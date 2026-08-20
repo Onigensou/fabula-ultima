@@ -40,13 +40,17 @@ const THUMB_GAP = 10;
 // it ever wants to be per-banner, it belongs in a RollTable field next to the
 // epithet rather than here.
 const FILLER_COPY = `
-  Wishes made upon the Gachapon are final and non-refundable. Hako Coupons carry
-  no monetary value outside this machine and may not be exchanged for zenit,
-  favours, or emotional support. Duplicate pieces are a feature of fortune, not
-  a defect. The proprietors accept no liability for oaths sworn, debts incurred,
-  or friendships strained in pursuit of a complete set. Participation implies
-  acceptance that fortune is a fickle patron. Void where prohibited by narrative
-  causality.`;
+  Wishes made upon the Wonderous Gachapon are final and non-refundable. Hako
+  Coupons carry no monetary value outside this machine and may not be redeemed
+  for zenit, favours, or emotional support. Hako is not responsible for
+  duplicate pieces, which are a feature of fortune rather than a defect of the
+  machine. Hako is likewise not responsible for oaths sworn, debts incurred,
+  bonds strained, or party funds spent in pursuit of a complete set. Hako
+  reminds patrons that the machine has never once been wrong, only unlucky.
+  Complaints regarding the machine may be submitted to Hako, who will consider
+  them carefully and at length. Participation implies acceptance that fortune
+  is a fickle patron and Hako is a worse one. Void where prohibited by
+  narrative causality.`;
 
 const CSS = `
 #${ROOT_ID} {
@@ -164,7 +168,7 @@ const CSS = `
 /* Title block sits TOP-left; the column no longer centres its content. */
 /* No divider: the card should read as one surface, not two panes. */
 .gu-card-text {
-  flex: 0 0 42%; padding: 34px 34px; display: flex; flex-direction: column;
+  flex: 0 0 38%; padding: 34px 32px; display: flex; flex-direction: column;
   justify-content: flex-start; gap: 12px; min-width: 0; z-index: 2;
 }
 .gu-epithet {
@@ -200,7 +204,7 @@ const CSS = `
 }
 
 .gu-card-art {
-  flex: 1 1 auto; min-width: 0; padding: 26px 30px;
+  flex: 1 1 auto; min-width: 0; padding: 20px 26px;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 18px;
   background:
@@ -220,12 +224,12 @@ const CSS = `
    name. Anchoring them to the art COLUMN instead pushed them out to its far
    right edge, well clear of the name they belong to. */
 .gu-lead-block {
-  flex: 0 0 auto; width: min(38vh, 340px);
+  flex: 0 0 auto; width: min(50vh, 430px);
   display: flex; flex-direction: column;
 }
 .gu-lead-plate {
   flex: 0 0 auto; position: relative;
-  width: 100%; height: min(38vh, 340px);
+  width: 100%; height: min(50vh, 430px);
   display: flex; align-items: center; justify-content: center;
   padding: 10px; border-radius: var(--gc-radius-lg);
   border: 2px solid var(--gc-line-2);
@@ -291,7 +295,7 @@ const CSS = `
   max-width: 100%; pointer-events: auto;
 }
 .gu-support img {
-  width: 52px; height: 52px; object-fit: contain; padding: 4px; cursor: pointer;
+  width: 58px; height: 58px; object-fit: contain; padding: 4px; cursor: pointer;
   border-radius: var(--gc-radius); border: 2px solid var(--gc-line);
   background: rgba(255,253,246,.9);
   transition: transform .13s, border-color .13s, box-shadow .13s;
@@ -301,7 +305,7 @@ const CSS = `
   box-shadow: 0 6px 14px -6px rgba(60,40,14,.7);
 }
 .gu-support img.is-showing { border-color: var(--gc-gold); box-shadow: 0 0 0 2px var(--gc-gold-soft); }
-.gu-support img.is-filler { width: 42px; height: 42px; opacity: .82; }
+.gu-support img.is-filler { width: 48px; height: 48px; opacity: .82; }
 
 /* ── actions ────────────────────────────────────────────────────────────── */
 /* Side by side, not stacked. */

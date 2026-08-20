@@ -14,9 +14,9 @@
 // hover tooltip for detail — a grid of names does not fit and does not read.
 // ============================================================================
 
-import { GACHA, RARITY } from "./gacha-const.js";
+import { GACHA, RARITY, TICKET_NAME, TICKET_ITEM_UUID } from "./gacha-const.js";
 import { getPoolTable, resolveTableItems, groupBySet, imgOf, FALLBACK_IMG } from "./gacha-banners.js";
-import { listSetBoard, redeemCatalogue } from "./gacha-exchange.js";
+import { listSetBoard } from "./gacha-exchange.js";
 import { request } from "./gacha-net.js";
 import { ensureTheme } from "./gacha-theme.js";
 
@@ -189,8 +189,8 @@ const CSS = `
   font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
   color: var(--gc-title);
 }
-.gp-board.is-solo { border-radius: var(--gc-radius); }
 .gp-board-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding-right: 4px; }
+.gp-redeem-name { align-self: center; font-size: 12px; color: var(--gc-ink-2); }
 .gp-chip.is-picked {
   border-color: var(--gc-title);
   box-shadow: 0 0 0 3px rgba(92,31,46,.22);
@@ -470,6 +470,7 @@ async function shop({ state, refresh }) {
  */
 async function exchange(ctx) {
   const board = await listSetBoard();
+  const ticket = ticketEntry();
 
   const body = frame("Exchange", `
     <div class="gp-exchange">
@@ -479,7 +480,7 @@ async function exchange(ctx) {
       width: 1020,
       topTabs: `
         <button class="gp-toptab" data-mode="swap">Gift Exchange</button>
-        <button class="gp-toptab" data-mode="__redeem">Redeem Ticket</button>`,
+        <button class="gp-toptab" data-mode="redeem">Redeem Ticket</button>`,
       foot: `<div class="gp-pick" data-pick></div>
              <button class="gc-btn is-primary" data-exchange disabled>Exchange</button>`,
     });
@@ -491,38 +492,49 @@ async function exchange(ctx) {
   const pickEl = root.querySelector("[data-pick]");
   const goBtn  = root.querySelector("[data-exchange]");
 
+  // MODE and SET are separate axes. Folding them into one field made "which set
+  // am I looking at" unanswerable while redeeming — which is precisely what the
+  // redeem board needs to know.
+  const S = { mode: "swap", set: board[0]?.setName ?? null, src: null, dst: null, dstUuid: null };
+
+  const currentSet = () => board.find((s) => s.setName === S.set) ?? board[0] ?? null;
+  const tickets = () => ctx?.state?.pool?.tickets ?? 0;
+  const clearPick = () => { S.src = S.dst = S.dstUuid = null; };
+
   stack.querySelectorAll("[data-mode]").forEach((t) =>
     t.addEventListener("click", () => {
-      const wantRedeem = t.dataset.mode === "__redeem";
-      if (wantRedeem === (S.view === "__redeem")) return;
-      if (wantRedeem) S.lastSet = S.view;
-      S.view = wantRedeem ? "__redeem" : (S.lastSet ?? board[0]?.setName);
-      S.src = S.dst = null;
+      if (S.mode === t.dataset.mode) return;
+      S.mode = t.dataset.mode;
+      clearPick();
       paint();
     })
   );
 
-  const S = { view: board[0]?.setName ?? "__redeem", src: null, dst: null };
-
-  // Set bookmarks only. Ticket Redemption is a MODE switch, not a peer of the
-  // sets, so it lives opposite them in the board header.
   const paintMarks = () => {
     marks.innerHTML = board.map((s) => `
-      <button class="gp-mark${S.view === s.setName ? " is-active" : ""}" data-view="${esc(s.setName)}">
-        ${esc(s.setName)}<span class="n">${s.ownedCount}/${s.pieces.length}</span>
+      <button class="gp-mark${S.set === s.setName ? " is-active" : ""}" data-view="${esc(s.setName)}">
+        ${esc(s.setName)}<span class="n">${
+          S.mode === "redeem" ? s.pieces.length : `${s.ownedCount}/${s.pieces.length}`
+        }</span>
       </button>`).join("");
     marks.querySelectorAll("[data-view]").forEach((n) =>
-      n.addEventListener("click", () => { S.view = n.dataset.view; S.src = S.dst = null; paint(); })
+      n.addEventListener("click", () => { S.set = n.dataset.view; clearPick(); paint(); })
     );
   };
 
   const paintFoot = () => {
-    const swapping = S.view !== "__redeem";
-    goBtn.style.display = swapping ? "" : "none";
-    pickEl.style.display = swapping ? "" : "none";
-    if (!swapping) return;
+    const redeeming = S.mode === "redeem";
+    goBtn.textContent = redeeming ? "Redeem" : "Exchange";
+    goBtn.disabled = redeeming ? !(S.dstUuid && tickets() > 0) : !(S.src && S.dst);
 
-    goBtn.disabled = !(S.src && S.dst);
+    if (redeeming) {
+      pickEl.innerHTML = tickets() < 1
+        ? `<span class="none">No tickets. They are handed out for events and holidays.</span>`
+        : S.dst
+          ? `Redeem <b>1 ${esc(TICKET_NAME)}</b> → <b>${esc(S.dst)}</b>`
+          : `<span class="none">Select the piece you want to receive.</span>`;
+      return;
+    }
     pickEl.innerHTML = S.src && S.dst
       ? `Trade <b>${esc(S.src)}</b> → <b>${esc(S.dst)}</b>`
       : `<span class="none">Select the piece you want to receive.</span>`;
@@ -530,34 +542,61 @@ async function exchange(ctx) {
 
   const paint = () => {
     paintMarks();
-
-    const redeeming = S.view === "__redeem";
-    const set = redeeming ? null : board.find((s) => s.setName === S.view);
-
     stack.querySelectorAll("[data-mode]").forEach((t) =>
-      t.classList.toggle("is-on", (t.dataset.mode === "__redeem") === redeeming)
+      t.classList.toggle("is-on", t.dataset.mode === S.mode)
     );
-    marks.style.display = redeeming ? "none" : "";
-    board_.classList.toggle("is-solo", redeeming);
+
+    const set = currentSet();
+    const redeeming = S.mode === "redeem";
 
     board_.innerHTML = `
       <div class="gp-board-head">
         <div class="gp-board-title">${
-          redeeming ? "Ticket Redemption"
-                    : `${esc(set?.setName ?? "")} — ${set?.ownedCount ?? 0} of ${set?.pieces.length ?? 0} held`
+          redeeming
+            ? `${esc(set?.setName ?? "")} — ${tickets()} ticket${tickets() === 1 ? "" : "s"} held`
+            : `${esc(set?.setName ?? "")} — ${set?.ownedCount ?? 0} of ${set?.pieces.length ?? 0} held`
         }</div>
       </div>
       <div class="gp-board-scroll"></div>`;
 
     const scroll = board_.querySelector(".gp-board-scroll");
-    if (redeeming) redeemView(scroll, ctx);
-    else paintSwapBoard(scroll, set, S, () => paintFoot());
+    if (redeeming) paintRedeemBoard(scroll, set, S, ticket, tickets(), paintFoot);
+    else paintSwapBoard(scroll, set, S, paintFoot);
 
     paintFoot();
   };
 
   goBtn.addEventListener("click", async () => {
-    const set = board.find((s) => s.setName === S.view);
+    const set = currentSet();
+
+    // ── Ticket redemption ────────────────────────────────────────────────
+    if (S.mode === "redeem") {
+      if (!S.dstUuid) return;
+      const ok = await Dialog.confirm({
+        title: "Redeem ticket?",
+        content: `<p>Spend one <b>${esc(TICKET_NAME)}</b> on <b>${esc(S.dst)}</b>?</p>`,
+        defaultYes: false,
+      });
+      if (!ok) return;
+
+      goBtn.disabled = true;
+      const res = await request(GACHA.MSG.REDEEM_REQ, {
+        targetItemUuid: S.dstUuid, requesterUserId: game.user.id,
+      });
+
+      if (res?.ok) {
+        ui.notifications?.info(`Redeemed → ${res.itemName}.`);
+        ctx?.refresh?.(res.pool);
+        closePanel();
+        renderPanel("exchange", ctx);
+      } else {
+        ui.notifications?.warn(`Redemption failed: ${res?.reason ?? "unknown"}`);
+        paintFoot();
+      }
+      return;
+    }
+
+    // ── Gift Exchange ────────────────────────────────────────────────────
     const src = set?.pieces.find((p) => p.name === S.src);
     const dst = set?.pieces.find((p) => p.name === S.dst);
     if (!src?.owned || !dst) return;
@@ -570,7 +609,7 @@ async function exchange(ctx) {
       content: `
         <p>Trade <b>${esc(src.name)}</b> for <b>${esc(dst.name)}</b>?</p>
         ${extra}
-        <p><b>“${esc(src.name)}” will be destroyed permanently.</b> This cannot be undone.</p>`,
+        <p><b>"${esc(src.name)}" will be destroyed permanently.</b> This cannot be undone.</p>`,
       defaultYes: false,
     });
     if (!ok) return;
@@ -590,12 +629,64 @@ async function exchange(ctx) {
       renderPanel("exchange", ctx);      // reopen on fresh state
     } else {
       ui.notifications?.warn(`Trade failed: ${res?.reason ?? "unknown"}`);
-      goBtn.disabled = false;
+      paintFoot();
     }
   });
 
   if (!board.length) { board_.innerHTML = `<div class="gp-empty">No gacha sets found.</div>`; return; }
   paint();
+}
+
+/** The 5-Star Exchange Ticket, as a display entry. */
+function ticketEntry() {
+  const id = TICKET_ITEM_UUID.replace(/^Item\./, "");
+  const it = game.items?.get(id) ?? null;
+  return { name: it?.name ?? TICKET_NAME, img: it?.img ?? FALLBACK_IMG, uuid: it?.uuid ?? TICKET_ITEM_UUID };
+}
+
+/**
+ * Redemption, laid out like the Gift Exchange board: browsed by set, one row
+ * per piece — but the row's source is always the ticket rather than something
+ * the party holds.
+ */
+function paintRedeemBoard(host, set, S, ticket, tickets, onPick) {
+  if (!set) { host.innerHTML = `<div class="gp-empty">Set not found.</div>`; return; }
+  const live = tickets > 0;
+
+  host.innerHTML = set.pieces.map((p) => `
+    <div class="gp-swaprow${live ? "" : " is-locked"}">
+      <div class="gp-swaprow-src">
+        <div class="gp-chip${live ? " is-own" : " is-dim"}"
+             data-tip="${esc(ticket.name)}"
+             data-tip-sub="${esc(live ? `${tickets} held` : "none held")}">
+          <img src="${ticket.img}" alt="">
+        </div>
+        <div class="cap">${live ? `×${tickets}` : "NONE"}</div>
+      </div>
+      <div class="gp-arrow">→</div>
+      <div class="gp-swaprow-dst">
+        <div class="gp-chip r5${live ? "" : " is-dim"}${S.dst === p.name ? " is-picked" : ""}"
+             ${live ? `data-redeem="${esc(p.name)}" data-uuid="${p.uuid}"` : ""}
+             data-tip="${esc(p.name)}"
+             data-tip-sub="${esc(live ? "redeem a ticket for this" : "no tickets held")}">
+          <img src="${p.img}" alt="">
+        </div>
+        <div class="gp-redeem-name">${esc(p.name)}</div>
+      </div>
+    </div>`).join("");
+
+  host.querySelectorAll("[data-redeem]").forEach((n) =>
+    n.addEventListener("click", () => {
+      const same = S.dst === n.dataset.redeem;
+      host.querySelectorAll(".gp-chip").forEach((c) => c.classList.remove("is-picked"));
+      if (same) { S.dst = null; S.dstUuid = null; }
+      else { S.dst = n.dataset.redeem; S.dstUuid = n.dataset.uuid; n.classList.add("is-picked"); }
+      onPick?.();
+    })
+  );
+
+  bindTips(host);
+  bindFallbacks(host);
 }
 
 function paintSwapBoard(host, set, S, onPick) {
@@ -661,50 +752,3 @@ function rowHTML(set, piece, S) {
     </div>`;
 }
 
-async function redeemView(panel, { state, refresh }) {
-  const tickets = state.pool.tickets ?? 0;
-  const cat = redeemCatalogue();
-
-  panel.innerHTML = `
-    <div class="gp-note" style="margin:0 0 14px">
-      You hold <b>${tickets}</b> ${RARITY.five.label} Exchange Ticket${tickets === 1 ? "" : "s"}.
-      A ticket may be redeemed for <b>any</b> ${RARITY.five.label} on <b>any</b> banner.
-    </div>
-    ${tickets < 1
-      ? `<div class="gp-empty">No tickets. They are handed out for events and holidays.</div>`
-      : `<div class="gp-grid">
-          ${cat.map((e) => `
-            <div class="gp-cell">
-              <div class="gp-chip r5" data-redeem="${e.uuid}"
-                   data-tip="${esc(e.name)}" data-tip-sub="${esc(e.setName || e.bannerName)}">
-                <img src="${imgOf(e)}" alt="">
-              </div>
-              <div class="gp-cell-name">${esc(e.name)}</div>
-            </div>`).join("")}
-        </div>`}`;
-
-  panel.querySelectorAll("[data-redeem]").forEach((n) =>
-    n.addEventListener("click", async () => {
-      const ok = await Dialog.confirm({
-        title: "Redeem ticket?",
-        content: `<p>Spend one ${RARITY.five.label} Exchange Ticket on this item?</p>`,
-      });
-      if (!ok) return;
-
-      const res = await request(GACHA.MSG.REDEEM_REQ, {
-        targetItemUuid: n.dataset.redeem, requesterUserId: game.user.id,
-      });
-
-      if (res?.ok) {
-        ui.notifications?.info(`Redeemed → ${res.itemName}.`);
-        refresh?.(res.pool);
-        closePanel();
-      } else {
-        ui.notifications?.warn(`Redemption failed: ${res?.reason ?? "unknown"}`);
-      }
-    })
-  );
-
-  bindTips(panel);
-  bindFallbacks(panel);
-}
