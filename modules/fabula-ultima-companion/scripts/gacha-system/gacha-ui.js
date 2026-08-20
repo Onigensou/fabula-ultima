@@ -164,6 +164,10 @@ const CSS = `
 
 /* A banner whose art is missing still has to be playable — show a card with
    its name rather than a broken image. The tab keeps its label regardless. */
+/* An author display rule outranks the UA stylesheet's [hidden] { display:none },
+   so without this the placeholder renders permanently — next to the real art,
+   both claiming the same banner. */
+.gu-art-missing[hidden] { display: none; }
 .gu-art-missing {
   width: 268px; height: 467px; border-radius: 12px;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -248,6 +252,7 @@ function applyInsets() {
 
 const S = {
   el: null,
+  opening: false,
   banners: [],
   bannerId: null,
   actor: null,
@@ -260,8 +265,24 @@ const S = {
 // ── Open / close ────────────────────────────────────────────────────────────
 
 export async function open() {
-  if (S.el) return;
+  // Re-entrancy guard, not just an "already open" guard.
+  //
+  // open() awaits (party actor, coupon cost) BEFORE assigning S.el, so two
+  // calls landing in that window — install() and canvasReady both fire on
+  // boot — would each sail past an `if (S.el)` check and append a second
+  // overlay. The symptom is a screen that looks almost right: doubled tabs,
+  // doubled wallet, and one copy left showing the previous banner.
+  if (S.el || S.opening) return;
+  S.opening = true;
 
+  try {
+    await build();
+  } finally {
+    S.opening = false;
+  }
+}
+
+async function build() {
   S.actor = await partyActor();
   if (!S.actor) return;
 
@@ -279,6 +300,9 @@ export async function open() {
   S.cost     = await couponCost();
 
   ensureStyle();
+  // Belt and braces: never leave a stray copy behind, whatever put it there.
+  document.querySelectorAll(`#${ROOT_ID}`).forEach((n) => n.remove());
+
   S.el = document.createElement("div");
   S.el.id = ROOT_ID;
   document.body.appendChild(S.el);
@@ -288,7 +312,7 @@ export async function open() {
 }
 
 export function close() {
-  S.el?.remove();
+  document.querySelectorAll(`#${ROOT_ID}`).forEach((n) => n.remove());
   S.el = null;
   S.busy = false;
 }
