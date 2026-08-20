@@ -482,17 +482,22 @@
 
     const el = document.createElement("div");
     el.id = TOAST_ID;
+    // Only fixed markup goes through innerHTML. Every monster name is authored
+    // data and is written with textContent below — never interpolated here.
     el.innerHTML = `
-      <div class="dp-enc-kind">${kind}</div>
+      <div class="dp-enc-kind"></div>
       <div class="dp-enc-group"></div>
-      ${unseen.length ? `<div class="dp-enc-new">✦ first encounter: ${unseen.map(u => u.name).join(", ")}</div>` : ""}
+      ${unseen.length ? `<div class="dp-enc-new"></div>` : ""}
       <div class="dp-enc-actions">
         <button data-act="now">Fight now</button>
         <button data-act="customize">Customize…</button>
       </div>
       <div class="dp-enc-bar"><i></i></div>`;
-    // Monster names are user data — set as text, never parsed as HTML.
+    el.querySelector(".dp-enc-kind").textContent  = kind;
     el.querySelector(".dp-enc-group").textContent = group;
+    if (unseen.length) {
+      el.querySelector(".dp-enc-new").textContent = `✦ first encounter: ${unseen.map(u => u.name).join(", ")}`;
+    }
     document.body.appendChild(el);
     requestAnimationFrame(() => el.classList.add("visible"));
 
@@ -627,10 +632,6 @@
       ui.notifications?.error?.("Random Battle | Battle Director API not loaded (Setup-relaunch needed).");
       return { ok: false, appear: true, launched: false, error: "Director API missing" };
     }
-    if (api.isRunning?.()) {
-      ui.notifications?.warn?.("Random Battle | A battle is already running — skipping the auto-launch.");
-      return { ok: false, appear: true, launched: false, error: "Director already running" };
-    }
 
     const payload = buildPayload({ scene, picks, engagement, cfg, tileId });
     payload.party.members = await resolvePartyMembers();
@@ -641,10 +642,23 @@
     }
 
     try {
+      // Don't pre-check isRunning() — it is a bare `!!_instance` and reports
+      // true for a WEDGED director that start()'s own preflightCleanup would
+      // have recovered, so it would refuse launches that are actually fine.
+      // start() is the single authority; we just read its verdict, which is
+      // legible by identity: it returns a NEW director on success and the
+      // EXISTING one when it refuses to clobber a live battle.
+      const before  = api.getActiveDirector?.() ?? null;
       // start() awaits only IDLE → PREP; the transition, curtain and spawn run
       // asynchronously after this resolves. That is what lets the player's turn
       // loop finish promptly instead of blocking on the whole cinematic.
-      await api.start({ payload });
+      const started = await api.start({ payload });
+
+      if (!started || started === before) {
+        warn("Director refused the launch (a battle is already running)");
+        ui.notifications?.warn?.("Random Battle | A battle is already running — skipping the auto-launch.");
+        return { ok: false, appear: true, launched: false, error: "Director already running" };
+      }
       return { ok: true, appear: true, launched: true };
     } catch (e) {
       console.error(TAG, "battleDirector.start threw", e);
