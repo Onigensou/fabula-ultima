@@ -102,6 +102,32 @@ Worked example at `bias = 1` over six 1-wide rows:
 `1 + bias × 0 = 1` and the draw is exactly the authored table. No exhaustion
 check, no reset.
 
+### ⚠ The formula ceiling is load-bearing
+
+Reading `results` directly is what makes the bias possible — and it also
+bypasses the die. **A row parked above the die maximum is the house idiom for
+"list this monster in the bestiary but never roll it."** `Ancient Temple -
+Enemies` is `1d8` with `⭐️ Geist` at row 9 for exactly that reason.
+
+So `rollableRows()` drops every row whose range starts above the formula's
+maximum, and the maximum is obtained by asking Foundry
+(`new Roll(formula).evaluateSync({ maximize: true })`) rather than by pattern-
+matching, so it stays in parity with what `table.roll()` would accept. A regex
+fallback covers the house `1dN` for environments without `Roll`.
+
+A formula neither Roll nor the regex can read means Foundry could not have
+rolled the table either, so it is treated as **unusable** — the draw falls back
+to the Enemies table, then to a graceful miss. Never to an unbounded draw.
+
+Without this filter the bias makes things actively worse, not merely
+unfiltered: an unfought boss is by definition unseen, so it would be the single
+most-favoured row on the table. The offline check covers this case, and a
+negative control (formula blanked) confirms the guard is what excludes it —
+Geist is otherwise drawn ~16% of the time.
+
+`Random` keyword slots go through `table.draw()`, which honours the formula
+already, so that path was never exposed.
+
 `Random` keyword slots are skipped when counting novelty — a row is not more
 novel just because it contains a wildcard — but they still resolve normally from
 the Enemies table at pick time.
@@ -192,6 +218,7 @@ All of these are reachable today.
 | Condition | Behaviour |
 |---|---|
 | No Encounter table, or zero rows | Falls back to 3–5 novelty-weighted draws from the Enemies table |
+| Table formula unreadable | Table skipped entirely (Foundry could not roll it either) → Enemies table → miss |
 | Neither table usable | Degrades to a **miss**: card, rate climbs, GM-only warning |
 | No `battleMap` on the scene | Same graceful miss |
 | An encounter slot names a missing actor | Skipped with a console warning; the rest of the row still spawns |

@@ -228,6 +228,58 @@
   }
 
   /**
+   * Highest number the table's formula can roll, or null if it cannot be read.
+   *
+   * Asks Foundry rather than guessing, so this stays in parity with what
+   * `table.roll()` would actually accept — any formula Roll understands works,
+   * not just the house `1dN`. The regex is a fallback for environments without
+   * Roll (the offline harness in tools/), and covers the house style exactly.
+   */
+  function formulaMax(table) {
+    const f = String(table?.formula ?? "").trim();
+    if (!f) return null;
+    try {
+      const r = new Roll(f);
+      if (typeof r.evaluateSync === "function") {
+        const total = Number(r.evaluateSync({ maximize: true })?.total);
+        if (Number.isFinite(total)) return total;
+      }
+    } catch { /* fall through to the regex */ }
+    const m = /^(\d*)\s*d\s*(\d+)$/i.exec(f);
+    return m ? Number(m[1] || 1) * Number(m[2]) : null;
+  }
+
+  /**
+   * Rows the table's own formula can actually reach.
+   *
+   * ⚠ LOAD-BEARING. Reading `table.results` directly is what lets us weight the
+   * draw, but it also bypasses the die — and a row parked ABOVE the die maximum
+   * is the house idiom for "list this monster in the bestiary but never roll
+   * it". `Ancient Temple - Enemies` is `1d8` with ⭐️ Geist at row 9 for exactly
+   * that reason. Without this filter a random encounter could spawn a boss.
+   *
+   * A formula neither Roll nor the regex can read means Foundry could not roll
+   * this table either, so it is treated as unusable rather than as "no ceiling".
+   * The caller then falls back to the Enemies table, and failing that to a
+   * graceful miss — never to an unbounded draw.
+   */
+  function rollableRows(table) {
+    const rows = [...(table?.results ?? [])].filter(r => rowText(r));
+    if (!rows.length) return rows;
+
+    const max = formulaMax(table);
+    if (max === null) {
+      warn(`table "${table?.name}" has an unreadable formula (${JSON.stringify(table?.formula)}) — skipping it; Foundry could not roll it either`);
+      return [];
+    }
+
+    const keep = rows.filter(r => Number(r?.range?.[0]) <= max);
+    const dropped = rows.length - keep.length;
+    if (dropped) log(`table "${table?.name}": ${dropped} row(s) above the ${max} maximum excluded (deliberately unrollable)`);
+    return keep;
+  }
+
+  /**
    * "Has the party ever fought this monster?"
    *
    * The Monster Encyclopedia creates a placeholder page the moment a monster is
@@ -285,7 +337,7 @@
     const encTable     = await resolveTable(cfg.encounterTable);
     const enemiesTable = await resolveTable(cfg.enemiesTable);
 
-    const encRows = [...(encTable?.results ?? [])].filter(r => rowText(r));
+    const encRows = rollableRows(encTable);
     if (encRows.length) {
       // Pre-resolve every row once so novelty can be counted per row.
       const scored = [];
@@ -318,7 +370,7 @@
 
     // Fallback: no Encounter table, no rows, or every row unresolvable.
     // Mirrors the Director's own "random" branch — 3-5 draws from the bestiary.
-    const eneRows = [...(enemiesTable?.results ?? [])].filter(r => rowText(r));
+    const eneRows = rollableRows(enemiesTable);
     if (!eneRows.length) return [];
 
     const scoredEnemies = eneRows.map(r => {

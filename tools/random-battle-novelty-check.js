@@ -24,7 +24,7 @@ const REPO       = path.resolve(__dirname, "..");
 const SCRIPT_REL = "modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-random-battle.js";
 
 // ── Fixture ────────────────────────────────────────────────────────────────
-const ACTORS = ["Electro Slime", "Lightning Prism", "Kirin", "Skizzik", "Mana Ray"]
+const ACTORS = ["Electro Slime", "Lightning Prism", "Kirin", "Skizzik", "Mana Ray", "⭐️ Geist"]
   .map((name, i) => ({ id: `a${i}`, name, uuid: `Actor.a${i}` }));
 const byName = new Map(ACTORS.map(a => [a.name, a]));
 
@@ -42,6 +42,18 @@ const ROWS = [
   "Kirin, Mana Ray",                   // 2 new
 ].map((text, i) => ({ text, range: [i + 1, i + 1] }));
 
+// The house "never roll this" idiom: a row parked ABOVE the die maximum.
+// Ancient Temple - Enemies is 1d8 with ⭐️ Geist at row 9 for exactly this
+// reason. It is also UNSEEN, so the novelty bias would actively favour it if
+// the formula ceiling were not honoured — the worst case, deliberately.
+const BOSS_ROW = { text: "⭐️ Geist", range: [7, 7] };
+let INCLUDE_BOSS_ROW = false;
+
+// Formula stays 1d6 — the six real rows — so BOSS_ROW at 7 is unrollable.
+const TABLE = { name: "Test - Encounter", formula: "1d6", get results() {
+  return INCLUDE_BOSS_ROW ? [...ROWS, BOSS_ROW] : ROWS;
+} };
+
 // ── Foundry stubs ──────────────────────────────────────────────────────────
 globalThis.DungeonPathing = { MODULE_ID: "fabula-ultima-companion", HOOKS: { GRAPH_REBUILT: "x" } };
 globalThis.Hooks = { once() {}, on() {}, off() {} };
@@ -52,7 +64,7 @@ globalThis.game  = {
   modules:  { get: () => null },
   macros:   { getName: () => null },
   scenes:   { get: () => null },
-  tables:   { get: (id) => (id === "enc" ? { results: ROWS } : null) },
+  tables:   { get: (id) => (id === "enc" ? TABLE : null) },
   actors:   { getName: (n) => byName.get(String(n).trim()) ?? null, get: () => null },
 };
 globalThis.fromUuid   = async () => null;
@@ -126,8 +138,21 @@ function check(label, ok) {
   const ok3 = check("expected a flat 16.7% each",
     ROWS.every(r => Math.abs(p3(r.text) - 100 / 6) < TOL));
 
+  // 4. A row above the die maximum must NEVER be drawn, even though it is the
+  //    single most novel row on the table. This is the boss-containment check.
+  BIAS = 1; UNSEEN = new Set(["Kirin", "Mana Ray", "⭐️ Geist"]); INCLUDE_BOSS_ROW = true;
+  const tally = new Map();
+  for (let i = 0; i < N; i++) {
+    const key = (await pickEncounter({ id: "s", name: "Test" })).map(p => p.name).join(", ");
+    tally.set(key, (tally.get(key) ?? 0) + 1);
+  }
+  const bossDraws = tally.get(BOSS_ROW.text) ?? 0;
+  console.log(`\n=== above-max row excluded (1d6 table, ⭐️ Geist parked at 7) ===`);
+  console.log(`  ⭐️ Geist drawn ${bossDraws} / ${N} times`);
+  const ok4 = check("expected 0 draws", bossDraws === 0);
+
   console.warn = realWarn;
-  const all = ok1 && ok2 && ok3;
+  const all = ok1 && ok2 && ok3 && ok4;
   console.log(`\nALL: ${all ? "PASS" : "FAIL"}`);
   process.exit(all ? 0 : 1);
 })();
