@@ -191,6 +191,18 @@ const CSS = `
 }
 .gp-board-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding-right: 4px; }
 .gp-redeem-name { align-self: center; font-size: 12px; color: var(--gc-ink-2); }
+
+/* How many tickets the party HOLDS. Deliberately a footer badge rather than a
+   caption under each row's ticket icon: sitting beneath the source chip it
+   read as a PRICE ("this costs 2 tickets"), when every redemption costs one. */
+.gp-ticketcount {
+  display: flex; align-items: center; gap: 9px;
+  padding: 6px 16px 6px 8px; border-radius: 999px;
+  background: linear-gradient(180deg, var(--gc-parch), var(--gc-panel));
+  border: 1px solid var(--gc-gold);
+  font-size: 20px; font-weight: 700; color: var(--gc-ink);
+}
+.gp-ticketcount img { width: 34px; height: 34px; object-fit: contain; }
 .gp-chip.is-picked {
   border-color: var(--gc-title);
   box-shadow: 0 0 0 3px rgba(92,31,46,.22);
@@ -482,6 +494,7 @@ async function exchange(ctx) {
         <button class="gp-toptab" data-mode="swap">Gift Exchange</button>
         <button class="gp-toptab" data-mode="redeem">Redeem Ticket</button>`,
       foot: `<div class="gp-pick" data-pick></div>
+             <div class="gp-ticketcount" data-ticketcount hidden></div>
              <button class="gc-btn is-primary" data-exchange disabled>Exchange</button>`,
     });
 
@@ -489,8 +502,9 @@ async function exchange(ctx) {
   const root   = body.closest(".gp-frame");
   const marks  = body.querySelector(".gp-marks");
   const board_ = body.querySelector(".gp-board");
-  const pickEl = root.querySelector("[data-pick]");
-  const goBtn  = root.querySelector("[data-exchange]");
+  const pickEl  = root.querySelector("[data-pick]");
+  const countEl = root.querySelector("[data-ticketcount]");
+  const goBtn   = root.querySelector("[data-exchange]");
 
   // MODE and SET are separate axes. Folding them into one field made "which set
   // am I looking at" unanswerable while redeeming — which is precisely what the
@@ -526,6 +540,11 @@ async function exchange(ctx) {
     const redeeming = S.mode === "redeem";
     goBtn.textContent = redeeming ? "Redeem" : "Exchange";
     goBtn.disabled = redeeming ? !(S.dstUuid && tickets() > 0) : !(S.src && S.dst);
+
+    countEl.hidden = !redeeming;
+    if (redeeming) {
+      countEl.innerHTML = `<img src="${ticket.img}" alt=""> ${tickets()}`;
+    }
 
     if (redeeming) {
       pickEl.innerHTML = tickets() < 1
@@ -658,10 +677,10 @@ function paintRedeemBoard(host, set, S, ticket, tickets, onPick) {
       <div class="gp-swaprow-src">
         <div class="gp-chip${live ? " is-own" : " is-dim"}"
              data-tip="${esc(ticket.name)}"
-             data-tip-sub="${esc(live ? `${tickets} held` : "none held")}">
+             data-tip-sub="${esc(live ? "costs one ticket" : "none held")}">
           <img src="${ticket.img}" alt="">
         </div>
-        <div class="cap">${live ? `×${tickets}` : "NONE"}</div>
+        <div class="cap">${live ? "1 TICKET" : "NONE"}</div>
       </div>
       <div class="gp-arrow">→</div>
       <div class="gp-swaprow-dst">

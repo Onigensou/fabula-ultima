@@ -265,9 +265,9 @@ const CSS = `
    Shadows sit strictly OUTSIDE the glyph, so the dark fill stays solid over
    both pale and busy artwork. */
 .gu-lead-name {
-  position: absolute; left: 18%; right: -30px; bottom: -10px; text-align: right;
+  position: absolute; left: 12%; right: -30px; bottom: -14px; text-align: right;
   font-family: "Trebuchet MS", "Segoe UI", Verdana, sans-serif;
-  font-size: 32px; font-weight: 800; font-style: italic; letter-spacing: .5px;
+  font-size: 42px; font-weight: 800; font-style: italic; letter-spacing: .5px;
   color: var(--gc-ink); pointer-events: none; z-index: 3;
   -webkit-text-stroke: 0;
   text-shadow:
@@ -280,8 +280,8 @@ const CSS = `
 /* Directly beneath the name — same right edge, so the two read as one label.
    The -30px matches .gu-lead-name's right offset. */
 .gu-lead-stars {
-  margin: 22px -30px 0 0; text-align: right;
-  font-size: 22px; letter-spacing: 4px; color: var(--gc-r5);
+  margin: 26px -30px 0 0; text-align: right;
+  font-size: 30px; letter-spacing: 5px; color: var(--gc-r5);
   text-shadow: 0 1px 2px rgba(90,60,20,.4);
 }
 
