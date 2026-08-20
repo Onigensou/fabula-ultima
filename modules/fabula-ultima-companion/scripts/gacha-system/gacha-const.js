@@ -103,26 +103,49 @@ export const PITY_FOUR = 10;
 export const PULL_SIZES = [1, 10];
 
 // ── Animation timing ────────────────────────────────────────────────────────
-// The warm + hold beat is ported from the v2.7 macro (8 x 120ms lerp, then a
-// 400ms hold). That cadence is what makes the anticipation land, so it is kept
-// exactly — only the delivery changed, from N chat-document writes to one CSS
-// keyframe. Durations are milliseconds.
+// Durations in milliseconds, for the three-phase reveal: a treasure chest that
+// wiggles, bursts, reveals each prize in turn, then summarises.
+//
+// The HOLDS are the drama, not the motion. Lifted from the check-requester's
+// die decel (cr-api.js), whose `staggerMs` is commented `hold: "is this it?"` —
+// each pause has to feel like it might be the last one.
 export const FX = {
-  DARKEN:      250,
-  STREAK:      900,
-  WARM:        960, // 8 x 120ms
-  HOLD:        400,
-  BURST:       300,
-  REVEAL_STEP:  70, // per-card stagger in the x10 grid
-  STAR_STAGGER: 55, // per-star stagger in the streak
-  // Hard ceiling for any animationend wait. A hidden tab never fires the event,
-  // so every phase races the listener against this timer.
-  PHASE_FALLBACK: 4000,
-  // How long the grey streak will hold waiting for the engine's answer before
-  // giving up and clearing the screen. Generous: a x10 on this world does ten
-  // grants plus pity and a chat receipt, and measured ~2s for a single pull.
+  // ── intro ──
+  DARKEN:       320,
+  CHEST_IN:     620,   // chest drops in
+  CHEST_SETTLE: 260,
+  WIGGLE:       380,   // one shake
+  HOLDS:        [620, 780, 900],  // after wiggle 1, 2, 3 — escalating
+  BURST:        520,
+  WHITEOUT:     420,
+
+  // ── reveal, per rarity ──
+  SILHOUETTE_IN: 380,
+  FLASH:         180,
+  REVEAL_HOLD:   { three: 750, four: 1000, five: 1600 },
+
+  // ── summary ──
+  SUMMARY_IN:      420,
+  SUMMARY_STAGGER:  70,
+
+  // How long the chest will idle waiting for the engine's answer before giving
+  // up and clearing the screen. Generous: a x10 does ten grants plus pity and a
+  // chat receipt, and a single pull measured ~2s.
   RESULT_TIMEOUT: 20000,
 };
+
+/**
+ * Chance that a roll wiggles ONE more time than its rarity earns.
+ *
+ * Without this the tell is fully readable after a handful of pulls — "one
+ * wiggle, nothing good" — and the anticipation dies at the first shake instead
+ * of at the burst. Same trick as the check-requester's `pickIntense`, which
+ * spends 8% of its rolls on drama the outcome did not justify.
+ *
+ * It only ever OVER-promises. Under-promising would waste the payoff: a 5-star
+ * that shook once would land as a shrug instead of a shock.
+ */
+export const FAKEOUT_CHANCE = 0.10;
 
 export const log  = (...a) => console.log(GACHA.TAG, ...a);
 export const warn = (...a) => console.warn(GACHA.TAG, ...a);

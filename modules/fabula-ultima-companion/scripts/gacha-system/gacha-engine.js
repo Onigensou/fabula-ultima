@@ -18,7 +18,7 @@
 // ============================================================================
 
 import {
-  GACHA, RARITY, PITY_FIVE, PITY_FOUR, PULL_SIZES, bestRarity, log, warn,
+  GACHA, RARITY, PITY_FIVE, PITY_FOUR, PULL_SIZES, log, warn,
 } from "./gacha-const.js";
 import { getBanner, getPoolTable, resolveTableItems } from "./gacha-banners.js";
 import {

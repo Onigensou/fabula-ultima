@@ -80,7 +80,7 @@ export const THEME_CSS = `
    <button> that wants an explicit width must be declared id-scoped too
    ("#gacha-panel .gp-step { width: ... }"), or it silently falls back to
    content width. Divs are unaffected. */
-#gacha-ui button, #gacha-panel button,
+#gacha-ui button, #gacha-panel button, #gacha-fx button,
 #gacha-ui input, #gacha-panel input {
   width: auto;
   flex: 0 0 auto;
