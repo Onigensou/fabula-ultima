@@ -451,8 +451,13 @@ function layoutRail() {
   if (!view || !strip) return;
 
   // Show as many whole thumbnails as fit, capped by the roster size.
-  const railBox = S.el.querySelector(".gu-rail").getBoundingClientRect().width;
-  const avail = Math.max(THUMB_W, railBox - 2 * 42 - 20 - 24);
+  //
+  // Measured against the OVERLAY's width, not the rail's own. The rail is
+  // sized by its content, so reading its width here would be circular: a
+  // narrow view makes a narrow rail, which then computes an even narrower
+  // view. After a sidebar toggle that collapsed the rail to one thumbnail.
+  const ARROWS = 2 * 42, GAPS = 20, PAD = 24;
+  const avail = Math.max(THUMB_W, S.el.clientWidth - ARROWS - GAPS - PAD);
   const fit = Math.max(1, Math.min(S.banners.length, Math.floor(avail / THUMB_W)));
   view.style.width = `${fit * THUMB_W - THUMB_GAP}px`;
 
