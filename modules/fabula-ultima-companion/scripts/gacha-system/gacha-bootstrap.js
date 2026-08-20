@@ -55,15 +55,26 @@ Hooks.on("updateScene", (scene) => {
   sync(scene);
 });
 
-// Currency and pity live on the party actor; when it changes underneath us
+// Currency and pity live on the party actor; when they change underneath us
 // (another player's purchase, a GM edit) the counters should follow.
+//
+// Scoped to the party actor on purpose. A wish grants several items and
+// decrements the coupon in one burst, and an unfiltered hook would repaint the
+// whole overlay once per document touched, mid-animation.
+const touchesParty = (doc) => {
+  const partyId = UI.partyActorId();
+  if (!partyId) return false;
+  return doc?.id === partyId || doc?.parent?.id === partyId;
+};
+
 Hooks.on("updateActor", (actor) => {
-  if (!UI.isOpen()) return;
-  UI.refreshPool();
+  if (UI.isOpen() && touchesParty(actor)) UI.refreshPool();
 });
 
 Hooks.on("updateItem", (item) => {
-  if (!UI.isOpen()) return;
-  if (item?.parent?.documentName !== "Actor") return;
-  UI.refreshPool();
+  if (UI.isOpen() && touchesParty(item)) UI.refreshPool();
+});
+
+Hooks.on("createItem", (item) => {
+  if (UI.isOpen() && touchesParty(item)) UI.refreshPool();
 });

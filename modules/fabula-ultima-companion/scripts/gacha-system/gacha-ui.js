@@ -199,7 +199,9 @@ export async function open() {
   }
 
   S.bannerId = S.banners[0].id;
-  S.canPlay  = isPartyMemberClient(S.actor);
+  // Party members participate; spectators watch. A GM is not a party member but
+  // still needs the controls to demo, test and roll on the table's behalf.
+  S.canPlay  = isPartyMemberClient(S.actor) || game.user.isGM;
   S.pool     = readPool(S.actor);
   S.cost     = await couponCost();
 
@@ -219,6 +221,9 @@ export function close() {
 }
 
 export const isOpen = () => !!S.el;
+
+/** Party actor id, so hooks can scope themselves to documents that matter. */
+export const partyActorId = () => S.actor?.id ?? null;
 
 /** Called by the socket layer when the pool changes anywhere. */
 export function refreshPool(pool) {

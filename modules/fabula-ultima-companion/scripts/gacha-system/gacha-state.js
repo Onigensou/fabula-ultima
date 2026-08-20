@@ -117,8 +117,11 @@ export async function grantCoupons(actor, n) {
   const existing = couponItemOf(actor);
 
   if (existing) {
-    await existing.update({ "system.props.item_quantity": qtyOf(existing) + n });
-    return { ok: true, total: qtyOf(existing) + n };
+    // Capture BEFORE the write: qtyOf() re-reads the live document, so
+    // recomputing it afterwards would count the new coupons twice.
+    const total = qtyOf(existing) + n;
+    await existing.update({ "system.props.item_quantity": total });
+    return { ok: true, total };
   }
 
   const tpl = await fromUuid(COUPON_ITEM_UUID).catch(() => null);

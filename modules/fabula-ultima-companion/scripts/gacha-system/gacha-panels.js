@@ -233,6 +233,17 @@ async function shop({ state, refresh }) {
   const zenit = Math.max(0, Number(buyer?.system?.props?.zenit ?? 0));
   const cost  = state.cost;
 
+  // A GM typically has no assigned character, so there is no wallet to bill.
+  // Say so plainly instead of failing on click.
+  if (!buyer) {
+    frame("Buy Hako Coupons", `
+      <div class="gp-empty">
+        No character is assigned to this client, so there is no Zenit to spend.<br>
+        Coupons are bought by a party member from their own purse.
+      </div>`);
+    return;
+  }
+
   const body = frame("Buy Hako Coupons", `
     <div class="gp-buy">
       <span>Quantity</span>
@@ -241,7 +252,7 @@ async function shop({ state, refresh }) {
       <button class="gp-btn" data-confirm>Purchase</button>
     </div>
     <div class="gp-note">
-      Paying from <b>${esc(buyer?.name ?? "—")}</b> — your own Zenit (<b>${zenit}</b>z),
+      Paying from <b>${esc(buyer.name)}</b> — your own Zenit (<b>${zenit}</b>z),
       at ${cost}z each.<br>
       The coupons go into the <b>shared party pool</b>, not your inventory:
       spending is personal, the currency is the party's.

@@ -180,7 +180,19 @@ function phase(ms, state) {
     if (state.skip) return resolve();
     const t = setTimeout(resolve, ms);
     state.timers.push(t);
+    // Skipping clears the timers, which would leave this promise permanently
+    // unresolved and the sequence's async frame leaked. Hand the resolver over
+    // so a skip can settle it explicitly.
+    state.pending.push(resolve);
   });
+}
+
+/** Settle any in-flight phase immediately (skip / teardown). */
+function flush(state) {
+  for (const t of state.timers ?? []) clearTimeout(t);
+  state.timers = [];
+  for (const r of state.pending ?? []) { try { r(); } catch {} }
+  state.pending = [];
 }
 
 const rgba = (hex, a) => {
@@ -208,7 +220,7 @@ export async function playReveal({ bannerName, results } = {}) {
 
   const best  = bestRarity(results.map((r) => r.rarity));
   const color = RARITY[best].color;
-  const state = { skip: false, timers: [] };
+  const state = { skip: false, done: false, timers: [], pending: [] };
 
   const el = document.createElement("div");
   el.id = ROOT_ID;
@@ -233,8 +245,9 @@ export async function playReveal({ bannerName, results } = {}) {
   el.append(sky, burst, label, skip);
   document.body.appendChild(el);
 
-  const onSkip = () => { state.skip = true; finish(el, state, results, true); };
+  const onSkip = () => { state.skip = true; flush(state); finish(el, state, results, true); };
   const onKey = (ev) => { if (ev.key === "Escape") onSkip(); };
+  state.onSkip = onSkip;
   el.addEventListener("click", onSkip);
   window.addEventListener("keydown", onKey);
 
@@ -281,7 +294,10 @@ function starHTML(i, total) {
 function finish(el, state, results, skipped) {
   if (state.done) return;
   state.done = true;
-  for (const t of state.timers) clearTimeout(t);
+  flush(state);
+  // Drop the skip handler before wiring dismiss, or a post-reveal click would
+  // fire both.
+  if (state.onSkip) el.removeEventListener("click", state.onSkip);
 
   const solo = results.length === 1;
   const grid = document.createElement("div");
@@ -315,7 +331,7 @@ export function stop() {
   const { state, el, cleanup } = _active;
   state.skip = true;
   state.done = true;
-  for (const t of state.timers ?? []) clearTimeout(t);
+  flush(state);
   cleanup?.();
   el?.remove();
   _active = null;
