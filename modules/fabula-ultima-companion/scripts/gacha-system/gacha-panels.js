@@ -14,7 +14,7 @@
 // hover tooltip for detail — a grid of names does not fit and does not read.
 // ============================================================================
 
-import { GACHA, RARITY, TICKET_NAME, TICKET_ITEM_UUID } from "./gacha-const.js";
+import { GACHA, RARITY, TICKET_NAME, TICKET_ITEM_UUID, COUPON_ITEM_UUID } from "./gacha-const.js";
 import { getPoolTable, resolveTableItems, groupBySet, imgOf, FALLBACK_IMG } from "./gacha-banners.js";
 import { listSetBoard } from "./gacha-exchange.js";
 import { request } from "./gacha-net.js";
@@ -23,6 +23,47 @@ import { ensureTheme } from "./gacha-theme.js";
 const PANEL_ID = "gacha-panel";
 const TIP_ID   = "gacha-tip";
 const STYLE_ID = "gacha-panel-style";
+
+// The house Zenit coin, shared with the shop, sell and refinement windows so
+// currency reads identically everywhere. Icon only — never a "z" suffix.
+const COIN_SRC = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/GP.png";
+const COIN_ICON    = `<img class="gp-coin" src="${COIN_SRC}" alt="Zenit">`;
+const COIN_ICON_LG = `<img class="gp-coin is-lg" src="${COIN_SRC}" alt="Zenit">`;
+
+/**
+ * Tween an integer readout, for the purse ticking down on a purchase.
+ *
+ * rAF drives it, but a timeout guarantees the final value lands even if the
+ * frame loop is throttled — a background tab would otherwise leave the number
+ * frozen mid-count, showing a balance that was never real.
+ */
+function rollNumber(el, from, to, ms = 600) {
+  if (!el) return;
+  if (from === to || window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) {
+    el.textContent = to.toLocaleString();
+    return;
+  }
+
+  const t0 = performance.now();
+  const ease = (t) => 1 - Math.pow(1 - t, 3);   // decelerate, like a counter settling
+  let done = false;
+
+  const settle = () => { if (done) return; done = true; el.textContent = to.toLocaleString(); };
+
+  const step = (now) => {
+    if (done) return;
+    // Clamp the LOW end too. rAF hands back the frame's start time, which can
+    // predate the performance.now() sampled moments earlier — a negative t runs
+    // the easing backwards and flashes a wildly wrong figure before settling.
+    const t = Math.min(1, Math.max(0, (now - t0) / ms));
+    el.textContent = Math.round(from + (to - from) * ease(t)).toLocaleString();
+    if (t < 1) requestAnimationFrame(step);
+    else settle();
+  };
+
+  requestAnimationFrame(step);
+  setTimeout(settle, ms + 250);
+}
 
 const CSS = `
 #${PANEL_ID} {
@@ -133,8 +174,39 @@ const CSS = `
 .gp-empty { font-size: 13px; color: var(--gc-ink-3); padding: 26px 0; text-align: center; }
 
 /* ── shop ──────────────────────────────────────────────────────────────── */
-.gp-buy { display: flex; align-items: center; justify-content: center; gap: 14px; }
+/* Same coin art the shop, sell and refinement windows use, so Zenit reads the
+   same everywhere. Icon only — never a "z" suffix. */
+.gp-coin {
+  width: 20px; height: 20px; object-fit: contain; vertical-align: middle;
+  border: none !important; box-shadow: none !important; background: transparent;
+}
+.gp-coin.is-lg { width: 30px; height: 30px; }
+
+/* The buyer's purse, shown before they commit to anything. */
+.gp-purse {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 16px; margin-bottom: 16px; border-radius: var(--gc-radius);
+  background: linear-gradient(180deg, var(--gc-parch), var(--gc-panel));
+  border: 1px solid var(--gc-line-2);
+}
+.gp-purse-label {
+  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--gc-ink-3);
+}
+.gp-purse-amount {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 26px; font-weight: 700; color: var(--gc-title);
+  font-variant-numeric: tabular-nums;
+  transition: color .2s;
+}
+.gp-purse-amount.is-spending { color: #a8412f; }
+
+.gp-buy { display: flex; align-items: center; justify-content: center; gap: 12px; }
 .gp-buy label { font-size: 13px; }
+.gp-buy .gp-coupon-icon {
+  width: 30px; height: 30px; object-fit: contain;
+  border: none !important; box-shadow: none !important; background: transparent;
+}
 /* Explicit and scoped: this panel is appended to document.body, so Foundry's
    global input rules apply and will otherwise take the field to 100%. */
 #${PANEL_ID} input.gp-qty {
@@ -143,7 +215,11 @@ const CSS = `
   background: var(--gc-parch); color: var(--gc-ink);
   border: 1px solid var(--gc-line-3); border-radius: var(--gc-radius);
 }
-.gp-total { font-size: 16px; font-weight: 700; color: var(--gc-title); min-width: 96px; }
+.gp-total {
+  display: flex; align-items: center; gap: 5px; min-width: 96px;
+  font-size: 17px; font-weight: 700; color: var(--gc-title);
+  font-variant-numeric: tabular-nums;
+}
 
 /* Purchase confirmation, in-panel. The Foundry toast alone is easy to miss and
    appears far from where the click happened. */
@@ -437,33 +513,43 @@ async function shop({ state, refresh }) {
   // lands, rather than waiting for the actor sync to come back around.
   let zenit = Math.max(0, Number(buyer.system?.props?.zenit ?? 0));
 
+  const couponImg = game.items?.get(COUPON_ITEM_UUID.replace(/^Item\./, ""))?.img ?? FALLBACK_IMG;
+
   const body = frame("Buy Hako Coupons", `
+    <div class="gp-purse">
+      <div class="gp-purse-label">${esc(buyer.name)}'s Zenit</div>
+      <div class="gp-purse-amount" data-zenit>
+        ${COIN_ICON_LG}<span data-zenit-n>${zenit.toLocaleString()}</span>
+      </div>
+    </div>
+
     <div class="gp-buy">
+      <img class="gp-coupon-icon" src="${couponImg}" alt="">
       <label for="gp-qty">Quantity</label>
       <input id="gp-qty" class="gp-qty" type="number" min="1" max="99" value="10" data-qty>
-      <span class="gp-total" data-total>${cost * 10}z</span>
+      <span class="gp-total" data-total>${COIN_ICON}<span>${(cost * 10).toLocaleString()}</span></span>
     </div>
+
     <div class="gp-note">
-      Paying from <b>${esc(buyer.name)}</b> — your own Zenit
-      (<b data-zenit>${zenit}z</b>), at ${cost}z each.<br>
-      The coupons go to the <b>shared party pool</b>, not your inventory:
-      spending is personal, the currency is the party's.
+      ${cost.toLocaleString()} each. The coupons go to the <b>shared party pool</b>,
+      not your inventory: spending is personal, the currency is the party's.
     </div>
     <div data-receipt></div>`, {
-      width: 480,
+      width: 500,
       foot: `<button class="gc-btn is-primary" data-confirm>Purchase</button>`,
     });
 
-  const root    = body.closest(".gp-frame");
-  const qty     = root.querySelector("[data-qty]");
-  const total   = root.querySelector("[data-total]");
-  const zenitEl = root.querySelector("[data-zenit]");
-  const receipt = root.querySelector("[data-receipt]");
-  const confirm = root.querySelector("[data-confirm]");
+  const root     = body.closest(".gp-frame");
+  const qty      = root.querySelector("[data-qty]");
+  const totalN   = root.querySelector("[data-total] span");
+  const purseEl  = root.querySelector("[data-zenit]");
+  const purseN   = root.querySelector("[data-zenit-n]");
+  const receipt  = root.querySelector("[data-receipt]");
+  const confirm  = root.querySelector("[data-confirm]");
 
   const sync = () => {
     const n = Math.max(1, Math.floor(Number(qty.value) || 1));
-    total.textContent = `${cost * n}z`;
+    totalN.textContent = (cost * n).toLocaleString();
     confirm.disabled = cost * n > zenit;
     confirm.title = cost * n > zenit ? "Not enough Zenit" : "";
   };
@@ -491,13 +577,15 @@ async function shop({ state, refresh }) {
       // confirmation, and the purse updated on the spot.
       window.FUCompanion?.shopSound?.playPurchase();
 
+      const from = zenit;
       zenit = Math.max(0, zenit - (res.totalCost ?? 0));
-      zenitEl.textContent = `${zenit}z`;
+      rollNumber(purseN, from, zenit, 620);
+      purseEl.classList.add("is-spending");
+      setTimeout(() => purseEl.classList.remove("is-spending"), 700);
 
       say(`Bought <b>${res.quantity}</b> Hako Coupon${res.quantity === 1 ? "" : "s"}
-           for <b>${res.totalCost}z</b>.<br>
-           Party pool is now <b>${res.pool?.coupons ?? "?"}</b> —
-           ${esc(buyer.name)} has <b>${zenit}z</b> left.`);
+           for ${COIN_ICON}<b>${(res.totalCost ?? 0).toLocaleString()}</b>.<br>
+           Party pool is now <b>${res.pool?.coupons ?? "?"}</b>.`);
 
       ui.notifications?.info(`Bought ${res.quantity} coupon(s) for ${res.totalCost}z.`);
       refresh?.(res.pool);
