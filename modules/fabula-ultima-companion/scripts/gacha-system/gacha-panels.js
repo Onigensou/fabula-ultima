@@ -145,6 +145,19 @@ const CSS = `
 }
 .gp-total { font-size: 16px; font-weight: 700; color: var(--gc-title); min-width: 96px; }
 
+/* Purchase confirmation, in-panel. The Foundry toast alone is easy to miss and
+   appears far from where the click happened. */
+.gp-receipt {
+  margin-top: 14px; padding: 10px 14px; border-radius: var(--gc-radius);
+  background: linear-gradient(180deg, var(--gc-panel), var(--gc-sunk));
+  border-left: 4px solid var(--gc-gold);
+  font-size: 12.5px; color: var(--gc-ink); line-height: 1.6;
+  animation: gp-pop .22s cubic-bezier(.2,.8,.3,1) both;
+}
+.gp-receipt b { color: var(--gc-title); }
+.gp-receipt.is-bad { border-left-color: #a8412f; color: #7c2718; }
+@keyframes gp-pop { from { opacity: 0; transform: translateY(-6px); } }
+
 /* ── exchange board ────────────────────────────────────────────────────── */
 /* Bookmark rail down the left edge; the active tab merges into the board so it
    reads as a page tab rather than a button. */
@@ -420,7 +433,9 @@ async function shop({ state, refresh }) {
     return;
   }
 
-  const zenit = Math.max(0, Number(buyer.system?.props?.zenit ?? 0));
+  // Local mirror of the purse so the panel can update the moment a purchase
+  // lands, rather than waiting for the actor sync to come back around.
+  let zenit = Math.max(0, Number(buyer.system?.props?.zenit ?? 0));
 
   const body = frame("Buy Hako Coupons", `
     <div class="gp-buy">
@@ -429,10 +444,12 @@ async function shop({ state, refresh }) {
       <span class="gp-total" data-total>${cost * 10}z</span>
     </div>
     <div class="gp-note">
-      Paying from <b>${esc(buyer.name)}</b> — your own Zenit (<b>${zenit}z</b>), at ${cost}z each.<br>
+      Paying from <b>${esc(buyer.name)}</b> — your own Zenit
+      (<b data-zenit>${zenit}z</b>), at ${cost}z each.<br>
       The coupons go to the <b>shared party pool</b>, not your inventory:
       spending is personal, the currency is the party's.
-    </div>`, {
+    </div>
+    <div data-receipt></div>`, {
       width: 480,
       foot: `<button class="gc-btn is-primary" data-confirm>Purchase</button>`,
     });
@@ -440,32 +457,76 @@ async function shop({ state, refresh }) {
   const root    = body.closest(".gp-frame");
   const qty     = root.querySelector("[data-qty]");
   const total   = root.querySelector("[data-total]");
+  const zenitEl = root.querySelector("[data-zenit]");
+  const receipt = root.querySelector("[data-receipt]");
   const confirm = root.querySelector("[data-confirm]");
 
   const sync = () => {
     const n = Math.max(1, Math.floor(Number(qty.value) || 1));
     total.textContent = `${cost * n}z`;
     confirm.disabled = cost * n > zenit;
+    confirm.title = cost * n > zenit ? "Not enough Zenit" : "";
   };
   qty.addEventListener("input", sync);
   sync();
 
+  const say = (html, bad = false) => {
+    receipt.innerHTML = `<div class="gp-receipt${bad ? " is-bad" : ""}">${html}</div>`;
+  };
+
   confirm.addEventListener("click", async () => {
+    const label = confirm.textContent;
     confirm.disabled = true;
+    confirm.textContent = "Buying…";
+
     const n = Math.max(1, Math.floor(Number(qty.value) || 1));
     const res = await request(GACHA.MSG.BUY_REQ, {
       buyerActorUuid: buyer.uuid, quantity: n, requesterUserId: game.user.id,
     });
 
+    confirm.textContent = label;
+
     if (res?.ok) {
+      // Same feedback shape the main shop gives: the purchase SFX, a written
+      // confirmation, and the purse updated on the spot.
+      window.FUCompanion?.shopSound?.playPurchase();
+
+      zenit = Math.max(0, zenit - (res.totalCost ?? 0));
+      zenitEl.textContent = `${zenit}z`;
+
+      say(`Bought <b>${res.quantity}</b> Hako Coupon${res.quantity === 1 ? "" : "s"}
+           for <b>${res.totalCost}z</b>.<br>
+           Party pool is now <b>${res.pool?.coupons ?? "?"}</b> —
+           ${esc(buyer.name)} has <b>${zenit}z</b> left.`);
+
       ui.notifications?.info(`Bought ${res.quantity} coupon(s) for ${res.totalCost}z.`);
       refresh?.(res.pool);
-      closePanel();
-    } else {
-      ui.notifications?.warn(`Purchase failed: ${res?.reason ?? "unknown"}`);
+
+      // Stay open, like the shop window does — buying once usually means
+      // buying again, and closing hides the confirmation you just earned.
       sync();
+      return;
     }
+
+    say(buyFailureText(res, cost, n), true);
+    ui.notifications?.warn(buyFailureText(res, cost, n).replace(/<[^>]+>/g, ""));
+    sync();
   });
+}
+
+/** Human-readable purchase failures, mirroring the main shop's message map. */
+function buyFailureText(res, cost, n) {
+  switch (res?.reason) {
+    case "insufficient_funds":
+      return `Not enough Zenit — need <b>${res.needed ?? cost * n}z</b>, have <b>${res.have ?? 0}z</b>.`;
+    case "buyer_not_found":        return "Your character could not be resolved.";
+    case "party_actor_missing":    return "The party sheet could not be resolved.";
+    case "coupon_template_missing":return "The Hako Coupon item is missing from the world.";
+    case "transfer_core_missing":  return "Item transfer system is not ready yet.";
+    case "not_primary_gm":         return "No GM is available to process the purchase.";
+    case "timeout":                return "Purchase timed out — is the GM online?";
+    default:                       return `Purchase failed (${esc(res?.reason ?? "unknown")}).`;
+  }
 }
 
 // ── Exchange ────────────────────────────────────────────────────────────────
