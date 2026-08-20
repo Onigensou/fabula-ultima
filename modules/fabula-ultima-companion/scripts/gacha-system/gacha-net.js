@@ -1,0 +1,170 @@
+// ============================================================================
+// Gacha System — Socket layer
+// ----------------------------------------------------------------------------
+// One listener, installed on every client. Three roles inside it:
+//
+//   * REQUESTER  emits a *_REQ and awaits the matching *_RESULT (pending map
+//                keyed by a request id, with a timeout so a dead GM cannot
+//                hang the button forever).
+//   * PRIMARY GM handles *_REQ, runs the engine, replies *_RESULT, then
+//                broadcasts REVEAL to everyone.
+//   * EVERYONE   receives REVEAL and plays the animation locally.
+//
+// Only the PRIMARY GM acts on a request. A second signed-in GM sees the same
+// packet and returns immediately — that gate is the whole anti-dedupe story,
+// and it lives here rather than in the engine's callers so no future entry
+// point can forget it.
+//
+// The reveal is broadcast rather than replayed per client from a shared seed:
+// the result is already decided GM-side, so spectators render exactly what the
+// roller renders, with no divergence possible.
+// ============================================================================
+
+import { GACHA, log, warn } from "./gacha-const.js";
+import { executeWish, executeBuy } from "./gacha-engine.js";
+import { executeSwap, executeRedeem } from "./gacha-exchange.js";
+
+const isPrimaryGM = () => globalThis.FUCompanion?.isPrimaryGM?.() === true;
+
+const pending = new Map(); // reqId -> resolve
+
+// Which handler and which result message each request maps to.
+const ROUTES = {
+  [GACHA.MSG.WISH_REQ]:   { run: executeWish,   result: GACHA.MSG.WISH_RESULT },
+  [GACHA.MSG.BUY_REQ]:    { run: executeBuy,    result: GACHA.MSG.BUY_RESULT },
+  [GACHA.MSG.SWAP_REQ]:   { run: executeSwap,   result: GACHA.MSG.SWAP_RESULT },
+  [GACHA.MSG.REDEEM_REQ]: { run: executeRedeem, result: GACHA.MSG.REDEEM_RESULT },
+};
+
+const RESULT_TYPES = new Set([
+  GACHA.MSG.WISH_RESULT, GACHA.MSG.BUY_RESULT,
+  GACHA.MSG.SWAP_RESULT, GACHA.MSG.REDEEM_RESULT,
+]);
+
+let _onReveal = null;
+let _onPool = null;
+
+/**
+ * @param {object} handlers
+ * @param {(payload:object)=>void} handlers.onReveal  play the animation
+ * @param {(payload:object)=>void} handlers.onPool    refresh the currency UI
+ */
+export function setup({ onReveal, onPool } = {}) {
+  _onReveal = onReveal ?? null;
+  _onPool = onPool ?? null;
+
+  game.socket.on(GACHA.CHANNEL, async (payload) => {
+    if (!payload || typeof payload !== "object") return;
+    const { type } = payload;
+
+    // ── Broadcasts: every client, spectators included ────────────────────
+    if (type === GACHA.MSG.REVEAL) { _onReveal?.(payload); return; }
+    if (type === GACHA.MSG.POOL_UPDATE) { _onPool?.(payload); return; }
+
+    // ── Paired results: only the client that asked ───────────────────────
+    if (RESULT_TYPES.has(type)) {
+      if (payload.toUserId && payload.toUserId !== game.user.id) return;
+      const resolve = pending.get(payload.reqId);
+      if (!resolve) return;
+      pending.delete(payload.reqId);
+      resolve(payload.result ?? { ok: false, reason: "empty_result" });
+      return;
+    }
+
+    // ── Requests: primary GM only ────────────────────────────────────────
+    const route = ROUTES[type];
+    if (!route) return;
+    if (!isPrimaryGM()) return;
+
+    await handleRequest(route, payload);
+  });
+
+  log("Socket ready on", GACHA.CHANNEL);
+}
+
+/** GM side: run the handler, reply, and broadcast any side effects. */
+async function handleRequest(route, payload) {
+  let result;
+  try {
+    result = await route.run(payload.data ?? {});
+  } catch (e) {
+    warn("Handler threw:", e);
+    result = { ok: false, reason: "error", message: String(e?.message ?? e) };
+  }
+
+  emit({
+    type: route.result,
+    reqId: payload.reqId,
+    toUserId: payload.fromUserId,
+    result,
+  });
+
+  if (!result?.ok) return;
+
+  // A wish is the only thing that animates; everything else just moves numbers.
+  if (route.result === GACHA.MSG.WISH_RESULT) {
+    emit({
+      type: GACHA.MSG.REVEAL,
+      bannerId: result.bannerId,
+      bannerName: result.bannerName,
+      results: result.results,
+      byUserId: payload.data?.requesterUserId ?? payload.fromUserId,
+    });
+    _onReveal?.({ ...result, byUserId: payload.fromUserId }); // GM sees it too
+  }
+
+  if (result.pool) {
+    emit({ type: GACHA.MSG.POOL_UPDATE, pool: result.pool });
+    _onPool?.({ pool: result.pool });
+  }
+}
+
+function emit(msg) {
+  try { game.socket.emit(GACHA.CHANNEL, msg); }
+  catch (e) { warn("emit failed", e); }
+}
+
+/**
+ * Client side: ask the GM to do something and await the answer.
+ *
+ * When the caller already IS the primary GM the socket is bypassed entirely —
+ * emitting to yourself does not round-trip in Foundry, so this is required for
+ * correctness, not just speed.
+ */
+export async function request(reqType, data) {
+  const route = ROUTES[reqType];
+  if (!route) return { ok: false, reason: "unknown_request" };
+
+  if (isPrimaryGM()) {
+    const result = await route.run(data);
+
+    if (result?.ok && route.result === GACHA.MSG.WISH_RESULT) {
+      emit({
+        type: GACHA.MSG.REVEAL,
+        bannerId: result.bannerId,
+        bannerName: result.bannerName,
+        results: result.results,
+        byUserId: game.user.id,
+      });
+      _onReveal?.({ ...result, byUserId: game.user.id });
+    }
+    if (result?.pool) {
+      emit({ type: GACHA.MSG.POOL_UPDATE, pool: result.pool });
+      _onPool?.({ pool: result.pool });
+    }
+    return result;
+  }
+
+  const reqId = foundry.utils.randomID();
+  return new Promise((resolve) => {
+    pending.set(reqId, resolve);
+
+    emit({ type: reqType, reqId, fromUserId: game.user.id, data });
+
+    setTimeout(() => {
+      if (!pending.has(reqId)) return;
+      pending.delete(reqId);
+      resolve({ ok: false, reason: "timeout" });
+    }, GACHA.REQ_TIMEOUT_MS);
+  });
+}

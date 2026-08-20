@@ -268,7 +268,6 @@
     "scripts/fabula-initiative/fabula-initiative-round-announcer.js",
     "scripts/fabula-initiative/fabula-initiative-autoUntarget.js",
     "scripts/fabula-initiative/fabula-initiative-turn-emitter.js",
-    "scripts/gacha-system/gacha-socket-banner.js",
     "scripts/treasure-chest-system/treasureChest-configUI.js",
     "scripts/treasure-chest-system/treasureChest-core.js",
     "scripts/journal-system/journalSystem-configUI.js",
@@ -428,7 +427,8 @@
     "scripts/battle-director/battle-end/battle-end-rewards.js",
     "scripts/guest-roster/guest-roster-core.js",
     "scripts/guest-roster/guest-roster-ui.js",
-    "scripts/main.js"
+    "scripts/main.js",
+    "scripts/gacha-system/gacha-bootstrap.js"
   ],
   "styles": [
     "styles/style.css",

@@ -152,10 +152,37 @@ export async function executeWish({ bannerId, count, requesterUserId }) {
   // 5. Pity, once.
   await writePity(actor, bannerId, after);
 
+  // 6. ONE chat message for the whole batch — the durable receipt. The old
+  // system spent 8 document updates per pull animating in chat; the animation
+  // is now a local overlay and chat is left to do the one job it is good at.
+  await postReceipt(banner.name, results, requesterUserId);
+
   const pool = readPool(actor);
   log(`Wish x${size} on "${banner.name}" →`, results.map((r) => `${RARITY[r.rarity].label} ${r.name}`));
 
   return { ok: true, bannerId, bannerName: banner.name, results, pool, requesterUserId };
+}
+
+async function postReceipt(bannerName, results, requesterUserId) {
+  const user = game.users?.get(requesterUserId);
+  const rows = results
+    .map((r) => {
+      const c = RARITY[r.rarity];
+      return `<div style="display:flex;align-items:center;gap:8px;padding:3px 0">
+        <img src="${r.img}" width="28" height="28" style="border:0;outline:0;flex:0 0 auto">
+        <span style="flex:1">@UUID[${r.uuid}]{${r.name}}</span>
+        <span style="color:${c.color};font-size:13px">${"★".repeat(c.stars)}</span>
+      </div>`;
+    })
+    .join("");
+
+  await ChatMessage.create({
+    speaker: { alias: `${bannerName} — Wish ×${results.length}` },
+    content: `<div>${rows}</div>
+      <div style="opacity:.7;font-size:11px;margin-top:6px">
+        Pulled by ${user?.name ?? "the party"} · sent to the party stash
+      </div>`,
+  });
 }
 
 function serialise(entry) {
