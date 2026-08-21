@@ -18,14 +18,14 @@ import { ensureTheme } from "./gacha-theme.js";
 export const FX_ROOT_ID = "gacha-fx";
 const STYLE_ID = "gacha-fx-style";
 
-// PLACEHOLDER. Foundry core art, served locally — no CDN round-trip and no
-// missing-asset risk. Swap this one constant for handcrafted chest art; a
-// separate open-lid sprite can be added alongside it later (see CHEST_OPEN_SRC).
+// PLACEHOLDER, pending a final choice of chest art. Swapping it is this one
+// line; CHEST_OPEN_SRC below takes the open-lid frame when there is one, and is
+// swapped in automatically at the burst.
 //
-// Deliberately the SVG rather than icons/containers/chest/*.webp: those are
-// full-bleed illustrated tiles with a sky-and-sand background baked in, which
-// reads as a floating rectangle on the dark gradient. This one is transparent.
-export const CHEST_SRC = "icons/svg/chest.svg";
+// Whatever replaces it wants a TRANSPARENT background — the earlier
+// icons/containers/chest/*.webp tiles bake in sky and sand, which reads as a
+// floating rectangle on the dark gradient.
+export const CHEST_SRC = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Gold_Chest.png";
 export const CHEST_OPEN_SRC = null;   // when set, swapped in at the burst
 
 /** Per-rarity drama. Higher rarity buys more of everything. */
