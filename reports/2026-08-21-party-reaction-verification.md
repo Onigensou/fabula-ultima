@@ -1,0 +1,84 @@
+# Party reaction verification — 87 of 97 rows (90%)
+
+**Scope:** every `reaction_config_table` row on the four Exfursion PCs.
+**Method:** `probeReactorTrigger` per row, run **twice** — once with its gates
+satisfied, once with the governing identifier flipped. A row whose availability
+does not MOVE is reported `INCONCLUSIVE` and **never counted as a pass**.
+
+| player | verified | open |
+|---|---|---|
+| **Keren** | **24 / 24** ✅ | — |
+| **Blanche** | **17 / 17** ✅ | — |
+| Hina | 25 / 29 | 1 refused, 3 not-scanned |
+| Zarg | 21 / 27 | 4 timeout, 2 not-scanned |
+
+Baseline before this pass: **43%** of testable docs. Now **90%** of reaction rows.
+
+Writes actually observed (not "it didn't error"): Thread the Horns
+`current_mp 76` + `+AE[Provoked]` · Fancy Footwork `+AE[Fatigue]` · Fear Is the
+Key `+AE[Grave Points]` · Illusory Shield `current_mp 111` · Zero Trigger:
+Shattered Phantasm `zero_power_value 1` · Frozen Envy `+AE[Slow]` · Icarus Wing
+`+AE[Flying]` · Psychic Gifts `+AE[Brainwave Clock]`.
+
+## The headline: the test rig was producing WRONG VERDICTS
+
+Nine defects were found **in the harness**, not the content. Every one made a
+working skill read as broken (or, twice, hid a real problem). They are listed
+here because the pattern matters more than any single fix: **a rig that omits a
+field fails silently, and the failure looks like a content bug.**
+
+| # | defect | effect |
+|---|---|---|
+| 1 | write-capture patch leaked on re-entrant install | **every world write silently swallowed** — `update()` returned success and changed nothing |
+| 2 | `override` allowlisted only 4 identifiers | gated rows read "Conditions not met" → looked like broken skills |
+| 3 | `list-picker` ignored the headless flag | every `open_action_menu` chain HUNG (and a hung picker is what leaks #1) |
+| 4 | no awareness of **virtual weapons** | Blanche reported `no_main_weapon`; her whole kit was unprobeable |
+| 5 | `"WEAPON"` sentinel unresolved on the skill path | Tafallera rolled the literal string → miss; actually hits for 37 |
+| 6 | dropped bridge chunk reported as a result | mis-scored a row that had passed minutes earlier |
+| 7 | `reaction_status_filter` read `statusId` not `status` | rows never scanned |
+| 8 | `reaction_source_skill` never supplied | Bandit Gloves unreachable |
+| 9 | `ROUND` excluded as the builtin `round()` | `ROUND % 2 == 0` extracted nothing → row read REFUSED |
+
+⚠ #5 failed **pessimistic** — "the attack missed" looks like a normal outcome, so
+it never tripped suspicion the way a permissive pass would.
+
+## Content defects found and fixed
+- **Poison** (2 docs) — blank `skill_target`; a blank IS Self
+  (compose-action.js:813), so the only creature you could poison was yourself.
+  Its sibling `Wind Stone` (same shape) had it right. Fixed → `One Creature`.
+- **Sneaker (Passive)** (Keren's copy) — description said "+2 to **Study**
+  Checks" while the row is `check_buff_action: "stealth"`. Copy drift; the world
+  master and Festival Stall copy already read "Stealth".
+
+## Content confirmed CORRECT (do not refile)
+Blanche's Adoration family all read "no observable write" for ONE shared reason —
+she holds 0 Adoration charges. Seeded: **Muleta** 27 dmg · **Castigo** `+AE[Bane]`
+· **Descabello** 51 = `30 + half level` (lvl 41) · **Heal** 20→69 · **Zero Power**
+15→69. `check_buff` / `check_die_swap` rows with no fire point are **not** dead —
+they are read at check time.
+
+## The last 10, categorised
+- **4 Zarg timeouts** — already measured by the **attack rig** (Barrage fired;
+  Cheap Shot / Dance #3 / Follow my lead condition-blocked). A tool boundary.
+- **2 Avatar of Vengeance** — unscanned even with its gear equipped; consistent
+  with that design having been removed.
+- **High Speed #0 / #99** — ⚠ **worth a look:** rows #0, #99 and #100 share ONE
+  `reaction_effect_ref` on ONE trigger; only #100 is ever scanned. Looks like
+  superseded authoring.
+- **Heart of Darkness #0**, **Cataclysm #0** — genuinely still open.
+
+## Reproducing
+```
+node tools/party-verify/verify.mjs <Actor> [--only <substr>] [--chunk N] [--probe-ms N]
+node tools/party-verify/merge.mjs  <Actor>     # union verdicts across runs
+BRIDGE_TIMEOUT_MS=280000 node tools/test-bridge-client/bridge-eval.mjs \
+  tools/party-verify/virtual-weapon-test.js '{"who":"Blanche"}'   # 14/14
+```
+⚠ `tools/` is gitignored, so the tooling and raw results are **local only** —
+which is why this pass left almost no trace in the repo. Full detail:
+`tools/session-notes/PENDING-2026-08-20.md`.
+
+## Regression status
+Compute `check` 484 skills — clean (one intended change, Tafallera 35→36, after
+fix #5; golden re-baselined at bench scope). `structure` 2115 docs clean.
+`parity` and `census` clean. `world-export` 0/0/0.
