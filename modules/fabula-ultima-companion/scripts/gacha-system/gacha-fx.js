@@ -49,8 +49,9 @@ const VOL = { start: 0.75, wiggle1: 0.6, wiggle2: 0.7, wiggle3: 0.85,
 
 // Local only: every client runs this animation, so broadcasting would stack one
 // copy of every cue per connected player.
-const sfx = (k) => {
-  try { AudioHelper?.play({ src: SFX[k], volume: VOL[k] ?? 0.7, loop: false }, false); } catch {}
+const sfx = (k) => sfxAt(k, VOL[k] ?? 0.7);
+const sfxAt = (k, volume) => {
+  try { AudioHelper?.play({ src: SFX[k], volume, loop: false }, false); } catch {}
 };
 
 /** Warm the cues so the first pull of a session is not the stuttering one. */
@@ -67,13 +68,21 @@ let _active = null;
 const esc = (s) => foundry.utils.escapeHTML?.(String(s ?? "")) ?? String(s ?? "");
 
 /**
- * How many times the chest shakes.
- * Base is the honest tell; the fake-out may add one, never remove one.
+ * How the chest shakes for a given best-rarity.
+ *
+ * `real` is the honest tell — full shakes, escalating cue, one per tier earned.
+ * `fake` adds a NUDGE on the end: a stalled twitch with no escalated sound.
+ *
+ * The two are deliberately different in kind, not just in count. An earlier
+ * build spent the fake-out on another full, fully-sounded shake, which is
+ * indistinguishable from the real thing right up until the burst — that reads
+ * as a lie rather than a tease, and players called it unfair. A fake-out has to
+ * be legible AS a fake-out in the moment: "huh, I thought that was going to go".
  */
-export function wiggleCount(best) {
-  const base = best === "five" ? 3 : best === "four" ? 2 : 1;
-  if (base < 3 && Math.random() < FAKEOUT_CHANCE) return base + 1;
-  return base;
+export function wigglePlan(best) {
+  const real = best === "five" ? 3 : best === "four" ? 2 : 1;
+  const fake = real < 3 && Math.random() < FAKEOUT_CHANCE;
+  return { real, fake };
 }
 
 // ── Public ──────────────────────────────────────────────────────────────────
@@ -196,16 +205,17 @@ async function run(el, state, resultPromise) {
 
   if (state.jumpToSummary || state.skip) { showSummary(el, state, results); return; }
 
-  const best   = bestRarity(results.map((r) => r.rarity));
-  const drama  = DRAMA[best];
-  const shakes = wiggleCount(best);
+  const best  = bestRarity(results.map((r) => r.rarity));
+  const drama = DRAMA[best];
+  const plan  = wigglePlan(best);
 
   chest.classList.remove("is-idle");
   glow.style.setProperty("--gfx-strain-tint", rgba(drama.tint, 0.85));
 
   const box = () => chest.getBoundingClientRect();
 
-  for (let i = 0; i < shakes; i++) {
+  // ── the honest shakes ──
+  for (let i = 0; i < plan.real; i++) {
     if (state.skip) break;
 
     chest.style.setProperty("--wig-ms", `${FX.WIGGLE}ms`);
@@ -213,8 +223,6 @@ async function run(el, state, resultPromise) {
     void chest.offsetWidth;                 // restart the animation
     chest.classList.add("is-wiggling");
 
-    // Escalating cue. Capped at the third: a fake-out fourth shake would have
-    // no louder sound to reach for anyway.
     sfx(`wiggle${Math.min(i + 1, 3)}`);
 
     // Strain builds with each shake: the chest looks progressively more loaded,
@@ -234,6 +242,36 @@ async function run(el, state, resultPromise) {
     chest.classList.remove("is-wiggling");
     // THE hold. Longer each time — every one has to read as possibly the last.
     await phase(FX.HOLDS[Math.min(i, FX.HOLDS.length - 1)], state);
+  }
+
+  // ── the fake-out ──
+  // A stall, not a shake. No escalated cue: the climactic wiggle sound is
+  // reserved for a roll that actually earned it, so hearing it always means
+  // something. The nudge gets the FIRST cue at low volume — present, but
+  // audibly smaller than any real shake, so it can never be misread upward.
+  if (plan.fake && !state.skip) {
+    chest.style.setProperty("--nudge-ms", `${FX.NUDGE}ms`);
+    chest.classList.remove("is-nudging");
+    void chest.offsetWidth;
+    chest.classList.add("is-nudging");
+    sfxAt("wiggle1", 0.3);
+
+    // The glow twitches rather than climbing — a fake-out must not promise with
+    // the light either.
+    const held = Number(glow.style.opacity || 0);
+    glow.style.opacity = String(Math.min(1, held + 0.08));
+    setTimeout(() => { glow.style.opacity = String(held); }, FX.NUDGE);
+
+    const r = box();
+    emit(el, {
+      x: r.left + r.width / 2, y: r.bottom - r.height * 0.15,
+      n: 3, up: 60, spreadX: 90, size: [2, 4],
+      tints: ["#c6ae87", "#e8d5a3"], dur: [380, 620],
+    });
+
+    await phase(FX.NUDGE, state);
+    chest.classList.remove("is-nudging");
+    await phase(FX.HOLDS[Math.min(plan.real, FX.HOLDS.length - 1)], state);
   }
 
   if (state.skip) { showSummary(el, state, results); return; }

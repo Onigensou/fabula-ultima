@@ -197,6 +197,19 @@ const CSS = `
 }
 .gfx-chest.is-wiggling { animation: gfx-wiggle var(--wig-ms,380ms) cubic-bezier(.3,.1,.3,1) both; }
 
+/* The FAKE-OUT nudge. It must never be mistakable for a real shake: it starts
+   in the same direction, stalls partway as though the energy died, and falls
+   back WITHOUT crossing to the other side. A real wiggle swings through -11 to
+   +9; this one barely reaches -7 and never goes positive. The feeling wanted is
+   "huh — I thought that was going to go" and not "it went, and I got nothing". */
+@keyframes gfx-nudge {
+  0%   { transform: translateX(-50%) rotate(0deg); }
+  28%  { transform: translateX(-50%) rotate(-7deg); }
+  44%  { transform: translateX(-50%) rotate(-6.2deg); }   /* the stall */
+  100% { transform: translateX(-50%) rotate(0deg); }
+}
+.gfx-chest.is-nudging { animation: gfx-nudge var(--nudge-ms,300ms) cubic-bezier(.25,.75,.4,1) both; }
+
 /* ── intro: burst ─────────────────────────────────────────────────────── */
 .gfx-beam {
   position: absolute; left: 50%; bottom: 34%; z-index: 4;

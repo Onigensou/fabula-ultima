@@ -115,6 +115,7 @@ export const FX = {
   CHEST_IN:     620,   // chest drops in
   CHEST_SETTLE: 260,
   WIGGLE:       380,   // one shake
+  NUDGE:        300,   // a fake-out twitch — shorter than a real shake
   HOLDS:        [620, 780, 900],  // after wiggle 1, 2, 3 — escalating
   BURST:        520,
   WHITEOUT:     420,
