@@ -1,4 +1,36 @@
-# Party reaction verification — 88 of 95 rows (93%)
+# Party reaction verification — 88 of 95 rows REACHABLE (93%)
+
+> ⚠ **Read the next section before quoting this number.** "Verified" here means
+> the row's GATE is genuinely read. It does **NOT** mean the skill does what its
+> description says.
+
+## What "verified" does and does NOT mean
+
+It means: the reaction is **reachable**, and its gate **discriminates** — flipping
+the governing identifier flips availability, so the condition is really being
+read. That is a real property and it is what caught the Poison self-lock, the
+Sneaker text drift and all twelve harness defects.
+
+It does **not** mean the effect matches the authored description. Measured over
+the 88 rows counted as verified:
+
+| tier | rows | what was actually observed |
+|---|---|---|
+| **A** — a document WRITE was captured | **38** | something real happened |
+| **B** — routed elsewhere (`fireReason`) | **13** | effect travels a channel this probe cannot measure (card mutation, `costOverride`, `data-only`) |
+| **C** — nothing observed | **37** | availability only |
+
+So **37 of 88 rest on availability alone**, and of the 38 with writes only about
+ten were hand-checked against their description text (Castigo `+AE[Bane]`,
+Descabello `51 = 30 + half level`, Muleta 27, the consumable family).
+
+⚠ Two tier-B entries are `step-failed:botc_summon` and
+`step-failed:botc_destroy_minion` — the gate passed and **the effect chain step
+FAILED**, yet the row still scored GATE_PROVEN. Availability and correctness are
+different questions and this suite only answers the first.
+
+**Still owed:** a description-conformance pass — read each skill's text, derive
+the expected number/AE, and assert it. That is a different and harder sweep.
 
 **Scope:** every `reaction_config_table` row on the four Exfursion PCs.
 **Method:** `probeReactorTrigger` per row, run **twice** — once with its gates
