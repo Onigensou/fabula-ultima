@@ -1028,7 +1028,21 @@ async function probeReactorTrigger({
         `reactor trigger ${reactor.name}/${cand.carrierName}`,
       );
     } catch (e) { fireErr = String(e?.message ?? e); }
-    finally { restore(); }
+    finally {
+      // 🚨 SETTLE BEFORE RESTORING, or writes land in the NEXT candidate's sink.
+      // firePreAcceptedCandidate can resolve while its chain still has async work
+      // queued; those writes then arrive after this restore() and get captured by
+      // the following candidate's install — i.e. attributed to the WRONG SKILL.
+      // Measured 2026-08-22: in a batched Hina run, `Prophetic Defender #1`
+      // recorded `+AE[Flying]` (Icarus Wing's effect) while the SAME `pds_gain`
+      // ref on row #0 recorded `+AE[Prophecy Point]`; probed in isolation row #1
+      // correctly gives `+AE[Prophecy Point]`. Three unrelated rows likewise
+      // collected `+AE[Lucky Seven Ready]`.
+      // A green gate is unaffected by this, but the EVIDENCE is — which is worse,
+      // because a write is exactly what makes a result look conclusive.
+      try { await new Promise((r) => setTimeout(r, 60)); } catch { /* ignore */ }
+      restore();
+    }
     const writes = summarizeWrites(captures);
     // summarizeWrites drops aeUpdates + itemUpdates; a charge/equip-only reaction
     // would otherwise report as having done nothing.
