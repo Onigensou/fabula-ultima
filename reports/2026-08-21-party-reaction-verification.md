@@ -1,4 +1,4 @@
-# Party reaction verification — 87 of 97 rows (90%)
+# Party reaction verification — 88 of 95 rows (93%)
 
 **Scope:** every `reaction_config_table` row on the four Exfursion PCs.
 **Method:** `probeReactorTrigger` per row, run **twice** — once with its gates
@@ -9,8 +9,15 @@ does not MOVE is reported `INCONCLUSIVE` and **never counted as a pass**.
 |---|---|---|
 | **Keren** | **24 / 24** ✅ | — |
 | **Blanche** | **17 / 17** ✅ | — |
-| Hina | 25 / 29 | 1 refused, 3 not-scanned |
-| Zarg | 21 / 27 | 4 timeout, 2 not-scanned |
+| Hina | 26 / 29 | 3 not-scanned |
+| Zarg | 21 / 25 | 4 timeout |
+
+🪤 **The denominator was wrong at first (97).** Two of Zarg's "rows" —
+`High Speed #0` and `#99` — are CSB **`$deleted` tombstones**, not skills. A
+tombstone comes in TWO shapes: the string `"$deleted"` AND an **object** with a
+truthy `$deleted` property. The prober only checked the string, so it counted
+removed rows as real and manufactured two NOT_SCANNED verdicts. Fixed; the true
+corpus is **95 rows**.
 
 Baseline before this pass: **43%** of testable docs. Now **90%** of reaction rows.
 
@@ -22,7 +29,7 @@ Shattered Phantasm `zero_power_value 1` · Frozen Envy `+AE[Slow]` · Icarus Win
 
 ## The headline: the test rig was producing WRONG VERDICTS
 
-Nine defects were found **in the harness**, not the content. Every one made a
+Twelve defects were found **in the harness**, not the content. Every one made a
 working skill read as broken (or, twice, hid a real problem). They are listed
 here because the pattern matters more than any single fix: **a rig that omits a
 field fails silently, and the failure looks like a content bug.**
@@ -38,6 +45,9 @@ field fails silently, and the failure looks like a content bug.**
 | 7 | `reaction_status_filter` read `statusId` not `status` | rows never scanned |
 | 8 | `reaction_source_skill` never supplied | Bandit Gloves unreachable |
 | 9 | `ROUND` excluded as the builtin `round()` | `ROUND % 2 == 0` extracted nothing → row read REFUSED |
+| 10 | object-form `$deleted` tombstones counted as rows | 2 phantom rows, 2 phantom failures |
+| 11 | last-occurrence-wins on a repeated identifier | picked the harder arm of a disjunction (Cataclysm) |
+| 12 | identifier-vs-identifier gates (`CUR_MP >= ACTION_COST_MP + 10`) | both pinned equal → gate unsatisfiable |
 
 ⚠ #5 failed **pessimistic** — "the attack missed" looks like a normal outcome, so
 it never tripped suspicion the way a permissive pass would.
@@ -62,10 +72,15 @@ they are read at check time.
   Cheap Shot / Dance #3 / Follow my lead condition-blocked). A tool boundary.
 - **2 Avatar of Vengeance** — unscanned even with its gear equipped; consistent
   with that design having been removed.
-- **High Speed #0 / #99** — ⚠ **worth a look:** rows #0, #99 and #100 share ONE
-  `reaction_effect_ref` on ONE trigger; only #100 is ever scanned. Looks like
-  superseded authoring.
-- **Heart of Darkness #0**, **Cataclysm #0** — genuinely still open.
+- **High Speed #0 / #99** — RESOLVED: `$deleted` tombstones, correctly ignored by
+  the engine. Not rows at all (see the denominator note above).
+- **Cataclysm #0** — VERIFIED. Its nested OR defeated the auto-extractor
+  (`ACTION_IS_FREE_CAST` appears as `== 0` in one arm and `== 1` in the other,
+  and last-occurrence-wins picked the harder Bimagus arm). Now proven with THREE
+  independent controls — dropping arcane weapon, spell-ness, or MP each flips
+  availability on its own.
+- **Heart of Darkness #0** — the one genuinely open row: reached now, but the
+  ask-mode fire hangs.
 
 ## Reproducing
 ```
