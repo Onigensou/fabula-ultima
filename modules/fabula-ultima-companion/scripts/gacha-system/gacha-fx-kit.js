@@ -254,10 +254,10 @@ const CSS = `
 }
 
 .gfx-prize { position: relative; z-index: 3; display: flex; flex-direction: column;
-  align-items: center; gap: 14px; }
+  align-items: center; gap: 20px; }
 
 .gfx-prize-img {
-  width: min(300px, 42vh); height: min(300px, 42vh); object-fit: contain;
+  width: min(440px, 56vh); height: min(440px, 56vh); object-fit: contain;
   filter: brightness(0) drop-shadow(0 0 0 transparent);
   transform: translateX(-70vw);
 }
@@ -275,22 +275,22 @@ const CSS = `
    corner radius and rarity-tinted rim make that look like a lit artifact. */
 .gfx-prize-img.is-lit {
   filter: brightness(1);
-  border-radius: 14px;
+  border-radius: 18px;
   box-shadow:
-    0 0 0 3px var(--ray),
-    0 0 34px 6px var(--rayGlow, rgba(255,214,120,.5)),
+    0 0 0 4px var(--ray),
+    0 0 48px 10px var(--rayGlow, rgba(255,214,120,.5)),
     0 16px 40px rgba(0,0,0,.6);
   transition: filter 160ms ease-out, box-shadow 220ms ease-out;
 }
 
 .gfx-prize-name {
   font-family: "Trebuchet MS","Segoe UI",Verdana,sans-serif;
-  font-size: 44px; font-weight: 800; font-style: italic; color: #fffdf6;
+  font-size: 62px; font-weight: 800; font-style: italic; color: #fffdf6;
   text-align: center; opacity: 0;
   text-shadow: -2px -2px 0 #2a1c08, 2px -2px 0 #2a1c08, -2px 2px 0 #2a1c08,
                 2px  2px 0 #2a1c08, 0 6px 18px rgba(0,0,0,.8);
 }
-.gfx-prize-stars { font-size: 30px; letter-spacing: 6px; color: var(--ray); opacity: 0;
+.gfx-prize-stars { font-size: 42px; letter-spacing: 8px; color: var(--ray); opacity: 0;
   text-shadow: 0 2px 10px rgba(0,0,0,.8); }
 .gfx-prize-name.is-on, .gfx-prize-stars.is-on {
   animation: gfx-pop 320ms cubic-bezier(.2,.9,.3,1.3) both;
@@ -319,12 +319,12 @@ const CSS = `
 .gfx-summary { position: absolute; inset: 0; z-index: 12; display: flex;
   flex-direction: column; align-items: center; justify-content: center; gap: 22px; }
 .gfx-summary-grid {
-  display: grid; grid-template-columns: repeat(5, 132px); gap: 14px;
+  display: grid; grid-template-columns: repeat(5, 186px); gap: 18px;
   justify-content: center;
 }
-.gfx-summary-grid.is-few { display: flex; gap: 16px; }
+.gfx-summary-grid.is-few { display: flex; gap: 20px; }
 .gfx-card {
-  width: 132px; padding: 12px 8px 10px; border-radius: 10px; text-align: center;
+  width: 186px; padding: 16px 10px 14px; border-radius: 12px; text-align: center;
   background: linear-gradient(180deg, rgba(58,50,74,.96), rgba(30,25,42,.96));
   border: 2px solid var(--cc);
   box-shadow: 0 0 22px -6px var(--ccGlow), inset 0 0 26px -14px var(--cc);
@@ -337,15 +337,15 @@ const CSS = `
   to   { opacity: 1; transform: none; }
 }
 .gfx-card img {
-  width: 78px; height: 78px; object-fit: contain; display: block; margin: 0 auto 8px;
+  width: 118px; height: 118px; object-fit: contain; display: block; margin: 0 auto 10px;
 }
 .gfx-card img.is-pixel { image-rendering: pixelated; }
-.gfx-card-name { font-size: 11px; line-height: 1.25; color: #f2eee2; word-break: break-word; }
-.gfx-card-stars { margin-top: 5px; font-size: 13px; color: var(--cc); letter-spacing: 1px; }
+.gfx-card-name { font-size: 14px; line-height: 1.3; color: #f2eee2; word-break: break-word; }
+.gfx-card-stars { margin-top: 7px; font-size: 17px; color: var(--cc); letter-spacing: 2px; }
 
 .gfx-anykey {
   font-family: 'Lucida Console','Courier New',monospace;
-  font-size: 14px; letter-spacing: 6px; text-transform: uppercase;
+  font-size: 17px; letter-spacing: 7px; text-transform: uppercase;
   color: #f3e6c0; opacity: 0;
   animation: gfx-anykey-in 400ms ease-out both, gfx-anykey-pulse 1.9s ease-in-out infinite 400ms;
 }

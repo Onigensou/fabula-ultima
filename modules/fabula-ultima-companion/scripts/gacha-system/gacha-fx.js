@@ -31,14 +31,36 @@ import {
   ensureFxStyle, phase, flush, emit, rgba, markPixel,
 } from "./gacha-fx-kit.js";
 
+const SND = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
 const SFX = {
-  start:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/TreasureGet.ogg",
-  rare:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/success2.ogg",
-  normal: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/ItemGet.ogg",
+  start:   SND + "SE_SYS_Gacha_Start.ogg",       // the chest arrives
+  // One per shake, escalating — the audio carries the same rising strain the
+  // glow does, so a third wiggle is heard as bigger before it is seen.
+  wiggle1: SND + "gacha_wiggle1.wav",
+  wiggle2: SND + "gacha_wiggle2.wav",
+  wiggle3: SND + "gacha_wiggle3.wav",
+  whoosh:  SND + "SE_SYS_Gacha_goods_4.ogg",     // a prize slides in
+  summary: SND + "SE_SYS_Gacha_ResultDef.ogg",   // the tally lands
+  rare:    SND + "success2.ogg",
+  normal:  SND + "ItemGet.ogg",
 };
+const VOL = { start: 0.75, wiggle1: 0.6, wiggle2: 0.7, wiggle3: 0.85,
+              whoosh: 0.6, summary: 0.75, rare: 0.8, normal: 0.65 };
+
 // Local only: every client runs this animation, so broadcasting would stack one
 // copy of every cue per connected player.
-const sfx = (k) => { try { AudioHelper?.play({ src: SFX[k], volume: 0.7, loop: false }, false); } catch {} };
+const sfx = (k) => {
+  try { AudioHelper?.play({ src: SFX[k], volume: VOL[k] ?? 0.7, loop: false }, false); } catch {}
+};
+
+/** Warm the cues so the first pull of a session is not the stuttering one. */
+function preloadSfx() {
+  for (const src of Object.values(SFX)) {
+    try { foundry.audio?.AudioHelper?.preloadSound?.(src); }
+    catch { try { fetch(src, { cache: "force-cache" }).catch(() => {}); } catch {} }
+  }
+}
+Hooks?.once?.("ready", preloadSfx);
 
 let _active = null;
 
@@ -191,6 +213,10 @@ async function run(el, state, resultPromise) {
     void chest.offsetWidth;                 // restart the animation
     chest.classList.add("is-wiggling");
 
+    // Escalating cue. Capped at the third: a fake-out fourth shake would have
+    // no louder sound to reach for anyway.
+    sfx(`wiggle${Math.min(i + 1, 3)}`);
+
     // Strain builds with each shake: the chest looks progressively more loaded,
     // which is the visual half of "surely it goes now".
     const strain = (i + 1) / 3;
@@ -273,6 +299,7 @@ async function revealOne(el, state, prize, whiteToClear) {
 
   const img = wrap.querySelector("[data-img]");
   markPixel(img);
+  sfx("whoosh");   // rides the slide, not the flash
 
   // Clearing the whiteout while the silhouette is already sliding is what makes
   // the first prize feel like it came OUT of the flash rather than after it.
@@ -321,6 +348,7 @@ function showSummary(el, state, results) {
   if (state.done) return;
   state.done = true;
   flush(state);
+  sfx("summary");
 
   el.querySelectorAll(".gfx-reveal, .gfx-stage, .gfx-white, .gfx-counter").forEach((n) => n.remove());
   el.querySelector("[data-skip]")?.remove();
