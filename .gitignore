@@ -98,6 +98,25 @@
 !/tools/hot-reload-map/**
 !/tools/bug-report/
 !/tools/bug-report/**
+
+# party-verify probes every reaction row on the four PCs and answers two
+# different questions: is the row REACHABLE (gate-flip) and does it CONFORM to
+# the skill's own description. Shared for the same reason as carrier-scan — the
+# knowledge it encodes should not live in one person's head:
+#   - conformance.mjs carries an EVIDENCE_CUTOFF, because a rank-merge over run
+#     files silently inherits write evidence from before a harness fix.
+#   - roster.mjs derives the live row set from the WORLD, not from result files,
+#     so a deleted row cannot linger in the denominator forever.
+#   - probe-lib.js separates a real chain failure from a RIG boundary
+#     (no-sink / no-combat / no-candidates), which is what turned two sessions of
+#     "top open finding" back into "the trigger probe has no combat".
+#   - adjudications.json is the human half: each settled row with the evidence
+#     that settled it, so a conclusion is read rather than re-derived.
+!/tools/party-verify/
+!/tools/party-verify/**
+# Run artifacts — one file per probe run, machine- and world-specific, and they
+# only grow. Regenerate locally with `verify.mjs <Actor>`. (cf. skill-regression/.state/)
+/tools/party-verify/results/
 # mindscape — offline Monte Carlo combat model. Shared: it is a balance tool
 # with no local state, and its ruleset spec (docs/mindscape-ruleset.md) is
 # meant to be reviewed and disagreed with by whoever is tuning a fight.

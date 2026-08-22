@@ -1,0 +1,114 @@
+{
+  "_README": [
+   "Human adjudications of conformance REVIEW rows. conformance.mjs stays a strict",
+   "classifier on purpose — it must never infer a pass. This file is where a person",
+   "records a decision they actually made, with the evidence that settled it, so the",
+   "next session reads a conclusion instead of re-deriving one.",
+   "",
+   "verdict: CONFORMS | DEFECT | PARTIAL (measured step conforms, rest unreached)",
+   "Keyed `<Who>|<Skill>#<row>`. Adding a key here does NOT change the classifier's",
+   "own MATCH/REVIEW tally; it annotates it."
+  ],
+  "_adjudicated": "2026-08-22",
+  "Blanche|Counter Pass#0": {
+   "verdict": "CONFORMS",
+   "why": "rows 0+1 re-apply the charge AE on conflict_start AND round_start, which is the 'Once per round' limiter; the observed +AE[Counter Pass] is that refresh. Row 2 gates on ACTION_IS_ATTACK==1 && AE_CHARGES_COUNTER_PASS>=1 and chains consume_charge + free_action(action_ref:skill) restricted to the six Pass skills with target_ref:trigger_subject — matching 'must target the enemy triggering this effect'."
+  },
+  "Blanche|Counter Pass#1": {
+   "verdict": "CONFORMS",
+   "why": "same row pair as #0."
+  },
+  "Blanche|Thread the Horns#0": {
+   "verdict": "CONFORMS",
+   "why": "committed baseline mp 86 -> observed 76 = -10, matching 'spend 10 MP'; +AE[Provoked] is named in the text."
+  },
+  "Hina|Bimagus#0": {
+   "verdict": "CONFORMS",
+   "why": "'Bimagus Encore' is the persistent_counter budget AE carrying the two free casts (tags:[bimagus]). The 20-50 MP is debited when the parent action is performed, not by this reaction row, so no MP write is expected here."
+  },
+  "Hina|Heart of Darkness#0": {
+   "verdict": "CONFORMS",
+   "why": "was PARTIAL — hod_pick parked on target-picker.js, which honoured only SimMode and not __FU_HARNESS_HEADLESS__ (the same bug §26 fixed in list-picker.js). With that fixed the full chain runs: hod_consume -> hod_pick -> hod_bond, writing +AE[Bond of Hatred (Test Target Enemy)] alongside -AE[Heart of Darkness Ready]. That is exactly ‘create a Bond of hatred towards that creature’, and the AE names the chosen target."
+  },
+  "Hina|Icarus Wing (gear skill)#3": {
+   "verdict": "CONFORMS",
+   "why": "row 3 fires on fire damage and chains gs_drop (remove_tagged_ae filter_tag 'icarus-flying') + gs_mark (apply 'Icarus Grounded'). The marker is not inert: grant rows 0/1 gate on HAS_STATUS_ICARUS_GROUNDED == 0, which is exactly 'you lose this effect when you take Fire damage'."
+  },
+  "Hina|Support Magic#0": {
+   "verdict": "CONFORMS",
+   "why": "the AE carries change bonus_check ADD BOND_STRENGTH — the 'bonus to their next Check' from the text. BOND_STRENGTH is valid here because this is an AE bake, the one context where it resolves (see feedback_ae_bake memory)."
+  },
+  "Hina|Windpiercer (Passive)#0": {
+   "verdict": "DEFECT",
+   "why": "DESCRIPTION IS WRONG, config is right. The _skill's text is Morrigan's boilerplate ('recover 10 Mind Points'); its config implements the parent weapon's actual text ('Pierce Snipe 15: inflicts Turbulence') via condition_formula TOTAL >= 15 -> apply_ae Turbulence to trigger_subject. There is no missing MP recovery. Fix = set the _skill description to the parent weapon's. Same copy-paste on 'Muscly Arm (Passive)' and 'The Tormentor (Passive)'.",
+   "fixed": "2026-08-23 via safe-edit: 21 fields across 8 docs — 7 system.props.description plus 14 CSB projection leaves (skill_description, item_skill_passive.*.skill_description, related_item_list.*.related_item_description). The projections matter: command-itemCreate.js:896 reads related_item_description BEFORE description, and shopWindow-app.js:231 reads skill_description with no fallback — fixing only description would have left both surfaces showing the old text."
+  },
+  "Hina|Zero Trigger: Foresight#0": {
+   "verdict": "CONFORMS",
+   "why": "zero_power_value 0 -> 1, matching 'she gain 1 zero trigger'."
+  },
+  "Keren|Beyond the Realms of Death#1": {
+   "verdict": "CONFORMS",
+   "why": "+AE[Grave Points] is named in the text; the self-named +AE[Beyond the Realms of Death] is the bortd_death_save charge carrier (chargeKey bortd_death_save, 1/1), not a separate effect."
+  },
+  "Keren|Birth of the Cruel#1": {
+   "verdict": "CONFORMS",
+   "why": "'Grave Toll' carries changes bonus_hp and bonus_mp ADD (TARGET_LEVEL * -1) — exactly 'reduce your maximum HP and MP by an amount equal to that NPC's level'. NOTE rows #0 and #2 of this skill are STEP_FAILED and are a separate, open finding."
+  },
+  "Keren|Fear Is the Key#0": {
+   "verdict": "CONFORMS",
+   "why": "classifier artifact only — the text says 'gain 1 Grave Point' (singular) and the AE is 'Grave Points' (plural), so word-boundary matching missed it."
+  },
+  "Keren|Illusory Shield#0": {
+   "verdict": "CONFORMS",
+   "why": "committed baseline mp 121 -> observed 111 = -10, matching system.props.cost '10 MP' and the is_cost row (consume_resource mp, consume_amount '10'). The classifier read only the description, where the cost is not restated."
+  },
+  "Keren|Thermokinesis#0": {
+   "verdict": "CONFORMS",
+   "why": "mp 121 -> 116 = -5 with an empty Brainwave Clock. consume_amount is max(5, AE_CHARGES_BRAINWAVE_CLOCK * 5), which reproduces the text exactly: 5 MP at 0-1 sections, 5 per section at 2+."
+  },
+  "Keren|Zero Trigger: Shattered Phantasm#0": {
+   "verdict": "CONFORMS",
+   "why": "zero_power_value 0 -> 1, matching 'you gain 1 Zero Power'."
+  },
+  "Zarg|Apple o' Archer#0": {
+   "verdict": "CONFORMS",
+   "why": "the Taunt AE carries change must_be_targeted_by OVERRIDE 'ranged' — the 'first ranged Attack each round against your party must include you' clause."
+  },
+  "Zarg|Apple o' Archer#1": {
+   "verdict": "CONFORMS",
+   "why": "same AE as #0."
+  },
+  "Zarg|Apple o' Archer#3": {
+   "verdict": "CONFORMS",
+   "why": "same AE as #0."
+  },
+  "Zarg|Emergency Item#0": {
+   "verdict": "CONFORMS",
+   "why": "only -AE[Emergency Item Ready] is observable by design: the free Inventory action is granted through the GM-local free-action _registry, which is not a document write. Absence of a second write is expected, not missing behavior."
+  },
+  "Zarg|Gadgets#0": {
+   "verdict": "CONFORMS",
+   "why": "looked like a 1-IP debit against a text and an inf_pay row that both say 2. Zarg has ip_reduction_value 1 (Deep Pockets, via the Maid cap passive), and the engine applies ipReducedAmount = max(1, amount - reduction), so 2 -> 1. Baseline ip 4 -> observed 3 is correct."
+  },
+  "Zarg|Hawkeye#0": {
+   "verdict": "CONFORMS",
+   "why": "the AE chains hawkeye_add (adjust_damage, SL * 2, outgoing) + hawkeye_consume — the 'next ranged attack deals extra damage' option from the text."
+  },
+  "Zarg|High Speed#100": {
+   "verdict": "CONFORMS",
+   "why": "committed baseline mp 91 -> observed 81 = -10, matching 'you may spend 10 Mind Points'."
+  },
+  "Zarg|Skull Orb#0": {
+   "verdict": "CONFORMS",
+   "why": "re-probed 2026-08-23 with the gear EQUIPPED (the earlier NOT_SCANNED was containerEquipped:false — correct behaviour for a gear passive, not a rig failure). GATE_PROVEN, gate-flip confirmed. Test Target Enemy 9999 -> 9994 = exactly -5, matching ‘it takes 5 Dark damage’."
+  },
+  "Zarg|Cursed Sword (gear skill)#0": {
+   "verdict": "CONFORMS",
+   "why": "re-probed 2026-08-23 with the weapon EQUIPPED. Zarg 111 -> 88 = -23. Not a rounding bug: consume_amount is authored as ceil(MAX_HP * 0.2), and ceil(111*0.2)=ceil(22.2)=23. The row is consume_resource hp / on_empty:drain / consume_cause:hazard / consume_can_defeat:true — the HP-LOSS-is-not-damage primitive, which is what the text’s ‘elementless — no affinity reduces it’ requires."
+  },
+  "Zarg|Dance#3": {
+   "verdict": "CONFORMS",
+   "why": "first evidence ever for this row — it was a TIMEOUT until the target-picker headless fix. Row 3 gates on SKILL_HAS_TAG_DANCE && SKILL_HAS_TAG_MANAGED and runs bd_cost -> bd_untoken -> bd_mark. Observed -AE[Dance] is bd_untoken (remove_tagged_ae filter_tag ‘dance-token’, spending the once-per-turn dance token) and +AE[Dancing] is bd_mark (ae_remember_action:true, the active-dance state). No MP write is expected here: bd_cost is the PARENT billing the managed dance via cost_amount, which composes into ar.costOverride and settles at CONFIRM — nothing leaves the pool under a trigger probe. Formula 10 - 5*(AE_COUNT_DANCING>0)*(AE_FLAG(‘Dancing’,‘rememberedAction’)!=PERFORMED_SKILL) is the 10 MP of the text with the repeat-discount."
+  }
+}
