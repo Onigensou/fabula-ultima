@@ -1919,7 +1919,7 @@
               "id": "${item.id}",
               "name": "Windpiercer (Passive)",
               "skill_cost": "",
-              "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+              "skill_description": "<p><strong>Snipe 15:</strong> when your Accuracy check with this weapon is 15 or higher, the target suffers <strong>Turbulence</strong>.</p>",
               "skill_maxLevel": "",
               "uuid": "Actor.dafTLBUscCDNgq8H.Item.jepGtMgwfkkCznXk"
             }
@@ -1934,7 +1934,7 @@
             "jepGtMgwfkkCznXk": {
               "id": "${item.id}",
               "name": "Windpiercer (Passive)",
-              "related_item_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+              "related_item_description": "<p><strong>Snipe 15:</strong> when your Accuracy check with this weapon is 15 or higher, the target suffers <strong>Turbulence</strong>.</p>",
               "uuid": "Actor.dafTLBUscCDNgq8H.Item.jepGtMgwfkkCznXk"
             }
           },
@@ -7548,7 +7548,7 @@
         "container": "720wa4E0ldJEqXG4",
         "props": {
           "cost": "",
-          "description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+          "description": "<p><strong>Snipe 15:</strong> when your Accuracy check with this weapon is 15 or higher, the target suffers <strong>Turbulence</strong>.</p>",
           "effect_table": {
             "0": {
               "$deleted": false,

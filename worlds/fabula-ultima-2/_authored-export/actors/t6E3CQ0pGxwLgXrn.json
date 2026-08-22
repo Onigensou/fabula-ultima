@@ -4732,7 +4732,7 @@
               "id": "${item.id}",
               "name": "The Tormentor (Passive)",
               "skill_cost": "",
-              "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+              "skill_description": "<ul><li><p>This weapon deals bonus damage equal to 20% of the target's current Hit Points, reduced to 10% against Champion-rank creatures.</p></li><li><p><strong>Benign:</strong> if this attack would reduce a creature to 0 HP, they hold on at 1 HP instead.</p></li></ul>",
               "skill_maxLevel": "",
               "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.MGaEsHxCdiE9FlIa"
             },
@@ -4740,7 +4740,7 @@
               "id": "${item.id}",
               "name": "The Tormentor (Passive)",
               "skill_cost": "",
-              "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+              "skill_description": "<ul><li><p>This weapon deals bonus damage equal to 20% of the target's current Hit Points, reduced to 10% against Champion-rank creatures.</p></li><li><p><strong>Benign:</strong> if this attack would reduce a creature to 0 HP, they hold on at 1 HP instead.</p></li></ul>",
               "skill_maxLevel": "",
               "uuid": "Actor.dafTLBUscCDNgq8H.Item.YUYi5J6GgRHVbEtd"
             }
@@ -4760,13 +4760,13 @@
             "MGaEsHxCdiE9FlIa": {
               "id": "${item.id}",
               "name": "The Tormentor (Passive)",
-              "related_item_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+              "related_item_description": "<ul><li><p>This weapon deals bonus damage equal to 20% of the target's current Hit Points, reduced to 10% against Champion-rank creatures.</p></li><li><p><strong>Benign:</strong> if this attack would reduce a creature to 0 HP, they hold on at 1 HP instead.</p></li></ul>",
               "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.MGaEsHxCdiE9FlIa"
             },
             "YUYi5J6GgRHVbEtd": {
               "id": "${item.id}",
               "name": "The Tormentor (Passive)",
-              "related_item_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+              "related_item_description": "<ul><li><p>This weapon deals bonus damage equal to 20% of the target's current Hit Points, reduced to 10% against Champion-rank creatures.</p></li><li><p><strong>Benign:</strong> if this attack would reduce a creature to 0 HP, they hold on at 1 HP instead.</p></li></ul>",
               "uuid": "Actor.dafTLBUscCDNgq8H.Item.YUYi5J6GgRHVbEtd"
             }
           },
@@ -5774,7 +5774,7 @@
         "container": "iWLAwSkmTqf8Zro9",
         "props": {
           "cost": "",
-          "description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+          "description": "<ul><li><p>This weapon deals bonus damage equal to 20% of the target's current Hit Points, reduced to 10% against Champion-rank creatures.</p></li><li><p><strong>Benign:</strong> if this attack would reduce a creature to 0 HP, they hold on at 1 HP instead.</p></li></ul>",
           "effect_table": {
             "0": {
               "$deleted": false,

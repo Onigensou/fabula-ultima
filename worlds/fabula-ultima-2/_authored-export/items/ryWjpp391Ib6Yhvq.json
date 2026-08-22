@@ -25,7 +25,7 @@
     "container": "KRD2oLQnj3dgVq0j",
     "props": {
       "cost": "",
-      "description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+      "description": "<ul><li><p><strong>Conquer 5:</strong> when your Accuracy check with this weapon exceeds the target's Defense by 5 or more, they suffer <strong>Stagger</strong>.</p></li><li><p><strong>Conquer 8:</strong> when it exceeds their Defense by 8 or more, they also suffer <strong>Frightened</strong>.</p></li><li><p>You gain <strong>+1</strong> to all Checks that involve <strong>Intimidation</strong>.</p></li></ul>",
       "effect_table": {
         "0": {
           "$deleted": false,
@@ -40,6 +40,13 @@
           "effect_kind": "apply_ae",
           "effect_label": "ma_fright",
           "target_ref": "trigger_subject"
+        },
+        "2": {
+          "$deleted": false,
+          "check_buff_action": "intimidation",
+          "check_buff_amount": "1",
+          "effect_kind": "check_buff",
+          "effect_label": "ma_intimidation_buff"
         }
       },
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/asan.png",
@@ -69,7 +76,7 @@
           "reaction_trigger": "creature_deals_damage"
         }
       },
-      "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+      "skill_description": "<ul><li><p><strong>Conquer 5:</strong> when your Accuracy check with this weapon exceeds the target's Defense by 5 or more, they suffer <strong>Stagger</strong>.</p></li><li><p><strong>Conquer 8:</strong> when it exceeds their Defense by 8 or more, they also suffer <strong>Frightened</strong>.</p></li><li><p>You gain <strong>+1</strong> to all Checks that involve <strong>Intimidation</strong>.</p></li></ul>",
       "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": ""

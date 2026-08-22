@@ -262,7 +262,7 @@
           "id": "${item.id}",
           "name": "Muscly Arm (Passive)",
           "skill_cost": "",
-          "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+          "skill_description": "<ul><li><p><strong>Conquer 5:</strong> when your Accuracy check with this weapon exceeds the target's Defense by 5 or more, they suffer <strong>Stagger</strong>.</p></li><li><p><strong>Conquer 8:</strong> when it exceeds their Defense by 8 or more, they also suffer <strong>Frightened</strong>.</p></li><li><p>You gain <strong>+1</strong> to all Checks that involve <strong>Intimidation</strong>.</p></li></ul>",
           "skill_maxLevel": "",
           "uuid": "Item.ryWjpp391Ib6Yhvq"
         }
@@ -280,7 +280,7 @@
         "ryWjpp391Ib6Yhvq": {
           "id": "${item.id}",
           "name": "Muscly Arm (Passive)",
-          "related_item_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+          "related_item_description": "<ul><li><p><strong>Conquer 5:</strong> when your Accuracy check with this weapon exceeds the target's Defense by 5 or more, they suffer <strong>Stagger</strong>.</p></li><li><p><strong>Conquer 8:</strong> when it exceeds their Defense by 8 or more, they also suffer <strong>Frightened</strong>.</p></li><li><p>You gain <strong>+1</strong> to all Checks that involve <strong>Intimidation</strong>.</p></li></ul>",
           "uuid": "Item.ryWjpp391Ib6Yhvq"
         }
       },

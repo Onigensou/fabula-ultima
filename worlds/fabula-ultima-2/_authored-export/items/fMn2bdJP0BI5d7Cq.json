@@ -25,7 +25,7 @@
     "container": "xktj2JJX7QZ5z6jA",
     "props": {
       "cost": "",
-      "description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+      "description": "<ul><li><p>This weapon deals bonus damage equal to 20% of the target's current Hit Points, reduced to 10% against Champion-rank creatures.</p></li><li><p><strong>Benign:</strong> if this attack would reduce a creature to 0 HP, they hold on at 1 HP instead.</p></li></ul>",
       "effect_table": {
         "0": {
           "$deleted": false,
@@ -77,7 +77,7 @@
           "reaction_trigger": "creature_will_deal_damage"
         }
       },
-      "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+      "skill_description": "<ul><li><p>This weapon deals bonus damage equal to 20% of the target's current Hit Points, reduced to 10% against Champion-rank creatures.</p></li><li><p><strong>Benign:</strong> if this attack would reduce a creature to 0 HP, they hold on at 1 HP instead.</p></li></ul>",
       "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": ""

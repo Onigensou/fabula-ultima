@@ -25,7 +25,7 @@
     "container": "quJxn5TAZFaY5i7C",
     "props": {
       "cost": "",
-      "description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+      "description": "<p><strong>Snipe 15:</strong> when your Accuracy check with this weapon is 15 or higher, the target suffers <strong>Turbulence</strong>.</p>",
       "effect_table": {
         "0": {
           "$deleted": false,
@@ -52,7 +52,7 @@
           "reaction_trigger": "creature_deals_damage"
         }
       },
-      "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+      "skill_description": "<p><strong>Snipe 15:</strong> when your Accuracy check with this weapon is 15 or higher, the target suffers <strong>Turbulence</strong>.</p>",
       "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": ""
