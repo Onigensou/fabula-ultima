@@ -352,12 +352,30 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
   // the SAME draw the picker makes: it pre-computes the result and the roulette
   // spin is purely theatrical, so we lose the animation, not the math.
   // Must sit ABOVE the remote branch — a sim never routes a pick to a player.
-  if (SimMode.active) {
+  //
+  // Also auto-pick under the HEADLESS harness flag, not just SimMode — the same
+  // two-gates-for-one-situation bug §26 fixed in list-picker.js, still open here.
+  // `noHumanToAsk` (skill-effects.js) checks BOTH SimMode and
+  // __FU_HARNESS_HEADLESS__; this picker checked only SimMode, so any chain with
+  // a `targeting` row driven by the director harness opened a REAL on-canvas
+  // picker and waited forever. Measured 2026-08-23: this is what left
+  // `Hina / Heart of Darkness #0` PARTIAL — its chain is
+  // hod_consume -> hod_pick -> hod_bond, and hod_pick parked here, so the bond
+  // step never ran and the row could be neither confirmed nor refuted.
+  // A hung picker is also exactly what leaks a write-capture patch (§14).
+  //
+  // Widening audit (a widened branch arms latent mis-gating): the flag is set and
+  // restored ONLY by installHeadlessGates() in _test-harness-director.js, and that
+  // file also clears a STALE flag, so live play never reaches this branch and a
+  // leaked flag cannot silently turn a real player's target pick into an
+  // auto-pick. Every SimMode-only call below is guarded on SimMode.active so the
+  // headless path never touches sim state.
+  if (SimMode.active || globalThis.__FU_HARNESS_HEADLESS__ === true) {
     // A brain-supplied hint answers the picks that carry a real decision — above
     // all WHICH ally Blanche is stepping in front of. Only meaningful for a
     // single-target pick; random and locked sets are not choices.
     if (mode !== "random" && !lockSelection && count === 1) {
-      const hint = SimMode.takePickHint();
+      const hint = SimMode.active ? SimMode.takePickHint() : null;
       const want = hint?.tokenUuid ?? null;
       const match = want ? eligible.find((e) => e.tokenUuid === want) : null;
       if (match) {

@@ -10435,7 +10435,20 @@ async function applyChainEffect(row, ctx) {
           // dismissed) so the reaction dispatcher can re-offer the reaction
           // (back to the menu) instead of treating it as a hard failure.
           const cancelled = !!r.cancelled || String(r.reason ?? "") === "cancelled";
-          return { ok: false, kind: "chain", applied: aggregated, reason: `step-failed:${label}`, abort: r.abort, cancelled };
+          // Carry the CHILD's reason, not just which step died. Without it a rig
+          // precondition ("no summon in the pool", "no action card to add a target
+          // to") is indistinguishable from a real content bug — both print
+          // `step-failed:<label>` and party-verify scores both STEP_FAILED, which
+          // deliberately OUTRANKS a pass. Measured 2026-08-23: `Barrage #0` and
+          // `Follow my lead #0` both failed on an `add_target` step purely because
+          // a trigger probe has no in-flight action card, and there was no way to
+          // tell that from the verdict. The reason is already in hand one line up
+          // (it is logged); dropping it was the whole problem.
+          const stepReason = String(r.reason ?? "").trim();
+          return { ok: false, kind: "chain", applied: aggregated,
+                   reason: stepReason ? `step-failed:${label}:${stepReason}` : `step-failed:${label}`,
+                   stepLabel: label, stepKind: String(stepRow?.effect_kind ?? "") || null, stepReason: stepReason || null,
+                   abort: r.abort, cancelled };
         }
         if (r.abort) {
           log(`skill-effects.chain: step "${label}" set abort:true; stopping chain`);
