@@ -2,10 +2,10 @@ import {
   EMPTY_GM_OVERRIDE, GM_DIE_SIZES, normalizeGmOverride, isGmOverrideEmpty, mergeGmOverride,
   composeGmRoll, gmDamageInput, applyGmDamageInput, composeGmDefenseOverrides, gmHitOverrideMap,
   applyGmDamageOverrides, recomputeHitTokenUuids, gmOverrideDeltaRows, describeGmEditors,
-  summarizeGmOverride, isGmEditableRow,
+  summarizeGmOverride, gmOverrideBits, isGmEditableRow,
   gmReactionKey, gmReactionDecision, gmReactionDecisionChanges, isGmEditableReaction,
   readGmReopenKeys, gmReactionBlocksAutoFire,
-  applyGmTargetRemovals, gmTargetsToAdd, reduceGmTargetRows,
+  applyGmTargetRemovals, gmTargetsToAdd, reduceGmTargetRows, dropGmRemovedReactions,
 } from "./gm-card-override.js";
 
 let pass = 0, fail = 0;
@@ -129,8 +129,28 @@ const pts = [
 ];
 eq("gm defense row", composeGmDefenseOverrides({ perTarget: { t1: { defense: 8 } } }, [], pts),
   [{ tokenUuid: "t1", actorUuid: "a1", from: 12, to: 8, via: "GM adjustment", gm: true }]);
-eq("engine defense rows kept first",
+eq("engine defense rows are kept, not replaced",
   composeGmDefenseOverrides({ perTarget: { t1: { defense: 8 } } }, [{ tokenUuid: "t2", from: 10, to: 13 }], pts).length, 2);
+// The consumer resolves a slot with `.find()` — FIRST match — so on a creature a
+// reaction ALSO bumped, ordering is the whole difference between the GM's
+// defence applying and being silently dropped. Both this file and the call site
+// have claimed "the GM wins" since the layer was written.
+eq("on a CONTESTED slot the GM's entry comes first, so `find` returns it",
+  composeGmDefenseOverrides({ perTarget: { t1: { defense: 8 } } },
+    [{ tokenUuid: "t1", from: 12, to: 20, via: "Verónica" }], pts)
+    .find((o) => o.tokenUuid === "t1").to, 8);
+// A creature being REMOVED keeps its override in the bag (so Restore returns the
+// numbers) but must produce no override ROW: there is no surviving per-target
+// row to resolve it against, so it would be built with a null actorUuid and a
+// placeholder `from` — the malformed shape that can land a GM's defence on
+// somebody else's slot.
+eq("a REMOVED creature contributes no defence override",
+  composeGmDefenseOverrides({ perTarget: { t1: { defense: 8 } }, targets: { removed: ["t1"] } }, [], pts), []);
+eq("...and no forced verdict",
+  gmHitOverrideMap({ perTarget: { t1: { hit: true } }, targets: { removed: ["t1"] } }), null);
+eq("...while a sibling target is unaffected",
+  gmHitOverrideMap({ perTarget: { t1: { hit: true }, t2: { hit: false } }, targets: { removed: ["t1"] } }),
+  { t2: false });
 eq("hit map", gmHitOverrideMap({ perTarget: { t1: { hit: true }, t2: { hit: false } } }), { t1: true, t2: false });
 eq("hit map null when nothing forced", gmHitOverrideMap({ perTarget: { t1: { damage: 5 } } }), null);
 eq("grant rows are not editable", isGmEditableRow({ grantAmount: 5 }), false);
@@ -375,6 +395,79 @@ eq("...and is still an ADD while it stands",
 eq("normalize drops the token from `added` once it is removed",
   normalizeGmOverride({ targets: reduce([ROW({ token: "P", addToken: "P", dropped: true })]) }).targets,
   { removed: ["P"], added: [] });
+// Staging a removal must NOT destroy that creature's per-target override.
+// Normalize runs on every read, so pruning there would wipe the GM's numbers the
+// instant they clicked Remove — and Restore, whose whole promise is that the
+// removal is reversible, would hand the creature back stripped. An intentional
+// removal still drops the entry, but through readForm (which declines to read a
+// dropped row) on the next Save, where the GM can see it happen.
+eq("staging a removal KEEPS the creature's per-target override",
+  normalizeGmOverride({
+    perTarget: { A: { hit: true, damage: 5 }, B: { damage: 9 } },
+    targets: { removed: ["A"], added: [] },
+  }).perTarget,
+  { A: { hit: true, damage: 5 }, B: { damage: 9 } });
+// …and the launch button must not COUNT it, or a one-target card reads "2
+// targets". The count is display; the data is not.
+eq("…but the launch-button summary does not count it",
+  gmOverrideBits({ perTarget: { A: { damage: 5 }, B: { damage: 9 } }, targets: { removed: ["A"] } }),
+  ["1 target", "−1 target"]);
+eq("…and counts it again the moment the removal is lifted",
+  gmOverrideBits({ perTarget: { A: { damage: 5 }, B: { damage: 9 } }, targets: { removed: [] } }),
+  ["2 targets"]);
+console.log("\n— reactions made moot by a GM removal —");
+// A creature the GM takes off the action was never targeted, as far as the table
+// is now concerned. A reaction it accepted BECAUSE it was targeted must not fire
+// and must not bill it — the chain used to run in full, so the reactor paid to
+// defend against an action that no longer touched them, and the chain's own
+// action_targets refs (snapshotted pre-removal) still landed on it.
+const RX = (o) => ({ carrierName: "R", rowKey: "r1", ...o });
+const dropped = (accepted, ov, atk) => dropGmRemovedReactions(accepted, ov, atk).dropped.map((c) => c.carrierName);
+const kept = (accepted, ov, atk) => dropGmRemovedReactions(accepted, ov, atk).kept.map((c) => c.carrierName);
+eq("no removals → nothing dropped, same array back",
+  dropGmRemovedReactions([RX({ reactorTokenUuid: "A" })], {}).dropped, []);
+eq("a candidate whose REACTOR was removed is dropped",
+  dropped([RX({ carrierName: "NinjaLog", reactorTokenUuid: "A" })], { targets: { removed: ["A"] } }),
+  ["NinjaLog"]);
+eq("...while a reactor still on the action is kept",
+  kept([RX({ carrierName: "NinjaLog", reactorTokenUuid: "B" })], { targets: { removed: ["A"] } }),
+  ["NinjaLog"]);
+// The performer's own reaction is not a subject-side one and must survive a
+// removal elsewhere — dropping it would be the availability bypass this layer is
+// forbidden from adding.
+eq("a PERFORMER-side candidate (no reactor token) is never dropped",
+  kept([RX({ carrierName: "Hawkeye" })], { targets: { removed: ["A"] } }), ["Hawkeye"]);
+eq("a hit-gated candidate whose every subject was removed is dropped",
+  dropped([RX({ carrierName: "CheapShot", appliesToTargetUuids: ["A", "B"] })],
+    { targets: { removed: ["A", "B"] } }), ["CheapShot"]);
+eq("...but not when ONE subject survives",
+  kept([RX({ carrierName: "CheapShot", appliesToTargetUuids: ["A", "B"] })],
+    { targets: { removed: ["A"] } }), ["CheapShot"]);
+eq("an EMPTY appliesToTargetUuids is left alone — RESOLVE already refuses it, and it is not our call to make",
+  kept([RX({ carrierName: "X", appliesToTargetUuids: [] })], { targets: { removed: ["A"] } }), ["X"]);
+// The ACTION-TAKER is never dropped. On a self-targeted Skill the caster is both
+// performer and target, and removing them from the target list must not take out
+// their own performer-side reaction: the action still happens and its
+// self-effects still run. A removal says "this action does not reach that
+// creature", never "this action did not happen".
+eq("the ATTACKER own reaction survives being removed as a target",
+  kept([RX({ carrierName: "SelfBuff", reactorTokenUuid: "ATK" })],
+    { targets: { removed: ["ATK"] } }, "ATK"), ["SelfBuff"]);
+eq("...and without the attacker argument the old, stricter answer still stands",
+  dropped([RX({ carrierName: "SelfBuff", reactorTokenUuid: "ATK" })],
+    { targets: { removed: ["ATK"] } }), ["SelfBuff"]);
+eq("a DIFFERENT creature is still dropped even when an attacker is named",
+  dropped([RX({ carrierName: "NinjaLog", reactorTokenUuid: "A" })],
+    { targets: { removed: ["A"] } }, "ATK"), ["NinjaLog"]);
+eq("a mixed list splits correctly", dropGmRemovedReactions([
+  RX({ carrierName: "gone", reactorTokenUuid: "A" }),
+  RX({ carrierName: "stays", reactorTokenUuid: "B" }),
+  RX({ carrierName: "self" }),
+], { targets: { removed: ["A"] } }),
+  { kept: [RX({ carrierName: "stays", reactorTokenUuid: "B" }), RX({ carrierName: "self" })],
+    dropped: [RX({ carrierName: "gone", reactorTokenUuid: "A" })] });
+eq("junk is survivable", dropGmRemovedReactions(null, { targets: { removed: ["A"] } }), { kept: [], dropped: [] });
+
 eq("a whole list reduces in one pass", reduce([
   ROW({ token: "A" }), ROW({ token: "B", dropped: true }),
   ROW({ addToken: "X" }), ROW({ addToken: "Y", dropped: true }),

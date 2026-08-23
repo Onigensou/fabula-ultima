@@ -181,6 +181,20 @@ export function normalizeGmOverride(ov) {
     added: uuidList(t.added).filter((u) => !addedSet.has(u)),
   };
 
+  // A per-target override for a creature the GM is REMOVING is deliberately NOT
+  // pruned here. Normalize runs on every read, so pruning would DESTROY the
+  // GM's typed outcome/damage the moment they staged a removal — and Restore,
+  // whose whole promise is that a removal is reversible, would silently hand
+  // back a creature with its numbers wiped.
+  //
+  // Nothing else drops it either: `readForm` READS a dropped row like any other
+  // (it used to skip it, which combined with Save's wholesale replace destroyed
+  // the entry one save later — the same loss by a longer route). The entry
+  // simply rides along, inert: `gmOverrideBits` does not count it,
+  // `composeGmDefenseOverrides` and `gmHitOverrideMap` do not build rows from
+  // it, and it comes back with the creature on Restore. Dropping data is the
+  // one thing this layer must not do behind the GM's back.
+
   return {
     version: 2,
     roll, damage, perTarget, reactions, targets,
@@ -367,21 +381,48 @@ export function applyGmDamageInput(gmDamage, flatBase, hr) {
   return { flat, hr: useHr ? hr : 0 };
 }
 
-// GM per-target defense → appended to the engine's defenseOverrides list. The GM
-// entry goes LAST so it wins on a slot a reaction also bumped.
+// GM per-target DEF/MDEF → the SAME `defenseOverrides` channel the engine's own
+// adjust_defense reactions use, so one re-apply pass honours both.
+//
+// The GM's entries are composed at the FRONT of the list, not appended. The
+// consumer resolves a slot with `.find()` — FIRST match — so appending put the
+// GM behind any reaction that had touched the same creature, and the table's
+// hand-set defence was silently dropped on exactly the slot where overruling the
+// engine matters most.
+//
+// One consequence worth knowing: on such a contested slot the surviving row now
+// carries `via: "GM adjustment"`, so the card's DEF chip and hover attribute the
+// change to the GM and no longer name the reaction that also bumped it. The
+// reaction still ran and still paid; only its attribution is lost, on a slot the
+// GM has explicitly overruled.
 export function composeGmDefenseOverrides(gmOverride, engineOverrides, perTargets) {
   const gm = normalizeGmOverride(gmOverride);
-  const out = Array.isArray(engineOverrides) ? [...engineOverrides] : [];
+  const engine = Array.isArray(engineOverrides) ? [...engineOverrides] : [];
+  const mine = [];
+  const removed = new Set(gm.targets.removed);
   for (const [tokenUuid, row] of Object.entries(gm.perTarget)) {
     if (toInt(row?.defense) == null) continue;
+    // A creature the GM is also REMOVING keeps its override (so Restore returns
+    // the numbers), but must not produce an entry here: there is no surviving
+    // row to resolve it against, so it would be built with a null actorUuid and
+    // a placeholder `from` — the malformed shape the composition point was moved
+    // to stop producing, arriving by a different route.
+    if (removed.has(tokenUuid)) continue;
     const pt = (perTargets ?? []).find((p) => p?.tokenUuid === tokenUuid);
-    out.push({
+    mine.push({
       tokenUuid, actorUuid: pt?.actorUuid ?? null,
       from: Number(pt?.defense ?? 10), to: Number(row.defense),
       via: "GM adjustment", gm: true,
     });
   }
-  return out;
+  // GM entries go FIRST, not last. The consumer resolves a slot with
+  // `defenseOverrides.find(...)` — FIRST match — so appending put the GM behind
+  // any `adjust_defense` reaction that touched the same creature, and the
+  // table's hand-set defence was silently dropped on exactly the slot where
+  // overruling the engine matters most. Both this file and card-mutations.js
+  // have claimed "the GM wins" in a comment since the layer was written; this is
+  // what makes it true.
+  return [...mine, ...engine];
 }
 
 // GM forced hit/miss → a plain { tokenUuid: bool } map consumed by
@@ -390,7 +431,12 @@ export function composeGmDefenseOverrides(gmOverride, engineOverrides, perTarget
 export function gmHitOverrideMap(gmOverride) {
   const gm = normalizeGmOverride(gmOverride);
   const map = {};
+  const removed = new Set(gm.targets.removed);
   for (const [tokenUuid, row] of Object.entries(gm.perTarget)) {
+    // Same rule as composeGmDefenseOverrides: the entry is KEPT in the bag so a
+    // Restore returns it, but a creature the action is losing gets no forced
+    // verdict — there is no row for one to land on.
+    if (removed.has(tokenUuid)) continue;
     if (row?.hit === true || row?.hit === false) map[tokenUuid] = row.hit;
   }
   return Object.keys(map).length ? map : null;
@@ -610,6 +656,57 @@ export function reduceGmTargetRows(rows) {
   return { added, removed };
 }
 
+// Accepted reaction candidates that the GM's target removal has made MOOT.
+//
+// A creature the GM takes off an action was never targeted by it, as far as the
+// table is now concerned — so a reaction that creature accepted BECAUSE it was
+// targeted (Ninja Log, a defender's Guard, any `creature_is_targeted_by_action`
+// row) must not fire, and must not bill its reactor. Left in, the chain ran in
+// full: the reactor paid the MP or IP to defend against an action that no longer
+// touches them, and because `payloadAtFire` was snapshotted before the removal,
+// the chain's own `action_targets` refs still resolved to the removed creature —
+// so its effects landed on it too. Half-applied in the worst direction: the
+// price charged, the reason gone.
+//
+// TWO rules, both keyed on the GM's explicit removal and nothing else:
+//
+//   · the REACTOR is a creature the GM removed — its reason to react is gone
+//   · every target the candidate `appliesToTargetUuids` was removed — the
+//     hit-gated families (Warning Shot, Cheap Shot) already refuse to fire on an
+//     empty list at RESOLVE; this makes the list empty for the right reason
+//     instead of leaving a stale one populated
+//
+// Deliberately NOT "any reaction on a card the GM edited": a performer-side
+// reaction (Hawkeye on the attacker) and a third-party one whose reactor is
+// still in play are unaffected by a removal elsewhere, and dropping those would
+// be the availability bypass this layer is forbidden from adding.
+//
+// ⚠ Known gap: a Protect whose DEFENDED creature was removed. Protect sets
+// neither `appliesToTargetUuids` nor a reactor inside the removed set (its
+// reactor is the protector), so neither rule reaches it.
+export function dropGmRemovedReactions(accepted, gmOverride, attackerTokenUuid = null) {
+  const list = Array.isArray(accepted) ? accepted : [];
+  const gm = normalizeGmOverride(gmOverride);
+  if (!gm.targets.removed.length || !list.length) return { kept: list, dropped: [] };
+  const gone = new Set(gm.targets.removed);
+  const kept = [], dropped = [];
+  for (const cand of list) {
+    // The ACTION-TAKER is never dropped by a target removal. On a self-targeted
+    // Skill the caster is both performer and target, so removing them from the
+    // target list would otherwise take out their own performer-side reaction —
+    // but the action still happens and its self-effects still run, so that
+    // reaction's reason to fire is untouched. A removal says "this action does
+    // not reach that creature", never "this action did not happen".
+    const isPerformer = !!attackerTokenUuid && cand?.reactorTokenUuid === attackerTokenUuid;
+    const reactorGone = !isPerformer && !!cand?.reactorTokenUuid && gone.has(cand.reactorTokenUuid);
+    const applies = Array.isArray(cand?.appliesToTargetUuids) ? cand.appliesToTargetUuids : null;
+    const allSubjectsGone = !!applies && applies.length > 0 && applies.every((u) => gone.has(u));
+    if (reactorGone || allSubjectsGone) dropped.push(cand);
+    else kept.push(cand);
+  }
+  return { kept, dropped };
+}
+
 // Which of the GM's added tokens are not already in the set. Callers resolve and
 // derive them (the engine's own add_target path), which needs Foundry.
 export function gmTargetsToAdd(targets, gmOverride) {
@@ -681,7 +778,12 @@ export function gmOverrideBits(gmOverride) {
   if (gm.damage?.element) bits.push(gm.damage.element);
   if (gm.damage?.weaponType) bits.push(gm.damage.weaponType);
   if (gm.damage && (gm.damage.base != null || gm.damage.bonus != null || gm.damage.useHR != null)) bits.push("damage");
-  const n = Object.keys(gm.perTarget).length;
+  // Skip a creature that is also being REMOVED: its override describes a row the
+  // action will not have, and counting it read as "2 targets" on a card carrying
+  // one. The entry itself is kept (see normalizeGmOverride) so a Restore returns
+  // the numbers with the creature.
+  const removedNow = new Set(gm.targets.removed);
+  const n = Object.keys(gm.perTarget).filter((u) => !removedNow.has(u)).length;
   if (n) bits.push(`${n} target${n === 1 ? "" : "s"}`);
   // Forced and suppressed are counted apart: they are opposite table calls, and
   // "2 reactions" would leave a GM unable to tell which way a card was bent

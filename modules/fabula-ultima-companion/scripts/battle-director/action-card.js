@@ -988,6 +988,18 @@ export function ensureStyles() {
     }
     /* Cost-unavailable reaction — surfaced but dimmed, non-interactive, with a
        reason badge ("Low IP") so the player sees why it can't be used. */
+    /* Made moot by a GM target removal — it will not fire and will not bill.
+       Struck through rather than merely greyed: "Skipped" is a decision somebody
+       made, and this was not one. */
+    .fud-bf-card .fud-bf-reaction-pill.is-moot {
+      opacity: 0.55;
+      filter: grayscale(0.6);
+      border-style: dashed;
+    }
+    .fud-bf-card .fud-bf-reaction-pill.is-moot .fud-bf-reaction-carrier,
+    .fud-bf-card .fud-bf-reaction-pill.is-moot .fud-bf-reaction-reactor {
+      text-decoration: line-through;
+    }
     .fud-bf-card .fud-bf-reaction-pill.is-unavailable {
       opacity: 0.5;
       filter: grayscale(0.6);
@@ -2084,16 +2096,39 @@ export function ensureStyles() {
     /* Restore is not destructive, so it stops wearing destructive colour. */
     .fud-gm-trow.is-cut .fud-gm-tdrop { color: #4b4338; border-color: var(--fud-stroke, #7a6a55); }
     /* The last surviving target cannot be removed — an action with no targets
-       leaves the card painted with rows it is no longer resolving. */
-    .fud-gm-edit-card .fud-gm-tdrop[disabled] {
-      opacity: .35; cursor: not-allowed; color: #4b4338; border-color: var(--fud-stroke, #7a6a55);
+       leaves the card painted with rows it is no longer resolving. Shown as
+       muted-but-LIVE, never truly disabled: the click is what delivers the reason,
+       and a dead button delivered nothing. */
+    .fud-gm-edit-card .fud-gm-tdrop[disabled],
+    .fud-gm-edit-card .fud-gm-tdrop[data-fud-gm-blocked="1"] {
+      opacity: .45; color: #4b4338; border-color: var(--fud-stroke, #7a6a55);
     }
     .fud-gm-edit-card .fud-gm-tdrop[disabled]:hover { background: rgba(255, 255, 255, 0.5); }
+    .fud-gm-edit-card .fud-gm-tdrop[data-fud-gm-blocked="1"]:hover { background: #f6efe4; }
     /* A staged add has no engine numbers yet, so it says what will happen rather
        than showing three empty boxes that look editable. */
     .fud-gm-tnote {
       margin: 0 0 4px; font-size: 10px; line-height: 1.4;
       color: var(--fud-ink-soft, #4b4338);
+    }
+    /* The empty-action warning, standing in the section rather than hiding in a
+       tooltip. Turns emphatic once the action actually has no targets. */
+    .fud-gm-tblock.is-empty-now {
+      border-color: #a8503f; background: #f7e9e4;
+    }
+    .fud-gm-tblock {
+      padding: 4px 6px; border-radius: 5px;
+      border: 1px solid var(--fud-stroke, #7a6a55);
+      background: rgba(255, 255, 255, 0.45);
+    }
+    .fud-gm-tblock[hidden] { display: none; }
+    .fud-gm-tblock.is-flash { animation: fud-gm-tblock-flash 900ms ease-out 1; }
+    @keyframes fud-gm-tblock-flash {
+      0%   { background: #f3e3de; border-color: #a8503f; }
+      100% { background: rgba(255, 255, 255, 0.45); border-color: var(--fud-stroke, #7a6a55); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .fud-gm-tblock.is-flash { animation: none; border-color: #a8503f; }
     }
     /* The picker is part of the list, not a neighbouring section — it sits under
        the rows it appends to, behind a dashed rule. */
@@ -3193,6 +3228,13 @@ export function rerenderCardTargetSurfaces(rootEl, { attacker, targets, perTarge
       tmp.innerHTML = buildPerTargetHTML({ perTargetResults, weapon: null, element, roll, isSpellish: vsMDef, hasDamage });
       const newList = tmp.querySelector(".fud-bf-target-list");
       if (newList) listEl.innerHTML = newList.innerHTML;
+    } else if (listEl && !(targets ?? []).length) {
+      // A GM emptied the target set. Say so — the alternative is leaving the
+      // pre-edit rows standing, each still reading "HIT 27" for a creature this
+      // action is no longer touching. That stale surface is the entire reason
+      // emptying used to be refused.
+      listEl.innerHTML = `<div class="fud-bf-target-row is-none">`
+        + `<span class="t-name" style="opacity:.7">No targets — this action hits nobody</span></div>`;
     }
   } catch (e) { warn("rerenderCardTargetSurfaces: target list threw", e); }
 }
@@ -3248,6 +3290,46 @@ function toWireSafe(v, depth = 0) {
     if (sv !== undefined) out[k] = sv;
   }
   return out;
+}
+
+// The GM editor's view of the post-mutation membership — a NARROW projection,
+// not the wire-safe snapshot arrays.
+//
+// It rides EVERY recompute (each pill click) out to every connected client,
+// including the players, none of whom can open the editor. A full target
+// snapshot carries affinities, conditions, targeting blocks and per-target
+// resource state; shipping two of those per recompute would undo most of the
+// bandwidth win the structured delta exists for. The editor reads exactly these
+// fields — membership, provenance, and the engine's own numbers for the
+// placeholders — so anything else is pure freight.
+//
+// `addedVia` is load-bearing, not decoration: it is how the editor tells an
+// ENGINE-added slot (add_target splash, a shield phantasm, a Protect redirect)
+// from the GM's own addition, which decides whether Remove means "remove" or
+// "un-add". Dropping it would recreate the bug this projection was written for.
+function projectTargetSurfaceForEditor(targets, rows) {
+  // Deliberately no `actorUuid`, `hit` or `crit`: nothing in the editor reads
+  // them (the outcome select is driven by the BAG, not by the row), and this
+  // rides out to every connected client on every pill click.
+  const slim = (t) => (t ? {
+    tokenUuid: t.tokenUuid ?? null,
+    name: t.name ?? null,
+    addedVia: t.addedVia ? { via: t.addedVia.via ?? null, gm: !!t.addedVia.gm } : null,
+  } : null);
+  return {
+    targets: (Array.isArray(targets) ? targets : []).map(slim).filter(Boolean),
+    perTargetResults: (Array.isArray(rows) ? rows : []).map((r) => (r ? {
+      ...slim(r),
+      damage: typeof r.damage === "number" ? r.damage : null,
+      defense: typeof r.defense === "number" ? r.defense : null,
+      // Present ONLY on a grant/heal row, and its presence is what
+      // isGmEditableRow excludes on — so the type has to survive the projection.
+      ...(typeof r.grantAmount === "number" ? { grantAmount: r.grantAmount } : {}),
+      // The pre-override defence, the only honest placeholder for a slot whose
+      // defence the GM has already set.
+      defenseOverride: r.defenseOverride ? { from: r.defenseOverride.from ?? null } : null,
+    } : null)).filter(Boolean),
+  };
 }
 
 // MAP, never filter — per-target rows are matched to `.fud-bf-target-row` by
@@ -3486,6 +3568,62 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
       `<p><b>GM override</b> — set by hand: ${escapeHtml(edited.join(", "))}</p>` +
       `<p><b>Affinity:</b> ${escapeHtml(g.affinity ?? "NE")}</p>` +
       `<p>${g.hit ? "Hits" : "Misses"}${g.fields?.damage ? ` for ${g.damage}` : ""} — this figure overrides the engine's.</p>`);
+  }
+  // Reaction pills a GM target removal has made moot. Marked here rather than at
+  // the decision site because the prune happens in the mutation pass, which runs
+  // on the PREVIEW too — so the pill tells the truth for the whole window
+  // between the GM's Save and Confirm, not only after the commit.
+  //
+  // Idempotent in both directions: the delta carries the CURRENT dropped set, so
+  // restoring the removed creature clears the mark on the next recompute.
+  if (Array.isArray(delta.gmDroppedReactions)) {
+    const mootKeys = new Set(delta.gmDroppedReactions
+      .map((c) => `${c?.rowKey ?? ""}:${c?.carrierUuid ?? ""}`));
+    for (const pill of rootEl.querySelectorAll(".fud-bf-reaction-pill")) {
+      const key = `${pill.dataset.fudReactionKey ?? ""}:${pill.dataset.fudReactionCarrier ?? ""}`;
+      const moot = mootKeys.has(key);
+      const wasMoot = pill.dataset.fudReactionMoot === "1";
+      const chipPresent = !!pill.querySelector('[data-fud-reaction-moot-chip="1"]');
+      // "Already right" is not the same as "the flag matches". Another path can
+      // repaint this slot while the pill is marked (a GM verdict, an Ask-again
+      // rebuild), which removes OUR chip but leaves the flag — and the flag
+      // alone would then short-circuit every later pass, so the pill would show
+      // live Apply/Skip for a reaction the prune still drops. Re-mark when the
+      // chip is missing, and refresh the stash to what that repaint left: the
+      // old stash describes a state two verdicts back.
+      const needsRemark = moot && !chipPresent;
+      if (moot === wasMoot && !needsRemark) continue;
+      if (moot) {
+        pill.dataset.fudReactionMoot = "1";
+        pill.classList.add("is-moot");
+        const st = pill.querySelector(".fud-bf-reaction-status, .fud-bf-reaction-actions");
+        if (st) {
+          // Remember what it said, so lifting the removal restores the player's
+          // own verdict rather than guessing at one.
+          if (needsRemark || pill.dataset.fudReactionMootPrev == null) {
+            pill.dataset.fudReactionMootPrev = st.outerHTML;
+          }
+          // The chip is TAGGED, and the un-mark below restores only when the tag
+          // is still there. Between these two passes something else can repaint
+          // this slot — a cascade injection, a re-post, restoreReactionPillToActionable
+          // — and blindly writing the stash back would resurrect the buttons
+          // that repaint had just replaced, wired to nothing.
+          st.outerHTML = `<span class="fud-bf-reaction-status" data-fud-reaction-moot-chip="1">Target removed</span>`;
+        }
+      } else {
+        delete pill.dataset.fudReactionMoot;
+        pill.classList.remove("is-moot");
+        const st = pill.querySelector(".fud-bf-reaction-status, .fud-bf-reaction-actions");
+        const mine = st?.dataset?.fudReactionMootChip === "1";
+        if (st && mine && pill.dataset.fudReactionMootPrev != null) {
+          st.outerHTML = pill.dataset.fudReactionMootPrev;
+        }
+        // Dropped either way: a stash nobody restored is stale by definition,
+        // and keeping it would let a LATER un-mark write a verdict from two
+        // states ago over whatever is current.
+        delete pill.dataset.fudReactionMootPrev;
+      }
+    }
   }
   // Launch button state — marked active while this card carries any override,
   // with the summary in its tooltip. Rebuilt on every delta so it stays true
@@ -5438,6 +5576,48 @@ function buildGmEditLaunchHTML(gmOverride = null) {
 
 const GM_EDIT_ROOT_ID = "fud-gm-edit-card-root";
 
+// The last-target rule paragraph. Referenced by aria-describedby from every
+// blocked Remove, so the rule is announced with the button rather than
+// hidden in a hover tooltip.
+const GM_TBLOCK_ID = "fud-gm-target-block-note";
+
+// Action kinds that keep a SECOND subject field beside `targets`, which this
+// editor does not write.
+//
+// Guard keeps `coverTarget`; Study and Hinder keep `target`; Equipment and the
+// Ultima commands are self-only. Editing `targets` on one of these would be HALF
+// APPLIED, and the half that moves differs per kind — which is the actual reason
+// the section is withheld:
+//
+//   · Hinder — `ar.targets` IS load-bearing (the chosen status goes to
+//     `action_targets`, i.e. `ar.targets`), but `ar.target` drives the miss VFX
+//     and the log line. A swap would inflict the status on the new creature
+//     while the log named the old one.
+//   · Study — `ar.target` drives `markStudied` and the tier bookkeeping; a swap
+//     would study one creature and record it against another.
+//   · Guard — BOTH matter, which is the trap. `ar.coverTarget` feeds the
+//     `creature_guards` scan payload and the log line, but the Covered AE
+//     reaches the ally through `action_targets` — i.e. `ar.targets`, whose sole
+//     entry is the cover target. (`coverTarget` has no reserved target_ref, so
+//     `action_targets` is the only channel it could travel by.) An edit here
+//     would move the AE and leave the scan payload and log naming the old ally.
+//     Do NOT read this kind as "inert and therefore the safe one to un-suppress
+//     first" — that was the original mistake, made about Hinder.
+//   · Equipment / Domination / Escape / Recovery — self-targeted; there is no
+//     second creature for the GM to choose. Their `ar.targets` is load-bearing
+//     all the same (Recovery's cleanse + MP restore go to `action_targets`), so
+//     the Guard-style "inert" argument must not be extended to them either.
+//
+// Supporting these properly means writing the kind's own subject field as well,
+// which is a separate override channel with its own RESOLVE paths to verify.
+// Until then the control is withheld rather than shown doing half a job:
+// building the list from `targets` (rather than from per-target result rows, as
+// it used to be) is what made these rows appear at all, and a control that
+// visibly works and silently half-applies is worse than no control. The Add
+// picker was already inert on these cards before this pass.
+const GM_COMPAT_TARGET_KINDS = new Set([
+  "guard", "study", "hinder", "equipment", "domination", "escape", "recovery",
+]);
 // Project the card's reaction candidates into editor rows.
 //
 // `decisionOf` is the card's live decision map lookup and is only available on
@@ -5539,12 +5719,17 @@ function gmAddableTargets(perTargetResults, attackerTokenUuid = null) {
 // strike-through, because its Remove takes out a creature the action really
 // has. That asymmetry is the point, not an inconsistency: a pending add and a
 // committed member are not the same thing to undo.
-function gmTargetRowHTML({ tokenUuid = null, addToken = null, name = "", cut = false, fields = "" }) {
+function gmTargetRowHTML({ tokenUuid = null, addToken = null, name = "", cut = false, fields = "", engine = null }) {
   const live = tokenUuid ? ` data-fud-gm-token="${escapeHtml(String(tokenUuid))}"` : "";
   const add = addToken ? ` data-fud-gm-add-token="${escapeHtml(String(addToken))}"` : "";
+  // ENGINE membership, which is NOT the same as carrying a token attribute: a
+  // bag-only removal carries a token for a creature the action does not have.
+  // Only this flag counts toward the last-target guard. Defaults to what the
+  // token attribute says, so the runtime add control needs no extra argument.
+  const eng = (engine ?? !!tokenUuid) ? ` data-fud-gm-engine="1"` : "";
   const nm = escapeHtml(String(name ?? ""));
   return `<div class="fud-gm-trow${cut ? " is-cut" : ""}${addToken ? " is-added" : ""}"
-       data-fud-gm-trow${live}${add}${cut ? ` data-fud-gm-drop="1"` : ""}>
+       data-fud-gm-trow${live}${add}${eng}${cut ? ` data-fud-gm-drop="1"` : ""}>
     <div class="fud-gm-thead">
       <span class="fud-gm-tname">${nm}</span>
       ${addToken ? `<span class="fud-gm-tbadge">Added by GM</span>` : ""}
@@ -5556,18 +5741,134 @@ function gmTargetRowHTML({ tokenUuid = null, addToken = null, name = "", cut = f
   </div>`;
 }
 
+// Per-target rows from two sources, joined by TOKEN and never by index — the
+// frozen COMPUTE rows and the last recompute's rows describe the same action but
+// not the same membership (a removal shortens one, a GM add lengthens the
+// other), so position is not a join. Later wins on a shared token; rows the
+// recompute no longer has are KEPT, because a creature staged for removal must
+// still render with its real numbers so Restore shows what comes back.
+function mergePerTargetRowsByToken(...lists) {
+  const out = new Map();
+  for (const list of lists) {
+    for (const r of (Array.isArray(list) ? list : [])) {
+      const u = String(r?.tokenUuid ?? "");
+      if (!u) continue;
+      out.set(u, r);
+    }
+  }
+  return [...out.values()];
+}
+
+// The union of several target-snapshot arrays, deduped by token uuid, order
+// preserved. Same join rule and the same reason as above.
+function dedupeTargetRefs(...lists) {
+  const out = new Map();
+  for (const list of lists) {
+    for (const t of (Array.isArray(list) ? list : [])) {
+      const u = String(t?.tokenUuid ?? "");
+      if (!u) continue;
+      out.set(u, t);
+    }
+  }
+  return [...out.values()];
+}
+
 // Project an actionResult (host) or render payload (mirror) into the editor's
 // inputs. One projection for both surfaces, so a support GM's editor cannot show
 // different numbers from the host's.
-function gmEditContextFor(src, kind = null, title = null, reactions = null) {
+// `live` is the LAST RECOMPUTE's target set + rows (see `lastTargetSurface` in
+// postActionCard). The action's own `perTargetResults` are frozen at COMPUTE and
+// never rewritten by an edit, so without this a GM-added creature is invisible
+// to the editor forever — it can never become a row with real numbers, only a
+// bare name. Passing the recompute in is what lets an added target be edited
+// like any other. It is display state, not authority: the bag is still the only
+// thing Save writes.
+function gmEditContextFor(src, kind = null, title = null, reactions = null, live = null) {
+  // Every creature the action currently has a row for — the frozen rows plus
+  // anything the last recompute derived (a GM add, an add_target splash, a
+  // shield phantasm). Recompute wins on a shared token: it is the fresher
+  // derivation of the same slot.
+  const liveRows = Array.isArray(live?.perTargetResults) ? live.perTargetResults : [];
+  const liveTargets = Array.isArray(live?.targets) ? live.targets : [];
+  const mergedRows = mergePerTargetRowsByToken(src?.perTargetResults ?? [], liveRows);
+  // Which creatures the ENGINE targets, INDEPENDENTLY of the GM's `added` set.
+  //
+  // This is the distinction the whole target list turns on, and it is not
+  // "is it in the current target set" — the recompute's set INCLUDES the GM's
+  // own additions. Removing an engine target is a REMOVAL (it goes to
+  // `targets.removed`); removing a creature that is only there because the GM
+  // added it is an UN-ADD (it leaves `targets.added` and nothing else happens).
+  //
+  // Conflating the two strands the creature: it lands in `removed`, where
+  // "removal wins" over `added` forever, so it can never be re-added — and the
+  // phantom row it leaves behind counts toward the last-target guard, which is
+  // how an action could be reduced to ZERO targets.
+  //
+  // The frozen COMPUTE state is engine-owned by definition. A row the recompute
+  // ADDED is engine-owned unless it carries the GM's own stamp (`addedVia.gm`,
+  // set in applyTargetSetMutation) — which is what keeps the Protect case right:
+  // a redirect that moves a GM-added protector into the engine's own slot makes
+  // it a real target, and dropping it then IS a removal.
+  //
+  // The stamp is read as a VETO over the union, not as a per-entry filter. The
+  // recompute rebuilds each per-target row through buildPerTarget, which does
+  // not carry `addedVia` — so a token stamped on the TARGET would be readmitted
+  // by its own unstamped result row, and a GM addition would go back to looking
+  // engine-owned. One stamp anywhere disqualifies the token everywhere.
+  const gmAddedLive = new Set([...liveTargets, ...liveRows]
+    .filter((t) => t?.addedVia?.gm === true)
+    .map((t) => String(t.tokenUuid ?? "")).filter(Boolean));
+  const engineTokens = new Set([
+    ...(src?.targets ?? []).map((t) => String(t?.tokenUuid ?? "")),
+    ...(src?.perTargetResults ?? []).map((r) => String(r?.tokenUuid ?? "")),
+  ].filter(Boolean));
+  for (const t of [...liveTargets, ...liveRows]) {
+    const u = String(t?.tokenUuid ?? "");
+    if (u && !gmAddedLive.has(u)) engineTokens.add(u);
+  }
+  // The veto over the FROZEN half too, so this really is a veto over the union
+  // rather than a filter on the live half. Unreachable today — ctx.actionResult
+  // is never rewritten with the mutated target set — but that is exactly the
+  // change someone makes to survive an F5, and it would silently restore the
+  // strand while this comment still claimed immunity.
+  for (const u of gmAddedLive) engineTokens.delete(u);
   return {
+    engineTokens: [...engineTokens],
+    // Placeholders must come from the FROZEN rows, never the recompute: the
+    // recompute's rows are POST-override (composeGmDefenseOverrides rewrites
+    // `defense`, applyGmDamageOverrides rewrites `damage`), so sourcing the grey
+    // "what the engine produced" value from them showed the GM their own typed
+    // number back as the engine's.
+    engineRows: src?.perTargetResults ?? [],
     // Computed on whichever client opens the editor: both GMs see the same
     // canvas, and it is derived state, not an authored value the host owns.
-    addable: gmAddableTargets(src?.perTargetResults, src?.attacker?.tokenUuid ?? null),
+    // Fed the ENGINE-OWNED membership: the target set as well as the rows (a
+    // no-damage Skill's targets have no rows to be excluded by, so its own
+    // victims were offered back in the picker), but NOT the GM's own additions.
+    //
+    // Excluding those was wrong in a way that only shows inside one session:
+    // un-adding a derived add destroys its row, and the picker is rebuilt from
+    // this list — so the creature had no row AND no option, recoverable only by
+    // Cancel, which throws away every other edit in the dialog. The live picker
+    // (`refreshAddOptions`) already hides anything that currently HAS a row, so
+    // offering it here costs nothing and is what hands it back.
+    addable: gmAddableTargets(
+      dedupeTargetRefs(mergedRows, src?.targets ?? [], liveTargets)
+        .filter((t) => engineTokens.has(String(t?.tokenUuid ?? ""))),
+      src?.attacker?.tokenUuid ?? null),
+    // The action's TARGET SET, which is not the same thing as its result rows:
+    // a no-damage Skill (Hawkeye, Warning Shot, Barrage) carries real targets
+    // and an EMPTY perTargetResults, so a list built from rows alone offered the
+    // GM nothing to remove at all. Measured 2026-08-23: 2 targets, 0 rows.
+    targets: dedupeTargetRefs(src?.targets ?? [], live?.targets ?? []),
+    // Whether this action's target SET is what resolves — see
+    // GM_COMPAT_TARGET_KINDS. `kind` is not on the render payload, so it has to
+    // be threaded in; both editor surfaces already pass it.
+    targetsEditable: !GM_COMPAT_TARGET_KINDS.has(String(kind ?? "").toLowerCase()),
     // The host passes its LIVE candidate list (which includes anything a cascade
     // injected since the card was posted); the mirror falls back to the payload's.
     reactions: reactions ?? gmEditReactionRows(src?.cardReactions),
-    perTargetResults: src?.perTargetResults ?? [],
+    perTargetResults: mergedRows,
     roll: src?.roll ?? null,
     damage: src?.damage ?? null,
     // The action's current weapon category, for the weapon-type picker's
@@ -5594,7 +5895,7 @@ function gmEditContextFor(src, kind = null, title = null, reactions = null) {
 // Build the editor card's markup from the action's CURRENT values and whatever
 // override is already in force. Engine values appear as placeholders, so an
 // empty box always reads as "leave this to the engine" — never as zero.
-function buildGmEditCardHTML({ perTargetResults, roll, damage, weaponType = null, isSpellish = false, gmOverride = null, hasDamage = true, title = "Action", reactions = [], addable = [] }) {
+function buildGmEditCardHTML({ perTargetResults, targets = [], engineTokens = [], engineRows = [], targetsEditable = true, roll, damage, weaponType = null, isSpellish = false, gmOverride = null, hasDamage = true, title = "Action", reactions = [], addable = [] }) {
   const gm = normalizeGmOverride(gmOverride);
   const defTag = isSpellish ? "MDEF" : "DEF";
   const num = (v) => (v == null ? "" : String(v));
@@ -5718,52 +6019,110 @@ function buildGmEditCardHTML({ perTargetResults, roll, damage, weaponType = null
   //
   // Read the ROWS, never a parallel JS array: keeping the two in step is how
   // this kind of editor drifts.
-  const engineRows = (perTargetResults ?? []).filter(isGmEditableRow);
-  const engineTokens = new Set(engineRows.map((r) => String(r.tokenUuid ?? "")));
-  // Every token the action currently carries — INCLUDING rows this editor
-  // offers no fields for (heal/grant). That is what separates "added, already
-  // derived" from "added, still staged", which is what decides whether Remove
-  // strikes through or discards.
-  const presentTokens = new Set((perTargetResults ?? [])
-    .map((r) => String(r?.tokenUuid ?? "")).filter(Boolean));
+  // Membership comes from THREE places and the list is their union:
+  //
+  //   · perTargetResults — the derived rows (outcome / damage / defence). Merged
+  //     with the last recompute's rows upstream, so a GM-added creature the
+  //     engine has already derived arrives here as a real row.
+  //   · targets          — the action's own target SET. NOT the same thing: a
+  //     no-damage Skill (Hawkeye, Warning Shot, Barrage) carries real targets and
+  //     an EMPTY perTargetResults, so a list built from rows alone rendered ZERO
+  //     rows and the GM could not remove anything at all. Measured 2026-08-23 on
+  //     Hawkeye with two targets: 2 targets, 0 rows, 0 list entries.
+  //   · the bag          — every token `added`/`removed` names. The reduction
+  //     reads both sets back OFF THE ROWS, so an unrendered entry is erased by
+  //     the next Save.
+  //
+  // A row carries the FIELD GRID whenever we have a derived result for it, and
+  // only then: a target with no row has no verdict, damage or defence for an
+  // override to land on, and blank controls there would offer edits the engine
+  // silently drops.
+  const rowByToken = new Map();
+  for (const r of (perTargetResults ?? [])) {
+    const u = String(r?.tokenUuid ?? "");
+    if (u) rowByToken.set(u, r);
+  }
+  // The FROZEN engine rows, kept apart from the merged set. Every grey
+  // placeholder comes from here: the recompute's rows are POST-override
+  // (composeGmDefenseOverrides rewrites `defense`, applyGmDamageOverrides
+  // rewrites `damage`), so reading a placeholder off them showed the GM their
+  // own typed number back as "what the engine produced".
+  const engineRowByToken = new Map();
+  for (const r of (engineRows ?? [])) {
+    const u = String(r?.tokenUuid ?? "");
+    if (u) engineRowByToken.set(u, r);
+  }
+  const targetTokens = (targets ?? []).map((t) => String(t?.tokenUuid ?? "")).filter(Boolean);
   const addedSet = new Set(gm.targets.added);
+  const removedSet = new Set(gm.targets.removed);
   const addableName = new Map(addable.map((t) => [t.tokenUuid, t.name]));
   const nameOfToken = (u) =>
-    (perTargetResults ?? []).find((r) => String(r?.tokenUuid ?? "") === u)?.name
-    ?? addableName.get(u) ?? "Added target";
-  // Adds with no editable engine row of their own — not derived yet, or derived
-  // onto a row that carries no hit/damage/defence (a grant). They must still
-  // RENDER: the reduction reads `added` back off the rows, so an unrendered add
-  // would be silently dropped by the next Save and the creature would vanish.
-  //
-  // EVERY token the bag mentions gets a row, added or removed — the reduction
-  // reads both sets back off the rows, so an unrendered one is silently dropped
-  // by the next Save. That is a live hazard, not a hypothetical: `ctx.actionResult`
-  // is only ever rewritten with `gmOverride` (applyGmEditPatch), never with the
-  // mutated target set, so a GM-added creature NEVER appears in the
-  // perTargetResults this editor reads — not even after Save and reopen.
-  const extraAdds = gm.targets.added.filter((u) => !engineTokens.has(u));
-  const extraRemoved = gm.targets.removed.filter((u) => !engineTokens.has(u));
-  const addOptions = addable.filter((t) => !addedSet.has(t.tokenUuid) && !engineTokens.has(t.tokenUuid));
-  const targets = (engineRows.length || extraAdds.length || extraRemoved.length || addable.length) ? `
+    rowByToken.get(u)?.name
+    ?? (targets ?? []).find((t) => String(t?.tokenUuid ?? "") === u)?.name
+    ?? addableName.get(u)
+    // Only a creature the GM actually added earns that label. An engine target
+    // this client cannot resolve is a target, not an add — calling it "Added
+    // target" states the wrong provenance about somebody else's edit.
+    ?? (addedSet.has(u) ? "Added target" : "Target");
+  // ENGINE-owned membership — see gmEditContextFor. This is what makes Remove
+  // mean REMOVAL on a real target and UN-ADD on a GM addition; the merged row
+  // set cannot answer that, because it contains the GM's own additions.
+  const engineSet = new Set(engineTokens ?? []);
+  // Ordered: the action's own targets first, in the order the card shows them,
+  // then any derived row it does not name, then bag-only tokens.
+  const memberOrder = [];
+  const seenMember = new Set();
+  const pushMember = (u) => { if (u && !seenMember.has(u)) { seenMember.add(u); memberOrder.push(u); } };
+  targetTokens.forEach(pushMember);
+  for (const u of rowByToken.keys()) pushMember(u);
+  gm.targets.added.forEach(pushMember);
+  gm.targets.removed.forEach(pushMember);
+  // A creature already in the list — or one the GM has staged for removal, whose
+  // own row carries a Restore — must not also be offered by the picker.
+  const addOptions = addable.filter((t) =>
+    !addedSet.has(t.tokenUuid) && !seenMember.has(t.tokenUuid) && !removedSet.has(t.tokenUuid));
+  const targetsSection = (targetsEditable && (memberOrder.length || addable.length)) ? `
     <fieldset class="fud-gm-sec fud-gm-targets" data-fud-gm-targets>
       <legend>Targets</legend>
-      ${engineRows.map((r) => {
-        const uuid = String(r.tokenUuid ?? "");
+      ${memberOrder.map((uuid) => {
+        const r = rowByToken.get(uuid) ?? null;
         const ov = gm.perTarget[uuid] ?? {};
         // "" for keep, like every other select — it used to be "auto", which is a
         // non-empty value, so markEdited railed every untouched outcome row as
         // edited and "Clear all fields" was never disabled. Clear-all also sets
         // selects to "", which on an "auto" option list left the control BLANK.
         const sel = ov.hit === true ? "hit" : ov.hit === false ? "miss" : "";
+        // Grant / heal rows carry no hit check, defence or damage — isGmEditableRow
+        // is the same gate readForm uses to decide which rows it may read back.
+        const editable = !!r && isGmEditableRow(r);
+        // The engine's own figures for the grey placeholders. A GM-ADDED creature
+        // has no frozen row at all, so its only source is the recompute — which
+        // is post-override, so any field the bag currently sets shows NO
+        // placeholder rather than echoing the GM's own number back at them.
+        const eng = engineRowByToken.get(uuid) ?? null;
+        const phDamage = eng ? eng.damage : (ov.damage != null ? null : r?.damage);
+        const phDefense = eng ? eng.defense
+          : (ov.defense != null ? (r?.defenseOverride?.from ?? null) : r?.defense);
+        const isEngine = engineSet.has(uuid);
         return gmTargetRowHTML({
-          tokenUuid: uuid,
+          // The token attribute is what makes a dropped row a REMOVAL. A
+          // GM-added creature must NOT carry it — dropping it un-adds instead,
+          // which is the only undo that leaves the bag able to converge. A
+          // bag-`removed` token keeps it even when this client cannot see the
+          // creature, or the reduction would read the row as a discarded staged
+          // add and silently drop the GM's removal.
+          tokenUuid: (isEngine || removedSet.has(uuid)) ? uuid : null,
+          // Counted toward the last-target guard. Separate from `tokenUuid`
+          // because the safety-net row above carries a token for a creature the
+          // action does not have, and counting THAT is how the guard could be
+          // walked around into a zero-target action.
+          engine: isEngine,
           // Normalize guarantees a token is never in both sets, so an added row
           // can never also be a removed one.
           addToken: addedSet.has(uuid) ? uuid : null,
-          name: r.name ?? "",
-          cut: gm.targets.removed.includes(uuid),
-          fields: `<div class="fud-gm-grid">
+          name: nameOfToken(uuid),
+          cut: removedSet.has(uuid),
+          fields: editable ? `<div class="fud-gm-grid">
             <label class="fud-gm-f"><span>Outcome</span>
               <select class="fud-gm-sel" data-fud-gm-field="hit">
                 <option value=""${sel === "" ? " selected" : ""}>Keep — engine</option>
@@ -5772,19 +6131,13 @@ function buildGmEditCardHTML({ perTargetResults, roll, damage, weaponType = null
               </select></label>
             ${hasDamage ? `<label class="fud-gm-f"><span>Damage</span>
               <input type="number" class="fud-gm-num" data-fud-gm-field="damage"
-                     value="${escapeHtml(num(ov.damage))}" placeholder="${escapeHtml(String(r.damage ?? 0))}" /></label>` : ""}
+                     value="${escapeHtml(num(ov.damage))}" placeholder="${escapeHtml(num(phDamage))}" /></label>` : ""}
             <label class="fud-gm-f"><span>${defTag}</span>
               <input type="number" class="fud-gm-num" data-fud-gm-field="defense"
-                     value="${escapeHtml(num(ov.defense))}" placeholder="${escapeHtml(String(r.defense ?? ""))}" /></label>
-          </div>`,
+                     value="${escapeHtml(num(ov.defense))}" placeholder="${escapeHtml(num(phDefense))}" /></label>
+          </div>` : "",
         });
       }).join("")}
-      ${extraAdds.map((u) => gmTargetRowHTML({
-        tokenUuid: presentTokens.has(u) ? u : null, addToken: u, name: nameOfToken(u),
-      })).join("")}
-      ${extraRemoved.map((u) => gmTargetRowHTML({
-        tokenUuid: u, name: nameOfToken(u), cut: true,
-      })).join("")}
       <div class="fud-gm-addrow">
         <label class="fud-gm-rl" for="fud-gm-addsel">Add</label>
         <select class="fud-gm-sel" id="fud-gm-addsel" data-fud-gm-field="addTarget">
@@ -5801,8 +6154,18 @@ function buildGmEditCardHTML({ perTargetResults, roll, damage, weaponType = null
       </div>
       <p class="fud-gm-tlive" data-fud-gm-tlive role="status" aria-live="polite"></p>
       <p class="fud-gm-tnote">A creature added here runs through the action's own pipeline —
-        its defence, affinity and damage reduction all apply. Its outcome and damage are
-        derived, so this editor cannot hand-set them.</p>
+        its defence, affinity and damage reduction all apply. Save, and it gains the same
+        outcome, damage and ${defTag} fields as every other target.</p>
+      <!-- Emptying the action is ALLOWED and is not the same call as cancelling
+           it, so this states the consequence rather than refusing. Two wordings,
+           one before the choice and one after, because "would" and "will" are
+           different pieces of information to a GM mid-decision. -->
+      <p class="fud-gm-tnote fud-gm-tblock" id="${GM_TBLOCK_ID}" data-fud-gm-tblock hidden>
+        <span data-fud-gm-tblock-ahead>Removing this one leaves the action with <b>no targets</b>.</span>
+        <span data-fud-gm-tblock-warn hidden>This action now has <b>no targets</b>.</span>
+        It still resolves — its cost is paid, the turn is spent and its self-effects
+        run — but it hits nobody. To call the action off entirely, cancel it on the card
+        instead.</p>
     </fieldset>` : "";
 
   // Reactions — what happens to each candidate, in the PILL's own vocabulary so
@@ -5880,7 +6243,7 @@ function buildGmEditCardHTML({ perTargetResults, roll, damage, weaponType = null
       <span class="fud-gm-edit-sub">${escapeHtml(title)}</span>
     </div>
     <div class="fud-gm-edit-body">
-      ${accuracy}${dmgSec}${reactionSec}${targets}
+      ${accuracy}${dmgSec}${reactionSec}${targetsSection}
       <p class="fud-gm-note" id="fud-gm-note">A blank box or a <b>Keep</b> entry means no override —
         the grey value beside it is what the engine produced. Nothing changes until you
         save.${credit ? ` <em>${escapeHtml(credit)}</em>` : ""}</p>
@@ -5947,7 +6310,16 @@ function openGmEditCard(context) {
     })));
     // How many creatures the action would have after Save — the number the GM is
     // actually deciding, and the guard on removing the last one.
-    const survivingRows = () => targetRows().filter((r) => r.dataset.fudGmDrop !== "1");
+    //
+    // Counts RESULTING MEMBERSHIP, not rendered rows. Those stopped being the
+    // same thing once bag-only tokens started getting rows: a row can exist for
+    // a creature the action does not have (the removal safety net), and counting
+    // it inflated the total — which is a way to walk the last-target guard into
+    // letting the GM empty the action entirely. A row counts when it survives
+    // AND is either an engine member or a staged add.
+    const survivingRows = () => targetRows().filter((r) =>
+      r.dataset.fudGmDrop !== "1"
+      && (r.dataset.fudGmEngine === "1" || !!r.dataset.fudGmAddToken));
 
     // Announce membership changes, and carry the resulting COUNT — the number a
     // GM is actually deciding, and the one thing a list of rows does not say
@@ -6003,12 +6375,31 @@ function openGmEditCard(context) {
           // name is ambiguous with deleting the token off the board.
           btn.setAttribute("aria-label",
             cut ? `Restore ${nm} to this action` : `Remove ${nm} from this action`);
-          // The last surviving target cannot be removed — see the drop handler.
-          btn.disabled = !cut && lastOne;
-          btn.title = btn.disabled ? "An action needs at least one target" : "";
+          // Removing the last one is permitted; it is CONSEQUENTIAL, so the
+          // button describes itself against the standing warning rather than
+          // being disabled or silently doing nothing.
+          const emptying = !cut && lastOne;
+          btn.disabled = false;
+          btn.dataset.fudGmBlocked = emptying ? "1" : "";
+          if (emptying) btn.setAttribute("aria-describedby", GM_TBLOCK_ID);
+          else btn.removeAttribute("aria-describedby");
+          btn.title = emptying ? "This would leave the action with no targets at all" : "";
         }
         const flag = row.querySelector("[data-fud-gm-tcut]");
         if (flag) flag.textContent = cut ? "Will be removed" : "";
+      }
+      // The consequence, stated BEFORE it is chosen — visible while some row's
+      // Remove would empty the action, and again (in its "done" wording) once
+      // the action actually has no targets left.
+      const blockNote = card.querySelector("[data-fud-gm-tblock]");
+      const emptied = survivingRows().length === 0;
+      if (blockNote) {
+        blockNote.hidden = !((lastOne || emptied) && targetRows().length > 0);
+        blockNote.classList.toggle("is-empty-now", emptied);
+        const warn = blockNote.querySelector("[data-fud-gm-tblock-warn]");
+        const ahead = blockNote.querySelector("[data-fud-gm-tblock-ahead]");
+        if (warn) warn.hidden = !emptied;
+        if (ahead) ahead.hidden = emptied;
       }
       // Nothing chosen, nothing to add.
       const addBtn = q('[data-fud-gm-action="add"]');
@@ -6056,17 +6447,36 @@ function openGmEditCard(context) {
         ? { base: null, useHR: hrEl ? !!hrEl.checked : null, bonus: dmgBonus, element, weaponType }
         : null;
       const perTarget = {};
-      // Only rows that actually CARRY the fields — an add row for a grant/heal
-      // target has a token but no controls, and reading it would write an
-      // all-null override entry for a creature the GM never touched.
-      for (const row of card.querySelectorAll("[data-fud-gm-token]")) {
+      // Which tokens got a rendered CONTROL SET this pass. Recorded rather than
+      // re-derived, because the carry-forward below has to ask exactly this
+      // question and the two answers must not drift.
+      const fieldRowTokens = new Set();
+      // Walk every ROW and take its token from EITHER attribute. A GM-added
+      // creature deliberately carries only `add-token` (that is what makes its
+      // Remove an un-add rather than a removal) — keying this loop on
+      // `data-fud-gm-token` alone silently dropped every value the GM typed into
+      // an added target's row, on a form that had just accepted the keystrokes.
+      //
+      // Only rows that actually CARRY the fields: a target with no derived
+      // result has a row and no controls, and reading it would write an all-null
+      // override entry for a creature the GM never touched.
+      for (const row of card.querySelectorAll("[data-fud-gm-trow]")) {
+        const uuid = row.dataset.fudGmToken || row.dataset.fudGmAddToken || "";
+        if (!uuid) continue;
         const sel = row.querySelector('[data-fud-gm-field="hit"]');
         if (!sel) continue;
-        // A creature being removed carries no outcome. Keeping its override
-        // would leave the bag counting a target the action no longer has, and
-        // `summarizeGmOverride` reporting it on the launch button.
-        if (row.dataset.fudGmDrop === "1") continue;
-        perTarget[row.dataset.fudGmToken] = {
+        fieldRowTokens.add(uuid);
+        // A row staged for REMOVAL is read like any other.
+        //
+        // It used to be skipped — which, because Save replaces this section
+        // wholesale and the row still counted as rendered, DESTROYED the GM's
+        // outcome/damage for that creature on the next Save. Restore then handed
+        // back a creature with its numbers wiped, which is the one thing a
+        // reversible control must not do. The reason for the skip was that a
+        // removed creature's override was still being COUNTED on the launch
+        // button; that is fixed where it belongs, in `gmOverrideBits`, and the
+        // consumers that walk `perTarget` now skip removed tokens themselves.
+        perTarget[uuid] = {
           hit: sel?.value === "hit" ? true : sel?.value === "miss" ? false : null,
           damage: valOf(row.querySelector('[data-fud-gm-field="damage"]')),
           defense: valOf(row.querySelector('[data-fud-gm-field="defense"]')),
@@ -6096,13 +6506,16 @@ function openGmEditCard(context) {
       // was deliberately dropped (fudGmDrop) or left on "keep" is a real
       // decision and must still win.
       // (the reactions half runs after that list is built, below)
-      // Match the build loop's own test (it skips a row with no `hit` select),
-      // not merely "a row exists": an extraAdds / extraRemoved row renders the
-      // token attribute with no controls, and treating that as rendered would
-      // drop a prior override instead of carrying it.
+      // Match the build loop's own test (it emits controls only for a row that
+      // has a DERIVED result), not merely "a row exists": a target with no
+      // per-target result — a no-damage Skill's victim, a staged add — renders
+      // with no controls, and treating that as rendered would drop a prior
+      // override instead of carrying it. `fieldRowTokens` is the loop's OWN
+      // record of what it read, so the two cannot disagree — and it covers a row
+      // identified by its add-token, which a `[data-fud-gm-token=...]` selector
+      // does not reach.
       for (const [key, val] of Object.entries(prior.perTarget ?? {})) {
-        const sel = `[data-fud-gm-token="${CSS.escape(key)}"] [data-fud-gm-field="hit"]`;
-        if (!card.querySelector(sel)) perTarget[key] = val;
+        if (!fieldRowTokens.has(key)) perTarget[key] = val;
       }
       // Reactions. Only real verdicts are sent — a "keep" row contributes NO key,
       // so an untouched candidate can never be mistaken for a suppressed one.
@@ -6312,15 +6725,23 @@ function openGmEditCard(context) {
         const row = btn.closest("[data-fud-gm-trow]");
         if (!row) return;
         const name = row.querySelector(".fud-gm-tname")?.textContent?.trim() ?? "Target";
-        // Removing the LAST target is blocked, not staged. The card's surface
-        // rebuild is gated on `recomputed.length`, so an empty target set leaves
-        // every original row painted on the card and on every mirror as though
-        // it were still being hit — a state the GM cannot see is wrong. An
-        // action with no targets is a cancel, not an edit.
-        if (row.dataset.fudGmDrop !== "1" && survivingRows().length <= 1) {
-          announce(`${name} cannot be removed — an action needs at least one target`);
-          return;
-        }
+        // Removing the LAST target is ALLOWED, and is not the same call as
+        // cancelling the card.
+        //
+        // It used to be refused, on the grounds that the card's surface rebuild
+        // was gated on `recomputed.length` so an emptied action left every
+        // original row painted as though still being hit. That was a RENDER
+        // limitation dressed as a rule, and it made Remove unusable on the
+        // commonest card shape there is — a single-target attack. The rebuild
+        // now runs on an empty set and says so, and RESOLVE was measured on one
+        // (2026-08-23, runDirectorAttackSimulate with every target removed):
+        // it completes cleanly and writes NOTHING.
+        //
+        // The two calls are genuinely different and the GM needs both. Cancel
+        // calls the action off — no cost, the turn is not spent. Emptying the
+        // targets resolves it against nobody: the cost is still paid, the turn
+        // is spent, self-effects still run. "Your shot goes wide, the creature
+        // was never there" is the second one.
         // A staged add that has not been derived yet is not part of the action,
         // so there is nothing to strike through — discard the row and hand the
         // option back. Leaving a struck-through ghost for a creature the action
@@ -7646,6 +8067,12 @@ export async function postActionCard({ director, kind, payload }) {
     // Serialised via a single in-flight Promise — fast clicks queue
     // behind the previous recompute instead of racing the DOM.
     let _previewInFlight = null;
+    // The last recompute's TARGET SET + rows. The action's own perTargetResults
+    // are frozen at COMPUTE and an edit only ever rewrites `gmOverride`, so a
+    // GM-ADDED creature never reaches them — it could never become an editable
+    // row, only a bare name with a Remove button. Kept here (not on the ar) so
+    // it stays display state: the bag is still the only thing Save writes.
+    let lastTargetSurface = null;
     async function recomputeTargetPreviews(remotePrompt = null) {
       // Run recompute when the card has a target list (Attack OR damage-
       // dealing Skill). Non-damage Skills (Soul Steal, Torpor, etc.)
@@ -7790,6 +8217,9 @@ export async function postActionCard({ director, kind, payload }) {
           // the loop below).
           const recomputed = Array.isArray(mutationResult.perTargetResults)
             ? mutationResult.perTargetResults : [];
+          // Publish the post-mutation membership for the GM editor (host) and,
+          // via the delta below, for a support GM's mirror.
+          lastTargetSurface = projectTargetSurfaceForEditor(mutationResult.targets, recomputed);
 
           // Build a `delta` describing per-slot mutations + non-mutation
           // damage updates. Shared between GM (patch local DOM + broadcast
@@ -7919,6 +8349,26 @@ export async function postActionCard({ director, kind, payload }) {
             gmOverrideBag: normalizeGmOverride(arSnapshot.gmOverride),
             gmEditReactions: gmEditReactionRows(cardReactions,
               (c) => reactionDecisionMap.get(`${c.rowKey}:${c.carrierUuid}`)),
+            // The POST-mutation target membership. Same reason as the bag above:
+            // a support GM's editor is built from the card-post payload, which
+            // carries the PRE-edit rows, so a creature the host added was a name
+            // with no fields on their screen — and Save replaces the target sets
+            // wholesale from the rows it can see.
+            gmTargetSurface: lastTargetSurface,
+            // Reaction candidates a GM TARGET REMOVAL has made moot — see
+            // dropGmRemovedReactions. They will not fire and will not bill, so
+            // the pill must stop saying "Applied": the player clicked Apply, the
+            // GM removed them, and without this the card goes on claiming their
+            // reaction is in force on the host and every mirror while nothing
+            // runs. The pill is the table's ONLY readout of reaction state.
+            //
+            // The CURRENT dropped set every pass, not an accumulating one, so
+            // restoring the target un-marks the pill by the same code path.
+            gmDroppedReactions: (mutationResult.gmDroppedReactions ?? []).map((c) => ({
+              rowKey: c?.rowKey ?? null,
+              carrierUuid: c?.carrierUuid ?? null,
+              carrierName: c?.carrierName ?? null,
+            })),
             // Which PANELS carry a hand-set value, so the accuracy and damage
             // fieldsets can be railed like an edited target row.
             gmRollEdited: !!normalizeGmOverride(arSnapshot.gmOverride).roll,
@@ -7978,7 +8428,13 @@ export async function postActionCard({ director, kind, payload }) {
             (Array.isArray(delta.redirects) && delta.redirects.length)
             || targetSetChanged
             || (!hasDamageRows && verdictFlipped);
-          if (needsSurfaceRebuild && recomputed.length) {
+          // `recomputed.length` alone would skip the one case that most needs a
+          // rebuild — a GM removal that emptied the target set. Rebuilding an
+          // EMPTY set is the honest response; not rebuilding leaves every
+          // original row painted as though still being hit, which is exactly why
+          // emptying used to be forbidden. A no-damage Skill (targets, no rows)
+          // still takes the old path: nothing to repaint, nothing repainted.
+          if (needsSurfaceRebuild && (recomputed.length || !mutTargets.length)) {
             const rowsSrc = recomputed.map((r, i) => ({
               ...r,
               redirectedFrom: mutTargets[i]?.redirectedFrom ?? r.redirectedFrom ?? null,
@@ -8830,7 +9286,11 @@ export async function postActionCard({ director, kind, payload }) {
             // carries neither (cardReactions is this closure's array, and the
             // decisions are in the map), so reading them off the ar would show
             // the GM an empty Reactions section on every card.
-            gmEditReactionRows(cardReactions, (c) => reactionDecisionMap.get(`${c.rowKey}:${c.carrierUuid}`))),
+            gmEditReactionRows(cardReactions, (c) => reactionDecisionMap.get(`${c.rowKey}:${c.carrierUuid}`)),
+            // The POST-mutation membership, so a creature the GM already added
+            // opens as a real row with its own derived damage and defence
+            // instead of a bare name the editor can only remove.
+            lastTargetSurface),
             (patch) => applyGmEditPatch(patch, {
               userId: game.user?.id, userName: game.user?.name, at: Date.now(),
             }));
@@ -9618,6 +10078,12 @@ function clearReactionPillTimer(pillEl) {
 function resolveReactionPillDom(pillEl, cardEl, decision, { pendingCount = null, gm = false } = {}) {
   if (!pillEl) return;
   clearReactionPillTimer(pillEl);
+  // This rewrites the status slot, so any "restore me later" stash the
+  // moot-pill patcher left is now describing a state two verdicts old. The
+  // patcher also refuses to restore a slot it did not write (it tags its own
+  // chip), so this is the second of two guards — but a stash nobody can use is
+  // a trap left lying around, and clearing it at the rewrite is the honest half.
+  delete pillEl.dataset.fudReactionMootPrev;
   delete pillEl.dataset.fudReactionSubmitting;
   delete pillEl.dataset.fudReactionAckPending;
   pillEl.classList.remove("is-submitting", "is-applied", "is-skipped", "is-gm-set");
@@ -9745,6 +10211,9 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
   // gmOverrideBag note on the delta.
   let playerGmOverride = undefined;
   let playerGmReactions = null;
+  // Post-mutation target membership shipped by the host's delta — see
+  // `gmTargetSurface`. Null until the first recompute reaches this client.
+  let playerGmTargets = null;
   let playerInvokeState = { trait: false, bond: false };
 
   // Invoke-update handler — GM calls this after processing an INVOKE_CHOICE
@@ -9843,6 +10312,11 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     // the host has set since this card was posted.
     if (menuSpec.delta?.gmOverrideBag !== undefined) playerGmOverride = menuSpec.delta.gmOverrideBag;
     if (Array.isArray(menuSpec.delta?.gmEditReactions)) playerGmReactions = menuSpec.delta.gmEditReactions;
+    // `!== undefined`, matching gmOverrideBag above: a delta carrying an explicit
+    // `null` (a recompute that early-returned, or a cancelled mutation) must
+    // CLEAR the surface, not leave the previous pass's membership standing for a
+    // support GM to merge into a current editor.
+    if (menuSpec.delta?.gmTargetSurface !== undefined) playerGmTargets = menuSpec.delta.gmTargetSurface;
     try {
       applyCardTargetMutationDelta(wrapper, menuSpec.delta);
     } catch (e) { warn("action-card-target-mutation: patch threw", e); }
@@ -9985,6 +10459,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     playerAr = menuSpec.actionResult ?? null;
     playerGmOverride = undefined;
     playerGmReactions = null;
+    playerGmTargets = null;
     playerInvokeState = { trait: false, bond: false };
 
     // Build a wrapper so we can hold both the imported HTML and the
@@ -10075,7 +10550,8 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
             // Likewise the candidate rows: the post-time projection misses
             // anything a cascade injected, and an absent row means an absent
             // key, which `replace` reads as "cleared".
-            playerGmReactions ?? undefined),
+            playerGmReactions ?? undefined,
+            playerGmTargets),
           (patch) => {
             try {
               channel.emit({

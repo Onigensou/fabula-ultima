@@ -186,6 +186,13 @@ export function buildDamageRow({
 
 // A whiffed attack — no commit happened, so this is built by the attack RESOLVE
 // loop, not the commit seam. apply_mode "Miss", value "—".
+// `applyMode` exists so a row that is NOT a missed attack can still use this
+// builder. The end-of-battle rank keys the party's accuracy statistic off
+// `apply_mode` with `.includes("miss")` (battle-end-rank.js), so any row shaped
+// as a Miss counts against the party's F–S grade. A GM emptying an action's
+// target list has to leave a record, but it is an audit note about a table
+// decision, not a shot the party fluffed — pass "No Targets" for those and the
+// rank ignores the row while the log still shows it.
 export function buildMissRow({
   attackerName = "Unknown",
   targetName = "",
@@ -195,6 +202,8 @@ export function buildMissRow({
   weaponType = null,
   range = null,
   sourceType = "None",
+  applyMode = "Miss",
+  summary = null,
 } = {}) {
   const tgtDisp = targetDisposition === 1 ? "ally" : targetDisposition === -1 ? "enemy" : "neutral";
   const entry = {
@@ -203,8 +212,9 @@ export function buildMissRow({
     dealer: { name: attackerName, disposition: "neutral", range: range ?? "None", sourceType },
     target: { name: targetName, disposition: tgtDisp },
     inputs: { element, weaponType },
-    miss: true,
-    summary: `${attackerName} misses ${targetName}`,
+    // `miss` drives the log RENDERER's styling; a non-Miss mode is not a whiff.
+    miss: applyMode === "Miss",
+    summary: summary ?? `${attackerName} misses ${targetName}`,
   };
   const row = {
     $deleted: false,
@@ -213,7 +223,7 @@ export function buildMissRow({
     accuracy: entry.accuracy,
     value: "—",
     value_type: "HP",
-    apply_mode: "Miss",
+    apply_mode: applyMode,
     damage_type: _cap(element),
     affinity: "—",
     efficiency: "—",

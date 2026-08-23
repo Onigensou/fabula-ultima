@@ -9,7 +9,7 @@
 // which are deliberately out of scope for the prototype).
 
 import { log, warn, err } from "./logger.js";
-import { isGmOverrideEmpty, summarizeGmOverride } from "./gm-card-override.js";
+import { isGmOverrideEmpty, summarizeGmOverride, dropGmRemovedReactions } from "./gm-card-override.js";
 import { runBattleEndSequence } from "./battle-end/battle-end-orchestrator.js";
 import { STATES } from "./states.js";
 import { INTENTS } from "./intents.js";
@@ -1395,6 +1395,32 @@ async function resolveAction(director, ar, opts = {}) {
   //    row-batch, not N. Hits were pushed by applyDamageToTarget's logContext,
   //    misses in the damage loop, and any deal_damage riders via the shared
   //    ctx.battleLogSink. Last step so it captures the whole action.
+  // A GM emptied this action's target list. Every log row is produced inside the
+  // per-target loop, so with no targets the sink stays empty and the most
+  // consequential edit a GM can make leaves NO trace in the record the table
+  // reads back — while the cost was paid and the turn spent. Log it explicitly.
+  //
+  // Gated on the GM bag, not merely on "no targets": an action that never had
+  // any is a different thing and is not this pass's business.
+  try {
+    const gmRemoved = ar?.gmOverride?.targets?.removed;
+    if (Array.isArray(gmRemoved) && gmRemoved.length && !(ar.targets ?? []).length && !battleLogSink.length) {
+      battleLogSink.push(buildMissRow({
+        attackerName: casterActor.name,
+        targetName: "—",
+        element: ar.damageType ?? "elementless",
+        accuracy: ar.roll?.total ?? null,
+        weaponType: ar.weapon?.weaponType ?? null,
+        range: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
+        sourceType: isAttackAction ? "Attack" : (view.kind ?? "Skill"),
+        // NOT "Miss". The end-of-battle rank counts every party-side Miss row
+        // against the party's accuracy grade, and this is a table decision, not
+        // a shot they fluffed — see buildMissRow.
+        applyMode: "No Targets",
+        summary: `${casterActor.name}'s action resolved against no targets (GM removed them)`,
+      }));
+    }
+  } catch (e) { warn("resolveAction: emptied-action log row threw", e); }
   if (battleLogSink.length) await appendBattleLog(battleLogSink);
 }
 
@@ -5856,7 +5882,14 @@ const Confirm = {
       // action-taker for a performer-side passive (a monster's own damage
       // rider), which is the case this closes. witnessNpcAbility drops
       // everything non-hostile / uncatalogued, so the fallback is safe.
-      for (const d of applied) {
+      // Witness the reactions that will ACTUALLY FIRE. A GM target removal
+      // prunes the ones it made moot (see dropGmRemovedReactions), and those
+      // never reach RESOLVE — so revealing them would write a monster's page
+      // from an ability nobody ended up using. Same pure function the mutation
+      // pass applies, so the two verdicts cannot disagree.
+      const witnessable = dropGmRemovedReactions(
+        applied, liveAr?.gmOverride ?? null, liveAr?.attacker?.tokenUuid ?? null).kept;
+      for (const d of witnessable) {
         const cand = candFor(d);
         if (!cand) continue;
         const reactorRef = cand.reactorTokenUuid
@@ -5902,6 +5935,8 @@ const Confirm = {
       let accuracyOverride = null;
       let costOverride = null;
       let negated = false;
+      // See the stamp below — null until the mutation pass reports what it ran.
+      let acceptedAfterGm = null;
       try {
         const { applyTargetSetMutation, buildCheckAdjustedEvents } = await import("./card-mutations.js?cb=" + Date.now());
         const r = await applyTargetSetMutation({
@@ -5926,6 +5961,10 @@ const Confirm = {
           if ((rollChanged || r.gmDamageApplied) && r.recomputedDamage) recomputedHeadlineDamage = r.recomputedDamage;
           accuracyOverride = r.accuracyOverride ?? null;
           costOverride = r.costOverride ?? null;
+          if (Array.isArray(r.acceptedAfterGm)) acceptedAfterGm = r.acceptedAfterGm;
+          if (r.gmDroppedReactions?.length) {
+            log(`CONFIRM: ${r.gmDroppedReactions.length} accepted reaction(s) dropped by a GM target removal`);
+          }
           if (r.mutationsApplied > 0 || negated) {
             log(`CONFIRM: target-set mutation — ${r.mutationsApplied} applied${negated ? "; NEGATED" : ""}`);
           }
@@ -6054,7 +6093,12 @@ const Confirm = {
         ...(studyTierPatch ? studyTierPatch : {}),
         ...(recomputedHeadlineDamage ? { damage: recomputedHeadlineDamage } : {}),
         ...(newDamageType ? { damageType: newDamageType } : {}),
-        acceptedCardReactions: applied,
+        // The list the mutation pass actually RAN, not the one we handed it: a
+        // GM target removal prunes candidates whose reactor (or whose every
+        // subject) is no longer on this action, and RESOLVE fires from this
+        // field. Stamping the unpruned list would charge a reactor for
+        // defending against an action that no longer touches them.
+        acceptedCardReactions: acceptedAfterGm ?? applied,
         evaluatedCardReactions: evaluated,
         accuracyOverride,
         // MERGE, not assign: COMPUTE may have pre-composed this skill's own

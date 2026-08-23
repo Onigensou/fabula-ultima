@@ -28,6 +28,12 @@
  *   - Passive trigger fires (firePassiveTriggers)
  *   - Reaction matching
  *
+ * Both simulate entry points accept `gmOverride` — a manual GM card-override bag
+ * (see gm-card-override.js). It is committed through the same shared entrypoint
+ * the real CONFIRM uses, so a suite can assert what a GM edit actually DOES at
+ * RESOLVE (damage applied, statuses handed out, a removed creature untouched)
+ * rather than only what the bag or the recompute contains.
+ *
  * `runDirectorSkillSimulate(...)` extends compute with RESOLVE under
  * monkey-patched Foundry document prototypes that capture (not commit)
  * every write. Phase 2 args:
@@ -1461,6 +1467,9 @@ async function runDirectorSkillCompute({
   // never dispatch — the goal is the resulting actionResult.
   const enqueued = [];
   const dispatched = [];
+  // Adopts the caller's combat when a simulate is already running (nested), so
+  // one turn means one tally; otherwise publishes its own and tears it down.
+  const harnessCombat = installHarnessCombat(1, attackerSnap?.actorId ?? null);
   const synthDirector = {
     ctx: {
       declaredCommand: ar.skillType?.toLowerCase() === "spell" ? "Spell" : "Skill",
@@ -1469,7 +1478,15 @@ async function runDirectorSkillCompute({
       eligibleTargets: targetSnaps,
       actionResult: ar,
     },
-    dCombat: { round: 1 },
+    // The FORMULAS' channel, not just the director's — see installHarnessCombat.
+    // COMPUTE resolves damage/accuracy formulas through buildPerTarget, so
+    // IS_MY_TURN and MP_SPENT_THIS_TURN are live here. Leaving it a bare
+    // `{ round: 1 }` made the two documented harnesses disagree: compute read
+    // `.current` as undefined -> IS_MY_TURN 0 -> an `== 0` gate (Viper Bone's
+    // off-turn +5) TRUE, while the simulate answered 1 and withheld it. Same
+    // action, two damage numbers, and the more-used entry point held the
+    // permissive answer.
+    dCombat: harnessCombat.dCombat,
     state: STATES.COMPUTE,
     enqueue(intent) { enqueued.push(intent); },
     dispatch(intent) { dispatched.push(intent); },
@@ -1477,6 +1494,7 @@ async function runDirectorSkillCompute({
 
   const computeHandler = STATE_HANDLERS[STATES.COMPUTE];
   if (!computeHandler?.onEnter) {
+    harnessCombat.restore();
     return { ok: false, reason: "compute_handler_missing" };
   }
 
@@ -1521,6 +1539,9 @@ async function runDirectorSkillCompute({
     rollOverride.restore();
     formulaOverrides.restore();
     headlessGates.restore();
+    // No-op when a simulate is already running (the install ADOPTED its combat
+    // and the outer call owns teardown) — so this is safe on both paths.
+    harnessCombat.restore();
   }
 
   const finalAr = synthDirector.ctx.actionResult;
@@ -1623,8 +1644,20 @@ function _looksCaptured(fn) {
 // is now load-bearing in PLAY: list-picker.js auto-picks under it, so a leaked
 // flag would turn real player menus into silent first-option picks.
 const _HARNESS_GLOBALS = ["__FU_HARNESS_HEADLESS__", "__FU_HARNESS_ACCEPT_PASSIVES__", "__FU_HARNESS_FORMULA_OVERRIDES__"];
+// `__fudActiveDCombat` is shared with LIVE PLAY — a real DirectorCombat owns the
+// same key — so it can only be cleared on IDENTITY, never on presence. A
+// simulate that dies without its finally (client reload, discarded tab) leaves a
+// harness stub published, and every IS_MY_TURN / MP_SPENT_THIS_TURN /
+// HITS_ON_TARGET_THIS_TURN in live play then reads a dead object until the next
+// director boot. The tag is what makes that detectable without endangering a
+// real combat.
+function _strandedHarnessCombat() {
+  return globalThis.__fudActiveDCombat?.__isHarnessCombat === true;
+}
 function _staleHarnessGlobals() {
-  return _HARNESS_GLOBALS.filter((k) => globalThis[k] !== undefined);
+  const out = _HARNESS_GLOBALS.filter((k) => globalThis[k] !== undefined);
+  if (_strandedHarnessCombat()) out.push("__fudActiveDCombat");
+  return out;
 }
 function harnessWriteCaptureState() {
   const { ActorCls, ItemCls, AECls } = _docClasses();
@@ -1646,7 +1679,14 @@ function healHarnessWrites() {
   // as dangerous as the prototype patch now that the picker reads one of them.
   const clearedGlobals = [];
   if (_captureDepth === 0) {
-    for (const k of _staleHarnessGlobals()) { delete globalThis[k]; clearedGlobals.push(k); }
+    for (const k of _staleHarnessGlobals()) {
+      // Guarded again at the delete: `_staleHarnessGlobals` only lists
+      // `__fudActiveDCombat` when it is a harness stub, but this loop is the one
+      // that actually removes it and must not depend on that being remembered.
+      if (k === "__fudActiveDCombat" && !_strandedHarnessCombat()) continue;
+      delete globalThis[k];
+      clearedGlobals.push(k);
+    }
   }
   if (!st.actorPatched && !st.itemPatched && !st.aePatched) {
     return { healed: clearedGlobals.length > 0, clearedGlobals, reason: clearedGlobals.length ? "cleared stale globals" : "not patched", state: harnessWriteCaptureState() };
@@ -2302,17 +2342,28 @@ async function runDirectorSkillSimulate(args = {}) {
     ? freezeActionResult({ ...compute.actionResult, ...arPatch })
     : compute.actionResult;
 
+  // ONE combat for the whole simulate, INSTALLED (not merely constructed) —
+  // see installHarnessCombat. Hoisted above the reaction pre-pass so that pass
+  // is covered too: it used to build a throwaway inline, which left the READ
+  // channel pointing at whatever the page held (the live combat, when one is
+  // booted) for the pre-pass only — the same scenario answering two different
+  // ways depending on which simulate entry point you called.
+  const roundS = Number.isFinite(args.round) ? args.round : 1;
+  const actingActorId = ar?.attacker?.actorId
+    ?? (await fromUuid(args.casterTokenUuid).then((d) => d?.actor?.id ?? null).catch(() => null));
+  const harnessCombat = installHarnessCombat(roundS, actingActorId);
+  let combatPublished = false, combatTally = {};
+
   // Pre-pass aggregator — same as the attack simulator. Lets damage-bearing
   // Skills validate Cheap Shot-style reactions (`creature_will_deal_damage`
   // + `add_damage`) without driving the live action-card click flow.
   if (args.acceptReactions) {
     try {
-      const round0 = Number.isFinite(args.round) ? args.round : 1;
       const attackerActor = await fromUuid(args.casterTokenUuid).then((d) => d?.actor ?? null).catch(() => null);
       if (attackerActor) {
         ar = await applyAcceptedReactionsToActionResult({
           ar, attackerActor, accept: args.acceptReactions, picks: Array.isArray(args.picks) ? args.picks : null,
-          dCombat: { round: round0, currentTurnResolved: false },
+          dCombat: harnessCombat.dCombat,
           deps,
         });
       }
@@ -2333,7 +2384,7 @@ async function runDirectorSkillSimulate(args = {}) {
   const round = Number.isFinite(args.round) ? args.round : 1;
   const synthDirector = {
     ctx: { actionResult: ar, _resumedFromPendingAction: true /* skip persistence save */ },
-    dCombat: { round, currentTurnResolved: false },
+    dCombat: harnessCombat.dCombat,
     state: STATES.RESOLVE,
     enqueue() {},
     dispatch() {},
@@ -2356,6 +2407,9 @@ async function runDirectorSkillSimulate(args = {}) {
       restore();
       passiveAcceptor.restore();
       headlessGates.restore();
+      combatPublished = harnessCombat.published();
+      combatTally = harnessCombat.snapshot();
+      harnessCombat.restore();
       await seeded.cleanup();
       await preApplied.cleanup();
       formulaOverrides.restore();
@@ -2374,6 +2428,10 @@ async function runDirectorSkillSimulate(args = {}) {
     restore();
     passiveAcceptor.restore();
     headlessGates.restore();
+    // Sampled BEFORE the restore — afterwards the global points elsewhere.
+    combatPublished = harnessCombat.published();
+    combatTally = harnessCombat.snapshot();
+    harnessCombat.restore();
     await seeded.cleanup();
     await preApplied.cleanup();
     formulaOverrides.restore();
@@ -2383,6 +2441,11 @@ async function runDirectorSkillSimulate(args = {}) {
     ok: !resolveError,
     actionResult: ar,
     summary: compute.summary,
+    // Per-turn tally + whether the channel the FORMULAS read was wired to it.
+    // Assertable, because a write-only tally reads 0 and a suite would record
+    // the un-bonused number as correct.
+    hitsOnTargets: combatTally,
+    dCombatPublished: combatPublished,
     captures,
     perActorWrites: summarizeWrites(captures),
     preApplied: preApplied.created,
@@ -2422,6 +2485,14 @@ async function runDirectorAttackCompute({
   pendingPasses = null, passIndex = 0, totalPasses = null,
   depsToken = null,   // batch reuse — see loadDeps
 } = {}) {
+  // The stranded-harness-state guard every other public entry point carries.
+  // It matters more since installHarnessCombat started ADOPTING an already-
+  // published harness combat: without the heal, a standalone call after a
+  // crashed simulate would adopt that DEAD object — and because the adopted
+  // handle's restore() is a no-op, the strand would survive this call too.
+  // IS_MY_TURN would then compare the real attacker against the previous
+  // run's acting actor and answer the permissive 0.
+  const _wg = _guardWrites("runDirectorAttackCompute");
   if (!game.user?.isGM) return { ok: false, reason: "gm_only" };
   if (!attackerTokenUuid || !Array.isArray(targetTokenUuids) || !targetTokenUuids.length) {
     return { ok: false, reason: "missing_args",
@@ -2487,6 +2558,9 @@ async function runDirectorAttackCompute({
     queue = [fallback];
   }
 
+  // Same reason as the skill compute — see installHarnessCombat. Adopts a
+  // running simulate's combat when nested.
+  const harnessCombat = installHarnessCombat(1, attackerSnap?.actorId ?? null);
   const synthDirector = {
     ctx: {
       declaredCommand: "Attack",
@@ -2498,7 +2572,15 @@ async function runDirectorAttackCompute({
       passIndex,
       totalPasses: Number.isFinite(totalPasses) ? totalPasses : queue.length,
     },
-    dCombat: { round: 1 },
+    // The FORMULAS' channel, not just the director's — see installHarnessCombat.
+    // COMPUTE resolves damage/accuracy formulas through buildPerTarget, so
+    // IS_MY_TURN and MP_SPENT_THIS_TURN are live here. Leaving it a bare
+    // `{ round: 1 }` made the two documented harnesses disagree: compute read
+    // `.current` as undefined -> IS_MY_TURN 0 -> an `== 0` gate (Viper Bone's
+    // off-turn +5) TRUE, while the simulate answered 1 and withheld it. Same
+    // action, two damage numbers, and the more-used entry point held the
+    // permissive answer.
+    dCombat: harnessCombat.dCombat,
     state: STATES.COMPUTE,
     enqueue() {},
     dispatch() {},
@@ -2523,6 +2605,8 @@ async function runDirectorAttackCompute({
     });
   } finally {
     rollOverride.restore();
+    // No-op when nested inside a simulate — see the skill compute above.
+    harnessCombat.restore();
   }
 
   const finalAr = synthDirector.ctx.actionResult;
@@ -2535,6 +2619,141 @@ async function runDirectorAttackCompute({
     pendingPasses: synthDirector.ctx.pendingPasses,
     nextPassIndex: synthDirector.ctx.passIndex,
     totalPasses: synthDirector.ctx.totalPasses,
+  };
+}
+
+// Per-turn, per-target landed-hit tally — the same contract DirectorCombat
+// exposes (director-combat.js). RESOLVE bumps it for every genuinely hit target
+// behind a `director.dCombat && ...` guard, which a bare `{ round }` object
+// PASSES while having no such method — so every attack RESOLVE in this harness
+// threw `addHitOnTarget is not a function` the moment any target was hit, and
+// the only attack that could complete was one that hit nothing. Measured
+// 2026-08-23: the baseline two-target simulate failed with damage already
+// written, i.e. the failure looked like a mid-resolve abort rather than a
+// missing stub.
+//
+// Implemented rather than stubbed empty, so a bonus that READS the tally
+// (Champion Gloves / Hot Pants) behaves in a simulate the way it behaves at the
+// table — which needs `installHarnessCombat` below, NOT this object alone.
+//
+// 🪤 The writer and the reader are on DIFFERENT CHANNELS. RESOLVE writes through
+// `director.dCombat.addHitOnTarget(...)`, but the formula reads
+// `globalThis.__fudActiveDCombat?.hitsOnTargetThisTurn?.(...)` (skill-formulas.js,
+// HITS_ON_TARGET_THIS_TURN). Giving the synth director a tally and stopping
+// there produces a write-only counter: the bonus reads `undefined`, `?? 0`
+// yields 0, and the suite records the UN-bonused number as correct — the
+// harness-fails-permissive shape this project keeps getting bitten by. Worse if
+// the real Battle Director is booted in the same page: the global then points at
+// the LIVE combat, so the formula reads a tally the harness never wrote and
+// never resets.
+function makeHarnessCombat(round = 1, actingActorId = null) {
+  const hitsOnTargets = new Map();
+  const mpSpentOnSpells = new Map();
+  return {
+    round,
+    currentTurnResolved: false,
+    // Tag, so `healHarnessWrites` can clear a STRANDED publish (a simulate that
+    // died without its finally) without ever touching a real DirectorCombat,
+    // which legitimately owns this same global key.
+    __isHarnessCombat: true,
+
+    // ── The whole `__fudActiveDCombat` contract, deliberately ───────────────
+    //
+    // THREE formula identifiers read this global, not one:
+    //   HITS_ON_TARGET_THIS_TURN → hitsOnTargetThisTurn()
+    //   MP_SPENT_THIS_TURN       → spellMpSpentThisTurn()
+    //   IS_MY_TURN               → .current
+    //
+    // Publishing an object that answers only the first makes the other two
+    // resolve `undefined` → 0, and for `IS_MY_TURN` that is the PERMISSIVE
+    // answer: Viper Bone is authored `IS_MY_TURN == 0` (+5 while it is NOT your
+    // turn), so a partial stub would hand the acting creature an off-turn bonus
+    // in every simulate and the suite would record it as correct. Owning the key
+    // means owning all of it.
+    get current() {
+      // A simulate resolves ONE creature's action, so it is that creature's
+      // turn by construction. The shape matches DirectorCombat's combatant —
+      // IS_MY_TURN reads `.actorId` off it.
+      return actingActorId ? { actorId: actingActorId } : null;
+    },
+    addSpellMpSpent(actorId, amount) {
+      const n = Number(amount) || 0;
+      if (!actorId || n <= 0) return;
+      mpSpentOnSpells.set(actorId, (mpSpentOnSpells.get(actorId) ?? 0) + n);
+    },
+    spellMpSpentThisTurn(actorId) {
+      return actorId ? (mpSpentOnSpells.get(actorId) ?? 0) : 0;
+    },
+    resetSpellMpSpent(actorId) {
+      if (actorId) mpSpentOnSpells.delete(actorId);
+    },
+
+    addHitOnTarget(actorId, targetTokenUuid) {
+      if (!actorId || !targetTokenUuid) return;
+      const k = `${actorId}::${targetTokenUuid}`;
+      hitsOnTargets.set(k, (hitsOnTargets.get(k) ?? 0) + 1);
+    },
+    hitsOnTargetThisTurn(actorId, targetTokenUuid) {
+      if (!actorId || !targetTokenUuid) return 0;
+      return hitsOnTargets.get(`${actorId}::${targetTokenUuid}`) ?? 0;
+    },
+    resetHitsOnTargets(actorId) {
+      if (!actorId) return;
+      const prefix = `${actorId}::`;
+      for (const k of [...hitsOnTargets.keys()]) if (k.startsWith(prefix)) hitsOnTargets.delete(k);
+    },
+    // Harness-only readouts — NOT part of the DirectorCombat contract.
+    snapshotHits() { return Object.fromEntries(hitsOnTargets); },
+    snapshotSpellMp() { return Object.fromEntries(mpSpentOnSpells); },
+  };
+}
+
+// Publish a harness combat on the channel the FORMULAS read, and hand back a
+// restore. Symmetric with installWriteCaptures / installFormulaOverrides, and
+// restored in the same `finally` — a leaked global would leave every later
+// formula in the page reading a dead simulate's tally.
+function installHarnessCombat(round = 1, actingActorId = null) {
+  // NESTED installs ADOPT rather than shadow. A simulate calls its own COMPUTE,
+  // and both install — two different objects would mean a tally written during
+  // one being invisible to the other, and the inner restore handing back an
+  // object the outer had already moved past. Adopting keeps one combat per
+  // outermost call, which is what a turn is.
+  const existing = globalThis.__fudActiveDCombat;
+  if (existing?.__isHarnessCombat === true) {
+    return {
+      dCombat: existing,
+      published: () => globalThis.__fudActiveDCombat === existing,
+      snapshot: () => existing.snapshotHits(),
+      snapshotSpellMp: () => existing.snapshotSpellMp(),
+      isMyTurn: (actorId) => String(existing.current?.actorId ?? "") === String(actorId ?? ""),
+      // The OUTER install owns teardown. Restoring here would unpublish the
+      // channel while the outer call is still running.
+      restore() {},
+      adopted: true,
+    };
+  }
+  const dCombat = makeHarnessCombat(round, actingActorId);
+  const prev = globalThis.__fudActiveDCombat;
+  const had = "__fudActiveDCombat" in globalThis;
+  globalThis.__fudActiveDCombat = dCombat;
+  return {
+    adopted: false,
+    dCombat,
+    // Whether the READ channel was still pointing at this object — sampled at
+    // teardown and surfaced on the result, so a suite can assert the wiring
+    // rather than trusting it. A write-only tally is the failure this exists to
+    // make visible.
+    published: () => globalThis.__fudActiveDCombat === dCombat,
+    // The tallies as plain data, for the same reason.
+    snapshot: () => dCombat.snapshotHits(),
+    snapshotSpellMp: () => dCombat.snapshotSpellMp(),
+    // What IS_MY_TURN would answer for this actor — assertable, because the
+    // failure it guards against is a silent 0.
+    isMyTurn: (actorId) => String(dCombat.current?.actorId ?? "") === String(actorId ?? ""),
+    restore() {
+      if (had) globalThis.__fudActiveDCombat = prev;
+      else delete globalThis.__fudActiveDCombat;
+    },
   };
 }
 
@@ -2556,9 +2775,49 @@ async function runDirectorAttackSimulate(args = {}) {
   const headlessGates = installHeadlessGates();
   const { captures, restore } = await installWriteCaptures();
 
+  // `gmOverride` + `acceptReactions` is REFUSED, not silently composed.
+  //
+  // At the table the two are mutually exclusive by construction: CONFIRM's GM
+  // branch is an `else if` on the reaction branch, and when reactions ARE
+  // accepted `applyTargetSetMutation` is called ONCE with both the accepted list
+  // and the bag, composing them in a single pass. This harness would instead run
+  // the reactions first and then a SECOND mutation pass over the already-mutated
+  // result — a composition order that does not exist in play, whose answer the
+  // GM layer's idempotence does not cover (the second pass re-derives from
+  // post-reaction state, not from the frozen rows). A suite passing both would
+  // be testing a pipeline nothing ships. Fail loudly rather than green.
+  if (args.gmOverride && args.acceptReactions) {
+    formulaOverrides.restore();
+    await preApplied.cleanup();
+    passiveAcceptor.restore();
+    headlessGates.restore();
+    restore();
+    return {
+      ok: false,
+      reason: "gmOverride_with_acceptReactions_unsupported",
+      hint: "At a real table these two never compose in this order — CONFIRM runs ONE mutation pass with both. "
+          + "Drive the reaction through the card (verify-gm-*.mjs) instead of stacking them here.",
+    };
+  }
   const passResults = [];
   const renderedCards = [];   // one card per pass (two-weapon → 2)
   let resolveError = null;
+  // ONE combat for the whole simulate. Built per PASS it would reset the
+  // landed-hit tally between a two-weapon main and off hand — which is exactly
+  // the case Champion Gloves ("you already hit this creature this turn") exists
+  // for. At the table `director.dCombat` is one object for the turn, and the
+  // tally is cleared at TURN_START, not per action.
+  const actingActorId = await fromUuid(args.attackerTokenUuid)
+    .then((d) => d?.actor?.id ?? null).catch(() => null);
+  const harnessCombat = installHarnessCombat(round, actingActorId);
+  let combatPublished = false, combatTally = {};
+  // What each of the THREE identifiers on `__fudActiveDCombat` would answer,
+  // sampled before teardown. Surfaced so a suite can assert the contract is
+  // WHOLE: a stub answering only the tally leaves IS_MY_TURN and
+  // MP_SPENT_THIS_TURN resolving 0, and `IS_MY_TURN == 0` (Viper Bone, "+5 while
+  // it is NOT your turn") treats 0 as TRUE — the permissive answer, silently
+  // granting an off-turn bonus in every simulate.
+  let combatContract = null;
 
   try {
     // First pass (or only pass).
@@ -2605,11 +2864,47 @@ async function runDirectorAttackSimulate(args = {}) {
           if (attackerActor) {
             ar = await applyAcceptedReactionsToActionResult({
               ar, attackerActor, accept: args.acceptReactions, picks: Array.isArray(args.picks) ? args.picks : null,
-              dCombat: { round, currentTurnResolved: false },
+              dCombat: harnessCombat.dCombat,
               deps,
             });
           }
         } catch (e) { console.warn(`${TAG} attack acceptReactions threw`, e); }
+      }
+      // ── Manual GM card overrides (gm-card-override.js) ────────────────────
+      //
+      // `args.gmOverride` is a bag exactly as the editor's Save would write it.
+      // Applied through the SAME shared entrypoint the CONFIRM commit uses
+      // (applyTargetSetMutation with an empty accepted list) and written back to
+      // the SAME fields — targets / perTargetResults / hitTokenUuids / roll — so
+      // what RESOLVE sees here is what RESOLVE sees at a real table.
+      //
+      // Without this the whole GM layer was untestable past the card: every
+      // suite stopped at "the bag is right" or "the recompute is right", and a
+      // GM removing a target could have been dropped anywhere between the commit
+      // and the damage loop with nothing to catch it. Mirrors
+      // state-handlers CONFIRM's no-reactions branch line for line; if that
+      // branch grows a field, this must too.
+      if (args.gmOverride) {
+        try {
+          const attackerActor = await fromUuid(args.attackerTokenUuid)
+            .then((d) => d?.actor ?? null).catch(() => null);
+          const withBag = freezeActionResult({ ...ar, gmOverride: args.gmOverride });
+          const cm = await import(`./card-mutations.js?harness=${Date.now()}`);
+          const r = await cm.applyTargetSetMutation({
+            ar: withBag, accepted: [], attackerActor, round,
+          });
+          if (r && !r.cancelled) {
+            ar = freezeActionResult({
+              ...withBag,
+              targets: r.targets ?? withBag.targets ?? null,
+              perTargetResults: r.perTargetResults ?? withBag.perTargetResults ?? null,
+              hitTokenUuids: Array.isArray(r.hitTokenUuids) ? r.hitTokenUuids : (withBag.hitTokenUuids ?? null),
+              ...(r.roll ? { roll: r.roll } : {}),
+              ...((r.gmDamageApplied || r.roll) && r.recomputedDamage ? { damage: r.recomputedDamage } : {}),
+              ...(r.accuracyOverride ? { accuracyOverride: r.accuracyOverride } : {}),
+            });
+          }
+        } catch (e) { console.warn(`${TAG} attack gmOverride commit threw`, e); }
       }
       // Render-capture for this pass (post-roll, pre-RESOLVE). Non-fatal.
       try {
@@ -2618,7 +2913,7 @@ async function runDirectorAttackSimulate(args = {}) {
       } catch (e) { console.warn(`${TAG} attack card capture threw`, e); }
       const synthDirector = {
         ctx: { actionResult: ar, _resumedFromPendingAction: true },
-        dCombat: { round, currentTurnResolved: false },
+        dCombat: harnessCombat.dCombat,
         state: STATES.RESOLVE,
         enqueue() {}, dispatch() {},
       };
@@ -2664,6 +2959,16 @@ async function runDirectorAttackSimulate(args = {}) {
     restore();
     passiveAcceptor.restore();
     headlessGates.restore();
+    // Sampled BEFORE the restore — afterwards the global points elsewhere and
+    // the reading would always be false.
+    combatPublished = harnessCombat.published();
+    combatTally = harnessCombat.snapshot();
+    combatContract = {
+      isMyTurn: harnessCombat.isMyTurn(actingActorId),
+      spellMpSpent: harnessCombat.snapshotSpellMp(),
+      hits: combatTally,
+    };
+    harnessCombat.restore();
     await preApplied.cleanup();
     formulaOverrides.restore();
   }
@@ -2675,6 +2980,12 @@ async function runDirectorAttackSimulate(args = {}) {
     perActorWrites: summarizeWrites(captures),
     preApplied: preApplied.created,
     resolveError,
+    // Per-turn landed-hit tally + whether the channel the FORMULAS read was
+    // actually wired to it. Assertable, because a write-only tally reads 0 and a
+    // suite would record the un-bonused number as correct.
+    hitsOnTargets: combatTally,
+    dCombatPublished: combatPublished,
+    dCombatContract: combatContract,
   }, renderedCards);
 }
 

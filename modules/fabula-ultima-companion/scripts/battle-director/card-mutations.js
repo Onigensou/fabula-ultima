@@ -44,7 +44,7 @@ import { resolvesVsMagicDefense } from "./snapshot.js";
 import {
   composeGmRoll, gmDamageInput, composeGmDefenseOverrides, gmHitOverrideMap,
   applyGmDamageOverrides, recomputeHitTokenUuids, gmOverrideDeltaRows, isGmOverrideEmpty,
-  applyGmTargetRemovals, gmTargetsToAdd,
+  applyGmTargetRemovals, gmTargetsToAdd, dropGmRemovedReactions,
 } from "./gm-card-override.js";
 
 const FLAG_NS = "fabula-ultima-companion";
@@ -1574,6 +1574,20 @@ export async function applyAddTargetSplices(arSnapshot, cands) {
 // harness iteration). Production callers omit it → plain boot-cached imports.
 export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = null, attackerActor = null, round = 0, _cb = null, remotePrompt = null } = {}) {
   const sfx = _cb ? `?cb=${_cb}` : "";
+  // A GM target removal can make an accepted reaction MOOT — see
+  // dropGmRemovedReactions. Applied FIRST, before the card-mutation half runs,
+  // because that half commits its effects here and the RESOLVE half fires from
+  // `acceptedCardReactions`: filtering in only one of the two would leave the
+  // benefit banked and the price still charged, or the reverse. Both halves now
+  // read the same list, and because this is the single entrypoint the card
+  // preview and the CONFIRM commit share, they cannot drift.
+  const gmReactionCut = dropGmRemovedReactions(
+    accepted, ar?.gmOverride ?? null, ar?.attacker?.tokenUuid ?? null);
+  if (gmReactionCut.dropped.length) {
+    log(`GM target edit: ${gmReactionCut.dropped.length} accepted reaction(s) dropped — their reactor or every subject was removed`
+      + ` (${gmReactionCut.dropped.map((c) => c?.carrierName ?? "?").join(", ")})`);
+  }
+  accepted = gmReactionCut.kept;
   const mut = await applyAcceptedCardMutations(ar, accepted, remotePrompt, costOnlyAccepted);
   if (mut.cancelled) return { cancelled: true };
   let mutatedTargets = mut.targets;
@@ -1585,6 +1599,11 @@ export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = 
       ...mut,
       targets: mutatedTargets, perTargetResults,
       accuracyOverride: null, hitTokenUuids: null,
+      // Carried on this path too — CONFIRM reads it unconditionally, and a
+      // negated action that also had a GM removal would otherwise re-admit the
+      // dropped candidates.
+      acceptedAfterGm: gmReactionCut.kept,
+      gmDroppedReactions: gmReactionCut.dropped,
       negated: true, cancelled: false,
     };
   }
@@ -1641,9 +1660,13 @@ export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = 
   let defenseOverrides = (mut.perTargetResults ?? [])
     .filter((p) => p?.defenseOverride)
     .map((p) => ({ tokenUuid: p.tokenUuid, actorUuid: p.actorUuid, ...p.defenseOverride }));
-  // GM-set DEF/MDEF joins the same list (appended last so it wins on a slot a
-  // reaction also bumped) and rides the existing per-target re-apply.
-  if (hasGmOverride) defenseOverrides = composeGmDefenseOverrides(gmOverride, defenseOverrides, mut.perTargetResults ?? []);
+  // GM-set DEF/MDEF joins the same list (composed at its FRONT, so it wins on a
+  // slot a reaction also bumped — the consumer resolves by first match) and
+  // rides the existing per-target re-apply. COMPOSED
+  // BELOW, after the GM target-set edit — it reads each slot's existing row for
+  // the `from` value and the actorUuid, and a GM-ADDED creature has no row in
+  // `mut.perTargetResults` at all. Composing here gave that slot
+  // `actorUuid: null` and a `from` of the placeholder 10.
   // Per-target incoming-damage overrides (adjust_damage / Ninja Log): collected
   // like defenseOverrides and THREADED INTO the recompute so the rebuilt damage
   // is re-soaked, instead of the recompute clobbering the reduction.
@@ -1710,6 +1733,10 @@ export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = 
         mutatedTargets = addedTargets;
         perTargetResults = addedRows;
       }
+      // NOW compose the GM's DEF/MDEF edits — against the POST-edit rows, so a
+      // hand-added creature's slot resolves to its own actorUuid and its own
+      // engine defence rather than to a null actor and a placeholder `from`.
+      defenseOverrides = composeGmDefenseOverrides(gmOverride, defenseOverrides, perTargetResults ?? []);
     }
     const mutatedAr = { ...ar, roll: gmRoll ?? mut.roll ?? ar.roll, targets: mutatedTargets, perTargetResults };
     if (attackerActor) {
@@ -1817,6 +1844,12 @@ export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = 
     // What the GM changed, for the card delta / mirror repaint. Empty when the
     // card was never hand-edited.
     gmOverrideRows,
+    // The accepted list AFTER the GM's removals pruned it. CONFIRM stamps this
+    // onto `acceptedCardReactions`, which is what RESOLVE fires from — stamping
+    // the caller's original list would re-admit exactly the candidates this pass
+    // just refused to run, and RESOLVE would charge for them.
+    acceptedAfterGm: gmReactionCut.kept,
+    gmDroppedReactions: gmReactionCut.dropped,
     accuracyRoll, accuracyIsSpellish,
     // Recomputed headline damage (used by the card when the roll changed — reroll).
     // `mut.roll` (post-mutation roll) rides through the `...mut` spread for HR.
