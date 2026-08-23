@@ -160,7 +160,7 @@ export function buildCases({ rows, ctx }) {
     const ids = Object.keys(gates);
     const payload = payloadForRow(r.raw, ctx, r.weaponUuid);
     cases.push({ key: `${r.name}#${r.row}`, name: r.name, row: r.row, trigger: r.trig,
-                 cond: r.cond, gates, payload, chargeKeys: r.chargeKeys ?? [],
+                 cond: r.cond, gates, payload, chargeKeys: r.chargeKeys ?? [], arcanumUid: r.arcanumUid ?? null, resourceSeeds: r.resourceSeeds ?? [],
                  phase: "pos", override: { ...gates } });
     if (ids.length) {
       // The negative control must actually be able to REFUSE the row.
@@ -175,7 +175,7 @@ export function buildCases({ rows, ctx }) {
       const flipped = isDisjunctive ? ids : [ids[0]];
       for (const id of flipped) neg[id] = gates[id] === 0 ? 1 : 0;
       cases.push({ key: `${r.name}#${r.row}`, name: r.name, row: r.row, trigger: r.trig,
-                   cond: r.cond, gates, payload, chargeKeys: r.chargeKeys ?? [],
+                   cond: r.cond, gates, payload, chargeKeys: r.chargeKeys ?? [], arcanumUid: r.arcanumUid ?? null, resourceSeeds: r.resourceSeeds ?? [],
                    phase: "neg", flipped, override: neg });
     }
   }

@@ -50,6 +50,12 @@ async function evalGM(code, args, timeoutMs = 280000) {
 const DUMP = `
 const a = game.actors.getName(ARGS.who);
 if (!a) return { err: "actor not found" };
+// Resolve resource -> sheet prop through the ENGINE's own registry rather than a
+// copy, so an added resource or alias cannot drift out of sync. Canonical import
+// (no cache-bust): this module is a pure data map, and a ?cb= copy would be a
+// second instance for no gain.
+const RES_MOD = await import("/modules/fabula-ultima-companion/scripts/battle-director/resources.js");
+const RES_DEF = (k) => RES_MOD.resolveResourceDef(k);
 const g = (n) => { const t = canvas.tokens.placeables.find(x => x.actor?.name === n); return t ? { actor: t.actor.uuid, token: t.document.uuid } : null; };
 const rows = [];
 for (const it of a.items) {
@@ -97,7 +103,59 @@ for (const it of a.items) {
       const ck = String(er.charge_key ?? "").trim();
       if (ck && !chargeKeys.includes(ck)) chargeKeys.push(ck);
     }
-    rows.push({ name: it.name, row: k, trig: r.reaction_trigger ?? "", refCond, ref, chargeKeys,
+    // An ARCANUM CHILD's reaction is gated by containerReactionInPlay ->
+    // isArcanumMerged, which is NOT a condition_formula and NOT an equip flag:
+    // it needs a live AE flagged arcanumMerge whose arcanumUniqueId matches the
+    // CONTAINER's system.uniqueId. No pinned identifier can satisfy it, so the
+    // row is dropped BEFORE the match filters and reads NOT_SCANNED -- exactly
+    // like a dead skill. (Avatar of Vengeance Merge/Dismiss read NOT_SCANNED for
+    // four sessions on that basis, and equipping the container does nothing.)
+    // Carry the uid so the probe can seed the merge AE via preApply.
+    // Detected by the child's own arcanum_role prop, so it holds for any future
+    // Arcanum without a hard-coded id.
+    // A row can also be refused by a chain COST the rig cannot satisfy -- the
+    // resource analogue of chargeKeys. Avatar of Vengeance: Dismiss bills
+    // cost_resource zero_power 6 (a FULL Zero Power bar), so it reported
+    // "Low ZERO_POWER" with its gate pinned and scored REFUSED, which is
+    // indistinguishable from a broken condition.
+    //
+    // Deliberately NARROW, so this cannot silently re-score rows that other runs
+    // already measured:
+    //   * LITERAL amounts only -- a formula cost (SL * 10, VAR_OVERCHARGE) is
+    //     skipped rather than guessed at;
+    //   * RAISE-ONLY -- emitted only when the actor is actually short. Seeding a
+    //     resource it already has would LOWER it (Zarg MP 91 -> 10) and change a
+    //     verdict that was never in question.
+    // Measured on the party corpus: 17 carriers declare a resource cost, and
+    // under both guards exactly ONE (Dismiss) is short. Everything else emits
+    // nothing at all.
+    const resourceSeeds = [];
+    for (const er of Object.values(it.system?.props?.effect_table ?? {})) {
+      if (!er || er === "$deleted" || er.$deleted) continue;
+      for (const [rk, ak] of [["cost_resource", "cost_amount"], ["consume_resource", "consume_amount"]]) {
+        const res = String(er[rk] ?? "").trim();
+        const amt = String(er[ak] ?? "").trim();
+        // NOTE: this lives inside a TEMPLATE LITERAL, so the backslash must be
+        // doubled -- a lone \d is swallowed and the regex degrades to /^d+$/,
+        // which matches no number and silently emits no seed at all.
+        if (!res || !/^\\d+$/.test(amt)) continue;
+        const def = RES_DEF(res);
+        if (!def) continue;
+        const need = Number(amt);
+        const cur = Number(a.system?.props?.[def.prop] ?? 0) || 0;
+        if (cur >= need) continue;
+        const prior = resourceSeeds.find((x) => x.prop === def.prop);
+        if (prior) prior.value = Math.max(prior.value, need);
+        else resourceSeeds.push({ prop: def.prop, value: need, resource: def.key, was: cur });
+      }
+    }
+    let arcanumUid = null;
+    if (String(it.system?.props?.arcanum_role ?? "").trim() && it.system?.container) {
+      const arc = a.items.get(it.system.container);
+      const uid = String(arc?.system?.uniqueId ?? "").trim();
+      if (uid) arcanumUid = uid;
+    }
+    rows.push({ name: it.name, row: k, trig: r.reaction_trigger ?? "", refCond, ref, chargeKeys, arcanumUid, resourceSeeds,
       cond: String(r.condition_formula ?? ""), mode: r.reaction_passive_mode ?? "",
       gearLinked: !!it.system?.container, weaponUuid, containerEquipped, raw: r });
   }
@@ -126,9 +184,26 @@ for (const c of ARGS.cases) {
       data: { name: "PV Charge " + key,
               flags: { "fabula-ultima-companion": { chargeKey: key, charges: 9, chargesMax: 9 } } },
     }));
+    // Merged-Arcanum precondition. Seeds ONLY the two flags isArcanumMerged
+    // reads -- deliberately NOT a copy of the authored merge AE, whose own
+    // reactionConfig rows (dismiss_free on turn_start/turn_end) would add
+    // candidates this probe never asked about and muddy the evidence.
+    if (c.arcanumUid) {
+      preApply.push({ targetActorUuid: ARGS.reactorUuid,
+        data: { name: "PV Merge " + c.arcanumUid,
+                flags: { "fabula-ultima-companion":
+                         { arcanumMerge: true, arcanumUniqueId: c.arcanumUid } } } });
+    }
+    // Chain-cost preconditions go through \`seed\` (installSeededProps), which
+    // records the prior value and restores it in finally -- so a raise here
+    // leaves the sheet exactly as it was, the same contract as preApply.
+    const seed = (c.resourceSeeds ?? []).length
+      ? [{ actorUuid: ARGS.reactorUuid,
+           props: Object.fromEntries((c.resourceSeeds ?? []).map((s) => [s.prop, s.value])) }]
+      : null;
     r = await withTimeout(T.probeReactorTrigger({ reactorName: ARGS.who, trigger: c.trigger,
       payloadExtra: c.payload, override: c.override, depsToken: ARGS.tok,
-      preApply: preApply.length ? preApply : null }), ARGS.probeMs ?? 45000, c.key);
+      preApply: preApply.length ? preApply : null, seed }), ARGS.probeMs ?? 45000, c.key);
   } catch (e) { out.push({ key: c.key, phase: c.phase, error: String(e?.message ?? e) }); continue; }
   const hit = (r.candidates ?? []).find(x => x.carrierName === c.name && String(x.rowKey) === String(c.row));
   out.push({ key: c.key, phase: c.phase, scanned: !!hit,
@@ -148,7 +223,7 @@ return { guard, out };
 const SWEEP = `
 const removed = [];
 for (const a of game.actors) for (const e of [...a.effects]) {
-  if (/^PV Charge /.test(e.name ?? "")) { await e.delete(); removed.push(a.name + "/" + e.name); }
+  if (/^PV (Charge|Merge) /.test(e.name ?? "")) { await e.delete(); removed.push(a.name + "/" + e.name); }
 }
 return { removed };
 `;
@@ -224,6 +299,7 @@ for (const r of rowsFiltered) {
   const v = verdictFor(pos, neg, gates.length > 0);
   report.push({ name: r.name, row: r.row, trigger: r.trig, mode: r.mode, gearLinked: r.gearLinked,
     containerEquipped: r.containerEquipped, weaponBacked: !!r.weaponUuid,
+    arcanumUid: r.arcanumUid ?? null, resourceSeeds: r.resourceSeeds ?? [],
     gates, cond: r.cond, ...v,
     pos: pos && { available: pos.available, fired: pos.fired, fireReason: pos.fireReason, why: pos.why, writes: pos.writes },
     neg: neg && { available: neg.available, why: neg.why } });
@@ -238,7 +314,15 @@ for (const r of report.sort((a, b) => a.verdict.localeCompare(b.verdict) || a.na
   console.log(`\n[${r.verdict}] ${r.name} #${r.row}  (${r.trigger}${r.mode ? ", " + r.mode : ""}${r.gearLinked ? ", gear" : ""})`);
   console.log(`    ${r.note}`);
   if (r.gates.length) console.log(`    gates pinned: ${r.gates.join(", ")}`);
-  if (r.containerEquipped === false) console.log(`    !! container is NOT EQUIPPED — containerReactionInPlay gates this out; equip it to probe`);
+  // An ARCANUM child takes containerReactionInPlay's arcanum branch, which
+  // returns isArcanumMerged and never looks at isEquipped — so the equip advice
+  // is not merely noise here, it sends the reader to do something that cannot
+  // work. (Two sessions were spent equipping Avatar of Vengeance on that advice.)
+  if (r.arcanumUid) {
+    console.log(`    ·· arcanum child — gated by isArcanumMerged, NOT by equip; probe seeds the merge AE`);
+  } else if (r.containerEquipped === false) {
+    console.log(`    !! container is NOT EQUIPPED — containerReactionInPlay gates this out; equip it to probe`);
+  }
   if (r.pos?.fireReason) console.log(`    fireReason: ${r.pos.fireReason}`);
   if (r.pos?.writes?.length) console.log(`    writes: ${r.pos.writes.join(" ; ").slice(0, 160)}`);
 }
