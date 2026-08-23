@@ -1,13 +1,13 @@
 ---
 id: 2026-07-28-botc-summon-max
 title: Birth of the Cruel never spawns its minion — summon_max counts phantasms
-status: open
+status: fixed
 severity: blocker
 reporter: onigensou
 assignee: sarunphat
 component: battle-director/skill-effects
 introduced_in: 8b8d6f56
-fixed_in:
+fixed_in: 68c8542c
 ---
 
 # Birth of the Cruel never spawns its minion
@@ -97,3 +97,52 @@ attempts from leaving debris in the world.
   (`09izWspo66G7mMIW`, `Q10cCMKJE6qcBgpt`). The first is recoverable from `3bff986e`.
 - 2026-07-28 (onigensou): skill-regression `check` is 482/482 green against your
   golden, so nothing else moved.
+
+## Notes
+
+**2026-08-23 — fixed in `68c8542c`.** Your root cause was exactly right, and the
+diagnosis held all the way down: `countOwnSummons` counted own summons
+"generally" for a non-phantasm row, so the Fox fire filled BotC's single slot and
+the loop broke before the `summon_overrides` write.
+
+One correction to the scope: it is not only phantasms. Every spawned token
+carries `isSummon`, and a phantasm *or a Numen* carries its identity flag on top
+of that — so Keren's Numen occupied the same slot by the same mechanism. The cap
+is now kind-scoped in all three directions (phantasm rows count own phantasms,
+Numen rows own Numen, a plain row counts own summons that are neither).
+
+Deliberately NOT changed: `ownSummonCount` in `skill-formulas.js`, which the old
+comment claimed this mirrored. That one powers the authored identifier
+`OWN_SUMMON_COUNT` and is meant to be a total including phantasms, with
+`OWN_PHANTASM_COUNT` / `OWN_NUMEN_COUNT` as its narrowed siblings. A per-row cap
+and a corpus-wide total are different questions, and merging them is what caused
+this. Blast radius of the change is exactly BotC: across the whole authored
+corpus the only capped rows are the phantasm rows (max 3, untouched branch) and
+BotC's plain max 1.
+
+**Your junk actor is a second, separate defect, now also closed.** The clone path
+`Actor.create()`s the persisted `(Reanimated)` actor while BUILDING the spawn
+plan; the cap check runs in the loop after it. So even a *legitimate* cap-out
+orphaned a world actor — which is also one source of the leftovers in
+`2026-07-31-reanimated-actors-shipped-as-content`. A full cap is now detected
+before anything is created, and a cap that fills part-way through deletes the
+surplus clones by the ids that call created (never by name — that would reap a
+standing ally from an earlier battle).
+
+Verified live on the Training Ground, each run deleting every id it created
+(post-run residue: 0 actors, 0 tokens):
+
+| precondition | result |
+|---|---|
+| Keren has a PHANTASM out | `ok:true`, spawns `Test Target Enemy (Reanimated)` — was `reason:"summon_max"` |
+| Keren has a PLAIN summon out | `reason:"summon_max"`, **0** new actors — cap holds, no orphan |
+| overrides on a non-soldier source | `species` ELEMENTAL→UNDEAD, `npc_rank` set, `current_hp` 34 = `floor(69*0.5)` |
+
+⚠ **One residual, pre-existing and separate — flagging rather than folding in.**
+`max_hp` does NOT persist on the spawned clone (measured 69, override wanted 34)
+even though `current_hp` from the same formula does. That is the known CSB
+max-resource label staleness — `max_*` are computed label fields that persist
+only on a sheet render — not the cap. Your original figures (`max_hp: 178`,
+expected ~89) are consistent with that, so the minion may still read with the
+corpse's max HP until its sheet is rendered. Worth its own report if it bites in
+play; I did not want to claim it fixed under this one.

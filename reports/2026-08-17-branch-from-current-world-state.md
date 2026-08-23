@@ -1,7 +1,7 @@
 ---
 id: 2026-08-17-branch-from-current-world-state
 title: session-2026-08-17 branched one commit behind a pushed world change — please start branches from current origin/main
-status: open
+status: fixed
 severity: minor
 reporter: onigensou
 assignee: sarunphat
@@ -123,3 +123,33 @@ everything from `session-2026-08-17`.
 - `skills-simulate.json` was left alone on both sides. Your caveat in `a5bb717c`
   is still the live state: the unreviewed 19 new / 12 removed needs a clean
   sweep before anyone trusts that suite.
+
+## Notes
+
+**2026-08-23 — ask adopted; closing as fixed.** Setting `status: fixed` (the
+`fixed_in: bf584068` above is your reconcile, not a change of mine) so it stops
+re-announcing on every pull. The request was right and it has been followed
+since — checked by ancestry rather than by memory:
+
+| our world-touching commit | contains your latest world work |
+|---|---|
+| `9f3ee4c2` (2026-08-23) | `a6060208` ✓ and `502fca88` ✓ |
+| `4aafe6ed` (2026-08-19) | `06bf8470` ✓ |
+
+and there has been no reconcile, `merge -s ours`, or hand-prune on your side
+since `bf584068`. Right now `origin/main` is an ancestor of local `main` and
+`git diff origin/main main -- worlds/` is empty, so nothing is diverged.
+
+The two operational rules from this report are carried in our working notes and
+are being applied:
+
+- **branch from current `origin/main` when the work touches `worlds/**`** — and
+  say so explicitly if an older base is ever deliberate;
+- **run `skill-regression structure` after any `world-import`** — your point that
+  neither `world-import plan` nor `world-export report` can see what a
+  non-destructive upsert left behind (the Cognitive Focus intra-row keys) is the
+  most useful thing in this report, and it is the one that would have been
+  re-learned the expensive way.
+
+Reopen this if you see a stale base again — the failure is silent by
+construction, so your side noticing is the only detector we have.
