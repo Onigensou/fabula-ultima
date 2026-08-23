@@ -8962,9 +8962,10 @@ async function applySummonEffect(row, ctx) {
   const asPhantasm = summonType === "phantasm";
   const asNumen = summonType === "numen";
   // summon_max — optional hard cap on how many of THIS kind the caster may have
-  // on the field at once. Empty/0/absent = unlimited. Phantasm rows count only
-  // own isPhantasm tokens (so the Numen — a full own-turn summon — is excluded);
-  // non-phantasm rows count own summons generally. This is the authoritative
+  // on the field at once. Empty/0/absent = unlimited. Each kind counts only its
+  // own: phantasm rows count own isPhantasm tokens, Numen rows own isNumen, and a
+  // plain row counts own summons that are NEITHER — one kind can never eat
+  // another's slot (see countOwnSummons). This is the authoritative
   // backstop for the Create Phantasm 3-Phantasm cap; the menu also dims the
   // "Create a new Phantasm" option via OWN_PHANTASM_COUNT so MP isn't wasted.
   const summonMax = Math.max(0, Number(row.summon_max ?? 0) || 0);
@@ -9093,10 +9094,22 @@ async function applySummonEffect(row, ctx) {
   // Canonical import (no cache-bust) — director-init isn't the unit under edit.
   const { spawnLiveDirectorTokens } = await import("./director-init.js");
 
-  // summon_max cap — count how many of this kind the caster already has out, so
-  // the spawn loop can stop at the limit. Mirrors ownSummonCount in
-  // skill-formulas.js: phantasm rows count own isPhantasm tokens; others count
-  // own summons generally.
+  // summon_max cap — count how many of THIS KIND the caster already has out, so
+  // the spawn loop can stop at the limit.
+  //
+  // Kind-scoped in all three directions, which is the whole point of the cap:
+  // every spawned token carries `isSummon`, and a phantasm or a Numen carries its
+  // own identity flag ON TOP of it. So "count own summons generally" — what this
+  // did for a non-phantasm row — let a DIFFERENT kind occupy the slot. Keren
+  // reliably has a Fox fire phantasm out from Create Phantasm, and it filled
+  // Birth of the Cruel's single `summon_max: 1`, so BotC could never spawn its
+  // minion (report 2026-07-28-botc-summon-max). Her Numen did the same thing.
+  //
+  // ⚠ NOT the same function as `ownSummonCount` in skill-formulas.js, which this
+  // used to say it mirrored. That one powers the authored identifier
+  // OWN_SUMMON_COUNT and is deliberately "live summons INCL. phantasms" — a
+  // total, with OWN_PHANTASM_COUNT / OWN_NUMEN_COUNT as its narrowed siblings.
+  // A per-row cap and a corpus-wide total are different questions; leave it be.
   const countOwnSummons = () => {
     if (!summonerUuid) return 0;
     let n = 0;
@@ -9106,7 +9119,8 @@ async function applySummonEffect(row, ctx) {
       const f = td.flags?.[FLAG_NS] ?? {};
       if (String(f.summonedBy ?? "") !== summonerUuid) continue;
       if (asPhantasm) { if (f.isPhantasm) n++; continue; }
-      if (f.isSummon || f.isPhantasm) n++;
+      if (asNumen)    { if (f.isNumen)    n++; continue; }
+      if (f.isSummon && !f.isPhantasm && !f.isNumen) n++;
     }
     return n;
   };
@@ -9118,7 +9132,21 @@ async function applySummonEffect(row, ctx) {
   // fixed path this is the resolved summon_actor refs; for the clone path it's a
   // freshly-created persistent clone per target_ref-resolved source actor.
   const spawnPlan = [];
-  if (cloneTarget) {
+  // A cap that is ALREADY full has to be detected before the plan is built, not
+  // inside the spawn loop below it. The clone path `Actor.create()`s a persisted
+  // "<name> (Reanimated)" world actor while building the plan; the loop's cap
+  // check runs after, so a capped-out clone summon left that actor behind
+  // forever — unspawned, unreferenced, and carrying none of `summon_overrides`
+  // because execution broke before the override write. That junk actor is the
+  // symptom reported in 2026-07-28-botc-summon-max.
+  //
+  // Building nothing also skips the ref resolution on the fixed path, which is
+  // pure waste at a full cap. `cappedOut` still routes to the same limit notice
+  // and the same `{ ok:false, reason:"summon_max" }` the loop would have given.
+  const capAlreadyFull = !!summonMax && liveCount >= summonMax;
+  if (capAlreadyFull) {
+    cappedOut = true;
+  } else if (cloneTarget) {
     // Resolve the actors to clone from this row's target_ref (e.g. trigger_subject).
     let srcTokens = [];
     try { srcTokens = (await resolveTargetRef(row.target_ref, ctx))?.tokens ?? []; }
@@ -9258,9 +9286,27 @@ async function applySummonEffect(row, ctx) {
       }
       applied.push({ actor: actor.name, tokenUuid: tokenDoc.uuid, combatantId: c?.id ?? null, side, actThisRound, asPhantasm, ...(unit.cloneUuid ? { clone: true } : {}) });
       spawnedDocs.push(tokenDoc);
+      unit._spawned = true;
       liveCount++;
     }
     if (cappedOut) break;
+  }
+
+  // The guard above catches a cap that was ALREADY full; this catches one that
+  // fills PART-WAY through the plan — several clone sources, or summon_count > 1
+  // with fewer slots than that. Those surplus clones are persisted world actors
+  // that nothing spawned and nothing references, so they are junk of exactly the
+  // same kind. Deleted by the ids THIS call created (`unit.cloneUuid`) and never
+  // by name or predicate — a name match would reap a legitimate standing ally
+  // from an earlier battle.
+  for (const unit of spawnPlan) {
+    if (!unit.cloneUuid || unit._spawned) continue;
+    try {
+      const doc = await fromUuid(unit.cloneUuid).catch(() => null);
+      if (doc?.documentName !== "Actor") continue;
+      await doc.delete();
+      log(`skill-effects.summon: deleted unspawned clone "${doc.name}" — the cap filled before it could spawn`);
+    } catch (e) { warn(`skill-effects.summon: unspawned-clone cleanup failed for ${unit.cloneUuid}`, e); }
   }
 
   // Surface the cap to the player when nothing spawned because the limit was
