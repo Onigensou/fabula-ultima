@@ -5887,8 +5887,16 @@ const Confirm = {
       // never reach RESOLVE — so revealing them would write a monster's page
       // from an ability nobody ended up using. Same pure function the mutation
       // pass applies, so the two verdicts cannot disagree.
+      // Both target lists are handed over: `liveAr` may already have had the
+      // removal applied, and a token missing from the map cannot be matched to
+      // an actor-keyed candidate — the frozen `ar` still carries the slot.
       const witnessable = dropGmRemovedReactions(
-        applied, liveAr?.gmOverride ?? null, liveAr?.attacker?.tokenUuid ?? null).kept;
+        applied, liveAr?.gmOverride ?? null, liveAr?.attacker?.tokenUuid ?? null,
+        {
+          targets: [...(liveAr?.targets ?? []), ...(ar?.targets ?? [])],
+          attackerActorUuid: liveAr?.attackerActorRef ?? ar?.attackerActorRef
+            ?? liveAr?.attacker?.actorUuid ?? null,
+        }).kept;
       for (const d of witnessable) {
         const cand = candFor(d);
         if (!cand) continue;

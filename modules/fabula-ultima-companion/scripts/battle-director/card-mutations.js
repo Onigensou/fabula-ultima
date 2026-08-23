@@ -1581,8 +1581,20 @@ export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = 
   // benefit banked and the price still charged, or the reverse. Both halves now
   // read the same list, and because this is the single entrypoint the card
   // preview and the CONFIRM commit share, they cannot drift.
+  // `ar.targets` is still the PRE-removal list here (this runs at the top, and
+  // applyGmTargetRemovals only fires inside the recompute below), which is what
+  // makes the token→actor map able to judge an actor-keyed candidate at all.
   const gmReactionCut = dropGmRemovedReactions(
-    accepted, ar?.gmOverride ?? null, ar?.attacker?.tokenUuid ?? null);
+    accepted, ar?.gmOverride ?? null, ar?.attacker?.tokenUuid ?? null,
+    {
+      targets: ar?.targets ?? null,
+      attackerActorUuid: ar?.attackerActorRef ?? ar?.attacker?.actorUuid ?? null,
+    });
+  if (gmReactionCut.unclassified?.length) {
+    warn(`GM target edit: reaction trigger(s) [${gmReactionCut.unclassified.join(", ")}] are not in `
+      + `GM_REMOVAL_MOOT_RULE (gm-card-override.js) — judged by the conservative fallback. `
+      + `Classify them so a removal prunes deliberately rather than by default.`);
+  }
   if (gmReactionCut.dropped.length) {
     log(`GM target edit: ${gmReactionCut.dropped.length} accepted reaction(s) dropped — their reactor or every subject was removed`
       + ` (${gmReactionCut.dropped.map((c) => c?.carrierName ?? "?").join(", ")})`);

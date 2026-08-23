@@ -668,43 +668,143 @@ export function reduceGmTargetRows(rows) {
 // so its effects landed on it too. Half-applied in the worst direction: the
 // price charged, the reason gone.
 //
-// TWO rules, both keyed on the GM's explicit removal and nothing else:
+// ── The question this asks, and why it is the TRIGGER's ──────────────────────
 //
-//   · the REACTOR is a creature the GM removed — its reason to react is gone
-//   · every target the candidate `appliesToTargetUuids` was removed — the
-//     hit-gated families (Warning Shot, Cheap Shot) already refuse to fire on an
-//     empty list at RESOLVE; this makes the list empty for the right reason
-//     instead of leaving a stale one populated
+// "Is this reaction still justified?" is answered by the trigger it fired on,
+// NOT by whether its reactor happens to appear in the removed set. Keying on
+// token membership got both interesting cases backwards:
 //
-// Deliberately NOT "any reaction on a card the GM edited": a performer-side
-// reaction (Hawkeye on the attacker) and a third-party one whose reactor is
-// still in play are unaffected by a removal elsewhere, and dropping those would
-// be the availability bypass this layer is forbidden from adding.
+//   · OVER-prune — a third-party reactor (Protect, Verónica, any bystander)
+//     who is COINCIDENTALLY also a target of the same multi-target action. Its
+//     reason to react is that its ALLY was targeted; taking the reactor off the
+//     action does not un-target the ally, so the reaction still stands.
+//   · UNDER-prune — a Protect whose DEFENDED creature was removed. The reactor
+//     (the protector) is untouched and Protect sets no `appliesToTargetUuids`,
+//     so neither old rule reached it: the protector kept paying to intercept an
+//     attack that no longer went anywhere.
 //
-// ⚠ Known gap: a Protect whose DEFENDED creature was removed. Protect sets
-// neither `appliesToTargetUuids` nor a reactor inside the removed set (its
-// reactor is the protector), so neither rule reaches it.
-export function dropGmRemovedReactions(accepted, gmOverride, attackerTokenUuid = null) {
+// Both are the same mistake — reading the reactor when the trigger's subject is
+// what carries the reason. So this classifies by `phaseTrigger` (stamped by
+// state-handlers' addCardReactions and carried onto the decision objects):
+//
+//   creature_targeted_by_action  →  drop iff the SUBJECT was removed. The
+//        subject IS the reason ("X was targeted"). Covers the self-defence
+//        shape (Ninja Log: reactor === subject) and Protect (reactor ≠ subject)
+//        through one rule.
+//   creature_will_deal_damage    →  drop iff EVERY subject in the candidate's
+//        list was removed. The hit-gated families (Warning Shot, Cheap Shot)
+//        already refuse an empty list at RESOLVE; this empties it for the right
+//        reason instead of leaving a stale one populated.
+//   performer-side triggers      →  never. `creature_performs_action`,
+//        `creature_completes_spell`, `creature_uses_item`, `creature_guards`:
+//        the action still HAPPENS, so its performer-side riders are untouched.
+//        A removal says "this action does not reach that creature", never "this
+//        action did not happen".
+//
+// An unclassified trigger falls back to the conservative pair (reactor-gone OR
+// all-subjects-gone) and is REPORTED in `unclassified` so the caller can warn —
+// a new pre-resolve trigger must be added to the table above deliberately, not
+// silently inherit a default.
+//
+// ⚠ UUID DOMAINS — the reason the old version was inert in play. `targets.removed`
+// holds TOKEN uuids, but a card-scan candidate identifies its reactor with
+// `reactorActorUuid` (a token uuid is never stamped on the card path) and its
+// `appliesToTargetUuids` holds ACTOR uuids (`appliesToTokenUuids` is the parallel
+// token list). Comparing either against the removed TOKEN set can never match,
+// so BOTH old rules were dead code and nothing was ever pruned — while the unit
+// suite passed, because it hand-fed abstract strings into one namespace.
+// `targets` (the pre-removal `ar.targets`) supplies the token→actor map that
+// lets an actor-keyed candidate be judged; an actor counts as removed only when
+// EVERY one of its tokens on this action was removed, so a duplicate-token
+// creature that keeps a slot is not pruned by its twin's removal.
+const GM_REMOVAL_MOOT_RULE = Object.freeze({
+  creature_targeted_by_action: "subject",
+  creature_will_deal_damage:   "all-subjects",
+  creature_performs_action:    "never",
+  creature_completes_spell:    "never",
+  creature_uses_item:          "never",
+  creature_guards:             "never",
+});
+
+export function dropGmRemovedReactions(accepted, gmOverride, attackerTokenUuid = null, opts = {}) {
   const list = Array.isArray(accepted) ? accepted : [];
   const gm = normalizeGmOverride(gmOverride);
-  if (!gm.targets.removed.length || !list.length) return { kept: list, dropped: [] };
-  const gone = new Set(gm.targets.removed);
-  const kept = [], dropped = [];
-  for (const cand of list) {
-    // The ACTION-TAKER is never dropped by a target removal. On a self-targeted
-    // Skill the caster is both performer and target, so removing them from the
-    // target list would otherwise take out their own performer-side reaction —
-    // but the action still happens and its self-effects still run, so that
-    // reaction's reason to fire is untouched. A removal says "this action does
-    // not reach that creature", never "this action did not happen".
-    const isPerformer = !!attackerTokenUuid && cand?.reactorTokenUuid === attackerTokenUuid;
-    const reactorGone = !isPerformer && !!cand?.reactorTokenUuid && gone.has(cand.reactorTokenUuid);
-    const applies = Array.isArray(cand?.appliesToTargetUuids) ? cand.appliesToTargetUuids : null;
-    const allSubjectsGone = !!applies && applies.length > 0 && applies.every((u) => gone.has(u));
-    if (reactorGone || allSubjectsGone) dropped.push(cand);
-    else kept.push(cand);
+  if (!gm.targets.removed.length || !list.length) return { kept: list, dropped: [], unclassified: [] };
+
+  const goneTokens = new Set(gm.targets.removed);
+  const attackerActorUuid = opts?.attackerActorUuid ?? null;
+
+  // token → actor for every slot this action HAD (callers pass the pre-removal
+  // list). An actor is "gone" only if it held at least one slot and every slot
+  // it held was removed.
+  const actorOf = new Map();
+  const slotsByActor = new Map();
+  for (const t of (Array.isArray(opts?.targets) ? opts.targets : [])) {
+    const tok = t?.tokenUuid, act = t?.actorUuid;
+    if (!tok || !act || actorOf.has(tok)) continue;
+    actorOf.set(tok, act);
+    if (!slotsByActor.has(act)) slotsByActor.set(act, []);
+    slotsByActor.get(act).push(tok);
   }
-  return { kept, dropped };
+  const goneActors = new Set();
+  for (const [act, toks] of slotsByActor) {
+    if (toks.length && toks.every((tok) => goneTokens.has(tok))) goneActors.add(act);
+  }
+
+  // A creature is gone when its TOKEN was removed; the token is authoritative,
+  // and the actor is consulted only when no token uuid is on hand.
+  const isGone = (tokenUuid, actorUuid) => {
+    if (tokenUuid) return goneTokens.has(tokenUuid);
+    return !!actorUuid && goneActors.has(actorUuid);
+  };
+  const isPerformer = (cand) =>
+    (!!attackerTokenUuid && cand?.reactorTokenUuid === attackerTokenUuid)
+    || (!!attackerActorUuid && cand?.reactorActorUuid === attackerActorUuid);
+
+  const reactorGone = (cand) =>
+    !isPerformer(cand)
+    && (!!cand?.reactorTokenUuid || !!cand?.reactorActorUuid)
+    && isGone(cand?.reactorTokenUuid ?? null, cand?.reactorActorUuid ?? null);
+
+  const subjectGone = (cand) => {
+    const tok = cand?.subjectTokenUuid ?? null, act = cand?.subjectActorUuid ?? null;
+    if (!tok && !act) return null;   // no subject on this candidate — caller decides
+    return isGone(tok, act);
+  };
+
+  // Prefer the parallel TOKEN list; fall back to the actor list. Either way an
+  // EMPTY list is left alone — a full-miss candidate already carries [], and
+  // emptying it is RESOLVE's call to make, not this layer's.
+  const allSubjectsGone = (cand) => {
+    const toks = Array.isArray(cand?.appliesToTokenUuids) ? cand.appliesToTokenUuids.filter(Boolean) : [];
+    if (toks.length) return toks.every((u) => goneTokens.has(u));
+    const acts = Array.isArray(cand?.appliesToTargetUuids) ? cand.appliesToTargetUuids.filter(Boolean) : [];
+    if (acts.length) return acts.every((u) => goneActors.has(u));
+    return false;
+  };
+
+  const kept = [], dropped = [], unclassified = [];
+  for (const cand of list) {
+    const trigger = String(cand?.phaseTrigger ?? "").trim();
+    const rule = GM_REMOVAL_MOOT_RULE[trigger];
+    let moot;
+    if (rule === "never") {
+      moot = false;
+    } else if (rule === "subject") {
+      const s = subjectGone(cand);
+      // A subject-keyed candidate that carries no subject (an older or
+      // hand-built shape) still has the reactor to go on — the self-defence
+      // case, where reactor and subject are the same creature.
+      moot = s === null ? reactorGone(cand) : s;
+    } else if (rule === "all-subjects") {
+      moot = allSubjectsGone(cand);
+    } else {
+      if (trigger) unclassified.push(trigger);
+      moot = reactorGone(cand) || allSubjectsGone(cand);
+    }
+    if (moot) dropped.push(cand); else kept.push(cand);
+  }
+  return { kept, dropped, unclassified: [...new Set(unclassified)] };
 }
 
 // Which of the GM's added tokens are not already in the set. Callers resolve and

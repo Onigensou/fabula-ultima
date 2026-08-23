@@ -421,52 +421,142 @@ console.log("\n— reactions made moot by a GM removal —");
 // and must not bill it — the chain used to run in full, so the reactor paid to
 // defend against an action that no longer touched them, and the chain's own
 // action_targets refs (snapshotted pre-removal) still landed on it.
+// The rules key on the candidate's TRIGGER, not on whether its reactor happens
+// to sit in the removed set — see GM_REMOVAL_MOOT_RULE. The uuid domains are
+// load-bearing and were the bug: `targets.removed` is TOKEN uuids, a card-scan
+// candidate names its reactor by ACTOR uuid, and `appliesToTargetUuids` is ACTOR
+// uuids with `appliesToTokenUuids` its parallel token list. Every assertion below
+// keeps the two namespaces distinct (`t*` tokens, `a*` actors) so a comparison
+// across them cannot pass by accident, which is exactly how the old suite went
+// green over a function that pruned nothing in play.
 const RX = (o) => ({ carrierName: "R", rowKey: "r1", ...o });
-const dropped = (accepted, ov, atk) => dropGmRemovedReactions(accepted, ov, atk).dropped.map((c) => c.carrierName);
-const kept = (accepted, ov, atk) => dropGmRemovedReactions(accepted, ov, atk).kept.map((c) => c.carrierName);
+const D = (accepted, ov, atk, opts) => dropGmRemovedReactions(accepted, ov, atk, opts);
+const dropped = (accepted, ov, atk, opts) => D(accepted, ov, atk, opts).dropped.map((c) => c.carrierName);
+const kept = (accepted, ov, atk, opts) => D(accepted, ov, atk, opts).kept.map((c) => c.carrierName);
+// token → actor for a three-creature action.
+const MAP = { targets: [
+  { tokenUuid: "tA", actorUuid: "aA" },
+  { tokenUuid: "tB", actorUuid: "aB" },
+  { tokenUuid: "tC", actorUuid: "aC" },
+] };
+
 eq("no removals → nothing dropped, same array back",
-  dropGmRemovedReactions([RX({ reactorTokenUuid: "A" })], {}).dropped, []);
+  D([RX({ reactorTokenUuid: "tA" })], {}).dropped, []);
+
+console.log("  · unclassified trigger — the conservative fallback");
 eq("a candidate whose REACTOR was removed is dropped",
-  dropped([RX({ carrierName: "NinjaLog", reactorTokenUuid: "A" })], { targets: { removed: ["A"] } }),
+  dropped([RX({ carrierName: "NinjaLog", reactorTokenUuid: "tA" })], { targets: { removed: ["tA"] } }),
   ["NinjaLog"]);
 eq("...while a reactor still on the action is kept",
-  kept([RX({ carrierName: "NinjaLog", reactorTokenUuid: "B" })], { targets: { removed: ["A"] } }),
+  kept([RX({ carrierName: "NinjaLog", reactorTokenUuid: "tB" })], { targets: { removed: ["tA"] } }),
   ["NinjaLog"]);
-// The performer's own reaction is not a subject-side one and must survive a
-// removal elsewhere — dropping it would be the availability bypass this layer is
-// forbidden from adding.
-eq("a PERFORMER-side candidate (no reactor token) is never dropped",
-  kept([RX({ carrierName: "Hawkeye" })], { targets: { removed: ["A"] } }), ["Hawkeye"]);
-eq("a hit-gated candidate whose every subject was removed is dropped",
-  dropped([RX({ carrierName: "CheapShot", appliesToTargetUuids: ["A", "B"] })],
-    { targets: { removed: ["A", "B"] } }), ["CheapShot"]);
+eq("a PERFORMER-side candidate (no reactor at all) is never dropped",
+  kept([RX({ carrierName: "Hawkeye" })], { targets: { removed: ["tA"] } }), ["Hawkeye"]);
+// A card-scan candidate carries reactorActorUuid and NO token uuid — the shape
+// the old rule could never match, so it pruned nothing in play.
+eq("a reactor named only by ACTOR uuid is judged through the token→actor map",
+  dropped([RX({ carrierName: "Veronica", reactorActorUuid: "aA" })],
+    { targets: { removed: ["tA"] } }, null, MAP), ["Veronica"]);
+eq("...and with no map to judge it by, it is left alone rather than guessed at",
+  kept([RX({ carrierName: "Veronica", reactorActorUuid: "aA" })],
+    { targets: { removed: ["tA"] } }), ["Veronica"]);
+eq("an unclassified trigger is REPORTED so it can be classified deliberately",
+  D([RX({ phaseTrigger: "creature_takes_damage", reactorTokenUuid: "tA" })],
+    { targets: { removed: ["tA"] } }).unclassified, ["creature_takes_damage"]);
+
+console.log("  · creature_will_deal_damage — every subject must be gone");
+const CS = (o) => RX({ carrierName: "CheapShot", phaseTrigger: "creature_will_deal_damage", ...o });
+eq("all subjects removed (token list) → dropped",
+  dropped([CS({ appliesToTokenUuids: ["tA", "tB"] })], { targets: { removed: ["tA", "tB"] } }),
+  ["CheapShot"]);
 eq("...but not when ONE subject survives",
-  kept([RX({ carrierName: "CheapShot", appliesToTargetUuids: ["A", "B"] })],
-    { targets: { removed: ["A"] } }), ["CheapShot"]);
-eq("an EMPTY appliesToTargetUuids is left alone — RESOLVE already refuses it, and it is not our call to make",
-  kept([RX({ carrierName: "X", appliesToTargetUuids: [] })], { targets: { removed: ["A"] } }), ["X"]);
-// The ACTION-TAKER is never dropped. On a self-targeted Skill the caster is both
-// performer and target, and removing them from the target list must not take out
-// their own performer-side reaction: the action still happens and its
-// self-effects still run. A removal says "this action does not reach that
-// creature", never "this action did not happen".
-eq("the ATTACKER own reaction survives being removed as a target",
-  kept([RX({ carrierName: "SelfBuff", reactorTokenUuid: "ATK" })],
-    { targets: { removed: ["ATK"] } }, "ATK"), ["SelfBuff"]);
-eq("...and without the attacker argument the old, stricter answer still stands",
-  dropped([RX({ carrierName: "SelfBuff", reactorTokenUuid: "ATK" })],
-    { targets: { removed: ["ATK"] } }), ["SelfBuff"]);
+  kept([CS({ appliesToTokenUuids: ["tA", "tB"] })], { targets: { removed: ["tA"] } }), ["CheapShot"]);
+// The scan builds appliesToTargetUuids from ACTOR uuids; without the map those
+// can never match a removed TOKEN, which is the dead-code half of the old bug.
+eq("an ACTOR-uuid subject list is resolved through the map",
+  dropped([CS({ appliesToTargetUuids: ["aA", "aB"] })],
+    { targets: { removed: ["tA", "tB"] } }, null, MAP), ["CheapShot"]);
+eq("...and one surviving actor keeps it",
+  kept([CS({ appliesToTargetUuids: ["aA", "aB"] })],
+    { targets: { removed: ["tA"] } }, null, MAP), ["CheapShot"]);
+// Two tokens of one linked actor: the actor is only "gone" when every slot it
+// held on THIS action was removed, or a twin's removal would prune the survivor.
+eq("a linked actor holding TWO slots survives its twin's removal",
+  kept([CS({ appliesToTargetUuids: ["aX"] })], { targets: { removed: ["t1"] } }, null,
+    { targets: [{ tokenUuid: "t1", actorUuid: "aX" }, { tokenUuid: "t2", actorUuid: "aX" }] }),
+  ["CheapShot"]);
+eq("...and is dropped once BOTH slots go",
+  dropped([CS({ appliesToTargetUuids: ["aX"] })], { targets: { removed: ["t1", "t2"] } }, null,
+    { targets: [{ tokenUuid: "t1", actorUuid: "aX" }, { tokenUuid: "t2", actorUuid: "aX" }] }),
+  ["CheapShot"]);
+eq("an EMPTY subject list is left alone — RESOLVE already refuses it, and it is not our call to make",
+  kept([CS({ appliesToTargetUuids: [] })], { targets: { removed: ["tA"] } }, null, MAP), ["CheapShot"]);
+eq("a will_deal_damage candidate is NOT pruned just because its reactor (the performer) was removed",
+  kept([CS({ reactorTokenUuid: "tA", appliesToTokenUuids: ["tB"] })],
+    { targets: { removed: ["tA"] } }), ["CheapShot"]);
+
+console.log("  · creature_targeted_by_action — the SUBJECT carries the reason");
+const TB = (o) => RX({ phaseTrigger: "creature_targeted_by_action", ...o });
+// UNDER-prune, fixed: Protect's reactor is the protector, who was never a
+// target. Only the DEFENDED creature's removal makes it moot.
+eq("PROTECT is dropped when the creature it defends is removed, though the protector is untouched",
+  dropped([TB({ carrierName: "Protect", reactorActorUuid: "aProt", subjectTokenUuid: "tB" })],
+    { targets: { removed: ["tB"] } }, null, MAP), ["Protect"]);
+eq("...and stands while that creature is still targeted",
+  kept([TB({ carrierName: "Protect", reactorActorUuid: "aProt", subjectTokenUuid: "tB" })],
+    { targets: { removed: ["tA"] } }, null, MAP), ["Protect"]);
+// OVER-prune, fixed: a bystander who is coincidentally also a target.
+eq("a third-party reactor who is ALSO a target keeps reacting for the ally still under attack",
+  kept([TB({ carrierName: "Protect", reactorTokenUuid: "tA", subjectTokenUuid: "tB" })],
+    { targets: { removed: ["tA"] } }, null, MAP), ["Protect"]);
+eq("self-defence (reactor IS the subject) is dropped when that creature goes",
+  dropped([TB({ carrierName: "NinjaLog", reactorTokenUuid: "tA", subjectTokenUuid: "tA" })],
+    { targets: { removed: ["tA"] } }, null, MAP), ["NinjaLog"]);
+eq("a subject named only by ACTOR uuid still resolves",
+  dropped([TB({ carrierName: "NinjaLog", subjectActorUuid: "aA" })],
+    { targets: { removed: ["tA"] } }, null, MAP), ["NinjaLog"]);
+eq("a subject-keyed candidate carrying NO subject falls back to its reactor",
+  dropped([TB({ carrierName: "Old", reactorTokenUuid: "tA" })],
+    { targets: { removed: ["tA"] } }), ["Old"]);
+
+console.log("  · performer-side triggers — a removal never makes these moot");
+// The action still HAPPENS. A removal says "this action does not reach that
+// creature", never "this action did not happen" — so the performer's own riders,
+// and a bystander reacting to the ACT rather than to a targeting, both stand.
+for (const trigger of ["creature_performs_action", "creature_completes_spell",
+                       "creature_uses_item", "creature_guards"]) {
+  eq(`${trigger} survives even when its reactor was removed`,
+    kept([RX({ carrierName: trigger, phaseTrigger: trigger, reactorTokenUuid: "tA", subjectTokenUuid: "tA" })],
+      { targets: { removed: ["tA"] } }, null, MAP), [trigger]);
+}
+
+console.log("  · the ACTION-TAKER is exempt");
+// On a self-targeted Skill the caster is both performer and target; removing
+// them must not take out their own reaction, since the self-effects still run.
+eq("exempt by TOKEN uuid",
+  kept([RX({ carrierName: "SelfBuff", reactorTokenUuid: "tATK" })],
+    { targets: { removed: ["tATK"] } }, "tATK"), ["SelfBuff"]);
+eq("exempt by ACTOR uuid — the shape a card-scan candidate actually has",
+  kept([RX({ carrierName: "SelfBuff", reactorActorUuid: "aATK" })],
+    { targets: { removed: ["tATK"] } }, null,
+    { targets: [{ tokenUuid: "tATK", actorUuid: "aATK" }], attackerActorUuid: "aATK" }), ["SelfBuff"]);
+eq("...and without that exemption the same candidate is dropped",
+  dropped([RX({ carrierName: "SelfBuff", reactorActorUuid: "aATK" })],
+    { targets: { removed: ["tATK"] } }, null,
+    { targets: [{ tokenUuid: "tATK", actorUuid: "aATK" }] }), ["SelfBuff"]);
 eq("a DIFFERENT creature is still dropped even when an attacker is named",
-  dropped([RX({ carrierName: "NinjaLog", reactorTokenUuid: "A" })],
-    { targets: { removed: ["A"] } }, "ATK"), ["NinjaLog"]);
-eq("a mixed list splits correctly", dropGmRemovedReactions([
-  RX({ carrierName: "gone", reactorTokenUuid: "A" }),
-  RX({ carrierName: "stays", reactorTokenUuid: "B" }),
+  dropped([RX({ carrierName: "NinjaLog", reactorTokenUuid: "tA" })],
+    { targets: { removed: ["tA"] } }, "tATK"), ["NinjaLog"]);
+
+eq("a mixed list splits correctly", D([
+  RX({ carrierName: "gone", reactorTokenUuid: "tA" }),
+  RX({ carrierName: "stays", reactorTokenUuid: "tB" }),
   RX({ carrierName: "self" }),
-], { targets: { removed: ["A"] } }),
-  { kept: [RX({ carrierName: "stays", reactorTokenUuid: "B" }), RX({ carrierName: "self" })],
-    dropped: [RX({ carrierName: "gone", reactorTokenUuid: "A" })] });
-eq("junk is survivable", dropGmRemovedReactions(null, { targets: { removed: ["A"] } }), { kept: [], dropped: [] });
+], { targets: { removed: ["tA"] } }),
+  { kept: [RX({ carrierName: "stays", reactorTokenUuid: "tB" }), RX({ carrierName: "self" })],
+    dropped: [RX({ carrierName: "gone", reactorTokenUuid: "tA" })], unclassified: [] });
+eq("junk is survivable", D(null, { targets: { removed: ["tA"] } }),
+  { kept: [], dropped: [], unclassified: [] });
 
 eq("a whole list reduces in one pass", reduce([
   ROW({ token: "A" }), ROW({ token: "B", dropped: true }),

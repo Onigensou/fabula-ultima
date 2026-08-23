@@ -398,7 +398,12 @@ async function applyAcceptedReactionsToActionResult({ ar, attackerActor, accept,
       const key = `${cand.rowKey}::${cand.carrierUuid}`;
       let agg = byKey.get(key);
       if (!agg) {
-        agg = { ...cand, appliesToTargetUuids: [], appliesToTokenUuids: [], payloadAtFire: payloadForTrigger, _payloadFromHit: !!entry.hit };
+        // `phaseTrigger` is what live's addCardReactions stamps, and downstream
+        // consumers CLASSIFY on it — dropGmRemovedReactions picks its moot-rule
+        // from it. Omitted, a harness candidate silently takes the unclassified
+        // fallback branch, so a rule this scan is meant to exercise is never the
+        // one under test.
+        agg = { ...cand, phaseTrigger: "creature_will_deal_damage", appliesToTargetUuids: [], appliesToTokenUuids: [], payloadAtFire: payloadForTrigger, _payloadFromHit: !!entry.hit };
         byKey.set(key, agg);
       } else if (entry.hit && !agg._payloadFromHit) {
         agg.payloadAtFire = payloadForTrigger;
@@ -594,7 +599,11 @@ async function probeCardReactions({
       for (const c of scanned ?? []) {
         const key = `${c?.rowKey}::${c?.carrierUuid}`;
         if (byKey.has(key)) continue;
-        byKey.set(key, { ...c, _trigger: trigger });
+        // `phaseTrigger` mirrors live's addCardReactions stamp — `_trigger` is
+        // this probe's own reporting field and nothing downstream reads it, so
+        // without the real key a consumer that classifies by trigger sees an
+        // unstamped candidate here and a stamped one in play.
+        byKey.set(key, { ...c, _trigger: trigger, phaseTrigger: trigger });
         scanLog.push({
           trigger, key,
           carrierName: c?.carrierName ?? null, carrierKind: c?.carrierKind ?? null,
@@ -864,8 +873,16 @@ async function probeTargetedReactions({
     const baseline = await probeOneAcceptedSet({ ar, accepted: [], attackerActor, round, deps });
     const results = [];
     for (const { cand, reactor, subject, payload } of byKey.values()) {
+      // Stamped exactly as live's third-party loop does (state-handlers ~5287):
+      // `subjectTokenUuid` alongside the actor, and `phaseTrigger` from
+      // addCardReactions. Both were missing, and both fail PERMISSIVE — a
+      // consumer keyed on the subject read a blank and fell back to the reactor
+      // (which is a DIFFERENT creature for Protect), and one keyed on the
+      // trigger took the unclassified branch. Under test the defender-side rule
+      // was therefore never the rule being exercised.
       const stamped = { ...cand, reactorActorUuid: reactor.uuid, reactorActorName: reactor.name,
-        subjectActorUuid: subject.actorUuid, payloadAtFire: payload,
+        subjectActorUuid: subject.actorUuid, subjectTokenUuid: subject.tokenUuid ?? null,
+        phaseTrigger: trigger, payloadAtFire: payload,
         ...(Array.isArray(picks) && picks.length ? { chosenMenuPicks: [...picks] } : {}) };
 
       const after = await probeOneAcceptedSet({ ar, accepted: [stamped], attackerActor, round, deps });
