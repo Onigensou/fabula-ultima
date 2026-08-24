@@ -28,7 +28,7 @@
 import { FX, FAKEOUT_CHANCE, RARITY, bestRarity } from "./gacha-const.js";
 import {
   FX_ROOT_ID, CHEST_SRC, CHEST_OPEN_SRC, DRAMA,
-  ensureFxStyle, phase, flush, emit, rankBurst, RANK_BURST,
+  ensureFxStyle, phase, flush, emit, rankBurst, RANK_BURST, clearParticles,
   rgba, mixHex, markPixel, TIER_TINT,
 } from "./gacha-fx-kit.js";
 
@@ -331,6 +331,7 @@ async function run(el, state, resultPromise) {
   // ── REVEAL ──────────────────────────────────────────────────────────────
   el.querySelector(".gfx-stage")?.remove();
   beam.remove();
+  clearParticles(el);   // the burst spray outlives the whiteout otherwise
 
   for (let i = 0; i < results.length; i++) {
     if (state.skip) break;
@@ -345,6 +346,10 @@ async function run(el, state, resultPromise) {
 async function revealOne(el, state, prize, whiteToClear) {
   const d = DRAMA[prize.rarity] ?? DRAMA.three;
   const c = RARITY[prize.rarity] ?? RARITY.three;
+
+  // The previous prize's spray can outlive its own slot — a 3-star holds for
+  // 750ms while its particles run to 1200 — so it would rain over this one.
+  clearParticles(el);
 
   const wrap = document.createElement("div");
   wrap.className = "gfx-reveal";
@@ -416,6 +421,7 @@ function showSummary(el, state, results) {
 
   el.querySelectorAll(".gfx-reveal, .gfx-stage, .gfx-white, .gfx-counter").forEach((n) => n.remove());
   el.querySelector("[data-skip]")?.remove();
+  clearParticles(el, { fade: 200 });   // and nothing rains onto the summary
 
   const wrap = document.createElement("div");
   wrap.className = "gfx-summary";

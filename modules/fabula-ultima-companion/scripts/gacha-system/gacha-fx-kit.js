@@ -127,6 +127,30 @@ export function emit(root, {
   }
 }
 
+/**
+ * Drop every particle still in flight, fading rather than snapping.
+ *
+ * Particles are parented to the FX ROOT, not to the stage or the prize wrap,
+ * which is what lets them survive a transform-bearing ancestor mid-flight. The
+ * cost is that tearing a phase down leaves its particles hanging in the NEXT
+ * one — the burst's spray runs up to 1.6s and was still falling through the
+ * first prize. Every phase boundary calls this, so each phase owns its own.
+ *
+ * The fade is a second opacity animation rather than a cancel(). Cancelling
+ * drops the particle back to its spawn point for one frame before removal,
+ * which reads as the whole spray jumping inward.
+ */
+export function clearParticles(root, { fade = 140 } = {}) {
+  if (!root) return;
+  for (const n of root.querySelectorAll(".gfx-particle, .gfx-shock")) {
+    if (n.dataset.clearing) continue;
+    n.dataset.clearing = "1";
+    const cur = Number(getComputedStyle(n).opacity) || 1;
+    n.animate([{ opacity: cur }, { opacity: 0 }], { duration: fade, fill: "forwards" })
+      .finished.catch(() => {}).finally(() => n.remove());
+  }
+}
+
 // ── rank-climb burst ────────────────────────────────────────────────────────
 
 /**
