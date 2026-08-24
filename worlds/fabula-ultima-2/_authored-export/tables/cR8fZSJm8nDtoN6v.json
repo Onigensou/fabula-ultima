@@ -2,13 +2,13 @@
   "_id": "cR8fZSJm8nDtoN6v",
   "_stats": {
     "compendiumSource": null,
-    "coreVersion": "12.331",
+    "coreVersion": "12.343",
     "createdTime": 1748648794844,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.4.2"
   },
-  "description": "",
+  "description": "<p>Sanguine Accolade</p>",
   "displayRoll": true,
   "flags": {
     "better-rolltables": {

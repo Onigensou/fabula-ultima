@@ -8,7 +8,7 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
-  "description": "",
+  "description": "<p>Aeolic Guardian</p>",
   "displayRoll": true,
   "flags": {
     "better-rolltables": {

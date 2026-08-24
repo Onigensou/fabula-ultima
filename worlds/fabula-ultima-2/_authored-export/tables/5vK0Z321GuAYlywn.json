@@ -2,13 +2,13 @@
   "_id": "5vK0Z321GuAYlywn",
   "_stats": {
     "compendiumSource": null,
-    "coreVersion": "12.331",
+    "coreVersion": "12.343",
     "createdTime": 1751896788285,
     "duplicateSource": "RollTable.nTcCBVqpj1EYIZHY",
     "systemId": "custom-system-builder",
     "systemVersion": "4.6.4"
   },
-  "description": "",
+  "description": "<p>Pulse of the Reanimated</p>",
   "displayRoll": true,
   "flags": {
     "better-rolltables": {
