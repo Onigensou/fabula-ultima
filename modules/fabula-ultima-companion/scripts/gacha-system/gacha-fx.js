@@ -28,7 +28,7 @@
 import { FX, FAKEOUT_CHANCE, RARITY, bestRarity } from "./gacha-const.js";
 import {
   FX_ROOT_ID, CHEST_SRC, CHEST_OPEN_SRC, DRAMA,
-  ensureFxStyle, phase, flush, emit, rgba, markPixel,
+  ensureFxStyle, phase, flush, emit, rgba, mixHex, markPixel, TIER_TINT,
 } from "./gacha-fx-kit.js";
 
 const SND = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
@@ -41,11 +41,17 @@ const SFX = {
   wiggle3: SND + "gacha_wiggle3.wav",
   whoosh:  SND + "SE_SYS_Gacha_goods_4.ogg",     // a prize slides in
   summary: SND + "SE_SYS_Gacha_ResultDef.ogg",   // the tally lands
-  rare:    SND + "success2.ogg",
-  normal:  SND + "ItemGet.ogg",
+  // One cue per rarity on the reveal. A 4-star is not the top of the table but
+  // it is well clear of a 3-star, and sharing the 3-star cue flattened that.
+  rare:    SND + "success2.ogg",                 // 5-star
+  crystal: SND + "SE_SYS_Gacha_Crystal.ogg",     // 4-star
+  normal:  SND + "ItemGet.ogg",                  // 3-star
 };
 const VOL = { start: 0.75, wiggle1: 0.6, wiggle2: 0.7, wiggle3: 0.85,
-              whoosh: 0.6, summary: 0.75, rare: 0.8, normal: 0.65 };
+              whoosh: 0.6, summary: 0.75, rare: 0.8, crystal: 0.75, normal: 0.65 };
+
+// Which reveal cue each rarity earns.
+const REVEAL_CUE = { five: "rare", four: "crystal", three: "normal" };
 
 // Local only: every client runs this animation, so broadcasting would stack one
 // copy of every cue per connected player.
@@ -210,7 +216,6 @@ async function run(el, state, resultPromise) {
   const plan  = wigglePlan(best);
 
   chest.classList.remove("is-idle");
-  glow.style.setProperty("--gfx-strain-tint", rgba(drama.tint, 0.85));
 
   const box = () => chest.getBoundingClientRect();
 
@@ -224,6 +229,11 @@ async function run(el, state, resultPromise) {
     chest.classList.add("is-wiggling");
 
     sfx(`wiggle${Math.min(i + 1, 3)}`);
+
+    // The glow climbs blue -> purple -> gold BY SHAKE NUMBER, never by the
+    // outcome. Tinting it from the final rarity spoiled the result on shake one.
+    glow.style.setProperty("--gfx-strain-tint",
+      rgba(TIER_TINT[Math.min(i, TIER_TINT.length - 1)], 0.85));
 
     // Strain builds with each shake: the chest looks progressively more loaded,
     // which is the visual half of "surely it goes now".
@@ -254,13 +264,19 @@ async function run(el, state, resultPromise) {
     chest.classList.remove("is-nudging");
     void chest.offsetWidth;
     chest.classList.add("is-nudging");
-    sfxAt("wiggle1", 0.3);
+    sfxAt("wiggle1", 0.15);
 
-    // The glow twitches rather than climbing — a fake-out must not promise with
-    // the light either.
+    // The light half-shifts toward the next tier and falls back, matching the
+    // motion: it reaches for the promotion and does not get there.
+    const from = TIER_TINT[Math.min(plan.real - 1, TIER_TINT.length - 1)];
+    const to   = TIER_TINT[Math.min(plan.real,     TIER_TINT.length - 1)];
     const held = Number(glow.style.opacity || 0);
-    glow.style.opacity = String(Math.min(1, held + 0.08));
-    setTimeout(() => { glow.style.opacity = String(held); }, FX.NUDGE);
+    glow.style.setProperty("--gfx-strain-tint", rgba(mixHex(from, to, 0.5), 0.85));
+    glow.style.opacity = String(Math.min(1, held + 0.06));
+    setTimeout(() => {
+      glow.style.setProperty("--gfx-strain-tint", rgba(from, 0.85));
+      glow.style.opacity = String(held);
+    }, FX.NUDGE);
 
     const r = box();
     emit(el, {
@@ -367,7 +383,7 @@ async function revealOne(el, state, prize, whiteToClear) {
     size: [3, 9], dur: [560, 1200],
     tints: [d.tint, "#fff3c4", "#ffffff"],
   });
-  sfx(prize.rarity === "five" ? "rare" : "normal");
+  sfx(REVEAL_CUE[prize.rarity] ?? "normal");
 
   await phase(FX.FLASH, state);
   wrap.querySelector("[data-name]")?.classList.add("is-on");

@@ -65,6 +65,26 @@ export const rgba = (hex, a) => {
   return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
 };
 
+/** Blend two hex colours. Used for the nudge's half-shift toward the next tier. */
+export function mixHex(a, b, t) {
+  const A = parseInt(String(a).replace("#", ""), 16);
+  const B = parseInt(String(b).replace("#", ""), 16);
+  const ch = (s) => [(s >> 16) & 255, (s >> 8) & 255, s & 255];
+  const [ar, ag, ab] = ch(A), [br, bg, bb] = ch(B);
+  const m = (x, y) => Math.round(x + (y - x) * t);
+  return `#${[m(ar, br), m(ag, bg), m(ab, bb)].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
+}
+
+/**
+ * The colour the chest glows on each successive shake.
+ *
+ * Indexed by SHAKE NUMBER, never by the outcome. The wiggle count is already
+ * the tell; if the glow were tinted from the final rarity it would spoil the
+ * result on the very first shake — a 5-star chest would come up gold before the
+ * player had been given anything to wonder about.
+ */
+export const TIER_TINT = [RARITY.three.color, RARITY.four.color, RARITY.five.color];
+
 // ── particles ───────────────────────────────────────────────────────────────
 
 /**
@@ -164,13 +184,24 @@ const CSS = `
   transform-origin: 50% 88%;
   filter: drop-shadow(0 14px 22px rgba(0,0,0,.6));
 }
+/* Registered so the tint can TRANSITION. A bare custom property snaps, and the
+   glow needs to slide blue → purple → gold across the shakes (and half-way back
+   again on a nudge) rather than cutting between them. */
+@property --gfx-strain-tint {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: rgba(255, 214, 120, 0);
+}
+
 /* Strain: rises with each wiggle so the chest looks increasingly loaded. */
 .gfx-chest-glow {
   position: absolute; left: 50%; bottom: 24%; z-index: 2;
   width: 300px; height: 300px; transform: translate(-50%, 0);
   border-radius: 50%; pointer-events: none;
   background: radial-gradient(circle, var(--gfx-strain-tint, rgba(255,214,120,.9)) 0%, rgba(255,214,120,0) 62%);
-  opacity: 0; transition: opacity 260ms ease-out, transform 260ms ease-out;
+  opacity: 0;
+  transition: opacity 260ms ease-out, transform 260ms ease-out,
+              --gfx-strain-tint 300ms ease-out;
 }
 
 @keyframes gfx-chest-in {
