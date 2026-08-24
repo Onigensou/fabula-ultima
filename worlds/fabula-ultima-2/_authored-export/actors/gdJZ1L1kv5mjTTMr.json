@@ -213,11 +213,44 @@
           "crossScene": true,
           "directorPermanent": true,
           "hudResourceColor": "#ff6a00",
-          "lifetimeMode": "",
+          "lifetimeMode": "persistent_counter",
           "reactionConfig": {
-            "effect_table": {},
-            "name": "",
-            "reaction_config_table": {}
+            "effect_table": {
+              "scion_rest_recover": {
+                "chain_steps": "scion_rest_roll,scion_rest_sub",
+                "effect_kind": "chain",
+                "effect_label": "scion_rest_recover"
+              },
+              "scion_rest_roll": {
+                "dice_count": "1",
+                "dice_faces": "6",
+                "effect_kind": "roll_dice",
+                "effect_label": "scion_rest_roll",
+                "prompt_var": "fatrest",
+                "roll_interactive": true,
+                "roll_label": "Bodyguard Recovery"
+              },
+              "scion_rest_sub": {
+                "charge_ae_name": "Bodyguard Fatigue",
+                "charge_amount": "VAR_FATREST",
+                "charge_max": "10",
+                "charge_operation": "subtract",
+                "effect_kind": "adjust_charges",
+                "effect_label": "scion_rest_sub",
+                "target_ref": "self"
+              }
+            },
+            "name": "Stubborn Scion",
+            "reaction_config_table": {
+              "0": {
+                "$deleted": false,
+                "condition_formula": "AE_CHARGES_BODYGUARD_FATIGUE > 0",
+                "reaction_effect_ref": "scion_rest_recover",
+                "reaction_passive_mode": "force",
+                "reaction_source": "",
+                "reaction_trigger": "session_started"
+              }
+            }
           }
         },
         "statuscounter": {

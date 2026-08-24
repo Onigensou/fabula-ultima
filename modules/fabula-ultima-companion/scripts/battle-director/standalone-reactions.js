@@ -344,7 +344,17 @@ export async function dispatchReactionMenu({
   //   null     → both, in one pass (legacy behavior, all non-phased triggers).
   phase = null,
 } = {}) {
-  if (!director || !reactor || !token || !trigger) {
+  // `director` and `token` are required by the ASK path only — menu anchoring,
+  // the IntentChannel broadcast, and the fired-set persistence all need them.
+  // The FORCED pass touches neither: it runs findPassiveCandidates (no director
+  // arg at all) then firePreAcceptedCandidate, which is null-safe on `director`
+  // and resolves its own reactor token, skipping the passive card when there
+  // isn't one. Guarding both phases on all four made every out-of-conflict
+  // dispatch a SILENT no-op — the early return is shaped exactly like "no rows
+  // matched", so nothing upstream could tell refusal from absence.
+  // See dispatchForcedTriggerForActors below.
+  if (!reactor || !trigger) return { cancelled: false, fired: [] };
+  if (phase !== "forced" && (!director || !token)) {
     return { cancelled: false, fired: [] };
   }
   const { findPassiveCandidates, firePreAcceptedCandidate, isActionCreatingReaction, isActionCreatingReactionForAE } = await getSkillEffectsExtras();
@@ -491,11 +501,23 @@ export async function dispatchReactionMenu({
   // pass); "forced"/null run it.
   for (const c of (phase === "ask" ? [] : autoFire)) {
     try {
-      await firePreAcceptedCandidate({
+      // ANNOTATE, don't filter. The ask path below drops a candidate whose chain
+      // returned !ok, but here `fired` is also what feeds appendFired's scope
+      // idempotency — dropping a failed auto-fire would make it re-offerable on
+      // the next dispatch in the same scope, which is a live behaviour change
+      // for every in-combat standalone trigger. So record the outcome on the
+      // entry instead and let each caller decide what it means. Callers that
+      // REPORT to a human (dispatchForcedTriggerForActors) must count `chainOk`,
+      // not length: an out-of-conflict chain that resolved zero targets returns
+      // ok:false, and counting it as applied turns a silent no-op into a
+      // confident false claim that the effect landed.
+      const chainResult = await firePreAcceptedCandidate({
         director, casterActor: reactor, candidate: c, payload,
       });
-      fired.push(c);
-      log(`reaction[${trigger}]: auto-fired "${c.carrierName}" for ${reactor.name}`);
+      const chainOk = chainResult?.ok !== false;
+      fired.push(Object.assign({}, c, { chainOk, chainReason: chainResult?.reason ?? null }));
+      log(`reaction[${trigger}]: auto-fired "${c.carrierName}" for ${reactor.name}` +
+          (chainOk ? "" : ` — chain did NOT apply (${chainResult?.reason ?? "unknown"})`));
       if (SimMode.active) {
         const { freeActionQueue } = await import("./free-action-queue.js");
         Journal.write("reaction-fired", `${reactor.name}: ${c.carrierName} [${trigger}]`, {
@@ -1092,6 +1114,88 @@ export async function dispatchStandaloneTrigger({ director, trigger, restrictTo 
   const involved = results.filter((r) => r.fired.length || !r.cancelled).length;
   log(`dispatchStandaloneTrigger[${trigger}]: ${results.length} reactor(s) processed`);
   return involved;
+}
+
+// Dispatch a FORCED-only trigger to an EXPLICIT list of actors, with no
+// director and no combat — the out-of-conflict counterpart to
+// dispatchStandaloneTrigger.
+//
+// dispatchStandaloneTrigger sources its reactors from
+// `director.dCombat.combatants` and drops anyone without a canvas token,
+// because it may need to hang a menu over them. Out of conflict neither
+// exists: at a Rest there is no combat at all, and a camp scene carries no PC
+// tokens. So the CALLER supplies the actor list, and only auto-fire rows
+// (`on` / `force`) run — with no surface to ask on, an `ask` row has nowhere
+// to go and is left alone rather than silently auto-accepted.
+//
+// No `scope` / `scene` idempotency: those keys are round/turn-shaped and are
+// cleared at combat end, so they mean nothing here. That makes idempotency the
+// CALLER's job — RestAPI.perform runs once per rest, on the primary GM only.
+//
+// SEQUENTIAL per [[reaction-architecture]] Rule 2: each reactor re-gates
+// against state the previous one may already have written. A parallel fan-out
+// is the exact shape that let one auto-fired chain mutate a sibling mid-
+// discovery (see the note in dispatchStandaloneTrigger).
+//
+// Returns the flat list of `{ reactorUuid, reactorName, candidate }` that fired.
+export async function dispatchForcedTriggerForActors({
+  trigger,
+  actors = [],
+  payload: extraPayload = null,
+} = {}) {
+  if (!trigger || !actors.length) return [];
+
+  const fired = [];
+  for (const actor of actors) {
+    if (!actor) continue;
+    // A FRESH payload per actor. makeChainContext stores the payload BY
+    // REFERENCE, and roll_dice both writes `payload._chainVars[var]` and
+    // short-circuits on it ("already captured; skipping roll"). Sharing one
+    // object across the party means actor #2's 1d6 silently inherits actor #1's
+    // result whenever two rows happen to use the same prompt_var — and this
+    // trigger is party-wide bookkeeping, so same-named vars are the natural
+    // authoring outcome, not an exotic case.
+    const payload = {
+      trigger,
+      // Declared explicitly rather than left absent: an omitted field reads as
+      // 0/blank downstream, and for several gates that is the PERMISSIVE answer.
+      round: null,
+      sourceActorUuid: null,
+      sourceTokenUuid: null,
+      ...(extraPayload ?? {}),
+    };
+    try {
+      const res = await dispatchReactionMenu({
+        director: null,
+        reactor: actor,
+        token: null,
+        trigger,
+        payload,
+        phase: "forced",
+      });
+      for (const c of res?.fired ?? []) {
+        fired.push({
+          reactorUuid: actor.uuid,
+          reactorName: actor.name,
+          candidate: c,
+          // Did the chain actually APPLY? See the annotate-don't-filter note in
+          // dispatchReactionMenu's auto-fire loop.
+          applied: c?.chainOk !== false,
+          reason: c?.chainReason ?? null,
+        });
+      }
+    } catch (e) {
+      warn(`dispatchForcedTriggerForActors[${trigger}]: reactor ${actor?.name} threw`, e);
+    }
+  }
+  const appliedCount = fired.filter((f) => f.applied).length;
+  log(`dispatchForcedTriggerForActors[${trigger}]: ${actors.length} actor(s) scanned, ` +
+      `${fired.length} reaction(s) dispatched, ${appliedCount} applied`);
+  for (const f of fired.filter((x) => !x.applied)) {
+    warn(`dispatchForcedTriggerForActors[${trigger}]: "${f.candidate?.carrierName}" on ` +
+         `${f.reactorName} matched but applied NOTHING (${f.reason ?? "unknown"})`);
+  }
+  return fired;
 }
 
 // Clear every reaction menu + indicator spawned by the standalone

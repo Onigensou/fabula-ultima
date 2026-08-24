@@ -241,6 +241,16 @@
                 "iteration_mode": "together",
                 "mode": "exact",
                 "skip_when_passive": true
+              },
+              "7": {
+                "$deleted": false,
+                "charge_ae_name": "Lucky Number",
+                "charge_amount": "7",
+                "charge_max": "12",
+                "charge_operation": "set",
+                "effect_kind": "adjust_charges",
+                "effect_label": "ls_rest_reset",
+                "target_ref": "ls_self"
               }
             },
             "name": "Lucky Seven",
@@ -260,6 +270,14 @@
                 "reaction_passive_mode": "ask",
                 "reaction_source": "self",
                 "reaction_trigger": "creature_performs_action"
+              },
+              "2": {
+                "$deleted": false,
+                "condition_formula": "",
+                "reaction_effect_ref": "ls_rest_reset",
+                "reaction_passive_mode": "force",
+                "reaction_source": "",
+                "reaction_trigger": "session_started"
               }
             }
           }
@@ -345,6 +363,29 @@
                 "effect_label": "ins_reset",
                 "target_ref": "self"
               },
+              "ins_rest_decay": {
+                "chain_steps": "ins_rest_roll,ins_rest_sub",
+                "effect_kind": "chain",
+                "effect_label": "ins_rest_decay"
+              },
+              "ins_rest_roll": {
+                "dice_count": "1",
+                "dice_faces": "6",
+                "effect_kind": "roll_dice",
+                "effect_label": "ins_rest_roll",
+                "prompt_var": "insrest",
+                "roll_interactive": true,
+                "roll_label": "Instability Recovery"
+              },
+              "ins_rest_sub": {
+                "charge_ae_name": "Instability",
+                "charge_amount": "VAR_INSREST",
+                "charge_max": "10",
+                "charge_operation": "subtract",
+                "effect_kind": "adjust_charges",
+                "effect_label": "ins_rest_sub",
+                "target_ref": "self"
+              },
               "ins_zero": {
                 "effect_kind": "grant",
                 "effect_label": "ins_zero",
@@ -360,6 +401,14 @@
                 "reaction_passive_mode": "force",
                 "reaction_source": "self",
                 "reaction_trigger": "creature_completes_action"
+              },
+              "1": {
+                "$deleted": false,
+                "condition_formula": "AE_CHARGES_INSTABILITY > 0",
+                "reaction_effect_ref": "ins_rest_decay",
+                "reaction_passive_mode": "force",
+                "reaction_source": "",
+                "reaction_trigger": "session_started"
               }
             }
           }

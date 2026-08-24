@@ -154,6 +154,37 @@ export const DIRECTOR_NATIVE_TRIGGERS = new Set([
   "round_end",
   "turn_start",
   "turn_end",
+  // Out-of-conflict lifecycle — fires ONCE when the party finishes a Rest, from
+  // camp-system's RestAPI.perform (after the HP/MP restore, the temporary-AE
+  // sweep and the campRestCharges tick, so rows see the POST-rest state).
+  // Party-level: nobody "did" it, so the payload carries no subject and
+  // `reaction_source` is meaningless on these rows — same as conflict_start.
+  // The payload carries `partyActorUuids` (the whole resting party).
+  //
+  // FORCED-ONLY, and this is a hard property of where it fires, not a
+  // simplification: at a Rest there is no conflict, no director instance, and
+  // the camp scene carries no PC tokens to anchor a menu to. It dispatches
+  // through dispatchForcedTriggerForActors with `phase: "forced"`, so only
+  // `on` / `force` rows run. An `ask` row authored against party_rested will
+  // NEVER surface a blade — it will simply do nothing, silently.
+  "party_rested",
+  // Out-of-conflict lifecycle — fires ONCE when a new play SESSION begins.
+  // RAW "at the end of each session" / "at the beginning of each session"
+  // clauses ride this (Hina's Instability decay, Keren's bodyguard Fatigue
+  // recovery, Lucky Seven's reset to 7).
+  //
+  // Fired at session START, not end, on purpose: a session's END cannot be
+  // observed — groups stop by closing the tab, not by clicking anything. A
+  // start-of-session fire discharges the previous session's end-of-session
+  // clause before anyone rolls, which is the same table outcome and is
+  // actually knowable. It also fires whether or not the party ever camped.
+  //
+  // Boundary detection is currently MANUAL: the GM presses the Start Session
+  // control (scripts/session-system/). An automatic detector (idle-gap +
+  // save-load) can bump the same dispatch later without touching these rows.
+  //
+  // FORCED-ONLY for the same reason as party_rested — see that entry.
+  "session_started",
   // Equip lifecycle — fire (subject = the wearer) when a gear item's isEquipped
   // flips, emitted by a standing updateItem hook. Let a gear `_skill` arm/clean up
   // its own state declaratively (Apple o' Archer: arm the ranged-taunt aura on
@@ -188,6 +219,8 @@ export const LEGACY_BRIDGED_TRIGGERS = new Set([
 // blade lists vs. attach pills to a card. Membership reads from the
 // runtime registry at boot.
 export const STANDALONE_TRIGGERS = new Set([
+  "party_rested",
+  "session_started",
   "conflict_start",
   "conflict_end",
   "round_start",
@@ -287,6 +320,11 @@ export const TRIGGER_PHASE = Object.freeze({
   "creature_recovers_mp":         "post-resolve",
   "creature_lose_mp":             "post-resolve",
   // Standalone — token-anchored menu at FSM transitions.
+  // party_rested is the one standalone trigger with NO menu at all (forced-only,
+  // fires out of conflict). It is declared here so the lint's "every native
+  // trigger has a phase" rule passes; "standalone" is the truthful class.
+  "party_rested":               "standalone",
+  "session_started":            "standalone",
   "conflict_start":             "standalone",
   "conflict_end":               "standalone",
   "round_start":                "standalone",

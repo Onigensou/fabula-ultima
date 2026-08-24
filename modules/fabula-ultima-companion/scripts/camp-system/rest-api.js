@@ -159,6 +159,15 @@
     jingle: DEFAULT_JINGLE,
 
     /**
+     * The party actors a rest applies to, resolved from the Database Actor.
+     * Exposed so anything else that must act on "the party" (the Start Session
+     * control in scripts/session-system/) dispatches to the EXACT same actor
+     * set — a second, independently-written resolver is how the rest trigger
+     * and the session trigger would silently drift onto different rosters.
+     */
+    getPartyActors() { return _getPartyActors(); },
+
+    /**
      * Cancel the camp-BGM resume scheduled by the last perform().
      * Call this on any branch that leaves the camp scene behind (return to
      * title), or the camp playlist starts up over the new scene's music when
@@ -178,7 +187,8 @@
      * 2. Broadcast jingle to all clients; schedule BGM resume for when it ends.
      * 3. Restore HP & MP for every party member.
      * 4. Delete all non-permanent active effects from party actors.
-     * 5. Post a chat message.
+     * 5. Fire the director's `party_rested` trigger (forced-only) — awaited.
+     * 6. Post a chat message.
      */
     async perform() {
       // 1 — Snapshot & stop BGM
@@ -223,7 +233,38 @@
       // has no hard dependency on DP.
       Hooks.callAll("fabula.restPerformed", actors);
 
-      // 5 — Chat message
+      // 5 — Battle Director: the `party_rested` reaction window.
+      //
+      // FORCED-only by necessity, not by choice: there is no conflict here, so
+      // no director instance and no token to anchor a reaction menu to. Only
+      // `on` / `force` rows fire; an `ask` row on this trigger never surfaces.
+      //
+      // AWAITED rather than left to the hook above. `Hooks.callAll` is
+      // synchronous — it would not wait for an async subscriber, and perform()
+      // returning is what lets SleepUI advance the camp phase into the save
+      // ceremony. An un-awaited reaction chain would be racing an actor write
+      // against a phase change and a possible save.
+      //
+      // ABSOLUTE specifier: this file is a classic (non-module) script, so a
+      // relative import() would resolve against the PAGE url, not this file.
+      try {
+        const { dispatchForcedTriggerForActors } = await import(
+          `/modules/${CAMP.MODULE_ID}/scripts/battle-director/standalone-reactions.js`
+        );
+        const fired = await dispatchForcedTriggerForActors({
+          trigger: "party_rested",
+          actors,
+          payload: { partyActorUuids: actors.map(a => a.uuid) },
+        });
+        if (fired.length) {
+          console.debug(TAG, `party_rested: ${fired.length} reaction(s) fired —`,
+            fired.map(f => `${f.reactorName}: ${f.candidate?.carrierName}`).join(", "));
+        }
+      } catch (e) {
+        console.warn(TAG, "party_rested dispatch failed:", e);
+      }
+
+      // 6 — Chat message
       await _postChatMessage();
 
       console.debug(TAG, "Rest complete.");

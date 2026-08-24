@@ -1785,7 +1785,17 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
   // Burst), which the defeat reactor dispatches while the token still exists. Any
   // other trigger (targeted / takes-damage / performs-action / lifecycle) is
   // suppressed so a KO'd creature can't react. Mirrors the free-action defeat gate.
-  if (trigger !== "creature_defeated" && isActorDefeated(casterActor)) return [];
+  // ...and out-of-conflict lifecycle triggers, which are not reactions to
+  // anything happening in a fight. A PC who ended the last session at 0 HP is
+  // precisely the one who most needs her start-of-session bookkeeping to run:
+  // Hina's own Instability row drives her to 0 HP and a Surrender, so gating
+  // session_started on HP would strand her in the state the decay exists to
+  // clear. Narrow by construction — only these two triggers newly reach the
+  // scan, and only for an already-defeated reactor.
+  const OUT_OF_CONFLICT_TRIGGERS = new Set(["party_rested", "session_started"]);
+  if (trigger !== "creature_defeated"
+      && !OUT_OF_CONFLICT_TRIGGERS.has(trigger)
+      && isActorDefeated(casterActor)) return [];
   const out = [];
 
   // Single-mode model (reaction_isPassive retired 2026-06-07): every row's
@@ -2015,8 +2025,28 @@ export async function findTargetOwnedCandidates({ skill, trigger, targetActor, p
 export async function firePreAcceptedCandidate({ director, casterActor, candidate, payload, remotePrompt = null }) {
   if (!candidate?.ref) return { ok: false, reason: "no-ref" };
   const { makeChainContext } = await import("./skill-targeting.js");
-  const reactorToken = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === casterActor.uuid)?.document
+  // Token resolution. The first two lookups are ACTIVE-SCENE ONLY — `placeables`
+  // is the current canvas, and Actor#getActiveTokens is documented as "in the
+  // current active Scene". Fine while every dispatch came from a live battle on
+  // the scene the reactor stands on; an out-of-conflict trigger (party_rested /
+  // session_started) fires from wherever the GM happens to be standing.
+  //
+  // With no token, `target_ref: "self"` resolves to ZERO tokens (collectSelfTokens
+  // returns [] on a null reactorToken), so adjust_charges / grant / apply_ae each
+  // return { ok:false, reason:"no-targets" } and applyChainEffect stops the chain
+  // — a silent no-op indistinguishable from "no rows matched". Walk every scene
+  // as a last resort, mirroring what firePassiveTriggers already does above for
+  // this exact reason. A cross-scene token would be wrong for anything
+  // POSITIONAL, but the out-of-conflict triggers are bookkeeping (charges,
+  // resources, AEs) and the alternative is doing nothing at all, silently.
+  let reactorToken = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === casterActor.uuid)?.document
     ?? casterActor?.getActiveTokens?.()?.[0]?.document ?? null;
+  if (!reactorToken) {
+    for (const scene of game.scenes?.contents ?? []) {
+      const tok = scene.tokens?.contents?.find((t) => t.actor?.uuid === casterActor.uuid);
+      if (tok) { reactorToken = tok; break; }
+    }
+  }
   let runtimeEffectTable;
   let firePoints;
   let skillForCtx;

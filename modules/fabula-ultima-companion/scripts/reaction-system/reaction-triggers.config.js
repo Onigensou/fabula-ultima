@@ -172,6 +172,45 @@ Hooks.once("ready", () => {
       aliases: ["pre_end_of_turn"]
     },
 
+    {
+      // The only trigger here that fires OUTSIDE a conflict: camp-system's
+      // RestAPI.perform emits it once the party finishes a Rest (after the
+      // HP/MP restore, the temporary-AE sweep and the campRestCharges tick).
+      //
+      // subjectFrom/filters are null/[] for the same reason conflict_start's
+      // are: nobody performed a Rest, so there is no subject to scope against
+      // and a `reaction_source` cell would be a no-op box that quietly voids
+      // any row that fills it.
+      //
+      // FORCED-ONLY. Out of conflict there is no director and no token to
+      // anchor a menu to, so only `on` / `force` rows fire. An `ask` row on
+      // this trigger never surfaces. Bucket is its own: the legacy phase
+      // handler never emits it, this entry exists so the AE Configuration
+      // editor's dropdown offers the key at all.
+      key: "party_rested",
+      label: "After the party Rests (out of conflict)",
+      bucket: "party_rested",
+      subjectFrom: null,
+      filters: []
+    },
+
+    {
+      // Fires once when a new play SESSION begins. Currently raised by the GM's
+      // Start Session control (scripts/session-system/), which is the only
+      // reliable boundary: a session's END is unobservable (groups stop by
+      // closing the tab). Carries the RAW "end of each session" clauses, fired
+      // at the START of the next one — same table outcome, and knowable.
+      //
+      // subjectFrom/filters null/[] like conflict_start: no creature performs a
+      // session, so a `reaction_source` cell would quietly void any row using it.
+      // FORCED-ONLY: no director and no menu surface out of conflict.
+      key: "session_started",
+      label: "When a new session begins (auto-only)",
+      bucket: "session_started",
+      subjectFrom: null,
+      filters: []
+    },
+
     // ----- Action declaration / check triggers -------------------------------
     {
       key: "creature_performs_check",

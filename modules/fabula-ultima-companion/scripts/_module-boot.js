@@ -183,11 +183,17 @@ Hooks.once("ready", async () => {
     return;
   }
   const MODULE_ID = "fabula-ultima-companion";
-  const SKILL_TEMPLATE_ID = "j0F5Msw5RZ8aIB3j";
+  // BOTH author-facing templates carry `reaction_trigger` / `effect_kind` select
+  // columns, and reaction-config-lint checks both — but only the skill template
+  // was ever synced here, so _Item Template drifted silently and every new value
+  // needed a hand-written template-surgery migration. Such a migration is a
+  // THIRD `ready`-hook writer of documents (3) and (3b) already have to
+  // serialize against, and it writes from its own stale snapshot: exactly the
+  // revert hazard the latch below exists to prevent. Syncing both templates here
+  // retires that whole class of migration.
+  const TEMPLATE_IDS = ["j0F5Msw5RZ8aIB3j", "ZoiV53VaLzeRsEps"];
 
   try {
-    const tmpl = game.items.get(SKILL_TEMPLATE_ID);
-    if (!tmpl) { console.info(`${FU_BOOT_TAG} Dropdown sync: skill template not found.`); return; }
 
     // Registry-sourced required options (key → friendly label). These carry
     // proper labels + include valid-but-currently-unused values; the data scan
@@ -204,6 +210,9 @@ Hooks.once("ready", async () => {
       if (RT?.listTriggers) registries.reaction_trigger = RT.listTriggers().map((t) => ({ key: t.key, value: t.label ?? t.key }));
     } catch { /* triggers not ready this boot — data scan still covers used ones */ }
 
+    for (const TEMPLATE_ID of TEMPLATE_IDS) {
+    const tmpl = game.items.get(TEMPLATE_ID);
+    if (!tmpl) { console.info(`${FU_BOOT_TAG} Dropdown sync: template ${TEMPLATE_ID} not found.`); continue; }
     const sys = foundry.utils.deepClone(tmpl.toObject(false).system ?? {});
 
     // Find every select column node (has a string `key` + an `options` array).
@@ -214,7 +223,7 @@ Hooks.once("ready", async () => {
       if (Array.isArray(n)) n.forEach((v) => walk(v, d + 1));
       else for (const k of Object.keys(n)) walk(n[k], d + 1);
     })(sys, 0);
-    if (!selectNodes.length) { console.info(`${FU_BOOT_TAG} Dropdown sync: no select columns.`); return; }
+    if (!selectNodes.length) { console.info(`${FU_BOOT_TAG} Dropdown sync: ${tmpl.name}: no select columns.`); continue; }
     const selectKeys = new Set(selectNodes.map((n) => n.key));
 
     // Data scan — collect every value used under each select key across the
@@ -223,7 +232,7 @@ Hooks.once("ready", async () => {
     const usedByKey = {};
     const addUsed = (k, v) => { if (typeof v === "string" && v.trim()) (usedByKey[k] ??= new Set()).add(v.trim()); };
     for (const it of game.items.contents) {
-      if (it.system?.template !== SKILL_TEMPLATE_ID) continue;
+      if (it.system?.template !== TEMPLATE_ID) continue;
       const props = it.system?.props ?? {};
       for (const [k, v] of Object.entries(props)) {
         if (selectKeys.has(k) && typeof v === "string") addUsed(k, v);
@@ -256,10 +265,11 @@ Hooks.once("ready", async () => {
 
     if (added > 0) {
       await tmpl.update({ system: sys });
-      console.info(`${FU_BOOT_TAG} Dropdown sync: backfilled ${added} option(s): ${detail.join(", ")}`);
-      ui.notifications?.info(`Template dropdowns: backfilled ${added} option(s) — see console`);
+      console.info(`${FU_BOOT_TAG} Dropdown sync: ${tmpl.name}: backfilled ${added} option(s): ${detail.join(", ")}`);
+      ui.notifications?.info(`${tmpl.name}: backfilled ${added} dropdown option(s) — see console`);
     } else {
-      console.info(`${FU_BOOT_TAG} Dropdown sync: all select columns already complete.`);
+      console.info(`${FU_BOOT_TAG} Dropdown sync: ${tmpl.name}: all select columns already complete.`);
+    }
     }
   } catch (e) {
     console.error(`${FU_BOOT_TAG} Dropdown-options sync failed:`, e);

@@ -344,6 +344,7 @@
     "scripts/camp-system/camp-ui-gm-panel.js",
     "scripts/camp-system/camp-ui-hider.js",
     "scripts/camp-system/camp-bootstrap.js",
+    "scripts/session-system/session-start-button.js",
     "scripts/save-system/save-constants.js",
     "scripts/save-system/save-storage.js",
     "scripts/save-system/save-core.js",

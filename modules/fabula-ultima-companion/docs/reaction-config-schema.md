@@ -165,13 +165,15 @@ Damage Card emits per-target, so the hook fires per-target).
 
 ### Canonical trigger keys
 
-31 triggers, grouped by phase bucket. The bucket determines when the
+33 triggers, grouped by phase bucket. The bucket determines when the
 reaction window opens/closes. Reactions in the same bucket coexist in a
 single merged window (e.g. damage + crisis + defeat all stay available
 in `resolution_phase`).
 
 | Bucket | Trigger keys |
 |--------|--------------|
+| `party_rested` | `party_rested` |
+| `session_started` | `session_started` |
 | `conflict_start` | `conflict_start` |
 | `conflict_end` | `conflict_end` |
 | `round_start` | `round_start` |
@@ -180,6 +182,30 @@ in `resolution_phase`).
 | `turn_end` | `turn_end` |
 | `action_phase` | `creature_performs_check`, `creature_performs_action`, `creature_targeted_by_action`, `creature_fumbles_check`, `creature_check_outcome_flipped` |
 | `resolution_phase` | `creature_hit_by_action`, `creature_critical_hit`, `creature_miss_action`, `creature_deals_damage`, `creature_takes_damage`, `creature_takes_vulnerable_damage`, `creature_takes_weak_damage`, `creature_resists_damage`, `creature_absorbs_damage`, `creature_immune_damage`, `creature_shield_break`, `creature_recovers_hp`, `creature_lose_mp`, `creature_recovers_mp`, `creature_status_applied`, `creature_enter_crisis`, `creature_exit_crisis`, `creature_defeated`, `creature_unleashes_zero_power`, `creature_completes_spell` |
+
+`party_rested` is the only trigger that fires **outside a conflict**.
+camp-system's `RestAPI.perform()` emits it once the party finishes a Rest,
+after the HP/MP restore, the temporary-AE sweep and the `campRestCharges`
+tick — so rows see the post-rest state, and an AE that the sweep removed is
+already gone and cannot react. Subject = none (nobody *performed* a Rest);
+payload carries `partyActorUuids`.
+
+⚠ **`party_rested` is forced-only.** Out of conflict there is no director
+instance and, on a camp scene, no token to anchor a reaction menu to, so the
+dispatch runs with `phase: "forced"` — only `on` and `force` rows fire. A row
+authored `ask` on this trigger will never surface a blade and will do nothing.
+Same for `reaction_source`: with no subject, anything other than blank voids
+the row.
+
+`session_started` fires once when a new play session begins. It is the home for
+RAW "at the end of each session" / "at the beginning of each session" clauses —
+fired at the START of the next session rather than the end of the last one,
+because a session's END cannot be observed (groups stop by closing the tab, not
+by clicking anything). Discharging the previous session's clause before anyone
+rolls is the same table outcome and is actually knowable; it also fires whether
+or not the party ever camped. Boundary detection is currently MANUAL — the GM
+presses the Start Session control (`scripts/session-system/`). Same subject and
+forced-only constraints as `party_rested` above.
 
 `creature_completes_spell` fires from the director's Skill RESOLVE
 handler after a Spell-typed action finishes resolving on its targets.
@@ -195,6 +221,8 @@ write them in JSON regardless — they just won't be evaluated.
 
 | Trigger key | Subject side | `source` filter | `damage_type` | `damage_amount` | `debuff_count` |
 |---|---|---|---|---|---|
+| `party_rested` | — | — | — | — | — |
+| `session_started` | — | — | — | — | — |
 | `conflict_start` | — | — | — | — | — |
 | `round_start` | — | — | — | — | yes |
 | `round_end` | — | — | — | — | yes |
