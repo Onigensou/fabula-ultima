@@ -209,6 +209,7 @@ async function run(el, state, resultPromise) {
 
   const results = payload.results;
   state.results = results;
+  state.bannerName = payload.bannerName;   // titles the summary
 
   if (state.jumpToSummary || state.skip) { showSummary(el, state, results); return; }
 
@@ -423,9 +424,17 @@ function showSummary(el, state, results) {
   el.querySelector("[data-skip]")?.remove();
   clearParticles(el, { fade: 200 });   // and nothing rains onto the summary
 
+  // Titled with the banner it came from. Absolutely positioned rather than a
+  // flex child, so it sits at the top of the SCREEN and the grid stays centred
+  // on the same axis it already used — adding a row would have shunted it down.
+  const title = state.bannerName
+    ? `<div class="gfx-summary-title">${esc(state.bannerName)}</div>`
+    : "";
+
   const wrap = document.createElement("div");
   wrap.className = "gfx-summary";
   wrap.innerHTML = `
+    ${title}
     <div class="gfx-summary-grid${results.length > 5 ? "" : " is-few"}"
          style="--stagger:${FX.SUMMARY_STAGGER}ms">
       ${results.map((p, i) => {

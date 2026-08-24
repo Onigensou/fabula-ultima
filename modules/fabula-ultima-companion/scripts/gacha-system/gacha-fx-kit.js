@@ -474,6 +474,30 @@ const CSS = `
 /* ── summary ──────────────────────────────────────────────────────────── */
 .gfx-summary { position: absolute; inset: 0; z-index: 12; display: flex;
   flex-direction: column; align-items: center; justify-content: center; gap: 22px; }
+/* Banner title, filling the dead space above the grid. Anchored to the root
+   rather than flowing in the column: as a flex child it would push the cards
+   off the centre line they are composed on. */
+.gfx-summary-title {
+  position: absolute; top: 9%; left: 50%; z-index: 1;
+  transform: translateX(-50%);
+  max-width: 80vw; text-align: center; pointer-events: none;
+  font-size: 34px; font-weight: 600; letter-spacing: 7px; text-transform: uppercase;
+  color: #f7ecd2;
+  text-shadow: 0 0 22px rgba(230,178,96,.45), 0 2px 12px rgba(0,0,0,.65);
+  animation: gfx-title-in 520ms cubic-bezier(.2,.8,.3,1) both;
+}
+/* Hairline under the name so it reads as a heading rather than loose text. */
+.gfx-summary-title::after {
+  content: ""; display: block; margin: 14px auto 0; width: 62%; height: 1px;
+  background: linear-gradient(90deg,
+    rgba(230,178,96,0), rgba(230,178,96,.75), rgba(230,178,96,0));
+}
+/* Down from above, matching the cards' own entrance direction. */
+@keyframes gfx-title-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(-26px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
 .gfx-summary-grid {
   display: grid; grid-template-columns: repeat(5, 186px); gap: 18px;
   justify-content: center;
