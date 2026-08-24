@@ -127,6 +127,79 @@ export function emit(root, {
   }
 }
 
+// ── rank-climb burst ────────────────────────────────────────────────────────
+
+/**
+ * How hard the chest pops when the strain climbs a rank, indexed by SHAKE.
+ *
+ * Blue is deliberately empty. It is the floor every roll starts from, so a
+ * burst there would dramatise the ABSENCE of a climb as though it were one,
+ * and the two escalations above it would lose the contrast that makes them
+ * read as escalations at all. The drama has to start from a quiet.
+ *
+ * Carries no information the wiggle count has not already given away, so it
+ * cannot spoil a roll — it only makes the tell hit harder.
+ */
+export const RANK_BURST = [
+  null,                                                                   // blue
+  { n: 18, radius: 165, size: [3, 7],  dur: [420, 760],  shock: false },  // purple
+  { n: 42, radius: 290, size: [4, 12], dur: [520, 1000], shock: true  },  // gold
+];
+
+/**
+ * Radial pop from a point — the chest releasing pressure as it gains a rank.
+ *
+ * Deliberately NOT the emit() fountain. That one is gravity-bound dust kicked
+ * off the base, and it reads as the chest being physically jostled; this has
+ * to read as the thing INSIDE getting stronger, so it throws evenly in every
+ * direction and decelerates outward instead of arcing back down.
+ */
+export function rankBurst(root, { x, y, tint, spec } = {}) {
+  if (!root || !spec) return;
+
+  if (spec.shock) {
+    const w = document.createElement("div");
+    w.className = "gfx-shock";
+    // `color`, not border-color: the border and both glows all read currentColor.
+    Object.assign(w.style, { left: `${x}px`, top: `${y}px`, color: rgba(tint, 0.9) });
+    root.appendChild(w);
+    w.animate(
+      [
+        { opacity: 0.95, transform: "translate(-50%,-50%) scale(.15)" },
+        { opacity: 0,    transform: `translate(-50%,-50%) scale(${spec.radius / 55})` },
+      ],
+      { duration: 620, easing: "cubic-bezier(.15,.75,.3,1)", fill: "both" }
+    ).finished.catch(() => {}).finally(() => w.remove());
+  }
+
+  for (let i = 0; i < spec.n; i++) {
+    const p = document.createElement("div");
+    p.className = "gfx-particle";
+    const s = spec.size[0] + Math.random() * (spec.size[1] - spec.size[0]);
+    Object.assign(p.style, {
+      left: `${x}px`, top: `${y}px`,
+      width: `${s}px`, height: `${s}px`,
+      background: Math.random() < 0.62 ? tint : "#fff3c4",
+    });
+    root.appendChild(p);
+
+    // Angles are STRIDED, not purely random. Random angles clump, and the bald
+    // patches read as the burst having misfired rather than as randomness.
+    const a = ((i + Math.random() * 0.85) / spec.n) * Math.PI * 2;
+    const r = spec.radius * (0.55 + Math.random() * 0.6);
+    const d = spec.dur[0] + Math.random() * (spec.dur[1] - spec.dur[0]);
+
+    p.animate(
+      [
+        { opacity: 1, transform: "translate(-50%,-50%) translate(0,0) scale(1)" },
+        { opacity: 1, transform: `translate(-50%,-50%) translate(${Math.cos(a) * r * 0.55}px, ${Math.sin(a) * r * 0.55}px) scale(.95)`, offset: 0.4 },
+        { opacity: 0, transform: `translate(-50%,-50%) translate(${Math.cos(a) * r}px, ${Math.sin(a) * r + 26}px) scale(.2)` },
+      ],
+      { duration: d, delay: Math.random() * 70, easing: "cubic-bezier(.1,.7,.3,1)", fill: "both" }
+    ).finished.catch(() => {}).finally(() => p.remove());
+  }
+}
+
 // ── stylesheet ──────────────────────────────────────────────────────────────
 
 const CSS = `
@@ -149,6 +222,21 @@ const CSS = `
 .gfx-particle {
   position: absolute; border-radius: 50%; pointer-events: none; z-index: 6;
   box-shadow: 0 0 8px currentColor; will-change: transform, opacity;
+}
+
+/* Shockwave for the top rank climb. Sized by the animation's scale, so the
+   base ring stays small and cheap — 110px is the unscaled diameter.
+
+   The glow is not decoration. A bare 3px border thins out as the ring scales
+   and, at the opacity it is already fading through, the tint muddies to brown
+   against the dark field — it read as a drawn circle rather than as energy.
+   Bleeding the colour outward keeps it reading as gold the whole way out. */
+.gfx-shock {
+  position: absolute; z-index: 5; pointer-events: none;
+  width: 110px; height: 110px; margin: 0;
+  border-radius: 50%; border: 4px solid currentColor;
+  box-shadow: 0 0 26px currentColor, inset 0 0 16px currentColor;
+  will-change: transform, opacity;
 }
 
 /* ── skip ─────────────────────────────────────────────────────────────── */
@@ -397,7 +485,7 @@ const CSS = `
 @keyframes gfx-anykey-pulse { 0%,100% { opacity: .35; } 50% { opacity: 1; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .gfx-particle, .gfx-rays, .gfx-ring, .gfx-beam { display: none; }
+  .gfx-particle, .gfx-rays, .gfx-ring, .gfx-beam, .gfx-shock { display: none; }
   .gfx-card { animation-duration: 1ms; animation-delay: 0ms; }
 }
 `;

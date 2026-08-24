@@ -28,7 +28,8 @@
 import { FX, FAKEOUT_CHANCE, RARITY, bestRarity } from "./gacha-const.js";
 import {
   FX_ROOT_ID, CHEST_SRC, CHEST_OPEN_SRC, DRAMA,
-  ensureFxStyle, phase, flush, emit, rgba, mixHex, markPixel, TIER_TINT,
+  ensureFxStyle, phase, flush, emit, rankBurst, RANK_BURST,
+  rgba, mixHex, markPixel, TIER_TINT,
 } from "./gacha-fx-kit.js";
 
 const SND = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
@@ -246,6 +247,15 @@ async function run(el, state, resultPromise) {
       x: r.left + r.width / 2, y: r.bottom - r.height * 0.15,
       n: 4 + i * 3, up: 90, spreadX: 130, size: [2, 5],
       tints: ["#e8d5a3", "#c6ae87", "#fff3c4"], dur: [420, 760],
+    });
+
+    // The rank climb, on top of the dust: blue stays quiet, purple pops, gold
+    // detonates. Fired from the chest's middle rather than its base — this is
+    // the thing inside surging, not the box scuffing the floor.
+    rankBurst(el, {
+      x: r.left + r.width / 2, y: r.top + r.height * 0.45,
+      tint: TIER_TINT[Math.min(i, TIER_TINT.length - 1)],
+      spec: RANK_BURST[Math.min(i, RANK_BURST.length - 1)],
     });
 
     await phase(FX.WIGGLE, state);
