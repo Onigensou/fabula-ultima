@@ -1,8 +1,15 @@
 // ============================================================================
 // Session System — "Start Session" GM control
 //
-// A GM-only control in the bottom-left column that raises the director's
-// `session_started` trigger for the whole party. That trigger carries the RAW
+// A GM-only entry in the battle-director's dev-tools speed dial (the bottom-left
+// 🛠 launcher) that raises the director's `session_started` trigger for the whole
+// party. Registered via registerDevTool rather than mounted as its own floating
+// button: one launcher, one stack, no second thing to position — and the stack's
+// children are <div>s, which sidesteps core's bare `button { width: 100% }` rule
+// that made the standalone version render as a full-width bar and swallow clicks
+// (reports/2026-08-25-session-start-button-full-width.md).
+//
+// That trigger carries the RAW
 // "at the end of each session" / "at the beginning of each session" clauses —
 // Hina's Instability decay, Keren's bodyguard Fatigue recovery, Lucky Seven's
 // reset to 7.
@@ -32,19 +39,9 @@
   const TAG       = "[SessionSystem][StartButton]";
   const MODULE_ID = "fabula-ultima-companion";
 
-  const BTN_ID    = "fud-session-start-btn";
-  const BTN_STYLE = "fud-session-start-style";
   const DLG_ID    = "fud-session-confirm";
   const DLG_STYLE = "fud-session-confirm-style";
-
-  // Mirrors battle-director/dev-tools-menu.js so the two controls sit side by
-  // side instead of on top of each other: that launcher is a 46px circle at
-  // left:16 which bottom-anchors above the Players list and opens a vertical
-  // child stack straight up from there. Sitting to its RIGHT (the same offset
-  // its own `devToolsAnchorLeft` reports) keeps this clear of that stack.
-  const DT_LEFT = 16, DT_SIZE = 46, DT_GAP = 12;
-  const LEFT       = DT_LEFT + DT_SIZE + DT_GAP;   // 74
-  const BOTTOM_PAD = 12;
+  const TOOL_ID   = "session-start";
 
   // Title-screen SFX set — the same three cues the Quit confirm uses, so a
   // confirm sounds like every other confirm in this world.
@@ -218,112 +215,36 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Button mount
+  // Registration into the dev-tools speed dial
   // ---------------------------------------------------------------------------
-  function _playersHeight() {
-    const players = document.getElementById("players");
-    return players ? (players.offsetHeight || 0) : 0;
-  }
-
-  function _reposition() {
-    const btn = document.getElementById(BTN_ID);
-    if (btn) btn.style.bottom = `${_playersHeight() + BOTTOM_PAD}px`;
-  }
-
-  function _mount() {
-    if (!game.user?.isGM) return;
-    if (document.getElementById(BTN_ID)) { _reposition(); return; }
-    _ensureButtonStyle();
-
-    const btn = document.createElement("button");
-    btn.id = BTN_ID;
-    btn.type = "button";
-    btn.title = "Begin a new session — applies start-of-session effects to the party";
-    btn.innerHTML = '<span class="fud-ss-badge">GM</span><span class="fud-ss-label">START SESSION</span>';
-    btn.addEventListener("click", () => { sfx("navigate"); _openConfirm(); });
-    document.body.appendChild(btn);
-    _reposition();
-
-    // The Players list grows and shrinks as users connect and expand it; the
-    // dev-tools launcher tracks it for the same reason. Without this the button
-    // ends up behind that box on a busy table.
+  //
+  // ABSOLUTE specifier: this is a classic (non-module) script, so a relative
+  // import() would resolve against the PAGE url, not against this file.
+  //
+  // Order-independent by design — registerDevTool appends to the tool list and
+  // rebuilds the stack if it happens to be open, so it does not matter whether
+  // the launcher booted first.
+  async function _register() {
+    if (!game.user?.isGM) return false;
     try {
-      const players = document.getElementById("players");
-      if (players && typeof ResizeObserver === "function") {
-        new ResizeObserver(() => _reposition()).observe(players);
-      }
-    } catch { /* the observer is an optimisation, not a requirement */ }
-
-    console.debug(TAG, "Start Session button mounted.");
-  }
-
-  function _ensureButtonStyle() {
-    if (document.getElementById(BTN_STYLE)) return;
-    const s = document.createElement("style");
-    s.id = BTN_STYLE;
-    // Palette lifted from camp-ui-gm-panel.js so this reads as the same class
-    // of object: a GM-only floating control, not a player-facing one.
-    s.textContent = `
-#${BTN_ID} {
-  position: fixed;
-  left: ${LEFT}px;
-  bottom: ${BOTTOM_PAD}px;
-  z-index: 80;
-  /* Foundry core style.css has a bare element rule
-       button { width: 100%; margin: 0 1px; line-height: 28px; ... }
-     and ANY <button> appended to document.body rather than into an Application
-     window inherits all three. Specificity does not help: an ID selector cannot
-     override a property it never declares, so each one has to be entered here.
-     Measured before this block existed: width 1920px on a 1920 viewport, i.e. a
-     full-width bar across the bottom strip that swallowed clicks aimed at
-     anything beneath it (reports/2026-08-25-session-start-button-full-width.md).
-     margin is why "left" computed 75 rather than the 74 set below; line-height
-     is why the pill stood 42px tall.
-     Same trap, same cure as gacha-system/gacha-theme.js:73-89.
-     (No backticks in here: this block lives inside a template literal.) */
-  width: max-content;
-  height: auto;
-  margin: 0;
-  line-height: normal;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(22,14,6,0.92);
-  border: 1px solid rgba(180,120,40,0.65);
-  border-radius: 10px;
-  padding: 6px 11px;
-  cursor: pointer;
-  pointer-events: auto;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.55);
-  font-family: "Signika","Noto Sans",system-ui,sans-serif;
-  transition: background .12s ease, border-color .12s ease, transform .12s ease;
-}
-#${BTN_ID}:hover {
-  background: rgba(38,24,10,0.96);
-  border-color: rgba(220,160,60,0.85);
-  transform: translateY(-1px);
-}
-#${BTN_ID} .fud-ss-badge {
-  font-size: .62em;
-  font-weight: 800;
-  letter-spacing: .8px;
-  text-transform: uppercase;
-  color: rgba(200,140,50,.9);
-  background: rgba(180,120,40,.18);
-  border: 1px solid rgba(180,120,40,.35);
-  border-radius: 4px;
-  padding: 1px 5px;
-  line-height: 1.4;
-}
-#${BTN_ID} .fud-ss-label {
-  font-size: .74em;
-  font-weight: 600;
-  letter-spacing: 1.4px;
-  color: #e8c870;
-  white-space: nowrap;
-}
-    `;
-    document.head.appendChild(s);
+      const { registerDevTool } = await import(
+        `/modules/${MODULE_ID}/scripts/battle-director/dev-tools-menu.js`
+      );
+      registerDevTool({
+        id: TOOL_ID,
+        icon: "🌅",
+        label: "Start Session",
+        onClick: () => { sfx("navigate"); _openConfirm(); },
+      });
+      console.debug(TAG, "registered in the dev-tools menu.");
+      return true;
+    } catch (e) {
+      console.error(TAG, "could not register in the dev-tools menu:", e);
+      // Loud, not silent: with no entry in the stack there is no way to raise
+      // session_started from the UI at all, and the GM would have no clue why.
+      ui.notifications?.error?.("[Session] Start Session control failed to register — see console.");
+      return false;
+    }
   }
 
   function _ensureDialogStyle() {
@@ -399,12 +320,11 @@
     document.head.appendChild(s);
   }
 
-  Hooks.once("ready", () => _mount());
-  // renderPlayerList fires whenever the Players box redraws (connect, expand);
-  // re-anchor then too, covering browsers without ResizeObserver.
-  Hooks.on("renderPlayerList", () => _reposition());
+  Hooks.once("ready", () => { _register(); });
 
-  SS.showStartButton = _mount;
+  // Exposed so a future automatic session detector (idle gap / save load) can
+  // raise the trigger without going through the menu or the confirm.
+  SS.registerControl = _register;
 
   console.debug(TAG, "Start Session control loaded.");
 })();
