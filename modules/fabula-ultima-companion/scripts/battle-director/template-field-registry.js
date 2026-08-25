@@ -65,6 +65,7 @@ const CONFIRM_VIS = `equalText(sameRow("effect_kind",''), "confirm")`;
 const FREE_GRANT_VIS = `or(equalText(sameRow("effect_kind",''), "open_action_menu"), equalText(sameRow("effect_kind",''), "free_action"))`;
 // notify — surface a message (stub branches / info).
 const NOTIFY_VIS = `equalText(sameRow("effect_kind",''), "notify")`;
+const SUMMON_VIS = `equalText(sameRow("effect_kind",''), "summon")`;
 // change_damage_element — override the in-flight attack's element (Tinkerer Infusions).
 const CHANGE_EL_VIS = `equalText(sameRow("effect_kind",''), "change_damage_element")`;
 const CHECK_DIE_SWAP_VIS = `equalText(sameRow("effect_kind",''), "check_die_swap")`;
@@ -193,7 +194,7 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // [[feedback_csb_template_gating]].
   textCol("damage_element", "Damage Element", { tooltip: "deal_damage element: fire/ice/bolt/earth/air/light/dark/physical/poison (default elementless).", vis: DEAL_VIS }),
   checkboxCol("damage_ignore_affinity", "Ignore Affinity", { tooltip: "deal_damage lands flat — skips RS/VU/IM/AB + condition-forced VU (for fixed/'true' damage like an opposed-check consequence). DR/shield still apply.", vis: DEAL_VIS }),
-  textCol("damage_keywords", "Damage Keywords", { tooltip: "Comma-separated action keywords carried by THIS damage instance (the effect-damage counterpart of a weapon's action_keywords). Currently read: crush = damage cannot be reduced (skips flat + % DR, a reducing weapon-efficiency, and a <1 damage_taken_mult) and ignores Immunity (RS and IM read as NE). VU/AB and damage-increasing axes still apply; shields still absorb.", vis: DEAL_VIS }),
+  textCol("damage_keywords", "Damage Keywords", { tooltip: "Comma-separated action keywords carried by THIS damage instance (the effect-damage counterpart of a weapon's action_keywords). Read today: crush = damage cannot be reduced (skips flat + % DR, a reducing weapon-efficiency, and a <1 damage_taken_mult) AND steps affinity down exactly ONE rung (AB→IM→RS→NE), so Crush into Immune is still Resistant, not full. For a real bypass use the CLAMP keywords instead — ignore_resistance (RS→NE), ignore_immunity (RS+IM→NE), ignore_absorption (RS+IM+AB→NE); they collapse everything at or below the named rung and compose after crush. None of them touch VU (a bypass strips defence, it must not cancel a vulnerability) and none bypass shields.", vis: DEAL_VIS }),
   checkboxCol("consume_can_defeat", "Can Defeat Target", { tooltip: "consume_resource: report an HP debit from this row to the battle director so the settle's Crisis and Defeat reactors fire — i.e. this loss can knock the target out. A plain consume writes HP silently, so it can empty the HP bar without ever KO-ing (Crisis still lands via the standing updateActor hook; Defeat does not, because auto-defeat is NPC-only). Turn ON for 'you lose X HP' curses (Cursed Sword); leave OFF for ordinary costs, which should never defeat their payer. To also let the debit take the LAST points instead of refusing when the target is short, set On Empty = drain — that is a separate control.", vis: CONSUME_RES_VIS }),
   // consume_item config — which carried item gets spent. Default subject is the
   // firing skill's container (a gear's linked _skill consumes its own gear), but
@@ -465,6 +466,12 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   textCol("element_override", "Free: Element Override", { tooltip: 'free_action: force the spawned action\'s damage element. "trigger_element" adopts the trigger payload\'s element (Ripples: "all its damage becomes the type dealt by your ally"); any other value is a literal element (fire/ice/bolt/…). Blank = the weapon\'s own element.', vis: FREE_ACTION_VIS }),
   textCol("on_hit_effect_refs", "Free: On-Hit Effect Refs", { tooltip: "free_action: effect_label(s) on THIS skill's effect_table to run AFTER the spawned attack RESOLVES, against its hit targets (hit_action_targets). Gated on a real hit. Comma/newline list. Ripples ends all \"hex\" AEs on the struck enemy via a remove_tagged_ae row.", vis: FREE_ACTION_VIS }),
   textCol("performer_ref", "Free: Performer Ref", { tooltip: 'free_action: WHO performs the granted action. Blank = the reactor (the reaction\'s bearer). A target ref (e.g. "action_targets", "trigger_subject", or a targeting-row label) grants the free action to a RESOLVED ally instead — Glowstick: "an ally other than yourself performs a free Magichant/Dance". The compose picker then lists that ally\'s own skills (filtered by Allowed Skill Refs).', vis: FREE_ACTION_VIS }),
+  // summon config. The rest of the `summon_*` family is still data-only (tracked
+  // at REQUIRED_FIELDS_BY_KIND below); this one gets its column at birth rather
+  // than adding to that debt, because it is the field that decides whether a
+  // spawn holds a turn at all — a sheet save that stripped it would hand the
+  // creature a second activation with nothing to show that anything changed.
+  textCol("summon_turns_per_round", "Summon: Turns/Round", { tooltip: 'summon: pin the spawn\'s activation count instead of reading it off the actor (activation + bonus_activation). Blank = untouched. "0" = the summon never takes a turn of its own — for a creature whose whole activation is a granted free action (Create Phantasm: Numen acts at the end of its summoner\'s turn). Distinct from Act This Round, which only suppresses the first round; this pin lasts the spawn\'s lifetime.', vis: SUMMON_VIS }),
   // adjust_charges config — charge arithmetic on a target's named charge-AE
   // (Enkindle: double the target's Burn = Burn × 2). Mirrors adjust_damage.
   textCol("charge_ae_name", "Charge AE Name", { tooltip: "adjust_charges: the charge-AE to modify, by name (e.g. Burn).", vis: ADJUST_CHARGES_VIS }),

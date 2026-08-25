@@ -143,6 +143,16 @@ export function buildPseudoWeaponFromNpcAttack(item) {
     // skill_target text — drives all-enemies auto-targeting (mirrors the
     // Skill/Spell branch's /\ball\b/ check). Stored lowercase for easy test.
     skillTarget: String(p.skill_target ?? "").trim().toLowerCase(),
+    // Inherent action keywords, same comma/newline vocabulary a PC weapon uses
+    // (snapshot.resolveVersatileWeapons / resolveAttackerWeapon). Without this
+    // field NO monster attack could carry ANY inherent keyword: an Attack's
+    // `view.source` is null, so action-profile.describePrimary reads them off
+    // `weapon.actionKeywords` — which nothing was setting for the NPC branch.
+    // A keyword authored on a monster attack therefore applied cleanly on the
+    // sheet and did nothing in play (`ignore_immunity` on Numen's Moonlight
+    // Blade was the case that surfaced it). Read by describePrimary for
+    // pierce/crush and the affinity-bypass ranks; blank = no keywords.
+    actionKeywords: String(p.action_keywords ?? ""),
     // Keyword bookkeeping tags — read by future interaction code.
     // Does NOT drive targeting logic (that comes from skillTarget above).
     hasPierce:   !!p.has_pierce,

@@ -9003,6 +9003,27 @@ async function applySummonEffect(row, ctx) {
   // front of the caster: one cell toward the centre of the scene, the way it
   // faces. Opt out with "formation" to use the old top-quarter battle slot.
   const placeAtCasterFront = String(row.summon_at ?? "").trim().toLowerCase() !== "formation";
+  // summon_turns_per_round — pin the spawn's ACTIVATION count instead of reading
+  // it off the actor (`activation` + `bonus_activation`). Blank = untouched.
+  // `0` is the interesting value: a summon whose whole activation is a granted
+  // free action ("at the end of your turn, your Numen performs a free action")
+  // must NOT also hold its own turn, or it acts twice per round. Distinct from
+  // `summon_act_this_round`, which only suppresses the FIRST round and refills
+  // on the next round wrap — this pin is permanent for the spawn's lifetime.
+  //
+  // Stamped as a TOKEN FLAG as well as set on the combatant, because
+  // `_resetRoundCounters` recomputes turnsPerRound from `_effectiveActivation`
+  // every round: a value only written here would be silently restored to the
+  // actor's own activation at the first round wrap (and again after a reload).
+  // Same persistence reasoning as the isPhantasm pin next to it.
+  const tprRaw = String(row.summon_turns_per_round ?? "").trim();
+  const tprNum = Number(tprRaw);
+  const turnsPerRoundPin = (tprRaw !== "" && Number.isFinite(tprNum))
+    ? Math.max(0, Math.floor(tprNum))
+    : null;
+  if (tprRaw !== "" && turnsPerRoundPin === null) {
+    warn(`skill-effects.summon: summon_turns_per_round "${tprRaw}" on "${row.effect_label}" is not a number — ignoring`);
+  }
 
   // ── Clone-a-target summon (general "turn a creature into your ally") ────────
   // summon_clone_target: spawn a CLONE of each actor resolved by this row's
@@ -9285,6 +9306,13 @@ async function applySummonEffect(row, ctx) {
         // 0 turns/round now; director-combat._effectiveActivation also returns 0
         // for isPhantasm tokens so it stays 0 across round resets + reload.
         if (asPhantasm && c) { c.turnsPerRound = 0; c.turnsRemaining = 0; }
+        // Authored activation pin (summon_turns_per_round). Applied here so the
+        // spawn is correct on the round it appears; the token flag stamped below
+        // is what keeps it correct across round wraps and reloads.
+        else if (turnsPerRoundPin !== null && c) {
+          c.turnsPerRound = turnsPerRoundPin;
+          c.turnsRemaining = actThisRound ? turnsPerRoundPin : 0;
+        }
         // act-this-round gate: false → ineligible until the next round wrap, which
         // refills turnsRemaining = turnsPerRound via _resetRoundCounters.
         else if (!actThisRound && c) c.turnsRemaining = 0;
@@ -9299,6 +9327,7 @@ async function applySummonEffect(row, ctx) {
           [`flags.${FLAG_NS}.isSummon`]: true,
           ...(asPhantasm ? { [`flags.${FLAG_NS}.isPhantasm`]: true } : {}),
           ...(asNumen ? { [`flags.${FLAG_NS}.isNumen`]: true } : {}),
+          ...(turnsPerRoundPin !== null ? { [`flags.${FLAG_NS}.turnsPerRound`]: turnsPerRoundPin } : {}),
           ...(unit.cloneUuid ? {
             [`flags.${FLAG_NS}.cloneActorUuid`]: unit.cloneUuid,
             [`flags.${FLAG_NS}.deleteCloneOnDespawn`]: unit.deleteOnDespawn,

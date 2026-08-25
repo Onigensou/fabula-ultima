@@ -86,7 +86,7 @@ async function loadDeps(reuseToken = null) {
   globalThis.__FU_CB = token;
   const bust = `?harness=${token}`;
   const cb = `?cb=${token}`;  // MUST match hot-reload.js's loader query
-  const [stateHandlers, states, intents, snapshot, skillIntent, skillEffects, actionProfile, actionCard, cardMutations, gmOverrideMod, hot] = await Promise.all([
+  const [stateHandlers, states, intents, snapshot, skillIntent, skillEffects, actionProfile, actionCard, cardMutations, gmOverrideMod, actorShape, hot] = await Promise.all([
     import(`./state-handlers.js${bust}`),
     import(`./states.js${bust}`),
     import(`./intents.js${bust}`),
@@ -97,6 +97,7 @@ async function loadDeps(reuseToken = null) {
     import(`./action-card.js${bust}`),
     import(`./card-mutations.js${bust}`),
     import(`./gm-card-override.js${bust}`),
+    import(`./actor-shape.js${bust}`),
     import(`./hot-reload.js`),  // singleton (registry on globalThis); no cache-bust
   ]);
   // state-handlers registered its skill-effects hot edge during the import
@@ -140,6 +141,12 @@ async function loadDeps(reuseToken = null) {
     gmReactionKey: gmOverrideMod.gmReactionKey,
     gmReactionDecisionChanges: gmOverrideMod.gmReactionDecisionChanges,
     isGmEditableReaction: gmOverrideMod.isGmEditableReaction,
+    // Monster attacks. An NPC has no equipped-weapon concept — it attacks via
+    // Items with skill_type "Attack", which the live flow turns into a
+    // weapon-shaped object. Without these the harness could only ever resolve
+    // PC weapon slots, so NO monster attack was testable through it.
+    getNpcAttackItems: actorShape.getNpcAttackItems,
+    buildPseudoWeaponFromNpcAttack: actorShape.buildPseudoWeaponFromNpcAttack,
   };
   if (reuseToken != null) _depsCache = { token: reuseToken, deps };
   return deps;
@@ -541,7 +548,7 @@ async function probeCardReactions({
   // `creature_will_deal_damage` family (Cheap Shot, Adversity, …) is the largest
   // reaction class in the game and a no-damage skill never even reaches its
   // scan, so a skill-only probe cannot see most of what exists.
-  attack = false, attackMode = "main",
+  attack = false, attackMode = "main", npcAttackItemUuid = null,
   force = null, round = 1, triggers = null, picks = null,
   // Optional: probe with a GM override bag in force, so a GM edit can be shown
   // to reach the same mutation the reaction does.
@@ -567,7 +574,7 @@ async function probeCardReactions({
     }
     const computed = attack
       ? await runDirectorAttackCompute({
-          attackerTokenUuid: casterTokenUuid, targetTokenUuids, mode: attackMode, force, depsToken })
+          attackerTokenUuid: casterTokenUuid, targetTokenUuids, mode: attackMode, npcAttackItemUuid, force, depsToken })
       : await runDirectorSkillCompute({
           skillUuid, casterTokenUuid, targetTokenUuids, force, picks, depsToken });
     if (!computed.ok) return { ok: false, reason: "compute_failed", computed };
@@ -702,7 +709,7 @@ async function probeCardReactions({
 // scope deliberately; do not read a null result as "that skill is dormant".
 async function probeTargetedReactions({
   attackerTokenUuid = null, targetTokenUuids = null,
-  skillUuid = null, attack = true, attackMode = "main",
+  skillUuid = null, attack = true, attackMode = "main", npcAttackItemUuid = null,
   force = null, round = 1,
   reactorNames = null,
   trigger = "creature_targeted_by_action",
@@ -734,7 +741,7 @@ async function probeTargetedReactions({
   const passiveAcceptor = installPassiveAutoAcceptor(true);
   try {
     const computed = attack
-      ? await runDirectorAttackCompute({ attackerTokenUuid, targetTokenUuids, mode: attackMode, force, depsToken })
+      ? await runDirectorAttackCompute({ attackerTokenUuid, targetTokenUuids, mode: attackMode, npcAttackItemUuid, force, depsToken })
       : await runDirectorSkillCompute({ skillUuid, casterTokenUuid: attackerTokenUuid, targetTokenUuids, force, depsToken });
     if (!computed?.ok) return { ok: false, reason: "compute_failed", computed };
     const ar = computed.actionResult;
@@ -1108,10 +1115,10 @@ async function probeReactorTrigger({
 // rather than a restatement of it.
 async function probeGmReactionOverride({
   skillUuid = null, casterTokenUuid = null, targetTokenUuids = null,
-  attack = false, attackMode = "main",
+  attack = false, attackMode = "main", npcAttackItemUuid = null,
   force = null, round = 1, picks = null, carrierName = null, depsToken = null,
 } = {}) {
-  const probe = await probeCardReactions({ skillUuid, casterTokenUuid, targetTokenUuids, attack, attackMode, force, round, picks, depsToken });
+  const probe = await probeCardReactions({ skillUuid, casterTokenUuid, targetTokenUuids, attack, attackMode, npcAttackItemUuid, force, round, picks, depsToken });
   // A COST-unavailable candidate that would fire is a legitimate subject here —
   // overruling a price is exactly what force is for, and the editor offers those
   // rows. So `only_fires_if_forced` is not a dead end for THIS test, unlike for
@@ -2500,6 +2507,12 @@ async function runDirectorSkillSimulate(args = {}) {
 async function runDirectorAttackCompute({
   attackerTokenUuid, targetTokenUuids, mode = "main", force = null,
   pendingPasses = null, passIndex = 0, totalPasses = null,
+  // Monster attacks. Mirrors the LIVE compose bundle (compose-action.js /
+  // enemy-autopilot.js both emit `attackMode:"npc"` + `npcAttackItemUuid`), so a
+  // harness call and a real monster turn describe the action the same way.
+  // Also reachable as mode "npc" (first attack item) or "npc:<N>" (by index),
+  // and auto-selected when the attacker is NPC-shaped and holds no weapon.
+  npcAttackItemUuid = null,
   depsToken = null,   // batch reuse — see loadDeps
 } = {}) {
   // The stranded-harness-state guard every other public entry point carries.
@@ -2533,8 +2546,61 @@ async function runDirectorAttackCompute({
   // Resolve the weapon queue. Single-pass: [main] or [off]. Two-weapon:
   // [main, off]. The caller can also pass a pre-built pendingPasses for
   // pass 2 of two-weapon (the simulate wrapper does this).
+  // NPC attack resolution. Decided BEFORE the weapon-slot modes: an NPC has no
+  // main/off hand at all, so every one of those branches answers for a concept
+  // the attacker does not have, and the fallback ends at `no_main_weapon` —
+  // which is why no monster attack was reachable through this entry point.
+  const attackerActorDoc = attackerToken?.actor ?? null;
+  let npcAttackItem = null;
+  let isNpcAttack = false;
+  {
+    const modeStr = String(mode ?? "");
+    const wantsNpc = !!npcAttackItemUuid || modeStr === "npc" || modeStr.startsWith("npc:");
+    // Auto-select only when there is nothing else to attack WITH, so an
+    // explicit main/off/virtual request is never silently rerouted.
+    const npcItems = (() => {
+      try { return deps.getNpcAttackItems?.(attackerActorDoc) ?? []; } catch { return []; }
+    })();
+    const noWeapon = !attackerSnap.weapon && !attackerSnap.offWeapon
+      && !(attackerSnap.virtualAttacks ?? []).length;
+    if (wantsNpc || (npcItems.length && noWeapon && !(Array.isArray(pendingPasses) && pendingPasses.length))) {
+      if (npcAttackItemUuid) {
+        npcAttackItem = await fromUuid(npcAttackItemUuid).catch(() => null)
+          ?? npcItems.find((i) => i.uuid === npcAttackItemUuid) ?? null;
+        if (!npcAttackItem) {
+          return { ok: false, reason: "npc_attack_item_not_found", npcAttackItemUuid,
+            available: npcItems.map((i) => `${i.name} = ${i.uuid}`) };
+        }
+      } else if (modeStr.startsWith("npc:")) {
+        const idx = Number(modeStr.slice("npc:".length));
+        npcAttackItem = npcItems[idx] ?? null;
+        if (!npcAttackItem) {
+          return { ok: false, reason: "no_such_npc_attack",
+            available: npcItems.map((x, i) => `npc:${i} = ${x?.name ?? "?"}`) };
+        }
+      } else {
+        npcAttackItem = npcItems[0] ?? null;
+        if (!npcAttackItem) {
+          return { ok: false, reason: "no_npc_attack_item",
+            hint: "Attacker exposes no skill_type \"Attack\" item. Check getNpcAttackItems(actor)." };
+        }
+      }
+      isNpcAttack = true;
+    }
+  }
+
   let queue;
-  if (Array.isArray(pendingPasses) && pendingPasses.length) {
+  if (isNpcAttack) {
+    // buildPseudoWeaponFromNpcAttack returns null when the item is missing its
+    // attribute pair — the same refusal the live COMPUTE makes, surfaced as a
+    // reason instead of a crash three frames later.
+    const pseudo = deps.buildPseudoWeaponFromNpcAttack?.(npcAttackItem) ?? null;
+    if (!pseudo) {
+      return { ok: false, reason: "npc_attack_unusable", item: npcAttackItem.name,
+        hint: "rolled_atr1 / rolled_atr2 missing on the attack item." };
+    }
+    queue = [pseudo];
+  } else if (Array.isArray(pendingPasses) && pendingPasses.length) {
     queue = [...pendingPasses];
   } else if (mode === "two-weapon" || mode === "two-weapon-main-first") {
     const off = attackerSnap.offWeapon;
@@ -2567,7 +2633,8 @@ async function runDirectorAttackCompute({
       ?? null;
     if (!fallback) {
       return { ok: false, reason: "no_main_weapon",
-        hint: "No main hand, no off hand, and no exposed virtual attack. Check resolveVirtualAttacks(actor)." };
+        hint: "No main hand, no off hand, and no exposed virtual attack. Check resolveVirtualAttacks(actor). "
+          + "If this is a MONSTER, it attacks via skill_type \"Attack\" items — pass npcAttackItemUuid, or mode \"npc\" / \"npc:<N>\"." };
     }
     if (!attackerSnap.weapon && fallback?.name) {
       log(`harness: no equipped weapon — using virtual attack "${fallback.name}"`);
@@ -2585,7 +2652,12 @@ async function runDirectorAttackCompute({
       pickedTargetUuids: targetSnaps.map((t) => t.tokenUuid),
       eligibleTargets: targetSnaps,
       pendingPasses: [...queue],
-      attackMode: mode,
+      // Normalised to the bare "npc" the live ctx carries — state-handlers gates
+      // the attack-item lookup on `attackMode === "npc"`, so a raw "npc:2" would
+      // pass the queue but leave `attackSkillItem` null, and the on-hit reaction
+      // rows declared on the attack item would attribute to nothing.
+      attackMode: isNpcAttack ? "npc" : mode,
+      ...(isNpcAttack ? { npcAttackItemUuid: npcAttackItem.uuid } : {}),
       passIndex,
       totalPasses: Number.isFinite(totalPasses) ? totalPasses : queue.length,
     },

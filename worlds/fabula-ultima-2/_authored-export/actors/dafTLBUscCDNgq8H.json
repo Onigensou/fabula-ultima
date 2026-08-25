@@ -9982,7 +9982,8 @@
           "target_eligibility": "",
           "type_damage": "Ice",
           "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.pcCBP65FqbsMOF0h"
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.pcCBP65FqbsMOF0h",
+          "versatile": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2788278387,

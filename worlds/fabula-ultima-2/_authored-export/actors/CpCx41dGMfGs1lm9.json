@@ -2,7 +2,7 @@
   "_id": "CpCx41dGMfGs1lm9",
   "_stats": {
     "compendiumSource": null,
-    "coreVersion": "12.331",
+    "coreVersion": "12.343",
     "createdTime": 1758196335042,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
@@ -197,6 +197,218 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "Dv3oCPSoRi7DrB1y",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1787678156312,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "extra_damage_mod_all",
+              "mode": 2,
+              "priority": 20,
+              "value": "6"
+            }
+          ],
+          "description": "<p>Skill Enhancement Lv. 40 — this Numen's on-hit damage increases to <strong>20</strong>.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {},
+          "img": "icons/magic/light/explosion-star-glow-silhouette.webp",
+          "name": "Numen Ascendance II",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "eAvjasWOanAUY7Hl",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1787678156632,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "override_all_damage_type",
+              "mode": 5,
+              "priority": 20,
+              "value": "Dark"
+            }
+          ],
+          "description": "<p>This Numen was shaped from the <strong>Diablos</strong> essence: its damage is <strong>dark</strong>.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {},
+          "img": "icons/magic/symbols/runes-star-blue.webp",
+          "name": "Numen Essence: Diablos",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "IThkOrTqDwQpWUUf",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1787678156546,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "override_all_damage_type",
+              "mode": 5,
+              "priority": 20,
+              "value": "Light"
+            }
+          ],
+          "description": "<p>This Numen was shaped from the <strong>Asura</strong> essence: its damage is <strong>light</strong>.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {},
+          "img": "icons/magic/symbols/runes-star-blue.webp",
+          "name": "Numen Essence: Asura",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "mNemJ8jbFoSbQDGU",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1787678156211,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "extra_damage_mod_all",
+              "mode": 2,
+              "priority": 20,
+              "value": "4"
+            }
+          ],
+          "description": "<p>Skill Enhancement Lv. 20 — this Numen's on-hit damage increases to <strong>18</strong>.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {},
+          "img": "icons/magic/light/explosion-star-glow-silhouette.webp",
+          "name": "Numen Ascendance I",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "Pd2vD3xArHpB2ODa",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1787678156441,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "override_all_damage_type",
+              "mode": 5,
+              "priority": 20,
+              "value": "Physical"
+            }
+          ],
+          "description": "<p>This Numen was shaped from the <strong>Ravana</strong> essence: its damage is <strong>physical</strong>.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {},
+          "img": "icons/magic/symbols/runes-star-blue.webp",
+          "name": "Numen Essence: Ravana",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.5"
@@ -212,54 +424,150 @@
       "sort": 0,
       "system": {
         "props": {
+          "availability_formula": "OWN_NUMEN_COUNT == 0",
+          "availability_reason": "Numen already active",
+          "class": "Illusionist",
           "cost": "50 MP",
+          "description": "<p>You can now have up to <strong>4</strong> active Phantasms, but one of them must necessarily be <strong>Numen</strong>. Also, you cannot have more than one Numen Phantasm active at a time. This Phantasm cannot be used in any of the Illusionist’s Skills or Spells.</p>\n<p>Numen is bound by the same set of special rules as any other Phantasm, with the following exceptions:</p>\n<ul>\n  <li>Numen Phantasms cost <strong>50 MP</strong> to cast.</li>\n  <li>Numen’s Phantasmal Vitality equals <strong>twice your base Insight die size plus your level</strong>.</li>\n  <li>Once active, Numen acts at the <strong>end of your turn</strong>: it performs a <strong>free action</strong> — one Attack or Skill of its own — chosen and driven automatically. It holds no turn of its own, and does not benefit from Spells that grant additional actions.</li>\n</ul>\n\n<p>When creating a Numen Phantasm you are prompted to choose one <strong>essence</strong>, which dictates Numen’s damage type for as long as it remains on the field:</p>\n<ul>\n  <li><strong>Ravana</strong> — <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(153,153,153) 0 0 4px;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span></li>\n  <li><strong>Asura</strong> — <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(202,189,154) 0 0 4px;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span></li>\n  <li><strong>Diablos</strong> — <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(182,102,210) 0 0 4px;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span></li>\n</ul>\n\n<p>The target hit by Numen suffers <strong>【HR + 14】</strong> damage.</p>\n<p>Damage dealt by Numen <strong>ignores Resistances and Immunities</strong>.</p>\n<p>The <strong>range</strong> of the attack is determined by your current weapon.</p>\n\n<hr>\n\n<p><em>Numen’s Phantasmal Vitality, MP and damage are all derived from you at the moment of summoning — its own sheet holds only the unscaled baseline.</em></p>\n<p><strong>Skill Enhancement Lv. 20</strong> ― <em>Numen’s on-hit damage</em> increases to <strong>18</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40</strong> ― <em>Numen’s on-hit damage</em> increases to <strong>20</strong>.</p>\n",
           "duration": "Scene",
           "effect_table": {
             "0": {
               "$deleted": false,
-              "chain_steps": "numen_summon, numen_act_next",
+              "chain_steps": "numen_essence, numen_gate",
               "effect_kind": "chain",
-              "effect_label": "numen_do",
-              "summon_actor": "ZPPCxB0eOJPulEHv",
-              "summon_count": 1
+              "effect_label": "numen_pre"
             },
             "1": {
+              "$deleted": false,
+              "chain_steps": "numen_summon, numen_target, numen_asc_1, numen_asc_2, numen_essence",
+              "effect_kind": "chain",
+              "effect_label": "numen_do"
+            },
+            "2": {
               "$deleted": false,
               "effect_kind": "summon",
               "effect_label": "numen_summon",
               "summon_actor": "ZPPCxB0eOJPulEHv",
               "summon_count": 1,
+              "summon_max": 1,
+              "summon_overrides": "{\"current_hp\":\"2*INS_BASE_DIE + CHAR_LEVEL\",\"max_hp\":\"2*INS_BASE_DIE + CHAR_LEVEL\",\"current_mp\":\"30 + (CHAR_LEVEL >= 20) * 10 + (CHAR_LEVEL >= 40) * 10\",\"max_mp\":\"30 + (CHAR_LEVEL >= 20) * 10 + (CHAR_LEVEL >= 40) * 10\"}",
+              "summon_turns_per_round": 0,
               "summon_type": "numen"
-            },
-            "2": {
-              "$deleted": false,
-              "effect_kind": "take_turn_next",
-              "effect_label": "numen_act_next",
-              "target_ref": "numen_summon"
             },
             "3": {
               "$deleted": false,
-              "effect_kind": "take_turn_next",
-              "effect_label": "numen_after_owner",
-              "target_ref": "own_numen"
+              "auto_target": "skip",
+              "candidate_source": "last_summoned",
+              "effect_kind": "targeting",
+              "effect_label": "numen_target",
+              "mode": "all",
+              "skip_when_passive": true
+            },
+            "4": {
+              "$deleted": false,
+              "chain_steps": "numen_ae_asc1",
+              "condition_formula": "CHAR_LEVEL >= 20 && CHAR_LEVEL < 40",
+              "effect_kind": "chain",
+              "effect_label": "numen_asc_1"
+            },
+            "5": {
+              "$deleted": false,
+              "chain_steps": "numen_ae_asc2",
+              "condition_formula": "CHAR_LEVEL >= 40",
+              "effect_kind": "chain",
+              "effect_label": "numen_asc_2"
+            },
+            "6": {
+              "$deleted": false,
+              "ae_duration_rounds": "scene",
+              "ae_template_ref": "Numen Ascendance I",
+              "effect_kind": "apply_ae",
+              "effect_label": "numen_ae_asc1",
+              "target_ref": "numen_target"
+            },
+            "7": {
+              "$deleted": false,
+              "ae_duration_rounds": "scene",
+              "ae_template_ref": "Numen Ascendance II",
+              "effect_kind": "apply_ae",
+              "effect_label": "numen_ae_asc2",
+              "target_ref": "numen_target"
+            },
+            "8": {
+              "$deleted": false,
+              "effect_kind": "open_action_menu",
+              "effect_label": "numen_essence",
+              "menu_option_labels": "Ravana (Physical)|Asura (Light)|Diablos (Dark)",
+              "menu_option_refs": "numen_ess_ravana, numen_ess_asura, numen_ess_diablos",
+              "menu_title": "Create Phantasm: Numen - choose an essence"
+            },
+            "9": {
+              "$deleted": false,
+              "ae_duration_rounds": "scene",
+              "ae_template_ref": "Numen Essence: Ravana",
+              "effect_kind": "apply_ae",
+              "effect_label": "numen_ess_ravana",
+              "target_ref": "numen_target"
+            },
+            "10": {
+              "$deleted": false,
+              "ae_duration_rounds": "scene",
+              "ae_template_ref": "Numen Essence: Asura",
+              "effect_kind": "apply_ae",
+              "effect_label": "numen_ess_asura",
+              "target_ref": "numen_target"
+            },
+            "11": {
+              "$deleted": false,
+              "ae_duration_rounds": "scene",
+              "ae_template_ref": "Numen Essence: Diablos",
+              "effect_kind": "apply_ae",
+              "effect_label": "numen_ess_diablos",
+              "target_ref": "numen_target"
+            },
+            "12": {
+              "$deleted": false,
+              "action_ref": "Attack,Skill",
+              "effect_kind": "free_action",
+              "effect_label": "numen_free",
+              "performer_ref": "own_numen"
+            },
+            "13": {
+              "$deleted": false,
+              "auto_target": "skip",
+              "candidate_source": "self",
+              "condition_formula": "OWN_NUMEN_COUNT == 0",
+              "effect_kind": "targeting",
+              "effect_label": "numen_gate",
+              "mode": "all",
+              "on_condition_fail": "abort",
+              "skip_when_passive": true
             }
           },
+          "heroic_requirement": "You must have mastered the Illusionist Class.",
           "isCheck": false,
           "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
           "isReaction": true,
           "level": "1",
+          "max_level": "1",
           "name": "Create Phantasm: Numen",
           "on_activate_effect_ref": "numen_do",
+          "pre_activate_effect_ref": "numen_pre",
           "reaction_config_table": {
             "0": {
               "$deleted": false,
               "condition_formula": "OWN_NUMEN_COUNT >= 1",
-              "reaction_effect_ref": "numen_after_owner",
+              "reaction_effect_ref": "numen_free",
               "reaction_passive_mode": "force",
               "reaction_source": "self",
-              "reaction_trigger": "turn_start"
+              "reaction_trigger": "turn_end"
             }
           },
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_range": "Any",
           "skill_target": "Self",
           "skill_type": "Spell"
         },

@@ -77,6 +77,23 @@ function combatantIsPhantasm(c) {
   catch { return false; }
 }
 
+// An authored activation pin stamped on the token by `summon_turns_per_round`
+// (skill-effects.summon). Returns the pinned turns/round, or null when the
+// spawn carries no pin and activation should be read off the actor as usual.
+//
+// Token FLAG, not an actor prop, for two reasons: the pin belongs to THIS
+// spawn (the same base actor may be summoned elsewhere with its own turn), and
+// a flag survives the reload + round-wrap recompute that made a combatant-only
+// write silently revert. Reads only persistent state for that reason.
+function combatantPinnedTurns(c) {
+  let raw;
+  try { raw = c?.tokenDoc?.getFlag?.("fabula-ultima-companion", "turnsPerRound"); }
+  catch { return null; }
+  if (raw === undefined || raw === null || raw === "") return null;
+  const n = Number(raw);
+  return Number.isFinite(n) ? Math.max(0, Math.floor(n)) : null;
+}
+
 function readBool(actor, keys) {
   for (const k of keys) {
     const v = actor?.system?.props?.[k];
@@ -554,6 +571,13 @@ export class DirectorCombat {
     // the summoner's turn (FU summon rules). 0 turns/round, recomputed every
     // round + after reload from persistent state (actor prop or token flag).
     if (combatantIsPhantasm(c)) return 0;
+    // Authored per-spawn pin (summon_turns_per_round). Sits BELOW the phantasm
+    // rule — a phantasm never acts on its own whatever a row claims — and ABOVE
+    // the actor read, which is the whole point: a Numen whose activation is the
+    // free action Create Phantasm: Numen grants at its summoner's turn end holds
+    // 0 turns of its own, without touching the base actor everyone shares.
+    const pinned = combatantPinnedTurns(c);
+    if (pinned !== null) return pinned;
     return readActivations(c.actorDoc);
   }
 
