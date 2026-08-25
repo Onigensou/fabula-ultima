@@ -160,7 +160,7 @@
         <div class="fud-ss-title">&#10022;&nbsp; NEW SESSION &nbsp;&#10022;</div>
         <div class="fud-ss-sub">BEGIN A NEW SESSION?</div>
         <div class="fud-ss-note">
-          Applies every start-of-session effect to the party &mdash;<br>
+          Applies every start-of-session effect to the party &mdash;
           Instability and bodyguard Fatigue recover, lucky numbers reset.
         </div>
         <div class="fud-ss-warn">Not undoable &mdash; pressing it twice applies it twice.</div>
@@ -269,6 +269,22 @@
   left: ${LEFT}px;
   bottom: ${BOTTOM_PAD}px;
   z-index: 80;
+  /* Foundry core style.css has a bare element rule
+       button { width: 100%; margin: 0 1px; line-height: 28px; ... }
+     and ANY <button> appended to document.body rather than into an Application
+     window inherits all three. Specificity does not help: an ID selector cannot
+     override a property it never declares, so each one has to be entered here.
+     Measured before this block existed: width 1920px on a 1920 viewport, i.e. a
+     full-width bar across the bottom strip that swallowed clicks aimed at
+     anything beneath it (reports/2026-08-25-session-start-button-full-width.md).
+     margin is why "left" computed 75 rather than the 74 set below; line-height
+     is why the pill stood 42px tall.
+     Same trap, same cure as gacha-system/gacha-theme.js:73-89.
+     (No backticks in here: this block lives inside a template literal.) */
+  width: max-content;
+  height: auto;
+  margin: 0;
+  line-height: normal;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -354,6 +370,10 @@
 #${DLG_ID} .fud-ss-note  {
   font-size: 10px; letter-spacing: 1.6px; color: #7a5428;
   text-align: center; line-height: 1.9; text-transform: uppercase;
+  /* balance only — a ch-based max-width squeezes the panel, because the "ch"
+     unit does not account for the 1.6px letter-spacing this block uses.
+     (No backticks in here: this block lives inside a template literal.) */
+  text-wrap: balance;
 }
 #${DLG_ID} .fud-ss-warn  {
   font-size: 9px; letter-spacing: 2px; color: #8b2210;
