@@ -1,13 +1,13 @@
 ---
 id: 2026-08-25-session-start-button-full-width
 title: Start Session button renders 1920px wide and intercepts clicks on anything in the bottom strip
-status: open
+status: fixed
 severity: major
 reporter: onigensou
 assignee: sarunphat
 component: session-system/session-start-button
 introduced_in: fd25a5bf
-fixed_in:
+fixed_in: 8e814584
 ---
 
 # The Start Session control is a full-width bar, not a pill
