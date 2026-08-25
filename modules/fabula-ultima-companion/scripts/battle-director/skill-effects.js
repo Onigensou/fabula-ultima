@@ -1873,6 +1873,24 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
       const refLabel = String(row.reaction_effect_ref ?? "").trim();
       let { available, unavailableKind, unavailableReason } =
         await evaluateAvailability(row, effectTable, refLabel, item);
+      // An unimplemented shell — blank reaction_effect_ref AND no live effect
+      // rows on the carrier — has nothing it could do: firePreAcceptedCandidate
+      // returns {ok:false, reason:"no-ref"}. Left actionable it becomes an ask
+      // blade that parks RESOLVE and does nothing when clicked. 31 such rows
+      // exist corpus-wide, incl. every authored Counterattack; they were inert
+      // only because creature_hit_by_action was never emitted.
+      //
+      // Downgraded rather than skipped: every production caller passes
+      // includeUnavailable:true, so a `continue` guarded on that flag would be
+      // dead code exactly where it is needed. "condition" is the kind
+      // dispatchReactionMenu drops from `askable`, and autoFire requires
+      // `available` — so this blocks both routes while staying diagnosable.
+      if (available && !refLabel
+          && !Object.values(effectTable ?? {}).some((e) => e && e.$deleted !== true)) {
+        available = false;
+        unavailableKind = "condition";
+        unavailableReason = "unimplemented — no effect ref and no effect rows";
+      }
       // Per-round cap: hide the row (as "condition") once it's fired its quota
       // this round, so it doesn't auto-fire or surface as a dimmed pill.
       if (available && reactionRoundCapReached(row, item.uuid, key, payload, casterActor?.uuid)) {
@@ -1933,6 +1951,24 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
       const refLabel = String(row.reaction_effect_ref ?? "").trim();
       let { available, unavailableKind, unavailableReason } =
         await evaluateAvailability(row, effectTable, refLabel, fakeItem);
+      // An unimplemented shell — blank reaction_effect_ref AND no live effect
+      // rows on the carrier — has nothing it could do: firePreAcceptedCandidate
+      // returns {ok:false, reason:"no-ref"}. Left actionable it becomes an ask
+      // blade that parks RESOLVE and does nothing when clicked. 31 such rows
+      // exist corpus-wide, incl. every authored Counterattack; they were inert
+      // only because creature_hit_by_action was never emitted.
+      //
+      // Downgraded rather than skipped: every production caller passes
+      // includeUnavailable:true, so a `continue` guarded on that flag would be
+      // dead code exactly where it is needed. "condition" is the kind
+      // dispatchReactionMenu drops from `askable`, and autoFire requires
+      // `available` — so this blocks both routes while staying diagnosable.
+      if (available && !refLabel
+          && !Object.values(effectTable ?? {}).some((e) => e && e.$deleted !== true)) {
+        available = false;
+        unavailableKind = "condition";
+        unavailableReason = "unimplemented — no effect ref and no effect rows";
+      }
       // Fire cap (see item path above).
       if (available && reactionRoundCapReached(row, ae.uuid, key, payload, casterActor?.uuid)) {
         available = false; unavailableKind = "condition";

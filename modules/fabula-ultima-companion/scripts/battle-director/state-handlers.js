@@ -1286,6 +1286,87 @@ async function resolveAction(director, ar, opts = {}) {
     });
   }
 
+  // 7c-bis. Defender-side `creature_hit_by_action`. Declared in the reaction
+  //     registry but never emitted by the Battle Director — only by the legacy
+  //     Action Pipeline macro — so every authored row on it was dead in BD
+  //     combat. Emitted here, alongside the other kind-agnostic completion
+  //     triggers, and deliberately NOT inside the `isAttackAction` branch: the
+  //     RAW shape is "hit by an Attack, Spell or Skill", and `hits`
+  //     (ar.perTargetResults) is the unified per-target list for every kind.
+  //
+  //     PAYLOAD CONVENTION (the part that is easy to get backwards): the BD
+  //     matcher reads `payload.sourceActorUuid` as the event SUBJECT — the
+  //     creature the thing happened TO — and `payload.causeActorUuid` as who
+  //     caused it. So the STRUCK creature goes in sourceActorUuid and the
+  //     attacker in causeActorUuid, matching the defender-side sibling at §5285
+  //     and the resource-ledger family. Getting this the other way round makes
+  //     every `reaction_source:"self"` row fail its source filter silently.
+  //
+  //     Once per hit target ACTOR (dedup mirrors §7d), and only on the first
+  //     pass of a multi-pass action, so a dual-wield combo is one "I was hit"
+  //     event per hand-swing set rather than one per hand.
+  if (Array.isArray(hits) && hits.length && (Number(ar.passIndex ?? 1) || 1) <= 1) {
+    // Local copies — §7d declares its own further down, scoped to its block.
+    const _hbWeaponRange = ar.weapon?.range ?? ar.weapon?.weapon_range ?? null;
+    const _hbIsRanged = _hbWeaponRange ? /ranged|distance/i.test(String(_hbWeaponRange)) : false;
+    const _hbIsMelee  = _hbWeaponRange ? /melee/i.test(String(_hbWeaponRange)) : false;
+    const _seenHitActors = new Set();
+    for (const r of hits) {
+      if (!r || !r.hit) continue;
+      const _hitKey = r.actorUuid ?? r.tokenUuid;
+      if (_hitKey && _seenHitActors.has(_hitKey)) continue;
+      if (_hitKey) _seenHitActors.add(_hitKey);
+      const _hitActor = (await fromUuid(r.tokenUuid))?.actor ?? null;
+      if (!_hitActor) continue;
+      queuePostResolveTrigger(director, {
+        casterActor: _hitActor,
+        trigger: "creature_hit_by_action",
+        payload: {
+          ...payloadForPassives,
+          // subject = the struck creature (what the matcher reads for reaction_source)
+          sourceActorUuid:   r.actorUuid,
+          sourceTokenUuid:   r.tokenUuid,
+          subjectActorUuid:  r.actorUuid,
+          subjectTokenUuid:  r.tokenUuid,
+          targetUuid:        r.tokenUuid,
+          targetTokenUuid:   r.tokenUuid,
+          targetActorUuid:   r.actorUuid,
+          targetTokenUuids:  [r.tokenUuid],
+          // cause = the attacker (what reaction_damage_source reads)
+          causeActorUuid:    ar.attackerActorRef,
+          causeTokenUuid:    ar.attacker?.tokenUuid ?? null,
+          attackerActorUuid: ar.attackerActorRef,
+          attackerUuid:      ar.attacker?.tokenUuid ?? null,
+          subjectSnapshot:   _subjectSnapshots.get(r.tokenUuid) ?? null,
+          sourceSkillName:   skill?.name ?? ar.skillName ?? ar.weapon?.name ?? null,
+          actionKind:        ar.kind ?? null,
+          actionCanMiss:     !!ar.canMiss,
+          incomingDamage:    Math.max(0, Number(r.damage ?? 0) || 0),
+          // `trigger_attacker` (skill-targeting.collectTriggerAttacker) resolves
+          // off attackerTokenUuid specifically — Toxic Orb's apply_ae targets it,
+          // and without this its chain resolves zero tokens and no-ops.
+          attackerTokenUuid: ar.attacker?.tokenUuid ?? null,
+          // ATTACK_IS_MELEE / ATTACK_IS_RANGED read weaponRange (falling back to
+          // weaponType). payloadForPassives carries neither, so Toxic Orb's
+          // "ATTACK_IS_MELEE == 1" gate read 0 and the row was permanently
+          // unavailable. Mirrors the fields §7d threads for Fancy Footwork.
+          weaponUuid:        ar.weapon?.uuid ?? null,
+          weaponType:        ar.weapon?.weaponType ?? null,
+          weaponRange:       _hbWeaponRange,
+          isMelee:           _hbIsMelee,
+          isRanged:          _hbIsRanged,
+          // Attack-kind actions never stamp actionIntent on the actionResult
+          // (it is set TARGET-side for skills/spells) — they are harmful by
+          // definition. §7d defaults it for exactly this reason; without the
+          // same default here every reaction_action_intent:"harmful" row on this
+          // trigger (Fjord / Oki / Kiki / Weaponmaster / the world Counterattack)
+          // is silently filtered out on every weapon Attack.
+          actionIntent:      ar.actionIntent ?? (isAttackAction ? "harmful" : null),
+        },
+      });
+    }
+  }
+
   // 7d. Per-missed-target `creature_miss_action` (resolution_phase). Fires for
   //     ANY action that can miss — `ar.canMiss` (single-source capability flag
   //     stamped in freezeActionResult: weapon Attack OR Check-skill/offensive
@@ -1359,6 +1440,52 @@ async function resolveAction(director, ar, opts = {}) {
           missMargin:   defense - accuracyTotal,
           isCrit:       !!ar.roll?.isCrit,
           isFumble:     !!ar.roll?.isFumble,
+        },
+      });
+    }
+
+    // ── Attacker-side twin: "I missed." ────────────────────────────────────
+    // The per-target dispatch above is DEFENDER-side by design (the missed
+    // creature reacts). That leaves "when I miss" inexpressible: a row on the
+    // attacker never receives the event, because the attacker is never a
+    // casterActor for it. §7d already fires for ANY action that can miss —
+    // attack, Check-skill, offensive spell — so one extra dispatch makes
+    // "when my action misses" authorable across all three uniformly, rather
+    // than adding a narrow per-kind trigger.
+    //
+    // ONCE per action, not per target: a whiffed AoE is one miss event for the
+    // attacker, however many creatures evaded it.
+    //
+    // Subject = the attacker = the reactor, so this dispatch matches
+    // `reaction_source:"self"` and ONLY that. The 14 shipped miss rows (Matador
+    // Pases / Fancy Footwork / Thread the Horns / Counter Pass, Swordbreaker)
+    // all use "enemy", which cannot match here — verified across the corpus
+    // before adding this, so no existing row changes behaviour.
+    if (seenMissActors.size && (Number(ar.passIndex ?? 1) || 1) <= 1) {
+      queuePostResolveTrigger(director, {
+        casterActor,
+        trigger: "creature_miss_action",
+        payload: {
+          subjectTokenUuid:  ar.attacker?.tokenUuid ?? null,
+          subjectActorUuid:  ar.attackerActorRef,
+          sourceTokenUuid:   ar.attacker?.tokenUuid ?? null,
+          sourceActorUuid:   ar.attackerActorRef,
+          attackerUuid:      ar.attacker?.tokenUuid ?? null,
+          attackerActorUuid: ar.attackerActorRef,
+          missedTargetCount: seenMissActors.size,
+          actionIntent:      ar.actionIntent ?? (isAttackAction ? "harmful" : null),
+          actionKind:        ar.kind ?? null,
+          actionCanMiss:     !!ar.canMiss,
+          sourceSkillName:   skill?.name ?? ar.skillName ?? ar.weapon?.name ?? null,
+          weaponUuid:        ar.weapon?.uuid ?? null,
+          weaponType:        ar.weapon?.weaponType ?? null,
+          weaponRange,
+          isMelee,
+          isRanged,
+          total:             accuracyTotal,
+          accuracyTotal,
+          isCrit:            !!ar.roll?.isCrit,
+          isFumble:          !!ar.roll?.isFumble,
         },
       });
     }

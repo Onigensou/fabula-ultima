@@ -689,6 +689,54 @@ async function resolveFirstNpcAttackItem(snap) {
   try { return await fromUuid(list[0].uuid); } catch { return null; }
 }
 
+// A grant that names exactly ONE action type has already answered "which kind?",
+// so resolving it directly (the basic NPC attack for "Attack") is unambiguous.
+// A grant that names SEVERAL — "Attack,Skill" — or none at all has not, and that
+// is precisely the question the creature's own Action Pattern exists to answer.
+function grantIsAmbiguous(allow) {
+  return !allow || allow.size > 1;
+}
+
+// Consult the creature's action_pattern_table for a free-action grant. Returns
+// the patterned bundle when the grant permits what the pattern chose, else null.
+// The grant keeps the final say — this decides WHICH action, never WHETHER one
+// is allowed.
+async function tryPatternedGrantPick(director, snap, actor, allow, grant) {
+  // decideViaActionReader is grant-BLIND — it is handed the director and snap,
+  // never the grant (contrast the sim twin, which passes it to decidePlayerAction).
+  // So the ONLY constraint this path can enforce is enabledLabels, checked below.
+  // A grant carrying any of the other three would have them silently dropped:
+  //   maxMpCost             — Acceleration's "a spell with total MP cost <= 10"
+  //   allowedSkillRefs      — Counter Pass's "Passes only"
+  //   lockedTargetTokenUuid — a forced target the composed action must hit
+  // Refuse rather than resolve it wrongly; the caller falls through to the basic
+  // attack or the GM's grant-filtered compose menu, both of which DO honour them.
+  const unenforceable = [];
+  if (grant?.maxMpCost != null) unenforceable.push("maxMpCost");
+  if (grant?.allowedSkillRefs?.length) unenforceable.push("allowedSkillRefs");
+  if (grant?.lockedTargetTokenUuid) unenforceable.push("lockedTargetTokenUuid");
+  if (unenforceable.length) {
+    log(`autopilot: free-action grant "${grant?.sourceLabel ?? "?"}" carries ${unenforceable.join("+")} which the Action Pattern path cannot enforce — declining the pattern`);
+    return null;
+  }
+
+  const hasPattern = Object.values(
+    actor?.system?.props?.[ActionReaderCore.keys.actionPatternTableKey] ?? {}
+  ).some((r) => r && !r[ActionReaderCore.keys.actionPatternDeletedKey]);
+  if (!hasPattern) return null;
+
+  const patterned = await decideViaActionReader(director, snap);
+  const cmd = patterned?.command ?? patterned?.bundle?.command ?? null;
+  if (patterned && cmd && labelPermits(allow, cmd)) {
+    log(`autopilot: free-action grant "${grant?.sourceLabel ?? "?"}" for ${snap.name} resolved from its Action Pattern → ${cmd}`);
+    return patterned;
+  }
+  if (patterned && cmd) {
+    log(`autopilot: free-action pattern pick ${cmd} not permitted by grant (allow=${allow ? [...allow].join("/") : "any"}) — declining the pattern`);
+  }
+  return null;
+}
+
 async function decideFreeActionBundle(director, snap, grant) {
   try {
     const token = canvas?.tokens?.get(snap?.tokenId) ?? null;
@@ -715,38 +763,35 @@ async function decideFreeActionBundle(director, snap, grant) {
     if (!ctx.performer?.actor) { log("autopilot: free-action frame — resolvePerformer produced no actor — manual fallback"); return null; }
     await buildActionReaderContext(ctx, {});
 
-    // Choose the granted item: a named skill first, else a basic Attack when the
-    // grant permits one.
+    // Choose the granted item: a named skill first. Then — for a grant that did
+    // NOT name a single action type — the creature's Action Pattern, consulted
+    // BEFORE the generic NPC-attack fallback.
+    //
+    // Order is the whole fix here. This block used to run resolveFirstNpcAttackItem
+    // first and reach the pattern only `if (!item)`. But any NPC with a basic
+    // attack always resolves that call, so `item` was never null and the pattern
+    // was DEAD CODE for exactly the creatures that have one — an ambiguous
+    // "Attack,Skill" grant silently collapsed to npcAttackItems[0]. Measured
+    // 2026-08-26 on Create Phantasm: Numen, whose Crysta could never reach her
+    // Crescent Cut. Named refs still win, and a grant naming one type still
+    // resolves directly, so only a genuinely ambiguous grant changes hands.
     let item = null;
     if (refs.length) item = pickNamedGrantItem(actor, refs, allow, ctx, snap);
+
+    if (!item && grantIsAmbiguous(allow)) {
+      const patterned = await tryPatternedGrantPick(director, snap, actor, allow, grant);
+      if (patterned) return patterned;
+    }
+
     if (!item && labelPermits(allow, "Attack")) item = await resolveFirstNpcAttackItem(snap);
 
-    // An ambiguous "any Skill/Spell" grant used to stop here and hand the GM a
-    // compose menu — "we don't guess which skill an enemy should burn a free
-    // action on". That is the right default for a creature with no stated
-    // preference, but it is WRONG for one that has stated it: an
-    // `action_pattern_table` IS the author's answer to "which action, and when".
-    // Declining it meant a patterned creature behaved WORSE on a free action than
-    // on its own turn, where the same table decides everything.
-    //
-    // So: consult the pattern, then verify the grant permits what it chose. The
-    // grant still has the final say — this widens WHO can be auto-resolved, never
-    // WHAT a grant allows. A creature with no pattern falls through unchanged.
+    // An UNAMBIGUOUS grant can still land here with nothing resolved — "Skill" on
+    // a creature that has no Attack item, say — so the pattern gets its chance
+    // before we hand the GM a compose menu. (The ambiguous case already tried.)
     if (!item) {
-      const hasPattern = Object.values(
-        actor?.system?.props?.[ActionReaderCore.keys.actionPatternTableKey] ?? {}
-      ).some((r) => r && !r[ActionReaderCore.keys.actionPatternDeletedKey]);
-
-      if (hasPattern) {
-        const patterned = await decideViaActionReader(director, snap);
-        const cmd = patterned?.command ?? patterned?.bundle?.command ?? null;
-        if (patterned && cmd && labelPermits(allow, cmd)) {
-          log(`autopilot: free-action grant "${grant?.sourceLabel ?? "?"}" for ${snap.name} resolved from its Action Pattern → ${cmd}`);
-          return patterned;
-        }
-        if (patterned && cmd) {
-          log(`autopilot: free-action pattern pick ${cmd} not permitted by grant (allow=${allow ? [...allow].join("/") : "any"}) — manual fallback`);
-        }
+      if (!grantIsAmbiguous(allow)) {
+        const patterned = await tryPatternedGrantPick(director, snap, actor, allow, grant);
+        if (patterned) return patterned;
       }
       log(`autopilot: free-action grant "${grant?.sourceLabel ?? "?"}" for ${snap.name} not auto-resolvable (allow=${allow ? [...allow].join("/") : "any"}) — manual fallback`);
       return null;
