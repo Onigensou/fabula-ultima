@@ -18034,6 +18034,78 @@
         "effects": 0
       },
       {
+        "id": "HjOIH2Bmj485C18Y",
+        "name": "Hellhound (Reanimated)",
+        "type": "character",
+        "items": [
+          {
+            "id": "weOyBRmuXnvzycl9",
+            "name": "(Empty)"
+          },
+          {
+            "id": "lV74fYrlQPN2CeGd",
+            "name": "Animal Fang"
+          },
+          {
+            "id": "3pOyST3Pn3p18oSb",
+            "name": "Animal Fur"
+          },
+          {
+            "id": "SZc2mYVhrmtOMSVm",
+            "name": "Bite"
+          },
+          {
+            "id": "u6YRNgn4WzJXDqLb",
+            "name": "Flame Breath"
+          },
+          {
+            "id": "9N0IWdt3BWjcLd8x",
+            "name": "On the Hunt"
+          },
+          {
+            "id": "0v5EYWSTa4pdAU8U",
+            "name": "Pounce"
+          }
+        ],
+        "effects": 1
+      },
+      {
+        "id": "YcAx35co9fXIpsOS",
+        "name": "Hellhound (Reanimated)",
+        "type": "character",
+        "items": [
+          {
+            "id": "weOyBRmuXnvzycl9",
+            "name": "(Empty)"
+          },
+          {
+            "id": "lV74fYrlQPN2CeGd",
+            "name": "Animal Fang"
+          },
+          {
+            "id": "3pOyST3Pn3p18oSb",
+            "name": "Animal Fur"
+          },
+          {
+            "id": "SZc2mYVhrmtOMSVm",
+            "name": "Bite"
+          },
+          {
+            "id": "u6YRNgn4WzJXDqLb",
+            "name": "Flame Breath"
+          },
+          {
+            "id": "9N0IWdt3BWjcLd8x",
+            "name": "On the Hunt"
+          },
+          {
+            "id": "0v5EYWSTa4pdAU8U",
+            "name": "Pounce"
+          }
+        ],
+        "effects": 1
+      },
+      {
         "id": "OYFcMSkBHGLXlFwq",
         "name": "Hellir",
         "type": "character",
@@ -23178,6 +23250,42 @@
           {
             "id": "2amtYSrRS83lzT7H",
             "name": "Well-Traveled"
+          }
+        ],
+        "effects": 0
+      },
+      {
+        "id": "B7LVbFjWz6qheddb",
+        "name": "Weaponmaster",
+        "type": "character",
+        "items": [
+          {
+            "id": "7Ptjd72rgwWiKfBA",
+            "name": "Bladestorm"
+          },
+          {
+            "id": "8IioHtDRxlddrwZJ",
+            "name": "Bone Crusher"
+          },
+          {
+            "id": "i3d0y0lDGRTnDEef",
+            "name": "Breach"
+          },
+          {
+            "id": "TdcU7auHPxJ7eQWK",
+            "name": "Counterattack"
+          },
+          {
+            "id": "2vCQK6ygic7bMj3m",
+            "name": "Melee Weapon Mastery"
+          },
+          {
+            "id": "HCiKZORipi7OzzbH",
+            "name": "Powerful Strike"
+          },
+          {
+            "id": "CHDX5rQLGA5CDkyZ",
+            "name": "Tempest Strike"
           }
         ],
         "effects": 0

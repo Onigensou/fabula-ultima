@@ -115,7 +115,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278388,
+        "templateSystemUniqueVersion": 2788278387,
         "unique": false,
         "uniqueId": "yWlkWZC2vLf4J5Pv"
       },
@@ -155,21 +155,21 @@
           "cost": "-",
           "damage_bonus": "0",
           "defense_target_type": "",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;Whenever the Kirin takes <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage</p></li></ul><p>The Kirin recovers <strong>20 MP</strong>. It begins the conflict with <strong>0 MP</strong>. Any MP gained beyond its maximum becomes <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Shield</strong></a> instead, <strong>stacking with any Shield it already has</strong>.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;Whenever any creature takes&nbsp;<a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage from a source other than the Kirin</p></li></ul><p>The Kirin recovers Mind Points equal to <strong>one fifth</strong> of that damage. It begins the conflict with <strong>0 MP</strong>. Any MP gained beyond its maximum becomes <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Shield</strong></a> instead, <strong>stacking with any Shield it already has</strong>.</p>",
           "details_roller": "Show",
           "duration": "-",
           "effect_table": {
             "0": {
               "effect_kind": "grant",
               "effect_label": "charge_mp",
-              "grant_amount": "20",
+              "grant_amount": "ceil(DAMAGE_DEALT * 0.2)",
               "grant_resource": "mp",
               "target_ref": "self"
             },
             "1": {
               "effect_kind": "grant",
               "effect_label": "charge_overflow",
-              "grant_amount": "max(0, CUR_MP + 20 - MAX_MP)",
+              "grant_amount": "max(0, CUR_MP + ceil(DAMAGE_DEALT * 0.2) - MAX_MP)",
               "grant_resource": "shield",
               "target_ref": "self"
             },
@@ -195,10 +195,11 @@
           "optional_params": {},
           "reaction_config_table": {
             "0": {
-              "condition_formula": "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1",
+              "condition_formula": "TRIGGER_DAMAGE_IS_BOLT == 1 && CAUSE_IS_SELF == 0",
               "reaction_effect_ref": "charge_horn",
               "reaction_passive_mode": "on",
-              "reaction_source": "self",
+              "reaction_resource_filter": "hp",
+              "reaction_source": "",
               "reaction_trigger": "creature_lose_resource"
             }
           },
@@ -214,7 +215,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278388,
+        "templateSystemUniqueVersion": 2788278387,
         "unique": false,
         "uniqueId": "yWlkWZC2vLf4J5Pv"
       },
@@ -324,7 +325,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278388,
+        "templateSystemUniqueVersion": 2788278387,
         "unique": false,
         "uniqueId": "yWlkWZC2vLf4J5Pv"
       },
@@ -362,20 +363,40 @@
           "animation_script": "",
           "check_bonus": "9",
           "class": "NPC",
-          "cost": "50 MP",
-          "damage_bonus": "45",
+          "cost": "0 MP",
+          "damage_bonus": "30",
           "defense_target_type": "mdef",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Pierce</strong></a></p></li><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a></p></li></ul><p>The Kirin looses the charge gathered in its horn.</p><p>Deal <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to <strong>all enemies</strong>, with a <strong>50%</strong> chance to inflict <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Paralyzed</strong></a> on each of them.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Pierce</strong></a></p></li><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a></p></li></ul><p>The Kirin looses everything gathered in its horn.</p><p>The Kirin <strong>consumes all of its Mind Points</strong>, then deals&nbsp;<a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to <strong>all enemies</strong>, with a chance to inflict <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Paralyzed</strong></a> on each of them. Both the damage and that chance rise with the amount consumed &mdash; <strong>moderate</strong> from a dim horn, <strong>heavy</strong> from a bright one, <strong>devastating</strong> from a full one.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
-              "ae_chance_percent": "50",
+              "ae_chance_percent": "min(75, 25 + CUR_MP)",
               "ae_duplicate_mode": "replace",
               "ae_template_ref": "Paralyzed",
               "effect_kind": "apply_ae",
               "effect_label": "apply_paralyzed",
               "target_ref": "hit_action_targets"
+            },
+            "1": {
+              "damage_amount": "min(75, CUR_MP)",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "rail_charge_bonus"
+            },
+            "2": {
+              "effect_kind": "consume_resource",
+              "effect_label": "rail_drain",
+              "grant_amount": "CUR_MP",
+              "grant_resource": "mp",
+              "on_empty": "skip",
+              "target_ref": "self"
+            },
+            "3": {
+              "chain_steps": "apply_paralyzed, rail_drain",
+              "effect_kind": "chain",
+              "effect_label": "rail_chain"
             }
           },
           "gadget_alchemy_tier": "",
@@ -399,11 +420,18 @@
           "pre_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
-              "reaction_effect_ref": "apply_paralyzed",
-              "reaction_passive_mode": "on",
+              "reaction_effect_ref": "rail_chain",
+              "reaction_passive_mode": "force",
               "reaction_source": "self",
               "reaction_source_skill": "Rail Stream",
               "reaction_trigger": "creature_deals_damage"
+            },
+            "1": {
+              "reaction_effect_ref": "rail_charge_bonus",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_source_skill": "Rail Stream",
+              "reaction_trigger": "creature_will_deal_damage"
             }
           },
           "rolled_atr1": "INS",
@@ -422,7 +450,7 @@
           "versatile": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278388,
+        "templateSystemUniqueVersion": 2788278387,
         "unique": false,
         "uniqueId": "yWlkWZC2vLf4J5Pv"
       },
@@ -630,7 +658,7 @@
           "action_pattern_priority": "8",
           "action_pattern_string": "",
           "action_pattern_target_focus": "auto",
-          "action_pattern_value_1": "100",
+          "action_pattern_value_1": "16",
           "action_pattern_value_2": "100"
         },
         "1": {
@@ -838,7 +866,7 @@
       "manadrain_value": 0,
       "max_hp": "210",
       "max_ip": "0",
-      "max_mp": "50",
+      "max_mp": "75",
       "max_zero": "6",
       "mdef_mod": "+5",
       "mig_base": "10",
@@ -848,12 +876,12 @@
       "name": "Kirin",
       "normal_spell_list": {
         "zNhzAhg1phFoHW8q": {
-          "cost": "50 MP",
+          "cost": "0 MP",
           "duration": "Instantaneous",
           "id": "${item.id}",
           "name": "Rail Stream",
           "roll": "",
-          "spell_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Pierce</strong></a></p></li><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a></p></li></ul><p>The Kirin looses the charge gathered in its horn.</p><p>Deal <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to <strong>all enemies</strong>, with a <strong>50%</strong> chance to inflict <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Paralyzed</strong></a> on each of them.</p>",
+          "spell_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Pierce</strong></a></p></li><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a></p></li></ul><p>The Kirin looses everything gathered in its horn.</p><p>The Kirin <strong>consumes all of its Mind Points</strong>, then deals&nbsp;<a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to <strong>all enemies</strong>, with a chance to inflict <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Paralyzed</strong></a> on each of them. Both the damage and that chance rise with the amount consumed &mdash; <strong>moderate</strong> from a dim horn, <strong>heavy</strong> from a bright one, <strong>devastating</strong> from a full one.</p>",
           "spell_target": "All Enemies",
           "uuid": "Actor.TvLv878yZLNUAWNN.Item.zNhzAhg1phFoHW8q"
         }
@@ -879,7 +907,7 @@
         "3JBSipAdIt17tf68": {
           "id": "${item.id}",
           "name": "Lightning Charge",
-          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;Whenever the Kirin takes <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage</p></li></ul><p>The Kirin recovers <strong>20 MP</strong>. It begins the conflict with <strong>0 MP</strong>. Any MP gained beyond its maximum becomes <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Shield</strong></a> instead, <strong>stacking with any Shield it already has</strong>.</p>",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;Whenever any creature takes&nbsp;<a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage from a source other than the Kirin</p></li></ul><p>The Kirin recovers Mind Points equal to <strong>one fifth</strong> of that damage. It begins the conflict with <strong>0 MP</strong>. Any MP gained beyond its maximum becomes <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Shield</strong></a> instead, <strong>stacking with any Shield it already has</strong>.</p>",
           "roll": "",
           "uuid": "Actor.TvLv878yZLNUAWNN.Item.3JBSipAdIt17tf68"
         }
@@ -889,7 +917,7 @@
       "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Kirin_Standard.png",
       "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Kirin_Standard.png",
       "steal_percentage_table": {},
-      "study_text": "<p>A serene horned beast that drinks the storm. Every <strong>bolt</strong> that touches it fills the horn, and one strike of the storm's own fills it completely; what it swallows comes back down on everyone. It drinks without discernment, and <strong>poison</strong> in the water goes straight to the horn.</p>",
+      "study_text": "<p>A serene horned beast that drinks the storm. It need not be struck itself &mdash; every bolt that lands anywhere in its presence runs to the horn, and what the horn cannot hold it wears as armour. It empties itself in a single stroke, and the stroke is only ever as terrible as what it was allowed to swallow. It drinks without discernment, and <strong>poison</strong> in the water goes straight to the horn.</p>",
       "subtype": "Sub-Type",
       "subtype_list": "FEY",
       "sword_ef": "100",
