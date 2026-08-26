@@ -7,7 +7,9 @@ const { IDS, FOLDER_CURRENT_DUNGEON, DONOR_ACTOR, DONOR_ATTACK, DONOR_PASSIVE, L
 const { blankActor, run } = require("./_dragon-util");
 
 const A = IDS.DRAKOZA;
-const ART = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Drakoza_Standard.png";
+// "Deakoza" is genuinely how the asset is named on the Forge (200/13608 bytes);
+// "Drakoza.png" 404s. Do not "correct" this.
+const ART = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Deakoza.png";
 
 const STUDY =
   "<p>A runt of the dragon line, all temper and no cunning — but it <strong>remembers</strong> " +
@@ -71,10 +73,18 @@ run(async ({ changes }) => {
 
   // ── Thrash — spends the whole Fury tally ────────────────────────────────
   // `reaction_source_skill` scopes the spend to THIS attack, so Claw and Tail
-  // Swipe never leak the bank. `add_damage` is read at CONFIRM (pre-resolve, so
-  // the card previews the real number); the clear fires at RESOLVE, after the
-  // damage lands. `include_persistent` is mandatory — Fury is a
-  // persistent_counter and the remove is a silent no-op without it.
+  // Swipe never leak the bank. `adjust_damage` (add/outgoing) is read at CONFIRM
+  // by computeSenderDamageBonuses, so the card previews the real number; the
+  // clear fires at RESOLVE, after the damage lands. `include_persistent` is
+  // mandatory — Fury is a persistent_counter and the remove is a silent no-op
+  // without it.
+  //
+  // ⚠ This row MUST NOT be `add_damage`. That kind is RETIRED (superseded by
+  // adjust_damage, skill-effects.js:2278) and fails twice silently: the
+  // accumulator matches only `adjust_damage` + stage "outgoing", AND the kind is
+  // absent from EFFECT_KIND_DISPATCH so the CHAIN ABORTS on it and never reaches
+  // thrash_spend — Fury would then never be consumed. Caught only by a live
+  // fight (fixed in 6c0a657b); inspection cannot see it.
   changes.push([ik(IDS.DK_THRASH), skill(dAtk, IDS.DK_THRASH, "Thrash", ICON.melee, {
     skill_type: "Attack", skill_target: "One Creature", skill_range: "Melee",
     rolled_atr1: "MIG", rolled_atr2: "MIG",
@@ -93,7 +103,9 @@ run(async ({ changes }) => {
     },
     effect_table: {
       "0": { effect_kind: "chain", effect_label: "thrash_payback", chain_steps: "thrash_bonus, thrash_spend" },
-      "1": { effect_kind: "add_damage", effect_label: "thrash_bonus", damage_amount: "ceil(AE_CHARGES_FURY * 0.5)" },
+      "1": { effect_kind: "adjust_damage", effect_label: "thrash_bonus",
+             damage_operation: "add", damage_stage: "outgoing",
+             damage_amount: "ceil(AE_CHARGES_FURY * 0.5)" },
       "2": { effect_kind: "remove_ae", effect_label: "thrash_spend", ae_template_ref: "Fury",
              include_persistent: true, count: "all", target_ref: "self" },
     },
@@ -143,7 +155,7 @@ run(async ({ changes }) => {
   }, "NEW AE — Fury (persistent_counter, uncapped)"]);
 
   // ── Actor ───────────────────────────────────────────────────────────────
-  const a = blankActor(donor, A, "Drakoza", FOLDER_CURRENT_DUNGEON, ART, 1.5);
+  const a = blankActor(donor, A, "Drakoza", FOLDER_CURRENT_DUNGEON, ART, 1.64);
   const p = a.system.props;
   Object.assign(p, {
     level: "43", npc_rank: "soldier", species: "BEAST", subtype_list: "DRAGON",

@@ -202,7 +202,7 @@ export async function composeAction({
     let result;
     switch (command) {
       case "Attack":
-        result = await composeAttack({ director, snap, token, eligible, cancelSentinel, combatId });
+        result = await composeAttack({ director, snap, token, eligible, cancelSentinel, combatId, grant });
         break;
       case "Guard":
         result = await composeGuard({ director, snap, eligible, cancelSentinel });
@@ -404,7 +404,7 @@ export function registerPlayerComposeActionHandler(channel, isActiveDirector = (
 // pass; subsequent passes for two-weapon are handled by the GM FSM
 // re-entering TARGET, since multi-pass logic is intertwined with
 // COMPUTE/CLEANUP).
-async function composeAttack({ director, snap, token, eligible, cancelSentinel, combatId }) {
+async function composeAttack({ director, snap, token, eligible, cancelSentinel, combatId, grant = null }) {
   // NPC branch — actor has no equipped-weapon concept; the basic attack
   // is chosen from `snap.npcAttackItems` (items with skill_type "Attack").
   // The "weapon-mode" picker doesn't apply: NPCs don't dual-wield in BD.
@@ -412,10 +412,29 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
     return composeAttackNpc({ director, snap, eligible, cancelSentinel });
   }
 
-  const hasMain = !!snap.weapon;
-  const hasOff = !!snap.offWeapon;
-  const virtualAttacks = Array.isArray(snap.virtualAttacks) ? snap.virtualAttacks : [];
+  // A free-action grant may restrict the Attack to a weapon RANGE CLASS
+  // (Counterattack: "this attack must be a melee attack"). Narrow the pool
+  // BEFORE the picker opens so an illegal weapon is never offered — the same
+  // reasoning as the Snared/Obscure rangeBlock below, which shows a weapon as
+  // disabled rather than refusing the action after the pick. Blank = any.
+  const grantLockedUuid = grant?.lockedTargetTokenUuid ?? null;
+  const grantRange = String(grant?.weaponRange ?? "").trim().toLowerCase();
+  const rangeOf = (w) => String(w?.range ?? "").trim().toLowerCase();
+  const matchesGrantRange = (w) => !grantRange || rangeOf(w) === grantRange;
+
+  const grantMain = matchesGrantRange(snap.weapon) ? snap.weapon : null;
+  const grantOff  = matchesGrantRange(snap.offWeapon) ? snap.offWeapon : null;
+  const grantVirtual = (Array.isArray(snap.virtualAttacks) ? snap.virtualAttacks : [])
+    .filter(matchesGrantRange);
+
+  const hasMain = !!grantMain;
+  const hasOff = !!grantOff;
+  const virtualAttacks = grantVirtual;
   const hasVirtual = virtualAttacks.length > 0;
+  if (grantRange && !hasMain && !hasOff && !hasVirtual) {
+    ui.notifications?.warn(`${snap.name} has no ${grantRange} weapon for this free attack.`);
+    return { cancelled: true, reason: "grant-range-no-weapon" };
+  }
   if (!hasMain && !hasOff && !hasVirtual) {
     ui.notifications?.warn(`${snap.name} has no usable weapon.`);
     return { cancelled: true, reason: "no weapon" };
@@ -427,9 +446,12 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
   const picked = await raceCancel(
     pickWeaponMode({
       director,
-      mainWeapon: snap.weapon,
-      offWeapon: snap.offWeapon,
-      allowTwoWeapon: !!snap.canTwoWeaponFight,
+      mainWeapon: grantMain,
+      offWeapon: grantOff,
+      // A locked target forbids multi-pass: pass 2 re-enters TARGET and
+      // re-prompts over every eligible enemy, which would let the second swing
+      // leave the forced target. RAW: "that enemy as its ONLY target".
+      allowTwoWeapon: !!snap.canTwoWeaponFight && !grantLockedUuid,
       twoWeaponSolo: !!snap.twoWeaponSolo,
       virtualAttacks,
       // Range-class lockouts (Snared / Obscure). Passed in so the picker can
@@ -447,7 +469,18 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
     cancelSentinel,
   );
   if (!picked) return { cancelled: true, reason: "weapon-mode-cancelled" };
-  const attackMode = picked;
+  let attackMode = picked;
+  // The picker emits a POSITIONAL index into whatever array it was handed, but
+  // the GM resolves `virtual:N` against the UNFILTERED snapshot list. Handing
+  // it a range-filtered array therefore re-indexes, and the GM would swing a
+  // weapon the filter excluded — silently, with the card naming the wrong one.
+  // Translate back to the canonical `virtualIndex` the snapshot stamps.
+  let localVirtualIdx = null;
+  if (attackMode.startsWith("virtual:")) {
+    localVirtualIdx = Number(attackMode.slice("virtual:".length)) | 0;
+    const canonical = virtualAttacks[localVirtualIdx]?.virtualIndex;
+    if (Number.isInteger(canonical) && canonical >= 0) attackMode = `virtual:${canonical}`;
+  }
 
   // Target pick.
   const enemies = eligible?.enemies ?? [];
@@ -458,11 +491,13 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
 
   // Apply Covered range gate via the unified helper — preserves the
   // `.excluded` side-channel (Vanish overlay etc.). RAW Core p.70.
-  const currentWeapon = attackMode.startsWith("virtual:")
-    ? virtualAttacks[Number(attackMode.slice("virtual:".length)) | 0]
+  // Reads the FILTERED arrays by the LOCAL index, so the range gate below and
+  // the card describe the same weapon the GM will resolve.
+  const currentWeapon = localVirtualIdx != null
+    ? virtualAttacks[localVirtualIdx]
     : (attackMode === "off" || attackMode === "two-weapon-off-first")
-      ? snap.offWeapon
-      : snap.weapon;
+      ? grantOff
+      : grantMain;
   // Range-class lockout (Snared blocks melee, Obscure blocks ranged) is now shown
   // INSIDE the weapon picker as a disabled, red-tagged row (see the rangeBlock
   // argument above) rather than refusing the action after the pick. A blocked row
@@ -503,8 +538,32 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
   // use, so the player pre-picks up to N here and the GM trusts that pre-compose.
   const isMultiPass = attackMode === "two-weapon" || attackMode === "two-weapon-off-first";
 
+  // Forced target from the grant (Counterattack / Counter Pass: "must have
+  // that enemy as its ONLY target"). Until now lockedTargetTokenUuid was
+  // honoured ONLY by the AI autopilot and the sim brain — a PLAYER composing
+  // the same granted attack got the ordinary picker over the whole enemy pool,
+  // so the constraint silently did not exist for the carriers that matter
+  // most (Counterattack ships on the Weaponmaster class template).
+  //
+  // Validated against `filtered`, not taken on faith: if the locked target is
+  // gone / Covered / otherwise ineligible we fall through to the normal picker
+  // rather than composing an illegal action.
+  const lockedUuid = grantLockedUuid;
+  const lockedOk = !!lockedUuid && filtered.some((e) => e.tokenUuid === lockedUuid);
+  if (lockedUuid && !lockedOk) {
+    // The forced target is gone / Covered / otherwise ineligible. The grant is
+    // FORFEIT, not redirected: redirecting composes an action the skill does not
+    // permit and silently upgrades "attack THAT enemy" into "attack anyone".
+    ui.notifications?.warn("The target of that free attack is no longer available.");
+    return { cancelled: true, reason: "locked-target-unavailable" };
+  }
+
   let targetUuids;
-  if (isMultiPass) {
+  if (lockedOk) {
+    // No picker: the grant already decided. Falls through to the shared return
+    // below so the bundle shape stays defined in exactly one place.
+    targetUuids = [lockedUuid];
+  } else if (isMultiPass) {
     const result = await raceCancel(
       requestTargeting({
         director, eligible: filtered, mode: "exact", count: 1,

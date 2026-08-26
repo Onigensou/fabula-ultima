@@ -31,6 +31,7 @@
           "version": "4.8.4"
         }
       },
+      "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
       "name": "Lodestone Core",
       "ownership": {
@@ -138,7 +139,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278387,
+        "templateSystemUniqueVersion": 2788278388,
         "unique": false,
         "uniqueId": "iFdNNGp4OVZVMEcB"
       },
@@ -159,6 +160,7 @@
           "version": "4.8.4"
         }
       },
+      "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
       "name": "Miasma Nova",
       "ownership": {
@@ -232,7 +234,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278387,
+        "templateSystemUniqueVersion": 2788278388,
         "unique": false,
         "uniqueId": "UKzHkmIJcjXZ4GFR"
       },
@@ -253,6 +255,7 @@
           "version": "4.8.4"
         }
       },
+      "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213353.399.png",
       "name": "Venomstone Spines",
       "ownership": {
@@ -321,7 +324,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278387,
+        "templateSystemUniqueVersion": 2788278388,
         "unique": false,
         "uniqueId": "A87i0WJvlVD1w3E7"
       },
@@ -342,6 +345,7 @@
           "version": "4.8.4"
         }
       },
+      "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
       "name": "Basalt Crush",
       "ownership": {
@@ -410,7 +414,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278387,
+        "templateSystemUniqueVersion": 2788278388,
         "unique": false,
         "uniqueId": "yWlkWZC2vLf4J5Pv"
       },
@@ -431,6 +435,7 @@
           "version": "4.8.4"
         }
       },
+      "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
       "name": "Tectonic Collapse",
       "ownership": {
@@ -482,7 +487,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278387,
+        "templateSystemUniqueVersion": 2788278388,
         "unique": false,
         "uniqueId": "UKzHkmIJcjXZ4GFR"
       },

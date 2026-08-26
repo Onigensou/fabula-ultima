@@ -8,7 +8,7 @@ const { IDS, FOLDER_CURRENT_DUNGEON, DONOR_ACTOR, DONOR_ATTACK, DONOR_PASSIVE, D
 const { blankActor, run } = require("./_dragon-util");
 
 const A = IDS.MIST;
-const ART = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Mist%20Dragon_Standard.png";
+const ART = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Mist%20Dragon.png";
 
 const STUDY =
   "<p>Not a dragon so much as a dragon-shaped fog: steel goes clean through it, and every move " +
@@ -223,7 +223,7 @@ run(async ({ changes }) => {
   }), "NEW item — Phantom Shift: Mana Stinger"]);
 
   // ── Actor ───────────────────────────────────────────────────────────────
-  const a = blankActor(donor, A, "Mist Dragon", FOLDER_CURRENT_DUNGEON, ART, 2.2);
+  const a = blankActor(donor, A, "Mist Dragon", FOLDER_CURRENT_DUNGEON, ART, 2.12);
   const p = a.system.props;
   Object.assign(p, {
     level: "45", npc_rank: "elite", species: "ELEMENTAL", subtype_list: "DRAGON",

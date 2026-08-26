@@ -197,6 +197,35 @@ node tools/safe-edit/bin/world-pack.js install --collection actors --from worlds
 `_merge-work/` is gitignored scratch. `install` refuses while Foundry holds a
 LOCK, backs up to `tools/safe-edit/backups/`, and rolls back on a bad key count.
 
+### The key-count oracle (read the numbers, every time)
+
+Each step prints a key count, and **that is the tripwire** — a merge that ADDS
+keys when neither side added a document is wrong by construction. This is not
+theoretical: `bc1e3738` re-shipped 3 ghost actors, and the only visible signal
+was 3138 actor keys where both legitimate sides had 3111.
+
+- `unpack` reports the **source** key count per side. Compare the two sides
+  before you merge anything; an unexplained gap is your answer already.
+- `pack` diffs the packed DB against the **installed** collection and NAMES every
+  added/removed document. Pass `--expect <keys>` to hard-assert a count.
+- `install` prints the same delta and **refuses** if the document set changes at
+  all, until you confirm with `--allow-new`. Growth can be legitimate (the other
+  side authored new content) — the gate exists to make you look, not to block.
+
+Two robustness fixes behind this, both root-caused 2026-08-26:
+
+- **`unpack` now owns its output dir.** The Foundry CLI writes into `--out`
+  *without clearing it*, and `_merge-work/` survives across sessions — so a doc
+  deleted weeks ago kept its `.yml` and rode a merge back into the world. Stale
+  files are now cleared (a non-empty dir that does not look like a prior unpack
+  needs `--force`), and any file that survives with an mtime predating the run is
+  a hard error.
+- **`unpack` no longer trusts the highest-numbered manifest.** A merge commit can
+  leave a DEAD `MANIFEST-*` with a *higher* number than the live one; the old
+  "highest wins" rule clobbered a correct `CURRENT` with it and every unpack died
+  `LEVEL_ITERATOR_NOT_OPEN`, which blocked merges entirely. `CURRENT` is now tried
+  first and manifests are validated by actually opening the DB.
+
 ### Which import tool for which job
 
 | Need | Tool | Game |

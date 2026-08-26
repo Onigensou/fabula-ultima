@@ -64,7 +64,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278387,
+        "templateSystemUniqueVersion": 2788278388,
         "unique": false,
         "uniqueId": "8u1xJ1G1CrJNf6Cp"
       },
@@ -181,7 +181,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278387,
+        "templateSystemUniqueVersion": 2788278388,
         "unique": false,
         "uniqueId": "x4bzOjIZqfj8ybfq"
       },
@@ -318,7 +318,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278387,
+        "templateSystemUniqueVersion": 2788278388,
         "unique": false,
         "uniqueId": "NpW7TDPCJRMVhH2K"
       },
@@ -438,7 +438,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278387,
+        "templateSystemUniqueVersion": 2788278388,
         "unique": true,
         "uniqueId": "VWe1aZLTjGQanHrQ"
       },
@@ -476,6 +476,31 @@
           "damage_bonus": "0",
           "description": "<p>After an enemy hits or misses you with a <strong>melee attack</strong>, if the Result of their Accuracy Check was an <strong>even number</strong>, you may perform a free attack against that enemy (after their attack has been fully resolved). This attack must be a <strong>melee attack</strong> and must have <strong>that enemy as its only target</strong>; treat your <strong>High Roll (HR)</strong> as 0 when calculating damage dealt by this attack</p>",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "action_ref": "Attack",
+              "allowed_skill_refs": "",
+              "chain": false,
+              "check_bonus_formula": "",
+              "condition_formula": "",
+              "consume_self": false,
+              "damage_bonus_formula": "",
+              "effect_kind": "free_action",
+              "effect_label": "ca_free",
+              "element_override": "",
+              "free_hr_as_zero": true,
+              "free_of_cost": false,
+              "free_weapon_range": "melee",
+              "from_resource": "",
+              "max_mp_cost": "",
+              "menu_label": "",
+              "on_hit_effect_refs": "",
+              "performer_ref": "",
+              "target_ref": "trigger_attacker",
+              "to_resource": ""
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": false,
@@ -488,13 +513,58 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
+              "condition_formula": "ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT % 2 == 0",
               "reaction_action_intent": "harmful",
+              "reaction_action_kind": "",
+              "reaction_action_target": "",
+              "reaction_cause_filter": "",
               "reaction_damage_amount": "",
+              "reaction_damage_outcome": "",
+              "reaction_damage_source": "enemy",
               "reaction_damage_type": "",
+              "reaction_effect_ref": "ca_free",
+              "reaction_max_per_round": "",
+              "reaction_max_scope": "",
+              "reaction_origin_filter": "",
+              "reaction_ownership": "",
               "reaction_passive_mode": "ask",
-              "reaction_passive_target": "",
+              "reaction_passive_target": "self",
+              "reaction_requires_weapon_used": "",
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
               "reaction_source": "self",
-              "reaction_trigger": "creature_hit_by_action"
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_hit_by_action",
+              "requires_skill": ""
+            },
+            "1": {
+              "$deleted": false,
+              "condition_formula": "ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT % 2 == 0",
+              "reaction_action_intent": "harmful",
+              "reaction_action_kind": "",
+              "reaction_action_target": "",
+              "reaction_cause_filter": "",
+              "reaction_damage_amount": "",
+              "reaction_damage_outcome": "",
+              "reaction_damage_type": "",
+              "reaction_effect_ref": "ca_free",
+              "reaction_max_per_round": "",
+              "reaction_max_scope": "",
+              "reaction_origin_filter": "",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "ask",
+              "reaction_passive_target": "self",
+              "reaction_requires_weapon_used": "",
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
+              "reaction_source": "enemy",
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_miss_action",
+              "requires_skill": ""
             }
           },
           "rolled_atr1": "-",
@@ -505,7 +575,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278387,
+        "templateSystemUniqueVersion": 2788278388,
         "unique": false,
         "uniqueId": "IEFFYKz9pycXYl7G"
       },
@@ -668,7 +738,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278387,
+        "templateSystemUniqueVersion": 2788278388,
         "unique": false,
         "uniqueId": "4JB73i77JIWq3tVe"
       },

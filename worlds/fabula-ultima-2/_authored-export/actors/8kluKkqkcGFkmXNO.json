@@ -85,7 +85,7 @@
           "uuid": "Actor.8kluKkqkcGFkmXNO.Item.crizxSUcTFdlJKpi"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278387,
+        "templateSystemUniqueVersion": 2788278388,
         "unique": false,
         "uniqueId": "A87i0WJvlVD1w3E7"
       },
@@ -179,7 +179,7 @@
           "uuid": "Actor.8kluKkqkcGFkmXNO.Item.CtR3hgvUBHBQ8r7S"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278387,
+        "templateSystemUniqueVersion": 2788278388,
         "unique": false,
         "uniqueId": "yWlkWZC2vLf4J5Pv"
       },
@@ -254,7 +254,7 @@
           "uuid": "Actor.8kluKkqkcGFkmXNO.Item.f6bn9d3f5NIdXbbA"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278387,
+        "templateSystemUniqueVersion": 2788278388,
         "unique": false,
         "uniqueId": "vdEX0eAROfOYjHED"
       },
@@ -348,7 +348,7 @@
           "uuid": "Actor.8kluKkqkcGFkmXNO.Item.fecg9O0PTPyAsxVj"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278387,
+        "templateSystemUniqueVersion": 2788278388,
         "unique": false,
         "uniqueId": "A87i0WJvlVD1w3E7"
       },
@@ -442,7 +442,7 @@
           "uuid": "Actor.8kluKkqkcGFkmXNO.Item.Iobix2EOuXqGNH6X"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278387,
+        "templateSystemUniqueVersion": 2788278388,
         "unique": false,
         "uniqueId": "A87i0WJvlVD1w3E7"
       },
@@ -461,14 +461,6 @@
       "effects": [
         {
           "_id": "mCnN3sS8zwYPOZox",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": null,
-            "systemVersion": null
-          },
           "changes": [
             {
               "key": "affinity_1",
@@ -479,15 +471,7 @@
           ],
           "description": "<p>The body is a suggestion. Blades find nothing to bite.</p>",
           "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
+          "duration": {},
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -495,19 +479,17 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
           "name": "Illusory Form",
           "origin": "Actor.8kluKkqkcGFkmXNO.Item.vvdntvwGzqaQ3m41",
-          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "illusory-form"
             ]
           },
-          "tint": "#ffffff",
-          "transfer": false,
-          "type": "base"
+          "transfer": false
         }
       ],
       "flags": {
@@ -611,7 +593,7 @@
           "uuid": "Actor.8kluKkqkcGFkmXNO.Item.vvdntvwGzqaQ3m41"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278387,
+        "templateSystemUniqueVersion": 2788278388,
         "unique": false,
         "uniqueId": "vdEX0eAROfOYjHED"
       },
@@ -717,7 +699,7 @@
           "uuid": "Actor.8kluKkqkcGFkmXNO.Item.zv0kGWfm8fpxeSC4"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278387,
+        "templateSystemUniqueVersion": 2788278388,
         "unique": false,
         "uniqueId": "A87i0WJvlVD1w3E7"
       },
@@ -729,6 +711,7 @@
     "default": 0
   },
   "prototypeToken": {
+    "actorId": "8kluKkqkcGFkmXNO",
     "actorLink": false,
     "alpha": 1,
     "appendNumber": false,

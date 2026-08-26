@@ -8303,6 +8303,7 @@ async function applyOpenActionMenuEffect(row, ctx) {
       reactorActorUuid: reactor.uuid,
       reactorTokenUuid: ctx.reactorToken?.uuid ?? null,
       enabledLabels, checkBonus, damageBonus, hrAsZero,
+      weaponRange: String(row.free_weapon_range ?? "").trim().toLowerCase() || null,
       sourceLabel,
       sourceItemUuid: ctx.skill?.uuid ?? null,
       maxMpCost:             null,    // future: row.max_mp_cost
@@ -8457,6 +8458,16 @@ async function applyFreeActionEffect(row, ctx) {
   // max_mp_cost cap still gates WHICH spell is eligible (by printed cost).
   const freeOfCost = row.free_of_cost === true || String(row.free_of_cost ?? "").trim().toLowerCase() === "true";
 
+  // free_weapon_range — restrict the granted Attack to a weapon RANGE CLASS
+  // ("melee" / "ranged"). RAW shapes like Counterattack ("this attack must be a
+  // melee attack") and Bullet Break could not be expressed before: action_ref is
+  // a TYPE filter and allowed_skill_refs only reaches the Skill/Spell picker,
+  // never the Attack path's weapon selection. Declarative and general — any
+  // grant can set it; composeAttack filters the weapon picker to matching
+  // weapons. ⚠ PLAYER compose only so far — the NPC compose path and the AI
+  // fallback do not read it. Empty = unrestricted (unchanged).
+  const weaponRange = String(row.free_weapon_range ?? "").trim().toLowerCase() || null;
+
   // Optional locked targets.
   let presetTargetTokenUuids = null;
   if (String(row.target_ref ?? "").trim()) {
@@ -8564,7 +8575,7 @@ async function applyFreeActionEffect(row, ctx) {
     reactorActorId:   performer.id,
     reactorActorUuid: performer.uuid,
     reactorTokenUuid: performerToken?.uuid ?? ctx.reactorToken?.uuid ?? null,
-    enabledLabels, checkBonus, damageBonus, hrAsZero, freeOfCost,
+    enabledLabels, checkBonus, damageBonus, hrAsZero, freeOfCost, weaponRange,
     sourceLabel,
     sourceItemUuid: ctx.skill?.uuid ?? null,
     maxMpCost,
