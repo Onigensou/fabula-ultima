@@ -19953,16 +19953,16 @@
             "name": "Consume Life"
           },
           {
-            "id": "mDCsEDSOUSpgzWqy",
-            "name": "Flee"
-          },
-          {
             "id": "HPmZBHFvEayaBTMv",
             "name": "Life Residue"
           },
           {
             "id": "xv29h2B2X7EuECAI",
             "name": "Mega-Remedy"
+          },
+          {
+            "id": "mDCsEDSOUSpgzWqy",
+            "name": "Run Away"
           }
         ],
         "effects": 0
@@ -20111,16 +20111,16 @@
             "name": "Consume Mana"
           },
           {
-            "id": "4IrUKGEoVA4r7gls",
-            "name": "Flee"
-          },
-          {
             "id": "A16EULxPG2dENY71",
             "name": "Mana Residue"
           },
           {
             "id": "wJJ3Jqpeol4tUqQQ",
             "name": "Mega-Elixir"
+          },
+          {
+            "id": "4IrUKGEoVA4r7gls",
+            "name": "Run Away"
           }
         ],
         "effects": 0

@@ -3,20 +3,14 @@
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1704912275172,
+    "createdTime": null,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
   "flags": {
     "custom-system-builder": {
-      "version": "4.5.0"
-    },
-    "fabula-ultima-companion": {
-      "idleAnimation": {
-        "bounce": false,
-        "float": true
-      }
+      "version": "4.8.5"
     }
   },
   "folder": "Nd8LnosrPid1eX1r",
@@ -25,48 +19,107 @@
     {
       "_id": "1mFdPUJbqw75sgsR",
       "_stats": {
-        "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1769576330856,
-        "duplicateSource": null,
+        "createdTime": null,
+        "duplicateSource": "Item.yWlkWZC2vLf4J5Pv",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "YVD5skR9nSRA1Xje",
+          "changes": [],
+          "description": "<p>It has fed. Now it only wants to leave.</p>",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "crossScene": false,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
+          "name": "Eaten",
+          "origin": "Actor.nyHr1MwzRKcGUdyW.Item.1mFdPUJbqw75sgsR",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "gorger_eaten"
+            ]
+          },
+          "transfer": false
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.4"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
+      "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
       "name": "Consume Life",
       "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
         "default": 0
       },
-      "sort": 0,
+      "sort": 100000,
       "system": {
         "props": {
+          "action_keywords": "",
           "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
           "animation_script": "",
-          "check_bonus": "0",
+          "check_bonus": "1",
           "class": "NPC",
           "cost": "-",
-          "damage_bonus": "",
+          "damage_bonus": "0",
           "defense_target_type": "def",
-          "description": "<p>Reduce the target HP by 50%. Then gain the <strong>Eaten</strong> buff.</p><p>&nbsp;</p><p>This skill is not usable if the Life Gorger has <strong>Eaten</strong>.</p>",
+          "description": "<p>The Gorger takes a bite out of whatever is keeping the target upright, halving their <strong>current HP</strong>.</p>",
+          "details_roller": "Show",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "chain_steps": "consume_bite, consume_feed",
+              "effect_kind": "chain",
+              "effect_label": "consume_chain"
+            },
+            "1": {
+              "damage_amount": "ceil(CUR_HP * 0.5)",
+              "damage_cause": "damage",
+              "damage_element": "elementless",
+              "damage_ignore_affinity": true,
+              "damage_resource": "hp",
+              "effect_kind": "deal_damage",
+              "effect_label": "consume_bite",
+              "target_ref": "action_targets"
+            },
+            "2": {
+              "ae_duplicate_mode": "skip",
+              "ae_template_ref": "Eaten",
+              "effect_kind": "apply_ae",
+              "effect_label": "consume_feed",
+              "target_ref": "self"
+            }
+          },
           "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
           "isReaction": false,
+          "isZeroPower": false,
           "level": "1",
           "max_level": "1",
           "name": "Consume Life",
+          "on_activate_effect_ref": "consume_chain",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "-",
@@ -78,22 +131,23 @@
           "skill_target": "One Creature",
           "skill_type": "Active",
           "type_damage": "",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.nyHr1MwzRKcGUdyW.Item.1mFdPUJbqw75sgsR"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2788278388,
         "unique": false,
-        "uniqueId": "UKzHkmIJcjXZ4GFR"
+        "uniqueId": "A87i0WJvlVD1w3E7"
       },
       "type": "equippableItem"
     },
     {
       "_id": "HPmZBHFvEayaBTMv",
       "_stats": {
-        "compendiumSource": "Item.aGZAOUdRyopqoDyc",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1769576643415,
-        "duplicateSource": "Item.iFdNNGp4OVZVMEcB",
+        "createdTime": null,
+        "duplicateSource": "Item.mJuSEmMc3A0HrqNO",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
@@ -102,63 +156,91 @@
           "version": "4.8.4"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
+      "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/enhanced_healing_magic.png",
       "name": "Life Residue",
       "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
         "default": 0
       },
       "sort": 0,
       "system": {
         "props": {
+          "action_keywords": "",
           "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
           "animation_script": "",
           "check_bonus": "0",
           "class": "NPC",
           "cost": "-",
-          "damage_bonus": "",
+          "damage_bonus": "0",
           "defense_target_type": "def",
-          "description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Trigger</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>When the Life Gorger is reduce to 0 HP</p></li></ul><p>If the Life Gorger has<strong> Eaten</strong>, Restore 100% HP to the character who reduce it to 0 HP.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the <strong>Life Gorger</strong> is reduced to 0 HP</p></li></ul><p>If it had <strong>Eaten</strong>, the stolen vitality snaps back to its owner. The creature that struck it down fully recovers <strong>HP</strong>.</p>",
+          "details_roller": "Show",
           "duration": "-",
+          "effect_table": {
+            "0": {
+              "effect_kind": "set_resource",
+              "effect_label": "residue_give",
+              "grant_amount": "MAX_HP",
+              "grant_resource": "hp",
+              "target_ref": "cause_actor"
+            }
+          },
           "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/enhanced_healing_magic.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
-          "isReaction": false,
+          "isReaction": true,
+          "isZeroPower": false,
           "level": "1",
           "max_level": "1",
           "name": "Life Residue",
+          "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "AE_CHARGES_EATEN >= 1",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "residue_give",
+              "reaction_passive_mode": "force",
+              "reaction_resource_filter": "",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_defeated"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
           "skill_animation_mode": "default",
           "skill_information": "",
-          "skill_range": "",
+          "skill_range": "-",
           "skill_target": "-",
           "skill_type": "Passive",
           "type_damage": "",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.nyHr1MwzRKcGUdyW.Item.HPmZBHFvEayaBTMv"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2788278388,
         "unique": false,
-        "uniqueId": "aGZAOUdRyopqoDyc"
+        "uniqueId": "vdEX0eAROfOYjHED"
       },
       "type": "equippableItem"
     },
     {
       "_id": "mDCsEDSOUSpgzWqy",
       "_stats": {
-        "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1769576343427,
-        "duplicateSource": null,
+        "createdTime": null,
+        "duplicateSource": "Item.yWlkWZC2vLf4J5Pv",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
@@ -167,36 +249,78 @@
           "version": "4.8.4"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
+      "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/CombatRangerSkill7.png",
-      "name": "Flee",
+      "name": "Run Away",
       "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
         "default": 0
       },
-      "sort": 0,
+      "sort": 100000,
       "system": {
         "props": {
+          "action_keywords": "",
           "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
           "animation_script": "",
-          "check_bonus": "0",
+          "check_bonus": "1",
           "class": "NPC",
           "cost": "-",
-          "damage_bonus": "",
+          "damage_bonus": "0",
           "defense_target_type": "def",
-          "description": "<p>Flee the scene, have 50% chance of success.</p>",
+          "description": "<p>Cheeks full, the Gorger turns to leave. The party makes a <strong>DL 15</strong> <strong>【DEX + INS】</strong> Group Check — on a failure it slips away and the conflict carries on without it.</p>",
+          "details_roller": "Show",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "chain_steps": "escape_check, escape_flee",
+              "effect_kind": "chain",
+              "effect_label": "run_away"
+            },
+            "1": {
+              "candidate_source": "combat",
+              "category": "enemy",
+              "effect_kind": "targeting",
+              "effect_label": "escape_party",
+              "exclude_self": true,
+              "mode": "all"
+            },
+            "2": {
+              "effect_kind": "group_check",
+              "effect_label": "escape_check",
+              "gc_attr1": "dex",
+              "gc_attr2": "ins",
+              "gc_dl": "15",
+              "gc_helper_bonus": "1",
+              "gc_mode": "designated",
+              "gc_on_error": "fail",
+              "gc_timeout": "60000",
+              "gc_var": "escape",
+              "target_ref": "escape_party"
+            },
+            "3": {
+              "condition_formula": "VAR_ESCAPE == 0",
+              "effect_kind": "leave_combat",
+              "effect_label": "escape_flee",
+              "target_ref": "self"
+            }
+          },
           "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/CombatRangerSkill7.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
           "isReaction": false,
+          "isZeroPower": false,
           "level": "1",
           "max_level": "1",
-          "name": "Flee",
+          "name": "Run Away",
+          "on_activate_effect_ref": "run_away",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "-",
@@ -208,12 +332,13 @@
           "skill_target": "Self",
           "skill_type": "Active",
           "type_damage": "",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.nyHr1MwzRKcGUdyW.Item.mDCsEDSOUSpgzWqy"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2788278388,
         "unique": false,
-        "uniqueId": "UKzHkmIJcjXZ4GFR"
+        "uniqueId": "A87i0WJvlVD1w3E7"
       },
       "type": "equippableItem"
     },
@@ -259,10 +384,10 @@
   ],
   "name": "Life Gorger",
   "ownership": {
-    "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
   "prototypeToken": {
+    "actorId": "nyHr1MwzRKcGUdyW",
     "actorLink": false,
     "alpha": 1,
     "appendNumber": false,
@@ -277,13 +402,6 @@
     "displayName": 50,
     "disposition": -1,
     "flags": {
-      "Border-Control": {
-        "borderCustomBaseOpacity": 0.5,
-        "borderCustomColorExt": "#000000",
-        "borderCustomColorInt": "#000000",
-        "borderCustomFrameOpacity": 0.5,
-        "noBorder": false
-      },
       "barbrawl": {
         "resourceBars": {
           "bar1": {
@@ -302,7 +420,6 @@
             "invert": false,
             "invertDirection": false,
             "label": "HP",
-            "max": null,
             "maxcolor": "#80FF00",
             "mincolor": "#FF0000",
             "opacity": null,
@@ -331,7 +448,6 @@
             "invert": false,
             "invertDirection": false,
             "label": "MP",
-            "max": null,
             "maxcolor": "#80B3FF",
             "mincolor": "#000080",
             "opacity": null,
@@ -375,21 +491,8 @@
         }
       },
       "hex-size-support": {
-        "alternateOrientation": false,
         "hideBorder": true,
-        "hideFill": false,
-        "pivotx": null,
-        "pivoty": null
-      },
-      "token-variants": {
-        "disableHUDButton": false,
-        "randomImgDefault": ""
-      },
-      "token-z": {
-        "zIndex": 0
-      },
-      "wall-height": {
-        "tokenHeight": 0
+        "hideFill": true
       }
     },
     "height": 1,
@@ -431,7 +534,7 @@
         "background": null,
         "ring": null
       },
-      "effects": 0,
+      "effects": 1,
       "enabled": false,
       "subject": {
         "scale": 1,
@@ -465,29 +568,61 @@
     },
     "width": 1
   },
-  "sort": 1100000,
+  "sort": 0,
   "system": {
     "activeConditionalModifierGroups": [],
-    "activeEffects": {},
     "props": {
+      "action_pattern_table": {
+        "0": {
+          "$deleted": false,
+          "action_pattern_condition": "self_has_status",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Run Away",
+          "action_pattern_priority": "8",
+          "action_pattern_string": "Eaten",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        },
+        "1": {
+          "$deleted": false,
+          "action_pattern_condition": "self_lacks_status",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Consume Life",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "Eaten",
+          "action_pattern_target_focus": "highest_hp",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        }
+      },
       "activation": "1",
       "affinity_1": "NA",
       "affinity_2": "NA",
       "affinity_3": "NA",
-      "affinity_4": "NA",
+      "affinity_4": "VU",
       "affinity_5": "NA",
       "affinity_6": "NA",
       "affinity_7": "NA",
-      "affinity_8": "NA",
+      "affinity_8": "RS",
       "affinity_9": "NA",
       "animation_table": {},
-      "arcane_ef": "100",
+      "arcane_ef": "125",
+      "attack_list": {},
       "attribute": "LIGHT",
       "battle_facing_direction": "left",
       "bonus_hp": 0,
       "bonus_mp": 0,
-      "bow_ef": "100",
-      "brawling_ef": "100",
+      "bow_ef": "75",
+      "brawling_ef": "75",
+      "check_mod_all": 0,
+      "check_mod_magic": 0,
+      "check_mod_melee": 0,
+      "check_mod_ranged": 0,
       "condition_anomaly": "NA",
       "condition_bane": "NA",
       "condition_berserk": "NA",
@@ -497,15 +632,15 @@
       "condition_charm": "NA",
       "condition_confused": "NA",
       "condition_curse": "NA",
-      "condition_dazed": "NA",
+      "condition_dazed": "IM",
       "condition_delayed": "NA",
       "condition_despair": "NA",
       "condition_disarmed": "NA",
       "condition_doom": "NA",
-      "condition_enraged": "NA",
-      "condition_envenomed": "NA",
+      "condition_enraged": "IM",
+      "condition_envenomed": "IM",
       "condition_fatigue": "NA",
-      "condition_frightened": "NA",
+      "condition_frightened": "IM",
       "condition_grappled": "NA",
       "condition_hypothermia": "NA",
       "condition_isolate": "NA",
@@ -514,8 +649,8 @@
       "condition_panic": "NA",
       "condition_paralyzed": "NA",
       "condition_petrify": "NA",
-      "condition_poisoned": "NA",
-      "condition_shaken": "NA",
+      "condition_poisoned": "IM",
+      "condition_shaken": "IM",
       "condition_silence": "NA",
       "condition_slow": "NA",
       "condition_stagger": "NA",
@@ -524,30 +659,75 @@
       "condition_weak": "NA",
       "condition_wet": "NA",
       "condition_wither": "NA",
-      "condition_zombie": "NA",
+      "condition_zombie": "IM",
+      "critical_damage_bonus": 0,
+      "critical_damage_multiplier": 1,
+      "critical_dice_range": 0,
       "current_hp": "30",
       "current_ip": "0",
-      "current_mp": "1",
-      "cut_in_critical": "",
-      "cut_in_fumble": "",
+      "current_mp": "200",
+      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Life%20Eater.png",
+      "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Life%20Eater.png",
       "cut_in_offset_y": "",
-      "cut_in_zero_power": "",
-      "dagger_ef": "100",
-      "def_mod": "+5",
+      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Life%20Eater.png",
+      "dagger_ef": "75",
+      "damage_receiving_mod_air": 0,
+      "damage_receiving_mod_all": 0,
+      "damage_receiving_mod_bolt": 0,
+      "damage_receiving_mod_dark": 0,
+      "damage_receiving_mod_earth": 0,
+      "damage_receiving_mod_fire": 0,
+      "damage_receiving_mod_ice": 0,
+      "damage_receiving_mod_light": 0,
+      "damage_receiving_mod_melee": 0,
+      "damage_receiving_mod_physical": 0,
+      "damage_receiving_mod_poison": 0,
+      "damage_receiving_mod_range": 0,
+      "def_mod": "+8",
       "default_facing_direction": "right",
-      "dex_base": "8",
+      "defense": 18,
+      "dex_base": "10",
+      "dex_current": 10,
+      "enmity": 100,
       "event_timeline_table": {},
-      "firearm_ef": "100",
-      "flail_ef": "100",
+      "extra_damage_mod_air": 0,
+      "extra_damage_mod_all": 0,
+      "extra_damage_mod_arcane": 0,
+      "extra_damage_mod_bolt": 0,
+      "extra_damage_mod_bow": 0,
+      "extra_damage_mod_brawling": 0,
+      "extra_damage_mod_dagger": 0,
+      "extra_damage_mod_dark": 0,
+      "extra_damage_mod_earth": 0,
+      "extra_damage_mod_fire": 0,
+      "extra_damage_mod_firearm": 0,
+      "extra_damage_mod_flail": 0,
+      "extra_damage_mod_heavy": 0,
+      "extra_damage_mod_ice": 0,
+      "extra_damage_mod_light": 0,
+      "extra_damage_mod_melee": 0,
+      "extra_damage_mod_physical": 0,
+      "extra_damage_mod_poison": 0,
+      "extra_damage_mod_ranged": 0,
+      "extra_damage_mod_spear": 0,
+      "extra_damage_mod_spell": 0,
+      "extra_damage_mod_sword": 0,
+      "extra_damage_mod_thrown": 0,
+      "firearm_ef": "75",
+      "flail_ef": "75",
       "gorger": true,
-      "heavy_ef": "100",
+      "heavy_ef": "75",
       "icon_offset_x": "",
       "icon_offset_y": "",
       "icon_scale": "",
-      "init": "10",
+      "id": "nyHr1MwzRKcGUdyW",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Life%20Eater.png",
+      "init": "12",
       "ins_base": "8",
+      "ins_current": 8,
       "isAlmighty": false,
       "isAwake": false,
+      "isBlacksmith": false,
       "isBoss": false,
       "isClarity": false,
       "isCustomEvent": false,
@@ -557,6 +737,7 @@
       "isEnraged": false,
       "isFocus": false,
       "isMasterful": false,
+      "isPhantasm": false,
       "isPoisoned": false,
       "isShaken": false,
       "isShop": false,
@@ -569,15 +750,27 @@
       "isVillain": false,
       "isWeak": false,
       "level": "15",
+      "lifesteal_percentage": 0,
+      "lifesteal_value": 0,
+      "magic_defense": 13,
+      "manadrain_percentage": 0,
+      "manadrain_value": 0,
       "max_hp": "30",
       "max_ip": "0",
-      "max_mp": "1",
+      "max_mp": "200",
       "max_zero": "0",
-      "mdef_mod": "+0",
-      "mig_base": "8",
+      "mdef_mod": "+5",
+      "mig_base": "6",
+      "mig_current": 6,
       "mimic": false,
+      "minimum_critical_dice": 6,
       "name": "Life Gorger",
+      "normal_spell_list": {},
       "npc_rank": "soldier",
+      "override_all_damage_type": "None",
+      "override_attack_damage_type": "None",
+      "override_damage_type": "None",
+      "override_spell_damage_type": "None",
       "rare": false,
       "resource_maxValue_1": "0",
       "resource_maxValue_2": "0",
@@ -593,7 +786,7 @@
       "skill_active_list": {
         "1mFdPUJbqw75sgsR": {
           "active_cost": "-",
-          "active_description": "<p>Reduce the target HP by 50%. Then gain the <strong>Eaten</strong> buff.</p><p>&nbsp;</p><p>This skill is not usable if the Life Gorger has <strong>Eaten</strong>.</p>",
+          "active_description": "<p>The Gorger takes a bite out of whatever is keeping the target upright, halving their <strong>current HP</strong>.</p>",
           "active_duration": "Instantaneous",
           "active_target": "One Creature",
           "id": "${item.id}",
@@ -603,11 +796,11 @@
         },
         "mDCsEDSOUSpgzWqy": {
           "active_cost": "-",
-          "active_description": "<p>Flee the scene, have 50% chance of success.</p>",
+          "active_description": "<p>Cheeks full, the Gorger turns to leave. The party makes a <strong>DL 15</strong> <strong>【DEX + INS】</strong> Group Check — on a failure it slips away and the conflict carries on without it.</p>",
           "active_duration": "Instantaneous",
           "active_target": "Self",
           "id": "${item.id}",
-          "name": "Flee",
+          "name": "Run Away",
           "roll": "",
           "uuid": "Actor.nyHr1MwzRKcGUdyW.Item.mDCsEDSOUSpgzWqy"
         }
@@ -616,23 +809,22 @@
         "HPmZBHFvEayaBTMv": {
           "id": "${item.id}",
           "name": "Life Residue",
-          "passive_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Trigger</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>When the Life Gorger is reduce to 0 HP</p></li></ul><p>If the Life Gorger has<strong> Eaten</strong>, Restore 100% HP to the character who reduce it to 0 HP.</p>",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the <strong>Life Gorger</strong> is reduced to 0 HP</p></li></ul><p>If it had <strong>Eaten</strong>, the stolen vitality snaps back to its owner. The creature that struck it down fully recovers <strong>HP</strong>.</p>",
           "roll": "",
           "uuid": "Actor.nyHr1MwzRKcGUdyW.Item.HPmZBHFvEayaBTMv"
-        },
-        "d6L3Vo2EY3NrEHZQ": {
-          "id": "${item.id}",
-          "name": "Generic NPC Passive",
-          "passive_description": "<p>When the Life Gorger dies. If the Life Gorger has<strong> Eaten</strong>, Restore 100% HP to the character who reduce it to 0 HP.</p>",
-          "roll": "",
-          "uuid": "Actor.nyHr1MwzRKcGUdyW.Item.d6L3Vo2EY3NrEHZQ"
         }
       },
-      "spear_ef": "100",
+      "spear_ef": "75",
       "species": "ELEMENTAL",
-      "sprite_battle": "",
-      "sprite_standard": "",
-      "steal_percentage_table": {},
+      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Life%20Eater.png",
+      "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Life%20Eater.png",
+      "steal_percentage_table": {
+        "0": {
+          "$deleted": false,
+          "steal_item_name": "Mega-Remedy",
+          "steal_item_percentage": "100"
+        }
+      },
       "stealable_loot": {
         "xv29h2B2X7EuECAI": {
           "id": "${item.id}",
@@ -642,16 +834,19 @@
           "uuid": "Actor.nyHr1MwzRKcGUdyW.Item.xv29h2B2X7EuECAI"
         }
       },
-      "study_text": "<p>An Light-Type gorger, it absorb life force, and unleash it upon death.</p>",
+      "study_text": "<p>The Mana Gorger's greedier cousin. It takes one bite of whatever is living and nearest, then bolts with its cheeks full. Its hide turns blades aside with insulting ease, but nobody ever taught it to ward off a <strong>spell</strong>.</p>",
+      "subtype": "Sub-Type",
       "subtype_list": "GORGER",
-      "sword_ef": "100",
+      "sword_ef": "75",
       "tactic_notes": "",
-      "thrown_ef": "100",
+      "thrown_ef": "75",
       "token_option_persist": false,
-      "traits": "Gorger, Elemental Creature, Light-Align",
+      "traits": "Gorger, Elemental Creature, Light-Align, Cowardly",
       "ultima_point": "0",
       "unique": false,
+      "uuid": "Actor.nyHr1MwzRKcGUdyW",
       "wlp_base": "8",
+      "wlp_current": 8,
       "zenit_reward_max": "10",
       "zenit_reward_min": "5",
       "zero_power_value": "0"

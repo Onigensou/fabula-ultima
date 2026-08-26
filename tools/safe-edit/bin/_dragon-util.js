@@ -62,7 +62,10 @@ function blankActor(donor, id, name, folder, art, tokenScale) {
   return a;
 }
 
-async function run(build) {
+// `label` only names the run in the safe-edit journal. Defaulted so the
+// original Valley of the Dragon scripts behave byte-identically; later monster
+// builds (the Gorger family) reuse this harness and pass their own.
+async function run(build, label = "valley-of-the-dragon") {
   const changes = [];
   await build({ changes });
 
@@ -89,7 +92,7 @@ async function run(build) {
   journal.append({
     uuid: "collection:actors", collection: "actors", key: changes.map((c) => c[0]).join(","),
     beforeHash: null, afterHash: null, backupPath, patch: null,
-    note: `valley-of-the-dragon: ${changes.length} docs — ${changes.map((c) => c[2]).join("; ")}`,
+    note: `${label}: ${changes.length} docs — ${changes.map((c) => c[2]).join("; ")}`,
   });
   console.log(`\nwrote ${changes.length} docs`);
 }
