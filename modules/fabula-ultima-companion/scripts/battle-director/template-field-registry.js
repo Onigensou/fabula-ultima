@@ -87,6 +87,10 @@ const CHECK_BUFF_VIS = `equalText(sameRow("effect_kind",''), "check_buff")`;
 // action's PER-TARGET grant amount (Cognitive Focus, Potion Rain, the Retainer
 // uniforms' "+5 HP/MP from your potions").
 const ADJUST_GRANT_VIS = `equalText(sameRow("effect_kind",''), "adjust_grant")`;
+// group_check — a FU Group Check (leader + helpers vs one DL) whose leader
+// result lands in a chain var for a later row to branch on. Sibling of
+// save_check, which instead rolls N independent per-target saves.
+const GROUP_CHECK_VIS = `equalText(sameRow("effect_kind",''), "group_check")`;
 
 // ── reaction_config_table visibility ─────────────────────────────────────────
 // The trigger-specific FILTER cells. Gated by coarse trigger FAMILY (declared in
@@ -645,6 +649,25 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // that already received it.
   textCol("menu_description", "Menu Description", { tooltip: "Shown under this row's label when it is offered as a menu option. Supports ${...} interpolation. The parent menu's Option Descriptions win when it supplies one.", vis: "", reconcileVis: true }),
   textCol("menu_color", "Menu Color", { tooltip: "Accent colour (CSS, e.g. #e8603c) for this row's option in a menu. The parent menu's Option Colors win when it supplies one. Blank = no accent.", vis: "", reconcileVis: true }),
+  // ── group_check config ─────────────────────────────────────────────────
+  // Adapter fields for ONI.GroupCheck.request (cr-group-check.js). Kept on the
+  // gc_ prefix so they never collide with save_check's save_ fields — the two
+  // kinds look alike and an author WILL put the wrong one on the wrong row.
+  selectCol("gc_attr1", "Group Check Attr 1", [{ key: "dex", value: "DEX" }, { key: "ins", value: "INS" }, { key: "mig", value: "MIG" }, { key: "wlp", value: "WLP" }], { tooltip: "group_check: first Attribute of the Check (default DEX).", vis: GROUP_CHECK_VIS, defaultValue: "" }),
+  selectCol("gc_attr2", "Group Check Attr 2", [{ key: "dex", value: "DEX" }, { key: "ins", value: "INS" }, { key: "mig", value: "MIG" }, { key: "wlp", value: "WLP" }], { tooltip: "group_check: second Attribute of the Check (default INS).", vis: GROUP_CHECK_VIS, defaultValue: "" }),
+  textCol("gc_dl", "Group Check DL", { tooltip: "group_check: the Difficulty Level both the helpers and the leader roll against. Number or formula.", vis: GROUP_CHECK_VIS }),
+  textCol("gc_var", "Group Check Var", { tooltip: "group_check: name of the chain variable that receives the result — gc_var \"ESCAPE\" sets VAR_ESCAPE to 1 on a leader PASS, 0 on a FAIL. Read it from a later row's Condition Formula.", vis: GROUP_CHECK_VIS }),
+  selectCol("gc_mode", "Group Check Mode", [
+    { key: "designated", value: "Designated — no lobby, rolls immediately" },
+    { key: "open",       value: "Open — opens the lobby, BLOCKS until GM starts" },
+  ], { tooltip: "group_check: Designated settles leader + helpers in code and fires the rolls at once (correct inside a combat turn). Open hands the party a lobby to pick their own leader and blocks until the GM presses Start — for out-of-combat beats only.", vis: GROUP_CHECK_VIS, defaultValue: "designated" }),
+  textCol("gc_leader", "Group Check Leader", { tooltip: "group_check: Actor UUID of the leader. Blank = auto-pick the participant with the highest total in the two rolled Attributes.", vis: GROUP_CHECK_VIS }),
+  textCol("gc_helper_bonus", "Group Check Helper Bonus", { tooltip: "group_check: bonus added to the leader's Result per helper success (default 1).", vis: GROUP_CHECK_VIS }),
+  textCol("gc_timeout", "Group Check Timeout (ms)", { tooltip: "group_check: ms before a participant's roll panel auto-confirms. Blank waits indefinitely — set this for anything that runs inside a combat turn so one disconnected player cannot stall it.", vis: GROUP_CHECK_VIS }),
+  selectCol("gc_on_error", "Group Check On Error", [
+    { key: "fail", value: "Fail — treat as leader FAIL (default)" },
+    { key: "pass", value: "Pass — treat as leader PASS" },
+  ], { tooltip: "group_check: which way to record the result when the check cannot run at all (no participants, GroupCheck API missing, roll threw). Defaults to fail, matching save_check's \"a save you don't make, you fail\".", vis: GROUP_CHECK_VIS, defaultValue: "" }),
 ];
 
 // ── reaction_config_table declarative fields ─────────────────────────────────

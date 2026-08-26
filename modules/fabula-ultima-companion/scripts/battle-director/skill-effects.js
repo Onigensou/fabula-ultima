@@ -4063,6 +4063,7 @@ const EFFECT_KIND_DISPATCH = {
   destroy_summon:      applyDestroySummonEffect,
   add_target:          applyAddTargetEffect,
   save_check:          applySaveCheckEffect,
+  group_check:         applyGroupCheckEffect,
   adjust_grant:        applyAdjustGrantEffect,
   roll_loot_table:     applyRollLootTableEffect,
   deal_damage:         dealDamageRun,        // UNIFIED (see dealDamageRun)
@@ -4197,6 +4198,7 @@ export const EFFECT_KIND_LABELS = {
   destroy_summon:      "Destroy Summon (shatter/despawn one of my summons)",
   add_target:          "Add Target",
   save_check:          "Save Check (each target rolls vs a DL; failures → save_failed_targets)",
+  group_check:         "Group Check (FU leader + helpers vs a DL; leader result → VAR_<gc_var>)",
   adjust_grant:        "Adjust Grant (op on the action's restore — multiply/set/cap/floor/add)",
   roll_loot_table:     "Roll Loot Table",
   deal_damage:         "Deal Damage",
@@ -8729,6 +8731,171 @@ async function applySaveCheckEffect(row, ctx) {
   const totalFails = [...failCount.values()].reduce((a, b) => a + b, 0);
   log(`save_check: DL ${dl} ${attrA}+${attrB} — ${slotActorUuids.length} roll(s), ${totalFails} failed save(s) across ${failed.length} target(s) / ${passed.length} passed`);
   return { ok: true, kind: "save_check", failed, passed };
+}
+
+// ── group_check ─────────────────────────────────────────────────────────────
+//
+// A Fabula Ultima GROUP CHECK: the group nominates a leader who performs the
+// Check, every other participant rolls the same Check, and each helper success
+// grants the leader +1. The leader's pass/fail is recorded as a chain variable
+// so a LATER row can branch on it.
+//
+// DISTINCT from `save_check`, which is N INDEPENDENT saves — each target rolls
+// for itself and the failures collect into `save_failed_targets`. Reach for
+// group_check when the party collectively succeeds or fails at ONE thing
+// ("stop the Gorger running away"), and for save_check when each creature
+// suffers its own consequence ("everyone hit rolls or is Poisoned").
+//
+// Author shape (effect_table rows):
+//
+//   { effect_label: "party_pool",  effect_kind: "targeting",
+//     candidate_source: "combat", category: "enemy",
+//     exclude_self: true, mode: "all" }
+//
+//   { effect_label: "escape_check", effect_kind: "group_check",
+//     target_ref:  "party_pool",     // who participates
+//     gc_attr1:    "dex",
+//     gc_attr2:    "ins",
+//     gc_dl:       "15",             // number OR formula
+//     gc_var:      "ESCAPE" }        // -> VAR_ESCAPE = 1 on leader PASS, else 0
+//
+//   { effect_kind: "leave_combat", target_ref: "self",
+//     condition_formula: "VAR_ESCAPE == 0" }
+//
+// This is a thin adapter over `ONI.GroupCheck.request` (cr-group-check.js) —
+// the same orchestrator the Initiative Group Check uses. Phase A rolls the
+// helpers, the passes become a named "+N Helper Bonus" modifier, Phase B rolls
+// the leader, and a combined chat card is posted.
+//
+// 🪤 `gc_mode: "open"` opens the Group Check LOBBY and BLOCKS until the GM
+// presses Start. That is right for a story beat and wrong inside a combat turn,
+// so the default is "designated": the leader and helpers are settled here and
+// the rolls fire immediately. cr-group-check skips the lobby exactly when a
+// leader is preset AND the mode is not "open" (`needsLobby`), so both halves
+// must hold — do not preset a leader and leave the mode "open".
+async function applyGroupCheckEffect(row, ctx) {
+  if (ctx?.mode === "preview") {
+    return { ok: true, kind: "group_check", applied: [], reason: "preview" };
+  }
+
+  const varName = String(row.gc_var ?? "").trim().toUpperCase().replace(/[^A-Z0-9_]/g, "_");
+  // Fail-safe direction on an unrunnable check, matching save_check's "a save
+  // you don't make, you fail". Authorable because the safe default depends on
+  // which side the failure favours.
+  const onError = String(row.gc_on_error ?? "fail").trim().toLowerCase() === "pass" ? 1 : 0;
+
+  const setVar = (value) => {
+    if (!varName) return;
+    if (!ctx.payload) ctx.payload = {};
+    if (!ctx.payload._chainVars) ctx.payload._chainVars = {};
+    ctx.payload._chainVars[varName] = value;
+  };
+
+  // ── participants ──
+  const targetRef = String(row.target_ref ?? "").trim();
+  let tokens = [];
+  if (targetRef) {
+    try {
+      const tr = await resolveTargetRef(targetRef, ctx);
+      if (tr.ok && Array.isArray(tr.tokens)) tokens = tr.tokens;
+    } catch (e) { warn(`group_check: target_ref "${targetRef}" resolve threw`, e); }
+  }
+
+  // Dedup by ACTOR — unlike save_check, a creature occupying two target slots
+  // does not roll twice here. A Group Check has one roll per participant.
+  const actorByUuid = new Map();
+  for (const tok of tokens) {
+    const a = tok?.actor;
+    if (a?.uuid && !actorByUuid.has(a.uuid)) actorByUuid.set(a.uuid, a);
+  }
+  const participants = [...actorByUuid.values()];
+
+  if (!participants.length) {
+    // Nobody is present to attempt it. Treat as a failed check rather than a
+    // no-op: "no one stopped it" and "everyone tried and missed" are the same
+    // outcome for the caller.
+    log(`group_check: no participants for "${row.effect_label}" — recording ${varName || "(no var)"} = 0`);
+    setVar(0);
+    return { ok: true, kind: "group_check", leaderPass: false, reason: "no-participants" };
+  }
+
+  const attrA = (String(row.gc_attr1 ?? "dex").trim().toUpperCase()) || "DEX";
+  const attrB = (String(row.gc_attr2 ?? "ins").trim().toUpperCase()) || "INS";
+
+  let dl = 10;
+  try {
+    const resolver = buildSkillResolver({
+      actor: ctx.reactorActor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0,
+    });
+    dl = Number(evaluateFormula(String(row.gc_dl ?? "10"), resolver, 10)) || 10;
+  } catch (e) { warn(`group_check: gc_dl eval threw`, e); }
+
+  const helperBonus = Number(row.gc_helper_bonus ?? 1) || 1;
+  const openLobby = String(row.gc_mode ?? "designated").trim().toLowerCase() === "open";
+
+  // Leader: authored, else the participant best at the Check actually being
+  // rolled (highest attrA + attrB). Reading the rolled attributes rather than a
+  // fixed pair keeps the auto-pick correct for any Group Check, not just DEX+INS.
+  const dieSize = (actor, attr) => {
+    const p = actor?.system?.props ?? {};
+    const k = attr.toLowerCase();
+    return Number(p[`${k}_current`] ?? p[`${k}_base`] ?? 0) || 0;
+  };
+  let leaderUuid = String(row.gc_leader ?? "").trim();
+  if (!leaderUuid || !actorByUuid.has(leaderUuid)) {
+    if (leaderUuid) warn(`group_check: gc_leader "${leaderUuid}" is not among the participants — auto-picking`);
+    let best = participants[0], bestScore = -1;
+    for (const a of participants) {
+      const score = dieSize(a, attrA) + dieSize(a, attrB);
+      if (score > bestScore) { best = a; bestScore = score; }
+    }
+    leaderUuid = best.uuid;
+  }
+  const helperActorUuids = participants.map((a) => a.uuid).filter((u) => u !== leaderUuid);
+
+  const GC = globalThis.ONI?.GroupCheck;
+  if (!GC?.request) {
+    warn(`group_check: ONI.GroupCheck unavailable — recording ${varName || "(no var)"} = ${onError}`);
+    setVar(onError);
+    return { ok: true, kind: "group_check", leaderPass: !!onError, reason: "no-groupcheck-api" };
+  }
+
+  const label = ctx.skill?.name ?? row.effect_label ?? "Group Check";
+  let result = null;
+  try {
+    result = await GC.request({
+      leaderUuid,
+      participantMode:  openLobby ? "open" : "designated",
+      helperActorUuids,
+      allActorUuids:    participants.map((a) => a.uuid),
+      helperDl:         dl,
+      leaderDl:         dl,
+      helperBonus,
+      attrA, attrB,
+      singleDie:        false,
+      label,
+      allowInvokes:     true,
+      postChat:         true,
+      // Without a timeout a disconnected player's panel stalls the whole turn.
+      // Blank leaves CR's default (null = wait indefinitely), which is only
+      // correct for an out-of-combat beat the GM is watching.
+      ...(String(row.gc_timeout ?? "").trim() ? { timeout: Number(row.gc_timeout) || undefined } : {}),
+    });
+  } catch (e) {
+    warn(`group_check: ONI.GroupCheck.request threw — recording ${varName || "(no var)"} = ${onError}`, e);
+    setVar(onError);
+    return { ok: true, kind: "group_check", leaderPass: !!onError, reason: "groupcheck-threw" };
+  }
+
+  const leaderPass = !!result?.leaderPass;
+  setVar(leaderPass ? 1 : 0);
+  // Also expose on ctx for a host that wants it without a chain var.
+  ctx.groupCheckPassed = leaderPass;
+  ctx.groupCheckBonus  = Number(result?.bonus ?? 0) || 0;
+
+  const leaderName = actorByUuid.get(leaderUuid)?.name ?? leaderUuid;
+  log(`group_check: DL ${dl} ${attrA}+${attrB} — leader ${leaderName} (+${ctx.groupCheckBonus} from ${helperActorUuids.length} helper(s)) -> ${leaderPass ? "PASS" : "FAIL"}${varName ? ` [VAR_${varName} = ${leaderPass ? 1 : 0}]` : ""}`);
+  return { ok: true, kind: "group_check", leaderPass, bonus: ctx.groupCheckBonus, leader: leaderUuid };
 }
 
 // ── remove_tagged_ae ────────────────────────────────────────────────────
