@@ -15936,6 +15936,30 @@
         "effects": 0
       },
       {
+        "id": "H6Ubup6kmkgNQzLU",
+        "name": "Drakoza",
+        "type": "character",
+        "items": [
+          {
+            "id": "kP5nGNoNUV2Q7AhM",
+            "name": "Dragon Claw"
+          },
+          {
+            "id": "vP0c8mCKoBQY4ggP",
+            "name": "Drako Fury"
+          },
+          {
+            "id": "h6YfA3CbD5IBMeXs",
+            "name": "Tail Swipe"
+          },
+          {
+            "id": "HU5v0qJ2gB1DmipK",
+            "name": "Thrash"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "RJECgM6oVt4UI4ds",
         "name": "Dryad",
         "type": "character",
@@ -20288,6 +20312,42 @@
         "name": "Miles",
         "type": "character",
         "items": [],
+        "effects": 0
+      },
+      {
+        "id": "8kluKkqkcGFkmXNO",
+        "name": "Mist Dragon",
+        "type": "character",
+        "items": [
+          {
+            "id": "vvdntvwGzqaQ3m41",
+            "name": "Illusory Form"
+          },
+          {
+            "id": "CtR3hgvUBHBQ8r7S",
+            "name": "Mist Breath"
+          },
+          {
+            "id": "crizxSUcTFdlJKpi",
+            "name": "Mist Claw"
+          },
+          {
+            "id": "f6bn9d3f5NIdXbbA",
+            "name": "Phantom Shift"
+          },
+          {
+            "id": "zv0kGWfm8fpxeSC4",
+            "name": "Phantom Shift: Mana Stinger"
+          },
+          {
+            "id": "Iobix2EOuXqGNH6X",
+            "name": "Phantom Shift: Thunder Strike"
+          },
+          {
+            "id": "fecg9O0PTPyAsxVj",
+            "name": "Phantom Shift: Venomstone Spines"
+          }
+        ],
         "effects": 0
       },
       {
