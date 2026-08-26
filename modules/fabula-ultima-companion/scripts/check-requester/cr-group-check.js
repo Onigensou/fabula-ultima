@@ -704,6 +704,14 @@
       postChat         = true,
       hiddenDl         = false,
       checkBuffActions = [],   // forwarded to both helper + leader CR.request calls
+      // ms before a participant's roll panel auto-confirms itself. Forwarded to
+      // both CR.request calls below. Until this existed a Group Check driven
+      // from automation waited FOREVER on a participant whose owner is offline —
+      // and that is the normal case for a monster-triggered check, where the
+      // party's actors are resolved from the combat rather than from who happens
+      // to be logged in. Null keeps CR's own default (wait indefinitely), which
+      // is still right for a GM-supervised out-of-combat check.
+      timeout          = null,
     } = opts;
 
     const CR = globalThis.ONI?.CheckRequester;
@@ -778,6 +786,7 @@
         checkBuffActions,
         skipGroupOutcomeSound: true,
         revealTimeout:        2000,
+        timeout,
         context:              { groupCheck: true, phase: "helper" },
       });
     }
@@ -801,6 +810,7 @@
       modifiers,
       hiddenDl,
       checkBuffActions,
+      timeout,
       context:      { groupCheck: true, phase: "leader", bonus },
     });
 
