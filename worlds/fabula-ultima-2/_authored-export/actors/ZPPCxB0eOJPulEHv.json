@@ -127,7 +127,7 @@
           "versatile": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278387,
+        "templateSystemUniqueVersion": 2788278388,
         "unique": false,
         "uniqueId": "yWlkWZC2vLf4J5Pv"
       },
@@ -200,7 +200,7 @@
           "uuid": "Actor.ZPPCxB0eOJPulEHv.Item.VItgqLojzjs9TDIH"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278387,
+        "templateSystemUniqueVersion": 2788278388,
         "unique": false,
         "uniqueId": "UKzHkmIJcjXZ4GFR"
       },
@@ -281,7 +281,7 @@
           "versatile": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278387,
+        "templateSystemUniqueVersion": 2788278388,
         "unique": false,
         "uniqueId": "iFdNNGp4OVZVMEcB"
       },
@@ -455,7 +455,8 @@
           "use_optional_params": false,
           "versatile": false
         },
-        "template": "j0F5Msw5RZ8aIB3j"
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2788278388
       },
       "type": "equippableItem"
     }

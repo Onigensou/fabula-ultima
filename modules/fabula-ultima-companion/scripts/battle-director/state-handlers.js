@@ -1342,6 +1342,12 @@ async function resolveAction(director, ar, opts = {}) {
           actionKind:        ar.kind ?? null,
           actionCanMiss:     !!ar.canMiss,
           incomingDamage:    Math.max(0, Number(r.damage ?? 0) || 0),
+          // ATTACK_CHECK_RESULT reads `checkTotal` SPECIFICALLY — not `total`
+          // or `accuracyTotal`. Absent it folds to 0, and an "even Accuracy
+          // Check" gate (Counterattack: ATTACK_CHECK_RESULT % 2 == 0) would then
+          // read 0 % 2 == 0 == TRUE and fire on every attack. A missing field
+          // makes this gate PERMISSIVE, so it must be stamped explicitly.
+          checkTotal:        Number(ar.roll?.total ?? 0) || 0,
           // `trigger_attacker` (skill-targeting.collectTriggerAttacker) resolves
           // off attackerTokenUuid specifically — Toxic Orb's apply_ae targets it,
           // and without this its chain resolves zero tokens and no-ops.
@@ -1412,6 +1418,12 @@ async function resolveAction(director, ar, opts = {}) {
           sourceActorUuid:   ar.attackerActorRef,
           attackerUuid:      ar.attacker?.tokenUuid ?? null,
           attackerActorUuid: ar.attackerActorRef,
+          // `trigger_attacker` (skill-targeting.collectTriggerAttacker) reads
+          // `attackerTokenUuid` SPECIFICALLY — `attackerUuid` above carries the
+          // same value under a key it does not look at, so without this a
+          // target_ref:"trigger_attacker" row resolves zero tokens and no-ops.
+          // Counterattack's free attack targets exactly that.
+          attackerTokenUuid: ar.attacker?.tokenUuid ?? null,
           // the missed creature (the reactor) — target_ref:"self" effects resolve
           // to it; carried for margin/melee reads too.
           targetUuid:        r.tokenUuid,
@@ -1440,6 +1452,7 @@ async function resolveAction(director, ar, opts = {}) {
           missMargin:   defense - accuracyTotal,
           isCrit:       !!ar.roll?.isCrit,
           isFumble:     !!ar.roll?.isFumble,
+          checkTotal:   accuracyTotal,   // ATTACK_CHECK_RESULT reads this key only
         },
       });
     }
@@ -1486,6 +1499,7 @@ async function resolveAction(director, ar, opts = {}) {
           accuracyTotal,
           isCrit:            !!ar.roll?.isCrit,
           isFumble:          !!ar.roll?.isFumble,
+          checkTotal:        accuracyTotal,   // ATTACK_CHECK_RESULT reads this key only
         },
       });
     }
@@ -7264,6 +7278,12 @@ const FreeActionWindow = {
       // reads allowedSkillRefs; the targeting step reads lockedTargetTokenUuid.
       allowedSkillRefs:      req.allowedSkillRefs ?? null,
       lockedTargetTokenUuid: req.lockedTargetTokenUuid ?? null,
+      // Weapon RANGE CLASS restriction on a granted Attack ("melee" / "ranged").
+      // ⚠ Enforced on the PLAYER compose path only (composeAttack filters the
+      // weapon picker). composeAttackNpc, the autopilot's basic-attack fallback
+      // and the sim brain's resolveAttackMode are all grant-blind for range, so
+      // an NPC bearer is NOT restricted yet. null = unrestricted.
+      weaponRange:           req.weaponRange ?? null,
       // Rider knobs (Ripples): force the spawned attack's element (adopt the
       // ally's) + run on-hit effect refs from the granting skill after it lands.
       elementOverride:       req.elementOverride ?? null,

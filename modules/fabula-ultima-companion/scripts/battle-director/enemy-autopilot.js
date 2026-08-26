@@ -715,6 +715,7 @@ async function tryPatternedGrantPick(director, snap, actor, allow, grant) {
   if (grant?.maxMpCost != null) unenforceable.push("maxMpCost");
   if (grant?.allowedSkillRefs?.length) unenforceable.push("allowedSkillRefs");
   if (grant?.lockedTargetTokenUuid) unenforceable.push("lockedTargetTokenUuid");
+  if (grant?.weaponRange) unenforceable.push("weaponRange");
   if (unenforceable.length) {
     log(`autopilot: free-action grant "${grant?.sourceLabel ?? "?"}" carries ${unenforceable.join("+")} which the Action Pattern path cannot enforce — declining the pattern`);
     return null;

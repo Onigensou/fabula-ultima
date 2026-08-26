@@ -187,6 +187,7 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   checkboxCol("free_mode", "Free Mode", { tooltip: "Grant a FREE ACTION + mini-turn (no inline picker) instead of showing menu options. Pairs with Allowed Types / Free: HR as 0.", vis: OAM_VIS }),
   textCol("allowed_types", "Allowed Types", { tooltip: "Free Mode only: comma-separated action types the granted free action is limited to (e.g. \"Attack\"). Blank = any.", vis: OAM_VIS }),
   checkboxCol("free_hr_as_zero", "Free: HR as 0", { tooltip: "Granted free attack treats High Roll as 0 for damage (Hawkeye option b / Soaring Strike). Pairs with Free Mode.", vis: OAM_VIS }),
+  textCol("free_weapon_range", "Free: Weapon Range", { tooltip: "Restrict a granted Attack to a weapon range class: melee | ranged. Blank = any. RAW shapes like Counterattack (\"this attack must be a melee attack\"). action_ref is a TYPE filter and allowed_skill_refs never reaches the Attack path, so this is the only knob that narrows WHICH weapon a free Attack may use.", vis: FREE_GRANT_VIS, reconcileVis: true }),
   // deal_damage / adjust_damage config — these kinds were added (deal_damage;
   // adjust_damage from the add_damage+modify_damage_taken unify) without any
   // effect_table columns, so their rows showed only the Kind dropdown and the
