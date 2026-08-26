@@ -10,11 +10,11 @@
   },
   "effects": [
     {
-      "_id": "Q03zEFzbKoxIDpCF",
+      "_id": "HGZOKhaDtuc2McCg",
       "_stats": {
         "compendiumSource": null,
-        "coreVersion": "12.331",
-        "createdTime": 1769830001429,
+        "coreVersion": "12.343",
+        "createdTime": 1787778870354,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -35,9 +35,9 @@
         "custom-system-builder": {
           "isFromTemplate": false,
           "isPredefined": true,
-          "originalId": "4ldx00srGNv5AJBr",
-          "originalParentId": "0gIBYzSpjdXS6f25",
-          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr"
+          "originalId": "HGZOKhaDtuc2McCg",
+          "originalParentId": "ehhO581DreiWDFnB",
+          "originalUuid": "Actor.ehhO581DreiWDFnB.ActiveEffect.HGZOKhaDtuc2McCg"
         },
         "dfreds-convenient-effects": {
           "ceEffectId": "ce-crisis",
@@ -48,7 +48,13 @@
           "isViewable": false
         },
         "fabula-ultima-companion": {
-          "autoCrisis": true
+          "bdCrisis": true,
+          "derivedStatus": {
+            "byRules": [
+              "core-crisis"
+            ],
+            "forStatus": "Crisis"
+          }
         },
         "statuscounter": {
           "config": {

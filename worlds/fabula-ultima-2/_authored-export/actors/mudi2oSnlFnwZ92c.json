@@ -10,11 +10,11 @@
   },
   "effects": [
     {
-      "_id": "gURInf3qoeC0amcu",
+      "_id": "iLkTOC5Z2j5j2LRc",
       "_stats": {
         "compendiumSource": null,
-        "coreVersion": "12.331",
-        "createdTime": 1769830001314,
+        "coreVersion": "12.343",
+        "createdTime": 1787778868666,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -35,9 +35,9 @@
         "custom-system-builder": {
           "isFromTemplate": false,
           "isPredefined": true,
-          "originalId": "4ldx00srGNv5AJBr",
-          "originalParentId": "0gIBYzSpjdXS6f25",
-          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr"
+          "originalId": "iLkTOC5Z2j5j2LRc",
+          "originalParentId": "mudi2oSnlFnwZ92c",
+          "originalUuid": "Actor.mudi2oSnlFnwZ92c.ActiveEffect.iLkTOC5Z2j5j2LRc"
         },
         "dfreds-convenient-effects": {
           "ceEffectId": "ce-crisis",
@@ -48,7 +48,13 @@
           "isViewable": false
         },
         "fabula-ultima-companion": {
-          "autoCrisis": true
+          "bdCrisis": true,
+          "derivedStatus": {
+            "byRules": [
+              "core-crisis"
+            ],
+            "forStatus": "Crisis"
+          }
         },
         "statuscounter": {
           "config": {

@@ -477,10 +477,26 @@
       "effects": [
         {
           "_id": "7aKcg16BaqaO9m8t",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>It is getting bigger. At three, it stops being a monster.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -488,17 +504,19 @@
               "lifetimeMode": "persistent_counter"
             }
           },
-          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
           "name": "Eaten",
           "origin": "Actor.zRuXyepUutM2LY9H.Item.RriNRMXown9Q90wG",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "gorger_eaten"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         }
       ],
       "flags": {
@@ -605,7 +623,6 @@
     "default": 0
   },
   "prototypeToken": {
-    "actorId": "zRuXyepUutM2LY9H",
     "actorLink": false,
     "alpha": 1,
     "appendNumber": false,

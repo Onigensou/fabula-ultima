@@ -10,23 +10,16 @@
   },
   "effects": [
     {
-      "_id": "JcFrNkLgltLcxflH",
+      "_id": "4SzYvfBdRInMjCdp",
       "_stats": {
         "compendiumSource": null,
-        "coreVersion": "12.331",
-        "createdTime": 1755419369489,
+        "coreVersion": "12.343",
+        "createdTime": 1787778868601,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
-        "systemVersion": "4.6.4"
+        "systemVersion": "4.8.5"
       },
-      "changes": [
-        {
-          "key": "macro.tokenMagic",
-          "mode": 0,
-          "priority": null,
-          "value": "Bleed"
-        }
-      ],
+      "changes": [],
       "description": "<p>This creature has less than 50% HP</p>",
       "disabled": false,
       "duration": {
@@ -39,20 +32,29 @@
         "turns": null
       },
       "flags": {
-        "combat-utility-belt": {
-          "conditionId": "5jkr80zqdzaR003d"
-        },
-        "condition-lab-triggler": {
-          "conditionId": "5jkr80zqdzaR003d"
-        },
-        "core": {
-          "overlay": false
-        },
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "JcFrNkLgltLcxflH",
+          "isPredefined": true,
+          "originalId": "4SzYvfBdRInMjCdp",
           "originalParentId": "lRBKHboc7pbAPwyN",
-          "originalUuid": "Actor.lRBKHboc7pbAPwyN.ActiveEffect.JcFrNkLgltLcxflH"
+          "originalUuid": "Actor.lRBKHboc7pbAPwyN.ActiveEffect.4SzYvfBdRInMjCdp"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-crisis",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": false
+        },
+        "fabula-ultima-companion": {
+          "bdCrisis": true,
+          "derivedStatus": {
+            "byRules": [
+              "core-crisis"
+            ],
+            "forStatus": "Crisis"
+          }
         },
         "statuscounter": {
           "config": {
@@ -65,12 +67,14 @@
       },
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
       "name": "Crisis",
-      "origin": null,
+      "origin": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr",
       "sort": 0,
       "statuses": [
         "5jkr80zqdzaR003d"
       ],
-      "system": {},
+      "system": {
+        "tags": []
+      },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
