@@ -3,20 +3,14 @@
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1732426349031,
+    "createdTime": null,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
   "flags": {
     "custom-system-builder": {
-      "version": "4.5.0"
-    },
-    "fabula-ultima-companion": {
-      "idleAnimation": {
-        "bounce": false,
-        "float": true
-      }
+      "version": "4.8.5"
     }
   },
   "folder": "Nd8LnosrPid1eX1r",
@@ -25,10 +19,10 @@
     {
       "_id": "8PW8ypra0pBkxKrx",
       "_stats": {
-        "compendiumSource": "Item.aGZAOUdRyopqoDyc",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1769577215786,
-        "duplicateSource": "Item.iFdNNGp4OVZVMEcB",
+        "createdTime": null,
+        "duplicateSource": "Item.mJuSEmMc3A0HrqNO",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
@@ -37,62 +31,279 @@
           "version": "4.8.4"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
+      "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
       "name": "Geo Explosion",
       "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
         "default": 0
       },
       "sort": 0,
       "system": {
         "props": {
+          "action_keywords": "",
           "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
           "animation_script": "",
           "check_bonus": "0",
           "class": "NPC",
           "cost": "-",
-          "damage_bonus": "",
+          "damage_bonus": "0",
           "defense_target_type": "def",
-          "description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Trigger</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>When the <strong>Geo Gorger</strong> is reduce to 0 HP</p></li></ul><p>When the Geo Gorger dies, it deal AOE Earth damage to all creatures equal to <strong>10 x Eaten Stack</strong> before it dies. Deal 200% damage on <strong>Construct</strong></p><p>Has no effect on <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Flying</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>creature.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the <strong>Geo Gorger</strong> is reduced to 0 HP</p></li></ul><p>It goes off. Every enemy is caught in a burst of <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Earth</strong></a>&nbsp;— the more it had <strong>Eaten</strong>, the worse this is, and by the third swell it is genuinely dangerous.</p>",
+          "details_roller": "Show",
           "duration": "-",
+          "effect_table": {
+            "0": {
+              "chain_steps": "boom_damage, boom_rider",
+              "effect_kind": "chain",
+              "effect_label": "boom_chain"
+            },
+            "1": {
+              "candidate_source": "combat",
+              "category": "enemy",
+              "effect_kind": "targeting",
+              "effect_label": "boom_targets",
+              "exclude_self": true,
+              "mode": "all"
+            },
+            "2": {
+              "damage_amount": "max(TARGET_LEVEL, 15) * TARGET_AE_CHARGES_EATEN * TARGET_AE_CHARGES_EATEN / 3",
+              "damage_cause": "damage",
+              "damage_element": "earth",
+              "effect_kind": "deal_damage",
+              "effect_label": "boom_damage",
+              "target_ref": "boom_targets"
+            },
+            "3": {
+              "ae_duplicate_mode": "stack",
+              "ae_template_ref": "Weak",
+              "effect_kind": "apply_ae",
+              "effect_label": "boom_rider",
+              "target_ref": "boom_targets"
+            }
+          },
           "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
           "isReaction": true,
+          "isZeroPower": false,
           "level": "1",
           "max_level": "1",
           "name": "Geo Explosion",
+          "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "boom_chain",
+              "reaction_passive_mode": "force",
+              "reaction_resource_filter": "",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_defeated"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
           "skill_animation_mode": "default",
           "skill_information": "",
-          "skill_range": "",
+          "skill_range": "-",
           "skill_target": "-",
           "skill_type": "Passive",
           "type_damage": "",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.zRuXyepUutM2LY9H.Item.8PW8ypra0pBkxKrx"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2788278388,
         "unique": false,
-        "uniqueId": "aGZAOUdRyopqoDyc"
+        "uniqueId": "vdEX0eAROfOYjHED"
       },
       "type": "equippableItem"
     },
     {
       "_id": "Cmf42fkwTOdFgfpb",
       "_stats": {
-        "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1769577154131,
+        "createdTime": null,
+        "duplicateSource": "Item.mJuSEmMc3A0HrqNO",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+      "name": "Consume Earth",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the <strong>Geo Gorger</strong> absorbs <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Earth</strong></a>&nbsp;damage</p></li></ul><p>It drinks the blow down and puffs up on it, gaining <strong>1 Eaten</strong>.</p>",
+          "details_roller": "Show",
+          "duration": "-",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "add_charges",
+              "ae_template_ref": "Eaten",
+              "effect_kind": "apply_ae",
+              "effect_label": "absorb_feed",
+              "target_ref": "self"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Consume Earth",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_EARTH == 1",
+              "reaction_cause_filter": "damage",
+              "reaction_effect_ref": "absorb_feed",
+              "reaction_passive_mode": "force",
+              "reaction_resource_filter": "hp",
+              "reaction_source": "",
+              "reaction_trigger": "creature_gain_resource"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "-",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.zRuXyepUutM2LY9H.Item.Cmf42fkwTOdFgfpb"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2788278388,
+        "unique": false,
+        "uniqueId": "vdEX0eAROfOYjHED"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "iLwNpoJXRCZH6hkE",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": "Item.yWlkWZC2vLf4J5Pv",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+      "name": "Bump",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "1",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "5",
+          "defense_target_type": "def",
+          "description": "<p>It throws its whole bloated weight at one creature. There is no technique in it.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Bump",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Attack",
+          "type_damage": "Physical",
+          "use_optional_params": false,
+          "uuid": "Actor.zRuXyepUutM2LY9H.Item.iLwNpoJXRCZH6hkE"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2788278388,
+        "unique": false,
+        "uniqueId": "A87i0WJvlVD1w3E7"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "mVJkZJ0N9Gsbgwx5",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": 1785582429733,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -102,119 +313,192 @@
           "version": "4.8.4"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
-      "name": "Consume Earth",
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/stone.png",
+      "name": "Terra",
       "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
         "default": 0
       },
-      "sort": 0,
+      "sort": 100000,
       "system": {
         "props": {
+          "action_keywords": "",
           "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
           "animation_script": "",
-          "check_bonus": "0",
+          "check_bonus": "1",
           "class": "NPC",
-          "cost": "-",
-          "damage_bonus": "",
-          "defense_target_type": "def",
-          "description": "<p>Nullify all <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(139, 94, 60) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span> damage against the Geo Gorger, if a damage was nullify this way,&nbsp; gain <strong>1 Eaten</strong> stack.</p><p>&nbsp;</p><p>When the Geo Gorger reaches <strong>3 Eaten</strong> stack, reduce it to 0 hp</p>",
-          "duration": "-",
+          "cost": "10 x T MP",
+          "damage_bonus": "15",
+          "defense_target_type": "mdef",
+          "description": "<p>The Gorger belches a gout of <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Earth</strong></a>&nbsp;at up to three creatures.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {},
           "heroic_requirement": "",
-          "isCheck": false,
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/stone.png",
+          "isCheck": true,
           "isFacet": false,
           "isHeroic": false,
-          "isOffensiveSpell": false,
+          "isOffensiveSpell": true,
           "isReaction": false,
+          "isZeroPower": false,
           "level": "1",
           "max_level": "1",
-          "name": "Consume Earth",
+          "name": "Terra",
+          "on_activate_effect_ref": "",
           "optional_params": {},
           "reaction_config_table": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
           "skill_animation_default": "",
           "skill_animation_mode": "default",
           "skill_information": "",
-          "skill_range": "",
-          "skill_target": "-",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
+          "skill_range": "Range",
+          "skill_target": "Up to three creatures",
+          "skill_type": "Spell",
+          "type_damage": "Earth",
+          "use_optional_params": false,
+          "uuid": "Actor.zRuXyepUutM2LY9H.Item.mVJkZJ0N9Gsbgwx5"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2788278388,
         "unique": false,
-        "uniqueId": "iFdNNGp4OVZVMEcB"
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "nE7SmGSSmGl0veUL",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1751657189753,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Earth%20Stone.gif",
+      "name": "Earth Stone",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 2900000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>Deals <strong>40 Earth </strong>damage to target creature</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "${item.id}",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "70",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Common",
+          "item_type": "consumable",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Earth Stone",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Actor.zRuXyepUutM2LY9H.Item.nE7SmGSSmGl0veUL",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "6wg3JxDlU6GD4uqq"
       },
       "type": "equippableItem"
     },
     {
       "_id": "RriNRMXown9Q90wG",
       "_stats": {
-        "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1769577147480,
-        "duplicateSource": null,
+        "createdTime": null,
+        "duplicateSource": "Item.mJuSEmMc3A0HrqNO",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "effects": [
         {
           "_id": "7aKcg16BaqaO9m8t",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.331",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
           "changes": [],
-          "description": "<p>The Gorger has eaten surrounding elements</p>",
+          "description": "<p>It is getting bigger. At three, it stops being a monster.</p>",
           "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": 99999,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
+          "duration": {},
           "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "7aKcg16BaqaO9m8t",
-              "originalParentId": "lmpZ4ifOcHjilCxJ",
-              "originalUuid": "Actor.9yadoDh5EhIWpevl.Item.lmpZ4ifOcHjilCxJ.ActiveEffect.7aKcg16BaqaO9m8t"
-            },
-            "statuscounter": {
-              "config": {
-                "dataSource": "flags.statuscounter.value",
-                "durationType": 0,
-                "modifyDuration": false,
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "crossScene": false,
+              "lifetimeMode": "persistent_counter"
             }
           },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T214820.874.png",
+          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
           "name": "Eaten",
-          "origin": null,
-          "sort": 0,
+          "origin": "Actor.zRuXyepUutM2LY9H.Item.RriNRMXown9Q90wG",
           "statuses": [],
           "system": {
-            "tags": []
+            "tags": [
+              "gorger_eaten"
+            ]
           },
-          "tint": "#ffffff",
-          "transfer": false,
-          "type": "base"
+          "transfer": false
         }
       ],
       "flags": {
@@ -222,76 +506,106 @@
           "version": "4.8.4"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
+      "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T214820.874.png",
       "name": "Puff Up",
       "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
         "default": 0
       },
       "sort": 0,
       "system": {
         "props": {
-          "active_effect_config_table": {
-            "0": {
-              "$deleted": false,
-              "active_effect_application": "add",
-              "active_effect_apply_mode": "percentage",
-              "active_effect_dice_1": "",
-              "active_effect_dice_2": "",
-              "active_effect_dl": "0",
-              "active_effect_id": "7aKcg16BaqaO9m8t",
-              "active_effect_percent": "100",
-              "active_effect_target": "self",
-              "active_effect_trigger": "on_attack"
-            }
-          },
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
           "animation_script": "",
           "check_bonus": "0",
           "class": "NPC",
           "cost": "-",
-          "damage_bonus": "",
+          "damage_bonus": "0",
           "defense_target_type": "def",
-          "description": "<p>Gain <strong>1 Eaten Stack</strong></p>",
-          "duration": "Instantaneous",
+          "description": "<p>The Gorger swells. It gains <strong>1 Eaten</strong> at the start of each of its turns, and at <strong>3 Eaten</strong> it can no longer hold itself together — it drops to 0 HP.</p>",
+          "details_roller": "Show",
+          "duration": "-",
+          "effect_table": {
+            "0": {
+              "chain_steps": "puff_swell, puff_pop",
+              "effect_kind": "chain",
+              "effect_label": "puff_chain"
+            },
+            "1": {
+              "ae_duplicate_mode": "add_charges",
+              "ae_template_ref": "Eaten",
+              "effect_kind": "apply_ae",
+              "effect_label": "puff_swell",
+              "target_ref": "self"
+            },
+            "2": {
+              "condition_formula": "AE_CHARGES_EATEN >= 3",
+              "consume_amount": "CUR_HP",
+              "consume_can_defeat": true,
+              "consume_resource": "hp",
+              "effect_kind": "consume_resource",
+              "effect_label": "puff_pop",
+              "on_empty": "drain",
+              "target_ref": "self"
+            }
+          },
           "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T214820.874.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
           "isReaction": true,
+          "isZeroPower": false,
           "level": "1",
           "max_level": "1",
           "name": "Puff Up",
+          "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "puff_chain",
+              "reaction_passive_mode": "force",
+              "reaction_resource_filter": "",
+              "reaction_source": "self",
+              "reaction_trigger": "turn_start"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
           "skill_animation_mode": "default",
           "skill_information": "",
-          "skill_range": "Any",
-          "skill_target": "Self",
-          "skill_type": "Active",
+          "skill_range": "-",
+          "skill_target": "-",
+          "skill_type": "Passive",
           "type_damage": "",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.zRuXyepUutM2LY9H.Item.RriNRMXown9Q90wG"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2788278388,
         "unique": false,
-        "uniqueId": "UKzHkmIJcjXZ4GFR"
+        "uniqueId": "vdEX0eAROfOYjHED"
       },
       "type": "equippableItem"
     }
   ],
   "name": "Geo Gorger",
   "ownership": {
-    "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
   "prototypeToken": {
+    "actorId": "zRuXyepUutM2LY9H",
     "actorLink": false,
     "alpha": 1,
     "appendNumber": false,
@@ -365,55 +679,38 @@
             "subdivisionsOwner": false
           },
           "bar3": {
-            "attribute": "custom",
+            "attribute": "attributeBar.shield_value",
             "bgImage": "",
             "fgImage": "",
             "gmVisibility": -1,
             "hideCombat": false,
-            "hideEmpty": false,
+            "hideEmpty": true,
             "hideFull": false,
             "hideHud": false,
             "hideNoCombat": false,
             "id": "bar3",
-            "ignoreMax": false,
-            "ignoreMin": false,
             "indentLeft": null,
             "indentRight": null,
             "invert": false,
             "invertDirection": false,
-            "label": "🍖",
-            "max": 3,
-            "maxcolor": "#d9d9d9",
-            "mincolor": "#b5aea1",
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
             "opacity": null,
             "order": 2,
-            "otherVisibility": 0,
+            "otherVisibility": 50,
             "ownerVisibility": 50,
-            "position": "top-inner",
+            "position": "bottom-inner",
             "shareHeight": false,
             "style": "fraction",
             "subdivisions": null,
-            "subdivisionsOwner": false,
-            "value": 0
+            "subdivisionsOwner": false
           }
         }
       },
       "hex-size-support": {
-        "alternateOrientation": false,
         "hideBorder": true,
-        "hideFill": true,
-        "pivotx": null,
-        "pivoty": null
-      },
-      "token-variants": {
-        "disableHUDButton": false,
-        "randomImgDefault": ""
-      },
-      "token-z": {
-        "zIndex": 0
-      },
-      "wall-height": {
-        "tokenHeight": 0
+        "hideFill": true
       }
     },
     "height": 1,
@@ -455,7 +752,7 @@
         "background": null,
         "ring": null
       },
-      "effects": 0,
+      "effects": 1,
       "enabled": false,
       "subject": {
         "scale": 1,
@@ -489,29 +786,72 @@
     },
     "width": 1
   },
-  "sort": 1200000,
+  "sort": 0,
   "system": {
     "activeConditionalModifierGroups": [],
-    "activeEffects": {},
     "props": {
+      "action_pattern_table": {
+        "0": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Terra",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "by_affinity",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        },
+        "1": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Bump",
+          "action_pattern_priority": "2",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        }
+      },
       "activation": "1",
       "affinity_1": "NA",
-      "affinity_2": "NA",
-      "affinity_3": "VU",
+      "affinity_2": "VU",
+      "affinity_3": "NA",
       "affinity_4": "NA",
-      "affinity_5": "IM",
+      "affinity_5": "AB",
       "affinity_6": "NA",
       "affinity_7": "NA",
       "affinity_8": "NA",
       "affinity_9": "NA",
       "animation_table": {},
       "arcane_ef": "100",
-      "attribute": "",
+      "attack_list": {
+        "iLwNpoJXRCZH6hkE": {
+          "active_target": "One Creature",
+          "attack_description": "<p>It throws its whole bloated weight at one creature. There is no technique in it.</p>",
+          "attribute_die1": "DEX",
+          "attribute_die2": "MIG",
+          "id": "${item.id}",
+          "name": "Bump",
+          "roll": "",
+          "uuid": "Actor.zRuXyepUutM2LY9H.Item.iLwNpoJXRCZH6hkE"
+        }
+      },
+      "attribute": "EARTH",
       "battle_facing_direction": "left",
       "bonus_hp": 0,
       "bonus_mp": 0,
       "bow_ef": "100",
       "brawling_ef": "100",
+      "check_mod_all": 0,
+      "check_mod_magic": 0,
+      "check_mod_melee": 0,
+      "check_mod_ranged": 0,
       "condition_anomaly": "NA",
       "condition_bane": "NA",
       "condition_berserk": "NA",
@@ -526,10 +866,10 @@
       "condition_despair": "NA",
       "condition_disarmed": "NA",
       "condition_doom": "NA",
-      "condition_enraged": "NA",
-      "condition_envenomed": "NA",
+      "condition_enraged": "IM",
+      "condition_envenomed": "IM",
       "condition_fatigue": "NA",
-      "condition_frightened": "NA",
+      "condition_frightened": "IM",
       "condition_grappled": "NA",
       "condition_hypothermia": "NA",
       "condition_isolate": "NA",
@@ -538,8 +878,8 @@
       "condition_panic": "NA",
       "condition_paralyzed": "NA",
       "condition_petrify": "NA",
-      "condition_poisoned": "NA",
-      "condition_shaken": "NA",
+      "condition_poisoned": "IM",
+      "condition_shaken": "IM",
       "condition_silence": "NA",
       "condition_slow": "NA",
       "condition_stagger": "NA",
@@ -548,19 +888,60 @@
       "condition_weak": "NA",
       "condition_wet": "NA",
       "condition_wither": "NA",
-      "condition_zombie": "NA",
-      "current_hp": "10",
+      "condition_zombie": "IM",
+      "critical_damage_bonus": 0,
+      "critical_damage_multiplier": 1,
+      "critical_dice_range": 0,
+      "current_hp": "30",
       "current_ip": "0",
       "current_mp": "60",
-      "cut_in_critical": "",
-      "cut_in_fumble": "",
+      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Geo%20Eater.png",
+      "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Geo%20Eater.png",
       "cut_in_offset_y": "",
-      "cut_in_zero_power": "",
+      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Geo%20Eater.png",
       "dagger_ef": "100",
-      "def_mod": "+2",
+      "damage_receiving_mod_air": 0,
+      "damage_receiving_mod_all": 0,
+      "damage_receiving_mod_bolt": 0,
+      "damage_receiving_mod_dark": 0,
+      "damage_receiving_mod_earth": 0,
+      "damage_receiving_mod_fire": 0,
+      "damage_receiving_mod_ice": 0,
+      "damage_receiving_mod_light": 0,
+      "damage_receiving_mod_melee": 0,
+      "damage_receiving_mod_physical": 0,
+      "damage_receiving_mod_poison": 0,
+      "damage_receiving_mod_range": 0,
+      "def_mod": "+7",
       "default_facing_direction": "right",
-      "dex_base": "6",
+      "defense": 15,
+      "dex_base": "8",
+      "dex_current": 8,
+      "enmity": 100,
       "event_timeline_table": {},
+      "extra_damage_mod_air": 0,
+      "extra_damage_mod_all": 0,
+      "extra_damage_mod_arcane": 0,
+      "extra_damage_mod_bolt": 0,
+      "extra_damage_mod_bow": 0,
+      "extra_damage_mod_brawling": 0,
+      "extra_damage_mod_dagger": 0,
+      "extra_damage_mod_dark": 0,
+      "extra_damage_mod_earth": 0,
+      "extra_damage_mod_fire": 0,
+      "extra_damage_mod_firearm": 0,
+      "extra_damage_mod_flail": 0,
+      "extra_damage_mod_heavy": 0,
+      "extra_damage_mod_ice": 0,
+      "extra_damage_mod_light": 0,
+      "extra_damage_mod_melee": 0,
+      "extra_damage_mod_physical": 0,
+      "extra_damage_mod_poison": 0,
+      "extra_damage_mod_ranged": 0,
+      "extra_damage_mod_spear": 0,
+      "extra_damage_mod_spell": 0,
+      "extra_damage_mod_sword": 0,
+      "extra_damage_mod_thrown": 0,
       "firearm_ef": "100",
       "flail_ef": "100",
       "gorger": true,
@@ -568,10 +949,14 @@
       "icon_offset_x": "",
       "icon_offset_y": "",
       "icon_scale": "",
-      "init": "6",
+      "id": "zRuXyepUutM2LY9H",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Geo%20Eater.png",
+      "init": "8",
       "ins_base": "8",
+      "ins_current": 8,
       "isAlmighty": false,
       "isAwake": false,
+      "isBlacksmith": false,
       "isBoss": false,
       "isClarity": false,
       "isCustomEvent": false,
@@ -581,6 +966,7 @@
       "isEnraged": false,
       "isFocus": false,
       "isMasterful": false,
+      "isPhantasm": false,
       "isPoisoned": false,
       "isShaken": false,
       "isShop": false,
@@ -593,15 +979,38 @@
       "isVillain": false,
       "isWeak": false,
       "level": "15",
-      "max_hp": "10",
+      "lifesteal_percentage": 0,
+      "lifesteal_value": 0,
+      "magic_defense": 15,
+      "manadrain_percentage": 0,
+      "manadrain_value": 0,
+      "max_hp": "30",
       "max_ip": "0",
       "max_mp": "60",
       "max_zero": "0",
-      "mdef_mod": "+3",
+      "mdef_mod": "+7",
       "mig_base": "6",
+      "mig_current": 6,
       "mimic": false,
+      "minimum_critical_dice": 6,
       "name": "Geo Gorger",
+      "normal_spell_list": {
+        "mVJkZJ0N9Gsbgwx5": {
+          "cost": "10 x T MP",
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Terra",
+          "roll": "",
+          "spell_description": "<p>The Gorger belches a gout of <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Earth</strong></a>&nbsp;at up to three creatures.</p>",
+          "spell_target": "Up to three creatures",
+          "uuid": "Actor.zRuXyepUutM2LY9H.Item.mVJkZJ0N9Gsbgwx5"
+        }
+      },
       "npc_rank": "soldier",
+      "override_all_damage_type": "None",
+      "override_attack_damage_type": "None",
+      "override_damage_type": "None",
+      "override_spell_damage_type": "None",
       "rare": false,
       "resource_maxValue_1": "0",
       "resource_maxValue_2": "0",
@@ -614,49 +1023,63 @@
       "shield_type": "PHYSICAL",
       "shield_value": "0",
       "showMacro": false,
-      "skill_active_list": {
-        "RriNRMXown9Q90wG": {
-          "active_cost": "-",
-          "active_description": "<p>Gain <strong>1 Eaten Stack</strong></p>",
-          "active_duration": "Instantaneous",
-          "active_target": "Self",
-          "id": "${item.id}",
-          "name": "Puff Up",
-          "roll": "",
-          "uuid": "Actor.zRuXyepUutM2LY9H.Item.RriNRMXown9Q90wG"
-        }
-      },
+      "skill_active_list": {},
       "skill_passive_list": {
         "8PW8ypra0pBkxKrx": {
           "id": "${item.id}",
           "name": "Geo Explosion",
-          "passive_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Trigger</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>When the <strong>Geo Gorger</strong> is reduce to 0 HP</p></li></ul><p>When the Geo Gorger dies, it deal AOE Earth damage to all creatures equal to <strong>10 x Eaten Stack</strong> before it dies. Deal 200% damage on <strong>Construct</strong></p><p>Has no effect on <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Flying</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>creature.</p>",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the <strong>Geo Gorger</strong> is reduced to 0 HP</p></li></ul><p>It goes off. Every enemy is caught in a burst of <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Earth</strong></a>&nbsp;— the more it had <strong>Eaten</strong>, the worse this is, and by the third swell it is genuinely dangerous.</p>",
           "roll": "",
           "uuid": "Actor.zRuXyepUutM2LY9H.Item.8PW8ypra0pBkxKrx"
         },
         "Cmf42fkwTOdFgfpb": {
           "id": "${item.id}",
           "name": "Consume Earth",
-          "passive_description": "<p>Nullify all <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(139, 94, 60) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span> damage against the Geo Gorger, if a damage was nullify this way,&nbsp; gain <strong>1 Eaten</strong> stack.</p><p>&nbsp;</p><p>When the Geo Gorger reaches <strong>3 Eaten</strong> stack, reduce it to 0 hp</p>",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the <strong>Geo Gorger</strong> absorbs <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Earth</strong></a>&nbsp;damage</p></li></ul><p>It drinks the blow down and puffs up on it, gaining <strong>1 Eaten</strong>.</p>",
           "roll": "",
           "uuid": "Actor.zRuXyepUutM2LY9H.Item.Cmf42fkwTOdFgfpb"
+        },
+        "RriNRMXown9Q90wG": {
+          "id": "${item.id}",
+          "name": "Puff Up",
+          "passive_description": "<p>The Gorger swells. It gains <strong>1 Eaten</strong> at the start of each of its turns, and at <strong>3 Eaten</strong> it can no longer hold itself together — it drops to 0 HP.</p>",
+          "roll": "",
+          "uuid": "Actor.zRuXyepUutM2LY9H.Item.RriNRMXown9Q90wG"
         }
       },
       "spear_ef": "100",
       "species": "ELEMENTAL",
-      "sprite_battle": "",
-      "sprite_standard": "",
-      "steal_percentage_table": {},
-      "study_text": "",
+      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Geo%20Eater.png",
+      "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Geo%20Eater.png",
+      "steal_percentage_table": {
+        "0": {
+          "$deleted": false,
+          "steal_item_name": "Earth Stone",
+          "steal_item_percentage": "100"
+        }
+      },
+      "stealable_loot": {
+        "nE7SmGSSmGl0veUL": {
+          "id": "${item.id}",
+          "loot_description": "",
+          "name": "Earth Stone",
+          "roll": "",
+          "uuid": "Actor.zRuXyepUutM2LY9H.Item.nE7SmGSSmGl0veUL"
+        }
+      },
+      "study_text": "<p>A lumpen ball of packed grit and stone. Gorgers do not hunt and they do not defend themselves; they <strong>eat</strong>, and they <strong>swell</strong>, and past a certain point they stop being a monster and start being an accident. Feeding it its own element only hurries that along. Anything that will put it down quickly is worth more than anything that will put it down well.</p>",
+      "subtype": "Sub-Type",
       "subtype_list": "GORGER",
       "sword_ef": "100",
       "tactic_notes": "",
       "thrown_ef": "100",
       "token_option_persist": false,
-      "traits": "Gorger, Elemental Creature, Earth-Align",
+      "traits": "Gorger, Elemental Creature, Earth-Align, Volatile",
       "ultima_point": "0",
       "unique": false,
+      "uuid": "Actor.zRuXyepUutM2LY9H",
       "wlp_base": "8",
+      "wlp_current": 8,
       "zenit_reward_max": "25",
       "zenit_reward_min": "20",
       "zero_power_value": "0"

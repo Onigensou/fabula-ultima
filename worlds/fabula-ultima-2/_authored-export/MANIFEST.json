@@ -13635,12 +13635,12 @@
             "name": "Aero Explosion"
           },
           {
-            "id": "KoyDVS38VutWq0aJ",
-            "name": "Consume Wind"
+            "id": "08OCMi5uBPve0pPL",
+            "name": "Bump"
           },
           {
-            "id": "5MUf38xSGYoYG6WW",
-            "name": "Ice Stone"
+            "id": "KoyDVS38VutWq0aJ",
+            "name": "Consume Air"
           },
           {
             "id": "lmpZ4ifOcHjilCxJ",
@@ -13649,6 +13649,10 @@
           {
             "id": "xvg5HXcwBOWPWpyr",
             "name": "Ventus"
+          },
+          {
+            "id": "5MUf38xSGYoYG6WW",
+            "name": "Wind Stone"
           }
         ],
         "effects": 0
@@ -15679,6 +15683,38 @@
         "effects": 0
       },
       {
+        "id": "s3PZn3F1rEEOfSKG",
+        "name": "Cryo Gorger",
+        "type": "character",
+        "items": [
+          {
+            "id": "TOCIf3Gg4tftUYQH",
+            "name": "Bump"
+          },
+          {
+            "id": "tFl6lds8UqLbwBtt",
+            "name": "Consume Ice"
+          },
+          {
+            "id": "lvsvAx1rI1v5UuzQ",
+            "name": "Cryo Explosion"
+          },
+          {
+            "id": "erJpUugnvfhJadQk",
+            "name": "Glacies"
+          },
+          {
+            "id": "qYRqJPMONFgPN1z6",
+            "name": "Ice Stone"
+          },
+          {
+            "id": "rwCBTY15iElm3yq7",
+            "name": "Puff Up"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "ZPPCxB0eOJPulEHv",
         "name": "Crysta",
         "type": "character",
@@ -16047,6 +16083,34 @@
         "name": "Eisendrachian Knight",
         "type": "character",
         "items": [],
+        "effects": 0
+      },
+      {
+        "id": "YSv1nNWZ5SGDJL5C",
+        "name": "Electro Gorger",
+        "type": "character",
+        "items": [
+          {
+            "id": "orWbZbfbtZJithJF",
+            "name": "Bump"
+          },
+          {
+            "id": "93jPWbWOYfEafpR4",
+            "name": "Consume Bolt"
+          },
+          {
+            "id": "nYxEsOZ5KJkS6NGN",
+            "name": "Electro Explosion"
+          },
+          {
+            "id": "xsBJne1nNLAwbUyq",
+            "name": "Fulgur"
+          },
+          {
+            "id": "H0meHXZybKPWBKqR",
+            "name": "Puff Up"
+          }
+        ],
         "effects": 0
       },
       {
@@ -17588,8 +17652,16 @@
         "type": "character",
         "items": [
           {
+            "id": "iLwNpoJXRCZH6hkE",
+            "name": "Bump"
+          },
+          {
             "id": "Cmf42fkwTOdFgfpb",
             "name": "Consume Earth"
+          },
+          {
+            "id": "nE7SmGSSmGl0veUL",
+            "name": "Earth Stone"
           },
           {
             "id": "8PW8ypra0pBkxKrx",
@@ -17598,6 +17670,10 @@
           {
             "id": "RriNRMXown9Q90wG",
             "name": "Puff Up"
+          },
+          {
+            "id": "mVJkZJ0N9Gsbgwx5",
+            "name": "Terra"
           }
         ],
         "effects": 0
@@ -20898,6 +20974,34 @@
         "effects": 0
       },
       {
+        "id": "oclPc7ibfLZKdXmg",
+        "name": "Phobo Gorger",
+        "type": "character",
+        "items": [
+          {
+            "id": "DAKn401jop75tKgd",
+            "name": "Bump"
+          },
+          {
+            "id": "9kqg6wZiotfqOd0n",
+            "name": "Consume Dark"
+          },
+          {
+            "id": "pjAMOiD4uRmpRn98",
+            "name": "Phobo Explosion"
+          },
+          {
+            "id": "VeEegE0oO43KZqxU",
+            "name": "Puff Up"
+          },
+          {
+            "id": "ns0O6pSdImlOlp9d",
+            "name": "Umbra"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "19EQG0IBF8FDm6m0",
         "name": "Pilgrim Gazalia",
         "type": "character",
@@ -21150,6 +21254,34 @@
           {
             "id": "F4Iy3N5tOcoJuuWt",
             "name": "Spicy Powder"
+          }
+        ],
+        "effects": 0
+      },
+      {
+        "id": "ERT7381Ood5xdrL9",
+        "name": "Pyro Gorger",
+        "type": "character",
+        "items": [
+          {
+            "id": "GK6VDR6dOtZAlNj7",
+            "name": "Bump"
+          },
+          {
+            "id": "rOqoc6mgeyeM1CoY",
+            "name": "Consume Fire"
+          },
+          {
+            "id": "rUSwaRzPQwHyngJt",
+            "name": "Ignis"
+          },
+          {
+            "id": "jKYbTFtZKMuvhOGG",
+            "name": "Puff Up"
+          },
+          {
+            "id": "HS2lyODnmjguYEqa",
+            "name": "Pyro Explosion"
           }
         ],
         "effects": 0

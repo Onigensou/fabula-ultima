@@ -1,5 +1,5 @@
 {
-  "_id": "9yadoDh5EhIWpevl",
+  "_id": "oclPc7ibfLZKdXmg",
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
@@ -14,10 +14,103 @@
     }
   },
   "folder": "Nd8LnosrPid1eX1r",
-  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Aero_Gorger_Standard.png",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Phobo%20Gorger.png",
   "items": [
     {
-      "_id": "08OCMi5uBPve0pPL",
+      "_id": "9kqg6wZiotfqOd0n",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": "Item.mJuSEmMc3A0HrqNO",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+      "name": "Consume Dark",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the <strong>Phobo Gorger</strong> absorbs <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;damage</p></li></ul><p>It drinks the blow down and puffs up on it, gaining <strong>1 Eaten</strong>.</p>",
+          "details_roller": "Show",
+          "duration": "-",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "add_charges",
+              "ae_template_ref": "Eaten",
+              "effect_kind": "apply_ae",
+              "effect_label": "absorb_feed",
+              "target_ref": "self"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Consume Dark",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_DARK == 1",
+              "reaction_cause_filter": "damage",
+              "reaction_effect_ref": "absorb_feed",
+              "reaction_passive_mode": "force",
+              "reaction_resource_filter": "hp",
+              "reaction_source": "",
+              "reaction_trigger": "creature_gain_resource"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "-",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.oclPc7ibfLZKdXmg.Item.9kqg6wZiotfqOd0n"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2788278388,
+        "unique": false,
+        "uniqueId": "vdEX0eAROfOYjHED"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "DAKn401jop75tKgd",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
@@ -82,7 +175,7 @@
           "skill_type": "Attack",
           "type_damage": "Physical",
           "use_optional_params": false,
-          "uuid": "Actor.9yadoDh5EhIWpevl.Item.08OCMi5uBPve0pPL"
+          "uuid": "Actor.oclPc7ibfLZKdXmg.Item.DAKn401jop75tKgd"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2788278388,
@@ -92,98 +185,82 @@
       "type": "equippableItem"
     },
     {
-      "_id": "5MUf38xSGYoYG6WW",
+      "_id": "ns0O6pSdImlOlp9d",
       "_stats": {
-        "compendiumSource": null,
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
         "coreVersion": "12.343",
-        "createdTime": 1751656819001,
+        "createdTime": 1785582429733,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "flags": {
         "custom-system-builder": {
-          "version": "4.6.4"
+          "version": "4.8.4"
         }
       },
       "folder": null,
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Wind%20Stone.gif",
-      "name": "Wind Stone",
+      "img": "icons/magic/unholy/beam-ringed-impact-purple.webp",
+      "name": "Umbra",
       "ownership": {
         "default": 0
       },
-      "sort": 2400000,
+      "sort": 100000,
       "system": {
-        "container": null,
         "props": {
+          "action_keywords": "",
           "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li><p>Deals <strong>40 Air </strong>damage to target creature</p></li></ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "1",
+          "class": "NPC",
+          "cost": "10 x T MP",
+          "damage_bonus": "15",
+          "defense_target_type": "mdef",
+          "description": "<p>The Gorger belches a gout of <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;at up to three creatures.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {},
+          "heroic_requirement": "",
           "id": "${item.id}",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "70",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Common",
-          "item_type": "consumable",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Wind Stone",
+          "ignore_hr": false,
+          "img": "icons/magic/unholy/beam-ringed-impact-purple.webp",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Umbra",
+          "on_activate_effect_ref": "",
           "optional_params": {},
-          "plant_ef": "100",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "uuid": "Actor.9yadoDh5EhIWpevl.Item.5MUf38xSGYoYG6WW",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
+          "reaction_config_table": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "Up to three creatures",
+          "skill_type": "Spell",
+          "type_damage": "Dark",
+          "use_optional_params": false,
+          "uuid": "Actor.oclPc7ibfLZKdXmg.Item.ns0O6pSdImlOlp9d"
         },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 3202566307,
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2788278388,
         "unique": false,
-        "uniqueId": "W12k5UVEouxIPrDf"
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
       },
       "type": "equippableItem"
     },
     {
-      "_id": "KoyDVS38VutWq0aJ",
+      "_id": "pjAMOiD4uRmpRn98",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
@@ -198,8 +275,8 @@
         }
       },
       "folder": null,
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
-      "name": "Consume Air",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
+      "name": "Phobo Explosion",
       "ownership": {
         "default": 0
       },
@@ -218,22 +295,43 @@
           "cost": "-",
           "damage_bonus": "0",
           "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the <strong>Aero Gorger</strong> absorbs <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;damage</p></li></ul><p>It drinks the blow down and puffs up on it, gaining <strong>1 Eaten</strong>.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the <strong>Phobo Gorger</strong> is reduced to 0 HP</p></li></ul><p>It goes off. Every enemy is caught in a burst of <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;— the more it had <strong>Eaten</strong>, the worse this is, and by the third swell it is genuinely dangerous.</p>",
           "details_roller": "Show",
           "duration": "-",
           "effect_table": {
             "0": {
-              "ae_duplicate_mode": "add_charges",
-              "ae_template_ref": "Eaten",
+              "chain_steps": "boom_damage, boom_rider",
+              "effect_kind": "chain",
+              "effect_label": "boom_chain"
+            },
+            "1": {
+              "candidate_source": "combat",
+              "category": "enemy",
+              "effect_kind": "targeting",
+              "effect_label": "boom_targets",
+              "exclude_self": true,
+              "mode": "all"
+            },
+            "2": {
+              "damage_amount": "max(TARGET_LEVEL, 15) * TARGET_AE_CHARGES_EATEN * TARGET_AE_CHARGES_EATEN / 3",
+              "damage_cause": "damage",
+              "damage_element": "dark",
+              "effect_kind": "deal_damage",
+              "effect_label": "boom_damage",
+              "target_ref": "boom_targets"
+            },
+            "3": {
+              "ae_duplicate_mode": "stack",
+              "ae_template_ref": "Shaken",
               "effect_kind": "apply_ae",
-              "effect_label": "absorb_feed",
-              "target_ref": "self"
+              "effect_label": "boom_rider",
+              "target_ref": "boom_targets"
             }
           },
           "heroic_requirement": "",
           "id": "${item.id}",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -242,18 +340,18 @@
           "isZeroPower": false,
           "level": "1",
           "max_level": "1",
-          "name": "Consume Air",
+          "name": "Phobo Explosion",
           "on_activate_effect_ref": "",
           "optional_params": {},
           "reaction_config_table": {
             "0": {
-              "condition_formula": "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_AIR == 1",
-              "reaction_cause_filter": "damage",
-              "reaction_effect_ref": "absorb_feed",
+              "condition_formula": "",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "boom_chain",
               "reaction_passive_mode": "force",
-              "reaction_resource_filter": "hp",
-              "reaction_source": "",
-              "reaction_trigger": "creature_gain_resource"
+              "reaction_resource_filter": "",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_defeated"
             }
           },
           "rolled_atr1": "-",
@@ -266,7 +364,7 @@
           "skill_type": "Passive",
           "type_damage": "",
           "use_optional_params": false,
-          "uuid": "Actor.9yadoDh5EhIWpevl.Item.KoyDVS38VutWq0aJ"
+          "uuid": "Actor.oclPc7ibfLZKdXmg.Item.pjAMOiD4uRmpRn98"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2788278388,
@@ -276,7 +374,7 @@
       "type": "equippableItem"
     },
     {
-      "_id": "lmpZ4ifOcHjilCxJ",
+      "_id": "VeEegE0oO43KZqxU",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
@@ -287,7 +385,7 @@
       },
       "effects": [
         {
-          "_id": "7aKcg16BaqaO9m8t",
+          "_id": "GRriQ277Is9MRvCa",
           "changes": [],
           "description": "<p>It is getting bigger. At three, it stops being a monster.</p>",
           "disabled": false,
@@ -302,7 +400,7 @@
           "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
           "name": "Eaten",
-          "origin": "Actor.9yadoDh5EhIWpevl.Item.lmpZ4ifOcHjilCxJ",
+          "origin": "Actor.oclPc7ibfLZKdXmg.Item.VeEegE0oO43KZqxU",
           "statuses": [],
           "system": {
             "tags": [
@@ -401,211 +499,22 @@
           "skill_type": "Passive",
           "type_damage": "",
           "use_optional_params": false,
-          "uuid": "Actor.9yadoDh5EhIWpevl.Item.lmpZ4ifOcHjilCxJ"
+          "uuid": "Actor.oclPc7ibfLZKdXmg.Item.VeEegE0oO43KZqxU"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2788278388,
         "unique": false,
         "uniqueId": "vdEX0eAROfOYjHED"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "qgjWRf2it0vv2bwJ",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": null,
-        "duplicateSource": "Item.mJuSEmMc3A0HrqNO",
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.4"
-        }
-      },
-      "folder": null,
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
-      "name": "Aero Explosion",
-      "ownership": {
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "action_keywords": "",
-          "active_effect_config_table": {},
-          "ae_chance_percent": "",
-          "ae_template_ref": "",
-          "animation_damage_timing_offset": "0",
-          "animation_damage_timing_options": "default",
-          "animation_script": "",
-          "check_bonus": "0",
-          "class": "NPC",
-          "cost": "-",
-          "damage_bonus": "0",
-          "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the <strong>Aero Gorger</strong> is reduced to 0 HP</p></li></ul><p>It goes off. Every enemy is caught in a burst of <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;— the more it had <strong>Eaten</strong>, the worse this is, and by the third swell it is genuinely dangerous.</p>",
-          "details_roller": "Show",
-          "duration": "-",
-          "effect_table": {
-            "0": {
-              "chain_steps": "boom_damage, boom_rider",
-              "effect_kind": "chain",
-              "effect_label": "boom_chain"
-            },
-            "1": {
-              "candidate_source": "combat",
-              "category": "enemy",
-              "effect_kind": "targeting",
-              "effect_label": "boom_targets",
-              "exclude_self": true,
-              "mode": "all"
-            },
-            "2": {
-              "damage_amount": "max(TARGET_LEVEL, 15) * TARGET_AE_CHARGES_EATEN * TARGET_AE_CHARGES_EATEN / 3",
-              "damage_cause": "damage",
-              "damage_element": "air",
-              "effect_kind": "deal_damage",
-              "effect_label": "boom_damage",
-              "target_ref": "boom_targets"
-            },
-            "3": {
-              "ae_duplicate_mode": "stack",
-              "ae_template_ref": "Obscure",
-              "effect_kind": "apply_ae",
-              "effect_label": "boom_rider",
-              "target_ref": "boom_targets"
-            }
-          },
-          "heroic_requirement": "",
-          "id": "${item.id}",
-          "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "isReaction": true,
-          "isZeroPower": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Aero Explosion",
-          "on_activate_effect_ref": "",
-          "optional_params": {},
-          "reaction_config_table": {
-            "0": {
-              "condition_formula": "",
-              "reaction_cause_filter": "",
-              "reaction_effect_ref": "boom_chain",
-              "reaction_passive_mode": "force",
-              "reaction_resource_filter": "",
-              "reaction_source": "self",
-              "reaction_trigger": "creature_defeated"
-            }
-          },
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_animation_default": "",
-          "skill_animation_mode": "default",
-          "skill_information": "",
-          "skill_range": "-",
-          "skill_target": "-",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.9yadoDh5EhIWpevl.Item.qgjWRf2it0vv2bwJ"
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278388,
-        "unique": false,
-        "uniqueId": "vdEX0eAROfOYjHED"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "xvg5HXcwBOWPWpyr",
-      "_stats": {
-        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
-        "coreVersion": "12.343",
-        "createdTime": 1785582429733,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.4"
-        }
-      },
-      "folder": null,
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/aero_ii.png",
-      "name": "Ventus",
-      "ownership": {
-        "default": 0
-      },
-      "sort": 100000,
-      "system": {
-        "props": {
-          "action_keywords": "",
-          "active_effect_config_table": {},
-          "ae_chance_percent": "",
-          "ae_template_ref": "",
-          "animation_damage_timing_offset": "0",
-          "animation_damage_timing_options": "default",
-          "animation_script": "",
-          "check_bonus": "1",
-          "class": "NPC",
-          "cost": "10 x T MP",
-          "damage_bonus": "15",
-          "defense_target_type": "mdef",
-          "description": "<p>The Gorger belches a gout of <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;at up to three creatures.</p>",
-          "details_roller": "Show",
-          "duration": "Instantaneous",
-          "effect_table": {},
-          "heroic_requirement": "",
-          "id": "${item.id}",
-          "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/aero_ii.png",
-          "isCheck": true,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": true,
-          "isReaction": false,
-          "isZeroPower": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Ventus",
-          "on_activate_effect_ref": "",
-          "optional_params": {},
-          "reaction_config_table": {},
-          "rolled_atr1": "INS",
-          "rolled_atr2": "WLP",
-          "skill_animation_default": "",
-          "skill_animation_mode": "default",
-          "skill_information": "",
-          "skill_range": "Range",
-          "skill_target": "Up to three creatures",
-          "skill_type": "Spell",
-          "type_damage": "Air",
-          "use_optional_params": false,
-          "uuid": "Actor.9yadoDh5EhIWpevl.Item.xvg5HXcwBOWPWpyr"
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278388,
-        "unique": false,
-        "uniqueId": "yWlkWZC2vLf4J5Pv"
       },
       "type": "equippableItem"
     }
   ],
-  "name": "Aero Gorger",
+  "name": "Phobo Gorger",
   "ownership": {
     "default": 0
   },
   "prototypeToken": {
-    "actorId": "9yadoDh5EhIWpevl",
+    "actorId": "oclPc7ibfLZKdXmg",
     "actorLink": false,
     "alpha": 1,
     "appendNumber": false,
@@ -741,7 +650,7 @@
       "shadows": 0
     },
     "lockRotation": false,
-    "name": "Aero Gorger",
+    "name": "Phobo Gorger",
     "occludable": {
       "radius": 0
     },
@@ -781,7 +690,7 @@
       "rotation": 0,
       "scaleX": 1,
       "scaleY": 1,
-      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Aero_Gorger_Standard.png",
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Phobo%20Gorger.png",
       "tint": "#ffffff"
     },
     "width": 1
@@ -797,7 +706,7 @@
           "action_pattern_cooldown": "0",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Ventus",
+          "action_pattern_name": "Umbra",
           "action_pattern_priority": "5",
           "action_pattern_string": "",
           "action_pattern_target_focus": "by_affinity",
@@ -820,18 +729,18 @@
       },
       "activation": "1",
       "affinity_1": "NA",
-      "affinity_2": "AB",
+      "affinity_2": "NA",
       "affinity_3": "NA",
-      "affinity_4": "NA",
-      "affinity_5": "VU",
+      "affinity_4": "AB",
+      "affinity_5": "NA",
       "affinity_6": "NA",
       "affinity_7": "NA",
-      "affinity_8": "NA",
+      "affinity_8": "VU",
       "affinity_9": "NA",
       "animation_table": {},
       "arcane_ef": "100",
       "attack_list": {
-        "08OCMi5uBPve0pPL": {
+        "DAKn401jop75tKgd": {
           "active_target": "One Creature",
           "attack_description": "<p>It throws its whole bloated weight at one creature. There is no technique in it.</p>",
           "attribute_die1": "DEX",
@@ -839,10 +748,10 @@
           "id": "${item.id}",
           "name": "Bump",
           "roll": "",
-          "uuid": "Actor.9yadoDh5EhIWpevl.Item.08OCMi5uBPve0pPL"
+          "uuid": "Actor.oclPc7ibfLZKdXmg.Item.DAKn401jop75tKgd"
         }
       },
-      "attribute": "WIND",
+      "attribute": "DARK",
       "battle_facing_direction": "left",
       "bonus_hp": 0,
       "bonus_mp": 0,
@@ -895,10 +804,10 @@
       "current_hp": "30",
       "current_ip": "0",
       "current_mp": "60",
-      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Aero_Gorger_Standard.png",
-      "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Aero_Gorger_Standard.png",
+      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Phobo%20Gorger.png",
+      "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Phobo%20Gorger.png",
       "cut_in_offset_y": "",
-      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Aero_Gorger_Standard.png",
+      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Phobo%20Gorger.png",
       "dagger_ef": "100",
       "damage_receiving_mod_air": 0,
       "damage_receiving_mod_all": 0,
@@ -949,8 +858,8 @@
       "icon_offset_x": "",
       "icon_offset_y": "",
       "icon_scale": "",
-      "id": "9yadoDh5EhIWpevl",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Aero_Gorger_Standard.png",
+      "id": "oclPc7ibfLZKdXmg",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Phobo%20Gorger.png",
       "init": "8",
       "ins_base": "8",
       "ins_current": 8,
@@ -993,17 +902,17 @@
       "mig_current": 6,
       "mimic": false,
       "minimum_critical_dice": 6,
-      "name": "Aero Gorger",
+      "name": "Phobo Gorger",
       "normal_spell_list": {
-        "xvg5HXcwBOWPWpyr": {
+        "ns0O6pSdImlOlp9d": {
           "cost": "10 x T MP",
           "duration": "Instantaneous",
           "id": "${item.id}",
-          "name": "Ventus",
+          "name": "Umbra",
           "roll": "",
-          "spell_description": "<p>The Gorger belches a gout of <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;at up to three creatures.</p>",
+          "spell_description": "<p>The Gorger belches a gout of <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;at up to three creatures.</p>",
           "spell_target": "Up to three creatures",
-          "uuid": "Actor.9yadoDh5EhIWpevl.Item.xvg5HXcwBOWPWpyr"
+          "uuid": "Actor.oclPc7ibfLZKdXmg.Item.ns0O6pSdImlOlp9d"
         }
       },
       "npc_rank": "soldier",
@@ -1025,59 +934,45 @@
       "showMacro": false,
       "skill_active_list": {},
       "skill_passive_list": {
-        "KoyDVS38VutWq0aJ": {
+        "9kqg6wZiotfqOd0n": {
           "id": "${item.id}",
-          "name": "Consume Air",
-          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the <strong>Aero Gorger</strong> absorbs <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;damage</p></li></ul><p>It drinks the blow down and puffs up on it, gaining <strong>1 Eaten</strong>.</p>",
+          "name": "Consume Dark",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the <strong>Phobo Gorger</strong> absorbs <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;damage</p></li></ul><p>It drinks the blow down and puffs up on it, gaining <strong>1 Eaten</strong>.</p>",
           "roll": "",
-          "uuid": "Actor.9yadoDh5EhIWpevl.Item.KoyDVS38VutWq0aJ"
+          "uuid": "Actor.oclPc7ibfLZKdXmg.Item.9kqg6wZiotfqOd0n"
         },
-        "lmpZ4ifOcHjilCxJ": {
+        "VeEegE0oO43KZqxU": {
           "id": "${item.id}",
           "name": "Puff Up",
           "passive_description": "<p>The Gorger swells. It gains <strong>1 Eaten</strong> at the start of each of its turns, and at <strong>3 Eaten</strong> it can no longer hold itself together — it drops to 0 HP.</p>",
           "roll": "",
-          "uuid": "Actor.9yadoDh5EhIWpevl.Item.lmpZ4ifOcHjilCxJ"
+          "uuid": "Actor.oclPc7ibfLZKdXmg.Item.VeEegE0oO43KZqxU"
         },
-        "qgjWRf2it0vv2bwJ": {
+        "pjAMOiD4uRmpRn98": {
           "id": "${item.id}",
-          "name": "Aero Explosion",
-          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the <strong>Aero Gorger</strong> is reduced to 0 HP</p></li></ul><p>It goes off. Every enemy is caught in a burst of <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;— the more it had <strong>Eaten</strong>, the worse this is, and by the third swell it is genuinely dangerous.</p>",
+          "name": "Phobo Explosion",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the <strong>Phobo Gorger</strong> is reduced to 0 HP</p></li></ul><p>It goes off. Every enemy is caught in a burst of <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;— the more it had <strong>Eaten</strong>, the worse this is, and by the third swell it is genuinely dangerous.</p>",
           "roll": "",
-          "uuid": "Actor.9yadoDh5EhIWpevl.Item.qgjWRf2it0vv2bwJ"
+          "uuid": "Actor.oclPc7ibfLZKdXmg.Item.pjAMOiD4uRmpRn98"
         }
       },
       "spear_ef": "100",
       "species": "ELEMENTAL",
-      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Aero_Gorger_Standard.png",
-      "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Aero_Gorger_Standard.png",
-      "steal_percentage_table": {
-        "0": {
-          "$deleted": false,
-          "steal_item_name": "Wind Stone",
-          "steal_item_percentage": "100"
-        }
-      },
-      "stealable_loot": {
-        "5MUf38xSGYoYG6WW": {
-          "id": "${item.id}",
-          "loot_description": "",
-          "name": "Wind Stone",
-          "roll": "",
-          "uuid": "Actor.9yadoDh5EhIWpevl.Item.5MUf38xSGYoYG6WW"
-        }
-      },
-      "study_text": "<p>A knot of hissing wind with something solid at the middle. Gorgers do not hunt and they do not defend themselves; they <strong>eat</strong>, and they <strong>swell</strong>, and past a certain point they stop being a monster and start being an accident. Feeding it its own element only hurries that along. Anything that will put it down quickly is worth more than anything that will put it down well.</p>",
+      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Phobo%20Gorger.png",
+      "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Phobo%20Gorger.png",
+      "steal_percentage_table": {},
+      "stealable_loot": {},
+      "study_text": "<p>A swollen bruise of a thing that drinks the lamplight. Gorgers do not hunt and they do not defend themselves; they <strong>eat</strong>, and they <strong>swell</strong>, and past a certain point they stop being a monster and start being an accident. Feeding it its own element only hurries that along. Anything that will put it down quickly is worth more than anything that will put it down well.</p>",
       "subtype": "Sub-Type",
       "subtype_list": "GORGER",
       "sword_ef": "100",
       "tactic_notes": "",
       "thrown_ef": "100",
       "token_option_persist": false,
-      "traits": "Gorger, Elemental Creature, Wind-Align, Volatile",
+      "traits": "Gorger, Elemental Creature, Dark-Align, Volatile",
       "ultima_point": "0",
       "unique": false,
-      "uuid": "Actor.9yadoDh5EhIWpevl",
+      "uuid": "Actor.oclPc7ibfLZKdXmg",
       "wlp_base": "8",
       "wlp_current": 8,
       "zenit_reward_max": "25",

@@ -28,6 +28,78 @@ const IDS = {
   LG_RUN:         "mDCsEDSOUSpgzWqy",   // was "Flee"
   LG_LOOT:        "xv29h2B2X7EuECAI",   // Mega-Remedy
   LG_EATEN_AE:    "YVD5skR9nSRA1Xje",
+
+  // — elemental cycle: existing actors —
+  AERO:              "9yadoDh5EhIWpevl",
+  AERO_SPELL:        "xvg5HXcwBOWPWpyr",   // Ventus
+  AERO_PUFF:         "lmpZ4ifOcHjilCxJ",
+  AERO_CONSUME:      "KoyDVS38VutWq0aJ",
+  AERO_BOOM:         "qgjWRf2it0vv2bwJ",
+  AERO_LOOT:         "5MUf38xSGYoYG6WW",   // was an "Ice Stone" — Cryo copy-paste residue
+  AERO_BUMP:         "08OCMi5uBPve0pPL",
+  // Reuse the ORIGINAL Eaten AE id on both Aero and Geo rather than minting a
+  // new one — a fresh id would leave the old AE doc orphaned at its own key,
+  // invisible on the sheet but still in the store. Same id under two different
+  // parent keys is fine; the key carries actor + item.
+  AERO_EATEN:        "7aKcg16BaqaO9m8t",
+
+  GEO:               "zRuXyepUutM2LY9H",
+  GEO_PUFF:          "RriNRMXown9Q90wG",
+  GEO_CONSUME:       "Cmf42fkwTOdFgfpb",
+  GEO_BOOM:          "8PW8ypra0pBkxKrx",
+  GEO_SPELL:         "mVJkZJ0N9Gsbgwx5",
+  GEO_BUMP:          "iLwNpoJXRCZH6hkE",
+  GEO_LOOT:          "nE7SmGSSmGl0veUL",
+  GEO_EATEN:         "7aKcg16BaqaO9m8t",
+
+  // — elemental cycle: new actors —
+  PYRO_ACTOR:        "ERT7381Ood5xdrL9",
+  PYRO_SPELL:        "rUSwaRzPQwHyngJt",
+  PYRO_BUMP:         "GK6VDR6dOtZAlNj7",
+  PYRO_PUFF:         "jKYbTFtZKMuvhOGG",
+  PYRO_CONSUME:      "rOqoc6mgeyeM1CoY",
+  PYRO_BOOM:         "HS2lyODnmjguYEqa",
+  PYRO_EATEN:        "DhJYY64iZZjyHAN9",
+
+  CRYO_ACTOR:        "s3PZn3F1rEEOfSKG",
+  CRYO_SPELL:        "erJpUugnvfhJadQk",
+  CRYO_BUMP:         "TOCIf3Gg4tftUYQH",
+  CRYO_PUFF:         "rwCBTY15iElm3yq7",
+  CRYO_CONSUME:      "tFl6lds8UqLbwBtt",
+  CRYO_BOOM:         "lvsvAx1rI1v5UuzQ",
+  CRYO_LOOT:         "qYRqJPMONFgPN1z6",
+  CRYO_EATEN:        "QjlZkIflqsKTPwL1",
+
+  ELECTRO_ACTOR:     "YSv1nNWZ5SGDJL5C",
+  ELECTRO_SPELL:     "xsBJne1nNLAwbUyq",
+  ELECTRO_BUMP:      "orWbZbfbtZJithJF",
+  ELECTRO_PUFF:      "H0meHXZybKPWBKqR",
+  ELECTRO_CONSUME:   "93jPWbWOYfEafpR4",
+  ELECTRO_BOOM:      "nYxEsOZ5KJkS6NGN",
+  ELECTRO_EATEN:     "yRGmfCzSFCWAEMlD",
+
+  PHOBO_ACTOR:       "oclPc7ibfLZKdXmg",
+  PHOBO_SPELL:       "ns0O6pSdImlOlp9d",
+  PHOBO_BUMP:        "DAKn401jop75tKgd",
+  PHOBO_PUFF:        "VeEegE0oO43KZqxU",
+  PHOBO_CONSUME:     "9kqg6wZiotfqOd0n",
+  PHOBO_BOOM:        "pjAMOiD4uRmpRn98",
+  PHOBO_EATEN:       "GRriQ277Is9MRvCa",
+};
+
+// World items cloned as a Gorger's stealable drop. Only three of the six
+// elements have a Stone authored — Fire, Bolt and Dark do not exist yet, so
+// those Gorgers ship with no steal table rather than inventing an item.
+const STONE = {
+  air:   "W12k5UVEouxIPrDf",   // Wind Stone
+  earth: "6wg3JxDlU6GD4uqq",   // Earth Stone
+  ice:   "rhUHerukYc4ZY2LB",   // Ice Stone
+};
+
+// Affinity prop index (apply-damage-core ELEMENT_AFFINITY_KEY).
+const AFFINITY = {
+  physical: 1, air: 2, bolt: 3, dark: 4, earth: 5,
+  fire: 6, ice: 7, light: 8, poison: 9,
 };
 
 // Filler monsters live in the Monster folder, NOT Current Dungeon — the latter
@@ -122,8 +194,51 @@ function eatenAE(id, actorId, itemId, flavor) {
   };
 }
 
+// ── the elemental cycle ─────────────────────────────────────────────────────
+// Six Gorgers, one chassis. Each ABSORBS its own element and is VULNERABLE to
+// its opposite, so the wheel closes: fire<->ice, air<->earth, dark<->light.
+// Bolt has no natural opposite in FU, so Electro is grounded by earth.
+//
+// `spellSrc` is the world item the NPC spell is cloned from — the party's own
+// basic elemental spells, reshaped for NPC use (class NPC, isFacet off,
+// isOffensiveSpell + isCheck on, or the NPC attack picker will not offer it).
+//
+// `rider` is the status the detonation leaves behind. All six come from the
+// world debuff library (Item.XVOWOq9oUmEECGrU) by bare name — nothing invented.
+// Note Aero's: the old passive promised "-X Ranged accuracy", which was never
+// implemented anywhere. Obscure is the real engine effect for that idea
+// (disable_attack_range: ranged).
+const CYCLE = [
+  { key: "PYRO",    name: "Pyro Gorger",    element: "fire",  vu: "ice",   attribute: "FIRE",
+    art: "Pyro%20Eater.png",     spell: "Ignis",   spellSrc: "EJ8qEpVDNMA0I1fi",
+    rider: "Burn",    riderLink: "burn",
+    align: "Fire-Align",  flavor: "a fat, grinning sphere of banked embers" },
+  { key: "CRYO",    name: "Cryo Gorger",    element: "ice",   vu: "fire",  attribute: "ICE",
+    // Glacies exists only as an actor-embedded item; there is no world copy.
+    art: "Cryo%20Eater.png",     spell: "Glacies",
+    spellSrc: "WhQkZuDMEraweEcP", spellSrcActor: "2oGGVHp4r8APG2Eu",
+    rider: "Slow",    riderLink: "slow",
+    align: "Ice-Align",   flavor: "a rime-crusted bladder that creaks as it fills" },
+  { key: "AERO",    name: "Aero Gorger",    element: "air",   vu: "earth", attribute: "WIND",
+    art: "Aero_Gorger_Standard.png", spell: "Ventus", spellSrc: "jLC0QzPXwRrpkY1e",
+    rider: "Obscure", riderLink: null,
+    align: "Wind-Align",  flavor: "a knot of hissing wind with something solid at the middle" },
+  { key: "GEO",     name: "Geo Gorger",     element: "earth", vu: "air",   attribute: "EARTH",
+    art: "Geo%20Eater.png",      spell: "Terra",   spellSrc: "oB6zQngnzWyl3VLx",
+    rider: "Weak",    riderLink: null,
+    align: "Earth-Align", flavor: "a lumpen ball of packed grit and stone" },
+  { key: "ELECTRO", name: "Electro Gorger", element: "bolt",  vu: "earth", attribute: "BOLT",
+    art: "Electro%20Eater.png",  spell: "Fulgur",  spellSrc: "9NedNyPRoLHZEmMX",
+    rider: "Dazed",   riderLink: "dazed",
+    align: "Bolt-Align",  flavor: "a crackling sac that stands every hair in the room on end" },
+  { key: "PHOBO",   name: "Phobo Gorger",   element: "dark",  vu: "light", attribute: "DARK",
+    art: "Phobo%20Gorger.png",   spell: "Umbra",   spellSrc: "vlUneeNRfgFVzK2E",
+    rider: "Shaken",  riderLink: "shaken",
+    align: "Dark-Align",  flavor: "a swollen bruise of a thing that drinks the lamplight" },
+];
+
 module.exports = {
-  IDS, FOLDER_MONSTER,
+  IDS, FOLDER_MONSTER, STONE, AFFINITY, CYCLE,
   DONOR_ACTOR, DONOR_ATTACK, DONOR_PASSIVE, DONOR_SPELL_ACTOR, DONOR_SPELL,
   link, L, bullets, trig, ICON, ART, eatenAE,
 };
