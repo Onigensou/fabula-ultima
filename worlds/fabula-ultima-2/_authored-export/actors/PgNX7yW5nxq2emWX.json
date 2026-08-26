@@ -3,14 +3,20 @@
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": null,
+    "createdTime": 1704911302491,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
   "flags": {
     "custom-system-builder": {
-      "version": "4.8.5"
+      "version": "4.5.0"
+    },
+    "fabula-ultima-companion": {
+      "idleAnimation": {
+        "bounce": false,
+        "float": true
+      }
     }
   },
   "folder": "Nd8LnosrPid1eX1r",
@@ -401,6 +407,7 @@
   ],
   "name": "Mana Gorger",
   "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
   "prototypeToken": {
@@ -418,6 +425,13 @@
     "displayName": 50,
     "disposition": -1,
     "flags": {
+      "Border-Control": {
+        "borderCustomBaseOpacity": 0.5,
+        "borderCustomColorExt": "#000000",
+        "borderCustomColorInt": "#000000",
+        "borderCustomFrameOpacity": 0.5,
+        "noBorder": false
+      },
       "barbrawl": {
         "resourceBars": {
           "bar1": {
@@ -436,6 +450,7 @@
             "invert": false,
             "invertDirection": false,
             "label": "HP",
+            "max": null,
             "maxcolor": "#80FF00",
             "mincolor": "#FF0000",
             "opacity": null,
@@ -464,6 +479,7 @@
             "invert": false,
             "invertDirection": false,
             "label": "MP",
+            "max": null,
             "maxcolor": "#80B3FF",
             "mincolor": "#000080",
             "opacity": null,
@@ -507,8 +523,21 @@
         }
       },
       "hex-size-support": {
+        "alternateOrientation": false,
         "hideBorder": true,
-        "hideFill": true
+        "hideFill": false,
+        "pivotx": null,
+        "pivoty": null
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "wall-height": {
+        "tokenHeight": 0
       }
     },
     "height": 1,

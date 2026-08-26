@@ -14,7 +14,7 @@
 const { getByKey } = require("../lib/db");
 const {
   IDS, FOLDER_MONSTER, DONOR_ACTOR, DONOR_ATTACK, DONOR_PASSIVE,
-  L, bullets, trig, ICON, ART, eatenAE,
+  L, bullets, trig, ICON, ART, eatenAE, preserveIdentity,
 } = require("./_gorger-lib");
 const { blankActor, run } = require("./_dragon-util");
 
@@ -233,7 +233,7 @@ run(async ({ changes }) => {
 
     changes.push([ik(IDS.MG_LOOT), manaLoot, "Mega-Elixir — carried forward unchanged"]);
 
-    const a = blankActor(donor, A, "Mana Gorger", FOLDER_MONSTER, ART + "Mana%20Eater.png", 1.0);
+    const a = preserveIdentity(blankActor(donor, A, "Mana Gorger", FOLDER_MONSTER, ART + "Mana%20Eater.png", 1.0), await getByKey("actors", `!actors!${A}`));
     Object.assign(a.system.props, common, {
       attribute: "DARK",
       traits: "Gorger, Elemental Creature, Dark-Align, Cowardly",
@@ -337,7 +337,7 @@ run(async ({ changes }) => {
 
     changes.push([ik(IDS.LG_LOOT), lifeLoot, "Mega-Remedy — carried forward unchanged"]);
 
-    const a = blankActor(donor, A, "Life Gorger", FOLDER_MONSTER, ART + "Life%20Eater.png", 1.0);
+    const a = preserveIdentity(blankActor(donor, A, "Life Gorger", FOLDER_MONSTER, ART + "Life%20Eater.png", 1.0), await getByKey("actors", `!actors!${A}`));
     Object.assign(a.system.props, common, {
       attribute: "LIGHT",
       traits: "Gorger, Elemental Creature, Light-Align, Cowardly",

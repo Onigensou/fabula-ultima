@@ -3,14 +3,20 @@
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": null,
+    "createdTime": 1732426349031,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
   "flags": {
     "custom-system-builder": {
-      "version": "4.8.5"
+      "version": "4.5.0"
+    },
+    "fabula-ultima-companion": {
+      "idleAnimation": {
+        "bounce": false,
+        "float": true
+      }
     }
   },
   "folder": "Nd8LnosrPid1eX1r",
@@ -620,6 +626,7 @@
   ],
   "name": "Geo Gorger",
   "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
   "prototypeToken": {
@@ -696,38 +703,55 @@
             "subdivisionsOwner": false
           },
           "bar3": {
-            "attribute": "attributeBar.shield_value",
+            "attribute": "custom",
             "bgImage": "",
             "fgImage": "",
             "gmVisibility": -1,
             "hideCombat": false,
-            "hideEmpty": true,
+            "hideEmpty": false,
             "hideFull": false,
             "hideHud": false,
             "hideNoCombat": false,
             "id": "bar3",
+            "ignoreMax": false,
+            "ignoreMin": false,
             "indentLeft": null,
             "indentRight": null,
             "invert": false,
             "invertDirection": false,
-            "label": "",
-            "maxcolor": "#FFFFFF",
-            "mincolor": "#000000",
+            "label": "🍖",
+            "max": 3,
+            "maxcolor": "#d9d9d9",
+            "mincolor": "#b5aea1",
             "opacity": null,
             "order": 2,
-            "otherVisibility": 50,
+            "otherVisibility": 0,
             "ownerVisibility": 50,
-            "position": "bottom-inner",
+            "position": "top-inner",
             "shareHeight": false,
             "style": "fraction",
             "subdivisions": null,
-            "subdivisionsOwner": false
+            "subdivisionsOwner": false,
+            "value": 0
           }
         }
       },
       "hex-size-support": {
+        "alternateOrientation": false,
         "hideBorder": true,
-        "hideFill": true
+        "hideFill": true,
+        "pivotx": null,
+        "pivoty": null
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "wall-height": {
+        "tokenHeight": 0
       }
     },
     "height": 1,

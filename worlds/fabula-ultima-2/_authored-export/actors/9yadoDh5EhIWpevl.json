@@ -3,14 +3,20 @@
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": null,
-    "duplicateSource": null,
+    "createdTime": 1769575513325,
+    "duplicateSource": "Actor.ik2o2KAR2WZoDgrB",
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
   "flags": {
     "custom-system-builder": {
-      "version": "4.8.5"
+      "version": "4.5.0"
+    },
+    "fabula-ultima-companion": {
+      "idleAnimation": {
+        "bounce": false,
+        "float": true
+      }
     }
   },
   "folder": "Nd8LnosrPid1eX1r",
@@ -620,6 +626,7 @@
   ],
   "name": "Aero Gorger",
   "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
   "prototypeToken": {
@@ -637,6 +644,13 @@
     "displayName": 50,
     "disposition": -1,
     "flags": {
+      "Border-Control": {
+        "borderCustomBaseOpacity": 0.5,
+        "borderCustomColorExt": "#000000",
+        "borderCustomColorInt": "#000000",
+        "borderCustomFrameOpacity": 0.5,
+        "noBorder": false
+      },
       "barbrawl": {
         "resourceBars": {
           "bar1": {
@@ -650,11 +664,14 @@
             "hideHud": false,
             "hideNoCombat": false,
             "id": "bar1",
+            "ignoreMax": false,
+            "ignoreMin": false,
             "indentLeft": null,
             "indentRight": null,
             "invert": false,
             "invertDirection": false,
             "label": "HP",
+            "max": null,
             "maxcolor": "#80FF00",
             "mincolor": "#FF0000",
             "opacity": null,
@@ -665,7 +682,8 @@
             "shareHeight": false,
             "style": "fraction",
             "subdivisions": null,
-            "subdivisionsOwner": false
+            "subdivisionsOwner": false,
+            "value": 30
           },
           "bar2": {
             "attribute": "attributeBar.current_mp",
@@ -678,11 +696,14 @@
             "hideHud": false,
             "hideNoCombat": false,
             "id": "bar2",
+            "ignoreMax": false,
+            "ignoreMin": false,
             "indentLeft": null,
             "indentRight": null,
             "invert": false,
             "invertDirection": false,
             "label": "MP",
+            "max": null,
             "maxcolor": "#80B3FF",
             "mincolor": "#000080",
             "opacity": null,
@@ -693,7 +714,8 @@
             "shareHeight": false,
             "style": "fraction",
             "subdivisions": null,
-            "subdivisionsOwner": false
+            "subdivisionsOwner": false,
+            "value": 60
           },
           "bar3": {
             "attribute": "attributeBar.shield_value",
@@ -706,11 +728,14 @@
             "hideHud": false,
             "hideNoCombat": false,
             "id": "bar3",
+            "ignoreMax": false,
+            "ignoreMin": false,
             "indentLeft": null,
             "indentRight": null,
             "invert": false,
             "invertDirection": false,
             "label": "",
+            "max": 3,
             "maxcolor": "#FFFFFF",
             "mincolor": "#000000",
             "opacity": null,
@@ -721,13 +746,59 @@
             "shareHeight": false,
             "style": "fraction",
             "subdivisions": null,
-            "subdivisionsOwner": false
+            "subdivisionsOwner": false,
+            "value": 0
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "🍖",
+            "max": 3,
+            "maxcolor": "#2dca2b",
+            "mincolor": "#53e45d",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 0
           }
         }
       },
       "hex-size-support": {
+        "alternateOrientation": false,
         "hideBorder": true,
-        "hideFill": true
+        "hideFill": false,
+        "pivotx": null,
+        "pivoty": null
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "wall-height": {
+        "tokenHeight": 0
       }
     },
     "height": 1,

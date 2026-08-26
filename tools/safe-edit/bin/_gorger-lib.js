@@ -237,8 +237,45 @@ const CYCLE = [
     align: "Dark-Align",  flavor: "a swollen bruise of a thing that drinks the lamplight" },
 ];
 
+// ── preserveIdentity ────────────────────────────────────────────────────────
+// ⚠ CALL THIS whenever blankActor REBUILDS AN ACTOR THAT ALREADY EXISTS.
+//
+// `blankActor` clones the DONOR wholesale, so the result carries the donor's
+// `flags` and `prototypeToken` and a hard-set `ownership = { default: 0 }`. That
+// is fine for a NEW actor (nothing to lose) and silently LOSSY for a rebuild:
+// the 2026-08-27 Gorger pass dropped 43 prototypeToken flags off Aero alone
+// (Border-Control, barbrawl resource bars), plus idle-animation flags, the GM's
+// ownership entry and the actor's creation stats.
+//
+// It survived the first audit because that audit diffed against a local HEAD
+// which already contained the rebuild — comparing the output to itself. Diff a
+// rebuild against the last PUSHED baseline, not against your own work.
+//
+// Restores prototypeToken.**flags** only, never the whole prototypeToken: the
+// art fix lives in prototypeToken.texture.src and must not be rolled back.
+// Sheet-mirror lists are deliberately untouched — dropping a stale mirror row is
+// usually the point of a rebuild.
+function preserveIdentity(rebuilt, original) {
+  if (!original) return rebuilt;
+  if (original.ownership) rebuilt.ownership = JSON.parse(JSON.stringify(original.ownership));
+  if (original.flags && Object.keys(original.flags).length) {
+    rebuilt.flags = JSON.parse(JSON.stringify(original.flags));
+  }
+  const tokFlags = original.prototypeToken?.flags;
+  if (tokFlags && Object.keys(tokFlags).length) {
+    rebuilt.prototypeToken = rebuilt.prototypeToken ?? {};
+    rebuilt.prototypeToken.flags = JSON.parse(JSON.stringify(tokFlags));
+  }
+  if (original._stats) {
+    rebuilt._stats = rebuilt._stats ?? {};
+    if (original._stats.createdTime != null) rebuilt._stats.createdTime = original._stats.createdTime;
+    if (original._stats.duplicateSource != null) rebuilt._stats.duplicateSource = original._stats.duplicateSource;
+  }
+  return rebuilt;
+}
+
 module.exports = {
   IDS, FOLDER_MONSTER, STONE, AFFINITY, CYCLE,
   DONOR_ACTOR, DONOR_ATTACK, DONOR_PASSIVE, DONOR_SPELL_ACTOR, DONOR_SPELL,
-  link, L, bullets, trig, ICON, ART, eatenAE,
+  link, L, bullets, trig, ICON, ART, eatenAE, preserveIdentity,
 };

@@ -25,7 +25,7 @@ const { getByKey } = require("../lib/db");
 const {
   IDS, FOLDER_MONSTER, STONE, AFFINITY, CYCLE,
   DONOR_ACTOR, DONOR_ATTACK, DONOR_PASSIVE, DONOR_SPELL_ACTOR, DONOR_SPELL,
-  L, bullets, trig, ICON, ART, eatenAE,
+  L, bullets, trig, ICON, ART, eatenAE, preserveIdentity,
 } = require("./_gorger-lib");
 const { blankActor, run } = require("./_dragon-util");
 
@@ -261,7 +261,8 @@ run(async ({ changes }) => {
     }
 
     // ── actor ──────────────────────────────────────────────────────────────
-    const a = blankActor(donor, A, g.name, FOLDER_MONSTER, ART + g.art, 1.0);
+    // preserveIdentity is a no-op for the four NEW Gorgers (no prior doc to read).
+    const a = preserveIdentity(blankActor(donor, A, g.name, FOLDER_MONSTER, ART + g.art, 1.0), await getByKey("actors", `!actors!${A}`));
     const p = a.system.props;
     Object.assign(p, {
       level: "15", npc_rank: "soldier", species: "ELEMENTAL", subtype_list: "GORGER",
