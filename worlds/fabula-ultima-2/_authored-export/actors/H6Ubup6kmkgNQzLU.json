@@ -138,7 +138,9 @@
             },
             "1": {
               "damage_amount": "ceil(AE_CHARGES_FURY * 0.5)",
-              "effect_kind": "add_damage",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
               "effect_label": "thrash_bonus"
             },
             "2": {
@@ -284,10 +286,26 @@
       "effects": [
         {
           "_id": "QzDGD8rwdkyysoyz",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>Every wound, remembered. Thrash spends the whole tally.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 0,
@@ -295,17 +313,19 @@
               "lifetimeMode": "persistent_counter"
             }
           },
-          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
           "name": "Fury",
           "origin": "Actor.H6Ubup6kmkgNQzLU.Item.vP0c8mCKoBQY4ggP",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "fury"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         }
       ],
       "flags": {
@@ -398,7 +418,6 @@
     "default": 0
   },
   "prototypeToken": {
-    "actorId": "H6Ubup6kmkgNQzLU",
     "actorLink": false,
     "alpha": 1,
     "appendNumber": false,
