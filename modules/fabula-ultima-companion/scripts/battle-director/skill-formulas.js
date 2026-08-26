@@ -864,6 +864,18 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "MP_DEALT_TOTAL":     return payload?.valueType === "mp" ? (Number(payload?.finalValue) || 0) : 0;
       case "SHIELD_DEALT":       return payload?.valueType === "shield" ? (Number(payload?.finalValue) || 0) : 0;
       case "SHIELD_DEALT_TOTAL": return payload?.valueType === "shield" ? (Number(payload?.finalValue) || 0) : 0;
+      // TRIGGER_AMOUNT: the SIZE of the resource change that fired this trigger —
+      // `payload.amount`, as stamped by fireResourceChangeTrigger (skill-effects.js).
+      // The resource-ledger twin of DAMAGE_DEALT: on `creature_lose_resource` it is
+      // how much HP/MP/IP the subject just lost — damage, DoT tick, cost or drain
+      // alike, since `reaction_cause_filter` is what narrows that — and on
+      // `creature_gain_resource` it is how much was restored. Powers "react in
+      // PROPORTION to what you lost" designs: Drakoza's Drako Fury banks the damage
+      // taken as Fury charges (`ae_initial_charges: "TRIGGER_AMOUNT"`) and Thrash
+      // pays the whole tally back in one swing.
+      // Always >= 0 — the direction lives in the trigger NAME, not the sign — and 0
+      // outside the resource-ledger triggers, so a stray gate is inert, not wrong.
+      case "TRIGGER_AMOUNT": return Math.max(0, Number(payload?.amount ?? 0) || 0);
       // Combat state
       case "ROUND": return Math.max(0, Number(round ?? 0) || 0);
       case "ACTION_TARGET_COUNT": {

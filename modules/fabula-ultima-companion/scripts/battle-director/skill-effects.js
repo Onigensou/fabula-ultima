@@ -6342,7 +6342,7 @@ async function applyApplyAeEffect(row, ctx) {
     // Flame's 22 (10% of 220) onto every Burn it applied, dealing 22 to any victim.
     // SL and other apply-time-stable ids stay resolvable at fire-time via the AE's
     // origin skill (see firePreAcceptedCandidate), so they don't need baking.
-    const REACTION_FORMULA_VOLATILE = /AE_CHARGES_|AE_COUNT_|TARGET_|MAX_HP|MAX_MP|MAX_IP|CUR_HP|CUR_MP|CUR_IP|CUR_SHIELD|CASTER_SHIELD|HP_DEALT|MP_DEALT|SHIELD_DEALT|DAMAGE_DEALT|STATUS_COUNT|HIT_/;
+    const REACTION_FORMULA_VOLATILE = /AE_CHARGES_|AE_COUNT_|TARGET_|MAX_HP|MAX_MP|MAX_IP|CUR_HP|CUR_MP|CUR_IP|CUR_SHIELD|CASTER_SHIELD|HP_DEALT|MP_DEALT|SHIELD_DEALT|DAMAGE_DEALT|TRIGGER_AMOUNT|STATUS_COUNT|HIT_/;
     const rcfg = data.flags?.[FLAG_NS]?.reactionConfig;
     const rcfgTable = rcfg?.effect_table ?? rcfg?.reaction_effect_table;
     if (rcfgTable && typeof rcfgTable === "object") {
