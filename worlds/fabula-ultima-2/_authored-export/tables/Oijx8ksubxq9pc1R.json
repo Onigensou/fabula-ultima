@@ -16,7 +16,7 @@
     }
   },
   "folder": "to3QkbU70EQKKxHW",
-  "formula": "1d23",
+  "formula": "1d27",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
   "name": "Valley of the Dragon - Encounter",
   "ownership": {
@@ -236,6 +236,20 @@
       "weight": 1
     },
     {
+      "_id": "Nb4TxJqWvHc9RmLd",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        24,
+        24
+      ],
+      "text": "Drakoza, Drakoza",
+      "type": "text",
+      "weight": 1
+    },
+    {
       "_id": "ofd3pnxZ3fDM7EXO",
       "documentId": null,
       "drawn": false,
@@ -246,6 +260,34 @@
         12
       ],
       "text": "Kirin, Skizzik, Lightning Prism",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "Pj8GyKsQwEz2VnRt",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        25,
+        25
+      ],
+      "text": "Drakoza, Skizzik",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "Rw6DhLmXbUa5CkYp",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        26,
+        26
+      ],
+      "text": "Mist Dragon, Obsidrax",
       "type": "text",
       "weight": 1
     },
@@ -330,6 +372,20 @@
         18
       ],
       "text": "Ampere, Mana Ray, Kirin",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "Zt3FcNvBqJi7SoGe",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        27,
+        27
+      ],
+      "text": "Mist Dragon, Mana Ray, Drakoza",
       "type": "text",
       "weight": 1
     },

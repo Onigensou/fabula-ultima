@@ -16,7 +16,7 @@
     }
   },
   "folder": "AF1TjOn1OTJNHrkx",
-  "formula": "1d9",
+  "formula": "1d11",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
   "name": "Valley of the Dragon - Enemies",
   "ownership": {
@@ -82,6 +82,21 @@
         4
       ],
       "text": "Skizzik",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Kq7ZsRpEUmH3fWbA",
+      "documentCollection": "Actor",
+      "documentId": "8kluKkqkcGFkmXNO",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/mystery-man.svg",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Mist Dragon",
       "type": "document",
       "weight": 1
     },
@@ -157,6 +172,21 @@
         8
       ],
       "text": "Gigas",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Vd1nMBoyCLXvQTaE",
+      "documentCollection": "Actor",
+      "documentId": "H6Ubup6kmkgNQzLU",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/mystery-man.svg",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Drakoza",
       "type": "document",
       "weight": 1
     }
