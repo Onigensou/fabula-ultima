@@ -8778,7 +8778,11 @@ async function applyGroupCheckEffect(row, ctx) {
     return { ok: true, kind: "group_check", applied: [], reason: "preview" };
   }
 
-  const varName = String(row.gc_var ?? "").trim().toUpperCase().replace(/[^A-Z0-9_]/g, "_");
+  // Stored LOWERCASED, matching prompt_number / roll_dice / prompt_element.
+  // The formula side reads `VAR_<NAME>` as `_chainVars[name.toLowerCase()]`
+  // (skill-formulas.js:1430), so an uppercase key is silently unreadable — the
+  // gate would just always see 0.
+  const varName = String(row.gc_var ?? "").trim().toLowerCase().replace(/[^a-z0-9_]/g, "_");
   // Fail-safe direction on an unrunnable check, matching save_check's "a save
   // you don't make, you fail". Authorable because the safe default depends on
   // which side the failure favours.
@@ -8894,7 +8898,7 @@ async function applyGroupCheckEffect(row, ctx) {
   ctx.groupCheckBonus  = Number(result?.bonus ?? 0) || 0;
 
   const leaderName = actorByUuid.get(leaderUuid)?.name ?? leaderUuid;
-  log(`group_check: DL ${dl} ${attrA}+${attrB} — leader ${leaderName} (+${ctx.groupCheckBonus} from ${helperActorUuids.length} helper(s)) -> ${leaderPass ? "PASS" : "FAIL"}${varName ? ` [VAR_${varName} = ${leaderPass ? 1 : 0}]` : ""}`);
+  log(`group_check: DL ${dl} ${attrA}+${attrB} — leader ${leaderName} (+${ctx.groupCheckBonus} from ${helperActorUuids.length} helper(s)) -> ${leaderPass ? "PASS" : "FAIL"}${varName ? ` [VAR_${varName.toUpperCase()} = ${leaderPass ? 1 : 0}]` : ""}`);
   return { ok: true, kind: "group_check", leaderPass, bonus: ctx.groupCheckBonus, leader: leaderUuid };
 }
 
