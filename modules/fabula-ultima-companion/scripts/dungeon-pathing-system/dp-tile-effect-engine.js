@@ -183,17 +183,29 @@
   // createEmbeddedDocuments, so the stamp arrives in the initial DB write.
   //
   // Default duration mirrors dp-ae-lifecycle.js DEFAULT_DURATION = 3.
-  // Custom AEs that declare their own duration.rounds use that instead.
+  // Each entry may carry its own `turns` (set per AE row in the tile config);
+  // custom AEs may also declare duration.rounds. Precedence:
+  //   entry.turns  →  duration.rounds (custom only)  →  DUNGEON_DEFAULT_DURATION
+  //
+  // Before this, registry-sourced effects were HARD-pinned to 3 turns with no
+  // way to say otherwise — which is wrong for any tile whose debuff is meant to
+  // outlast (or undercut) the default, e.g. Vertigo's 5-step Blind.
   const DUNGEON_DEFAULT_DURATION = 3;
+
+  function entryTurns(entry) {
+    const n = Number(entry?.turns);
+    return (Number.isFinite(n) && n > 0) ? Math.floor(n) : null;
+  }
 
   function buildEffectRefs(entries) {
     const refs = [];
     for (const entry of entries) {
+      const turns = entryTurns(entry);
       if (entry.source === "registry" && entry.id) {
         refs.push({
           registryId: entry.id,
           overrides: {
-            flags: { [MODULE_ID]: { dungeonTurnsRemaining: DUNGEON_DEFAULT_DURATION } },
+            flags: { [MODULE_ID]: { dungeonTurnsRemaining: turns ?? DUNGEON_DEFAULT_DURATION } },
           },
         });
       } else if (entry.source === "custom" && entry.json) {
@@ -201,7 +213,9 @@
           const data = JSON.parse(entry.json);
           data.flags ??= {};
           data.flags[MODULE_ID] ??= {};
-          if (data.flags[MODULE_ID].dungeonTurnsRemaining == null) {
+          if (turns != null) {
+            data.flags[MODULE_ID].dungeonTurnsRemaining = turns;
+          } else if (data.flags[MODULE_ID].dungeonTurnsRemaining == null) {
             const explicit = Number(data.duration?.rounds);
             data.flags[MODULE_ID].dungeonTurnsRemaining =
               (Number.isFinite(explicit) && explicit > 0) ? explicit : DUNGEON_DEFAULT_DURATION;

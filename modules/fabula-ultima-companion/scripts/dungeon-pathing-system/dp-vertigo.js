@@ -143,7 +143,7 @@
 #${EL_ID} {
   position: fixed;
   pointer-events: none;
-  z-index: ${c.Z_INDEX ?? 99990};
+  z-index: var(--dp-vertigo-z, ${c.Z_INDEX ?? 100});
   opacity: 0;
   transition: opacity ${c.FADE_MS ?? 500}ms ease;
   will-change: opacity;
@@ -151,6 +151,23 @@
 #${EL_ID}.dp-vertigo-visible { opacity: var(--dp-vertigo-alpha, 1); }
     `;
     document.head.appendChild(s);
+  }
+
+  /**
+   * Where to mount the veil.
+   *
+   * #interface is the canvas's own parent; Foundry's sidebar, chat, scene
+   * controls and notifications are later siblings of it, so anything mounted
+   * inside is painted over the board and under the UI chrome no matter what
+   * z-index we pick. Falling back to <body> means competing with the whole
+   * document, hence the much higher fallback z — still under the status HUD
+   * (99990) and the DP buttons.
+   */
+  function overlayParent() {
+    const board = document.getElementById("board") ?? getCanvasView();
+    const host  = board?.parentElement;
+    if (host && host !== document.body) return { host, z: cfg().Z_INDEX ?? 100 };
+    return { host: document.body, z: cfg().Z_INDEX_BODY ?? 99980 };
   }
 
   function getCanvasView() {
@@ -278,13 +295,15 @@
     injectStyles();
     if (_el) return;
 
+    const { host, z } = overlayParent();
     _el = document.createElement("div");
     _el.id = EL_ID;
     _el.style.setProperty(
       "--dp-vertigo-alpha",
       String(game.user?.isGM ? (cfg().GM_ALPHA ?? 0.35) : 1)
     );
-    document.body.appendChild(_el);
+    _el.style.setProperty("--dp-vertigo-z", String(z));
+    host.appendChild(_el);
 
     _center = tokenTargetCentre();  // snap on first show — never sweep in from 0,0
     _target = _center ? { ..._center } : null;
@@ -314,7 +333,10 @@
   // ---------------------------------------------------------------------------
   // Local sync — drive the overlay + scan lockout off the scene flag
   // ---------------------------------------------------------------------------
-  let _wasActive = false;
+  let _wasActive         = false;
+  // Whether Vertigo was already in force when the current turn began — see the
+  // TURN_START / TURN_END pair below.
+  let _activeAtTurnStart = false;
 
   function sync({ silent = false } = {}) {
     const dungeonActive = !!globalThis.__ONI_DUNGEON_PATHING__?.state?.active;
@@ -452,8 +474,16 @@
 
     // A fresh canvas re-reads the flag, but without the sting: re-entering the
     // scene is not a new affliction.
-    Hooks.on("canvasReady", () => { _wasActive = false; sync({ silent: true }); });
-    Hooks.on("canvasTearDown", () => { hideOverlay({ animate: false }); _wasActive = false; });
+    Hooks.on("canvasReady", () => {
+      _wasActive = false;
+      _activeAtTurnStart = false;
+      sync({ silent: true });
+    });
+    Hooks.on("canvasTearDown", () => {
+      hideOverlay({ animate: false });
+      _wasActive = false;
+      _activeAtTurnStart = false;
+    });
 
     // Lead the circle toward the destination the moment the player commits, so
     // the light travels with the party instead of snapping at the end of the
@@ -480,8 +510,22 @@
 
     // One confirmed step = one tick. Hooks.callAll is local, so this fires on
     // the moving client; DP.Socket routes the write to the GM.
+    //
+    // The tick is gated on Vertigo having been active when the turn BEGAN, not
+    // when it ended. On a GM client the tile handler's flag write is awaited
+    // inline, so by TURN_END the debuff is already live and an end-state check
+    // would spend a step on the very turn the party was afflicted (5 → 4 before
+    // they had moved once). Player clients wouldn't, because their flag arrives
+    // over the socket a beat later — so the same fight would count differently
+    // depending on who was walking. Snapshotting at TURN_START makes it
+    // deterministic on every client, and keeps a force-move/gusty chain as the
+    // single step it reads as.
+    Hooks.on(DP.HOOKS.TURN_START, () => { _activeAtTurnStart = isActive(); });
+
     Hooks.on(DP.HOOKS.TURN_END, () => {
-      if (!isActive()) return;
+      const due = _activeAtTurnStart;
+      _activeAtTurnStart = false;
+      if (!due || !isActive()) return;
       DP.Socket?.vertigoTick?.().catch(e => console.warn(TAG, "tick dispatch failed:", e));
     });
 
