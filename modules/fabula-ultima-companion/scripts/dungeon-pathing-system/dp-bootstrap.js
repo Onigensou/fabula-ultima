@@ -699,6 +699,12 @@
     DP.ScanMode?.attachTicker();
     DP.StatusHUD?.show();
     await rebuild();
+    // Restore the Vertigo veil + scan lock for a scene the party is still
+    // blinded on. dp-vertigo also syncs on canvasReady, but its hook is
+    // registered first (module.json loads it before this file), so it runs
+    // while state.active is still false and would conclude "not in a dungeon".
+    // Syncing here, after activation, is order-independent.
+    DP.Vertigo?.sync?.({ silent: true });
     console.debug(TAG, "Activated. Press H to toggle helper mode.");
   }
 

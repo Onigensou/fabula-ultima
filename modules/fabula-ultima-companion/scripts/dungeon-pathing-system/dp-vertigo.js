@@ -98,7 +98,17 @@
   // node the party is standing on. Every client derives the same number from the
   // same graph, so nothing about it needs to travel in the flag.
   // ---------------------------------------------------------------------------
+  // Memoised for the life of a graph: paint() runs at 60fps and the answer only
+  // changes when the party's node does. Invalidated on GRAPH_REBUILT.
+  let _radiusCache = null;
+
   function computeRadius() {
+    if (_radiusCache != null) return _radiusCache;
+    _radiusCache = _computeRadius();
+    return _radiusCache;
+  }
+
+  function _computeRadius() {
     const c   = cfg();
     const api = globalThis.__ONI_DUNGEON_PATHING__;
     const gSize = Number(canvas?.grid?.size ?? 100) || 100;
@@ -322,6 +332,7 @@
     _center = null;
     _target = null;
     _lastPaint = "";
+    _radiusCache = null;
     if (animate) {
       el.classList.remove("dp-vertigo-visible");
       setTimeout(() => el.remove(), (cfg().FADE_MS ?? 500) + 60);
@@ -501,8 +512,11 @@
       if (!_el || !fromNode?.center) return;
       _target = { x: fromNode.center.x, y: fromNode.center.y };
     });
-    // The graph may have moved the party without a turn (scene load, GM nudge).
+    // The graph may have moved the party without a turn (scene load, GM nudge,
+    // fast travel). Node spacing can differ wherever they ended up, so the
+    // memoised radius goes with it.
     Hooks.on(DP.HOOKS.GRAPH_REBUILT, () => {
+      _radiusCache = null;
       if (!_el) return;
       _target = tokenTargetCentre();
       _lastPaint = "";
