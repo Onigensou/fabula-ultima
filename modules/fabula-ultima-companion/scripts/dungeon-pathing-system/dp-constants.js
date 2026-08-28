@@ -235,13 +235,12 @@
       GM_ALPHA:        0.35,  // GM sees a faded veil and keeps their overview
       FADE_MS:         500,   // overlay fade in / out
       FOLLOW_LERP:     0.12,  // per-frame catch-up toward the token (≈MOVE_MS)
-      // The veil mounts inside #interface (the canvas's own parent) so Foundry's
-      // sidebar/chat/controls, which live in later siblings, are never shaded.
-      // Z_INDEX orders it within that container; Z_INDEX_BODY is the fallback for
-      // when #interface can't be found and we mount on <body> instead — kept
-      // below the status HUD (99990) and the DP buttons (99998/99999).
-      Z_INDEX:         100,
-      Z_INDEX_BODY:    99980,
+      // Measured live against Foundry 12.343: #board is a direct child of <body>
+      // at z-index 0, and #interface (holding #ui-left/#ui-right/#sidebar at
+      // z-index 30) is its SIBLING. So the veil mounts on <body> and must sit
+      // strictly between the two — at or above 30 it dims the sidebar and chat,
+      // which at player alpha 1.0 makes them unreadable.
+      Z_INDEX:         5,
     },
   };
 

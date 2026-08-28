@@ -205,7 +205,13 @@
         refs.push({
           registryId: entry.id,
           overrides: {
-            flags: { [MODULE_ID]: { dungeonTurnsRemaining: turns ?? DUNGEON_DEFAULT_DURATION } },
+            flags: { [MODULE_ID]: {
+              dungeonTurnsRemaining: turns ?? DUNGEON_DEFAULT_DURATION,
+              // One-shot grace: the turn an AE LANDS must not also spend one of
+              // its turns. dp-ae-lifecycle ticks at TURN_END, which is after the
+              // tile handler ran, so without this a 5-turn debuff was live for 4.
+              dungeonTickGrace: true,
+            } },
           },
         });
       } else if (entry.source === "custom" && entry.json) {
@@ -219,6 +225,10 @@
             const explicit = Number(data.duration?.rounds);
             data.flags[MODULE_ID].dungeonTurnsRemaining =
               (Number.isFinite(explicit) && explicit > 0) ? explicit : DUNGEON_DEFAULT_DURATION;
+          }
+          // Same one-shot grace as the registry branch above.
+          if (data.flags[MODULE_ID].dungeonTickGrace == null) {
+            data.flags[MODULE_ID].dungeonTickGrace = true;
           }
           refs.push(data);
         } catch {}

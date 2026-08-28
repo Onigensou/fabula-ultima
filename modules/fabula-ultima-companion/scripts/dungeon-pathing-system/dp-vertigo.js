@@ -161,7 +161,7 @@
 #${EL_ID} {
   position: fixed;
   pointer-events: none;
-  z-index: var(--dp-vertigo-z, ${c.Z_INDEX ?? 100});
+  z-index: var(--dp-vertigo-z, ${c.Z_INDEX ?? 5});
   opacity: 0;
   transition: opacity ${c.FADE_MS ?? 500}ms ease;
   will-change: opacity;
@@ -172,20 +172,22 @@
   }
 
   /**
-   * Where to mount the veil.
+   * Where to mount the veil, and at what z.
    *
-   * #interface is the canvas's own parent; Foundry's sidebar, chat, scene
-   * controls and notifications are later siblings of it, so anything mounted
-   * inside is painted over the board and under the UI chrome no matter what
-   * z-index we pick. Falling back to <body> means competing with the whole
-   * document, hence the much higher fallback z — still under the status HUD
-   * (99990) and the DP buttons.
+   * Measured live against Foundry 12.343: #board is a DIRECT child of <body>
+   * at z-index 0, and #interface — which holds #ui-left / #ui-right / #sidebar
+   * at z-index 30 — is its SIBLING, not its parent. #interface has z-index auto
+   * and so creates no stacking context, which is why those UI children stack
+   * above the canvas in the root context.
+   *
+   * The veil therefore mounts on <body> at a z strictly between the two.
+   * Anything at or above 30 dims the sidebar and chat — at player alpha 1.0
+   * that makes them unreadable, which is what the first live test caught. DP's
+   * own UI (status HUD 99990, buttons 99998/99999) sits far above and is
+   * unaffected. #hud (token HUD, z 1) is deliberately under the veil.
    */
   function overlayParent() {
-    const board = document.getElementById("board") ?? getCanvasView();
-    const host  = board?.parentElement;
-    if (host && host !== document.body) return { host, z: cfg().Z_INDEX ?? 100 };
-    return { host: document.body, z: cfg().Z_INDEX_BODY ?? 99980 };
+    return { host: document.body, z: cfg().Z_INDEX ?? 5 };
   }
 
   function getCanvasView() {
@@ -356,6 +358,12 @@
   // Whether Vertigo was already in force when the current turn began — see the
   // TURN_START / TURN_END pair below.
   let _activeAtTurnStart = false;
+  // Set when this client's Vertigo tile handler (re)applies the debuff during the
+  // current turn. Such a turn must NOT also tick: the apply and the tick are two
+  // independent socket messages, and with no ordering between them the tick's
+  // read-modify-write clobbers the refresh (live test: re-entry landed on 3
+  // instead of refreshing to 5).
+  let _appliedThisTurn   = false;
 
   function sync({ silent = false } = {}) {
     const dungeonActive = !!globalThis.__ONI_DUNGEON_PATHING__?.state?.active;
@@ -408,6 +416,17 @@
   // ---------------------------------------------------------------------------
   // GM-side writes
   // ---------------------------------------------------------------------------
+  // Every GM-side mutation goes through one promise chain. apply / tick / clear
+  // arrive as independent socket messages with no ordering guarantee, and each is
+  // a read-modify-write on the same flag — without this they interleave and the
+  // last writer wins with stale data.
+  let _writeQueue = Promise.resolve();
+  function serialize(op) {
+    const next = _writeQueue.then(op, op);
+    _writeQueue = next.catch(() => {});
+    return next;
+  }
+
   async function writeState(scene, value) {
     if (!game.user?.isGM || !scene) return;
     if (value === null) {
@@ -422,7 +441,8 @@
   }
 
   /** GM: afflict the party. Re-entry REFRESHES to full rather than stacking. */
-  async function applyAsGM({ sceneId, tileId, moves } = {}) {
+  async function applyAsGM(args = {}) { return serialize(() => _applyAsGM(args)); }
+  async function _applyAsGM({ sceneId, tileId, moves } = {}) {
     const scene = game.scenes.get(sceneId) ?? canvas?.scene;
     if (!scene) return;
     const max = Math.max(1, Number(moves) || cfg().DEFAULT_MOVES || 5);
@@ -439,7 +459,8 @@
    * GM: one confirmed dungeon step has resolved. Counts down, and ends early if
    * the party has been cleansed of Blind.
    */
-  async function tickAsGM({ sceneId } = {}) {
+  async function tickAsGM(args = {}) { return serialize(() => _tickAsGM(args)); }
+  async function _tickAsGM({ sceneId } = {}) {
     const scene = game.scenes.get(sceneId) ?? canvas?.scene;
     const st    = readState(scene);
     if (!st) return;
@@ -471,7 +492,8 @@
   }
 
   /** GM: lift Vertigo immediately (cleanse, or the GM's own override). */
-  async function clearAsGM({ sceneId } = {}) {
+  async function clearAsGM(args = {}) { return serialize(() => _clearAsGM(args)); }
+  async function _clearAsGM({ sceneId } = {}) {
     const scene = game.scenes.get(sceneId) ?? canvas?.scene;
     if (!readState(scene)) return;
     await writeState(scene, null);
@@ -542,12 +564,19 @@
     // depending on who was walking. Snapshotting at TURN_START makes it
     // deterministic on every client, and keeps a force-move/gusty chain as the
     // single step it reads as.
-    Hooks.on(DP.HOOKS.TURN_START, () => { _activeAtTurnStart = isActive(); });
+    Hooks.on(DP.HOOKS.TURN_START, () => {
+      _activeAtTurnStart = isActive();
+      _appliedThisTurn   = false;
+    });
 
     Hooks.on(DP.HOOKS.TURN_END, () => {
-      const due = _activeAtTurnStart;
+      const due     = _activeAtTurnStart;
+      const applied = _appliedThisTurn;
       _activeAtTurnStart = false;
-      if (!due || !isActive()) return;
+      _appliedThisTurn   = false;
+      // A turn that (re)applied Vertigo never also spends a step — the landing
+      // IS the affliction. This is what keeps a refresh at full duration.
+      if (applied || !due || !isActive()) return;
       DP.Socket?.vertigoTick?.().catch(e => console.warn(TAG, "tick dispatch failed:", e));
     });
 
@@ -583,6 +612,13 @@
     movesRemaining,
     computeRadius,
     sync,
+
+    /**
+     * Called by the Vertigo tile handler on the client running the turn, to mark
+     * that this turn IS the affliction. Suppresses that turn's tick so a refresh
+     * keeps its full duration instead of racing the countdown.
+     */
+    noteApplied() { _appliedThisTurn = true; },
     partyHasBlind,
 
     // GM entry points — the socket layer calls these after routing.

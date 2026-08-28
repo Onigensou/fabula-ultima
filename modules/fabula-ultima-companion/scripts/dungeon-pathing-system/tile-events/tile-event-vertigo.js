@@ -46,6 +46,11 @@
 
       const already = DP.Vertigo?.isActive?.() ?? false;
 
+      // Mark the turn BEFORE the await: this turn IS the affliction, so it must
+      // not also spend a step. Without it the apply and the turn-end tick race as
+      // two unordered socket messages and the countdown clobbers the refresh.
+      DP.Vertigo?.noteApplied?.();
+
       // Refresh rather than stack — re-entering resets the counter to full.
       await DP.Vertigo?.apply?.(scene ?? canvas?.scene, tileDoc?.id ?? null, moves);
 
