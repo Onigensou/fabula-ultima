@@ -244,11 +244,19 @@
       // Vision radius is DERIVED per node from the graph rather than fixed:
       // dungeon tiles are 20-50px nodes whose spacing varies by scene, so "one
       // tile of vision" is the distance to the furthest walkable neighbour.
-      NEIGHBOR_FACTOR: 1.15,  // × furthest-neighbour distance
-      MIN_RADIUS:      70,    // world units — floor for very tight node clusters
+      //
+      // Tuned on the table 2026-08-28 against a live scene (neighbours 66-113
+      // world units, 60wu grid). The first pass lit 130wu and did not reach full
+      // black until 208wu — 1.8× past the furthest neighbour, so two tiles beyond
+      // reach stayed half-readable. The feather was doing most of that damage.
+      // These values light ~1.1 grid squares and close to black within another
+      // 0.15×: the tile underfoot is clear, the adjacent nodes sit right on the
+      // lit edge (just enough to pick a step), everything past them is gone.
+      NEIGHBOR_FACTOR: 0.60,  // × furthest-neighbour distance
+      MIN_RADIUS:      45,    // world units — floor for very tight node clusters
       MAX_RADIUS:      460,   // world units — ceiling for sprawling scenes
       FALLBACK_GRIDS:  1.5,   // × grid size, used when the graph has no neighbours
-      FEATHER:         0.60,  // soft edge width as a fraction of the radius
+      FEATHER:         0.15,  // soft edge width as a fraction of the radius
       DARKNESS:        0.94,  // alpha of the dark field outside the circle
       GM_ALPHA:        0.35,  // GM sees a faded veil and keeps their overview
       FADE_MS:         500,   // overlay fade in / out
