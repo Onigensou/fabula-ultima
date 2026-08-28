@@ -20,6 +20,7 @@
     FT_CYCLE:   0.55,
     FT_WIND:    0.7,
     FT_LAND:    0.75,
+    VERTIGO:    0.7,
   };
 
   function play(src, volume) {
@@ -101,6 +102,9 @@
         }
       });
     },
+    /** Play the darkness sting when Vertigo takes hold. */
+    playVertigo() { play(DP.SOUNDS.VERTIGO, VOLUME.VERTIGO); },
+
     playFastTravelCycle() { play(DP.SOUNDS.FT_CYCLE, VOLUME.FT_CYCLE); },
     playFastTravelWind()  { play(DP.SOUNDS.FT_WIND,  VOLUME.FT_WIND);  },
     playFastTravelLand()  { play(DP.SOUNDS.FT_LAND,  VOLUME.FT_LAND);  },

@@ -100,6 +100,7 @@
     DOOR:           "door",
     GUSTY:          "gusty",
     DIRT:           "dirt",
+    VERTIGO:        "vertigo",
     UNKNOWN:        "unknown",
   });
 
@@ -217,6 +218,25 @@
       LEFT_SOLO:  20,        // theatre: the only button, so it takes the leftmost slot
       FONT_SIZE: "28px",
     },
+
+    // Vertigo — the party is blinded; the screen goes dark except for a small
+    // circle of vision around the party token. See dp-vertigo.js.
+    VERTIGO: {
+      DEFAULT_MOVES:   5,     // dungeon steps the debuff lasts
+      // Vision radius is DERIVED per node from the graph rather than fixed:
+      // dungeon tiles are 20-50px nodes whose spacing varies by scene, so "one
+      // tile of vision" is the distance to the furthest walkable neighbour.
+      NEIGHBOR_FACTOR: 1.15,  // × furthest-neighbour distance
+      MIN_RADIUS:      70,    // world units — floor for very tight node clusters
+      MAX_RADIUS:      460,   // world units — ceiling for sprawling scenes
+      FALLBACK_GRIDS:  1.5,   // × grid size, used when the graph has no neighbours
+      FEATHER:         0.60,  // soft edge width as a fraction of the radius
+      DARKNESS:        0.94,  // alpha of the dark field outside the circle
+      GM_ALPHA:        0.35,  // GM sees a faded veil and keeps their overview
+      FADE_MS:         500,   // overlay fade in / out
+      FOLLOW_LERP:     0.12,  // per-frame catch-up toward the token (≈MOVE_MS)
+      Z_INDEX:         99990, // under the confirm panel (99999) and HUD (99998)
+    },
   };
 
   // Flag key for per-scene scan radius (read by dp-scan-mode.js)
@@ -247,6 +267,7 @@
     FT_CYCLE:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_1.wav",
     FT_WIND:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Wind1.ogg",
     FT_LAND:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_Jump.wav",
+    VERTIGO:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Darkness5.ogg",
   });
 
   // Blank tile asset
