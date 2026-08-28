@@ -56,9 +56,17 @@
   const EL_ID     = "oni-dp-vertigo-overlay";
   const STYLE_ID  = "oni-dp-vertigo-styles";
 
-  // What counts as "the party is still Blinded". The tile applies Blind through
-  // its effectConfig, which may reference either the CONFIG.statusEffects form
-  // or the world Debuff item's AE, so match on both the name and the status id.
+  // What counts as "the party is still Blinded". Match on both the name and the
+  // status id so a hand-applied Blind counts the same as the tile's.
+  //
+  // ⚠ The tile MUST reference Blind by its CONFIG.statusEffects form
+  // ("status:7FLtIUvENcYDAJKC"), never by the world AE's uuid
+  // (Item.XVOWOq9oUmEECGrU.ActiveEffect.WIZRIA6k5cnFQoak) — even though both
+  // resolve to the same effect. AEM stamps `origin` from the registry entry's
+  // sourceUuid, which for an item-owned AE is "Item.…"; ae-lifetime then reads
+  // that as item-transferred and NEVER turn-ticks it. The debuff would be
+  // permanent, and the cleanse rule below would be the only way out of Vertigo.
+  // The config-status form carries ownerUuid null → origin null → tickable.
   const BLIND_NAME_RE   = /\bblind(ed)?\b/i;
   const BLIND_STATUS_ID = "7FLtIUvENcYDAJKC";
 

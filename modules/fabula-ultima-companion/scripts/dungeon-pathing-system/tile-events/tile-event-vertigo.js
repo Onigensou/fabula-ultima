@@ -13,6 +13,11 @@
 // exploration-mode consequences. Set the AE's "Duration (dungeon turns)" to
 // match the tile's Vertigo duration so the two expire together.
 //
+// Keep that AE referenced as a CONFIG status ("status:…"), not as the world
+// Debuff item's AE uuid — see the BLIND_STATUS_ID note in dp-vertigo.js. The
+// item form arrives with an "Item." origin and never turn-ticks, which would
+// make Blind permanent.
+//
 // Per-tile override: flags.<MODULE>.dungeonPathing.vertigoMoves (number).
 //
 // This tile does NOT clear after triggering — a disorienting stretch of dungeon
