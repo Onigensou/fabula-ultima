@@ -25,6 +25,24 @@
       ?.sort?.((a, b) => String(a.id).localeCompare(String(b.id)))?.[0];
     return firstGM ? firstGM.id === game.user.id : true;
   };
+  // ── GM-side write queue ────────────────────────────────────────────────────
+  // A dungeon turn fans several INDEPENDENT socket messages at the GM — the tile
+  // effect engine's AE apply, the AE-lifecycle tick, the Vertigo apply/tick — and
+  // each is a read-modify-write over the same actor or scene flag. The messages
+  // arrive in emission order, but the handlers are async and were not awaited, so
+  // they interleaved and the last writer won with stale data.
+  //
+  // Two live-test bugs came from exactly this: a Vertigo refresh landing on 3
+  // instead of 5, and a tile-applied AE keeping its landing-turn grace because the
+  // tick ran before the apply. Funnelling every GM-side mutation through one chain
+  // makes handling order match emission order, which IS deterministic.
+  let _gmQueue = Promise.resolve();
+  DP.gmSerialize = function gmSerialize(op) {
+    const next = _gmQueue.then(op, op);
+    _gmQueue = next.catch(() => {});
+    return next;
+  };
+
   DP.GENERAL_KEY      = "general";
   DP.SCENE_MODE_KEY   = "sceneMode";
   DP.PATHING_ROOT_KEY = "dungeonPathing";

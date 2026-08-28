@@ -416,16 +416,9 @@
   // ---------------------------------------------------------------------------
   // GM-side writes
   // ---------------------------------------------------------------------------
-  // Every GM-side mutation goes through one promise chain. apply / tick / clear
-  // arrive as independent socket messages with no ordering guarantee, and each is
-  // a read-modify-write on the same flag — without this they interleave and the
-  // last writer wins with stale data.
-  let _writeQueue = Promise.resolve();
-  function serialize(op) {
-    const next = _writeQueue.then(op, op);
-    _writeQueue = next.catch(() => {});
-    return next;
-  }
+  // One chain shared with the tile effect engine and the AE tick — see
+  // DP.gmSerialize in dp-constants.js for why ordering has to be global.
+  const serialize = (op) => (DP.gmSerialize ? DP.gmSerialize(op) : Promise.resolve().then(op));
 
   async function writeState(scene, value) {
     if (!game.user?.isGM || !scene) return;

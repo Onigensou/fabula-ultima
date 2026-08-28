@@ -78,8 +78,12 @@
 
         if (msg?.type === MSG_TAE) {
           // Player client finished a dungeon turn — tick party AEs as GM.
-          await DP.AELifecycle?.tickPartyAEs?.()
-            .catch(e => console.warn(TAG, "raw tickPartyAEs failed:", e));
+          // Same chain as the tile effect apply — the tick must not overtake an
+          // apply emitted earlier in the same turn (see DP.gmSerialize).
+          await (DP.gmSerialize ?? (fn => fn()))(() =>
+            DP.AELifecycle?.tickPartyAEs?.()
+              ?.catch?.(e => console.warn(TAG, "raw tickPartyAEs failed:", e))
+          );
           return;
         }
 

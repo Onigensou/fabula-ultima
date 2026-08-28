@@ -288,6 +288,32 @@
               const row = rowMap.get(r.actor?.uuid);
               if (row) row.ae.push({ label: r.effect?.name ?? "Effect", ok: r.ok === true });
             }
+            // Re-landing a tile debuff RESETS its duration. AEM leaves an existing
+            // same-named effect alone, so without this a party that steps back onto
+            // a hazard keeps the old, already-counted-down timer while the tile's own
+            // state refreshes to full — live test: Vertigo refreshed to 5 while its
+            // Blind carried on down to 3. Re-stamp the intended duration, and the
+            // landing-turn grace with it, so the AE and the tile agree.
+            for (const actor of actors) {
+              const updates = [];
+              for (const entry of cfg.activeEffects) {
+                const want = String(entry?.label ?? "").trim().toLowerCase();
+                if (!want) continue;
+                const turns = entryTurns(entry) ?? DUNGEON_DEFAULT_DURATION;
+                for (const eff of actor.effects ?? []) {
+                  if (String(eff.name ?? "").trim().toLowerCase() !== want) continue;
+                  updates.push({
+                    _id: eff.id,
+                    [`flags.${MODULE_ID}.dungeonTurnsRemaining`]: turns,
+                    [`flags.${MODULE_ID}.dungeonTickGrace`]: true,
+                  });
+                }
+              }
+              if (updates.length) {
+                await actor.updateEmbeddedDocuments("ActiveEffect", updates, { render: false })
+                  .catch(e => console.warn(TAG, `duration re-stamp failed for ${actor.name}:`, e));
+              }
+            }
           } catch (e) {
             console.error(TAG, "AE batch apply failed:", e);
             for (const row of rowMap.values())
@@ -450,6 +476,10 @@
         // resource/AE mutation + chat card don't apply twice. (VFX below still
         // plays on every client.)
         if (DP.isPrimaryGM && !DP.isPrimaryGM()) return;
+        // Ordered against the AE-lifecycle tick and the Vertigo writes: without
+        // this the tick could run BEFORE this apply and the landing-turn grace
+        // would survive into the next turn (see DP.gmSerialize).
+        await (DP.gmSerialize ?? (fn => fn()))(async () => {
         try {
           const { actorUuids, cfg, tileLabel, tokenId, sceneId } = msg.payload ?? {};
           const actors = [];
@@ -469,6 +499,7 @@
         } catch (e) {
           console.error(TAG, "MSG_APPLY handler failed:", e);
         }
+        });
         return;
       }
 
