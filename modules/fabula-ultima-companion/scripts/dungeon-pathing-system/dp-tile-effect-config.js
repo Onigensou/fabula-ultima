@@ -69,6 +69,9 @@
       .oni-ec-ae-row .oni-ec-ae-label { flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.9rem; }
       .oni-ec-ae-row .oni-ec-ae-src { font-size:10px;opacity:.5;flex-shrink:0;padding:1px 4px;background:rgba(0,0,0,.15);border-radius:2px; }
       .oni-ec-ae-row button { flex-shrink:0;padding:0 6px;min-height:22px; }
+      .oni-ec-ae-turns { display:flex;align-items:center;gap:3px;flex-shrink:0; }
+      .oni-ec-ae-turns span { font-size:10px;opacity:.55;white-space:nowrap; }
+      .oni-ec-ae-turns input { width:44px;min-height:22px;padding:0 4px;text-align:center;font-size:.85rem; }
       .oni-ec-ae-actions { display:flex;gap:6px;margin-top:4px;flex-wrap:wrap; }
 
       /* Registry picker dialog */
@@ -258,7 +261,10 @@
   }
 
   // ── AE list renderer ───────────────────────────────────────────────────────
-  function renderAeList(listEl, activeEffects, onRemove) {
+  // `showTurns` adds a per-effect "Duration (dungeon turns)" box. Only the APPLY
+  // list gets one — the remove list has no lifetime of its own. Leaving the box
+  // blank keeps the engine default (3), so existing tiles are unaffected.
+  function renderAeList(listEl, activeEffects, onRemove, { showTurns = false, onChange = null } = {}) {
     listEl.innerHTML = "";
     if (!activeEffects.length) {
       listEl.innerHTML = `<li style="opacity:.5;font-size:.85rem;padding:4px 2px;">No effects selected.</li>`;
@@ -270,13 +276,27 @@
       const srcTag  = entry.source === "custom" ? "custom" : "registry";
       const li      = document.createElement("li");
       li.className  = "oni-ec-ae-row";
+      const turnsHtml = showTurns
+        ? `<label class="oni-ec-ae-turns" title="How many dungeon turns this effect lasts. Blank = default (3).">
+             <span>turns</span>
+             <input type="number" min="1" step="1" placeholder="3"
+                    data-turns-idx="${i}" value="${entry.turns ?? ""}" />
+           </label>`
+        : "";
       li.innerHTML  = `
         <img src="${img}" onerror="this.src='icons/svg/aura.svg'" />
         <span class="oni-ec-ae-label">${entry.label ?? entry.id ?? "Effect"}</span>
         <span class="oni-ec-ae-src">${srcTag}</span>
+        ${turnsHtml}
         <button type="button" data-remove-idx="${i}" title="Remove">✕</button>
       `;
       li.querySelector("[data-remove-idx]").addEventListener("click", () => onRemove(i));
+      li.querySelector("[data-turns-idx]")?.addEventListener("change", (ev) => {
+        const n = Number(ev.currentTarget.value);
+        if (Number.isFinite(n) && n > 0) entry.turns = Math.floor(n);
+        else delete entry.turns;
+        onChange?.();
+      });
       listEl.appendChild(li);
     }
   }
@@ -520,15 +540,20 @@
       if (jsonInput) jsonInput.value = JSON.stringify(activeEffects);
     }
 
+    function redrawAe() {
+      if (!listEl) return;
+      renderAeList(listEl, activeEffects, removeEffect, { showTurns: true, onChange: syncJson });
+    }
+
     function removeEffect(idx) {
       activeEffects.splice(idx, 1);
       syncJson();
-      renderAeList(listEl, activeEffects, removeEffect);
+      redrawAe();
       resize();
     }
 
     // Initial render of the AE list
-    if (listEl) renderAeList(listEl, activeEffects, removeEffect);
+    redrawAe();
 
     // "Add from Registry" button
     const addRegistryBtn = $("[data-oni-ae-add-registry='1']");
@@ -537,7 +562,7 @@
         openRegistryPicker(entry => {
           activeEffects.push(entry);
           syncJson();
-          renderAeList(listEl, activeEffects, removeEffect);
+          redrawAe();
           resize();
         });
       });
@@ -550,7 +575,7 @@
         openNativeBuilder(entry => {
           activeEffects.push(entry);
           syncJson();
-          renderAeList(listEl, activeEffects, removeEffect);
+          redrawAe();
           resize();
         }).catch(e => console.warn(TAG, "Native builder error:", e));
       });

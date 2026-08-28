@@ -103,6 +103,7 @@
   let _ritualCtrlHook   = null;   // controlToken hook id — regreys the ritual button
   let _curateBtn        = null;   // 🎬 GM-only "curate next encounter" toggle
   let _scanning         = false;
+  let _scanDisabled     = false;  // Vertigo (or any future debuff) locks scanning out
   let _cameraSettled    = false;  // true once pivot is within 1wu of token and no pan needed
   let _tickerFn         = null;
   let _escHandler       = null;
@@ -264,6 +265,10 @@
   // ── Scan mode on/off ───────────────────────────────────────────────────────
   function enterScan() {
     if (_scanning) return;
+    if (_scanDisabled) {
+      ui.notifications?.info?.("You cannot see far enough to scan.");
+      return;
+    }
     _scanning = true;
     _cachedScanRadius = null; // re-read from flags in case scene config changed
     _cameraSettled = false; // pivot will drift; re-evaluate every frame until re-locked
@@ -287,6 +292,28 @@
   function toggleScan() {
     if (_scanning) exitScan();
     else           enterScan();
+  }
+
+  // ── Scan lockout ───────────────────────────────────────────────────────────
+  // Vertigo blinds the party, so scanning ahead is meaningless while it holds.
+  // Greys the button, blocks enterScan(), and kicks the user out if they were
+  // already scanning when the debuff landed. The state is module-level (not on
+  // the button) so it survives the button being torn down and re-shown by a
+  // rebuild — syncScanDisabled() re-applies it in show().
+  function setScanDisabled(disabled) {
+    const next = !!disabled;
+    if (next === _scanDisabled) { syncScanDisabled(); return; }
+    _scanDisabled = next;
+    if (_scanDisabled && _scanning) exitScan();
+    syncScanDisabled();
+  }
+
+  function syncScanDisabled() {
+    if (!_scanBtn) return;
+    _scanBtn.classList.toggle("dp-btn-disabled", _scanDisabled);
+    _scanBtn.title = _scanDisabled
+      ? "Scan Mode unavailable — you cannot see far enough"
+      : (_scanning ? "Exit Scan Mode (ESC)" : "Scan Mode — explore the map");
   }
 
   // ── Helper button visual sync ──────────────────────────────────────────────
@@ -402,6 +429,7 @@
 
     syncHelperBtn();
     syncFtBtn();
+    syncScanDisabled();   // a rebuild rebuilds the button; keep Vertigo's lock
     installEsc();
 
     requestAnimationFrame(() => {
@@ -669,6 +697,10 @@
     toggle: toggleScan,
     exitScan,
     snapCameraToToken,
+    /** Lock/unlock Scan Mode (Vertigo). Greys the button and blocks enterScan. */
+    setScanDisabled,
+    /** True while Scan Mode is locked out. */
+    get scanDisabled() { return _scanDisabled; },
     /** Call after any external helper-mode state change to keep the button in sync. */
     syncHelperBtn,
     /** Call after any fast travel state change to keep the button in sync. */

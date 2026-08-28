@@ -30,6 +30,9 @@
   const MSG_AS    = "DP_ACTIVATE_SCENE";
   const MSG_TAE   = "DP_TICK_PARTY_AES";
   const MSG_FOG   = "DP_FOG_REVEALED";
+  const MSG_VTG_A = "DP_VERTIGO_APPLY";
+  const MSG_VTG_T = "DP_VERTIGO_TICK";
+  const MSG_VTG_C = "DP_VERTIGO_CLEAR";
   const MV_GUARD  = "__ONI_DP_MV_SOCKET__";
 
   DP.Socket = {
@@ -75,8 +78,12 @@
 
         if (msg?.type === MSG_TAE) {
           // Player client finished a dungeon turn — tick party AEs as GM.
-          await DP.AELifecycle?.tickPartyAEs?.()
-            .catch(e => console.warn(TAG, "raw tickPartyAEs failed:", e));
+          // Same chain as the tile effect apply — the tick must not overtake an
+          // apply emitted earlier in the same turn (see DP.gmSerialize).
+          await (DP.gmSerialize ?? (fn => fn()))(() =>
+            DP.AELifecycle?.tickPartyAEs?.()
+              ?.catch?.(e => console.warn(TAG, "raw tickPartyAEs failed:", e))
+          );
           return;
         }
 
@@ -88,9 +95,31 @@
             .catch(e => console.warn(TAG, "raw markFogRevealed failed:", e));
           return;
         }
+
+        // ── Vertigo ──────────────────────────────────────────────────────────
+        // The scene flag is the single source of truth and only a GM may write
+        // it. Player clients emit here; the primary-GM gate above keeps the
+        // write from happening twice on a dual-GM table.
+        if (msg?.type === MSG_VTG_A) {
+          await DP.Vertigo?.applyAsGM?.(msg.payload ?? {})
+            ?.catch?.(e => console.warn(TAG, "raw vertigoApply failed:", e));
+          return;
+        }
+
+        if (msg?.type === MSG_VTG_T) {
+          await DP.Vertigo?.tickAsGM?.(msg.payload ?? {})
+            ?.catch?.(e => console.warn(TAG, "raw vertigoTick failed:", e));
+          return;
+        }
+
+        if (msg?.type === MSG_VTG_C) {
+          await DP.Vertigo?.clearAsGM?.(msg.payload ?? {})
+            ?.catch?.(e => console.warn(TAG, "raw vertigoClear failed:", e));
+          return;
+        }
       });
 
-      console.debug(TAG, "Raw socket listener installed (markVisited, activateScene, tickPartyAEs).");
+      console.debug(TAG, "Raw socket listener installed (markVisited, activateScene, tickPartyAEs, vertigo).");
     },
 
     /** Called from dp-bootstrap once socketlib is ready. */
@@ -307,6 +336,29 @@
         return DP.AELifecycle?.tickPartyAEs?.();
       }
       game.socket.emit(RAW_CH, { type: MSG_TAE, payload: {} });
+    },
+
+    /**
+     * Vertigo — afflict / count down / lift.
+     * GM calls straight through; players emit on the raw channel, matching the
+     * markVisited + tickPartyAEs pattern (bypasses the socketlib.ready race).
+     */
+    async vertigoApply(scene, tileId, moves) {
+      const sceneId = scene?.id ?? canvas?.scene?.id ?? null;
+      if (game.user?.isGM) return DP.Vertigo?.applyAsGM?.({ sceneId, tileId, moves });
+      game.socket.emit(RAW_CH, { type: MSG_VTG_A, payload: { sceneId, tileId, moves } });
+    },
+
+    async vertigoTick(scene) {
+      const sceneId = (scene ?? canvas?.scene)?.id ?? null;
+      if (game.user?.isGM) return DP.Vertigo?.tickAsGM?.({ sceneId });
+      game.socket.emit(RAW_CH, { type: MSG_VTG_T, payload: { sceneId } });
+    },
+
+    async vertigoClear(scene) {
+      const sceneId = (scene ?? canvas?.scene)?.id ?? null;
+      if (game.user?.isGM) return DP.Vertigo?.clearAsGM?.({ sceneId });
+      game.socket.emit(RAW_CH, { type: MSG_VTG_C, payload: { sceneId } });
     },
 
     async triggerTreasure(scene, tileId, tokenId, tileType) {

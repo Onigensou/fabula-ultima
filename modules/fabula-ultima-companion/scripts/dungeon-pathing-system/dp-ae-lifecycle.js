@@ -54,6 +54,16 @@
       if (!isDungeonTickable(eff)) continue;
 
       const flags = eff.flags?.[FLAG_NS] ?? {};
+
+      // One-shot grace, stamped by dp-tile-effect-engine when a TILE applies the
+      // effect. The tick fires at TURN_END, after the tile handler has run, so the
+      // very turn a debuff lands would otherwise consume one of its turns — a
+      // 5-turn Blind was live for 4 (caught in the Vertigo live test). Spend the
+      // grace instead of a turn, and never again for this effect.
+      if (flags.dungeonTickGrace === true) {
+        toUpdate.push({ _id: eff.id, [`flags.${FLAG_NS}.dungeonTickGrace`]: false });
+        continue;
+      }
       const stamp = flags.directorAppliedBy;
       let turnsRemaining;
       let updatePath;

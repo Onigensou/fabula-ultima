@@ -183,17 +183,35 @@
   // createEmbeddedDocuments, so the stamp arrives in the initial DB write.
   //
   // Default duration mirrors dp-ae-lifecycle.js DEFAULT_DURATION = 3.
-  // Custom AEs that declare their own duration.rounds use that instead.
+  // Each entry may carry its own `turns` (set per AE row in the tile config);
+  // custom AEs may also declare duration.rounds. Precedence:
+  //   entry.turns  →  duration.rounds (custom only)  →  DUNGEON_DEFAULT_DURATION
+  //
+  // Before this, registry-sourced effects were HARD-pinned to 3 turns with no
+  // way to say otherwise — which is wrong for any tile whose debuff is meant to
+  // outlast (or undercut) the default, e.g. Vertigo's 5-step Blind.
   const DUNGEON_DEFAULT_DURATION = 3;
+
+  function entryTurns(entry) {
+    const n = Number(entry?.turns);
+    return (Number.isFinite(n) && n > 0) ? Math.floor(n) : null;
+  }
 
   function buildEffectRefs(entries) {
     const refs = [];
     for (const entry of entries) {
+      const turns = entryTurns(entry);
       if (entry.source === "registry" && entry.id) {
         refs.push({
           registryId: entry.id,
           overrides: {
-            flags: { [MODULE_ID]: { dungeonTurnsRemaining: DUNGEON_DEFAULT_DURATION } },
+            flags: { [MODULE_ID]: {
+              dungeonTurnsRemaining: turns ?? DUNGEON_DEFAULT_DURATION,
+              // One-shot grace: the turn an AE LANDS must not also spend one of
+              // its turns. dp-ae-lifecycle ticks at TURN_END, which is after the
+              // tile handler ran, so without this a 5-turn debuff was live for 4.
+              dungeonTickGrace: true,
+            } },
           },
         });
       } else if (entry.source === "custom" && entry.json) {
@@ -201,10 +219,16 @@
           const data = JSON.parse(entry.json);
           data.flags ??= {};
           data.flags[MODULE_ID] ??= {};
-          if (data.flags[MODULE_ID].dungeonTurnsRemaining == null) {
+          if (turns != null) {
+            data.flags[MODULE_ID].dungeonTurnsRemaining = turns;
+          } else if (data.flags[MODULE_ID].dungeonTurnsRemaining == null) {
             const explicit = Number(data.duration?.rounds);
             data.flags[MODULE_ID].dungeonTurnsRemaining =
               (Number.isFinite(explicit) && explicit > 0) ? explicit : DUNGEON_DEFAULT_DURATION;
+          }
+          // Same one-shot grace as the registry branch above.
+          if (data.flags[MODULE_ID].dungeonTickGrace == null) {
+            data.flags[MODULE_ID].dungeonTickGrace = true;
           }
           refs.push(data);
         } catch {}
@@ -263,6 +287,32 @@
             for (const r of report?.results ?? []) {
               const row = rowMap.get(r.actor?.uuid);
               if (row) row.ae.push({ label: r.effect?.name ?? "Effect", ok: r.ok === true });
+            }
+            // Re-landing a tile debuff RESETS its duration. AEM leaves an existing
+            // same-named effect alone, so without this a party that steps back onto
+            // a hazard keeps the old, already-counted-down timer while the tile's own
+            // state refreshes to full — live test: Vertigo refreshed to 5 while its
+            // Blind carried on down to 3. Re-stamp the intended duration, and the
+            // landing-turn grace with it, so the AE and the tile agree.
+            for (const actor of actors) {
+              const updates = [];
+              for (const entry of cfg.activeEffects) {
+                const want = String(entry?.label ?? "").trim().toLowerCase();
+                if (!want) continue;
+                const turns = entryTurns(entry) ?? DUNGEON_DEFAULT_DURATION;
+                for (const eff of actor.effects ?? []) {
+                  if (String(eff.name ?? "").trim().toLowerCase() !== want) continue;
+                  updates.push({
+                    _id: eff.id,
+                    [`flags.${MODULE_ID}.dungeonTurnsRemaining`]: turns,
+                    [`flags.${MODULE_ID}.dungeonTickGrace`]: true,
+                  });
+                }
+              }
+              if (updates.length) {
+                await actor.updateEmbeddedDocuments("ActiveEffect", updates, { render: false })
+                  .catch(e => console.warn(TAG, `duration re-stamp failed for ${actor.name}:`, e));
+              }
             }
           } catch (e) {
             console.error(TAG, "AE batch apply failed:", e);
@@ -426,6 +476,10 @@
         // resource/AE mutation + chat card don't apply twice. (VFX below still
         // plays on every client.)
         if (DP.isPrimaryGM && !DP.isPrimaryGM()) return;
+        // Ordered against the AE-lifecycle tick and the Vertigo writes: without
+        // this the tick could run BEFORE this apply and the landing-turn grace
+        // would survive into the next turn (see DP.gmSerialize).
+        await (DP.gmSerialize ?? (fn => fn()))(async () => {
         try {
           const { actorUuids, cfg, tileLabel, tokenId, sceneId } = msg.payload ?? {};
           const actors = [];
@@ -445,6 +499,7 @@
         } catch (e) {
           console.error(TAG, "MSG_APPLY handler failed:", e);
         }
+        });
         return;
       }
 

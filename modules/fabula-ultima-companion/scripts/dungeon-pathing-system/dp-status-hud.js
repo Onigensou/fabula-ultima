@@ -65,6 +65,27 @@
     transform 280ms cubic-bezier(.4,0,.2,1);
 }
 
+/* ── Vertigo chip — party-level, sits above the member rows ── */
+.oni-dp-hud-vertigo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  padding: 3px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(120,90,190,0.45);
+  background: rgba(18,10,30,0.9);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.55);
+  color: #d8c8ff;
+  font-family: "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 6px rgba(0,0,0,0.8);
+}
+.oni-dp-hud-vertigo span { font-size: 13px; }
+
 /* ── Row — single horizontal strip ── */
 .oni-dp-hud-row {
   display: flex;
@@ -519,7 +540,18 @@
       return;
     }
 
-    panel.innerHTML = rows.map(({ actor, aes }) => {
+    // Party-level Vertigo chip. The per-member Blind icon already carries its
+    // own countdown, but the two can diverge (a GM override, a partial cleanse),
+    // and the darkness is what actually gates scanning and confirmation — so
+    // show the authoritative counter rather than inferring it from a debuff.
+    const vertigoMoves = DP.Vertigo?.movesRemaining?.() ?? 0;
+    const vertigoHtml  = vertigoMoves > 0
+      ? `<div class="oni-dp-hud-vertigo" title="Vertigo — vision reduced, Scan Mode locked, moves auto-confirm">
+           <span>👁</span> Vertigo · ${vertigoMoves}
+         </div>`
+      : "";
+
+    panel.innerHTML = vertigoHtml + rows.map(({ actor, aes }) => {
       const portrait = actor.img ?? "icons/svg/mystery-man.svg";
       const name     = actor.name ?? "?";
 

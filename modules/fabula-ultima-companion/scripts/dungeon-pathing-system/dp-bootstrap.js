@@ -337,7 +337,10 @@
       const usableFlag         = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.usable`);
       const isUsable           = usableFlag === true || usableFlag === "true";
       const skipConfirmFlag    = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.skipConfirm`);
-      const skipConfirm        = skipConfirmFlag === true || skipConfirmFlag === "true";
+      // Vertigo auto-confirms every step: the party is stumbling blind, so they
+      // land and the tile resolves with no chance to take the move back.
+      const skipConfirm        = skipConfirmFlag === true || skipConfirmFlag === "true"
+                              || (DP.Vertigo?.isActive?.() ?? false);
       // Disable: hide Go Back on this destination tile.
       const disableGoBackFlag  = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.disableGoBack`);
       const disableGoBack      = disableGoBackFlag === true || disableGoBackFlag === "true";
@@ -545,7 +548,9 @@
       const usableFlag         = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.usable`);
       const isUsable           = usableFlag === true || usableFlag === "true";
       const skipConfirmFlag    = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.skipConfirm`);
-      const skipConfirm        = skipConfirmFlag === true || skipConfirmFlag === "true";
+      // Vertigo auto-confirms every step — see processArrivalAt above.
+      const skipConfirm        = skipConfirmFlag === true || skipConfirmFlag === "true"
+                              || (DP.Vertigo?.isActive?.() ?? false);
       // Disable: hide Go Back on this destination tile.
       const disableGoBackFlag  = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.disableGoBack`);
       const disableGoBack      = disableGoBackFlag === true || disableGoBackFlag === "true";
@@ -694,6 +699,12 @@
     DP.ScanMode?.attachTicker();
     DP.StatusHUD?.show();
     await rebuild();
+    // Restore the Vertigo veil + scan lock for a scene the party is still
+    // blinded on. dp-vertigo also syncs on canvasReady, but its hook is
+    // registered first (module.json loads it before this file), so it runs
+    // while state.active is still false and would conclude "not in a dungeon".
+    // Syncing here, after activation, is order-independent.
+    DP.Vertigo?.sync?.({ silent: true });
     console.debug(TAG, "Activated. Press H to toggle helper mode.");
   }
 
@@ -718,6 +729,9 @@
     DP.ScanMode?.detachTicker();
     DP.ConfirmDialog?.forceClose?.();
     DP.StatusHUD?.hide();
+    // Drop the Vertigo veil + scan lock when pathing stops. The scene flag is
+    // untouched, so re-entering the scene restores the debuff where it left off.
+    DP.Vertigo?.sync?.({ silent: true });
     console.debug(TAG, "Deactivated.");
   }
 
@@ -883,6 +897,11 @@
       if (state.active) await rebuild();
     },
 
+    /** GM override — lift Vertigo immediately. */
+    async clearVertigo() {
+      await DP.Vertigo?.clear?.(canvas.scene);
+    },
+
     get graph()       { return state.graph; },
     get currentNode() { return state.currentNode; },
     get turnPhase()   { return state.turnPhase; },
@@ -903,6 +922,7 @@
     console.debug(TAG, "  H key — toggle helper mode (walkable tile indicators)");
     console.debug(TAG, "  .resetDungeon()  — reset all tiles to initial state");
     console.debug(TAG, "  .mutateTile(id, type, texture?)");
+    console.debug(TAG, "  .clearVertigo()  — lift the Vertigo debuff early");
     console.debug(TAG, "Perf logging: window.__DP_PERF__ = true  (set in browser console)");
     console.debug(TAG, "Walk debug:   window.__DP_WALK_DBG__ = true  (per-move + per-rebuild timing)");
   });

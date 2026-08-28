@@ -298,6 +298,10 @@
 
       const forceMoveDir   = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.forceMoveDirection`) ?? "";
       const forceMoveSteps = Math.max(1, Number(tileDoc?.getFlag(MODULE_ID, `${pathingKey}.forceMoveSteps`) ?? 1));
+      const vertigoMovesRaw = Number(tileDoc?.getFlag(MODULE_ID, `${pathingKey}.vertigoMoves`));
+      const vertigoMoves    = (Number.isFinite(vertigoMovesRaw) && vertigoMovesRaw > 0)
+        ? Math.floor(vertigoMovesRaw)
+        : (DP.UI?.VERTIGO?.DEFAULT_MOVES ?? 5);
 
       // ── Check Gate config ───────────────────────────────────────────────────
       const cgKey         = `${pathingKey}.checkGate`;
@@ -520,6 +524,26 @@
                    min="1" max="10" step="1" />
           </div>
           <p class="notes">Number of tiles to push the token in the chosen direction.</p>
+        </div>
+
+        <hr class="oni-fabula-section-divider" />
+        <h3 style="margin: 10px 0 6px;"><i class="fas fa-eye-slash"></i> Vertigo</h3>
+
+        <div class="form-group">
+          <label>Duration (moves)</label>
+          <div class="form-fields">
+            <input type="number"
+                   name="flags.${MODULE_ID}.${pathingKey}.vertigoMoves"
+                   data-dtype="Number"
+                   value="${vertigoMoves}"
+                   min="1" max="20" step="1" />
+          </div>
+          <p class="notes">
+            Only used by <b>Vertigo</b> tiles. How many confirmed moves the party stays blinded:
+            vision drops to one tile, Scan Mode locks, and every step auto-confirms with no Go Back.
+            Set the Blind effect's <b>turns</b> (Effect Logic → Apply Active Effect) to the same
+            number so the debuff and the darkness expire together — a cleanse lifts both.
+          </p>
         </div>
 
         <hr class="oni-fabula-section-divider" />

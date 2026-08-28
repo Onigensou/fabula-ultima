@@ -25,6 +25,24 @@
       ?.sort?.((a, b) => String(a.id).localeCompare(String(b.id)))?.[0];
     return firstGM ? firstGM.id === game.user.id : true;
   };
+  // ── GM-side write queue ────────────────────────────────────────────────────
+  // A dungeon turn fans several INDEPENDENT socket messages at the GM — the tile
+  // effect engine's AE apply, the AE-lifecycle tick, the Vertigo apply/tick — and
+  // each is a read-modify-write over the same actor or scene flag. The messages
+  // arrive in emission order, but the handlers are async and were not awaited, so
+  // they interleaved and the last writer won with stale data.
+  //
+  // Two live-test bugs came from exactly this: a Vertigo refresh landing on 3
+  // instead of 5, and a tile-applied AE keeping its landing-turn grace because the
+  // tick ran before the apply. Funnelling every GM-side mutation through one chain
+  // makes handling order match emission order, which IS deterministic.
+  let _gmQueue = Promise.resolve();
+  DP.gmSerialize = function gmSerialize(op) {
+    const next = _gmQueue.then(op, op);
+    _gmQueue = next.catch(() => {});
+    return next;
+  };
+
   DP.GENERAL_KEY      = "general";
   DP.SCENE_MODE_KEY   = "sceneMode";
   DP.PATHING_ROOT_KEY = "dungeonPathing";
@@ -100,6 +118,7 @@
     DOOR:           "door",
     GUSTY:          "gusty",
     DIRT:           "dirt",
+    VERTIGO:        "vertigo",
     UNKNOWN:        "unknown",
   });
 
@@ -217,6 +236,38 @@
       LEFT_SOLO:  20,        // theatre: the only button, so it takes the leftmost slot
       FONT_SIZE: "28px",
     },
+
+    // Vertigo — the party is blinded; the screen goes dark except for a small
+    // circle of vision around the party token. See dp-vertigo.js.
+    VERTIGO: {
+      DEFAULT_MOVES:   5,     // dungeon steps the debuff lasts
+      // Vision radius is DERIVED per node from the graph rather than fixed:
+      // dungeon tiles are 20-50px nodes whose spacing varies by scene, so "one
+      // tile of vision" is the distance to the furthest walkable neighbour.
+      //
+      // Tuned on the table 2026-08-28 against a live scene (neighbours 66-113
+      // world units, 60wu grid). The first pass lit 130wu and did not reach full
+      // black until 208wu — 1.8× past the furthest neighbour, so two tiles beyond
+      // reach stayed half-readable. The feather was doing most of that damage.
+      // These values light ~1.1 grid squares and close to black within another
+      // 0.15×: the tile underfoot is clear, the adjacent nodes sit right on the
+      // lit edge (just enough to pick a step), everything past them is gone.
+      NEIGHBOR_FACTOR: 0.60,  // × furthest-neighbour distance
+      MIN_RADIUS:      45,    // world units — floor for very tight node clusters
+      MAX_RADIUS:      460,   // world units — ceiling for sprawling scenes
+      FALLBACK_GRIDS:  1.5,   // × grid size, used when the graph has no neighbours
+      FEATHER:         0.15,  // soft edge width as a fraction of the radius
+      DARKNESS:        0.94,  // alpha of the dark field outside the circle
+      GM_ALPHA:        0.35,  // GM sees a faded veil and keeps their overview
+      FADE_MS:         500,   // overlay fade in / out
+      FOLLOW_LERP:     0.12,  // per-frame catch-up toward the token (≈MOVE_MS)
+      // Measured live against Foundry 12.343: #board is a direct child of <body>
+      // at z-index 0, and #interface (holding #ui-left/#ui-right/#sidebar at
+      // z-index 30) is its SIBLING. So the veil mounts on <body> and must sit
+      // strictly between the two — at or above 30 it dims the sidebar and chat,
+      // which at player alpha 1.0 makes them unreadable.
+      Z_INDEX:         5,
+    },
   };
 
   // Flag key for per-scene scan radius (read by dp-scan-mode.js)
@@ -247,6 +298,7 @@
     FT_CYCLE:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_1.wav",
     FT_WIND:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Wind1.ogg",
     FT_LAND:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_Jump.wav",
+    VERTIGO:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Darkness5.ogg",
   });
 
   // Blank tile asset
