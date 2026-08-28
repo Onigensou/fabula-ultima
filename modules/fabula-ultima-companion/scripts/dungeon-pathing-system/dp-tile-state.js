@@ -125,6 +125,14 @@
     return inferType(tileDoc);
   }
 
+  // Restoring a tile to its initial type re-arms it, so the spent stamp has to go
+  // with it — otherwise ensure() would blank the tile again on the next rebuild.
+  async function unstampConsumed(scene, tileId) {
+    const td = scene?.tiles?.get(tileId);
+    if (!td?.getFlag?.(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.consumed`)) return;
+    await td.unsetFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.consumed`).catch(() => {});
+  }
+
   DP.TileState = {
     /**
      * Ensure a tile has a state entry.  Call this when the graph is first built.
@@ -139,12 +147,22 @@
       if (states[id]) return;
 
       const inferredType = resolveType(tileDoc);
+
+      // A tile the party already spent must not come back to life. clearTile
+      // stamps `consumed` on the TILE DOCUMENT, which survives the scene flag
+      // going missing. Without it, ensure() re-infers the type from the tile's
+      // Monk's name — which clearTile deliberately leaves alone ("Consumable
+      // Tile" on a blanked tile) and inferType prefers over the texture — so a
+      // spent loot tile pays out a second time. Reproduced live 2026-08-28: drop
+      // the state entry, rebuild, and currentType came back as `consumable`.
+      const consumedRaw = tileDoc.getFlag?.(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.consumed`);
+      const isConsumed  = consumedRaw === true || consumedRaw === "true";
       const initialTexture = tileDoc.texture?.src ?? null;
 
       // Write only this tile's entry — avoids broadcasting the full 129-tile object.
       await scene.setFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.tileStates.${id}`, {
         initialType:    inferredType,
-        currentType:    inferredType,
+        currentType:    isConsumed ? DP.TILE_TYPES.BLANK : inferredType,
         initialTexture,
       }).catch(e => console.warn(TAG, "ensure failed", e));
     },
@@ -174,6 +192,14 @@
         ...current, currentType: String(newType)
       }).catch(e => console.warn(TAG, "mutateTile setFlag failed", e));
 
+      // Explicitly retyping a tile to something live re-arms it.
+      if (String(newType) !== DP.TILE_TYPES.BLANK) {
+        const td = scene.tiles.get(tileId);
+        if (td?.getFlag?.(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.consumed`)) {
+          await td.unsetFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.consumed`).catch(() => {});
+        }
+      }
+
       if (newTexture) {
         const tileDoc = scene.tiles.get(tileId);
         if (tileDoc) await tileDoc.update({ "texture.src": newTexture }, { dungeonPathing: true }).catch(() => {});
@@ -186,6 +212,13 @@
      */
     async clearTile(scene, tileId, { updateTexture = true } = {}) {
       await this.mutateTile(scene, tileId, DP.TILE_TYPES.BLANK);
+
+      // Durable, per-tile record that this one is spent — see ensure() above.
+      const spentDoc = scene.tiles.get(tileId);
+      if (spentDoc) {
+        await spentDoc.setFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.consumed`, true)
+          .catch(e => console.warn(TAG, "clearTile: consumed stamp failed", e));
+      }
 
       if (updateTexture) {
         const tileDoc = scene.tiles.get(tileId);
@@ -218,6 +251,7 @@
       const updated = {};
       for (const [id, entry] of Object.entries(states)) {
         updated[id] = { ...entry, currentType: entry.initialType };
+        await unstampConsumed(scene, id);
         if (entry.initialTexture) {
           const tileDoc = scene.tiles.get(id);
           if (tileDoc) await tileDoc.update({ "texture.src": entry.initialTexture }).catch(() => {});
@@ -327,6 +361,7 @@
       const updated = {};
       for (const [id, entry] of Object.entries(states)) {
         updated[id] = { ...entry, currentType: entry.initialType };
+        await unstampConsumed(scene, id);
         if (entry.initialTexture) {
           const tileDoc = scene.tiles.get(id);
           if (tileDoc) await tileDoc.update({ "texture.src": entry.initialTexture }).catch(() => {});
@@ -374,6 +409,7 @@
           }
 
           updated[id] = { ...entry, currentType: entry.initialType };
+          await unstampConsumed(scene, id);
           touched = true;
           total++;
           if (entry.initialTexture && tileDoc) {
@@ -405,6 +441,38 @@
       if (!scene) return;
       await scene.unsetFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.fogRevealed`)
         .catch(e => console.warn(TAG, "resetAllFogRevealed failed", e));
+    },
+
+    /**
+     * Back-fill the `consumed` stamp onto tiles that were spent BEFORE the stamp
+     * existed — any tile whose state says blank while its initial type was
+     * something live. Those are exactly the tiles that would resurrect if their
+     * scene-flag entry were ever lost. Idempotent; safe to run repeatedly.
+     * Pass no scene to sweep every scene in the world. Must run as GM.
+     */
+    async repairConsumedStamps(scene = null) {
+      if (!game.user?.isGM) return { scanned: 0, stamped: 0 };
+      const scenes = scene ? [scene] : [...game.scenes];
+      let scanned = 0, stamped = 0;
+      const details = [];
+      for (const sc of scenes) {
+        const states = getStates(sc);
+        for (const [id, st] of Object.entries(states)) {
+          scanned++;
+          if (!st || st.currentType !== DP.TILE_TYPES.BLANK) continue;
+          if (!st.initialType || st.initialType === DP.TILE_TYPES.BLANK) continue;
+          const td = sc.tiles.get(id);
+          if (!td) continue;
+          const raw = td.getFlag?.(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.consumed`);
+          if (raw === true || raw === "true") continue;
+          await td.setFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.consumed`, true)
+            .catch(e => console.warn(TAG, "repairConsumedStamps failed", e));
+          stamped++;
+          details.push({ scene: sc.name, tileId: id, was: st.initialType });
+        }
+      }
+      if (stamped) console.log(TAG, `repairConsumedStamps — stamped ${stamped} spent tile(s)`, details);
+      return { scanned, stamped, details };
     },
 
     /** Resolve a tile's type (explicit flag, else name/texture inference). */
