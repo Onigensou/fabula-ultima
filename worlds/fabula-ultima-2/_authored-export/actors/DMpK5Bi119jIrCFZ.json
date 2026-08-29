@@ -14,9 +14,9 @@
     },
     "fabula-ultima-companion": {
       "movementControlState": {
-        "centralPartyTokenId": null,
-        "centralPartyTokenName": null,
-        "centralPartyTokenUuid": null,
+        "centralPartyTokenId": "amBKUJAtPWXdetnU",
+        "centralPartyTokenName": "Hina",
+        "centralPartyTokenUuid": "Scene.QqHxDWBnWBLXsNYN.Token.amBKUJAtPWXdetnU",
         "controllerActorId": "dafTLBUscCDNgq8H",
         "controllerActorName": "Hina",
         "controllerActorUuid": "Actor.dafTLBUscCDNgq8H",
@@ -26,13 +26,13 @@
         "currentGameActorUuid": "Actor.DMpK5Bi119jIrCFZ",
         "lastControllerUserId": "yL2PQxh3R9ddt0te",
         "lastControllerUserName": "Rinri",
-        "lastResolvedAt": 1787454566740,
+        "lastResolvedAt": 1787990331604,
         "partyActorId": "t6E3CQ0pGxwLgXrn",
         "partyActorName": "EXFURSION Party",
         "partyActorUuid": "Actor.t6E3CQ0pGxwLgXrn",
-        "updateReason": "refreshResolvedController:bootstrap:updateActor",
-        "updatedAt": 1787454566740,
-        "updatedByUserId": "WQGFvLStTZeWGpak",
+        "updateReason": "refresh:bootstrap:canvasReady",
+        "updatedAt": 1787990331604,
+        "updatedByUserId": "JQGNzKpDPHJmcUIW",
         "version": 1
       }
     }
