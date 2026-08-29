@@ -352,7 +352,6 @@
     "default": 0
   },
   "prototypeToken": {
-    "actorId": "rftRuHZwWx5SiNpH",
     "actorLink": false,
     "alpha": 1,
     "appendNumber": false,
@@ -526,8 +525,8 @@
       "offsetX": 0,
       "offsetY": 0,
       "rotation": 0,
-      "scaleX": 1,
-      "scaleY": 1,
+      "scaleX": 1.84,
+      "scaleY": 1.84,
       "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/DireOrc_Standard.png",
       "tint": "#ffffff"
     },

@@ -111,9 +111,16 @@ const ART = {
   HF: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Princess%20Hilde/Hilde_Standard.png",
 };
 
-// Token scales are DEFERRED per the user — set by hand after the build. These
-// are neutral seeds only (party PCs sit at 1.44-1.56 as the human yardstick).
-const SCALE = { DG: 1.0, DO: 1.0, IC: 1.0, SU: 1.0, HF: 1.0 };
+// Token scales, eyeballed by the user on Training Ground 2026-08-29 against a
+// row of tuned references and the party (the human yardstick sits at 1.44-1.56).
+// Recorded here so a re-run reproduces the tuning instead of resetting it to 1.
+//
+// HF is still 1.0 on purpose — Hilde-Fafnir has no art yet and is wearing
+// Princess Hilde's portrait as a stand-in, so there is nothing to size. Tune it
+// with the real boss art, not before. Everything else in the champion band sits
+// at 2.1-2.56 (⭐️ Wandering Flame 2.56, Gigas 2.45); the Valley's own ⭐️ Fafnir
+// is the outlier at 5.0 with `width: 1.5`.
+const SCALE = { DG: 1.26, DO: 1.84, IC: 2.77, SU: 1.04, HF: 1.0 };
 
 module.exports = {
   IDS, FOLDER_FAFNIR, FOLDER_MONSTER_ROOT, AE_CONTAINER,

@@ -548,8 +548,8 @@
       "offsetX": 0,
       "offsetY": 0,
       "rotation": 0,
-      "scaleX": 1,
-      "scaleY": 1,
+      "scaleX": 1.04,
+      "scaleY": 1.04,
       "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Succubus_Standard.png",
       "tint": "#ffffff"
     },
