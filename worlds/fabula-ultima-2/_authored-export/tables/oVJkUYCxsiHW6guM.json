@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "5Rg3NSMXFKjTHHsk",
-  "formula": "1d1",
+  "formula": "1d4",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
   "name": "Fafnir Castle - Enemies",
   "ownership": {
@@ -20,5 +20,82 @@
     "default": 0
   },
   "replacement": true,
+  "results": [
+    {
+      "_id": "DYJbRo5tX5d0TjY0",
+      "documentCollection": "Actor",
+      "documentId": "fCxslZazJKtQWsKP",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/mystery-man.svg",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Death Gazer",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "FEzS8RrJ66gqA0Ul",
+      "documentCollection": "Actor",
+      "documentId": "rftRuHZwWx5SiNpH",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/mystery-man.svg",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Dire Orc",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "h4qrO4YKt5FrU9S9",
+      "documentCollection": "Actor",
+      "documentId": "2SFrEMqLBfqzc7Nj",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/mystery-man.svg",
+      "range": [
+        5,
+        5
+      ],
+      "text": "⭐️ Hilde-Fafnir",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "H6ZBW62Wtyr2DfDE",
+      "documentCollection": "Actor",
+      "documentId": "bnem1vdA6Bv3mBVx",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/mystery-man.svg",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Succubus",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "PCGcoIeHTZg6MuZv",
+      "documentCollection": "Actor",
+      "documentId": "FLy3XRr40wNRmYxV",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/mystery-man.svg",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Iron Colossus",
+      "type": "document",
+      "weight": 1
+    }
+  ],
   "sort": 0
 }

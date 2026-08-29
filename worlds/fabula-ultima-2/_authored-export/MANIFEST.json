@@ -849,6 +849,12 @@
         "parent": null
       },
       {
+        "id": "334KROpobXWVeG1Z",
+        "name": "Fafnir Castle",
+        "type": "Actor",
+        "parent": "Nd8LnosrPid1eX1r"
+      },
+      {
         "id": "BykuRa1wHg4VliNO",
         "name": "Fafnir Castle",
         "type": "RollTable",
@@ -4664,7 +4670,7 @@
         "id": "XVOWOq9oUmEECGrU",
         "name": "Debuff",
         "type": "activeEffectContainer",
-        "effects": 52
+        "effects": 54
       },
       {
         "id": "ZnzHJ5RiISPz0Bll",
@@ -13254,6 +13260,30 @@
         "effects": 0
       },
       {
+        "id": "2SFrEMqLBfqzc7Nj",
+        "name": "⭐️ Hilde-Fafnir",
+        "type": "character",
+        "items": [
+          {
+            "id": "csviMSGyPvawLkyW",
+            "name": "Crown of the Sleeping Dragon"
+          },
+          {
+            "id": "fA6feEtGFrfjrMAP",
+            "name": "Dragoon Lance"
+          },
+          {
+            "id": "IoQn3JsHHcqGNM4U",
+            "name": "Lance of Ruin"
+          },
+          {
+            "id": "7wOhRfCoYWhuVkLn",
+            "name": "Wyrmbreath"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "8nncIhGQAEJ0ABjl",
         "name": "⭐️ Jack",
         "type": "character",
@@ -15932,11 +15962,59 @@
         "effects": 0
       },
       {
+        "id": "fCxslZazJKtQWsKP",
+        "name": "Death Gazer",
+        "type": "character",
+        "items": [
+          {
+            "id": "guM3PAJ3LLLcuBEA",
+            "name": "Death Gaze"
+          },
+          {
+            "id": "2ykRRsvYzAbKDjFk",
+            "name": "Eye Beam"
+          },
+          {
+            "id": "hzb6hDpTEl7SkijL",
+            "name": "Mind Sear"
+          },
+          {
+            "id": "ba9EknTOZeIqoQOB",
+            "name": "Unblinking"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "SX6EFbqVtKweL1A1",
         "name": "Dimitri",
         "type": "character",
         "items": [],
         "effects": 1
+      },
+      {
+        "id": "rftRuHZwWx5SiNpH",
+        "name": "Dire Orc",
+        "type": "character",
+        "items": [
+          {
+            "id": "q2NIu6N6TdhdPxJ8",
+            "name": "Brutish Fury"
+          },
+          {
+            "id": "OClwP8UL91stAV5t",
+            "name": "Cleaver"
+          },
+          {
+            "id": "gxnIJRcVBVP8M73A",
+            "name": "Skull Splitter"
+          },
+          {
+            "id": "IPgB7f91GpMaQZ3k",
+            "name": "War Howl"
+          }
+        ],
+        "effects": 0
       },
       {
         "id": "XD0ToZXRMrmKbGR8",
@@ -19283,6 +19361,30 @@
         "effects": 0
       },
       {
+        "id": "FLy3XRr40wNRmYxV",
+        "name": "Iron Colossus",
+        "type": "character",
+        "items": [
+          {
+            "id": "LnTfrgzFzJbFhHMm",
+            "name": "Adamant Plating"
+          },
+          {
+            "id": "gAfogT3m3BAMPabJ",
+            "name": "Grinding Quake"
+          },
+          {
+            "id": "tSuz5uZWJb65eZ4E",
+            "name": "Seismic Stomp"
+          },
+          {
+            "id": "kv2ZeGq61arj5dtG",
+            "name": "Siege Fist"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "OjtngxWTQN9MMTcx",
         "name": "Ishasha Isu",
         "type": "character",
@@ -22618,6 +22720,30 @@
         "effects": 1
       },
       {
+        "id": "bnem1vdA6Bv3mBVx",
+        "name": "Succubus",
+        "type": "character",
+        "items": [
+          {
+            "id": "X6IFQS3RflxhDvyU",
+            "name": "Charm"
+          },
+          {
+            "id": "BRCBx1Wiudbxux6L",
+            "name": "Deadly Temptation"
+          },
+          {
+            "id": "Mn7LzSfHjvhcLBZs",
+            "name": "Draining Kiss"
+          },
+          {
+            "id": "iitlLOnNVod66GjL",
+            "name": "Rake"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "GhK19HvvDy8CiOmP",
         "name": "Surtur",
         "type": "character",
@@ -24294,12 +24420,12 @@
       {
         "id": "hpCzLw5RI4wQNtF7",
         "name": "Fafnir Castle - Encounter",
-        "results": 0
+        "results": 8
       },
       {
         "id": "oVJkUYCxsiHW6guM",
         "name": "Fafnir Castle - Enemies",
-        "results": 0
+        "results": 5
       },
       {
         "id": "y7iU5LWEwxGwrGug",

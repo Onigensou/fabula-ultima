@@ -225,6 +225,62 @@
       "type": "base"
     },
     {
+      "_id": "3THoUX00A2aDDmrZ",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781654522107,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>The Lance of Ruin has been thrown. It will not come again this battle.</p>",
+      "disabled": false,
+      "duration": {},
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "3THoUX00A2aDDmrZ",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.3THoUX00A2aDDmrZ"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-lance-spent",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": false
+        },
+        "fabula-ultima-companion": {
+          "crossScene": false,
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215904.664.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215904.664.png",
+      "name": "Lance Spent",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
       "_id": "5K3lbMsHORKZCJWQ",
       "_stats": {
         "compendiumSource": null,
@@ -3906,6 +3962,83 @@
       },
       "tint": "#ffffff",
       "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "x46iKjWCaZylSb9R",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781654522107,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "disable_action_intent",
+          "mode": 5,
+          "priority": 0,
+          "value": "aid, neutral"
+        },
+        {
+          "key": "allegiance_override",
+          "mode": 5,
+          "priority": 0,
+          "value": "ally:enemy"
+        }
+      ],
+      "description": "<p>On your turn, you must spend your action to perform a harmful action against an ally.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "x46iKjWCaZylSb9R",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.x46iKjWCaZylSb9R"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-deadly-temptation",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "",
+          "riderOf": "Charmed"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Heart.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Heart.png",
+      "name": "Deadly Temptation",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
       "type": "base"
     },
     {

@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "fB2fAXlolioFKFSI",
-  "formula": "1d1",
+  "formula": "1d8",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
   "name": "Fafnir Castle - Encounter",
   "ownership": {
@@ -20,5 +20,119 @@
     "default": 0
   },
   "replacement": true,
+  "results": [
+    {
+      "_id": "cVe8YfeRdOxGAWZH",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Dire Orc, Death Gazer, Iron Colossus, Succubus",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "gOJR1WEJypXiGWCI",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Dire Orc, Dire Orc",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "jSYm2F6sdcnpSFCU",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Dire Orc, Iron Colossus, Dire Orc",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "k0cMJ77RS5msWWgj",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Dire Orc, Death Gazer, Dire Orc",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "LZZrahp1sXwBFuXD",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Death Gazer, Succubus, Iron Colossus, Succubus, Death Gazer",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "P5XcgEmzMq7q2r3n",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Succubus, Dire Orc, Succubus",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "Qck7ZCJldprYfcIp",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Death Gazer, Succubus, Death Gazer",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "W7OI3fkn8NocXHnQ",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Succubus, Iron Colossus, Succubus",
+      "type": "text",
+      "weight": 1
+    }
+  ],
   "sort": 0
 }
