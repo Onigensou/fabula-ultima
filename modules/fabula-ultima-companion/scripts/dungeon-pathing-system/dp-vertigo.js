@@ -46,6 +46,16 @@
 // sortableChildren = true) are a recurring source of creeping per-turn lag, and
 // a stage overlay would also need manual coverage of everything outside the
 // scene rect. One div, one rAF, one resize listener — all torn down in hide().
+//
+// ── Iris sweep ───────────────────────────────────────────────────────────────
+// The veil does not appear at its final size. On show, the lit circle starts
+// past the corners of the viewport — the dark field is entirely offscreen, so
+// the board reads as untouched — and constricts down onto the party token; on
+// hide it expands back out the same way. The radius is a gradient colour stop,
+// which CSS cannot transition, so the sweep is driven per-frame inside the rAF
+// loop that already runs to track the token. That also means the exit sweep
+// has to keep the element and the loop ALIVE: hideOverlay() only starts the
+// phase, and finishExit() does the teardown when it lands.
 // ============================================================================
 (() => {
   const DP  = globalThis.DungeonPathing ??= {};
@@ -152,6 +162,15 @@
   let _target    = null;   // world-space centre we are easing toward
   let _lastPaint = "";     // last background string written — skips no-op writes
 
+  // Iris sweep state. _phase drives paint(); "idle" is the settled veil, and the
+  // whole block costs nothing once it gets there (the gradient string stops
+  // changing, so the _lastPaint guard skips the style write again).
+  let _phase       = "idle";  // "idle" | "in" | "out"
+  let _phaseStart  = 0;       // performance.now() when the phase began
+  let _phaseDur    = 0;       // ms this phase runs for (shortened on a reversal)
+  let _phaseFrom   = null;    // client-px radius to sweep FROM, null = derive it
+  let _lastInnerPx = 0;       // radius actually painted last frame
+
   function injectStyles() {
     if (document.getElementById(STYLE_ID)) return;
     const c = cfg();
@@ -228,6 +247,62 @@
     };
   }
 
+  const clamp01 = (t) => (t < 0 ? 0 : t > 1 ? 1 : t);
+
+  // Slow start, quick middle, gentle settle — the curtain has weight. A linear
+  // sweep reads mechanical and a pure ease-out lands too abruptly on the token.
+  const easeInOutCubic = (t) =>
+    t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+  /**
+   * Radius (client px, from a point inside the overlay rect) that puts the dark
+   * ring past the furthest corner of the veil — i.e. the circle is bigger than
+   * what can be seen, so the screen reads as clear.
+   *
+   * Recomputed every frame rather than baked in as a fixed multiple of the node
+   * radius: the answer depends on the window size AND on where the party sits
+   * in it, so a fixed factor would leave a dark corner showing on a large
+   * monitor, or on a pan/zoom made mid-sweep.
+   */
+  function coverRadius(x, y) {
+    const w  = _rect.width  || 1;
+    const h  = _rect.height || 1;
+    const dx = Math.max(x, w - x);
+    const dy = Math.max(y, h - y);
+    return Math.hypot(dx, dy) * (cfg().IRIS_START_PAD ?? 1.15);
+  }
+
+  /**
+   * Enter an iris phase. Reversing one still in flight (hide → re-apply inside
+   * the sweep) starts from where the ring actually IS and shortens the trip to
+   * match, so a rapid toggle doesn't crawl back over ground already covered.
+   */
+  function beginPhase(next) {
+    if (next === "idle") {
+      _phase     = "idle";
+      _phaseFrom = null;
+      return;
+    }
+    const c    = cfg();
+    const now  = performance.now();
+    const full = Math.max(
+      1,
+      Number(next === "in" ? c.IRIS_IN_MS ?? 900 : c.IRIS_OUT_MS ?? 700) || 1
+    );
+    const reversing = _phase !== "idle" && _phase !== next && _lastInnerPx > 0;
+    const done      = reversing ? clamp01((now - _phaseStart) / (_phaseDur || 1)) : 0;
+
+    // An exit pins the radius it starts from. Deriving it live would re-read
+    // computeRadius() every frame, and GRAPH_REBUILT — which fires on pathing
+    // deactivate, right as the veil is leaving — clears that memo and would
+    // jolt the circle mid-sweep. An entry leaves it null so the cover radius
+    // stays live, which is what absorbs a resize during the constrict.
+    _phaseFrom  = (reversing || next === "out") && _lastInnerPx > 0 ? _lastInnerPx : null;
+    _phaseDur   = reversing ? Math.max(1, full * done) : full;
+    _phaseStart = now;
+    _phase      = next;
+  }
+
   function paint() {
     if (!_el) return;
     const c = cfg();
@@ -236,7 +311,11 @@
     // the 650ms move animation (dp-movement animates a throwaway sprite), so
     // without this the light would sit on the old tile and then snap. The lerp
     // makes the circle travel WITH the party instead.
-    const want = _target ?? tokenTargetCentre();
+    // A veil on its way out expands from where it stood. The retarget hooks
+    // (TOKEN_MOVED, GRAPH_REBUILT, …) can still fire during those few hundred
+    // ms — the party walks on the moment Vertigo expires — and chasing them
+    // would drag the opening circle across the board.
+    const want = _phase === "out" ? null : (_target ?? tokenTargetCentre());
     if (want) {
       if (!_center) _center = { ...want };
       else {
@@ -249,13 +328,38 @@
 
     const pt    = worldToClient(_center.x, _center.y);
     const scale = Number(canvas?.stage?.scale?.x ?? 1) || 1;
-    const inner = Math.round(computeRadius() * scale);
-    const outer = Math.round(inner * (1 + (c.FEATHER ?? 0.6)));
 
     // Coordinates are relative to the overlay element, which is pinned to the
-    // canvas rect.
+    // canvas rect. Needed before the radius now, because the iris sweep starts
+    // from a cover radius measured out of this very point.
     const x = Math.round(pt.x - _rect.left);
     const y = Math.round(pt.y - _rect.top);
+
+    // The settled radius — where the circle rests once the sweep has landed.
+    const liveInner = Math.round(computeRadius() * scale);
+    let   inner     = liveInner;
+
+    if (_phase !== "idle") {
+      const t     = clamp01((performance.now() - _phaseStart) / (_phaseDur || 1));
+      const e     = easeInOutCubic(t);
+      const cover = coverRadius(x, y);
+      // "in" sweeps toward the settled radius, "out" away from it. Both read
+      // their start from _phaseFrom when a reversal pinned one, and derive it
+      // otherwise — so a pan or zoom mid-sweep is absorbed frame by frame.
+      const from  = _phase === "in" ? (_phaseFrom ?? cover)     : (_phaseFrom ?? liveInner);
+      const to    = _phase === "in" ? liveInner                 : cover;
+      inner = Math.round(from + (to - from) * e);
+
+      if (t >= 1) {
+        // The exit sweep owns the teardown — the element and the rAF loop had
+        // to stay alive to run it, so this is where they go.
+        if (_phase === "out") { finishExit(); return; }
+        beginPhase("idle");
+      }
+    }
+    _lastInnerPx = inner;
+
+    const outer = Math.round(inner * (1 + (c.FEATHER ?? 0.6)));
 
     const dark = c.DARKNESS ?? 0.94;
     const bg = `radial-gradient(circle at ${x}px ${y}px,`
@@ -289,6 +393,7 @@
     const tick = () => {
       if (!_el) { stopTracking(); return; }
       paint();
+      if (!_el) return;  // paint() landed the exit sweep and tore us down
       _rafId = requestAnimationFrame(tick);
     };
     _rafId = requestAnimationFrame(tick);
@@ -311,9 +416,22 @@
     _lastPaint = ""; // geometry moved — force the next paint through
   }
 
-  function showOverlay() {
+  /**
+   * @param {object}  [opts]
+   * @param {boolean} [opts.animate=true] false snaps straight to the settled
+   *   radius. Used for a RESTORE — re-entering a scene the party is already
+   *   Vertigo'd on is not a fresh affliction, so it gets no sting, the same way
+   *   it already gets no sound.
+   */
+  function showOverlay({ animate = true } = {}) {
     injectStyles();
-    if (_el) return;
+
+    if (_el) {
+      // Re-shown while the exit sweep was still running. Reverse it in place —
+      // early-returning here would strand a veil that is on its way out.
+      if (_phase === "out") beginPhase(animate ? "in" : "idle");
+      return;
+    }
 
     const { host, z } = overlayParent();
     _el = document.createElement("div");
@@ -327,28 +445,45 @@
 
     _center = tokenTargetCentre();  // snap on first show — never sweep in from 0,0
     _target = _center ? { ..._center } : null;
-    _lastPaint = "";
+    _lastPaint   = "";
+    _lastInnerPx = 0;
 
     startTracking();
+    beginPhase(animate ? "in" : "idle");
     paint();
     requestAnimationFrame(() => { _el?.classList.add("dp-vertigo-visible"); });
   }
 
+  /**
+   * Start the exit sweep. The element and the rAF loop deliberately STAY alive:
+   * the radius is animated in paint(), so tearing down here would leave nothing
+   * to animate. paint() calls finishExit() when the sweep lands.
+   *
+   * animate:false is the hard stop (canvas teardown) — it also cancels a sweep
+   * already in flight, so no div and no loop can outlive the scene.
+   */
   function hideOverlay({ animate = true } = {}) {
-    stopTracking();
     if (!_el) return;
+    if (!animate) { finishExit(); return; }
+    if (_phase === "out") return;  // already on its way out
+    beginPhase("out");
+  }
+
+  /** Teardown. The only place the veil is actually removed. */
+  function finishExit() {
+    stopTracking();
     const el = _el;
     _el = null;
-    _center = null;
-    _target = null;
-    _lastPaint = "";
+    _phase       = "idle";
+    _phaseFrom   = null;
+    _center      = null;
+    _target      = null;
+    _lastPaint   = "";
+    _lastInnerPx = 0;
+    // Held until now on purpose: clearing it mid-sweep lets a GRAPH_REBUILT
+    // recompute the settled radius and jolt the circle on its way out.
     _radiusCache = null;
-    if (animate) {
-      el.classList.remove("dp-vertigo-visible");
-      setTimeout(() => el.remove(), (cfg().FADE_MS ?? 500) + 60);
-    } else {
-      el.remove();
-    }
+    el?.remove();
   }
 
   // ---------------------------------------------------------------------------
@@ -370,7 +505,7 @@
     const active        = dungeonActive && isActive();
 
     if (active && !_wasActive) {
-      showOverlay();
+      showOverlay({ animate: !silent });
       DP.ScanMode?.setScanDisabled?.(true);
       // Local-only sounds (push=false), so every client plays its own copy when
       // it observes the flag turn on — no separate broadcast needed.

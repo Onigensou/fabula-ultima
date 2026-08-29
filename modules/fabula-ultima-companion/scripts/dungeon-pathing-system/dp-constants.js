@@ -259,8 +259,16 @@
       FEATHER:         0.15,  // soft edge width as a fraction of the radius
       DARKNESS:        0.94,  // alpha of the dark field outside the circle
       GM_ALPHA:        0.35,  // GM sees a faded veil and keeps their overview
-      FADE_MS:         500,   // overlay fade in / out
+      FADE_MS:         500,   // opacity fade on show (the exit is the iris)
       FOLLOW_LERP:     0.12,  // per-frame catch-up toward the token (≈MOVE_MS)
+      // Iris sweep — the veil does not simply fade in at its final size. The
+      // lit circle starts past the corners of the viewport (so the darkness is
+      // entirely offscreen) and constricts down onto the party token, then
+      // expands back out when Vertigo lifts. Driven per-frame in dp-vertigo's
+      // existing rAF loop, since CSS cannot transition a radial-gradient stop.
+      IRIS_IN_MS:      900,   // constrict: full-screen → node radius
+      IRIS_OUT_MS:     700,   // expand:    node radius → full-screen
+      IRIS_START_PAD:  1.15,  // × distance to the furthest viewport corner
       // Measured live against Foundry 12.343: #board is a direct child of <body>
       // at z-index 0, and #interface (holding #ui-left/#ui-right/#sidebar at
       // z-index 30) is its SIBLING. So the veil mounts on <body> and must sit
