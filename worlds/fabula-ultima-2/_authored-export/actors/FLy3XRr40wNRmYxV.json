@@ -322,7 +322,6 @@
     "default": 0
   },
   "prototypeToken": {
-    "actorId": "FLy3XRr40wNRmYxV",
     "actorLink": false,
     "alpha": 1,
     "appendNumber": false,
@@ -641,7 +640,7 @@
       "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/IronColossus_Standard.png",
       "dagger_ef": "50",
       "damage_receiving_mod_air": 0,
-      "damage_receiving_mod_all": 12,
+      "damage_receiving_mod_all": 0,
       "damage_receiving_mod_bolt": 0,
       "damage_receiving_mod_dark": 0,
       "damage_receiving_mod_earth": 0,

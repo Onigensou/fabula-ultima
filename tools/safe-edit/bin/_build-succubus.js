@@ -91,11 +91,19 @@ run(async ({ changes }) => {
   // stage, so the same row wired there would heal 0.
   // `reaction_source_skill` scopes the drain to THIS spell, so Rake never
   // leaks a heal.
+  //
+  // `isReaction: true` even though this is an offensive Spell, not a reaction:
+  // the flag means "this item carries reaction rows", and the legacy collector
+  // (reaction-triggerCore.js:1002) hard-skips any item without it, so the drain
+  // would silently never fire. 77 of the world's 85 non-Passive items with
+  // reaction rows set it; Mana Ray's Volt Stinger is the exact precedent
+  // (an Active on `creature_deals_damage`). Caught by api.lint.runReactionLint
+  // (REACTION_FLAG_MISSING), not by inspection.
   changes.push([ik(IDS.SU_KISS), skill(dSpl, IDS.SU_KISS, "Draining Kiss", ICON.ospell, {
     skill_type: "Spell", skill_target: "One Enemy", skill_range: "Melee",
     rolled_atr1: "INS", rolled_atr2: "WLP",
     check_bonus: "5", damage_bonus: "32", type_damage: "Dark", defense_target_type: "mdef",
-    isCheck: true, isOffensiveSpell: true, isReaction: false,
+    isCheck: true, isOffensiveSpell: true, isReaction: true,
     cost: "20 MP", duration: "Instantaneous", details_roller: "Show",
     action_keywords: "", description: DESC.kiss,
     reaction_config_table: {

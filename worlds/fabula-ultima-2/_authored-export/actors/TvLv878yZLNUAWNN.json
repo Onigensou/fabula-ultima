@@ -917,7 +917,7 @@
       "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Kirin_Standard.png",
       "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Kirin_Standard.png",
       "steal_percentage_table": {},
-      "study_text": "<p>A serene horned beast that drinks the storm. It need not be struck itself &mdash; every bolt that lands anywhere in its presence runs to the horn, and what the horn cannot hold it wears as armour. It empties itself in a single stroke, and the stroke is only ever as terrible as what it was allowed to swallow. It drinks without discernment, and <strong>poison</strong> in the water goes straight to the horn.</p>",
+      "study_text": "<p>A serene horned beast that drinks the storm. It need not be struck itself — every bolt that lands anywhere in its presence runs to the horn, and what the horn cannot hold it wears as armour. It empties itself in a single stroke, and the stroke is only ever as terrible as what it was allowed to swallow. It drinks without discernment, and <strong>poison</strong> in the water goes straight to the horn.</p>",
       "subtype": "Sub-Type",
       "subtype_list": "FEY",
       "sword_ef": "100",

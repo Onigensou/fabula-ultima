@@ -349,7 +349,6 @@
     "default": 0
   },
   "prototypeToken": {
-    "actorId": "fCxslZazJKtQWsKP",
     "actorLink": false,
     "alpha": 1,
     "appendNumber": false,
@@ -808,7 +807,7 @@
       "stealable_loot": {},
       "study_text": "<p>It does not hunt, it does not feed, and it does not appear to want anything at all. It simply <strong>opens</strong>, somewhere down a corridor you were sure was empty, and one of you stops walking. The palace archivists recorded fourteen encounters and no wounds.</p>",
       "subtype": "Sub-Type",
-      "subtype_list": "ABERRATION",
+      "subtype_list": "",
       "sword_ef": "100",
       "tactic_notes": "",
       "thrown_ef": "100",

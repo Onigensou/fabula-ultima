@@ -348,7 +348,6 @@
     "default": 0
   },
   "prototypeToken": {
-    "actorId": "2SFrEMqLBfqzc7Nj",
     "actorLink": false,
     "alpha": 1,
     "appendNumber": false,
@@ -808,7 +807,7 @@
       "stealable_loot": {},
       "study_text": "<p>She is still in there. That is the difficult part, and the palace has arranged the whole approach so that you will be certain of it by the time you arrive. It speaks with her voice, it remembers your name, and it has been waiting at the end of this hallway for longer than the hallway has existed.</p>",
       "subtype": "Sub-Type",
-      "subtype_list": "HUMANOID, DRAGON",
+      "subtype_list": "",
       "sword_ef": "100",
       "tactic_notes": "",
       "thrown_ef": "100",

@@ -223,7 +223,7 @@
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": true,
-          "isReaction": false,
+          "isReaction": true,
           "isZeroPower": false,
           "level": "1",
           "max_level": "1",
@@ -375,7 +375,6 @@
     "default": 0
   },
   "prototypeToken": {
-    "actorId": "bnem1vdA6Bv3mBVx",
     "actorLink": false,
     "alpha": 1,
     "appendNumber": false,
@@ -834,7 +833,7 @@
       "stealable_loot": {},
       "study_text": "<p>Court records from the last three reigns list the same lady-in-waiting, and every portrait of her was painted from a different description. She has never once been seen to strike anybody. The <strong>casualty figures</strong> from the palace halls are nonetheless entirely her work.</p>",
       "subtype": "Sub-Type",
-      "subtype_list": "FIEND",
+      "subtype_list": "",
       "sword_ef": "100",
       "tactic_notes": "",
       "thrown_ef": "100",
