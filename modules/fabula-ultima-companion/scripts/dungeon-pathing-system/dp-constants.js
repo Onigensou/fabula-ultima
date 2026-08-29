@@ -266,8 +266,8 @@
       // entirely offscreen) and constricts down onto the party token, then
       // expands back out when Vertigo lifts. Driven per-frame in dp-vertigo's
       // existing rAF loop, since CSS cannot transition a radial-gradient stop.
-      IRIS_IN_MS:      900,   // constrict: full-screen → node radius
-      IRIS_OUT_MS:     700,   // expand:    node radius → full-screen
+      IRIS_IN_MS:      1700,  // constrict: full-screen → node radius
+      IRIS_OUT_MS:     1400,  // expand:    node radius → full-screen
       IRIS_START_PAD:  1.15,  // × distance to the furthest viewport corner
       // Measured live against Foundry 12.343: #board is a direct child of <body>
       // at z-index 0, and #interface (holding #ui-left/#ui-right/#sidebar at

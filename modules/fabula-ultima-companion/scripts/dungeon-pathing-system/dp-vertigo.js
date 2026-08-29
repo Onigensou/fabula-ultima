@@ -249,10 +249,12 @@
 
   const clamp01 = (t) => (t < 0 ? 0 : t > 1 ? 1 : t);
 
-  // Slow start, quick middle, gentle settle — the curtain has weight. A linear
-  // sweep reads mechanical and a pure ease-out lands too abruptly on the token.
-  const easeInOutCubic = (t) =>
-    t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  // Quadratic, not cubic. Cubic packs almost all of its travel into a short
+  // fast middle, which reads as a whoosh however long the duration is — and the
+  // constrict wastes that slow lead-in offscreen, where nothing is visible yet.
+  // Quad spreads the movement evenly: the curtain drifts closed instead.
+  const easeInOutQuad = (t) =>
+    t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 
   /**
    * Radius (client px, from a point inside the overlay rect) that puts the dark
@@ -341,7 +343,7 @@
 
     if (_phase !== "idle") {
       const t     = clamp01((performance.now() - _phaseStart) / (_phaseDur || 1));
-      const e     = easeInOutCubic(t);
+      const e     = easeInOutQuad(t);
       const cover = coverRadius(x, y);
       // "in" sweeps toward the settled radius, "out" away from it. Both read
       // their start from _phaseFrom when a reversal pinned one, and derive it
