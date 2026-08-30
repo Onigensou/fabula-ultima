@@ -602,7 +602,7 @@
         },
         "gxnIJRcVBVP8M73A": {
           "active_target": "One Creature",
-          "attack_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Pierce</strong></a></p></li></ul><p>Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature. Armour is not really the point.</p>",
+          "attack_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Pierce</strong></a></p></li></ul><p>Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature.</p>",
           "attribute_die1": "MIG",
           "attribute_die2": "MIG",
           "id": "${item.id}",
@@ -797,7 +797,7 @@
         "q2NIu6N6TdhdPxJ8": {
           "id": "${item.id}",
           "name": "Brutish Fury",
-          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the Dire Orc is at half Hit Points or below</p></li></ul><p>Pain is the only instruction it has ever understood. Everything it does lands harder.</p>",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the Dire Orc is at half Hit Points or below</p></li></ul><p>The Dire Orc deals <strong>25</strong> extra damage with all of its attacks.</p>",
           "roll": "",
           "uuid": "Actor.rftRuHZwWx5SiNpH.Item.q2NIu6N6TdhdPxJ8"
         }

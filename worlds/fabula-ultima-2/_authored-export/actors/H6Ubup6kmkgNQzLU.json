@@ -658,7 +658,7 @@
       "attack_list": {
         "HU5v0qJ2gB1DmipK": {
           "active_target": "One Creature",
-          "attack_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the Drakoza is holding <strong>Fury</strong></p></li></ul><p>It empties every wound it has taken into one swing — the more it has been hurt, the harder this lands — and its <strong>Fury</strong> is spent.</p>",
+          "attack_description": "<p>The Drakoza thrashes around. Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature. This attack consumes all of its <strong>Fury</strong> to deal bonus damage.</p>",
           "attribute_die1": "MIG",
           "attribute_die2": "MIG",
           "id": "${item.id}",
@@ -862,7 +862,7 @@
         "vP0c8mCKoBQY4ggP": {
           "id": "${item.id}",
           "name": "Drako Fury",
-          "passive_description": "<p>Every point of damage the Drakoza suffers is banked as <strong>Fury</strong>. It does not flinch and it does not forget; the tally waits for <strong>Thrash</strong>.</p>",
+          "passive_description": "<p>Whenever the Drakoza loses HP, it gains <strong>Fury</strong> equal to the damage taken.</p>",
           "roll": "",
           "uuid": "Actor.H6Ubup6kmkgNQzLU.Item.vP0c8mCKoBQY4ggP"
         }

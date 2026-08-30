@@ -706,7 +706,7 @@
       "skill_active_list": {
         "IoQn3JsHHcqGNM4U": {
           "active_cost": "50 MP",
-          "active_description": "<p>Hilde-Fafnir levels the Lance and the throne room agrees with it. <strong>Every enemy is reduced to 1 Hit Point.</strong></p><p>It can only be thrown once.</p>",
+          "active_description": "<p>Hilde-Fafnir levels the Lance at the party. <strong>Every enemy is reduced to 1 Hit Point.</strong></p><p>Usable once per conflict.</p>",
           "active_duration": "Instantaneous",
           "active_target": "All Enemies",
           "id": "${item.id}",
@@ -715,15 +715,7 @@
           "uuid": "Actor.2SFrEMqLBfqzc7Nj.Item.IoQn3JsHHcqGNM4U"
         }
       },
-      "skill_passive_list": {
-        "csviMSGyPvawLkyW": {
-          "id": "${item.id}",
-          "name": "Crown of the Sleeping Dragon",
-          "passive_description": "<p>There is nothing left in Hilde-Fafnir to sway, frighten or talk down. Whatever was negotiable about the Princess is not answering.</p>",
-          "roll": "",
-          "uuid": "Actor.2SFrEMqLBfqzc7Nj.Item.csviMSGyPvawLkyW"
-        }
-      },
+      "skill_passive_list": {},
       "spear_ef": "150",
       "species": "MONSTER",
       "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Princess%20Hilde/Hilde_Standard.png",

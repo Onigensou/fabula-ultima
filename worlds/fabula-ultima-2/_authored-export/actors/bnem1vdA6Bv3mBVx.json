@@ -783,7 +783,7 @@
           "id": "${item.id}",
           "name": "Draining Kiss",
           "roll": "",
-          "spell_description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;damage to one creature. The Succubus takes back half of everything it costs them.</p>",
+          "spell_description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;damage to one creature. The Succubus recovers HP equal to half the damage dealt.</p>",
           "spell_target": "One Enemy",
           "uuid": "Actor.bnem1vdA6Bv3mBVx.Item.Mn7LzSfHjvhcLBZs"
         },

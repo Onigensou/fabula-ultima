@@ -968,7 +968,7 @@
         "blW2o4tFoB0oVzEM": {
           "id": "${item.id}",
           "name": "Lodestone Core",
-          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;At the start of the Obsidrax's turn, while it holds the <strong>Lightning Rod</strong></p></li></ul><p>The stored charge earths through its glass and erupts beneath one random enemy, dealing 30 <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Earth</strong></a>&nbsp;damage &mdash; and the <strong>Lightning Rod</strong> passes to whatever it struck.</p>",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;At the start of the Obsidrax's turn, while it holds the <strong>Lightning Rod</strong></p></li></ul><p>The Obsidrax discharges the stored charge beneath one random enemy, dealing 30 <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Earth</strong></a>&nbsp;damage. The <strong>Lightning Rod</strong> passes to that creature.</p>",
           "roll": "",
           "uuid": "Actor.x8TBsDZaRgoSo5no.Item.blW2o4tFoB0oVzEM"
         }

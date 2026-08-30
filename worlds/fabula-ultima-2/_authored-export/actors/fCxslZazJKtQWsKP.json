@@ -715,15 +715,7 @@
       "shield_value": "0",
       "showMacro": false,
       "skill_active_list": {},
-      "skill_passive_list": {
-        "ba9EknTOZeIqoQOB": {
-          "id": "${item.id}",
-          "name": "Unblinking",
-          "passive_description": "<p>The Death Gazer has no eyelid and nothing behind the eye to deceive. It cannot be blinded, and darkness is no cover from it.</p>",
-          "roll": "",
-          "uuid": "Actor.fCxslZazJKtQWsKP.Item.ba9EknTOZeIqoQOB"
-        }
-      },
+      "skill_passive_list": {},
       "spear_ef": "100",
       "species": "MONSTER",
       "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/DeathGaze_Standard.png",

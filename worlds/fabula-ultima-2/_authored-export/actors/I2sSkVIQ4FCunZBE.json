@@ -931,7 +931,7 @@
         "2nHv9Fvn5En9wL3S": {
           "id": "${item.id}",
           "name": "Static Buildup",
-          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;Whenever the Skizzik deals damage to an enemy</p></li></ul><p>It gathers a charge of <strong>Static</strong>. On the <strong>third</strong>, the charge earths out through that creature, dealing <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage.</p>",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;Whenever the Skizzik deals damage to an enemy</p></li></ul><p>The Skizzik gains 1 <strong>Static</strong>. On the <strong>third</strong>, it deals <strong>30</strong> <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to that creature and loses all <strong>Static</strong>.</p>",
           "roll": "",
           "uuid": "Actor.I2sSkVIQ4FCunZBE.Item.2nHv9Fvn5En9wL3S"
         },
@@ -945,7 +945,7 @@
         "oezr2w4m0LMEFM6F": {
           "id": "${item.id}",
           "name": "Overload Riposte",
-          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When an attack strikes the Skizzik and the Result of the attacker's Accuracy Check was an <strong>even number</strong></p></li></ul><p>It answers before the blow has landed, striking that creature with a <strong>free</strong> <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;riposte.</p><p><a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage does not provoke it — that is <strong>Chain Reaction</strong>'s business.</p>",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When an attack strikes the Skizzik and the Result of the attacker's Accuracy Check was an <strong>even number</strong></p></li></ul><p>The Skizzik immediately performs a <strong>free</strong> <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;riposte against the attacker. <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage does not trigger this.</p>",
           "roll": "",
           "uuid": "Actor.I2sSkVIQ4FCunZBE.Item.oezr2w4m0LMEFM6F"
         }

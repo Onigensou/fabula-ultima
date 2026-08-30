@@ -497,7 +497,7 @@
         },
         "tSuz5uZWJb65eZ4E": {
           "active_target": "Up to three creatures",
-          "attack_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Multi</strong></a><strong>&nbsp;3</strong></p></li></ul><p>Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Earth</strong></a>&nbsp;damage. The floor of the approach was not built for this.</p>",
+          "attack_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Multi</strong></a><strong>&nbsp;3</strong></p></li></ul><p>The Iron Colossus stamps the ground. Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Earth</strong></a>&nbsp;damage.</p>",
           "attribute_die1": "MIG",
           "attribute_die2": "DEX",
           "id": "${item.id}",
@@ -665,7 +665,7 @@
           "id": "${item.id}",
           "name": "Grinding Quake",
           "roll": "",
-          "spell_description": "<p>Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Earth</strong></a>&nbsp;damage to all enemies, and the ground stops cooperating.</p>",
+          "spell_description": "<p>Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Earth</strong></a>&nbsp;damage to all enemies.</p>",
           "spell_target": "All Enemies",
           "uuid": "Actor.FLy3XRr40wNRmYxV.Item.gAfogT3m3BAMPabJ"
         }
@@ -688,15 +688,7 @@
       "shield_value": "0",
       "showMacro": false,
       "skill_active_list": {},
-      "skill_passive_list": {
-        "LnTfrgzFzJbFhHMm": {
-          "id": "${item.id}",
-          "name": "Adamant Plating",
-          "passive_description": "<p>Centuries of palace armour, layered and re-layered. Every blow that reaches the Iron Colossus arrives smaller than it left.</p>",
-          "roll": "",
-          "uuid": "Actor.FLy3XRr40wNRmYxV.Item.LnTfrgzFzJbFhHMm"
-        }
-      },
+      "skill_passive_list": {},
       "spear_ef": "100",
       "species": "CONSTRUCT",
       "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/IronColossus_Standard.png",

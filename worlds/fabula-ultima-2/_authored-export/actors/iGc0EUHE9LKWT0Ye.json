@@ -533,7 +533,7 @@
       "attack_list": {
         "lK1xNxttDeXzwhVh": {
           "active_target": "One Creature",
-          "attack_description": "<p>Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;damage to one creature and drain <strong>20%</strong> of its maximum MP. The stinger bites deeper for every point of mana it takes — a full well of magic makes the worst wound.</p>",
+          "attack_description": "<p>Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;damage to one creature and drain <strong>20%</strong> of its maximum MP. Bonus damage increases with the MP drained.</p>",
           "attribute_die1": "DEX",
           "attribute_die2": "MIG",
           "id": "${item.id}",
