@@ -162,7 +162,9 @@ const REWRITES = [
     uuid: "Actor.H6Ubup6kmkgNQzLU.Item.HU5v0qJ2gB1DmipK",
     label: "Drakoza / Thrash",
     html:
-      `<p>The Drakoza thrashes around. Deal <strong>heavy</strong> ${PHYS}&nbsp;damage to one creature. This attack consumes all of its <strong>Fury</strong> to deal bonus damage.</p>`,
+      // Not "heavy": Thrash's damage_bonus is 18, BELOW Dragon Claw's 20, and
+      // Claw is written as plain "Physical damage". The punch comes from Fury.
+      `<p>The Drakoza thrashes around. Deal ${PHYS}&nbsp;damage to one creature. This attack consumes all of its <strong>Fury</strong> to deal bonus damage.</p>`,
   },
 
   // ---- Skizzik ----------------------------------------------------------

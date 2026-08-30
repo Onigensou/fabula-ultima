@@ -13265,10 +13265,6 @@
         "type": "character",
         "items": [
           {
-            "id": "csviMSGyPvawLkyW",
-            "name": "Crown of the Sleeping Dragon"
-          },
-          {
             "id": "fA6feEtGFrfjrMAP",
             "name": "Dragoon Lance"
           },
@@ -15977,10 +15973,6 @@
           {
             "id": "hzb6hDpTEl7SkijL",
             "name": "Mind Sear"
-          },
-          {
-            "id": "ba9EknTOZeIqoQOB",
-            "name": "Unblinking"
           }
         ],
         "effects": 0
@@ -19365,10 +19357,6 @@
         "name": "Iron Colossus",
         "type": "character",
         "items": [
-          {
-            "id": "LnTfrgzFzJbFhHMm",
-            "name": "Adamant Plating"
-          },
           {
             "id": "gAfogT3m3BAMPabJ",
             "name": "Grinding Quake"

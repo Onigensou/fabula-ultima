@@ -50,7 +50,7 @@
           "cost": "-",
           "damage_bonus": "24",
           "defense_target_type": "def",
-          "description": "<p>Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;damage to one creature and drain <strong>20%</strong> of its maximum MP. The stinger bites deeper for every point of mana it takes — a full well of magic makes the worst wound.</p>",
+          "description": "<p>Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;damage to one creature and drain <strong>20%</strong> of its maximum MP. Bonus damage increases with the MP drained.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {

@@ -52,7 +52,7 @@
           "cost": "30 MP",
           "damage_bonus": "20",
           "defense_target_type": "mdef",
-          "description": "<p>Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Earth</strong></a>&nbsp;damage to all enemies, and the ground stops cooperating.</p>",
+          "description": "<p>Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Earth</strong></a>&nbsp;damage to all enemies.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {},
@@ -167,81 +167,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "LnTfrgzFzJbFhHMm",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": null,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.4"
-        }
-      },
-      "folder": null,
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
-      "name": "Adamant Plating",
-      "ownership": {
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "action_keywords": "",
-          "active_effect_config_table": {},
-          "ae_chance_percent": "",
-          "ae_template_ref": "",
-          "animation_damage_timing_offset": "0",
-          "animation_damage_timing_options": "default",
-          "animation_script": "",
-          "check_bonus": "0",
-          "class": "NPC",
-          "cost": "-",
-          "damage_bonus": "0",
-          "defense_target_type": "def",
-          "description": "<p>Centuries of palace armour, layered and re-layered. Every blow that reaches the Iron Colossus arrives smaller than it left.</p>",
-          "details_roller": "Show",
-          "duration": "-",
-          "effect_table": {},
-          "heroic_requirement": "",
-          "id": "${item.id}",
-          "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "isReaction": true,
-          "isZeroPower": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Adamant Plating",
-          "on_activate_effect_ref": "",
-          "optional_params": {},
-          "reaction_config_table": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_animation_default": "",
-          "skill_animation_mode": "default",
-          "skill_information": "",
-          "skill_range": "-",
-          "skill_target": "-",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.FLy3XRr40wNRmYxV.Item.LnTfrgzFzJbFhHMm"
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278388,
-        "unique": false,
-        "uniqueId": "vdEX0eAROfOYjHED"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "tSuz5uZWJb65eZ4E",
       "_stats": {
         "compendiumSource": null,
@@ -277,7 +202,7 @@
           "cost": "-",
           "damage_bonus": "16",
           "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Multi</strong></a><strong>&nbsp;3</strong></p></li></ul><p>Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Earth</strong></a>&nbsp;damage. The floor of the approach was not built for this.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Multi</strong></a><strong>&nbsp;3</strong></p></li></ul><p>The Iron Colossus stamps the ground. Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Earth</strong></a>&nbsp;damage.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {},
