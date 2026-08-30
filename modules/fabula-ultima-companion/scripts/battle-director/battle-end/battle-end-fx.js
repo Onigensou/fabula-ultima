@@ -5,6 +5,7 @@
 // then starts victory BGM by name, then broadcasts a camera pan to all clients.
 
 import { log, warn } from "../logger.js";
+import { stageOf, resolveIntent, clampToCanvas } from "../director-camera.js";
 import { stopBattleBgm } from "../director-vfx.js";
 import { pWait } from "../presentation-clock.js";
 
@@ -71,10 +72,16 @@ function installInputLock() {
 async function runLocalCameraFx(plan) {
   const unlock = installInputLock();
   try {
-    if (!plan?.target) return;
+    // Resolve the stage-space intent against THIS client's viewport, then
+    // clamp so the shot can never leave the artwork. `target` stays honoured
+    // as a fallback for any caller still building an absolute view.
+    const view = plan?.intent ? resolveIntent(plan.intent)
+               : plan?.target ? clampToCanvas(plan.target)
+               : null;
+    if (!view) return;
     const timeoutMs = Math.max(1000, plan.durationMs + 1500);
     await Promise.race([
-      canvas.animatePan({ x: plan.target.x, y: plan.target.y, scale: plan.target.scale, duration: plan.durationMs }),
+      canvas.animatePan({ x: view.x, y: view.y, scale: view.scale, duration: plan.durationMs }),
       wait(timeoutMs),
     ]);
     await wait(plan.holdMs);
@@ -115,11 +122,27 @@ export async function runBattleEndFx(endCtx) {
 
   const token  = candidates[Math.floor(Math.random() * candidates.length)];
   const center = token.center;
+  const stage  = stageOf(canvas.scene);
+
+  // Stage-space intent, not an absolute view.
+  //
+  // The old form baked in a +220px offset and scale 1.7 — numbers measured
+  // against a 1682-wide scene on one particular monitor — and broadcast them
+  // verbatim, so a player on a smaller window got a different shot. Worse, on
+  // a 1682-wide canvas that pan sails several hundred pixels past the right
+  // edge into the void, because Foundry's own constraint lets the pivot travel
+  // 0.4 of a viewport beyond the map.
+  //
+  // OFFSET_FRAC and ZOOM reproduce the INTENDED framing (220/1682 of the stage
+  // width; 1.7 against the legacy 1.142 rest scale is ~1.5x) and each client
+  // resolves and clamps it against its own viewport.
+  const OFFSET_FRAC = 220 / 1682;
+  const ZOOM = 1.5;
   const plan   = {
     runId:      makeRunId("battleend_fx_cam"),
     durationMs: 3200,
     holdMs:     450,
-    target:     { x: Math.floor(center.x + 220), y: Math.floor(center.y), scale: 1.7 },
+    intent:     { point: { x: center.x + stage.w * OFFSET_FRAC, y: center.y }, zoom: ZOOM },
   };
 
   // Broadcast to all clients so everyone pans
@@ -127,7 +150,7 @@ export async function runBattleEndFx(endCtx) {
     game.socket.emit(SOCKET_CHANNEL, {
       type: "ONI_BATTLEEND_FX_CAMERA",
       sceneId: canvas.scene?.id ?? "",
-      payload: { lockId: plan.runId, durationMs: plan.durationMs, holdMs: plan.holdMs, target: plan.target },
+      payload: { lockId: plan.runId, durationMs: plan.durationMs, holdMs: plan.holdMs, intent: plan.intent },
     });
   } catch (e) {
     warn("[BattleEnd:FX] Socket emit failed:", e);

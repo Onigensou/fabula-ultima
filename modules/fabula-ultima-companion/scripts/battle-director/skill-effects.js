@@ -18,6 +18,7 @@
 //   isPassive, resolvedTargets (Map, mutated as resolution proceeds).
 
 import { log, warn } from "./logger.js";
+import { stageOf } from "./director-camera.js";
 import { evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, applyAdjustOp, readAdjustment, applyHealReceiving } from "./skill-formulas.js";
 import { pickFromList } from "./list-picker.js";
 // The amount selector lives in its own leaf module so remote-pick can render it
@@ -9343,7 +9344,10 @@ async function applySummonEffect(row, ctx) {
     const ch = (casterTok.height ?? 1) * grid;
     const casterCx = casterTok.x + cw / 2;
     const casterCy = casterTok.y + ch / 2;
-    const towardCenter = (scene.width / 2) >= casterCx ? 1 : -1; // face the centre
+    // Face the STAGE centre, not the canvas centre: on a v2 conflict scene the
+    // canvas is wider than the play area, so its midpoint sits off the stage.
+    const stage = stageOf(scene);
+    const towardCenter = (stage.x + stage.w / 2) >= casterCx ? 1 : -1;
     spawnAnchor = { x: casterCx + towardCenter * grid * 1.15, y: casterCy };
   }
 

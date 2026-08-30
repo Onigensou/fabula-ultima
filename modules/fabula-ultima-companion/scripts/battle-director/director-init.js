@@ -24,6 +24,7 @@
 // end can find and remove them.
 
 import { log, warn, err } from "./logger.js";
+import { stageOf, hasStageRect, restViewFor } from "./director-camera.js";
 import { buildDirectorCombat } from "./director-combat.js";
 import { DIRECTOR_STATIC_URLS, playBattleStartTransition, playBattleBgm, stopBattleBgm, preloadDirectorSfx } from "./director-vfx.js";
 import { preloadDirectorCutins } from "./director-cutin.js";
@@ -450,8 +451,16 @@ async function resolveParty(payload) {
 }
 
 // ─── Layout ────────────────────────────────────────────────────────────
-// Scene 1682x788 reference, grid ref 110. Other scenes scale proportionally
-// via sx/sy in computeLayout.
+// Stage 1682x788 reference, grid ref 110. Anchors scale proportionally to
+// the scene's STAGE rect via sx/sy in computeLayout, and are offset by the
+// stage origin.
+//
+// The stage is NOT necessarily the scene. A v2 conflict scene is larger than
+// its play area — the surplus is painted bleed the camera moves into — and it
+// declares the play area with flags[NS].conflict.stage. A legacy scene has no
+// flag, so its stage IS its full rect, sx/sy collapse to 1 and the origin to
+// (0,0), and every anchor below lands exactly where it always has. See
+// director-camera.js.
 //
 // Party on right: base anchors (1202, 162) → (1367, 492). The diagonal
 // goes ~71%→81% across the scene width, mirroring the monster wedge on
@@ -478,15 +487,15 @@ function scaleSegmentAroundMidpoint(a, b, scale) {
 }
 
 function computeLayout({ party, enemies, scene }) {
-  const sceneWidth = scene?.width ?? 1682;
-  const sceneHeight = scene?.height ?? 788;
+  const stage = stageOf(scene);
   const grid = scene?.grid?.size ?? 110;
 
-  // Scale all reference points relative to the assumed 1682x788 base so we
-  // work on differently-sized scenes too.
-  const sx = sceneWidth / 1682;
-  const sy = sceneHeight / 788;
-  const scaledPoint = (x, y) => ({ x: x * sx, y: y * sy });
+  // Scale all reference points relative to the assumed 1682x788 base, then
+  // translate into canvas space by the stage origin. On a legacy scene the
+  // stage is the whole rect, so this is scale 1 / offset 0 — identity.
+  const sx = stage.w / 1682;
+  const sy = stage.h / 788;
+  const scaledPoint = (x, y) => ({ x: stage.x + x * sx, y: stage.y + y * sy });
 
   // Base reference points. Party diagonal sits on the right side of the
   // scene (action-card-clear, menu-room-clear); enemy column on the left.
@@ -588,14 +597,18 @@ export async function spawnLiveDirectorTokens({ scene, actorUuids, disposition, 
   // Anchor mode: start at the caster-relative point and fan toward screen centre
   // (left-of-centre → fan right, right-of-centre → fan left). Formation mode:
   // the classic top-quarter corner (enemies left/fan-right, party right/fan-left).
+  // Corner + bounds come from the STAGE, not the scene: on a v2 scene the
+  // surplus canvas is bleed, and a token stacked into it would sit outside the
+  // play area (and outside the stage walls). Legacy scenes have stage === rect.
+  const stage = stageOf(scene);
   const baseX = useAnchor
     ? Math.round(anchor.x)
-    : Math.round(scene.width * (disposition === -1 ? 0.16 : 0.82));
+    : Math.round(stage.x + stage.w * (disposition === -1 ? 0.16 : 0.82));
   const baseY = useAnchor
     ? Math.round(anchor.y)
-    : Math.round(scene.height * 0.26);
+    : Math.round(stage.y + stage.h * 0.26);
   const dir = useAnchor
-    ? (anchor.x <= scene.width / 2 ? 1 : -1)
+    ? (anchor.x <= stage.x + stage.w / 2 ? 1 : -1)
     : (disposition === -1 ? 1 : -1); // enemies fan right, party fans left
 
   // Occupied token CENTERS (every existing token + ones we place this call), so
@@ -612,12 +625,12 @@ export async function spawnLiveDirectorTokens({ scene, actorUuids, disposition, 
       for (let row = 0; row < 8; row++) {
         const x = baseX + col * step * dir;
         const y = baseY + row * step;
-        if (x < grid || x > scene.width - grid || y > scene.height - grid) continue;
+        if (x < stage.x + grid || x > stage.x + stage.w - grid || y > stage.y + stage.h - grid) continue;
         if (occupied.some((o) => Math.abs(o.x - x) < grid * 0.7 && Math.abs(o.y - y) < grid * 0.7)) continue;
         return { x, y };
       }
     }
-    return { x: baseX, y: Math.min(scene.height - grid, baseY) };
+    return { x: baseX, y: Math.min(stage.y + stage.h - grid, baseY) };
   };
 
   const out = [];
@@ -1181,6 +1194,31 @@ export async function runDirectorInit(payload) {
     if (!battleScene.active) {
       try { await battleScene.activate(); } catch (e) { warn("battleScene.activate threw", e); }
     }
+  }
+
+  // ── 5b. Rest framing (v2 stage scenes only).
+  //
+  // A v2 scene has bleed around its stage, so the scene's stored `initial`
+  // view is the wrong thing to open on — it would either show the bleed or
+  // crop the stage, and being an absolute scale it frames differently on
+  // every client's window. restViewFor() contains the stage in THIS client's
+  // viewport instead, so every player opens on the same stage framing with
+  // the bleed filling whatever their aspect ratio leaves over.
+  //
+  // Gated on the flag: a legacy scene keeps using its authored `initial`,
+  // which is what its 1.3 was hand-tuned for. Changing that would reframe all
+  // fifteen existing arenas for no gain.
+  if (hasStageRect(battleScene)) {
+    try {
+      const v = restViewFor(battleScene);
+      if (v) {
+        battleScene._viewPosition = { x: v.x, y: v.y, scale: v.scale };
+        if (canvas?.ready && canvas.scene?.id === battleScene.id) {
+          canvas.pan({ x: v.x, y: v.y, scale: v.scale });
+        }
+        log("Rest framing applied (v2 stage scene)", v);
+      }
+    } catch (e) { warn("restViewFor threw (continuing)", e); }
   }
 
   // ── 6. Compute layout (party right, enemies left).

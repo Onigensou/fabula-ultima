@@ -62,7 +62,12 @@ Hooks.once("ready", () => {
     try {
       if (canvas?.scene?.id === sceneId && canvas?.animatePan) {
         const dur = Math.max(0, safeNumber(durationMs, 0));
-        await canvas.animatePan({ x, y, scale, duration: dur });
+        // Clamp against THIS client's viewport before panning — the broadcast
+        // values were captured on the sender's window, which may be larger.
+        // Classic script, so no import: reach the helper via the published API.
+        let v = { x, y, scale };
+        try { v = globalThis.FUCompanion?.api?.camera?.clampToCanvas?.(v) ?? v; } catch (_) {}
+        await canvas.animatePan({ x: v.x, y: v.y, scale: v.scale, duration: dur });
         log("animatePan applied (current view) ✅", { sceneId, dur });
       }
     } catch (e) {

@@ -109,11 +109,29 @@ Hooks.once("ready", () => {
     async function runCameraFx(payload) {
     const lockId = String(payload?.lockId ?? "default");
     const durationMs = Number(payload?.durationMs ?? 3000);
-    const target = payload?.target ?? null;
 
     if (!canvas?.scene) {
       log("No canvas.scene, cannot run camera FX.");
       return;
+    }
+
+    // The sender broadcasts a stage-space INTENT (a point plus a zoom factor
+    // relative to this scene's rest framing) rather than an absolute view,
+    // because every client has a different window size — an absolute
+    // {x,y,scale} frames differently on each one, and the smallest window
+    // reaches the edge of the artwork first.
+    //
+    // This file ships as a classic script in module.json, so it cannot import
+    // director-camera. It reaches the same helpers through the published API;
+    // if that is somehow missing we fall back to the raw target rather than
+    // skipping the shot, which is the pre-v2 behaviour.
+    const cam = globalThis.FUCompanion?.api?.camera ?? null;
+    let target = payload?.target ?? null;
+    if (payload?.intent && cam?.resolveIntent) {
+      try { target = cam.resolveIntent(payload.intent); }
+      catch (e) { console.warn(`${tag} resolveIntent failed; falling back`, e); }
+    } else if (target && cam?.clampToCanvas) {
+      try { target = cam.clampToCanvas(target); } catch (_) {}
     }
 
     installCameraLockOverlay(lockId);

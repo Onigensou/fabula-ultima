@@ -13,6 +13,7 @@
 // Both viewports are captured at PREP time and passed via endCtx.
 
 import { log, warn } from "../logger.js";
+import { clampToCanvas } from "../director-camera.js";
 
 const MODULE_ID      = "fabula-ultima-companion";
 const SOCKET_CHANNEL = `module.${MODULE_ID}`;
@@ -125,7 +126,15 @@ export async function runBattleEndTransition(endCtx) {
     //    If missing or mismatched, skip (let Foundry restore whatever it has).
     const cam = (preBattleCamera?.sceneId === returnSceneId) ? preBattleCamera : null;
     if (cam) {
-      const { x, y, scale } = cam;
+      // Clamp before restoring. The stored viewport is a live pivot captured
+      // on this scene, so it is normally already legal — but it was captured
+      // on the GM's window, and a player restoring it on a smaller one can
+      // find it out of bounds.
+      let { x, y, scale } = cam;
+      try {
+        const v = clampToCanvas({ x, y, scale });
+        if (v) ({ x, y, scale } = v);
+      } catch (_) {}
       try {
         canvas.animatePan({ x, y, scale, duration: 300 });
         if (canvas.scene) canvas.scene._viewPosition = { x, y, scale };
