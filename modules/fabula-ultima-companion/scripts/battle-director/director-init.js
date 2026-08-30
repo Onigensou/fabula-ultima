@@ -24,7 +24,7 @@
 // end can find and remove them.
 
 import { log, warn, err } from "./logger.js";
-import { stageOf, hasStageRect, restViewFor } from "./director-camera.js";
+import { stageOf, hasStageRect, restViewFor, settleRestFraming } from "./director-camera.js";
 import { buildDirectorCombat } from "./director-combat.js";
 import { DIRECTOR_STATIC_URLS, playBattleStartTransition, playBattleBgm, stopBattleBgm, preloadDirectorSfx } from "./director-vfx.js";
 import { preloadDirectorCutins } from "./director-cutin.js";
@@ -1269,6 +1269,20 @@ export async function runDirectorInit(payload) {
   // positioned but still alpha=0 (invisible) underneath the curtain; the
   // entrance animation reveals them next. The party run-in animates its own
   // (cheap, ~4) WEBM sprite copies; enemy stance loops start at step 10b.
+  // ── 8.5. Re-assert rest framing while the screen is still black.
+  //
+  // Step 5b set it, but on a COLD draw of a v2 arena the artwork is still
+  // downloading and other canvasReady consumers — LockView reassigns
+  // Canvas.prototype.pan and re-applies its own view — land AFTER us instead
+  // of before. Observed live: the first launch of this arena settled at scale
+  // 1.1719 instead of 1.1415 and cropped ~22px off each side of the stage,
+  // while the second and third launches (texture cached) were correct. This is
+  // the last moment nothing is visible, so it is the right place to win.
+  if (hasStageRect(battleScene)) {
+    try { await settleRestFraming(battleScene); }
+    catch (e) { warn("settleRestFraming threw (continuing)", e); }
+  }
+
   if (!lean) await dropCurtain();
 
   // Short settle delay so the curtain fade completes visually before

@@ -236,6 +236,43 @@ export async function panTo(view, { duration = 500, scene = null } = {}) {
   return v;
 }
 
+/**
+ * Apply rest framing and make it stick.
+ *
+ * Setting the view once is not enough on a COLD scene draw. Other canvasReady
+ * consumers pan too — LockView in particular reassigns Canvas.prototype.pan
+ * and re-applies its own view from a `canvasReady` handler — and on the first
+ * ever draw of an arena the artwork is still downloading, so those handlers
+ * land AFTER the director's pan instead of before it. Observed live: the first
+ * launch of a new 2560x1270 arena settled at scale 1.1719 instead of 1.1415,
+ * cropping ~22px off each side of the stage; the second and third launches,
+ * with the texture cached, won the race and were correct. A race that only
+ * shows up on a cold load is exactly the one that will hit a player and not
+ * the GM who authored the scene.
+ *
+ * Rather than depend on ordering, assert the framing and check it held. Cheap
+ * (one pan, one comparison) and indifferent to who else is panning.
+ */
+export async function settleRestFraming(scene, { attempts = 3, gapMs = 220 } = {}) {
+  if (!hasStageRect(scene)) return null;
+  const c = globalThis.canvas;
+  let want = null;
+  for (let i = 0; i < attempts; i++) {
+    want = restViewFor(scene);
+    try { scene._viewPosition = { x: want.x, y: want.y, scale: want.scale }; } catch (_) {}
+    if (!c?.ready || c.scene?.id !== scene.id) return want;
+    try { c.pan({ x: want.x, y: want.y, scale: want.scale }); } catch (_) {}
+    if (i === attempts - 1) break;
+    await new Promise((r) => setTimeout(r, gapMs));
+    const s = c.stage?.scale?.x, px = c.stage?.pivot?.x, py = c.stage?.pivot?.y;
+    const held = Math.abs(s - want.scale) < 1e-3
+              && Math.abs(px - want.x) < 1
+              && Math.abs(py - want.y) < 1;
+    if (held) break;
+  }
+  return want;
+}
+
 /** Snap (no animation) — used when restoring a remembered viewport. */
 export function panSnap(view, { scene = null } = {}) {
   const c = globalThis.canvas;
@@ -257,7 +294,7 @@ export function panSnap(view, { scene = null } = {}) {
 // finds no API silently falls back to unclamped panning.
 
 export const CameraApi = {
-  stageOf, hasStageRect, restViewFor, clampToCanvas, resolveIntent,
+  stageOf, hasStageRect, restViewFor, settleRestFraming, clampToCanvas, resolveIntent,
   panTo, panSnap, viewportOf,
   resolveStage, computeRestView, clampView, focusView,
 };
