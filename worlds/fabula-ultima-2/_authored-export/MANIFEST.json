@@ -4670,7 +4670,7 @@
         "id": "XVOWOq9oUmEECGrU",
         "name": "Debuff",
         "type": "activeEffectContainer",
-        "effects": 54
+        "effects": 56
       },
       {
         "id": "ZnzHJ5RiISPz0Bll",
@@ -16054,6 +16054,26 @@
         "effects": 1
       },
       {
+        "id": "tJCXrTtfLkrN9E57",
+        "name": "Dragon Guard",
+        "type": "character",
+        "items": [
+          {
+            "id": "aJVIAhwQL1cNYBb7",
+            "name": "Flame Breath"
+          },
+          {
+            "id": "5sJ5sMpp003FLyBG",
+            "name": "Saber"
+          },
+          {
+            "id": "HuoudKM5TQjFuBKI",
+            "name": "Suppressing Sweep"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "p6FjXtbyYL9bTQiW",
         "name": "Drakora",
         "type": "character",
@@ -19147,6 +19167,30 @@
           {
             "id": "LpUX9OQZyZnx1E5L",
             "name": "Vital Sacrifice"
+          }
+        ],
+        "effects": 0
+      },
+      {
+        "id": "wjGqTFMH0Z7yZkZt",
+        "name": "Imp",
+        "type": "character",
+        "items": [
+          {
+            "id": "ygUBr1y0wj6muUyv",
+            "name": "Pitchfork"
+          },
+          {
+            "id": "iezocNcUJeRWRr3P",
+            "name": "Prank"
+          },
+          {
+            "id": "p1OUWt9fz2vvdr6E",
+            "name": "Strip Armor"
+          },
+          {
+            "id": "YFSn8dXPogYPMIJO",
+            "name": "Strip Weapon"
           }
         ],
         "effects": 0
@@ -24432,12 +24476,12 @@
       {
         "id": "hpCzLw5RI4wQNtF7",
         "name": "Fafnir Castle - Encounter",
-        "results": 9
+        "results": 14
       },
       {
         "id": "oVJkUYCxsiHW6guM",
         "name": "Fafnir Castle - Enemies",
-        "results": 6
+        "results": 8
       },
       {
         "id": "y7iU5LWEwxGwrGug",

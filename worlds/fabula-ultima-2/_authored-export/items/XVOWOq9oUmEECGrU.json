@@ -1107,6 +1107,62 @@
       "type": "base"
     },
     {
+      "_id": "CH9mdR17V9Tcr5tM",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781654522107,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Your armor has been taken. It is gone from your inventory until this battle ends.</p>",
+      "disabled": false,
+      "duration": {},
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "CH9mdR17V9Tcr5tM",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.CH9mdR17V9Tcr5tM"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-armor-stripped",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "crossScene": false,
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEF%20DOWN.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEF%20DOWN.png",
+      "name": "Armor Stripped",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
       "_id": "D3F2Clh5RjGtHJDl",
       "_stats": {
         "compendiumSource": null,
@@ -1785,6 +1841,62 @@
         "tags": [
           "debuff"
         ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "hFqpS4SODoIDeZgA",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781654522107,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Your weapon has been taken. It is gone from your inventory until this battle ends.</p>",
+      "disabled": false,
+      "duration": {},
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "hFqpS4SODoIDeZgA",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.hFqpS4SODoIDeZgA"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-weapon-stripped",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "crossScene": false,
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/ATK%20DOWN.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/ATK%20DOWN.png",
+      "name": "Weapon Stripped",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
       },
       "tint": "#ffffff",
       "transfer": false,

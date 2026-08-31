@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "fB2fAXlolioFKFSI",
-  "formula": "1d9",
+  "formula": "1d14",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
   "name": "Fafnir Castle - Encounter",
   "ownership": {
@@ -23,14 +23,29 @@
   "results": [
     {
       "_id": "10t55RI3spejUwmB",
+      "documentId": null,
       "drawn": false,
       "flags": {},
-      "img": "icons/svg/mystery-man.svg",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "range": [
-        9,
-        9
+        14,
+        14
       ],
       "text": "Carlbero",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "A4JaKWcsxzEABmpA",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Imp, Dire Orc, Imp",
       "type": "text",
       "weight": 1
     },
@@ -41,10 +56,24 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "range": [
-        7,
-        7
+        11,
+        11
       ],
       "text": "Dire Orc, Death Gazer, Iron Colossus, Succubus",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "efnTS2Bcc7US4IPW",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Dragon Guard, Dragon Guard",
       "type": "text",
       "weight": 1
     },
@@ -63,14 +92,42 @@
       "weight": 1
     },
     {
+      "_id": "HUWtrOi5L5OI8Lyu",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Imp, Dragon Guard, Iron Colossus, Dragon Guard, Imp",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "ItgzP9KLkhguSoFk",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Imp, Dragon Guard, Imp",
+      "type": "text",
+      "weight": 1
+    },
+    {
       "_id": "jSYm2F6sdcnpSFCU",
       "documentId": null,
       "drawn": false,
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "range": [
-        5,
-        5
+        9,
+        9
       ],
       "text": "Dire Orc, Iron Colossus, Dire Orc",
       "type": "text",
@@ -83,10 +140,24 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "range": [
-        3,
-        3
+        6,
+        6
       ],
       "text": "Dire Orc, Death Gazer, Dire Orc",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "ksp5ucZJEITiWMu9",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Dragon Guard, Death Gazer, Dragon Guard",
       "type": "text",
       "weight": 1
     },
@@ -97,8 +168,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "range": [
-        8,
-        8
+        13,
+        13
       ],
       "text": "Death Gazer, Succubus, Iron Colossus, Succubus, Death Gazer",
       "type": "text",
@@ -111,8 +182,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "range": [
-        2,
-        2
+        4,
+        4
       ],
       "text": "Succubus, Dire Orc, Succubus",
       "type": "text",
@@ -125,8 +196,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "range": [
-        4,
-        4
+        8,
+        8
       ],
       "text": "Death Gazer, Succubus, Death Gazer",
       "type": "text",
@@ -139,8 +210,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "range": [
-        6,
-        6
+        10,
+        10
       ],
       "text": "Succubus, Iron Colossus, Succubus",
       "type": "text",

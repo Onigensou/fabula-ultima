@@ -43,9 +43,22 @@ const IDS = {
   CB_GRAB:     'b7Y9eRcNEGOUthwH',
   CB_SAP:      'sn3eTbtgsHfEm7Y9',
   CB_BREATH:   'YNV6oPSbTyywkT5r',
+  // ── Imp — L50 soldier, gimmick disruptor (Demon, Dark) ─────────────────
+  IM:          "wjGqTFMH0Z7yZkZt",
+  IM_FORK:     "ygUBr1y0wj6muUyv",
+  IM_ARMOR:    "p1OUWt9fz2vvdr6E",
+  IM_WEAPON:   "YFSn8dXPogYPMIJO",
+  IM_PRANK:    "iezocNcUJeRWRr3P",
+  // ── Dragon Guard — L50 soldier, midrange DPS (Humanoid/Dragon, Fire) ───
+  DGD:         "tJCXrTtfLkrN9E57",
+  DGD_SABER:   "5sJ5sMpp003FLyBG",
+  DGD_BREATH:  "aJVIAhwQL1cNYBb7",
+  DGD_SWEEP:   "HuoudKM5TQjFuBKI",
   // ── AEs added to the shared Debuff container ───────────────────────────
   AE_TEMPT:    "x46iKjWCaZylSb9R",   // Deadly Temptation (Charmed rider)
   AE_SPENT:    "3THoUX00A2aDDmrZ",   // Lance Spent (once-per-fight marker)
+  AE_ARMOR:    "CH9mdR17V9Tcr5tM",   // Armor Stripped (Imp marker)
+  AE_WEAPON:   "hFqpS4SODoIDeZgA",   // Weapon Stripped (Imp marker)
 };
 
 // New Actor folder: The Legend of Dragonslayer / Monster / Fafnir Castle.
@@ -90,6 +103,11 @@ const L = {
   shaken:   link("JournalEntry.ImFKpNNGjstom7Q9", "Shaken"),
   poison:   link("Item.tDcCWc67Ary9nVxe", "Poison"),
   grappled: link("JournalEntry.FV8JefaHsehzgXR7", "Grappled"),
+  fire:     link("Item.0sFCVCoM6FRrQP2f", "Fire"),
+  ice:      link("Item.Osq3NN3QCtiW7otU", "Ice"),
+  disarmed: link("JournalEntry.MM2SvLRyVhazkNq3", "Disarmed"),
+  confused: link("JournalEntry.e9wABGGGFg7b9OMD", "Confused"),
+  slow:     link("JournalEntry.HHmYmj7xffQMqtzT", "Slow"),
 };
 const bullets = (...items) => `<ul>${items.map((t) => `<li><p>${t}</p></li>`).join("")}</ul>`;
 const trig = (cond) => `${L.trigger}&nbsp;${cond}`;
@@ -104,6 +122,13 @@ const ICON = {
   ospell:   SK + "Epic%207/show%20-%202025-07-20T213409.361.png",
   charm:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Heart.png",
   domin:    SK + "Epic%207/show%20-%202025-07-20T215904.664.png",
+  // The two Strip markers. DEF/ATK DOWN say what the loss actually costs you,
+  // which is the whole point of the chip — the gear is gone from the sheet, so
+  // the icon is the only place the player is told why the numbers moved.
+  defdown:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEF%20DOWN.png",
+  atkdown:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/ATK%20DOWN.png",
+  // Disarmed's own icon, reused by Prank (which inflicts it).
+  dismantle: SK + "FFXIVIcons%20Battle(PvE)/12_MCH/dismantle.png",
 };
 
 // ── art ────────────────────────────────────────────────────────────────────
@@ -121,6 +146,18 @@ const ART = {
   // Bestiary format, so all eight image fields resolve rather than rendering a
   // blank mystery-man on the sheet, the token and the four BD art fields.
   CB: BEST + "BanditShroom_Standard.png",
+  // No Imp and no draconic-humanoid sprite on the Forge (probed 2026-08-31:
+  // Imp / Gremlin / Devil / Pixie / Lizardman / Draconian / Drake / Wyvern /
+  // DragonGuard / Knight all 404). Stand-ins from the existing Bestiary, same
+  // reasoning as CB: a real sprite in the right format beats an svg that would
+  // render as a blank mystery-man across all eight image fields.
+  //   Dark Soul — small, dark, not-quite-corporeal. Right element and scale.
+  //   O'zealot  — an armoured humanoid warrior. Right silhouette for a castle
+  //               guardsman, and already in use by the O'zealot duo, which is
+  //               the accepted cost of a stand-in (Bandit Shroom is likewise a
+  //               live monster).
+  IM:  BEST + "Dark_Soul_Standard.png",
+  DGD: BEST + "O%27zealot_Standard.png",
   HF: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Princess%20Hilde/Hilde_Standard.png",
 };
 
@@ -136,7 +173,13 @@ const ART = {
 // CB 2.2 is a DELIBERATE placement in the elite band (2.1-2.5), not a tuned
 // value — it is a stand-in sprite, so it needs the Training Ground eyeball pass
 // once the real Carlbero art lands. Better than 1.0, which would read as chaff.
-const SCALE = { DG: 1.26, DO: 1.84, IC: 2.77, SU: 1.04, HF: 1.0, CB: 2.2 };
+// IM 0.95 / DGD 1.60 are DELIBERATE band placements on stand-in sprites, not
+// tuned values — both still want the Training Ground eyeball pass once real art
+// lands. The Imp sits below the party's 1.44-1.56 human yardstick on purpose
+// (it is a knee-high pest, and Succubus's 1.04 is the precedent for going
+// under); the Dragon Guard sits just above it, a disciplined soldier rather
+// than the Dire Orc's 1.84 slab of bruiser.
+const SCALE = { DG: 1.26, DO: 1.84, IC: 2.77, SU: 1.04, HF: 1.0, CB: 2.2, IM: 0.95, DGD: 1.60 };
 
 module.exports = {
   IDS, FOLDER_FAFNIR, FOLDER_MONSTER_ROOT, AE_CONTAINER,
