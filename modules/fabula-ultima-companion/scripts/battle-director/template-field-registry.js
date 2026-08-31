@@ -91,6 +91,7 @@ const ADJUST_GRANT_VIS = `equalText(sameRow("effect_kind",''), "adjust_grant")`;
 // result lands in a chain var for a later row to branch on. Sibling of
 // save_check, which instead rolls N independent per-target saves.
 const GROUP_CHECK_VIS = `equalText(sameRow("effect_kind",''), "group_check")`;
+const SET_OUTCOME_VIS = `equalText(sameRow("effect_kind",''), "set_battle_outcome")`;
 const SAVE_CHECK_VIS  = `equalText(sameRow("effect_kind",''), "save_check")`;
 // contest_check — performer AND target both roll; higher total wins, ties reroll.
 // It borrows save_check's TARGET-side columns (save_attr1/2 name the attributes
@@ -675,6 +676,11 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   ], { tooltip: "group_check: Designated settles leader + helpers in code and fires the rolls at once (correct inside a combat turn). Open hands the party a lobby to pick their own leader and blocks until the GM presses Start — for out-of-combat beats only.", vis: GROUP_CHECK_VIS, defaultValue: "designated" }),
   textCol("gc_leader", "Group Check Leader", { tooltip: "group_check: Actor UUID of the leader, or \"self\" for the creature performing the action (the only portable choice on a shared Common item). Blank = auto-pick the participant with the highest total in the two rolled Attributes.", vis: GROUP_CHECK_VIS }),
   textCol("gc_helper_bonus", "Group Check Helper Bonus", { tooltip: "group_check: bonus added to the leader's Result per helper success (default 1).", vis: GROUP_CHECK_VIS }),
+  selectCol("outcome_value", "Battle Outcome", [
+    { key: "escaped", value: "Escaped — party withdrew, no rewards" },
+    { key: "defeat",  value: "Defeat" },
+    { key: "victory", value: "Victory" },
+  ], { tooltip: "set_battle_outcome: how this conflict is reported at battle end. Author the row BEFORE the leave_combat that empties a side — an emptied party side otherwise infers as a victory.", vis: SET_OUTCOME_VIS, defaultValue: "" }),
   textCol("gc_timeout", "Group Check Timeout (ms)", { tooltip: "group_check: ms before a participant's roll panel auto-confirms. Blank waits indefinitely — set this for anything that runs inside a combat turn so one disconnected player cannot stall it.", vis: GROUP_CHECK_VIS }),
   selectCol("gc_on_error", "Group Check On Error", [
     { key: "fail", value: "Fail — treat as leader FAIL (default)" },
@@ -846,6 +852,8 @@ export const REQUIRED_COLUMNS_BY_TABLE = {
 //   - summon.summon_actor / summon_clone_target — neither is a declared column.
 export const REQUIRED_FIELDS_BY_KIND = {
   adjust_charges:   { all: ["charge_ae_name"],    either: [] },
+  // Rejects any value outside escaped / victory / defeat, blank included.
+  set_battle_outcome: { all: ["outcome_value"],   either: [] },
   chain:            { all: ["chain_steps"],       either: [] },
   consume_charge:   { all: ["charge_key"],        either: [] },
   grant:            { all: ["grant_resource"],    either: [] },

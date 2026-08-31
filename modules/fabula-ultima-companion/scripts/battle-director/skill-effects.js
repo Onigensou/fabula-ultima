@@ -3776,6 +3776,44 @@ async function applyLeaveCombatEffect(row, ctx) {
   return { ok: true, kind: "leave_combat", applied };
 }
 
+// ── set_battle_outcome — declare how this conflict ends ───────────────────
+//
+// Stamps the outcome the battle-end pipeline will report, overriding the
+// victory/defeat inference in battle-end-orchestrator.detectOutcome. The reason
+// this exists is Run Away: `leave_combat` across the party empties the party
+// side, and an EMPTY party side does not satisfy detectOutcome's
+// `party.length > 0 && every defeated` defeat test — so a fleeing party would
+// fall through to "victory" and be handed the full EXP/Zenit prompt.
+//
+// 🪤 ORDER IS LOAD-BEARING. Author this row BEFORE the `leave_combat` that
+// empties the side: removeCombatant calls checkSideWipe synchronously, which
+// ends dCombat, and the battle-end sequence reads the marker from there.
+//
+//   { effect_kind: "set_battle_outcome", outcome_value: "escaped",
+//     condition_formula: "VAR_ESCAPE == 1" }
+//
+// In-memory on dCombat by design: persistence.save returns early once
+// dCombat.ended is set, so there is no reload window between the wipe and the
+// battle-end sequence for a persisted marker to cover.
+const BATTLE_OUTCOMES = new Set(["escaped", "victory", "defeat"]);
+
+async function applySetBattleOutcomeEffect(row, ctx) {
+  const value = String(row.outcome_value ?? "").trim().toLowerCase();
+  if (!BATTLE_OUTCOMES.has(value)) {
+    warn(`skill-effects.set_battle_outcome: outcome_value "${row.outcome_value}" is not one of `
+      + `${[...BATTLE_OUTCOMES].join(" / ")} — row skipped`);
+    return { ok: false, kind: "set_battle_outcome", reason: "bad-outcome" };
+  }
+  const dc = ctx.dCombat ?? ctx.director?.dCombat ?? null;
+  if (!dc) {
+    warn("skill-effects.set_battle_outcome: no live DirectorCombat — nothing stamped");
+    return { ok: false, kind: "set_battle_outcome", reason: "no-dcombat" };
+  }
+  dc.outcomeOverride = value;
+  log(`skill-effects.set_battle_outcome: this conflict will end as "${value}"`);
+  return { ok: true, kind: "set_battle_outcome", applied: [value] };
+}
+
 // ── destroy_summon — remove one of my summons/phantasms from play ──────────
 // The DESTROY half of the summon family. Drops the targeted summon's HP to 0
 // (so the universal creature-defeated emitter fires `creature_defeated` →
@@ -4061,6 +4099,7 @@ const EFFECT_KIND_DISPATCH = {
   consume_resource:    consumeResourceRun,   // UNIFIED (see consumeResourceRun)
   confirm:             applyConfirmEffect,
   leave_combat:        applyLeaveCombatEffect,
+  set_battle_outcome:  applySetBattleOutcomeEffect,
   destroy_summon:      applyDestroySummonEffect,
   add_target:          applyAddTargetEffect,
   save_check:          applySaveCheckEffect,
@@ -4197,6 +4236,7 @@ export const EFFECT_KIND_LABELS = {
   consume_resource:    "Consume Resource",
   confirm:             "Confirm (decision dialog — gate / multi-button)",
   leave_combat:        "Leave Combat (remove self from the conflict)",
+  set_battle_outcome:  "Set Battle Outcome (escaped / victory / defeat — author BEFORE the leave_combat that empties a side)",
   destroy_summon:      "Destroy Summon (shatter/despawn one of my summons)",
   add_target:          "Add Target",
   save_check:          "Save Check (each target rolls vs a DL; failures → save_failed_targets)",
@@ -4406,6 +4446,8 @@ const EFFECT_KIND_PREVIEW = {
   // combatant — neither is a target-facing inline card row.
   confirm: () => null,
   leave_combat: () => null,
+  // Bookkeeping for the battle-end pipeline — nothing to preview on the card.
+  set_battle_outcome: () => null,
   destroy_summon: () => null,
 
   // chain recurses; the profile builder expands sub-steps. No standalone card row.

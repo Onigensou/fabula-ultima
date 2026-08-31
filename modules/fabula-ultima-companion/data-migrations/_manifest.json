@@ -619,6 +619,10 @@
     {
       "key": "2026-07-22-attribute-advance-seed",
       "path": "data-migrations/2026-07-22-attribute-advance-seed.js"
+    },
+    {
+      "key": "2026-08-31-objective-common-author",
+      "path": "data-migrations/2026-08-31-objective-common-author.js"
     }
   ]
 }

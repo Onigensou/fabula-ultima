@@ -109,6 +109,20 @@ export async function ensureCoreActionSkill(game, spec, log = () => {}) {
     touched = true;
   }
 
+  // Extra module flags (spec.flags). Objective options carry their scope + gate
+  // here rather than in system.props: they have no column on the shared
+  // `_Skill Template`, and a props key with no column can be dropped by a CSB
+  // template re-stamp. Flags sit outside that machinery — the same reason
+  // coreAction itself has always been one.
+  if (spec.flags && typeof spec.flags === "object") {
+    for (const [k, v] of Object.entries(spec.flags)) {
+      if ((item.flags?.[MODULE_ID]?.[k] ?? null) === v) continue;
+      await item.setFlag(MODULE_ID, k, v);
+      touched = true;
+      log(`  ${name}: flag ${k} = ${JSON.stringify(v)}`);
+    }
+  }
+
   // Merge spec.props on top of current props (preserve template defaults).
   if (spec.props && typeof spec.props === "object") {
     const baseProps = foundry.utils.deepClone(item.system?.props ?? {});

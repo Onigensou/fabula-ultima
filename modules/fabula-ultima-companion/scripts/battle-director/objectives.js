@@ -146,8 +146,30 @@ function actorIsPc(actor) {
   return !String(actor?.system?.props?.npc_rank ?? "").trim();
 }
 
+// ── Why the option's own metadata lives in FLAGS, not system.props ──────────
+//
+// `objectiveScope` / `objectiveGate` / `objectiveGateReason` are read from
+// `flags["fabula-ultima-companion"]`, exactly like `coreAction`. They are NOT
+// declared columns on the shared `_Skill Template`, and a props key with no
+// column is not safe: a CSB template re-stamp rebuilds props from the template
+// and can drop what it doesn't know about. Flags are outside that machinery
+// entirely — which is why `coreAction` has always been one.
+//
+// props is still read as a fallback so an author who adds real columns later
+// gets them honoured without an engine change.
+function objectiveFlags(item) {
+  return item?.flags?.[MODULE_ID] ?? {};
+}
+
+function objectiveMeta(item, key, propKey) {
+  const f = objectiveFlags(item)[key];
+  if (f != null && String(f).trim() !== "") return String(f).trim();
+  const p = item?.system?.props?.[propKey];
+  return p != null ? String(p).trim() : "";
+}
+
 function defaultScopeAllows(item, actor) {
-  const scope = String(item?.system?.props?.objective_default ?? "all").trim().toLowerCase();
+  const scope = (objectiveMeta(item, "objectiveScope", "objective_default") || "all").toLowerCase();
   if (scope === "none") return false;              // grant-only
   if (scope === "pc")   return actorIsPc(actor);
   if (scope === "npc")  return !actorIsPc(actor);
@@ -161,8 +183,7 @@ function defaultScopeAllows(item, actor) {
 // same shown-not-hidden treatment the Ultima picker and the action-gating blades
 // use). Run's boss gate is authored as `ENEMY_BOSS_COUNT == 0`.
 function gateReasonFor(item, actor) {
-  const props = item?.system?.props ?? {};
-  const formula = String(props.objective_gate_formula ?? "").trim();
+  const formula = objectiveMeta(item, "objectiveGate", "objective_gate_formula");
   if (!formula) return null;
   try {
     const resolver = buildSkillResolver({ actor, payload: null, skill: item, round: 0 });
@@ -172,7 +193,7 @@ function gateReasonFor(item, actor) {
     warn(`objectives: gate formula on "${item?.name}" threw — treating as open`, e);
     return null;
   }
-  return String(props.objective_gate_reason ?? "").trim() || "Unavailable";
+  return objectiveMeta(item, "objectiveGateReason", "objective_gate_reason") || "Unavailable";
 }
 
 function costInfoFor(item, actor) {

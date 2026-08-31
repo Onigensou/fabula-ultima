@@ -45,6 +45,9 @@ export async function showBattleEndPrompt(endCtx) {
   const defaultBgmName = defaultMode === "victory"
     ? (dbVictoryBgm || "Victory Fanfare")
     : "Defeat Theme";
+  // Escaped runs the defeat-shaped tail (prompt → FX → transition): no summary,
+  // no rank, no rewards. Getting away is not winning.
+  const isEscaped = defaultMode === "escaped";
 
   const returnScene = sourceSceneId ? game.scenes?.get?.(sourceSceneId) : null;
   const defaultReturnSceneId = returnScene?.id ?? "";
@@ -102,12 +105,17 @@ export async function showBattleEndPrompt(endCtx) {
               <span>Defeat</span>
             </label>
             <label style="display:flex;gap:6px;align-items:center;">
+              <input type="radio" name="mode" value="escaped" ${isEscaped ? "checked" : ""}/>
+              <span>Escaped</span>
+            </label>
+            <label style="display:flex;gap:6px;align-items:center;">
               <input type="radio" name="mode" value="debug" />
               <span>Debug</span>
             </label>
           </div>
           <div style="opacity:0.75;font-size:12px;margin-top:4px;">
             Auto-detected from battle state. Victory enables EXP + Zenit + Summary UI.
+            Escaped returns to the scene with no rewards — the party got away, they didn't win.
             Debug returns to the scene with no animation, music, or rewards.
           </div>
         </div>
@@ -206,15 +214,23 @@ export async function showBattleEndPrompt(endCtx) {
             const playMusic = !debug && fd.get("playMusic") === "on";
             const playAnimation = !debug && fd.get("playAnimation") === "on";
 
+            // Escaped zeroes rewards on the SAME footing as debug: the party
+            // withdrew, so there is nothing to award regardless of what the
+            // pre-filled fields say.
+            const escaped = mode === "escaped";
+            const noRewards = debug || escaped;
+
             const expByActorId = {};
             const zenitByActorId = {};
             for (const id of partyActorIds) {
-              expByActorId[id]   = debug ? 0 : safeNumber(fd.get(`exp_${id}`), 0);
-              zenitByActorId[id] = debug ? 0 : safeInt(fd.get(`zenit_${id}`), 0);
+              expByActorId[id]   = noRewards ? 0 : safeNumber(fd.get(`exp_${id}`), 0);
+              zenitByActorId[id] = noRewards ? 0 : safeInt(fd.get(`zenit_${id}`), 0);
             }
 
             // Debug returns to the scene like a victory, but skips the reward pipeline.
-            const outcome = debug ? "victory" : (mode === "defeat" ? "defeat" : "victory");
+            const outcome = debug ? "victory"
+              : escaped ? "escaped"
+              : (mode === "defeat" ? "defeat" : "victory");
 
             log("[BattleEnd:Prompt] Confirmed", { mode, outcome, debug, returnSceneId, bgmName });
             settleWith({
@@ -265,22 +281,29 @@ export async function showBattleEndPrompt(endCtx) {
       applyPreview(defaultReturnSceneId);
       sel?.addEventListener("change", ev => applyPreview(String(ev?.target?.value ?? "")));
 
-      // Debug mode visually forgoes music, animation, and rewards.
+      // Debug forgoes music, animation, and rewards. Escaped keeps the music and
+      // the transition (the party is going somewhere) but zeroes the rewards, so
+      // the two modes share the reward half and differ on the presentation half.
       const music = root.querySelector('input[name="playMusic"]');
       const anim  = root.querySelector('input[name="playAnimation"]');
       const rewardInputs = root.querySelectorAll('input[name^="exp_"], input[name^="zenit_"]');
       function applyMode(mode) {
         const debug = mode === "debug";
+        const noRewards = debug || mode === "escaped";
         if (music) { music.checked = !debug; music.disabled = debug; }
         if (anim)  { anim.checked  = !debug; anim.disabled  = debug; }
         rewardInputs.forEach(inp => {
-          inp.disabled = debug;
-          if (debug) inp.value = "0";
+          inp.disabled = noRewards;
+          if (noRewards) inp.value = "0";
         });
       }
       root.querySelectorAll('input[name="mode"]').forEach(r =>
         r.addEventListener("change", ev => applyMode(String(ev?.target?.value ?? "")))
       );
+      // Reflect the auto-detected mode immediately — an escaped battle should
+      // open with its reward fields already zeroed and locked, not require a
+      // click on the radio that is already checked to get there.
+      applyMode(defaultMode);
     }, 0);
   });
 }
