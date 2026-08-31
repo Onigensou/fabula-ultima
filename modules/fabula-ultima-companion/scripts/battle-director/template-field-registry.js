@@ -673,7 +673,7 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
     { key: "designated", value: "Designated — no lobby, rolls immediately" },
     { key: "open",       value: "Open — opens the lobby, BLOCKS until GM starts" },
   ], { tooltip: "group_check: Designated settles leader + helpers in code and fires the rolls at once (correct inside a combat turn). Open hands the party a lobby to pick their own leader and blocks until the GM presses Start — for out-of-combat beats only.", vis: GROUP_CHECK_VIS, defaultValue: "designated" }),
-  textCol("gc_leader", "Group Check Leader", { tooltip: "group_check: Actor UUID of the leader. Blank = auto-pick the participant with the highest total in the two rolled Attributes.", vis: GROUP_CHECK_VIS }),
+  textCol("gc_leader", "Group Check Leader", { tooltip: "group_check: Actor UUID of the leader, or \"self\" for the creature performing the action (the only portable choice on a shared Common item). Blank = auto-pick the participant with the highest total in the two rolled Attributes.", vis: GROUP_CHECK_VIS }),
   textCol("gc_helper_bonus", "Group Check Helper Bonus", { tooltip: "group_check: bonus added to the leader's Result per helper success (default 1).", vis: GROUP_CHECK_VIS }),
   textCol("gc_timeout", "Group Check Timeout (ms)", { tooltip: "group_check: ms before a participant's roll panel auto-confirms. Blank waits indefinitely — set this for anything that runs inside a combat turn so one disconnected player cannot stall it.", vis: GROUP_CHECK_VIS }),
   selectCol("gc_on_error", "Group Check On Error", [

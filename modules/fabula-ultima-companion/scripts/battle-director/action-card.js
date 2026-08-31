@@ -5325,6 +5325,7 @@ export function composeActionCardObject({ kind, payload }) {
     case "Hinder":    return buildHinderCard(payload);
     case "Equipment": return buildEquipmentCard(payload);
     case "Skill":
+    case "Objective": // skill-shaped: backing Item, optional Check, effect_table
     case "Item":      return buildSkillCard(payload);
     case "Domination":
     case "Escape":
@@ -5388,7 +5389,10 @@ export function composeActionCardRenderPayload(ar) {
 // spec-not-HTML pattern reaction menus + the HUD already use). Equipment (needs the
 // live actor for its swap dropdowns) and Item (interactive tabs/rows) + any unknown
 // kind stay on the HTML path.
-const ACTION_CARD_LOCAL_RENDER_KINDS = new Set(["Attack", "Guard", "Study", "Hinder", "Skill"]);
+// "Objective" is included: it renders through buildSkillCard from the same
+// serializable snapshot fields a Skill does (backing Item resolved GM-side into
+// skillName/skillImg/roll/targets), so a mirror client can rebuild it locally.
+const ACTION_CARD_LOCAL_RENDER_KINDS = new Set(["Attack", "Guard", "Study", "Hinder", "Skill", "Objective"]);
 
 // Display-only projection of a reaction candidate — exactly the fields
 // buildReactionPills reads. The full candidate carries GM-only resolution state

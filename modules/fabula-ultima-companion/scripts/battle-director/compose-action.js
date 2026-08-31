@@ -47,6 +47,7 @@ import { resolveTargetPlan } from "./target-survey.js";
 import { freeActions } from "./free-actions.js";
 import { getNpcAttackItems } from "./actor-shape.js";
 import { buildUltimaMenuSpec } from "./domination.js";
+import { buildObjectiveMenuSpec } from "./objectives.js";
 import { pickFromList } from "./list-picker.js";
 import { applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, snapshotEligibleTargetsFromDCombat,
          attackRangeBlockedBy } from "./snapshot.js";
@@ -106,6 +107,12 @@ export async function composeAction({
   // singleton is not visible on the player's client). GM-side falls
   // through to the local registry.
   freeActionGrant = null,
+  // Objective options for this creature, pre-computed by DECLARE. Travels in
+  // the menuSpec for the same reason `eligible` does: the list needs world
+  // Items + the battle plan, and the player's client has no dCombat. Null on a
+  // path that didn't compute it — the blade then greys with a reason rather
+  // than opening an empty picker. See [[objectives.js]].
+  objectives = null,
 }) {
   if (!snap) return { cancelled: true, reason: "no snap" };
   if (!token) return { cancelled: true, reason: "no token" };
@@ -161,13 +168,21 @@ export async function composeAction({
     const ultimaDisabled = ultimaSpec?.buttonDisabledReason
       ? [{ label: "Ultima", reason: ultimaSpec.buttonDisabledReason }]
       : [];
+    // Objective blade. Unlike Ultima the blade is always rendered; an empty or
+    // fully-unusable list greys it with a reason. Inside a free-action window the
+    // list is still offered (the grant's own enabledLabels decides whether the
+    // blade is clickable at all), so no grant-gate here.
+    const objectiveSpec = buildObjectiveMenuSpec(objectives ?? []);
+    const objectiveDisabled = objectiveSpec.buttonDisabledReason
+      ? [{ label: "Objective", reason: objectiveSpec.buttonDisabledReason }]
+      : [];
     const command = await waitForOctopathClick({
       director, token, combatId, actorUuid, cancelSentinel,
       enabledLabels: grant?.enabledLabels ?? null,
       budgetText: grant ? `${grant.sourceLabel ?? "Free"} Free Action` : null,
       // Action-gating debuffs (Frightened/Silence/…) — frozen Array<{label,
       // reason}> captured at snapshot time; the menu greys + red-stamps these.
-      disabledLabels: [...(snap?.blockedActions ?? []), ...ultimaDisabled],
+      disabledLabels: [...(snap?.blockedActions ?? []), ...ultimaDisabled, ...objectiveDisabled],
       showUltima: !!ultimaSpec,
     });
     if (externallyCancelled || command === null) break;
@@ -235,6 +250,12 @@ export async function composeAction({
         // like Skill. After this the consumable flows through the one pipeline
         // (TARGET→COMPUTE→CONFIRM→resolveAction) with no Item-specific path.
         result = await composeItem({ director, snap, eligible, cancelSentinel });
+        break;
+      case "Objective":
+        // ONE command; the picked option travels as `objectiveId` on the bundle
+        // (the Item pattern), so TARGET/COMPUTE/CONFIRM/RESOLVE stay shared and
+        // content can extend the list without touching the FSM.
+        result = await composeObjective({ director, snap, objectiveSpec, cancelSentinel });
         break;
       case "Ultima":
         // Boss Ultima menu — ListPicker over the three Ultima actions. The
@@ -357,6 +378,10 @@ export function registerPlayerComposeActionHandler(channel, isActiveDirector = (
         // GM client), so we pass it through explicitly. Drives the
         // Octopath filter + budget label.
         freeActionGrant: menuSpec.freeActionGrant ?? null,
+        // Same reasoning as `eligible`: the Objective pool is derived from world
+        // Items + the battle plan, neither of which this client can see, so the
+        // GM ships the resolved rows. The pick is re-validated GM-side anyway.
+        objectives: menuSpec.objectives ?? null,
       });
 
       // If the active session changed while we were composing, drop this
@@ -1193,6 +1218,51 @@ async function composeGuard({ director, snap, eligible, cancelSentinel }) {
 // from buildUltimaMenuSpec (costs + per-row shortfall reasons); a disabled
 // row stays visible with its reason appended so the GM can see WHY (mirrors
 // the dimmed-entry style of the intent-filtered skill picker).
+// Objective picker. Deliberately unlike composeUltima in ONE respect: the picked
+// row does NOT become the bundle's command. The command stays "Objective" and the
+// choice rides `objectiveId`, so a runtime-granted option needs no FSM branch of
+// its own. The GM re-derives and re-validates that id against the live actor at
+// DECLARE before anything is spent — a player client's bundle is never trusted.
+async function composeObjective({ director, snap, objectiveSpec, cancelSentinel }) {
+  const rows = objectiveSpec?.rows ?? [];
+  if (!rows.length) {
+    ui.notifications?.info(`${snap?.name ?? "This creature"} has no Objective actions available.`);
+    return { cancelled: true, reason: "no objectives" };
+  }
+  const picked = await raceCancel(
+    pickFromList({
+      director,
+      title: "Objective Actions",
+      subtitle: `${snap.name} • costs your action`,
+      width: 460,
+      options: rows.map((r) => ({
+        value: r.id,
+        primary: r.name,
+        secondary: r.disabledReason
+          ? `${stripHtml(r.desc)} <span style="color:#c81010; font-weight:800;">— ${r.disabledReason}</span>`
+          : stripHtml(r.desc),
+        imageUrl: r.img,
+        badge: r.cost || undefined,
+        disabled: !!r.disabledReason,
+        tooltip: r.desc || undefined,
+      })),
+      externalCancel: cancelSentinel,
+    }),
+    cancelSentinel,
+  );
+  if (!picked) return { cancelled: true, reason: "objective-cancelled" };
+  return { cancelled: false, bundle: { command: "Objective", objectiveId: picked } };
+}
+
+// Option descriptions are authored as CSB rich text. The picker's `secondary`
+// slot is a single line, so flatten the markup rather than letting a <p> or a
+// <ul> break the row's layout. `tooltip` still gets the full HTML.
+function stripHtml(html) {
+  const s = String(html ?? "");
+  if (!s) return "";
+  return s.replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
+}
+
 async function composeUltima({ director, snap, ultimaSpec, cancelSentinel }) {
   const rows = ultimaSpec?.rows ?? [];
   if (!rows.length) return { cancelled: true, reason: "no ultima spec" };

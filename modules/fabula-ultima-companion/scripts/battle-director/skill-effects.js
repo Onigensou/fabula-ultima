@@ -9250,6 +9250,25 @@ async function applyGroupCheckEffect(row, ctx) {
     return Number(p[`${k}_current`] ?? p[`${k}_base`] ?? 0) || 0;
   };
   let leaderUuid = String(row.gc_leader ?? "").trim();
+  // `self` sentinel — the creature performing the action leads. A shared Common
+  // item (Run Away) cannot hardcode an Actor UUID, and the auto-pick fallback
+  // below would hand leadership to whoever has the best dice instead of to the
+  // creature spending its turn. Resolved against the SAME actor identity the
+  // participants were deduped by, so the membership test below is meaningful.
+  if (/^(self|performer|leader_self)$/i.test(leaderUuid)) {
+    const selfUuid = String(ctx.reactorActor?.uuid ?? ctx.reactorToken?.actor?.uuid ?? "").trim();
+    if (selfUuid && actorByUuid.has(selfUuid)) {
+      leaderUuid = selfUuid;
+    } else {
+      // Loud, not silent: an author who asked for "self" and got the best roller
+      // instead has a Check that reads correctly in the log and plays wrong. The
+      // usual cause is a participant pool that excludes the performer
+      // (`exclude_self: true`, or a category that filters them out).
+      warn(`group_check: gc_leader "self" could not be resolved to a participant `
+        + `(${selfUuid || "no actor on ctx"}) — check the target_ref pool includes the performer. Auto-picking.`);
+      leaderUuid = "";
+    }
+  }
   if (!leaderUuid || !actorByUuid.has(leaderUuid)) {
     if (leaderUuid) warn(`group_check: gc_leader "${leaderUuid}" is not among the participants — auto-picking`);
     let best = participants[0], bestScore = -1;

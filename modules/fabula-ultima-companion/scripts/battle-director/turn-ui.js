@@ -28,11 +28,16 @@ const STYLE_ID = "fud-turnui-style";
 
 const LEGACY_PAGES = [
   { name: "Actions", items: ["Attack", "Guard", "Skill", "Spell", "Item"] },
-  // Party Swap (legacy "Switch") and Objective hidden until D.6/D.7 ship.
-  // "Passive" is the bottom entry on the System tab — intercepted in the
-  // click handler (it does NOT dispatch DECLARE_COMMAND; it just opens
-  // the parchment Passive Manager overlay for the current combatant).
-  { name: "System",  items: ["Equipment", "Study", "Hinder", "Passive"] }
+  // Party Swap (legacy "Switch") is still hidden. Objective SHIPPED — it opens
+  // a ListPicker over the creature's available options (see objectives.js).
+  // Unlike the boss-only Ultima blade it is always rendered: every creature has
+  // the world defaults, and an empty/unusable list greys the blade with a reason
+  // instead of hiding it, matching the action-gating stamp treatment.
+  //
+  // "Passive" MUST stay the last entry — the Ultima splice below inserts before
+  // it (`p.items.slice(0, -1)`), so anything appended after Passive would land
+  // on the wrong side of that insert.
+  { name: "System",  items: ["Equipment", "Study", "Hinder", "Objective", "Passive"] }
 ];
 
 // Commands that bypass the FSM dispatch — clicking them opens an
