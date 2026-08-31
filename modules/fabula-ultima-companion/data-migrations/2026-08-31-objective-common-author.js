@@ -228,9 +228,97 @@ const CLOCK_INTERACTION = {
   activeEffects: [],
 };
 
+// ── Reveal (Hidden removal) ────────────────────────────────────────────────
+// The Hidden status has always said "You can use an Objective Action to remove
+// the Hidden status from target creature." Until the Objective action existed
+// there was nothing to carry that sentence.
+//
+// Hidden blocks single-target actions, so the target picker would refuse the
+// hidden creature under a single-target spec. `skill_target: "All Enemy"` sweeps
+// instead: you sweep the area, and the remove_ae simply finds nothing when
+// nobody is hidden. That is also why this is not a Check — you are not beating
+// the hider, you are flushing the space.
+const REVEAL = {
+  coreAction: "objective:reveal",
+  name: "Reveal",
+  img: "icons/svg/eye.svg",
+  flags: { objectiveScope: "all" },
+  props: {
+    skill_type: "Active",
+    isCheck: false,
+    isReaction: false,
+    skill_target: "All Enemy",
+    cost: "",
+    max_level: "1",
+    on_activate_effect_ref: "reveal_strip",
+    description:
+      "<p>Sweep the area and drag whoever is skulking in it into the open — " +
+      "every <strong>Hidden</strong> enemy loses the status.</p>",
+    effect_table: {
+      "0": {
+        effect_label: "reveal_strip",
+        effect_kind: "remove_ae",
+        target_ref: "action_targets",
+        ae_template_ref: "Hidden",
+        count: "all",
+      },
+    },
+  },
+  activeEffects: [],
+};
+
+// ── Break Free (Grappled re-attempt) ───────────────────────────────────────
+// The Grappled rules text promises this: "the grappled unit may choose to use
+// the Objective action in their turn to reattempt the check if they do not break
+// free at the start of their turn." state-handlers deferred it in a comment
+// ("until the Objective action ships") — this is that ship.
+//
+// RAW wants any pair containing at least one MIG or DEX die; DEX+MIG satisfies
+// that and needs no picker. The turn-start attempt is still free and unchanged;
+// this is the paid second bite.
+//
+// `break_free`, not `remove_ae`: grappling is a reciprocal pair and the
+// grappler's Grappling AE has to be re-synced. See the effect's own note.
+const BREAK_FREE = {
+  coreAction: "objective:break_free",
+  name: "Break Free",
+  img: "icons/svg/net.svg",
+  flags: {
+    objectiveScope: "all",
+    objectiveGate: "HAS_STATUS_GRAPPLED",
+    objectiveGateReason: "You aren't being held",
+  },
+  props: {
+    skill_type: "Active",
+    isCheck: true,
+    check_mode: "open",
+    rolled_atr1: "DEX",
+    rolled_atr2: "MIG",
+    check_difficulty_level: "10",
+    isReaction: false,
+    skill_target: "Self",
+    cost: "",
+    max_level: "1",
+    on_activate_effect_ref: "break_free_try",
+    description:
+      "<p>Spend your action wrenching yourself loose. <strong>【DEX + MIG】</strong> " +
+      "vs <strong>DL 10</strong> — on a success you are no longer <strong>Grappled</strong>.</p>" +
+      "<p><em>The free attempt at the start of your turn still happens; this is a second try.</em></p>",
+    effect_table: {
+      "0": {
+        effect_label: "break_free_try",
+        effect_kind: "break_free",
+        target_ref: "self",
+        condition_formula: "TOTAL >= 10",
+      },
+    },
+  },
+  activeEffects: [],
+};
+
 export async function migrate(game, log) {
   const results = [];
-  for (const spec of [RUN_AWAY, CUSTOM_OBJECTIVE, CLOCK_INTERACTION]) {
+  for (const spec of [RUN_AWAY, CUSTOM_OBJECTIVE, CLOCK_INTERACTION, REVEAL, BREAK_FREE]) {
     const { item, created, touched } = await ensureCoreActionSkill(game, spec, log);
     results.push(`${spec.name} ${created ? "created" : touched ? "updated" : "already current"} (${item?.uuid ?? "?"})`);
   }

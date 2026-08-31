@@ -3814,6 +3814,41 @@ async function applySetBattleOutcomeEffect(row, ctx) {
   return { ok: true, kind: "set_battle_outcome", applied: [value] };
 }
 
+// ── break_free — end a Grapple, with the grappler-side cleanup ────────────
+//
+// NOT a `remove_ae` on "Grappled". Grappling is a RECIPROCAL pair: the victim
+// carries Grappled, the grappler carries Grappling, and deleting only the
+// victim's half leaves the grappler holding a stale AE that still hosts the
+// shared-space splash reaction. grappled.breakFree captures the grapplers before
+// deletion and re-syncs each one, which is why this row delegates to it rather
+// than deleting the effect itself.
+//
+// Powers the Objective-action re-attempt the Grappled rules text has always
+// promised ("the grappled unit may choose to use the Objective action in their
+// turn to reattempt the check"), which was deferred while the action did not
+// exist. Gate it on the action's own check:
+//
+//   { effect_kind: "break_free", target_ref: "self",
+//     condition_formula: "TOTAL >= 10" }
+async function applyBreakFreeEffect(row, ctx) {
+  const tr = await resolveTargetRef(row.target_ref || "self", ctx);
+  if (!tr.ok || !tr.tokens.length) {
+    return { ok: false, kind: "break_free", reason: tr.reason ?? "no-targets", cancelled: !!tr.cancelled };
+  }
+  const { breakFree } = await import("./grappled.js");
+  const applied = [];
+  for (const token of tr.tokens) {
+    const actor = token?.actor;
+    if (!actor) continue;
+    try {
+      const removed = await breakFree(actor, { reason: row.effect_label ?? "break_free effect" });
+      if (removed > 0) applied.push(actor.uuid);
+    } catch (e) { warn(`skill-effects.break_free: threw on ${actor?.name}`, e); }
+  }
+  log(`skill-effects.break_free: freed ${applied.length} creature(s)`);
+  return { ok: true, kind: "break_free", applied };
+}
+
 // ── clock_advance — move a Clock System clock from inside an action ────────
 //
 // The ONLY sanctioned way the Battle Director writes a clock. The Clock System
@@ -4194,6 +4229,7 @@ const EFFECT_KIND_DISPATCH = {
   leave_combat:        applyLeaveCombatEffect,
   set_battle_outcome:  applySetBattleOutcomeEffect,
   clock_advance:       applyClockAdvanceEffect,
+  break_free:          applyBreakFreeEffect,
   destroy_summon:      applyDestroySummonEffect,
   add_target:          applyAddTargetEffect,
   save_check:          applySaveCheckEffect,
@@ -4332,6 +4368,7 @@ export const EFFECT_KIND_LABELS = {
   leave_combat:        "Leave Combat (remove self from the conflict)",
   set_battle_outcome:  "Set Battle Outcome (escaped / victory / defeat — author BEFORE the leave_combat that empties a side)",
   clock_advance:       "Clock Advance (move a Clock System clock — roll mode commits this action's own check)",
+  break_free:          "Break Free (end a Grapple, incl. the grappler-side Grappling cleanup)",
   destroy_summon:      "Destroy Summon (shatter/despawn one of my summons)",
   add_target:          "Add Target",
   save_check:          "Save Check (each target rolls vs a DL; failures → save_failed_targets)",
@@ -4544,6 +4581,7 @@ const EFFECT_KIND_PREVIEW = {
   // Bookkeeping for the battle-end pipeline — nothing to preview on the card.
   set_battle_outcome: () => null,
   clock_advance: () => null,
+  break_free: () => null,
   destroy_summon: () => null,
 
   // chain recurses; the profile builder expands sub-steps. No standalone card row.
