@@ -37,6 +37,12 @@ const IDS = {
   HF_BREATH:   "7wOhRfCoYWhuVkLn",
   HF_RUIN:     "IoQn3JsHHcqGNM4U",
   HF_CROWN:    "csviMSGyPvawLkyW",
+  // ── Carlbero — L50 elite, solo (Malboro parody, plant debuffer) ────────
+  CB:          'B4qRdBIxFN6dZ6MT',
+  CB_SLAP:     'aL8M4ZB1s4i6wgSG',
+  CB_GRAB:     'b7Y9eRcNEGOUthwH',
+  CB_SAP:      'sn3eTbtgsHfEm7Y9',
+  CB_BREATH:   'YNV6oPSbTyywkT5r',
   // ── AEs added to the shared Debuff container ───────────────────────────
   AE_TEMPT:    "x46iKjWCaZylSb9R",   // Deadly Temptation (Charmed rider)
   AE_SPENT:    "3THoUX00A2aDDmrZ",   // Lance Spent (once-per-fight marker)
@@ -82,6 +88,8 @@ const L = {
   trigger:  link("JournalEntry.P7eaFojxra2gTRTG", "Trigger"),
   charm:    link("JournalEntry.x6ByoJnflDAuVn9r", "Charm"),
   shaken:   link("JournalEntry.ImFKpNNGjstom7Q9", "Shaken"),
+  poison:   link("Item.tDcCWc67Ary9nVxe", "Poison"),
+  grappled: link("JournalEntry.FV8JefaHsehzgXR7", "Grappled"),
 };
 const bullets = (...items) => `<ul>${items.map((t) => `<li><p>${t}</p></li>`).join("")}</ul>`;
 const trig = (cond) => `${L.trigger}&nbsp;${cond}`;
@@ -108,6 +116,11 @@ const ART = {
   // No boss art yet. Princess Hilde's own portrait stands in — Hilde-Fafnir IS
   // her, wearing the dragon — rather than an svg placeholder that would render
   // as a blank mystery-man on the sheet, the token and all six BD art fields.
+  // No Carlbero art on the Forge (probed 2026-08-31: Carlbero/Malboro/Morbol
+  // all 404). Bandit Shroom stands in — a carnivorous-plant sprite in the right
+  // Bestiary format, so all eight image fields resolve rather than rendering a
+  // blank mystery-man on the sheet, the token and the four BD art fields.
+  CB: BEST + "BanditShroom_Standard.png",
   HF: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Princess%20Hilde/Hilde_Standard.png",
 };
 
@@ -120,7 +133,10 @@ const ART = {
 // with the real boss art, not before. Everything else in the champion band sits
 // at 2.1-2.56 (⭐️ Wandering Flame 2.56, Gigas 2.45); the Valley's own ⭐️ Fafnir
 // is the outlier at 5.0 with `width: 1.5`.
-const SCALE = { DG: 1.26, DO: 1.84, IC: 2.77, SU: 1.04, HF: 1.0 };
+// CB 2.2 is a DELIBERATE placement in the elite band (2.1-2.5), not a tuned
+// value — it is a stand-in sprite, so it needs the Training Ground eyeball pass
+// once the real Carlbero art lands. Better than 1.0, which would read as chaff.
+const SCALE = { DG: 1.26, DO: 1.84, IC: 2.77, SU: 1.04, HF: 1.0, CB: 2.2 };
 
 module.exports = {
   IDS, FOLDER_FAFNIR, FOLDER_MONSTER_ROOT, AE_CONTAINER,

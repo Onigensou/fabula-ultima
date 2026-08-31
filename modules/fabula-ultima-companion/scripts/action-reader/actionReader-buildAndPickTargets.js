@@ -221,6 +221,21 @@ function getFocusContext(context) {
   };
 }
 
+/*
+ * "status_focus:Grappled" → "Grappled"; anything else → null.
+ * Authored in the action pattern's Target Focus column, so a new "aim at the
+ * creature carrying X" behaviour costs a data edit rather than a new focus mode
+ * and a code change per status. The separator is a colon; the status name is
+ * matched case-insensitively downstream by getEffectStackCount.
+ */
+function parseStatusFocus(focus) {
+  const raw = AR.toString(focus, "");
+  const at = raw.indexOf(":");
+  if (at < 0) return null;
+  if (raw.slice(0, at).trim().toLowerCase() !== "status_focus") return null;
+  return raw.slice(at + 1).trim() || null;
+}
+
 function affinityMultiplier(candidate, damageType) {
   if (!damageType) return 1;
   const code = AR.toString(candidate?.affinityMap?.[damageType], "NA").toUpperCase();
@@ -483,9 +498,24 @@ export async function buildAndPickActionReaderTargets(context, options = {}) {
     const creatureWide = focusCtx.focus === "burn_spread" || focusCtx.focus === "burn_focus";
 
     // Creature-wide focus modes ignore relation filtering (ally+enemy, excl. self).
-    const legalCandidates = creatureWide
+    let legalCandidates = creatureWide
       ? allCandidates.filter(c => !c.isSelf)
       : filterCandidatesByRule(context, allCandidates, targetRule, options);
+
+    // `status_focus:<Status>` — prefer candidates already carrying a named
+    // status. The generic form of burn_focus, and unlike it this one RESPECTS
+    // relation filtering: "hit the grappled one" must not reach a grappled ally.
+    // Narrowing (rather than re-weighting) is deliberate — a follow-up whose
+    // whole point is the setup (Carlbero's Mind Sap only drains a Grappled
+    // victim) should never quietly pick someone else. When nobody carries it the
+    // pool is left untouched, so the action still resolves against a legal target
+    // instead of the AI stalling on an empty pick; gate the ROW on
+    // enemy_has_status when it must not fire at all.
+    const statusFocusName = parseStatusFocus(focusCtx.focus);
+    if (statusFocusName) {
+      const holders = legalCandidates.filter(c => AR.getEffectStackCount(c.actor, statusFocusName) >= 1);
+      if (holders.length) legalCandidates = holders;
+    }
 
     context.targetCandidatesAll = allCandidates;
     context.targetCandidates = legalCandidates;

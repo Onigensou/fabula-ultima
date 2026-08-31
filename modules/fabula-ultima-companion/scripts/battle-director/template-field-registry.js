@@ -91,6 +91,7 @@ const ADJUST_GRANT_VIS = `equalText(sameRow("effect_kind",''), "adjust_grant")`;
 // result lands in a chain var for a later row to branch on. Sibling of
 // save_check, which instead rolls N independent per-target saves.
 const GROUP_CHECK_VIS = `equalText(sameRow("effect_kind",''), "group_check")`;
+const SAVE_CHECK_VIS  = `equalText(sameRow("effect_kind",''), "save_check")`;
 
 // ── reaction_config_table visibility ─────────────────────────────────────────
 // The trigger-specific FILTER cells. Gated by coarse trigger FAMILY (declared in
@@ -432,6 +433,7 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // strippable on a sheet save; register both so boot-3b self-heals them.
   textCol("ae_name_pool", "AE Name Pool", { tooltip: "apply_ae: comma/semicolon/pipe-separated AE names; ONE is picked at random per target instead of Template Ref (Draconic Roar). Prefer AE Pool Tag when you mean \"any status of this kind\".", vis: APPLY_AE_VIS }),
   textCol("ae_pool_tag", "AE Pool Tag", { tooltip: "apply_ae: build the random pool LIVE from every curated status carrying this tag (e.g. \"debuff\"), instead of hand-listing names — so the roll keeps covering the whole library as it grows. Untagged statuses (KO/Death) can never be rolled. Takes precedence over AE Name Pool. Backs Magic Mushroom.", vis: APPLY_AE_VIS }),
+  textCol("ae_pool_skip_existing", "AE Pool: No Repeats", { tooltip: "apply_ae pool mode: draw WITHOUT replacement — skip names the target already carries or that an earlier row in this same chain drew. Set this whenever several rows draw from one pool (Carlbero's Stinky Breath tiers), or the draws collide and the action under-delivers. Exhausting the pool redraws from the full list. 1/true = on, blank = off.", vis: APPLY_AE_VIS }),
   // Per-TARGET probability gate. Distinct from `effect_kind: "chance"`, which
   // rolls ONCE for the whole row — on a multi-target row that means every target
   // shares one coin flip. An AoE "50% chance to inflict X on each creature hit"
@@ -668,6 +670,18 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
     { key: "fail", value: "Fail — treat as leader FAIL (default)" },
     { key: "pass", value: "Pass — treat as leader PASS" },
   ], { tooltip: "group_check: which way to record the result when the check cannot run at all (no participants, GroupCheck API missing, roll threw). Defaults to fail, matching save_check's \"a save you don't make, you fail\".", vis: GROUP_CHECK_VIS, defaultValue: "" }),
+  // ── save_check config ──────────────────────────────────────────────────
+  // These four were authorable-but-unregistered: the engine read them from the
+  // row while the sheet showed nothing, so a GM could not retune a DL without a
+  // script. Registered on the save_ prefix (see the gc_ note above).
+  selectCol("save_attr1", "Save Attr 1", [{ key: "dex", value: "DEX" }, { key: "ins", value: "INS" }, { key: "mig", value: "MIG" }, { key: "wlp", value: "WLP" }], { tooltip: "save_check: first Attribute each target rolls (default MIG).", vis: SAVE_CHECK_VIS, defaultValue: "" }),
+  selectCol("save_attr2", "Save Attr 2", [{ key: "dex", value: "DEX" }, { key: "ins", value: "INS" }, { key: "mig", value: "MIG" }, { key: "wlp", value: "WLP" }], { tooltip: "save_check: second Attribute each target rolls (default WLP).", vis: SAVE_CHECK_VIS, defaultValue: "" }),
+  textCol("save_dl", "Save DL", { tooltip: "save_check: the Difficulty Level each target rolls against. Number or formula. Blank = 10.", vis: SAVE_CHECK_VIS }),
+  selectCol("save_mode", "Save Mode", [
+    { key: "interactive", value: "Interactive — roll panels on each owner's client" },
+    { key: "silent",      value: "Silent — auto-rolled GM-side, no panels" },
+  ], { tooltip: "save_check: Interactive opens a roll panel on each target's OWNING client, so players can spend Fabula Points to climb out of a bad result — and it HANGS if those players are offline. Silent auto-rolls GM-side and posts a chat card; use it for solo testing and for saves rolled by NPCs.", vis: SAVE_CHECK_VIS, defaultValue: "" }),
+  textCol("save_tiers", "Save Tiers", { tooltip: "save_check: optional magnitude buckets — a descending, comma-separated list of roll totals (e.g. 16,14,12,10,8,6). CUMULATIVE: a target sits in every tier its total falls at or below, and each bucket is exposed as target_ref \"save_tier_1\"…\"save_tier_8\". Lets a consequence scale with HOW BADLY the target rolled instead of just pass/fail. Blank = binary save, unchanged.", vis: SAVE_CHECK_VIS }),
 ];
 
 // ── reaction_config_table declarative fields ─────────────────────────────────

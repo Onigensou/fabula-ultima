@@ -3130,6 +3130,31 @@ export function applyHealReceiving(targetActor, amount) {
   return Math.max(0, scaled + flat);
 }
 
+// The MP twin of applyHealReceiving — recipient-side adjustment on a positive MP
+// restore, via `mp_receiving_mod_all` / `mp_receiving_flat_all`:
+//
+//   final = max(0, floor(amount × (1 + mp_receiving_mod_all)) + mp_receiving_flat_all)
+//
+// Exists because the curated `Wither` status ("Reduce the effectiveness of Mana
+// Gain") had no mechanical implementation at all — no changes on the AE and no
+// key anywhere in scripts/ — so every skill that inflicted it was inflicting a
+// tooltip. Bleed had the HP half of this pair wired since Vitality Up; this is
+// the half that was never built. Same shape, same clamp, same one-entry-point
+// rule: call it from both the preview and the apply path.
+//
+// Deliberately NOT folded into applyHealReceiving with a resource argument —
+// the call sites are already resource-scoped (`canonRes === "hp"`), and a shared
+// entry point taking a discriminator is the kind of thing that ends up called
+// with the wrong one.
+export function applyMpReceiving(targetActor, amount) {
+  const base = Number(amount) || 0;
+  if (!targetActor || base <= 0) return base;
+  const mult = Math.max(0, 1 + sumAeChangeKey(targetActor, "mp_receiving_mod_all"));
+  const flat = sumAeChangeKey(targetActor, "mp_receiving_flat_all");
+  const scaled = mult === 1 ? base : Math.floor(base * mult);
+  return Math.max(0, scaled + flat);
+}
+
 // Apply an `adjust_grant` op to an already-final restore amount — the heal
 // counterpart of adjust_damage's op model (multiply / add / set / cap / floor).
 // `adjust` is { op, value, round } (e.g. Potion Rain: multiply 0.5 round up).

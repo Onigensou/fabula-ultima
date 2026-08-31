@@ -64,6 +64,21 @@ const RESERVED_REFS = {
   // ctx.saveFailedTokenUuids). Used by follow-up apply_ae rows (Dreadwyrm: the
   // failures suffer Frightened/Paralyzed/Silence). mode "all" → every failure.
   save_failed_targets:   { candidate_source: "save_failed_targets", mode: "all" },
+  // Magnitude buckets from the most recent `save_check` that declared
+  // `save_tiers` (populated on ctx.saveTierTokenUuids). Thresholds are CUMULATIVE
+  // and descending, so save_tier_1 is the widest pool and each later tier is a
+  // subset of it: N rows aimed at successive tiers land N consequences on the
+  // worst roller and one on the luckiest (Carlbero's Stinky Breath). Empty
+  // whenever the save_check carried no save_tiers. mode "all" → every target in
+  // the bucket. Keep this count in step with SAVE_TIER_MAX in skill-effects.js.
+  save_tier_1:           { candidate_source: "save_tier_1", mode: "all" },
+  save_tier_2:           { candidate_source: "save_tier_2", mode: "all" },
+  save_tier_3:           { candidate_source: "save_tier_3", mode: "all" },
+  save_tier_4:           { candidate_source: "save_tier_4", mode: "all" },
+  save_tier_5:           { candidate_source: "save_tier_5", mode: "all" },
+  save_tier_6:           { candidate_source: "save_tier_6", mode: "all" },
+  save_tier_7:           { candidate_source: "save_tier_7", mode: "all" },
+  save_tier_8:           { candidate_source: "save_tier_8", mode: "all" },
   // The reactor's own summoned Numen (summonedBy == me + actor isNumen). A Numen
   // subset of own_summons that EXCLUDES phantasms — used by Create Phantasm: Numen's
   // turn_start reaction so take_turn_next force-moves only the Numen. mode "all"
@@ -573,6 +588,9 @@ async function buildCandidatePool(source, ctx) {
     case "cover_target":        return collectCoverTarget(ctx);
     case "grappled_by_self":    return collectGrappledBySelf(ctx);
     case "save_failed_targets": return collectSaveFailedTargets(ctx);
+    case "save_tier_1": case "save_tier_2": case "save_tier_3": case "save_tier_4":
+    case "save_tier_5": case "save_tier_6": case "save_tier_7": case "save_tier_8":
+      return collectSaveTierTargets(ctx, Number(String(source).slice("save_tier_".length)));
     case "combat":
     default:                    return collectCombatTokens(ctx);
   }
@@ -662,6 +680,19 @@ async function collectSelfOrMyFocusTokens(ctx) {
 // map them back to TokenDocuments here.
 async function collectSaveFailedTargets(ctx) {
   return await uuidsToTokens(ctx.saveFailedTokenUuids ?? []);
+}
+
+// Tokens in magnitude bucket N of the most recent save_check that declared
+// `save_tiers` (1-indexed to match the source name). Returns empty — not an
+// error — when the chain's save_check carried no tiers, or when nobody rolled
+// low enough to reach this one: a tier row that lands on no-one is the normal
+// outcome for a good roll, not a misconfiguration.
+async function collectSaveTierTargets(ctx, tierNumber) {
+  const pools = ctx.saveTierTokenUuids;
+  if (!Array.isArray(pools)) return [];
+  const idx = Number(tierNumber) - 1;
+  if (!Number.isInteger(idx) || idx < 0 || idx >= pools.length) return [];
+  return await uuidsToTokens(pools[idx] ?? []);
 }
 
 async function collectActionTargets(ctx) {

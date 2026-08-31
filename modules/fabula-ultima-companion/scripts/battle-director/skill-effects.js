@@ -19,7 +19,7 @@
 
 import { log, warn } from "./logger.js";
 import { stageOf } from "./director-camera.js";
-import { evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, applyAdjustOp, readAdjustment, applyHealReceiving } from "./skill-formulas.js";
+import { evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, applyAdjustOp, readAdjustment, applyHealReceiving, applyMpReceiving } from "./skill-formulas.js";
 import { pickFromList } from "./list-picker.js";
 // The amount selector lives in its own leaf module so remote-pick can render it
 // on a player's client without dragging the effect engine along. Re-exported
@@ -5011,12 +5011,17 @@ async function grantApply(row, ctx, { resource, targetRef, amount }) {
       // Single source: the precomputed per-target amount (already fully scaled).
       recipAmount = fromProfile.get(token.uuid);
     } else {
-      // Re-exec path (secondary / chain grants). Incoming-heal adjustment
+      // Re-exec path (secondary / chain grants). Incoming-restore adjustment
       // (RECIPIENT side): scale HP recovery by the healed actor's
       // heal_receiving_mod_all (Bleed -50%), then add heal_receiving_flat_all
-      // (Vitality Up +5). Per-target; HP "healing" only — MP restore untouched.
+      // (Vitality Up +5). MP recovery takes the same treatment through its own
+      // key pair (Wither -50% mana gain) — the two resources are scoped
+      // separately so a status can dampen one without touching the other.
       recipAmount = amount;
-      if (resource === "hp" && amount > 0) recipAmount = applyHealReceiving(actor, amount);
+      if (amount > 0) {
+        if (resource === "hp")      recipAmount = applyHealReceiving(actor, amount);
+        else if (resource === "mp") recipAmount = applyMpReceiving(actor, amount);
+      }
       // Performer-side per-target heal boosts (Cognitive Focus "+SL×2 to my focus")
       // are NOT re-derived here — they ride the adjust_grant card-mutation and are
       // already baked into the PRIMARY grant's perTargetResults (the fromProfile
@@ -5890,6 +5895,7 @@ async function applyApplyAeEffect(row, ctx) {
   const poolAlt  = splitNames(row.ae_name_pool_alt);
   const poolAltCond = String(row.ae_pool_alt_condition ?? "").trim();
   const poolMode = poolMain.length > 0;
+  const poolSkipExisting = /^(1|true|yes|on)$/i.test(String(row.ae_pool_skip_existing ?? "").trim());
   const _tplCache = new Map();
 
   if (!aeRef && !poolMode) {
@@ -5968,7 +5974,36 @@ async function applyApplyAeEffect(row, ctx) {
         });
         if (Number(evaluateFormula(poolAltCond, condResolver, 0)) > 0) pool = poolAlt;
       }
+      // Draw WITHOUT replacement (`ae_pool_skip_existing`). Several rows drawing
+      // from one pool in a single chain is how a "the worse you rolled, the more
+      // statuses you take" action is authored (Carlbero's Stinky Breath: six
+      // save_tier rows). With plain replacement those draws collide and the
+      // action silently under-delivers — 6 draws from a 6-name pool yield ~4
+      // distinct statuses, and the collisions read as "the effect did nothing".
+      // Excluded: names the target ALREADY carries (so a second cast escalates
+      // into what they haven't got yet) plus names drawn earlier in THIS chain
+      // (ctx-scoped, so it spans rows — a batched create isn't on actor.effects
+      // yet, which is exactly the case a per-row check would miss).
+      // Exhausting the pool falls back to the full list rather than skipping the
+      // target: a refreshed duration is a truer "you took another one" than
+      // nothing happening.
+      if (poolSkipExisting) {
+        const already = new Set();
+        for (const eff of actor.effects ?? []) {
+          if (eff?.name) already.add(String(eff.name).trim().toLowerCase());
+        }
+        for (const n of (ctx._aePoolDrawn?.get(actor.uuid) ?? [])) already.add(n);
+        const fresh = pool.filter((n) => !already.has(String(n).trim().toLowerCase()));
+        if (fresh.length) pool = fresh;
+        else log(`skill-effects.apply_ae: pool exhausted on ${actor.name} for "${row.effect_label}" — redrawing from the full pool`);
+      }
       const pickName = pool[Math.floor(Math.random() * pool.length)];
+      if (poolSkipExisting) {
+        ctx._aePoolDrawn ??= new Map();
+        const seen = ctx._aePoolDrawn.get(actor.uuid) ?? new Set();
+        seen.add(String(pickName).trim().toLowerCase());
+        ctx._aePoolDrawn.set(actor.uuid, seen);
+      }
       if (!_tplCache.has(pickName)) _tplCache.set(pickName, await resolveAeTemplate(pickName, ctx));
       template = _tplCache.get(pickName);
       if (!template) {
@@ -8604,6 +8639,11 @@ async function applyFreeActionEffect(row, ctx) {
 
 // ── save_check ──────────────────────────────────────────────────────────────
 //
+// How many `save_tiers` buckets a single row may declare. Matches the
+// save_tier_1..save_tier_N target sources registered in skill-targeting.js —
+// raising one without the other silently strands the extra tiers.
+export const SAVE_TIER_MAX = 8;
+//
 // Each creature in `target_ref` rolls a Difficulty-Level Check (via the legacy
 // ONI.CheckRequester UI — interactive player rolls with Trait/Bond invokes); the
 // creatures that FAIL are recorded on ctx so the `save_failed_targets` target
@@ -8615,12 +8655,35 @@ async function applyFreeActionEffect(row, ctx) {
 //     target_ref: "action_targets",          // who rolls (default action_targets)
 //     save_attr1: "mig", save_attr2: "wlp",  // the two Check attributes
 //     save_dl:    "15",                        // Difficulty Level (number OR formula)
-//     save_mode:  "interactive" }              // "interactive" (default) | "silent"
+//     save_mode:  "interactive",               // "interactive" (default) | "silent"
+//     save_tiers: "16,14,12,10,8,6" }          // optional MAGNITUDE buckets
 //
 // Runs at RESOLVE (on_activate / chain), AFTER the Action Card is confirmed — so a
 // Protect-style redirect has already mutated the target set and the roll lands on
 // the FINAL slots. A target with no returned result (offline / no client) defaults
 // to FAIL (RAW: a save you don't make, you fail).
+//
+// ── save_tiers: consequences that scale with HOW BADLY you rolled ────────────
+// Plain save_check is binary — pass or fail. `save_tiers` additionally buckets
+// each target by its roll TOTAL (CheckRequester already returns it; this handler
+// used to discard it). Thresholds are CUMULATIVE and descending, so a target sits
+// in every tier its total falls at or below:
+//
+//   save_tiers: "16,14,12,10,8,6"   → rolled 15 ⇒ tier 1 only
+//                                     rolled  9 ⇒ tiers 1-4
+//                                     rolled  3 ⇒ tiers 1-6
+//
+// Each tier is exposed as its own target source (`save_tier_1` … `save_tier_8`),
+// so N follow-up rows aimed at successive tiers land N consequences on the worst
+// roller and one on the luckiest. Carlbero's Stinky Breath: six apply_ae rows
+// drawing from Basic / Denial / Rot pools — the lower you roll, the more of the
+// Bad Breath you eat.
+//
+// A target occupying several slots is bucketed on its WORST (lowest) total, which
+// matches the failure-multiplicity rule above: extra exposure never helps you.
+// An unrunnable check (no CheckRequester / it threw / no result for a slot) puts
+// the target in EVERY tier — the same "a save you don't make, you fail" direction
+// the binary pools already take, carried through to magnitude.
 async function applySaveCheckEffect(row, ctx) {
   const targetRef = String(row.target_ref ?? "action_targets").trim() || "action_targets";
   let tokens = [];
@@ -8629,10 +8692,19 @@ async function applySaveCheckEffect(row, ctx) {
     if (tr.ok && Array.isArray(tr.tokens)) tokens = tr.tokens;
   } catch (e) { warn(`save_check: target_ref "${targetRef}" resolve threw`, e); }
 
+  // Descending, de-duplicated tier thresholds. Blank/absent → no tier pools, and
+  // the handler behaves exactly as it did before save_tiers existed.
+  const tierThresholds = String(row.save_tiers ?? "")
+    .split(/[,;|]/).map((s) => Number(String(s).trim()))
+    .filter((n) => Number.isFinite(n))
+    .sort((a, b) => b - a)
+    .slice(0, SAVE_TIER_MAX);
+
   // Reset pools so a re-run / empty set doesn't leak a prior result.
   ctx.saveFailedTargetUuids = [];
   ctx.saveFailedTokenUuids  = [];
   ctx.savePassedTargetUuids = [];
+  ctx.saveTierTokenUuids    = tierThresholds.map(() => []);
   if (!tokens.length) {
     log(`save_check: no targets for "${row.effect_label}"`);
     return { ok: true, kind: "save_check", failed: [], passed: [] };
@@ -8687,6 +8759,8 @@ async function applySaveCheckEffect(row, ctx) {
       const tok = actorToToken.get(u);
       if (!tok) continue;
       for (let i = 0; i < (slotCount.get(u) ?? 1); i++) ctx.saveFailedTokenUuids.push(tok);
+      // Unrunnable check ⇒ WORST magnitude too, not just "failed".
+      for (const pool of ctx.saveTierTokenUuids) pool.push(tok);
     }
     log(`save_check: no results — defaulting ${slotActorUuids.length} slot(s) to FAIL`);
     return { ok: true, kind: "save_check", failed: [...uniqueActorUuids], passed: [], reason: "no-results" };
@@ -8705,11 +8779,17 @@ async function applySaveCheckEffect(row, ctx) {
   // token list directly (apply_ae's _aeBatch dup-visibility guard makes repeated
   // add_charges on one token accumulate), so duplicates scale correctly.
   const passByActor = new Map();   // actorUuid → array of per-slot pass booleans
+  const worstTotal  = new Map();   // actorUuid → LOWEST total rolled across slots
   for (const r of results) {
     if (!r?.actorUuid) continue;
     const arr = passByActor.get(r.actorUuid) ?? [];
     arr.push(!!r.pass);
     passByActor.set(r.actorUuid, arr);
+    const t = Number(r.total);
+    if (Number.isFinite(t)) {
+      const prev = worstTotal.get(r.actorUuid);
+      if (prev === undefined || t < prev) worstTotal.set(r.actorUuid, t);
+    }
   }
   const failCount = new Map();     // actorUuid → number of FAILED slots
   for (const u of uniqueActorUuids) {
@@ -8729,9 +8809,30 @@ async function applySaveCheckEffect(row, ctx) {
     for (let i = 0; i < (failCount.get(u) ?? 1); i++) ctx.saveFailedTokenUuids.push(tok);
   }
   ctx.savePassedTargetUuids = passed;
+
+  // Magnitude buckets. Cumulative and descending: a total of 9 against
+  // "16,14,12,10,8,6" lands in tiers 1-4. A target whose total never came back
+  // (slot rolled but returned nothing readable) is bucketed at the worst tier,
+  // matching the fail direction. Multiplicity is deliberately NOT carried here —
+  // a tier row should land once per target, however many slots it occupied.
+  if (tierThresholds.length) {
+    const tierNames = [];
+    for (const u of uniqueActorUuids) {
+      const tok = actorToToken.get(u);
+      if (!tok) continue;
+      const total = worstTotal.has(u) ? worstTotal.get(u) : -Infinity;
+      let depth = 0;
+      for (let i = 0; i < tierThresholds.length; i++) {
+        if (total <= tierThresholds[i]) { ctx.saveTierTokenUuids[i].push(tok); depth = i + 1; }
+      }
+      tierNames.push(`${u.split(".").pop()}:${total === -Infinity ? "?" : total}→T${depth}`);
+    }
+    log(`save_check: tiers [${tierThresholds.join(",")}] — ${tierNames.join(" ")}`);
+  }
+
   const totalFails = [...failCount.values()].reduce((a, b) => a + b, 0);
   log(`save_check: DL ${dl} ${attrA}+${attrB} — ${slotActorUuids.length} roll(s), ${totalFails} failed save(s) across ${failed.length} target(s) / ${passed.length} passed`);
-  return { ok: true, kind: "save_check", failed, passed };
+  return { ok: true, kind: "save_check", failed, passed, tiers: ctx.saveTierTokenUuids.map((p) => p.length) };
 }
 
 // ── group_check ─────────────────────────────────────────────────────────────
