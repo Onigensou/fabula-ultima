@@ -14,7 +14,7 @@
     }
   },
   "folder": "334KROpobXWVeG1Z",
-  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Dark_Soul_Standard.png",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Imp_Standard.png",
   "items": [
     {
       "_id": "iezocNcUJeRWRr3P",
@@ -594,7 +594,7 @@
       "rotation": 0,
       "scaleX": 0.95,
       "scaleY": 0.95,
-      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Dark_Soul_Standard.png",
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Imp_Standard.png",
       "tint": "#ffffff"
     },
     "width": 1
@@ -738,10 +738,10 @@
       "current_hp": "110",
       "current_ip": "0",
       "current_mp": "50",
-      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Dark_Soul_Standard.png",
-      "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Dark_Soul_Standard.png",
+      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Imp_Standard.png",
+      "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Imp_Standard.png",
       "cut_in_offset_y": "",
-      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Dark_Soul_Standard.png",
+      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Imp_Standard.png",
       "dagger_ef": "100",
       "damage_receiving_mod_air": 0,
       "damage_receiving_mod_all": 0,
@@ -793,7 +793,7 @@
       "icon_offset_y": "",
       "icon_scale": "",
       "id": "wjGqTFMH0Z7yZkZt",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Dark_Soul_Standard.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Imp_Standard.png",
       "init": "12",
       "ins_base": "10",
       "ins_current": 10,
@@ -890,8 +890,8 @@
       "skill_passive_list": {},
       "spear_ef": "100",
       "species": "DEMON",
-      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Dark_Soul_Standard.png",
-      "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Dark_Soul_Standard.png",
+      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Imp_Standard.png",
+      "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Imp_Standard.png",
       "steal_percentage_table": {},
       "stealable_loot": {},
       "study_text": "<p>The palace quartermaster's ledgers run to nine volumes, of which four are entirely losses. Breastplates, sabres, a ceremonial halberd, both of the late Steward's boots. Nothing is ever <strong>found</strong>, and nothing is ever <strong>sold</strong>. Whatever is taking it appears to simply want you not to have it.</p>",
