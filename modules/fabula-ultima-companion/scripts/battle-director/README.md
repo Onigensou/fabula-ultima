@@ -111,7 +111,9 @@ After the first launch with the new code, plain F5 reloads work fine.
 
 **Stubbed:**
 
-- Skill / Spell / Item / Equipment / Study / Hinder / Objective / Switch — clicking any of these shows a notification and returns to DECLARE. No flow implemented in v1.
+- Switch (Party Swap) — clicking it shows a notification and returns to DECLARE. No flow implemented.
+  (Skill / Spell / Item / Equipment / Study / Hinder shipped long ago; **Objective** shipped
+  2026-08-31 — one command, a data-driven option pool, see `objectives.js`.)
 - `REACTION_WINDOW` is a 100ms no-op pass-through. No reactions fire.
 - No proper Active Effect application (Guard is just an actor flag).
 - No animation handler integration (the `ANIMATING` state isn't even in the v1 transition table).
