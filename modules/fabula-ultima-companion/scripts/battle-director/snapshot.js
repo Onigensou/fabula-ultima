@@ -193,10 +193,21 @@ export function attrDieSize(actor, key) {
 // action kind: Spells resolve vs Magic Defense, everything else (Attacks,
 // non-Spell Skills) vs Defense. Single source of truth for the per-target engine,
 // the card labels, and the redirect recompute so they can never drift apart.
+//
+// "default" is the authoring templates' FACTORY value and is deliberately NOT an
+// override — it means "decide from the action kind", i.e. exactly the fallback
+// below. It exists because the dropdown previously defaulted to "def", which
+// silently shipped 50 spells resolving against the wrong defence (they were
+// corrected in c1e2d5c3; this is the fix to the thing that produced them).
+// Treat "" (prop never written) and any out-of-set value the same way, so a
+// blank and a "default" can never disagree.
+// ⚠ Do NOT "simplify" the explicit `default` branch away — it is load-bearing
+// documentation of a value that flows in from the templates, not dead code.
 export function resolvesVsMagicDefense({ defenseTargetType, isSpell } = {}) {
   const dtt = String(defenseTargetType ?? "").trim().toLowerCase();
   if (dtt === "mdef") return true;
   if (dtt === "def") return false;
+  if (dtt === "default" || dtt === "") return !!isSpell;
   return !!isSpell;
 }
 

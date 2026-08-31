@@ -642,14 +642,18 @@
                       "role": 0,
                       "editRole": 0,
                       "permission": 0,
-                      "tooltip": "",
+                      "tooltip": "Which defence this check is compared against. Default = decide from Skill Type (Spell -> Magic Defense, everything else -> Defense) — the same fallback the engine already applies to a blank. Choose Defense/Magic Defense only to OVERRIDE that: a non-Spell magic action (Soul Steal, Pillage, Flamethrower) needs Magic Defense, and a Spell that resolves vs Defense needs Defense. The old factory value was 'def', which silently shipped 50 spells against the wrong defence (corrected in c1e2d5c3).",
                       "visibilityFormula": "and(isCheck, not(equalText(skill_type, 'Passive')))",
                       "type": "select",
                       "size": "medium",
                       "label": "vs",
-                      "defaultValue": "def",
+                      "defaultValue": "default",
                       "selectedOptionType": "custom",
                       "options": [
+                        {
+                          "key": "default",
+                          "value": "Default (Spell -> MDEF)"
+                        },
                         {
                           "key": "def",
                           "value": "Defense"
