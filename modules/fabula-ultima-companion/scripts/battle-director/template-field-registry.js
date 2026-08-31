@@ -92,6 +92,16 @@ const ADJUST_GRANT_VIS = `equalText(sameRow("effect_kind",''), "adjust_grant")`;
 // save_check, which instead rolls N independent per-target saves.
 const GROUP_CHECK_VIS = `equalText(sameRow("effect_kind",''), "group_check")`;
 const SAVE_CHECK_VIS  = `equalText(sameRow("effect_kind",''), "save_check")`;
+// contest_check — performer AND target both roll; higher total wins, ties reroll.
+// It borrows save_check's TARGET-side columns (save_attr1/2 name the attributes
+// the targets roll, save_mode says how) rather than growing a parallel set, so
+// SAVE_OR_CONTEST_VIS widens those three. Widening a gate only ever reveals more
+// cells, which is why these carry reconcileVis onto the existing columns; the
+// DL/tier columns keep the narrow save_check gate because a contest has no DL.
+const CONTEST_VIS = `equalText(sameRow("effect_kind",''), "contest_check")`;
+const SAVE_OR_CONTEST_VIS = `or(${SAVE_CHECK_VIS}, ${CONTEST_VIS})`;
+// hide_item — take a gear off a creature and vanish it until the fight is over.
+const HIDE_ITEM_VIS = `equalText(sameRow("effect_kind",''), "hide_item")`;
 
 // ── reaction_config_table visibility ─────────────────────────────────────────
 // The trigger-specific FILTER cells. Gated by coarse trigger FAMILY (declared in
@@ -674,14 +684,38 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // These four were authorable-but-unregistered: the engine read them from the
   // row while the sheet showed nothing, so a GM could not retune a DL without a
   // script. Registered on the save_ prefix (see the gc_ note above).
-  selectCol("save_attr1", "Save Attr 1", [{ key: "dex", value: "DEX" }, { key: "ins", value: "INS" }, { key: "mig", value: "MIG" }, { key: "wlp", value: "WLP" }], { tooltip: "save_check: first Attribute each target rolls (default MIG).", vis: SAVE_CHECK_VIS, defaultValue: "" }),
-  selectCol("save_attr2", "Save Attr 2", [{ key: "dex", value: "DEX" }, { key: "ins", value: "INS" }, { key: "mig", value: "MIG" }, { key: "wlp", value: "WLP" }], { tooltip: "save_check: second Attribute each target rolls (default WLP).", vis: SAVE_CHECK_VIS, defaultValue: "" }),
+  selectCol("save_attr1", "Save Attr 1", [{ key: "dex", value: "DEX" }, { key: "ins", value: "INS" }, { key: "mig", value: "MIG" }, { key: "wlp", value: "WLP" }], { tooltip: "save_check / contest_check: first Attribute each TARGET rolls (save_check default MIG, contest_check default DEX).", vis: SAVE_OR_CONTEST_VIS, reconcileVis: true, defaultValue: "" }),
+  selectCol("save_attr2", "Save Attr 2", [{ key: "dex", value: "DEX" }, { key: "ins", value: "INS" }, { key: "mig", value: "MIG" }, { key: "wlp", value: "WLP" }], { tooltip: "save_check / contest_check: second Attribute each TARGET rolls (save_check default WLP, contest_check default INS).", vis: SAVE_OR_CONTEST_VIS, reconcileVis: true, defaultValue: "" }),
   textCol("save_dl", "Save DL", { tooltip: "save_check: the Difficulty Level each target rolls against. Number or formula. Blank = 10.", vis: SAVE_CHECK_VIS }),
   selectCol("save_mode", "Save Mode", [
     { key: "interactive", value: "Interactive — roll panels on each owner's client" },
     { key: "silent",      value: "Silent — auto-rolled GM-side, no panels" },
-  ], { tooltip: "save_check: Interactive opens a roll panel on each target's OWNING client, so players can spend Fabula Points to climb out of a bad result — and it HANGS if those players are offline. Silent auto-rolls GM-side and posts a chat card; use it for solo testing and for saves rolled by NPCs.", vis: SAVE_CHECK_VIS, defaultValue: "" }),
+  ], { tooltip: "save_check / contest_check: Interactive opens a roll panel on each target's OWNING client, so players can spend Fabula Points to climb out of a bad result — and it HANGS if those players are offline. Silent auto-rolls GM-side and posts a chat card; use it for solo testing and for rolls made by NPCs. The performer's own contest roll is ALWAYS silent regardless of this setting.", vis: SAVE_OR_CONTEST_VIS, reconcileVis: true, defaultValue: "" }),
   textCol("save_tiers", "Save Tiers", { tooltip: "save_check: optional magnitude buckets — a descending, comma-separated list of roll totals (e.g. 16,14,12,10,8,6). CUMULATIVE: a target sits in every tier its total falls at or below, and each bucket is exposed as target_ref \"save_tier_1\"…\"save_tier_8\". Lets a consequence scale with HOW BADLY the target rolled instead of just pass/fail. Blank = binary save, unchanged.", vis: SAVE_CHECK_VIS }),
+
+  // ── contest_check config (PERFORMER side) ──────────────────────────────
+  // The target side reuses save_attr1 / save_attr2 / save_mode above.
+  selectCol("contest_attr1", "Contest Attr 1", [{ key: "dex", value: "DEX" }, { key: "ins", value: "INS" }, { key: "mig", value: "MIG" }, { key: "wlp", value: "WLP" }], { tooltip: "contest_check: first Attribute the PERFORMER rolls (default DEX).", vis: CONTEST_VIS, defaultValue: "" }),
+  selectCol("contest_attr2", "Contest Attr 2", [{ key: "dex", value: "DEX" }, { key: "ins", value: "INS" }, { key: "mig", value: "MIG" }, { key: "wlp", value: "WLP" }], { tooltip: "contest_check: second Attribute the PERFORMER rolls (default INS).", vis: CONTEST_VIS, defaultValue: "" }),
+  textCol("contest_bonus", "Contest Bonus", { tooltip: "contest_check: flat modifier added to the PERFORMER's roll. Number or formula. An NPC's accuracy bonus is floor(level/10), so a level-50 monster wants 5. Blank = 0.", vis: CONTEST_VIS }),
+  textCol("contest_max_rerolls", "Contest Rerolls", { tooltip: "contest_check: how many times a TIE may be re-contested before the attempt is abandoned (both sides reroll each time). Blank = 5, hard cap 20. If the budget runs out still tied, the TARGET keeps it — a contest that never resolves is one the performer did not win.", vis: CONTEST_VIS }),
+
+  // ── hide_item config ───────────────────────────────────────────────────
+  // All three were authorable-but-unregistered — the engine read them off the
+  // row while the sheet showed nothing, so the only way to write one was a
+  // script, and a sheet save could strip them.
+  textCol("hide_item_id", "Hide Item Id", { tooltip: "hide_item: embedded item id to take. Highest precedence. Usually left blank — an attacker does not know the victim's item ids.", vis: HIDE_ITEM_VIS }),
+  textCol("hide_item_name", "Hide Item Name", { tooltip: "hide_item: name of the item to take, matched exactly (case-insensitive). Used when Hide Item Id is blank.", vis: HIDE_ITEM_VIS }),
+  selectCol("hide_item_slot", "Hide Item Slot", [
+    { key: "",           value: "— (by id/name, else the gear that granted this skill)" },
+    { key: "armor",      value: "Armor" },
+    { key: "weapon",     value: "Weapon — main hand, else off hand" },
+    { key: "main",       value: "Main Hand" },
+    { key: "off",        value: "Off Hand" },
+    { key: "accessory",  value: "Accessory — slot 1, else slot 2" },
+    { key: "accessory1", value: "Accessory 1" },
+    { key: "accessory2", value: "Accessory 2" },
+  ], { tooltip: "hide_item: take whatever the named EQUIPMENT SLOT currently holds. This is the mode that makes stripping another creature's gear authorable — the other two need to already know the item. A slot that is empty is a no-op, not an error: the target was already stripped, or fights bare-handed.", vis: HIDE_ITEM_VIS, defaultValue: "" }),
 ];
 
 // ── reaction_config_table declarative fields ─────────────────────────────────

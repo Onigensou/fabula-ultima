@@ -86,6 +86,13 @@ export const ACTION_READER_KEYS = Object.freeze({
   actionPatternWeightKey: "action_pattern_weight",
   actionPatternCooldownKey: "action_pattern_cooldown",
   actionPatternTargetFocusKey: "action_pattern_target_focus",
+  // Status name consumed by the `status_focus` / `status_avoid` focus modes.
+  // A SEPARATE column because Target Focus is a CSB *select*: an inline
+  // "status_focus:Grappled" is not one of its options, so a sheet save would
+  // revert it to the fallback (the Dryad burn_spread regression, twice). The
+  // condition select + action_pattern_string pair works the same way. The
+  // inline colon form is still parsed, for a row authored by script.
+  actionPatternFocusStatusKey: "action_pattern_focus_status",
   // Min current-HP required to pick this row — a self-cost safety reserve so a
   // move that pays HP (Geist's Shadow Strike / Shadowbringers) is never picked
   // when it could KO the performer. Blank / 0 => no HP guard (legacy).

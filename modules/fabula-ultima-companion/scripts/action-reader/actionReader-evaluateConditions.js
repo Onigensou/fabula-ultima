@@ -351,6 +351,44 @@ function evaluateCountCondition(context, row, relation, label) {
   };
 }
 
+/* Passes if at least one enemy does NOT carry the named status — "is there still
+   somebody left to do this to?". The mirror of enemy_has_status, and NOT its
+   negation: `not(any enemy has X)` would go false the moment ONE enemy picked X
+   up, which is the wrong gate for a move that works through a group one victim
+   at a time. Pair it with target focus `status_avoid:<X>` so the action also
+   AIMS at someone who still lacks the status. */
+function evaluateEnemyLacksStatus(context, row) {
+  const statusName = AR.toString(row?.stringRaw, "").trim();
+  const label = "Enemy Lacks Status";
+
+  if (!statusName) {
+    return { passed: false, conditionKey: "enemy_lacks_status", conditionLabel: label,
+      reason: "No status name entered in the row string field.", details: {} };
+  }
+
+  const tokenDoc = getPerformerTokenDoc(context);
+  const performerDisposition = AR.getTokenDisposition(tokenDoc);
+  const tokens = AR.participantTokens(context);
+
+  let free = null;
+  for (const tok of tokens) {
+    const actor = AR.getTokenActor(tok);
+    if (!actor || AR.isUntargetableActor(actor)) continue;
+    const rel = AR.relationToPerformer(AR.getTokenDisposition(AR.getTokenDocument(tok)), performerDisposition);
+    if (rel !== "enemy") continue;
+    if (!AR.actorHasEffectByName(actor, statusName)) { free = AR.getActorName(actor); break; }
+  }
+
+  const passed = Boolean(free);
+  return {
+    passed,
+    conditionKey: "enemy_lacks_status",
+    conditionLabel: label,
+    reason: passed ? `Enemy "${free}" does not have "${statusName}".` : `Every enemy already has "${statusName}".`,
+    details: { statusName, free }
+  };
+}
+
 /* Passes if any enemy (opposing-side token) carries the named status. */
 function evaluateEnemyHasStatus(context, row) {
   const statusName = AR.toString(row?.stringRaw, "").trim();
@@ -684,6 +722,9 @@ function evaluateOneCondition(context, row, options = {}) {
 
     case "enemy_has_status":
       return evaluateEnemyHasStatus(context, row);
+
+    case "enemy_lacks_status":
+      return evaluateEnemyLacksStatus(context, row);
 
     case "ally_has_status":
       return evaluateAllyHasStatus(context, row);

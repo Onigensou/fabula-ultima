@@ -64,6 +64,13 @@ const RESERVED_REFS = {
   // ctx.saveFailedTokenUuids). Used by follow-up apply_ae rows (Dreadwyrm: the
   // failures suffer Frightened/Paralyzed/Silence). mode "all" → every failure.
   save_failed_targets:   { candidate_source: "save_failed_targets", mode: "all" },
+  // Creatures that LOST / WON the most recent `contest_check` this chain
+  // (ctx.contestLostTokenUuids / ctx.contestWonTokenUuids). The contest twin of
+  // save_failed_targets, and the reason there are two of them: unlike a save,
+  // a contest has a meaningful winner, so "you kept your grip on it" is an
+  // authorable consequence and not just the absence of one.
+  contest_lost_targets:  { candidate_source: "contest_lost_targets", mode: "all" },
+  contest_won_targets:   { candidate_source: "contest_won_targets",  mode: "all" },
   // Magnitude buckets from the most recent `save_check` that declared
   // `save_tiers` (populated on ctx.saveTierTokenUuids). Thresholds are CUMULATIVE
   // and descending, so save_tier_1 is the widest pool and each later tier is a
@@ -588,6 +595,8 @@ async function buildCandidatePool(source, ctx) {
     case "cover_target":        return collectCoverTarget(ctx);
     case "grappled_by_self":    return collectGrappledBySelf(ctx);
     case "save_failed_targets": return collectSaveFailedTargets(ctx);
+    case "contest_lost_targets": return collectContestTargets(ctx, "lost");
+    case "contest_won_targets":  return collectContestTargets(ctx, "won");
     case "save_tier_1": case "save_tier_2": case "save_tier_3": case "save_tier_4":
     case "save_tier_5": case "save_tier_6": case "save_tier_7": case "save_tier_8":
       return collectSaveTierTargets(ctx, Number(String(source).slice("save_tier_".length)));
@@ -680,6 +689,14 @@ async function collectSelfOrMyFocusTokens(ctx) {
 // map them back to TokenDocuments here.
 async function collectSaveFailedTargets(ctx) {
   return await uuidsToTokens(ctx.saveFailedTokenUuids ?? []);
+}
+
+// Tokens on the losing / winning side of the most recent `contest_check`.
+// Returns empty — not an error — when no contest ran in this chain: a row aimed
+// at a pool nobody landed in should do nothing, not abort the chain.
+async function collectContestTargets(ctx, side) {
+  const uuids = side === "won" ? ctx.contestWonTokenUuids : ctx.contestLostTokenUuids;
+  return await uuidsToTokens(uuids ?? []);
 }
 
 // Tokens in magnitude bucket N of the most recent save_check that declared

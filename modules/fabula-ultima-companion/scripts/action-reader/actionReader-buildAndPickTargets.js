@@ -213,28 +213,40 @@ function getFocusContext(context) {
   const chosen = context?.chosenAction ?? null;
   const props = chosen?.itemSnapshot?.props ?? chosen?.item?.system?.props ?? {};
   const focusRaw = AR.normalizeText(chosen?.row?.raw?.[AR.keys.actionPatternTargetFocusKey] ?? "");
+  const focusStatus = AR.toString(chosen?.row?.raw?.[AR.keys.actionPatternFocusStatusKey] ?? "", "").trim();
 
   return {
     damageType: AR.normalizeDamageType(props?.[AR.keys.typeDamage]),
     defenseTarget: AR.getItemDefenseTarget(props),
-    focus: focusRaw || "auto"
+    focus: focusRaw || "auto",
+    focusStatus
   };
 }
 
 /*
- * "status_focus:Grappled" → "Grappled"; anything else → null.
- * Authored in the action pattern's Target Focus column, so a new "aim at the
- * creature carrying X" behaviour costs a data edit rather than a new focus mode
- * and a code change per status. The separator is a colon; the status name is
- * matched case-insensitively downstream by getEffectStackCount.
+ * Which status a status_focus / status_avoid row is about. Two accepted shapes:
+ *
+ *   focus = "status_focus"          + focusStatus = "Grappled"   ← author this
+ *   focus = "status_focus:Grappled"                              ← inline form
+ *
+ * The paired form is the one to author. Target Focus is a CSB *select*, and an
+ * inline colon value is not one of its options, so opening the sheet reverts it
+ * to the fallback — the exact regression that silently un-did Dryad's
+ * burn_spread twice. The inline form is still parsed so a script-authored row
+ * (and the shape this started life in) keeps working.
+ *
+ * The status name is matched case-insensitively downstream by getEffectStackCount.
  */
-function parseStatusFocus(focus) {
-  const raw = AR.toString(focus, "");
-  const at = raw.indexOf(":");
-  if (at < 0) return null;
-  if (raw.slice(0, at).trim().toLowerCase() !== "status_focus") return null;
-  return raw.slice(at + 1).trim() || null;
+function parsePrefixedFocus(focusCtx, prefix) {
+  const raw = AR.toString(focusCtx?.focus, "").trim();
+  const head = raw.includes(":") ? raw.slice(0, raw.indexOf(":")).trim() : raw;
+  if (head.toLowerCase() !== prefix) return null;
+  const inline = raw.includes(":") ? raw.slice(raw.indexOf(":") + 1).trim() : "";
+  return inline || AR.toString(focusCtx?.focusStatus, "").trim() || null;
 }
+
+function parseStatusFocus(focusCtx) { return parsePrefixedFocus(focusCtx, "status_focus"); }
+function parseStatusAvoid(focusCtx) { return parsePrefixedFocus(focusCtx, "status_avoid"); }
 
 function affinityMultiplier(candidate, damageType) {
   if (!damageType) return 1;
@@ -511,10 +523,23 @@ export async function buildAndPickActionReaderTargets(context, options = {}) {
     // pool is left untouched, so the action still resolves against a legal target
     // instead of the AI stalling on an empty pick; gate the ROW on
     // enemy_has_status when it must not fire at all.
-    const statusFocusName = parseStatusFocus(focusCtx.focus);
+    const statusFocusName = parseStatusFocus(focusCtx);
     if (statusFocusName) {
       const holders = legalCandidates.filter(c => AR.getEffectStackCount(c.actor, statusFocusName) >= 1);
       if (holders.length) legalCandidates = holders;
+    }
+
+    // `status_avoid:<Status>` — the inverse: prefer candidates who do NOT yet
+    // carry the status. What a "work through the group one at a time" move needs
+    // (the Imp's Strip skills: take from someone who still has something), where
+    // status_focus is what its follow-up needs. Same narrowing-not-reweighting
+    // rule, and the same fail-open: if EVERYONE already has it the pool is left
+    // untouched, so the action still resolves — gate the ROW on
+    // enemy_lacks_status when it should not fire at all.
+    const statusAvoidName = parseStatusAvoid(focusCtx);
+    if (statusAvoidName) {
+      const free = legalCandidates.filter(c => AR.getEffectStackCount(c.actor, statusAvoidName) < 1);
+      if (free.length) legalCandidates = free;
     }
 
     context.targetCandidatesAll = allCandidates;

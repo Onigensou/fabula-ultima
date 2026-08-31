@@ -4064,6 +4064,7 @@ const EFFECT_KIND_DISPATCH = {
   destroy_summon:      applyDestroySummonEffect,
   add_target:          applyAddTargetEffect,
   save_check:          applySaveCheckEffect,
+  contest_check:       applyContestCheckEffect,
   group_check:         applyGroupCheckEffect,
   adjust_grant:        applyAdjustGrantEffect,
   roll_loot_table:     applyRollLootTableEffect,
@@ -4199,6 +4200,7 @@ export const EFFECT_KIND_LABELS = {
   destroy_summon:      "Destroy Summon (shatter/despawn one of my summons)",
   add_target:          "Add Target",
   save_check:          "Save Check (each target rolls vs a DL; failures → save_failed_targets)",
+  contest_check:       "Contest Check (performer and target both roll, higher wins, ties reroll; losers → contest_lost_targets)",
   group_check:         "Group Check (FU leader + helpers vs a DL; leader result → VAR_<gc_var>)",
   adjust_grant:        "Adjust Grant (op on the action's restore — multiply/set/cap/floor/add)",
   roll_loot_table:     "Roll Loot Table",
@@ -4389,6 +4391,10 @@ const EFFECT_KIND_PREVIEW = {
   // save_check rolls per-target saves at RESOLVE (via ONI.CheckRequester) — the
   // outcome isn't known at card time, so no inline preview row.
   save_check: () => null,
+
+  // contest_check rolls BOTH sides at RESOLVE — same reason as save_check, and
+  // additionally the performer's own roll doesn't exist yet at card time.
+  contest_check: () => null,
 
   // adjust_charges mutates a target's charge-AE at apply time — no card row.
   adjust_charges: () => null,
@@ -6987,28 +6993,83 @@ async function applyEquipSwapEffect(row, ctx) {
 // attempt. The flag is cleared at battle end by battle-end-cleanup's restore pass,
 // so the item reappears (unequipped) next scene.
 //
-// Target resolution (first match wins):
+// ⚠ It is NOT cleared by a gauntlet continuation. Battle-end's follow-up branch
+// returns before the restore, and the battle-START sweep skips an in-place
+// reinforce — so a sequel fight inherits whatever was taken. That is the point
+// of the Imp's Strip skills: what it steals stays stolen until the fight is
+// genuinely over.
+//
+// WHOSE item (first match wins):
+//   row.target_ref → hide on EVERY resolved token's actor (the Imp's Strip
+//                    skills aim it at `contest_lost_targets`)
+//   else           → the reactor itself (Encyclopedia's self-hide)
+//
+// WHICH item (first match wins):
 //   row.hide_item_id   → that embedded item id
 //   row.hide_item_name → first item with that name
+//   row.hide_item_slot → whatever that EQUIPMENT SLOT currently holds:
+//                        armor | main | off | weapon (main, else off) |
+//                        accessory1 | accessory2 | accessory (1, else 2)
 //   else               → the gear that granted this skill (ctx.skill.container)
-async function applyHideItemEffect(row, ctx) {
-  const actor = ctx.reactorActor;
-  if (!actor) return { ok: false, kind: "hide_item", reason: "no-actor" };
+//
+// The slot mode is the one that makes "strip their armour" authorable at all:
+// the other three need to already know the item, which an attacker never does.
+const HIDE_ITEM_SLOT_ALIASES = {
+  armor: ["armor"], armour: ["armor"],
+  main: ["main"], main_hand: ["main"], mainhand: ["main"],
+  off: ["off"], off_hand: ["off"], offhand: ["off"],
+  // "weapon" is the useful authoring unit for a disarm: take what they are
+  // actually holding, main hand first, and fall through to a one-handed
+  // off-hand rather than no-op'ing on a left-handed loadout.
+  weapon: ["main", "off"],
+  accessory1: ["accessory1"], accessory2: ["accessory2"],
+  accessory: ["accessory1", "accessory2"],
+};
+
+function resolveHideItemBySlot(actor, slotRaw, slots) {
+  const keys = HIDE_ITEM_SLOT_ALIASES[String(slotRaw ?? "").trim().toLowerCase()];
+  if (!keys) return null;
+  for (const key of keys) {
+    const slot = slots.find((s) => s.key === key);
+    const id = slot?.currentItemId ?? null;
+    if (id) {
+      const item = actor.items?.get?.(id) ?? null;
+      if (item) return item;
+    }
+  }
+  return null;
+}
+
+// Hide ONE item on ONE actor. Returns an `applied` entry or null.
+async function hideItemOnActor(row, ctx, actor) {
+  if (!actor) return { ok: false, reason: "no-actor" };
+
+  const { applyEquipmentSwap, gatherEquipmentSlots } = await import("./equipment-swap.js");
+  // includeArmor: armor is omitted from the slot list by default (RAW forbids
+  // mid-combat armor swaps, so the Equipment card never offers it). A hide is
+  // not a swap — it is gear being taken off you — so the armor slot has to be
+  // visible here or `hide_item_slot: "armor"` could never resolve anything.
+  const slots = gatherEquipmentSlots(actor, { includeArmor: true }).slots ?? [];
 
   let item = null;
   const explicitId = String(row.hide_item_id ?? "").trim();
   const explicitName = String(row.hide_item_name ?? "").trim().toLowerCase();
+  const slotRaw = String(row.hide_item_slot ?? "").trim();
   if (explicitId) item = actor.items?.get?.(explicitId) ?? null;
   if (!item && explicitName) {
     item = actor.items?.find?.((i) => String(i.name ?? "").trim().toLowerCase() === explicitName) ?? null;
   }
-  if (!item) {
+  if (!item && slotRaw) item = resolveHideItemBySlot(actor, slotRaw, slots);
+  if (!item && !slotRaw) {
     const containerId = String(ctx.skill?.system?.container ?? "").trim();
     if (containerId) item = actor.items?.get?.(containerId) ?? null;
   }
   if (!item) {
-    warn(`skill-effects.hide_item: no item to hide on ${actor.name}`);
-    return { ok: false, kind: "hide_item", reason: "no-item" };
+    // A slot-addressed hide that finds nothing is a NORMAL outcome — the target
+    // was already stripped, or fights bare-handed. Log it, don't warn.
+    if (slotRaw) log(`skill-effects.hide_item: ${actor.name} has nothing in slot "${slotRaw}" — nothing to take`);
+    else warn(`skill-effects.hide_item: no item to hide on ${actor.name}`);
+    return { ok: false, reason: "no-item" };
   }
 
   // Idempotent: if already hidden, do nothing. Re-running would be a no-op at
@@ -7017,22 +7078,23 @@ async function applyHideItemEffect(row, ctx) {
   // slot. Bail before that can desync the equip slot from isEquipped.
   if (item.flags?.["fabula-ultima-companion"]?.hiddenUntilBattleEnd) {
     log(`skill-effects.hide_item: "${item.name}" already hidden on ${actor.name} — no-op`);
-    return { ok: true, kind: "hide_item", reason: "already-hidden", applied: [] };
+    return { ok: true, reason: "already-hidden", entry: null };
   }
 
   // 1) Unequip from whichever slot wears it — reuse applyEquipmentSwap so the
   //    actor's slot props, isEquipped, and item-resident AEs all stay coherent
   //    (empties that hand → "Unarmed", leaving the other slots untouched).
+  //    allowArmor mirrors includeArmor above: without it applyEquipmentSwap
+  //    silently DROPS an armor selection, and the armour's own AEs — the DEF it
+  //    grants — would stay live on an actor who is no longer wearing it.
   try {
-    const { applyEquipmentSwap, gatherEquipmentSlots } = await import("./equipment-swap.js");
-    const slots = gatherEquipmentSlots(actor).slots ?? [];
     const sel = {};
     let wasWorn = false;
     for (const s of slots) {
       sel[s.key] = s.currentItemId ?? null;
       if (s.currentItemId === item.id) { sel[s.key] = null; wasWorn = true; }
     }
-    if (wasWorn) await applyEquipmentSwap(actor, sel);
+    if (wasWorn) await applyEquipmentSwap(actor, sel, { allowArmor: true });
   } catch (e) { warn("skill-effects.hide_item: unequip via applyEquipmentSwap threw", e); }
 
   // 2) Flag hidden + force isEquipped false. The flag drops it out of
@@ -7044,11 +7106,50 @@ async function applyHideItemEffect(row, ctx) {
     });
   } catch (e) {
     warn("skill-effects.hide_item: flag update threw", e);
-    return { ok: false, kind: "hide_item", reason: "update-threw" };
+    return { ok: false, reason: "update-threw" };
   }
 
   log(`skill-effects.hide_item: ${actor.name} — "${item.name}" unequipped + hidden until battle end`);
-  return { ok: true, kind: "hide_item", applied: [{ actor: actor.uuid, itemId: item.id, itemName: item.name }] };
+  return { ok: true, entry: { actor: actor.uuid, itemId: item.id, itemName: item.name } };
+}
+
+async function applyHideItemEffect(row, ctx) {
+  // Subjects. De-duplicated by actor, unlike save_check's per-slot multiplicity:
+  // hiding the same item twice is a no-op by construction, so slot count carries
+  // no meaning here.
+  const targetRef = String(row.target_ref ?? "").trim();
+  let actors = [];
+  if (targetRef) {
+    try {
+      const tr = await resolveTargetRef(targetRef, ctx);
+      const seen = new Set();
+      for (const tok of (tr.ok && Array.isArray(tr.tokens) ? tr.tokens : [])) {
+        const a = tok.actor;
+        if (!a || seen.has(a.uuid)) continue;
+        seen.add(a.uuid);
+        actors.push(a);
+      }
+    } catch (e) { warn(`skill-effects.hide_item: target_ref "${targetRef}" resolve threw`, e); }
+    if (!actors.length) {
+      log(`skill-effects.hide_item: target_ref "${targetRef}" resolved to nobody`);
+      return { ok: true, kind: "hide_item", applied: [], reason: "no-targets" };
+    }
+  } else {
+    const self = ctx.reactorActor;
+    if (!self) return { ok: false, kind: "hide_item", reason: "no-actor" };
+    actors = [self];
+  }
+
+  const applied = [];
+  let anyOk = false;
+  for (const actor of actors) {
+    const res = await hideItemOnActor(row, ctx, actor);
+    if (res.ok) anyOk = true;
+    if (res.entry) applied.push(res.entry);
+  }
+  // ok reflects "the effect ran", not "it found something" — a strip that lands
+  // on an already-bare target must not abort the rest of the chain.
+  return { ok: true, kind: "hide_item", applied, reason: anyOk ? undefined : "nothing-hidden" };
 }
 
 // consume_item — spend ONE unit of a carried consumable. The permanent twin of
@@ -8833,6 +8934,207 @@ async function applySaveCheckEffect(row, ctx) {
   const totalFails = [...failCount.values()].reduce((a, b) => a + b, 0);
   log(`save_check: DL ${dl} ${attrA}+${attrB} — ${slotActorUuids.length} roll(s), ${totalFails} failed save(s) across ${failed.length} target(s) / ${passed.length} passed`);
   return { ok: true, kind: "save_check", failed, passed, tiers: ctx.saveTierTokenUuids.map((p) => p.length) };
+}
+
+// ── contest_check ───────────────────────────────────────────────────────────
+//
+// A Fabula Ultima CONTEST: the performer and each target both roll a Check with
+// two Attributes, and the HIGHER TOTAL WINS. RAW ties are re-rolled — here by
+// BOTH sides, and only for the targets still tied — until the tie breaks or the
+// reroll budget runs out.
+//
+// DISTINCT from `save_check`, which rolls only the target against a static
+// (possibly formula-derived) DL. A contest is the right shape whenever the
+// performer's own roll is part of the fiction ("beat my sleight of hand"), and
+// it is the only shape where the performer can roll badly and simply lose.
+//
+// Author shape (effect_table row):
+//   { effect_label, effect_kind: "contest_check",
+//     target_ref:      "action_targets",   // who contests (default action_targets)
+//     contest_attr1:   "dex",              // the PERFORMER's two Attributes
+//     contest_attr2:   "ins",
+//     contest_bonus:   "5",                // performer's flat modifier (number OR formula)
+//     save_attr1:      "dex",              // the TARGETS' two Attributes (shared
+//     save_attr2:      "ins",              //   with save_check — same columns)
+//     save_mode:       "interactive",      // how the TARGETS roll (shared)
+//     contest_max_rerolls: "5" }
+//
+// Targets that LOSE the contest land in `contest_lost_targets`; targets that WIN
+// land in `contest_won_targets`. Both are ordinary target sources, so the
+// consequence is authored as the next row(s) in the chain.
+//
+// Runs at RESOLVE, after the Action Card is confirmed — same placement as
+// save_check, so a redirect has already settled the final target set.
+//
+// ── the two failure directions, and why they differ ─────────────────────────
+// An UNRUNNABLE contest (no CheckRequester, the request threw, a slot returned
+// nothing) makes the target LOSE. That is save_check's "a check you don't make,
+// you fail" carried over, and it is what keeps the effect meaningful in the
+// harness and the offline sim, which have no CheckRequester at all.
+//
+// An UNBROKEN TIE — the budget exhausted with both sides still level — goes the
+// other way: the TARGET WINS and the effect does not land. A contest is the
+// performer's claim to make, so a contest that never resolves is a contest they
+// did not win. (At two 2d rolls a run of 5 ties is ~1 in 10^7; this branch is
+// insurance, not a design lever.)
+const CONTEST_MAX_REROLLS_CAP = 20;
+
+async function rollContestPerformer(actor, { attrA, attrB, mods, label }) {
+  const CR = globalThis.ONI?.CheckRequester;
+  if (!CR?.request) return null;
+  try {
+    // Always SILENT and non-invokable: the performer is an NPC acting inside the
+    // director's turn, and an interactive panel here would block on the GM.
+    // hiddenDl keeps the chat card from advertising a DL the contest never used.
+    const res = await CR.request([actor.uuid], {
+      attrA, attrB, dl: 0, label, mode: "silent",
+      allowInvokes: false, postChat: true, hiddenDl: true, modifiers: mods,
+    });
+    const total = Number(res?.[0]?.total);
+    return Number.isFinite(total) ? total : null;
+  } catch (e) {
+    warn("contest_check: performer roll threw", e);
+    return null;
+  }
+}
+
+async function applyContestCheckEffect(row, ctx) {
+  const targetRef = String(row.target_ref ?? "action_targets").trim() || "action_targets";
+  let tokens = [];
+  try {
+    const tr = await resolveTargetRef(targetRef, ctx);
+    if (tr.ok && Array.isArray(tr.tokens)) tokens = tr.tokens;
+  } catch (e) { warn(`contest_check: target_ref "${targetRef}" resolve threw`, e); }
+
+  ctx.contestLostTargetUuids = [];
+  ctx.contestLostTokenUuids  = [];
+  ctx.contestWonTargetUuids  = [];
+  ctx.contestWonTokenUuids   = [];
+
+  const performer = ctx.reactorActor ?? null;
+  if (!performer) {
+    warn(`contest_check: no performer for "${row.effect_label}"`);
+    return { ok: false, kind: "contest_check", reason: "no-performer" };
+  }
+  if (!tokens.length) {
+    log(`contest_check: no targets for "${row.effect_label}"`);
+    return { ok: true, kind: "contest_check", lost: [], won: [] };
+  }
+
+  // Per-SLOT actor list, deliberately NOT deduped — the same actor can occupy
+  // several target slots (a Protector who redirected an ally's slot onto
+  // themselves contests once per exposure). A target LOSES if ANY of its slots
+  // lost: extra exposure never helps you, exactly as in save_check.
+  const actorToToken = new Map();
+  const slotActorUuids = [];
+  for (const tok of tokens) {
+    const a = tok.actor; if (!a) continue;
+    slotActorUuids.push(a.uuid);
+    if (!actorToToken.has(a.uuid)) actorToToken.set(a.uuid, tok.document?.uuid ?? tok.uuid ?? null);
+  }
+  const uniqueActorUuids = [...new Set(slotActorUuids)];
+  if (!slotActorUuids.length) {
+    log(`contest_check: no target actors for "${row.effect_label}"`);
+    return { ok: true, kind: "contest_check", lost: [], won: [] };
+  }
+
+  const pAttrA = (String(row.contest_attr1 ?? "dex").trim().toUpperCase()) || "DEX";
+  const pAttrB = (String(row.contest_attr2 ?? "ins").trim().toUpperCase()) || "INS";
+  const tAttrA = (String(row.save_attr1 ?? "dex").trim().toUpperCase()) || "DEX";
+  const tAttrB = (String(row.save_attr2 ?? "ins").trim().toUpperCase()) || "INS";
+
+  let bonus = 0;
+  try {
+    const resolver = buildSkillResolver({ actor: performer, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0 });
+    bonus = Number(evaluateFormula(String(row.contest_bonus ?? "0"), resolver, 0)) || 0;
+  } catch (e) { warn("contest_check: contest_bonus eval threw", e); }
+  const perfMods = bonus ? [{ label: `${performer.name} bonus`, value: bonus }] : [];
+
+  const label = ctx.skill?.name ?? row.effect_label ?? "Contest";
+  const mode = String(row.save_mode ?? "interactive").trim().toLowerCase() === "silent" ? "silent" : "interactive";
+  const maxRerolls = Math.min(
+    CONTEST_MAX_REROLLS_CAP,
+    Math.max(0, Math.floor(Number(String(row.contest_max_rerolls ?? "5").trim()) || 0)),
+  );
+
+  const CR = globalThis.ONI?.CheckRequester;
+  const lostSlots = new Set();     // actorUuid → lost at least one slot
+  let pending = [...slotActorUuids];
+  let round = 0;
+  let lastPerformerTotal = null;
+
+  while (pending.length) {
+    const performerTotal = await rollContestPerformer(performer, { attrA: pAttrA, attrB: pAttrB, mods: perfMods, label });
+    lastPerformerTotal = performerTotal;
+
+    // No performer roll ⇒ no contest can run. House rule: the targets LOSE, so a
+    // headless/sim context still exercises the consequence.
+    if (performerTotal == null || !CR?.request) {
+      warn(`contest_check: unrunnable (performerTotal=${performerTotal}, CheckRequester=${!!CR?.request}) — ${pending.length} slot(s) default to LOSS`);
+      for (const u of pending) lostSlots.add(u);
+      pending = [];
+      break;
+    }
+
+    // dl = performerTotal + 1 so the panel's own PASS/FAIL badge reads true: a
+    // displayed pass is a real win. A tie displays as a fail and is re-rolled
+    // immediately below, which is the one moment the badge is ahead of itself.
+    let results = null;
+    try {
+      results = await CR.request(pending, {
+        attrA: tAttrA, attrB: tAttrB, dl: performerTotal + 1, label,
+        mode, allowInvokes: true, postChat: true,
+      });
+    } catch (e) { warn("contest_check: target roll threw", e); }
+
+    if (!Array.isArray(results)) {
+      for (const u of pending) lostSlots.add(u);
+      pending = [];
+      break;
+    }
+
+    // Bucket this round's slots. A slot with no readable total is a loss.
+    const byActor = new Map();
+    for (const r of results) {
+      if (!r?.actorUuid) continue;
+      const arr = byActor.get(r.actorUuid) ?? [];
+      arr.push(Number(r.total));
+      byActor.set(r.actorUuid, arr);
+    }
+    const stillTied = [];
+    for (const u of pending) {
+      const arr = byActor.get(u) ?? [];
+      const total = arr.length ? arr.shift() : NaN;   // one entry per pending slot
+      byActor.set(u, arr);
+      if (!Number.isFinite(total)) { lostSlots.add(u); continue; }
+      if (total > performerTotal) continue;
+      if (total < performerTotal) { lostSlots.add(u); continue; }
+      stillTied.push(u);                              // exact tie → contest again
+    }
+
+    if (!stillTied.length) { pending = []; break; }
+    if (round >= maxRerolls) {
+      // Budget spent and still level. The performer did not win, so nothing lands.
+      log(`contest_check: ${stillTied.length} slot(s) still tied after ${round} reroll(s) — target keeps it`);
+      
+      pending = [];
+      break;
+    }
+    round += 1;
+    log(`contest_check: tie at ${performerTotal} — rerolling ${stillTied.length} slot(s) (reroll ${round}/${maxRerolls})`);
+    try { ui.notifications?.info?.(`${label}: contest tied at ${performerTotal} — rerolling.`); } catch (_) {}
+    pending = stillTied;
+  }
+
+  const lost = uniqueActorUuids.filter((u) => lostSlots.has(u));
+  const won  = uniqueActorUuids.filter((u) => !lostSlots.has(u));
+  ctx.contestLostTargetUuids = lost;
+  ctx.contestWonTargetUuids  = won;
+  for (const u of lost) { const t = actorToToken.get(u); if (t) ctx.contestLostTokenUuids.push(t); }
+  for (const u of won)  { const t = actorToToken.get(u); if (t) ctx.contestWonTokenUuids.push(t); }
+
+  log(`contest_check: ${performer.name} ${pAttrA}+${pAttrB}${bonus ? `+${bonus}` : ""} rolled ${lastPerformerTotal ?? "?"} vs ${tAttrA}+${tAttrB} — ${lost.length} lost / ${won.length} won (${round} reroll(s))`);
+  return { ok: true, kind: "contest_check", lost, won, performerTotal: lastPerformerTotal, rerolls: round };
 }
 
 // ── group_check ─────────────────────────────────────────────────────────────

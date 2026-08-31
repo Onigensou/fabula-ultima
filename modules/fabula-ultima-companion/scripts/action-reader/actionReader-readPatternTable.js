@@ -79,6 +79,9 @@ const CONDITION_ALIASES = Object.freeze({
   enemy_has_status: "enemy_has_status",
   "enemy has status": "enemy_has_status",
 
+  enemy_lacks_status: "enemy_lacks_status",
+  "enemy lacks status": "enemy_lacks_status",
+
   ally_has_status: "ally_has_status",
   "ally has status": "ally_has_status",
 
@@ -141,6 +144,7 @@ function getConditionLabel(conditionKey) {
     case "target_count": return "Targets Available";
     case "ally_count": return "Ally Count";
     case "enemy_has_status": return "Enemy Has Status";
+    case "enemy_lacks_status": return "Enemy Lacks Status";
     case "ally_has_status": return "Ally Has Status";
     case "ally_in_crisis": return "Ally In Crisis";
     case "creature_has_status": return "Creature Has Status";

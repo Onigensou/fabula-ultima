@@ -1780,7 +1780,13 @@ const Prep = {
     // does this, but a battle that didn't shut down cleanly (crash, legacy-flow
     // end, manual re-start) would leave the item stranded — so re-running it at
     // battle START guarantees the item is back (UNEQUIPPED) for the new fight.
-    try {
+    //
+    // ⚠ NOT on an in-place reinforce. A gauntlet sequel (Wandering Flame's
+    // ambush, any battle-followup rule) is the SAME fight continuing on a fresh
+    // dCombat: battle-end's follow-up branch already returns before its own
+    // restore pass, and handing the gear back here would undo that from the
+    // other end. What was taken stays taken until the fight genuinely ends.
+    if (!inPlace) try {
       const partyActors = (director.dCombat?.combatants ?? [])
         .filter((c) => c.side === "party")
         .map((c) => c.actorDoc)
