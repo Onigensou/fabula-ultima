@@ -2955,7 +2955,17 @@ export function resolveAccuracyParts({ actor = null, props = null, kind = null, 
   const add = (key, label) => {
     if (seen.has(key)) return;   // a MIG+MIG weapon must not add check_mod_mig twice
     seen.add(key);
-    const total = _mnum(p[key]);
+    // Props FIRST, AE changes only as a fallback — and never both, or a PC
+    // double-counts. On a PC the key is a CSB template column, so an AE writing
+    // it has already been folded into props by prepareData. On an NPC the column
+    // does NOT exist (`check_mod_accuracy` is absent from every NPC sheet), CSB
+    // drops an AE that targets an undeclared prop, and the props read returns
+    // nothing — which is why Blind did nothing whatsoever to a monster even after
+    // its change was authored. Falling back to the AE sum makes the key work on
+    // any actor without re-stamping the NPC template (the same column-independent
+    // trick heal_receiving_mod_all uses). `key in p` is the discriminator, not the
+    // value: a declared-but-zero column must still take the props path.
+    const total = (p && key in p) ? _mnum(p[key]) : _mnum(sumAeChangeKey(actor, key));
     if (total !== 0) parts.push(...attributeModParts({ actor, key, total, label }));
   };
   add("check_mod_all", "Check (All)");

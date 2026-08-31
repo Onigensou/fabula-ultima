@@ -876,7 +876,7 @@
     },
     "Crysta / Crescent Cut": {
       "caster": "Crysta",
-      "element": "light",
+      "element": "physical",
       "hasDamage": true,
       "hasHealing": false,
       "offensive": true,
