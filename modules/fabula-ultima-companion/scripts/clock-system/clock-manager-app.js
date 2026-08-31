@@ -229,6 +229,7 @@ function rowHtml(clock) {
   const tags = [];
   if (clock.lifecycle !== LIFECYCLE.MANUAL) tags.push(clock.lifecycle);
   if (clock.visibility === VISIBILITY.GM) tags.push("gm-only");
+  if (clock.requiresAction) tags.push("costs-action");
   if (clock.group) tags.push(`${clock.group.mode}:${clock.group.id}`);
   if (clock.state !== CLOCK_STATE.ACTIVE) tags.push(clock.state);
 
@@ -288,6 +289,14 @@ function createTabHtml() {
     <label class="cm-lbl cm-check">
       <input id="cm-hiddenDl" type="checkbox" checked /> Hide DL
     </label>
+  </div>
+
+  <h3>In combat <span class="cm-sub">who may move it during a conflict</span></h3>
+  <div class="cm-fields cm-fields-4">
+    <label class="cm-lbl cm-check" title="While a Battle Director conflict is live, players can only move this clock with the Objective action, which spends their turn. Outside a conflict the panel stays freely clickable, and the GM is never gated.">
+      <input id="cm-requiresAction" type="checkbox" /> Costs an action
+    </label>
+    <div></div><div></div><div></div>
   </div>
 
   <h3>On a failed roll</h3>
@@ -479,10 +488,14 @@ export const ClockManager = {
       sections: Number(val("#cm-failSections")) || 1,
     };
 
+    // Objective-gated: players need the Objective action to move it during a
+    // conflict. Passes straight through every preset (they spread `...spec`).
+    const requiresAction = Boolean(root.querySelector("#cm-requiresAction")?.checked);
+
     const build = preset[shape] ?? preset.progress;
     // `preset.*` validates and throws on a bad spec; the store assigns the id.
     let spec;
-    try { spec = build({ name, sections, lifecycle, check, failure }); }
+    try { spec = build({ name, sections, lifecycle, check, failure, requiresAction }); }
     catch (e) { ui.notifications?.error(`Clocks: ${e.message}`); return; }
 
     const made = await api().create(spec);

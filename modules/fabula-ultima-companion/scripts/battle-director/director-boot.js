@@ -46,6 +46,7 @@ import { registerRemotePickResponder } from "./remote-pick.js";
 import { WeaponModePicker } from "./weapon-mode-picker.js";
 import { AttributePairPicker } from "./attribute-pair-picker.js";
 import { DieSwapPicker } from "./check-die-swap-picker.js";
+import { ListPicker } from "./list-picker.js";
 import { BattlefieldActionCard } from "./action-card.js";
 import * as LegacySuppressor from "./legacy-suppressor.js";
 import { runDirectorInit, cleanupDirectorSpawnedTokens, initDirectorEntrance, spawnLiveDirectorTokens } from "./director-init.js";
@@ -151,6 +152,10 @@ async function preflightCleanup() {
   try { AttributePairPicker.despawnAll(); } catch {}
   try { DieSwapPicker.despawnAll(); } catch {}
   try { BattlefieldActionCard.despawnAll(); } catch {}
+  // ListPicker backs the weapon-mode / skill / item / Ultima / Objective menus.
+  // It is torn down at STOPPED, but was missing from this scrub, so a picker
+  // orphaned by a crash rather than a clean stop survived into the next boot.
+  try { ListPicker.despawnAll(); } catch {}
   try { PassiveManager.despawn(); } catch {}
 
   // 3. If the legacy suppressor is still active without a live instance, that
@@ -387,6 +392,10 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
   try { AttributePairPicker.despawnAll(); } catch {}
   try { DieSwapPicker.despawnAll(); } catch {}
   try { BattlefieldActionCard.despawnAll(); } catch {}
+  // ListPicker backs the weapon-mode / skill / item / Ultima / Objective menus.
+  // It is torn down at STOPPED, but was missing from this scrub, so a picker
+  // orphaned by a crash rather than a clean stop survived into the next boot.
+  try { ListPicker.despawnAll(); } catch {}
   try { PassiveManager.despawn(); } catch {}
   // Surface registry — the despawnAll calls above remove DOM (the observer
   // unregisters each), but wipe the registry too so any explicitly-registered

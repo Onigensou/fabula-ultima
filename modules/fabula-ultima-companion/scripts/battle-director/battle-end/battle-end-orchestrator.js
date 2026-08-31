@@ -22,6 +22,17 @@ import { evaluateUndying } from "./undying/undying.js";
 function detectOutcome(director) {
   const dc = director.dCombat;
   if (!dc) return "victory";
+  // An explicit outcome set by content wins over inference. Run Away stamps
+  // "escaped" (via the `set_battle_outcome` effect) BEFORE its leave_combat
+  // empties the party side — order that matters, because an empty party side
+  // reaches the `party.length > 0` guard below and falls through to "victory",
+  // handing a fleeing party the full reward prompt.
+  //
+  // In-memory by design: persistence.save returns early once dCombat.ended is
+  // set, so there is no F5 window between dc.end() and the battle-end sequence
+  // for a persisted marker to cover.
+  const forced = String(dc.outcomeOverride ?? "").trim().toLowerCase();
+  if (forced === "escaped" || forced === "victory" || forced === "defeat") return forced;
   const combatants = dc.combatants ?? [];
   const enemies = combatants.filter(c => c.side === "enemy");
   const party  = combatants.filter(c => c.side === "party");

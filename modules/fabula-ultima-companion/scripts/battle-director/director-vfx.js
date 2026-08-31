@@ -135,6 +135,8 @@ function namecardSpecFor(ar) {
     case "Hinder":    return { title: "Hinder", icon: "💢" };
     case "Equipment": return { title: "Equip", icon: "🔄" };
     case "Item":      return { title: ar?.itemName ?? ar?.item?.name ?? "Item", icon: "🧪" };
+    // ❗️ is the Objective glyph the keyword registry already uses for the term.
+    case "Objective": return { title: skillName ?? "Objective", icon: "❗️" };
     case "Spell":     return { title: skillName ?? "Spell", icon: "📕" };
     case "Skill":
       return isSpell

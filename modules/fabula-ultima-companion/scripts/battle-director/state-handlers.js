@@ -83,6 +83,7 @@ import {
   ULTIMA_COMMANDS,
   DOMINATION_STATE_AE_NAME,
 } from "./domination.js";
+import { collectObjectives, validateObjectivePick, findObjectiveItem } from "./objectives.js";
 import { canPay as canPayUltima, payPoint as payUltimaPoint } from "./invoke/invoke-core.js";
 import { emitCrestsHidden } from "./domination-crest.js";
 
@@ -1632,6 +1633,15 @@ function describeActionForRewind(ar) {
     case "Study":
       if (ar.roll?.isFumble) return `${attName} fumbled Study on ${ar.target?.name ?? "target"}`;
       return `${attName} studied ${ar.target?.name ?? "target"} (${ar.tier?.name ?? "?"})`;
+    case "Objective": {
+      const objName = ar.skillName ?? "Objective";
+      const names = (ar.targets ?? []).map((t) => t.name).filter(Boolean).join(", ");
+      const self = (ar.targets ?? []).length === 1
+        && ar.targets[0]?.tokenUuid === ar.attacker?.tokenUuid;
+      if (ar.roll?.isFumble) return `${attName} fumbled ${objName}`;
+      if (!names || self) return `${attName} used ${objName}`;
+      return `${attName} used ${objName} on ${names}`;
+    }
     case "Skill": {
       const skillName = ar.skillName ?? "Skill";
       const targetNames = (ar.targets ?? []).map((t) => t.name).join(", ") || "target";
@@ -2486,6 +2496,11 @@ function applyComposedBundleAndAdvance(director, winnerBundle) {
       if (Array.isArray(winnerBundle.targetUuids)) {
         director.ctx.pickedTargetUuids = [...winnerBundle.targetUuids];
       }
+    } else if (winnerBundle.command === "Objective") {
+      // Targets are picked in TARGET from the option's own skill_target, not in
+      // compose — the option Item isn't resolved until the GM has validated the
+      // pick. Only the id travels.
+      director.ctx.pickedTargetUuids = null;
     }
     // Guard: bundle.coverTokenUuid (null = skip, string = ally) is
     //   consumed by TARGET's Guard branch via ctx._composedBundle.
@@ -2657,6 +2672,18 @@ const Declare = {
     // with the broadcast (the player client has no DirectorCombat). RAW p.74.
     const studiedTokenUuids = director.dCombat?.studiedTokensFor?.(snap.actorId) ?? [];
 
+    // Objective options — world default Items + this creature's grant/deny AEs +
+    // the battle plan's lists. Computed HERE rather than on the combatant
+    // snapshot because the battle-wide half lives on ctx.payload.battlePlan and
+    // snapshotDirectorCombatant only receives a combatant. Ships in the compose
+    // menuSpec alongside `eligible` for exactly the reason that does: the
+    // player's client can see neither world Items nor the plan. Plain
+    // serializable rows. See [[objectives.js]].
+    let objectiveRows = [];
+    try {
+      objectiveRows = collectObjectives({ actor, director });
+    } catch (e) { warn("DECLARE: collectObjectives threw — Objective blade will grey", e); }
+
     // GM-local compose chain. The cancel token lets us tear it down when
     // the player wins the race.
     const cancelToken = makeCancelToken();
@@ -2669,6 +2696,7 @@ const Declare = {
       cancelSentinel: cancelToken.promise,
       combatId: director.combatId,
       actorUuid: snap.actorUuid,
+      objectives: objectiveRows,
     }).catch((e) => {
       warn("DECLARE: local composeAction threw", e);
       return { cancelled: true, reason: "exception" };
@@ -2705,6 +2733,7 @@ const Declare = {
       snap,
       eligible: { enemies: eligibleEnemies, allies: eligibleAllies, studiedTokenUuids },
       freeActionGrant,
+      objectives: objectiveRows,
     };
     const composeRecipients = [...(ownerUserId ? [ownerUserId] : []), ...secondaryGmIds];
 
@@ -2890,6 +2919,29 @@ const Declare = {
         if (hasIgnoreActionGating(uActor)) { refuse("already in Domination State."); return; }
         if (readDominancePoints(uActor) < 1) { refuse("no Dominance Point available."); return; }
       }
+    }
+
+    // Objective backstop. The other commands trust their bundle payload (a
+    // Skill's skillUuid is taken on faith), but Objective's whole point is that
+    // some options are granted PER CREATURE — so a forged or stale id from a
+    // player client would hand anyone any option. Re-derive from the LIVE actor
+    // (not the frozen snap, not the list we broadcast a moment ago) and refuse
+    // anything that isn't currently available. Same posture as the Ultima
+    // backstop above. See [[objectives.js]].
+    if (winnerBundle.command === "Objective") {
+      const oActor = await fromUuid(snap.tokenUuid).then((t) => t?.actor ?? null).catch(() => null)
+        ?? await fromUuid(snap.actorUuid).catch(() => null);
+      const row = validateObjectivePick({ actor: oActor, director, id: winnerBundle.objectiveId });
+      if (!row) {
+        warn(`DECLARE: Objective "${winnerBundle.objectiveId}" refused for ${snap.name}`);
+        ui.notifications?.warn(`That Objective action isn't available right now.`);
+        director.enqueue({ type: INTENTS.TIMEOUT });
+        return;
+      }
+      // Stamp the VALIDATED row so TARGET reads the GM's copy, never the bundle's.
+      director.ctx.objectiveRow = row;
+    } else {
+      director.ctx.objectiveRow = null;
     }
 
     log(`DECLARE: winner=${winnerSource}, command=${winnerBundle.command}`);
@@ -3691,6 +3743,98 @@ const Target = {
     // active skill is deferred to Phase B (Skills). The card surfaces
     // the linked skill names so the player knows what's *coming*, and
     // the commit toast notes the deferred status.
+    // ─── Objective (RAW Core p.72, extended) ──────────────────────────
+    // The option was chosen in the compose chain and VALIDATED against the live
+    // actor at DECLARE (ctx.objectiveRow). This branch only shapes the standard
+    // actionResult from the option's backing Item; COMPUTE / CONFIRM / RESOLVE
+    // are the shared skill path, exactly like the Item action above — which is
+    // why a runtime-granted Objective needs no FSM branch of its own.
+    //
+    // `kind: "Objective"` (not "Skill") so the card, the log and the
+    // creature_targeted_by_action allow-list can all speak about it honestly.
+    if (command === "Objective") {
+      const attackerSnap = director.ctx.turnSnapshot;
+      let attackerActor = null;
+      try { attackerActor = await fromUuid(attackerSnap.actorUuid); } catch {}
+      if (!attackerActor) {
+        ui.notifications?.warn("Couldn't read your Objective actions — actor not found.");
+        director.enqueue({ type: INTENTS.TARGET_BACK });
+        return;
+      }
+      const row = director.ctx.objectiveRow;
+      if (!row?.id) {
+        // Unreachable via the menu (DECLARE refuses an unvalidated pick), so this
+        // means a resume or a forced dispatch landed here without the stamp.
+        ui.notifications?.warn("Pick an Objective action first.");
+        director.enqueue({ type: INTENTS.TARGET_BACK });
+        return;
+      }
+      const objectiveItem = findObjectiveItem(row.id);
+      if (!objectiveItem) {
+        ui.notifications?.error(`The "${row.name}" Objective action could not be resolved.`);
+        director.enqueue({ type: INTENTS.TARGET_BACK });
+        return;
+      }
+
+      const oProps = objectiveItem.system?.props ?? {};
+      const skillTargetText = String(oProps.skill_target ?? "").trim();
+      const objTargeting = await resolveActionTargets(director, attackerSnap, {
+        skillTargetText,
+        attackerActor,
+        skill: objectiveItem,
+        usingPreComposed:    !!director.ctx.pickedTargetUuids?.length,
+        composedTargetUuids: director.ctx.pickedTargetUuids,
+        titleText: (!skillTargetText || /^self$/i.test(skillTargetText) || /\ball\b/i.test(skillTargetText))
+          ? null
+          : `${attackerSnap.name}: pick target for ${row.name}`,
+      });
+      if (!objTargeting.ok) {
+        director.dispatch({ type: (objTargeting.cancelled || objTargeting.reason === "no_eligible") ? INTENTS.TARGET_BACK : INTENTS.ABORT });
+        return;
+      }
+
+      // Cost gate against the ACTUAL target count. The picker dimmed on the
+      // single-target minimum; a per-target cost can still overrun here.
+      const parsedObjCost = parseSkillCost(String(oProps.cost ?? ""));
+      const objCostMap = resolveCost(parsedObjCost, { actor: attackerActor, targetCount: objTargeting.targets.length });
+      const objGate = checkAffordable(attackerActor, objCostMap);
+      if (!objGate.ok) {
+        const missing = objGate.missing.map((m) => `${m.label}: ${m.has}/${m.need}`).join(", ");
+        ui.notifications?.warn(`Can't use ${row.name} — missing ${missing}.`);
+        director.enqueue({ type: INTENTS.TARGET_BACK });
+        return;
+      }
+
+      director.ctx.pickedTargetUuids = [...objTargeting.targetUuids];
+      director.ctx.actionResult = freezeActionResult({
+        kind: "Objective",
+        attacker: attackerSnap,
+        attackerActorRef: attackerSnap.actorUuid,
+        // Effects + Check resolve from the option Item, exactly as a Skill does.
+        skillUuid: objectiveItem.uuid,
+        skillName: row.name,
+        skillImg:  row.img,
+        skillType: String(oProps.skill_type ?? ""),
+        objectiveId: row.id,
+        targets: objTargeting.targets,
+        defenseTargetType: String(oProps.defense_target_type ?? "").toLowerCase(),
+        isCheck: oProps.isCheck === true || String(oProps.isCheck) === "true",
+        rolledA1: String(oProps.rolled_atr1 ?? "").toUpperCase(),
+        rolledA2: String(oProps.rolled_atr2 ?? "").toUpperCase(),
+        checkBonus: Number(oProps.check_bonus ?? 0) || 0,
+        damageBonus: oProps.damage_bonus ?? 0,
+        damageType: String(oProps.type_damage ?? ""),
+        skillRange: String(oProps.skill_range ?? ""),
+        skillTarget: skillTargetText,
+        dl: Math.max(0, Number(oProps.check_difficulty_level) || 0),
+        cost: String(oProps.cost ?? ""),
+        costSerialized: serializeCostMap(objCostMap),
+        actionIntent: classifyActionIntent(objectiveItem),
+      });
+      director.dispatch({ type: INTENTS.TARGET_PICKED, body: { targetTokenUuids: objTargeting.targetUuids } });
+      return;
+    }
+
     if (command === "Item") {
       // Item action: the consumable was chosen + targeted in the compose chain
       // (composeItem → pickItem → shared resolveTargetsForSource), exactly like
@@ -4253,7 +4397,10 @@ const Compute = {
       return;
     }
 
-    if (command === "Skill" || command === "Spell" || command === "Item") {
+    // "Objective" rides the shared COMPUTE with Skill/Spell/Item: its actionResult
+    // was shaped in TARGET from a backing Item, so the Check roll, per-target damage
+    // and affinity routing are identical work — no Objective-specific compute.
+    if (command === "Skill" || command === "Spell" || command === "Item" || command === "Objective") {
       // Skill / Spell COMPUTE: roll the Check (if isCheck), compute
       // per-target damage (if type_damage set), per-target affinity
       // routing. Skill effects (on_activate / post_damage) fire in
@@ -5284,7 +5431,14 @@ const Confirm = {
       ar.targets.length > 0 &&
       (ar.kind === "Attack"
         || ar.kind === "Item"   // item-use is reactable ("targeted by an item"); payload carries actionKind
-        || ((ar.kind === "Skill" || ar.kind === "Spell")
+        || ((ar.kind === "Skill" || ar.kind === "Spell" || ar.kind === "Objective")
+            // Objective joins on the SAME terms as Skill/Spell — only when it
+            // actually does something to the target. A self-targeted Run or a
+            // clock interaction has no victim to intercept; "remove Hidden from
+            // that creature" does, and every defensive reaction (Protect,
+            // Verónica, Prophetic Defender…) would be silently inert against it
+            // if this kind were left off the list. That omission is exactly what
+            // happened to `Spell` for months — see the note above.
             && (ar.hasDamage || ar.hasHealing || ar.actionIntent === "harmful")));
     if (fireCreatureTargetedByAction) {
       try {
@@ -6464,9 +6618,10 @@ const Resolve = {
           catch (e) { warn(`RESOLVE Equipment: stamp free-transform flag failed on ${it.name}`, e); }
         }
       }
-    } else if (ar.kind === "Skill" || ar.kind === "Item") {
-      // Resolve a Skill cast OR Item use through the ONE pipeline — both are
-      // skill-shaped sources. resolveAction debits cost (incl. the item cost:
+    } else if (ar.kind === "Skill" || ar.kind === "Item" || ar.kind === "Objective") {
+      // Resolve a Skill cast, Item use OR Objective action through the ONE
+      // pipeline — all three are skill-shaped sources whose backing Item carries
+      // the effect_table. resolveAction debits cost (incl. the item cost:
       // consume the consumable for "use", IP for "create"), fires on_activate /
       // per-target damage / post_damage / effect_table. No Item-specific branch.
       // free_of_cost grant (Bimagus's free spells) → skip the cost debit so the

@@ -690,6 +690,32 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // same-sign disposition, self excluded). Backs the Guest system's heal
       // gate. Same enumeration as ENEMY_COUNT, mirrored to the ally side.
       case "ALLY_COUNT": return allyActorsOf(actor).length;
+      // Side AVERAGE total level, and the enemy Champion head-count. Backs the
+      // Run Away objective, whose Group Check DL is a ladder over the level gap
+      // (`7 + 3*(GAP >= 1) + 3*(GAP >= 10)` with GAP = ENEMY_AVG − PARTY_AVG),
+      // and whose availability gate is `ENEMY_BOSS_COUNT == 0`.
+      //
+      // PARTY_AVG_LEVEL INCLUDES the caster. allyActorsOf excludes self by
+      // construction (`a === actor` skip), which is right for "how many allies
+      // do I have" and wrong for "what is my side's average" — the runner is on
+      // their own side. ENEMY_AVG_LEVEL needs no such fix-up.
+      //
+      // Every actor in this world carries system.props.level, NPCs included, so
+      // both sides are readable with no fallback. A side with nobody on it
+      // averages 0 rather than dividing by zero.
+      case "PARTY_AVG_LEVEL": return avgLevelOf([actor, ...allyActorsOf(actor)]);
+      case "ENEMY_AVG_LEVEL": return avgLevelOf(enemyActorsOf(actor));
+      case "ENEMY_BOSS_COUNT":
+        return enemyActorsOf(actor).filter((a) => {
+          const v = a?.system?.props?.isBoss;
+          return v === true || String(v ?? "").trim().toLowerCase() === "true";
+        }).length;
+      // Live Clock System clocks this creature could spend an action on — ACTIVE,
+      // visible to them, and flagged `requiresAction`. Gates the Clock
+      // Interaction objective so its row dims honestly ("nothing to interact
+      // with") instead of opening an empty picker and burning the turn.
+      // 0 when the clock system isn't loaded, which is the safe direction.
+      case "ACTIONABLE_CLOCK_COUNT": return actionableClockCount();
       case "ALLY_IN_CRISIS":
       case "ANY_ALLY_IN_CRISIS": return anyAllyInCrisis(actor) ? 1 : 0;
       // 1 if an ALLY who is THIS actor's focus (carries a Focus AE — status
@@ -2585,6 +2611,32 @@ function anyEnemyInCrisis(actor) {
 // Backs ALLY_COUNT / ANY_ALLY_IN_CRISIS for the Guest system (a party-side
 // guest heals a PC ally). Same combat-roster-then-canvas fallback as the enemy
 // scan (the Battle Director often leaves game.combat null mid-battle).
+// Count of clocks a creature could spend an Objective action on. Read through
+// the published clock API, never an import: the clock system is decoupled by
+// design and may be absent, in which case the honest answer is 0.
+function actionableClockCount() {
+  try {
+    const clocks = globalThis.FUCompanion?.api?.clocks;
+    if (!clocks?.list) return 0;
+    const isGM = !!globalThis.game?.user?.isGM;
+    return (clocks.list({ state: clocks.CLOCK_STATE.ACTIVE }) ?? [])
+      .filter((c) => c?.requiresAction)
+      .filter((c) => isGM || c.visibility !== clocks.VISIBILITY?.GM)
+      .length;
+  } catch { return 0; }
+}
+
+// Mean total (character) level across a set of actors, rounded down. Reads the
+// same `system.props.level` CHAR_LEVEL does. Empty set → 0, so a formula that
+// divides by it still folds cleanly instead of producing NaN.
+function avgLevelOf(actors) {
+  const list = (actors ?? []).filter(Boolean);
+  if (!list.length) return 0;
+  let sum = 0;
+  for (const a of list) sum += Number(a?.system?.props?.level ?? a?.system?.level ?? 0) || 0;
+  return Math.floor(sum / list.length);
+}
+
 function allyActorsOf(actor) {
   if (!actor) return [];
   const myDisp = _combatDisposition(actor);

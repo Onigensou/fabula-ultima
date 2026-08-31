@@ -97,7 +97,19 @@ export const EVENT_HANDLERS = Object.freeze([
 ]);
 
 /** Descriptive (non-handler) keys an event may carry. */
-const EVENT_META = Object.freeze(["id", "label", "description"]);
+// `objectives` is battle-wide Objective-action config, read by objectives.js
+// when the Octopath's Objective blade builds its list:
+//
+//   objectives: {
+//     grant: ["sabotage_generator"],   // offered to every creature this battle
+//     deny:  ["run"],                  // withheld, even from the world defaults
+//     allow: ["run"],                  // bypasses an option's own gate formula
+//   }
+//
+// A bare array is shorthand for `{ grant: [...] }`. Same vocabulary as the
+// battle plan's objectiveGrant / objectiveDeny / objectiveAllow keys, so an
+// event and a hand-authored plan say the same thing the same way.
+const EVENT_META = Object.freeze(["id", "label", "description", "objectives"]);
 
 const _events = new Map();
 

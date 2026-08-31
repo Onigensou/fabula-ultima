@@ -3776,6 +3776,172 @@ async function applyLeaveCombatEffect(row, ctx) {
   return { ok: true, kind: "leave_combat", applied };
 }
 
+// ── set_battle_outcome — declare how this conflict ends ───────────────────
+//
+// Stamps the outcome the battle-end pipeline will report, overriding the
+// victory/defeat inference in battle-end-orchestrator.detectOutcome. The reason
+// this exists is Run Away: `leave_combat` across the party empties the party
+// side, and an EMPTY party side does not satisfy detectOutcome's
+// `party.length > 0 && every defeated` defeat test — so a fleeing party would
+// fall through to "victory" and be handed the full EXP/Zenit prompt.
+//
+// 🪤 ORDER IS LOAD-BEARING. Author this row BEFORE the `leave_combat` that
+// empties the side: removeCombatant calls checkSideWipe synchronously, which
+// ends dCombat, and the battle-end sequence reads the marker from there.
+//
+//   { effect_kind: "set_battle_outcome", outcome_value: "escaped",
+//     condition_formula: "VAR_ESCAPE == 1" }
+//
+// In-memory on dCombat by design: persistence.save returns early once
+// dCombat.ended is set, so there is no reload window between the wipe and the
+// battle-end sequence for a persisted marker to cover.
+const BATTLE_OUTCOMES = new Set(["escaped", "victory", "defeat"]);
+
+async function applySetBattleOutcomeEffect(row, ctx) {
+  const value = String(row.outcome_value ?? "").trim().toLowerCase();
+  if (!BATTLE_OUTCOMES.has(value)) {
+    warn(`skill-effects.set_battle_outcome: outcome_value "${row.outcome_value}" is not one of `
+      + `${[...BATTLE_OUTCOMES].join(" / ")} — row skipped`);
+    return { ok: false, kind: "set_battle_outcome", reason: "bad-outcome" };
+  }
+  const dc = ctx.dCombat ?? ctx.director?.dCombat ?? null;
+  if (!dc) {
+    warn("skill-effects.set_battle_outcome: no live DirectorCombat — nothing stamped");
+    return { ok: false, kind: "set_battle_outcome", reason: "no-dcombat" };
+  }
+  dc.outcomeOverride = value;
+  log(`skill-effects.set_battle_outcome: this conflict will end as "${value}"`);
+  return { ok: true, kind: "set_battle_outcome", applied: [value] };
+}
+
+// ── break_free — end a Grapple, with the grappler-side cleanup ────────────
+//
+// NOT a `remove_ae` on "Grappled". Grappling is a RECIPROCAL pair: the victim
+// carries Grappled, the grappler carries Grappling, and deleting only the
+// victim's half leaves the grappler holding a stale AE that still hosts the
+// shared-space splash reaction. grappled.breakFree captures the grapplers before
+// deletion and re-syncs each one, which is why this row delegates to it rather
+// than deleting the effect itself.
+//
+// Powers the Objective-action re-attempt the Grappled rules text has always
+// promised ("the grappled unit may choose to use the Objective action in their
+// turn to reattempt the check"), which was deferred while the action did not
+// exist. Gate it on the action's own check:
+//
+//   { effect_kind: "break_free", target_ref: "self",
+//     condition_formula: "TOTAL >= 10" }
+async function applyBreakFreeEffect(row, ctx) {
+  const tr = await resolveTargetRef(row.target_ref || "self", ctx);
+  if (!tr.ok || !tr.tokens.length) {
+    return { ok: false, kind: "break_free", reason: tr.reason ?? "no-targets", cancelled: !!tr.cancelled };
+  }
+  const { breakFree } = await import("./grappled.js");
+  const applied = [];
+  for (const token of tr.tokens) {
+    const actor = token?.actor;
+    if (!actor) continue;
+    try {
+      const removed = await breakFree(actor, { reason: row.effect_label ?? "break_free effect" });
+      if (removed > 0) applied.push(actor.uuid);
+    } catch (e) { warn(`skill-effects.break_free: threw on ${actor?.name}`, e); }
+  }
+  log(`skill-effects.break_free: freed ${applied.length} creature(s)`);
+  return { ok: true, kind: "break_free", applied };
+}
+
+// ── clock_advance — move a Clock System clock from inside an action ────────
+//
+// The ONLY sanctioned way the Battle Director writes a clock. The Clock System
+// keeps its API; BD calls it through the effect pipeline so the ACTION stays
+// FSM-governed — card, reactions, invokes, rewind and the GM card override all
+// apply, because the roll happened at COMPUTE on the action card.
+//
+// The alternative (calling the clock system's own player path) resolves the
+// roll in a Check Requester session that the director never sees: no
+// creature_performs_action scan, no card reactions, no rewind entry. That is
+// precisely what this row exists to avoid.
+//
+//   { effect_kind: "clock_advance",
+//     clock_ref:       "VAR_CLOCK",     // clock id, or a VAR_ holding one
+//     clock_direction: "high",          // high | low | "" (use the side's pole)
+//     clock_mode:      "roll",          // roll | fixed
+//     clock_sections:  "1" }            // fixed mode only; number or formula
+//
+// `roll` mode commits the ACTION's own check (ar.roll, threaded on the payload)
+// through the clock's RAW margin rules via applyRoll — so a better roll fills
+// more sections, exactly like a panel click. `fixed` moves a flat count.
+//
+// Single-writer: applyRoll / advance are NOT in the clock system's PLAYER_OPS,
+// so they are GM-only, and RESOLVE runs GM-side. Where the director host is not
+// game.users.activeGM (a two-GM table), the clock API's own dispatch relays to
+// the one that is — so exactly one client writes either way.
+async function applyClockAdvanceEffect(row, ctx) {
+  const clocks = globalThis.FUCompanion?.api?.clocks ?? null;
+  if (!clocks) {
+    warn("skill-effects.clock_advance: the Clock System API is unavailable");
+    return { ok: false, kind: "clock_advance", reason: "no-clock-api" };
+  }
+
+  // `clock_ref` may name a clock id directly or a chain var holding one (the
+  // Objective's picker stashes the player's choice that way).
+  let clockId = String(row.clock_ref ?? "").trim();
+  if (/^VAR_/i.test(clockId)) {
+    const key = clockId.slice(4).toLowerCase();
+    clockId = String(ctx?.payload?._chainVars?.[key] ?? "").trim();
+  }
+  if (!clockId) {
+    warn(`skill-effects.clock_advance: row "${row.effect_label}" resolved no clock id`);
+    return { ok: false, kind: "clock_advance", reason: "no-clock" };
+  }
+  const clock = clocks.get(clockId);
+  if (!clock) {
+    warn(`skill-effects.clock_advance: no clock "${clockId}" — it may have resolved or been swept`);
+    return { ok: false, kind: "clock_advance", reason: "clock-gone" };
+  }
+
+  const dirRaw = String(row.clock_direction ?? "").trim().toLowerCase();
+  const direction = (dirRaw === "high" || dirRaw === "low") ? dirRaw : null;
+  const mode = String(row.clock_mode ?? "roll").trim().toLowerCase();
+  const cause = `${ctx?.reactorActor?.name ?? "Someone"}: ${ctx?.skill?.name ?? "Objective"}`;
+
+  if (mode === "fixed") {
+    const { buildSkillResolver, evaluateFormula } = await getSkillFormulas();
+    const resolver = buildSkillResolver({
+      actor: ctx.reactorActor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0,
+    });
+    const sections = Math.trunc(Number(evaluateFormula(String(row.clock_sections ?? "1"), resolver, 1))) || 1;
+    const res = await clocks.advance(clockId, { direction, sections, cause, actorUuid: ctx.reactorActor?.uuid ?? null });
+    log(`skill-effects.clock_advance: "${clock.name}" ${direction ?? "(own pole)"} ${sections} — ${res ? "applied" : "refused"}`);
+    return { ok: !!res, kind: "clock_advance", applied: res ? [clockId] : [] };
+  }
+
+  // roll mode — commit the action's OWN check, the one already shown on the
+  // action card. The on_activate chain payload carries the roll FLAT
+  // (`total` / `isCrit` / `isFumble`, see resolveAction's chainPayload), not
+  // nested under `roll`; the nested forms are accepted as a fallback for a row
+  // fired from some other window.
+  const p = ctx?.payload ?? {};
+  const nested = p.actionRoll ?? p.roll ?? null;
+  const result = Number(p.total ?? nested?.total ?? NaN);
+  if (!Number.isFinite(result) || result === 0) {
+    warn(`skill-effects.clock_advance: mode "roll" but the action carries no check `
+      + `— set isCheck on the option, or use clock_mode "fixed"`);
+    return { ok: false, kind: "clock_advance", reason: "no-roll" };
+  }
+  const res = await clocks.applyRoll(clockId, {
+    direction: direction ?? clocks.playerGoalDirection(clock),
+    result,
+    difficulty: clock.check?.dl ?? clocks.DL_DEFAULT,
+    isCritical: !!(p.isCrit ?? nested?.isCrit),
+    isFumble: !!(p.isFumble ?? nested?.isFumble),
+    actorUuid: ctx.reactorActor?.uuid ?? null,
+    cause,
+  });
+  log(`skill-effects.clock_advance: "${clock.name}" rolled ${result} vs DL `
+    + `${clock.check?.dl ?? "?"} — ${res ? "applied" : "refused"}`);
+  return { ok: !!res, kind: "clock_advance", applied: res ? [clockId] : [] };
+}
+
 // ── destroy_summon — remove one of my summons/phantasms from play ──────────
 // The DESTROY half of the summon family. Drops the targeted summon's HP to 0
 // (so the universal creature-defeated emitter fires `creature_defeated` →
@@ -4061,6 +4227,9 @@ const EFFECT_KIND_DISPATCH = {
   consume_resource:    consumeResourceRun,   // UNIFIED (see consumeResourceRun)
   confirm:             applyConfirmEffect,
   leave_combat:        applyLeaveCombatEffect,
+  set_battle_outcome:  applySetBattleOutcomeEffect,
+  clock_advance:       applyClockAdvanceEffect,
+  break_free:          applyBreakFreeEffect,
   destroy_summon:      applyDestroySummonEffect,
   add_target:          applyAddTargetEffect,
   save_check:          applySaveCheckEffect,
@@ -4197,6 +4366,9 @@ export const EFFECT_KIND_LABELS = {
   consume_resource:    "Consume Resource",
   confirm:             "Confirm (decision dialog — gate / multi-button)",
   leave_combat:        "Leave Combat (remove self from the conflict)",
+  set_battle_outcome:  "Set Battle Outcome (escaped / victory / defeat — author BEFORE the leave_combat that empties a side)",
+  clock_advance:       "Clock Advance (move a Clock System clock — roll mode commits this action's own check)",
+  break_free:          "Break Free (end a Grapple, incl. the grappler-side Grappling cleanup)",
   destroy_summon:      "Destroy Summon (shatter/despawn one of my summons)",
   add_target:          "Add Target",
   save_check:          "Save Check (each target rolls vs a DL; failures → save_failed_targets)",
@@ -4406,6 +4578,10 @@ const EFFECT_KIND_PREVIEW = {
   // combatant — neither is a target-facing inline card row.
   confirm: () => null,
   leave_combat: () => null,
+  // Bookkeeping for the battle-end pipeline — nothing to preview on the card.
+  set_battle_outcome: () => null,
+  clock_advance: () => null,
+  break_free: () => null,
   destroy_summon: () => null,
 
   // chain recurses; the profile builder expands sub-steps. No standalone card row.
@@ -7542,6 +7718,10 @@ function buildMenuOptions(row, ctx) {
   // (not merged) or the active Arcanum's Pulse/Dismiss (merged).
   const dynSource = String(row.menu_dynamic_source ?? "").trim().toLowerCase();
   if (dynSource === "arcanum") return buildArcanumMenuOptions(row, ctx);
+  // `clock` → the live Clock System clocks this creature may push. Powers the
+  // Clock Interaction Objective; the list is runtime state, so it cannot be
+  // authored as refs.
+  if (dynSource === "clock") return buildClockMenuOptions(row, ctx);
 
   const refs = parseEffectRefList(row.menu_option_refs);
   const splitPipe = (s) =>
@@ -8239,6 +8419,71 @@ async function runArcanumChild(child, ctx) {
 // `summon_arcanum` EXECUTOR row (no picker of its own):
 //   • not merged → one option per bound Arcanum → summon_target = its uniqueId
 //   • merged     → the active Arcanum's Pulse / Dismiss → arcanum_action = role
+// `menu_dynamic_source: "clock"` — one option per LIVE clock the acting side may
+// push, two rows per clock when both poles are contested (fill / erase).
+//
+// Synthesises a `clock_advance` row per option, so the pick carries its own clock
+// id and direction and nothing has to be authored per-clock. The clock list is
+// runtime state; authored refs could never track it.
+//
+// Scope: ACTIVE clocks only, GM-only clocks hidden from players, and — unless the
+// row sets `menu_all_clocks` — only clocks flagged `requiresAction`. That flag is
+// the author's statement that this clock is worth a turn action; an unflagged one
+// is still freely clickable on its panel, so offering it here would spend an
+// action on something free.
+function buildClockMenuOptions(row, ctx) {
+  const options = [];
+  const optionRows = [];
+  const clocks = globalThis.FUCompanion?.api?.clocks ?? null;
+  if (!clocks) {
+    warn("skill-effects.open_action_menu: menu_dynamic_source \"clock\" but the Clock System API is unavailable");
+    return { options, optionRows };
+  }
+  const all = String(row.menu_all_clocks ?? "").trim().toLowerCase() === "true";
+  const baseLabel = row.effect_label ?? "clock";
+  const isGM = !!game.user?.isGM;
+
+  let live = [];
+  try { live = clocks.list({ state: clocks.CLOCK_STATE.ACTIVE }) ?? []; }
+  catch (e) { warn("skill-effects.open_action_menu: clock list threw", e); return { options, optionRows }; }
+
+  for (const clock of live) {
+    if (!clock) continue;
+    if (clock.visibility === clocks.VISIBILITY?.GM && !isGM) continue;
+    if (!all && !clock.requiresAction) continue;
+
+    // The direction the players WANT is the natural default; the opposite is
+    // offered too, because a clock can be worth pushing either way (a struggle
+    // clock, or an ally sabotaging their own progress bar).
+    const goal = clocks.playerGoalDirection(clock);
+    const dirs = clock.poles?.high && clock.poles?.low
+      ? [goal, goal === clocks.POLE.HIGH ? clocks.POLE.LOW : clocks.POLE.HIGH]
+      : [goal];
+
+    for (const dir of dirs) {
+      if (!dir) continue;
+      const verb = dir === clocks.POLE.HIGH ? "Fill" : "Erase";
+      options.push({
+        label: `${verb}: ${clock.name}`,
+        description: `${clock.value} / ${clock.sections}`
+          + (clock.check?.hiddenDl ? "" : ` • DL ${clock.check?.dl ?? clocks.DL_DEFAULT}`),
+        icon: clock.icon ?? null,
+        disabled: false,
+        badge: `${clock.value}/${clock.sections}`,
+      });
+      optionRows.push({
+        effect_kind: "clock_advance",
+        clock_ref: clock.id,
+        clock_direction: dir,
+        clock_mode: String(row.clock_mode ?? "roll"),
+        clock_sections: String(row.clock_sections ?? "1"),
+        effect_label: `${baseLabel}:${clock.id}:${dir}`,
+      });
+    }
+  }
+  return { options, optionRows };
+}
+
 function buildArcanumMenuOptions(row, ctx) {
   const caster = ctx.reactorActor;
   const options = [];
@@ -9250,6 +9495,25 @@ async function applyGroupCheckEffect(row, ctx) {
     return Number(p[`${k}_current`] ?? p[`${k}_base`] ?? 0) || 0;
   };
   let leaderUuid = String(row.gc_leader ?? "").trim();
+  // `self` sentinel — the creature performing the action leads. A shared Common
+  // item (Run Away) cannot hardcode an Actor UUID, and the auto-pick fallback
+  // below would hand leadership to whoever has the best dice instead of to the
+  // creature spending its turn. Resolved against the SAME actor identity the
+  // participants were deduped by, so the membership test below is meaningful.
+  if (/^(self|performer|leader_self)$/i.test(leaderUuid)) {
+    const selfUuid = String(ctx.reactorActor?.uuid ?? ctx.reactorToken?.actor?.uuid ?? "").trim();
+    if (selfUuid && actorByUuid.has(selfUuid)) {
+      leaderUuid = selfUuid;
+    } else {
+      // Loud, not silent: an author who asked for "self" and got the best roller
+      // instead has a Check that reads correctly in the log and plays wrong. The
+      // usual cause is a participant pool that excludes the performer
+      // (`exclude_self: true`, or a category that filters them out).
+      warn(`group_check: gc_leader "self" could not be resolved to a participant `
+        + `(${selfUuid || "no actor on ctx"}) — check the target_ref pool includes the performer. Auto-picking.`);
+      leaderUuid = "";
+    }
+  }
   if (!leaderUuid || !actorByUuid.has(leaderUuid)) {
     if (leaderUuid) warn(`group_check: gc_leader "${leaderUuid}" is not among the participants — auto-picking`);
     let best = participants[0], bestScore = -1;

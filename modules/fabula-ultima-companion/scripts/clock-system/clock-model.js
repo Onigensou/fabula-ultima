@@ -182,6 +182,24 @@ export function makeClock(spec = {}) {
     lifecycle: oneOf(spec.lifecycle, LIFECYCLE, LIFECYCLE.MANUAL),
     visibility: oneOf(spec.visibility, VISIBILITY, VISIBILITY.ALL),
 
+    // Does moving this clock cost a player a turn action?
+    //
+    // false (the default, and what every pre-existing clock revives as) keeps
+    // today's behaviour: the panel IS the button, click it any time, free.
+    //
+    // true means the panel stops accepting PLAYER clicks while a Battle Director
+    // conflict is live — the clock is then reachable only through the Objective
+    // action, which spends the turn. That is a governance fix as much as a
+    // balance one: a free panel click mid-conflict is a way to change the battle
+    // state without the FSM ever seeing it.
+    //
+    // The GM is never gated either way. GM clicks are fiat on the axis, not turn
+    // economy, and the manager window exists for exactly that.
+    //
+    // Outside a live conflict a flagged clock is still freely clickable: there is
+    // no action economy out there to respect.
+    requiresAction: spec.requiresAction === true,
+
     // Owning scene, for the `scene` lifecycle only. Without it a scene sweep
     // couldn't tell "clock from the room we just left" from "clock created for
     // the room we just entered", and would discard both.
