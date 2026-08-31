@@ -46,6 +46,7 @@ import { log, warn } from "./logger.js";
 import { hasIgnoreActionGating } from "./domination.js";
 import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
 import { parseSkillCost, resolveCost, checkAffordable, formatParsedCost } from "./skill-cost.js";
+import { activeConflictEvent } from "../conflict-event/conflict-event-runtime.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 
@@ -219,14 +220,35 @@ function costInfoFor(item, actor) {
 // one vocabulary rather than two. Re-read on every call (nothing is cached on
 // ctx — persistence.js captures an allowlist, so a cache would be silently
 // undefined after an F5; see conflict-event-runtime.js for the same reasoning).
+function readRefSet(v) {
+  return new Set((Array.isArray(v) ? v : splitRefs(v))
+    .map((s) => String(s).trim().toLowerCase())
+    .filter(Boolean));
+}
+
 function battlePlanLists(director) {
   const plan = director?.ctx?.payload?.battlePlan ?? null;
-  const read = (v) => new Set((Array.isArray(v) ? v : splitRefs(v)).map((s) => String(s).trim().toLowerCase()).filter(Boolean));
-  return {
-    grant: read(plan?.objectiveGrant),
-    deny:  read(plan?.objectiveDeny),
-    allow: read(plan?.objectiveAllow),   // bypasses an option's gate formula
+  const out = {
+    grant: readRefSet(plan?.objectiveGrant),
+    deny:  readRefSet(plan?.objectiveDeny),
+    allow: readRefSet(plan?.objectiveAllow),   // bypasses an option's gate formula
   };
+
+  // The scene's conflict event speaks the same vocabulary. Re-resolved on every
+  // call rather than cached: activeConflictEvent reads ctx.payload + the battle
+  // scene, both of which survive an F5, so there is nothing to go stale.
+  // A bare array is shorthand for `{ grant: [...] }`.
+  try {
+    const spec = activeConflictEvent(director)?.event?.objectives ?? null;
+    if (spec) {
+      const norm = Array.isArray(spec) ? { grant: spec } : spec;
+      for (const k of ["grant", "deny", "allow"]) {
+        for (const ref of readRefSet(norm[k])) out[k].add(ref);
+      }
+    }
+  } catch (e) { warn("objectives: conflict-event objectives read threw", e); }
+
+  return out;
 }
 
 // ── The collector ───────────────────────────────────────────────────────────

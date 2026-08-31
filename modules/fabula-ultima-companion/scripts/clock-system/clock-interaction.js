@@ -45,7 +45,7 @@
 // player, and is GM-only.
 // ============================================================================
 
-import { CLOCK_TAG, CLOCK_CHANNEL, CLOCK_SOCKET, CLICK, POLE, CLOCK_STATE } from "./clock-const.js";
+import { CLOCK_MODULE_ID, CLOCK_TAG, CLOCK_CHANNEL, CLOCK_SOCKET, CLICK, POLE, CLOCK_STATE } from "./clock-const.js";
 import { directionForClick } from "./clock-model.js";
 import * as store from "./clock-store.js";
 
@@ -58,6 +58,31 @@ let _wired = false;
 
 function api() { return globalThis.FUCompanion?.api?.clocks ?? null; }
 function requester() { return globalThis.ONI?.CheckRequester ?? null; }
+
+/**
+ * Is a Battle Director conflict live?
+ *
+ * ⚠ `battleDirector.isRunning()` alone is NOT enough. `start()` is GM-only, so
+ * the director instance exists on the GM's client and nowhere else — on a player
+ * client it always answers false, which is exactly backwards for a gate whose
+ * whole job is to stop PLAYERS clicking. The authoritative cross-client signal
+ * is the battle scene's `directorState` flag: written by persistence.save while
+ * combat is live, replicated to every client like any document flag, and cleared
+ * by director stop().
+ *
+ * Read through the published API / document flags rather than an import — this
+ * module sits on the far side of the decoupling seam described in clock-api.js,
+ * and the clock engine must keep working in a world where the director never
+ * boots. Everything absent answers "no conflict", the permissive branch: a
+ * missing director can never lock a player out of their own clocks.
+ */
+function directorConflictLive() {
+  try {
+    if (globalThis.FUCompanion?.api?.experimental?.battleDirector?.isRunning?.()) return true;
+    const state = canvas?.scene?.getFlag?.(CLOCK_MODULE_ID, "directorState") ?? null;
+    return !!(state?.dCombat?.started && !state.dCombat.ended);
+  } catch { return false; }
+}
 
 /** The actor a given user rolls as. */
 function actorForUser(user) {
@@ -196,6 +221,21 @@ export async function onPanelClick(clockId, click) {
   const clock = store.get(clockId);
   if (!a || !clock || clock.state !== CLOCK_STATE.ACTIVE) return;
 
+  // Action-gated clocks (see clock-model.requiresAction). While a Battle
+  // Director conflict is live, a player's free panel click on such a clock is
+  // refused — it costs a turn action, so it belongs to the Objective action and
+  // the FSM, not to a click that nothing in the director ever observes.
+  //
+  // GM clicks are never gated: those are fiat on the axis.
+  // Outside a live conflict nothing is gated either — there is no action
+  // economy out there for the flag to protect.
+  if (clock.requiresAction && !game.user?.isGM && directorConflictLive()) {
+    ui.notifications?.info(
+      `"${clock.name}" needs an action — use the Objective command on your turn.`
+    );
+    return;
+  }
+
   // One click per clock per client, so a double-click cannot open two sessions.
   if (_busy.has(clockId)) return;
   _busy.add(clockId);
@@ -244,7 +284,13 @@ export function clickHint(clock) {
   const l = directionForClick(clock, CLICK.LEFT, isGM);
   const r = directionForClick(clock, CLICK.RIGHT, isGM);
   const word = (d) => (d === POLE.HIGH ? "fill" : "erase");
-  return isGM
-    ? `Left-click: ${word(l)} a section · Right-click: ${word(r)} a section`
-    : `Left-click: roll to ${word(l)} · Right-click: roll to ${word(r)}`;
+  if (isGM) {
+    const gated = clock.requiresAction ? " · costs players an action in combat" : "";
+    return `Left-click: ${word(l)} a section · Right-click: ${word(r)} a section${gated}`;
+  }
+  // Say WHY the panel won't respond, rather than leaving a dead-feeling click.
+  if (clock.requiresAction && directorConflictLive()) {
+    return `Costs an action — use the Objective command on your turn`;
+  }
+  return `Left-click: roll to ${word(l)} · Right-click: roll to ${word(r)}`;
 }

@@ -58,7 +58,8 @@ import { ensureCoreActionSkill } from "./_action-skill-author.js";
 export const key = "2026-08-31-objective-common-author";
 export const description =
   "Author Battle Director/Common Objective options: Run Away (DEX+INS Group Check, " +
-  "level-gap DL ladder, escaped outcome) and Custom Objective (RAW p.72 open check).";
+  "level-gap DL ladder, escaped outcome), Custom Objective (RAW p.72 open check), " +
+  "and Clock Interaction (dynamic clock menu, roll-mode advance).";
 
 const SK_ICON = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/";
 
@@ -175,9 +176,61 @@ const CUSTOM_OBJECTIVE = {
   activeEffects: [],
 };
 
+// ── Clock Interaction ──────────────────────────────────────────────────────
+// One option per live clock the creature may push, generated at pick time from
+// the Clock System registry (`menu_dynamic_source: "clock"`) — the clock list is
+// runtime state and could never be authored as refs.
+//
+// Only clocks flagged `requiresAction` are offered. An unflagged clock is still
+// freely clickable on its own panel, so spending a turn action on one would be
+// strictly worse than doing nothing special.
+//
+// The roll is the ACTION's own check, made at COMPUTE and shown on the action
+// card; `clock_advance` in "roll" mode commits it through the clock's RAW margin
+// rules against that clock's OWN DL. So the difficulty is per-clock while the
+// attribute pair is fixed here — a dungeon that wants a different pair authors
+// its own Objective option rather than reusing this one.
+const CLOCK_INTERACTION = {
+  coreAction: "objective:clock",
+  name: "Clock Interaction",
+  img: "icons/svg/clockwork.svg",
+  flags: {
+    objectiveScope: "all",
+    objectiveGate: "ACTIONABLE_CLOCK_COUNT > 0",
+    objectiveGateReason: "Nothing here to work on",
+  },
+  props: {
+    skill_type: "Active",
+    isCheck: true,
+    isReaction: false,
+    check_mode: "open",
+    rolled_atr1: "DEX",
+    rolled_atr2: "INS",
+    skill_target: "Self",
+    cost: "",
+    max_level: "1",
+    on_activate_effect_ref: "clock_pick",
+    description:
+      "<p>Work on something the battlefield is keeping track of. Make an " +
+      "<strong>【DEX + INS】</strong> check and push a clock — the better the result, " +
+      "the more ground you cover.</p>",
+    effect_table: {
+      "0": {
+        effect_label: "clock_pick",
+        effect_kind: "open_action_menu",
+        menu_dynamic_source: "clock",
+        clock_mode: "roll",
+        menu_title: "Which clock?",
+        menu_subtitle: "Your check result decides how far it moves.",
+      },
+    },
+  },
+  activeEffects: [],
+};
+
 export async function migrate(game, log) {
   const results = [];
-  for (const spec of [RUN_AWAY, CUSTOM_OBJECTIVE]) {
+  for (const spec of [RUN_AWAY, CUSTOM_OBJECTIVE, CLOCK_INTERACTION]) {
     const { item, created, touched } = await ensureCoreActionSkill(game, spec, log);
     results.push(`${spec.name} ${created ? "created" : touched ? "updated" : "already current"} (${item?.uuid ?? "?"})`);
   }

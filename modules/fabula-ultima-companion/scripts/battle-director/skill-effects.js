@@ -3814,6 +3814,99 @@ async function applySetBattleOutcomeEffect(row, ctx) {
   return { ok: true, kind: "set_battle_outcome", applied: [value] };
 }
 
+// ── clock_advance — move a Clock System clock from inside an action ────────
+//
+// The ONLY sanctioned way the Battle Director writes a clock. The Clock System
+// keeps its API; BD calls it through the effect pipeline so the ACTION stays
+// FSM-governed — card, reactions, invokes, rewind and the GM card override all
+// apply, because the roll happened at COMPUTE on the action card.
+//
+// The alternative (calling the clock system's own player path) resolves the
+// roll in a Check Requester session that the director never sees: no
+// creature_performs_action scan, no card reactions, no rewind entry. That is
+// precisely what this row exists to avoid.
+//
+//   { effect_kind: "clock_advance",
+//     clock_ref:       "VAR_CLOCK",     // clock id, or a VAR_ holding one
+//     clock_direction: "high",          // high | low | "" (use the side's pole)
+//     clock_mode:      "roll",          // roll | fixed
+//     clock_sections:  "1" }            // fixed mode only; number or formula
+//
+// `roll` mode commits the ACTION's own check (ar.roll, threaded on the payload)
+// through the clock's RAW margin rules via applyRoll — so a better roll fills
+// more sections, exactly like a panel click. `fixed` moves a flat count.
+//
+// Single-writer: applyRoll / advance are NOT in the clock system's PLAYER_OPS,
+// so they are GM-only, and RESOLVE runs GM-side. Where the director host is not
+// game.users.activeGM (a two-GM table), the clock API's own dispatch relays to
+// the one that is — so exactly one client writes either way.
+async function applyClockAdvanceEffect(row, ctx) {
+  const clocks = globalThis.FUCompanion?.api?.clocks ?? null;
+  if (!clocks) {
+    warn("skill-effects.clock_advance: the Clock System API is unavailable");
+    return { ok: false, kind: "clock_advance", reason: "no-clock-api" };
+  }
+
+  // `clock_ref` may name a clock id directly or a chain var holding one (the
+  // Objective's picker stashes the player's choice that way).
+  let clockId = String(row.clock_ref ?? "").trim();
+  if (/^VAR_/i.test(clockId)) {
+    const key = clockId.slice(4).toLowerCase();
+    clockId = String(ctx?.payload?._chainVars?.[key] ?? "").trim();
+  }
+  if (!clockId) {
+    warn(`skill-effects.clock_advance: row "${row.effect_label}" resolved no clock id`);
+    return { ok: false, kind: "clock_advance", reason: "no-clock" };
+  }
+  const clock = clocks.get(clockId);
+  if (!clock) {
+    warn(`skill-effects.clock_advance: no clock "${clockId}" — it may have resolved or been swept`);
+    return { ok: false, kind: "clock_advance", reason: "clock-gone" };
+  }
+
+  const dirRaw = String(row.clock_direction ?? "").trim().toLowerCase();
+  const direction = (dirRaw === "high" || dirRaw === "low") ? dirRaw : null;
+  const mode = String(row.clock_mode ?? "roll").trim().toLowerCase();
+  const cause = `${ctx?.reactorActor?.name ?? "Someone"}: ${ctx?.skill?.name ?? "Objective"}`;
+
+  if (mode === "fixed") {
+    const { buildSkillResolver, evaluateFormula } = await getSkillFormulas();
+    const resolver = buildSkillResolver({
+      actor: ctx.reactorActor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0,
+    });
+    const sections = Math.trunc(Number(evaluateFormula(String(row.clock_sections ?? "1"), resolver, 1))) || 1;
+    const res = await clocks.advance(clockId, { direction, sections, cause, actorUuid: ctx.reactorActor?.uuid ?? null });
+    log(`skill-effects.clock_advance: "${clock.name}" ${direction ?? "(own pole)"} ${sections} — ${res ? "applied" : "refused"}`);
+    return { ok: !!res, kind: "clock_advance", applied: res ? [clockId] : [] };
+  }
+
+  // roll mode — commit the action's OWN check, the one already shown on the
+  // action card. The on_activate chain payload carries the roll FLAT
+  // (`total` / `isCrit` / `isFumble`, see resolveAction's chainPayload), not
+  // nested under `roll`; the nested forms are accepted as a fallback for a row
+  // fired from some other window.
+  const p = ctx?.payload ?? {};
+  const nested = p.actionRoll ?? p.roll ?? null;
+  const result = Number(p.total ?? nested?.total ?? NaN);
+  if (!Number.isFinite(result) || result === 0) {
+    warn(`skill-effects.clock_advance: mode "roll" but the action carries no check `
+      + `— set isCheck on the option, or use clock_mode "fixed"`);
+    return { ok: false, kind: "clock_advance", reason: "no-roll" };
+  }
+  const res = await clocks.applyRoll(clockId, {
+    direction: direction ?? clocks.playerGoalDirection(clock),
+    result,
+    difficulty: clock.check?.dl ?? clocks.DL_DEFAULT,
+    isCritical: !!(p.isCrit ?? nested?.isCrit),
+    isFumble: !!(p.isFumble ?? nested?.isFumble),
+    actorUuid: ctx.reactorActor?.uuid ?? null,
+    cause,
+  });
+  log(`skill-effects.clock_advance: "${clock.name}" rolled ${result} vs DL `
+    + `${clock.check?.dl ?? "?"} — ${res ? "applied" : "refused"}`);
+  return { ok: !!res, kind: "clock_advance", applied: res ? [clockId] : [] };
+}
+
 // ── destroy_summon — remove one of my summons/phantasms from play ──────────
 // The DESTROY half of the summon family. Drops the targeted summon's HP to 0
 // (so the universal creature-defeated emitter fires `creature_defeated` →
@@ -4100,6 +4193,7 @@ const EFFECT_KIND_DISPATCH = {
   confirm:             applyConfirmEffect,
   leave_combat:        applyLeaveCombatEffect,
   set_battle_outcome:  applySetBattleOutcomeEffect,
+  clock_advance:       applyClockAdvanceEffect,
   destroy_summon:      applyDestroySummonEffect,
   add_target:          applyAddTargetEffect,
   save_check:          applySaveCheckEffect,
@@ -4237,6 +4331,7 @@ export const EFFECT_KIND_LABELS = {
   confirm:             "Confirm (decision dialog — gate / multi-button)",
   leave_combat:        "Leave Combat (remove self from the conflict)",
   set_battle_outcome:  "Set Battle Outcome (escaped / victory / defeat — author BEFORE the leave_combat that empties a side)",
+  clock_advance:       "Clock Advance (move a Clock System clock — roll mode commits this action's own check)",
   destroy_summon:      "Destroy Summon (shatter/despawn one of my summons)",
   add_target:          "Add Target",
   save_check:          "Save Check (each target rolls vs a DL; failures → save_failed_targets)",
@@ -4448,6 +4543,7 @@ const EFFECT_KIND_PREVIEW = {
   leave_combat: () => null,
   // Bookkeeping for the battle-end pipeline — nothing to preview on the card.
   set_battle_outcome: () => null,
+  clock_advance: () => null,
   destroy_summon: () => null,
 
   // chain recurses; the profile builder expands sub-steps. No standalone card row.
@@ -7584,6 +7680,10 @@ function buildMenuOptions(row, ctx) {
   // (not merged) or the active Arcanum's Pulse/Dismiss (merged).
   const dynSource = String(row.menu_dynamic_source ?? "").trim().toLowerCase();
   if (dynSource === "arcanum") return buildArcanumMenuOptions(row, ctx);
+  // `clock` → the live Clock System clocks this creature may push. Powers the
+  // Clock Interaction Objective; the list is runtime state, so it cannot be
+  // authored as refs.
+  if (dynSource === "clock") return buildClockMenuOptions(row, ctx);
 
   const refs = parseEffectRefList(row.menu_option_refs);
   const splitPipe = (s) =>
@@ -8281,6 +8381,71 @@ async function runArcanumChild(child, ctx) {
 // `summon_arcanum` EXECUTOR row (no picker of its own):
 //   • not merged → one option per bound Arcanum → summon_target = its uniqueId
 //   • merged     → the active Arcanum's Pulse / Dismiss → arcanum_action = role
+// `menu_dynamic_source: "clock"` — one option per LIVE clock the acting side may
+// push, two rows per clock when both poles are contested (fill / erase).
+//
+// Synthesises a `clock_advance` row per option, so the pick carries its own clock
+// id and direction and nothing has to be authored per-clock. The clock list is
+// runtime state; authored refs could never track it.
+//
+// Scope: ACTIVE clocks only, GM-only clocks hidden from players, and — unless the
+// row sets `menu_all_clocks` — only clocks flagged `requiresAction`. That flag is
+// the author's statement that this clock is worth a turn action; an unflagged one
+// is still freely clickable on its panel, so offering it here would spend an
+// action on something free.
+function buildClockMenuOptions(row, ctx) {
+  const options = [];
+  const optionRows = [];
+  const clocks = globalThis.FUCompanion?.api?.clocks ?? null;
+  if (!clocks) {
+    warn("skill-effects.open_action_menu: menu_dynamic_source \"clock\" but the Clock System API is unavailable");
+    return { options, optionRows };
+  }
+  const all = String(row.menu_all_clocks ?? "").trim().toLowerCase() === "true";
+  const baseLabel = row.effect_label ?? "clock";
+  const isGM = !!game.user?.isGM;
+
+  let live = [];
+  try { live = clocks.list({ state: clocks.CLOCK_STATE.ACTIVE }) ?? []; }
+  catch (e) { warn("skill-effects.open_action_menu: clock list threw", e); return { options, optionRows }; }
+
+  for (const clock of live) {
+    if (!clock) continue;
+    if (clock.visibility === clocks.VISIBILITY?.GM && !isGM) continue;
+    if (!all && !clock.requiresAction) continue;
+
+    // The direction the players WANT is the natural default; the opposite is
+    // offered too, because a clock can be worth pushing either way (a struggle
+    // clock, or an ally sabotaging their own progress bar).
+    const goal = clocks.playerGoalDirection(clock);
+    const dirs = clock.poles?.high && clock.poles?.low
+      ? [goal, goal === clocks.POLE.HIGH ? clocks.POLE.LOW : clocks.POLE.HIGH]
+      : [goal];
+
+    for (const dir of dirs) {
+      if (!dir) continue;
+      const verb = dir === clocks.POLE.HIGH ? "Fill" : "Erase";
+      options.push({
+        label: `${verb}: ${clock.name}`,
+        description: `${clock.value} / ${clock.sections}`
+          + (clock.check?.hiddenDl ? "" : ` • DL ${clock.check?.dl ?? clocks.DL_DEFAULT}`),
+        icon: clock.icon ?? null,
+        disabled: false,
+        badge: `${clock.value}/${clock.sections}`,
+      });
+      optionRows.push({
+        effect_kind: "clock_advance",
+        clock_ref: clock.id,
+        clock_direction: dir,
+        clock_mode: String(row.clock_mode ?? "roll"),
+        clock_sections: String(row.clock_sections ?? "1"),
+        effect_label: `${baseLabel}:${clock.id}:${dir}`,
+      });
+    }
+  }
+  return { options, optionRows };
+}
+
 function buildArcanumMenuOptions(row, ctx) {
   const caster = ctx.reactorActor;
   const options = [];

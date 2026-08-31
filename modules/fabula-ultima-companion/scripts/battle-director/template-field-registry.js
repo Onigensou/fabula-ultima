@@ -92,6 +92,7 @@ const ADJUST_GRANT_VIS = `equalText(sameRow("effect_kind",''), "adjust_grant")`;
 // save_check, which instead rolls N independent per-target saves.
 const GROUP_CHECK_VIS = `equalText(sameRow("effect_kind",''), "group_check")`;
 const SET_OUTCOME_VIS = `equalText(sameRow("effect_kind",''), "set_battle_outcome")`;
+const CLOCK_VIS       = `equalText(sameRow("effect_kind",''), "clock_advance")`;
 const SAVE_CHECK_VIS  = `equalText(sameRow("effect_kind",''), "save_check")`;
 // contest_check — performer AND target both roll; higher total wins, ties reroll.
 // It borrows save_check's TARGET-side columns (save_attr1/2 name the attributes
@@ -681,6 +682,17 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
     { key: "defeat",  value: "Defeat" },
     { key: "victory", value: "Victory" },
   ], { tooltip: "set_battle_outcome: how this conflict is reported at battle end. Author the row BEFORE the leave_combat that empties a side — an emptied party side otherwise infers as a victory.", vis: SET_OUTCOME_VIS, defaultValue: "" }),
+  textCol("clock_ref", "Clock", { tooltip: "clock_advance: the Clock System clock id, or VAR_<NAME> holding one (an open_action_menu pick can stash the player's choice there).", vis: CLOCK_VIS }),
+  selectCol("clock_direction", "Clock Direction", [
+    { key: "",     value: "The acting side's own pole" },
+    { key: "high", value: "High — fill" },
+    { key: "low",  value: "Low — erase" },
+  ], { tooltip: "clock_advance: which way the clock moves. Blank pushes toward the pole the acting side owns.", vis: CLOCK_VIS, defaultValue: "" }),
+  selectCol("clock_mode", "Clock Mode", [
+    { key: "roll",  value: "Roll — commit this action's own check (RAW margin)" },
+    { key: "fixed", value: "Fixed — move a flat number of sections" },
+  ], { tooltip: "clock_advance: \"roll\" reuses the action card's check, so a better roll fills more sections. \"fixed\" ignores the roll.", vis: CLOCK_VIS, defaultValue: "roll" }),
+  textCol("clock_sections", "Clock Sections", { tooltip: "clock_advance (fixed mode only): how many sections to move. Number or formula.", vis: CLOCK_VIS }),
   textCol("gc_timeout", "Group Check Timeout (ms)", { tooltip: "group_check: ms before a participant's roll panel auto-confirms. Blank waits indefinitely — set this for anything that runs inside a combat turn so one disconnected player cannot stall it.", vis: GROUP_CHECK_VIS }),
   selectCol("gc_on_error", "Group Check On Error", [
     { key: "fail", value: "Fail — treat as leader FAIL (default)" },
@@ -854,6 +866,8 @@ export const REQUIRED_FIELDS_BY_KIND = {
   adjust_charges:   { all: ["charge_ae_name"],    either: [] },
   // Rejects any value outside escaped / victory / defeat, blank included.
   set_battle_outcome: { all: ["outcome_value"],   either: [] },
+  // Resolves no clock without a ref, and returns before touching the registry.
+  clock_advance:      { all: ["clock_ref"],       either: [] },
   chain:            { all: ["chain_steps"],       either: [] },
   consume_charge:   { all: ["charge_key"],        either: [] },
   grant:            { all: ["grant_resource"],    either: [] },
