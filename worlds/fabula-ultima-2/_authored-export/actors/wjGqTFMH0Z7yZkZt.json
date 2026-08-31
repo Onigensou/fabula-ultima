@@ -419,7 +419,6 @@
     "default": 0
   },
   "prototypeToken": {
-    "actorId": "wjGqTFMH0Z7yZkZt",
     "actorLink": false,
     "alpha": 1,
     "appendNumber": false,
@@ -897,7 +896,7 @@
       "stealable_loot": {},
       "study_text": "<p>The palace quartermaster's ledgers run to nine volumes, of which four are entirely losses. Breastplates, sabres, a ceremonial halberd, both of the late Steward's boots. Nothing is ever <strong>found</strong>, and nothing is ever <strong>sold</strong>. Whatever is taking it appears to simply want you not to have it.</p>",
       "subtype": "Sub-Type",
-      "subtype_list": "FIEND",
+      "subtype_list": "",
       "sword_ef": "100",
       "tactic_notes": "",
       "thrown_ef": "100",
