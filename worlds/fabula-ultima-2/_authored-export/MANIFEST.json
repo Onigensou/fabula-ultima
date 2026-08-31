@@ -15071,6 +15071,30 @@
         "effects": 0
       },
       {
+        "id": "B4qRdBIxFN6dZ6MT",
+        "name": "Carlbero",
+        "type": "character",
+        "items": [
+          {
+            "id": "sn3eTbtgsHfEm7Y9",
+            "name": "Mind Sap"
+          },
+          {
+            "id": "YNV6oPSbTyywkT5r",
+            "name": "Stinky Breath"
+          },
+          {
+            "id": "b7Y9eRcNEGOUthwH",
+            "name": "Tentacle Grab"
+          },
+          {
+            "id": "aL8M4ZB1s4i6wgSG",
+            "name": "Tentacle Slap"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "WJvUVRpKl2vcXnmX",
         "name": "Centimare",
         "type": "character",
@@ -24408,12 +24432,12 @@
       {
         "id": "hpCzLw5RI4wQNtF7",
         "name": "Fafnir Castle - Encounter",
-        "results": 8
+        "results": 9
       },
       {
         "id": "oVJkUYCxsiHW6guM",
         "name": "Fafnir Castle - Enemies",
-        "results": 5
+        "results": 6
       },
       {
         "id": "y7iU5LWEwxGwrGug",

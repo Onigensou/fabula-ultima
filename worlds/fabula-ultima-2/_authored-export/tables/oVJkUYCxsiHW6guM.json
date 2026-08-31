@@ -22,6 +22,21 @@
   "replacement": true,
   "results": [
     {
+      "_id": "2LHLJLdpDdiaQIF7",
+      "documentCollection": "Actor",
+      "documentId": "B4qRdBIxFN6dZ6MT",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/mystery-man.svg",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Carlbero",
+      "type": "document",
+      "weight": 1
+    },
+    {
       "_id": "DYJbRo5tX5d0TjY0",
       "documentCollection": "Actor",
       "documentId": "fCxslZazJKtQWsKP",

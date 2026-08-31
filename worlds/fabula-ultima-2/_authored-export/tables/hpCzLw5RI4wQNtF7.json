@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "fB2fAXlolioFKFSI",
-  "formula": "1d8",
+  "formula": "1d9",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
   "name": "Fafnir Castle - Encounter",
   "ownership": {
@@ -21,6 +21,19 @@
   },
   "replacement": true,
   "results": [
+    {
+      "_id": "10t55RI3spejUwmB",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/mystery-man.svg",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Carlbero",
+      "type": "text",
+      "weight": 1
+    },
     {
       "_id": "cVe8YfeRdOxGAWZH",
       "documentId": null,

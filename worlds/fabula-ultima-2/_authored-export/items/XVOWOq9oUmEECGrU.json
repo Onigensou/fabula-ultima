@@ -3270,7 +3270,14 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "changes": [],
+      "changes": [
+        {
+          "key": "mp_receiving_mod_all",
+          "mode": 2,
+          "priority": 20,
+          "value": "-0.5"
+        }
+      ],
       "description": "<p>Reduce the effectiveness of <strong>Mana Gain</strong></p>",
       "disabled": false,
       "duration": {
@@ -3297,6 +3304,12 @@
           "isDynamic": false,
           "isTemporary": false,
           "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "wither",
+          "charges": 3,
+          "chargesMax": 3,
+          "lifetimeMode": "target_turn_end"
         },
         "statuscounter": {
           "config": {
@@ -3850,7 +3863,14 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "changes": [],
+      "changes": [
+        {
+          "key": "check_mod_accuracy",
+          "mode": 2,
+          "priority": 20,
+          "value": "-2"
+        }
+      ],
       "description": "<p>Reduce <strong>Accuracy</strong></p>",
       "disabled": false,
       "duration": {
@@ -3877,6 +3897,12 @@
           "isDynamic": false,
           "isTemporary": false,
           "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "blind",
+          "charges": 3,
+          "chargesMax": 3,
+          "lifetimeMode": "target_turn_end"
         },
         "statuscounter": {
           "config": {
