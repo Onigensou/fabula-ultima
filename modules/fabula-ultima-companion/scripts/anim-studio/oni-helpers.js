@@ -680,6 +680,11 @@ export function buildOni(ctx, env) {
       if (home) return home;
       const st = canvas.stage;
       home = { x: st.pivot.x, y: st.pivot.y, scale: st.scale.x };
+      // Hand the camera to this shot: the authority stops clamping, and a
+      // sidebar toggle defers its re-frame until we are done rather than
+      // fighting the choreography mid-move.
+      try { globalThis.FUCompanion?.api?.cameraAuthority?.suspend?.(); } catch {}
+      _disposers.push(() => { try { globalThis.FUCompanion?.api?.cameraAuthority?.resume?.(); } catch {} });
       // Safety net for a script that throws before restoring. It must resolve
       // the SAME target restore() would, or it silently undoes it — dispose()
       // runs after the script body, so a naive apply(home) here wins.
