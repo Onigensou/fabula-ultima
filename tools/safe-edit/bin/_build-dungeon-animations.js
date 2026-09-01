@@ -254,12 +254,10 @@ const REGISTRY = {
       }),
       "Rail Stream": () => G.railStream({
         key: "kirin-rail-stream", name: "Rail Stream",
-        // The falling strike is a drawn straight BEAM (a clip has no leading
-        // edge, so it cannot read as falling), decorated with small faint copies
-        // of the real lightning clip scattered along it — a hand-drawn zig-zag
-        // never stops looking synthetic, so the asset supplies the texture.
-        cfg: { crackleWebm: FX.chainLightning,
-               sfxCharge: "ChargeAttack", sfxChargeVol: 0.6,
+        // A drawn straight BEAM is the strike, with faint jagged strands drawn
+        // behind it as accompanying crackle. No video: a clip has no leading
+        // edge, so it cannot read as falling.
+        cfg: { sfxCharge: "ChargeAttack", sfxChargeVol: 0.6,
                sfxFire: "Thunder10", sfxFireVol: 0.75,
                sfxImpact: "Hit_Lightning2", sfxImpactVol: 0.5 },
       }),
