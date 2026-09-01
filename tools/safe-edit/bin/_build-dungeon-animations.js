@@ -257,6 +257,7 @@ const REGISTRY = {
         // scale 1 = the natural top-to-target fall. At 3 the bolts were three
         // screen-heights long and merged into a single sheet.
         cfg: { rainWebm: FX.chainLightning, rainWebmScale: 1, rainWebmAngle: 90,
+               rainBoltLifeMs: 2000,
                sfxCharge: "ChargeAttack", sfxChargeVol: 0.6,
                sfxFire: "Thunder10", sfxFireVol: 0.75,
                sfxImpact: "Hit_Lightning2", sfxImpactVol: 0.5 },
@@ -473,9 +474,12 @@ const REGISTRY = {
       }),
       "Stinky Breath": () => G.stinkyBreath({
         key: "carlbero-stinky-breath", name: "Stinky Breath",
-        cfg: { coneWebm: FX.breathPoison, coneWebmScale: 2, coneWebmThickness: 1,
+        cfg: { coneWebm: FX.breathPoison, coneWebmScale: 1, coneWebmThickness: 1,
+               coneDurationMs: 9266, impactLeadMs: 900,
                sfxBuild: SFX.monster2, sfxBuildVol: 0.7,
-               sfxSpray: "Poison", sfxSprayVol: 0.7 },
+               // The hit sound moves to the impact beat with the recoil; only the
+               // cast cue plays up front.
+               sfxSpray: null, sfxImpact: "Poison", sfxImpactVol: 0.7 },
       }),
       // "Blue particles flying from the target to the caster" — no approach,
       // the Carlbero saps at range from whatever it already has Grappled.

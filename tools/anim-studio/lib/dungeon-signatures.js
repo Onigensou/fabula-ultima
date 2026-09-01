@@ -314,12 +314,17 @@ function railStream(opts = {}) {
     gatherMs: 1600, gatherCount: 46, gatherRadius: 260, color: 0x8ec5ff,
     coreColor: 0xffffff,
     columnMs: 800, columnWidth: 46, columnFadeMs: 500,
-    rainCount: 22, rainWindowMs: 3200, rainFallMs: 480, rainWidth: 10,
-    // Jitter around an even slot rather than a raw random draw (see below).
-    rainChaos: 0.85, rainSizeJitter: 0.3, rainSpeedJitter: 0.35,
+    rainCount: 26, rainWindowMs: 1700, rainFallMs: 480, rainWidth: 10,
+    // 0 = the original even spacing, which was the timing that read right.
+    // Raise it to loosen the rhythm.
+    rainChaos: 0, rainSizeJitter: 0.3, rainSpeedJitter: 0.2,
     // Length is the natural top-to-target fall (scale 1); thickness is a
     // fraction of SCREEN height. Both are independent dials.
-    rainWebmThickness: 0.06, rainBoltLifeMs: 900,
+    rainWebmThickness: 0.06,
+    // The chain-lightning clip is 1700ms. This is a FAILSAFE, not a trim —
+    // at 900 every strike was being killed halfway through, which is what
+    // made the storm look wrong however the timing was scheduled.
+    rainBoltLifeMs: 2000,
     impactCount: 24, impactRadius: 150,
     shakeMs: 620, shakeAmp: 10, screenshakeMs: 1500, screenshakeAmp: 9,
     flashAlpha: 0.5, flashColor: "#cfe6ff",
@@ -522,6 +527,8 @@ function stinkyBreath(opts = {}) {
     // moves only fight that.
     camZoomIn: 0.85, camInMs: 2200,
     camPanToParty: false, camZoomParty: 0.82, camWhipMs: 520,
+    // Measured off the asset, not guessed: the cone clip decodes at 9266ms.
+    coneDurationMs: 9266, impactLeadMs: 900,
     coneWebm: null, coneWebmScale: 3, coneWebmThickness: 1, coneHoldMs: 1600,
     buildMs: 2000, buildCount: 54, buildRadius: 200,
     color: 0x9fd45f, darkColor: 0x5c7a2a,
@@ -530,6 +537,7 @@ function stinkyBreath(opts = {}) {
     puffCount: 24, puffRadius: 170, shakeMs: 620, shakeAmp: 9,
     camOutMs: 1200,
     sfxBuild: null, sfxBuildVol: 0.5, sfxSpray: null, sfxSprayVol: 0.7,
+    sfxImpact: null, sfxImpactVol: 0.7,
     totalTimeoutMs: 30000,
   }, opts.cfg || {});
 
@@ -539,8 +547,15 @@ function stinkyBreath(opts = {}) {
     "const mid = centroid(tgts);",
     "",
     "const dimmer = await oni.sceneDim({ to: cfg.dimTo, fadeIn: cfg.dimMs });",
-    "// Frame the whole engagement, not the Carlbero.",
-    "const wide = centroid(tgts.concat(caster ? [caster] : []));",
+    "// Pull back on the STAGE CENTRE and hold there. Framing on a centroid",
+    "// drifts with wherever the combatants happen to stand, which reads as the",
+    "// camera wandering during the shot.",
+    "const sr = canvas.scene && canvas.scene.flags && canvas.scene.flags['fabula-ultima-companion']",
+    "  ? canvas.scene.flags['fabula-ultima-companion'].conflict : null;",
+    "const stageRect = sr && sr.stage ? sr.stage : null;",
+    "const wide = stageRect",
+    "  ? { x: stageRect.x + stageRect.w / 2, y: stageRect.y + stageRect.h / 2 }",
+    "  : centroid(tgts.concat(caster ? [caster] : []));",
     "await oni.camera.focus({ point: wide, zoom: cfg.camZoomIn, duration: cfg.camInMs });",
     "",
     "// Poison pools at the mouth.",
@@ -595,6 +610,13 @@ function stinkyBreath(opts = {}) {
     "await wait(260);",
     "if (cfg.camPanToParty) await oni.camera.focus({ point: mid, zoom: cfg.camZoomParty, duration: cfg.camWhipMs });",
     "",
+    "// Hold for the breath to actually reach them. The cone clip runs ~9.3s and",
+    "// the hit used to land immediately, so the party recoiled from a cloud that",
+    "// had not arrived yet. impactLeadMs is how long BEFORE the end it lands.",
+    "const impactAt = Math.max(0, cfg.coneDurationMs - cfg.impactLeadMs - 260);",
+    "await wait(impactAt);",
+    "",
+    "playSfx('sfxImpact', 'sfxImpactVol');",
     "const shakes = [];",
     "for (const tk of tgts) {",
     "  const c = ctr(tk);",
