@@ -119,6 +119,16 @@ const PRE = [
   "  for (const t of list) { const c = ctr(t); x += c.x; y += c.y; }",
   "  return { x: x / list.length, y: y / list.length };",
   "}",
+  "// Centre of the authored play area (the v2 conflict scene stage rect).",
+  "// A pull-back should frame the arena, so it wants a FIXED point: aiming at",
+  "// the caster turns a zoom-out into a pan, and aiming at a centroid makes the",
+  "// framing drift with wherever the combatants happen to be standing.",
+  "function stageCentre() {",
+  "  const f = canvas.scene && canvas.scene.flags ? canvas.scene.flags['fabula-ultima-companion'] : null;",
+  "  const sr = f && f.conflict ? f.conflict.stage : null;",
+  "  if (sr) return { x: sr.x + sr.w / 2, y: sr.y + sr.h / 2 };",
+  "  return centroid(tgts.concat(caster ? [caster] : []));",
+  "}",
   // cfg.<key>Fade / <key>FadeMs let a long library sample be cut short without
   // swapping it — the attack of the sound is usually the part that was wanted.
   "function playSfx(k, v) { if (!cfg[k]) return; oni.sfx(cfg[k], { volume: cfg[v] == null ? 0.6 : cfg[v], fadeAfter: cfg[k + 'Fade'] || 0, fadeMs: cfg[k + 'FadeMs'] || 400 }); }",
