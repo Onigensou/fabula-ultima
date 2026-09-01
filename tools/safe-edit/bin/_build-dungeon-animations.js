@@ -254,10 +254,12 @@ const REGISTRY = {
       }),
       "Rail Stream": () => G.railStream({
         key: "kirin-rail-stream", name: "Rail Stream",
-        // Drawn, not a clip. A video is placed at full length with no leading
-        // edge, so the strikes could never read as sequential however they were
-        // scheduled; drawing lets each bolt grow, crackle and fork on its own.
-        cfg: { sfxCharge: "ChargeAttack", sfxChargeVol: 0.6,
+        // The falling strike is a drawn straight BEAM (a clip has no leading
+        // edge, so it cannot read as falling), decorated with small faint copies
+        // of the real lightning clip scattered along it — a hand-drawn zig-zag
+        // never stops looking synthetic, so the asset supplies the texture.
+        cfg: { crackleWebm: FX.chainLightning,
+               sfxCharge: "ChargeAttack", sfxChargeVol: 0.6,
                sfxFire: "Thunder10", sfxFireVol: 0.75,
                sfxImpact: "Hit_Lightning2", sfxImpactVol: 0.5 },
       }),

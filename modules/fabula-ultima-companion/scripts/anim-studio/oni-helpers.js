@@ -505,6 +505,11 @@ export function buildOni(ctx, env) {
   async function webm(url, {
     size = 400, x = 0, y = 0, parent = null, loop = false,
     zIndex = 95000, blend = null, alpha = 1, angle = 0,
+    // Foundry caches video textures by URL, so several sprites of the same clip
+    // SHARE one <video>. Restarting it then yanks every existing sprite back to
+    // frame 0 in lockstep, which is very visible when the clip is used as
+    // scattered decoration. Pass restart:false for those.
+    restart = true,
   } = {}) {
     let tex = null;
     try { tex = await loadTexture?.(url); } catch (e) { console.warn("[oni] webm load failed", url, e); }
@@ -521,7 +526,13 @@ export function buildOni(ctx, env) {
     if (blend != null) spr.blendMode = blend;
     (parent ?? canvas.stage).addChild(spr);
     const vid = tex.baseTexture?.resource?.source ?? null;
-    if (vid) { try { vid.loop = loop; vid.currentTime = 0; vid.play?.().catch(() => {}); } catch {} }
+    if (vid) {
+      try {
+        vid.loop = loop;
+        if (restart) vid.currentTime = 0;
+        vid.play?.().catch(() => {});
+      } catch {}
+    }
     track(() => {
       try { spr.destroy(); } catch {}
       try { if (vid) vid.pause(); } catch {}
