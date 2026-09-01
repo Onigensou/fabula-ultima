@@ -16,10 +16,8 @@ const { blankActor, makeSkill, run } = require("./_fafnir-util");
 const A = IDS.CB;
 
 const STUDY =
-  "<p>Growers in the lower terraces still plant it deliberately. Nothing else keeps the vermin down so " +
-  "thoroughly, and it will not move from where it is rooted — a perfectly safe arrangement, provided " +
-  "nobody walks the row downwind of it. The <strong>terraces below the palace</strong> have not been " +
-  "harvested in eleven years.</p>";
+  "<p>A Plant monster born from the pollution mankind pours into nature. It roots in poisoned soil " +
+  "and breathes out the rot it feeds on. It cannot survive <strong>fire</strong>.</p>";
 
 // Damage wording is QUALITATIVE (never the math). Numbers that are NOT damage —
 // the DL, the MP figures — stay, because those are readable clocks.
@@ -35,9 +33,8 @@ const DESC = {
     `<p>Deal <strong>heavy</strong> ${L.dark}&nbsp;damage to a ${L.grappled}&nbsp;creature and drain ` +
     `<strong>10 MP</strong> from them, which Carlbero takes for itself.</p>`,
   breath:
-    `<p>Every enemy rolls a <strong>DL16 【INS】+【WLP】</strong> check and takes ${L.poison}&nbsp;damage. ` +
-    `<strong>The lower they roll, the more the rot takes hold</strong> — a poor result leaves them ` +
-    `weakened, a bad one costs them what they can do, and the worst of them start to come apart.</p>`,
+    `<p>Unleash a foul-smelling breath. Every enemy rolls a <strong>DL16 【INS】+【WLP】</strong> check ` +
+    `and takes ${L.poison}&nbsp;damage. The lower the result, the more debuffs they suffer.</p>`,
 };
 
 // ── Stinky Breath: the tier table ──────────────────────────────────────────
@@ -217,7 +214,7 @@ run(async ({ changes }) => {
   Object.assign(p, {
     level: "50", npc_rank: "elite", species: "PLANT", subtype_list: "ABERRATION",
     attribute: "POISON",
-    traits: "Rooted, Patient, Ravenous, Never Retreats",
+    traits: "Born of Pollution, Rooted, Ravenous, Never Retreats",
     dex_base: "8", ins_base: "10", mig_base: "12", wlp_base: "10",
     dex_current: 8, ins_current: 10, mig_current: 12, wlp_current: 10,
     def_mod: "+3", mdef_mod: "+4", defense: 11, magic_defense: 14,
