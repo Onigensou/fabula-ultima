@@ -254,11 +254,10 @@ const REGISTRY = {
       }),
       "Rail Stream": () => G.railStream({
         key: "kirin-rail-stream", name: "Rail Stream",
-        // scale 1 = the natural top-to-target fall. At 3 the bolts were three
-        // screen-heights long and merged into a single sheet.
-        cfg: { rainWebm: FX.chainLightning, rainWebmScale: 1, rainWebmAngle: 90,
-               rainBoltLifeMs: 2000,
-               sfxCharge: "ChargeAttack", sfxChargeVol: 0.6,
+        // Drawn, not a clip. A video is placed at full length with no leading
+        // edge, so the strikes could never read as sequential however they were
+        // scheduled; drawing lets each bolt grow, crackle and fork on its own.
+        cfg: { sfxCharge: "ChargeAttack", sfxChargeVol: 0.6,
                sfxFire: "Thunder10", sfxFireVol: 0.75,
                sfxImpact: "Hit_Lightning2", sfxImpactVol: 0.5 },
       }),
