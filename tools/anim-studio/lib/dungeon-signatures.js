@@ -323,20 +323,23 @@ function railStream(opts = {}) {
     coreColor: 0xffffff, auraColor: 0x4d9bff,
     columnMs: 800, columnWidth: 46, columnFadeMs: 500,
 
-    // Rain
-    rainCount: 30, rainWindowMs: 1900, rainFallMs: 300,
+    // Rain — tuned live, then the falling phase extended by 1.5s on request.
+    // rainCount scales WITH the window so the tuned density (11.5 strikes/sec)
+    // holds instead of thinning out: 11.5 * 3.4s = 39.
+    rainCount: 39, rainWindowMs: 3400, rainFallMs: 300,
     rainHoldMs: 260, rainFadeMs: 220,
     // The strike itself is a STRAIGHT beam. A hand-drawn zig-zag reads as
     // synthetic no matter how it is tuned; the natural-looking crackle comes
     // from the real lightning clip scattered around the beam instead.
     rainFlickerMs: 22,
-    rainCoreWidth: 5, rainBodyWidth: 17, rainAuraWidth: 48,
+    rainCoreWidth: 5.25, rainBodyWidth: 17.85, rainAuraWidth: 50.4,
     rainPulseHz: 16,
     // Companion lightning: faint jagged strands drawn BEHIND the beam and
     // re-rolled every frame or two. The beam is the strike; these are the
     // crackle around it, which is what keeps a straight line from looking
-    // like a laser.
-    jagCount: 2, jagAlpha: 0.3, jagSegments: 12, jagSpread: 38,
+    // like a laser. Tuned to nearly-subliminal (0.08) — at the 0.3 it started
+    // at they competed with the beam instead of dressing it.
+    jagCount: 3, jagAlpha: 0.08, jagSegments: 12, jagSpread: 38,
     jagCoreWidth: 2.5, jagBodyWidth: 7, jagFlickerMs: 22,
     // Per-bolt opacity spread, so a storm has faint strikes and blazing ones
     // rather than thirty identical bolts.
@@ -351,8 +354,8 @@ function railStream(opts = {}) {
 
     // Per-target strikes (same renderer, heavier)
     hitLeadMs: 420, hitGapMs: 190,
-    hitCoreWidth: 8, hitBodyWidth: 26, hitAuraWidth: 70,
-    hitJagCount: 4,
+    hitCoreWidth: 8.4, hitBodyWidth: 27.3, hitAuraWidth: 73.5,
+    hitJagCount: 5,
     impactCount: 24, impactRadius: 150,
     shakeMs: 620, shakeAmp: 10, screenshakeMs: 1500, screenshakeAmp: 9,
     flashAlpha: 0.5, flashColor: '#cfe6ff',
