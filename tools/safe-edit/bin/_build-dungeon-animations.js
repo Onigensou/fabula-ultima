@@ -74,6 +74,7 @@ const SFX = {
   dashA:    SND + "DashA.wav",
   monster2: SND + "Monster2.ogg",
   spook:    SND + "Spook.mp3",
+  pollen:   SND + "Pollen.ogg",
 };
 
 /* ── Blazing Sweep reuse ─────────────────────────────────────────────────── */
@@ -476,9 +477,11 @@ const REGISTRY = {
         cfg: { coneWebm: FX.breathPoison, coneWebmScale: 1, coneWebmThickness: 1,
                coneDurationMs: 9266, impactLeadMs: 900,
                sfxBuild: SFX.monster2, sfxBuildVol: 0.7,
-               // The hit sound moves to the impact beat with the recoil; only the
-               // cast cue plays up front.
-               sfxSpray: null, sfxImpact: "Poison", sfxImpactVol: 0.7 },
+               // Three cues across a 9.3s shot: the roar on the wind-up, the spray
+               // as the breath leaves (the opening was silent once the hit moved
+               // to the end), and the hit itself on the recoil.
+               sfxSpray: SFX.pollen, sfxSprayVol: 0.7,
+               sfxImpact: "Poison", sfxImpactVol: 0.7 },
       }),
       // "Blue particles flying from the target to the caster" — no approach,
       // the Carlbero saps at range from whatever it already has Grappled.
