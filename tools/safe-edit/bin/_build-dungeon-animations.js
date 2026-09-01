@@ -240,7 +240,7 @@ const REGISTRY = {
       "Hooves": () => T.melee({
         key: "kirin-hooves", name: "Hooves",
         cfg: { color: C.physical, slashCount: 0, impactWebm: FX.impactOrange, impactWebmSize: 340,
-               sfx: "Attack1", sfxVol: 0.5, sfxImpact: "HitBlowS", sfxImpactVol: 0.65 },
+               sfx: SFX.dashA, sfxVol: 0.55, sfxImpact: "HitBlowS", sfxImpactVol: 0.65 },
       }),
       "Horn Rush": () => T.rush({
         key: "kirin-horn-rush", name: "Horn Rush",
@@ -248,8 +248,8 @@ const REGISTRY = {
                impactColor: C.bolt, impactCount: 26, impactRadius: 160,
                impactWebm: FX.trailBlueYellow, impactWebmSize: 460,
                shakeMs: 480, shakeAmp: 10,
-               // Bolt SFX removed on request — the trail asset carries the hit.
-               sfx: null, sfxArrive: null },
+               // Bolt SFX removed on request; a generic hit still marks contact.
+               sfx: null, sfxArrive: "HitBlowS", sfxArriveVol: 0.7 },
       }),
       "Rail Stream": () => G.railStream({
         key: "kirin-rail-stream", name: "Rail Stream",
@@ -362,14 +362,15 @@ const REGISTRY = {
         key: "drakoza-dragon-claw", name: "Dragon Claw",
         cfg: { color: C.physical, slashCount: 0,
                impactWebm: FX.clawRed1, impactWebmSize: 460,
-               sfx: "Attack1", sfxVol: 0.5, sfxImpact: "HitSlashM", sfxImpactVol: 0.7 },
+               sfx: SFX.dashA, sfxVol: 0.55, sfxImpact: "HitSlashM", sfxImpactVol: 0.7 },
       }),
       "Tail Swipe": () => sweep({
         key: "drakoza-tail-swipe", name: "Tail Swipe",
-        // Wind bed dropped — it rang on long after the swipe had finished.
+        // Wind bed dropped (it rang on long after the swipe finished) and replaced
+        // with a generic impact, which lands on the sweep itself.
         cfg: { sweeps: 1, sweepMs: 640, dashMs: 420, dashBackMs: 500,
                color: 0xffd9a0, emberColor: 0xffc98a, explosion: false,
-               sfxSweep: null },
+               sfxSweep: "HitBlowS", sfxSweepVol: 0.7 },
       }),
       "Thrash": () => G.thrash({
         key: "drakoza-thrash", name: "Thrash",
@@ -556,7 +557,9 @@ const REGISTRY = {
       // Cartoon jitter around the victim — annoying is the whole point.
       "Prank": () => T.rush({
         key: "imp-prank", name: "Prank",
-        cfg: { dashMs: 320, holdMs: 1600, returnMs: 520, overlap: 0.8,
+        // overlap 1 puts the Imp exactly on the target — it is in their face, which
+        // is the joke; stopping short reads as an ordinary melee approach.
+        cfg: { dashMs: 320, holdMs: 1600, returnMs: 520, overlap: 1,
                jitter: true, jitterAmp: 46, jitterHz: 4.2,
                impact: false,
                holdWebm: FX.smokePuff, holdWebmSize: 300, holdWebmRepeatMs: 460,
