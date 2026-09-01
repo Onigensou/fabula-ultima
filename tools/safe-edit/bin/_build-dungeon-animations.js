@@ -254,7 +254,9 @@ const REGISTRY = {
       }),
       "Rail Stream": () => G.railStream({
         key: "kirin-rail-stream", name: "Rail Stream",
-        cfg: { rainWebm: FX.chainLightning, rainWebmScale: 3, rainWebmAngle: 90,
+        // scale 1 = the natural top-to-target fall. At 3 the bolts were three
+        // screen-heights long and merged into a single sheet.
+        cfg: { rainWebm: FX.chainLightning, rainWebmScale: 1, rainWebmAngle: 90,
                sfxCharge: "ChargeAttack", sfxChargeVol: 0.6,
                sfxFire: "Thunder10", sfxFireVol: 0.75,
                sfxImpact: "Hit_Lightning2", sfxImpactVol: 0.5 },
