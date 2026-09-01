@@ -73,6 +73,7 @@ const SFX = {
   paralyze3: SND + "Soundboard/Paralyze3.ogg",
   dashA:    SND + "DashA.wav",
   monster2: SND + "Monster2.ogg",
+  spook:    SND + "Spook.mp3",
 };
 
 /* ── Blazing Sweep reuse ─────────────────────────────────────────────────── */
@@ -470,7 +471,7 @@ const REGISTRY = {
       }),
       "Stinky Breath": () => G.stinkyBreath({
         key: "carlbero-stinky-breath", name: "Stinky Breath",
-        cfg: { coneWebm: FX.breathPoison, coneWebmScale: 3, coneWebmThickness: 1,
+        cfg: { coneWebm: FX.breathPoison, coneWebmScale: 2, coneWebmThickness: 1,
                sfxBuild: SFX.monster2, sfxBuildVol: 0.7,
                sfxSpray: "Poison", sfxSprayVol: 0.7 },
       }),
@@ -547,12 +548,12 @@ const REGISTRY = {
       "Strip Armor": () => G.stripEquip({
         key: "imp-strip-armor", name: "Strip Armor",
         cfg: { grabWebm: FX.handPush, grabWebmSize: 420, lootEmoji: "🛡️", lootEmojiSize: 58,
-               sfxDash: "WindWalk", sfxDashVol: 0.45, sfxSnatch: "Steal", sfxSnatchVol: 0.85 },
+               sfxDash: SFX.dashA, sfxDashVol: 0.55, sfxSnatch: "Steal", sfxSnatchVol: 0.85 },
       }),
       "Strip Weapon": () => G.stripEquip({
         key: "imp-strip-weapon", name: "Strip Weapon",
         cfg: { grabWebm: FX.handPush, grabWebmSize: 420, lootEmoji: "⚔️", lootEmojiSize: 58,
-               sfxDash: "WindWalk", sfxDashVol: 0.45, sfxSnatch: "Steal", sfxSnatchVol: 0.85 },
+               sfxDash: SFX.dashA, sfxDashVol: 0.55, sfxSnatch: "Steal", sfxSnatchVol: 0.85 },
       }),
       // Cartoon jitter around the victim — annoying is the whole point.
       "Prank": () => T.rush({
@@ -563,7 +564,7 @@ const REGISTRY = {
                jitter: true, jitterAmp: 46, jitterHz: 4.2,
                impact: false,
                holdWebm: FX.smokePuff, holdWebmSize: 300, holdWebmRepeatMs: 460,
-               sfx: "Cursor2", sfxVol: 0.4, sfxArrive: "Devil1", sfxArriveVol: 0.55 },
+               sfx: "Cursor2", sfxVol: 0.4, sfxArrive: SFX.spook, sfxArriveVol: 0.6 },
       }),
     },
   },
