@@ -211,6 +211,21 @@ export function restViewFor(scene) {
 }
 
 /** Clamp an absolute view against the current canvas. */
+/**
+ * Accept EITHER a resolved view {x, y, scale} or an intent {point, zoom}.
+ *
+ * These two shapes are easy to confuse and the failure was silent and
+ * backwards: an intent passed as a view has no .scale, so the clamp fell back
+ * to the minimum cover-fit and every requested push-IN came out as a pull-OUT.
+ * That cost a full review round of animation work misdiagnosed as third-party
+ * camera interference. Normalising here means the mistake cannot be made.
+ */
+export function asView(v, scene = null) {
+  if (v && v.point !== undefined) return resolveIntent(v, scene);
+  if (v && v.zoom !== undefined && v.scale === undefined) return resolveIntent(v, scene);
+  return v;
+}
+
 export function clampToCanvas(view, scene = null) {
   return clampView(view, canvasRectOf(scene), viewportOf());
 }
@@ -231,7 +246,7 @@ export function resolveIntent({ point, zoom = 1 }, scene = null) {
 export async function panTo(view, { duration = 500, scene = null } = {}) {
   const c = globalThis.canvas;
   if (!c?.ready || !c.animatePan) return null;
-  const v = clampToCanvas(view, scene);
+  const v = clampToCanvas(asView(view, scene), scene);
   await c.animatePan({ x: v.x, y: v.y, scale: v.scale, duration });
   return v;
 }
@@ -277,7 +292,7 @@ export async function settleRestFraming(scene, { attempts = 3, gapMs = 220 } = {
 export function panSnap(view, { scene = null } = {}) {
   const c = globalThis.canvas;
   if (!c?.ready || !c.pan) return null;
-  const v = clampToCanvas(view, scene);
+  const v = clampToCanvas(asView(view, scene), scene);
   c.pan({ x: v.x, y: v.y, scale: v.scale });
   return v;
 }
@@ -294,7 +309,7 @@ export function panSnap(view, { scene = null } = {}) {
 // finds no API silently falls back to unclamped panning.
 
 export const CameraApi = {
-  stageOf, hasStageRect, restViewFor, settleRestFraming, clampToCanvas, resolveIntent,
+  stageOf, hasStageRect, restViewFor, settleRestFraming, clampToCanvas, resolveIntent, asView,
   panTo, panSnap, viewportOf,
   resolveStage, computeRestView, clampView, focusView,
 };

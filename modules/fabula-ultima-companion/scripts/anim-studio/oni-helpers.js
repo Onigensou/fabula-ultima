@@ -634,12 +634,15 @@ export function buildOni(ctx, env) {
 
     // Write the stage transform DIRECTLY.
     //
-    // LockView replaces Canvas.prototype.pan and animatePan with versions that
-    // re-constrain every move to ITS bounding box, and its canvasPan hook re-runs
-    // scaleToFit on top. Any cinematic routed through those is silently rewritten
-    // — a requested push-in came out as a pull-back. We already do our own
-    // stage-aware clamped maths (FUCompanion.api.camera), so set pivot/scale
-    // ourselves and deliberately do NOT fire canvasPan while a shot is running.
+    // Driving the transform ourselves (rather than canvas.pan / animatePan) keeps
+    // a cinematic independent of whatever else wants to move the camera: modules
+    // that patch those prototypes, Foundry own re-framing on canvasReady, and the
+    // canvasPan listeners that re-fit the view. A shot should play the same way
+    // regardless of what is installed.
+    //
+    // Targets still come from FUCompanion.api.camera.resolveIntent, so the stage
+    // rect and the on-artwork clamp are the shared ones — this bypasses the
+    // plumbing, not the rules.
     const apply = (v) => {
       canvas.stage.pivot.set(v.x, v.y);
       canvas.stage.scale.set(v.scale, v.scale);
