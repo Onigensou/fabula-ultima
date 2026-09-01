@@ -251,7 +251,11 @@ export function buildOni(ctx, env) {
 
   // Play an SFX by manifest name (or URL). Returns the Audio element.
   // Non-fatal on missing manifest / 404 (matches the house convention).
-  function sfx(nameOrUrl, { volume = 1, rate = 1, delay = 0 } = {}) {
+  // fadeAfter/fadeMs exist because several library sounds ring on long past the
+  // shot that triggered them — a wind bed still blowing after the dragon has
+  // finished breathing reads as a bug, not atmosphere. Fading beats picking a
+  // different sound: the attack of the sample is usually the part you wanted.
+  function sfx(nameOrUrl, { volume = 1, rate = 1, delay = 0, fadeAfter = 0, fadeMs = 400 } = {}) {
     const url = sfxUrl(nameOrUrl);
     if (!url) { console.warn("[oni] sfx not found:", nameOrUrl); return null; }
     const play = () => {
@@ -260,6 +264,20 @@ export function buildOni(ctx, env) {
         a.volume = Math.max(0, Math.min(1, volume));
         a.playbackRate = rate;
         a.play().catch(() => {});
+        if (fadeAfter > 0) {
+          const t0 = setTimeout(() => {
+            const v0 = a.volume;
+            const start = performance.now();
+            const step = () => {
+              const p = fadeMs > 0 ? Math.min(1, (performance.now() - start) / fadeMs) : 1;
+              try { a.volume = Math.max(0, v0 * (1 - p)); } catch {}
+              if (p >= 1) { try { a.pause(); } catch {} return; }
+              requestAnimationFrame(step);
+            };
+            step();
+          }, fadeAfter);
+          _disposers.push(() => clearTimeout(t0));
+        }
         return a;
       } catch (e) { console.warn("[oni] sfx play failed", e); return null; }
     };
@@ -613,33 +631,73 @@ export function buildOni(ctx, env) {
   function makeCamera() {
     const capi = () => globalThis.FUCompanion?.api?.camera ?? null;
     let home = null;
+
+    // Write the stage transform DIRECTLY.
+    //
+    // LockView replaces Canvas.prototype.pan and animatePan with versions that
+    // re-constrain every move to ITS bounding box, and its canvasPan hook re-runs
+    // scaleToFit on top. Any cinematic routed through those is silently rewritten
+    // — a requested push-in came out as a pull-back. We already do our own
+    // stage-aware clamped maths (FUCompanion.api.camera), so set pivot/scale
+    // ourselves and deliberately do NOT fire canvasPan while a shot is running.
+    const apply = (v) => {
+      canvas.stage.pivot.set(v.x, v.y);
+      canvas.stage.scale.set(v.scale, v.scale);
+      try { canvas.updateBlur?.(); } catch {}
+      try { canvas.hud?.align?.(); } catch {}
+      try { canvas.scene._viewPosition = { x: v.x, y: v.y, scale: v.scale }; } catch {}
+    };
+
     const capture = () => {
       if (home) return home;
-      const s = canvas.stage;
-      home = { x: s.pivot.x, y: s.pivot.y, scale: s.scale.x };
-      _disposers.push(() => { try { canvas.pan(home); } catch {} });
+      const st = canvas.stage;
+      home = { x: st.pivot.x, y: st.pivot.y, scale: st.scale.x };
+      _disposers.push(() => { try { apply(home); } catch {} });
       return home;
     };
+
+    // zoom is a MULTIPLE OF REST SCALE. Rest framing already contains the whole
+    // stage, so >1 pushes in and <1 pulls out to show more of the bleed.
+    const resolve = ({ point, zoom }) => {
+      const c = capi();
+      if (c?.resolveIntent) return c.resolveIntent({ point, zoom }, canvas.scene);
+      const st = canvas.stage;
+      return { x: point?.x ?? st.pivot.x, y: point?.y ?? st.pivot.y, scale: (st.scale.x || 1) * (zoom || 1) };
+    };
+
+    const glide = (to, duration, ease) => {
+      const st = canvas.stage;
+      const from = { x: st.pivot.x, y: st.pivot.y, scale: st.scale.x };
+      return tween({
+        from: 0, to: 1, duration, ease: ease || EASE.inOutQuad,
+        onUpdate: (t) => apply({
+          x: from.x + (to.x - from.x) * t,
+          y: from.y + (to.y - from.y) * t,
+          scale: from.scale + (to.scale - from.scale) * t,
+        }),
+      });
+    };
+
     return {
       capture,
       home: () => home,
-      async focus({ point, zoom = 1.4, duration = 900 } = {}) {
+      apply,
+      async focus({ point, zoom = 1.4, duration = 900, ease = null } = {}) {
         capture();
-        const c = capi();
-        if (c?.panTo) return c.panTo({ point, zoom }, { duration });
-        try { await canvas.animatePan({ x: point?.x, y: point?.y, duration }); } catch {}
-        return null;
+        const to = resolve({ point, zoom });
+        await glide(to, duration, ease);
+        return to;
       },
       snap({ point, zoom = 1.4 } = {}) {
         capture();
-        const c = capi();
-        if (c?.panSnap) return c.panSnap({ point, zoom });
-        try { canvas.pan({ x: point?.x, y: point?.y }); } catch {}
-        return null;
+        const v = resolve({ point, zoom });
+        apply(v);
+        return v;
       },
-      async restore({ duration = 900 } = {}) {
+      async restore({ duration = 900, ease = null } = {}) {
         if (!home) return;
-        try { await canvas.animatePan({ ...home, duration }); } catch {}
+        await glide(home, duration, ease);
+        apply(home);
       },
     };
   }

@@ -35,13 +35,44 @@ const { encode, validate } = require(path.join(ANIM_LIB, "lib", "encode.js"));
 const C = {
   physical: 0xffe9c4,
   fire:     0xff8a3d,
-  bolt:     0xffe75a,
+  // Bolt is PURPLE in this setting, not yellow (user, review round 1). Applied
+  // to particle work; where a specific BLUE asset was named for a move, that
+  // asset wins — an explicit choice beats a palette default.
+  bolt:     0xb46bff,
   ice:      0x8fe2ff,
   air:      0xc6ffe4,
   earth:    0xc2a878,
   dark:     0x9d4dff,
   poison:   0x9fd45f,
   mana:     0x5fa8ff,
+};
+
+/* ── Shared VFX assets ───────────────────────────────────────────────────── */
+
+const JB = "modules/JB2A_DnD5e/Library/";
+const FX = {
+  impactOrange: JB + "Generic/Impact/Impact_10_Regular_Orange_400x400.webm",
+  impactYellow: JB + "Generic/Impact/Impact_06_Regular_Yellow_400x400.webm",
+  impactBlue:   JB + "Generic/Impact/Impact_12_Regular_Blue_400x400.webm",
+  trailBlueYellow: JB + "Generic/Weapon_Attacks/Melee/Group02/TrailAttack02_01_02_Regular_BlueYellow_800x600.webm",
+  chainLightning:  JB + "6th_Level/Chain_Lightning/ChainLightning_01_Regular_Blue_30ft_Primary_1600x400.webm",
+  clawRed1: JB + "Generic/Creature/Claw/CreatureAttackClaw_002_001_Red_800x600.webm",
+  clawRed2: JB + "Generic/Creature/Claw/CreatureAttackClaw_002_002_Red_800x600.webm",
+  rangedBlueGreen: JB + "Generic/RangedSpell/03/RangedProjectile03_01_Regular_BlueGreen_30ft_1600x400.webm",
+  lightningBolt:   JB + "3rd_Level/Lightning_Bolt/LightningBolt_01_Regular_Blue_4000x200.webm",
+  breathPoison:    JB + "Generic/Template/Cone/Breath_Weapon/BreathWeapon_Poison01_Regular_Green_30ft_Cone_Burst_600x600.webm",
+  heartPink:       JB + "Generic/Marker/MarkerHeart_02_Regular_Pink_400x400.webm",
+  smokePuff:       JB + "Generic/Smoke/SmokePuffRing01_03_Regular_White_400x400.webm",
+  handPush: "modules/boss-loot-assets-free/artwork/05-spell/homebrew/arcane/arm/Hand_1_Push_1_BLUE_1200x1200.webm",
+};
+
+const SND = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
+const SFX = {
+  windWalk: SND + "WindWalk.wav",
+  earth4:   SND + "Soundboard/Earth4.ogg",
+  paralyze3: SND + "Soundboard/Paralyze3.ogg",
+  dashA:    SND + "DashA.wav",
+  monster2: SND + "Monster2.ogg",
 };
 
 /* ── Blazing Sweep reuse ─────────────────────────────────────────────────── */
@@ -61,7 +92,7 @@ const ASPECT_INJECT = [
   "// Resolved OUTER-side (this runs on the GM, which has the actor) and shipped",
   "// in the broadcast CFG, so every client draws the same colour.",
   "try {",
-  "  const ASPECT_COLORS = { fire: 0xff8a3d, bolt: 0xffe75a, ice: 0x8fe2ff, air: 0xc6ffe4 };",
+  "  const ASPECT_COLORS = { fire: 0xff8a3d, bolt: 0xb46bff, ice: 0x8fe2ff, air: 0xc6ffe4 };",
   "  for (const e of (sourceToken?.actor?.effects ?? [])) {",
   "    if (e?.disabled) continue;",
   "    const m = /^\\s*(fire|bolt|ice|air)\\s+aspect\\s*$/i.exec(String(e?.name ?? ''));",
@@ -169,13 +200,14 @@ const REGISTRY = {
     items: {
       "Mist Claw": () => T.melee({
         key: "mist-claw", name: "Mist Claw",
-        cfg: { color: C.air, slashColor: 0xe8fff5, slashCount: 3, slashGapMs: 90,
+        cfg: { color: C.air, slashCount: 0, impactWebm: FX.impactOrange, impactWebmSize: 340,
                sfx: "Wind2", sfxVol: 0.45, sfxImpact: "HitSlashS", sfxImpactVol: 0.6 },
       }),
       "Mist Breath": () => T.breath({
         key: "mist-breath", name: "Mist Breath",
         cfg: { color: C.air, particleSize: 30, sprayCount: 150, coneSpread: 0.6,
-               sfx: "ChargeAttack", sfxVol: 0.45, sfxSpray: "SE_Hardwind_long", sfxSprayVol: 0.6 },
+               sfx: "ChargeAttack", sfxVol: 0.45,
+               sfxSpray: SFX.windWalk, sfxSprayVol: 0.6 },
       }),
       "Phantom Shift: Thunder Strike": () => G.phantomShift({
         key: "mist-phantom-thunder", name: "Phantom Shift: Thunder Strike",
@@ -207,19 +239,22 @@ const REGISTRY = {
     items: {
       "Hooves": () => T.melee({
         key: "kirin-hooves", name: "Hooves",
-        cfg: { color: C.physical, slashColor: 0xfff2cf, slashCount: 2,
+        cfg: { color: C.physical, slashCount: 0, impactWebm: FX.impactOrange, impactWebmSize: 340,
                sfx: "Attack1", sfxVol: 0.5, sfxImpact: "HitBlowS", sfxImpactVol: 0.65 },
       }),
       "Horn Rush": () => T.rush({
         key: "kirin-horn-rush", name: "Horn Rush",
         cfg: { dashMs: 340, holdMs: 180, returnMs: 620, overlap: 0.78,
                impactColor: C.bolt, impactCount: 26, impactRadius: 160,
+               impactWebm: FX.trailBlueYellow, impactWebmSize: 460,
                shakeMs: 480, shakeAmp: 10,
-               sfx: "ThunderStep", sfxVol: 0.5, sfxArrive: "Hit_Lightning2", sfxArriveVol: 0.75 },
+               // Bolt SFX removed on request — the trail asset carries the hit.
+               sfx: null, sfxArrive: null },
       }),
       "Rail Stream": () => G.railStream({
         key: "kirin-rail-stream", name: "Rail Stream",
-        cfg: { sfxCharge: "ChargeAttack", sfxChargeVol: 0.6,
+        cfg: { rainWebm: FX.chainLightning, rainWebmScale: 3, rainWebmAngle: 90,
+               sfxCharge: "ChargeAttack", sfxChargeVol: 0.6,
                sfxFire: "Thunder10", sfxFireVol: 0.75,
                sfxImpact: "Hit_Lightning2", sfxImpactVol: 0.5 },
       }),
@@ -232,14 +267,16 @@ const REGISTRY = {
     items: {
       "Heavy Swing": () => T.melee({
         key: "gigas-heavy-swing", name: "Heavy Swing",
-        cfg: { color: C.physical, slashColor: 0xffe0a8, slashCount: 1, slashWidth: 16,
+        cfg: { color: C.physical, slashCount: 0, impactWebm: FX.impactOrange, impactWebmSize: 420,
                lungeMs: 520, returnMs: 640, particles: 28, particleRadius: 180,
                shakeMs: 620, shakeAmp: 14,
                sfx: "ChargeAttack", sfxVol: 0.5, sfxImpact: "SE_BTL_HitBlowL", sfxImpactVol: 0.85 },
       }),
       "Heavy Bodyslam": () => G.bodyslam({
         key: "gigas-heavy-bodyslam", name: "Heavy Bodyslam",
-        cfg: { sfxRush: "WindWalk", sfxRushVol: 0.5, sfxSlam: "SE_BTL_HitBlowL", sfxSlamVol: 0.95 },
+        cfg: { impactWebm: FX.impactYellow, impactWebmSize: 460,
+               // WindWalk removed on request; the slam carries it.
+               sfxRush: null, sfxSlam: "SE_BTL_HitBlowL", sfxSlamVol: 0.95 },
       }),
     },
   },
@@ -252,12 +289,17 @@ const REGISTRY = {
         key: "obsidrax-basalt-crush", name: "Basalt Crush",
         cfg: { dashMs: 380, holdMs: 200, returnMs: 640, overlap: 0.76,
                impactColor: C.earth, impactCount: 24, impactRadius: 150,
+               impactWebm: FX.impactOrange, impactWebmSize: 380,
                shakeMs: 480, shakeAmp: 10,
-               sfx: "WindWalk", sfxVol: 0.45, sfxArrive: "Earth2", sfxArriveVol: 0.75 },
+               sfx: SFX.earth4, sfxVol: 0.6, sfxArrive: "Earth2", sfxArriveVol: 0.75 },
       }),
       "Venomstone Spines": () => T.burst({
         key: "obsidrax-venomstone-spines", name: "Venomstone Spines",
         cfg: { color: C.poison, at: "targets", count: 26, radius: 170, size: 12,
+               // Quills come off the Obsidrax itself, porcupine-style, before the
+               // hits land on the targets.
+               needles: 26, needleColor: 0x86c93f, needleLen: 120, needleWidth: 5,
+               needleReach: 360, needleMs: 760,
                shake: true, shakeMs: 420, shakeAmp: 8,
                sfx: "Poison", sfxVol: 0.55 },
       }),
@@ -280,14 +322,20 @@ const REGISTRY = {
     items: {
       "Thunder Strike": () => G.thunderStrikeDash({
         key: "skizzik-thunder-strike", name: "Thunder Strike",
-        cfg: { sfxDash: "ThunderStep", sfxDashVol: 0.6, sfxImpact: "Hit_Lightning2", sfxImpactVol: 0.75 },
+        cfg: { color: C.bolt, impactWebm: FX.impactBlue, impactWebmSize: 400,
+               sfxDash: "ThunderStep", sfxDashVol: 0.6,
+               sfxImpact: "Hit_Lightning2", sfxImpactVol: 0.75,
+               sfxImpactFade: 900, sfxImpactFadeMs: 500 },
       }),
       // Same shot, as directed. This one is fired by Overload Riposte on every
       // even-parity accuracy roll, so it is the one most likely to want a
       // shorter dashMs if the repeat starts to drag.
       "Thunder Strike (Riposte)": () => G.thunderStrikeDash({
         key: "skizzik-thunder-strike-riposte", name: "Thunder Strike (Riposte)",
-        cfg: { sfxDash: "ThunderStep", sfxDashVol: 0.5, sfxImpact: "Hit_Lightning", sfxImpactVol: 0.65 },
+        cfg: { color: C.bolt, impactWebm: FX.impactBlue, impactWebmSize: 360,
+               sfxDash: "ThunderStep", sfxDashVol: 0.5,
+               sfxImpact: "Hit_Lightning", sfxImpactVol: 0.65,
+               sfxImpactFade: 800, sfxImpactFadeMs: 500 },
       }),
     },
   },
@@ -298,8 +346,9 @@ const REGISTRY = {
     items: {
       "Arc Spark": () => T.ranged({
         key: "prism-arc-spark", name: "Arc Spark",
+        // Jingle (Shock1) dropped on request — only the lightning hit remains.
         cfg: { color: C.bolt, travelMs: 520, orbSize: 26,
-               sfx: "Shock1", sfxVol: 0.45, sfxImpact: "HitElectric", sfxImpactVol: 0.6 },
+               sfx: null, sfxImpact: "HitElectric", sfxImpactVol: 0.6 },
       }),
       "Fulgur Finis": "COPY",
     },
@@ -311,19 +360,21 @@ const REGISTRY = {
     items: {
       "Dragon Claw": () => T.melee({
         key: "drakoza-dragon-claw", name: "Dragon Claw",
-        cfg: { color: C.physical, slashColor: 0xfff0d4, slashCount: 3, slashGapMs: 80,
-               slashWidth: 7,
+        cfg: { color: C.physical, slashCount: 0,
+               impactWebm: FX.clawRed1, impactWebmSize: 460,
                sfx: "Attack1", sfxVol: 0.5, sfxImpact: "HitSlashM", sfxImpactVol: 0.7 },
       }),
       "Tail Swipe": () => sweep({
         key: "drakoza-tail-swipe", name: "Tail Swipe",
+        // Wind bed dropped — it rang on long after the swipe had finished.
         cfg: { sweeps: 1, sweepMs: 640, dashMs: 420, dashBackMs: 500,
                color: 0xffd9a0, emberColor: 0xffc98a, explosion: false,
-               sfxSweep: "SE_SWINGH", sfxSweepVol: 0.55 },
+               sfxSweep: null },
       }),
       "Thrash": () => G.thrash({
         key: "drakoza-thrash", name: "Thrash",
         cfg: { sfxThrash: "SE_Hardwind_long", sfxThrashVol: 0.55,
+               sfxThrashFade: 1600, sfxThrashFadeMs: 600,
                sfxImpact: "SE_BTL_HitBlowL", sfxImpactVol: 0.9 },
       }),
     },
@@ -347,7 +398,7 @@ const REGISTRY = {
         key: "ampere-volt-counter", name: "Volt Counter",
         cfg: { color: C.bolt, count: 26, radius: 190, size: 11, life: 700,
                ring: true, ringMs: 700, ringRadius: 230, ringWidth: 5,
-               sfx: "Shock2", sfxVol: 0.5 },
+               sfx: SFX.paralyze3, sfxVol: 0.6 },
       }),
     },
   },
@@ -358,12 +409,14 @@ const REGISTRY = {
     items: {
       "Mana Stinger": () => T.drain({
         key: "manaray-mana-stinger", name: "Mana Stinger",
-        cfg: { color: C.mana, arrowColor: 0x8ec5ff, approach: true,
+        cfg: { color: C.mana, approach: true, arrow: false,
+               beamWebm: FX.rangedBlueGreen, beamThickness: 0.22, beamHoldMs: 560,
                sfx: "WindWalk", sfxVol: 0.4, sfxDrain: "Absorb1", sfxDrainVol: 0.6 },
       }),
       "Volt Stinger": () => T.drain({
         key: "manaray-volt-stinger", name: "Volt Stinger",
-        cfg: { color: C.bolt, arrowColor: 0xfff6b0, approach: true,
+        cfg: { color: C.bolt, approach: true, arrow: false,
+               beamWebm: FX.lightningBolt, beamThickness: 0.09, beamHoldMs: 520,
                sfx: "ThunderStep", sfxVol: 0.45, sfxDrain: "HitElectric", sfxDrainVol: 0.6 },
       }),
     },
@@ -375,20 +428,21 @@ const REGISTRY = {
     items: {
       "Tackle": () => T.melee({
         key: "eslime-tackle", name: "Tackle",
-        cfg: { color: C.physical, slashColor: 0xfff0d4, slashCount: 1, slashWidth: 12,
+        cfg: { color: C.physical, slashCount: 0, impactWebm: FX.impactOrange, impactWebmSize: 320,
                lungeMs: 300, returnMs: 460, standoff: 0.8,
-               sfx: "WindWalk", sfxVol: 0.4, sfxImpact: "HitBlowS", sfxImpactVol: 0.6 },
+               sfx: SFX.dashA, sfxVol: 0.55, sfxImpact: "HitBlowS", sfxImpactVol: 0.6 },
       }),
       "Static Shot": () => T.ranged({
         key: "eslime-static-shot", name: "Static Shot",
-        cfg: { color: C.bolt, travelMs: 540, orbSize: 24,
-               sfx: "Shock1", sfxVol: 0.45, sfxImpact: "HitElectric", sfxImpactVol: 0.55 },
+        // Same template and treatment as Arc Spark, on request.
+        cfg: { color: C.bolt, travelMs: 520, orbSize: 26,
+               sfx: null, sfxImpact: "HitElectric", sfxImpactVol: 0.6 },
       }),
       "Electro Explosion": () => T.burst({
         key: "eslime-electro-explosion", name: "Electro Explosion",
         cfg: { color: C.bolt, count: 52, radius: 380, size: 15, life: 1000,
                ring: true, ringMs: 950, ringRadius: 440, ringWidth: 9,
-               flash: true, flashColor: "#fff8c4", flashAlpha: 0.4,
+               flash: true, flashColor: "#e3c4ff", flashAlpha: 0.4,
                screenshakeMs: 620, screenshakeAmp: 9,
                shake: true, shakeMs: 460, shakeAmp: 8,
                sfx: "Explosion1", sfxVol: 0.7 },
@@ -402,7 +456,7 @@ const REGISTRY = {
     items: {
       "Tentacle Slap": () => T.melee({
         key: "carlbero-tentacle-slap", name: "Tentacle Slap",
-        cfg: { color: 0xb6d98a, slashColor: 0xd8f0b4, slashCount: 2, slashWidth: 13,
+        cfg: { color: 0xb6d98a, slashCount: 0, impactWebm: FX.impactOrange, impactWebmSize: 380,
                lungeMs: 440, returnMs: 560,
                sfx: "Attack2", sfxVol: 0.5, sfxImpact: "HitBlowS", sfxImpactVol: 0.7 },
       }),
@@ -410,11 +464,13 @@ const REGISTRY = {
         key: "carlbero-tentacle-grab", name: "Tentacle Grab",
         cfg: { dashMs: 460, holdMs: 620, returnMs: 660, overlap: 0.74,
                impactColor: 0xb6d98a, impactCount: 20, impactRadius: 130,
-               sfx: "WindWalk", sfxVol: 0.4, sfxArrive: "Hit_Piercing", sfxArriveVol: 0.65 },
+               impactWebm: FX.impactOrange, impactWebmSize: 360,
+               sfx: null, sfxArrive: "Hit_Piercing", sfxArriveVol: 0.65 },
       }),
       "Stinky Breath": () => G.stinkyBreath({
         key: "carlbero-stinky-breath", name: "Stinky Breath",
-        cfg: { sfxBuild: "ChargeAttack", sfxBuildVol: 0.45,
+        cfg: { coneWebm: FX.breathPoison, coneWebmScale: 3, coneWebmThickness: 1,
+               sfxBuild: SFX.monster2, sfxBuildVol: 0.7,
                sfxSpray: "Poison", sfxSprayVol: 0.7 },
       }),
       // "Blue particles flying from the target to the caster" — no approach,
@@ -435,7 +491,8 @@ const REGISTRY = {
     items: {
       "Rake": () => T.melee({
         key: "succubus-rake", name: "Rake",
-        cfg: { color: C.dark, slashColor: 0xd9b0ff, slashCount: 3, slashGapMs: 80, slashWidth: 7,
+        cfg: { color: C.dark, slashCount: 0,
+               impactWebm: FX.clawRed2, impactWebmSize: 440,
                sfx: "Attack1", sfxVol: 0.45, sfxImpact: "HitSlashS", sfxImpactVol: 0.6 },
       }),
       "Charm": () => G.charm({
@@ -447,6 +504,7 @@ const REGISTRY = {
         key: "succubus-draining-kiss", name: "Draining Kiss",
         cfg: { dashMs: 900, holdMs: 3000, returnMs: 1100, overlap: 1,
                impact: false,
+               holdWebm: FX.heartPink, holdWebmSize: 400, holdWebmFadeMs: 700,
                sfx: "Magic1", sfxVol: 0.45, sfxArrive: "Charm", sfxArriveVol: 0.55 },
       }),
     },
@@ -481,17 +539,19 @@ const REGISTRY = {
     items: {
       "Pitchfork": () => T.melee({
         key: "imp-pitchfork", name: "Pitchfork",
-        cfg: { color: C.physical, slashColor: 0xffe9c4, slashCount: 2, slashWidth: 6,
+        cfg: { color: C.physical, slashCount: 0, impactWebm: FX.impactOrange, impactWebmSize: 320,
                lungeMs: 340, returnMs: 460,
                sfx: "Attack1", sfxVol: 0.45, sfxImpact: "Hit_Piercing", sfxImpactVol: 0.6 },
       }),
       "Strip Armor": () => G.stripEquip({
         key: "imp-strip-armor", name: "Strip Armor",
-        cfg: { sfxDash: "WindWalk", sfxDashVol: 0.45, sfxSnatch: "Steal", sfxSnatchVol: 0.85 },
+        cfg: { grabWebm: FX.handPush, grabWebmSize: 420, lootEmoji: "🛡️", lootEmojiSize: 58,
+               sfxDash: "WindWalk", sfxDashVol: 0.45, sfxSnatch: "Steal", sfxSnatchVol: 0.85 },
       }),
       "Strip Weapon": () => G.stripEquip({
         key: "imp-strip-weapon", name: "Strip Weapon",
-        cfg: { sfxDash: "WindWalk", sfxDashVol: 0.45, sfxSnatch: "Steal", sfxSnatchVol: 0.85 },
+        cfg: { grabWebm: FX.handPush, grabWebmSize: 420, lootEmoji: "⚔️", lootEmojiSize: 58,
+               sfxDash: "WindWalk", sfxDashVol: 0.45, sfxSnatch: "Steal", sfxSnatchVol: 0.85 },
       }),
       // Cartoon jitter around the victim — annoying is the whole point.
       "Prank": () => T.rush({
@@ -499,6 +559,7 @@ const REGISTRY = {
         cfg: { dashMs: 320, holdMs: 1600, returnMs: 520, overlap: 0.8,
                jitter: true, jitterAmp: 46, jitterHz: 4.2,
                impact: false,
+               holdWebm: FX.smokePuff, holdWebmSize: 300, holdWebmRepeatMs: 460,
                sfx: "Cursor2", sfxVol: 0.4, sfxArrive: "Devil1", sfxArriveVol: 0.55 },
       }),
     },
