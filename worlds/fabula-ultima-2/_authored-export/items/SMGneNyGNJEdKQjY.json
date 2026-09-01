@@ -1,0 +1,53 @@
+{
+  "_id": "SMGneNyGNJEdKQjY",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1788226901794,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "coreAction": "objective:custom",
+      "objectiveScope": "all"
+    }
+  },
+  "folder": null,
+  "img": "icons/svg/target.svg",
+  "name": "Custom Objective",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "action_command": "",
+      "check_difficulty_level": "10",
+      "check_mode": "open",
+      "cost": "",
+      "description": "<p>Attempt something the battlefield allows but no other action covers — work a mechanism, shove a boulder, wrench a door open, reach a vantage point.</p><p>The Game Master picks the Attributes and the Difficulty Level from what you describe.</p>",
+      "details_roller": "Show",
+      "effect_table": {},
+      "id": "SMGneNyGNJEdKQjY",
+      "img": "icons/svg/target.svg",
+      "isCheck": true,
+      "isReaction": false,
+      "max_level": "1",
+      "name": "Custom Objective",
+      "skill_target": "Self",
+      "skill_type": "Active",
+      "uuid": "Item.SMGneNyGNJEdKQjY"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2788278388,
+    "unique": true,
+    "uniqueId": "SMGneNyGNJEdKQjY"
+  },
+  "type": "equippableItem"
+}

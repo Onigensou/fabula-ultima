@@ -1,0 +1,64 @@
+{
+  "_id": "eoZ4d5Vvvel3LmOJ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1788226911227,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "coreAction": "objective:break_free",
+      "objectiveGate": "HAS_STATUS_GRAPPLED",
+      "objectiveGateReason": "You aren't being held",
+      "objectiveScope": "all"
+    }
+  },
+  "folder": null,
+  "img": "icons/svg/net.svg",
+  "name": "Break Free",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "check_difficulty_level": "10",
+      "check_mode": "open",
+      "cost": "",
+      "description": "<p>Spend your action wrenching yourself loose. <strong>【DEX + MIG】</strong> vs <strong>DL 10</strong> — on a success you are no longer <strong>Grappled</strong>.</p><p><em>The free attempt at the start of your turn still happens; this is a second try.</em></p>",
+      "details_roller": "Show",
+      "effect_table": {
+        "0": {
+          "condition_formula": "TOTAL >= 10",
+          "effect_kind": "break_free",
+          "effect_label": "break_free_try",
+          "target_ref": "self"
+        }
+      },
+      "id": "eoZ4d5Vvvel3LmOJ",
+      "img": "icons/svg/net.svg",
+      "isCheck": true,
+      "isReaction": false,
+      "max_level": "1",
+      "name": "Break Free",
+      "on_activate_effect_ref": "break_free_try",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "MIG",
+      "skill_target": "Self",
+      "skill_type": "Active",
+      "uuid": "Item.eoZ4d5Vvvel3LmOJ"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2788278388,
+    "unique": true,
+    "uniqueId": "eoZ4d5Vvvel3LmOJ"
+  },
+  "type": "equippableItem"
+}

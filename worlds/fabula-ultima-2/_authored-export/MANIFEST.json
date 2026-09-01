@@ -3785,6 +3785,12 @@
         "effects": 0
       },
       {
+        "id": "eoZ4d5Vvvel3LmOJ",
+        "name": "Break Free",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "6f3U2Cz826kB5ZIp",
         "name": "Brief Respite",
         "type": "equippableItem",
@@ -4217,6 +4223,12 @@
         "effects": 0
       },
       {
+        "id": "7WP6HiHgaauoiQ7b",
+        "name": "Clock Interaction",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "DeIMdUFdNlbApDVT",
         "name": "Clockwork Heart",
         "type": "equippableItem",
@@ -4561,6 +4573,12 @@
       {
         "id": "xOuzir5B9xUCx9P6",
         "name": "Cursed Sword (gear skill)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "SMGneNyGNJEdKQjY",
+        "name": "Custom Objective",
         "type": "equippableItem",
         "effects": 0
       },
@@ -10139,6 +10157,12 @@
         "effects": 1
       },
       {
+        "id": "8OCI3qRPsZ4k3nup",
+        "name": "Reveal",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "4nci4od0SV6KHykc",
         "name": "Revealing Lens",
         "type": "equippableItem",
@@ -10453,6 +10477,12 @@
       {
         "id": "pdsnWFo6XwEIL0TV",
         "name": "Rumbling Staves",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "CX9Am1Uh3jNB5jvF",
+        "name": "Run Away",
         "type": "equippableItem",
         "effects": 0
       },

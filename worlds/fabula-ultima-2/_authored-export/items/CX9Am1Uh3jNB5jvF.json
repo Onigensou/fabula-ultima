@@ -1,0 +1,92 @@
+{
+  "_id": "CX9Am1Uh3jNB5jvF",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1788226830282,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "coreAction": "objective:run",
+      "objectiveGate": "ENEMY_BOSS_COUNT == 0",
+      "objectiveGateReason": "There's no escaping this one",
+      "objectiveScope": "pc"
+    }
+  },
+  "folder": null,
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/shade_shift.png",
+  "name": "Run Away",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "cost": "",
+      "description": "<p>The whole party attempts to flee. Everyone rolls a <strong>【DEX + INS】</strong> Group Check with you as the leader — each ally who succeeds grants you +1. On a success the party escapes the conflict.</p><p>The Difficulty Level rises with how far the enemy outclasses you. <em>You gain no experience, no Zenit and no spoils from a battle you ran from.</em></p>",
+      "details_roller": "Show",
+      "effect_table": {
+        "0": {
+          "chain_steps": "run_check, run_mark_escaped, run_leave",
+          "effect_kind": "chain",
+          "effect_label": "run_root"
+        },
+        "1": {
+          "candidate_source": "combat",
+          "category": "ally",
+          "effect_kind": "targeting",
+          "effect_label": "run_party_pool",
+          "exclude_self": false,
+          "mode": "all"
+        },
+        "2": {
+          "effect_kind": "group_check",
+          "effect_label": "run_check",
+          "gc_attr1": "dex",
+          "gc_attr2": "ins",
+          "gc_dl": "7 + 3*((ENEMY_AVG_LEVEL - PARTY_AVG_LEVEL) >= 1) + 3*((ENEMY_AVG_LEVEL - PARTY_AVG_LEVEL) >= 10)",
+          "gc_helper_bonus": "1",
+          "gc_leader": "self",
+          "gc_on_error": "fail",
+          "gc_timeout": "20000",
+          "gc_var": "ESCAPE",
+          "target_ref": "run_party_pool"
+        },
+        "3": {
+          "condition_formula": "VAR_ESCAPE == 1",
+          "effect_kind": "set_battle_outcome",
+          "effect_label": "run_mark_escaped",
+          "outcome_value": "escaped"
+        },
+        "4": {
+          "condition_formula": "VAR_ESCAPE == 1",
+          "effect_kind": "leave_combat",
+          "effect_label": "run_leave",
+          "target_ref": "run_party_pool"
+        }
+      },
+      "id": "CX9Am1Uh3jNB5jvF",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/shade_shift.png",
+      "isCheck": false,
+      "isReaction": false,
+      "max_level": "1",
+      "name": "Run Away",
+      "on_activate_effect_ref": "run_root",
+      "skill_target": "Self",
+      "skill_type": "Active",
+      "uuid": "Item.CX9Am1Uh3jNB5jvF"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2788278388,
+    "unique": true,
+    "uniqueId": "CX9Am1Uh3jNB5jvF"
+  },
+  "type": "equippableItem"
+}
