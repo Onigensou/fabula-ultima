@@ -49,7 +49,7 @@ function ensureShakeStyle() {
 }
 
 export function buildOni(ctx, env) {
-  const { canvas, PIXI, wait } = env;
+  const { canvas, PIXI, wait, loadTexture } = env;
   const app = canvas?.app ?? null;
   const ticker = app?.ticker ?? null;
 
@@ -283,6 +283,281 @@ export function buildOni(ctx, env) {
     for (const fn of _disposers.splice(0).reverse()) { try { fn(); } catch {} }
   }
 
+  // ── Camera-proof screen space (live transform) ───────────────────────────
+  //
+  // `screen()` above snapshots the world transform ONCE, which is correct only
+  // while the camera is still. Any script that pans or zooms mid-sequence must
+  // use this instead: every accessor re-reads canvas.stage.worldTransform at
+  // call time, so a world-anchored overlay stays glued to the screen through a
+  // pan. Same shape as screen(), so the two are drop-in interchangeable.
+  //
+  // (Flat full-screen washes should prefer domDim/domFlash below — those are
+  // real screen space and need no re-projection at all.)
+  function screenLive() {
+    const api = {
+      get W() { return app?.renderer?.screen?.width ?? window.innerWidth; },
+      get H() { return app?.renderer?.screen?.height ?? window.innerHeight; },
+      get zoom() { return canvas.stage.scale?.x || 1; },
+      get WT() { return canvas.stage.worldTransform; },
+      S2W: (fx, fy) => canvas.stage.worldTransform.applyInverse(
+        new PIXI.Point(fx * api.W, fy * api.H),
+      ),
+      wLen: (px) => px / (canvas.stage.scale?.x || 1),
+      hPx: (frac) => (frac * api.H) / (canvas.stage.scale?.x || 1),
+    };
+    return api;
+  }
+
+  // ── Screen-space DOM overlays ────────────────────────────────────────────
+  //
+  // A PIXI Graphics sheet lives in WORLD space, so it slides off-screen the
+  // moment the camera moves. A position:fixed div projected from the canvas
+  // element's client rect is true screen space and is immune to pan/zoom — the
+  // idiom already shipped in battle-end/followups/wandering-flame-entrance.js.
+  //
+  // Trade-off: DOM sits ABOVE the whole PIXI canvas, so world-space art cannot
+  // render over it. Use these for flat washes (dim / whiteout / colour flash)
+  // and keep anything that must appear on top in DOM too.
+  //
+  // z-index stays under 100 so Foundry app windows (sheets/config) still cover
+  // it, matching domination-crest.js's ordering contract.
+  const DOM_Z = { dim: 70, flash: 75 };
+
+  function domSheet({ color = "#000", zIndex = DOM_Z.dim } = {}) {
+    const view = app?.view;
+    const el = document.createElement("div");
+    el.className = "oni-anim-sheet";
+    el.style.cssText = [
+      "position: fixed",
+      "pointer-events: none",
+      "opacity: 0",
+      "background: " + color,
+      "z-index: " + zIndex,
+    ].join("; ");
+    const place = () => {
+      const r = view?.getBoundingClientRect?.();
+      if (!r) { el.style.inset = "0"; return; }
+      el.style.left = r.left + "px";
+      el.style.top = r.top + "px";
+      el.style.width = r.width + "px";
+      el.style.height = r.height + "px";
+    };
+    place();
+    window.addEventListener("resize", place);
+    document.body.appendChild(el);
+    track(() => {
+      window.removeEventListener("resize", place);
+      try { el.remove(); } catch {}
+    });
+    return el;
+  }
+
+  // Cinematic dim in screen space. Returns { el, fadeOut }.
+  async function domDim({ to = 0.6, fadeIn = 400, color = "#000", zIndex = DOM_Z.dim } = {}) {
+    const el = domSheet({ color, zIndex });
+    await tween({
+      from: 0, to, duration: fadeIn, ease: EASE.inOutQuad,
+      onUpdate: (v) => { el.style.opacity = String(v); },
+    });
+    return {
+      el,
+      fadeOut: async ({ duration = 500 } = {}) => {
+        const from = Number(el.style.opacity) || 0;
+        await tween({
+          from, to: 0, duration, ease: EASE.inOutQuad,
+          onUpdate: (v) => { el.style.opacity = String(v); },
+        });
+        try { el.remove(); } catch {}
+      },
+    };
+  }
+
+  // Screen-space colour flash (whiteout / element-tinted hit flash). onPeak
+  // fires at full opacity — the damage moment for an impact whiteout.
+  async function domFlash({
+    color = "#fff", fadeIn = 220, hold = 140, fadeOut = 420,
+    alpha = 1, onPeak = null, zIndex = DOM_Z.flash,
+  } = {}) {
+    const el = domSheet({ color, zIndex });
+    await tween({
+      from: 0, to: alpha, duration: fadeIn, ease: EASE.outQuad,
+      onUpdate: (v) => { el.style.opacity = String(v); },
+    });
+    try { onPeak?.(); } catch (e) { console.warn("[oni] domFlash onPeak threw", e); }
+    if (hold > 0) await wait(hold);
+    await tween({
+      from: alpha, to: 0, duration: fadeOut, ease: EASE.inOutQuad,
+      onUpdate: (v) => { el.style.opacity = String(v); },
+    });
+    try { el.remove(); } catch {}
+  }
+
+  // ── webm (replaces the broken webmSprite) ────────────────────────────────
+  //
+  // webmSprite uses PIXI.Texture.from(video), which in this Foundry v12/PIXI
+  // build never binds the video: tex.valid stays false and orig.width is 1, so
+  // sprite.width = N scales a 1x1 and renders nothing. Foundry's loadTexture()
+  // returns a VALID video texture. Async — always await it.
+  async function webm(url, {
+    size = 400, x = 0, y = 0, parent = null, loop = false,
+    zIndex = 95000, blend = null, alpha = 1, angle = 0,
+  } = {}) {
+    let tex = null;
+    try { tex = await loadTexture?.(url); } catch (e) { console.warn("[oni] webm load failed", url, e); }
+    if (!tex) return null;
+    const ratio = (tex.orig?.width && tex.orig?.height) ? tex.orig.height / tex.orig.width : 1;
+    const spr = new PIXI.Sprite(tex);
+    spr.anchor.set(0.5);
+    spr.width = size;
+    spr.height = size * ratio;
+    spr.position.set(x, y);
+    spr.zIndex = zIndex;
+    spr.alpha = alpha;
+    spr.angle = angle;
+    if (blend != null) spr.blendMode = blend;
+    (parent ?? canvas.stage).addChild(spr);
+    const vid = tex.baseTexture?.resource?.source ?? null;
+    if (vid) { try { vid.loop = loop; vid.currentTime = 0; vid.play?.().catch(() => {}); } catch {} }
+    track(() => {
+      try { spr.destroy(); } catch {}
+      try { if (vid) vid.pause(); } catch {}
+    });
+    // Failsafe on `ended`: a hidden tab or a stalled decode must never hang the
+    // sequence behind an await that will not resolve.
+    const ended = new Promise((resolve) => {
+      if (!vid || loop) return resolve();
+      let settled = false;
+      const done = () => {
+        if (settled) return; settled = true;
+        try { vid.removeEventListener("ended", done); } catch {}
+        resolve();
+      };
+      vid.addEventListener("ended", done);
+      const t = setTimeout(done, 8000);
+      _disposers.push(() => clearTimeout(t));
+    });
+    return { sprite: spr, video: vid, ended };
+  }
+
+  // ── Particle emitter ─────────────────────────────────────────────────────
+  //
+  // One emitter covers the three shapes every template in this pass needs:
+  //   burst  — radiate outward from origin (impacts, elemental bursts)
+  //   gather — converge INWARD onto origin (charge-ups, drains)
+  //   stream — directional flow origin → toward (breath, MP drain trails)
+  //
+  // Positions are WORLD coordinates. Returns a promise resolving when the last
+  // particle dies, so a caller can await the tail.
+  function particles({
+    x = 0, y = 0, toX = null, toY = null,
+    count = 24, color = 0xffffff, size = 10, sizeJitter = 0.5,
+    radius = 160, radiusJitter = 0.4,
+    life = 900, lifeJitter = 0.3, stagger = 0,
+    gravity = 0, mode = "burst", parent = null, blend = null,
+    alphaFrom = 1, alphaTo = 0, ease = EASE.outQuad,
+  } = {}) {
+    const host = parent ?? layer({ zIndex: 94000 });
+    const r8 = (color >> 16) & 255, g8 = (color >> 8) & 255, b8 = color & 255;
+    const tex = radialTexture(
+      "rgba(" + r8 + "," + g8 + "," + b8 + ",1)",
+      "rgba(" + r8 + "," + g8 + "," + b8 + ",0)",
+      { size: 64 },
+    );
+    const jit = (base, amt) => base * (1 + (Math.random() * 2 - 1) * amt);
+    const runs = [];
+    for (let i = 0; i < count; i++) {
+      const ang = Math.random() * Math.PI * 2;
+      const rad = jit(radius, radiusJitter);
+      const spr = new PIXI.Sprite(tex);
+      spr.anchor.set(0.5);
+      const px = jit(size, sizeJitter);
+      spr.width = spr.height = px;
+      if (blend != null) spr.blendMode = blend;
+      host.addChild(spr);
+
+      let sx, sy, ex, ey;
+      if (mode === "gather") {
+        sx = x + Math.cos(ang) * rad; sy = y + Math.sin(ang) * rad;
+        ex = x; ey = y;
+      } else if (mode === "stream" && toX != null && toY != null) {
+        // Fan out around the origin, converge loosely on the destination.
+        const spread = rad * 0.35;
+        sx = x + Math.cos(ang) * spread * 0.4;
+        sy = y + Math.sin(ang) * spread * 0.4;
+        ex = toX + Math.cos(ang) * spread;
+        ey = toY + Math.sin(ang) * spread;
+      } else {
+        sx = x; sy = y;
+        ex = x + Math.cos(ang) * rad; ey = y + Math.sin(ang) * rad;
+      }
+      spr.position.set(sx, sy);
+      spr.alpha = 0;
+
+      const dur = jit(life, lifeJitter);
+      const delay = stagger > 0 ? Math.random() * stagger : 0;
+      runs.push(
+        (delay > 0 ? wait(delay) : Promise.resolve()).then(() =>
+          tween({
+            from: 0, to: 1, duration: dur, ease,
+            onUpdate: (t) => {
+              spr.position.set(
+                sx + (ex - sx) * t,
+                sy + (ey - sy) * t + gravity * t * t,
+              );
+              spr.alpha = alphaFrom + (alphaTo - alphaFrom) * t;
+            },
+            onComplete: () => { try { spr.destroy(); } catch {} },
+          }),
+        ),
+      );
+    }
+    return Promise.all(runs);
+  }
+
+  // ── Camera ───────────────────────────────────────────────────────────────
+  //
+  // Routed through FUCompanion.api.camera so every move is clamped to the
+  // artwork (a raw canvas.animatePan can sail into the bleed / void). `zoom` is
+  // a MULTIPLE OF REST SCALE, so 1 is the resting framing on every client
+  // regardless of window size — and 1 is therefore a NO-OP, because rest
+  // framing already contains the whole stage. Any pan beat must zoom in.
+  //
+  // home is captured on first use and restore is auto-registered as a disposer,
+  // so a script that throws still hands the camera back.
+  function makeCamera() {
+    const capi = () => globalThis.FUCompanion?.api?.camera ?? null;
+    let home = null;
+    const capture = () => {
+      if (home) return home;
+      const s = canvas.stage;
+      home = { x: s.pivot.x, y: s.pivot.y, scale: s.scale.x };
+      _disposers.push(() => { try { canvas.pan(home); } catch {} });
+      return home;
+    };
+    return {
+      capture,
+      home: () => home,
+      async focus({ point, zoom = 1.4, duration = 900 } = {}) {
+        capture();
+        const c = capi();
+        if (c?.panTo) return c.panTo({ point, zoom }, { duration });
+        try { await canvas.animatePan({ x: point?.x, y: point?.y, duration }); } catch {}
+        return null;
+      },
+      snap({ point, zoom = 1.4 } = {}) {
+        capture();
+        const c = capi();
+        if (c?.panSnap) return c.panSnap({ point, zoom });
+        try { canvas.pan({ x: point?.x, y: point?.y }); } catch {}
+        return null;
+      },
+      async restore({ duration = 900 } = {}) {
+        if (!home) return;
+        try { await canvas.animatePan({ ...home, duration }); } catch {}
+      },
+    };
+  }
+
   return {
     // context conveniences
     ctx,
@@ -291,13 +566,16 @@ export function buildOni(ctx, env) {
     // timing
     tween, EASE, wait,
     // space + layers
-    screen, layer,
+    screen, screenLive, layer,
     // tokens
     cloneToken, hideToken,
     // textures / media
-    gradientTexture, radialTexture, webmSprite,
-    // full-screen fx
+    gradientTexture, radialTexture, webmSprite, webm,
+    // full-screen fx (PIXI helpers are WORLD space; dom* are camera-proof)
     whiteout, blackout, dim, screenshake,
+    domSheet, domDim, domFlash,
+    // particles + camera
+    particles, camera: makeCamera(),
     // audio
     sfx, sfxUrl,
     // gate + lifecycle
