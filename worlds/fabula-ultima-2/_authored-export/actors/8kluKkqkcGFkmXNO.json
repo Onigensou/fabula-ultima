@@ -341,7 +341,7 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Range",
-          "skill_target": "Up to three creatures",
+          "skill_target": "Up to two creatures",
           "skill_type": "Attack",
           "type_damage": "Air",
           "use_optional_params": false,
@@ -1014,7 +1014,7 @@
           "uuid": "Actor.8kluKkqkcGFkmXNO.Item.crizxSUcTFdlJKpi"
         },
         "fecg9O0PTPyAsxVj": {
-          "active_target": "Up to three creatures",
+          "active_target": "Up to two creatures",
           "attack_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Multi</strong></a><strong>&nbsp;2</strong></p></li></ul><p>Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;damage, with a <strong>50%</strong> chance to leave each creature <a class=\"content-link\" data-uuid=\"JournalEntry.rBnvYhLfmrVZDdoW\" data-id=\"rBnvYhLfmrVZDdoW\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Blind</strong></a>.</p>",
           "attribute_die1": "INS",
           "attribute_die2": "MIG",

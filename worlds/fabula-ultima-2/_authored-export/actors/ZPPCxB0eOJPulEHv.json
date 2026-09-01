@@ -671,6 +671,8 @@
           "$deleted": false,
           "action_pattern_condition": "mp",
           "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
           "action_pattern_name": "Crescent Cut",
           "action_pattern_priority": "5",
           "action_pattern_string": "",
@@ -682,6 +684,8 @@
           "$deleted": false,
           "action_pattern_condition": "always",
           "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
           "action_pattern_name": "Moonlight Blade",
           "action_pattern_priority": "4",
           "action_pattern_string": "",
@@ -899,9 +903,16 @@
         "Y7ds6luUU5CLFH3T": {
           "id": "${item.id}",
           "name": "Numen",
-          "passive_description": "<p>This creature do not regains <strong>MP </strong>except from <strong>Rest</strong></p><hr><p><strong>Skill Enhancement Lv.20 ― </strong>Increase Max MP to 40</p><p><strong>Skill Enhancement Lv.40 ― </strong>Increase Max MP to 50</p>",
+          "passive_description": "<p>This creature does not regain <strong>MP</strong> except from <strong>Rest</strong>.</p><hr><p><em>The values on this sheet are the unscaled baseline.</em> When summoned by <strong>Create Phantasm: Numen</strong> they are rewritten from the summoner:</p><ul><li><strong>Phantasmal Vitality</strong> = twice the summoner's base Insight die size, plus their level.</li><li><strong>Max MP</strong> = 30, raised to 40 at summoner Lv. 20 and 50 at Lv. 40.</li><li><strong>On-hit damage</strong> = HR + 14, raised to 18 / 20 at those same levels by the <em>Numen Ascendance</em> effect.</li><li><strong>Damage type</strong> is set by the essence chosen at summoning (Ravana / Asura / Diablos).</li></ul>",
           "roll": "",
           "uuid": "Actor.ZPPCxB0eOJPulEHv.Item.Y7ds6luUU5CLFH3T"
+        },
+        "yH9nAxQyh9n2S6i1": {
+          "id": "${item.id}",
+          "name": "Deadly Shame",
+          "passive_description": "<p>Whenever <strong>Crysta</strong> misses with an action, or is hit by an <strong>Attack</strong>, <strong>Spell</strong> or <strong>Skill</strong> that requires a <strong>Check</strong>, she gains <strong>10 MP</strong> and <strong>1</strong> section of her <strong>Zero Power</strong> clock.</p>",
+          "roll": "",
+          "uuid": "Actor.ZPPCxB0eOJPulEHv.Item.yH9nAxQyh9n2S6i1"
         }
       },
       "spear_ef": "100",
