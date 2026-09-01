@@ -630,6 +630,11 @@ function stinkyBreath(opts = {}) {
     camPanToParty: false, camZoomParty: 0.82, camWhipMs: 520,
     // Measured off the asset, not guessed: the cone clip decodes at 9266ms.
     coneDurationMs: 9266, impactLeadMs: 900,
+    // The cone clip opens with a charge-up at the mouth, not the breath.
+    // Measured frame-by-frame: coverage stays under 5% until 3309ms, crosses
+    // half at 3640ms, then sustains ~41% from 3971 to 7280ms. So the spray cue
+    // is delayed to the emergence — at t=0 it played over dead air.
+    sprayDelayMs: 3600,
     coneWebm: null, coneWebmScale: 3, coneWebmThickness: 1, coneHoldMs: 1600,
     buildMs: 2000, buildCount: 54, buildRadius: 200,
     color: 0x9fd45f, darkColor: 0x5c7a2a,
@@ -660,7 +665,9 @@ function stinkyBreath(opts = {}) {
     "  stagger: 900, blend: PIXI.BLEND_MODES.ADD, parent: host, ease: E.inOutQuad });",
     "",
     "// Spew, and whip the camera onto the party at the same instant.",
-    "playSfx('sfxSpray', 'sfxSprayVol');",
+    "// Cue fires on the breath EMERGING, not on the clip starting — see",
+    "// sprayDelayMs. Not awaited, so the visual is unaffected.",
+    "wait(cfg.sprayDelayMs).then(() => playSfx('sfxSpray', 'sfxSprayVol'));",
     "const dist = Math.hypot(mid.x - home.x, mid.y - home.y) * cfg.reach;",
     "const glow = oni.radialTexture('rgba(255,255,255,1)', 'rgba(255,255,255,0)', { size: 96 });",
     "const puffs = [];",
