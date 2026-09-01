@@ -63,6 +63,7 @@ import { initHurtReaction, emitHurtReaction, playHurtReactionLocal } from "./dam
 import { initNpcHpBar, emitNpcHpBar, emitNpcHpBarUnchecked, renderNpcHpBarLocal } from "./damage-numbers/director-hp-bar.js";
 import { initDominationFx } from "./domination.js";
 import { initDominationCrest } from "./domination-crest.js";
+import { initAspectAura } from "./aspect-aura.js";
 import { initLightningRodCursor } from "../conflict-event/lightning-rod-cursor.js";
 import { initLightningStormFx } from "../conflict-event/lightning-storm-strike-fx.js";
 // Damage-number audition (look-only) tool is intentionally not registered as a
@@ -1626,6 +1627,10 @@ Hooks.once("ready", () => {
   // AE-replication-driven on every client.
   try { initDominationCrest(); }
   catch (e) { warn("initDominationCrest on ready threw", e); }
+
+  // Elemental Aspect Aura — same AE-replication pattern as the crest above.
+  try { initAspectAura(); }
+  catch (e) { warn("initAspectAura on ready threw", e); }
 
   // Lightning Storm conflict-event UX — the Rod cursor is AE-replication-driven
   // (no socket) and self-scoping: it costs nothing in a fight with no Storm.
