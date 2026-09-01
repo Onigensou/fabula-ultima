@@ -372,6 +372,92 @@ export function buildOni(ctx, env) {
     };
   }
 
+  // ── Scene dim (the RIGHT layer for a spotlight dim) ──────────────────────
+  //
+  // A dim and a curtain are different tools and belong at different depths:
+  //
+  //   dim      — darkens the SCENE so the subject and its VFX pop. It must sit
+  //              ABOVE the background art and tiles but BELOW the tokens and
+  //              the effect layers. Everything the shot is about stays lit.
+  //   curtain  — whiteout / blackout for a transition or an impact. Sits above
+  //              essentially everything. That is domFlash, above.
+  //
+  // domDim cannot be a dim: DOM sits above the entire PIXI canvas, so it buries
+  // the clones and VFX it is supposed to be highlighting.
+  //
+  // Token sprites live in canvas.primary (PrimaryCanvasGroup) next to the
+  // background and tiles, so the sheet has to go INSIDE that group. The group
+  // re-sorts its children on its own schedule, so rather than fight its
+  // comparator we re-assert the child index every frame: immediately below the
+  // lowest Token child. Cheap, and deterministic no matter how it sorts.
+  //
+  // Anything drawn via oni.layer() lives on canvas.stage, which renders above
+  // the whole rendered group — so VFX and token clones are automatically above
+  // this dim, which is exactly the intent.
+  //
+  // World space, so the rect is redrawn from the LIVE transform each frame and
+  // a camera pan or zoom cannot slide it off.
+  async function sceneDim({ to = 0.6, fadeIn = 400, color = 0x000000 } = {}) {
+    const primary = canvas?.primary;
+    const g = new PIXI.Graphics();
+    g.alpha = 0;
+    (primary ?? canvas.stage).addChild(g);
+
+    const S = screenLive();
+    const redraw = () => {
+      const tl = S.S2W(0, 0);
+      g.clear();
+      // Overdraw by half a screen on each side so a mid-fade camera move never
+      // exposes an undimmed edge.
+      g.beginFill(color, 1)
+        .drawRect(tl.x - S.wLen(S.W) * 0.5, tl.y - S.wLen(S.H) * 0.5, S.wLen(S.W) * 2, S.wLen(S.H) * 2)
+        .endFill();
+    };
+
+    const reindex = () => {
+      if (!primary || g.destroyed) return;
+      const kids = primary.children;
+      let firstToken = -1;
+      for (let i = 0; i < kids.length; i++) {
+        const n = kids[i]?.name;
+        if (typeof n === "string" && n.startsWith("Token.")) { firstToken = i; break; }
+      }
+      const want = firstToken < 0 ? kids.length - 1 : Math.max(0, firstToken - 1);
+      const cur = kids.indexOf(g);
+      if (cur >= 0 && cur !== want) {
+        try { primary.setChildIndex(g, Math.min(want, kids.length - 1)); } catch {}
+      }
+    };
+
+    const tick = () => { redraw(); reindex(); };
+    tick();
+    ticker?.add(tick);
+
+    let removed = false;
+    const destroy = () => {
+      if (removed) return; removed = true;
+      ticker?.remove(tick);
+      try { g.destroy(); } catch {}
+    };
+    _disposers.push(destroy);
+
+    await tween({
+      from: 0, to, duration: fadeIn, ease: EASE.inOutQuad,
+      onUpdate: (v) => { g.alpha = v; },
+    });
+
+    return {
+      graphic: g,
+      fadeOut: async ({ duration = 500 } = {}) => {
+        await tween({
+          from: g.alpha, to: 0, duration, ease: EASE.inOutQuad,
+          onUpdate: (v) => { if (!g.destroyed) g.alpha = v; },
+        });
+        destroy();
+      },
+    };
+  }
+
   // Screen-space colour flash (whiteout / element-tinted hit flash). onPeak
   // fires at full opacity — the damage moment for an impact whiteout.
   async function domFlash({
@@ -573,7 +659,7 @@ export function buildOni(ctx, env) {
     gradientTexture, radialTexture, webmSprite, webm,
     // full-screen fx (PIXI helpers are WORLD space; dom* are camera-proof)
     whiteout, blackout, dim, screenshake,
-    domSheet, domDim, domFlash,
+    domSheet, domDim, domFlash, sceneDim,
     // particles + camera
     particles, camera: makeCamera(),
     // audio

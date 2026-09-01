@@ -5,10 +5,16 @@
 // Same storage rules as dungeon-templates.js (exactly two backticks per file,
 // no backtick anywhere in the inner). Same pacing rule: slow, quad/sine.
 //
-// Anything that moves the camera uses oni.domDim / oni.domFlash for full-screen
-// washes (real screen space, immune to the camera) and oni.screenLive() for
-// world-anchored art (re-reads the transform per access). Mixing those up is
-// what makes an overlay slide off mid-pan.
+// A dim and a curtain are DIFFERENT TOOLS at different depths:
+//   oni.sceneDim  — darkens the scene to spotlight the subject. Sits above the
+//                   background and tiles but BELOW tokens and VFX, so the thing
+//                   being highlighted stays lit. Never use a DOM sheet for this:
+//                   DOM is above the whole canvas and buries the clones and VFX
+//                   the dim exists to emphasise.
+//   oni.domFlash  — whiteout / blackout / impact flash. A transition curtain, so
+//                   it is meant to sit above essentially everything.
+// World-anchored art uses oni.screenLive(), which re-reads the transform per
+// access, so nothing slides off during a pan.
 //
 // Camera moves route through oni.camera, which clamps to the artwork. NOTE the
 // zoom argument is a MULTIPLE OF REST SCALE, and rest framing already contains
@@ -52,7 +58,7 @@ function quadElementalSlash(opts = {}) {
     "",
     "// 1. Push in on the Asura and drop the lights.",
     "const camming = oni.camera.focus({ point: home, zoom: cfg.camZoom, duration: cfg.camInMs });",
-    "const dimmer = await oni.domDim({ to: cfg.dimTo, fadeIn: cfg.dimMs });",
+    "const dimmer = await oni.sceneDim({ to: cfg.dimTo, fadeIn: cfg.dimMs });",
     "await camming;",
     "",
     "// 2. Four elements spiral in, one colour per blade.",
@@ -319,7 +325,7 @@ function railStream(opts = {}) {
     "const glow = oni.radialTexture('rgba(255,255,255,1)', 'rgba(255,255,255,0)', { size: 128 });",
     "",
     "const camming = oni.camera.focus({ point: home, zoom: cfg.camZoom, duration: cfg.camInMs });",
-    "const dimmer = await oni.domDim({ to: cfg.dimTo, fadeIn: cfg.dimMs });",
+    "const dimmer = await oni.sceneDim({ to: cfg.dimTo, fadeIn: cfg.dimMs });",
     "await camming;",
     "",
     "playSfx('sfxCharge', 'sfxChargeVol');",
@@ -492,7 +498,7 @@ function stinkyBreath(opts = {}) {
     "const host = oni.layer({ zIndex: 94000 });",
     "const mid = centroid(tgts);",
     "",
-    "const dimmer = await oni.domDim({ to: cfg.dimTo, fadeIn: cfg.dimMs });",
+    "const dimmer = await oni.sceneDim({ to: cfg.dimTo, fadeIn: cfg.dimMs });",
     "await oni.camera.focus({ point: home, zoom: cfg.camZoomIn, duration: cfg.camInMs });",
     "",
     "// Poison pools at the mouth.",
@@ -652,7 +658,7 @@ function deathGaze(opts = {}) {
   const body = [
     "if (!caster || !prime) { done(); return; }",
     "const host = oni.layer({ zIndex: 95000 });",
-    "const dimmer = await oni.domDim({ to: cfg.dimTo, fadeIn: cfg.dimMs });",
+    "const dimmer = await oni.sceneDim({ to: cfg.dimTo, fadeIn: cfg.dimMs });",
     "",
     "// Roulette pool: every token on the board, so the snap can land anywhere",
     "// and the reveal is genuinely a reveal.",
