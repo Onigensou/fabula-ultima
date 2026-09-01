@@ -160,6 +160,28 @@ node tools/safe-edit/bin/world-import.js apply --only actors/<id>.json --ref <th
 - **Idempotent:** re-applying the same JSON updates in place, no duplicates.
 - `--ref <gitref>` reads the JSON from a commit's export tree instead of the
   working tree. `--only` filters by relpath (`actors/<id>.json`) or bare id.
+- **Prop preservation (the guard that makes it safe).** Import calls CSB's
+  `reloadTemplate()` so the imported doc picks up the template's body/header --
+  but that call PRUNES every `system.props` key the template does not declare.
+  Unguarded it once deleted **112 keys across 10 docs** on a co-dev merge, 3 of
+  them authored content (`action_keywords`). `world-import` now captures the
+  props first and restores anything the reload dropped -- **both** what the JSON
+  intends **and** what the live doc already held, so "absent from the JSON" is
+  never treated as permission to delete. Restored keys print loudly, and `plan`
+  predicts them *before* you write:
+
+  ```
+    WARN 3 undeclared system.props key(s) WOULD be pruned by reloadTemplate and restored:
+        Asura: action_keywords
+  ```
+
+  Presence is judged on `doc._source.system.props`, never the prepared doc --
+  CSB re-derives props on load, so the prepared doc reports them present even
+  when LevelDB holds nothing. Regression test (no game needed):
+  `node tools/safe-edit/test/world-import-reloadcsb.test.mjs`.
+- `world-export report` will NOT catch a prop loss -- it counts documents and
+  embedded docs, not properties. The guard above is the only thing between an
+  import and silent content loss.
 
 ```
 node tools/safe-edit/bin/world-import.js plan  [--only …] [--ref <gitref>] [--all]
