@@ -18,6 +18,7 @@ import {
   computeRestView,
   clampView,
   focusView,
+  pivotShift,
 } from "./director-camera.js";
 
 let pass = 0, fail = 0;
@@ -177,6 +178,50 @@ console.log("\n── legacy equivalence (load-bearing) ──");
   eq("layout scale factors collapse to identity",
     { sx: stage.w / 1682, sy: stage.h / 788, ox: stage.x, oy: stage.y },
     { sx: 1, sy: 1, ox: 0, oy: 0 });
+}
+
+console.log("\n── reserved insets: nothing hides behind the chat box ──");
+
+{
+  // A 300px sidebar on a 1920x1027 window. Without the reserve the stage is
+  // contained in the FULL window, so its right edge sits under the chat box —
+  // roughly 260 canvas px of every conflict stage.
+  const HD_OPEN = { w: 1920, h: 1027, insets: { top: 0, right: 300, bottom: 0, left: 0 } };
+  const HD_SHUT = { w: 1920, h: 1027, insets: { top: 0, right: 0, bottom: 0, left: 0 } };
+
+  const open = computeRestView(V2_STAGE, HD_OPEN);
+  const shut = computeRestView(V2_STAGE, HD_SHUT);
+
+  near("reserving the sidebar shrinks the fit", open.scale, Math.min(1620 / 1682, 1027 / 788));
+  ok("a reserved fit is smaller than an unreserved one", open.scale < shut.scale);
+
+  // The whole point: the stage has to land inside the VISIBLE rect.
+  const half = (V2_STAGE.w * open.scale) / 2;
+  const stageCentreScreenX = 1920 / 2 - (open.x - (V2_STAGE.x + V2_STAGE.w / 2)) * open.scale;
+  ok("stage right edge clears the sidebar", stageCentreScreenX + half <= 1920 - 300 + 0.5);
+  ok("stage left edge stays on screen", stageCentreScreenX - half >= -0.5);
+
+  ok("no insets means no pivot shift", shut.x === V2_STAGE.x + V2_STAGE.w / 2);
+  ok("a right inset pushes the pivot right", open.x > V2_STAGE.x + V2_STAGE.w / 2);
+}
+
+{
+  // The shift is scale-dependent: the same chrome is fewer world units when
+  // zoomed in. Getting this wrong offsets every cinematic by a drifting amount.
+  const ins = { top: 0, right: 300, bottom: 0, left: 0 };
+  near("shift at scale 1 is half the inset", pivotShift(ins, 1).x, 150);
+  near("shift halves when the scale doubles", pivotShift(ins, 2).x, 75);
+  eq("no insets, no shift", pivotShift(null, 1), { x: 0, y: 0 });
+  eq("a zero scale cannot divide", pivotShift(ins, 0), { x: 0, y: 0 });
+}
+
+{
+  // Legacy guard: a viewport with NO insets field must behave exactly as it
+  // did before this existed, or every shipped conflict scene reframes.
+  const before = computeRestView(V2_STAGE, { w: 1920, h: 1027 });
+  eq("an inset-less viewport is unchanged",
+    { x: before.x, y: before.y },
+    { x: V2_STAGE.x + V2_STAGE.w / 2, y: V2_STAGE.y + V2_STAGE.h / 2 });
 }
 
 console.log(`\n${fail === 0 ? "PASS" : "FAIL"} — ${pass} passed, ${fail} failed`);

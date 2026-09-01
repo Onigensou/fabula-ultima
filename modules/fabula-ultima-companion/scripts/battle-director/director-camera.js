@@ -124,8 +124,32 @@ export function resolveStage(flagStage, fallbackRect) {
  * by bleed art instead of black, which is exactly what the bleed is for.
  */
 export function computeRestView(stage, viewport) {
-  const scale = Math.min(viewport.w / stage.w, viewport.h / stage.h);
-  return { x: stage.x + stage.w / 2, y: stage.y + stage.h / 2, scale };
+  const ins = viewport?.insets ?? null;
+  const vw = ins ? Math.max(200, viewport.w - ins.left - ins.right) : viewport.w;
+  const vh = ins ? Math.max(200, viewport.h - ins.top - ins.bottom) : viewport.h;
+  const scale = Math.min(vw / stage.w, vh / stage.h);
+  const off = pivotShift(ins, scale);
+  return { x: stage.x + stage.w / 2 + off.x, y: stage.y + stage.h / 2 + off.y, scale };
+}
+
+/**
+ * How far the pivot must move so that content lands in the middle of the
+ * VISIBLE rect rather than the middle of the window.
+ *
+ * The camera renders the pivot at the window centre. Chrome that overlays the
+ * canvas — the Foundry sidebar above all — makes the visible centre sit off to
+ * one side of that, so anything framed on the window centre drifts under the
+ * chrome. With a 300px sidebar on a 1920px window the right ~260 canvas pixels
+ * of a contained stage sit behind the chat box.
+ *
+ * Returned in WORLD units, so it depends on the scale it will be applied at.
+ */
+export function pivotShift(insets, scale) {
+  if (!insets || !finite(scale) || scale <= 0) return { x: 0, y: 0 };
+  return {
+    x: ((insets.right || 0) - (insets.left || 0)) / 2 / scale,
+    y: ((insets.bottom || 0) - (insets.top || 0)) / 2 / scale,
+  };
 }
 
 /**
@@ -155,10 +179,16 @@ export function clampView(view, canvasRect, viewport) {
  */
 export function focusView({ point, zoom = 1 }, { stage, canvasRect, viewport }) {
   const rest = computeRestView(stage, viewport);
+  const scale = rest.scale * (Number(zoom) || 1);
+  // The shift is scale-dependent, so it is recomputed at the FINAL scale rather
+  // than reused from the rest view.
+  const off = pivotShift(viewport?.insets ?? null, scale);
+  const cx = stage.x + stage.w / 2;
+  const cy = stage.y + stage.h / 2;
   const target = {
-    x: finite(Number(point?.x)) ? Number(point.x) : rest.x,
-    y: finite(Number(point?.y)) ? Number(point.y) : rest.y,
-    scale: rest.scale * (Number(zoom) || 1),
+    x: (finite(Number(point?.x)) ? Number(point.x) : cx) + off.x,
+    y: (finite(Number(point?.y)) ? Number(point.y) : cy) + off.y,
+    scale,
   };
   return clampView(target, canvasRect, viewport);
 }
@@ -170,7 +200,38 @@ export function viewportOf() {
   return {
     w: (typeof window !== "undefined" && window.innerWidth) || 1920,
     h: (typeof window !== "undefined" && window.innerHeight) || 1080,
+    insets: reservedInsets(),
   };
+}
+
+/**
+ * Screen-space chrome that sits ON TOP of the canvas, measured live.
+ *
+ * Only the sidebar is reserved by default. The left tool column and the hotbar
+ * also overlay, but conflict scenes hide them for players, and reserving every
+ * piece of chrome would shrink the play area for occlusion that mostly is not
+ * happening. Add to this function if that changes.
+ *
+ * Measured rather than assumed: the sidebar is user-resizable and collapsible,
+ * and the collapsed element still has width, so its class/expanded state has to
+ * be consulted as well as its box.
+ */
+export function reservedInsets() {
+  const none = { top: 0, right: 0, bottom: 0, left: 0 };
+  if (typeof document === "undefined") return none;
+  try {
+    const el = document.getElementById("sidebar");
+    if (!el) return none;
+    const ui = globalThis.ui;
+    const collapsed = (typeof ui?.sidebar?.expanded === "boolean")
+      ? !ui.sidebar.expanded
+      : el.classList.contains("collapsed");
+    if (collapsed) return none;
+    const w = el.getBoundingClientRect?.().width || el.offsetWidth || 0;
+    return { top: 0, right: Math.max(0, Math.round(w)), bottom: 0, left: 0 };
+  } catch (_) {
+    return none;
+  }
 }
 
 /**
@@ -310,6 +371,7 @@ export function panSnap(view, { scene = null } = {}) {
 
 export const CameraApi = {
   stageOf, hasStageRect, restViewFor, settleRestFraming, clampToCanvas, resolveIntent, asView,
+  reservedInsets, pivotShift,
   panTo, panSnap, viewportOf,
   resolveStage, computeRestView, clampView, focusView,
 };
