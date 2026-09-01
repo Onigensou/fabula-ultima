@@ -651,11 +651,31 @@ export function buildOni(ctx, env) {
       try { canvas.scene._viewPosition = { x: v.x, y: v.y, scale: v.scale }; } catch {}
     };
 
+    // Where the camera should end up. On a v2 conflict scene that is the
+    // authored REST framing, not wherever the camera happened to be when this
+    // shot started: if a previous shot left it wide, captured home would carry
+    // that error forward and the framing would ratchet out over a fight.
+    const homeTarget = () => {
+      const c = capi();
+      try {
+        if (c?.hasStageRect?.(canvas.scene) && c?.restViewFor) return c.restViewFor(canvas.scene);
+      } catch { /* fall through */ }
+      return home;
+    };
+
+    let restored = false;
+
     const capture = () => {
       if (home) return home;
       const st = canvas.stage;
       home = { x: st.pivot.x, y: st.pivot.y, scale: st.scale.x };
-      _disposers.push(() => { try { apply(home); } catch {} });
+      // Safety net for a script that throws before restoring. It must resolve
+      // the SAME target restore() would, or it silently undoes it — dispose()
+      // runs after the script body, so a naive apply(home) here wins.
+      _disposers.push(() => {
+        if (restored) return;
+        try { apply(homeTarget()); } catch {}
+      });
       return home;
     };
 
@@ -697,10 +717,22 @@ export function buildOni(ctx, env) {
         apply(v);
         return v;
       },
+      // Restore to the scene REST framing when the scene defines a stage rect
+      // (a v2 conflict scene), not to whatever the camera happened to be at.
+      //
+      // Captured home is the wrong target there: if a previous shot left the
+      // camera wide — or one was interrupted — the next shot captures THAT as
+      // home and restores to it, so the framing ratchets further out with every
+      // cinematic. Rest framing is the arena default that settleRestFraming
+      // already asserts at battle start, so it is the correct place to land.
+      // Scenes without a stage rect keep the captured-home behaviour, since
+      // there is no authored framing to return to.
       async restore({ duration = 900, ease = null } = {}) {
-        if (!home) return;
-        await glide(home, duration, ease);
-        apply(home);
+        const target = homeTarget();
+        if (!target) return;
+        restored = true;
+        await glide(target, duration, ease);
+        apply(target);
       },
     };
   }
