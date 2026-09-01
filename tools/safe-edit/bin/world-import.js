@@ -147,36 +147,50 @@ const plan = { apply, folders:{create:[],update:[]}, items:{create:[],update:[]}
 // this tool exists to surface. Only the write is apply-gated; in dry-run the
 // prunable set is derived from the template's declared keys without touching
 // the document.
-const reloadCSB = async (doc, wantProps) => {
-  if (!wantProps || typeof wantProps !== "object") {
-    if (apply) { try { await doc.templateSystem?.reloadTemplate?.(); } catch (e) {} }
-    return;
+const reloadCSB = async (doc, wantProps, templateId) => {
+  // reloadTemplate() PRUNES every prop the template does not declare. Restore
+  // BOTH what the JSON intends AND what the live document already held: this
+  // tool's contract is "never DELETES", so a prop that exists on the doc but is
+  // absent from the JSON has to survive the reload too. Restoring only the JSON
+  // set silently deleted live authored content on a targeted --only recovery.
+  // JSON wins on conflict.
+  const before = {};
+  for (const [k, v] of Object.entries(doc?._source?.system?.props ?? {})) {
+    if (!k.startsWith("-=")) before[k] = v;
   }
+  const want = { ...before, ...(wantProps && typeof wantProps === "object" ? wantProps : {}) };
+  const label = doc?.name ?? ("(new) " + (templateId ?? "?"));
   try {
     let atRisk;
     if (apply) {
+      if (!doc) return;
       try { await doc.templateSystem?.reloadTemplate?.(); } catch (e) {}
       // _source reflects post-prune storage; the PREPARED doc re-derives
       // template props and would report them present regardless.
       const after = doc._source?.system?.props ?? {};
-      atRisk = Object.entries(wantProps).filter(([k, v]) => v !== undefined && after[k] === undefined);
+      atRisk = Object.entries(want).filter(([k, v]) => v !== undefined && after[k] === undefined);
     } else {
-      // Predict it: reloadTemplate deletes every prop the template does not
-      // declare (TemplateSystem writes system.props['-='+prop] = true).
+      // Predict it, writing nothing. Resolve the declared set from the TEMPLATE
+      // document -- which is what reloadTemplate itself consults -- so this also
+      // works for a doc that does not exist yet (a create in dry-run).
+      const tid = templateId ?? doc?._source?.system?.template ?? null;
+      const tmpl = tid ? (game.items.get(tid) ?? game.actors.get(tid)) : null;
       let declared = null;
-      try { declared = new Set(Object.keys(await doc.templateSystem?.getAllProperties?.() ?? {})); }
-      catch (e) { declared = null; }
+      try {
+        const src = tmpl?.templateSystem ?? doc?.templateSystem;
+        if (src?.getAllProperties) declared = new Set(Object.keys((await src.getAllProperties()) ?? {}));
+      } catch (e) { declared = null; }
       atRisk = declared
-        ? Object.entries(wantProps).filter(([k, v]) => v !== undefined && !declared.has(k))
+        ? Object.entries(want).filter(([k, v]) => v !== undefined && !declared.has(k))
         : [];
     }
     const keys = atRisk.map(([k]) => k);
     if (keys.length) {
       if (apply) await doc.update({ system: { props: Object.fromEntries(atRisk) } });
       plan.propsRestored += keys.length;
-      plan.propsRestoredDetail.push(\`\${doc.name}: \${keys.join(", ")}\`);
+      plan.propsRestoredDetail.push(\`\${label}: \${keys.join(", ")}\`);
     }
-  } catch (e) { plan.errors.push(\`prop restore failed on \${doc.name}: \${e?.message || e}\`); }
+  } catch (e) { plan.errors.push(\`prop restore failed on \${label}: \${e?.message || e}\`); }
 };
 
 // Reconcile an embedded collection (Item or ActiveEffect) on a parent — upsert only.
@@ -194,7 +208,8 @@ async function upsertEmbedded(parent, type, wanted) {
         system: w.system, flags: w.flags, ...(type==="ActiveEffect"?{changes:w.changes,disabled:w.disabled,duration:w.duration,statuses:w.statuses,description:w.description,origin:w.origin,transfer:w.transfer}:{}) }]);
       if (type === "Item") plan.embedded.itemsUpdated++; else plan.embedded.effectsUpserted++;
     }
-    if (type === "Item") { const it = parent.getEmbeddedDocument("Item", w._id); if (it) { await upsertEmbedded(it, "ActiveEffect", w.effects); if (apply) await reloadCSB(it, w.system?.props); } }
+    if (type === "Item") { const it = parent.getEmbeddedDocument("Item", w._id); if (it) await upsertEmbedded(it, "ActiveEffect", w.effects);
+      await reloadCSB(it ?? null, w.system?.props, w.system?.template); }
   }
 }
 
@@ -206,17 +221,21 @@ try {
   }
   for (const it of (docs.items || [])) {
     const ex = game.items.get(it._id);
-    if (!ex) { if (apply) { const c = await Item.create(it, { keepId: true }); if (!c) { plan.errors.push(\`item create rejected: \${it.name} (\${it._id})\`); continue; } await reloadCSB(c, it.system?.props); } plan.items.create.push(it.name); }
+    if (!ex) { if (apply) { const c = await Item.create(it, { keepId: true }); if (!c) { plan.errors.push(\`item create rejected: \${it.name} (\${it._id})\`); continue; } await reloadCSB(c, it.system?.props, it.system?.template); }
+      else { await reloadCSB(null, it.system?.props, it.system?.template); }
+      plan.items.create.push(it.name); }
     else {
       if (apply) await ex.update({ name:it.name, img:it.img, system:it.system, flags:it.flags, folder:it.folder, sort:it.sort });
       await upsertEmbedded(ex, "ActiveEffect", it.effects); // counts in dry-run; writes gated inside
-      if (apply) await reloadCSB(ex, it.system?.props);
+      await reloadCSB(ex, it.system?.props, it.system?.template);
       plan.items.update.push(it.name);
     }
   }
   for (const a of (docs.actors || [])) {
     const ex = game.actors.get(a._id);
-    if (!ex) { if (apply) { const c = await Actor.create(a, { keepId: true }); if (!c) { plan.errors.push(\`actor create rejected: \${a.name} (\${a._id})\`); continue; } for (const it of c.items) await reloadCSB(it, (a.items || []).find((s) => s._id === it.id)?.system?.props); } plan.actors.create.push(a.name); }
+    if (!ex) { if (apply) { const c = await Actor.create(a, { keepId: true }); if (!c) { plan.errors.push(\`actor create rejected: \${a.name} (\${a._id})\`); continue; } for (const it of c.items) { const src = (a.items || []).find((s) => s._id === it.id); await reloadCSB(it, src?.system?.props, src?.system?.template); } }
+      else { for (const s of (a.items || [])) await reloadCSB(null, s.system?.props, s.system?.template); }
+      plan.actors.create.push(a.name); }
     else {
       if (apply) await ex.update({ name:a.name, img:a.img, system:a.system, prototypeToken:a.prototypeToken, flags:a.flags, folder:a.folder, sort:a.sort, ownership:a.ownership });
       await upsertEmbedded(ex, "Item", a.items);          // counts in dry-run; writes gated inside
