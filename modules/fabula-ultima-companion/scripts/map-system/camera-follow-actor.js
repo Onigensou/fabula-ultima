@@ -90,7 +90,7 @@
     // New: sceneMode selector takes precedence
     const mode = safeGet(fab, `${GENERAL_KEY}.${SCENE_MODE_KEY}`, null);
     if (mode === "exploration") return true;
-    if (mode === "dungeon" || mode === "none") return false;
+    if (mode === "dungeon" || mode === "none" || mode === "stealth") return false;
     // Backward-compat: old boolean flag
     const raw = safeGet(fab, `${GENERAL_KEY}.${CAMERA_FOLLOW_KEY}`, false);
     return normalizeBoolean(raw, false);

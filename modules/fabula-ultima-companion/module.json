@@ -2,7 +2,7 @@
   "id": "fabula-ultima-companion",
   "title": "FabulaUltimaCompanion",
   "description": "Adds custom hooks and cool functionality.",
-  "version": "1.0.423",
+  "version": "1.0.424",
   "compatibility": {
     "minimum": "12",
     "verified": "12"
@@ -361,6 +361,7 @@
     "scripts/battle-director/rewind-button.js"
   ],
   "esmodules": [
+    "scripts/shared/exp-core.js",
     "scripts/shared/code-backed-content.js",
     "scripts/shared/identifier-registry.js",
     "scripts/shop-system/shopOpen-bootstrap.js",
@@ -432,7 +433,30 @@
     "scripts/guest-roster/guest-roster-core.js",
     "scripts/guest-roster/guest-roster-ui.js",
     "scripts/main.js",
-    "scripts/gacha-system/gacha-bootstrap.js"
+    "scripts/gacha-system/gacha-bootstrap.js",
+    "scripts/stealth-system/sm-constants.js",
+    "scripts/stealth-system/sm-grid.js",
+    "scripts/stealth-system/sm-lattice.js",
+    "scripts/stealth-system/sm-vision.js",
+    "scripts/stealth-system/sm-state.js",
+    "scripts/stealth-system/sm-states.js",
+    "scripts/stealth-system/sm-enemy-ai.js",
+    "scripts/stealth-system/sm-actions.js",
+    "scripts/stealth-system/sm-reinforcement.js",
+    "scripts/stealth-system/sm-conflict.js",
+    "scripts/stealth-system/sm-socket.js",
+    "scripts/stealth-system/sm-blades.js",
+    "scripts/stealth-system/sm-motion.js",
+    "scripts/stealth-system/sm-banner.js",
+    "scripts/stealth-system/sm-camera.js",
+    "scripts/stealth-system/sm-overlay.js",
+    "scripts/stealth-system/sm-ui.js",
+    "scripts/stealth-system/sm-gm-panel.js",
+    "scripts/stealth-system/sm-director.js",
+    "scripts/stealth-system/sm-handlers.js",
+    "scripts/stealth-system/sm-bgm.js",
+    "scripts/stealth-system/sm-gm-button.js",
+    "scripts/stealth-system/sm-boot.js"
   ],
   "styles": [
     "styles/style.css",

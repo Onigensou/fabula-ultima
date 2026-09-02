@@ -1,0 +1,1129 @@
+// ============================================================================
+// Stealth Mode — state handlers. What each FSM state actually does.
+//
+// Every handler runs on the GM inside the director's serial queue, so each one
+// may read-modify-write `ctx.sm` freely and save at the end without racing the
+// next event.
+// ============================================================================
+
+import { TAG, MODULE_ID, ALERT, ALERT_ORDER, AI, HOOKS, MSG, AI_SETTING } from "./sm-constants.js";
+import { S, E } from "./sm-states.js";
+import {
+  cellOfToken, cellDistance, directionBetween, sameCell, cellKey, topLeftOf, centerOf,
+} from "./sm-grid.js";
+import {
+  buildLattice, syncOccupancy, invalidateLattice, reachable, cellRecord,
+} from "./sm-lattice.js";
+import { evaluateSight, surveyObservers } from "./sm-vision.js";
+import {
+  emptyEnemy, shiftAlert, bumpAwareness, decayAwareness, enemyRecords,
+  pendingActivations, markActivated, resetRoundCounters, pushLog, isAlert,
+  engagementFor, writeState, concealTier, breakConcealment, tickConcealment,
+  applyStupor, tickStupor, isStupored,
+} from "./sm-state.js";
+import {
+  decideActivation, pickActivation, truncateAtContact, conflictParticipants,
+} from "./sm-enemy-ai.js";
+import { settleLedger, makeNoise } from "./sm-actions.js";
+import { spawnReinforcement } from "./sm-reinforcement.js";
+import { launchConflict } from "./sm-conflict.js";
+import * as camera from "./sm-camera.js";
+import * as overlay from "./sm-overlay.js";
+import * as smUi from "./sm-ui.js";
+import {
+  broadcastState, broadcastOverlay, broadcastMotion, broadcastBanner, broadcastDetection,
+  broadcastEcho,
+} from "./sm-socket.js";
+import { walkToken } from "./sm-motion.js";
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// ── Party token resolution ──────────────────────────────────────────────────
+
+/**
+ * The one central party token. Same model as Exploration mode — the party
+ * moves as a single piece with a designated leader, not four tokens.
+ */
+export function findPartyToken(scene = canvas?.scene) {
+  const mc = globalThis.FUCompanion?.api?.MovementControl;
+  const snap = mc?.getLastSnapshot?.();
+  const id = snap?.centralPartyTokenData?.tokenId;
+  if (id) {
+    const t = scene?.tokens?.get?.(id);
+    if (t) return t;
+  }
+  // Fallback: the friendly token the players own. Better than failing to start.
+  return scene?.tokens?.find?.((t) => t.disposition === 1 && !t.hidden) ?? null;
+}
+
+/** The actor whose stats every check this round uses. */
+export function controllerActor(sm) {
+  const id = sm?.party?.controllerActorId;
+  return id ? game.actors?.get?.(id) ?? null : null;
+}
+
+/**
+ * The party actors — EXP payout, and the helper pool for a Hide group check.
+ *
+ * MovementControl's resolver first, because reading `member_id_*` off the DB
+ * directly under-reports: on this world only slot 1 resolves to an actor while
+ * MovementControl finds all four members. Note the field names — the actor is
+ * on `partyMemberActorId`, NOT `actorId`; the obvious name is undefined on
+ * every row and fails silently.
+ */
+export async function partyActors() {
+  const out = [];
+  const seen = new Set();
+
+  try {
+    const rows = (await globalThis.FUCompanion?.api?.MovementControl
+      ?.getEligibleControllers?.({ onlineOnly: false, includeGM: false })) ?? [];
+    for (const r of rows) {
+      const a = game.actors?.get?.(r.partyMemberActorId);
+      if (a && !seen.has(a.id)) { seen.add(a.id); out.push(a); }
+    }
+  } catch (e) {
+    console.warn(TAG, "MovementControl party resolve failed:", e);
+  }
+
+  if (!out.length) {
+    try {
+      const { source: db } = (await globalThis.FUCompanion?.api?.getCurrentGameDb?.()) ?? {};
+      const props = db?.system?.props ?? {};
+      for (const [k, v] of Object.entries(props)) {
+        if (!String(k).startsWith("member_id_")) continue;
+        const a = game.actors?.get?.(String(v));
+        if (a && !seen.has(a.id)) { seen.add(a.id); out.push(a); }
+      }
+    } catch (e) {
+      console.warn(TAG, "party DB resolve failed:", e);
+    }
+  }
+
+  if (out.length) return out;
+  return game.actors?.filter?.((a) => a.hasPlayerOwner && a.type === "character") ?? [];
+}
+
+// ── Enemy adoption ──────────────────────────────────────────────────────────
+
+/**
+ * Adopt the scene's hostile tokens into the state model.
+ *
+ * Enemies are ordinary tokens the GM placed by hand — 17 of them on the
+ * prototype map — so authoring a patrol stays "drag a token", and this layer
+ * only adds what a token cannot carry: an AI state, an awareness meter and a
+ * last-known-position.
+ */
+function adoptEnemies(sm, scene, config) {
+  const facings = config.facings ?? {};
+  const routes = config.routes ?? {};
+
+  for (const tokenDoc of (scene?.tokens ?? [])) {
+    if (tokenDoc.disposition !== -1) continue;
+    if (tokenDoc.hidden) continue;
+
+    const id = tokenDoc.id;
+    const cell = cellOfToken(tokenDoc);
+    if (sm.enemies[id]) {
+      // Already known — refresh position only, so a GM nudging a token between
+      // rounds does not wipe its awareness.
+      sm.enemies[id].cell = cell;
+      continue;
+    }
+
+    const rec = emptyEnemy(id, cell, facings[id] ?? "S");
+    rec.name = tokenDoc.name;
+    // A route's first waypoint is where the guard walks to first, so a guard
+    // authored with a route starts facing it.
+    const route = routes[id];
+    if (route?.length) rec.facing = directionBetween(cell, route[0]) ?? rec.facing;
+    sm.enemies[id] = rec;
+  }
+
+  // Drop records for tokens that no longer exist (deleted between sessions).
+  for (const id of Object.keys(sm.enemies)) {
+    if (!scene?.tokens?.get?.(id)) delete sm.enemies[id];
+  }
+}
+
+// ── Detection sweep ─────────────────────────────────────────────────────────
+
+/**
+ * Run every enemy's eyes against the party's current cell.
+ *
+ * Called after EVERY cell entered during a move, not once at the end. That is
+ * what makes walking into a cone stop you at its edge instead of three cells
+ * past it.
+ *
+ * @returns {{spotted:boolean, seenBy:string[], raised:object|null}}
+ */
+/**
+ * Broadcast an echo for every step of a walk that fell within earshot.
+ *
+ * Nearness is normalised against the hearing range and shipped with each
+ * cell, so the client can weight the ring without needing the tuning or the
+ * party position. Steps outside earshot are simply not sent — the party
+ * cannot hear them, and shipping them would let a curious player read the
+ * whole map out of the socket traffic.
+ */
+function emitFootsteps(sm, path, tune, { scene = canvas?.scene } = {}) {
+  const pc = sm?.party?.cell;
+  const range = tune.hearingRange ?? 5;
+  if (!pc || range <= 0 || !path?.length) return;
+
+  const heard = [];
+  for (const cell of path) {
+    const d = cellDistance(pc, cell, scene);
+    if (d > range) continue;
+    heard.push({ cell, nearness: 1 - (d / range) });
+  }
+  if (heard.length) broadcastEcho(heard);
+}
+
+/**
+ * Register that one guard has noticed something. Extracted so a suspicion
+ * held back for a check can be applied later, on failure, on exactly the same
+ * terms as one that landed immediately.
+ */
+/**
+ * One check for the whole move, not one per guard.
+ *
+ * The point of this rule is that it must not become a toll booth. A party
+ * crossing a busy room clips the outer edge of several attention cones in a
+ * single walk, and rolling once per guard would turn one movement into four
+ * dialogs and make the feature something players route around. So every
+ * outer-edge glimpse from a single move is settled by ONE roll, and its
+ * result is applied to all of them.
+ *
+ * The camera goes to the guard who noticed while the check is open, then
+ * comes back. Being told to roll without being shown WHO is looking is the
+ * difference between a tense moment and an unexplained interruption.
+ *
+ * @returns {Promise<boolean>} true if the party talked its way out
+ */
+// ── Manual enemy phase ──────────────────────────────────────────────────────
+//
+// With the AI off the GM plays the guards, and the loop is the same one the
+// AI runs — pick an eligible enemy, resolve its activation, repeat — with the
+// pick made by clicking a token instead of by pickActivation().
+//
+// Bound in the CAPTURE phase for the same reason the player's targeting is:
+// a left click on a token is claimed by Foundry before it reaches the stage.
+// Right-click ends the enemy phase early, matching "right-click means back"
+// everywhere else in this mode.
+/** Is the AI driving the enemy phase? Defaults ON. */
+export function aiEnabled() {
+  try { return game.settings.get(MODULE_ID, AI_SETTING) !== false; }
+  catch (_) { return true; }
+}
+
+/** Take down any armed GM-activation picker. Safe to call at any time. */
+export function disarmGmActivation() {
+  try { smUi.endGmActivation(); } catch (_) {}
+}
+
+/**
+ * Arm the board for a GM pick and RETURN — never await.
+ *
+ * Two things this must not do, both learned the hard way:
+ *
+ *  · It must not AWAIT the click. The director serialises its events, so a
+ *    handler parked on human input stops the queue draining and the whole run
+ *    wedges behind a promise only a mouse can resolve.
+ *  · It must not register its own canvas listener. A left click on a token is
+ *    claimed by Foundry before a late listener sees it — the same reason the
+ *    takedown pick did nothing. sm-ui owns canvas clicks through a single
+ *    capture-phase handler installed at enable(); everything that needs a
+ *    click goes through that one.
+ */
+/**
+ * Give one guard a turn the GM plays, then park.
+ *
+ * A guard's turn is deliberately thinner than a player's: Move and End, and
+ * no Objective. It has nothing to hide from, nothing to scan for and no
+ * reason to throw a rock — it walks, and reaching the party is a fight. A
+ * menu of actions none of which apply is worse than no menu.
+ *
+ * Movement is the full hunting speed, not the patrol walk: patrol tempo is a
+ * behaviour of the AI's routine, and there is no routine here — the GM is
+ * deciding, so the guard gets what it is actually capable of.
+ */
+/**
+ * Apply whatever the GM just did with the guard they are playing.
+ *
+ * @returns {Promise<"ended"|"contact"|"moved"|"idle">}
+ */
+async function resumeGmTurn(ctx) {
+  const { sm, tune, scene } = ctx;
+  const turn = sm.__gmTurn;
+  const enemy = sm.enemies?.[turn?.tokenId];
+  if (!enemy || enemy.defeated) return "ended";
+
+  if (sm.__gmTurnEnd) { sm.__gmTurnEnd = false; return "ended"; }
+
+  const path = sm.__gmMove ?? null;
+  sm.__gmMove = null;
+  if (!path?.length) return "idle";
+
+  // Contact is decided the same way the AI's walk decides it, so a guard the
+  // GM walks into the party starts a fight on identical terms.
+  const { path: walked, contact } = truncateAtContact(path, sm.party.cell, scene);
+  const spent = Math.min(turn.moveLeft ?? 0, walked.length);
+  turn.moveLeft = Math.max(0, (turn.moveLeft ?? 0) - spent);
+
+  const from = enemy.cell;
+  enemy.cell = walked[walked.length - 1] ?? enemy.cell;
+  enemy.facing = directionBetween(from, enemy.cell, scene) ?? enemy.facing;
+
+  emitFootsteps(sm, walked, tune, { scene });
+
+  const tokenDoc = scene?.tokens?.get?.(enemy.tokenId);
+  if (tokenDoc) {
+    await walkToken(tokenDoc, walked, {
+      msPerLeg: tune.stepMs,
+      sfx: false,
+      broadcast: (p) => broadcastMotion(p),
+    });
+  }
+
+  syncOccupancy(scene);
+  await ctx.save();
+  broadcastState(sm);
+
+  if (contact) {
+    pushLog(sm, `${tokenDoc?.name ?? "A guard"} reaches the party`);
+    smUi.endGmEnemyTurn();
+    sm.__gmTurn = null;
+    return "contact";
+  }
+
+  // Same guard, fewer squares — re-arm so the blades show what is left.
+  smUi.updateGmEnemyTurn({ cell: enemy.cell, moveLeft: turn.moveLeft });
+  return "moved";
+}
+
+function beginGmTurn(ctx, enemy) {
+  const { sm, tune, scene } = ctx;
+  const name = scene?.tokens?.get?.(enemy.tokenId)?.name ?? "a guard";
+  sm.__gmTurn = { tokenId: enemy.tokenId, moveLeft: tune.enemyMove ?? 5 };
+  pushLog(sm, `${name} activates (GM)`);
+  armGmTurnUi(ctx, enemy, name);
+}
+
+function armGmTurnUi(ctx, enemy, name) {
+  const { sm } = ctx;
+  smUi.beginGmEnemyTurn({
+    tokenId: enemy.tokenId,
+    name,
+    cell: enemy.cell,
+    moveLeft: sm.__gmTurn?.moveLeft ?? 0,
+    onMove: (path) => {
+      sm.__gmMove = path;
+      ctx.dispatch(E.MORE_ENEMIES);
+    },
+    onEnd: () => {
+      sm.__gmTurnEnd = true;
+      ctx.dispatch(E.MORE_ENEMIES);
+    },
+  });
+}
+
+function armGmActivation(ctx) {
+  const { sm, dispatch } = ctx;
+
+  // The SAME pool the AI would draw from, so turning the toggle off changes
+  // who chooses, never who is allowed to act.
+  const eligible = pendingActivations(sm).filter((e) => !e.defeated && !isStupored(e));
+  if (!eligible.length) { dispatch(E.NO_MORE); return; }
+
+  const byCell = new Map(eligible.map((e) => [`${e.cell.i},${e.cell.j}`, e]));
+  ui.notifications?.info?.(
+    `Enemy phase — click a guard to act (${eligible.length} left), right-click to end.`);
+
+  smUi.beginGmActivation(
+    eligible.map((e) => e.cell),
+    (cell) => {
+      const hit = byCell.get(`${cell.i},${cell.j}`);
+      if (!hit) { dispatch(E.NO_MORE); return; }
+      sm.__gmPick = hit.tokenId;
+      dispatch(E.MORE_ENEMIES);
+    },
+    () => dispatch(E.NO_MORE),
+  );
+}
+
+/**
+ * One check for the whole move, not one per guard.
+ *
+ * The point of this rule is that it must not become a toll booth. A party
+ * crossing a busy room clips the outer edge of several attention cones in a
+ * single walk, and rolling once per guard would turn one movement into four
+ * dialogs and make the feature something players route around. So every
+ * outer-edge glimpse from a single move is settled by ONE roll, and its
+ * result is applied to all of them.
+ *
+ * The camera goes to the guard who noticed while the check is open, then
+ * comes back. Being told to roll without being shown WHO is looking is the
+ * difference between a tense moment and an unexplained interruption.
+ *
+ * @returns {Promise<boolean>} true if the party talked its way out
+ */
+async function runSuspicionCheck(ctx, deferred) {
+  const { sm, tune, scene } = ctx;
+  const leader = controllerActor(sm);
+  const dl = tune.suspicionCheckDl ?? 12;
+
+  // Nearest first: the guard with the best look is the one worth showing.
+  const rows = [...deferred].sort((a, b) => a.distance - b.distance);
+  const focus = rows[0];
+  const name = scene?.tokens?.get?.(focus.tokenId)?.name ?? "a guard";
+
+  const CR = globalThis.ONI?.CheckRequester;
+  const GC = globalThis.ONI?.GroupCheck;
+  if (!leader || (!CR?.requestOne && !GC?.request)) return false;   // no check → suspicion stands
+
+  const label = rows.length > 1
+    ? `Stay unnoticed — ${name} and ${rows.length - 1} other(s)`
+    : `Stay unnoticed — ${name}`;
+
+  let passed = false;
+  try {
+    await camera.panToCell(focus.cell, { duration: 380 });
+
+    const roster = await partyActors();
+    const helpers = roster.filter((a) => a?.uuid && a.uuid !== leader.uuid);
+
+    if (GC?.request && helpers.length) {
+      const res = await GC.request({
+        leaderUuid: leader.uuid,
+        participantMode: "designated",
+        helperActorUuids: helpers.map((a) => a.uuid),
+        allActorUuids: [leader.uuid, ...helpers.map((a) => a.uuid)],
+        helperDl: dl, leaderDl: dl, helperBonus: 1,
+        attrA: "DEX", attrB: "INS",
+        label, allowInvokes: true, postChat: true,
+      });
+      passed = !!(res?.pass ?? res?.leader?.pass);
+    } else {
+      const solo = await CR.requestOne(leader, {
+        attrA: "DEX", attrB: "INS", dl, label,
+        mode: "interactive", allowInvokes: true, postChat: true,
+        context: { system: "stealth", kind: "suspicion" },
+      });
+      passed = !!solo?.pass;
+    }
+  } catch (e) {
+    console.warn(TAG, "suspicion check threw — suspicion stands", e);
+    passed = false;
+  } finally {
+    try { await camera.panToCell(sm.party.cell, { duration: 380 }); } catch (_) {}
+  }
+
+  pushLog(sm, passed
+    ? `Suspicion check PASSED (DL ${dl}) — ${rows.length} guard(s) look away`
+    : `Suspicion check FAILED (DL ${dl}) — ${rows.length} guard(s) take notice`);
+  return passed;
+}
+
+export function applySuspicion(sm, tune, e, tokenId, awareness, partyCell, firstGlimpse, marks = []) {
+  bumpAwareness(sm, tokenId, awareness, tune,
+    firstGlimpse ? partyCell : null, { ceiling: tune.searchAt - 1 });
+
+  e.mark = "suspect";
+  e.markAt = sm.round;
+  if (!e.raisedOnce) {
+    e.raisedOnce = true;
+    marks.push({ id: tokenId, kind: "suspect" });
+    e.__raisedAlert = shiftAlert(sm, 1, "something noticed");
+  }
+  return marks;
+}
+
+export function detectionSweep(ctx, partyCell, { deferOuter = false } = {}) {
+  const { sm, tune, scene } = ctx;
+
+  // A stupored guard sees NOTHING. It is out of play for the round, so it
+  // cannot raise suspicion or ring the alarm any more than it can take a step
+  // — a guard skipped in the enemy phase that still detects you is exactly the
+  // "escaping bought me nothing" problem Stupor exists to solve.
+  const observers = enemyRecords(sm)
+    .filter((e) => !isStupored(e))
+    .map((e) => ({ tokenId: e.tokenId, cell: e.cell, facing: e.facing }));
+
+  const survey = surveyObservers(observers, partyCell, tune, {
+    scene, concealTier: concealTier(sm),
+  });
+  const seenBy = [];
+  const newMarks = [];
+  const deferred = [];
+  let raised = null;
+
+  for (const row of survey.results) {
+    const sight = row.sight;
+    if (!sight.seen) continue;
+    const e = sm.enemies[row.tokenId];
+    if (!e) continue;
+
+    seenBy.push(row.tokenId);
+    const firstGlimpse = !e.raisedOnce;
+
+    if (sight.spotted) {
+      bumpAwareness(sm, row.tokenId, Math.max(1, sight.awareness), tune, partyCell);
+      // Seen outright. The alarm goes straight to ALERT — walking the tier up
+      // one notch at a time when a guard is staring at you from two tiles away
+      // just meant the party got spotted twice for the same mistake.
+      e.mark = "spot";
+      e.markAt = sm.round;
+      if (!e.raisedOnce) { e.raisedOnce = true; newMarks.push({ id: e.tokenId, kind: "spot" }); }
+      else newMarks.push({ id: e.tokenId, kind: "spot" });
+
+      // Concealment is about not being FOUND, not invisibility. A guard at
+      // spotted range with clear sight sees you regardless.
+      breakConcealment(sm, "seen outright");
+      if (sm.alert !== ALERT.ALERT) {
+        raised = shiftAlert(sm, ALERT_ORDER.length, "spotted outright");
+      }
+      try { Hooks.callAll(HOOKS.ENEMY_SPOTTED, { cell: partyCell, by: [row.tokenId] }); } catch (_) {}
+      continue;
+    }
+
+    // Suspicious. Costs ONE tier the first time THIS guard notices anything,
+    // and nothing thereafter — otherwise crossing a long cone ratchets the
+    // alarm once per cell and the party is punished for a single mistake five
+    // times over. The latch clears when the guard gives up and returns to
+    // patrol, so a second, separate approach still costs again.
+    // The lead is fixed at the FIRST glimpse and never refreshed.
+    //
+    // It used to be rewritten to the party's position on every cell of the
+    // walk, so a guard who half-noticed you at the start of a move knew
+    // exactly where you finished it — and ducking behind a crate on the last
+    // step bought nothing, because the crate was where it had been told to
+    // look. Now it goes to where it thought it saw something, which is the
+    // whole reason cover exists.
+    // ── The outer edge is arguable; the inner edge is not ─────────────────
+    //
+    // A glimpse caught at the far edge of a guard's attention is the moment
+    // a party can still talk itself out of trouble: freeze, blend, move like
+    // you belong. Close in, there is nothing to roll for — you are simply
+    // there. So an outer-edge reading is HELD rather than applied, handed
+    // back to the caller, and settled by one check for the whole move; the
+    // inner edge lands immediately, exactly as before.
+    if (deferOuter && sight.distance > (tune.suspicionInnerRange ?? 3)) {
+      deferred.push({
+        tokenId: row.tokenId, cell: e.cell, distance: sight.distance,
+        awareness: Math.max(1, sight.awareness), firstGlimpse, atCell: partyCell,
+      });
+      continue;
+    }
+
+    applySuspicion(sm, tune, e, row.tokenId, Math.max(1, sight.awareness),
+      partyCell, firstGlimpse, newMarks);
+    if (e.__raisedAlert) { raised = e.__raisedAlert; delete e.__raisedAlert; }
+  }
+
+  return { spotted: survey.anySpotted, seenBy, raised, marks: newMarks, survey, deferred };
+}
+
+// ── Handlers ────────────────────────────────────────────────────────────────
+
+export function buildHandlers() {
+  return {
+
+    // ── PREP ──────────────────────────────────────────────────────────────
+    async [S.PREP](ctx) {
+      const { sm, scene } = ctx;
+
+      invalidateLattice();
+      buildLattice(scene);
+      syncOccupancy(scene);
+
+      const cfg = readSceneConfig(scene);
+      sm.__config = cfg;
+
+      const partyToken = findPartyToken(scene);
+      if (!partyToken) {
+        ui.notifications?.error?.("Stealth: no party token on this scene.");
+        return ctx.dispatch(E.ABORT);
+      }
+
+      sm.party.tokenId = partyToken.id;
+      sm.party.cell = cellOfToken(partyToken);
+
+      adoptEnemies(sm, scene, cfg);
+
+      // A fight that ended in escape may have finished while this run was torn
+      // down, so the stupor waits on a flag until there is a state to put it on.
+      try {
+        const { drainPendingStupor, drainPendingAlert } = await import("./sm-boot.js");
+        await drainPendingStupor(sm, scene, ctx.tune);
+        await drainPendingAlert(sm, scene);
+      } catch (e) { console.warn(TAG, "stupor drain failed", e); }
+
+      if (!sm.round) sm.round = 0;
+      pushLog(sm, `Stealth started — ${Object.keys(sm.enemies).length} enemies`);
+
+      await ctx.save();
+      broadcastState(sm);
+      return ctx.dispatch(E.DONE);
+    },
+
+    // ── ROUND_START ───────────────────────────────────────────────────────
+    async [S.ROUND_START](ctx) {
+      const { sm } = ctx;
+      sm.round += 1;
+      resetRoundCounters(sm);
+
+      try { Hooks.callAll(HOOKS.ROUND_START, { round: sm.round, alert: sm.alert }); } catch (_) {}
+      pushLog(sm, `── Round ${sm.round} (${sm.alert}) ──`);
+
+      await ctx.save();
+      broadcastState(sm);
+      return ctx.dispatch(E.DONE);
+    },
+
+    // ── PLAYER_START ──────────────────────────────────────────────────────
+    async [S.PLAYER_START](ctx) {
+      const { sm, tune, scene } = ctx;
+
+      broadcastBanner("player");
+
+      syncOccupancy(scene);
+      const token = scene?.tokens?.get?.(sm.party.tokenId);
+      if (token) sm.party.cell = cellOfToken(token);
+
+      sm.party.moveLeft = tune.partyMove;
+      sm.party.objectiveUsed = false;
+
+      await ctx.save();
+      broadcastState(sm);
+      return ctx.dispatch(E.DONE);
+    },
+
+    // ── CONTROLLER_PICK ───────────────────────────────────────────────────
+    // The brief: at the start of the Player Phase the party decides who leads,
+    // and that actor's stats carry every check for the round. Kept as its own
+    // state so the choice cannot be revisited after a bad roll.
+    async [S.CONTROLLER_PICK](ctx) {
+      const { sm } = ctx;
+
+      // There is ALWAYS a leader. Every check in this mode is rolled against
+      // one, so "no leader" is not a state the game can be in — a Hide that
+      // reports it is a bug, not a rule.
+      //
+      // The old autopick read `info.controller.actorId` (undefined — the rows
+      // key it `partyMemberActorId`) and fell back to `currentGameActorId`,
+      // which is the Current Game DB ACTOR, not a party member. So it either
+      // left the slot null or filled it with a bookkeeping actor that has no
+      // attributes to roll. Resolve against the real roster instead, and
+      // re-pick whenever the stored id no longer names a live actor.
+      const stored = sm.party.controllerActorId;
+      const valid = stored && game.actors?.get?.(stored);
+
+      if (!valid) {
+        const roster = await partyActors();
+        const pick = roster[0] ?? null;
+        if (pick) {
+          sm.party.controllerActorId = pick.id;
+          if (stored) pushLog(sm, `Leader reset to ${pick.name} (previous leader unresolvable)`);
+          else pushLog(sm, `${pick.name} leads`);
+        } else {
+          console.warn(TAG, "no party member could be resolved as leader");
+        }
+      }
+
+      await ctx.save();
+      broadcastState(sm);
+      // The command UI opens on ACTION; picking is offered there as a free
+      // Switch, so we do not block the turn waiting for a decision nobody
+      // needs to change.
+      return ctx.dispatch(E.DONE);
+    },
+
+    // ── ACTION ────────────────────────────────────────────────────────────
+    // Passive: the command UI is up and the director is waiting. Intents
+    // arrive from the controller's client via the socket.
+    async [S.ACTION](ctx) {
+      broadcastState(ctx.sm);
+    },
+
+    // ── RESOLUTION ────────────────────────────────────────────────────────
+    async [S.RESOLUTION](ctx, payload) {
+      const { sm, tune, scene } = ctx;
+
+      // A move arrives as a path; detection is evaluated per cell entered and
+      // the walk STOPS at the cell that got them spotted.
+      if (payload?.kind === "move" && Array.isArray(payload.path)) {
+        const token = scene?.tokens?.get?.(sm.party.tokenId);
+        let spottedAt = null;
+
+        // Decide the walk BEFORE animating it. Detection is evaluated per cell
+        // entered and the walk must stop where the party was spotted, so the
+        // cells actually travelled are resolved first and only those are
+        // animated. Animating the whole path and rewinding on a spot would
+        // show the player a move that never happened.
+        // Only a genuine SIGHTING halts the walk. Suspicion registers, marks
+        // the guard and may cost a tier, but the party keeps moving — halting
+        // on every suspicious cell was what turned crossing one cone into a
+        // stop-start loop the player could not escape by moving.
+        const walked = [];
+        const marks = [];
+        const pending = new Map();   // tokenId -> held outer-edge glimpse
+        for (const cell of payload.path) {
+          if (sm.party.moveLeft <= 0) break;
+
+          sm.party.cell = cell;
+          sm.party.moveLeft -= 1;
+          walked.push(cell);
+
+          // Outer-edge glimpses are HELD for one check at the end of the
+          // walk. Only a player move defers: an enemy phase never asks the
+          // party to roll, because they are not the ones doing anything.
+          const det = detectionSweep(ctx, cell, { deferOuter: true });
+          marks.push(...(det.marks ?? []));
+          for (const d of (det.deferred ?? [])) {
+            // One entry per guard, keeping the CLOSEST look they got — that
+            // is the reading the check is really against.
+            const prev = pending.get(d.tokenId);
+            if (!prev || d.distance < prev.distance) pending.set(d.tokenId, d);
+          }
+          if (det.spotted) { spottedAt = cell; break; }
+        }
+
+        // A real sighting settles the matter — there is nothing left to
+        // explain away, so the held glimpses are dropped rather than rolled.
+        if (spottedAt) pending.clear();
+
+        if (marks.length) broadcastDetection(marks);
+
+        // One glide, one document write — see sm-motion.
+        if (token && walked.length) {
+          await walkToken(token, walked, {
+            msPerLeg: tune.stepMs,
+            broadcast: (p) => broadcastMotion(p),
+          });
+        }
+
+        // ── Settle the held glimpses ────────────────────────────────────
+        // AFTER the walk, so the party is standing where they ended up when
+        // the camera swings to the guard and the check opens. Asking
+        // mid-glide would freeze the token halfway across the room.
+        if (pending.size) {
+          const held = [...pending.values()];
+          const talkedOut = await runSuspicionCheck(ctx, held);
+          if (!talkedOut) {
+            const lateMarks = [];
+            for (const d of held) {
+              const e = sm.enemies[d.tokenId];
+              if (!e || e.defeated) continue;
+              applySuspicion(sm, tune, e, d.tokenId, d.awareness,
+                d.atCell, d.firstGlimpse, lateMarks);
+              if (e.__raisedAlert) delete e.__raisedAlert;
+            }
+            if (lateMarks.length) broadcastDetection(lateMarks);
+          }
+        }
+
+        // Ordinary movement does NOT break concealment — hiding then slipping
+        // away has to work, or the party is pinned by the system meant to free
+        // them. But if the hide was made behind cover, walking out of cover is
+        // walking out of the thing that was hiding you.
+        if (sm.party.conceal?.tier && sm.party.conceal.hidInCover
+            && !cellRecord(sm.party.cell, scene)?.cover) {
+          breakConcealment(sm, "left cover");
+        }
+
+        syncOccupancy(scene);
+        await maybeTeleport(ctx);
+        try { Hooks.callAll(HOOKS.PARTY_MOVED, { cell: sm.party.cell }); } catch (_) {}
+
+        // No ui.notifications here. Being seen is a thing that happens ON the
+        // board — the guard wears an exclamation mark and the alarm sounds.
+        // A toast in the corner said the same thing worse, and pulled the
+        // player away from the map at the exact moment it mattered.
+        if (spottedAt) pushLog(sm, `Spotted at ,`);
+
+        if (payload.noisy) makeNoise(sm, sm.party.cell, tune, { scene, strength: 2, reason: "dash" });
+      }
+
+      if (payload?.kind === "objective") {
+        sm.party.objectiveUsed = true;
+        if (payload.grantMove) sm.party.moveLeft += payload.grantMove;
+        if (payload.contact) {
+          await ctx.save();
+          return ctx.dispatch(E.CONTACT, { cell: sm.party.cell, enemyId: payload.enemyId });
+        }
+      }
+
+      await ctx.save();
+      broadcastState(sm);
+      return ctx.dispatch(E.DONE);
+    },
+
+    // ── PLAYER_END ────────────────────────────────────────────────────────
+    async [S.PLAYER_END](ctx) {
+      await ctx.save();
+      return ctx.dispatch(E.DONE);
+    },
+
+    // ── ENEMY_START ───────────────────────────────────────────────────────
+    async [S.ENEMY_START](ctx) {
+      const { sm, tune } = ctx;
+
+      broadcastBanner("enemy");
+      await sleep(700);   // let the flash land before guards start walking
+      const budget = tune.activationsPerRound;
+      const used = (sm.activatedThisRound ?? []).length;
+      const pending = pendingActivations(sm);
+
+      if (used >= budget || !pending.length) return ctx.dispatch(E.NO_MORE);
+      return ctx.dispatch(E.MORE_ENEMIES);
+    },
+
+    // ── ACTIVATE ──────────────────────────────────────────────────────────
+    async [S.ACTIVATE](ctx) {
+      const { sm, tune, scene } = ctx;
+
+      const partyCell = sm.party.cell;
+
+      // Who picks. With the AI on, the same priority rule as always; with it
+      // off, the GM clicks a guard. Only the CHOICE changes — everything
+      // after this point is identical, so a hand-played phase resolves
+      // detection, movement and contact exactly as an automated one does.
+      let enemy;
+      if (aiEnabled()) {
+        enemy = pickActivation(sm, partyCell, { scene });
+      } else if (sm.__gmTurn) {
+        // A guard the GM is already playing. Re-entry carries either a move
+        // they clicked or the end of its turn.
+        const done = await resumeGmTurn(ctx);
+        if (done === "ended") {
+          markActivated(sm, sm.__gmTurn.tokenId);
+          sm.__gmTurn = null;
+          await ctx.save();
+          broadcastState(sm);
+
+          // The SAME budget the AI path spends. Playing the guards by hand
+          // must not quietly buy the round more activations than it has, or
+          // the toggle changes the encounter instead of who drives it.
+          const used = (sm.activatedThisRound ?? []).length;
+          if (used >= tune.activationsPerRound || !pendingActivations(sm).length) {
+            return ctx.dispatch(E.NO_MORE);
+          }
+          return ctx.dispatch(E.MORE_ENEMIES);
+        }
+        if (done === "contact") return ctx.dispatch(E.CONTACT, { cell: sm.party.cell });
+        return;   // moved, or nothing to do — stay parked on this guard
+      } else {
+        // A pick already made by a click re-enters here carrying its choice.
+        const picked = sm.__gmPick ?? null;
+        sm.__gmPick = null;
+        if (!picked) { armGmActivation(ctx); return; }   // park, do not block
+        const chosen = sm.enemies?.[picked] ?? null;
+        if (!chosen) return ctx.dispatch(E.NO_MORE);
+
+        // Hand it over and park. Running decideActivation for a guard the GM
+        // has just chosen would answer a question they were asked — the whole
+        // point of choosing is that they play it.
+        beginGmTurn(ctx, chosen);
+        return;
+      }
+
+      if (!enemy) return ctx.dispatch(E.NO_MORE);
+
+      const intent = decideActivation(sm, enemy, partyCell, tune, { scene });
+      const { path, contact } = truncateAtContact(intent.path, partyCell, scene);
+
+      enemy.facing = intent.facing;
+      if (intent.sawParty) {
+        enemy.lastKnownCell = partyCell;
+        enemy.lostRounds = 0;
+      }
+
+      // Walk it, so the players can watch a guard close in. Same glide the
+      // party gets — a guard that teleports cell to cell reads as a bug, and
+      // watching one close the distance is most of the tension.
+      const tokenDoc = scene?.tokens?.get?.(enemy.tokenId);
+      if (path.length) {
+        enemy.cell = path[path.length - 1];
+
+        // Footsteps the party can HEAR but not see.
+        //
+        // Emitted from the path rather than the destination, so a guard
+        // crossing the edge of hearing is heard for the part of the walk
+        // that was close enough — which is what makes the echoes read as a
+        // direction of travel instead of a single ping. Sent before the
+        // glide so the sound leads the movement, the way it would if you
+        // were listening in the dark.
+        emitFootsteps(sm, path, tune, { scene });
+
+        if (tokenDoc) {
+          await walkToken(tokenDoc, path, {
+            msPerLeg: tune.stepMs,
+            sfx: false,   // only the party's own steps are audible
+            broadcast: (p) => broadcastMotion(p),
+          });
+        }
+      } else if (intent.move) {
+        enemy.cell = intent.move;
+      }
+
+      // A guard that walked onto a pad goes through it, same as the party.
+      // A one-way route the party can use to escape but guards cannot follow
+      // through is a free lever, and a pad guards ignore stops reading as a
+      // teleporter at all.
+      if (tokenDoc) {
+        const hopped = await teleportPlaceable(tokenDoc, scene, { sameSceneOnly: true });
+        if (hopped === "gone") {
+          // Followed a cross-scene pad off the map. It is no longer ours.
+          enemy.defeated = true;
+          pushLog(sm, (tokenDoc.name || "A guard") + " left through a teleporter");
+        } else if (hopped) {
+          enemy.cell = cellOfToken(scene?.tokens?.get?.(enemy.tokenId)) ?? enemy.cell;
+          pushLog(sm, (tokenDoc.name || "A guard") + " came through a teleporter");
+        }
+      }
+
+      enemy.ai = intent.ai;
+
+      // Investigated and found nothing: wipe the awareness and the latch that
+      // put this guard on edge, so a suspicion the party already survived
+      // cannot keep costing them.
+      if (intent.resolved) {
+        enemy.awareness = 0;
+        enemy.lastKnownCell = null;
+        enemy.raisedOnce = false;
+        enemy.mark = null;
+      }
+
+      markActivated(sm, enemy.tokenId);
+      syncOccupancy(scene);
+
+      if (intent.note) pushLog(sm, `${tokenDoc?.name ?? enemy.tokenId}: ${intent.note}`);
+
+      await ctx.save();
+      broadcastState(sm);
+
+      if (contact || intent.contact) {
+        return ctx.dispatch(E.CONTACT, { cell: enemy.cell, enemyId: enemy.tokenId });
+      }
+
+      const used = (sm.activatedThisRound ?? []).length;
+      if (used >= tune.activationsPerRound || !pendingActivations(sm).length) {
+        return ctx.dispatch(E.NO_MORE);
+      }
+      return ctx.dispatch(E.MORE_ENEMIES);
+    },
+
+    // ── REINFORCE ─────────────────────────────────────────────────────────
+    async [S.REINFORCE](ctx) {
+      const { sm, tune, scene } = ctx;
+
+      if (isAlert(sm)) {
+        const res = await spawnReinforcement(sm, tune, { scene });
+        if (res?.spawned) pushLog(sm, `Reinforcement arrived: ${res.name}`);
+      }
+
+      await ctx.save();
+      return ctx.dispatch(E.DONE);
+    },
+
+    // ── ENEMY_END ─────────────────────────────────────────────────────────
+    async [S.ENEMY_END](ctx) {
+      const { sm, tune, scene } = ctx;
+
+      // Anyone who saw the party this round keeps their awareness; everyone
+      // else cools off, and may drop an AI state on the way.
+      const sawIds = new Set();
+      for (const e of enemyRecords(sm)) {
+        if (isStupored(e)) continue;   // out of play — sees nothing
+        const r = evaluateSight(e.cell, e.facing, sm.party.cell, tune, { scene });
+        if (r.seen) { sawIds.add(e.tokenId); e.lastKnownCell = sm.party.cell; }
+      }
+      decayAwareness(sm, tune, sawIds);
+      tickConcealment(sm);
+      tickStupor(sm);
+
+      await ctx.save();
+      broadcastState(sm);
+      return ctx.dispatch(E.DONE);
+    },
+
+    // ── ROUND_END ─────────────────────────────────────────────────────────
+    async [S.ROUND_END](ctx) {
+      const { sm, tune } = ctx;
+
+      // Optional passive cooling. Off by default — automatic cooling undercuts
+      // the tension the mode exists for.
+      if (tune.alertDecayRounds > 0 && sm.alert !== ALERT.STEALTH) {
+        sm.__quietRounds = (sm.__quietRounds ?? 0) + (enemyRecords(sm).some((e) => e.awareness > 0) ? 0 : 1);
+        if (sm.__quietRounds >= tune.alertDecayRounds) {
+          shiftAlert(sm, -1, "quiet");
+          sm.__quietRounds = 0;
+        }
+      }
+
+      await ctx.save();
+      return ctx.dispatch(E.DONE);
+    },
+
+    // ── CONFLICT_HANDOFF ──────────────────────────────────────────────────
+    // Contact is enemy-initiated only. Walking up to a guard is the setup for a
+    // Takedown, not a mistake — so this is only ever reached from an enemy's
+    // activation or a failed Takedown.
+    async [S.CONFLICT_HANDOFF](ctx, payload) {
+      const { sm, tune, scene } = ctx;
+
+      const atCell = payload?.cell ?? sm.party.cell;
+      const participants = conflictParticipants(sm, atCell, tune, { scene });
+
+      pushLog(sm, `Contact — conflict opens as "${engagementFor(sm.alert)}" with ${participants.length} enemy(ies)`);
+
+      // Remember who went in, on a SEPARATE flag: stopStealth() clears the
+      // runtime state when the battle scene activates, so the roster of
+      // combatants has to outlive it to be actionable when we come back.
+      try {
+        await scene?.setFlag("fabula-ultima-companion", "stealthPendingConflict", {
+          participants: participants.map((p) => p.tokenId),
+          // The tier the fight STARTED at. stopStealth clears the run when the
+          // battle scene activates, so anything the alert level should be
+          // built from has to survive out here or it comes back as Stealth.
+          alert: sm.alert,
+          atCell, round: sm.round, at: Date.now(),
+        });
+      } catch (e) { console.warn(TAG, "could not record pending conflict", e); }
+      try { Hooks.callAll(HOOKS.CONTACT, { cell: atCell, participants: participants.map((p) => p.tokenId) }); } catch (_) {}
+
+      // The banked ledger settles FIRST, so takedown EXP and battle EXP arrive
+      // as two clearly-labelled awards rather than one number nobody can audit.
+      try {
+        const pa = await partyActors();
+        await settleLedger(sm, pa, tune);
+      } catch (e) {
+        console.error(TAG, "ledger settle failed", e);
+      }
+
+      await ctx.save();
+
+      try {
+        await launchConflict({ sm, tune, scene, participants, atCell });
+      } catch (e) {
+        console.error(TAG, "conflict launch failed", e);
+        ui.notifications?.error?.("Stealth: conflict launch failed — check console.");
+      }
+
+      return ctx.dispatch(E.DONE);
+    },
+
+    // ── STOPPED ───────────────────────────────────────────────────────────
+    async [S.STOPPED](ctx) {
+      broadcastState(ctx.sm);
+    },
+  };
+}
+
+// ── Scene authoring config ──────────────────────────────────────────────────
+
+export function readSceneConfig(scene = canvas?.scene) {
+  const MODULE_ID = "fabula-ultima-companion";
+  const raw = scene?.flags?.[MODULE_ID]?.stealthConfig;
+  return {
+    routes:      raw?.routes ?? {},       // tokenId → [cell, cell, …]
+    facings:     raw?.facings ?? {},      // tokenId → direction key
+    spawnPoints: raw?.spawnPoints ?? [],  // [cell, …]
+    reinforcementTable: raw?.reinforcementTable ?? null,
+    tuning:      raw?.tuning ?? {},
+  };
+}
+
+// ── Teleporters ─────────────────────────────────────────────────────────────
+
+/**
+ * Fire a teleporter the party landed on.
+ *
+ * The teleporter system's own detector is a per-frame ticker gated to
+ * exploration mode, and it reads the token's VISUAL position — which in this
+ * mode is a hidden token standing at its old cell while a clone glides. It
+ * would never fire here, and making it fire would mean it firing mid-glide.
+ *
+ * So stealth drives it explicitly: after a committed walk, check the cell the
+ * party actually stopped on and call the public API. One trigger, at the one
+ * moment the party is genuinely standing there.
+ */
+/**
+ * Send a token through a teleporter pad it is standing on.
+ *
+ * Generalised from the party-only version so GUARDS use it too: a route the
+ * party can escape through but pursuit cannot follow is a free lever, and a pad
+ * guards visibly ignore stops reading as a teleporter at all.
+ *
+ * The teleporter system's own detector is a per-frame ticker gated to
+ * exploration mode that reads the token's VISUAL position — which here is a
+ * hidden token at its old cell while a clone glides — so it would never fire,
+ * and forcing it to would fire mid-glide. This is called once, at the moment
+ * the walk is actually over.
+ *
+ * @param {boolean} sameSceneOnly refuse cross-scene pads (guards)
+ * @returns {Promise<false|true|"gone">} "gone" = it left this scene entirely
+ */
+export async function teleportPlaceable(tokenDoc, scene, { sameSceneOnly = false } = {}) {
+  const TP = globalThis.TeleporterSystem?.api;
+  if (!TP?.teleportToken || !TP?.isTeleporterEnabled || !tokenDoc) return false;
+
+  const gs = canvas?.grid?.size ?? 100;
+  const here = cellOfToken(tokenDoc);
+  if (!here) return false;
+
+  for (const tile of (scene?.tiles ?? [])) {
+    if (tile.hidden) continue;
+    if (!TP.isTeleporterEnabled(tile)) continue;
+
+    const c = cellOfPointLocal(tile.x + (tile.width || gs) / 2, tile.y + (tile.height || gs) / 2);
+    if (!sameCell(c, here)) continue;
+
+    const flags = TP.getFlags(tile);
+    const destination = flags?.destination ?? flags?.target ?? null;
+    if (!destination) {
+      console.warn(TAG, "teleporter tile has no destination", tile.id);
+      continue;
+    }
+
+    // A guard following a cross-scene pad would vanish into another map and
+    // keep occupying a slot in this run's model. Let the party take those; a
+    // guard simply does not use them.
+    const destScene = destination.sceneId ?? scene?.id;
+    if (sameSceneOnly && destScene && destScene !== scene?.id) return false;
+
+    try {
+      await TP.teleportToken(tokenDoc, destination, { sfxUrl: flags.sfxUrl ?? "" });
+    } catch (e) {
+      console.error(TAG, "teleport failed", e);
+      return false;
+    }
+
+    // The lattice's occupancy and any recorded cell are now stale.
+    invalidateLattice();
+    buildLattice(scene);
+    syncOccupancy(scene);
+
+    return scene?.tokens?.get?.(tokenDoc.id) ? true : "gone";
+  }
+  return false;
+}
+
+/** The party stepped somewhere — send them through if it was a pad. */
+export async function maybeTeleport(ctx) {
+  const { sm, scene } = ctx;
+  const tokenDoc = scene?.tokens?.get?.(sm.party.tokenId);
+  const hopped = await teleportPlaceable(tokenDoc, scene);
+  if (!hopped) return false;
+
+  pushLog(sm, "Stepped onto a teleporter");
+  const landed = cellOfToken(scene?.tokens?.get?.(sm.party.tokenId));
+  if (landed) sm.party.cell = landed;
+  return true;
+}
+
+function cellOfPointLocal(x, y) {
+  const o = canvas?.grid?.getOffset?.({ x, y });
+  return o ? { i: o.i, j: o.j } : { i: 0, j: 0 };
+}

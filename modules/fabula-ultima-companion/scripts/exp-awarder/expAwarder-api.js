@@ -1,9 +1,27 @@
 // ============================================================================
 // expAwarder-api.js (Foundry V12 Module Script)
+//
+// The standalone "grant some EXP" entry point — the GM sidebar button, and any
+// out-of-band source that wants the sliding award panel.
+//
 // - Public API: window.FUCompanion.api.expAwarder.awardExp(payload)
-// - Updates Actor EXP at: actor.system.props.experience (decimal supported)
+// - Payload:    { targets, amount, source, playUi, user }
 // - Emits UI signal (decoupled snapshot): Hooks.callAll("oni:expAwarded", {...})
-// - UI percent conversion matches BattleEnd Summary behavior (0..10 => 0..100%)
+//
+// It no longer owns any EXP maths. The gauge, the level-up overflow and the
+// Skill Point mint moved to shared/exp-core.js so that the Battle Director's
+// victory path shares them — before that split, this file was the only place a
+// point was ever minted, and every Director level-up quietly left drift for a
+// GM to heal by hand.
+//
+// Two behaviours changed with the move, both deliberate:
+//   • The gauge is now 1..10 (a level spans NINE points), matching the Battle
+//     Director. It used to be 0..10 here. A stored value below 1 is normalised
+//     up on the next award, so no migration was needed.
+//   • Percentages therefore divide by 9, not 10 — the bar now agrees with the
+//     victory screen.
+//
+// See shared/exp-core.js and docs/exp-award-pipeline.md.
 // ============================================================================
 
 (() => {
@@ -13,10 +31,6 @@
   function log(...args) { if (DBG) console.log(TAG, ...args); }
   function warn(...args) { console.warn(TAG, ...args); }
   function err(...args) { console.error(TAG, ...args); }
-
-  function makeRunId() {
-    return `${Date.now()}-${Math.floor(Math.random() * 100000)}`;
-  }
 
   function ensureNamespace() {
     globalThis.FUCompanion = globalThis.FUCompanion ?? {};
@@ -34,62 +48,6 @@
     const s = (v ?? "").toString();
     const t = s.trim();
     return t.length ? t : "";
-  }
-
-  function clamp(n, a, b) {
-    return Math.max(a, Math.min(b, n));
-  }
-
-  // Same idea as BattleEnd SummaryUI expToPct(): (exp - start) / (cap - start) * 100
-  function expToPct(exp, expStart, levelUpAt) {
-    const start = Number(expStart);
-    const cap = Number(levelUpAt);
-    const denom = Math.max(1e-6, (cap - start));
-    const t = (Number(exp) - start) / denom;
-    return clamp(t * 100, 0, 100);
-  }
-
-  // EXP meter rules:
-  // - experience is a 0..LEVELUP_AT gauge
-  // - if exp reaches LEVELUP_AT, level increases and exp rolls over (overflow supported)
-  // - negative awards will not reduce level; exp clamps to 0
-  function applyLevelUpOverflow(expBefore, levelBefore, delta, levelUpAt) {
-    const cap = Math.max(1e-6, Number(levelUpAt));
-    let level = Math.max(1, Math.floor(asNumber(levelBefore, 1)));
-    let exp0 = asNumber(expBefore, 0);
-
-    // If old data already exceeded cap, normalize it first
-    if (exp0 >= cap) {
-      const gained0 = Math.floor(exp0 / cap);
-      level += gained0;
-      exp0 = exp0 - gained0 * cap;
-    } else if (exp0 < 0) {
-      exp0 = 0;
-    }
-
-    let exp = exp0 + asNumber(delta, 0);
-
-    // Clamp negative (no level-down logic)
-    if (exp < 0) exp = 0;
-
-    // Apply overflow level-ups
-    let gained = 0;
-    // Use a tiny epsilon to avoid floating precision issues (e.g. 9.9999999997)
-    const EPS = 1e-9;
-    while (exp + EPS >= cap) {
-      exp -= cap;
-      level += 1;
-      gained += 1;
-      // safety against infinite loops on weird cap
-      if (gained > 9999) break;
-    }
-
-    return {
-      expStart: exp0,
-      expFinal: exp,
-      levelFinal: level,
-      levelsGained: gained,
-    };
   }
 
   function normalizeTargets(targets) {
@@ -120,165 +78,72 @@
     return out;
   }
 
-  function emitExpAwardedSignal(payload) {
-    try {
-      Hooks.callAll("oni:expAwarded", payload);
-    } catch (e) {
-      err("Failed to emit oni:expAwarded", e);
-    }
+  /** The shared EXP core, published for classic scripts by shared/exp-core.js. */
+  function core() {
+    return globalThis["oni.ExpCore"] ?? null;
   }
 
+  /**
+   * Award EXP to actors.
+   *
+   * The gauge maths, the level-up overflow and the Skill Point mint used to
+   * live in this file, which made it the only path in the game that minted a
+   * point — Battle Director victories levelled without one. All of it now
+   * belongs to shared/exp-core.js and every path shares it. This function is
+   * the standalone entry point: it validates the payload, delegates the write,
+   * and keeps the sliding award panel (oni:expAwarded → expAwarder-ui.js) as
+   * its own presentation.
+   *
+   * Payload is unchanged, so the GM sidebar needed no edit:
+   *   { targets, amount, source, playUi, user }
+   */
   async function awardExp(userPayload = {}) {
-    const runId = makeRunId();
-    log(`START runId=${runId}`, { keys: Object.keys(userPayload ?? {}) });
-
     try {
-      const targets = normalizeTargets(userPayload.targets);
-      const amount = asNumber(userPayload.amount, NaN);
-      const playUi = (userPayload.playUi ?? true) === true;
-      const source = normString(userPayload.source);
+      const C = core();
+      if (!C?.applyExpAward) {
+        err("shared/exp-core.js not loaded — cannot award EXP.");
+        ui.notifications?.error?.("EXP Awarder: EXP core not loaded. Check console.");
+        return { ok: false, error: "NO_EXP_CORE" };
+      }
 
-      const awardingUser = {
-        id: userPayload.user?.id ?? game.user?.id ?? null,
-        name: userPayload.user?.name ?? game.user?.name ?? "Unknown",
-      };
+      const targets = normalizeTargets(userPayload.targets);
+      const amount  = asNumber(userPayload.amount, NaN);
 
       if (!Number.isFinite(amount)) {
         ui.notifications?.warn?.("EXP Awarder: Invalid EXP amount.");
-        warn(`runId=${runId} Invalid amount`, userPayload.amount);
-        return { ok: false, runId, error: "INVALID_AMOUNT" };
+        warn("Invalid amount", userPayload.amount);
+        return { ok: false, error: "INVALID_AMOUNT" };
       }
 
       if (!targets.length) {
         ui.notifications?.warn?.("EXP Awarder: No targets selected.");
-        warn(`runId=${runId} No targets`);
-        return { ok: false, runId, error: "NO_TARGETS" };
+        warn("No targets");
+        return { ok: false, error: "NO_TARGETS" };
       }
 
-      // Your sheet behavior: exp is a 0..10 meter, displayed as % (x10)
-      const EXP_START = 0;
-      const LEVELUP_AT = 10;
+      const res = await C.applyExpAward({
+        targets,
+        amount,
+        source:  normString(userPayload.source),
+        playUi:  (userPayload.playUi ?? true) === true,
+        user:    userPayload.user ?? null,
+      });
 
-      const entries = [];
-      for (const t of targets) {
-        const actorUuid = t.actorUuid;
-
-        let actor;
-        try {
-          actor = await fromUuid(actorUuid);
-        } catch (e) {
-          warn(`runId=${runId} fromUuid failed`, actorUuid, e);
-          continue;
-        }
-
-        if (!actor) {
-          warn(`runId=${runId} Actor not found`, actorUuid);
-          continue;
-        }
-
-        // --- Read EXP from Custom System Builder fields ---
-        const expBefore = asNumber(actor.system?.props?.experience, 0);
-
-        // Optional level snapshot (your actors store level under system.props.level)
-        const levelBefore =
-          actor.system?.props?.level ??
-          actor.system?.level ??
-          1;
-
-        // --- Apply level-up + overflow (0..10 gauge) ---
-        const calc = applyLevelUpOverflow(expBefore, levelBefore, amount, LEVELUP_AT);
-        const expAfter = calc.expFinal;
-        const levelAfter = calc.levelFinal;
-
-        // --- Update EXP + Level (Custom System Builder paths) ---
-        // A gained level also mints a Skill Point, spent later in the level-up
-        // window at camp or on the title screen. This is the ONLY place a level
-        // is minted, so it is the only place a point needs to be. Levels lost
-        // (never produced by applyLevelUpOverflow, which clamps at 0) would not
-        // reclaim a point — refunds are the level-up window's job.
-        const pointsBefore = asNumber(actor.system?.props?.skill_point, 0);
-        const pointsAfter = pointsBefore + Math.max(0, calc.levelsGained);
-
-        try {
-          const update = {
-            "system.props.experience": expAfter,
-            "system.props.level": levelAfter,
-          };
-          if (calc.levelsGained > 0) update["system.props.skill_point"] = pointsAfter;
-          await actor.update(update);
-        } catch (e) {
-          err(`runId=${runId} Failed to update actor EXP`, actorUuid, e);
-          ui.notifications?.error?.(`EXP Awarder: Failed to update ${actor.name}.`);
-          continue;
-        }
-
-        // --- UI percent conversion (matches BattleEnd SummaryUI logic style) ---
-        const expPctFrom = expToPct(calc.expStart, EXP_START, LEVELUP_AT);
-        const expPctTo = expToPct(expAfter, EXP_START, LEVELUP_AT);
-
-        const entry = {
-          actorUuid,
-          actorName: actor.name,
-          group: t.group ?? "",
-          label: t.label ?? "",
-          amount,
-          source,
-          awardedBy: awardingUser,
-
-          // Decoupled snapshot
-          expBeforeRaw: expBefore,
-          expBefore: calc.expStart,
-          expAfter,
-          levelBefore,
-          levelAfter,
-          levelsGained: calc.levelsGained,
-
-          // Skill Points minted by this award — the unspent-SP badge listens
-          // for this rather than polling actor props.
-          skillPointsBefore: pointsBefore,
-          skillPointsAfter: pointsAfter,
-
-          // UI snapshot values
-          expPctFrom,
-          expPctTo,
-        };
-
-        entries.push(entry);
-
-        log(`runId=${runId} Updated`, {
-          actor: actor.name,
-          expBefore,
-          expAfter,
-          amount,
-          expPctFrom,
-          expPctTo,
-        });
+      if (!res.ok) {
+        warn("core returned not ok", res);
+        return res;
       }
 
-      if (!entries.length) {
-        warn(`runId=${runId} No entries updated (all targets failed?)`);
-        return { ok: false, runId, error: "NO_UPDATES" };
+      for (const e of res.entries) {
+        const minted = e.skillPointsMinted > 0 ? ` +${e.skillPointsMinted} SP` : "";
+        log(`runId=${res.runId} ${e.actorName}: ${e.expBefore}+${e.amount}→${e.expAfter} Lv${e.levelBefore}→${e.levelAfter}${minted}`);
       }
 
-      if (playUi) {
-        emitExpAwardedSignal({
-          runId,
-          ts: Date.now(),
-          source,
-          awardedBy: awardingUser,
-          entries,
-        });
-        log(`runId=${runId} Emitted oni:expAwarded`, { count: entries.length });
-      } else {
-        log(`runId=${runId} playUi=false (no UI signal emitted)`);
-      }
-
-      log(`END runId=${runId} ok`);
-      return { ok: true, runId, entries };
+      return res;
     } catch (e) {
-      err(`runId=${runId} CRASH`, e);
+      err("CRASH", e);
       ui.notifications?.error?.("EXP Awarder: API crashed. Check console.");
-      return { ok: false, runId, error: "CRASH", detail: String(e?.message ?? e) };
+      return { ok: false, error: "CRASH", detail: String(e?.message ?? e) };
     }
   }
 
@@ -288,7 +153,7 @@
 
     api._debug = api._debug ?? {};
     api._debug.TAG = TAG;
-    api._debug.version = "v3-levelupOverflow";
+    api._debug.version = "v4-expCore";
     log("API registered: window.FUCompanion.api.expAwarder.awardExp");
   }
 
