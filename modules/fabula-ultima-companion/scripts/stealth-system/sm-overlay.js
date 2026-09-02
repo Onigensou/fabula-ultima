@@ -751,11 +751,10 @@ const Z_TARGET = 62;
 const Z_CROSS  = 500003;
 
 const TCOL = Object.freeze({
-  fill:  0x8fc9ef,   // cool blue — "somewhere I am pointing", not "where I walk"
-  edge:  0xeaf5ff,
-  cross: 0xf6fbff,
-  ring:  0x8fc9ef,
-  hostile: 0xef8f7a, // a target that is a PERSON reads warm
+  fill:  0x4aa6ec,   // cool blue — "somewhere I am pointing", not "where I walk"
+  edge:  0xcfe9ff,
+  cross: 0xffffff,
+  hostile: 0xf2604a, // a target that is a PERSON reads warm
 });
 
 let _targets = null;
@@ -777,8 +776,8 @@ export function drawTargets(cells, { hostile = false } = {}) {
 
   for (const cell of cells) {
     const p = topLeftOf(cell);
-    _targets.lineStyle(Math.max(1, gs * 0.04), TCOL.edge, 0.32);
-    _targets.beginFill(col, 0.24);
+    _targets.lineStyle(Math.max(1, gs * 0.05), TCOL.edge, 0.5);
+    _targets.beginFill(col, 0.34);
     _targets.drawRoundedRect(p.x + inset, p.y + inset, size, size, gs * 0.14);
     _targets.endFill();
     _targets.lineStyle(0);
@@ -807,9 +806,20 @@ function crossLayer() {
 function buildCrosshair(gs, hostile) {
   const c = new PIXI.Container();
   const col = hostile ? TCOL.hostile : TCOL.cross;
-  const arm = gs * 0.26;      // corner bracket length
-  const off = gs * 0.44;      // how far the brackets sit from centre
-  const w   = Math.max(2, gs * 0.045);
+  const arm = gs * 0.3;       // corner bracket length
+  const off = gs * 0.46;      // how far the brackets sit from centre
+  const w   = Math.max(2, gs * 0.06);
+
+  // A dark casing under the bright stroke, so the reticle holds its shape over
+  // pale floor as well as dark — the same trick the path arrow uses.
+  const shadow = new PIXI.Graphics();
+  shadow.lineStyle(w * 2, 0x1b1712, 0.55);
+  for (const [sx, sy] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+    shadow.moveTo(sx * off, sy * off - sy * arm);
+    shadow.lineTo(sx * off, sy * off);
+    shadow.lineTo(sx * off - sx * arm, sy * off);
+  }
+  c.addChild(shadow);
 
   const g = new PIXI.Graphics();
   g.lineStyle(w, col, 1);

@@ -155,12 +155,27 @@ export function awareEnemies(state, threshold = 1) {
  * Raise one enemy's awareness and move its AI state if a threshold was crossed.
  * Returns the transition, if any.
  */
-export function bumpAwareness(state, enemyId, delta, tune, lastKnownCell = null) {
+export function bumpAwareness(state, enemyId, delta, tune, lastKnownCell = null, { ceiling = null } = {}) {
   const e = state.enemies?.[enemyId];
   if (!e || e.defeated) return null;
 
   const before = e.ai;
-  e.awareness = Math.max(0, Math.min(tune.awarenessMax, e.awareness + delta));
+
+  // A CEILING lets a weak signal raise a guard only so far.
+  //
+  // Glimpses pass searchAt - 1 here, so no accumulation of half-sightings can
+  // ever tip a guard into hunting: only being genuinely seen does that. Before
+  // this, a suspicious reading was worth up to 3 and searchAt is 4, so walking
+  // two cells across a distant cone flipped a patrolling guard into SEARCH —
+  // pathing at a position the party had merely been GLIMPSED at.
+  //
+  // A capped bump never pulls awareness DOWN. Being glimpsed after being seen
+  // outright must not calm anyone.
+  const cap = ceiling == null ? tune.awarenessMax : Math.min(tune.awarenessMax, ceiling);
+  const raw = e.awareness + delta;
+  e.awareness = delta > 0
+    ? Math.max(e.awareness, Math.min(raw, cap))
+    : Math.max(0, Math.min(tune.awarenessMax, raw));
 
   if (lastKnownCell) e.lastKnownCell = lastKnownCell;
 
@@ -193,6 +208,10 @@ export function decayAwareness(state, tune, sawPartyIds = new Set()) {
       // single crossing of its cone only ever cost the party one tier.
       e.ai = AI.PATROL;
       e.raisedOnce = false;
+      // Drop the lead as well. Leaving it behind meant the next thing to
+      // startle this guard sent it to a stale point from an episode it had
+      // already given up on.
+      e.lastKnownCell = null;
     } else if (e.ai === AI.SEARCH) {
       // A well-hidden party makes a search fruitless faster: the guard is
       // sweeping an area that genuinely has nothing in it.

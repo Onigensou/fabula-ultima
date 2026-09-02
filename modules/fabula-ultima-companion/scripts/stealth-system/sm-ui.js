@@ -795,7 +795,10 @@ export function applyState(view, tune) {
 
   // Leaving ACTION cancels any half-finished interaction — a Back blade left
   // hanging over the enemy phase is a button that lies about being usable.
-  if (prevPhase === "ACTION" && view.phase !== "ACTION") _mode = null;
+  // Cleared through setMode, not by assigning _mode: half-finished targeting
+  // owns overlay layers, and nulling the variable alone left the lit tiles and
+  // the crosshair sitting on the board all through the enemy phase.
+  if (prevPhase === "ACTION" && view.phase !== "ACTION" && _mode) setMode(null);
 
   renderHud();
   redrawCones();

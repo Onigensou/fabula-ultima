@@ -178,9 +178,10 @@ export function detectionSweep(ctx, partyCell) {
     if (!e) continue;
 
     seenBy.push(row.tokenId);
-    bumpAwareness(sm, row.tokenId, Math.max(1, sight.awareness), tune, partyCell);
+    const firstGlimpse = !e.raisedOnce;
 
     if (sight.spotted) {
+      bumpAwareness(sm, row.tokenId, Math.max(1, sight.awareness), tune, partyCell);
       // Seen outright. The alarm goes straight to ALERT — walking the tier up
       // one notch at a time when a guard is staring at you from two tiles away
       // just meant the party got spotted twice for the same mistake.
@@ -204,6 +205,17 @@ export function detectionSweep(ctx, partyCell) {
     // alarm once per cell and the party is punished for a single mistake five
     // times over. The latch clears when the guard gives up and returns to
     // patrol, so a second, separate approach still costs again.
+    // The lead is fixed at the FIRST glimpse and never refreshed.
+    //
+    // It used to be rewritten to the party's position on every cell of the
+    // walk, so a guard who half-noticed you at the start of a move knew
+    // exactly where you finished it — and ducking behind a crate on the last
+    // step bought nothing, because the crate was where it had been told to
+    // look. Now it goes to where it thought it saw something, which is the
+    // whole reason cover exists.
+    bumpAwareness(sm, row.tokenId, Math.max(1, sight.awareness), tune,
+      firstGlimpse ? partyCell : null, { ceiling: tune.searchAt - 1 });
+
     e.mark = "suspect";
     e.markAt = sm.round;
     if (!e.raisedOnce) {

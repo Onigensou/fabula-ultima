@@ -421,6 +421,49 @@ eq("a hunting guard covers more ground than a patrol would",
 eq("  but never more than its full speed",
   hunt.move ? grid.cellDistance(C(2, 2), hunt.move) <= TUNE.enemyMove : false, true);
 
+// ── Glimpses cannot stack into a hunt ───────────────────────────────────────
+//
+// The player-facing complaint this encodes: "I move behind an object but an
+// unsuspicious enemy still bolts straight at me." Two causes, both here.
+// A suspicious reading is worth up to 3 and searchAt is 4, so crossing a
+// distant cone for two cells used to tip a patrolling guard into SEARCH; and
+// the lead was rewritten to the party's CURRENT cell on every step of the
+// walk, so the guard ended up knowing precisely where the party stopped.
+console.log("\n── glimpses do not stack ──");
+
+const gl = stateM.emptyState();
+gl.enemies.g = stateM.emptyEnemy("g", C(5, 5), "E");
+
+for (let i = 0; i < 8; i++) {
+  stateM.bumpAwareness(gl, "g", 3, TUNE, C(5, 8), { ceiling: TUNE.searchAt - 1 });
+}
+eq("no pile of glimpses reaches the hunting threshold",
+  gl.enemies.g.awareness < TUNE.searchAt, true);
+eq("  the guard is suspicious, never searching", gl.enemies.g.ai, AI.SUSPICIOUS);
+
+// A real sighting is uncapped and still commits.
+stateM.bumpAwareness(gl, "g", TUNE.searchAt, TUNE, C(5, 8));
+eq("a real sighting still tips it into the hunt", gl.enemies.g.ai, AI.SEARCH);
+
+// A later glimpse must not calm a guard that has already seen you.
+const hot = gl.enemies.g.awareness;
+stateM.bumpAwareness(gl, "g", 1, TUNE, null, { ceiling: TUNE.searchAt - 1 });
+eq("a capped bump never talks a guard DOWN", gl.enemies.g.awareness >= hot, true);
+
+// Giving up drops the lead, so the next scare does not send them somewhere
+// they already searched.
+const drop = stateM.emptyState();
+drop.enemies.g = stateM.emptyEnemy("g", C(5, 5), "E");
+drop.enemies.g.ai = AI.SUSPICIOUS;
+drop.enemies.g.awareness = TUNE.suspiciousAt;
+drop.enemies.g.lastKnownCell = C(5, 8);
+drop.enemies.g.raisedOnce = true;
+stateM.decayAwareness(drop, TUNE, new Set());
+eq("giving up returns the guard to its round", drop.enemies.g.ai, AI.PATROL);
+eq("  and discards the stale lead", drop.enemies.g.lastKnownCell, null);
+eq("  and unlatches, so a NEW approach can startle it again",
+  drop.enemies.g.raisedOnce, false);
+
 // Activation priority: the guard who knows the most acts first.
 const prio = stateM.emptyState();
 prio.enemies.calm = stateM.emptyEnemy("calm", C(1, 1), "E");
