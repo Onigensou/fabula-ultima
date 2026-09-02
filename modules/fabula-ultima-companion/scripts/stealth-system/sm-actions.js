@@ -44,6 +44,14 @@ export function takedownCheck(state, enemy, partyCell, controllerActor, tune, {
   }
   if (!enemy || enemy.defeated) return { ok: false, reason: "No target." };
 
+  // A stupored guard is out of the fiction for the moment — reeling, not
+  // standing there waiting to be throttled. Letting the party cash in a free
+  // kill on the enemies they just RAN from would turn the escape they bought
+  // into a farming loop, which is the opposite of what Stupor is for.
+  if ((enemy.stupor ?? 0) > 0) {
+    return { ok: false, reason: "They are still reeling — leave them be." };
+  }
+
   const dist = cellDistance(partyCell, enemy.cell, scene);
   if (dist > 1) return { ok: false, reason: "You must be adjacent." };
 

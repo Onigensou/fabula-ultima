@@ -162,7 +162,7 @@ export const TUNE_DEFAULTS = Object.freeze({
   // guards are up and how hard they are looking, so stacking per-enemy and
   // per-helper modifiers on top only produced unreadable numbers (DL 22 in
   // ordinary play) without saying anything the tier did not.
-  hideDlByAlert:         { stealth: 8, neutral: 10, alert: 12 },
+  hideDlByAlert:         { stealth: 10, neutral: 13, alert: 15 },
   hideCoverBonus:        2,   // DL reduction for hiding in cover
   hideHelperDl:          10,  // RAW: supporting characters roll the standard DL
   hideHelperBonus:       1,   // RAW: +1 to the leader per helper success

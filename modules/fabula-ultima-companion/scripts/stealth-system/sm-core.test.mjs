@@ -410,9 +410,20 @@ eq("cover downgrades a spot", vision.evaluateSight(C(5, 5), "E", C(5, 6), TUNE).
 scene.tiles = []; lattice.invalidateLattice(); lattice.buildLattice(scene);
 
 // Hide is one flat number per tier now, not a stack that reached DL 22.
-eq("hide DL at stealth", TUNE.hideDlByAlert.stealth, 8);
-eq("hide DL at neutral", TUNE.hideDlByAlert.neutral, 10);
-eq("hide DL at alert",   TUNE.hideDlByAlert.alert, 12);
+eq("hide DL at stealth", TUNE.hideDlByAlert.stealth, 10);
+eq("hide DL at neutral", TUNE.hideDlByAlert.neutral, 13);
+eq("hide DL at alert",   TUNE.hideDlByAlert.alert, 15);
+
+// A stupored guard is not a valid takedown target — otherwise escaping a
+// fight would hand the party a free kill on the enemies they just ran from.
+const stTd = stateM.emptyState();
+stTd.enemies.t_mook = stateM.emptyEnemy("t_mook", C(5, 6), "E");
+let g2 = actions.takedownCheck(stTd, stTd.enemies.t_mook, C(5, 5), leader, TUNE, { scene });
+eq("an alert guard can be taken down", g2.ok, true);
+stTd.enemies.t_mook.stupor = 1;
+g2 = actions.takedownCheck(stTd, stTd.enemies.t_mook, C(5, 5), leader, TUNE, { scene });
+eq("a stupored guard cannot", g2.ok, false);
+eq("  and says why", /reeling/i.test(g2.reason), true);
 
 // The suspicion latch: one tier per guard, cleared only when it gives up.
 const ls = stateM.emptyState();

@@ -601,3 +601,135 @@ export function destroySonarLayer() {
   } catch (_) {}
   _sonarLayer = null;
 }
+
+// ── Stupor stars ────────────────────────────────────────────────────────────
+//
+// The cartoon "seeing stars" ring over a reeling guard.
+//
+// Unlike the !/? marks, this is PERSISTENT: it has to be true for as long as
+// the condition lasts, because the player is making a decision on it — a
+// stupored guard cannot be taken down, and "why is Takedown missing?" needs an
+// answer visible on the board rather than in a rules doc.
+//
+// One container per enemy, kept across frames and reconciled against the
+// broadcast list, so the animation runs continuously instead of restarting
+// every time state ticks.
+
+const Z_STUPOR = 500002;
+let _stuporLayer = null;
+const _stuporNodes = new Map();   // tokenId -> container
+let _stuporTick = null;
+
+function stuporLayer() {
+  if (_stuporLayer && !_stuporLayer.destroyed) return _stuporLayer;
+  const parent = canvas?.stage;
+  if (!parent) return null;
+  const c = new PIXI.Container();
+  c.name = "Stealth Stupor";
+  c.zIndex = Z_STUPOR;          // above tokens: it is about the token
+  c.eventMode = "none";
+  parent.sortableChildren = true;
+  parent.addChild(c);
+  _stuporLayer = c;
+  return c;
+}
+
+/** A filled five-point star, drawn once and then only moved. */
+function starShape(r, color) {
+  const g = new PIXI.Graphics();
+  g.beginFill(color, 1);
+  g.lineStyle(Math.max(1, r * 0.22), 0x6b4a06, 0.9);
+  const pts = [];
+  for (let i = 0; i < 10; i++) {
+    const rad = (i % 2 === 0) ? r : r * 0.44;
+    const a = (Math.PI / 5) * i - Math.PI / 2;
+    pts.push(Math.cos(a) * rad, Math.sin(a) * rad);
+  }
+  g.drawPolygon(pts);
+  g.endFill();
+  g.lineStyle(0);
+  return g;
+}
+
+/**
+ * Reconcile the stupor rings against the current enemy list.
+ * @param {Array<{tokenId, cell, stupor}>} enemies
+ */
+export function drawStuporMarks(enemies) {
+  const layer = stuporLayer();
+  if (!layer) return;
+
+  const gs = gridSize();
+  const want = new Set(
+    (enemies ?? []).filter((e) => (e.stupor ?? 0) > 0).map((e) => e.tokenId));
+
+  // Drop rings for anyone who has come round.
+  for (const [id, node] of [..._stuporNodes]) {
+    if (want.has(id)) continue;
+    try { layer.removeChild(node); node.destroy({ children: true }); } catch (_) {}
+    _stuporNodes.delete(id);
+  }
+
+  for (const e of (enemies ?? [])) {
+    if ((e.stupor ?? 0) <= 0 || !e.cell) continue;
+
+    let node = _stuporNodes.get(e.tokenId);
+    if (!node) {
+      node = new PIXI.Container();
+      node.__stars = [];
+      const STAR_COUNT = 3;
+      for (let i = 0; i < STAR_COUNT; i++) {
+        const s = starShape(gs * 0.24, 0xffd75e);
+        s.__phase = (i / STAR_COUNT) * Math.PI * 2;
+        node.addChild(s);
+        node.__stars.push(s);
+      }
+      layer.addChild(node);
+      _stuporNodes.set(e.tokenId, node);
+    }
+
+    // Follow the token: a guard can be shoved or repositioned while reeling.
+    const c = centerOf(e.cell);
+    node.x = c.x;
+    node.y = c.y - gs * 0.70;
+  }
+
+  // One shared ticker for every ring — three stars per guard on their own
+  // tickers would be a lot of closures for a purely cosmetic orbit.
+  if (_stuporNodes.size && !_stuporTick) {
+    _stuporTick = () => {
+      const t = performance.now() / 620;
+      const gsz = gridSize();
+      for (const node of _stuporNodes.values()) {
+        for (const s of node.__stars) {
+          const a = t + s.__phase;
+          s.x = Math.cos(a) * gsz * 0.36;
+          // Squashed vertically so the orbit reads as a ring seen edge-on,
+          // the way the cartoon shorthand does, rather than a flat circle.
+          s.y = Math.sin(a) * gsz * 0.13;
+          s.rotation = a * 0.6;
+          // Stars on the far side ride behind and dim slightly.
+          const far = (Math.sin(a) + 1) / 2;
+          s.alpha = 0.55 + 0.45 * far;
+          s.scale.set(0.78 + 0.22 * far);
+        }
+      }
+    };
+    canvas.app.ticker.add(_stuporTick);
+  } else if (!_stuporNodes.size && _stuporTick) {
+    canvas.app.ticker.remove(_stuporTick);
+    _stuporTick = null;
+  }
+}
+
+export function destroyStuporLayer() {
+  if (_stuporTick) { try { canvas.app.ticker.remove(_stuporTick); } catch (_) {} _stuporTick = null; }
+  _stuporNodes.clear();
+  try {
+    if (_stuporLayer && !_stuporLayer.destroyed) {
+      _stuporLayer.parent?.removeChild(_stuporLayer);
+      _stuporLayer.destroy({ children: true });
+    }
+  } catch (_) {}
+  _stuporLayer = null;
+}

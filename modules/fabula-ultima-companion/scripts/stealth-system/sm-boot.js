@@ -316,6 +316,7 @@ export async function stopStealth({ settle = true, cleanup = true } = {}) {
   smUi.disable();
   overlay.destroyAll();
   overlay.destroyMarkLayer();
+  overlay.destroyStuporLayer();
   removeBanner();
   socket.broadcastState({ active: false });
 }

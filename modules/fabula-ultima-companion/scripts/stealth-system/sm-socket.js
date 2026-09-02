@@ -174,6 +174,7 @@ export function serialiseForClients(sm) {
         facing: e.facing,
         ai: e.ai,
         awareness: e.awareness,
+        stupor: e.stupor ?? 0,
       })),
     ledgerCount: sm.ledger?.length ?? 0,
   };

@@ -356,6 +356,7 @@ function nearestEnemy() {
   const pc = _view?.party?.cell;
   if (!pc) return null;
   for (const e of (_view.enemies ?? [])) {
+    if ((e.stupor ?? 0) > 0) continue;   // reeling — not a target
     if (cellDistance(pc, e.cell) <= 1) {
       return { ...e, name: canvas?.scene?.tokens?.get?.(e.tokenId)?.name ?? "guard" };
     }
@@ -639,6 +640,7 @@ export function disable() {
   removeExitButton();
   blades.hideBlades();
   overlay.clearAll();
+  overlay.destroyStuporLayer();
   camera.unlock();
 
   if (_canvasHooked) {
@@ -653,6 +655,7 @@ export function disable() {
 function redrawCones() {
   if (!_view?.active) return;
   overlay.drawCones(_view.enemies ?? [], _tune ?? {});
+  overlay.drawStuporMarks(_view.enemies ?? []);
 }
 
 /** Called on every authoritative broadcast. */
