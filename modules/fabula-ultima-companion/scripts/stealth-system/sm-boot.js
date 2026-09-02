@@ -16,7 +16,7 @@ import {
   TUNING_SETTING, OBJECTIVE, HOOKS, readTuning, ALERT, AI_SETTING } from "./sm-constants.js";
 import { S, E } from "./sm-states.js";
 import { director } from "./sm-director.js";
-import { buildHandlers, findPartyToken, controllerActor, partyActors, detectionSweep, aiEnabled } from "./sm-handlers.js";
+import { buildHandlers, findPartyToken, controllerActor, partyActors, detectionSweep, aiEnabled, disarmGmActivation } from "./sm-handlers.js";
 import {
   readState, writeState, clearState, shiftAlert, pushLog, enemyRecords, isAlert,
   concealTier, breakConcealment, applyStupor,
@@ -402,6 +402,7 @@ export async function stopStealth({ settle = true, cleanup = true } = {}) {
   // infiltration scores whatever the table does next.
   restoreSceneBgm(scene).catch((e) => console.warn(TAG, "BGM restore failed", e));
 
+  disarmGmActivation();
   gmPanel.remove();
   smUi.disable();
   overlay.destroyAll();

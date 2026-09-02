@@ -216,56 +216,100 @@ export function aiEnabled() {
   catch (_) { return true; }
 }
 
-function awaitGmActivation(ctx) {
-  const { sm, scene } = ctx;
+let _gmPickDispose = null;
+
+/** Take down any armed picker. Safe to call at any time. */
+export function disarmGmActivation() {
+  try { _gmPickDispose?.(); } catch (_) {}
+  _gmPickDispose = null;
+}
+
+/**
+ * Arm the board for a GM pick and RETURN — never await.
+ *
+ * The first cut awaited the click inside the ACTIVATE handler, which wedged
+ * the whole machine: the director serialises its events, so a handler parked
+ * on human input stops the queue draining and everything after it piles up
+ * behind a promise that only a mouse can resolve. Observed live as
+ * queueLen 5 / draining true with the run frozen.
+ *
+ * So this follows the same shape as every other human input in the system:
+ * arm, return, and let the click DISPATCH. The FSM parks in ACTIVATE with
+ * nothing pending, and MORE_ENEMIES re-enters it with the choice made.
+ */
+function armGmActivation(ctx) {
+  const { sm, scene, dispatch } = ctx;
+  disarmGmActivation();
+
   // The SAME pool the AI would draw from, so turning the toggle off changes
   // who chooses, never who is allowed to act.
-  const eligible = pendingActivations(sm).filter(
-    (e) => !e.defeated && !isStupored(e));
-  if (!eligible.length) return Promise.resolve(null);
+  const eligible = pendingActivations(sm).filter((e) => !e.defeated && !isStupored(e));
+  if (!eligible.length) { dispatch(E.NO_MORE); return; }
 
   const byCell = new Map(eligible.map((e) => [`${e.cell.i},${e.cell.j}`, e]));
   overlay.drawTargets(eligible.map((e) => e.cell), { hostile: true });
   ui.notifications?.info?.(
     `Enemy phase — click a guard to act (${eligible.length} left), right-click to end.`);
 
-  return new Promise((resolve) => {
-    const view = canvas?.app?.view;
-    const done = (picked) => {
-      try { view?.removeEventListener?.("pointerdown", onDown, true); } catch (_) {}
-      overlay.clearTargets();
-      resolve(picked);
-    };
+  const view = canvas?.app?.view;
+  const finish = (fn) => {
+    disarmGmActivation();
+    overlay.clearTargets();
+    try { fn(); } catch (e) { console.warn(TAG, "GM activation dispatch threw", e); }
+  };
 
-    function onDown(ev) {
-      if (ev.button === 2) { ev.preventDefault(); ev.stopPropagation();
-                             ev.stopImmediatePropagation(); done(null); return; }
-      if (ev.button !== 0) return;
-      const rect = view.getBoundingClientRect();
-      const w = canvas.stage.worldTransform.applyInverse(
-        new PIXI.Point(ev.clientX - rect.left, ev.clientY - rect.top));
-      const cell = cellAt(w);
-
-      // Claim the click either way — mid-pick, a stray sheet opening is
-      // exactly the interruption this phase does not need.
+  function onDown(ev) {
+    if (ev.button === 2) {
       ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation();
-
-      let hit = byCell.get(`${cell.i},${cell.j}`);
-      if (!hit) {
-        // The art overhangs the cell, same as everywhere else — fall back to
-        // whichever eligible guard is nearest the click.
-        for (const e of eligible) {
-          if (cellDistance(cell, e.cell, scene) <= 1) { hit = e; break; }
-        }
-      }
-      if (!hit) { ui.notifications?.info?.("Not a guard you can activate."); return; }
-      done(hit);
+      finish(() => dispatch(E.NO_MORE));
+      return;
     }
+    if (ev.button !== 0) return;
 
-    view?.addEventListener?.("pointerdown", onDown, true);
-  });
+    const rect = view.getBoundingClientRect();
+    const w = canvas.stage.worldTransform.applyInverse(
+      new PIXI.Point(ev.clientX - rect.left, ev.clientY - rect.top));
+    const cell = cellAt(w);
+
+    // Claim the click either way — mid-pick, a stray sheet opening is exactly
+    // the interruption this phase does not need.
+    ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation();
+
+    let hit = byCell.get(`${cell.i},${cell.j}`);
+    if (!hit) {
+      // The art overhangs its cell, same as everywhere else — fall back to
+      // whichever eligible guard is nearest the click.
+      for (const e of eligible) {
+        if (cellDistance(cell, e.cell, scene) <= 1) { hit = e; break; }
+      }
+    }
+    if (!hit) { ui.notifications?.info?.("Not a guard you can activate."); return; }
+
+    sm.__gmPick = hit.tokenId;
+    finish(() => dispatch(E.MORE_ENEMIES));
+  }
+
+  view?.addEventListener?.("pointerdown", onDown, true);
+  _gmPickDispose = () => {
+    try { view?.removeEventListener?.("pointerdown", onDown, true); } catch (_) {}
+  };
 }
-
+/**
+ * One check for the whole move, not one per guard.
+ *
+ * The point of this rule is that it must not become a toll booth. A party
+ * crossing a busy room clips the outer edge of several attention cones in a
+ * single walk, and rolling once per guard would turn one movement into four
+ * dialogs and make the feature something players route around. So every
+ * outer-edge glimpse from a single move is settled by ONE roll, and its
+ * result is applied to all of them.
+ *
+ * The camera goes to the guard who noticed while the check is open, then
+ * comes back. Being told to roll without being shown WHO is looking is the
+ * difference between a tense moment and an unexplained interruption.
+ *
+ * @returns {Promise<boolean>} true if the party talked its way out
+ */
 async function runSuspicionCheck(ctx, deferred) {
   const { sm, tune, scene } = ctx;
   const leader = controllerActor(sm);
@@ -686,9 +730,16 @@ export function buildHandlers() {
       // off, the GM clicks a guard. Only the CHOICE changes — everything
       // after this point is identical, so a hand-played phase resolves
       // detection, movement and contact exactly as an automated one does.
-      const enemy = aiEnabled()
-        ? pickActivation(sm, partyCell, { scene })
-        : await awaitGmActivation(ctx);
+      let enemy;
+      if (aiEnabled()) {
+        enemy = pickActivation(sm, partyCell, { scene });
+      } else {
+        // A pick already made by a click re-enters here carrying its choice.
+        const picked = sm.__gmPick ?? null;
+        sm.__gmPick = null;
+        if (!picked) { armGmActivation(ctx); return; }   // park, do not block
+        enemy = sm.enemies?.[picked] ?? null;
+      }
 
       if (!enemy) return ctx.dispatch(E.NO_MORE);
 
