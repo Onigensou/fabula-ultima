@@ -1416,25 +1416,6 @@
     handleTurnChange(combat);
   });
 
-      // === Hooks ==============================================================
-
-  // 1) On combat start: warm up SFX cache
-  Hooks.on("combatStart", () => { cacheSFX(); });
-
-  // 2) On combat end / delete / active=false: clear UI + uncache
-  Hooks.on("combatEnd", () => { clearAllUI(); uncacheSFX(); });
-  Hooks.on("deleteCombat", () => { clearAllUI(); uncacheSFX(); });
-  Hooks.on("updateCombat", (combat, changed) => {
-    // If combat was deactivated, treat as end
-    if (Object.prototype.hasOwnProperty.call(changed, "active") && changed.active === false) {
-      clearAllUI(); uncacheSFX(); return;
-    }
-
-    // Only act when turn or round actually changes
-    if (!("turn" in changed || "round" in changed)) return;
-    handleTurnChange(combat);
-  });
-
   // 3a) On canvasReady: re-sync UI to current combat state.
   //     This is the recovery path for "after page refresh, no buttons":
   //     when Hooks.once("ready") fires, canvas tokens may not yet be on the
