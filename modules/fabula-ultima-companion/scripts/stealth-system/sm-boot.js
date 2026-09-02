@@ -37,6 +37,7 @@ import * as socket from "./sm-socket.js";
 import * as smUi from "./sm-ui.js";
 import * as overlay from "./sm-overlay.js";
 import * as gmPanel from "./sm-gm-panel.js";
+import { replayMotion } from "./sm-motion.js";
 
 // ── Scene gate ──────────────────────────────────────────────────────────────
 
@@ -341,6 +342,7 @@ Hooks.once("ready", () => {
         for (const f of payload.found ?? []) overlay.markCell(f.cell, { color: 0x7fd0ff });
       }
     },
+    onMotion: (payload) => { replayMotion(payload).catch(() => {}); },
     onNarrate: (payload) => {
       if (!payload?.text) return;
       ui.notifications?.info?.(payload.text);

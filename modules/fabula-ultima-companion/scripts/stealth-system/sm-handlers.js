@@ -26,7 +26,8 @@ import {
 import { settleLedger, makeNoise } from "./sm-actions.js";
 import { spawnReinforcement } from "./sm-reinforcement.js";
 import { launchConflict } from "./sm-conflict.js";
-import { broadcastState, broadcastOverlay } from "./sm-socket.js";
+import { broadcastState, broadcastOverlay, broadcastMotion } from "./sm-socket.js";
+import { walkToken } from "./sm-motion.js";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -258,20 +259,29 @@ export function buildHandlers() {
         const token = scene?.tokens?.get?.(sm.party.tokenId);
         let spottedAt = null;
 
+        // Decide the walk BEFORE animating it. Detection is evaluated per cell
+        // entered and the walk must stop where the party was spotted, so the
+        // cells actually travelled are resolved first and only those are
+        // animated. Animating the whole path and rewinding on a spot would
+        // show the player a move that never happened.
+        const walked = [];
         for (const cell of payload.path) {
           if (sm.party.moveLeft <= 0) break;
 
           sm.party.cell = cell;
           sm.party.moveLeft -= 1;
-
-          if (token) {
-            const p = topLeftOf(cell);
-            await token.update({ x: p.x, y: p.y }, { animate: true, stealthAuthorised: true });
-          }
+          walked.push(cell);
 
           const det = detectionSweep(ctx, cell);
           if (det.spotted) { spottedAt = cell; break; }
-          await sleep(tune.stepMs);
+        }
+
+        // One glide, one document write — see sm-motion.
+        if (token && walked.length) {
+          await walkToken(token, walked, {
+            msPerLeg: tune.stepMs,
+            broadcast: (p) => broadcastMotion(p),
+          });
         }
 
         syncOccupancy(scene);
@@ -334,17 +344,22 @@ export function buildHandlers() {
         enemy.lostRounds = 0;
       }
 
-      // Walk it, so the players can watch a guard close in.
+      // Walk it, so the players can watch a guard close in. Same glide the
+      // party gets — a guard that teleports cell to cell reads as a bug, and
+      // watching one close the distance is most of the tension.
       const tokenDoc = scene?.tokens?.get?.(enemy.tokenId);
-      for (const cell of path) {
-        enemy.cell = cell;
+      if (path.length) {
+        enemy.cell = path[path.length - 1];
         if (tokenDoc) {
-          const p = topLeftOf(cell);
-          await tokenDoc.update({ x: p.x, y: p.y }, { animate: true, stealthAuthorised: true });
+          await walkToken(tokenDoc, path, {
+            msPerLeg: tune.stepMs,
+            sfx: false,   // only the party's own steps are audible
+            broadcast: (p) => broadcastMotion(p),
+          });
         }
-        await sleep(tune.stepMs);
+      } else if (intent.move) {
+        enemy.cell = intent.move;
       }
-      if (!path.length && intent.move) enemy.cell = intent.move;
 
       enemy.ai = intent.ai;
       markActivated(sm, enemy.tokenId);

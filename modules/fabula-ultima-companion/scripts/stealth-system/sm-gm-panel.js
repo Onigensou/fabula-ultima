@@ -31,36 +31,54 @@ function ensureStyles() {
   s.id = STYLE_ID;
   s.textContent = `
     #${PANEL_ID}{
-      position:fixed; right:64px; top:88px; z-index:70; width:264px;
-      font-family:"Signika",sans-serif; color:#e6e6e6; font-size:12.5px;
-      background:rgba(14,18,24,.92); border:1px solid rgba(255,255,255,.14);
-      border-radius:8px; box-shadow:0 10px 30px -14px rgba(0,0,0,.9);
-      backdrop-filter:blur(3px); max-height:70vh; display:flex; flex-direction:column;
+      position:fixed; right:64px; top:88px; z-index:68; width:262px;
+      font-family:"Inter","Segoe UI",system-ui,sans-serif; font-size:12px;
+      color:#3a3228; max-height:74vh; display:flex; flex-direction:column;
+      background:linear-gradient(180deg,#f6f1e6,#ebe3d0);
+      border:2px solid #7a6a55; border-radius:12px;
+      box-shadow:0 4px 0 rgba(41,33,24,.55), 0 0 0 1px rgba(255,255,255,.7) inset;
+      text-shadow:0 1px 0 rgba(255,255,255,.7);
     }
     #${PANEL_ID} h4{
       margin:0; padding:9px 12px; font-size:11px; letter-spacing:.14em;
-      text-transform:uppercase; opacity:.65; border-bottom:1px solid rgba(255,255,255,.1);
+      text-transform:uppercase; font-weight:900; color:#4b4338;
+      border-bottom:2px solid rgba(122,106,85,.45);
       display:flex; justify-content:space-between; align-items:center;
+      background:linear-gradient(180deg,#d5b67a,#b7935a);
+      border-radius:9px 9px 0 0;
     }
     #${PANEL_ID} .sm-gm-body{ padding:10px 12px; overflow-y:auto; }
-    #${PANEL_ID} .sm-gm-sec{ margin-bottom:12px; }
-    #${PANEL_ID} .sm-gm-lbl{ font-size:10.5px; letter-spacing:.1em; text-transform:uppercase;
-      opacity:.5; margin-bottom:5px; }
-    #${PANEL_ID} button{
-      cursor:pointer; background:rgba(255,255,255,.07); color:#e6e6e6;
-      border:1px solid rgba(255,255,255,.18); border-radius:4px;
-      padding:4px 9px; font-size:11.5px; font-family:inherit; margin:0 4px 4px 0;
+    #${PANEL_ID} .sm-gm-sec{ margin-bottom:11px; }
+    #${PANEL_ID} .sm-gm-lbl{
+      font-size:10px; letter-spacing:.12em; text-transform:uppercase;
+      font-weight:900; color:#7a6a55; margin-bottom:5px;
     }
-    #${PANEL_ID} button:hover{ background:rgba(255,255,255,.16); }
-    #${PANEL_ID} .sm-gm-enemy{ display:flex; justify-content:space-between; gap:6px;
-      padding:3px 0; border-bottom:1px solid rgba(255,255,255,.06); }
-    #${PANEL_ID} .sm-gm-enemy b{ font-weight:600; }
-    #${PANEL_ID} .sm-gm-log{ font-size:11px; opacity:.62; line-height:1.5;
-      max-height:130px; overflow-y:auto; }
-    #${PANEL_ID} textarea{ width:100%; background:rgba(0,0,0,.35); color:#e6e6e6;
-      border:1px solid rgba(255,255,255,.16); border-radius:4px; font-family:inherit;
-      font-size:11.5px; padding:5px; }
-    #${PANEL_ID} .sm-gm-close{ cursor:pointer; opacity:.5; }
+    #${PANEL_ID} button{
+      cursor:pointer; color:#3a3228; font-family:inherit;
+      background:linear-gradient(180deg,#f6f1e6,#e6dcc6);
+      border:2px solid #7a6a55; border-radius:7px;
+      padding:4px 9px; font-size:11px; font-weight:800; letter-spacing:.2px;
+      margin:0 4px 4px 0; text-transform:uppercase;
+      box-shadow:0 2px 0 rgba(41,33,24,.45), 0 0 0 1px rgba(255,255,255,.7) inset;
+      transition:transform .1s ease, filter .1s ease;
+    }
+    #${PANEL_ID} button:hover{ transform:translateY(-1px); filter:brightness(1.05); }
+    #${PANEL_ID} button:active{ transform:translateY(1px); box-shadow:0 1px 0 rgba(41,33,24,.45); }
+    #${PANEL_ID} .sm-gm-enemy{
+      display:flex; justify-content:space-between; gap:6px; padding:3px 0;
+      border-bottom:1px solid rgba(122,106,85,.22);
+    }
+    #${PANEL_ID} .sm-gm-enemy b{ font-weight:800; }
+    #${PANEL_ID} .sm-gm-log{
+      font-size:10.5px; color:#4b4338; opacity:.8; line-height:1.55;
+      max-height:130px; overflow-y:auto;
+      background:rgba(122,106,85,.1); border-radius:6px; padding:5px 7px;
+    }
+    #${PANEL_ID} textarea{
+      width:100%; color:#3a3228; font-family:inherit; font-size:11.5px; padding:5px;
+      background:rgba(255,255,255,.55); border:2px solid #7a6a55; border-radius:6px;
+    }
+    #${PANEL_ID} .sm-gm-close{ cursor:pointer; opacity:.6; font-weight:900; }
     #${PANEL_ID} .sm-gm-close:hover{ opacity:1; }
   `;
   document.head.appendChild(s);

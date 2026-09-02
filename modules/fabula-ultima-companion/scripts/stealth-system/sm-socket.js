@@ -31,12 +31,14 @@ let _onRequest = null;    // GM-side intent handler, set by the boot module
 let _onState = null;      // client-side state receiver
 let _onOverlay = null;
 let _onNarrate = null;
+let _onMotion = null;
 
-export function install({ onRequest, onState, onOverlay, onNarrate } = {}) {
+export function install({ onRequest, onState, onOverlay, onNarrate, onMotion } = {}) {
   _onRequest = onRequest ?? _onRequest;
   _onState   = onState   ?? _onState;
   _onOverlay = onOverlay ?? _onOverlay;
   _onNarrate = onNarrate ?? _onNarrate;
+  _onMotion  = onMotion  ?? _onMotion;
 
   if (_installed) return;
   _installed = true;
@@ -65,6 +67,13 @@ export function install({ onRequest, onState, onOverlay, onNarrate } = {}) {
 
         case MSG.NARRATE:
           _onNarrate?.(msg.payload);
+          return;
+
+        case MSG.MOTION:
+          // The GM has already played this glide locally; replaying it there
+          // would double the animation.
+          if (game.user?.isGM) return;
+          _onMotion?.(msg.payload);
           return;
 
         default:
@@ -155,4 +164,17 @@ export function serialiseForClients(sm) {
       })),
     ledgerCount: sm.ledger?.length ?? 0,
   };
+}
+
+/**
+ * Push a token glide to the other clients.
+ *
+ * The document write that follows carries `animate: false`, so without this a
+ * player would see the token simply appear at its destination while the GM
+ * watched it walk. Fire-and-forget: a dropped animation is cosmetic, and
+ * blocking a turn on one would not be.
+ */
+export function broadcastMotion(payload) {
+  if (!game.user?.isGM) return;
+  try { game.socket.emit(CHANNEL, { type: MSG.MOTION, payload }); } catch (_) {}
 }

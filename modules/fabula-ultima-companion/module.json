@@ -445,6 +445,8 @@
     "scripts/stealth-system/sm-reinforcement.js",
     "scripts/stealth-system/sm-conflict.js",
     "scripts/stealth-system/sm-socket.js",
+    "scripts/stealth-system/sm-blades.js",
+    "scripts/stealth-system/sm-motion.js",
     "scripts/stealth-system/sm-overlay.js",
     "scripts/stealth-system/sm-ui.js",
     "scripts/stealth-system/sm-gm-panel.js",

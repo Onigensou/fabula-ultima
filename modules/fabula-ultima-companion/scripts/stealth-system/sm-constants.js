@@ -204,4 +204,5 @@ export const MSG = Object.freeze({
   STATE:     "SM_STATE",      // GM → all: authoritative state broadcast
   OVERLAY:   "SM_OVERLAY",    // GM → all: transient visual
   NARRATE:   "SM_NARRATE",    // GM → all: narration beat
+  MOTION:    "SM_MOTION",     // GM → all: replay a token glide
 });
