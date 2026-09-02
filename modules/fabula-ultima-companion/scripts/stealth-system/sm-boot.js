@@ -29,7 +29,7 @@ import {
 } from "./sm-lattice.js";
 import {
   resolveTakedown, resolveHide, resolveScan, resolveDiversion,
-  resolveMoveObject, resolveBreakCover, settleLedger, makeNoise,
+  resolveMoveObject, resolveBreakCover, settleLedger, makeNoise, resolveDash,
 } from "./sm-actions.js";
 import { spawnReinforcement, clearReinforcements } from "./sm-reinforcement.js";
 import { decideActivation, pickActivation } from "./sm-enemy-ai.js";
@@ -120,8 +120,9 @@ async function runObjective(payload, { sm, tune, scene }) {
   // Dash is the one objective that spends the slot to BUY movement, so it goes
   // straight through RESOLUTION with a grant rather than resolving here.
   if (id === OBJECTIVE.DASH) {
+    const res = await resolveDash(sm, leader, tune);
     return director.dispatch(E.OBJECTIVE, {
-      kind: "objective", id, grantMove: tune.dashBonus, noisy: true,
+      kind: "objective", id, grantMove: res.gain, noisy: true,
     });
   }
 
@@ -157,9 +158,15 @@ async function runObjective(payload, { sm, tune, scene }) {
   }
 
   if (id === OBJECTIVE.SCAN) {
-    const res = resolveScan(sm, partyCell, tune, { scene });
-    socket.broadcastOverlay({ kind: "scan", found: res.found });
-    ui.notifications?.info?.(`Scan: ${res.found.length} enemy position(s) revealed.`);
+    const res = await resolveScan(sm, leader, partyCell, tune, { scene });
+    // Broadcast the sweep itself, not a toast: the finding IS the animation.
+    socket.broadcastOverlay({
+      kind: "scan",
+      origin: partyCell,
+      radius: res.radius,
+      finds: res.found.map((f) => ({ cell: f.cell, kind: f.kind })),
+      holdMs: tune.scanHoldMs,
+    });
     return director.dispatch(E.OBJECTIVE, { kind: "objective", id });
   }
 
@@ -343,7 +350,8 @@ Hooks.once("ready", () => {
     onState: (view) => smUi.applyState(view, readTuning(canvas?.scene)),
     onOverlay: (payload) => {
       if (payload?.kind === "scan") {
-        for (const f of payload.found ?? []) overlay.markCell(f.cell, { color: 0x7fd0ff });
+        overlay.playSonar(payload.origin, payload.radius, payload.finds ?? [],
+          { holdMs: payload.holdMs });
       }
     },
     onMotion: (payload) => { replayMotion(payload).catch(() => {}); },

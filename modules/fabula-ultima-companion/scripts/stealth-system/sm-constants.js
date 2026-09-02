@@ -169,6 +169,21 @@ export const TUNE_DEFAULTS = Object.freeze({
   // Conflict
   conflictJoinRadius: 4,     // cells; which enemies join a triggered fight
 
+  // Scan — INS+INS buys radius. 10 is an average roll.
+  scanAverageRoll:    10,
+  scanRadiusBase:     6,    // cells revealed on an average roll
+  scanRadiusPerPoint: 0.5,  // cells gained per point over/under average
+  scanRadiusMin:      2,
+  scanRadiusMax:      14,
+  scanHoldMs:         10000,
+
+  // Dash — MIG+DEX buys extra movement. 10 is an average roll.
+  dashAverageRoll:    10,
+  dashGainBase:       3,    // cells on an average roll
+  dashGainPerPoint:   0.35,
+  dashGainMin:        1,
+  dashGainMax:        5,
+
   // Presentation
   stepMs:             160,   // per-cell walk tween
   coneAlpha:          0.13,

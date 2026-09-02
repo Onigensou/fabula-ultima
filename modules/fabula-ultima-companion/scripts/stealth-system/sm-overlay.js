@@ -388,3 +388,143 @@ export function destroyMarkLayer() {
   } catch (_) {}
   _markLayer = null;
 }
+
+// ── Scan sonar ──────────────────────────────────────────────────────────────
+//
+// A ring pulsing outward from the party, and outlines on whatever it found —
+// held for a beat and then faded.
+//
+// The point is that it reads THROUGH the fog. Foundry's fog hides everything
+// past the party's own sight, which is exactly the tension the mode wants for
+// ordinary movement; Scan is the deliberate exception, so its highlights are
+// drawn on their own layer above the fog rather than as tokens made visible.
+// Nothing about the scene's real visibility changes, and the knowledge expires.
+
+const Z_SONAR = 500000;
+let _sonarLayer = null;
+
+function sonarLayer() {
+  if (_sonarLayer && !_sonarLayer.destroyed) return _sonarLayer;
+  const parent = canvas?.stage;
+  if (!parent) return null;
+  const c = new PIXI.Container();
+  c.name = "Stealth Sonar";
+  c.zIndex = Z_SONAR;
+  c.eventMode = "none";
+  parent.sortableChildren = true;
+  parent.addChild(c);
+  _sonarLayer = c;
+  return c;
+}
+
+/**
+ * Play the scan.
+ *
+ * @param {object} originCell  the party's cell
+ * @param {number} radiusCells how far the pulse reaches
+ * @param {Array}  finds       [{ cell, kind: "enemy"|"prop", facing? }]
+ * @param {number} holdMs      how long the outlines linger
+ */
+export function playSonar(originCell, radiusCells, finds = [], { holdMs = 10000 } = {}) {
+  const layer = sonarLayer();
+  if (!layer || !originCell) return;
+
+  const gs = gridSize();
+  const origin = centerOf(originCell);
+  const maxR = Math.max(1, radiusCells) * gs;
+
+  // ── The expanding ring ──
+  const ring = new PIXI.Graphics();
+  layer.addChild(ring);
+
+  const RING_MS = 1100;
+  const t0 = performance.now();
+  const ringTick = () => {
+    const t = (performance.now() - t0) / RING_MS;
+    ring.clear();
+    if (t >= 1) {
+      canvas.app.ticker.remove(ringTick);
+      try { layer.removeChild(ring); ring.destroy(); } catch (_) {}
+      return;
+    }
+    // Two rings, the second trailing, so it reads as a pulse rather than a
+    // single expanding circle.
+    for (const lag of [0, 0.22]) {
+      const k = t - lag;
+      if (k <= 0 || k >= 1) continue;
+      const r = k * maxR;
+      const a = (1 - k) * 0.75;
+      ring.lineStyle(Math.max(2, gs * 0.09 * (1 - k * 0.5)), 0x7fd0ff, a);
+      ring.drawCircle(origin.x, origin.y, r);
+    }
+    ring.lineStyle(0);
+  };
+  canvas.app.ticker.add(ringTick);
+
+  // ── The finds ──
+  // Each outline appears as the wavefront reaches it, so the sweep reads as
+  // the thing doing the finding rather than as a list that pops in at once.
+  for (const f of finds) {
+    if (!f?.cell) continue;
+    const d = Math.hypot(centerOf(f.cell).x - origin.x, centerOf(f.cell).y - origin.y);
+    const delay = Math.min(RING_MS, (d / maxR) * RING_MS);
+    setTimeout(() => outlineFind(layer, f, gs, holdMs), delay);
+  }
+}
+
+function outlineFind(layer, find, gs, holdMs) {
+  if (!layer || layer.destroyed) return;
+  const g = new PIXI.Graphics();
+  const p = topLeftOf(find.cell);
+  const enemy = find.kind === "enemy";
+  const color = enemy ? 0xff6a58 : 0x8fd8ff;
+
+  const inset = gs * 0.1;
+  const s = gs - inset * 2;
+
+  g.lineStyle(Math.max(2, gs * 0.07), color, 0.95);
+  g.beginFill(color, 0.14);
+  g.drawRoundedRect(p.x + inset, p.y + inset, s, s, gs * 0.18);
+  g.endFill();
+
+  // Corner ticks — reads as a targeting bracket rather than a filled tile,
+  // which matters because a filled tile is what "reachable" already means.
+  const t = gs * 0.26;
+  g.lineStyle(Math.max(2, gs * 0.085), color, 1);
+  for (const [cx, cy, dx, dy] of [
+    [p.x + inset, p.y + inset, 1, 1],
+    [p.x + gs - inset, p.y + inset, -1, 1],
+    [p.x + inset, p.y + gs - inset, 1, -1],
+    [p.x + gs - inset, p.y + gs - inset, -1, -1],
+  ]) {
+    g.moveTo(cx + dx * t, cy); g.lineTo(cx, cy); g.lineTo(cx, cy + dy * t);
+  }
+  g.lineStyle(0);
+
+  layer.addChild(g);
+
+  const born = performance.now();
+  const FADE = 900;
+  const tick = () => {
+    const age = performance.now() - born;
+    if (age < 220) { g.alpha = age / 220; return; }
+    if (age < holdMs) { g.alpha = 1; return; }
+    const k = (age - holdMs) / FADE;
+    g.alpha = Math.max(0, 1 - k);
+    if (k >= 1) {
+      canvas.app.ticker.remove(tick);
+      try { layer.removeChild(g); g.destroy(); } catch (_) {}
+    }
+  };
+  canvas.app.ticker.add(tick);
+}
+
+export function destroySonarLayer() {
+  try {
+    if (_sonarLayer && !_sonarLayer.destroyed) {
+      _sonarLayer.parent?.removeChild(_sonarLayer);
+      _sonarLayer.destroy({ children: true });
+    }
+  } catch (_) {}
+  _sonarLayer = null;
+}

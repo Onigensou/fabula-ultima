@@ -448,6 +448,7 @@
     "scripts/stealth-system/sm-blades.js",
     "scripts/stealth-system/sm-motion.js",
     "scripts/stealth-system/sm-banner.js",
+    "scripts/stealth-system/sm-camera.js",
     "scripts/stealth-system/sm-overlay.js",
     "scripts/stealth-system/sm-ui.js",
     "scripts/stealth-system/sm-gm-panel.js",

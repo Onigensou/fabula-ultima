@@ -347,6 +347,7 @@ export function buildHandlers() {
         }
 
         syncOccupancy(scene);
+        await maybeTeleport(ctx);
         try { Hooks.callAll(HOOKS.PARTY_MOVED, { cell: sm.party.cell }); } catch (_) {}
 
         // No ui.notifications here. Being seen is a thing that happens ON the
@@ -549,4 +550,67 @@ export function readSceneConfig(scene = canvas?.scene) {
     reinforcementTable: raw?.reinforcementTable ?? null,
     tuning:      raw?.tuning ?? {},
   };
+}
+
+// ── Teleporters ─────────────────────────────────────────────────────────────
+
+/**
+ * Fire a teleporter the party landed on.
+ *
+ * The teleporter system's own detector is a per-frame ticker gated to
+ * exploration mode, and it reads the token's VISUAL position — which in this
+ * mode is a hidden token standing at its old cell while a clone glides. It
+ * would never fire here, and making it fire would mean it firing mid-glide.
+ *
+ * So stealth drives it explicitly: after a committed walk, check the cell the
+ * party actually stopped on and call the public API. One trigger, at the one
+ * moment the party is genuinely standing there.
+ */
+export async function maybeTeleport(ctx) {
+  const { sm, scene } = ctx;
+  const TP = globalThis.TeleporterSystem?.api;
+  if (!TP?.teleportToken || !TP?.isTeleporterEnabled) return false;
+
+  const gs = canvas?.grid?.size ?? 100;
+  const tokenDoc = scene?.tokens?.get?.(sm.party.tokenId);
+  if (!tokenDoc) return false;
+
+  for (const tile of (scene?.tiles ?? [])) {
+    if (tile.hidden) continue;
+    if (!TP.isTeleporterEnabled(tile)) continue;
+
+    const c = cellOfPointLocal(tile.x + (tile.width || gs) / 2, tile.y + (tile.height || gs) / 2);
+    if (!sameCell(c, sm.party.cell)) continue;
+
+    const flags = TP.getFlags(tile);
+    const destination = flags?.destination ?? flags?.target ?? null;
+    if (!destination) {
+      console.warn(TAG, "teleporter tile has no destination", tile.id);
+      continue;
+    }
+
+    pushLog(sm, "Stepped onto a teleporter");
+    try {
+      await TP.teleportToken(tokenDoc, destination, { sfxUrl: flags.sfxUrl ?? "" });
+    } catch (e) {
+      console.error(TAG, "teleport failed", e);
+      return false;
+    }
+
+    // The token has moved under us — the lattice's occupancy and the party's
+    // recorded cell are both stale, and a same-scene hop leaves the rest of
+    // the turn running against the wrong position.
+    const landed = cellOfToken(scene?.tokens?.get?.(sm.party.tokenId));
+    if (landed) sm.party.cell = landed;
+    invalidateLattice();
+    buildLattice(scene);
+    syncOccupancy(scene);
+    return true;
+  }
+  return false;
+}
+
+function cellOfPointLocal(x, y) {
+  const o = canvas?.grid?.getOffset?.({ x, y });
+  return o ? { i: o.i, j: o.j } : { i: 0, j: 0 };
 }

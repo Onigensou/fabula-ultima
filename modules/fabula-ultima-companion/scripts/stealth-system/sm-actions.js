@@ -286,23 +286,116 @@ function finishHide(state, tune, passed, dl, roll, bonus = 0) {
 
 // ── Scan ────────────────────────────────────────────────────────────────────
 
-/** Reveal enemy positions, facings and AI states within a radius. */
-export function resolveScan(state, partyCell, tune, { scene = canvas?.scene } = {}) {
-  const radius = tune.visionRange + 2;
-  const found = enemyRecords(state)
+/**
+ * Sweep the surroundings. INS + INS — this is pure perception, so the same
+ * attribute twice rather than a pairing that smuggles in agility or nerve.
+ *
+ * The roll buys RADIUS. A 10 is average and yields the baseline sweep; a great
+ * roll reaches most of a room, a poor one barely past arm's length. That makes
+ * Scan worth spending an Objective on in a place you cannot see, rather than a
+ * flat reveal that is either always or never worth it.
+ *
+ * What it finds is reported through the FOG: the outlines are drawn on their
+ * own layer above it, so the party learns positions they could not see without
+ * anything about the scene's real visibility changing. The knowledge expires
+ * with the outlines.
+ */
+export async function resolveScan(state, controllerActor, partyCell, tune, {
+  scene = canvas?.scene,
+} = {}) {
+  const CR = globalThis.ONI?.CheckRequester;
+
+  let roll = null;
+  let total = tune.scanAverageRoll;
+  if (CR?.requestOne && controllerActor) {
+    roll = await CR.requestOne(controllerActor, {
+      attrA: "INS", attrB: "INS",
+      dl: tune.scanAverageRoll,
+      label: "Scan — sweep the surroundings",
+      mode: "interactive", allowInvokes: true, postChat: true,
+      context: { system: "stealth", kind: "scan" },
+    });
+    total = num(roll?.total, tune.scanAverageRoll);
+  }
+
+  // Radius scales off the roll around the average, clamped so a fumble still
+  // tells you something and a crit does not reveal the whole map.
+  const radius = Math.max(
+    tune.scanRadiusMin,
+    Math.min(
+      tune.scanRadiusMax,
+      Math.round(tune.scanRadiusBase + (total - tune.scanAverageRoll) * tune.scanRadiusPerPoint),
+    ),
+  );
+
+  const enemies = enemyRecords(state)
     .filter((e) => cellDistance(e.cell, partyCell, scene) <= radius)
     .map((e) => ({
-      tokenId: e.tokenId,
-      cell: e.cell,
-      facing: e.facing,
-      ai: e.ai,
-      awareness: e.awareness,
+      tokenId: e.tokenId, cell: e.cell, facing: e.facing,
+      ai: e.ai, awareness: e.awareness, kind: "enemy",
       distance: cellDistance(e.cell, partyCell, scene),
-    }))
-    .sort((a, b) => a.distance - b.distance);
+    }));
 
-  pushLog(state, `Scan revealed ${found.length} enemy position(s)`);
-  return { ok: true, found, radius };
+  // Props too — the point of scanning a fogged room is learning what is IN it,
+  // and a movable crate is as much a discovery as a guard.
+  const props = [];
+  for (const t of (scene?.tiles ?? [])) {
+    if (t.hidden) continue;
+    const cfg = propConfigOf(t);
+    if (!cfg) continue;
+    const gs = canvas?.grid?.size ?? 100;
+    const cell = cellOfPoint(t.x + (t.width || gs) / 2, t.y + (t.height || gs) / 2);
+    const d = cellDistance(cell, partyCell, scene);
+    if (d > radius) continue;
+    props.push({ cell, kind: "prop", label: cfg.label, distance: d });
+  }
+
+  const found = [...enemies, ...props].sort((a, b) => a.distance - b.distance);
+  pushLog(state, `Scan (roll ${total}) → radius ${radius}, found ${enemies.length} enemy / ${props.length} prop`);
+  return { ok: true, found, enemies, props, radius, roll, total };
+}
+
+function cellOfPoint(x, y) {
+  const o = canvas?.grid?.getOffset?.({ x, y });
+  return o ? { i: o.i, j: o.j } : { i: 0, j: 0 };
+}
+
+// ── Dash ────────────────────────────────────────────────────────────────────
+
+/**
+ * Spend the Objective to buy movement. MIG + DEX — a burst of speed is legs
+ * and lungs, not cunning.
+ *
+ * The gain is rolled rather than flat so Dash is a gamble rather than a known
+ * quantity: at Alert, where Dash is the party's only escape lever, a flat
+ * bonus would make escape arithmetic and a rolled one keeps it a decision.
+ */
+export async function resolveDash(state, controllerActor, tune) {
+  const CR = globalThis.ONI?.CheckRequester;
+
+  let roll = null;
+  let total = tune.dashAverageRoll;
+  if (CR?.requestOne && controllerActor) {
+    roll = await CR.requestOne(controllerActor, {
+      attrA: "MIG", attrB: "DEX",
+      dl: tune.dashAverageRoll,
+      label: "Dash — a burst of speed",
+      mode: "interactive", allowInvokes: true, postChat: true,
+      context: { system: "stealth", kind: "dash" },
+    });
+    total = num(roll?.total, tune.dashAverageRoll);
+  }
+
+  const gain = Math.max(
+    tune.dashGainMin,
+    Math.min(
+      tune.dashGainMax,
+      Math.round(tune.dashGainBase + (total - tune.dashAverageRoll) * tune.dashGainPerPoint),
+    ),
+  );
+
+  pushLog(state, `Dash (roll ${total}) → +${gain} movement`);
+  return { ok: true, gain, roll, total };
 }
 
 // ── Diversion ───────────────────────────────────────────────────────────────

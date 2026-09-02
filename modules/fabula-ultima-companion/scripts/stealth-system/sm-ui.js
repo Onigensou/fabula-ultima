@@ -32,6 +32,7 @@ import { reachable, pathFromReachable } from "./sm-lattice.js";
 import * as overlay from "./sm-overlay.js";
 import * as blades from "./sm-blades.js";
 import { requestIntent } from "./sm-socket.js";
+import * as camera from "./sm-camera.js";
 
 const HUD_ID = "oni-stealth-hud";
 const STYLE_ID = "oni-stealth-hud-style";
@@ -187,6 +188,7 @@ function renderExitButton() {
     el.id = EXIT_ID;
     el.style.cssText = `
       position:fixed; right:22px; bottom:118px; z-index:69;
+      width:auto; min-width:0; max-width:none; flex:none; line-height:1;
       font-family:"Inter","Segoe UI",system-ui,sans-serif;
       font-size:12.5px; font-weight:800; letter-spacing:.4px; text-transform:uppercase;
       color:#3a3228; padding:9px 18px; cursor:pointer;
@@ -236,23 +238,89 @@ function rootCommands() {
   ];
 }
 
+/**
+ * The objective list, filtered to what is actually possible right now.
+ *
+ * Unavailable options are OMITTED, not greyed. A greyed row still costs the
+ * player a read to rule out, and a list where half the rows are permanently
+ * dead teaches them to stop reading it. What is on screen is what can be done;
+ * anything the board does not currently support simply is not offered.
+ *
+ * The exception is Takedown, which is shown greyed when an adjacent enemy
+ * exists but the room is on alert — that is a rule worth learning rather than
+ * an option that never applied.
+ */
 function objectiveCommands() {
   const near = nearestEnemy();
   const tier = _view.alert;
-  return [
-    { id: `obj:${OBJECTIVE.DASH}`,        label: "Dash",        note: `+${_tune?.dashBonus ?? 5}` },
-    { id: `obj:${OBJECTIVE.TAKEDOWN}`,    label: "Takedown",    note: near ? near.name : "",
-      disabled: !near || tier === ALERT.ALERT,
-      reason: !near ? "No adjacent enemy" : "The room is on alert" },
-    { id: `obj:${OBJECTIVE.HIDE}`,        label: "Hide",
-      disabled: tier === ALERT.STEALTH, reason: "Already unseen" },
-    { id: `obj:${OBJECTIVE.SCAN}`,        label: "Scan" },
-    { id: `obj:${OBJECTIVE.DIVERSION}`,   label: "Diversion" },
-    { id: `obj:${OBJECTIVE.MOVE_OBJECT}`, label: "Move Object" },
-    { id: `obj:${OBJECTIVE.BREAK_COVER}`, label: "Break Cover" },
-    { id: `obj:${OBJECTIVE.CUSTOM}`,      label: "Something Else" },
-    { id: "back", label: "Back", back: true },
-  ];
+  const rows = [];
+
+  rows.push({ id: `obj:${OBJECTIVE.DASH}`, label: "Dash", note: "MIG+DEX" });
+
+  // Only when there is something to take down.
+  if (near) {
+    rows.push({
+      id: `obj:${OBJECTIVE.TAKEDOWN}`, label: "Takedown", note: near.name,
+      disabled: tier === ALERT.ALERT,
+      reason: "The room is on alert — nobody is off their guard",
+    });
+  }
+
+  // Hiding only means anything once something is looking for you.
+  if (tier !== ALERT.STEALTH && !inActiveCone()) {
+    rows.push({ id: `obj:${OBJECTIVE.HIDE}`, label: "Hide", note: hideDlNote() });
+  }
+
+  rows.push({ id: `obj:${OBJECTIVE.SCAN}`, label: "Scan", note: "INS+INS" });
+  rows.push({ id: `obj:${OBJECTIVE.DIVERSION}`, label: "Diversion" });
+
+  // Prop actions need a prop in reach.
+  const props = nearbyProps();
+  if (props.movable) rows.push({ id: `obj:${OBJECTIVE.MOVE_OBJECT}`, label: "Move Object" });
+  if (props.breakable) rows.push({ id: `obj:${OBJECTIVE.BREAK_COVER}`, label: "Break Cover" });
+
+  rows.push({ id: `obj:${OBJECTIVE.CUSTOM}`, label: "Something Else" });
+  rows.push({ id: "back", label: "Back", back: true });
+  return rows;
+}
+
+function hideDlNote() {
+  const dl = _tune?.hideDlByAlert?.[_view?.alert];
+  return dl ? `DL ${dl}` : "";
+}
+
+/** Is any guard currently looking straight at the party? Hide is barred then. */
+function inActiveCone() {
+  const pc = _view?.party?.cell;
+  if (!pc) return false;
+  // The client has cells + facings, so it can answer this without a round
+  // trip; the GM re-checks authoritatively before the roll either way.
+  const tune = _tune ?? {};
+  for (const e of (_view.enemies ?? [])) {
+    if (e.ai === "chase" || e.ai === "search") {
+      if (cellDistance(pc, e.cell) <= (tune.visionRange ?? 8)) return true;
+    }
+  }
+  return false;
+}
+
+/** Movable / breakable props adjacent to the party. */
+function nearbyProps() {
+  const out = { movable: false, breakable: false };
+  const pc = _view?.party?.cell;
+  if (!pc || !canvas?.scene) return out;
+  const gs = canvas.grid?.size ?? 100;
+
+  for (const t of canvas.scene.tiles) {
+    if (t.hidden) continue;
+    const cfg = t.flags?.["fabula-ultima-companion"]?.stealthProp;
+    if (!cfg || cfg.enabled === false) continue;
+    const c = cellAt({ x: t.x + (t.width || gs) / 2, y: t.y + (t.height || gs) / 2 });
+    if (cellDistance(pc, c) > 1) continue;
+    if (cfg.movable) out.movable = true;
+    if (cfg.destructible) out.breakable = true;
+  }
+  return out;
 }
 
 function nearestEnemy() {
@@ -542,6 +610,7 @@ export function disable() {
   removeExitButton();
   blades.hideBlades();
   overlay.clearAll();
+  camera.unlock();
 
   if (_canvasHooked) {
     _canvasHooked = false;
@@ -575,6 +644,13 @@ export function applyState(view, tune) {
   if (_mode === "move") computeReach(); else overlay.drawReachable(null);
   refreshBlades();
   renderExitButton();
+
+  // Free pan on your own turn (the fog already hides what you should not see);
+  // locked to the party token otherwise, so you watch the guard walking toward
+  // you rather than roaming the map while the GM moves.
+  if (view.phase !== prevPhase) {
+    camera.applyPhasePolicy(view.phase, view.party?.cell).catch(() => {});
+  }
 }
 
 export function currentView() { return _view; }

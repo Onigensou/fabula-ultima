@@ -405,5 +405,25 @@ stateM.decayAwareness(ls, TUNE, new Set());
 eq("giving up clears the latch", ls.enemies.g1.raisedOnce, false);
 eq("  and drops the mark", ls.enemies.g1.mark, null);
 
+// ── Scan / Dash scaling ─────────────────────────────────────────────────────
+// Both buy a quantity off a roll, clamped so a fumble still does something and
+// a crit does not trivialise the map.
+console.log("\n── scan & dash scaling ──");
+
+const scanR = (total) => Math.max(TUNE.scanRadiusMin, Math.min(TUNE.scanRadiusMax,
+  Math.round(TUNE.scanRadiusBase + (total - TUNE.scanAverageRoll) * TUNE.scanRadiusPerPoint)));
+eq("scan on an average roll is the baseline", scanR(TUNE.scanAverageRoll), TUNE.scanRadiusBase);
+eq("a bad scan still sees something", scanR(1) >= TUNE.scanRadiusMin, true);
+eq("a great scan is capped", scanR(99), TUNE.scanRadiusMax);
+eq("scan scales upward with the roll", scanR(20) > scanR(10), true);
+
+const dashG = (total) => Math.max(TUNE.dashGainMin, Math.min(TUNE.dashGainMax,
+  Math.round(TUNE.dashGainBase + (total - TUNE.dashAverageRoll) * TUNE.dashGainPerPoint)));
+eq("dash on an average roll is the baseline", dashG(TUNE.dashAverageRoll), TUNE.dashGainBase);
+eq("dash never gives less than 1", dashG(1), TUNE.dashGainMin);
+eq("dash never gives more than 5", dashG(99), TUNE.dashGainMax);
+eq("dash is inside the brief's 1-5 band",
+  [1, 8, 10, 14, 25].every((r) => dashG(r) >= 1 && dashG(r) <= 5), true);
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
