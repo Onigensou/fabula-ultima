@@ -319,16 +319,37 @@ eq("  it never strays past its leash",
   moved ? grid.cellDistance(moved.move, aiState.enemies.g.anchor) <= TUNE.wanderLeash : true, true);
 let intent = ai.decideActivation(aiState, aiState.enemies.g, C(5, 12), TUNE, { scene });
 
-// SUSPICIOUS: turn toward the stimulus and hold. This is the round the party
-// gets to break line of sight, so movement here would be a real design bug.
+// SUSPICIOUS investigates the SPOT, not the party. It walks to where it thought
+// something was, and resolves there one way or the other — a guard that bolted
+// at your real position made suspicion indistinguishable from being caught.
 aiState.enemies.g.ai = AI.SUSPICIOUS;
+aiState.enemies.g.cell = C(5, 5);
 aiState.enemies.g.lastKnownCell = C(5, 9);
-intent = ai.decideActivation(aiState, aiState.enemies.g, null, TUNE, { scene });
-eq("a suspicious guard does NOT approach", intent.move, null);
-eq("  it turns toward the stimulus", intent.facing, "E");
+aiState.enemies.g.facing = "E";
+intent = ai.decideActivation(aiState, aiState.enemies.g, C(15, 15), TUNE, { scene });
+eq("a suspicious guard walks to the suspicion point", !!intent.move, true);
+eq("  heading for the point, not the party", intent.move.i, 5);
+eq("  and not yet resolved", intent.resolved, false);
+
+// Standing on the point with nothing to see: drop it entirely.
+aiState.enemies.g.cell = C(5, 9);
+aiState.enemies.g.facing = "E";
+intent = ai.decideActivation(aiState, aiState.enemies.g, C(25, 25), TUNE, { scene });
+eq("arriving and finding nothing drops the suspicion", intent.ai, AI.PATROL);
+eq("  flagged resolved so the latch clears", intent.resolved, true);
+
+// Standing on the point WITH the party in view: commit.
+aiState.enemies.g.ai = AI.SUSPICIOUS;
+aiState.enemies.g.cell = C(5, 9);
+aiState.enemies.g.facing = "E";
+aiState.enemies.g.lastKnownCell = C(5, 9);
+intent = ai.decideActivation(aiState, aiState.enemies.g, C(5, 10), TUNE, { scene });
+eq("arriving and seeing them commits to the hunt",
+  intent.ai === AI.CHASE || intent.ai === AI.SEARCH, true);
 
 // SEARCH goes to the LAST KNOWN cell, not the true one. The whole trick.
 aiState.enemies.g.ai = AI.SEARCH;
+aiState.enemies.g.cell = C(5, 5);             // stand away from the lead
 aiState.enemies.g.lastKnownCell = C(5, 9);
 aiState.enemies.g.facing = "W";               // cannot see the party
 intent = ai.decideActivation(aiState, aiState.enemies.g, C(9, 9), TUNE, { scene });

@@ -118,7 +118,9 @@ export const TUNE_DEFAULTS = Object.freeze({
   detectionRange:   3,     // legacy alias; the live gate is spottedRange
   spottedRange:     2,     // inside the cone AND this close = seen outright
   visionRange:      5,     // outer limit of the cone
-  coneHalfAngle:    45,    // degrees either side of facing → a 90° cone
+  coneHalfAngle:    22,    // half-angle -> a 44° cone. Narrow on purpose: at
+                           // 90° a guard watched nearly everything in front of
+                           // it and facing barely mattered.
   flankRangeMult:   0.6,   // sight range multiplier in the flank arc
   coverAwareness:   -2,    // awareness delta when the party stands in cover
   darkAwareness:    -1,    // awareness delta in an unlit cell

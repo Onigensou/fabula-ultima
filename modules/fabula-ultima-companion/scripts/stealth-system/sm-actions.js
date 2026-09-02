@@ -382,7 +382,7 @@ export async function resolveScan(state, controllerActor, partyCell, tune, {
     const cell = cellOfPoint(t.x + (t.width || gs) / 2, t.y + (t.height || gs) / 2);
     const d = cellDistance(cell, partyCell, scene);
     if (d > radius) continue;
-    props.push({ cell, kind: "prop", label: cfg.label, distance: d });
+    props.push({ cell, kind: "prop", tileId: t.id, label: cfg.label, distance: d });
   }
 
   const found = [...enemies, ...props].sort((a, b) => a.distance - b.distance);

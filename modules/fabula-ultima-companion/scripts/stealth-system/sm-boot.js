@@ -174,7 +174,9 @@ async function runObjective(payload, { sm, tune, scene }) {
       kind: "scan",
       origin: partyCell,
       radius: res.radius,
-      finds: res.found.map((f) => ({ cell: f.cell, kind: f.kind })),
+      finds: res.found.map((f) => ({
+        cell: f.cell, kind: f.kind, tokenId: f.tokenId ?? null, tileId: f.tileId ?? null,
+      })),
       holdMs: tune.scanHoldMs,
     });
     return director.dispatch(E.OBJECTIVE, { kind: "objective", id });

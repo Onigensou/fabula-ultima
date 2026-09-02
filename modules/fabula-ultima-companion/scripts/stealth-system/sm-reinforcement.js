@@ -58,13 +58,45 @@ async function pickReinforcementActor(sm, cfg) {
  * indistinguishable from a bug, and the failure should look like a long walk,
  * not an ambush nobody designed.
  */
+/** Every teleporter tile on the scene, as passable cells. */
+function teleporterCells(scene) {
+  const TP = globalThis.TeleporterSystem?.api;
+  if (!TP?.isTeleporterEnabled) return [];
+  const gs = canvas?.grid?.size ?? 100;
+  const out = [];
+  for (const t of (scene?.tiles ?? [])) {
+    if (t.hidden) continue;
+    if (!TP.isTeleporterEnabled(t)) continue;
+    const o = canvas?.grid?.getOffset?.({
+      x: t.x + (t.width || gs) / 2,
+      y: t.y + (t.height || gs) / 2,
+    });
+    if (o) out.push({ i: o.i, j: o.j });
+  }
+  return out;
+}
+
 function pickSpawnCell(sm, cfg, scene) {
   const partyCell = sm.party.cell;
-
-  const authored = (cfg.spawnPoints ?? []).filter((c) => {
+  const free = (c) => {
     const rec = cellRecord(c, scene);
     return rec?.passable && !rec.occupant;
-  });
+  };
+
+  // ── Teleporters first ────────────────────────────────────────────────────
+  // Reinforcements come from somewhere. A teleporter is the one thing on the
+  // map that visibly explains how a guard arrived, so if the scene has any,
+  // the NEAREST one to the party is where the response comes through — which
+  // also makes a teleporter a piece of terrain the party has a reason to
+  // watch, avoid, or block.
+  const pads = teleporterCells(scene).filter(free);
+  if (pads.length) {
+    return pads
+      .map((c) => ({ c, d: cellDistance(c, partyCell, scene) }))
+      .sort((a, b) => a.d - b.d)[0].c;
+  }
+
+  const authored = (cfg.spawnPoints ?? []).filter(free);
 
   if (authored.length) {
     // The nearest authored point that is not right on top of the party — the

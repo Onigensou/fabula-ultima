@@ -472,13 +472,104 @@ export function playSonar(originCell, radiusCells, finds = [], { holdMs = 10000 
   }
 }
 
+/**
+ * Outline one find as a SILHOUETTE of the thing itself.
+ *
+ * A grid bracket told you a tile was interesting; it did not tell you what was
+ * standing on it. Cloning the placeable's own sprite and rendering only its
+ * edge gives the shape back — you read "a guard facing away" or "a stack of
+ * crates" through the fog, not "something at 12,7".
+ *
+ * The clone is drawn at zero fill with an OutlineFilter over it, so the sprite
+ * is never visible, only its boundary. The filter is the whole reason this
+ * works on arbitrary art with no per-asset authoring: it traces alpha, so a
+ * barrel outlines as a barrel.
+ */
 function outlineFind(layer, find, gs, holdMs) {
   if (!layer || layer.destroyed) return;
-  const g = new PIXI.Graphics();
-  const p = topLeftOf(find.cell);
-  const enemy = find.kind === "enemy";
-  const color = enemy ? 0xff6a58 : 0x8fd8ff;
 
+  const color = find.kind === "enemy" ? 0xff6a58 : 0x8fd8ff;
+  const src = resolvePlaceable(find);
+
+  const node = src ? silhouetteOf(src, color, gs) : bracketOf(find.cell, color, gs);
+  if (!node) return;
+  layer.addChild(node);
+
+  const born = performance.now();
+  const FADE = 900;
+  const tick = () => {
+    const age = performance.now() - born;
+    // A slow pulse so a held silhouette reads as a live scan return rather
+    // than a decal someone left on the map.
+    const pulse = 0.78 + 0.22 * Math.sin(age / 260);
+    if (age < 220) node.alpha = (age / 220) * pulse;
+    else if (age < holdMs) node.alpha = pulse;
+    else {
+      const k = (age - holdMs) / FADE;
+      node.alpha = Math.max(0, (1 - k) * pulse);
+      if (k >= 1) {
+        canvas.app.ticker.remove(tick);
+        try { layer.removeChild(node); node.destroy({ children: true }); } catch (_) {}
+      }
+    }
+  };
+  canvas.app.ticker.add(tick);
+}
+
+/** The Token or Tile a find refers to, if it is still on the canvas. */
+function resolvePlaceable(find) {
+  try {
+    if (find.tokenId) return canvas?.tokens?.get?.(find.tokenId) ?? null;
+    if (find.tileId)  return canvas?.tiles?.get?.(find.tileId) ?? null;
+  } catch (_) {}
+  return null;
+}
+
+/** A zero-fill clone of a placeable's sprite, wearing only its outline. */
+function silhouetteOf(placeable, color, gs) {
+  const base = placeable.mesh ?? placeable.icon ?? placeable.texture;
+  const tex = base?.texture ?? placeable.texture;
+  if (!tex) return null;
+
+  let sprite;
+  try { sprite = new PIXI.Sprite(tex); } catch (_) { return null; }
+
+  sprite.anchor.set(0.5);
+  const c = placeable.center ?? {
+    x: (placeable.document?.x ?? 0) + (placeable.width ?? gs) / 2,
+    y: (placeable.document?.y ?? 0) + (placeable.height ?? gs) / 2,
+  };
+  sprite.x = c.x;
+  sprite.y = c.y;
+  sprite.width = base?.width ?? placeable.width ?? gs;
+  sprite.height = base?.height ?? placeable.height ?? gs;
+  if ((base?.scale?.x ?? 1) < 0) sprite.scale.x = -Math.abs(sprite.scale.x);
+
+  const Outline = PIXI.filters?.OutlineFilter
+    ?? globalThis.PIXI?.filters?.OutlineFilter
+    ?? globalThis.OutlineFilter;
+
+  if (Outline) {
+    // Zero fill: the sprite itself never shows, only the traced edge.
+    sprite.tint = 0x000000;
+    sprite.alpha = 1;
+    const f = new Outline(Math.max(2, gs * 0.09), color, 0.35);
+    f.knockout = true;          // discard the interior, keep the border
+    sprite.filters = [f];
+    return sprite;
+  }
+
+  // No OutlineFilter available in this Foundry build. Rather than show a solid
+  // black rectangle where a silhouette should be, fall back to the bracket —
+  // less informative, but never wrong.
+  try { sprite.destroy(); } catch (_) {}
+  return null;
+}
+
+/** The old corner-bracket, kept as the fallback when no sprite is available. */
+function bracketOf(cell, color, gs) {
+  const g = new PIXI.Graphics();
+  const p = topLeftOf(cell);
   const inset = gs * 0.1;
   const s = gs - inset * 2;
 
@@ -487,8 +578,6 @@ function outlineFind(layer, find, gs, holdMs) {
   g.drawRoundedRect(p.x + inset, p.y + inset, s, s, gs * 0.18);
   g.endFill();
 
-  // Corner ticks — reads as a targeting bracket rather than a filled tile,
-  // which matters because a filled tile is what "reachable" already means.
   const t = gs * 0.26;
   g.lineStyle(Math.max(2, gs * 0.085), color, 1);
   for (const [cx, cy, dx, dy] of [
@@ -500,23 +589,7 @@ function outlineFind(layer, find, gs, holdMs) {
     g.moveTo(cx + dx * t, cy); g.lineTo(cx, cy); g.lineTo(cx, cy + dy * t);
   }
   g.lineStyle(0);
-
-  layer.addChild(g);
-
-  const born = performance.now();
-  const FADE = 900;
-  const tick = () => {
-    const age = performance.now() - born;
-    if (age < 220) { g.alpha = age / 220; return; }
-    if (age < holdMs) { g.alpha = 1; return; }
-    const k = (age - holdMs) / FADE;
-    g.alpha = Math.max(0, 1 - k);
-    if (k >= 1) {
-      canvas.app.ticker.remove(tick);
-      try { layer.removeChild(g); g.destroy(); } catch (_) {}
-    }
-  };
-  canvas.app.ticker.add(tick);
+  return g;
 }
 
 export function destroySonarLayer() {

@@ -252,9 +252,9 @@ function rootCommands() {
   return [
     { id: "move",      label: "Move",      note: `${p.moveLeft ?? 0}`,
       disabled: noMove, reason: "No movement left this turn" },
-    { id: "switch",    label: "Switch" },
     { id: "objective", label: "Objective", disabled: !!p.objectiveUsed,
       reason: "Objective already spent this turn" },
+    { id: "switch",    label: "Switch" },
     { id: "end",       label: "End" },
   ];
 }

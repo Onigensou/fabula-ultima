@@ -7,7 +7,7 @@
 // and which way do I look" rather than "which of forty skills".
 //
 //   PATROL      walks an authored route, or holds a post and sweeps its facing
-//   SUSPICIOUS  turns to face the stimulus and STOPS — does not approach
+//   SUSPICIOUS  walks to the SPOT it half-noticed, then commits or drops it
 //   SEARCH      paths to the party's LAST KNOWN cell, not their real one
 //   CHASE       paths to the true position; only reachable at the Alert tier
 //
@@ -19,9 +19,12 @@
 // one stored cell per enemy and it is the difference between the mode being
 // fun and being a stopwatch.
 //
-// SUSPICIOUS not approaching is the other half. It hands the party a full round
-// to break line of sight, which is what makes a near-miss readable as a
-// near-miss instead of an unexplained failure.
+// SUSPICIOUS investigating the SPOT is the other half. It walks to where it
+// thought something was — not at the party — and resolves there: sees them and
+// commits, or finds nothing and drops it entirely. A guard that bolts straight
+// at you the instant it half-noticed something makes suspicion
+// indistinguishable from being caught, and leaves the party nothing to do about
+// it. Bounded, and it ends where the guard is looking rather than where you are.
 // ============================================================================
 
 import { TAG, AI, ALERT } from "./sm-constants.js";
@@ -143,6 +146,7 @@ export function decideActivation(state, enemy, partyCell, tune, { scene = canvas
     facing: enemy.facing,
     sawParty: false,
     contact: false,
+    resolved: false,   // suspicion investigated and dismissed
     note: "",
   };
 
@@ -196,11 +200,41 @@ export function decideActivation(state, enemy, partyCell, tune, { scene = canvas
     }
 
     case AI.SUSPICIOUS: {
-      // Turn toward the stimulus and hold. Deliberately no movement: this is
-      // the round the party gets to break line of sight.
-      const look = enemy.lastKnownCell ?? partyCell;
-      if (look) out.facing = directionBetween(enemy.cell, look, scene) ?? out.facing;
-      out.note = "alerted, holding";
+      // Investigate the SPOT, not the party.
+      //
+      // A suspicious guard walks to where it thought something was and looks.
+      // It does not path at the party's real position — that is CHASE, and a
+      // guard that bolts straight at you the instant it half-noticed something
+      // makes suspicion indistinguishable from being caught.
+      //
+      // On arrival it resolves one way or the other: sees you and commits, or
+      // finds nothing and drops it. That bounded outcome is what makes
+      // suspicion survivable — it ends, and it ends where the guard is looking
+      // rather than where you are.
+      const point = enemy.lastKnownCell;
+      if (!point) { out.ai = AI.PATROL; out.note = "nothing to investigate"; break; }
+
+      if (sameCell(enemy.cell, point)) {
+        if (sight.seen) {
+          out.ai = isAlert(state) ? AI.CHASE : AI.SEARCH;
+          out.facing = directionBetween(enemy.cell, partyCell, scene) ?? out.facing;
+          out.note = "found them";
+        } else {
+          // Nothing here. The `resolved` flag tells the caller to clear the
+          // awareness and latch that put this guard on edge in the first place.
+          out.ai = AI.PATROL;
+          out.resolved = true;
+          out.facing = sweepFacing(enemy, scene);
+          out.note = "investigated, found nothing";
+        }
+        break;
+      }
+
+      const { cell, path } = stepToward(enemy.cell, point, budget, { scene, ignoreOccupants: false });
+      out.move = cell;
+      out.path = path;
+      out.facing = directionBetween(enemy.cell, point, scene) ?? out.facing;
+      out.note = `investigating ${point.i},${point.j}`;
       break;
     }
 

@@ -285,13 +285,29 @@ export function buildHandlers() {
     async [S.CONTROLLER_PICK](ctx) {
       const { sm } = ctx;
 
-      if (!sm.party.controllerActorId) {
-        const mc = globalThis.FUCompanion?.api?.MovementControl;
-        try {
-          const info = await mc?.getEffectiveControllerInfo?.();
-          const actorId = info?.controller?.actorId ?? info?.snapshot?.currentGameActorId ?? null;
-          if (actorId) sm.party.controllerActorId = actorId;
-        } catch (_) { /* the UI can still set one */ }
+      // There is ALWAYS a leader. Every check in this mode is rolled against
+      // one, so "no leader" is not a state the game can be in — a Hide that
+      // reports it is a bug, not a rule.
+      //
+      // The old autopick read `info.controller.actorId` (undefined — the rows
+      // key it `partyMemberActorId`) and fell back to `currentGameActorId`,
+      // which is the Current Game DB ACTOR, not a party member. So it either
+      // left the slot null or filled it with a bookkeeping actor that has no
+      // attributes to roll. Resolve against the real roster instead, and
+      // re-pick whenever the stored id no longer names a live actor.
+      const stored = sm.party.controllerActorId;
+      const valid = stored && game.actors?.get?.(stored);
+
+      if (!valid) {
+        const roster = await partyActors();
+        const pick = roster[0] ?? null;
+        if (pick) {
+          sm.party.controllerActorId = pick.id;
+          if (stored) pushLog(sm, `Leader reset to ${pick.name} (previous leader unresolvable)`);
+          else pushLog(sm, `${pick.name} leads`);
+        } else {
+          console.warn(TAG, "no party member could be resolved as leader");
+        }
       }
 
       await ctx.save();
@@ -443,6 +459,17 @@ export function buildHandlers() {
       }
 
       enemy.ai = intent.ai;
+
+      // Investigated and found nothing: wipe the awareness and the latch that
+      // put this guard on edge, so a suspicion the party already survived
+      // cannot keep costing them.
+      if (intent.resolved) {
+        enemy.awareness = 0;
+        enemy.lastKnownCell = null;
+        enemy.raisedOnce = false;
+        enemy.mark = null;
+      }
+
       markActivated(sm, enemy.tokenId);
       syncOccupancy(scene);
 
