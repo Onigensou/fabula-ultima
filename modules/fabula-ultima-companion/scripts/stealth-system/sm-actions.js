@@ -190,12 +190,27 @@ export async function settleLedger(state, partyActors, tune, { source = "Stealth
 // ── Hide ────────────────────────────────────────────────────────────────────
 
 /**
- * Lower the alert tier by one on a successful check.
- * DL scales with how many enemies currently hold awareness — how hot the room
- * is, not how hot it was when you walked in.
+ * Lower the alert tier by one — a party-wide GROUP CHECK, not a solo roll.
+ *
+ * Hiding is the one objective the whole party does together: everyone has to
+ * get out of sight, so one person's brilliance cannot cover for the rest. That
+ * is exactly the shape of a Fabula Group Check — the Main Controller leads
+ * against the real DL, every other member rolls a support check at the
+ * standard helper DL, and each success gives the leader +1.
+ *
+ * ── The DL, rebalanced for a group ─────────────────────────────────────────
+ * A leader now arrives with help, so the old solo numbers would make this
+ * trivial. The leader's DL rises with the party size it is being helped by
+ * (`hideDlPerHelper`), which keeps the check honest: more bodies mean more
+ * help AND more people to hide. Cover and the number of alerted guards still
+ * move it, as before.
+ *
+ * `participantMode: "designated"` on purpose — the "open" mode opens a lobby
+ * and waits for players to claim roles, which hangs a solo-GM table and stalls
+ * a turn that is already mid-flight.
  */
 export async function resolveHide(state, controllerActor, partyCell, tune, {
-  scene = canvas?.scene, inActiveCone = false,
+  scene = canvas?.scene, inActiveCone = false, partyActors = [],
 } = {}) {
   if (inActiveCone) {
     return { ok: false, reason: "You cannot hide while someone is looking straight at you." };
@@ -203,37 +218,66 @@ export async function resolveHide(state, controllerActor, partyCell, tune, {
   if (state.alert === ALERT.STEALTH) {
     return { ok: false, reason: "You are already unseen." };
   }
-
-  const CR = globalThis.ONI?.CheckRequester;
-  if (!CR?.requestOne) return { ok: false, reason: "Check Requester unavailable." };
+  if (!controllerActor) return { ok: false, reason: "No leader assigned." };
 
   const aware = awareEnemies(state, 1).length;
   const cover = !!cellRecord(partyCell, scene)?.cover;
-  const dl = Math.max(
+
+  const helpers = partyActors.filter((a) => a && a.id !== controllerActor.id);
+  const leaderDl = Math.max(
     5,
-    tune.hideBaseDl + aware * tune.hideDlPerAwareEnemy - (cover ? tune.hideCoverBonus : 0),
+    tune.hideBaseDl
+      + aware * tune.hideDlPerAwareEnemy
+      + helpers.length * tune.hideDlPerHelper
+      - (cover ? tune.hideCoverBonus : 0),
   );
 
-  const res = await CR.requestOne(controllerActor, {
-    attrA: "DEX", attrB: "INS",
-    dl,
-    label: `Hide${cover ? " (in cover)" : ""}`,
-    mode: "interactive", allowInvokes: true, postChat: true,
-    context: { system: "stealth", kind: "hide" },
-  });
+  const GC = globalThis.ONI?.GroupCheck;
+  const label = `Hide${cover ? " (in cover)" : ""} — DL ${leaderDl}`;
 
-  if (res?.pass) {
-    shiftAlert(state, -1, "hide");
-    // Cooling the room means cooling the guards; leaving them hot would make
-    // the tier drop cosmetic.
-    for (const e of enemyRecords(state)) {
-      e.awareness = Math.max(0, e.awareness - 2);
-    }
-    return { ok: true, passed: true, dl, roll: res };
+  // A lone leader has nobody to lead. Fall back to a plain check rather than
+  // opening a group check with an empty helper list.
+  if (!GC?.request || !helpers.length) {
+    const CR = globalThis.ONI?.CheckRequester;
+    if (!CR?.requestOne) return { ok: false, reason: "Check Requester unavailable." };
+    const solo = await CR.requestOne(controllerActor, {
+      attrA: "DEX", attrB: "INS", dl: leaderDl, label,
+      mode: "interactive", allowInvokes: true, postChat: true,
+      context: { system: "stealth", kind: "hide" },
+    });
+    return finishHide(state, tune, !!solo?.pass, leaderDl, solo);
   }
 
-  pushLog(state, `Hide failed (DL ${dl})`);
-  return { ok: true, passed: false, dl, roll: res };
+  const res = await GC.request({
+    leaderUuid: controllerActor.uuid,
+    participantMode: "designated",
+    helperActorUuids: helpers.map((a) => a.uuid),
+    allActorUuids: [controllerActor.uuid, ...helpers.map((a) => a.uuid)],
+    helperDl: tune.hideHelperDl,
+    leaderDl,
+    helperBonus: tune.hideHelperBonus,
+    attrA: "DEX", attrB: "INS",
+    label,
+    allowInvokes: true,
+    postChat: true,
+  });
+
+  return finishHide(state, tune, !!res?.leaderPass, leaderDl, res, res?.bonus ?? 0);
+}
+
+function finishHide(state, tune, passed, dl, roll, bonus = 0) {
+  if (passed) {
+    shiftAlert(state, -1, "hide");
+    // Cooling the room means cooling the guards; leaving them hot would make
+    // the tier drop cosmetic — they would simply re-raise it next round.
+    for (const e of enemyRecords(state)) {
+      e.awareness = Math.max(0, e.awareness - tune.hideAwarenessRelief);
+    }
+    pushLog(state, `Hide succeeded (DL ${dl}${bonus ? `, +${bonus} from helpers` : ""})`);
+    return { ok: true, passed: true, dl, roll, bonus };
+  }
+  pushLog(state, `Hide failed (DL ${dl}${bonus ? `, +${bonus} from helpers` : ""})`);
+  return { ok: true, passed: false, dl, roll, bonus };
 }
 
 // ── Scan ────────────────────────────────────────────────────────────────────

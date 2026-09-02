@@ -18,6 +18,8 @@
 // interaction model for the whole turn.
 // ============================================================================
 
+import { playUiHoverSfx, playUiClickSfx } from "../battle-director/director-ui-sfx.js";
+
 const ROOT_ID = "oni-stealth-blades";
 const STYLE_ID = "oni-stealth-blades-style";
 
@@ -163,10 +165,14 @@ export function showBlades(token, commands, onPick) {
       : `<span>${cmd.label}</span>`;
     if (cmd.disabled && cmd.reason) blade.title = cmd.reason;
 
+    // Same cursor cues the Battle Director menus use, so the two feel like one
+    // interface rather than two systems that happen to share a palette.
+    blade.addEventListener("pointerenter", () => { if (!cmd.disabled) playUiHoverSfx(); });
     blade.addEventListener("click", (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
       if (cmd.disabled) return;
+      playUiClickSfx();
       onPick?.(cmd.id);
     });
     // The blades sit over the canvas; without this a click also reaches the

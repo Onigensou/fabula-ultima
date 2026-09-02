@@ -164,6 +164,48 @@ export function removeHud() {
   document.getElementById(HUD_ID)?.remove();
 }
 
+// ── Docked mode-exit button ─────────────────────────────────────────────────
+
+const EXIT_ID = "oni-stealth-exit";
+
+/**
+ * The way out of movement / target-picking.
+ *
+ * Bottom-right, the same corner the other scene-mode controls (Fast Travel,
+ * Healing, Ritual) live in, so it is somewhere the player already looks and —
+ * crucially — nowhere near the tiles they are trying to click.
+ */
+function renderExitButton() {
+  const wanted = _enabled && _view?.active && canAct() && myTurn()
+    && (_mode === "move" || _mode === "pick-cell");
+
+  let el = document.getElementById(EXIT_ID);
+  if (!wanted) { el?.remove(); return; }
+
+  if (!el) {
+    el = document.createElement("button");
+    el.id = EXIT_ID;
+    el.style.cssText = `
+      position:fixed; right:22px; bottom:118px; z-index:69;
+      font-family:"Inter","Segoe UI",system-ui,sans-serif;
+      font-size:12.5px; font-weight:800; letter-spacing:.4px; text-transform:uppercase;
+      color:#3a3228; padding:9px 18px; cursor:pointer;
+      background:linear-gradient(180deg,#f6f1e6,#ebe3d0);
+      border:2px solid #7a6a55; border-radius:11px;
+      box-shadow:0 4px 0 rgba(41,33,24,.55), 0 0 0 1px rgba(255,255,255,.7) inset;
+      text-shadow:0 1px 0 rgba(255,255,255,.7);
+    `;
+    el.addEventListener("click", (ev) => { ev.preventDefault(); setMode(null); });
+    el.addEventListener("pointerdown", (ev) => ev.stopPropagation());
+    document.body.appendChild(el);
+  }
+  el.textContent = _mode === "move" ? "✕ Cancel Move" : "✕ Cancel";
+}
+
+export function removeExitButton() {
+  document.getElementById(EXIT_ID)?.remove();
+}
+
 // ── Permissions ─────────────────────────────────────────────────────────────
 
 function canAct() {
@@ -233,8 +275,14 @@ export function refreshBlades() {
   const token = partyToken();
   if (!token) { blades.hideBlades(); return; }
 
+  // Movement and target-picking put NO blade beside the token.
+  //
+  // A Back blade there sat exactly where the player needs to click — the tiles
+  // adjacent to their own — so leaving the mode and moving one step competed
+  // for the same pixels. The exit is a docked button at the bottom-right
+  // instead, beside the other scene-mode controls.
   if (_mode === "move" || _mode === "pick-cell") {
-    blades.showBlades(token, [{ id: "back", label: "Back", back: true }], onPick);
+    blades.hideBlades();
     return;
   }
   if (_mode === "objective") {
@@ -272,6 +320,7 @@ function setMode(mode) {
   if (mode === "move") computeReach();
   refreshBlades();
   renderHud();
+  renderExitButton();
 }
 
 /**
@@ -337,22 +386,62 @@ function submitObjective(objId) {
   requestIntent({ kind: "objective", id: objId });
 }
 
+/**
+ * The party roster.
+ *
+ * MovementControl's rows are the source of truth. The trap they carry is their
+ * FIELD NAMES: a row's actor lives on `partyMemberActorId` / `partyMemberActorName`,
+ * not `actorId` / `actorName`. Reading the obvious names yields undefined for
+ * every slot, which is exactly what the Switch dialog used to show.
+ *
+ * Its resolver is also better than reading the DB directly — on this world
+ * `member_id_2..4` do not resolve to actors at all, while MovementControl's
+ * extraction finds all four members. `onlineOnly: false` because the stealth
+ * leader is an ACTOR choice (whose stats carry the round's checks), so an
+ * offline player's character is still a legitimate pick and a solo GM must be
+ * able to choose at all.
+ */
+export async function partyRoster() {
+  const out = [];
+  const seen = new Set();
+
+  try {
+    const rows = (await globalThis.FUCompanion?.api?.MovementControl
+      ?.getEligibleControllers?.({ onlineOnly: false, includeGM: false })) ?? [];
+    for (const r of rows) {
+      const id = r.partyMemberActorId;
+      if (!id || seen.has(id)) continue;
+      seen.add(id);
+      out.push({ id, name: r.partyMemberActorName ?? game.actors?.get?.(id)?.name ?? id });
+    }
+  } catch (_) { /* fall through */ }
+
+  if (!out.length) {
+    try {
+      const { source: db } = (await globalThis.FUCompanion?.api?.getCurrentGameDb?.()) ?? {};
+      const props = db?.system?.props ?? {};
+      for (const k of Object.keys(props).filter((x) => x.startsWith("member_id_"))
+        .sort((a, b) => Number(a.split("_").pop()) - Number(b.split("_").pop()))) {
+        const a = game.actors?.get?.(String(props[k]));
+        if (a && !seen.has(a.id)) { seen.add(a.id); out.push({ id: a.id, name: a.name }); }
+      }
+    } catch (_) { /* fall through */ }
+  }
+
+  return out;
+}
+
 async function openSwitchDialog() {
-  const mc = globalThis.FUCompanion?.api?.MovementControl;
-  let choices = [];
-  try { choices = (await mc?.getEligibleControllers?.({ onlineOnly: false, includeGM: false })) ?? []; }
-  catch (_) { choices = []; }
+  const choices = await partyRoster();
 
   if (!choices.length) {
-    ui.notifications?.warn?.("Stealth: no eligible party members found.");
+    ui.notifications?.warn?.("Stealth: no party members found.");
     return;
   }
 
-  const opts = choices.map((c) => {
-    const id = c.actorId ?? c.actor?.id ?? c.id;
-    const name = c.actorName ?? c.actor?.name ?? c.name ?? id;
-    return `<option value="${id}">${name}</option>`;
-  }).join("");
+  const current = _view?.party?.controllerActorId ?? null;
+  const opts = choices.map((c) =>
+    `<option value="${c.id}"${c.id === current ? " selected" : ""}>${c.name}</option>`).join("");
 
   new Dialog({
     title: "Who leads?",
@@ -441,6 +530,7 @@ export function enable(tune) {
   renderHud();
   redrawCones();
   refreshBlades();
+  renderExitButton();
 }
 
 export function disable() {
@@ -449,6 +539,7 @@ export function disable() {
   _reach = null;
   _pickCb = null;
   removeHud();
+  removeExitButton();
   blades.hideBlades();
   overlay.clearAll();
 
@@ -483,6 +574,7 @@ export function applyState(view, tune) {
   redrawCones();
   if (_mode === "move") computeReach(); else overlay.drawReachable(null);
   refreshBlades();
+  renderExitButton();
 }
 
 export function currentView() { return _view; }

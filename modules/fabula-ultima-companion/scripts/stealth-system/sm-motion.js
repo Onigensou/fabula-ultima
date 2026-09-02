@@ -99,21 +99,49 @@ export async function glideSprite(token, points, { msPerLeg = 190, sfx = true } 
 
     if (sfx) playMoveSfx();
 
-    for (let leg = 1; leg < points.length; leg++) {
-      const from = points[leg - 1];
-      const to = points[leg];
-      await new Promise((res) => {
-        const start = performance.now();
-        const tick = () => {
-          const t = Math.min((performance.now() - start) / msPerLeg, 1);
-          const k = ease(t);
-          s.x = from.x + (to.x - from.x) * k;
-          s.y = from.y + (to.y - from.y) * k;
-          if (t >= 1) { canvas.app.ticker.remove(tick); res(); }
-        };
-        canvas.app.ticker.add(tick);
-      });
+    // ONE tween over the WHOLE polyline, not one per leg.
+    //
+    // Easing each leg separately meant the sprite decelerated to a stop at
+    // every cell boundary and accelerated out again — a five-cell walk read as
+    // five little hops with a pause between each. Here the ease runs once over
+    // the total distance and the position is sampled by ARC LENGTH, so the
+    // sprite tracks the corners at a constant, smooth rate and only slows at
+    // the true start and end of the move.
+    const segLen = [];
+    let total = 0;
+    for (let i = 1; i < points.length; i++) {
+      const d = Math.hypot(points[i].x - points[i - 1].x, points[i].y - points[i - 1].y);
+      segLen.push(d);
+      total += d;
     }
+    if (total <= 0) return;
+
+    const duration = Math.max(msPerLeg, msPerLeg * (points.length - 1));
+
+    /** Position at arc-length `dist` along the polyline. */
+    const at = (dist) => {
+      let d = Math.max(0, Math.min(total, dist));
+      for (let i = 0; i < segLen.length; i++) {
+        if (d <= segLen[i] || i === segLen.length - 1) {
+          const f = segLen[i] > 0 ? d / segLen[i] : 1;
+          const a = points[i], b = points[i + 1];
+          return { x: a.x + (b.x - a.x) * f, y: a.y + (b.y - a.y) * f };
+        }
+        d -= segLen[i];
+      }
+      return points[points.length - 1];
+    };
+
+    await new Promise((res) => {
+      const start = performance.now();
+      const tick = () => {
+        const t = Math.min((performance.now() - start) / duration, 1);
+        const p = at(ease(t) * total);
+        s.x = p.x; s.y = p.y;
+        if (t >= 1) { canvas.app.ticker.remove(tick); res(); }
+      };
+      canvas.app.ticker.add(tick);
+    });
 
     // A beat at the destination before the real token reappears, so the swap
     // is never visible as a flicker.

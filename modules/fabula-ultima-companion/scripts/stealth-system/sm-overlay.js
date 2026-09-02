@@ -6,16 +6,11 @@
 // a redraw that allocates is a redraw that stutters.
 //
 // ── The cone is the whole indicator ────────────────────────────────────────
-// An earlier pass drew a small chevron for facing and shaded the visible cells
-// separately. That was two marks saying one thing, and the chevron was too
-// small to read at the zoom people actually play at. Now a single wedge
-// radiates from the guard's own tile outward along its facing, and its COLOUR
-// carries that guard's state — calm, suspicious, hunting. Direction and threat
-// in one shape.
-//
-// The wedge is drawn per-cell rather than as a smooth arc on purpose: this is
-// a grid game, and a player planning a route needs to know exactly which TILES
-// are watched, not roughly where the light falls.
+// A chevron for facing plus a shaded tile-set for range was two marks saying
+// one thing, and on an alerted map the tile-sets overlapped into static. Now
+// a single smooth wedge radiates from the guard along its facing and fades out
+// at its rim; its COLOUR carries that guard.s state — calm, suspicious,
+// hunting. Direction and threat in one shape, and nothing to read through.
 //
 // ── Layering ───────────────────────────────────────────────────────────────
 // Everything sits on the PRIMARY group, BELOW tokens. A cone drawn over a
@@ -25,7 +20,7 @@
 
 import { ALERT, AI } from "./sm-constants.js";
 import { centerOf, topLeftOf, gridSize, facingVector } from "./sm-grid.js";
-import { visibleCells } from "./sm-vision.js";
+
 
 const Z_CONE  = 55;
 const Z_REACH = 60;
@@ -85,11 +80,21 @@ function coneColor(enemy) {
 }
 
 /**
- * Draw every guard's cone: a wedge radiating from its tile along its facing.
+ * Draw every guard's vision cone.
  *
- * Cells fade with distance so the shape reads as a beam with a source rather
- * than a flat blob, and the guard's own tile gets a solid pip so you can see
- * where the beam starts even when the wedge is clipped to nothing by a wall.
+ * ── Why this is NOT the per-tile detection map ─────────────────────────────
+ * An earlier pass shaded every watched TILE. It was accurate and unreadable:
+ * on an alerted map a dozen overlapping tile-grids turned the board into
+ * static, and the thing a player actually needs — which way is this guard
+ * looking, and how worried should I be — was buried in it.
+ *
+ * So the drawn cone is a single smooth wedge that fades to nothing at its
+ * outer edge, and the exact per-cell detection set stays in sm-vision.js where
+ * the rules read it. The picture is a cue; the maths is still exact.
+ *
+ * The fade is built from concentric wedge bands rather than a real gradient,
+ * because PIXI.Graphics has no radial gradient fill and a band stack is both
+ * cheaper and sharper than a generated texture.
  */
 export function drawCones(enemies, tune) {
   _cones = ensure(_cones, "Stealth Cones", Z_CONE);
@@ -98,51 +103,68 @@ export function drawCones(enemies, tune) {
 
   const gs = gridSize();
   const base = tune?.coneAlpha ?? 0.13;
+  const half = ((tune?.coneHalfAngle ?? 45) * Math.PI) / 180;
+  const range = (tune?.visionRange ?? 8) * gs;
 
   for (const e of (enemies ?? [])) {
     if (!e?.cell) continue;
     const color = coneColor(e);
     const hot = e.ai === AI.CHASE || e.ai === AI.SEARCH;
     const warm = e.ai === AI.SUSPICIOUS;
-    const gain = hot ? 2.0 : warm ? 1.5 : 1.0;
+    const gain = hot ? 2.2 : warm ? 1.6 : 1.0;
 
-    const cells = visibleCells(e.cell, e.facing, tune);
-    const maxD = Math.max(1, tune.visionRange);
-
-    for (const v of cells) {
-      // Linear falloff, floored so the far edge is still legible.
-      const falloff = 1 - 0.55 * (v.distance / maxD);
-      const a = Math.min(0.5, base * gain * falloff * (v.near ? 1.8 : 1));
-      const p = topLeftOf(v.cell);
-      _cones.beginFill(color, a);
-      _cones.drawRect(p.x, p.y, gs, gs);
-      _cones.endFill();
-    }
-
-    drawConeOrigin(e, color, gs, gain);
+    drawFadedWedge(centerOf(e.cell), e.facing, range, half, color, base * gain);
   }
 }
 
 /**
- * The emitter: a small filled wedge inside the guard's own tile pointing the
- * way it faces. This is what survives when a wall clips the cone to nothing —
- * without it a guard staring at a wall would show no facing at all.
+ * A wedge that fades out toward its far edge.
+ *
+ * BANDS bands from the origin outward, each an annular slice, alpha falling
+ * on a curve so the near end reads solid and the far end dissolves instead of
+ * ending on a hard line. The hard line was what made the old cone look pasted
+ * onto the map.
  */
-function drawConeOrigin(enemy, color, gs, gain) {
-  const c = centerOf(enemy.cell);
-  const v = facingVector(enemy.facing);
-  const px = -v.y, py = v.x;
+function drawFadedWedge(origin, facing, range, halfAngle, color, peakAlpha) {
+  const v = facingVector(facing);
+  const a0 = Math.atan2(v.y, v.x);
+  const BANDS = 14;
+  const STEPS = 14;              // arc resolution per band
 
-  const reach = gs * 0.62;
-  const halfW = gs * 0.34;
+  for (let b = 0; b < BANDS; b++) {
+    const r0 = (b / BANDS) * range;
+    const r1 = ((b + 1) / BANDS) * range;
+    const t = b / (BANDS - 1);
 
-  const tipX = c.x + v.x * reach;
-  const tipY = c.y + v.y * reach;
+    // Quadratic falloff: holds near the guard, dissolves fast at the rim.
+    const alpha = peakAlpha * Math.pow(1 - t, 2.1);
+    if (alpha < 0.004) continue;
 
-  _cones.beginFill(color, Math.min(0.85, 0.45 * gain));
-  _cones.moveTo(c.x, c.y);
-  _cones.lineTo(tipX + px * halfW, tipY + py * halfW);
-  _cones.lineTo(tipX - px * halfW, tipY - py * halfW);
+    _cones.beginFill(color, alpha);
+    // Outward along one edge...
+    for (let i = 0; i <= STEPS; i++) {
+      const ang = a0 - halfAngle + (2 * halfAngle * i) / STEPS;
+      const x = origin.x + Math.cos(ang) * r1;
+      const y = origin.y + Math.sin(ang) * r1;
+      if (i === 0) _cones.moveTo(x, y); else _cones.lineTo(x, y);
+    }
+    // ...and back along the inner arc, so the band is a closed ring slice.
+    for (let i = STEPS; i >= 0; i--) {
+      const ang = a0 - halfAngle + (2 * halfAngle * i) / STEPS;
+      _cones.lineTo(origin.x + Math.cos(ang) * r0, origin.y + Math.sin(ang) * r0);
+    }
+    _cones.closePath();
+    _cones.endFill();
+  }
+
+  // A bright core at the guard's own tile, so facing survives a cone that a
+  // wall or a short range has squashed to almost nothing.
+  _cones.beginFill(color, Math.min(0.6, peakAlpha * 3));
+  _cones.moveTo(origin.x, origin.y);
+  for (let i = 0; i <= STEPS; i++) {
+    const ang = a0 - halfAngle + (2 * halfAngle * i) / STEPS;
+    _cones.lineTo(origin.x + Math.cos(ang) * range * 0.14, origin.y + Math.sin(ang) * range * 0.14);
+  }
   _cones.closePath();
   _cones.endFill();
 }

@@ -135,6 +135,10 @@ export const TUNE_DEFAULTS = Object.freeze({
   alertDecayRounds:      0,   // 0 = no passive cooling; tension is the point
   hideBaseDl:            10,
   hideDlPerAwareEnemy:   2,
+  hideDlPerHelper:       2,   // more bodies means more help AND more to hide
+  hideHelperDl:          10,  // RAW: supporting characters roll the standard DL
+  hideHelperBonus:       1,   // RAW: +1 to the leader per helper success
+  hideAwarenessRelief:   2,   // awareness each guard sheds on a successful hide
   hideCoverBonus:        2,
   noiseAlertChance:      0.35, // chance a Dash/noise event raises a tier
 
@@ -204,5 +208,6 @@ export const MSG = Object.freeze({
   STATE:     "SM_STATE",      // GM → all: authoritative state broadcast
   OVERLAY:   "SM_OVERLAY",    // GM → all: transient visual
   NARRATE:   "SM_NARRATE",    // GM → all: narration beat
+  BANNER:    "SM_BANNER",     // GM → all: phase announcer flash
   MOTION:    "SM_MOTION",     // GM → all: replay a token glide
 });

@@ -38,6 +38,7 @@ import * as smUi from "./sm-ui.js";
 import * as overlay from "./sm-overlay.js";
 import * as gmPanel from "./sm-gm-panel.js";
 import { replayMotion } from "./sm-motion.js";
+import { playPhaseBannerLocal, removeBanner } from "./sm-banner.js";
 
 // ── Scene gate ──────────────────────────────────────────────────────────────
 
@@ -149,7 +150,8 @@ async function runObjective(payload, { sm, tune, scene }) {
     // A guard actively looking at you forbids the attempt outright.
     const sweep = detectionSweep({ sm, tune, scene, director }, partyCell);
     const inCone = sweep.survey.results.some((r) => r.sight.inCone && r.sight.seen);
-    const res = await resolveHide(sm, leader, partyCell, tune, { scene, inActiveCone: inCone });
+    const roster = await partyActors();
+    const res = await resolveHide(sm, leader, partyCell, tune, { scene, inActiveCone: inCone, partyActors: roster });
     if (!res.ok) { ui.notifications?.warn?.(res.reason); return; }
     return director.dispatch(E.OBJECTIVE, { kind: "objective", id });
   }
@@ -294,6 +296,7 @@ export async function stopStealth({ settle = true, cleanup = true } = {}) {
   gmPanel.remove();
   smUi.disable();
   overlay.destroyAll();
+  removeBanner();
   socket.broadcastState({ active: false });
 }
 
@@ -343,6 +346,7 @@ Hooks.once("ready", () => {
       }
     },
     onMotion: (payload) => { replayMotion(payload).catch(() => {}); },
+    onBanner: (payload) => { playPhaseBannerLocal(payload?.kind).catch(() => {}); },
     onNarrate: (payload) => {
       if (!payload?.text) return;
       ui.notifications?.info?.(payload.text);

@@ -26,7 +26,7 @@ import {
 import { settleLedger, makeNoise } from "./sm-actions.js";
 import { spawnReinforcement } from "./sm-reinforcement.js";
 import { launchConflict } from "./sm-conflict.js";
-import { broadcastState, broadcastOverlay, broadcastMotion } from "./sm-socket.js";
+import { broadcastState, broadcastOverlay, broadcastMotion, broadcastBanner } from "./sm-socket.js";
 import { walkToken } from "./sm-motion.js";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -55,22 +55,45 @@ export function controllerActor(sm) {
   return id ? game.actors?.get?.(id) ?? null : null;
 }
 
-/** The party actors, for EXP payout. Resolved through the party DB. */
+/**
+ * The party actors — EXP payout, and the helper pool for a Hide group check.
+ *
+ * MovementControl's resolver first, because reading `member_id_*` off the DB
+ * directly under-reports: on this world only slot 1 resolves to an actor while
+ * MovementControl finds all four members. Note the field names — the actor is
+ * on `partyMemberActorId`, NOT `actorId`; the obvious name is undefined on
+ * every row and fails silently.
+ */
 export async function partyActors() {
+  const out = [];
+  const seen = new Set();
+
   try {
-    const api = globalThis.FUCompanion?.api;
-    const { source: db } = (await api?.getCurrentGameDb?.()) ?? {};
-    const props = db?.system?.props ?? {};
-    const out = [];
-    for (const [k, v] of Object.entries(props)) {
-      if (!String(k).startsWith("member_id_")) continue;
-      const a = game.actors?.get?.(String(v));
-      if (a) out.push(a);
+    const rows = (await globalThis.FUCompanion?.api?.MovementControl
+      ?.getEligibleControllers?.({ onlineOnly: false, includeGM: false })) ?? [];
+    for (const r of rows) {
+      const a = game.actors?.get?.(r.partyMemberActorId);
+      if (a && !seen.has(a.id)) { seen.add(a.id); out.push(a); }
     }
-    if (out.length) return out;
   } catch (e) {
-    console.warn(TAG, "party DB resolve failed:", e);
+    console.warn(TAG, "MovementControl party resolve failed:", e);
   }
+
+  if (!out.length) {
+    try {
+      const { source: db } = (await globalThis.FUCompanion?.api?.getCurrentGameDb?.()) ?? {};
+      const props = db?.system?.props ?? {};
+      for (const [k, v] of Object.entries(props)) {
+        if (!String(k).startsWith("member_id_")) continue;
+        const a = game.actors?.get?.(String(v));
+        if (a && !seen.has(a.id)) { seen.add(a.id); out.push(a); }
+      }
+    } catch (e) {
+      console.warn(TAG, "party DB resolve failed:", e);
+    }
+  }
+
+  if (out.length) return out;
   return game.actors?.filter?.((a) => a.hasPlayerOwner && a.type === "character") ?? [];
 }
 
@@ -206,6 +229,8 @@ export function buildHandlers() {
     async [S.PLAYER_START](ctx) {
       const { sm, tune, scene } = ctx;
 
+      broadcastBanner("player");
+
       syncOccupancy(scene);
       const token = scene?.tokens?.get?.(sm.party.tokenId);
       if (token) sm.party.cell = cellOfToken(token);
@@ -318,6 +343,9 @@ export function buildHandlers() {
     // ── ENEMY_START ───────────────────────────────────────────────────────
     async [S.ENEMY_START](ctx) {
       const { sm, tune } = ctx;
+
+      broadcastBanner("enemy");
+      await sleep(700);   // let the flash land before guards start walking
       const budget = tune.activationsPerRound;
       const used = (sm.activatedThisRound ?? []).length;
       const pending = pendingActivations(sm);

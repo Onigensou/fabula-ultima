@@ -32,13 +32,15 @@ let _onState = null;      // client-side state receiver
 let _onOverlay = null;
 let _onNarrate = null;
 let _onMotion = null;
+let _onBanner = null;
 
-export function install({ onRequest, onState, onOverlay, onNarrate, onMotion } = {}) {
+export function install({ onRequest, onState, onOverlay, onNarrate, onMotion, onBanner } = {}) {
   _onRequest = onRequest ?? _onRequest;
   _onState   = onState   ?? _onState;
   _onOverlay = onOverlay ?? _onOverlay;
   _onNarrate = onNarrate ?? _onNarrate;
   _onMotion  = onMotion  ?? _onMotion;
+  _onBanner  = onBanner  ?? _onBanner;
 
   if (_installed) return;
   _installed = true;
@@ -67,6 +69,10 @@ export function install({ onRequest, onState, onOverlay, onNarrate, onMotion } =
 
         case MSG.NARRATE:
           _onNarrate?.(msg.payload);
+          return;
+
+        case MSG.BANNER:
+          _onBanner?.(msg.payload);
           return;
 
         case MSG.MOTION:
@@ -177,4 +183,11 @@ export function serialiseForClients(sm) {
 export function broadcastMotion(payload) {
   if (!game.user?.isGM) return;
   try { game.socket.emit(CHANNEL, { type: MSG.MOTION, payload }); } catch (_) {}
+}
+
+/** Fire the phase announcer on every client, GM included. */
+export function broadcastBanner(kind) {
+  if (!game.user?.isGM) return;
+  try { game.socket.emit(CHANNEL, { type: MSG.BANNER, payload: { kind } }); } catch (_) {}
+  try { _onBanner?.({ kind }); } catch (_) {}
 }
