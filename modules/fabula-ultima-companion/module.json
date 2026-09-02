@@ -455,6 +455,7 @@
     "scripts/stealth-system/sm-director.js",
     "scripts/stealth-system/sm-handlers.js",
     "scripts/stealth-system/sm-bgm.js",
+    "scripts/stealth-system/sm-gm-button.js",
     "scripts/stealth-system/sm-boot.js"
   ],
   "styles": [

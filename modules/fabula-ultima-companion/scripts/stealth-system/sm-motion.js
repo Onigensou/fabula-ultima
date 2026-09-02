@@ -26,6 +26,11 @@ import { centerOf, topLeftOf } from "./sm-grid.js";
 export const MOVE_SFX = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/DashA.wav";
 export const ALERT_SFX = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Alert.mp3";
 
+// A guard's step, heard through the fog. Same sample as the party's own —
+// footsteps are footsteps — but played at a volume set by distance, so the
+// ear reports range the way the ring reports it to the eye.
+export const ENEMY_STEP_SFX = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/DashA.wav";
+
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /** Ease-in-out cubic. Gentler than a linear crawl, no bounce at the ends. */
@@ -48,6 +53,39 @@ export function playMoveSfx({ volume = 0.5 } = {}) {
   } catch (e) {
     try { AudioHelper.play({ src: MOVE_SFX, volume, autoplay: true, loop: false }, false); }
     catch (_) { /* audio still locked — never let a sound break a turn */ }
+  }
+}
+
+let _lastStepSfxAt = 0;
+
+/**
+ * A footstep heard at a distance.
+ *
+ * @param {number} nearness  0 at the edge of hearing, 1 right beside you.
+ *
+ * Volume is cubed rather than linear. Perceived loudness is not proportional
+ * to the number, so a linear ramp makes everything from the far edge inward
+ * sound roughly equally present and the cue stops carrying distance at all.
+ * A cubic curve keeps the far steps genuinely faint and lets the near ones
+ * land, which is the whole information content of the sound.
+ *
+ * Rate-limited like the party's own steps: a five-cell walk is a handful of
+ * footfalls, not five copies of the same sample stacked on one frame.
+ */
+export function playEnemyStepSfx(nearness = 0.5, { max = 0.55 } = {}) {
+  const now = performance.now();
+  if (now - _lastStepSfxAt < 110) return;
+  _lastStepSfxAt = now;
+
+  const n = Math.max(0, Math.min(1, nearness));
+  const volume = max * Math.pow(n, 3);
+  if (volume < 0.015) return;   // below this it is silence with extra steps
+
+  try {
+    foundry.audio.AudioHelper.play({ src: ENEMY_STEP_SFX, volume, autoplay: true, loop: false }, false);
+  } catch (e) {
+    try { AudioHelper.play({ src: ENEMY_STEP_SFX, volume, autoplay: true, loop: false }, false); }
+    catch (_) { /* audio locked — never let a sound break a turn */ }
   }
 }
 

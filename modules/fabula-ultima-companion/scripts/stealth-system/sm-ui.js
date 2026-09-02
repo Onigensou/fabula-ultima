@@ -25,7 +25,7 @@
 // ============================================================================
 
 import {
-  ALERT, ALERT_LABEL, ALERT_COLOR, OBJECTIVE, ARC,
+  ALERT, ALERT_LABEL, OBJECTIVE, ARC,
 } from "./sm-constants.js";
 import { cellAt, cellKey, cellDistance, cellsWithin, relativeArc, cellOfToken } from "./sm-grid.js";
 import { reachable, pathFromReachable, hasLineOfSight, cellRecord } from "./sm-lattice.js";
@@ -60,71 +60,87 @@ function ensureStyles() {
   const s = document.createElement("style");
   s.id = STYLE_ID;
   s.textContent = `
+    /* ── The monitor ───────────────────────────────────────────────────
+       A vitals readout, not a parchment card. The alert tier is a state of
+       nerves, so it is shown as one: a calm green trace while unnoticed, a
+       yellow one that will not quite settle while something is stirring, a
+       red one hammering and shaking once the room is hunting.
+
+       Bottom-left, out of the way of the chat sidebar and clear of the
+       command blades, which sit on the token. */
     #${HUD_ID}{
-      position:fixed; left:14px; top:14px; z-index:68;
+      position:fixed; left:14px; bottom:118px; z-index:68;
       font-family:"Inter","Segoe UI",system-ui,sans-serif;
       pointer-events:none; user-select:none;
-      --sm-parchment-top:#f6f1e6; --sm-parchment-bot:#ebe3d0;
-      --sm-ink:#3a3228; --sm-ink-soft:#4b4338;
-      --sm-gold-1:#d5b67a; --sm-gold-2:#b7935a;
-      --sm-stroke:#7a6a55; --sm-shadow:rgba(41,33,24,.55);
-      --sm-highlight:rgba(255,255,255,.7);
+      --sm-mon-bg-1:#0d1411; --sm-mon-bg-2:#070b0a;
+      --sm-mon-line:rgba(255,255,255,.10);
+      --sm-trace:#5fe3a1; --sm-trace-dim:rgba(95,227,161,.16);
     }
+    #${HUD_ID}[data-tier="neutral"]{ --sm-trace:#f0c95a; --sm-trace-dim:rgba(240,201,90,.16); }
+    #${HUD_ID}[data-tier="alert"]  { --sm-trace:#ff5b48; --sm-trace-dim:rgba(255,91,72,.20); }
+
     #${HUD_ID} .sm-panel{
-      position:relative; min-width:196px;
-      padding:9px 14px 10px 16px;
-      color:var(--sm-ink);
-      background:linear-gradient(180deg,var(--sm-parchment-top),var(--sm-parchment-bot));
-      border:2px solid var(--sm-stroke); border-radius:12px;
-      box-shadow:0 4px 0 var(--sm-shadow), 0 0 0 1px var(--sm-highlight) inset;
-      text-shadow:0 1px 0 var(--sm-highlight);
+      position:relative; width:214px; padding:9px 12px 10px;
+      background:linear-gradient(180deg,var(--sm-mon-bg-1),var(--sm-mon-bg-2));
+      border:1px solid var(--sm-mon-line); border-radius:10px;
+      box-shadow:0 10px 24px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.03) inset,
+                 0 0 18px var(--sm-trace-dim);
+      overflow:hidden;
     }
-    /* Gold spine, same device as a command blade's leading edge. */
-    #${HUD_ID} .sm-panel::before{
-      content:""; position:absolute; left:-12px; top:50%; transform:translateY(-50%);
-      width:12px; height:74%;
-      background:linear-gradient(180deg,var(--sm-gold-1),var(--sm-gold-2));
-      border:2px solid var(--sm-stroke); border-right:none; border-radius:10px 0 0 10px;
-      box-shadow:0 0 0 1px var(--sm-highlight) inset;
+    /* Alert makes the whole unit shake. Reduced-motion users get the colour
+       and the trace, never the tremor. */
+    #${HUD_ID}[data-tier="alert"] .sm-panel{ animation:sm-shake 320ms linear infinite; }
+    @media (prefers-reduced-motion: reduce){
+      #${HUD_ID} .sm-panel{ animation:none !important; }
+      #${HUD_ID} .sm-sweep{ animation:none !important; }
     }
-    #${HUD_ID} .sm-tier{ display:flex; align-items:center; gap:9px; }
-    #${HUD_ID} .sm-pip{
-      width:12px; height:12px; border-radius:50%; flex:none;
-      border:2px solid rgba(58,50,40,.55);
-      box-shadow:0 0 8px 1px currentColor;
+    @keyframes sm-shake{
+      0%,100%{ transform:translate(0,0); }
+      20%{ transform:translate(-1.5px,.5px); }
+      40%{ transform:translate(1.5px,-.5px); }
+      60%{ transform:translate(-1px,-1px); }
+      80%{ transform:translate(1px,1px); }
     }
+
+    #${HUD_ID} .sm-head{ display:flex; align-items:baseline; gap:8px; }
     #${HUD_ID} .sm-tier-name{
-      font-size:15px; font-weight:900; letter-spacing:.5px; text-transform:uppercase;
+      font-size:12.5px; font-weight:900; letter-spacing:1.4px; text-transform:uppercase;
+      color:var(--sm-trace); text-shadow:0 0 10px var(--sm-trace-dim);
     }
-    #${HUD_ID} .sm-meta{
-      font-size:10.5px; font-weight:800; letter-spacing:.9px; text-transform:uppercase;
-      color:var(--sm-ink-soft); opacity:.72; margin-top:2px;
+    #${HUD_ID} .sm-round{
+      margin-left:auto; font-size:10.5px; font-weight:800; letter-spacing:.8px;
+      color:rgba(255,255,255,.5); font-variant-numeric:tabular-nums; text-transform:uppercase;
     }
+
+    /* The trace. One SVG path per tier, scrolling right to left. */
+    #${HUD_ID} .sm-ecg{
+      position:relative; height:38px; margin-top:6px;
+      border-top:1px solid var(--sm-mon-line); border-bottom:1px solid var(--sm-mon-line);
+      background:
+        repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 1px, transparent 1px 20px),
+        repeating-linear-gradient(0deg,  rgba(255,255,255,.035) 0 1px, transparent 1px 19px);
+      overflow:hidden;
+    }
+    #${HUD_ID} .sm-ecg svg{ position:absolute; inset:0; width:200%; height:100%; }
+    #${HUD_ID} .sm-ecg path{
+      fill:none; stroke:var(--sm-trace); stroke-width:1.8;
+      stroke-linecap:round; stroke-linejoin:round;
+      filter:drop-shadow(0 0 4px var(--sm-trace-dim));
+    }
+    /* Two copies of the same waveform side by side, translated by exactly half
+       the doubled width — so the loop point is seamless rather than a visible
+       jump every cycle. */
+    #${HUD_ID} .sm-sweep{ animation:sm-scroll var(--sm-rate,2.4s) linear infinite; }
+    @keyframes sm-scroll{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
+
     #${HUD_ID} .sm-conceal{
-      display:inline-block; margin-top:5px; padding:2px 8px;
-      font-size:10px; font-weight:900; letter-spacing:.1em; text-transform:uppercase;
-      color:#1d3b33; background:linear-gradient(180deg,#8fd8c4,#5cb8a0);
-      border:1.5px solid #3f7a6a; border-radius:5px;
-      text-shadow:0 1px 0 rgba(255,255,255,.55);
+      margin-top:7px; display:inline-block; padding:2px 8px; border-radius:999px;
+      font-size:10px; font-weight:800; letter-spacing:.6px; text-transform:uppercase;
+      color:#0d1411; background:var(--sm-trace);
     }
-    #${HUD_ID} .sm-rule{
-      height:2px; margin:8px 0 7px;
-      background:linear-gradient(90deg,var(--sm-stroke),rgba(122,106,85,0));
-      opacity:.5;
-    }
-    #${HUD_ID} .sm-stats{ display:flex; gap:14px; align-items:baseline; }
-    #${HUD_ID} .sm-stat{
-      font-size:11px; font-weight:800; letter-spacing:.7px; text-transform:uppercase;
-      color:var(--sm-ink-soft);
-    }
-    #${HUD_ID} .sm-stat b{
-      font-size:17px; font-weight:900; color:var(--sm-ink);
-      font-variant-numeric:tabular-nums; margin-right:3px;
-    }
-    #${HUD_ID} .sm-stat.is-spent{ opacity:.42; }
     #${HUD_ID} .sm-hint{
       margin-top:7px; font-size:10.5px; font-weight:700; letter-spacing:.3px;
-      color:var(--sm-ink-soft); opacity:.7; font-style:italic; text-transform:none;
+      color:rgba(255,255,255,.55); font-style:italic; text-transform:none;
     }
   `;
   document.head.appendChild(s);
@@ -150,13 +166,63 @@ export /**
  * enemy count answers a question nobody asks mid-infiltration. What is left
  * is the one thing the board cannot show — the alert tier — plus the round.
  */
+// ── The waveform ────────────────────────────────────────────────────────────
+//
+// Each tier gets a trace with its own PULSE and its own pace, because colour
+// alone is a poor carrier: the shape is what you read out of the corner of
+// your eye while looking at the board.
+//
+//   stealth  a slow, even resting rhythm — long flat runs, one clean beat
+//   neutral  quicker, with the baseline never quite settling between beats
+//   alert    fast, tall, and ragged: no flat line left anywhere
+const ECG_W = 120;
+const ECG = Object.freeze({
+  stealth: { rate: "3.4s", beats: 2, amp: 9,  jitter: 0,   spike: 1.0 },
+  neutral: { rate: "2.0s", beats: 3, amp: 12, jitter: 1.6, spike: 1.15 },
+  alert:   { rate: "0.85s", beats: 5, amp: 16, jitter: 3.4, spike: 1.35 },
+});
+
+/**
+ * Build one cycle of the trace, then repeat it so the SVG is exactly twice
+ * its viewport. The CSS scrolls by -50%, so the second copy is already in
+ * place when the first leaves — the loop has no seam.
+ */
+function tracePath(tier) {
+  const cfg = ECG[tier] ?? ECG.stealth;
+  const mid = 20;
+  const seg = ECG_W / cfg.beats;
+  const wob = (x) => cfg.jitter
+    ? Math.sin(x * 0.9) * cfg.jitter + Math.sin(x * 2.3) * cfg.jitter * 0.4
+    : 0;
+
+  const cycle = (xOff) => {
+    const p = [];
+    for (let b = 0; b < cfg.beats; b++) {
+      const x0 = xOff + b * seg;
+      // Flat run, then the beat: small dip, tall spike, undershoot, recover.
+      const pts = [
+        [x0,              mid + wob(x0)],
+        [x0 + seg * 0.42, mid + wob(x0 + seg * 0.42)],
+        [x0 + seg * 0.50, mid + cfg.amp * 0.35],
+        [x0 + seg * 0.56, mid - cfg.amp * cfg.spike],
+        [x0 + seg * 0.62, mid + cfg.amp * 0.55],
+        [x0 + seg * 0.70, mid + wob(x0 + seg * 0.70)],
+        [x0 + seg,        mid + wob(x0 + seg)],
+      ];
+      for (const [x, y] of pts) p.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+    }
+    return p;
+  };
+
+  const all = [...cycle(0), ...cycle(ECG_W)];
+  return "M" + all.join(" L");
+}
+
 function renderHud() {
   if (!_enabled || !_view?.active) { removeHud(); return; }
   ensureStyles();
 
   const tier = _view.alert ?? ALERT.STEALTH;
-  const color = ALERT_COLOR[tier] ?? "#fff";
-  const p = _view.party ?? {};
 
   // No Leader line: the central token already wears the leader's portrait, so
   // naming them again is the same fact twice.
@@ -166,13 +232,21 @@ function renderHud() {
     : (_view.phase === "ACTIVATE" || _view.phase === "ENEMY_START") ? "Enemy phase…"
     : canAct() ? "" : "Spectating";
 
-  hudRoot().innerHTML = `
+  const root = hudRoot();
+  root.setAttribute("data-tier", tier);
+  root.style.setProperty("--sm-rate", ECG[tier]?.rate ?? "2.4s");
+
+  root.innerHTML = `
     <div class="sm-panel">
-      <div class="sm-tier">
-        <span class="sm-pip" style="background:${color}; color:${color}"></span>
-        <span class="sm-tier-name" style="color:${color}">${ALERT_LABEL[tier] ?? tier}</span>
+      <div class="sm-head">
+        <span class="sm-tier-name">${ALERT_LABEL[tier] ?? tier}</span>
+        <span class="sm-round">Round ${_view.round ?? 0}</span>
       </div>
-      <div class="sm-meta">Round ${_view.round ?? 0}</div>
+      <div class="sm-ecg">
+        <svg viewBox="0 0 ${ECG_W * 2} 40" preserveAspectRatio="none">
+          <path class="sm-sweep" d="${tracePath(tier)}" />
+        </svg>
+      </div>
       ${concealBadge()}
       ${hint ? `<div class="sm-hint">${hint}</div>` : ""}
     </div>`;
@@ -216,7 +290,7 @@ function renderExitButton() {
     el = document.createElement("button");
     el.id = EXIT_ID;
     el.style.cssText = `
-      position:fixed; left:22px; bottom:160px; z-index:69;
+      position:fixed; left:22px; bottom:232px; z-index:69;
       width:auto; min-width:0; max-width:none; flex:none; line-height:1;
       font-family:"Inter","Segoe UI",system-ui,sans-serif;
       font-size:12.5px; font-weight:800; letter-spacing:.4px; text-transform:uppercase;
@@ -770,39 +844,50 @@ function pointOf(event) {
 }
 
 /**
+ * Which token is under this point?
+ *
+ * Two hit tests, because the two disagree and both matter. A token OCCUPIES
+ * its grid footprint, but this game's art is DRAWN taller than the cell — a
+ * guard's head and torso hang over the square above their feet. A player
+ * aims at the figure, not the footprint, so a click on the drawn sprite has
+ * to count as a click on that creature.
+ */
+function tokenAtPoint(worldPt, screenPt) {
+  for (const t of (canvas?.tokens?.placeables ?? [])) {
+    if (t.document?.hidden && !game.user?.isGM) continue;
+    if (worldPt.x >= t.x && worldPt.x <= t.x + t.w &&
+        worldPt.y >= t.y && worldPt.y <= t.y + t.h) return t;
+    const m = t.mesh;
+    if (m && !m.destroyed) {
+      try {
+        const b = m.getBounds();
+        if (screenPt.x >= b.x && screenPt.x <= b.x + b.width &&
+            screenPt.y >= b.y && screenPt.y <= b.y + b.height) return t;
+      } catch (_) { /* bounds unavailable mid-teardown */ }
+    }
+  }
+  return null;
+}
+
+/**
  * Turn a click into the target the player meant.
  *
- * The naive answer — the grid cell under the cursor — is wrong for creature
- * targets, because this game's token art is drawn TALLER than its cell. A
- * guard standing on one square has their head and torso hanging over the
- * square above it, so a player who clicks the figure they can plainly see
- * hits the empty cell above its feet. That cell is not in the lit set, the
- * click was silently discarded, and the mode stayed open: "I clicked the
- * enemy and nothing happened."
- *
- * So three passes, in order of confidence:
- *   1. the cell under the cursor, if it is legal;
- *   2. the token the cursor is actually over — the click LANDED on that
- *      creature, whatever cell its feet occupy;
- *   3. a legal cell within one square, nearest first, for art that overhangs
- *      a prop or a tile rather than a token.
- * Anything further away was not a mis-aim and is refused.
+ * Three passes, in order of confidence: the cell under the cursor, then the
+ * token the cursor is over (whatever cell its feet occupy), then a legal cell
+ * within one square. Anything further was not a mis-aim and is refused.
  */
-function resolveTargetClick(cell, event) {
+function resolveTargetClick(cell, worldPt, screenPt) {
   const keys = _targetSpec?.keys;
   if (!keys?.size) return null;
 
   if (keys.has(cellKey(cell))) return cell;
 
-  // What did the cursor actually land on?
-  const hit = event?.target;
-  const tokenDoc = hit?.document ?? null;
-  if (tokenDoc?.documentName === "Token") {
-    const c = cellOfToken(tokenDoc);
+  const tok = tokenAtPoint(worldPt, screenPt);
+  if (tok?.document) {
+    const c = cellOfToken(tok.document);
     if (c && keys.has(cellKey(c))) return c;
   }
 
-  // Nearest legal cell within one square.
   let best = null, bestD = Infinity;
   for (const key of keys) {
     const [i, j] = key.split(",").map(Number);
@@ -812,37 +897,52 @@ function resolveTargetClick(cell, event) {
   return best;
 }
 
-function onCanvasClick(event) {
+/** Screen point → world point, independent of any PIXI event plumbing. */
+function worldPointOf(ev) {
+  const view = canvas?.app?.view;
+  if (!view || !canvas?.stage) return null;
+  const rect = view.getBoundingClientRect();
+  const sx = ev.clientX - rect.left;
+  const sy = ev.clientY - rect.top;
+  const w = canvas.stage.worldTransform.applyInverse(new PIXI.Point(sx, sy));
+  return { world: w, screen: { x: sx, y: sy } };
+}
+
+/**
+ * The modal click.
+ *
+ * Bound to the canvas ELEMENT in the CAPTURE phase, which is the whole point:
+ * a left click on a token is claimed by Foundry's own token interaction —
+ * select on a single click, open the sheet on a double — and never reaches a
+ * listener on canvas.stage. So aiming at a guard and clicking them opened
+ * their sheet and left the command hanging, which is exactly what "I still
+ * can't initiate takedown" looked like.
+ *
+ * While a mode is open the board is MODAL: a left click means "I am aiming at
+ * this", not "select this token". Capturing here and stopping the event dead
+ * is what makes that true. Right-click is untouched, so cancelling and
+ * panning still behave exactly as Foundry intends.
+ */
+function onCanvasCapture(ev) {
   if (!_enabled || !_view?.active) return;
-
-  // LEFT button only. Bound to canvas.stage so a click anywhere on the board
-  // is heard — which also catches right-click pan and anything bubbling from
-  // a UI layer, each of which would otherwise silently spend a move.
-  const btn = event?.data?.originalEvent?.button ?? event?.nativeEvent?.button ?? event?.button;
-
-  // Right button: remember where it went down. Whether it CANCELS is decided
-  // on release — see onCanvasRightUp. Foundry pans on a right-drag, so a
-  // press alone cannot mean "back" without stealing the pan.
-  if (btn === 2) {
-    const p = pointOf(event);
-    _rmbDown = { x: p?.x ?? null, y: p?.y ?? null, t: performance.now() };
-    return;
-  }
-  if (btn !== undefined && btn !== 0) return;
+  if (ev.button !== 0) return;                       // right/middle stay Foundry's
+  if (_mode !== "move" && _mode !== "target") return;
   if (!canAct() || !myTurn()) return;
 
-  const pos = pointOf(event);
-  if (!pos) return;
-  const cell = cellAt(pos);
+  const pt = worldPointOf(ev);
+  if (!pt) return;
+  const cell = cellAt(pt.world);
+
+  // Claim the click BEFORE deciding what it means. A click that turns out to
+  // be illegal must still not fall through to selecting a token — the player
+  // is aiming, and a stray sheet opening mid-aim is worse than a no-op.
+  ev.preventDefault();
+  ev.stopPropagation();
+  ev.stopImmediatePropagation();
 
   if (_mode === "target") {
-    const picked = resolveTargetClick(cell, event);
+    const picked = resolveTargetClick(cell, pt.world, pt.screen);
     if (!picked) {
-      // Clicking well outside the lit set does not CANCEL — a stray click
-      // should not throw away a command mid-aim. But it must not be silent
-      // either: a click that does nothing and leaves the mode open is
-      // indistinguishable from a dead button, which is exactly how this
-      // read at the table.
       ui.notifications?.info?.("Not a legal target — right-click to cancel.");
       return;
     }
@@ -852,27 +952,29 @@ function onCanvasClick(event) {
     return;
   }
 
-  if (_mode !== "move" || !_reach) return;
-
+  if (!_reach) return;
   const node = _reach.get(cellKey(cell));
   if (!node || node.cost === 0) return;
-
   const path = pathFromReachable(_reach, cell);
   if (!path.length) return;
-
   setMode(null);
   requestIntent({ kind: "move", path });
 }
-
 /**
- * Right-click backs out of whatever mode is open — the SRPG idiom, and the
- * fastest way off a mode entered by mistake.
+ * Right-button latch.
  *
- * Gated on click-versus-drag because Foundry pans the board with a right
- * DRAG. Cancelling on the press would mean every pan dropped the player out
- * of targeting; cancelling on a release that never moved leaves panning
- * intact and still gives them a one-click exit.
+ * Left clicks are handled in the capture phase (onCanvasCapture) because
+ * Foundry claims them for token selection before they ever reach the stage.
+ * This one exists only to record where and when the right button went down,
+ * so its release can be judged a tap or a hold.
  */
+function onCanvasClick(event) {
+  if (!_enabled || !_view?.active) return;
+  const btn = event?.data?.originalEvent?.button ?? event?.nativeEvent?.button ?? event?.button;
+  if (btn !== 2) return;
+  const p = pointOf(event);
+  _rmbDown = { x: p?.x ?? null, y: p?.y ?? null, t: performance.now() };
+}
 // A TAP cancels; a HOLD is Foundry panning the viewport.
 //
 // Distance alone was not enough. Foundry pans on a right-DRAG, and a player
@@ -934,6 +1036,8 @@ export function enable(tune) {
 
   if (!_canvasHooked) {
     _canvasHooked = true;
+    // Capture phase, on the ELEMENT — ahead of Foundry's token interaction.
+    canvas?.app?.view?.addEventListener?.("pointerdown", onCanvasCapture, true);
     canvas?.stage?.on?.("pointerdown", onCanvasClick);
     canvas?.stage?.on?.("pointermove", onCanvasHover);
     canvas?.stage?.on?.("pointerup", onCanvasRightUp);
@@ -965,6 +1069,7 @@ export function disable() {
   if (_canvasHooked) {
     _canvasHooked = false;
     try {
+      canvas?.app?.view?.removeEventListener?.("pointerdown", onCanvasCapture, true);
       canvas?.stage?.off?.("pointerdown", onCanvasClick);
       canvas?.stage?.off?.("pointermove", onCanvasHover);
       canvas?.stage?.off?.("pointerup", onCanvasRightUp);

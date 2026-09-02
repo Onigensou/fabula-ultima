@@ -39,8 +39,9 @@ import * as socket from "./sm-socket.js";
 import * as smUi from "./sm-ui.js";
 import * as overlay from "./sm-overlay.js";
 import * as gmPanel from "./sm-gm-panel.js";
-import { replayMotion, playAlertSfx, throwRock } from "./sm-motion.js";
+import { replayMotion, playAlertSfx, throwRock, playEnemyStepSfx } from "./sm-motion.js";
 import { installBgmWatcher, applyTierBgm, restoreSceneBgm, resetBgmMemory } from "./sm-bgm.js";
+import * as gmButton from "./sm-gm-button.js";
 import { playPhaseBannerLocal, removeBanner } from "./sm-banner.js";
 
 // ── Scene gate ──────────────────────────────────────────────────────────────
@@ -511,7 +512,9 @@ function armForScene(scene) {
     if (director.running) stopStealth({ settle: true }).catch(() => {});
     smUi.disable();
     overlay.destroyAll();
+    gmPanel.resetOpenState();
     gmPanel.remove();
+    gmButton.remove();
     // Leaving the mode: forget what we scored, without touching audio. The
     // scene we are arriving at owns the music now.
     resetBgmMemory();
@@ -521,6 +524,13 @@ function armForScene(scene) {
   const tune = readTuning(scene);
   invalidateLattice();
   collapseSidebarForStealth();
+
+  // The console starts closed on every arrival, and its button appears on
+  // the column only here — a control for a mode you are not in is clutter,
+  // and that column is shared with every other system.
+  gmPanel.resetOpenState();
+  gmButton.install(() => { gmPanel.toggle(); gmButton.setOpen(gmPanel.isOpen()); });
+  gmButton.setOpen(false);
 
   if (game.user?.isGM) {
     // Auto-start rather than making the GM find a button: arriving on a stealth
@@ -563,7 +573,10 @@ Hooks.once("ready", () => {
       // stay in step.
       const step = readTuning(canvas?.scene).stepMs ?? 160;
       (payload?.cells ?? []).forEach((e, i) => {
-        setTimeout(() => overlay.popFootstepEcho(e.cell, e.nearness), i * step);
+        setTimeout(() => {
+          overlay.popFootstepEcho(e.cell, e.nearness);
+          playEnemyStepSfx(e.nearness);
+        }, i * step);
       });
     },
     onDetect: (payload) => {

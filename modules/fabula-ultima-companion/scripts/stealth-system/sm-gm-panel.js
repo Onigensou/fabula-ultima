@@ -25,6 +25,24 @@ let _api = null;   // { director, refresh } wired by the boot module
 
 export function wire(api) { _api = api; }
 
+// ── Open / closed ───────────────────────────────────────────────────────────
+//
+// The panel used to open itself the moment a stealth scene loaded and sit
+// over the board for the whole run. It is a GM console — alert overrides,
+// forced activations, reinforcement spawns — reached for occasionally, not
+// read continuously, so it starts CLOSED and lives behind its own button in
+// the right-edge column.
+let _open = false;
+
+export function isOpen() { return _open; }
+
+export function open()  { _open = true;  render(); }
+export function close() { _open = false; remove(); }
+export function toggle() { _open ? close() : open(); }
+
+/** Forget the open state — a new scene starts closed. */
+export function resetOpenState() { _open = false; }
+
 function ensureStyles() {
   if (document.getElementById(STYLE_ID)) return;
   const s = document.createElement("style");
@@ -86,6 +104,7 @@ function ensureStyles() {
 
 export function render() {
   if (!game.user?.isGM) return;
+  if (!_open) { remove(); return; }
   const d = _api?.director;
   if (!d?.running || !d.sm) { remove(); return; }
   ensureStyles();
