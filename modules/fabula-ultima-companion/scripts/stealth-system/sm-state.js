@@ -45,6 +45,9 @@ export function emptyState() {
       objectiveUsed: false,
       controllerActorId: null,   // whose stats every check this round uses
       controllerUserId: null,
+
+      // Concealment — a held breath, not a buff. See breakConcealment().
+      conceal: { tier: 0, roundsLeft: 0, hidInCover: false },
     },
 
     // enemyId → per-enemy record. Enemies are ordinary scene tokens the GM
@@ -190,6 +193,11 @@ export function decayAwareness(state, tune, sawPartyIds = new Set()) {
       e.ai = AI.PATROL;
       e.raisedOnce = false;
     } else if (e.ai === AI.SEARCH) {
+      // A well-hidden party makes a search fruitless faster: the guard is
+      // sweeping an area that genuinely has nothing in it.
+      if (concealTier(state) >= 2) {
+        e.awareness = Math.max(0, e.awareness - tune.concealSearchDecay);
+      }
       e.searchRounds += 1;
       if (e.searchRounds > tune.searchPersistence) {
         e.ai = AI.PATROL;
@@ -206,6 +214,53 @@ export function decayAwareness(state, tune, sawPartyIds = new Set()) {
       }
     }
   }
+}
+
+// ── Concealment ─────────────────────────────────────────────────────────────
+
+/** Margin over the DL -> tier. Tier 1 is the floor for any successful hide. */
+export function concealTierFor(margin, tune) {
+  if (margin >= tune.concealTier3Margin) return 3;
+  if (margin >= tune.concealTier2Margin) return 2;
+  return 1;
+}
+
+export const concealTier = (state) => state?.party?.conceal?.tier ?? 0;
+
+export function setConcealment(state, tier, tune, { hidInCover = false } = {}) {
+  state.party.conceal = {
+    tier,
+    roundsLeft: tune.concealDuration,
+    hidInCover: !!hidInCover,
+  };
+}
+
+/**
+ * End concealment.
+ *
+ * Deliberately NOT called by ordinary movement. The whole point of the change
+ * is that hiding and then slipping away has to work, or the party is pinned in
+ * place by the very system meant to free them. It ends on being seen outright,
+ * on noise, on leaving the cover you hid behind, and on time.
+ */
+export function breakConcealment(state, reason = "") {
+  if (!state?.party?.conceal?.tier) return false;
+  state.party.conceal = { tier: 0, roundsLeft: 0, hidInCover: false };
+  pushLog(state, "Concealment lost (" + reason + ")");
+  return true;
+}
+
+/** Per-round countdown. Returns true when it lapsed this round. */
+export function tickConcealment(state) {
+  const c = state?.party?.conceal;
+  if (!c?.tier) return false;
+  c.roundsLeft -= 1;
+  if (c.roundsLeft <= 0) {
+    state.party.conceal = { tier: 0, roundsLeft: 0, hidInCover: false };
+    pushLog(state, "Concealment lapsed");
+    return true;
+  }
+  return false;
 }
 
 // ── Ledger ──────────────────────────────────────────────────────────────────

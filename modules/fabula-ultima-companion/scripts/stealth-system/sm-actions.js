@@ -14,12 +14,13 @@
 // ============================================================================
 
 import {
-  MODULE_ID, TAG, ALERT, OBJECTIVE, ARC, HOOKS,
+  MODULE_ID, TAG, ALERT, AI, OBJECTIVE, ARC, HOOKS,
 } from "./sm-constants.js";
 import { cellDistance, relativeArc, directionBetween } from "./sm-grid.js";
 import { cellRecord, invalidateLattice, propConfigOf, TILE_FLAG } from "./sm-lattice.js";
 import {
   shiftAlert, bankTakedown, pushLog, awareEnemies, enemyRecords, bumpAwareness,
+  concealTierFor, setConcealment, breakConcealment,
 } from "./sm-state.js";
 
 const num = (v, d = 0) => { const n = Number(v); return Number.isFinite(n) ? n : d; };
@@ -249,7 +250,7 @@ export async function resolveHide(state, controllerActor, partyCell, tune, {
       mode: "interactive", allowInvokes: true, postChat: true,
       context: { system: "stealth", kind: "hide" },
     });
-    return finishHide(state, tune, !!solo?.pass, leaderDl, solo);
+    return finishHide(state, tune, !!solo?.pass, leaderDl, solo, 0, cover);
   }
 
   const res = await GC.request({
@@ -266,22 +267,56 @@ export async function resolveHide(state, controllerActor, partyCell, tune, {
     postChat: true,
   });
 
-  return finishHide(state, tune, !!res?.leaderPass, leaderDl, res, res?.bonus ?? 0);
+  return finishHide(state, tune, !!res?.leaderPass, leaderDl, res, res?.bonus ?? 0, cover);
 }
 
-function finishHide(state, tune, passed, dl, roll, bonus = 0) {
-  if (passed) {
-    shiftAlert(state, -1, "hide");
-    // Cooling the room means cooling the guards; leaving them hot would make
-    // the tier drop cosmetic — they would simply re-raise it next round.
-    for (const e of enemyRecords(state)) {
-      e.awareness = Math.max(0, e.awareness - tune.hideAwarenessRelief);
-    }
-    pushLog(state, `Hide succeeded (DL ${dl}${bonus ? `, +${bonus} from helpers` : ""})`);
-    return { ok: true, passed: true, dl, roll, bonus };
+/**
+ * Land a Hide result and apply its Concealment.
+ *
+ * The MARGIN over the DL is what buys the tier — a pass/fail hide makes the
+ * roll a formality where the DL is the only lever, while reading the margin
+ * turns one roll into a spread of outcomes and gives the Alert-tier DL real
+ * work to do: a harder DL now costs you tier as well as chance.
+ */
+function finishHide(state, tune, passed, dl, roll, bonus = 0, inCover = false) {
+  if (!passed) {
+    pushLog(state, "Hide failed (DL " + dl + (bonus ? ", +" + bonus + " from helpers" : "") + ")");
+    return { ok: true, passed: false, dl, roll, bonus, tier: 0 };
   }
-  pushLog(state, `Hide failed (DL ${dl}${bonus ? `, +${bonus} from helpers` : ""})`);
-  return { ok: true, passed: false, dl, roll, bonus };
+
+  const total = num(roll?.total ?? roll?.leaderResult?.total, dl);
+  const margin = Math.max(0, total - dl);
+  const tier = concealTierFor(margin, tune);
+
+  setConcealment(state, tier, tune, { hidInCover: inCover });
+  shiftAlert(state, tier >= 3 ? -tune.concealTier3AlertDrop : -1, "hide");
+
+  // Cooling the room means cooling the guards; leaving them hot would make the
+  // tier drop cosmetic — they would simply re-raise it next round.
+  for (const e of enemyRecords(state)) {
+    e.awareness = Math.max(0, e.awareness - tune.hideAwarenessRelief);
+
+    // Tier 1+: the trail goes cold. A searcher keeps hunting, but for where
+    // the party WAS — which is the whole reason last-known-position exists.
+    if (e.ai === AI.SEARCH || e.ai === AI.SUSPICIOUS) {
+      e.lastKnownCell = e.lastKnownCell ?? state.party.cell;
+      e.raisedOnce = false;
+    }
+
+    // Tier 3: the hunt is called off outright. This is the mode's one way to
+    // recover from a botched approach that is not simply running.
+    if (tier >= 3 && (e.ai === AI.SEARCH || e.ai === AI.CHASE || e.ai === AI.SUSPICIOUS)) {
+      e.ai = AI.PATROL;
+      e.awareness = 0;
+      e.lastKnownCell = null;
+      e.searchRounds = 0;
+      e.raisedOnce = false;
+    }
+  }
+
+  const label = tier >= 3 ? "Vanished" : tier === 2 ? "Well Hidden" : "Concealed";
+  pushLog(state, "Hide succeeded — " + label + " (margin " + margin + ", DL " + dl + ")");
+  return { ok: true, passed: true, dl, roll, bonus, tier, margin, label };
 }
 
 // ── Scan ────────────────────────────────────────────────────────────────────
@@ -467,6 +502,8 @@ export async function resolveBreakCover(state, tileDoc, tune, { scene = canvas?.
  * running. The knob is where that argument gets settled.
  */
 export function makeNoise(state, atCell, tune, { scene = canvas?.scene, strength = 1, reason = "noise" } = {}) {
+  // Noise gives you away: whatever you were hiding behind, they heard it.
+  breakConcealment(state, reason);
   const heard = [];
   for (const e of enemyRecords(state)) {
     if (cellDistance(e.cell, atCell, scene) > tune.suspicionRadius + strength) continue;

@@ -114,10 +114,10 @@ export const TUNE_DEFAULTS = Object.freeze({
   activationsPerRound: 3,  // each enemy at most once
 
   // Perception
-  suspicionRadius:  5,     // proximity awareness, cone-independent
+  suspicionRadius:  3,     // proximity awareness, cone-independent
   detectionRange:   3,     // legacy alias; the live gate is spottedRange
   spottedRange:     2,     // inside the cone AND this close = seen outright
-  visionRange:      8,     // outer limit of the cone
+  visionRange:      5,     // outer limit of the cone
   coneHalfAngle:    45,    // degrees either side of facing → a 90° cone
   flankRangeMult:   0.6,   // sight range multiplier in the flank arc
   coverAwareness:   -2,    // awareness delta when the party stands in cover
@@ -136,6 +136,14 @@ export const TUNE_DEFAULTS = Object.freeze({
   wanderChance:     0.5,   // odds it moves at all on a given activation
   wanderStep:       2,     // cells per drift
   wanderLeash:      3,     // never strays further than this from its post
+
+  // Concealment — what a successful Hide buys, by margin over the DL.
+  // Deliberately short-lived: it is a held breath, not a buff you carry.
+  concealDuration:      2,   // rounds before it lapses on its own
+  concealTier2Margin:   5,   // "Well Hidden"
+  concealTier3Margin:   10,  // "Vanished"
+  concealSearchDecay:   2,   // extra awareness a searcher sheds per round at T2+
+  concealTier3AlertDrop: 2,  // tiers dropped by a Vanished hide
 
   // Alert
   alertRaiseOnSpot:      1,   // tiers gained when the party is spotted outright

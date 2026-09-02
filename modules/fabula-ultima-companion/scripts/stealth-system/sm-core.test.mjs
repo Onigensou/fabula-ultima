@@ -372,12 +372,12 @@ let d = vision.evaluateSight(C(5, 5), "E", C(5, 6), TUNE);
 eq("adjacent in-cone is spotted outright", d.level, "spotted");
 eq("  and halts a walk", d.spotted, true);
 
-d = vision.evaluateSight(C(5, 5), "E", C(5, 11), TUNE);
-eq("far in-cone is only suspicious", d.level, "suspicious");
+d = vision.evaluateSight(C(5, 5), "E", C(5, 8), TUNE);
+eq("in-cone past spotted range is only suspicious", d.level, "suspicious");
 eq("  and does NOT halt a walk", d.spotted, false);
 
-d = vision.evaluateSight(C(5, 5), "E", C(5, 30), TUNE);
-eq("well out of range is nothing", d.level, "none");
+d = vision.evaluateSight(C(5, 5), "E", C(5, 12), TUNE);
+eq("past the tightened vision range is nothing", d.level, "none");
 
 // Cover downgrades a would-be spot to mere suspicion.
 scene.tiles = [{
@@ -424,6 +424,56 @@ eq("dash never gives less than 1", dashG(1), TUNE.dashGainMin);
 eq("dash never gives more than 5", dashG(99), TUNE.dashGainMax);
 eq("dash is inside the brief's 1-5 band",
   [1, 8, 10, 14, 25].every((r) => dashG(r) >= 1 && dashG(r) <= 5), true);
+
+// ── Concealment ─────────────────────────────────────────────────────────────
+// Hiding is a defence against being FOUND, not invisibility.
+console.log("\n── concealment ──");
+
+eq("tighter ranges", `${TUNE.spottedRange}/${TUNE.suspicionRadius}/${TUNE.visionRange}`, "2/3/5");
+
+eq("a bare pass is Concealed", stateM.concealTierFor(0, TUNE), 1);
+eq("margin 5 is Well Hidden",  stateM.concealTierFor(5, TUNE), 2);
+eq("margin 10 is Vanished",    stateM.concealTierFor(10, TUNE), 3);
+
+// Tier 1 counts as cover: a guard at spotted range no longer sees outright.
+const bare = vision.evaluateSight(C(5, 5), "E", C(5, 6), TUNE, { concealTier: 0 });
+const hid1 = vision.evaluateSight(C(5, 5), "E", C(5, 6), TUNE, { concealTier: 1 });
+eq("unconcealed at 1 cell is spotted", bare.spotted, true);
+eq("Concealed is NOT spotted there",   hid1.spotted, false);
+
+// Tier 2 blocks suspicion outright. Compared against an UNCONCEALED party at
+// the same tile, so the assertion does not depend on how dark the cell is.
+const open2 = vision.evaluateSight(C(5, 5), "E", C(5, 8), TUNE, { concealTier: 0 });
+const hid2  = vision.evaluateSight(C(5, 5), "E", C(5, 8), TUNE, { concealTier: 2 });
+eq("in the open at 3 cells you are suspected", open2.level, "suspicious");
+eq("Well Hidden at the same tile is not",      hid2.level, "none");
+
+// Lifecycle.
+const cs = stateM.emptyState();
+eq("starts unconcealed", stateM.concealTier(cs), 0);
+stateM.setConcealment(cs, 2, TUNE, { hidInCover: true });
+eq("set to tier 2", stateM.concealTier(cs), 2);
+eq("  with a duration", cs.party.conceal.roundsLeft, TUNE.concealDuration);
+
+eq("a tick does not end it early", stateM.tickConcealment(cs), false);
+eq("  but the last one does", stateM.tickConcealment(cs), true);
+eq("  and clears the tier", stateM.concealTier(cs), 0);
+
+stateM.setConcealment(cs, 3, TUNE);
+eq("being seen breaks it", stateM.breakConcealment(cs, "seen"), true);
+eq("  tier cleared", stateM.concealTier(cs), 0);
+eq("breaking twice is a no-op", stateM.breakConcealment(cs, "again"), false);
+
+// A well-hidden party makes searchers give up faster.
+const ds = stateM.emptyState();
+ds.enemies.s1 = stateM.emptyEnemy("s1", C(9, 9), "E");
+ds.enemies.s1.ai = AI.SEARCH;
+ds.enemies.s1.awareness = TUNE.awarenessMax;
+stateM.setConcealment(ds, 2, TUNE);
+const before = ds.enemies.s1.awareness;
+stateM.decayAwareness(ds, TUNE, new Set());
+eq("searchers shed extra awareness while you are well hidden",
+  before - ds.enemies.s1.awareness, TUNE.awarenessDecay + TUNE.concealSearchDecay);
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

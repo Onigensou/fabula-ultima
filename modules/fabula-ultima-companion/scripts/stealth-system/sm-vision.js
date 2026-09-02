@@ -41,6 +41,7 @@ import { cellRecord, hasLineOfSight } from "./sm-lattice.js";
  */
 export function evaluateSight(observerCell, facing, targetCell, tune, {
   scene = canvas?.scene,
+  concealTier = 0,
 } = {}) {
   const miss = (reason, extra = {}) => ({
     seen: false, level: "none", spotted: false,
@@ -75,7 +76,11 @@ export function evaluateSight(observerCell, facing, targetCell, tune, {
   if (!los) return miss("wall", { distance, arc });
 
   const rec = cellRecord(targetCell, scene);
-  const cover = !!rec?.cover;
+  // Concealment counts as cover for every purpose sight cares about. A party
+  // that has just gone to ground is behind SOMETHING even on an open tile —
+  // that is what the roll represents — so it suppresses the auto-spot and
+  // feeds the same awareness penalty.
+  const cover = !!rec?.cover || concealTier >= 1;
   const lit = !!rec?.lit;
 
   const coneHit = arc !== ARC.REAR && inCone(observerCell, facing, targetCell, tune.coneHalfAngle);
@@ -112,7 +117,15 @@ export function evaluateSight(observerCell, facing, targetCell, tune, {
   // crossing the same room. Suspicion now costs one tier ONCE per guard and
   // never stops the walk; only a genuine sighting does both.
   const spotted = coneHit && distance <= tune.spottedRange && !cover;
-  const level = spotted ? "spotted" : (awareness > 0 ? "suspicious" : "none");
+
+  // At Well Hidden and above, suspicion cannot register at all — a guard
+  // either walks close enough to see you outright or learns nothing. That is
+  // the whole point of a good hide, and without it a strong roll still leaked
+  // your position one point of awareness at a time.
+  const suspicionBlocked = concealTier >= 2;
+  const level = spotted ? "spotted"
+    : (awareness > 0 && !suspicionBlocked) ? "suspicious"
+    : "none";
 
   return {
     seen: level !== "none",
@@ -154,13 +167,23 @@ export function visibleCells(observerCell, facing, tune, { scene = canvas?.scene
  * `best` is the strongest single sighting, because alert should react to the
  * guard who saw the most, not to the average of a crowd.
  */
-export function surveyObservers(observers, partyCell, tune, { scene = canvas?.scene } = {}) {
+/**
+ * Run every listed observer against one party cell. PURE — reads only.
+ *
+ * The mutating half (awareness, marks, alert) lives in the caller. Keeping the
+ * query side clean is what lets a GATE ask "can they see us?" without the act
+ * of asking bumping awareness and raising the alarm, which is exactly the bug
+ * the Hide permission check used to have.
+ */
+export function surveyObservers(observers, partyCell, tune, {
+  scene = canvas?.scene, concealTier = 0,
+} = {}) {
   const results = [];
   let best = null;
   let anySpotted = false;
 
   for (const obs of observers) {
-    const r = evaluateSight(obs.cell, obs.facing, partyCell, tune, { scene });
+    const r = evaluateSight(obs.cell, obs.facing, partyCell, tune, { scene, concealTier });
     const row = { ...obs, sight: r };
     results.push(row);
     if (r.spotted) anySpotted = true;

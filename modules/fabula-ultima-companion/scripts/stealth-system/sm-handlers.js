@@ -12,13 +12,13 @@ import {
   cellOfToken, cellDistance, directionBetween, sameCell, cellKey, topLeftOf, centerOf,
 } from "./sm-grid.js";
 import {
-  buildLattice, syncOccupancy, invalidateLattice, reachable,
+  buildLattice, syncOccupancy, invalidateLattice, reachable, cellRecord,
 } from "./sm-lattice.js";
 import { evaluateSight, surveyObservers } from "./sm-vision.js";
 import {
   emptyEnemy, shiftAlert, bumpAwareness, decayAwareness, enemyRecords,
   pendingActivations, markActivated, resetRoundCounters, pushLog, isAlert,
-  engagementFor, writeState,
+  engagementFor, writeState, concealTier, breakConcealment, tickConcealment,
 } from "./sm-state.js";
 import {
   decideActivation, pickActivation, truncateAtContact, conflictParticipants,
@@ -159,7 +159,9 @@ export function detectionSweep(ctx, partyCell) {
     tokenId: e.tokenId, cell: e.cell, facing: e.facing,
   }));
 
-  const survey = surveyObservers(observers, partyCell, tune, { scene });
+  const survey = surveyObservers(observers, partyCell, tune, {
+    scene, concealTier: concealTier(sm),
+  });
   const seenBy = [];
   const newMarks = [];
   let raised = null;
@@ -182,6 +184,9 @@ export function detectionSweep(ctx, partyCell) {
       if (!e.raisedOnce) { e.raisedOnce = true; newMarks.push({ id: e.tokenId, kind: "spot" }); }
       else newMarks.push({ id: e.tokenId, kind: "spot" });
 
+      // Concealment is about not being FOUND, not invisibility. A guard at
+      // spotted range with clear sight sees you regardless.
+      breakConcealment(sm, "seen outright");
       if (sm.alert !== ALERT.ALERT) {
         raised = shiftAlert(sm, ALERT_ORDER.length, "spotted outright");
       }
@@ -346,6 +351,15 @@ export function buildHandlers() {
           });
         }
 
+        // Ordinary movement does NOT break concealment — hiding then slipping
+        // away has to work, or the party is pinned by the system meant to free
+        // them. But if the hide was made behind cover, walking out of cover is
+        // walking out of the thing that was hiding you.
+        if (sm.party.conceal?.tier && sm.party.conceal.hidInCover
+            && !cellRecord(sm.party.cell, scene)?.cover) {
+          breakConcealment(sm, "left cover");
+        }
+
         syncOccupancy(scene);
         await maybeTeleport(ctx);
         try { Hooks.callAll(HOOKS.PARTY_MOVED, { cell: sm.party.cell }); } catch (_) {}
@@ -473,6 +487,7 @@ export function buildHandlers() {
         if (r.seen) { sawIds.add(e.tokenId); e.lastKnownCell = sm.party.cell; }
       }
       decayAwareness(sm, tune, sawIds);
+      tickConcealment(sm);
 
       await ctx.save();
       broadcastState(sm);

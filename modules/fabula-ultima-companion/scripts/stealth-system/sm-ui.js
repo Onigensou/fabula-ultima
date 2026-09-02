@@ -29,6 +29,7 @@ import {
 } from "./sm-constants.js";
 import { cellAt, cellKey, cellDistance } from "./sm-grid.js";
 import { reachable, pathFromReachable } from "./sm-lattice.js";
+import { surveyObservers } from "./sm-vision.js";
 import * as overlay from "./sm-overlay.js";
 import * as blades from "./sm-blades.js";
 import { requestIntent } from "./sm-socket.js";
@@ -96,6 +97,13 @@ function ensureStyles() {
       font-size:10.5px; font-weight:800; letter-spacing:.9px; text-transform:uppercase;
       color:var(--sm-ink-soft); opacity:.72; margin-top:2px;
     }
+    #${HUD_ID} .sm-conceal{
+      display:inline-block; margin-top:5px; padding:2px 8px;
+      font-size:10px; font-weight:900; letter-spacing:.1em; text-transform:uppercase;
+      color:#1d3b33; background:linear-gradient(180deg,#8fd8c4,#5cb8a0);
+      border:1.5px solid #3f7a6a; border-radius:5px;
+      text-shadow:0 1px 0 rgba(255,255,255,.55);
+    }
     #${HUD_ID} .sm-rule{
       height:2px; margin:8px 0 7px;
       background:linear-gradient(90deg,var(--sm-stroke),rgba(122,106,85,0));
@@ -152,6 +160,7 @@ export function renderHud() {
         <span class="sm-tier-name" style="color:${color}">${ALERT_LABEL[tier] ?? tier}</span>
       </div>
       <div class="sm-meta">Round ${_view.round ?? 0} · ${_view.enemies?.length ?? 0} enemies</div>
+      ${concealBadge()}
       <div class="sm-rule"></div>
       <div class="sm-stats">
         <span class="sm-stat ${(p.moveLeft ?? 0) <= 0 ? "is-spent" : ""}"><b>${p.moveLeft ?? 0}</b>Move</span>
@@ -159,6 +168,18 @@ export function renderHud() {
       </div>
       ${hint ? `<div class="sm-hint">${hint}</div>` : ""}
     </div>`;
+}
+
+/**
+ * Concealment is temporary and invisible on the board, so the panel has to
+ * carry it. Showing the rounds left is the point: a player needs to know how
+ * long the held breath lasts to decide whether to move now or wait.
+ */
+function concealBadge() {
+  const c = _view?.party?.conceal;
+  if (!c?.tier) return "";
+  const label = c.tier >= 3 ? "Vanished" : c.tier === 2 ? "Well Hidden" : "Concealed";
+  return `<div class="sm-conceal">${label} · ${c.roundsLeft}${c.roundsLeft === 1 ? " round" : " rounds"}</div>`;
 }
 
 export function removeHud() {
@@ -289,19 +310,27 @@ function hideDlNote() {
   return dl ? `DL ${dl}` : "";
 }
 
-/** Is any guard currently looking straight at the party? Hide is barred then. */
+/**
+ * Is any guard SEEING the party right now? Only that bars hiding.
+ *
+ * The old version asked "is any hunting guard within visionRange?" with no
+ * facing, wall or line-of-sight test at all — so one searching guard made Hide
+ * vanish from every tile within 8 cells of it, including behind a wall with
+ * its back turned, and walking away never cleared it. That single condition
+ * was most of the "no matter how you walk, you get spotted" spiral.
+ *
+ * This is the same test the GM applies, so the button and the permission agree.
+ */
 function inActiveCone() {
   const pc = _view?.party?.cell;
-  if (!pc) return false;
-  // The client has cells + facings, so it can answer this without a round
-  // trip; the GM re-checks authoritatively before the roll either way.
-  const tune = _tune ?? {};
-  for (const e of (_view.enemies ?? [])) {
-    if (e.ai === "chase" || e.ai === "search") {
-      if (cellDistance(pc, e.cell) <= (tune.visionRange ?? 8)) return true;
-    }
-  }
-  return false;
+  if (!pc || !_tune) return false;
+  const conceal = _view?.party?.conceal?.tier ?? 0;
+
+  const survey = surveyObservers(
+    (_view.enemies ?? []).map((e) => ({ tokenId: e.tokenId, cell: e.cell, facing: e.facing })),
+    pc, _tune, { concealTier: conceal },
+  );
+  return survey.anySpotted;
 }
 
 /** Movable / breakable props adjacent to the party. */

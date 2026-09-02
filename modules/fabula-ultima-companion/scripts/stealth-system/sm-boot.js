@@ -20,7 +20,9 @@ import { director } from "./sm-director.js";
 import { buildHandlers, findPartyToken, controllerActor, partyActors, detectionSweep } from "./sm-handlers.js";
 import {
   readState, writeState, clearState, shiftAlert, pushLog, enemyRecords, isAlert,
+  concealTier, breakConcealment,
 } from "./sm-state.js";
+import { surveyObservers } from "./sm-vision.js";
 import {
   cellAt, cellKey, sameCell, cellDistance, cellOfToken,
 } from "./sm-grid.js";
@@ -148,9 +150,17 @@ async function runObjective(payload, { sm, tune, scene }) {
   }
 
   if (id === OBJECTIVE.HIDE) {
-    // A guard actively looking at you forbids the attempt outright.
-    const sweep = detectionSweep({ sm, tune, scene, director }, partyCell);
-    const inCone = sweep.survey.results.some((r) => r.sight.inCone && r.sight.seen);
+    // Only being SEEN OUTRIGHT bars hiding — suspicion never does.
+    //
+    // This used to call detectionSweep(), which MUTATES: it bumped awareness,
+    // stamped marks and could shift the Alert tier. Asking whether you were
+    // allowed to hide therefore raised the alarm, before the roll, whether or
+    // not you got to hide at all. It reads a pure survey now.
+    const survey = surveyObservers(
+      enemyRecords(sm).map((e) => ({ tokenId: e.tokenId, cell: e.cell, facing: e.facing })),
+      partyCell, tune, { scene, concealTier: concealTier(sm) },
+    );
+    const inCone = survey.anySpotted;
     const roster = await partyActors();
     const res = await resolveHide(sm, leader, partyCell, tune, { scene, inActiveCone: inCone, partyActors: roster });
     if (!res.ok) { ui.notifications?.warn?.(res.reason); return; }

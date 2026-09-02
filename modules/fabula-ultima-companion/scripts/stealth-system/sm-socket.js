@@ -164,6 +164,7 @@ export function serialiseForClients(sm) {
       moveLeft: sm.party?.moveLeft ?? 0,
       objectiveUsed: !!sm.party?.objectiveUsed,
       controllerActorId: sm.party?.controllerActorId ?? null,
+      conceal: sm.party?.conceal ?? { tier: 0, roundsLeft: 0 },
     },
     enemies: Object.values(sm.enemies ?? {})
       .filter((e) => !e.defeated)
