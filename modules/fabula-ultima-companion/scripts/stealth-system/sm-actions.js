@@ -278,6 +278,29 @@ export async function resolveHide(state, controllerActor, partyCell, tune, {
  * turns one roll into a spread of outcomes and gives the Alert-tier DL real
  * work to do: a harder DL now costs you tier as well as chance.
  */
+/**
+ * A cell roughly `radius` away from `origin`, in a random direction.
+ *
+ * This is the "general direction" a talked-down hunter walks toward: near
+ * enough that the party still has to move, wrong enough that the guard is not
+ * marching at their actual tile. Falls back to the origin when the map has
+ * nowhere to scatter to, which is correct — in a closet there IS nowhere else
+ * to look.
+ */
+function scatterCell(origin, radius, scene) {
+  const ring = [];
+  for (let di = -radius; di <= radius; di++) {
+    for (let dj = -radius; dj <= radius; dj++) {
+      const c = { i: origin.i + di, j: origin.j + dj };
+      const d = cellDistance(origin, c, scene);
+      if (d < Math.max(1, radius - 1) || d > radius) continue;
+      if (cellRecord(c, scene)?.passable) ring.push(c);
+    }
+  }
+  if (!ring.length) return { ...origin };
+  return ring[Math.floor(Math.random() * ring.length)];
+}
+
 function finishHide(state, tune, passed, dl, roll, bonus = 0, inCover = false) {
   if (!passed) {
     pushLog(state, "Hide failed (DL " + dl + (bonus ? ", +" + bonus + " from helpers" : "") + ")");
@@ -287,6 +310,7 @@ function finishHide(state, tune, passed, dl, roll, bonus = 0, inCover = false) {
   const total = num(roll?.total ?? roll?.leaderResult?.total, dl);
   const margin = Math.max(0, total - dl);
   const tier = concealTierFor(margin, tune);
+  const downgrade = total >= tune.hideDowngradeRoll;
 
   setConcealment(state, tier, tune, { hidInCover: inCover });
   shiftAlert(state, tier >= 3 ? -tune.concealTier3AlertDrop : -1, "hide");
@@ -303,6 +327,18 @@ function finishHide(state, tune, passed, dl, roll, bonus = 0, inCover = false) {
       e.raisedOnce = false;
     }
 
+    // A strong hide talks the room down. A guard that was CHASING — pathing at
+    // your true position every activation, which is unescapable at equal speed
+    // — loses the fix and drops to investigating a rough direction instead.
+    // Being hunted should be recoverable by hiding well, or hiding is only
+    // ever a way to avoid trouble you have not yet found.
+    if (downgrade && e.ai === AI.CHASE) {
+      e.ai = AI.SUSPICIOUS;
+      e.lastKnownCell = scatterCell(state.party.cell, tune.hideScatterRadius, canvas?.scene);
+      e.awareness = Math.min(e.awareness, tune.searchAt - 1);
+      e.raisedOnce = false;
+    }
+
     // Tier 3: the hunt is called off outright. This is the mode's one way to
     // recover from a botched approach that is not simply running.
     if (tier >= 3 && (e.ai === AI.SEARCH || e.ai === AI.CHASE || e.ai === AI.SUSPICIOUS)) {
@@ -315,8 +351,9 @@ function finishHide(state, tune, passed, dl, roll, bonus = 0, inCover = false) {
   }
 
   const label = tier >= 3 ? "Vanished" : tier === 2 ? "Well Hidden" : "Concealed";
-  pushLog(state, "Hide succeeded — " + label + " (margin " + margin + ", DL " + dl + ")");
-  return { ok: true, passed: true, dl, roll, bonus, tier, margin, label };
+  pushLog(state, "Hide succeeded — " + label + " (rolled " + total + " vs DL " + dl + ")"
+    + (downgrade ? " — hunters lost the trail" : ""));
+  return { ok: true, passed: true, dl, roll, bonus, tier, margin, label, total, downgrade };
 }
 
 // ── Scan ────────────────────────────────────────────────────────────────────

@@ -19,6 +19,7 @@ import {
   emptyEnemy, shiftAlert, bumpAwareness, decayAwareness, enemyRecords,
   pendingActivations, markActivated, resetRoundCounters, pushLog, isAlert,
   engagementFor, writeState, concealTier, breakConcealment, tickConcealment,
+  applyStupor, tickStupor, isStupored,
 } from "./sm-state.js";
 import {
   decideActivation, pickActivation, truncateAtContact, conflictParticipants,
@@ -237,6 +238,13 @@ export function buildHandlers() {
       sm.party.cell = cellOfToken(partyToken);
 
       adoptEnemies(sm, scene, cfg);
+
+      // A fight that ended in escape may have finished while this run was torn
+      // down, so the stupor waits on a flag until there is a state to put it on.
+      try {
+        const { drainPendingStupor } = await import("./sm-boot.js");
+        await drainPendingStupor(sm, scene, ctx.tune);
+      } catch (e) { console.warn(TAG, "stupor drain failed", e); }
 
       if (!sm.round) sm.round = 0;
       pushLog(sm, `Stealth started — ${Object.keys(sm.enemies).length} enemies`);
@@ -515,6 +523,7 @@ export function buildHandlers() {
       }
       decayAwareness(sm, tune, sawIds);
       tickConcealment(sm);
+      tickStupor(sm);
 
       await ctx.save();
       broadcastState(sm);
@@ -550,6 +559,16 @@ export function buildHandlers() {
       const participants = conflictParticipants(sm, atCell, tune, { scene });
 
       pushLog(sm, `Contact — conflict opens as "${engagementFor(sm.alert)}" with ${participants.length} enemy(ies)`);
+
+      // Remember who went in, on a SEPARATE flag: stopStealth() clears the
+      // runtime state when the battle scene activates, so the roster of
+      // combatants has to outlive it to be actionable when we come back.
+      try {
+        await scene?.setFlag("fabula-ultima-companion", "stealthPendingConflict", {
+          participants: participants.map((p) => p.tokenId),
+          atCell, round: sm.round, at: Date.now(),
+        });
+      } catch (e) { console.warn(TAG, "could not record pending conflict", e); }
       try { Hooks.callAll(HOOKS.CONTACT, { cell: atCell, participants: participants.map((p) => p.tokenId) }); } catch (_) {}
 
       // The banked ledger settles FIRST, so takedown EXP and battle EXP arrive

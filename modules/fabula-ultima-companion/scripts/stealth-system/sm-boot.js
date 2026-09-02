@@ -20,7 +20,7 @@ import { director } from "./sm-director.js";
 import { buildHandlers, findPartyToken, controllerActor, partyActors, detectionSweep } from "./sm-handlers.js";
 import {
   readState, writeState, clearState, shiftAlert, pushLog, enemyRecords, isAlert,
-  concealTier, breakConcealment,
+  concealTier, breakConcealment, applyStupor,
 } from "./sm-state.js";
 import { surveyObservers } from "./sm-vision.js";
 import {
@@ -320,6 +320,79 @@ export async function stopStealth({ settle = true, cleanup = true } = {}) {
   socket.broadcastState({ active: false });
 }
 
+
+// ── Resolving a fight the stealth scene handed off ──────────────────────────
+
+const PENDING_FLAG = "stealthPendingConflict";
+
+/**
+ * React to a battle this scene started.
+ *
+ * A stealth contact hands its guards to the Battle Director and the scene
+ * changes, which tears the stealth run down. Without this the guards simply
+ * came back: the fight was won, the party returned, and the same enemies were
+ * re-adopted standing exactly where they died.
+ *
+ *   victory  the guards are gone. Hidden rather than deleted, matching what a
+ *            Takedown does, so a GM can put them back and the world actor is
+ *            never touched.
+ *   escaped  the guards remain but are STUPORED for a round — running away
+ *            has to actually buy distance, or the fight just restarts on the
+ *            next enemy phase with the party standing right there.
+ *   defeat   left alone. The party has bigger problems.
+ */
+async function resolvePendingConflict(scene, outcome) {
+  if (!game.user?.isGM || !scene) return null;
+
+  const pending = scene.flags?.[MODULE_ID]?.[PENDING_FLAG];
+  if (!pending?.participants?.length) return null;
+
+  // Consume it first: a half-applied resolution that runs twice is worse than
+  // one that does not run at all.
+  try { await scene.unsetFlag(MODULE_ID, PENDING_FLAG); } catch (_) {}
+
+  const ids = pending.participants;
+
+  if (outcome === "victory") {
+    const alive = ids.filter((id) => scene.tokens?.get?.(id) && !scene.tokens.get(id).hidden);
+    if (alive.length) {
+      await scene.updateEmbeddedDocuments("Token",
+        alive.map((id) => ({ _id: id, hidden: true })));
+    }
+    // Drop them from the runtime model too, if a run is already back up.
+    if (director.sm) {
+      for (const id of ids) if (director.sm.enemies?.[id]) director.sm.enemies[id].defeated = true;
+    }
+    invalidateLattice();
+    console.debug(TAG, `conflict victory — removed ${alive.length} guard(s) from the map`);
+    return { outcome, removed: alive.length };
+  }
+
+  if (outcome === "escaped") {
+    // Stash it for PREP: the run may not be back up yet when this fires.
+    try {
+      await scene.setFlag(MODULE_ID, "stealthPendingStupor", { ids, at: Date.now() });
+    } catch (_) {}
+    if (director.sm) {
+      applyStupor(director.sm, ids, director.tune ?? readTuning(scene));
+      await writeState(director.sm, scene);
+      socket.broadcastState(director.sm);
+    }
+    console.debug(TAG, `conflict escaped — ${ids.length} guard(s) left reeling`);
+    return { outcome, stupored: ids.length };
+  }
+
+  return { outcome, skipped: true };
+}
+
+/** Apply a stupor that was recorded before the stealth run came back up. */
+export async function drainPendingStupor(sm, scene, tune) {
+  const pend = scene?.flags?.[MODULE_ID]?.stealthPendingStupor;
+  if (!pend?.ids?.length) return 0;
+  try { await scene.unsetFlag(MODULE_ID, "stealthPendingStupor"); } catch (_) {}
+  return applyStupor(sm, pend.ids, tune);
+}
+
 // ── Boot ────────────────────────────────────────────────────────────────────
 
 function armForScene(scene) {
@@ -394,6 +467,15 @@ Hooks.once("ready", () => {
   });
 
   Hooks.on("canvasReady", () => armForScene(canvas?.scene));
+
+  // A fight this scene started has finished — clear the dead or daze the fled.
+  Hooks.on("fu.battleEnd", (info) => {
+    if (!game.user?.isGM) return;
+    const scene = game.scenes?.get?.(info?.sourceSceneId) ?? null;
+    if (!scene || !isStealthScene(scene)) return;
+    resolvePendingConflict(scene, info?.outcome).catch(
+      (e) => console.error(TAG, "resolvePendingConflict threw", e));
+  });
 
   // Native dragging has to go while a run is live. A movement pool that a
   // player can sidestep by dragging the token is not a movement pool, and a

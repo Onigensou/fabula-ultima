@@ -147,6 +147,14 @@ export const TUNE_DEFAULTS = Object.freeze({
   concealSearchDecay:   2,   // extra awareness a searcher sheds per round at T2+
   concealTier3AlertDrop: 2,  // tiers dropped by a Vanished hide
 
+  // A hide this good talks the room down: hunters lose the exact fix on you
+  // and fall back to investigating a rough direction instead.
+  hideDowngradeRoll:    13,  // total needed to downgrade CHASE -> SUSPICIOUS
+  hideScatterRadius:    4,   // how far the "general direction" point strays
+
+  // Stupor — the breather running away buys you.
+  stuporRounds:         1,
+
   // Alert
   alertRaiseOnSpot:      1,   // tiers gained when the party is spotted outright
   alertDecayRounds:      0,   // 0 = no passive cooling; tension is the point

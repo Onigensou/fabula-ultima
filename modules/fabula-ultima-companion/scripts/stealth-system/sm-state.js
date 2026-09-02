@@ -85,6 +85,7 @@ export function emptyEnemy(tokenId, cell, facing) {
     raisedOnce: false,     // has this guard already cost the party a tier?
     reinforcement: false,
     defeated: false,
+    stupor: 0,             // rounds left skipping activation (see applyStupor)
   };
 }
 
@@ -306,3 +307,40 @@ export function resetRoundCounters(state) {
 }
 
 export { cellKey };
+
+// ── Stupor ──────────────────────────────────────────────────────────────────
+
+/**
+ * Daze the guards a fled fight left behind.
+ *
+ * Running away used to leave the party standing next to the exact enemies they
+ * just escaped, who then acted immediately — so escaping bought nothing and the
+ * fight simply restarted. Stupor is the breather: a stupored guard is skipped
+ * entirely in the enemy phase, which gives the party the round they paid for
+ * without deleting enemies they never actually beat.
+ */
+export function applyStupor(state, tokenIds, tune) {
+  let n = 0;
+  for (const id of tokenIds ?? []) {
+    const e = state.enemies?.[id];
+    if (!e || e.defeated) continue;
+    e.stupor = tune.stuporRounds;
+    // Whatever they knew, they are in no state to act on it.
+    e.awareness = 0;
+    e.ai = AI.PATROL;
+    e.lastKnownCell = null;
+    e.raisedOnce = false;
+    n++;
+  }
+  if (n) pushLog(state, `${n} enemy(ies) left reeling`);
+  return n;
+}
+
+/** Count down every stupor. Called once per round. */
+export function tickStupor(state) {
+  for (const e of enemyRecords(state)) {
+    if (e.stupor > 0) e.stupor -= 1;
+  }
+}
+
+export const isStupored = (e) => (e?.stupor ?? 0) > 0;

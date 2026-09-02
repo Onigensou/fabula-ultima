@@ -496,5 +496,38 @@ stateM.decayAwareness(ds, TUNE, new Set());
 eq("searchers shed extra awareness while you are well hidden",
   before - ds.enemies.s1.awareness, TUNE.awarenessDecay + TUNE.concealSearchDecay);
 
+// ── Stupor ──────────────────────────────────────────────────────────────────
+// The breather running away buys: skipped, not deleted.
+console.log("\n── stupor ──");
+
+const ss = stateM.emptyState();
+ss.enemies.a = stateM.emptyEnemy("a", C(4, 4), "E");
+ss.enemies.b = stateM.emptyEnemy("b", C(6, 6), "E");
+ss.enemies.a.ai = AI.CHASE; ss.enemies.a.awareness = 6;
+
+eq("nobody starts stupored", stateM.isStupored(ss.enemies.a), false);
+eq("stupor applies to the named guards", stateM.applyStupor(ss, ["a"], TUNE), 1);
+eq("  the guard is stupored", stateM.isStupored(ss.enemies.a), true);
+eq("  and is no longer hunting", ss.enemies.a.ai, AI.PATROL);
+eq("  awareness wiped", ss.enemies.a.awareness, 0);
+eq("  the other guard is untouched", stateM.isStupored(ss.enemies.b), false);
+
+// A stupored guard is passed over; the budget moves to the next in priority.
+eq("activation skips the stupored one",
+  ai.pickActivation(ss, C(5, 5), { scene })?.tokenId, "b");
+
+stateM.tickStupor(ss);
+eq("one round clears it", stateM.isStupored(ss.enemies.a), false);
+eq("  and it can act again",
+  !!ai.pickActivation(ss, C(4, 5), { scene }), true);
+
+eq("stupor never touches a defeated guard",
+  (() => { ss.enemies.b.defeated = true; return stateM.applyStupor(ss, ["b"], TUNE); })(), 0);
+
+// ── Hide talks a hunt down ──────────────────────────────────────────────────
+console.log("\n── hide downgrade ──");
+eq("the downgrade threshold is an absolute roll", TUNE.hideDowngradeRoll, 13);
+eq("scatter radius keeps them near but wrong", TUNE.hideScatterRadius, 4);
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

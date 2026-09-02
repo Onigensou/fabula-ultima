@@ -34,7 +34,7 @@ import {
 } from "./sm-grid.js";
 import { stepToward, reachable, findPath, pathFromReachable } from "./sm-lattice.js";
 import { evaluateSight } from "./sm-vision.js";
-import { isAlert, pendingActivations } from "./sm-state.js";
+import { isAlert, pendingActivations, isStupored } from "./sm-state.js";
 
 /**
  * Which enemy acts next.
@@ -46,7 +46,10 @@ import { isAlert, pendingActivations } from "./sm-state.js";
  * lottery.
  */
 export function pickActivation(state, partyCell, { scene = canvas?.scene } = {}) {
-  const pending = pendingActivations(state);
+  // A stupored guard does not act — it is passed over and the budget moves on
+  // to the next in priority. That is the whole value of running away: the
+  // party bought a round, not a deleted enemy.
+  const pending = pendingActivations(state).filter((e) => !isStupored(e));
   if (!pending.length) return null;
 
   const scored = pending.map((e) => ({
