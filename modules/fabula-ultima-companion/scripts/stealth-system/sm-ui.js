@@ -52,6 +52,7 @@ let _targetSpec = null;      // active targeting spec — see beginTargeting()
 let _roster = [];            // party members, cached for the Switch stack
 let _rmbDown = null;         // right-button press origin, for click-vs-drag
 let _gmPick = null;          // { keys:Set, onPick, onCancel } while the GM activates
+let _gmTurn = null;          // { tokenId, cell, moveLeft, onMove, onEnd } — a guard the GM is playing
 let _canvasHooked = false;
 
 // ── Alert panel ─────────────────────────────────────────────────────────────
@@ -228,7 +229,9 @@ function renderHud() {
   // No Leader line: the central token already wears the leader's portrait, so
   // naming them again is the same fact twice.
   const hint =
-    _gmPick               ? "Click a guard to activate — right-click to end the phase"
+    _gmTurn && _mode === "gm-move" ? "Click a lit tile to move the guard"
+    : _gmTurn             ? `Playing ${_gmTurn.name ?? "a guard"} — Move or End`
+    : _gmPick             ? "Click a guard to activate"
     : _mode === "move"      ? "Click a lit tile to move"
     : _mode === "target" ? `Choose a target — ${_pickLabel}`
     : (_view.phase === "ACTIVATE" || _view.phase === "ENEMY_START") ? "Enemy phase…"
@@ -282,8 +285,14 @@ const EXIT_ID = "oni-stealth-exit";
  * crucially — nowhere near the tiles they are trying to click.
  */
 function renderExitButton() {
-  const wanted = _enabled && _view?.active && canAct() && myTurn()
-    && (_mode === "move" || _mode === "target");
+  // Right-click cannot carry "end the phase": a right HOLD is how Foundry
+  // pans, and the two are indistinguishable often enough that the player
+  // reported it simply not working. So the enemy phase gets a real button,
+  // in the same docked spot the player's Cancel uses.
+  const gmWanted = _enabled && _view?.active && game.user?.isGM
+    && (!!_gmPick || (!!_gmTurn && _mode === "gm-move"));
+  const wanted = gmWanted || (_enabled && _view?.active && canAct() && myTurn()
+    && (_mode === "move" || _mode === "target"));
 
   let el = document.getElementById(EXIT_ID);
   if (!wanted) { el?.remove(); return; }
@@ -302,11 +311,20 @@ function renderExitButton() {
       box-shadow:0 4px 0 rgba(41,33,24,.55), 0 0 0 1px rgba(255,255,255,.7) inset;
       text-shadow:0 1px 0 rgba(255,255,255,.7);
     `;
-    el.addEventListener("click", (ev) => { ev.preventDefault(); setMode(null); });
+    el.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      if (_gmPick) { const cb = _gmPick.onCancel; endGmActivation(); cb?.(); return; }
+      if (_gmTurn && _mode === "gm-move") { setGmMode(null); return; }
+      setMode(null);
+    });
     el.addEventListener("pointerdown", (ev) => ev.stopPropagation());
     document.body.appendChild(el);
   }
-  el.textContent = _mode === "move" ? "✕ Cancel Move" : "✕ Cancel";
+  el.textContent =
+    _gmPick                          ? "✕ End Enemy Phase"
+    : (_gmTurn && _mode === "gm-move") ? "✕ Cancel Move"
+    : _mode === "move"                 ? "✕ Cancel Move"
+    : "✕ Cancel";
 }
 
 export function removeExitButton() {
@@ -960,6 +978,25 @@ function onCanvasCapture(ev) {
     return;
   }
 
+  // The GM walking a guard. Its own branch for the same reason the pick has
+  // one: it is not the player's turn, so the gate below would refuse it.
+  if (_gmTurn && _mode === "gm-move") {
+    if (!game.user?.isGM) return;
+    const pt = worldPointOf(ev);
+    if (!pt) return;
+    ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation();
+    if (!_reach) return;
+    const cell = cellAt(pt.world);
+    const node = _reach.get(cellKey(cell));
+    if (!node || node.cost === 0) return;
+    const path = pathFromReachable(_reach, cell);
+    if (!path.length) return;
+    const cb = _gmTurn.onMove;
+    setGmMode(null);
+    cb?.(path);
+    return;
+  }
+
   if (_mode !== "move" && _mode !== "target") return;
   if (!canAct() || !myTurn()) return;
 
@@ -1027,13 +1064,16 @@ function onCanvasRightUp(event) {
   _rmbDown = null;
   if (!start || !_enabled) return;
 
-  // During a GM activation, a right-tap ends the enemy phase — the same
-  // "right-click means back" this mode uses everywhere else.
-  if (_gmPick) {
+  // The enemy phase deliberately does NOT end on a right-click. A right hold
+  // is how Foundry pans, tap and hold are hard to separate in practice, and
+  // "it does not work" was the report. It has a button instead.
+  if (_gmPick) return;
+
+  // Backing out of a guard's move, though, is the same gesture as anywhere
+  // else: a tap returns to that guard's command blades.
+  if (_gmTurn) {
     if (performance.now() - start.t > RMB_HOLD_MS) return;
-    const cb = _gmPick.onCancel;
-    endGmActivation();
-    cb?.();
+    if (_mode === "gm-move") setGmMode(null);
     return;
   }
 
@@ -1047,7 +1087,8 @@ function onCanvasRightUp(event) {
 }
 
 function onCanvasHover(event) {
-  if (!_enabled || !canAct() || !myTurn()) return;
+  if (!_enabled) return;
+  if (!_gmTurn && (!canAct() || !myTurn())) return;
 
   if (_mode === "target") {
     const pos = pointOf(event);
@@ -1058,6 +1099,18 @@ function onCanvasHover(event) {
     } else {
       overlay.hideCrosshair();
     }
+    return;
+  }
+
+  if (_gmTurn && _mode === "gm-move" && _reach) {
+    const pos = pointOf(event);
+    if (!pos) return;
+    const cell = cellAt(pos);
+    const node = _reach.get(cellKey(cell));
+    overlay.clearMarks();
+    if (!node || node.cost === 0) { _hoverPath = null; return; }
+    _hoverPath = pathFromReachable(_reach, cell);
+    overlay.drawPathArrow(_hoverPath, _gmTurn.cell);
     return;
   }
 
@@ -1087,6 +1140,93 @@ function onCanvasHover(event) {
  * installed once at enable(), and every mode that needs a click goes through
  * it. Fewer listeners, and the one that exists is known to win.
  */
+/**
+ * Hand one guard to the GM to play, with the same grammar the party gets.
+ *
+ * Deliberately a TURN, not a command: the GM moves the guard where they want
+ * it, sees the same lit reachable tiles, and ends the turn when they are
+ * done. Running the AI's decision for a guard the GM had just chosen defeated
+ * the point of choosing it.
+ *
+ * No Objective blade. A guard has nothing to hide from, nothing to scan for,
+ * and no reason to throw a rock — it walks, and if it reaches the party that
+ * is a fight. Offering a menu of actions none of which apply would be worse
+ * than offering none.
+ */
+export function beginGmEnemyTurn(turn) {
+  _gmPick = null;
+  _gmTurn = null;
+  _gmTurn = { ...turn };
+  overlay.clearTargets();
+  setGmMode("gm-move");
+}
+
+export function updateGmEnemyTurn(patch) {
+  if (!_gmTurn) return;
+  Object.assign(_gmTurn, patch);
+  setGmMode(_mode === "gm-move" ? "gm-move" : null);
+}
+
+export function endGmEnemyTurn() {
+  _gmTurn = null;
+  _mode = null;
+  _reach = null;
+  overlay.drawReachable(null);
+  overlay.clearMarks();
+  blades.hideBlades();
+  renderHud();
+  renderExitButton();
+}
+
+export const gmEnemyTurnActive = () => !!_gmTurn;
+
+/** Mode switch for the GM-driven turn — mirrors setMode, on the guard. */
+function setGmMode(mode) {
+  _mode = mode;
+  _hoverPath = null;
+  _reach = null;
+  overlay.clearMarks();
+  overlay.drawReachable(null);
+  if (mode === "gm-move") computeGmReach();
+  refreshGmBlades();
+  renderHud();
+  renderExitButton();
+}
+
+function computeGmReach() {
+  const t = _gmTurn;
+  if (!t?.cell || (t.moveLeft ?? 0) <= 0) { _reach = null; overlay.drawReachable(null); return; }
+  _reach = reachable(t.cell, t.moveLeft, { ignoreOccupants: false });
+  overlay.drawReachable(_reach);
+}
+
+function gmEnemyToken() {
+  return canvas?.scene?.tokens?.get?.(_gmTurn?.tokenId)?.object ?? null;
+}
+
+function refreshGmBlades() {
+  const token = gmEnemyToken();
+  if (!_gmTurn || !token) { blades.hideBlades(); return; }
+  // Movement mode puts no blade beside the token — the tiles under it are
+  // exactly where the GM needs to click.
+  if (_mode === "gm-move") { blades.hideBlades(); return; }
+  blades.showBlades(token, [
+    { id: "gm-move", label: "Move", note: String(_gmTurn.moveLeft ?? 0),
+      disabled: (_gmTurn.moveLeft ?? 0) <= 0, reason: "No movement left" },
+    { id: "gm-end", label: "End" },
+  ], onGmPick);
+}
+
+function onGmPick(id) {
+  if (!_gmTurn) return;
+  if (id === "gm-move") { setGmMode("gm-move"); return; }
+  if (id === "gm-end") {
+    const cb = _gmTurn.onEnd;
+    endGmEnemyTurn();
+    cb?.();
+  }
+}
+
 export function beginGmActivation(cells, onPick, onCancel) {
   _gmPick = {
     keys: new Set((cells ?? []).map(cellKey)),

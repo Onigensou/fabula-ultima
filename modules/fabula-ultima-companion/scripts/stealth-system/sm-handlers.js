@@ -236,6 +236,98 @@ export function disarmGmActivation() {
  *    capture-phase handler installed at enable(); everything that needs a
  *    click goes through that one.
  */
+/**
+ * Give one guard a turn the GM plays, then park.
+ *
+ * A guard's turn is deliberately thinner than a player's: Move and End, and
+ * no Objective. It has nothing to hide from, nothing to scan for and no
+ * reason to throw a rock — it walks, and reaching the party is a fight. A
+ * menu of actions none of which apply is worse than no menu.
+ *
+ * Movement is the full hunting speed, not the patrol walk: patrol tempo is a
+ * behaviour of the AI's routine, and there is no routine here — the GM is
+ * deciding, so the guard gets what it is actually capable of.
+ */
+/**
+ * Apply whatever the GM just did with the guard they are playing.
+ *
+ * @returns {Promise<"ended"|"contact"|"moved"|"idle">}
+ */
+async function resumeGmTurn(ctx) {
+  const { sm, tune, scene } = ctx;
+  const turn = sm.__gmTurn;
+  const enemy = sm.enemies?.[turn?.tokenId];
+  if (!enemy || enemy.defeated) return "ended";
+
+  if (sm.__gmTurnEnd) { sm.__gmTurnEnd = false; return "ended"; }
+
+  const path = sm.__gmMove ?? null;
+  sm.__gmMove = null;
+  if (!path?.length) return "idle";
+
+  // Contact is decided the same way the AI's walk decides it, so a guard the
+  // GM walks into the party starts a fight on identical terms.
+  const { path: walked, contact } = truncateAtContact(path, sm.party.cell, scene);
+  const spent = Math.min(turn.moveLeft ?? 0, walked.length);
+  turn.moveLeft = Math.max(0, (turn.moveLeft ?? 0) - spent);
+
+  const from = enemy.cell;
+  enemy.cell = walked[walked.length - 1] ?? enemy.cell;
+  enemy.facing = directionBetween(from, enemy.cell, scene) ?? enemy.facing;
+
+  emitFootsteps(sm, walked, tune, { scene });
+
+  const tokenDoc = scene?.tokens?.get?.(enemy.tokenId);
+  if (tokenDoc) {
+    await walkToken(tokenDoc, walked, {
+      msPerLeg: tune.stepMs,
+      sfx: false,
+      broadcast: (p) => broadcastMotion(p),
+    });
+  }
+
+  syncOccupancy(scene);
+  await ctx.save();
+  broadcastState(sm);
+
+  if (contact) {
+    pushLog(sm, `${tokenDoc?.name ?? "A guard"} reaches the party`);
+    smUi.endGmEnemyTurn();
+    sm.__gmTurn = null;
+    return "contact";
+  }
+
+  // Same guard, fewer squares — re-arm so the blades show what is left.
+  smUi.updateGmEnemyTurn({ cell: enemy.cell, moveLeft: turn.moveLeft });
+  return "moved";
+}
+
+function beginGmTurn(ctx, enemy) {
+  const { sm, tune, scene } = ctx;
+  const name = scene?.tokens?.get?.(enemy.tokenId)?.name ?? "a guard";
+  sm.__gmTurn = { tokenId: enemy.tokenId, moveLeft: tune.enemyMove ?? 5 };
+  pushLog(sm, `${name} activates (GM)`);
+  armGmTurnUi(ctx, enemy, name);
+}
+
+function armGmTurnUi(ctx, enemy, name) {
+  const { sm } = ctx;
+  smUi.beginGmEnemyTurn({
+    tokenId: enemy.tokenId,
+    name,
+    cell: enemy.cell,
+    moveLeft: sm.__gmTurn?.moveLeft ?? 0,
+    onMove: (path) => {
+      sm.__gmMove = path;
+      ctx.dispatch(E.MORE_ENEMIES);
+    },
+    onEnd: () => {
+      sm.__gmTurnEnd = true;
+      ctx.dispatch(E.MORE_ENEMIES);
+    },
+  });
+}
+
 function armGmActivation(ctx) {
   const { sm, dispatch } = ctx;
 
@@ -700,12 +792,40 @@ export function buildHandlers() {
       let enemy;
       if (aiEnabled()) {
         enemy = pickActivation(sm, partyCell, { scene });
+      } else if (sm.__gmTurn) {
+        // A guard the GM is already playing. Re-entry carries either a move
+        // they clicked or the end of its turn.
+        const done = await resumeGmTurn(ctx);
+        if (done === "ended") {
+          markActivated(sm, sm.__gmTurn.tokenId);
+          sm.__gmTurn = null;
+          await ctx.save();
+          broadcastState(sm);
+
+          // The SAME budget the AI path spends. Playing the guards by hand
+          // must not quietly buy the round more activations than it has, or
+          // the toggle changes the encounter instead of who drives it.
+          const used = (sm.activatedThisRound ?? []).length;
+          if (used >= tune.activationsPerRound || !pendingActivations(sm).length) {
+            return ctx.dispatch(E.NO_MORE);
+          }
+          return ctx.dispatch(E.MORE_ENEMIES);
+        }
+        if (done === "contact") return ctx.dispatch(E.CONTACT, { cell: sm.party.cell });
+        return;   // moved, or nothing to do — stay parked on this guard
       } else {
         // A pick already made by a click re-enters here carrying its choice.
         const picked = sm.__gmPick ?? null;
         sm.__gmPick = null;
         if (!picked) { armGmActivation(ctx); return; }   // park, do not block
-        enemy = sm.enemies?.[picked] ?? null;
+        const chosen = sm.enemies?.[picked] ?? null;
+        if (!chosen) return ctx.dispatch(E.NO_MORE);
+
+        // Hand it over and park. Running decideActivation for a guard the GM
+        // has just chosen would answer a question they were asked — the whole
+        // point of choosing is that they play it.
+        beginGmTurn(ctx, chosen);
+        return;
       }
 
       if (!enemy) return ctx.dispatch(E.NO_MORE);
