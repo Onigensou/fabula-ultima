@@ -336,6 +336,21 @@ export async function startStealth(scene = canvas?.scene, opts = {}) {
   gmPanel.render();
   smUi.applyState(socket.serialiseForClients(director.sm), director.tune);
 
+  // Re-assert the leader's face on start as well as on switch.
+  //
+  // A resume restores the leader from the scene flag, but the token keeps
+  // whatever art it was last given — so a run that ended with Keren leading
+  // came back showing Keren over a state that says Hina. The token is the
+  // only place the leader is visible on the board, so it has to be settled
+  // here too, not just at the moment of a switch.
+  {
+    const lead = game.actors?.get?.(director.sm?.party?.controllerActorId);
+    if (lead) {
+      applyLeaderVisual(director.sm, lead, scene)
+        .catch((e) => console.warn(TAG, "leader visual on start failed", e));
+    }
+  }
+
   // Score the opening tier explicitly rather than waiting for the first
   // change: a run that begins in Stealth should already sound like it.
   installBgmWatcher();
