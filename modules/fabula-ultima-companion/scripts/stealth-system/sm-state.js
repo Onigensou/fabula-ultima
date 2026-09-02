@@ -76,6 +76,10 @@ export function emptyEnemy(tokenId, cell, facing) {
     searchRounds: 0,
     lostRounds: 0,
     routeIndex: 0,
+    anchor: null,          // where an unrouted guard drifts around
+    mark: null,            // "spot" | "suspect" — transient, for the overlay
+    markAt: 0,
+    raisedOnce: false,     // has this guard already cost the party a tier?
     reinforcement: false,
     defeated: false,
   };
@@ -175,8 +179,16 @@ export function decayAwareness(state, tune, sawPartyIds = new Set()) {
     if (sawPartyIds.has(e.tokenId)) continue;
     e.awareness = Math.max(0, e.awareness - tune.awarenessDecay);
 
+    // Marks are per-round: the "!" over a guard's head belongs to the moment it
+    // saw something, not to the rest of the infiltration.
+    e.mark = null;
+
     if (e.ai === AI.SUSPICIOUS && e.awareness < tune.suspiciousAt) {
+      // Investigated, found nothing, back to the round. Clearing the latch is
+      // the point: this guard can be startled again by a NEW approach, but a
+      // single crossing of its cone only ever cost the party one tier.
       e.ai = AI.PATROL;
+      e.raisedOnce = false;
     } else if (e.ai === AI.SEARCH) {
       e.searchRounds += 1;
       if (e.searchRounds > tune.searchPersistence) {
@@ -184,6 +196,7 @@ export function decayAwareness(state, tune, sawPartyIds = new Set()) {
         e.awareness = 0;
         e.lastKnownCell = null;
         e.searchRounds = 0;
+        e.raisedOnce = false;
       }
     } else if (e.ai === AI.CHASE) {
       e.lostRounds += 1;

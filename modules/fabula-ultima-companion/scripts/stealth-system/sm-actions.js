@@ -220,17 +220,21 @@ export async function resolveHide(state, controllerActor, partyCell, tune, {
   }
   if (!controllerActor) return { ok: false, reason: "No leader assigned." };
 
-  const aware = awareEnemies(state, 1).length;
+  // ── A flat DL per tier ────────────────────────────────────────────────────
+  //
+  // The stacked version (base + per-aware-enemy + per-helper − cover) reached
+  // DL 22 in ordinary play, which is not a check, it is a wall. It also made
+  // the number impossible to reason about at the table: nobody could say what
+  // hiding cost without doing arithmetic first.
+  //
+  // One number per alert tier, and the tier already encodes everything the
+  // modifiers were groping at — how many guards are up, and how hard they are
+  // looking. Cover still helps, because standing behind a crate should.
   const cover = !!cellRecord(partyCell, scene)?.cover;
-
   const helpers = partyActors.filter((a) => a && a.id !== controllerActor.id);
-  const leaderDl = Math.max(
-    5,
-    tune.hideBaseDl
-      + aware * tune.hideDlPerAwareEnemy
-      + helpers.length * tune.hideDlPerHelper
-      - (cover ? tune.hideCoverBonus : 0),
-  );
+
+  const tierDl = tune.hideDlByAlert?.[state.alert] ?? tune.hideDlByAlert?.[ALERT.NEUTRAL] ?? 10;
+  const leaderDl = Math.max(5, tierDl - (cover ? tune.hideCoverBonus : 0));
 
   const GC = globalThis.ONI?.GroupCheck;
   const label = `Hide${cover ? " (in cover)" : ""} — DL ${leaderDl}`;

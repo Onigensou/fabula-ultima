@@ -24,6 +24,7 @@ import { TAG, MSG } from "./sm-constants.js";
 import { centerOf, topLeftOf } from "./sm-grid.js";
 
 export const MOVE_SFX = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/DashA.wav";
+export const ALERT_SFX = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Alert.mp3";
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -198,4 +199,24 @@ export async function replayMotion(payload) {
     msPerLeg: payload.msPerLeg ?? 190,
     sfx: payload.sfx !== false,
   });
+}
+
+/**
+ * The alarm cue for a detection.
+ *
+ * Rate-limited like the footstep: a party crossing a room can be noticed by
+ * three guards in the same step, and three overlapping copies of an alarm is
+ * noise, not tension.
+ */
+let _lastAlertAt = 0;
+export function playAlertSfx({ volume = 0.65 } = {}) {
+  const now = performance.now();
+  if (now - _lastAlertAt < 500) return;
+  _lastAlertAt = now;
+  try {
+    foundry.audio.AudioHelper.play({ src: ALERT_SFX, volume, autoplay: true, loop: false }, false);
+  } catch (_) {
+    try { AudioHelper.play({ src: ALERT_SFX, volume, autoplay: true, loop: false }, false); }
+    catch (_e) { /* audio locked */ }
+  }
 }

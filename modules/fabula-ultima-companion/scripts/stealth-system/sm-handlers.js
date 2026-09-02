@@ -6,7 +6,7 @@
 // next event.
 // ============================================================================
 
-import { TAG, ALERT, AI, HOOKS, MSG } from "./sm-constants.js";
+import { TAG, ALERT, ALERT_ORDER, AI, HOOKS, MSG } from "./sm-constants.js";
 import { S, E } from "./sm-states.js";
 import {
   cellOfToken, cellDistance, directionBetween, sameCell, cellKey, topLeftOf, centerOf,
@@ -26,7 +26,9 @@ import {
 import { settleLedger, makeNoise } from "./sm-actions.js";
 import { spawnReinforcement } from "./sm-reinforcement.js";
 import { launchConflict } from "./sm-conflict.js";
-import { broadcastState, broadcastOverlay, broadcastMotion, broadcastBanner } from "./sm-socket.js";
+import {
+  broadcastState, broadcastOverlay, broadcastMotion, broadcastBanner, broadcastDetection,
+} from "./sm-socket.js";
 import { walkToken } from "./sm-motion.js";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -159,21 +161,49 @@ export function detectionSweep(ctx, partyCell) {
 
   const survey = surveyObservers(observers, partyCell, tune, { scene });
   const seenBy = [];
+  const newMarks = [];
+  let raised = null;
 
   for (const row of survey.results) {
-    if (!row.sight.seen) continue;
+    const sight = row.sight;
+    if (!sight.seen) continue;
+    const e = sm.enemies[row.tokenId];
+    if (!e) continue;
+
     seenBy.push(row.tokenId);
-    bumpAwareness(sm, row.tokenId, Math.max(1, row.sight.awareness), tune, partyCell);
+    bumpAwareness(sm, row.tokenId, Math.max(1, sight.awareness), tune, partyCell);
+
+    if (sight.spotted) {
+      // Seen outright. The alarm goes straight to ALERT — walking the tier up
+      // one notch at a time when a guard is staring at you from two tiles away
+      // just meant the party got spotted twice for the same mistake.
+      e.mark = "spot";
+      e.markAt = sm.round;
+      if (!e.raisedOnce) { e.raisedOnce = true; newMarks.push({ id: e.tokenId, kind: "spot" }); }
+      else newMarks.push({ id: e.tokenId, kind: "spot" });
+
+      if (sm.alert !== ALERT.ALERT) {
+        raised = shiftAlert(sm, ALERT_ORDER.length, "spotted outright");
+      }
+      try { Hooks.callAll(HOOKS.ENEMY_SPOTTED, { cell: partyCell, by: [row.tokenId] }); } catch (_) {}
+      continue;
+    }
+
+    // Suspicious. Costs ONE tier the first time THIS guard notices anything,
+    // and nothing thereafter — otherwise crossing a long cone ratchets the
+    // alarm once per cell and the party is punished for a single mistake five
+    // times over. The latch clears when the guard gives up and returns to
+    // patrol, so a second, separate approach still costs again.
+    e.mark = "suspect";
+    e.markAt = sm.round;
+    if (!e.raisedOnce) {
+      e.raisedOnce = true;
+      newMarks.push({ id: e.tokenId, kind: "suspect" });
+      raised = shiftAlert(sm, 1, "something noticed") ?? raised;
+    }
   }
 
-  let raised = null;
-  if (survey.anyAutoSpot) {
-    // Caught in the open at close range — no check, the guard simply sees them.
-    raised = shiftAlert(sm, tune.alertRaiseOnSpot, "spotted");
-    try { Hooks.callAll(HOOKS.ENEMY_SPOTTED, { cell: partyCell, by: seenBy }); } catch (_) {}
-  }
-
-  return { spotted: survey.anyAutoSpot, seenBy, raised, survey };
+  return { spotted: survey.anySpotted, seenBy, raised, marks: newMarks, survey };
 }
 
 // ── Handlers ────────────────────────────────────────────────────────────────
@@ -289,7 +319,12 @@ export function buildHandlers() {
         // cells actually travelled are resolved first and only those are
         // animated. Animating the whole path and rewinding on a spot would
         // show the player a move that never happened.
+        // Only a genuine SIGHTING halts the walk. Suspicion registers, marks
+        // the guard and may cost a tier, but the party keeps moving — halting
+        // on every suspicious cell was what turned crossing one cone into a
+        // stop-start loop the player could not escape by moving.
         const walked = [];
+        const marks = [];
         for (const cell of payload.path) {
           if (sm.party.moveLeft <= 0) break;
 
@@ -298,8 +333,10 @@ export function buildHandlers() {
           walked.push(cell);
 
           const det = detectionSweep(ctx, cell);
+          marks.push(...(det.marks ?? []));
           if (det.spotted) { spottedAt = cell; break; }
         }
+        if (marks.length) broadcastDetection(marks);
 
         // One glide, one document write — see sm-motion.
         if (token && walked.length) {
@@ -312,10 +349,11 @@ export function buildHandlers() {
         syncOccupancy(scene);
         try { Hooks.callAll(HOOKS.PARTY_MOVED, { cell: sm.party.cell }); } catch (_) {}
 
-        if (spottedAt) {
-          pushLog(sm, `Spotted at ${spottedAt.i},${spottedAt.j}`);
-          ui.notifications?.warn?.("You have been spotted!");
-        }
+        // No ui.notifications here. Being seen is a thing that happens ON the
+        // board — the guard wears an exclamation mark and the alarm sounds.
+        // A toast in the corner said the same thing worse, and pulled the
+        // player away from the map at the exact moment it mattered.
+        if (spottedAt) pushLog(sm, `Spotted at ,`);
 
         if (payload.noisy) makeNoise(sm, sm.party.cell, tune, { scene, strength: 2, reason: "dash" });
       }

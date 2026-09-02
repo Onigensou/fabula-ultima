@@ -79,6 +79,33 @@ function sweepFacing(enemy, scene) {
   return keys[(dirIdx + step + keys.length) % keys.length];
 }
 
+/**
+ * A soft wander for a guard with no authored route.
+ *
+ * Picks a cell a short hop away, inside a leash around the post it started on,
+ * and only some of the time — a guard that moves every single activation is a
+ * guard whose cone never settles, and the player can never read a pattern to
+ * plan against. Standing still sometimes IS the pattern.
+ *
+ * The anchor is captured on first use rather than authored, so an unrouted
+ * guard the GM drops anywhere behaves sensibly with no setup at all.
+ */
+function wanderStep(enemy, tune, { scene }) {
+  if (!enemy.anchor) enemy.anchor = { ...enemy.cell };
+  if (Math.random() > (tune.wanderChance ?? 0.5)) return null;
+
+  const leash = tune.wanderLeash ?? 3;
+  const hop = Math.max(1, Math.min(tune.wanderStep ?? 2, tune.enemyMove));
+
+  const reach = reachable(enemy.cell, hop, { scene, ignoreOccupants: false });
+  const options = [...reach.values()].filter((n) =>
+    n.cost > 0 && cellDistance(n.cell, enemy.anchor, scene) <= leash);
+
+  if (!options.length) return null;
+  const pick = options[Math.floor(Math.random() * options.length)];
+  return { cell: pick.cell, path: pathFromReachable(reach, pick.cell) };
+}
+
 /** Advance along an authored waypoint route, looping at the end. */
 function patrolStep(enemy, route, budget, { scene }) {
   if (!route?.length) return null;
@@ -185,6 +212,19 @@ export function decideActivation(state, enemy, partyCell, tune, { scene = canvas
         out.path = stepped.path;
         out.facing = directionBetween(enemy.cell, stepped.cell, scene) ?? out.facing;
         out.note = "patrolling";
+        break;
+      }
+
+      // No authored route. Rather than stand rooted and spin — which made
+      // unrouted guards read as scenery and let a player memorise a static
+      // map — drift a short way around the post and look where you are going.
+      // The anchor is remembered so the guard never wanders off its station.
+      const wander = wanderStep(enemy, tune, { scene });
+      if (wander) {
+        out.move = wander.cell;
+        out.path = wander.path;
+        out.facing = directionBetween(enemy.cell, wander.cell, scene) ?? out.facing;
+        out.note = "meandering";
       } else {
         out.facing = sweepFacing(enemy, scene);
         out.note = "holding post";

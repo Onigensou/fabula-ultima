@@ -37,7 +37,7 @@ import * as socket from "./sm-socket.js";
 import * as smUi from "./sm-ui.js";
 import * as overlay from "./sm-overlay.js";
 import * as gmPanel from "./sm-gm-panel.js";
-import { replayMotion } from "./sm-motion.js";
+import { replayMotion, playAlertSfx } from "./sm-motion.js";
 import { playPhaseBannerLocal, removeBanner } from "./sm-banner.js";
 
 // ── Scene gate ──────────────────────────────────────────────────────────────
@@ -296,6 +296,7 @@ export async function stopStealth({ settle = true, cleanup = true } = {}) {
   gmPanel.remove();
   smUi.disable();
   overlay.destroyAll();
+  overlay.destroyMarkLayer();
   removeBanner();
   socket.broadcastState({ active: false });
 }
@@ -347,6 +348,16 @@ Hooks.once("ready", () => {
     },
     onMotion: (payload) => { replayMotion(payload).catch(() => {}); },
     onBanner: (payload) => { playPhaseBannerLocal(payload?.kind).catch(() => {}); },
+    onDetect: (payload) => {
+      // Marks over the guards who noticed, plus one alarm cue for the batch.
+      const view = smUi.currentView();
+      let sounded = false;
+      for (const m of (payload?.marks ?? [])) {
+        const e = (view?.enemies ?? []).find((x) => x.tokenId === m.id);
+        if (e?.cell) overlay.popDetectionMark(e.cell, m.kind);
+        if (!sounded) { playAlertSfx(); sounded = true; }
+      }
+    },
     onNarrate: (payload) => {
       if (!payload?.text) return;
       ui.notifications?.info?.(payload.text);

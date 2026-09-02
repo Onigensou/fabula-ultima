@@ -306,10 +306,18 @@ aiState.__config = { routes: {}, facings: {} };
 aiState.enemies.g = stateM.emptyEnemy("g", C(5, 5), "E");
 aiState.party.cell = C(5, 12);
 
-// PATROL with no route: hold the post and sweep, never chase.
+// PATROL with no route: meander around its post, never chase. Wandering is
+// probabilistic, so sample until it moves rather than asserting one roll.
+let moved = null, held = false;
+for (let i = 0; i < 40 && (!moved || !held); i++) {
+  const r = ai.decideActivation(aiState, aiState.enemies.g, C(5, 12), TUNE, { scene });
+  if (r.move) moved = r; else held = true;
+}
+eq("an unrouted guard sometimes drifts", !!moved, true);
+eq("  and sometimes holds", held, true);
+eq("  it never strays past its leash", 
+  moved ? grid.cellDistance(moved.move, aiState.enemies.g.anchor) <= TUNE.wanderLeash : true, true);
 let intent = ai.decideActivation(aiState, aiState.enemies.g, C(5, 12), TUNE, { scene });
-eq("a patrolling guard with no route does not move", intent.move, null);
-eq("  but its facing sweeps", intent.facing !== "E", true);
 
 // SUSPICIOUS: turn toward the stimulus and hold. This is the round the party
 // gets to break line of sight, so movement here would be a real design bug.
@@ -354,6 +362,48 @@ jf.enemies.near = stateM.emptyEnemy("near", C(5, 5), "E");
 jf.enemies.far  = stateM.emptyEnemy("far",  C(30, 30), "E");
 eq("only nearby enemies join the conflict",
   ai.conflictParticipants(jf, C(5, 6), TUNE, { scene }).map((e) => e.tokenId).join(), "near");
+
+// ── Two-tier detection ──────────────────────────────────────────────────────
+// The split that made movement playable: suspicion costs a tier once and lets
+// you keep walking; only a real sighting halts the move.
+console.log("\n── detection tiers ──");
+
+let d = vision.evaluateSight(C(5, 5), "E", C(5, 6), TUNE);
+eq("adjacent in-cone is spotted outright", d.level, "spotted");
+eq("  and halts a walk", d.spotted, true);
+
+d = vision.evaluateSight(C(5, 5), "E", C(5, 11), TUNE);
+eq("far in-cone is only suspicious", d.level, "suspicious");
+eq("  and does NOT halt a walk", d.spotted, false);
+
+d = vision.evaluateSight(C(5, 5), "E", C(5, 30), TUNE);
+eq("well out of range is nothing", d.level, "none");
+
+// Cover downgrades a would-be spot to mere suspicion.
+scene.tiles = [{
+  id: "c3", x: 600, y: 500, width: 100, height: 100, hidden: false,
+  flags: { "fabula-ultima-companion": { stealthProp: { enabled: true, solid: false, cover: true } } },
+}];
+lattice.invalidateLattice(); lattice.buildLattice(scene);
+eq("cover downgrades a spot", vision.evaluateSight(C(5, 5), "E", C(5, 6), TUNE).spotted, false);
+scene.tiles = []; lattice.invalidateLattice(); lattice.buildLattice(scene);
+
+// Hide is one flat number per tier now, not a stack that reached DL 22.
+eq("hide DL at stealth", TUNE.hideDlByAlert.stealth, 8);
+eq("hide DL at neutral", TUNE.hideDlByAlert.neutral, 10);
+eq("hide DL at alert",   TUNE.hideDlByAlert.alert, 12);
+
+// The suspicion latch: one tier per guard, cleared only when it gives up.
+const ls = stateM.emptyState();
+ls.enemies.g1 = stateM.emptyEnemy("g1", C(5, 5), "E");
+eq("a fresh guard has not yet cost a tier", ls.enemies.g1.raisedOnce, false);
+ls.enemies.g1.raisedOnce = true;
+ls.enemies.g1.mark = "suspect";
+ls.enemies.g1.ai = AI.SUSPICIOUS;
+ls.enemies.g1.awareness = 0;
+stateM.decayAwareness(ls, TUNE, new Set());
+eq("giving up clears the latch", ls.enemies.g1.raisedOnce, false);
+eq("  and drops the mark", ls.enemies.g1.mark, null);
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

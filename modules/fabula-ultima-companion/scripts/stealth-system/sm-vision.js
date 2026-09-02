@@ -43,13 +43,15 @@ export function evaluateSight(observerCell, facing, targetCell, tune, {
   scene = canvas?.scene,
 } = {}) {
   const miss = (reason, extra = {}) => ({
-    seen: false, arc: ARC.REAR, distance: Infinity, los: false, inCone: false,
+    seen: false, level: "none", spotted: false,
+    arc: ARC.REAR, distance: Infinity, los: false, inCone: false,
     cover: false, lit: false, awareness: 0, autoSpot: false, reason, ...extra,
   });
 
   if (!observerCell || !targetCell) return miss("no-cell");
   if (sameCell(observerCell, targetCell)) {
-    return { seen: true, arc: ARC.FRONT, distance: 0, los: true, inCone: true,
+    return { seen: true, level: "spotted", spotted: true,
+             arc: ARC.FRONT, distance: 0, los: true, inCone: true,
              cover: false, lit: true, awareness: tune.awarenessMax, autoSpot: true,
              reason: "same-cell" };
   }
@@ -96,16 +98,31 @@ export function evaluateSight(observerCell, facing, targetCell, tune, {
   if (!lit)  awareness += tune.darkAwareness;     // negative
   awareness = Math.max(0, awareness);
 
-  // Auto-spot: inside the cone, inside detection range, no cover. At that
-  // point a check would be theatre — the guard is looking right at them.
-  const autoSpot = coneHit && distance <= tune.detectionRange && !cover;
+  // ── Two levels, not one ──────────────────────────────────────────────────
+  //
+  //   "spotted"     inside the cone, within spottedRange, not in cover.
+  //                 The guard is looking right at them. No check, no doubt.
+  //
+  //   "suspicious"  inside the cone but further out. Something moved; the
+  //                 guard is not sure what.
+  //
+  // The split exists because one level made movement unplayable: every cell
+  // entered inside a cone re-triggered the same "spotted" event, halting the
+  // walk and ratcheting the alert again and again while the party was still
+  // crossing the same room. Suspicion now costs one tier ONCE per guard and
+  // never stops the walk; only a genuine sighting does both.
+  const spotted = coneHit && distance <= tune.spottedRange && !cover;
+  const level = spotted ? "spotted" : (awareness > 0 ? "suspicious" : "none");
 
   return {
-    seen: awareness > 0 || autoSpot,
+    seen: level !== "none",
+    level,
+    spotted,
     arc, distance, los, inCone: coneHit, cover, lit,
-    awareness: autoSpot ? Math.max(awareness, 2) : awareness,
-    autoSpot,
-    reason: autoSpot ? "auto-spot" : (coneHit ? "in-cone" : "proximity"),
+    awareness: spotted ? Math.max(awareness, 3) : awareness,
+    // Kept for callers that only care whether the guard is certain.
+    autoSpot: spotted,
+    reason: spotted ? "spotted" : (coneHit ? "in-cone" : "proximity"),
   };
 }
 
@@ -140,15 +157,21 @@ export function visibleCells(observerCell, facing, tune, { scene = canvas?.scene
 export function surveyObservers(observers, partyCell, tune, { scene = canvas?.scene } = {}) {
   const results = [];
   let best = null;
-  let anyAutoSpot = false;
+  let anySpotted = false;
 
   for (const obs of observers) {
     const r = evaluateSight(obs.cell, obs.facing, partyCell, tune, { scene });
     const row = { ...obs, sight: r };
     results.push(row);
-    if (r.autoSpot) anyAutoSpot = true;
+    if (r.spotted) anySpotted = true;
     if (r.seen && (!best || r.awareness > best.sight.awareness)) best = row;
   }
 
-  return { results, best, anyAutoSpot, seenBy: results.filter((r) => r.sight.seen) };
+  return {
+    results, best, anySpotted,
+    anyAutoSpot: anySpotted,          // legacy alias
+    spottedBy:   results.filter((r) => r.sight.spotted),
+    suspiciousBy: results.filter((r) => r.sight.level === "suspicious"),
+    seenBy:      results.filter((r) => r.sight.seen),
+  };
 }

@@ -33,14 +33,16 @@ let _onOverlay = null;
 let _onNarrate = null;
 let _onMotion = null;
 let _onBanner = null;
+let _onDetect = null;
 
-export function install({ onRequest, onState, onOverlay, onNarrate, onMotion, onBanner } = {}) {
+export function install({ onRequest, onState, onOverlay, onNarrate, onMotion, onBanner, onDetect } = {}) {
   _onRequest = onRequest ?? _onRequest;
   _onState   = onState   ?? _onState;
   _onOverlay = onOverlay ?? _onOverlay;
   _onNarrate = onNarrate ?? _onNarrate;
   _onMotion  = onMotion  ?? _onMotion;
   _onBanner  = onBanner  ?? _onBanner;
+  _onDetect  = onDetect  ?? _onDetect;
 
   if (_installed) return;
   _installed = true;
@@ -69,6 +71,10 @@ export function install({ onRequest, onState, onOverlay, onNarrate, onMotion, on
 
         case MSG.NARRATE:
           _onNarrate?.(msg.payload);
+          return;
+
+        case MSG.DETECT:
+          _onDetect?.(msg.payload);
           return;
 
         case MSG.BANNER:
@@ -190,4 +196,16 @@ export function broadcastBanner(kind) {
   if (!game.user?.isGM) return;
   try { game.socket.emit(CHANNEL, { type: MSG.BANNER, payload: { kind } }); } catch (_) {}
   try { _onBanner?.({ kind }); } catch (_) {}
+}
+
+/**
+ * Announce a detection: the !/? marks over the guards who noticed, plus the
+ * alarm cue. Fired to every client INCLUDING the GM, because being seen is a
+ * board event and the GM is watching the same board.
+ */
+export function broadcastDetection(marks) {
+  if (!game.user?.isGM || !marks?.length) return;
+  const payload = { marks };
+  try { game.socket.emit(CHANNEL, { type: MSG.DETECT, payload }); } catch (_) {}
+  try { _onDetect?.(payload); } catch (_) {}
 }

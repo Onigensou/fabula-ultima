@@ -282,3 +282,109 @@ export function markCell(cell, { color = 0xf3d98b, alpha = 0.9, filled = false }
   _marks.drawCircle(c.x, c.y, gs * 0.38);
   _marks.lineStyle(0);
 }
+
+// ── Detection marks ─────────────────────────────────────────────────────────
+//
+// The "!" a guard wears when it sees you and the "?" when it is unsure. This
+// replaces the Foundry toast that used to announce a sighting: being seen is a
+// thing that happens ON the board, next to the guard it happened to, and a
+// notification in the corner pulled the player's eye away from the map at the
+// exact moment the map mattered most.
+//
+// Its own container (not the shared Graphics layers) because these are Text
+// objects with their own lifetime — they pop, hold, and fade on a timer rather
+// than being redrawn with the rest of the frame.
+
+const Z_MARKS_TOP = 500001;
+let _markLayer = null;
+
+function markLayer() {
+  if (_markLayer && !_markLayer.destroyed) return _markLayer;
+  const parent = canvas?.stage;
+  if (!parent) return null;
+  const c = new PIXI.Container();
+  c.name = "Stealth DetectionMarks";
+  c.zIndex = Z_MARKS_TOP;      // ABOVE tokens: it is about the token
+  c.eventMode = "none";
+  parent.sortableChildren = true;
+  parent.addChild(c);
+  _markLayer = c;
+  return c;
+}
+
+const MARK_STYLE = {
+  spot:    { glyph: "!", fill: 0xff5a4a, stroke: 0x2a0d09 },
+  suspect: { glyph: "?", fill: 0xf3d066, stroke: 0x2e2408 },
+};
+
+/**
+ * Pop a mark over a token: rise, hold, fade.
+ * `cell` is where the guard stands; the mark floats above its head.
+ */
+export function popDetectionMark(cell, kind = "suspect", { holdMs = 950 } = {}) {
+  const layer = markLayer();
+  if (!layer || !cell) return;
+  const spec = MARK_STYLE[kind] ?? MARK_STYLE.suspect;
+  const gs = gridSize();
+
+  let text;
+  try {
+    text = new PIXI.Text(spec.glyph, new PIXI.TextStyle({
+      fontFamily: "Signika, sans-serif",
+      fontSize: Math.round(gs * 1.05),
+      fontWeight: "900",
+      fill: spec.fill,
+      stroke: spec.stroke,
+      strokeThickness: Math.max(3, gs * 0.11),
+      dropShadow: true,
+      dropShadowColor: 0x000000,
+      dropShadowAlpha: 0.65,
+      dropShadowBlur: 4,
+      dropShadowDistance: 2,
+    }));
+  } catch (_) { return; }
+
+  const c = centerOf(cell);
+  text.anchor.set(0.5, 1);
+  text.x = c.x;
+  text.y = c.y - gs * 0.45;
+  text.alpha = 0;
+  layer.addChild(text);
+
+  const startY = text.y;
+  const t0 = performance.now();
+  const RISE = 220;
+
+  const tick = () => {
+    const t = performance.now() - t0;
+    if (t < RISE) {
+      const k = t / RISE;
+      text.alpha = k;
+      text.y = startY + (1 - k) * gs * 0.35;   // pops upward into place
+      text.scale.set(0.7 + 0.3 * k);
+    } else if (t < RISE + holdMs) {
+      text.alpha = 1;
+      text.y = startY;
+      text.scale.set(1);
+    } else {
+      const k = Math.min(1, (t - RISE - holdMs) / 260);
+      text.alpha = 1 - k;
+      text.y = startY - k * gs * 0.25;
+      if (k >= 1) {
+        canvas.app.ticker.remove(tick);
+        try { layer.removeChild(text); text.destroy(); } catch (_) {}
+      }
+    }
+  };
+  canvas.app.ticker.add(tick);
+}
+
+export function destroyMarkLayer() {
+  try {
+    if (_markLayer && !_markLayer.destroyed) {
+      _markLayer.parent?.removeChild(_markLayer);
+      _markLayer.destroy({ children: true });
+    }
+  } catch (_) {}
+  _markLayer = null;
+}

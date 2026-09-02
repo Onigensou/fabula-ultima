@@ -44,7 +44,10 @@ function ensureStyle() {
   width:88vw; height:12vh; --line:${DISP_BLUE};
   display:flex; flex-direction:column; justify-content:space-between;
 }
-#${LAYER_ID} .sm-wash{ position:absolute; inset:0; opacity:0; }
+/* The wash lives INSIDE the band, not the layer. On the layer it was
+   position:absolute inset:0 against a fixed full-screen parent, so the
+   disposition colour flashed the entire viewport instead of the strip. */
+#${LAYER_ID} .sm-wash{ position:absolute; inset:0; opacity:0; border-radius:3px; }
 #${LAYER_ID} .sm-line{
   position:relative; width:100%; height:3px; transform:scaleX(0);
   transform-origin:50% 50%;
@@ -75,11 +78,11 @@ function ensureLayer() {
   const wash = document.createElement("div"); wash.className = "sm-wash";
   const top = document.createElement("div"); top.className = "sm-line";
   const bot = document.createElement("div"); bot.className = "sm-line";
-  band.append(top, bot);
+  band.append(wash, top, bot);
 
   const text = document.createElement("div"); text.className = "sm-text";
 
-  layer.append(wash, band, text);
+  layer.append(band, text);
   document.body.appendChild(layer);
   layer.__sm = { band, wash, top, bot, text };
   return layer;

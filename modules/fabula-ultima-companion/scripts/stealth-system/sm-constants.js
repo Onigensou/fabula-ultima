@@ -115,7 +115,8 @@ export const TUNE_DEFAULTS = Object.freeze({
 
   // Perception
   suspicionRadius:  5,     // proximity awareness, cone-independent
-  detectionRange:   3,     // automatic spot inside the cone
+  detectionRange:   3,     // legacy alias; the live gate is spottedRange
+  spottedRange:     2,     // inside the cone AND this close = seen outright
   visionRange:      8,     // outer limit of the cone
   coneHalfAngle:    45,    // degrees either side of facing → a 90° cone
   flankRangeMult:   0.6,   // sight range multiplier in the flank arc
@@ -130,16 +131,24 @@ export const TUNE_DEFAULTS = Object.freeze({
   searchPersistence: 3,    // rounds before SEARCH falls back to PATROL
   chaseGiveUp:      2,     // rounds without sight before CHASE drops to SEARCH
 
+  // Idle wander — a guard with no authored route drifts around its post
+  // instead of standing rooted and spinning.
+  wanderChance:     0.5,   // odds it moves at all on a given activation
+  wanderStep:       2,     // cells per drift
+  wanderLeash:      3,     // never strays further than this from its post
+
   // Alert
   alertRaiseOnSpot:      1,   // tiers gained when the party is spotted outright
   alertDecayRounds:      0,   // 0 = no passive cooling; tension is the point
-  hideBaseDl:            10,
-  hideDlPerAwareEnemy:   2,
-  hideDlPerHelper:       2,   // more bodies means more help AND more to hide
+  // Hide is ONE flat DL per alert tier. The tier already encodes how many
+  // guards are up and how hard they are looking, so stacking per-enemy and
+  // per-helper modifiers on top only produced unreadable numbers (DL 22 in
+  // ordinary play) without saying anything the tier did not.
+  hideDlByAlert:         { stealth: 8, neutral: 10, alert: 12 },
+  hideCoverBonus:        2,   // DL reduction for hiding in cover
   hideHelperDl:          10,  // RAW: supporting characters roll the standard DL
   hideHelperBonus:       1,   // RAW: +1 to the leader per helper success
   hideAwarenessRelief:   2,   // awareness each guard sheds on a successful hide
-  hideCoverBonus:        2,
   noiseAlertChance:      0.35, // chance a Dash/noise event raises a tier
 
   // Takedown
@@ -209,5 +218,6 @@ export const MSG = Object.freeze({
   OVERLAY:   "SM_OVERLAY",    // GM → all: transient visual
   NARRATE:   "SM_NARRATE",    // GM → all: narration beat
   BANNER:    "SM_BANNER",     // GM → all: phase announcer flash
+  DETECT:    "SM_DETECT",     // GM → all: !/? marks + alarm cue
   MOTION:    "SM_MOTION",     // GM → all: replay a token glide
 });
