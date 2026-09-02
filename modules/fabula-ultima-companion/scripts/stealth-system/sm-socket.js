@@ -219,9 +219,13 @@ export function broadcastBanner(kind) {
  * alarm cue. Fired to every client INCLUDING the GM, because being seen is a
  * board event and the GM is watching the same board.
  */
-export function broadcastDetection(marks) {
+export function broadcastDetection(marks, { silent = false } = {}) {
   if (!game.user?.isGM || !marks?.length) return;
-  const payload = { marks };
+  // `silent` suppresses the alarm cue. A diversion raises question marks over
+  // the guards it pulled, but nobody has NOTICED anything — the rock already
+  // played its own sound, and stacking the alert sting on top would tell the
+  // player they had been caught by the thing they threw to avoid being caught.
+  const payload = { marks, silent };
   try { game.socket.emit(CHANNEL, { type: MSG.DETECT, payload }); } catch (_) {}
   try { _onDetect?.(payload); } catch (_) {}
 }

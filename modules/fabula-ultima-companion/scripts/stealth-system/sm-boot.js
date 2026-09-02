@@ -194,8 +194,15 @@ async function runObjective(payload, { sm, tune, scene }) {
     // Show the throw BEFORE resolving, and wait for it. The guards turning is
     // the consequence; playing both at once reads as the guards reacting to
     // nothing and the rock arriving late to explain it.
-    await socket.broadcastOverlayAwait({ kind: "throw", from: partyCell, to: payload.cell });
-    resolveDiversion(sm, payload.cell, partyCell, tune, { scene });
+    await socket.broadcastOverlayAwait({
+      kind: "throw", from: partyCell, to: payload.cell, radius: tune.diversionRadius,
+    });
+    const div = resolveDiversion(sm, payload.cell, partyCell, tune, { scene });
+    // A "?" over everyone the noise reached. Without it the area is invisible:
+    // two guards stand equally near the landing point, one answers and one
+    // does not, and nothing on screen says which — or why.
+    socket.broadcastDetection(
+      (div.pulled ?? []).map((id) => ({ id, kind: "suspect" })), { silent: true });
     return director.dispatch(E.OBJECTIVE, { kind: "objective", id });
   }
 
@@ -447,7 +454,7 @@ Hooks.once("ready", () => {
     onState: (view) => smUi.applyState(view, readTuning(canvas?.scene)),
     onOverlay: (payload) => {
       if (payload?.kind === "throw") {
-        return throwRock(payload.from, payload.to);
+        return throwRock(payload.from, payload.to, { radiusCells: payload.radius });
       }
       if (payload?.kind === "scan") {
         overlay.playSonar(payload.origin, payload.radius, payload.finds ?? [],
@@ -463,7 +470,7 @@ Hooks.once("ready", () => {
       for (const m of (payload?.marks ?? [])) {
         const e = (view?.enemies ?? []).find((x) => x.tokenId === m.id);
         if (e?.cell) overlay.popDetectionMark(e.cell, m.kind);
-        if (!sounded) { playAlertSfx(); sounded = true; }
+        if (!payload.silent && !sounded) { playAlertSfx(); sounded = true; }
       }
     },
     onNarrate: (payload) => {

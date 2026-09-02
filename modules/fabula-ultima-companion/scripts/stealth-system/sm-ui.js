@@ -25,9 +25,9 @@
 // ============================================================================
 
 import {
-  ALERT, ALERT_LABEL, ALERT_COLOR, OBJECTIVE,
+  ALERT, ALERT_LABEL, ALERT_COLOR, OBJECTIVE, ARC,
 } from "./sm-constants.js";
-import { cellAt, cellKey, cellDistance, cellsWithin } from "./sm-grid.js";
+import { cellAt, cellKey, cellDistance, cellsWithin, relativeArc } from "./sm-grid.js";
 import { reachable, pathFromReachable, hasLineOfSight, cellRecord } from "./sm-lattice.js";
 import { surveyObservers } from "./sm-vision.js";
 import * as overlay from "./sm-overlay.js";
@@ -273,18 +273,31 @@ function rootCommands() {
  * an option that never applied.
  */
 function objectiveCommands() {
-  const near = nearestEnemy();
+  const takedowns = takedownCandidates();
+  const adjacent  = adjacentGuards();
   const tier = _view.alert;
   const rows = [];
 
   rows.push({ id: `obj:${OBJECTIVE.DASH}`, label: "Dash", note: "MIG+DEX" });
 
-  // Only when there is something to take down.
-  if (near) {
+  // Only when there is something that can actually BE taken down.
+  //
+  // A guard who is facing you is shown greyed with the reason rather than
+  // omitted: standing next to someone and being told why you cannot throttle
+  // them teaches the rule, whereas an empty menu just looks broken. A guard
+  // behind a wall is not listed at all — there is nothing to learn there.
+  if (takedowns.length) {
     rows.push({
-      id: `obj:${OBJECTIVE.TAKEDOWN}`, label: "Takedown", note: near.name,
+      id: `obj:${OBJECTIVE.TAKEDOWN}`, label: "Takedown",
+      note: takedowns.length > 1 ? `${takedowns.length} targets` : takedowns[0].name,
       disabled: tier === ALERT.ALERT,
       reason: "The room is on alert — nobody is off their guard",
+    });
+  } else if (adjacent.length) {
+    rows.push({
+      id: `obj:${OBJECTIVE.TAKEDOWN}`, label: "Takedown", note: "facing you",
+      disabled: true,
+      reason: "They are looking straight at you — get behind them first",
     });
   }
 
@@ -353,16 +366,49 @@ function nearbyProps() {
   return out;
 }
 
-function nearestEnemy() {
+/**
+ * Every guard the party could actually take down this instant.
+ *
+ * ONE function decides this, and both the menu and the targeting step call it.
+ * They used to disagree: the blade appeared for any adjacent guard on raw cell
+ * distance, while the targeting step additionally demanded line of sight and
+ * the GM additionally refused a guard that was facing you. So Takedown could
+ * be offered for someone behind a wall — the option was there, the targeting
+ * then found nothing and said "Nobody within reach", and a guard facing you
+ * got as far as a confirmed click before being refused.
+ *
+ * The arc test is the substantive rule here: you cannot throttle someone who
+ * is looking straight at you. Enforcing it at the menu means the option is
+ * absent rather than offered-then-denied, which is the difference between a
+ * rule the player learns and a button that lies.
+ */
+function takedownCandidates() {
   const pc = _view?.party?.cell;
-  if (!pc) return null;
+  if (!pc || !_view) return [];
+  const range = _tune?.takedownRange ?? 1;
+  const half  = _tune?.coneHalfAngle ?? 22;
+  const out = [];
+
   for (const e of (_view.enemies ?? [])) {
-    if ((e.stupor ?? 0) > 0) continue;   // reeling — not a target
-    if (cellDistance(pc, e.cell) <= 1) {
-      return { ...e, name: canvas?.scene?.tokens?.get?.(e.tokenId)?.name ?? "guard" };
-    }
+    if ((e.stupor ?? 0) > 0) continue;                 // reeling — not a target
+    if (cellDistance(pc, e.cell) > range) continue;
+    if (!hasLineOfSight(pc, e.cell)) continue;         // a wall between is not reach
+    // Arc is measured from the GUARD's facing toward the party — the same way
+    // the authority measures it.
+    if (relativeArc(e.cell, e.facing, pc, half) === ARC.FRONT) continue;
+    out.push({ ...e, name: canvas?.scene?.tokens?.get?.(e.tokenId)?.name ?? "guard" });
   }
-  return null;
+  return out;
+}
+
+/** Any adjacent guard at all, facing notwithstanding — for the menu note. */
+function adjacentGuards() {
+  const pc = _view?.party?.cell;
+  if (!pc) return [];
+  return (_view?.enemies ?? []).filter((e) =>
+    (e.stupor ?? 0) <= 0 &&
+    cellDistance(pc, e.cell) <= (_tune?.takedownRange ?? 1) &&
+    hasLineOfSight(pc, e.cell));
 }
 
 /** Rebuild the blade stack for whatever mode we are in. */
@@ -488,15 +534,6 @@ function beginTargeting(spec) {
   renderHud();
 }
 
-/** Is there a live enemy on this cell that may legally be taken down? */
-function enemyAtCell(cell) {
-  for (const e of (_view?.enemies ?? [])) {
-    if ((e.stupor ?? 0) > 0) continue;      // reeling — out of play this round
-    if (e.cell?.i === cell.i && e.cell?.j === cell.j) return e;
-  }
-  return null;
-}
-
 /** A configured prop on this cell, optionally of one kind. */
 function propAtCell(cell, kind) {
   const gs = canvas?.grid?.size ?? 100;
@@ -539,20 +576,25 @@ function submitObjective(objId) {
 
   // Takedown goes through the same target step as everything else.
   //
-  // It used to fire straight at nearestEnemy(), which silently chose FOR the
+  // It used to fire straight at the nearest enemy, silently choosing FOR the
   // player whenever two guards stood adjacent — and gave no confirmation step
   // on the one action in the game that cannot be taken back. Range 1 makes the
   // pick trivial in the common case and correct in the uncommon one.
   if (objId === OBJECTIVE.TAKEDOWN) {
+    const targets = takedownCandidates();
     beginTargeting({
       range: _tune?.takedownRange ?? 1,
       hostile: true,
       label: "who to take down",
-      empty: "Nobody within reach.",
-      filter: (cell) => !!enemyAtCell(cell),
+      empty: "Nobody you can reach from behind.",
+      filter: (cell) => targets.some((e) => e.cell.i === cell.i && e.cell.j === cell.j),
       cb: (cell) => {
-        const e = enemyAtCell(cell);
-        if (e) requestIntent({ kind: "objective", id: objId, enemyId: e.tokenId });
+        const e = targets.find((t) => t.cell.i === cell.i && t.cell.j === cell.j);
+        // Never end in silence. If the board moved under the pick, say so —
+        // a callback that quietly does nothing is indistinguishable from a
+        // dead button, which is exactly how this read when it went wrong.
+        if (!e) { ui.notifications?.warn?.("That target is gone."); return; }
+        requestIntent({ kind: "objective", id: objId, enemyId: e.tokenId });
       },
     });
     return;

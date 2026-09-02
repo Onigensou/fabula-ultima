@@ -295,6 +295,31 @@ td.enemies.t_mook.facing = "E";
 eq("a distant guard cannot be taken down",
   actions.takedownCheck(td, td.enemies.t_mook, C(0, 0), leader, TUNE, { scene }).ok, false);
 
+// ── The OFFER must mirror the AUTHORITY ───────────────────────────
+//
+// sm-ui decides whether to show Takedown with its own predicate (adjacency +
+// line of sight + arc). That predicate and takedownCheck have to agree, or the
+// menu offers something the GM then refuses — which is what produced a lit
+// target tile that did nothing when clicked. This pins the shared rule: for
+// every facing, "the UI would offer it" and "the authority allows it" match.
+console.log("\n── offer mirrors authority ──");
+
+const arcState = stateM.emptyState();
+arcState.enemies.a = stateM.emptyEnemy("a", C(5, 6), "E");
+const partyAt = C(5, 5);   // due WEST of the guard
+
+for (const facing of ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]) {
+  arcState.enemies.a.facing = facing;
+  const authority = actions.takedownCheck(
+    arcState, arcState.enemies.a, partyAt, leader, TUNE, { scene }).ok;
+  // The exact predicate sm-ui.takedownCandidates() applies.
+  const offered =
+    grid.cellDistance(partyAt, arcState.enemies.a.cell, scene) <= TUNE.takedownRange &&
+    lattice.hasLineOfSight(partyAt, arcState.enemies.a.cell, scene) &&
+    grid.relativeArc(arcState.enemies.a.cell, facing, partyAt, TUNE.coneHalfAngle) !== "front";
+  eq("  facing " + facing + ": offer and authority agree", offered, authority);
+}
+
 const gElite = actions.takedownCheck(td, td.enemies.t_elite, C(5, 5), leader, TUNE, { scene });
 eq("an elite is a harder takedown than a soldier", gElite.dl > g.dl, true);
 

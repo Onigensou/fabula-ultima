@@ -173,6 +173,7 @@ export const TUNE_DEFAULTS = Object.freeze({
   // Takedown
   takedownRange:    1,     // adjacent only — the reach of a hand
   diversionRange:   5,     // how far a rock carries
+  diversionRadius:  3,     // how far the NOISE carries from where it lands
   takedownBaseDl:     7,
   takedownDlMin:      6,
   takedownDlMax:      16,

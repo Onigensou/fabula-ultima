@@ -256,22 +256,35 @@ function rockSprite(gs) {
   return g;
 }
 
-/** Dust where it lands. Short — the guards' reaction is the real payoff. */
-async function dustPuff(point, gs) {
+/**
+ * Dust where it lands, expanding to the noise's ACTUAL reach.
+ *
+ * The ring is not decoration: it is the diversion's area of effect drawn at
+ * true scale, so the player can see which guards were inside it and judge the
+ * next throw. A fixed-size puff would have implied a reach the rule does not
+ * have.
+ */
+async function dustPuff(point, gs, radiusCells = 0) {
   const g = new PIXI.Graphics();
   g.x = point.x; g.y = point.y;
   g.zIndex = 499999;
   canvas.stage.sortableChildren = true;
   canvas.stage.addChild(g);
 
+  // A radius of N cells reaches the far EDGE of the Nth cell, so the ring is
+  // drawn to N + 0.5 — matching what cellDistance actually admits.
+  const reach = radiusCells > 0 ? gs * (radiusCells + 0.5) : gs * 0.46;
   const t0 = performance.now();
-  const DUR = 420;
+  const DUR = radiusCells > 0 ? 620 : 420;
   await new Promise((resolve) => {
     const tick = () => {
       const t = Math.min(1, (performance.now() - t0) / DUR);
       g.clear();
-      const r = gs * (0.12 + t * 0.34);
-      g.lineStyle(Math.max(1, gs * 0.035 * (1 - t)), 0xd8cdb8, 0.7 * (1 - t));
+      // Ease out: the noise leaves fast and settles, rather than creeping
+      // outward at a constant rate like a targeting reticle.
+      const e = 1 - Math.pow(1 - t, 3);
+      const r = gs * 0.12 + (reach - gs * 0.12) * e;
+      g.lineStyle(Math.max(1, gs * 0.05 * (1 - t)), 0xd8cdb8, 0.7 * (1 - t));
       g.drawCircle(0, 0, r);
       if (t >= 1) {
         canvas?.app?.ticker?.remove?.(tick);
@@ -290,14 +303,14 @@ async function dustPuff(point, gs) {
  * across the hall visibly travels further than one dropped beside you — the
  * throw reads as an act with reach rather than a fixed animation.
  */
-export async function throwRock(fromCell, toCell, { sfx = true } = {}) {
+export async function throwRock(fromCell, toCell, { sfx = true, radiusCells = 0 } = {}) {
   if (!fromCell || !toCell || !canvas?.stage) return;
   const a = centerOf(fromCell);
   const b = centerOf(toCell);
   const gs = canvas.grid?.size ?? 100;
 
   const dist = Math.hypot(b.x - a.x, b.y - a.y);
-  if (dist < 1) { if (sfx) playThrowSfx(); return; }
+  if (dist < 1) { if (sfx) playThrowSfx(); await dustPuff(b, gs, radiusCells); return; }
 
   const rock = rockSprite(gs);
   rock.x = a.x; rock.y = a.y;
@@ -328,5 +341,5 @@ export async function throwRock(fromCell, toCell, { sfx = true } = {}) {
   });
 
   if (sfx) playThrowSfx();
-  await dustPuff(b, gs);
+  await dustPuff(b, gs, radiusCells);
 }

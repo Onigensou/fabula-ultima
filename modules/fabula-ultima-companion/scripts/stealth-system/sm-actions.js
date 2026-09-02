@@ -488,7 +488,14 @@ export async function resolveDash(state, controllerActor, tune) {
 export function resolveDiversion(state, targetCell, partyCell, tune, {
   scene = canvas?.scene, radius = null,
 } = {}) {
-  const r = radius ?? tune.suspicionRadius + 2;
+  // The noise has a REACH, and it is the rock's, not the party's.
+  //
+  // This used to be suspicionRadius + 2, which on the current tuning pulled
+  // every guard within five cells — wide enough that a diversion was less a
+  // placed distraction than a map-wide summons, and the player had no way to
+  // reason about who would answer it. A published radius they can see landing
+  // makes the throw a decision about WHICH guard to move.
+  const r = radius ?? tune.diversionRadius ?? 3;
   const pulled = [];
 
   for (const e of enemyRecords(state)) {
