@@ -51,14 +51,41 @@ function findTrack(name) {
   return null;
 }
 
-/** Stop every playing playlist sound. */
-async function silence() {
+/**
+ * Stop only the music THIS system is responsible for.
+ *
+ * Deliberately not a stop-everything sweep. A tier change happens mid-play,
+ * and a GM may well have an ambience loop or a soundboard bed running that
+ * has nothing to do with the alert level — cutting those every time a guard
+ * notices something would make the mode unusable alongside the rest of the
+ * table's audio. Three things are ours and no more: whatever we started, the
+ * scene's own authored music (which we have to move aside to play a tier
+ * track), and the tier tracks themselves wherever they happen to live —
+ * that last one catches a track left playing by an earlier run.
+ */
+async function stopOurScore(scene) {
   const stops = [];
-  for (const pl of (game.playlists ?? [])) {
-    for (const s of (pl.sounds ?? [])) {
-      if (s?.playing) stops.push(pl.stopSound(s).catch(() => {}));
-    }
+
+  if (_current) {
+    const pl = game.playlists?.get?.(_current.playlistId);
+    const snd = pl?.sounds?.get?.(_current.soundId);
+    if (pl && snd?.playing) stops.push(pl.stopSound(snd).catch(() => {}));
   }
+
+  const sc = scene ?? canvas?.scene;
+  const sceneSound = sc?.playlistSound;
+  if (sceneSound?.playing && sceneSound.parent) {
+    stops.push(sceneSound.parent.stopSound(sceneSound).catch(() => {}));
+  }
+  const scenePl = sc?.playlist;
+  if (scenePl?.playing?.length) stops.push(scenePl.stopAll().catch(() => {}));
+
+  for (const name of Object.values(TIER_TRACK)) {
+    if (!name) continue;
+    const hit = findTrack(name);
+    if (hit?.sound?.playing) stops.push(hit.playlist.stopSound(hit.sound).catch(() => {}));
+  }
+
   await Promise.allSettled(stops);
 }
 
@@ -94,7 +121,7 @@ export async function applyTierBgm(tier, { scene = canvas?.scene, force = false 
 
   const name = TIER_TRACK[key] ?? null;
 
-  await silence();
+  await stopOurScore(scene);
   _current = null;
 
   if (!name) { await playSceneDefault(scene); return; }
@@ -124,7 +151,7 @@ export async function restoreSceneBgm(scene = canvas?.scene) {
   if (!game.user?.isGM) return;
   _appliedTier = null;
   _current = null;
-  await silence();
+  await stopOurScore(scene);
   await playSceneDefault(scene);
 }
 
