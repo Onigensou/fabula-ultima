@@ -1,7 +1,7 @@
 // ============================================================================
 // Stealth Mode — the director.
 //
-// Owns the FSM: one serial dispatch lock, one transition table, one place
+// Owns the FSM: one FIFO event loop, one transition table, one place
 // every hook and timer is registered so stop() is total. Runs on the GM.
 //
 // ── Why GM-side, when the player drives? ───────────────────────────────────
@@ -27,6 +27,8 @@ class StealthDirector {
     this.running = false;
 
     this._queue = Promise.resolve();
+    this._events = [];        // FIFO of pending FSM events
+    this._draining = false;   // true while _drain() owns the loop
     this._hooks = [];
     this._timers = new Set();
     this._handlers = new Map();  // state → onEnter
@@ -129,43 +131,82 @@ class StealthDirector {
   // ── Dispatch ──────────────────────────────────────────────────────────────
 
   /**
-   * Feed an event to the machine. Serialised: a click arriving while the enemy
-   * phase is mid-flight queues rather than interleaving.
+   * Feed an event to the machine.
+   *
+   * Events run one at a time through a FIFO drain loop rather than through
+   * `serialize()`. That distinction matters: nearly every handler ends by
+   * dispatching its own follow-up (PREP → DONE → ROUND_START → …), and a
+   * handler that awaited a fresh queue slot would be waiting on the very
+   * promise its own execution is blocking. Routing dispatch through the
+   * mutation queue self-deadlocked on the first transition.
+   *
+   * So a dispatch from INSIDE a handler enqueues and returns immediately; the
+   * drain loop already running picks it up when the current handler returns.
+   * A dispatch from outside starts the loop. Either way exactly one handler
+   * is ever in flight, which is what the serialisation was for.
    */
   dispatch(event, payload = null) {
-    return this.serialize(async () => {
-      if (!this.running) return { ok: false, reason: "not running" };
+    if (!this.running) return Promise.resolve({ ok: false, reason: "not running" });
 
-      const table = TRANSITIONS[this.state] ?? {};
-      const entry = table[event];
+    this._events.push({ event, payload });
 
-      if (!entry) {
-        console.debug(TAG, `dropped ${event} in ${this.state} (no transition)`);
-        return { ok: false, reason: "no-transition", state: this.state };
-      }
+    // Re-entrant call from a handler: the loop below will drain it.
+    if (this._draining) return Promise.resolve({ ok: true, queued: true });
 
-      if (entry.guard) {
-        const verdict = entry.guard(this._ctx(), payload);
-        if (verdict !== true) {
-          console.debug(TAG, `guard refused ${event} in ${this.state}: ${verdict}`);
-          return { ok: false, reason: String(verdict), state: this.state };
+    return this._drain();
+  }
+
+  async _drain() {
+    this._draining = true;
+    try {
+      let guard = 0;
+      while (this._events.length && this.running) {
+        // A runaway transition loop is a bug, not a workload. Stop rather than
+        // freeze the client while it spins.
+        if (guard++ > 500) {
+          console.error(TAG, "transition loop exceeded 500 steps — halting");
+          this._events.length = 0;
+          break;
         }
+        const { event, payload } = this._events.shift();
+        await this._step(event, payload);
       }
+    } finally {
+      this._draining = false;
+    }
+    return { ok: true, state: this.state };
+  }
 
-      const next = typeof entry.next === "function"
-        ? entry.next(this._ctx(), payload)
-        : entry.next;
+  async _step(event, payload) {
+    const table = TRANSITIONS[this.state] ?? {};
+    const entry = table[event];
 
-      const from = this.state;
-      this.state = next;
-      if (this.sm) this.sm.phase = next;
+    if (!entry) {
+      console.debug(TAG, `dropped ${event} in ${this.state} (no transition)`);
+      return { ok: false, reason: "no-transition", state: this.state };
+    }
 
-      console.debug(TAG, `${from} --${event}--> ${next}`);
-      try { Hooks.callAll(HOOKS.STATE_CHANGED, { from, to: next, event }); } catch (_) {}
+    if (entry.guard) {
+      const verdict = entry.guard(this._ctx(), payload);
+      if (verdict !== true) {
+        console.debug(TAG, `guard refused ${event} in ${this.state}: ${verdict}`);
+        return { ok: false, reason: String(verdict), state: this.state };
+      }
+    }
 
-      await this._runHandler(next, payload);
-      return { ok: true, from, to: next };
-    });
+    const next = typeof entry.next === "function"
+      ? entry.next(this._ctx(), payload)
+      : entry.next;
+
+    const from = this.state;
+    this.state = next;
+    if (this.sm) this.sm.phase = next;
+
+    console.debug(TAG, `${from} --${event}--> ${next}`);
+    try { Hooks.callAll(HOOKS.STATE_CHANGED, { from, to: next, event }); } catch (_) {}
+
+    await this._runHandler(next, payload);
+    return { ok: true, from, to: next };
   }
 
   /** Enter a state directly, bypassing the table. Recovery paths only. */

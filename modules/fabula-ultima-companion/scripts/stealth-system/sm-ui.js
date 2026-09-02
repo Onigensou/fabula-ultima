@@ -350,6 +350,18 @@ export function refreshReachable() {
 function onCanvasClick(event) {
   if (!_enabled || !_view?.active) return;
 
+  // LEFT button only, and only a real pointer.
+  //
+  // The handler is bound to canvas.stage so a click anywhere on the board is
+  // heard, which also means right-clicks (pan), middle-clicks and anything
+  // bubbling up from a UI layer arrive here too. Without this guard a stray
+  // event spends the party's movement, and the player never sees why their
+  // turn moved. Cheap check, and the failure it prevents is invisible.
+  const nativeBtn = event?.data?.originalEvent?.button
+    ?? event?.nativeEvent?.button
+    ?? event?.button;
+  if (nativeBtn !== undefined && nativeBtn !== 0) return;
+
   const pos = event?.data?.getLocalPosition?.(canvas.stage)
     ?? event?.interactionData?.origin
     ?? null;

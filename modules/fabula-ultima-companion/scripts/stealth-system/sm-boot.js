@@ -416,11 +416,21 @@ Hooks.once("ready", () => {
     director,
     gm: gmApi,
     // Authoring helpers — see docs/stealth-mode-design.md.
-    setFacing: async (tokenId, dir) => {
-      if (!director.sm?.enemies?.[tokenId]) return false;
-      director.sm.enemies[tokenId].facing = dir;
-      await writeState(director.sm, director.scene);
-      socket.broadcastState(director.sm);
+    // Writes BOTH the live record and the scene's authoring config. Runtime
+    // state alone would look right until the next fresh start, at which point
+    // every guard would silently snap back to the default facing — and a
+    // stealth map whose cones moved overnight is a map nobody can author.
+    setFacing: async (tokenId, dir, scene = canvas?.scene) => {
+      const cfg = scene?.flags?.[MODULE_ID]?.stealthConfig ?? {};
+      const facings = { ...(cfg.facings ?? {}), [tokenId]: dir };
+      await scene?.setFlag(MODULE_ID, "stealthConfig", { ...cfg, facings });
+
+      if (director.sm?.enemies?.[tokenId]) {
+        director.sm.enemies[tokenId].facing = dir;
+        director.sm.__config = { ...(director.sm.__config ?? {}), facings };
+        await writeState(director.sm, director.scene);
+        socket.broadcastState(director.sm);
+      }
       return true;
     },
     setRoute: async (tokenId, cells, scene = canvas?.scene) => {

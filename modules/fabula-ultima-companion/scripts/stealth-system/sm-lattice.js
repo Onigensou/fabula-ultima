@@ -68,13 +68,20 @@ function cellsUnderTile(tileDoc, scene) {
   const w = Number(tileDoc.width) || gs;
   const h = Number(tileDoc.height) || gs;
 
-  // Sample the tile's footprint on a half-cell lattice. A barrel 21px wide on a
-  // 35px grid covers exactly one cell and must not be missed; sampling beats
-  // rounding the corners, which drops sub-cell props entirely.
+  // Sample the tile's footprint. A barrel 21px wide on a 35px grid covers
+  // exactly one cell and must not be missed, so sampling beats rounding the
+  // corners — that would drop sub-cell props entirely.
+  //
+  // The interval is HALF-OPEN on purpose. Sampling `px <= x + w` reads the
+  // pixel one past the tile's right edge, which belongs to the NEXT cell, so
+  // every prop claimed a phantom extra row and column. On a map with 40 props
+  // that inflated the blocked set enough to wall a patrolling guard into his
+  // own tile with no legal move — silently, because "guard holds post" is also
+  // what a guard with no route does.
   const step = Math.max(4, gs / 3);
   const seen = new Map();
-  for (let px = x; px <= x + w; px += step) {
-    for (let py = y; py <= y + h; py += step) {
+  for (let px = x; px < x + w; px += step) {
+    for (let py = y; py < y + h; py += step) {
       const c = cellAt({ x: px, y: py });
       seen.set(cellKey(c), c);
     }

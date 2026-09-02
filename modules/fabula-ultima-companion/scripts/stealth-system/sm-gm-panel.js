@@ -31,7 +31,7 @@ function ensureStyles() {
   s.id = STYLE_ID;
   s.textContent = `
     #${PANEL_ID}{
-      position:fixed; right:16px; top:88px; z-index:70; width:264px;
+      position:fixed; right:64px; top:88px; z-index:70; width:264px;
       font-family:"Signika",sans-serif; color:#e6e6e6; font-size:12.5px;
       background:rgba(14,18,24,.92); border:1px solid rgba(255,255,255,.14);
       border-radius:8px; box-shadow:0 10px 30px -14px rgba(0,0,0,.9);
