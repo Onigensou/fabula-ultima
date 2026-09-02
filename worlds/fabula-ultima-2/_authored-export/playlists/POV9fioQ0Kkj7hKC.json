@@ -19,7 +19,7 @@
     "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
-  "seed": 416,
+  "seed": 721,
   "sort": 200000,
   "sorting": "a",
   "sounds": [
@@ -194,6 +194,22 @@
       "repeat": true,
       "sort": 0,
       "volume": 0.06
+    },
+    {
+      "_id": "d9evrqkEgJMpwOoL",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Stealth Theme",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Stealth_Theme.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.46
     },
     {
       "_id": "DGIOVgbUjzsumvaT",
