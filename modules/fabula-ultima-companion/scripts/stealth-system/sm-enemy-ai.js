@@ -140,7 +140,12 @@ function patrolStep(enemy, route, budget, { scene }) {
  * }}
  */
 export function decideActivation(state, enemy, partyCell, tune, { scene = canvas?.scene } = {}) {
-  const budget = tune.enemyMove;
+  // A guard walking its rounds moves at a walk; one that is actually onto you
+  // runs. Patrol at full speed meant an idle guard covered as much ground as a
+  // pursuit, so the map never felt calm and there was no tempo change to read
+  // when things went wrong.
+  const patrolling = enemy.ai === AI.PATROL;
+  const budget = patrolling ? (tune.patrolMove ?? tune.enemyMove) : tune.enemyMove;
   const out = {
     enemyId: enemy.tokenId,
     ai: enemy.ai,
@@ -159,10 +164,24 @@ export function decideActivation(state, enemy, partyCell, tune, { scene = canvas
     ? evaluateSight(enemy.cell, enemy.facing, partyCell, tune, { scene })
     : { seen: false };
 
-  if (sight.seen) {
+  // Escalate on what was ACTUALLY seen, not on "something registered".
+  //
+  // This used to branch on sight.seen, which is true for a merely SUSPICIOUS
+  // reading as well as a real sighting — so a guard that half-noticed you at
+  // four cells jumped straight to SEARCH and pathed at your exact tile. That
+  // is the "I stepped behind a crate and it bolted at me anyway" case, and it
+  // was a bug rather than the dice: stepping into cover cannot help if being
+  // glimpsed already handed the guard your position.
+  if (sight.spotted) {
     out.sawParty = true;
     out.facing = directionBetween(enemy.cell, partyCell, scene) ?? enemy.facing;
     out.ai = isAlert(state) ? AI.CHASE : AI.SEARCH;
+  } else if (sight.level === "suspicious" && out.ai === AI.PATROL) {
+    // Glimpsed something. Go and LOOK at where it was — which is what makes
+    // ducking behind cover work: they walk to the spot and find nothing.
+    out.sawParty = true;
+    out.ai = AI.SUSPICIOUS;
+    if (!enemy.lastKnownCell) enemy.lastKnownCell = partyCell;
   }
 
   const config = state.__config ?? {};
@@ -218,7 +237,7 @@ export function decideActivation(state, enemy, partyCell, tune, { scene = canvas
       if (!point) { out.ai = AI.PATROL; out.note = "nothing to investigate"; break; }
 
       if (sameCell(enemy.cell, point)) {
-        if (sight.seen) {
+        if (sight.spotted) {
           out.ai = isAlert(state) ? AI.CHASE : AI.SEARCH;
           out.facing = directionBetween(enemy.cell, partyCell, scene) ?? out.facing;
           out.note = "found them";

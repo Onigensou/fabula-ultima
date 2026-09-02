@@ -135,6 +135,20 @@ export function broadcastOverlay(payload) {
   try { _onOverlay?.(payload); } catch (_) {}
 }
 
+/**
+ * Same as broadcastOverlay, but resolves once the LOCAL playback finishes.
+ *
+ * Used where the visual is a beat in a sequence rather than decoration: the
+ * caller needs to hold the next step until the rock has actually landed.
+ * Remote clients still get theirs fire-and-forget — waiting on every client
+ * would hand one slow machine the power to stall the GM's turn.
+ */
+export async function broadcastOverlayAwait(payload) {
+  if (!game.user?.isGM) return;
+  game.socket.emit(CHANNEL, { type: MSG.OVERLAY, payload });
+  try { await _onOverlay?.(payload); } catch (_) {}
+}
+
 export function broadcastNarration(text, { title = "" } = {}) {
   if (!game.user?.isGM) return;
   const payload = { text: String(text ?? ""), title: String(title ?? "") };

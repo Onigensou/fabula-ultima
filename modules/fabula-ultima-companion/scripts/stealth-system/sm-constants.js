@@ -106,7 +106,8 @@ export const OBJECTIVE = Object.freeze({
 export const TUNE_DEFAULTS = Object.freeze({
   // Movement
   partyMove:        5,     // cells per Player Phase
-  enemyMove:        5,     // parity with the party, per the brief
+  enemyMove:        5,     // parity with the party when actually hunting
+  patrolMove:       3,     // a guard on its rounds walks; only pursuit runs
   dashBonus:        5,     // extra cells; costs the Objective slot
   enemiesMayDash:   false, // the party's only escape lever at Alert
 
@@ -170,6 +171,8 @@ export const TUNE_DEFAULTS = Object.freeze({
   noiseAlertChance:      0.35, // chance a Dash/noise event raises a tier
 
   // Takedown
+  takedownRange:    1,     // adjacent only — the reach of a hand
+  diversionRange:   5,     // how far a rock carries
   takedownBaseDl:     7,
   takedownDlMin:      6,
   takedownDlMax:      16,

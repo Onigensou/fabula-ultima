@@ -733,3 +733,154 @@ export function destroyStuporLayer() {
   } catch (_) {}
   _stuporLayer = null;
 }
+
+// ── SRPG targeting ──────────────────────────────────────────────────────────
+//
+// A command that needs a point on the board gets the Fire Emblem / FFT
+// treatment: the legal tiles light up as a set, and a crosshair snaps to
+// whichever one the cursor is over. Before this, "pick a cell" was an
+// unmarked board and a line of HUD text — the player had to guess the range,
+// guess whether a wall blocked it, and find out by being told no.
+//
+// Deliberately a COOLER colour than the gold movement range. The two modes can
+// never be on screen together, but they are one click apart, and a player who
+// has learned "gold means my feet" should not have to re-read the board to see
+// that this set means something else.
+
+const Z_TARGET = 62;
+const Z_CROSS  = 500003;
+
+const TCOL = Object.freeze({
+  fill:  0x8fc9ef,   // cool blue — "somewhere I am pointing", not "where I walk"
+  edge:  0xeaf5ff,
+  cross: 0xf6fbff,
+  ring:  0x8fc9ef,
+  hostile: 0xef8f7a, // a target that is a PERSON reads warm
+});
+
+let _targets = null;
+let _crossLayer = null;
+let _crossNode = null;
+let _crossTick = null;
+
+/** Light up every tile a command may legally be aimed at. */
+export function drawTargets(cells, { hostile = false } = {}) {
+  _targets = ensure(_targets, "Stealth Targets", Z_TARGET);
+  if (!_targets) return;
+  _targets.clear();
+  if (!cells?.length) return;
+
+  const gs = gridSize();
+  const inset = Math.max(1, gs * 0.1);
+  const size = gs - inset * 2;
+  const col = hostile ? TCOL.hostile : TCOL.fill;
+
+  for (const cell of cells) {
+    const p = topLeftOf(cell);
+    _targets.lineStyle(Math.max(1, gs * 0.04), TCOL.edge, 0.32);
+    _targets.beginFill(col, 0.24);
+    _targets.drawRoundedRect(p.x + inset, p.y + inset, size, size, gs * 0.14);
+    _targets.endFill();
+    _targets.lineStyle(0);
+  }
+}
+
+export function clearTargets() {
+  if (_targets && !_targets.destroyed) _targets.clear();
+}
+
+function crossLayer() {
+  if (_crossLayer && !_crossLayer.destroyed) return _crossLayer;
+  const parent = layerParent();
+  if (!parent) return null;
+  _crossLayer = new PIXI.Container();
+  _crossLayer.name = "Stealth Crosshair";
+  _crossLayer.zIndex = Z_CROSS;
+  _crossLayer.eventMode = "none";
+  _crossLayer.sortableChildren = true;
+  parent.sortableChildren = true;
+  parent.addChild(_crossLayer);
+  return _crossLayer;
+}
+
+/** Build the reticle once; moving it afterwards is just a position write. */
+function buildCrosshair(gs, hostile) {
+  const c = new PIXI.Container();
+  const col = hostile ? TCOL.hostile : TCOL.cross;
+  const arm = gs * 0.26;      // corner bracket length
+  const off = gs * 0.44;      // how far the brackets sit from centre
+  const w   = Math.max(2, gs * 0.045);
+
+  const g = new PIXI.Graphics();
+  g.lineStyle(w, col, 1);
+  // Four corner brackets — the SRPG reticle. Drawn as separate strokes rather
+  // than a box so the tile art stays readable through the middle.
+  for (const [sx, sy] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+    g.moveTo(sx * off, sy * off - sy * arm);
+    g.lineTo(sx * off, sy * off);
+    g.lineTo(sx * off - sx * arm, sy * off);
+  }
+  c.addChild(g);
+
+  // A soft centre pip so the exact tile is unambiguous at low zoom, where the
+  // brackets alone can straddle two cells.
+  const pip = new PIXI.Graphics();
+  pip.beginFill(col, 0.85);
+  pip.drawCircle(0, 0, Math.max(1.5, gs * 0.05));
+  pip.endFill();
+  c.addChild(pip);
+
+  c.__pip = pip;
+  return c;
+}
+
+/**
+ * Snap the reticle onto a cell. Passing null hides it.
+ * Cheap to call on every pointermove — it only rebuilds when the style changes.
+ */
+export function drawCrosshair(cell, { hostile = false } = {}) {
+  if (!cell) { hideCrosshair(); return; }
+  const layer = crossLayer();
+  if (!layer) return;
+  const gs = gridSize();
+
+  if (!_crossNode || _crossNode.destroyed || _crossNode.__hostile !== hostile) {
+    if (_crossNode && !_crossNode.destroyed) { layer.removeChild(_crossNode); _crossNode.destroy({ children: true }); }
+    _crossNode = buildCrosshair(gs, hostile);
+    _crossNode.__hostile = hostile;
+    layer.addChild(_crossNode);
+  }
+
+  const p = centerOf(cell);
+  _crossNode.x = p.x;
+  _crossNode.y = p.y;
+  _crossNode.visible = true;
+
+  // A slow breath, so the reticle reads as live rather than as a stamp left
+  // behind by an earlier frame.
+  if (!_crossTick) {
+    const t0 = performance.now();
+    _crossTick = () => {
+      if (!_crossNode || _crossNode.destroyed) return;
+      const t = (performance.now() - t0) / 620;
+      const s = 1 + Math.sin(t) * 0.05;
+      _crossNode.scale.set(s);
+      if (_crossNode.__pip) _crossNode.__pip.alpha = 0.55 + (Math.sin(t) + 1) * 0.2;
+    };
+    canvas?.app?.ticker?.add?.(_crossTick);
+  }
+}
+
+export function hideCrosshair() {
+  if (_crossNode && !_crossNode.destroyed) _crossNode.visible = false;
+}
+
+export function destroyCrosshair() {
+  if (_crossTick) { try { canvas?.app?.ticker?.remove?.(_crossTick); } catch (_) {} _crossTick = null; }
+  if (_crossNode && !_crossNode.destroyed) { try { _crossNode.destroy({ children: true }); } catch (_) {} }
+  _crossNode = null;
+  if (_crossLayer && !_crossLayer.destroyed) {
+    try { _crossLayer.parent?.removeChild(_crossLayer); _crossLayer.destroy({ children: true }); } catch (_) {}
+  }
+  _crossLayer = null;
+}

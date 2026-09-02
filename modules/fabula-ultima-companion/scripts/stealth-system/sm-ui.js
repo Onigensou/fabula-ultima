@@ -27,8 +27,8 @@
 import {
   ALERT, ALERT_LABEL, ALERT_COLOR, OBJECTIVE,
 } from "./sm-constants.js";
-import { cellAt, cellKey, cellDistance } from "./sm-grid.js";
-import { reachable, pathFromReachable } from "./sm-lattice.js";
+import { cellAt, cellKey, cellDistance, cellsWithin } from "./sm-grid.js";
+import { reachable, pathFromReachable, hasLineOfSight, cellRecord } from "./sm-lattice.js";
 import { surveyObservers } from "./sm-vision.js";
 import * as overlay from "./sm-overlay.js";
 import * as blades from "./sm-blades.js";
@@ -42,12 +42,13 @@ let _view = null;
 let _tune = null;
 let _enabled = false;
 
-// Interaction mode: null | "move" | "objective" | "pick-cell"
+// Interaction mode: null | "move" | "objective" | "target"
 let _mode = null;
 let _reach = null;
 let _hoverPath = null;
 let _pickCb = null;
 let _pickLabel = "";
+let _targetSpec = null;      // active targeting spec — see beginTargeting()
 let _canvasHooked = false;
 
 // ── Alert panel ─────────────────────────────────────────────────────────────
@@ -149,7 +150,7 @@ export function renderHud() {
   // naming them again is the same fact twice.
   const hint =
     _mode === "move"      ? "Click a lit tile to move"
-    : _mode === "pick-cell" ? `Click a target tile — ${_pickLabel}`
+    : _mode === "target" ? `Choose a target — ${_pickLabel}`
     : (_view.phase === "ACTIVATE" || _view.phase === "ENEMY_START") ? "Enemy phase…"
     : canAct() ? "" : "Spectating";
 
@@ -199,7 +200,7 @@ const EXIT_ID = "oni-stealth-exit";
  */
 function renderExitButton() {
   const wanted = _enabled && _view?.active && canAct() && myTurn()
-    && (_mode === "move" || _mode === "pick-cell");
+    && (_mode === "move" || _mode === "target");
 
   let el = document.getElementById(EXIT_ID);
   if (!wanted) { el?.remove(); return; }
@@ -379,7 +380,7 @@ export function refreshBlades() {
   // adjacent to their own — so leaving the mode and moving one step competed
   // for the same pixels. The exit is a docked button at the bottom-right
   // instead, beside the other scene-mode controls.
-  if (_mode === "move" || _mode === "pick-cell") {
+  if (_mode === "move" || _mode === "target") {
     blades.hideBlades();
     return;
   }
@@ -413,8 +414,11 @@ function setMode(mode) {
   _hoverPath = null;
   _pickCb = null;
   _reach = null;
+  _targetSpec = null;
   overlay.clearMarks();
   overlay.drawReachable(null);
+  overlay.clearTargets();
+  overlay.hideCrosshair();
   if (mode === "move") computeReach();
   refreshBlades();
   renderHud();
@@ -434,6 +438,79 @@ function computeReach() {
   if (!p.cell || (p.moveLeft ?? 0) <= 0) { _reach = null; overlay.drawReachable(null); return; }
   _reach = reachable(p.cell, p.moveLeft, { ignoreOccupants: false });
   overlay.drawReachable(_reach);
+}
+
+// ── Targeting ───────────────────────────────────────────────────────────────
+
+/**
+ * Enter target mode for a command that needs a point on the board.
+ *
+ * Everything a player needs to judge the shot is on the map before they
+ * commit: the legal tiles are lit, and a crosshair snaps to whichever one the
+ * cursor is over. The old flow simply said "click a target tile" in the HUD
+ * and left them to discover the range, and the walls, by being refused.
+ *
+ * Legality is decided HERE, once, and the resulting set is what the click is
+ * checked against — so the highlight and the rule can never disagree.
+ *
+ * @param {object} spec
+ * @param {number} spec.range     max cell distance from the party
+ * @param {Function} spec.filter  extra per-cell test (occupancy, props, …)
+ * @param {boolean} spec.los      require clear line of sight (default true)
+ * @param {boolean} spec.hostile  colour the set as a creature target
+ */
+function beginTargeting(spec) {
+  const pc = _view?.party?.cell;
+  if (!pc) return;
+
+  const cells = [];
+  for (const cell of cellsWithin(pc, spec.range)) {
+    if (cellDistance(pc, cell) === 0) continue;      // never yourself
+    if (spec.los !== false && !hasLineOfSight(pc, cell)) continue;
+    if (spec.filter && !spec.filter(cell)) continue;
+    cells.push(cell);
+  }
+
+  if (!cells.length) {
+    ui.notifications?.warn?.(spec.empty ?? "Nothing in range.");
+    setMode(null);
+    return;
+  }
+
+  _pickLabel = spec.label ?? "";
+  setMode("target");                 // clears state, so arm the spec AFTER
+  _targetSpec = {
+    ...spec,
+    keys: new Set(cells.map(cellKey)),
+  };
+  _pickCb = spec.cb;
+  overlay.drawTargets(cells, { hostile: !!spec.hostile });
+  renderHud();
+}
+
+/** Is there a live enemy on this cell that may legally be taken down? */
+function enemyAtCell(cell) {
+  for (const e of (_view?.enemies ?? [])) {
+    if ((e.stupor ?? 0) > 0) continue;      // reeling — out of play this round
+    if (e.cell?.i === cell.i && e.cell?.j === cell.j) return e;
+  }
+  return null;
+}
+
+/** A configured prop on this cell, optionally of one kind. */
+function propAtCell(cell, kind) {
+  const gs = canvas?.grid?.size ?? 100;
+  for (const t of (canvas?.scene?.tiles ?? [])) {
+    if (t.hidden) continue;
+    const cfg = t.flags?.["fabula-ultima-companion"]?.stealthProp;
+    if (!cfg || cfg.enabled === false) continue;
+    const c = cellAt({ x: t.x + (t.width || gs) / 2, y: t.y + (t.height || gs) / 2 });
+    if (c.i !== cell.i || c.j !== cell.j) continue;
+    if (kind === "movable" && !cfg.movable) continue;
+    if (kind === "breakable" && !cfg.destructible) continue;
+    return t;
+  }
+  return null;
 }
 
 // ── Objectives ──────────────────────────────────────────────────────────────
@@ -460,23 +537,50 @@ function submitObjective(objId) {
     return;
   }
 
+  // Takedown goes through the same target step as everything else.
+  //
+  // It used to fire straight at nearestEnemy(), which silently chose FOR the
+  // player whenever two guards stood adjacent — and gave no confirmation step
+  // on the one action in the game that cannot be taken back. Range 1 makes the
+  // pick trivial in the common case and correct in the uncommon one.
   if (objId === OBJECTIVE.TAKEDOWN) {
-    const near = nearestEnemy();
-    if (!near) return;
-    setMode(null);
-    requestIntent({ kind: "objective", id: objId, enemyId: near.tokenId });
+    beginTargeting({
+      range: _tune?.takedownRange ?? 1,
+      hostile: true,
+      label: "who to take down",
+      empty: "Nobody within reach.",
+      filter: (cell) => !!enemyAtCell(cell),
+      cb: (cell) => {
+        const e = enemyAtCell(cell);
+        if (e) requestIntent({ kind: "objective", id: objId, enemyId: e.tokenId });
+      },
+    });
     return;
   }
 
-  if (objId === OBJECTIVE.DIVERSION || objId === OBJECTIVE.MOVE_OBJECT || objId === OBJECTIVE.BREAK_COVER) {
-    _pickLabel = objId === OBJECTIVE.DIVERSION ? "where to draw their attention"
-               : objId === OBJECTIVE.MOVE_OBJECT ? "which prop to shove"
-               : "which prop to break";
-    // Order matters: setMode() clears the pending callback, so it is armed
-    // after the mode switch, not before.
-    setMode("pick-cell");
-    _pickCb = (cell) => requestIntent({ kind: "objective", id: objId, cell });
-    renderHud();
+  if (objId === OBJECTIVE.DIVERSION) {
+    beginTargeting({
+      range: _tune?.diversionRange ?? 5,
+      label: "where to throw",
+      empty: "No clear spot to throw at.",
+      // A rock has to LAND somewhere, so the tile must be real floor. Line of
+      // sight is enforced by beginTargeting: you cannot throw through a wall,
+      // which is what makes a corner worth walking to before you throw.
+      filter: (cell) => !!cellRecord(cell)?.passable,
+      cb: (cell) => requestIntent({ kind: "objective", id: objId, cell }),
+    });
+    return;
+  }
+
+  if (objId === OBJECTIVE.MOVE_OBJECT || objId === OBJECTIVE.BREAK_COVER) {
+    const kind = objId === OBJECTIVE.MOVE_OBJECT ? "movable" : "breakable";
+    beginTargeting({
+      range: 1,
+      label: kind === "movable" ? "which prop to shove" : "which prop to break",
+      empty: "Nothing within reach to work on.",
+      filter: (cell) => !!propAtCell(cell, kind),
+      cb: (cell) => requestIntent({ kind: "objective", id: objId, cell }),
+    });
     return;
   }
 
@@ -581,7 +685,12 @@ function onCanvasClick(event) {
   if (!pos) return;
   const cell = cellAt(pos);
 
-  if (_mode === "pick-cell") {
+  if (_mode === "target") {
+    // Clicking outside the lit set does NOTHING — it does not cancel.
+    // Cancelling is the docked button, deliberately: a misclick on a dark tile
+    // used to spend the whole command on an illegal point, and the player only
+    // learned that from a warning after the fact.
+    if (!_targetSpec?.keys?.has(cellKey(cell))) return;
     const cb = _pickCb;
     setMode(null);
     cb?.(cell);
@@ -601,7 +710,21 @@ function onCanvasClick(event) {
 }
 
 function onCanvasHover(event) {
-  if (!_enabled || _mode !== "move" || !_reach || !canAct() || !myTurn()) return;
+  if (!_enabled || !canAct() || !myTurn()) return;
+
+  if (_mode === "target") {
+    const pos = pointOf(event);
+    if (!pos) return;
+    const cell = cellAt(pos);
+    if (_targetSpec?.keys?.has(cellKey(cell))) {
+      overlay.drawCrosshair(cell, { hostile: !!_targetSpec.hostile });
+    } else {
+      overlay.hideCrosshair();
+    }
+    return;
+  }
+
+  if (_mode !== "move" || !_reach) return;
   const pos = pointOf(event);
   if (!pos) return;
   const cell = cellAt(pos);
@@ -636,10 +759,13 @@ export function disable() {
   _mode = null;
   _reach = null;
   _pickCb = null;
+  _targetSpec = null;
   removeHud();
   removeExitButton();
   blades.hideBlades();
   overlay.clearAll();
+  overlay.clearTargets();
+  overlay.destroyCrosshair();
   overlay.destroyStuporLayer();
   camera.unlock();
 

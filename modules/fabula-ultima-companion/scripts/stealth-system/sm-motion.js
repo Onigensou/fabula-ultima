@@ -220,3 +220,113 @@ export function playAlertSfx({ volume = 0.65 } = {}) {
     catch (_e) { /* audio locked */ }
   }
 }
+
+// ── The thrown rock ─────────────────────────────────────────────────────────
+//
+// Diversion worked before this, but produced no picture: guards turned and
+// walked toward an empty tile, and the only evidence of a cause was a line in
+// the log. Showing the throw makes the mechanic legible — the player sees the
+// noise happen where they aimed it, and can read the guards' reaction as the
+// consequence of a specific object landing in a specific place.
+
+export const THROW_SFX = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fall.ogg";
+
+export function playThrowSfx({ volume = 0.6 } = {}) {
+  try {
+    foundry.audio.AudioHelper.play({ src: THROW_SFX, volume, autoplay: true, loop: false }, false);
+  } catch (e) {
+    try { AudioHelper.play({ src: THROW_SFX, volume, autoplay: true, loop: false }, false); }
+    catch (_) { /* audio locked — never let a sound break a turn */ }
+  }
+}
+
+/** A small tumbling stone, drawn rather than loaded — no asset to ship. */
+function rockSprite(gs) {
+  const r = Math.max(3, gs * 0.11);
+  const g = new PIXI.Graphics();
+  g.beginFill(0x2b2620, 0.35);            // a soft dark rim so it reads on pale floor
+  g.drawCircle(0, 0, r * 1.25);
+  g.endFill();
+  g.beginFill(0x6f6455, 1);
+  g.drawCircle(0, 0, r);
+  g.endFill();
+  g.beginFill(0x9a8d78, 1);               // lit face, offset — gives it a spin to see
+  g.drawCircle(-r * 0.28, -r * 0.3, r * 0.5);
+  g.endFill();
+  return g;
+}
+
+/** Dust where it lands. Short — the guards' reaction is the real payoff. */
+async function dustPuff(point, gs) {
+  const g = new PIXI.Graphics();
+  g.x = point.x; g.y = point.y;
+  g.zIndex = 499999;
+  canvas.stage.sortableChildren = true;
+  canvas.stage.addChild(g);
+
+  const t0 = performance.now();
+  const DUR = 420;
+  await new Promise((resolve) => {
+    const tick = () => {
+      const t = Math.min(1, (performance.now() - t0) / DUR);
+      g.clear();
+      const r = gs * (0.12 + t * 0.34);
+      g.lineStyle(Math.max(1, gs * 0.035 * (1 - t)), 0xd8cdb8, 0.7 * (1 - t));
+      g.drawCircle(0, 0, r);
+      if (t >= 1) {
+        canvas?.app?.ticker?.remove?.(tick);
+        try { g.parent?.removeChild(g); g.destroy(); } catch (_) {}
+        resolve();
+      }
+    };
+    canvas?.app?.ticker?.add?.(tick);
+  });
+}
+
+/**
+ * Arc a rock from one cell to another, then puff dust and sound the landing.
+ *
+ * The height of the arc scales with the distance thrown, so a rock lobbed
+ * across the hall visibly travels further than one dropped beside you — the
+ * throw reads as an act with reach rather than a fixed animation.
+ */
+export async function throwRock(fromCell, toCell, { sfx = true } = {}) {
+  if (!fromCell || !toCell || !canvas?.stage) return;
+  const a = centerOf(fromCell);
+  const b = centerOf(toCell);
+  const gs = canvas.grid?.size ?? 100;
+
+  const dist = Math.hypot(b.x - a.x, b.y - a.y);
+  if (dist < 1) { if (sfx) playThrowSfx(); return; }
+
+  const rock = rockSprite(gs);
+  rock.x = a.x; rock.y = a.y;
+  rock.zIndex = 500001;
+  canvas.stage.sortableChildren = true;
+  canvas.stage.addChild(rock);
+
+  const arcH = Math.min(gs * 1.6, dist * 0.42);
+  const duration = Math.max(320, Math.min(720, dist * 1.05));
+  const t0 = performance.now();
+
+  await new Promise((resolve) => {
+    const tick = () => {
+      const t = Math.min(1, (performance.now() - t0) / duration);
+      // Linear along the ground, parabolic in height: a thrown object keeps
+      // its horizontal speed and only the vertical reads as gravity. Easing
+      // the ground track too made it float.
+      rock.x = a.x + (b.x - a.x) * t;
+      rock.y = a.y + (b.y - a.y) * t - Math.sin(Math.PI * t) * arcH;
+      rock.rotation = t * Math.PI * 3;
+      if (t >= 1) {
+        canvas?.app?.ticker?.remove?.(tick);
+        try { rock.parent?.removeChild(rock); rock.destroy(); } catch (_) {}
+        resolve();
+      }
+    };
+    canvas?.app?.ticker?.add?.(tick);
+  });
+
+  if (sfx) playThrowSfx();
+  await dustPuff(b, gs);
+}

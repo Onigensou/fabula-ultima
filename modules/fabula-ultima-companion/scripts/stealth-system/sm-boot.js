@@ -39,7 +39,7 @@ import * as socket from "./sm-socket.js";
 import * as smUi from "./sm-ui.js";
 import * as overlay from "./sm-overlay.js";
 import * as gmPanel from "./sm-gm-panel.js";
-import { replayMotion, playAlertSfx } from "./sm-motion.js";
+import { replayMotion, playAlertSfx, throwRock } from "./sm-motion.js";
 import { playPhaseBannerLocal, removeBanner } from "./sm-banner.js";
 
 // ── Scene gate ──────────────────────────────────────────────────────────────
@@ -184,6 +184,17 @@ async function runObjective(payload, { sm, tune, scene }) {
 
   if (id === OBJECTIVE.DIVERSION) {
     if (!payload.cell) return;
+    // The client lights only legal tiles, but the intent arrives over a socket
+    // and the GM is the authority — an out-of-range point must be refused here
+    // regardless of what the sender believed.
+    if (cellDistance(partyCell, payload.cell, scene) > (tune.diversionRange ?? 5)) {
+      ui.notifications?.warn?.("That is out of throwing range.");
+      return;
+    }
+    // Show the throw BEFORE resolving, and wait for it. The guards turning is
+    // the consequence; playing both at once reads as the guards reacting to
+    // nothing and the rock arriving late to explain it.
+    await socket.broadcastOverlayAwait({ kind: "throw", from: partyCell, to: payload.cell });
     resolveDiversion(sm, payload.cell, partyCell, tune, { scene });
     return director.dispatch(E.OBJECTIVE, { kind: "objective", id });
   }
@@ -435,6 +446,9 @@ Hooks.once("ready", () => {
       (e) => console.error(TAG, "intent handler threw", e)),
     onState: (view) => smUi.applyState(view, readTuning(canvas?.scene)),
     onOverlay: (payload) => {
+      if (payload?.kind === "throw") {
+        return throwRock(payload.from, payload.to);
+      }
       if (payload?.kind === "scan") {
         overlay.playSonar(payload.origin, payload.radius, payload.finds ?? [],
           { holdMs: payload.holdMs });

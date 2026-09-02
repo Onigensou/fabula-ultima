@@ -368,6 +368,59 @@ aiState.enemies.g.cell = C(9, 7);
 intent = ai.decideActivation(aiState, aiState.enemies.g, C(9, 9), TUNE, { scene });
 eq("reaching the party is contact", intent.contact, true);
 
+// ── Escalation is gated on a REAL sighting ──────────────────────────────────
+//
+// The regression this guards: escalation used to branch on sight.seen, which
+// is true for a merely suspicious reading too. A patrolling guard that caught
+// a glimpse at four cells therefore jumped straight to SEARCH and pathed at
+// the party's exact tile — so stepping behind cover could not help, because
+// being glimpsed had already handed over the position.
+console.log("\n── glimpse vs sighting ──");
+
+const esc = stateM.emptyState();
+esc.__config = { routes: {}, facings: {} };
+esc.enemies.g = stateM.emptyEnemy("g", C(5, 5), "E");
+esc.enemies.g.ai = AI.PATROL;
+esc.party.cell = C(5, 8);
+
+// Three cells out, in the cone, past spottedRange: a glimpse.
+// (Not four — the stub map is unlit, and the dark penalty takes a four-cell
+// reading all the way down to "none". Three is the band this rule is about.)
+const glimpse = vision.evaluateSight(C(5, 5), "E", C(5, 8), TUNE, { scene });
+eq("three cells out in the cone is a glimpse, not a sighting", glimpse.level, "suspicious");
+eq("  and specifically NOT spotted", glimpse.spotted, false);
+
+let e1 = ai.decideActivation(esc, esc.enemies.g, C(5, 8), TUNE, { scene });
+eq("a glimpse makes a patrolling guard suspicious", e1.ai, AI.SUSPICIOUS);
+eq("  it does NOT jump to the hunt", e1.ai === AI.SEARCH || e1.ai === AI.CHASE, false);
+
+// One cell out, in the cone: an actual sighting.
+esc.enemies.g.ai = AI.PATROL;
+esc.enemies.g.cell = C(5, 5);
+esc.enemies.g.lastKnownCell = null;
+const seenClose = vision.evaluateSight(C(5, 5), "E", C(5, 6), TUNE, { scene });
+eq("one cell out in the cone IS a sighting", seenClose.spotted, true);
+let e2 = ai.decideActivation(esc, esc.enemies.g, C(5, 6), TUNE, { scene });
+eq("a real sighting does commit to the hunt",
+  e2.ai === AI.SEARCH || e2.ai === AI.CHASE, true);
+
+// ── Patrol walks, pursuit runs ──────────────────────────────────────────────
+console.log("\n── patrol tempo ──");
+
+eq("patrol speed is below the hunting speed", TUNE.patrolMove < TUNE.enemyMove, true);
+
+const tempo = stateM.emptyState();
+tempo.__config = { routes: {}, facings: {} };
+tempo.enemies.g = stateM.emptyEnemy("g", C(2, 2), "E");
+tempo.enemies.g.ai = AI.SEARCH;
+tempo.enemies.g.lastKnownCell = C(2, 25);      // a long way off
+tempo.enemies.g.facing = "W";                  // cannot see the party
+const hunt = ai.decideActivation(tempo, tempo.enemies.g, C(9, 9), TUNE, { scene });
+eq("a hunting guard covers more ground than a patrol would",
+  hunt.move ? grid.cellDistance(C(2, 2), hunt.move) > TUNE.patrolMove : false, true);
+eq("  but never more than its full speed",
+  hunt.move ? grid.cellDistance(C(2, 2), hunt.move) <= TUNE.enemyMove : false, true);
+
 // Activation priority: the guard who knows the most acts first.
 const prio = stateM.emptyState();
 prio.enemies.calm = stateM.emptyEnemy("calm", C(1, 1), "E");
