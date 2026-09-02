@@ -40,6 +40,7 @@ import * as smUi from "./sm-ui.js";
 import * as overlay from "./sm-overlay.js";
 import * as gmPanel from "./sm-gm-panel.js";
 import { replayMotion, playAlertSfx, throwRock } from "./sm-motion.js";
+import { installBgmWatcher, applyTierBgm, restoreSceneBgm, resetBgmMemory } from "./sm-bgm.js";
 import { playPhaseBannerLocal, removeBanner } from "./sm-banner.js";
 
 // ── Scene gate ──────────────────────────────────────────────────────────────
@@ -77,6 +78,11 @@ async function handleIntent(payload, userId) {
       if (!actor) return;
       sm.party.controllerActorId = actor.id;
       pushLog(sm, `${actor.name} takes the lead`);
+      // The one token on the board IS the leader, so it has to look like
+      // them. Exploration does the same for its central party token; a
+      // stealth run that says "Keren leads" over Hina's sprite is a lie the
+      // player has to hold in their head all round.
+      await applyLeaderVisual(sm, actor, scene);
       await writeState(sm, scene);
       socket.broadcastState(sm);
       gmPanel.render();
@@ -294,6 +300,30 @@ const gmApi = {
 
 // ── Start / stop ────────────────────────────────────────────────────────────
 
+/**
+ * Make the party token wear the leader's face.
+ *
+ * Ported from exploration's central-party-token sync: take the actor's
+ * prototype-token art and name, but KEEP the token's own scale. The scale is
+ * a property of the placed token — a GM sizes the party marker to suit the
+ * map — and inheriting each actor's prototype scale instead would make the
+ * marker jump size every time the lead changed.
+ */
+async function applyLeaderVisual(sm, actor, scene = canvas?.scene) {
+  try {
+    const doc = scene?.tokens?.get?.(sm?.party?.tokenId);
+    if (!doc || !actor?.prototypeToken) return;
+    const src = String(actor.prototypeToken.texture?.src || actor.img || "").trim();
+    const update = { name: actor.name };
+    if (src) update["texture.src"] = src;
+    update["texture.scaleX"] = doc.texture?.scaleX ?? 1;
+    update["texture.scaleY"] = doc.texture?.scaleY ?? 1;
+    await doc.update(update);
+  } catch (e) {
+    console.warn(TAG, "leader visual sync failed:", e);
+  }
+}
+
 export async function startStealth(scene = canvas?.scene, opts = {}) {
   if (!game.user?.isGM) return { ok: false, reason: "GM only" };
   if (!scene) return { ok: false, reason: "no scene" };
@@ -305,6 +335,13 @@ export async function startStealth(scene = canvas?.scene, opts = {}) {
   gmPanel.wire(gmApi);
   gmPanel.render();
   smUi.applyState(socket.serialiseForClients(director.sm), director.tune);
+
+  // Score the opening tier explicitly rather than waiting for the first
+  // change: a run that begins in Stealth should already sound like it.
+  installBgmWatcher();
+  applyTierBgm(director.sm.alert, { scene, force: true })
+    .catch((e) => console.warn(TAG, "opening BGM failed", e));
+
   socket.broadcastState(director.sm);
 
   return res;
@@ -329,6 +366,10 @@ export async function stopStealth({ settle = true, cleanup = true } = {}) {
   const scene = director.scene;
   await director.stop({ persist: false });
   try { await clearState(scene); } catch (_) {}
+
+  // Give the scene its own music back. A stealth track that outlives the
+  // infiltration scores whatever the table does next.
+  restoreSceneBgm(scene).catch((e) => console.warn(TAG, "BGM restore failed", e));
 
   gmPanel.remove();
   smUi.disable();
@@ -414,6 +455,24 @@ export async function drainPendingStupor(sm, scene, tune) {
 
 // ── Boot ────────────────────────────────────────────────────────────────────
 
+/**
+ * Fold the sidebar away on arrival at a stealth scene.
+ *
+ * Stealth is played on the board: the alert panel, the vision cones and the
+ * command blades all live over the map, and the docked sidebar covers the
+ * right-hand quarter of it. Every client does this for itself — it is a view
+ * preference, not world state — and only on ARRIVAL, so a GM who opens the
+ * chat to talk to the table keeps it open for the rest of the run.
+ */
+function collapseSidebarForStealth() {
+  try {
+    const sb = ui?.sidebar;
+    if (sb && !sb._collapsed && typeof sb.collapse === "function") sb.collapse();
+  } catch (e) {
+    console.warn(TAG, "sidebar collapse failed:", e);
+  }
+}
+
 function armForScene(scene) {
   const on = isStealthScene(scene);
 
@@ -422,11 +481,15 @@ function armForScene(scene) {
     smUi.disable();
     overlay.destroyAll();
     gmPanel.remove();
+    // Leaving the mode: forget what we scored, without touching audio. The
+    // scene we are arriving at owns the music now.
+    resetBgmMemory();
     return;
   }
 
   const tune = readTuning(scene);
   invalidateLattice();
+  collapseSidebarForStealth();
 
   if (game.user?.isGM) {
     // Auto-start rather than making the GM find a button: arriving on a stealth

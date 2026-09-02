@@ -42,13 +42,15 @@ let _view = null;
 let _tune = null;
 let _enabled = false;
 
-// Interaction mode: null | "move" | "objective" | "target"
+// Interaction mode: null | "move" | "objective" | "switch" | "target"
 let _mode = null;
 let _reach = null;
 let _hoverPath = null;
 let _pickCb = null;
 let _pickLabel = "";
 let _targetSpec = null;      // active targeting spec — see beginTargeting()
+let _roster = [];            // party members, cached for the Switch stack
+let _rmbDown = null;         // right-button press origin, for click-vs-drag
 let _canvasHooked = false;
 
 // ── Alert panel ─────────────────────────────────────────────────────────────
@@ -209,7 +211,7 @@ function renderExitButton() {
     el = document.createElement("button");
     el.id = EXIT_ID;
     el.style.cssText = `
-      position:fixed; right:22px; bottom:118px; z-index:69;
+      position:fixed; left:22px; bottom:160px; z-index:69;
       width:auto; min-width:0; max-width:none; flex:none; line-height:1;
       font-family:"Inter","Segoe UI",system-ui,sans-serif;
       font-size:12.5px; font-weight:800; letter-spacing:.4px; text-transform:uppercase;
@@ -434,6 +436,10 @@ export function refreshBlades() {
     blades.showBlades(token, objectiveCommands(), onPick);
     return;
   }
+  if (_mode === "switch") {
+    blades.showBlades(token, switchCommands(), onPick);
+    return;
+  }
   blades.showBlades(token, rootCommands(), onPick);
 }
 
@@ -445,8 +451,15 @@ function onPick(id) {
   if (id === "back") { setMode(null); return; }
   if (id === "end")  { setMode(null); requestIntent({ kind: "endTurn" }); return; }
   if (id === "move") { setMode("move"); return; }
-  if (id === "switch") { openSwitchDialog(); return; }
+  if (id === "switch") { openSwitchStack(); return; }
   if (id === "objective") { setMode("objective"); return; }
+
+  if (id.startsWith("switch:")) {
+    const actorId = id.slice(7);
+    setMode(null);
+    if (actorId !== _view?.party?.controllerActorId) requestIntent({ kind: "switch", actorId });
+    return;
+  }
 
   if (id.startsWith("obj:")) {
     const objId = id.slice(4);
@@ -675,34 +688,42 @@ export async function partyRoster() {
   return out;
 }
 
-async function openSwitchDialog() {
+/**
+ * The Switch stack.
+ *
+ * This was a pop-out Dialog with a <select> — a modal, three clicks, and a
+ * different interaction grammar from every other command in the mode. It is
+ * a blade stack now, like Objective: one blade per party member, labelled
+ * with their name, picked in a single click on the board.
+ *
+ * The roster is fetched BEFORE entering the mode because blades are built
+ * synchronously on every refresh, and an async lookup inside that path would
+ * render an empty stack on the first frame.
+ */
+async function openSwitchStack() {
   const choices = await partyRoster();
-
   if (!choices.length) {
     ui.notifications?.warn?.("Stealth: no party members found.");
     return;
   }
+  _roster = choices;
+  setMode("switch");
+}
 
+function switchCommands() {
   const current = _view?.party?.controllerActorId ?? null;
-  const opts = choices.map((c) =>
-    `<option value="${c.id}"${c.id === current ? " selected" : ""}>${c.name}</option>`).join("");
-
-  new Dialog({
-    title: "Who leads?",
-    content: `<p>Their stats carry every check until the round ends.</p>
-              <select name="actorId" style="width:100%">${opts}</select>`,
-    buttons: {
-      ok: {
-        label: "Take the lead",
-        callback: (html) => {
-          const actorId = html[0].querySelector('select[name="actorId"]')?.value;
-          if (actorId) requestIntent({ kind: "switch", actorId });
-        },
-      },
-      cancel: { label: "Cancel" },
-    },
-    default: "ok",
-  }).render(true);
+  const rows = _roster.map((c) => ({
+    id: `switch:${c.id}`,
+    label: c.name,
+    // The current leader stays on the list, marked and inert. Removing them
+    // would silently renumber the stack between openings, so the blade you
+    // reach for by position would not be the one you meant.
+    note: c.id === current ? "leading" : "",
+    disabled: c.id === current,
+    reason: "Already leading",
+  }));
+  rows.push({ id: "back", label: "Back", back: true });
+  return rows;
 }
 
 // ── Canvas interaction ──────────────────────────────────────────────────────
@@ -720,6 +741,15 @@ function onCanvasClick(event) {
   // is heard — which also catches right-click pan and anything bubbling from
   // a UI layer, each of which would otherwise silently spend a move.
   const btn = event?.data?.originalEvent?.button ?? event?.nativeEvent?.button ?? event?.button;
+
+  // Right button: remember where it went down. Whether it CANCELS is decided
+  // on release — see onCanvasRightUp. Foundry pans on a right-drag, so a
+  // press alone cannot mean "back" without stealing the pan.
+  if (btn === 2) {
+    const p = pointOf(event);
+    _rmbDown = p ? { x: p.x, y: p.y } : null;
+    return;
+  }
   if (btn !== undefined && btn !== 0) return;
   if (!canAct() || !myTurn()) return;
 
@@ -749,6 +779,30 @@ function onCanvasClick(event) {
 
   setMode(null);
   requestIntent({ kind: "move", path });
+}
+
+/**
+ * Right-click backs out of whatever mode is open — the SRPG idiom, and the
+ * fastest way off a mode entered by mistake.
+ *
+ * Gated on click-versus-drag because Foundry pans the board with a right
+ * DRAG. Cancelling on the press would mean every pan dropped the player out
+ * of targeting; cancelling on a release that never moved leaves panning
+ * intact and still gives them a one-click exit.
+ */
+const RMB_SLOP = 6;   // world px of travel still counted as a click, not a drag
+
+function onCanvasRightUp(event) {
+  const btn = event?.data?.originalEvent?.button ?? event?.nativeEvent?.button ?? event?.button;
+  if (btn !== 2) return;
+  const start = _rmbDown;
+  _rmbDown = null;
+  if (!start || !_enabled || !_mode) return;
+  if (!canAct() || !myTurn()) return;
+
+  const p = pointOf(event);
+  if (p && Math.hypot(p.x - start.x, p.y - start.y) > RMB_SLOP) return;   // that was a pan
+  setMode(null);
 }
 
 function onCanvasHover(event) {
@@ -789,6 +843,8 @@ export function enable(tune) {
     _canvasHooked = true;
     canvas?.stage?.on?.("pointerdown", onCanvasClick);
     canvas?.stage?.on?.("pointermove", onCanvasHover);
+    canvas?.stage?.on?.("pointerup", onCanvasRightUp);
+    canvas?.stage?.on?.("pointerupoutside", onCanvasRightUp);
   }
   renderHud();
   redrawCones();
@@ -802,6 +858,7 @@ export function disable() {
   _reach = null;
   _pickCb = null;
   _targetSpec = null;
+  _rmbDown = null;
   removeHud();
   removeExitButton();
   blades.hideBlades();
@@ -816,6 +873,8 @@ export function disable() {
     try {
       canvas?.stage?.off?.("pointerdown", onCanvasClick);
       canvas?.stage?.off?.("pointermove", onCanvasHover);
+      canvas?.stage?.off?.("pointerup", onCanvasRightUp);
+      canvas?.stage?.off?.("pointerupoutside", onCanvasRightUp);
     } catch (_) {}
   }
 }
