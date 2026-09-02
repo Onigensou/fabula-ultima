@@ -125,6 +125,7 @@
       const fab = scene?.flags?.[MODULE_ID]?.oniFabula;
       const sceneMode = fab?.general?.sceneMode ?? null;
       if (sceneMode === "dungeon")     return false;
+      if (sceneMode === "stealth")     return false;  // stealth owns its own movement + HUD
       if (sceneMode === "exploration") return true;
       if (sceneMode === "none")        return false;
 

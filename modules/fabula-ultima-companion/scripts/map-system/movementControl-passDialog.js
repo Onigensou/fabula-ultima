@@ -123,6 +123,7 @@
 
     const sceneMode = safeGet(fab, `${GENERAL_KEY}.${SCENE_MODE_KEY}`, null);
     if (sceneMode === "dungeon")     return false;
+      if (sceneMode === "stealth")     return false;  // stealth owns its own movement + HUD
     if (sceneMode === "exploration") return true;
     if (sceneMode === "none")        return false;
 
@@ -146,6 +147,7 @@
 
     const sceneMode = safeGet(fab, `${GENERAL_KEY}.${SCENE_MODE_KEY}`, null);
     if (sceneMode === "dungeon")     return true;
+    if (sceneMode === "stealth")     return true;
     if (sceneMode === "exploration") return true;
     if (sceneMode === "none")        return false;
 

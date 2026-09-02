@@ -612,6 +612,7 @@
                 <option value="title">Title (Video Game Title Screen)</option>
                 <option value="theatre">Theatre (Visual-Novel Roleplaying)</option>
                 <option value="gacha">Gacha (Wondrous Gachapon)</option>
+                <option value="stealth">Stealth (Infiltration Turns)</option>
                 <option value="conflict">Conflict (WIP)</option>
               </select>
             </div>
@@ -914,7 +915,7 @@
       if (sel) {
         // Read new sceneMode value, or migrate from legacy cameraFollowToken boolean
         let mode = safeGet(fabulaData, `${GENERAL_KEY}.${SCENE_MODE_KEY}`, null);
-        if (!mode || !["none", "exploration", "dungeon", "camp", "title", "conflict", "theatre", "gacha"].includes(mode)) {
+        if (!mode || !["none", "exploration", "dungeon", "camp", "title", "conflict", "theatre", "gacha", "stealth"].includes(mode)) {
           const legacy = safeGet(fabulaData, `${GENERAL_KEY}.${CAMERA_FOLLOW_KEY}`, false);
           mode = normalizeBoolean(legacy, false) ? "exploration" : "none";
         }
@@ -1313,7 +1314,7 @@
       readGeneral(scene = canvas.scene) {
         const fabula = readFabulaData(scene);
         let mode = safeGet(fabula, `${GENERAL_KEY}.${SCENE_MODE_KEY}`, null);
-        if (!mode || !["none", "exploration", "dungeon", "camp", "title", "conflict", "theatre", "gacha"].includes(mode)) {
+        if (!mode || !["none", "exploration", "dungeon", "camp", "title", "conflict", "theatre", "gacha", "stealth"].includes(mode)) {
           const legacy = safeGet(fabula, `${GENERAL_KEY}.${CAMERA_FOLLOW_KEY}`, false);
           mode = normalizeBoolean(legacy, false) ? "exploration" : "none";
         }
