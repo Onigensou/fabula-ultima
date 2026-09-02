@@ -1158,7 +1158,10 @@ export function beginGmEnemyTurn(turn) {
   _gmTurn = null;
   _gmTurn = { ...turn };
   overlay.clearTargets();
-  setGmMode("gm-move");
+  // Blades first, not straight into movement. The point of handing the guard
+  // over is that the GM picks what it does; dropping them into move mode
+  // makes that choice for them and hides the End they need to finish.
+  setGmMode(null);
 }
 
 export function updateGmEnemyTurn(patch) {
@@ -1316,6 +1319,14 @@ export function applyState(view, tune) {
   // owns overlay layers, and nulling the variable alone left the lit tiles and
   // the crosshair sitting on the board all through the enemy phase.
   if (prevPhase === "ACTION" && view.phase !== "ACTION" && _mode) setMode(null);
+
+  // A GM-driven guard exists only inside the enemy phase. Anything left armed
+  // once the board is back on the party is a leak — seen across a stop/start,
+  // where a stale turn kept the blades pointed at a guard from the last run.
+  if (view.phase === "ACTION") {
+    if (_gmTurn) endGmEnemyTurn();
+    if (_gmPick) endGmActivation();
+  }
 
   renderHud();
   redrawCones();
