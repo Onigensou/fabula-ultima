@@ -51,6 +51,7 @@ let _pickLabel = "";
 let _targetSpec = null;      // active targeting spec — see beginTargeting()
 let _roster = [];            // party members, cached for the Switch stack
 let _rmbDown = null;         // right-button press origin, for click-vs-drag
+let _gmPick = null;          // { keys:Set, onPick, onCancel } while the GM activates
 let _canvasHooked = false;
 
 // ── Alert panel ─────────────────────────────────────────────────────────────
@@ -227,7 +228,8 @@ function renderHud() {
   // No Leader line: the central token already wears the leader's portrait, so
   // naming them again is the same fact twice.
   const hint =
-    _mode === "move"      ? "Click a lit tile to move"
+    _gmPick               ? "Click a guard to activate — right-click to end the phase"
+    : _mode === "move"      ? "Click a lit tile to move"
     : _mode === "target" ? `Choose a target — ${_pickLabel}`
     : (_view.phase === "ACTIVATE" || _view.phase === "ENEMY_START") ? "Enemy phase…"
     : canAct() ? "" : "Spectating";
@@ -926,6 +928,38 @@ function worldPointOf(ev) {
 function onCanvasCapture(ev) {
   if (!_enabled || !_view?.active) return;
   if (ev.button !== 0) return;                       // right/middle stay Foundry's
+
+  // GM activating a guard during the enemy phase. Checked FIRST and outside
+  // the player-mode gate: it is not the player's turn, so _mode is null and
+  // myTurn() is false — the conditions below would refuse it every time.
+  if (_gmPick) {
+    if (!game.user?.isGM) return;
+    const pt = worldPointOf(ev);
+    if (!pt) return;
+    ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation();
+
+    const cell = cellAt(pt.world);
+    let picked = _gmPick.keys.has(cellKey(cell)) ? cell : null;
+    if (!picked) {
+      // Same overhanging art as everywhere else — resolve through the token.
+      const tok = tokenAtPoint(pt.world, pt.screen);
+      const c = tok?.document ? cellOfToken(tok.document) : null;
+      if (c && _gmPick.keys.has(cellKey(c))) picked = c;
+    }
+    if (!picked) {
+      for (const key of _gmPick.keys) {
+        const [i, j] = key.split(",").map(Number);
+        if (cellDistance(cell, { i, j }) <= 1) { picked = { i, j }; break; }
+      }
+    }
+    if (!picked) { ui.notifications?.info?.("Not a guard you can activate."); return; }
+
+    const cb = _gmPick.onPick;
+    endGmActivation();
+    cb?.(picked);
+    return;
+  }
+
   if (_mode !== "move" && _mode !== "target") return;
   if (!canAct() || !myTurn()) return;
 
@@ -991,7 +1025,19 @@ function onCanvasRightUp(event) {
   if (btn !== 2) return;
   const start = _rmbDown;
   _rmbDown = null;
-  if (!start || !_enabled || !_mode) return;
+  if (!start || !_enabled) return;
+
+  // During a GM activation, a right-tap ends the enemy phase — the same
+  // "right-click means back" this mode uses everywhere else.
+  if (_gmPick) {
+    if (performance.now() - start.t > RMB_HOLD_MS) return;
+    const cb = _gmPick.onCancel;
+    endGmActivation();
+    cb?.();
+    return;
+  }
+
+  if (!_mode) return;
   if (!canAct() || !myTurn()) return;
 
   if (performance.now() - start.t > RMB_HOLD_MS) return;          // held — a pan
@@ -1029,6 +1075,36 @@ function onCanvasHover(event) {
 
 // ── Lifecycle ───────────────────────────────────────────────────────────────
 
+/**
+ * Ask the GM to click a guard, using the SAME modal capture the player's
+ * targeting uses.
+ *
+ * The first version registered its own listener from inside the FSM handler.
+ * It never fired: a left click on a token is claimed by Foundry's token
+ * interaction, and a second ad-hoc listener is one more thing racing for an
+ * event that had already been taken — the identical failure as the takedown
+ * pick. There is exactly one canvas-click owner in this module now, it is
+ * installed once at enable(), and every mode that needs a click goes through
+ * it. Fewer listeners, and the one that exists is known to win.
+ */
+export function beginGmActivation(cells, onPick, onCancel) {
+  _gmPick = {
+    keys: new Set((cells ?? []).map(cellKey)),
+    onPick, onCancel,
+  };
+  overlay.drawTargets(cells ?? [], { hostile: true });
+  renderHud();
+}
+
+export function endGmActivation() {
+  _gmPick = null;
+  overlay.clearTargets();
+  overlay.hideCrosshair();
+  renderHud();
+}
+
+export const gmActivationArmed = () => !!_gmPick;
+
 export function enable(tune) {
   _tune = tune ?? _tune;
   _enabled = true;
@@ -1056,6 +1132,7 @@ export function disable() {
   _pickCb = null;
   _targetSpec = null;
   _rmbDown = null;
+  _gmPick = null;
   removeHud();
   removeExitButton();
   blades.hideBlades();

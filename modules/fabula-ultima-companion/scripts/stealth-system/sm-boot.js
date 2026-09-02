@@ -13,7 +13,7 @@
 
 import {
   MODULE_ID, TAG, SCENE_MODE, FABULA_ROOT_KEY, GENERAL_KEY, SCENE_MODE_KEY,
-  TUNING_SETTING, OBJECTIVE, HOOKS, readTuning, ALERT, AI_SETTING } from "./sm-constants.js";
+  TUNING_SETTING, OBJECTIVE, HOOKS, readTuning, ALERT, ALERT_ORDER, AI_SETTING } from "./sm-constants.js";
 import { S, E } from "./sm-states.js";
 import { director } from "./sm-director.js";
 import { buildHandlers, findPartyToken, controllerActor, partyActors, detectionSweep, aiEnabled, disarmGmActivation } from "./sm-handlers.js";
@@ -445,6 +445,25 @@ async function resolvePendingConflict(scene, outcome) {
 
   const ids = pending.participants;
 
+  // ── A fight ALWAYS costs a tier ─────────────────────────────────────────
+  //
+  // Win or lose. Stealth mode is meant to reward getting through unseen, so
+  // fighting cannot be the cheap way out: a party that brawls its way down a
+  // corridor should find the place progressively harder, not reset to calm
+  // because the last fight ended. Only two things bring the tier DOWN — time
+  // spent unseen, and a successful Hide — and neither is a fight.
+  //
+  // Stashed rather than applied: the run is usually not back up yet when this
+  // fires, and a tier written into a state that is about to be rebuilt from
+  // the scene flag is a tier that never happened.
+  const from = pending.alert ?? ALERT.STEALTH;
+  const idx = Math.min(ALERT_ORDER.length - 1, Math.max(0, ALERT_ORDER.indexOf(from)) + 1);
+  const nextTier = ALERT_ORDER[idx];
+  try {
+    await scene.setFlag(MODULE_ID, "stealthPendingAlert",
+      { tier: nextTier, from, outcome: outcome ?? "unknown", at: Date.now() });
+  } catch (e) { console.warn(TAG, "could not record the post-fight alert", e); }
+
   if (outcome === "victory") {
     const alive = ids.filter((id) => scene.tokens?.get?.(id) && !scene.tokens.get(id).hidden);
     if (alive.length) {
@@ -475,6 +494,27 @@ async function resolvePendingConflict(scene, outcome) {
   }
 
   return { outcome, skipped: true };
+}
+
+/**
+ * Apply the tier a finished fight left behind.
+ *
+ * Raise-only against whatever the resumed run already holds: if something
+ * else has since pushed the room higher, a stale post-fight value must not
+ * pull it back down.
+ */
+export async function drainPendingAlert(sm, scene) {
+  const pend = scene?.flags?.[MODULE_ID]?.stealthPendingAlert;
+  if (!pend?.tier) return null;
+  try { await scene.unsetFlag(MODULE_ID, "stealthPendingAlert"); } catch (_) {}
+
+  const want = ALERT_ORDER.indexOf(pend.tier);
+  const have = ALERT_ORDER.indexOf(sm.alert);
+  if (want < 0 || want <= have) return null;
+
+  sm.alert = pend.tier;
+  pushLog(sm, `The fight was heard — alert ${pend.from} → ${pend.tier}`);
+  return pend.tier;
 }
 
 /** Apply a stupor that was recorded before the stealth run came back up. */

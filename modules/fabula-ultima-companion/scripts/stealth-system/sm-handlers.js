@@ -29,6 +29,7 @@ import { spawnReinforcement } from "./sm-reinforcement.js";
 import { launchConflict } from "./sm-conflict.js";
 import * as camera from "./sm-camera.js";
 import * as overlay from "./sm-overlay.js";
+import * as smUi from "./sm-ui.js";
 import {
   broadcastState, broadcastOverlay, broadcastMotion, broadcastBanner, broadcastDetection,
   broadcastEcho,
@@ -216,30 +217,27 @@ export function aiEnabled() {
   catch (_) { return true; }
 }
 
-let _gmPickDispose = null;
-
-/** Take down any armed picker. Safe to call at any time. */
+/** Take down any armed GM-activation picker. Safe to call at any time. */
 export function disarmGmActivation() {
-  try { _gmPickDispose?.(); } catch (_) {}
-  _gmPickDispose = null;
+  try { smUi.endGmActivation(); } catch (_) {}
 }
 
 /**
  * Arm the board for a GM pick and RETURN — never await.
  *
- * The first cut awaited the click inside the ACTIVATE handler, which wedged
- * the whole machine: the director serialises its events, so a handler parked
- * on human input stops the queue draining and everything after it piles up
- * behind a promise that only a mouse can resolve. Observed live as
- * queueLen 5 / draining true with the run frozen.
+ * Two things this must not do, both learned the hard way:
  *
- * So this follows the same shape as every other human input in the system:
- * arm, return, and let the click DISPATCH. The FSM parks in ACTIVATE with
- * nothing pending, and MORE_ENEMIES re-enters it with the choice made.
+ *  · It must not AWAIT the click. The director serialises its events, so a
+ *    handler parked on human input stops the queue draining and the whole run
+ *    wedges behind a promise only a mouse can resolve.
+ *  · It must not register its own canvas listener. A left click on a token is
+ *    claimed by Foundry before a late listener sees it — the same reason the
+ *    takedown pick did nothing. sm-ui owns canvas clicks through a single
+ *    capture-phase handler installed at enable(); everything that needs a
+ *    click goes through that one.
  */
 function armGmActivation(ctx) {
-  const { sm, scene, dispatch } = ctx;
-  disarmGmActivation();
+  const { sm, dispatch } = ctx;
 
   // The SAME pool the AI would draw from, so turning the toggle off changes
   // who chooses, never who is allowed to act.
@@ -247,53 +245,21 @@ function armGmActivation(ctx) {
   if (!eligible.length) { dispatch(E.NO_MORE); return; }
 
   const byCell = new Map(eligible.map((e) => [`${e.cell.i},${e.cell.j}`, e]));
-  overlay.drawTargets(eligible.map((e) => e.cell), { hostile: true });
   ui.notifications?.info?.(
     `Enemy phase — click a guard to act (${eligible.length} left), right-click to end.`);
 
-  const view = canvas?.app?.view;
-  const finish = (fn) => {
-    disarmGmActivation();
-    overlay.clearTargets();
-    try { fn(); } catch (e) { console.warn(TAG, "GM activation dispatch threw", e); }
-  };
-
-  function onDown(ev) {
-    if (ev.button === 2) {
-      ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation();
-      finish(() => dispatch(E.NO_MORE));
-      return;
-    }
-    if (ev.button !== 0) return;
-
-    const rect = view.getBoundingClientRect();
-    const w = canvas.stage.worldTransform.applyInverse(
-      new PIXI.Point(ev.clientX - rect.left, ev.clientY - rect.top));
-    const cell = cellAt(w);
-
-    // Claim the click either way — mid-pick, a stray sheet opening is exactly
-    // the interruption this phase does not need.
-    ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation();
-
-    let hit = byCell.get(`${cell.i},${cell.j}`);
-    if (!hit) {
-      // The art overhangs its cell, same as everywhere else — fall back to
-      // whichever eligible guard is nearest the click.
-      for (const e of eligible) {
-        if (cellDistance(cell, e.cell, scene) <= 1) { hit = e; break; }
-      }
-    }
-    if (!hit) { ui.notifications?.info?.("Not a guard you can activate."); return; }
-
-    sm.__gmPick = hit.tokenId;
-    finish(() => dispatch(E.MORE_ENEMIES));
-  }
-
-  view?.addEventListener?.("pointerdown", onDown, true);
-  _gmPickDispose = () => {
-    try { view?.removeEventListener?.("pointerdown", onDown, true); } catch (_) {}
-  };
+  smUi.beginGmActivation(
+    eligible.map((e) => e.cell),
+    (cell) => {
+      const hit = byCell.get(`${cell.i},${cell.j}`);
+      if (!hit) { dispatch(E.NO_MORE); return; }
+      sm.__gmPick = hit.tokenId;
+      dispatch(E.MORE_ENEMIES);
+    },
+    () => dispatch(E.NO_MORE),
+  );
 }
+
 /**
  * One check for the whole move, not one per guard.
  *
@@ -496,8 +462,9 @@ export function buildHandlers() {
       // A fight that ended in escape may have finished while this run was torn
       // down, so the stupor waits on a flag until there is a state to put it on.
       try {
-        const { drainPendingStupor } = await import("./sm-boot.js");
+        const { drainPendingStupor, drainPendingAlert } = await import("./sm-boot.js");
         await drainPendingStupor(sm, scene, ctx.tune);
+        await drainPendingAlert(sm, scene);
       } catch (e) { console.warn(TAG, "stupor drain failed", e); }
 
       if (!sm.round) sm.round = 0;
@@ -897,6 +864,10 @@ export function buildHandlers() {
       try {
         await scene?.setFlag("fabula-ultima-companion", "stealthPendingConflict", {
           participants: participants.map((p) => p.tokenId),
+          // The tier the fight STARTED at. stopStealth clears the run when the
+          // battle scene activates, so anything the alert level should be
+          // built from has to survive out here or it comes back as Stealth.
+          alert: sm.alert,
           atCell, round: sm.round, at: Date.now(),
         });
       } catch (e) { console.warn(TAG, "could not record pending conflict", e); }
