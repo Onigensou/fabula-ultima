@@ -27,7 +27,7 @@
 import {
   ALERT, ALERT_LABEL, ALERT_COLOR, OBJECTIVE, ARC,
 } from "./sm-constants.js";
-import { cellAt, cellKey, cellDistance, cellsWithin, relativeArc } from "./sm-grid.js";
+import { cellAt, cellKey, cellDistance, cellsWithin, relativeArc, cellOfToken } from "./sm-grid.js";
 import { reachable, pathFromReachable, hasLineOfSight, cellRecord } from "./sm-lattice.js";
 import { surveyObservers } from "./sm-vision.js";
 import * as overlay from "./sm-overlay.js";
@@ -140,7 +140,17 @@ function hudRoot() {
   return el;
 }
 
-export function renderHud() {
+export /**
+ * The alert panel.
+ *
+ * A STATUS readout, not a resource tracker. Move and Objective counts lived
+ * here, and the enemy count sat beside the round; none of them is where the
+ * player looks. The movement pool is legible from the lit tiles, the
+ * Objective from whether the command is still on the blade stack, and the
+ * enemy count answers a question nobody asks mid-infiltration. What is left
+ * is the one thing the board cannot show — the alert tier — plus the round.
+ */
+function renderHud() {
   if (!_enabled || !_view?.active) { removeHud(); return; }
   ensureStyles();
 
@@ -162,13 +172,8 @@ export function renderHud() {
         <span class="sm-pip" style="background:${color}; color:${color}"></span>
         <span class="sm-tier-name" style="color:${color}">${ALERT_LABEL[tier] ?? tier}</span>
       </div>
-      <div class="sm-meta">Round ${_view.round ?? 0} · ${_view.enemies?.length ?? 0} enemies</div>
+      <div class="sm-meta">Round ${_view.round ?? 0}</div>
       ${concealBadge()}
-      <div class="sm-rule"></div>
-      <div class="sm-stats">
-        <span class="sm-stat ${(p.moveLeft ?? 0) <= 0 ? "is-spent" : ""}"><b>${p.moveLeft ?? 0}</b>Move</span>
-        <span class="sm-stat ${p.objectiveUsed ? "is-spent" : ""}"><b>${p.objectiveUsed ? "0" : "1"}</b>Objective</span>
-      </div>
       ${hint ? `<div class="sm-hint">${hint}</div>` : ""}
     </div>`;
 }
@@ -300,6 +305,19 @@ function objectiveCommands() {
       id: `obj:${OBJECTIVE.TAKEDOWN}`, label: "Takedown", note: "facing you",
       disabled: true,
       reason: "They are looking straight at you — get behind them first",
+    });
+  }
+
+  // Starting the fight on purpose.
+  //
+  // Offered whenever anyone is in reach, INCLUDING a guard who is facing you
+  // — that is the whole point of it. Takedown is the option that needs their
+  // back turned; this is the one you take when it is not, or when you would
+  // rather fight than gamble on a check.
+  if (adjacent.length) {
+    rows.push({
+      id: `obj:${OBJECTIVE.FIGHT}`, label: "Fight",
+      note: adjacent.length > 1 ? `${adjacent.length} in reach` : "start it",
     });
   }
 
@@ -613,6 +631,23 @@ function submitObjective(objId) {
     return;
   }
 
+  if (objId === OBJECTIVE.FIGHT) {
+    const reach = adjacentGuards();
+    beginTargeting({
+      range: _tune?.takedownRange ?? 1,
+      hostile: true,
+      label: "who to take on",
+      empty: "Nobody within reach.",
+      filter: (cell) => reach.some((e) => e.cell.i === cell.i && e.cell.j === cell.j),
+      cb: (cell) => {
+        const e = reach.find((t) => t.cell.i === cell.i && t.cell.j === cell.j);
+        if (!e) { ui.notifications?.warn?.("That target is gone."); return; }
+        requestIntent({ kind: "objective", id: objId, enemyId: e.tokenId, cell });
+      },
+    });
+    return;
+  }
+
   if (objId === OBJECTIVE.DIVERSION) {
     beginTargeting({
       range: _tune?.diversionRange ?? 5,
@@ -734,6 +769,49 @@ function pointOf(event) {
       ?? null;
 }
 
+/**
+ * Turn a click into the target the player meant.
+ *
+ * The naive answer — the grid cell under the cursor — is wrong for creature
+ * targets, because this game's token art is drawn TALLER than its cell. A
+ * guard standing on one square has their head and torso hanging over the
+ * square above it, so a player who clicks the figure they can plainly see
+ * hits the empty cell above its feet. That cell is not in the lit set, the
+ * click was silently discarded, and the mode stayed open: "I clicked the
+ * enemy and nothing happened."
+ *
+ * So three passes, in order of confidence:
+ *   1. the cell under the cursor, if it is legal;
+ *   2. the token the cursor is actually over — the click LANDED on that
+ *      creature, whatever cell its feet occupy;
+ *   3. a legal cell within one square, nearest first, for art that overhangs
+ *      a prop or a tile rather than a token.
+ * Anything further away was not a mis-aim and is refused.
+ */
+function resolveTargetClick(cell, event) {
+  const keys = _targetSpec?.keys;
+  if (!keys?.size) return null;
+
+  if (keys.has(cellKey(cell))) return cell;
+
+  // What did the cursor actually land on?
+  const hit = event?.target;
+  const tokenDoc = hit?.document ?? null;
+  if (tokenDoc?.documentName === "Token") {
+    const c = cellOfToken(tokenDoc);
+    if (c && keys.has(cellKey(c))) return c;
+  }
+
+  // Nearest legal cell within one square.
+  let best = null, bestD = Infinity;
+  for (const key of keys) {
+    const [i, j] = key.split(",").map(Number);
+    const d = cellDistance(cell, { i, j });
+    if (d <= 1 && d < bestD) { bestD = d; best = { i, j }; }
+  }
+  return best;
+}
+
 function onCanvasClick(event) {
   if (!_enabled || !_view?.active) return;
 
@@ -747,7 +825,7 @@ function onCanvasClick(event) {
   // press alone cannot mean "back" without stealing the pan.
   if (btn === 2) {
     const p = pointOf(event);
-    _rmbDown = p ? { x: p.x, y: p.y } : null;
+    _rmbDown = { x: p?.x ?? null, y: p?.y ?? null, t: performance.now() };
     return;
   }
   if (btn !== undefined && btn !== 0) return;
@@ -758,14 +836,19 @@ function onCanvasClick(event) {
   const cell = cellAt(pos);
 
   if (_mode === "target") {
-    // Clicking outside the lit set does NOTHING — it does not cancel.
-    // Cancelling is the docked button, deliberately: a misclick on a dark tile
-    // used to spend the whole command on an illegal point, and the player only
-    // learned that from a warning after the fact.
-    if (!_targetSpec?.keys?.has(cellKey(cell))) return;
+    const picked = resolveTargetClick(cell, event);
+    if (!picked) {
+      // Clicking well outside the lit set does not CANCEL — a stray click
+      // should not throw away a command mid-aim. But it must not be silent
+      // either: a click that does nothing and leaves the mode open is
+      // indistinguishable from a dead button, which is exactly how this
+      // read at the table.
+      ui.notifications?.info?.("Not a legal target — right-click to cancel.");
+      return;
+    }
     const cb = _pickCb;
     setMode(null);
-    cb?.(cell);
+    cb?.(picked);
     return;
   }
 
@@ -790,7 +873,16 @@ function onCanvasClick(event) {
  * of targeting; cancelling on a release that never moved leaves panning
  * intact and still gives them a one-click exit.
  */
-const RMB_SLOP = 6;   // world px of travel still counted as a click, not a drag
+// A TAP cancels; a HOLD is Foundry panning the viewport.
+//
+// Distance alone was not enough. Foundry pans on a right-DRAG, and a player
+// grabbing the board to look around often presses, holds, and releases very
+// near where they started — a slow nudge, or a grab that thought better of
+// itself. That read as a tap and dropped them out of targeting. Time is the
+// property that actually separates the two intents: a tap is short whatever
+// distance it covers, and a hold is a hold even if it never moved.
+const RMB_SLOP    = 6;    // world px of travel still counted as a tap
+const RMB_HOLD_MS = 220;  // longer than this is a hold, not a tap
 
 function onCanvasRightUp(event) {
   const btn = event?.data?.originalEvent?.button ?? event?.nativeEvent?.button ?? event?.button;
@@ -800,8 +892,9 @@ function onCanvasRightUp(event) {
   if (!start || !_enabled || !_mode) return;
   if (!canAct() || !myTurn()) return;
 
+  if (performance.now() - start.t > RMB_HOLD_MS) return;          // held — a pan
   const p = pointOf(event);
-  if (p && Math.hypot(p.x - start.x, p.y - start.y) > RMB_SLOP) return;   // that was a pan
+  if (p && start.x != null && Math.hypot(p.x - start.x, p.y - start.y) > RMB_SLOP) return;
   setMode(null);
 }
 
@@ -866,6 +959,7 @@ export function disable() {
   overlay.clearTargets();
   overlay.destroyCrosshair();
   overlay.destroyStuporLayer();
+  overlay.destroyEchoLayer();
   camera.unlock();
 
   if (_canvasHooked) {

@@ -29,6 +29,7 @@ import { spawnReinforcement } from "./sm-reinforcement.js";
 import { launchConflict } from "./sm-conflict.js";
 import {
   broadcastState, broadcastOverlay, broadcastMotion, broadcastBanner, broadcastDetection,
+  broadcastEcho,
 } from "./sm-socket.js";
 import { walkToken } from "./sm-motion.js";
 
@@ -153,6 +154,29 @@ function adoptEnemies(sm, scene, config) {
  *
  * @returns {{spotted:boolean, seenBy:string[], raised:object|null}}
  */
+/**
+ * Broadcast an echo for every step of a walk that fell within earshot.
+ *
+ * Nearness is normalised against the hearing range and shipped with each
+ * cell, so the client can weight the ring without needing the tuning or the
+ * party position. Steps outside earshot are simply not sent — the party
+ * cannot hear them, and shipping them would let a curious player read the
+ * whole map out of the socket traffic.
+ */
+function emitFootsteps(sm, path, tune, { scene = canvas?.scene } = {}) {
+  const pc = sm?.party?.cell;
+  const range = tune.hearingRange ?? 5;
+  if (!pc || range <= 0 || !path?.length) return;
+
+  const heard = [];
+  for (const cell of path) {
+    const d = cellDistance(pc, cell, scene);
+    if (d > range) continue;
+    heard.push({ cell, nearness: 1 - (d / range) });
+  }
+  if (heard.length) broadcastEcho(heard);
+}
+
 export function detectionSweep(ctx, partyCell) {
   const { sm, tune, scene } = ctx;
 
@@ -471,6 +495,17 @@ export function buildHandlers() {
       const tokenDoc = scene?.tokens?.get?.(enemy.tokenId);
       if (path.length) {
         enemy.cell = path[path.length - 1];
+
+        // Footsteps the party can HEAR but not see.
+        //
+        // Emitted from the path rather than the destination, so a guard
+        // crossing the edge of hearing is heard for the part of the walk
+        // that was close enough — which is what makes the echoes read as a
+        // direction of travel instead of a single ping. Sent before the
+        // glide so the sound leads the movement, the way it would if you
+        // were listening in the dark.
+        emitFootsteps(sm, path, tune, { scene });
+
         if (tokenDoc) {
           await walkToken(tokenDoc, path, {
             msPerLeg: tune.stepMs,

@@ -95,6 +95,7 @@ export const OBJECTIVE = Object.freeze({
   HIDE:        "hide",
   DASH:        "dash",
   TAKEDOWN:    "takedown",
+  FIGHT:       "fight",       // start the fight on purpose
   MOVE_OBJECT: "move_object",
   DIVERSION:   "diversion",
   BREAK_COVER: "break_cover",
@@ -116,6 +117,7 @@ export const TUNE_DEFAULTS = Object.freeze({
 
   // Perception
   suspicionRadius:  3,     // proximity awareness, cone-independent
+  hearingRange:     5,     // how far the party HEARS a moving guard through fog
   detectionRange:   3,     // legacy alias; the live gate is spottedRange
   spottedRange:     2,     // inside the cone AND this close = seen outright
   visionRange:      5,     // outer limit of the cone
@@ -172,15 +174,13 @@ export const TUNE_DEFAULTS = Object.freeze({
 
   // Takedown
   takedownRange:    1,     // adjacent only — the reach of a hand
+  takedownAttrs:    ["MIG", "DEX"],   // the grapple: strength plus precision
   diversionRange:   5,     // how far a rock carries
   diversionRadius:  3,     // how far the NOISE carries from where it lands
-  takedownBaseDl:     7,
-  takedownDlMin:      6,
-  takedownDlMax:      16,
-  takedownLevelCoef:  0.5,   // DL per level of gap
-  takedownRankDl:     { soldier: 0, elite: 3, champion: 6 },
-  takedownRearBonus:  2,     // DL reduction from the rear arc
-  takedownStealthBonus: 1,   // the brief's flat +1 during Stealth
+  takedownBaseDl:     10,
+  takedownDlMin:      8,
+  takedownDlMax:      15,
+  takedownStealthBonus: 2,   // flat bonus to the ROLL while unnoticed
   takedownExpMult:    0.7,   // ~1.4x slower levelling than fighting
   takedownExpFloor:   0.5,
 
@@ -257,4 +257,5 @@ export const MSG = Object.freeze({
   BANNER:    "SM_BANNER",     // GM → all: phase announcer flash
   DETECT:    "SM_DETECT",     // GM → all: !/? marks + alarm cue
   MOTION:    "SM_MOTION",     // GM → all: replay a token glide
+  ECHO:      "SM_ECHO",       // GM → all: a footstep heard through the fog
 });

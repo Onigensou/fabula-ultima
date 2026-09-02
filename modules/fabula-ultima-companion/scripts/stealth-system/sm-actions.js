@@ -17,6 +17,7 @@ import {
   MODULE_ID, TAG, ALERT, AI, OBJECTIVE, ARC, HOOKS,
 } from "./sm-constants.js";
 import { cellDistance, relativeArc, directionBetween } from "./sm-grid.js";
+import { playTakedownKill } from "./sm-motion.js";
 import { cellRecord, invalidateLattice, propConfigOf, TILE_FLAG } from "./sm-lattice.js";
 import {
   shiftAlert, bankTakedown, pushLog, awareEnemies, enemyRecords, bumpAwareness,
@@ -60,27 +61,39 @@ export function takedownCheck(state, enemy, partyCell, controllerActor, tune, {
   if (arc === ARC.FRONT) return { ok: false, reason: "They are facing you." };
 
   const targetActor = game.actors?.get?.(tokenActorId(enemy.tokenId, scene));
+
+  // ── DL ────────────────────────────────────────────────────────────────
+  // Base 10, moved by how far above or below you the target sits: their
+  // level against yours, and their raw physicality (MIG + DEX dice) against
+  // yours. Both are signed, so a bigger, higher-level guard is harder and a
+  // conscript is easier, and the clamp keeps either extreme playable.
+  //
+  // Attributes are die SIZES (6/8/10/12), read from `<attr>_current` so a
+  // buffed or weakened creature is judged as it stands right now, not as it
+  // was written.
+  const die = (a, k) => num(a?.system?.props?.[k + "_current"], 8);
+  const physOf = (a) => die(a, "mig") + die(a, "dex");
+
   const targetLevel = num(targetActor?.system?.props?.level, 1);
-  const rank = String(targetActor?.system?.props?.npc_rank ?? "soldier").toLowerCase();
-  const ctrlLevel = num(controllerActor?.system?.props?.level, 1);
+  const ctrlLevel   = num(controllerActor?.system?.props?.level, 1);
+  const levelTerm   = targetLevel - ctrlLevel;
+  const physTerm    = physOf(targetActor) - physOf(controllerActor);
 
-  const rankDl = num(tune.takedownRankDl?.[rank], 0);
-  const levelTerm = tune.takedownLevelCoef * (targetLevel - ctrlLevel);
-  const arcBonus = arc === ARC.REAR ? tune.takedownRearBonus : 0;
-  const stealthBonus = state.alert === ALERT.STEALTH ? tune.takedownStealthBonus : 0;
+  // The Stealth bonus is a bonus to the ROLL, not a discount on the DL, so
+  // the player sees it named on the check card instead of having to infer it
+  // from a number that moved.
+  const stealthBonus = state.alert === ALERT.STEALTH ? (tune.takedownStealthBonus ?? 2) : 0;
 
-  // The brief's flat +1 during Stealth is applied as a -1 to DL. Same thing,
-  // and it keeps every term in this sum pointing one direction.
-  const raw = tune.takedownBaseDl + rankDl + levelTerm - arcBonus - stealthBonus;
+  const raw = tune.takedownBaseDl + levelTerm + physTerm;
   const dl = Math.round(Math.min(tune.takedownDlMax, Math.max(tune.takedownDlMin, raw)));
+  const arcName = arc;
 
   return {
-    ok: true, dl, arc,
-    targetActor, targetLevel, rank,
-    breakdown: { base: tune.takedownBaseDl, rankDl, levelTerm, arcBonus, stealthBonus, raw, dl },
+    ok: true, dl, arc: arcName, stealthBonus,
+    targetActor, targetLevel,
+    breakdown: { base: tune.takedownBaseDl, levelTerm, physTerm, raw, dl, stealthBonus },
   };
 }
-
 function tokenActorId(tokenId, scene = canvas?.scene) {
   return scene?.tokens?.get?.(tokenId)?.actorId ?? null;
 }
@@ -102,13 +115,19 @@ export async function resolveTakedown(state, enemy, controllerActor, tune, {
   const CR = globalThis.ONI?.CheckRequester;
   if (!CR?.requestOne) return { ok: false, reason: "Check Requester unavailable." };
 
+  const [attrA, attrB] = (tune.takedownAttrs ?? ["MIG", "DEX"]);
   const res = await CR.requestOne(controllerActor, {
-    attrA: "DEX", attrB: "INS",
+    attrA, attrB,
     dl: gate.dl,
     label: `Takedown — ${enemy.name ?? "guard"} (${gate.arc})`,
     mode: "interactive",
     allowInvokes: true,
     postChat: true,
+    // Named on the card rather than folded into the DL, so the player can
+    // see what being unnoticed is worth.
+    modifiers: gate.stealthBonus
+      ? [{ label: "Unnoticed", value: gate.stealthBonus }]
+      : [],
     context: { system: "stealth", kind: "takedown", enemyId: enemy.tokenId },
   });
 
@@ -132,6 +151,12 @@ export async function resolveTakedown(state, enemy, controllerActor, tune, {
         bumpAwareness(state, other.tokenId, 1, tune, enemy.cell);
       }
     }
+
+    // Show the kill. Awaited so the guard is visibly taken down before the
+    // turn moves on — a token that simply vanishes reads as a bug, not as
+    // something the party did.
+    try { await playTakedownKill(enemy.tokenId, scene); }
+    catch (e) { console.warn(TAG, "takedown VFX threw", e); }
 
     try { Hooks.callAll(HOOKS.TAKEDOWN, { enemyId: enemy.tokenId, dl: gate.dl }); } catch (_) {}
     pushLog(state, `Takedown succeeded on ${actor?.name ?? enemy.tokenId} (DL ${gate.dl})`);

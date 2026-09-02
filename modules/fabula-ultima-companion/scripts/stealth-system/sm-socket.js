@@ -34,8 +34,9 @@ let _onNarrate = null;
 let _onMotion = null;
 let _onBanner = null;
 let _onDetect = null;
+let _onEcho = null;      // client-side footstep echo
 
-export function install({ onRequest, onState, onOverlay, onNarrate, onMotion, onBanner, onDetect } = {}) {
+export function install({ onRequest, onState, onOverlay, onNarrate, onMotion, onBanner, onDetect, onEcho } = {}) {
   _onRequest = onRequest ?? _onRequest;
   _onState   = onState   ?? _onState;
   _onOverlay = onOverlay ?? _onOverlay;
@@ -43,6 +44,7 @@ export function install({ onRequest, onState, onOverlay, onNarrate, onMotion, on
   _onMotion  = onMotion  ?? _onMotion;
   _onBanner  = onBanner  ?? _onBanner;
   _onDetect  = onDetect  ?? _onDetect;
+  _onEcho    = onEcho    ?? _onEcho;
 
   if (_installed) return;
   _installed = true;
@@ -75,6 +77,10 @@ export function install({ onRequest, onState, onOverlay, onNarrate, onMotion, on
 
         case MSG.DETECT:
           _onDetect?.(msg.payload);
+          return;
+
+        case MSG.ECHO:
+          _onEcho?.(msg.payload);
           return;
 
         case MSG.BANNER:
@@ -219,6 +225,17 @@ export function broadcastBanner(kind) {
  * alarm cue. Fired to every client INCLUDING the GM, because being seen is a
  * board event and the GM is watching the same board.
  */
+/**
+ * A footstep heard but not seen. Fired for EVERY client including the GM —
+ * the GM is watching the same board and benefits from the same cue.
+ */
+export function broadcastEcho(cells) {
+  if (!game.user?.isGM || !cells?.length) return;
+  const payload = { cells };
+  try { game.socket.emit(CHANNEL, { type: MSG.ECHO, payload }); } catch (_) {}
+  try { _onEcho?.(payload); } catch (_) {}
+}
+
 export function broadcastDetection(marks, { silent = false } = {}) {
   if (!game.user?.isGM || !marks?.length) return;
   // `silent` suppresses the alarm cue. A diversion raises question marks over

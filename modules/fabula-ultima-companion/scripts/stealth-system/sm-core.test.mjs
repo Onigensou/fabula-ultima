@@ -67,8 +67,12 @@ globalThis.game = {
 };
 
 const ACTORS = {};
-const mkActor = (id, level, rank) => (ACTORS[id] = {
-  id, name: id, system: { props: { level: String(level), npc_rank: rank } },
+const mkActor = (id, level, rank, { mig = 8, dex = 8 } = {}) => (ACTORS[id] = {
+  id, name: id,
+  system: { props: {
+    level: String(level), npc_rank: rank,
+    mig_current: mig, dex_current: dex,
+  } },
 });
 
 // ── Imports (after stubs) ───────────────────────────────────────────────────
@@ -275,12 +279,17 @@ td.enemies.t_elite = stateM.emptyEnemy("t_elite", C(5, 6), "E");
 let g = actions.takedownCheck(td, td.enemies.t_mook, C(5, 5), leader, TUNE, { scene });
 eq("rear takedown is legal", g.ok, true);
 eq("  arc is rear", g.arc, "rear");
-// base 7 + rank 0 + level 0 - rear 2 - stealth 1 = 4 → clamped to the min of 6
-eq("  DL clamps at the minimum", g.dl, TUNE.takedownDlMin);
+// An evenly-matched target sits at the base: same level, same MIG+DEX.
+eq("  an even match is the base DL", g.dl, TUNE.takedownBaseDl);
+
+// The Stealth bonus is a bonus to the ROLL, not a discount on the DL, so the
+// player sees it named on the check card. The DL itself must not move.
+eq("  being unnoticed is a roll bonus, not a cheaper DL", g.stealthBonus, TUNE.takedownStealthBonus);
 
 td.alert = ALERT.NEUTRAL;
 const gNeutral = actions.takedownCheck(td, td.enemies.t_mook, C(5, 5), leader, TUNE, { scene });
-eq("Neutral loses the stealth bonus (DL no lower than Stealth's)", gNeutral.dl >= g.dl, true);
+eq("Neutral drops the bonus", gNeutral.stealthBonus, 0);
+eq("  but the DL is unchanged by it", gNeutral.dl, g.dl);
 
 td.alert = ALERT.ALERT;
 eq("Alert forbids takedowns entirely",
@@ -320,8 +329,43 @@ for (const facing of ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]) {
   eq("  facing " + facing + ": offer and authority agree", offered, authority);
 }
 
-const gElite = actions.takedownCheck(td, td.enemies.t_elite, C(5, 5), leader, TUNE, { scene });
-eq("an elite is a harder takedown than a soldier", gElite.dl > g.dl, true);
+// ── What actually moves the DL now ─────────────────────────────────────────
+// Rank no longer contributes. The target's level and raw physicality against
+// the leader's do, both signed, so the same guard is harder for a weaker
+// character and easier for a stronger one.
+td.alert = ALERT.STEALTH;
+
+mkActor("bigger", 26, "soldier", { mig: 10, dex: 10 });
+scene.tokens.push({ id: "t_big", actorId: "bigger", disposition: -1, hidden: false,
+                    x: 500, y: 600, width: 1, height: 1 });
+td.enemies.t_big = stateM.emptyEnemy("t_big", C(5, 6), "E");
+const gBig = actions.takedownCheck(td, td.enemies.t_big, C(5, 5), leader, TUNE, { scene });
+eq("a higher-level, stronger target is a harder takedown", gBig.dl > g.dl, true);
+
+mkActor("weaker", 14, "soldier", { mig: 6, dex: 6 });
+scene.tokens.push({ id: "t_weak", actorId: "weaker", disposition: -1, hidden: false,
+                    x: 500, y: 600, width: 1, height: 1 });
+td.enemies.t_weak = stateM.emptyEnemy("t_weak", C(5, 6), "E");
+const gWeak = actions.takedownCheck(td, td.enemies.t_weak, C(5, 5), leader, TUNE, { scene });
+eq("a weaker, lower-level target is an easier one", gWeak.dl < g.dl, true);
+
+// The clamps are the playability guarantee: a wildly mismatched pairing must
+// still produce a roll worth making rather than an auto-pass or a wall.
+mkActor("titan", 200, "champion", { mig: 12, dex: 12 });
+scene.tokens.push({ id: "t_titan", actorId: "titan", disposition: -1, hidden: false,
+                    x: 500, y: 600, width: 1, height: 1 });
+td.enemies.t_titan = stateM.emptyEnemy("t_titan", C(5, 6), "E");
+eq("an absurdly stronger target clamps to the maximum",
+  actions.takedownCheck(td, td.enemies.t_titan, C(5, 5), leader, TUNE, { scene }).dl,
+  TUNE.takedownDlMax);
+
+mkActor("rat", 1, "soldier", { mig: 6, dex: 6 });
+scene.tokens.push({ id: "t_rat", actorId: "rat", disposition: -1, hidden: false,
+                    x: 500, y: 600, width: 1, height: 1 });
+td.enemies.t_rat = stateM.emptyEnemy("t_rat", C(5, 6), "E");
+eq("an absurdly weaker one clamps to the minimum",
+  actions.takedownCheck(td, td.enemies.t_rat, C(5, 5), leader, TUNE, { scene }).dl,
+  TUNE.takedownDlMin);
 
 // ── Enemy AI ────────────────────────────────────────────────────────────────
 console.log("\n── enemy AI ──");

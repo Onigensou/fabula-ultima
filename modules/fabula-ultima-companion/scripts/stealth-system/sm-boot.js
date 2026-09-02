@@ -155,6 +155,22 @@ async function runObjective(payload, { sm, tune, scene }) {
     });
   }
 
+  if (id === OBJECTIVE.FIGHT) {
+    const enemy = sm.enemies?.[payload.enemyId];
+    if (!enemy) { ui.notifications?.warn?.("That target is gone."); return; }
+    if (cellDistance(partyCell, enemy.cell, scene) > (tune.takedownRange ?? 1)) {
+      ui.notifications?.warn?.("They are out of reach.");
+      return;
+    }
+    // Routed through CONTACT rather than a private launcher, so a fight you
+    // START is the same event as a fight that finds you: the same handoff,
+    // the same join radius pulling in nearby guards, the same tier-derived
+    // engagement. Choosing it from Stealth still opens with the ambush
+    // advantage — that IS the reward for setting it up.
+    pushLog(sm, `${leader?.name ?? "The party"} attacks ${enemy.name ?? "a guard"}`);
+    return director.dispatch(E.CONTACT, { cell: enemy.cell, initiatedByParty: true });
+  }
+
   if (id === OBJECTIVE.HIDE) {
     // Only being SEEN OUTRIGHT bars hiding — suspicion never does.
     //
@@ -541,6 +557,15 @@ Hooks.once("ready", () => {
     },
     onMotion: (payload) => { replayMotion(payload).catch(() => {}); },
     onBanner: (payload) => { playPhaseBannerLocal(payload?.kind).catch(() => {}); },
+    onEcho: (payload) => {
+      // Staggered so a five-cell walk reads as a series of steps rather than
+      // one loud thump; the interval matches the glide so sound and movement
+      // stay in step.
+      const step = readTuning(canvas?.scene).stepMs ?? 160;
+      (payload?.cells ?? []).forEach((e, i) => {
+        setTimeout(() => overlay.popFootstepEcho(e.cell, e.nearness), i * step);
+      });
+    },
     onDetect: (payload) => {
       // Marks over the guards who noticed, plus one alarm cue for the batch.
       const view = smUi.currentView();

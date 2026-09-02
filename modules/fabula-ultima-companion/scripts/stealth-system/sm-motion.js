@@ -343,3 +343,65 @@ export async function throwRock(fromCell, toCell, { sfx = true, radiusCells = 0 
   if (sfx) playThrowSfx();
   await dustPuff(b, gs, radiusCells);
 }
+
+// ── The takedown kill ───────────────────────────────────────────────────────
+//
+// A guard that simply vanished read as a bug rather than as something the
+// party did. This is the beat that makes a successful Takedown land: an impact
+// on the target, then the same red-tint-and-fade the Battle Director uses when
+// a creature drops, so a stealth kill and a combat kill look like the same
+// event happening in two different places.
+//
+// The token is HIDDEN, never deleted. A takedown removes a guard from the
+// player's problem, not from the GM's scene — the placement, the patrol route
+// and the facing all survive, so the encounter can be reset or the ruling
+// reversed without re-authoring the map.
+
+export const TAKEDOWN_IMPACT =
+  "modules/JB2A_DnD5e/Library/Generic/Impact/Impact_09_Regular_Orange_400x400.webm";
+
+/**
+ * Play the impact and the drop on a token, then hide it.
+ * Resolves once the token is hidden, so the caller can rely on the board
+ * being settled.
+ */
+export async function playTakedownKill(tokenId, scene = canvas?.scene) {
+  const doc = scene?.tokens?.get?.(tokenId);
+  if (!doc) return;
+  const placeable = doc.object ?? null;
+
+  const hide = async () => {
+    try { await doc.update({ hidden: true }); }
+    catch (e) { console.warn(TAG, "takedown hide failed", e); }
+  };
+
+  // Sequencer drives both beats when it is available. Without it — or with the
+  // token off-canvas — the guard still has to go, so the fallback is the plain
+  // hide rather than an animation that never resolves.
+  if (typeof Sequence !== "function" || !placeable) { await hide(); return; }
+
+  try {
+    await new Sequence()
+      .effect()
+        .file(TAKEDOWN_IMPACT)
+        .atLocation(placeable)
+        .scaleToObject(1.6)
+        .zIndex(1)
+      .animation().on(placeable).tint("#ff0000").waitUntilFinished()
+      .animation().on(placeable).fadeOut(700).waitUntilFinished()
+      .play();
+  } catch (e) {
+    console.warn(TAG, "takedown sequence threw — hiding without animation", e);
+  }
+  await hide();
+
+  // Undo the fade/tint on the DOCUMENT's placeable so the token is clean if a
+  // GM un-hides it later: Sequencer animates the sprite, not the document, and
+  // a token brought back at alpha 0 would look deleted.
+  try {
+    if (placeable && !placeable.destroyed) {
+      placeable.alpha = 1;
+      if (placeable.mesh) { placeable.mesh.alpha = 1; placeable.mesh.tint = 0xffffff; }
+    }
+  } catch (_) { /* cosmetic only */ }
+}

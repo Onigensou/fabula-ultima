@@ -894,3 +894,84 @@ export function destroyCrosshair() {
   }
   _crossLayer = null;
 }
+
+// ── Footstep echoes ─────────────────────────────────────────────────────────
+//
+// A guard walking somewhere out in the dark is the most useful information the
+// party never got. Fog hides the token, and correctly so — but it also hid the
+// fact that anything was moving at all, which made an enemy phase read as
+// nothing happening right up until someone walked into view.
+//
+// So movement inside the party's hearing makes a sound you can SEE: a ring
+// pulsing outward from where the step fell. Distance is carried by the ring's
+// WEIGHT rather than its size — a near step draws thick and bright, a far one
+// thin and faint — because a ring that grew with distance would read as a
+// bigger event rather than a closer one. Direction the player reads for
+// themselves, from where on the screen it appeared.
+//
+// Deliberately drawn ABOVE the fog. It is a sound, not a sighting: it tells
+// you something is there without telling you what, or exactly where.
+
+const Z_ECHO = 500004;
+let _echoLayer = null;
+
+function echoLayer() {
+  if (_echoLayer && !_echoLayer.destroyed) return _echoLayer;
+  const parent = canvas?.stage ?? null;
+  if (!parent) return null;
+  _echoLayer = new PIXI.Container();
+  _echoLayer.name = "Stealth Echoes";
+  _echoLayer.zIndex = Z_ECHO;
+  _echoLayer.eventMode = "none";
+  parent.sortableChildren = true;
+  parent.addChild(_echoLayer);
+  return _echoLayer;
+}
+
+/**
+ * One expanding ring at a cell.
+ *
+ * @param {{i:number,j:number}} cell   where the step fell
+ * @param {number} nearness            0 = at the edge of hearing, 1 = adjacent
+ */
+export function popFootstepEcho(cell, nearness = 0.5) {
+  const layer = echoLayer();
+  if (!layer || !cell) return;
+
+  const gs = gridSize();
+  const p = centerOf(cell);
+  const n = Math.max(0, Math.min(1, nearness));
+
+  const g = new PIXI.Graphics();
+  g.x = p.x; g.y = p.y;
+  layer.addChild(g);
+
+  // Weight and opacity carry distance; the radius is the same for every echo
+  // so they stay comparable.
+  const width = gs * (0.03 + n * 0.10);
+  const alpha = 0.30 + n * 0.55;
+  const maxR  = gs * 0.95;
+  const DUR   = 900;
+  const t0 = performance.now();
+
+  const tick = () => {
+    if (g.destroyed) { canvas?.app?.ticker?.remove?.(tick); return; }
+    const t = Math.min(1, (performance.now() - t0) / DUR);
+    // Fast out, slow settle — the shape of a sound arriving.
+    const e = 1 - Math.pow(1 - t, 3);
+    g.clear();
+    g.lineStyle(Math.max(1, width * (1 - t * 0.6)), 0xdfe8f5, alpha * (1 - t));
+    g.drawCircle(0, 0, gs * 0.12 + (maxR - gs * 0.12) * e);
+    if (t >= 1) {
+      canvas?.app?.ticker?.remove?.(tick);
+      try { g.parent?.removeChild(g); g.destroy(); } catch (_) {}
+    }
+  };
+  canvas?.app?.ticker?.add?.(tick);
+}
+
+export function destroyEchoLayer() {
+  if (!_echoLayer || _echoLayer.destroyed) { _echoLayer = null; return; }
+  try { _echoLayer.parent?.removeChild(_echoLayer); _echoLayer.destroy({ children: true }); } catch (_) {}
+  _echoLayer = null;
+}
