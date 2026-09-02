@@ -540,5 +540,34 @@ console.log("\n── hide downgrade ──");
 eq("the downgrade threshold is an absolute roll", TUNE.hideDowngradeRoll, 13);
 eq("scatter radius keeps them near but wrong", TUNE.hideScatterRadius, 4);
 
+// ── Connectivity ────────────────────────────────────────────────────────────
+// A spawn must land in the party's OWN walled region. Picking by distance
+// alone will happily choose a sealed-off band the guard can never leave.
+console.log("\n── connectivity ──");
+
+WALLS = () => false;
+lattice.invalidateLattice(); lattice.buildLattice(scene);
+eq("an open map is one region", lattice.connectedCells(C(5, 5)).size, 100);
+
+// Seal column 5 completely: nothing may cross between j<5 and j>=5.
+WALLS = (a, b) => (a.x < 500 && b.x >= 500) || (a.x >= 500 && b.x < 500);
+lattice.invalidateLattice(); lattice.buildLattice(scene);
+const near = lattice.connectedCells(C(5, 2));
+eq("a sealing wall splits the map", near.size < 100, true);
+eq("  cells on our side are connected", lattice.isConnected(C(5, 2), C(7, 3)), true);
+eq("  cells past the wall are NOT", lattice.isConnected(C(5, 2), C(5, 8)), false);
+eq("  and the far side is invisible to the flood", near.has("5,8"), false);
+
+WALLS = () => false;
+lattice.invalidateLattice(); lattice.buildLattice(scene);
+
+// A stupored guard is out of play: it neither acts nor observes.
+console.log("\n── stupor is total ──");
+const os = stateM.emptyState();
+os.enemies.z = stateM.emptyEnemy("z", C(5, 5), "E");
+os.enemies.z.stupor = 1;
+eq("a stupored guard is filtered from the observer list",
+  stateM.enemyRecords(os).filter((e) => !stateM.isStupored(e)).length, 0);
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

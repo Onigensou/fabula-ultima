@@ -156,9 +156,13 @@ function adoptEnemies(sm, scene, config) {
 export function detectionSweep(ctx, partyCell) {
   const { sm, tune, scene } = ctx;
 
-  const observers = enemyRecords(sm).map((e) => ({
-    tokenId: e.tokenId, cell: e.cell, facing: e.facing,
-  }));
+  // A stupored guard sees NOTHING. It is out of play for the round, so it
+  // cannot raise suspicion or ring the alarm any more than it can take a step
+  // — a guard skipped in the enemy phase that still detects you is exactly the
+  // "escaping bought me nothing" problem Stupor exists to solve.
+  const observers = enemyRecords(sm)
+    .filter((e) => !isStupored(e))
+    .map((e) => ({ tokenId: e.tokenId, cell: e.cell, facing: e.facing }));
 
   const survey = surveyObservers(observers, partyCell, tune, {
     scene, concealTier: concealTier(sm),
@@ -466,6 +470,22 @@ export function buildHandlers() {
         enemy.cell = intent.move;
       }
 
+      // A guard that walked onto a pad goes through it, same as the party.
+      // A one-way route the party can use to escape but guards cannot follow
+      // through is a free lever, and a pad guards ignore stops reading as a
+      // teleporter at all.
+      if (tokenDoc) {
+        const hopped = await teleportPlaceable(tokenDoc, scene, { sameSceneOnly: true });
+        if (hopped === "gone") {
+          // Followed a cross-scene pad off the map. It is no longer ours.
+          enemy.defeated = true;
+          pushLog(sm, (tokenDoc.name || "A guard") + " left through a teleporter");
+        } else if (hopped) {
+          enemy.cell = cellOfToken(scene?.tokens?.get?.(enemy.tokenId)) ?? enemy.cell;
+          pushLog(sm, (tokenDoc.name || "A guard") + " came through a teleporter");
+        }
+      }
+
       enemy.ai = intent.ai;
 
       // Investigated and found nothing: wipe the awareness and the latch that
@@ -518,6 +538,7 @@ export function buildHandlers() {
       // else cools off, and may drop an AI state on the way.
       const sawIds = new Set();
       for (const e of enemyRecords(sm)) {
+        if (isStupored(e)) continue;   // out of play — sees nothing
         const r = evaluateSight(e.cell, e.facing, sm.party.cell, tune, { scene });
         if (r.seen) { sawIds.add(e.tokenId); e.lastKnownCell = sm.party.cell; }
       }
@@ -627,21 +648,36 @@ export function readSceneConfig(scene = canvas?.scene) {
  * party actually stopped on and call the public API. One trigger, at the one
  * moment the party is genuinely standing there.
  */
-export async function maybeTeleport(ctx) {
-  const { sm, scene } = ctx;
+/**
+ * Send a token through a teleporter pad it is standing on.
+ *
+ * Generalised from the party-only version so GUARDS use it too: a route the
+ * party can escape through but pursuit cannot follow is a free lever, and a pad
+ * guards visibly ignore stops reading as a teleporter at all.
+ *
+ * The teleporter system's own detector is a per-frame ticker gated to
+ * exploration mode that reads the token's VISUAL position — which here is a
+ * hidden token at its old cell while a clone glides — so it would never fire,
+ * and forcing it to would fire mid-glide. This is called once, at the moment
+ * the walk is actually over.
+ *
+ * @param {boolean} sameSceneOnly refuse cross-scene pads (guards)
+ * @returns {Promise<false|true|"gone">} "gone" = it left this scene entirely
+ */
+export async function teleportPlaceable(tokenDoc, scene, { sameSceneOnly = false } = {}) {
   const TP = globalThis.TeleporterSystem?.api;
-  if (!TP?.teleportToken || !TP?.isTeleporterEnabled) return false;
+  if (!TP?.teleportToken || !TP?.isTeleporterEnabled || !tokenDoc) return false;
 
   const gs = canvas?.grid?.size ?? 100;
-  const tokenDoc = scene?.tokens?.get?.(sm.party.tokenId);
-  if (!tokenDoc) return false;
+  const here = cellOfToken(tokenDoc);
+  if (!here) return false;
 
   for (const tile of (scene?.tiles ?? [])) {
     if (tile.hidden) continue;
     if (!TP.isTeleporterEnabled(tile)) continue;
 
     const c = cellOfPointLocal(tile.x + (tile.width || gs) / 2, tile.y + (tile.height || gs) / 2);
-    if (!sameCell(c, sm.party.cell)) continue;
+    if (!sameCell(c, here)) continue;
 
     const flags = TP.getFlags(tile);
     const destination = flags?.destination ?? flags?.target ?? null;
@@ -650,7 +686,12 @@ export async function maybeTeleport(ctx) {
       continue;
     }
 
-    pushLog(sm, "Stepped onto a teleporter");
+    // A guard following a cross-scene pad would vanish into another map and
+    // keep occupying a slot in this run's model. Let the party take those; a
+    // guard simply does not use them.
+    const destScene = destination.sceneId ?? scene?.id;
+    if (sameSceneOnly && destScene && destScene !== scene?.id) return false;
+
     try {
       await TP.teleportToken(tokenDoc, destination, { sfxUrl: flags.sfxUrl ?? "" });
     } catch (e) {
@@ -658,17 +699,27 @@ export async function maybeTeleport(ctx) {
       return false;
     }
 
-    // The token has moved under us — the lattice's occupancy and the party's
-    // recorded cell are both stale, and a same-scene hop leaves the rest of
-    // the turn running against the wrong position.
-    const landed = cellOfToken(scene?.tokens?.get?.(sm.party.tokenId));
-    if (landed) sm.party.cell = landed;
+    // The lattice's occupancy and any recorded cell are now stale.
     invalidateLattice();
     buildLattice(scene);
     syncOccupancy(scene);
-    return true;
+
+    return scene?.tokens?.get?.(tokenDoc.id) ? true : "gone";
   }
   return false;
+}
+
+/** The party stepped somewhere — send them through if it was a pad. */
+export async function maybeTeleport(ctx) {
+  const { sm, scene } = ctx;
+  const tokenDoc = scene?.tokens?.get?.(sm.party.tokenId);
+  const hopped = await teleportPlaceable(tokenDoc, scene);
+  if (!hopped) return false;
+
+  pushLog(sm, "Stepped onto a teleporter");
+  const landed = cellOfToken(scene?.tokens?.get?.(sm.party.tokenId));
+  if (landed) sm.party.cell = landed;
+  return true;
 }
 
 function cellOfPointLocal(x, y) {

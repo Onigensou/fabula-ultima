@@ -13,8 +13,12 @@
 // ============================================================================
 
 import { TAG, AI } from "./sm-constants.js";
-import { cellOfToken, topLeftOf, cellDistance, cellKey } from "./sm-grid.js";
-import { cellRecord, syncOccupancy, invalidateLattice, getLattice } from "./sm-lattice.js";
+import {
+  cellOfToken, topLeftOf, cellDistance, cellKey, neighbours as neighboursOf,
+} from "./sm-grid.js";
+import {
+  cellRecord, syncOccupancy, invalidateLattice, getLattice, connectedCells,
+} from "./sm-lattice.js";
 import { emptyEnemy, pushLog, enemyRecords } from "./sm-state.js";
 import { readSceneConfig } from "./sm-handlers.js";
 
@@ -89,6 +93,11 @@ function pickSpawnCell(sm, cfg, scene) {
   // the NEAREST one to the party is where the response comes through — which
   // also makes a teleporter a piece of terrain the party has a reason to
   // watch, avoid, or block.
+  const region = connectedCells(partyCell, { scene });
+  const inRegion = (c) => region.has(`${c.i},${c.j}`);
+
+  // A teleporter pad is exempt from the connectivity rule: crossing a wall is
+  // the entire point of one, so a pad in a sealed room is a legitimate way in.
   const pads = teleporterCells(scene).filter(free);
   if (pads.length) {
     return pads
@@ -96,7 +105,7 @@ function pickSpawnCell(sm, cfg, scene) {
       .sort((a, b) => a.d - b.d)[0].c;
   }
 
-  const authored = (cfg.spawnPoints ?? []).filter(free);
+  const authored = (cfg.spawnPoints ?? []).filter((c) => free(c) && inRegion(c));
 
   if (authored.length) {
     // The nearest authored point that is not right on top of the party — the
@@ -109,12 +118,31 @@ function pickSpawnCell(sm, cfg, scene) {
     return authored[0];
   }
 
+  // Furthest CONNECTED cell — not simply furthest.
+  //
+  // A map can have regions a wall seals off entirely, and picking by distance
+  // alone will happily choose one: the guard appears, is visibly present, and
+  // can never take a single step toward the party. Seen live on a map whose
+  // outer band was walled off from the play area. Flooding from the party
+  // first guarantees whatever we pick can actually walk here.
+  const reachableSet = connectedCells(partyCell, { scene });
   let best = null;
   let bestD = -Infinity;
-  for (const rec of getLattice(scene).cells.values()) {
-    if (!rec.passable || rec.occupant) continue;
-    const d = cellDistance({ i: rec.i, j: rec.j }, partyCell, scene);
-    if (d > bestD) { bestD = d; best = { i: rec.i, j: rec.j }; }
+  for (const cell of reachableSet.values()) {
+    const rec = cellRecord(cell, scene);
+    if (!rec || rec.occupant) continue;
+    const d = cellDistance(cell, partyCell, scene);
+    if (d > bestD) { bestD = d; best = cell; }
+  }
+
+  // Nowhere connected and free at all (a one-tile closet, everything occupied):
+  // better to arrive right beside the party than not at all — a reinforcement
+  // that never spawns is an Alert tier that silently stops escalating.
+  if (!best) {
+    for (const { cell } of neighboursOf(partyCell, scene)) {
+      const rec = cellRecord(cell, scene);
+      if (rec?.passable && !rec.occupant) return cell;
+    }
   }
   return best;
 }

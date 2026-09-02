@@ -382,3 +382,49 @@ export function stepToward(origin, goal, budget, opts = {}) {
   if (!best || sameCell(best.cell, origin)) return { cell: origin, path: [], reach };
   return { cell: best.cell, path: pathFromReachable(reach, best.cell), reach };
 }
+
+/**
+ * Every cell CONNECTED to `origin` — an unbounded BFS, no movement budget.
+ *
+ * Reachability with a budget answers "where can I go this turn". This answers
+ * "is that place part of the same world as me at all", which is a different
+ * question and the one that matters for placing anything.
+ *
+ * A map can have regions a wall seals off completely. Picking a spawn by
+ * DISTANCE alone will happily choose one, and the result is a guard who can
+ * never take a single step toward the party — visibly present, permanently
+ * irrelevant, and impossible to diagnose from the board.
+ *
+ * ~1,100 cells on the prototype map, so a full flood is sub-millisecond and
+ * there is no reason to cache or approximate it.
+ */
+export function connectedCells(origin, { scene = canvas?.scene } = {}) {
+  const out = new Map();
+  if (!origin) return out;
+
+  const lat = getLattice(scene);
+  const startKey = cellKey(origin);
+  if (!lat.cells.get(startKey)?.passable) return out;
+
+  out.set(startKey, origin);
+  const queue = [origin];
+
+  while (queue.length) {
+    const cur = queue.shift();
+    for (const { cell } of neighbours(cur, scene)) {
+      const key = cellKey(cell);
+      if (out.has(key)) continue;
+      const rec = lat.cells.get(key);
+      if (!rec || !rec.passable) continue;
+      if (!canStep(cur, cell, scene)) continue;
+      out.set(key, cell);
+      queue.push(cell);
+    }
+  }
+  return out;
+}
+
+/** Is `cell` in the same walled-off region as `origin`? */
+export function isConnected(origin, cell, { scene = canvas?.scene } = {}) {
+  return connectedCells(origin, { scene }).has(cellKey(cell));
+}
