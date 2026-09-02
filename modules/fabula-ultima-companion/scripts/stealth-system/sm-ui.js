@@ -69,7 +69,7 @@ function ensureStyles() {
        Bottom-left, out of the way of the chat sidebar and clear of the
        command blades, which sit on the token. */
     #${HUD_ID}{
-      position:fixed; left:14px; bottom:118px; z-index:68;
+      position:fixed; left:14px; bottom:178px; z-index:68;
       font-family:"Inter","Segoe UI",system-ui,sans-serif;
       pointer-events:none; user-select:none;
       --sm-mon-bg-1:#0d1411; --sm-mon-bg-2:#070b0a;
@@ -290,7 +290,7 @@ function renderExitButton() {
     el = document.createElement("button");
     el.id = EXIT_ID;
     el.style.cssText = `
-      position:fixed; left:22px; bottom:232px; z-index:69;
+      position:fixed; left:22px; bottom:272px; z-index:69;
       width:auto; min-width:0; max-width:none; flex:none; line-height:1;
       font-family:"Inter","Segoe UI",system-ui,sans-serif;
       font-size:12.5px; font-weight:800; letter-spacing:.4px; text-transform:uppercase;
