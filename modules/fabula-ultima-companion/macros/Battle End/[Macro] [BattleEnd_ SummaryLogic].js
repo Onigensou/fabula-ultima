@@ -1,3 +1,20 @@
+// ############################################################################
+// ## DISCONTINUED — legacy (non-Battle-Director) battles only.
+// ##
+// ## EXP, character level and Skill Points are now owned by
+// ## modules/fabula-ultima-companion/scripts/shared/exp-core.js, and the live
+// ## path is battle-director/battle-end/battle-end-summary-logic.js, which
+// ## delegates to it.
+// ##
+// ## This macro still carries its OWN copy of the gauge maths and, like the
+// ## module file used to, does NOT mint the Skill Point a gained level owes.
+// ## A level-up through this path will leave the level-up window showing
+// ## `points.drift`; a GM clears it with the window's Heal button.
+// ##
+// ## Deliberately left untouched — see docs/exp-award-pipeline.md. Do not
+// ## extend it. New EXP behaviour goes in exp-core.js.
+// ############################################################################
+
 // ============================================================================
 // [BattleEnd: SummaryLogic] • Foundry VTT v12
 // ----------------------------------------------------------------------------

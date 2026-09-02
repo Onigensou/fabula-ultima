@@ -1,3 +1,18 @@
+// ############################################################################
+// ## DISCONTINUED — legacy (non-Battle-Director) battles only.
+// ##
+// ## The v1.2 EXP formula this macro implements now lives once, in
+// ## modules/fabula-ultima-companion/scripts/shared/exp-core.js as
+// ## computeExpAward(). battle-end-rewards.js supplies the actors and calls it.
+// ##
+// ## The copy below is frozen. If you retune the formula — weights, rank
+// ## multipliers, the level-delta curve, the clamps — change exp-core.js. This
+// ## file will then disagree, which is expected and harmless as long as the
+// ## Director is the path in use.
+// ##
+// ## Deliberately left untouched — see docs/exp-award-pipeline.md.
+// ############################################################################
+
 // ============================================================================
 // BattleInit — Battle Record Writer (Step 8) • Foundry VTT v12
 // ----------------------------------------------------------------------------
