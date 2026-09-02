@@ -84,6 +84,7 @@ const stateM  = await import("./sm-state.js");
 const actions = await import("./sm-actions.js");
 const ai      = await import("./sm-enemy-ai.js");
 const { TUNE_DEFAULTS, ALERT, AI } = await import("./sm-constants.js");
+const handlers = await import("./sm-handlers.js");
 
 const TUNE = { ...TUNE_DEFAULTS };
 
@@ -366,6 +367,57 @@ td.enemies.t_rat = stateM.emptyEnemy("t_rat", C(5, 6), "E");
 eq("an absurdly weaker one clamps to the minimum",
   actions.takedownCheck(td, td.enemies.t_rat, C(5, 5), leader, TUNE, { scene }).dl,
   TUNE.takedownDlMin);
+
+// ── The suspicion check ─────────────────────────────────────────────────────
+//
+// The rule has to hold three lines at once, and each exists to stop the check
+// becoming a toll booth on ordinary movement:
+//   · only the OUTER edge is arguable — close in, you are simply seen
+//   · only a PLAYER MOVE defers — an enemy phase never asks the party to roll
+//   · being SPOTTED outright cancels the whole question
+console.log("\n── suspicion deferral ──");
+
+const sus = stateM.emptyState();
+sus.enemies.far  = stateM.emptyEnemy("far",  C(5, 10), "W");   // looks west
+sus.enemies.near = stateM.emptyEnemy("near", C(5, 7),  "W");
+sus.party.cell = C(5, 5);
+
+const ctx = { sm: sus, tune: TUNE, scene };
+
+// Without deferral nothing is held back — the legacy path is untouched.
+const plain = handlers.detectionSweep(ctx, C(5, 5));
+eq("an undeferred sweep holds nothing back", (plain.deferred ?? []).length, 0);
+
+// With deferral, only readings beyond the inner range are held.
+const sus2 = stateM.emptyState();
+sus2.enemies.far = stateM.emptyEnemy("far", C(5, 10), "W");
+sus2.party.cell = C(5, 5);
+const heldSweep = handlers.detectionSweep({ sm: sus2, tune: TUNE, scene }, C(5, 5), { deferOuter: true });
+const anyHeld = (heldSweep.deferred ?? []).length > 0;
+const anyInner = (heldSweep.deferred ?? []).some(d => d.distance <= TUNE.suspicionInnerRange);
+eq("nothing inside the inner range is ever held for a check", anyInner, false);
+if (anyHeld) {
+  eq("  a held glimpse carries the distance it was caught at",
+    typeof heldSweep.deferred[0].distance, "number");
+  eq("  and the cell the guard is standing in, for the camera",
+    typeof heldSweep.deferred[0].cell?.i, "number");
+}
+
+// applySuspicion lands the held reading on exactly the same terms.
+const late = stateM.emptyState();
+late.enemies.g = stateM.emptyEnemy("g", C(5, 9), "W");
+const marks = [];
+handlers.applySuspicion(late, TUNE, late.enemies.g, "g", 2, C(5, 5), true, marks);
+eq("a failed check registers the suspicion", late.enemies.g.awareness >= TUNE.suspiciousAt, true);
+eq("  and marks the guard once", marks.length, 1);
+eq("  with the lead where it was GLIMPSED, not where the party ended up",
+  JSON.stringify(late.enemies.g.lastKnownCell), JSON.stringify(C(5, 5)));
+
+// The ceiling still applies: a check you failed cannot make a guard hunt.
+for (let i = 0; i < 6; i++)
+  handlers.applySuspicion(late, TUNE, late.enemies.g, "g", 3, C(5, 5), false, []);
+eq("no pile of failed checks reaches the hunting threshold",
+  late.enemies.g.awareness < TUNE.searchAt, true);
 
 // ── Enemy AI ────────────────────────────────────────────────────────────────
 console.log("\n── enemy AI ──");

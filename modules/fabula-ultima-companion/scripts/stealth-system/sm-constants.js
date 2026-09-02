@@ -33,6 +33,10 @@ export const STATE_FLAG = "stealthState";
 export const CONFIG_FLAG = "stealthConfig";
 
 /** World setting holding a JSON tuning override. */
+// World setting: who plays the guards during the enemy phase. Mirrors the
+// Battle Director's autopilot toggle — the GM can always take the wheel.
+export const AI_SETTING = "stealthEnemyAi";
+
 export const TUNING_SETTING = "stealthTuning";
 
 // ── Alert tiers ─────────────────────────────────────────────────────────────
@@ -117,13 +121,19 @@ export const TUNE_DEFAULTS = Object.freeze({
 
   // Perception
   suspicionRadius:  3,     // proximity awareness, cone-independent
+  suspicionInnerRange: 3,  // at or inside this, suspicion is automatic — no check
+  suspicionCheckDl:   12,  // DEX + INS to hold your nerve at the outer edge
   hearingRange:     5,     // how far the party HEARS a moving guard through fog
   detectionRange:   3,     // legacy alias; the live gate is spottedRange
   spottedRange:     2,     // inside the cone AND this close = seen outright
   visionRange:      5,     // outer limit of the cone
-  coneHalfAngle:    22,    // half-angle -> a 44° cone. Narrow on purpose: at
-                           // 90° a guard watched nearly everything in front of
-                           // it and facing barely mattered.
+  coneHalfAngle:    31,    // half-angle -> a 62° cone. Tuned by HALF-WIDTH at
+                           // max range rather than by the angle, because the
+                           // angle is not what anyone reads off the board: at
+                           // visionRange 5, tan(22°)·5 = 2.02 cells to each
+                           // side, and tan(31°)·5 = 3.00 — exactly one more
+                           // square of shoulder. 45° was the original and put
+                           // 5 cells either side, which was unplayable.
   flankRangeMult:   0.6,   // sight range multiplier in the flank arc
   coverAwareness:   -2,    // awareness delta when the party stands in cover
   darkAwareness:    -1,    // awareness delta in an unlit cell
@@ -181,6 +191,10 @@ export const TUNE_DEFAULTS = Object.freeze({
   takedownDlMin:      8,
   takedownDlMax:      15,
   takedownStealthBonus: 2,   // flat bonus to the ROLL while unnoticed
+  // Set false for a tuning session: takedowns resolve and animate exactly as
+  // normal, but nothing is banked and nothing is ever awarded, so repeated
+  // testing cannot drift real character sheets.
+  awardTakedownExp:   true,
   takedownExpMult:    0.7,   // ~1.4x slower levelling than fighting
   takedownExpFloor:   0.5,
 

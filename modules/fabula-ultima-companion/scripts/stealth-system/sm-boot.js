@@ -13,11 +13,10 @@
 
 import {
   MODULE_ID, TAG, SCENE_MODE, FABULA_ROOT_KEY, GENERAL_KEY, SCENE_MODE_KEY,
-  TUNING_SETTING, OBJECTIVE, HOOKS, readTuning, ALERT,
-} from "./sm-constants.js";
+  TUNING_SETTING, OBJECTIVE, HOOKS, readTuning, ALERT, AI_SETTING } from "./sm-constants.js";
 import { S, E } from "./sm-states.js";
 import { director } from "./sm-director.js";
-import { buildHandlers, findPartyToken, controllerActor, partyActors, detectionSweep } from "./sm-handlers.js";
+import { buildHandlers, findPartyToken, controllerActor, partyActors, detectionSweep, aiEnabled } from "./sm-handlers.js";
 import {
   readState, writeState, clearState, shiftAlert, pushLog, enemyRecords, isAlert,
   concealTier, breakConcealment, applyStupor,
@@ -496,6 +495,24 @@ export async function drainPendingStupor(sm, scene, tune) {
  * preference, not world state — and only on ARRIVAL, so a GM who opens the
  * chat to talk to the table keeps it open for the rest of the run.
  */
+/**
+ * Hand the enemy phase between the AI and the GM.
+ *
+ * Takes effect from the NEXT activation, not retroactively — flipping it
+ * mid-phase must not strand a guard that is already walking.
+ */
+async function toggleEnemyAi() {
+  if (!game.user?.isGM) return;
+  const next = !aiEnabled();
+  try { await game.settings.set(MODULE_ID, AI_SETTING, next); }
+  catch (e) { console.warn(TAG, "AI toggle write failed", e); return; }
+  gmButton.setAiEnabled(next);
+  ui.notifications?.info?.(next
+    ? "Stealth: the AI plays the guards."
+    : "Stealth: you play the guards — click a guard to activate it.");
+  if (director.running) pushLog(director.sm, next ? "Enemy AI ON" : "Enemy AI OFF (GM plays)");
+}
+
 function collapseSidebarForStealth() {
   try {
     const sb = ui?.sidebar;
@@ -515,6 +532,7 @@ function armForScene(scene) {
     gmPanel.resetOpenState();
     gmPanel.remove();
     gmButton.remove();
+    gmButton.removeAiToggle();
     // Leaving the mode: forget what we scored, without touching audio. The
     // scene we are arriving at owns the music now.
     resetBgmMemory();
@@ -531,6 +549,7 @@ function armForScene(scene) {
   gmPanel.resetOpenState();
   gmButton.install(() => { gmPanel.toggle(); gmButton.setOpen(gmPanel.isOpen()); });
   gmButton.setOpen(false);
+  gmButton.installAiToggle(toggleEnemyAi, aiEnabled());
 
   if (game.user?.isGM) {
     // Auto-start rather than making the GM find a button: arriving on a stealth
@@ -547,6 +566,13 @@ Hooks.once("init", () => {
       name: "Stealth Mode tuning (JSON)",
       hint: "Overrides for the stealth ruleset. Any key from TUNE_DEFAULTS; a scene flag can override again.",
       scope: "world", config: true, type: String, default: "",
+    });
+
+    // Who plays the guards. World-scoped so both GMs agree, and hidden from
+    // the config sheet because its home is the toggle on the button column.
+    game.settings.register(MODULE_ID, AI_SETTING, {
+      name: "Stealth: enemy AI drives the enemy phase",
+      scope: "world", config: false, type: Boolean, default: true,
     });
   } catch (e) { console.warn(TAG, "settings.register failed", e); }
 });

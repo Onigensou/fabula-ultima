@@ -136,7 +136,10 @@ export async function resolveTakedown(state, enemy, controllerActor, tune, {
   if (passed) {
     enemy.defeated = true;
     const actor = gate.targetActor;
-    bankTakedown(state, {
+    // Banking is what eventually writes EXP to a real character sheet, so a
+    // tuning session turns it off here rather than at the payout: nothing is
+    // recorded, so nothing can leak out later through a settle.
+    if (tune.awardTakedownExp !== false) bankTakedown(state, {
       actorId: actor?.id ?? null,
       actorName: actor?.name ?? enemy.name ?? "Unknown",
       tokenId: enemy.tokenId,

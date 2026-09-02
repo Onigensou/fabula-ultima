@@ -23,11 +23,14 @@ import { TAG } from "./sm-constants.js";
 
 const ROOT_ID  = "oni-stealth-gm-root";
 const BTN_ID   = "oni-stealth-gm-btn";
+const AI_ROOT_ID = "oni-stealth-ai-root";
+const AI_BTN_ID  = "oni-stealth-ai-btn";
 const STYLE_ID = "oni-stealth-gm-styles";
 
 const CFG = {
   offsetRightPx: 313,   // fallback until the sidebar anchor publishes
   offsetBottomPx: 494,
+  aiOffsetBottomPx: 558,   // directly above the console button
   sizePx: 52,
   zIndex: 83,
   label: "Stealth Control",
@@ -83,6 +86,45 @@ function ensureStyle() {
   pointer-events: none; box-shadow: 0 10px 24px rgba(0,0,0,.35);
 }
 #${BTN_ID}:hover .oni-stealth-btn-tip { opacity: 1; transform: translateY(0); }
+
+/* AI toggle — same shell, its own slot, and a state that is readable at a
+   glance: green while the AI is driving, amber while the GM is. A toggle
+   that looks identical in both states is a toggle nobody trusts. */
+#${AI_ROOT_ID} {
+  position: fixed;
+  right: var(--fu-sidebar-anchor-right, ${CFG.offsetRightPx}px);
+  bottom: ${CFG.aiOffsetBottomPx}px;
+  z-index: ${CFG.zIndex};
+  pointer-events: none;
+}
+#${AI_BTN_ID} {
+  pointer-events: auto;
+  width: ${CFG.sizePx}px; height: ${CFG.sizePx}px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.22);
+  background: rgba(18,18,22,0.86);
+  box-shadow: 0 10px 24px rgba(0,0,0,.35), 0 2px 0 rgba(255,255,255,.06) inset;
+  display: grid; place-items: center;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
+  transform: translateZ(0); position: relative;
+  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+}
+#${AI_BTN_ID}:hover  { transform: translateY(-1px) scale(1.02); background: rgba(28,28,34,.92); }
+#${AI_BTN_ID}.ai-on  { border-color: rgba(95,227,161,.55); box-shadow: 0 10px 24px rgba(0,0,0,.35), 0 0 16px rgba(95,227,161,.28); }
+#${AI_BTN_ID}.ai-off { border-color: rgba(240,201,90,.60); box-shadow: 0 10px 24px rgba(0,0,0,.35), 0 0 16px rgba(240,201,90,.30); }
+#${AI_BTN_ID} .oni-stealth-btn-icon { font-size: 22px; line-height: 1; filter: drop-shadow(0 2px 2px rgba(0,0,0,.45)); }
+#${AI_BTN_ID}.ai-on  .oni-stealth-btn-icon { color: #5fe3a1; }
+#${AI_BTN_ID}.ai-off .oni-stealth-btn-icon { color: #f0c95a; }
+#${AI_BTN_ID} .oni-stealth-btn-tip {
+  position: absolute; right: 0; bottom: calc(100% + 10px);
+  background: rgba(10,10,12,.92); border: 1px solid rgba(255,255,255,.18);
+  border-radius: 10px; padding: 8px 10px; font-size: 12px;
+  color: rgba(255,255,255,.9); white-space: nowrap;
+  opacity: 0; transform: translateY(4px);
+  transition: opacity 120ms ease, transform 120ms ease;
+  pointer-events: none; box-shadow: 0 10px 24px rgba(0,0,0,.35);
+}
+#${AI_BTN_ID}:hover .oni-stealth-btn-tip { opacity: 1; transform: translateY(0); }
 `;
   document.head.appendChild(style);
 }
@@ -109,6 +151,46 @@ export function install(onToggle) {
 
   root.appendChild(btn);
   document.body.appendChild(root);
+}
+
+let _onAiToggle = null;
+
+/** Put the AI toggle on the column, above the console button. */
+export function installAiToggle(onToggle, enabled) {
+  _onAiToggle = onToggle ?? _onAiToggle;
+  if (!game.user?.isGM) { removeAiToggle(); return; }
+  ensureStyle();
+  if (!document.getElementById(AI_ROOT_ID)) {
+    const root = document.createElement("div");
+    root.id = AI_ROOT_ID;
+    const btn = document.createElement("div");
+    btn.id = AI_BTN_ID;
+    btn.innerHTML =
+      `<div class="oni-stealth-btn-tip" id="${AI_BTN_ID}-tip"></div>` +
+      `<div class="oni-stealth-btn-icon"><i class="fas fa-robot"></i></div>`;
+    btn.addEventListener("click", () => {
+      try { _onAiToggle?.(); } catch (e) { console.warn(TAG, "AI toggle threw", e); }
+    });
+    root.appendChild(btn);
+    document.body.appendChild(root);
+  }
+  setAiEnabled(enabled);
+}
+
+export function removeAiToggle() {
+  document.getElementById(AI_ROOT_ID)?.remove();
+}
+
+/** Reflect who is driving the enemy phase. */
+export function setAiEnabled(on) {
+  const btn = document.getElementById(AI_BTN_ID);
+  if (!btn) return;
+  btn.classList.toggle("ai-on", !!on);
+  btn.classList.toggle("ai-off", !on);
+  const tip = document.getElementById(`${AI_BTN_ID}-tip`);
+  if (tip) tip.textContent = on ? "Enemy AI: ON (auto)" : "Enemy AI: OFF (you play them)";
+  const icon = btn.querySelector(".oni-stealth-btn-icon");
+  if (icon) icon.innerHTML = on ? `<i class="fas fa-robot"></i>` : `<i class="fas fa-hand-pointer"></i>`;
 }
 
 export function remove() {

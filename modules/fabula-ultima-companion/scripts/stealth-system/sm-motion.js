@@ -395,6 +395,9 @@ export async function throwRock(fromCell, toCell, { sfx = true, radiusCells = 0 
 // and the facing all survive, so the encounter can be reset or the ruling
 // reversed without re-authoring the map.
 
+export const TAKEDOWN_DEATH_SFX =
+  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Enemy_Death.ogg";
+
 export const TAKEDOWN_IMPACT =
   "modules/JB2A_DnD5e/Library/Generic/Impact/Impact_09_Regular_Orange_400x400.webm";
 
@@ -416,10 +419,20 @@ export async function playTakedownKill(tokenId, scene = canvas?.scene) {
   // Sequencer drives both beats when it is available. Without it — or with the
   // token off-canvas — the guard still has to go, so the fallback is the plain
   // hide rather than an animation that never resolves.
-  if (typeof Sequence !== "function" || !placeable) { await hide(); return; }
+  if (typeof Sequence !== "function" || !placeable) {
+    // No Sequencer, or the token is off-canvas. The guard still has to go,
+    // and the kill should still be audible even when it cannot be seen.
+    try {
+      foundry.audio.AudioHelper.play(
+        { src: TAKEDOWN_DEATH_SFX, volume: 0.7, autoplay: true, loop: false }, false);
+    } catch (_) { /* audio locked */ }
+    await hide();
+    return;
+  }
 
   try {
     await new Sequence()
+      .sound().file(TAKEDOWN_DEATH_SFX).volume(0.7)
       .effect()
         .file(TAKEDOWN_IMPACT)
         .atLocation(placeable)

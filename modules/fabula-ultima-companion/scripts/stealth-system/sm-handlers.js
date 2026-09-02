@@ -6,7 +6,7 @@
 // next event.
 // ============================================================================
 
-import { TAG, ALERT, ALERT_ORDER, AI, HOOKS, MSG } from "./sm-constants.js";
+import { TAG, MODULE_ID, ALERT, ALERT_ORDER, AI, HOOKS, MSG, AI_SETTING } from "./sm-constants.js";
 import { S, E } from "./sm-states.js";
 import {
   cellOfToken, cellDistance, directionBetween, sameCell, cellKey, topLeftOf, centerOf,
@@ -27,6 +27,8 @@ import {
 import { settleLedger, makeNoise } from "./sm-actions.js";
 import { spawnReinforcement } from "./sm-reinforcement.js";
 import { launchConflict } from "./sm-conflict.js";
+import * as camera from "./sm-camera.js";
+import * as overlay from "./sm-overlay.js";
 import {
   broadcastState, broadcastOverlay, broadcastMotion, broadcastBanner, broadcastDetection,
   broadcastEcho,
@@ -177,7 +179,165 @@ function emitFootsteps(sm, path, tune, { scene = canvas?.scene } = {}) {
   if (heard.length) broadcastEcho(heard);
 }
 
-export function detectionSweep(ctx, partyCell) {
+/**
+ * Register that one guard has noticed something. Extracted so a suspicion
+ * held back for a check can be applied later, on failure, on exactly the same
+ * terms as one that landed immediately.
+ */
+/**
+ * One check for the whole move, not one per guard.
+ *
+ * The point of this rule is that it must not become a toll booth. A party
+ * crossing a busy room clips the outer edge of several attention cones in a
+ * single walk, and rolling once per guard would turn one movement into four
+ * dialogs and make the feature something players route around. So every
+ * outer-edge glimpse from a single move is settled by ONE roll, and its
+ * result is applied to all of them.
+ *
+ * The camera goes to the guard who noticed while the check is open, then
+ * comes back. Being told to roll without being shown WHO is looking is the
+ * difference between a tense moment and an unexplained interruption.
+ *
+ * @returns {Promise<boolean>} true if the party talked its way out
+ */
+// ── Manual enemy phase ──────────────────────────────────────────────────────
+//
+// With the AI off the GM plays the guards, and the loop is the same one the
+// AI runs — pick an eligible enemy, resolve its activation, repeat — with the
+// pick made by clicking a token instead of by pickActivation().
+//
+// Bound in the CAPTURE phase for the same reason the player's targeting is:
+// a left click on a token is claimed by Foundry before it reaches the stage.
+// Right-click ends the enemy phase early, matching "right-click means back"
+// everywhere else in this mode.
+/** Is the AI driving the enemy phase? Defaults ON. */
+export function aiEnabled() {
+  try { return game.settings.get(MODULE_ID, AI_SETTING) !== false; }
+  catch (_) { return true; }
+}
+
+function awaitGmActivation(ctx) {
+  const { sm, scene } = ctx;
+  // The SAME pool the AI would draw from, so turning the toggle off changes
+  // who chooses, never who is allowed to act.
+  const eligible = pendingActivations(sm).filter(
+    (e) => !e.defeated && !isStupored(e));
+  if (!eligible.length) return Promise.resolve(null);
+
+  const byCell = new Map(eligible.map((e) => [`${e.cell.i},${e.cell.j}`, e]));
+  overlay.drawTargets(eligible.map((e) => e.cell), { hostile: true });
+  ui.notifications?.info?.(
+    `Enemy phase — click a guard to act (${eligible.length} left), right-click to end.`);
+
+  return new Promise((resolve) => {
+    const view = canvas?.app?.view;
+    const done = (picked) => {
+      try { view?.removeEventListener?.("pointerdown", onDown, true); } catch (_) {}
+      overlay.clearTargets();
+      resolve(picked);
+    };
+
+    function onDown(ev) {
+      if (ev.button === 2) { ev.preventDefault(); ev.stopPropagation();
+                             ev.stopImmediatePropagation(); done(null); return; }
+      if (ev.button !== 0) return;
+      const rect = view.getBoundingClientRect();
+      const w = canvas.stage.worldTransform.applyInverse(
+        new PIXI.Point(ev.clientX - rect.left, ev.clientY - rect.top));
+      const cell = cellAt(w);
+
+      // Claim the click either way — mid-pick, a stray sheet opening is
+      // exactly the interruption this phase does not need.
+      ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation();
+
+      let hit = byCell.get(`${cell.i},${cell.j}`);
+      if (!hit) {
+        // The art overhangs the cell, same as everywhere else — fall back to
+        // whichever eligible guard is nearest the click.
+        for (const e of eligible) {
+          if (cellDistance(cell, e.cell, scene) <= 1) { hit = e; break; }
+        }
+      }
+      if (!hit) { ui.notifications?.info?.("Not a guard you can activate."); return; }
+      done(hit);
+    }
+
+    view?.addEventListener?.("pointerdown", onDown, true);
+  });
+}
+
+async function runSuspicionCheck(ctx, deferred) {
+  const { sm, tune, scene } = ctx;
+  const leader = controllerActor(sm);
+  const dl = tune.suspicionCheckDl ?? 12;
+
+  // Nearest first: the guard with the best look is the one worth showing.
+  const rows = [...deferred].sort((a, b) => a.distance - b.distance);
+  const focus = rows[0];
+  const name = scene?.tokens?.get?.(focus.tokenId)?.name ?? "a guard";
+
+  const CR = globalThis.ONI?.CheckRequester;
+  const GC = globalThis.ONI?.GroupCheck;
+  if (!leader || (!CR?.requestOne && !GC?.request)) return false;   // no check → suspicion stands
+
+  const label = rows.length > 1
+    ? `Stay unnoticed — ${name} and ${rows.length - 1} other(s)`
+    : `Stay unnoticed — ${name}`;
+
+  let passed = false;
+  try {
+    await camera.panToCell(focus.cell, { duration: 380 });
+
+    const roster = await partyActors();
+    const helpers = roster.filter((a) => a?.uuid && a.uuid !== leader.uuid);
+
+    if (GC?.request && helpers.length) {
+      const res = await GC.request({
+        leaderUuid: leader.uuid,
+        participantMode: "designated",
+        helperActorUuids: helpers.map((a) => a.uuid),
+        allActorUuids: [leader.uuid, ...helpers.map((a) => a.uuid)],
+        helperDl: dl, leaderDl: dl, helperBonus: 1,
+        attrA: "DEX", attrB: "INS",
+        label, allowInvokes: true, postChat: true,
+      });
+      passed = !!(res?.pass ?? res?.leader?.pass);
+    } else {
+      const solo = await CR.requestOne(leader, {
+        attrA: "DEX", attrB: "INS", dl, label,
+        mode: "interactive", allowInvokes: true, postChat: true,
+        context: { system: "stealth", kind: "suspicion" },
+      });
+      passed = !!solo?.pass;
+    }
+  } catch (e) {
+    console.warn(TAG, "suspicion check threw — suspicion stands", e);
+    passed = false;
+  } finally {
+    try { await camera.panToCell(sm.party.cell, { duration: 380 }); } catch (_) {}
+  }
+
+  pushLog(sm, passed
+    ? `Suspicion check PASSED (DL ${dl}) — ${rows.length} guard(s) look away`
+    : `Suspicion check FAILED (DL ${dl}) — ${rows.length} guard(s) take notice`);
+  return passed;
+}
+
+export function applySuspicion(sm, tune, e, tokenId, awareness, partyCell, firstGlimpse, marks = []) {
+  bumpAwareness(sm, tokenId, awareness, tune,
+    firstGlimpse ? partyCell : null, { ceiling: tune.searchAt - 1 });
+
+  e.mark = "suspect";
+  e.markAt = sm.round;
+  if (!e.raisedOnce) {
+    e.raisedOnce = true;
+    marks.push({ id: tokenId, kind: "suspect" });
+    e.__raisedAlert = shiftAlert(sm, 1, "something noticed");
+  }
+  return marks;
+}
+
+export function detectionSweep(ctx, partyCell, { deferOuter = false } = {}) {
   const { sm, tune, scene } = ctx;
 
   // A stupored guard sees NOTHING. It is out of play for the round, so it
@@ -193,6 +353,7 @@ export function detectionSweep(ctx, partyCell) {
   });
   const seenBy = [];
   const newMarks = [];
+  const deferred = [];
   let raised = null;
 
   for (const row of survey.results) {
@@ -237,19 +398,28 @@ export function detectionSweep(ctx, partyCell) {
     // step bought nothing, because the crate was where it had been told to
     // look. Now it goes to where it thought it saw something, which is the
     // whole reason cover exists.
-    bumpAwareness(sm, row.tokenId, Math.max(1, sight.awareness), tune,
-      firstGlimpse ? partyCell : null, { ceiling: tune.searchAt - 1 });
-
-    e.mark = "suspect";
-    e.markAt = sm.round;
-    if (!e.raisedOnce) {
-      e.raisedOnce = true;
-      newMarks.push({ id: e.tokenId, kind: "suspect" });
-      raised = shiftAlert(sm, 1, "something noticed") ?? raised;
+    // ── The outer edge is arguable; the inner edge is not ─────────────────
+    //
+    // A glimpse caught at the far edge of a guard's attention is the moment
+    // a party can still talk itself out of trouble: freeze, blend, move like
+    // you belong. Close in, there is nothing to roll for — you are simply
+    // there. So an outer-edge reading is HELD rather than applied, handed
+    // back to the caller, and settled by one check for the whole move; the
+    // inner edge lands immediately, exactly as before.
+    if (deferOuter && sight.distance > (tune.suspicionInnerRange ?? 3)) {
+      deferred.push({
+        tokenId: row.tokenId, cell: e.cell, distance: sight.distance,
+        awareness: Math.max(1, sight.awareness), firstGlimpse, atCell: partyCell,
+      });
+      continue;
     }
+
+    applySuspicion(sm, tune, e, row.tokenId, Math.max(1, sight.awareness),
+      partyCell, firstGlimpse, newMarks);
+    if (e.__raisedAlert) { raised = e.__raisedAlert; delete e.__raisedAlert; }
   }
 
-  return { spotted: survey.anySpotted, seenBy, raised, marks: newMarks, survey };
+  return { spotted: survey.anySpotted, seenBy, raised, marks: newMarks, survey, deferred };
 }
 
 // ── Handlers ────────────────────────────────────────────────────────────────
@@ -394,6 +564,7 @@ export function buildHandlers() {
         // stop-start loop the player could not escape by moving.
         const walked = [];
         const marks = [];
+        const pending = new Map();   // tokenId -> held outer-edge glimpse
         for (const cell of payload.path) {
           if (sm.party.moveLeft <= 0) break;
 
@@ -401,10 +572,24 @@ export function buildHandlers() {
           sm.party.moveLeft -= 1;
           walked.push(cell);
 
-          const det = detectionSweep(ctx, cell);
+          // Outer-edge glimpses are HELD for one check at the end of the
+          // walk. Only a player move defers: an enemy phase never asks the
+          // party to roll, because they are not the ones doing anything.
+          const det = detectionSweep(ctx, cell, { deferOuter: true });
           marks.push(...(det.marks ?? []));
+          for (const d of (det.deferred ?? [])) {
+            // One entry per guard, keeping the CLOSEST look they got — that
+            // is the reading the check is really against.
+            const prev = pending.get(d.tokenId);
+            if (!prev || d.distance < prev.distance) pending.set(d.tokenId, d);
+          }
           if (det.spotted) { spottedAt = cell; break; }
         }
+
+        // A real sighting settles the matter — there is nothing left to
+        // explain away, so the held glimpses are dropped rather than rolled.
+        if (spottedAt) pending.clear();
+
         if (marks.length) broadcastDetection(marks);
 
         // One glide, one document write — see sm-motion.
@@ -413,6 +598,26 @@ export function buildHandlers() {
             msPerLeg: tune.stepMs,
             broadcast: (p) => broadcastMotion(p),
           });
+        }
+
+        // ── Settle the held glimpses ────────────────────────────────────
+        // AFTER the walk, so the party is standing where they ended up when
+        // the camera swings to the guard and the check opens. Asking
+        // mid-glide would freeze the token halfway across the room.
+        if (pending.size) {
+          const held = [...pending.values()];
+          const talkedOut = await runSuspicionCheck(ctx, held);
+          if (!talkedOut) {
+            const lateMarks = [];
+            for (const d of held) {
+              const e = sm.enemies[d.tokenId];
+              if (!e || e.defeated) continue;
+              applySuspicion(sm, tune, e, d.tokenId, d.awareness,
+                d.atCell, d.firstGlimpse, lateMarks);
+              if (e.__raisedAlert) delete e.__raisedAlert;
+            }
+            if (lateMarks.length) broadcastDetection(lateMarks);
+          }
         }
 
         // Ordinary movement does NOT break concealment — hiding then slipping
@@ -476,7 +681,14 @@ export function buildHandlers() {
       const { sm, tune, scene } = ctx;
 
       const partyCell = sm.party.cell;
-      const enemy = pickActivation(sm, partyCell, { scene });
+
+      // Who picks. With the AI on, the same priority rule as always; with it
+      // off, the GM clicks a guard. Only the CHOICE changes — everything
+      // after this point is identical, so a hand-played phase resolves
+      // detection, movement and contact exactly as an automated one does.
+      const enemy = aiEnabled()
+        ? pickActivation(sm, partyCell, { scene })
+        : await awaitGmActivation(ctx);
 
       if (!enemy) return ctx.dispatch(E.NO_MORE);
 
