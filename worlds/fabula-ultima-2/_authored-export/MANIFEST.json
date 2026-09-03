@@ -21946,6 +21946,30 @@
         "effects": 0
       },
       {
+        "id": "VwClo606KbQSK6aQ",
+        "name": "Roo",
+        "type": "character",
+        "items": [
+          {
+            "id": "5nRPZWogdOXD6n2I",
+            "name": "Approach"
+          },
+          {
+            "id": "IqytDxaB5BGEtSZZ",
+            "name": "Chef's Knife"
+          },
+          {
+            "id": "pQ3rGV33hyQukJc2",
+            "name": "Empty Stare"
+          },
+          {
+            "id": "0HCvn5LC3qIdq3W3",
+            "name": "Karma"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "aTLyASPTv1omAcIn",
         "name": "Roselie",
         "type": "character",
@@ -24506,12 +24530,12 @@
       {
         "id": "hpCzLw5RI4wQNtF7",
         "name": "Fafnir Castle - Encounter",
-        "results": 14
+        "results": 16
       },
       {
         "id": "oVJkUYCxsiHW6guM",
         "name": "Fafnir Castle - Enemies",
-        "results": 8
+        "results": 9
       },
       {
         "id": "y7iU5LWEwxGwrGug",

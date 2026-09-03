@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "fB2fAXlolioFKFSI",
-  "formula": "1d14",
+  "formula": "1d16",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
   "name": "Fafnir Castle - Encounter",
   "ownership": {
@@ -28,8 +28,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "range": [
-        14,
-        14
+        16,
+        16
       ],
       "text": "Carlbero",
       "type": "text",
@@ -56,8 +56,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "range": [
-        11,
-        11
+        12,
+        12
       ],
       "text": "Dire Orc, Death Gazer, Iron Colossus, Succubus",
       "type": "text",
@@ -98,8 +98,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "range": [
-        12,
-        12
+        14,
+        14
       ],
       "text": "Imp, Dragon Guard, Iron Colossus, Dragon Guard, Imp",
       "type": "text",
@@ -168,10 +168,24 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "range": [
+        15,
+        15
+      ],
+      "text": "Death Gazer, Succubus, Iron Colossus, Succubus, Death Gazer",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "P4hSzJ8cRnVtA6yE",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
         13,
         13
       ],
-      "text": "Death Gazer, Succubus, Iron Colossus, Succubus, Death Gazer",
+      "text": "Imp, Death Gazer, Roo, Imp",
       "type": "text",
       "weight": 1
     },
@@ -214,6 +228,20 @@
         10
       ],
       "text": "Succubus, Iron Colossus, Succubus",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "Y7kQm2bTxWvL9dNr",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Dragon Guard, Roo, Dragon Guard",
       "type": "text",
       "weight": 1
     }

@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "5Rg3NSMXFKjTHHsk",
-  "formula": "1d6",
+  "formula": "1d7",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
   "name": "Fafnir Castle - Enemies",
   "ownership": {
@@ -29,8 +29,8 @@
       "flags": {},
       "img": "icons/svg/mystery-man.svg",
       "range": [
-        8,
-        8
+        9,
+        9
       ],
       "text": "Carlbero",
       "type": "document",
@@ -89,8 +89,8 @@
       "flags": {},
       "img": "icons/svg/mystery-man.svg",
       "range": [
-        7,
-        7
+        8,
+        8
       ],
       "text": "⭐️ Hilde-Fafnir",
       "type": "document",
@@ -123,6 +123,21 @@
         4
       ],
       "text": "Iron Colossus",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Q9wDfK3mLbXpT5uH",
+      "documentCollection": "Actor",
+      "documentId": "VwClo606KbQSK6aQ",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/mystery-man.svg",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Roo",
       "type": "document",
       "weight": 1
     },
