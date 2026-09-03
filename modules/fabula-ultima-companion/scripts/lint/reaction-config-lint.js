@@ -169,7 +169,12 @@
   const CANDIDATE_SOURCE_VALUES = new Set([
     "self", "combat", "trigger_subject", "trigger_actor", "action_targets"
   ]);
-  const TARGETING_MODE_VALUES   = new Set(["exact", "up_to", "all"]);
+  // "random" picks `count` tokens from the pool with no prompt — implemented in
+  // skill-targeting.js (chain-level random targeting, the twin of skill_target
+  // "One Random ..."). It was missing here, so the first content to use it
+  // (Roo's Approach, picking whom to stalk) linted as an error against a row
+  // the runtime resolves correctly.
+  const TARGETING_MODE_VALUES   = new Set(["exact", "up_to", "all", "random"]);
   const TARGETING_CATEGORY_VALUES = new Set(["", "creature", "ally", "enemy"]);
   // Mirror of the engine's dispatch switch (skill-effects.js applyEffectRow) +
   // Prefer the engine's live kind registry (api.effectKinds, published by
