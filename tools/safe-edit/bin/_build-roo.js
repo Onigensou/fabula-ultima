@@ -66,11 +66,15 @@ const DESC = {
     "not stop. On the third step it arrives within reach, and draws the knife.</p>",
 };
 
-// Bestiary voice, one hint in the flavour, unlinked prose.
+// Bestiary voice, unlinked prose. Two hints, both load-bearing: Light is the
+// element, and the dagger/sword EF only pays out for a blade carrying an
+// element (EF applies BEFORE affinity, so 150% x IM Physical is still 0 — a
+// plain blade does nothing no matter what the efficiency table says).
 const STUDY =
   "<p>A small dead thing in a green robe, carrying a lantern and a kitchen knife. " +
-  "It does not defend itself and it does not need to — steel and venom pass through it " +
-  "like weather, and it is <strong>quicker than it looks</strong> to sidestep a blow.</p>" +
+  "It does not dodge and it does not parry — it does not need to. Ordinary steel and " +
+  "venom pass through it like weather. A blade that has been <strong>given an element " +
+  "to carry</strong>, though, finds something in there to bite.</p>" +
   "<p>It is not hunting the party. It is hunting <strong>one of them</strong>, and it has " +
   "already decided which. Everything else it does is filling the time until it arrives. " +
   "<strong>Whatever it is that finally burns away a grudge, it is not darkness.</strong></p>";
@@ -318,16 +322,24 @@ run(async ({ changes }) => {
     traits: "Silent, Patient, Bears a Grudge, Never Hurries",
     dex_base: "10", ins_base: "10", mig_base: "6", wlp_base: "10",
     dex_current: 10, ins_current: 10, mig_current: 6, wlp_current: 10,
-    // Highly evasive in BOTH, per spec. This is well above the 12-15 band the
-    // design rules give a hard-encounter normal, and it is deliberate: evasion
-    // is the gimmick. Measured against the L41 party it means Zarg hits 54%,
-    // Hina's magic 70%, Keren 23%, Blanche 23%.
+    // RE-STATTED 2026-09-04. Was 16/16 ("highly evasive"); the design idea
+    // changed to a creature that is easy to HIT and hard to HURT. 13/13 is the
+    // top of the hard-encounter normal band. Measured on the L41 party the drop
+    // moves hit rates 54->78% (Zarg), 70->88% (Hina magic), 23->46% (Keren),
+    // 23->56% (Blanche) — and Mindscape measured it as +33% party DPR at fixed
+    // HP (38.7 -> 51.3), median 7 rounds -> 5.
     // Derived = DEX/INS die + mod; written explicitly because a clone carries
     // the DONOR's stored numbers to disk even though CSB recomputes them live.
-    def_mod: "+6", mdef_mod: "+6", defense: 16, magic_defense: 16,
-    // 255 HP = TP 0.75 (three party actions) x BaselineDPR 105 x M(PE 0.75).
-    // Also ~2 spikes, which clears the one-shot floor that any monster
-    // designed to survive >=2 turns has to clear — and the Roo needs three.
+    def_mod: "+3", mdef_mod: "+3", defense: 13, magic_defense: 13,
+    // 255 HP KEPT through the re-stat, on the sim rather than the formula.
+    // The formula wanted 945 for "2-2.5 rounds at PE 100%" and that is wrong
+    // here: BaselineDPR 105 assumes four contributing PCs, and IM Physical
+    // deletes Blanche outright, so PE 100% multiplied a broken baseline by 4.
+    // Mindscape (game closed, n=3000) + hand-correcting for Zarg's Light mode
+    // — which the model scores at zero, confirmed a model gap against a
+    // control — puts precise-play output near 110 DPR, i.e. 2-2.5 rounds at
+    // 220-275 HP. 255 sits mid-band. Also still ~2 spikes, clearing the
+    // one-shot floor the three-turn Approach clock depends on.
     max_hp: "255", current_hp: "255", max_mp: "50", current_mp: "50",
     init: "10", max_zero: "6", ultima_points: "3",
     zenit_reward_min: "1100", zenit_reward_max: "1100",
@@ -341,7 +353,14 @@ run(async ({ changes }) => {
     // Approach clock is the tactical answer and must stay available.
     condition_poisoned: "IM", condition_envenomed: "IM", condition_zombie: "IM",
     condition_curse: "IM",
-    bow_ef: "150", dagger_ef: "75",
+    // Weapon efficiency: weak to blades, resistant to casting implements and
+    // the heavy stuff. ⚠ EF applies BEFORE element affinity (damage-ruleset.js
+    // step 1b, then step 2), so against IM Physical a PLAIN dagger or sword is
+    // still 150% x 0 = 0. The blade weakness only pays out for a blade carrying
+    // a non-Physical element — an infusion, an elemental weapon, Light. That is
+    // deliberate and the study text says so; do not read these as a general
+    // "swords work" without the enchantment.
+    dagger_ef: "150", sword_ef: "150", arcane_ef: "75", heavy_ef: "75",
   });
 
   p.skill_active_list = {
