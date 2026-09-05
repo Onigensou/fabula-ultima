@@ -364,6 +364,42 @@
     dbg("Bounce stopped", { token: token.name, tokenId: token.id });
   }
 
+  /**
+   * The bounce entry for a token, or null. Exposed so another visual system
+   * that legitimately rewrites mesh.scale can hand the base back in step —
+   * see setBounceBaseScale.
+   */
+  function getBounceEntry(tokenId) {
+    return bounceState().active.get(tokenId) ?? null;
+  }
+
+  /**
+   * Re-seat the bounce base after an EXTERNAL, intentional rewrite of the
+   * token's mesh scale.
+   *
+   * The exploration Depth Index (scripts/map-system/depth-index.js) re-runs
+   * _refreshMesh's maths with a depth factor folded in, on every animation
+   * frame. To refreshBounceToken below that is indistinguishable from a genuine
+   * Foundry mesh rebuild, so it would re-capture the base WITH the depth factor
+   * already in it and compound frame over frame. Calling this right after such
+   * a rewrite keeps the base honest and the re-capture heuristic quiet.
+   *
+   * The bounce phase is derived from elapsed time, not accumulated from scale,
+   * so re-seating the base mid-oscillation is safe.
+   */
+  function setBounceBaseScale(tokenId, scaleX, scaleY) {
+    const b = bounceState().active.get(tokenId);
+    if (!b) return false;
+    if (!Number.isFinite(scaleY)) return false;
+    b.baseScaleY = scaleY;
+    b.lastAppliedY = scaleY;
+    if (b.original) {
+      if (Number.isFinite(scaleX)) b.original.scaleX = scaleX;
+      b.original.scaleY = scaleY;
+    }
+    return true;
+  }
+
   function refreshBounceToken(token) {
     const g = bounceState();
     const b = g.active.get(token?.id);
@@ -573,6 +609,10 @@
     applyConfigToToken,
     applyEffectiveConfigToToken,
     applyActorToAllTokens,
+
+    // bounce coordination for other mesh-scale writers (see setBounceBaseScale)
+    getBounceEntry,
+    setBounceBaseScale,
 
     // sockets
     emitSocketApplyActor,

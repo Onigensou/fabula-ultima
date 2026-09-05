@@ -61,6 +61,18 @@
   // import). Mirrors FLAG_KEY in scripts/conflict-event/conflict-event-binding.js
   // — keep the two in step.
   const CONFLICT_EVENT_KEY      = "conflictEvent";         // string: registered conflict-event id
+  // Depth Index — pseudo-3D sprite scaling for Exploration scenes. A token near
+  // the top of a pre-rendered background is far from the camera and is drawn
+  // smaller; it grows back to full size toward the bottom. Only meaningful when
+  // sceneMode === "exploration". These keys MUST match
+  // scripts/map-system/depth-index.js — keep the two in step.
+  const DEPTH_ENABLED_KEY    = "depthEnabled";     // boolean: master switch
+  const DEPTH_FAR_Y_KEY      = "depthFarY";        // number: scene y of the horizon line
+  const DEPTH_NEAR_Y_KEY     = "depthNearY";       // number: scene y of the near line
+  const DEPTH_FAR_SCALE_KEY  = "depthFarScale";    // number: sprite multiplier at the horizon
+  const DEPTH_NEAR_SCALE_KEY = "depthNearScale";   // number: sprite multiplier at the near line
+  const DEPTH_CURVE_KEY      = "depthCurve";       // number: ramp power (>1 shrinks faster near the top)
+  const DEPTH_SORT_KEY       = "depthSort";        // boolean: y-sort tokens (nearer draws in front)
   // Invoker wellsprings present on this scene. Per-element boolean under general
   // (`wellspring_<elem>`); UNSET/true → available, false → absent. Read by the
   // WELLSPRING_<ELEM>_AVAILABLE formula identifier (Invocation menu gating).
@@ -671,6 +683,103 @@
             <p class="notes">Skip the screen-fade animation when entering this scene. Useful for scenes that load instantly or where the effect is unwanted.</p>
           </div>
 
+          <div class="oni-depth-group">
+            <h3 style="margin:12px 0 6px;"><i class="fas fa-mountain-sun"></i> Depth Index</h3>
+            <p class="notes" style="margin:0 0 8px;">
+              Pseudo-3D depth over a pre-rendered background, PS1-JRPG style. A token walking
+              toward the <b>top</b> of the map is far from the camera and is drawn smaller; it
+              grows back to its true size as it comes down toward the <b>bottom</b>.
+              Purely visual — the token's real scale is never modified.
+            </p>
+
+            <div class="form-group">
+              <label>Enable Depth</label>
+              <div class="form-fields">
+                <input type="checkbox" class="oni-depth-enabled"
+                       name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${DEPTH_ENABLED_KEY}" data-dtype="Boolean" />
+              </div>
+              <p class="notes">Scale token sprites by how far up the map they stand.</p>
+            </div>
+
+            <div class="oni-depth-fields">
+              <div class="form-group" style="align-items:flex-start;">
+                <label>Horizon Line</label>
+                <div class="form-fields" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                  <input type="number" class="oni-depth-far-y" step="1"
+                         name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${DEPTH_FAR_Y_KEY}"
+                         placeholder="scene top" style="flex:0 0 120px;" />
+                  <button type="button" class="oni-pick-depth-y" data-depth-target="far" style="flex-shrink:0;">
+                    <i class="fas fa-crosshairs"></i> Pick on map
+                  </button>
+                </div>
+                <p class="notes">
+                  Scene Y where sprites are at their <b>smallest</b> — the far end of the path.
+                  Leave blank for the top edge of the scene.
+                </p>
+              </div>
+
+              <div class="form-group" style="align-items:flex-start;">
+                <label>Near Line</label>
+                <div class="form-fields" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                  <input type="number" class="oni-depth-near-y" step="1"
+                         name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${DEPTH_NEAR_Y_KEY}"
+                         placeholder="scene bottom" style="flex:0 0 120px;" />
+                  <button type="button" class="oni-pick-depth-y" data-depth-target="near" style="flex-shrink:0;">
+                    <i class="fas fa-crosshairs"></i> Pick on map
+                  </button>
+                </div>
+                <p class="notes">
+                  Scene Y where sprites are at their <b>full</b> size — closest to the camera.
+                  Leave blank for the bottom edge of the scene.
+                </p>
+              </div>
+
+              <div class="form-group">
+                <label>Far / Near Scale</label>
+                <div class="form-fields" style="display:flex;align-items:center;gap:8px;">
+                  <input type="number" class="oni-depth-far-scale" step="0.05" min="0.1" max="4"
+                         name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${DEPTH_FAR_SCALE_KEY}"
+                         placeholder="0.55" style="flex:1 1 0;" />
+                  <input type="number" class="oni-depth-near-scale" step="0.05" min="0.1" max="4"
+                         name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${DEPTH_NEAR_SCALE_KEY}"
+                         placeholder="1.00" style="flex:1 1 0;" />
+                </div>
+                <p class="notes">
+                  Sprite multiplier at the horizon line and at the near line.
+                  Defaults <b>0.55</b> / <b>1.00</b> — smallest is a bit over half size, nearest is the token's true size.
+                </p>
+              </div>
+
+              <div class="form-group">
+                <label>Falloff Curve</label>
+                <div class="form-fields">
+                  <input type="number" class="oni-depth-curve" step="0.1" min="0.1" max="8"
+                         name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${DEPTH_CURVE_KEY}"
+                         placeholder="1.6" />
+                </div>
+                <p class="notes">
+                  How the scale ramps between the two lines. <b>1.0</b> is linear;
+                  higher values keep the sprite small for longer and then grow it quickly near the
+                  bottom, which reads better on a path that recedes sharply. Default <b>1.6</b>.
+                </p>
+              </div>
+
+              <div class="form-group">
+                <label>Depth Sorting</label>
+                <div class="form-fields">
+                  <input type="checkbox" class="oni-depth-sort"
+                         name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${DEPTH_SORT_KEY}" data-dtype="Boolean" />
+                </div>
+                <p class="notes">
+                  Draw tokens that stand lower on the map in front of ones standing higher, so
+                  they overlap the way depth would demand. On by default.
+                </p>
+              </div>
+
+              <p class="notes oni-depth-preview-note" style="font-style:italic;margin:0;"></p>
+            </div>
+          </div>
+
           <h3 style="margin:12px 0 6px;"><i class="fas fa-tag"></i> Scene Type</h3>
           <p class="notes" style="margin:0 0 8px;">Tag this scene for the Travel system. Used to categorise destinations in the Travel dialog.</p>
 
@@ -982,6 +1091,38 @@
         disableTransCb.checked = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${DISABLE_TRANSITION_KEY}`, false), false);
       }
 
+      // Depth Index prefill.
+      //
+      // Every numeric field is left BLANK when unset rather than pre-filled
+      // with its default. A blank field means "use the default", so the runtime
+      // keeps deciding it; writing the default into the flag would freeze
+      // today's value into every scene ever opened in this dialog.
+      const depthNumField = (cls, key) => {
+        const el = generalPanel?.querySelector(`input.${cls}`);
+        if (!el) return;
+        const raw = safeGet(fabulaData, `${GENERAL_KEY}.${key}`, null);
+        const n = Number(raw);
+        el.value = (raw === null || raw === "" || !Number.isFinite(n)) ? "" : String(n);
+      };
+
+      const depthEnabledCb = generalPanel?.querySelector("input.oni-depth-enabled");
+      if (depthEnabledCb) {
+        depthEnabledCb.checked = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${DEPTH_ENABLED_KEY}`, false), false);
+      }
+
+      depthNumField("oni-depth-far-y",       DEPTH_FAR_Y_KEY);
+      depthNumField("oni-depth-near-y",      DEPTH_NEAR_Y_KEY);
+      depthNumField("oni-depth-far-scale",   DEPTH_FAR_SCALE_KEY);
+      depthNumField("oni-depth-near-scale",  DEPTH_NEAR_SCALE_KEY);
+      depthNumField("oni-depth-curve",       DEPTH_CURVE_KEY);
+
+      // Depth sorting defaults ON when the flag has never been written.
+      const depthSortCb = generalPanel?.querySelector("input.oni-depth-sort");
+      if (depthSortCb) {
+        const raw = safeGet(fabulaData, `${GENERAL_KEY}.${DEPTH_SORT_KEY}`, null);
+        depthSortCb.checked = (raw === null) ? true : normalizeBoolean(raw, true);
+      }
+
       // Scene type checkboxes prefill
       const overworldCb = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${IS_OVERWORLD_KEY}"]`);
       const townCb      = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${IS_TOWN_KEY}"]`);
@@ -1157,10 +1298,193 @@
         conflictEventGroup.style.display = (modeSel?.value ?? "") === "conflict" ? "" : "none";
       }
 
+      // Depth Index only means anything on an exploration scene, and its
+      // parameters only mean anything once it is switched on. Hidden, NOT
+      // removed — same reasoning as Conflict Event above: the fields stay in
+      // the form so stored values round-trip through a save made while the
+      // scene is in another mode.
+      const depthGroup     = generalPanel?.querySelector(".oni-depth-group");
+      const depthFields    = generalPanel?.querySelector(".oni-depth-fields");
+      const depthEnabledEl = generalPanel?.querySelector("input.oni-depth-enabled");
+      function syncDepthVisibility() {
+        if (depthGroup) depthGroup.style.display = (modeSel?.value ?? "") === "exploration" ? "" : "none";
+        if (depthFields) depthFields.style.display = depthEnabledEl?.checked ? "" : "none";
+        updateDepthPreviewNote();
+        drawDepthGuides();
+      }
+
       syncResetVisibility();
       syncConflictEventVisibility();
       modeSel?.addEventListener("change", syncResetVisibility);
       modeSel?.addEventListener("change", syncConflictEventVisibility);
+      modeSel?.addEventListener("change", syncDepthVisibility);
+      depthEnabledEl?.addEventListener("change", syncDepthVisibility);
+      // NOTE: the first syncDepthVisibility() call is deliberately deferred to
+      // the end of the depth block below — it reaches drawDepthGuides(), which
+      // closes over consts declared further down.
+
+      // -----------------------------
+      // Depth Index — live guide lines + on-map pickers
+      // -----------------------------
+
+      /** Current band as the runtime would read it, resolving blanks to scene edges. */
+      function readDepthBandFromForm() {
+        const rect = canvas?.dimensions?.sceneRect ?? null;
+        const readNum = (cls, fallback) => {
+          const raw = generalPanel?.querySelector(`input.${cls}`)?.value ?? "";
+          const n = Number(raw);
+          return (raw === "" || !Number.isFinite(n)) ? fallback : n;
+        };
+        return {
+          farY:  readNum("oni-depth-far-y",  rect ? rect.y : 0),
+          nearY: readNum("oni-depth-near-y", rect ? rect.y + rect.height : 0),
+          farScale:  readNum("oni-depth-far-scale",  0.55),
+          nearScale: readNum("oni-depth-near-scale", 1.00)
+        };
+      }
+
+      function updateDepthPreviewNote() {
+        const noteEl = generalPanel?.querySelector(".oni-depth-preview-note");
+        if (!noteEl) return;
+        if (!isConfiguringActiveScene()) {
+          noteEl.textContent = "Guide lines and picking are available only while this scene is the active one.";
+          return;
+        }
+        const b = readDepthBandFromForm();
+        noteEl.textContent =
+          `Band: y ${Math.round(b.farY)} (×${b.farScale.toFixed(2)}) → y ${Math.round(b.nearY)} (×${b.nearScale.toFixed(2)}).`;
+      }
+
+      function isConfiguringActiveScene() {
+        return !!canvas?.ready && !!canvas?.scene && scene?.id === canvas.scene.id;
+      }
+
+      // The guide overlay lives on canvas.controls so it sits above tiles and
+      // tokens and is torn down with the layer. It is created lazily and always
+      // destroyed in closeSceneConfig — an orphaned PIXI container survives a
+      // scene change and leaks.
+      const DEPTH_GUIDE_KEY = "__oniDepthGuides";
+
+      function destroyDepthGuides() {
+        try {
+          const g = canvas?.controls?.[DEPTH_GUIDE_KEY];
+          if (!g) return;
+          g.parent?.removeChild(g);
+          g.destroy({ children: true });
+          delete canvas.controls[DEPTH_GUIDE_KEY];
+        } catch (e) {
+          console.warn("[FabulaConfigUI] destroyDepthGuides failed:", e);
+        }
+      }
+
+      function drawDepthGuides() {
+        try {
+          if (!isConfiguringActiveScene()) return destroyDepthGuides();
+
+          const show = (modeSel?.value ?? "") === "exploration" && !!depthEnabledEl?.checked;
+          if (!show) return destroyDepthGuides();
+
+          let g = canvas.controls[DEPTH_GUIDE_KEY];
+          if (!g) {
+            g = new PIXI.Graphics();
+            g.eventMode = "none";
+            canvas.controls.addChild(g);
+            canvas.controls[DEPTH_GUIDE_KEY] = g;
+          }
+
+          const rect = canvas.dimensions.sceneRect;
+          const b = readDepthBandFromForm();
+
+          g.clear();
+          // Horizon (far, smallest) in cold blue; near line in warm amber.
+          g.lineStyle({ width: 4, color: 0x66aaff, alpha: 0.9 });
+          g.moveTo(rect.x, b.farY).lineTo(rect.x + rect.width, b.farY);
+          g.lineStyle({ width: 4, color: 0xffb347, alpha: 0.9 });
+          g.moveTo(rect.x, b.nearY).lineTo(rect.x + rect.width, b.nearY);
+        } catch (e) {
+          console.warn("[FabulaConfigUI] drawDepthGuides failed:", e);
+        }
+      }
+
+      // Redraw as the numbers are typed, so the band can be dialled in against
+      // the artwork without closing the dialog.
+      for (const cls of ["oni-depth-far-y", "oni-depth-near-y", "oni-depth-far-scale", "oni-depth-near-scale"]) {
+        generalPanel?.querySelector(`input.${cls}`)?.addEventListener("input", () => {
+          updateDepthPreviewNote();
+          drawDepthGuides();
+        });
+      }
+
+      // Pick a line by clicking the map. Mirrors the spawn-point flow, except
+      // it writes the form input rather than the flag: the depth fields are
+      // ordinary form fields, so an immediate setFlag would be overwritten by
+      // the stale input value on the next Save Changes.
+      tabPanel.querySelectorAll(".oni-pick-depth-y").forEach((pickBtn) => {
+        pickBtn.addEventListener("click", (ev) => {
+          ev.preventDefault(); ev.stopPropagation();
+
+          if (!isConfiguringActiveScene()) {
+            ui.notifications?.warn?.("Activate this scene first — picking needs it on the canvas.");
+            return;
+          }
+
+          const which = pickBtn.dataset.depthTarget === "near" ? "near" : "far";
+          const inputEl = generalPanel?.querySelector(which === "near" ? "input.oni-depth-near-y" : "input.oni-depth-far-y");
+          if (!inputEl) return;
+
+          app.minimize();
+          ui.notifications?.info?.(
+            which === "near"
+              ? "Click the point on the map where sprites should be FULL size. Escape to cancel."
+              : "Click the point on the map where sprites should be SMALLEST. Escape to cancel."
+          );
+
+          const view = canvas?.app?.view ?? document.querySelector("#board canvas");
+          if (!view) { app.maximize(); return; }
+
+          let cleaned = false;
+          const cleanUp = () => {
+            if (cleaned) return; cleaned = true;
+            view.removeEventListener("pointerdown", clickHandler, true);
+            window.removeEventListener("keydown", escHandler, true);
+          };
+
+          const escHandler = (keyEv) => {
+            if (keyEv.key !== "Escape") return;
+            keyEv.preventDefault(); keyEv.stopPropagation();
+            cleanUp();
+            app.maximize();
+            ui.notifications?.info?.("Depth line picking cancelled.");
+          };
+
+          const clickHandler = (pointerEv) => {
+            if (pointerEv.button !== 0) return;
+            pointerEv.preventDefault(); pointerEv.stopPropagation();
+            cleanUp();
+
+            const worldPt = globalThis.DungeonPathing?.Graph?.clientToWorld?.(pointerEv.clientX, pointerEv.clientY)
+                         ?? clientToWorld(pointerEv.clientX, pointerEv.clientY);
+
+            inputEl.value = String(Math.round(worldPt.y));
+            updateDepthPreviewNote();
+            drawDepthGuides();
+            ui.notifications?.info?.(`${which === "near" ? "Near" : "Horizon"} line set to y ${Math.round(worldPt.y)}. Press Save Changes to keep it.`);
+            app.maximize();
+          };
+
+          window.addEventListener("keydown", escHandler, true);
+          view.addEventListener("pointerdown", clickHandler, true);
+        });
+      });
+
+      // The guides are a dialog-scoped preview, never leave them behind.
+      Hooks.once("closeSceneConfig", (closedApp) => {
+        if (closedApp?.appId === app?.appId) destroyDepthGuides();
+      });
+
+      // Everything the depth block closes over now exists — safe to run the
+      // first pass.
+      syncDepthVisibility();
 
       // Spawnpoint arm mode
       tabPanel.querySelector(".oni-set-spawnpoint-btn")?.addEventListener("click", async (ev) => {

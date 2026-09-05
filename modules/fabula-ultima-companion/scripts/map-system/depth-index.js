@@ -220,21 +220,37 @@
   // oscillating around the correct base (its phase is time-derived, not
   // accumulated from scale) and keeps its re-capture heuristic quiet.
   // --------------------------------------------------------------------------
+  const IDLE_ANIM_API_KEY = "__ONI_IDLE_ANIM_API__";
+
   function getBounceEntry(tokenId) {
     try {
+      const api = globalThis[IDLE_ANIM_API_KEY];
+      if (api?.getBounceEntry) return api.getBounceEntry(tokenId) ?? null;
+      // Fallback for an idle-animation build predating the coordination seam.
       return globalThis.__ONI_IDLE_BOUNCE__?.active?.get?.(tokenId) ?? null;
     } catch {
       return null;
     }
   }
 
-  function syncBounceBase(token, bounce) {
+  function syncBounceBase(token) {
     const mesh = token.mesh;
-    bounce.baseScaleY = mesh.scale.y;
-    bounce.lastAppliedY = mesh.scale.y;
-    if (bounce.original) {
-      bounce.original.scaleX = mesh.scale.x;
-      bounce.original.scaleY = mesh.scale.y;
+    try {
+      const api = globalThis[IDLE_ANIM_API_KEY];
+      if (api?.setBounceBaseScale) {
+        api.setBounceBaseScale(token.id, mesh.scale.x, mesh.scale.y);
+        return;
+      }
+      const b = globalThis.__ONI_IDLE_BOUNCE__?.active?.get?.(token.id);
+      if (!b) return;
+      b.baseScaleY = mesh.scale.y;
+      b.lastAppliedY = mesh.scale.y;
+      if (b.original) {
+        b.original.scaleX = mesh.scale.x;
+        b.original.scaleY = mesh.scale.y;
+      }
+    } catch (e) {
+      warn("syncBounceBase failed", { tokenId: token?.id, error: e?.message ?? e });
     }
   }
 
@@ -293,7 +309,7 @@
     // frame, so this offset is applied to a clean base every time.
     mesh.position.set(token.center.x, token.center.y + (1 - effAnchorY) * baseHeight * (1 - f));
 
-    if (bounce) syncBounceBase(token, bounce);
+    if (bounce) syncBounceBase(token);
 
     // Depth ordering: within the TOKENS sort layer, PrimaryCanvasGroup breaks
     // elevation ties on mesh.sort, so a larger y draws in front. The setter
