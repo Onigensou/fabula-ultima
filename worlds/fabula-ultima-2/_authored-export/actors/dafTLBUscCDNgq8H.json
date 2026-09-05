@@ -1722,7 +1722,7 @@
               "id": "${item.id}",
               "name": "Glowstick (Passive)",
               "skill_cost": "",
-              "skill_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+              "skill_description": "<p>When you hit one or more creatures with this weapon, you may have the attack deal 0 damage. If you do, choose an ally other than yourself who has the Chanter or Dancer class; that ally immediately performs a Magichant or Dance as a free action.</p>",
               "skill_maxLevel": 1,
               "uuid": "Actor.dafTLBUscCDNgq8H.Item.vSYxbtOX3DNTnl2X"
             }
@@ -1742,7 +1742,7 @@
             "vSYxbtOX3DNTnl2X": {
               "id": "${item.id}",
               "name": "Glowstick (Passive)",
-              "related_item_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+              "related_item_description": "<p>When you hit one or more creatures with this weapon, you may have the attack deal 0 damage. If you do, choose an ally other than yourself who has the Chanter or Dancer class; that ally immediately performs a Magichant or Dance as a free action.</p>",
               "uuid": "Actor.dafTLBUscCDNgq8H.Item.vSYxbtOX3DNTnl2X"
             }
           },
@@ -2225,6 +2225,16 @@
           "item_mdef_bonus": "0",
           "item_quantity": 1,
           "item_rarity": "Uncommon",
+          "item_skill_passive": {
+            "ukD53QXnKt78M3rv": {
+              "id": "${item.id}",
+              "name": "Icarus Wing (gear skill)",
+              "skill_cost": "",
+              "skill_description": "<p>Gain <strong>Flying</strong>. You lose this effect when you take <strong>Fire</strong> damage.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.ukD53QXnKt78M3rv"
+            }
+          },
           "item_type": "accessory",
           "mimic_ef": "100",
           "monster_ef": "100",
@@ -2233,6 +2243,14 @@
           "plant_ef": "100",
           "refine_count": "0",
           "refine_level": "0",
+          "related_item_list": {
+            "ukD53QXnKt78M3rv": {
+              "id": "${item.id}",
+              "name": "Icarus Wing (gear skill)",
+              "related_item_description": "<p>Gain <strong>Flying</strong>. You lose this effect when you take <strong>Fire</strong> damage.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.ukD53QXnKt78M3rv"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -2552,7 +2570,7 @@
               "id": "${item.id}",
               "name": "Shield of Rejuvenation (Passive)",
               "skill_cost": "",
-              "skill_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+              "skill_description": "<p>At the start of your turn, you recover Hit Points equal to 10% of your maximum Hit Points.</p>",
               "skill_maxLevel": 1,
               "uuid": "Actor.dafTLBUscCDNgq8H.Item.ftTbURtcbfwCg8CT"
             }
@@ -2572,7 +2590,7 @@
             "ftTbURtcbfwCg8CT": {
               "id": "${item.id}",
               "name": "Shield of Rejuvenation (Passive)",
-              "related_item_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+              "related_item_description": "<p>At the start of your turn, you recover Hit Points equal to 10% of your maximum Hit Points.</p>",
               "uuid": "Actor.dafTLBUscCDNgq8H.Item.ftTbURtcbfwCg8CT"
             }
           },
@@ -17021,7 +17039,7 @@
         "Wtcdd42MQHwsOsSe": {
           "class": "Spiritist",
           "cost": "10 x T MP",
-          "duration": "-",
+          "duration": "Instantaneous",
           "id": "${item.id}",
           "name": "Heal",
           "roll": "",
