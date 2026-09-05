@@ -3,15 +3,21 @@
 // Reads awards from endCtx.promptResult.{expByActorId, zenitByActorId}.
 // Writes results to endCtx.summaryResults for use by RankComputation + SummaryUI.
 // Only runs on victory; skipped on defeat (endCtx is untouched).
+//
+// EXP is no longer applied here. This file used to own its own copy of the
+// gauge maths, which is how it ended up NOT minting the Skill Point a gained
+// level owes — that lived only in expAwarder, so every Director level-up left
+// drift for a GM to clear by hand with `healPoints()`. The write now goes
+// through shared/exp-core.js, the single owner of experience / level /
+// skill_point, and the mint comes with it. Zenit and combat totals are still
+// this file's own business.
+//
+// See [[exp-core]] and docs/exp-award-pipeline.md.
 
 import { log, warn } from "../logger.js";
+import { EXP_RULE, applyExpAward } from "../../shared/exp-core.js";
 
-const EXP_PATH   = "system.props.experience";
-const LEVEL_PATH = "system.props.level";
 const ZENIT_PATH = "system.props.zenit";
-const EXP_START  = 1;
-const LEVEL_UP_AT = 10;
-const DECIMALS   = 2;
 
 const gp = foundry.utils.getProperty;
 
@@ -22,46 +28,6 @@ function safeNumber(v, fallback = 0) {
 
 function safeInt(v, fallback = 0) {
   return Math.floor(safeNumber(v, fallback));
-}
-
-function roundTo(x, dec) {
-  const p = Math.pow(10, dec);
-  return Math.round(x * p) / p;
-}
-
-function computeExpAndLevel(beforeExpRaw, beforeLevelRaw, gainedRaw) {
-  const beforeLevel = Math.max(1, Math.floor(safeNumber(beforeLevelRaw, 1)));
-  let beforeExp = safeNumber(beforeExpRaw, EXP_START);
-  if (!Number.isFinite(beforeExp) || beforeExp < EXP_START) beforeExp = EXP_START;
-  if (beforeExp >= LEVEL_UP_AT) beforeExp = EXP_START;
-
-  const gained = Math.max(0, safeNumber(gainedRaw, 0));
-  const segments = [];
-
-  let runningLevel = beforeLevel;
-  let runningExp   = beforeExp;
-  let total        = runningExp + gained;
-
-  if (gained <= 0) {
-    segments.push({ from: roundTo(runningExp, DECIMALS), to: roundTo(runningExp, DECIMALS), levelUp: false });
-    return { beforeLevel, afterLevel: runningLevel, levelsGained: 0,
-             beforeExp: roundTo(beforeExp, DECIMALS), afterExp: roundTo(runningExp, DECIMALS),
-             gained: roundTo(gained, DECIMALS), segments };
-  }
-
-  let levelsGained = 0;
-  while (total >= LEVEL_UP_AT) {
-    segments.push({ from: roundTo(runningExp, DECIMALS), to: roundTo(LEVEL_UP_AT, DECIMALS), levelUp: true });
-    total = EXP_START + (total - LEVEL_UP_AT);
-    runningLevel += 1;
-    levelsGained += 1;
-    runningExp = EXP_START;
-  }
-  segments.push({ from: roundTo(runningExp, DECIMALS), to: roundTo(total, DECIMALS), levelUp: false });
-
-  return { beforeLevel, afterLevel: runningLevel, levelsGained,
-           beforeExp: roundTo(beforeExp, DECIMALS), afterExp: roundTo(total, DECIMALS),
-           gained: roundTo(gained, DECIMALS), segments };
 }
 
 async function resolveDbActor() {
@@ -91,30 +57,24 @@ export async function runBattleEndSummaryLogic(endCtx) {
   const { expByActorId, zenitByActorId } = promptResult;
 
   // --- Apply EXP ---
-  const expApplied = [];
-  const expErrors  = [];
+  //
+  // playUi is FALSE on purpose. The award panel that oni:expAwarded drives is
+  // the standalone surface for an out-of-band grant; here the victory summary
+  // screen IS the presentation, and it animates from the `segments` these
+  // entries carry. Firing both would stack two EXP bars on top of each other.
+  // The level-up badge picks the change up from `updateActor` regardless.
+  const expResult = await applyExpAward({
+    amountByActorId: expByActorId,
+    source: "Battle Victory",
+    playUi: false,
+  });
 
-  for (const actorId of Object.keys(expByActorId)) {
-    const actor = game.actors?.get?.(actorId);
-    if (!actor) { expErrors.push(`Missing actor: ${actorId}`); continue; }
+  const expApplied = expResult.entries;
+  const expErrors  = expResult.errors ?? [];
 
-    const beforeExp   = gp(actor, EXP_PATH);
-    const beforeLevel = gp(actor, LEVEL_PATH);
-    const calc = computeExpAndLevel(beforeExp, beforeLevel, expByActorId[actorId]);
-
-    try {
-      await actor.update({ [EXP_PATH]: calc.afterExp, [LEVEL_PATH]: calc.afterLevel });
-      expApplied.push({
-        actorId, actorName: actor.name ?? "",
-        exp:   { before: calc.beforeExp, gained: calc.gained, after: calc.afterExp },
-        level: { before: calc.beforeLevel, after: calc.afterLevel, gained: calc.levelsGained, leveledUp: calc.levelsGained > 0 },
-        segments: calc.segments,
-      });
-      log(`[BattleEnd:SummaryLogic] EXP applied: ${actor.name} ${calc.beforeExp}+${calc.gained}→${calc.afterExp} Lv${calc.beforeLevel}→${calc.afterLevel}`);
-    } catch (e) {
-      expErrors.push(`EXP update failed for ${actor.name}: ${e?.message ?? e}`);
-      warn("[BattleEnd:SummaryLogic] EXP update threw:", e);
-    }
+  for (const e of expApplied) {
+    const minted = e.skillPointsMinted > 0 ? ` +${e.skillPointsMinted} SP` : "";
+    log(`[BattleEnd:SummaryLogic] EXP applied: ${e.actorName} ${e.exp.before}+${e.exp.gained}→${e.exp.after} Lv${e.level.before}→${e.level.after}${minted}`);
   }
 
   // --- Apply Zenit ---
@@ -199,7 +159,13 @@ export async function runBattleEndSummaryLogic(endCtx) {
     expApplied,
     zenitApplied,
     combatTotals,
-    expRule: { expStart: EXP_START, levelUpAt: LEVEL_UP_AT, decimals: DECIMALS, expPath: EXP_PATH, levelPath: LEVEL_PATH },
+    expRule: {
+      expStart:  EXP_RULE.EXP_START,
+      levelUpAt: EXP_RULE.LEVEL_UP_AT,
+      decimals:  EXP_RULE.DECIMALS,
+      expPath:   EXP_RULE.EXP_PATH,
+      levelPath: EXP_RULE.LEVEL_PATH,
+    },
     zenitRule: { zenitPath: ZENIT_PATH },
     errors: [...expErrors, ...zenitErrors],
   };

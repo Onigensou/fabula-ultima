@@ -216,5 +216,26 @@ export async function runBattleEndSequence(director) {
   try { game.settings.set("fabula-ultima-companion", "bdPreBattleViewport",   null); } catch (_) {}
   try { game.settings.set("fabula-ultima-companion", "bdBattleSceneViewport", null); } catch (_) {}
 
+  // Publish the result so systems that HANDED a fight to the Director can
+  // react to how it went. Stealth needs exactly this: a victory should clear
+  // the guards it sent in, an escape should only daze them. Nothing else was
+  // announcing the outcome, so the only alternative was inferring it from
+  // whatever state happened to survive the scene change.
+  //
+  // Fired last, after rewards and the transition, so a listener sees a settled
+  // world rather than one mid-teardown.
+  try {
+    Hooks.callAll("fu.battleEnd", {
+      outcome:        endCtx.outcome,
+      sourceSceneId:  endCtx.sourceSceneId,
+      battleSceneId:  endCtx.battleSceneId,
+      partyActorIds:  endCtx.partyActorIds,
+      totalRounds:    endCtx.totalRounds,
+      meta:           payload?.meta ?? null,
+    });
+  } catch (e) {
+    warn("[BattleEnd] fu.battleEnd listener threw", e);
+  }
+
   log("[BattleEnd] Sequence complete");
 }

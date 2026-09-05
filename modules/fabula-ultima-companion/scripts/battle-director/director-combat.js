@@ -171,6 +171,21 @@ export class DirectorCombat {
     this.round = 0;
     // `turn` is kept for Foundry-mirror diagnostics only; not used for ordering.
     this.turn = 0;
+
+    // ── Runaway watchdog ────────────────────────────────────
+    // Turns actually TAKEN in the current round, and how many rounds in a row
+    // have passed with none. A healthy round always has at least one combatant
+    // act; a round in which literally nobody acts means the combat has lost the
+    // world it was running in — scene deactivated, tokens gone — and is spinning
+    // rather than playing.
+    //
+    // Seen live: a director whose Foundry Combat had been deleted and whose
+    // scene was switched out from under it kept wrapping rounds at roughly 40
+    // a minute, announcing every one, until it was stopped by hand.
+    // director-boot states plainly that the End-Battle button is the only way
+    // out, which is exactly why nothing else ever caught this.
+    this._turnsTakenThisRound = 0;
+    this._barrenRounds = 0;
     this.started = false;
     this.ended = false;
     this.combatants = [];
@@ -533,6 +548,10 @@ export class DirectorCombat {
     // director-boot.js' Battle Start branch.
     this.round = 0;
     this.turn = 0;
+    // A restart begins with a clean watchdog; a barren streak from a previous
+    // run must not carry over and end round 1 of the next battle.
+    this._turnsTakenThisRound = 0;
+    this._barrenRounds = 0;
     // Initialize round-1 turn counts from the live activation stat (re-read so
     // any pre-battle change / solo-mode is honored; combatants appended after
     // construction also get a correct count).
@@ -619,6 +638,7 @@ export class DirectorCombat {
     // 1. Decrement the just-acted combatant's remaining count.
     const acted = this.current;
     if (acted) {
+      this._turnsTakenThisRound++;
       acted.turnsRemaining = Math.max(0, acted.turnsRemaining - 1);
       log(`nextTurn: ${acted.name} acted (turnsRemaining now ${acted.turnsRemaining}/${acted.turnsPerRound})`);
     }
@@ -672,6 +692,29 @@ export class DirectorCombat {
       // currentSide stays.
     } else {
       // Both exhausted → wrap to a new round.
+      //
+      // A round nobody acted in is not a round — it is a spin. Refilling the
+      // counters and going again would just produce another one, forever, and
+      // each lap fires the round announcer. Two barren rounds is already past
+      // anything legitimate: even a party stunned to a standstill has its
+      // turns decremented by whatever skipped them.
+      if (this._turnsTakenThisRound === 0) {
+        this._barrenRounds++;
+        if (this._barrenRounds >= 2) {
+          warn(
+            `nextTurn: ${this._barrenRounds} rounds with no combatant acting — ` +
+            `the combat has lost its world (round ${this.round}). Ending rather ` +
+            `than spinning.`
+          );
+          this.end();
+          this._notifyTurnActions();
+          return { round: this.round, currentSide: this.currentSide, wrappedRound: true, ended: true, eligibleIds: [], barren: true };
+        }
+      } else {
+        this._barrenRounds = 0;
+      }
+      this._turnsTakenThisRound = 0;
+
       this.round++;
       this.turn = 0;
       wrappedRound = true;

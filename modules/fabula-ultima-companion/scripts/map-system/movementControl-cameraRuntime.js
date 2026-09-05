@@ -39,6 +39,28 @@
 
   const SMOOTHING = 0.18;
 
+  /**
+   * Where the followed token should sit, in world units.
+   *
+   * The camera renders the pivot at the WINDOW centre, but the chat sidebar
+   * covers the right of it. Following the token directly therefore parks the
+   * party right-of-centre in the area the player can actually see, and roughly
+   * a sidebar-width of map to their right is permanently behind the chat box.
+   * That is what makes a chest near the right edge unfindable.
+   *
+   * Shifting the pivot right by half the reserved chrome puts the party at the
+   * centre of the VISIBLE rect, so the map is symmetric around them again.
+   * Costs no zoom and no board size, and it reads the live sidebar width, so it
+   * self-corrects whether chat is open or closed.
+   */
+  function followOffset(scale) {
+    try {
+      const cam = globalThis.FUCompanion?.api?.camera;
+      if (!cam?.viewportOf || !cam?.pivotShift) return { x: 0, y: 0 };
+      return cam.pivotShift(cam.viewportOf().insets ?? null, scale || 1);
+    } catch (_) { return { x: 0, y: 0 }; }
+  }
+
   const state = {
     installed: true,
     enabled: true,
@@ -147,6 +169,7 @@
     // Dungeon mode explicitly disables camera follow (and right-click movement).
     const sceneMode = safeGet(fab, `${GENERAL_KEY}.${SCENE_MODE_KEY}`, null);
     if (sceneMode === "dungeon")     return false;
+      if (sceneMode === "stealth")     return false;  // stealth owns its own movement + HUD
     if (sceneMode === "exploration") return true;
     if (sceneMode === "none")        return false;
 
@@ -662,7 +685,9 @@
           return;
         }
 
-        const targetCenter = token.center;
+        const raw = token.center;
+        const off = followOffset(scale);
+        const targetCenter = { x: raw.x + off.x, y: raw.y + off.y };
 
         state.curX = state.curX ?? canvas.stage.pivot.x;
         state.curY = state.curY ?? canvas.stage.pivot.y;

@@ -17021,7 +17021,7 @@
         "Wtcdd42MQHwsOsSe": {
           "class": "Spiritist",
           "cost": "10 x T MP",
-          "duration": "Instantaneous",
+          "duration": "-",
           "id": "${item.id}",
           "name": "Heal",
           "roll": "",

@@ -3785,7 +3785,7 @@
         "effects": 0
       },
       {
-        "id": "eoZ4d5Vvvel3LmOJ",
+        "id": "MV3cvmYEtB1N6TmA",
         "name": "Break Free",
         "type": "equippableItem",
         "effects": 0
@@ -4223,7 +4223,7 @@
         "effects": 0
       },
       {
-        "id": "7WP6HiHgaauoiQ7b",
+        "id": "TcSTDnmMFpOByYZN",
         "name": "Clock Interaction",
         "type": "equippableItem",
         "effects": 0
@@ -4577,7 +4577,7 @@
         "effects": 0
       },
       {
-        "id": "SMGneNyGNJEdKQjY",
+        "id": "blzWxbhzTzjhKYv9",
         "name": "Custom Objective",
         "type": "equippableItem",
         "effects": 0
@@ -10157,7 +10157,7 @@
         "effects": 1
       },
       {
-        "id": "8OCI3qRPsZ4k3nup",
+        "id": "MhTGG50DFr9GL1f5",
         "name": "Reveal",
         "type": "equippableItem",
         "effects": 0
@@ -10481,7 +10481,7 @@
         "effects": 0
       },
       {
-        "id": "CX9Am1Uh3jNB5jvF",
+        "id": "lsK8I0TL1GjdWn7S",
         "name": "Run Away",
         "type": "equippableItem",
         "effects": 0
@@ -15814,10 +15814,6 @@
           {
             "id": "Y7ds6luUU5CLFH3T",
             "name": "Numen"
-          },
-          {
-            "id": "vfnF9LahzS0jyNNB",
-            "name": "Zero Power: Water-Moon Mirage"
           }
         ],
         "effects": 0
@@ -21950,6 +21946,30 @@
         "effects": 0
       },
       {
+        "id": "VwClo606KbQSK6aQ",
+        "name": "Roo",
+        "type": "character",
+        "items": [
+          {
+            "id": "5nRPZWogdOXD6n2I",
+            "name": "Approach"
+          },
+          {
+            "id": "IqytDxaB5BGEtSZZ",
+            "name": "Chef's Knife"
+          },
+          {
+            "id": "pQ3rGV33hyQukJc2",
+            "name": "Empty Stare"
+          },
+          {
+            "id": "0HCvn5LC3qIdq3W3",
+            "name": "Karma"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "aTLyASPTv1omAcIn",
         "name": "Roselie",
         "type": "character",
@@ -24510,12 +24530,12 @@
       {
         "id": "hpCzLw5RI4wQNtF7",
         "name": "Fafnir Castle - Encounter",
-        "results": 14
+        "results": 16
       },
       {
         "id": "oVJkUYCxsiHW6guM",
         "name": "Fafnir Castle - Enemies",
-        "results": 8
+        "results": 9
       },
       {
         "id": "y7iU5LWEwxGwrGug",
@@ -24872,7 +24892,7 @@
       {
         "id": "POV9fioQ0Kkj7hKC",
         "name": "Generic Playlist",
-        "sounds": 61
+        "sounds": 62
       },
       {
         "id": "2IOBBlG7FfsPz0fA",

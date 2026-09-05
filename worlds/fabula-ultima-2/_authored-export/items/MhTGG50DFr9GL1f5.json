@@ -1,0 +1,59 @@
+{
+  "_id": "MhTGG50DFr9GL1f5",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1788186132013,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "coreAction": "objective:reveal",
+      "objectiveScope": "all"
+    }
+  },
+  "folder": null,
+  "img": "icons/svg/eye.svg",
+  "name": "Reveal",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "cost": "",
+      "description": "<p>Sweep the area and drag whoever is skulking in it into the open — every <strong>Hidden</strong> enemy loses the status.</p>",
+      "details_roller": "Show",
+      "effect_table": {
+        "0": {
+          "ae_template_ref": "Hidden",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "reveal_strip",
+          "target_ref": "action_targets"
+        }
+      },
+      "id": "MhTGG50DFr9GL1f5",
+      "img": "icons/svg/eye.svg",
+      "isCheck": false,
+      "isReaction": false,
+      "max_level": "1",
+      "name": "Reveal",
+      "on_activate_effect_ref": "reveal_strip",
+      "skill_target": "All Enemy",
+      "skill_type": "Active",
+      "uuid": "Item.MhTGG50DFr9GL1f5"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2788278388,
+    "unique": true,
+    "uniqueId": "MhTGG50DFr9GL1f5"
+  },
+  "type": "equippableItem"
+}
