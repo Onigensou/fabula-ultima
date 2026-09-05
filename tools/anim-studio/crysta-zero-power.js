@@ -19,9 +19,17 @@
 //   8. one second later it resolves. On a MISS the blackout, the moon and both
 //      silhouettes vanish in one frame, every hidden token returns in that same
 //      frame, and the REAL camera pulls back out to exactly where it started.
-//      The HIT continuation is not authored yet. The damage GATE deliberately
-//      waits for the world to come back, because damage feedback is DOM pinned
-//      to the token's real map position. See the note beside oni.fireDone().
+//      The damage GATE deliberately waits for the world to come back, because
+//      damage feedback is DOM pinned to the token's real map position. See the
+//      note beside oni.fireDone().
+//   9. on a HIT the cut reaches the moon: it parts along the same line the blade
+//      drew, the top half drifting right and the bottom left, and one second
+//      into that drift ripples break along the cut and spread, distorting it.
+//  10. the light takes the frame mid-ripple, swallowing it. Two seconds
+//      of nothing but white -- under which the composition is struck, every
+//      token is put back and the real camera walks home -- then the white lifts
+//      in under half a second onto the ordinary battlefield, and the damage
+//      lands on that frame.
 //
 // ---------------------------------------------------------------------------
 // FIVE DESIGN DECISIONS, each one a thing that would otherwise bite
@@ -107,7 +115,9 @@
     // Auditioned alternatives in the same library: Blow1..3 (a blown-out
     // candle), Close1..3, Water_Drop, Bell1 (2.78 s, still ringing under the
     // moon), Wind5, Silence. Blank to silence it entirely.
-    blackoutSfx: "Bell3",
+    // Folder-qualified: BOTH Sound/ and Sound/Soundboard/ carry a "Bell1", and a
+    // bare name resolves by manifest array order -- which a re-scrape can flip.
+    blackoutSfx: "Soundboard/Bell1",
     blackoutSfxVol: 0.9,
     // 0 = a HARD CUT, like a light switch. Anything above ~80 ms stops reading
     // as a switch and starts reading as a dissolve.
@@ -240,14 +250,27 @@
 
     // ---- beat 8: the branch ----
     postStabMs: 2000,         // beat held on the aftermath before hit/miss resolves
-    // "" = read the real roll from the Battle Director. "hit" / "miss" force a
-    // branch, which is the only way to rehearse either one in the Preview Bench.
+    // "" = take the outcome the payload carries (the real roll in play, the
+    // Preview Bench's Outcome selector out of it). "hit" / "miss" override it,
+    // which is only needed to pin a branch while tuning from the CFG box.
     forceOutcome: "",
     // MISS: everything comes back in a single frame; the camera holds on the
     // close framing while she reacts, and only pulls out as she withdraws.
     missZoomIn: 2.1,          // how far in the cut lands, as a multiple of the start zoom
     missZoomMs: 2100,         // the pull-back itself, and it runs UNDER the retreat
-    missDamageDelayMs: 500,   // beat between the world returning and the MISS landing
+    // Signed offset between the world coming back and the MISS landing. 0 puts
+    // them on the SAME FRAME, which is what this wants.
+    //
+    // Traced 2026-09-05 (fireDone / animationEnd / reveal all timestamped in one
+    // run) because two indirect measurements disagreed: oni.fireDone() reaches
+    // oni:animationEnd in 0 ms -- the outer's onceHook resolves in the same tick,
+    // there is no pipeline to pre-empt. At 0 the gate and the reveal measured
+    // 1 ms apart; the shipped 500 measured 645. A NEGATIVE value still works
+    // (fire, wait, then reveal) if the cue ever needs pulling ahead of the
+    // reveal, but do not use it to chase latency that is not there -- and note
+    // that a short oni.wait is only as precise as the client's timers: 170 ms
+    // asked for measured ~416 ms on a headless client.
+    missDamageDelayMs: 0,
     // Her reaction. Sob.webm is the sobbing emote from the world's own RO emote
     // set -- the same folder the emote hotkeys use. Any name from that folder
     // works; this is the only value to change.
@@ -274,13 +297,75 @@
     stabShakeMs: 260,
     stabShakeIntensity: 9,
 
-    // ---- placeholder tail (NOT part of the spec) ----
-    // Steps 5+ do not exist yet, so the shot has to end somehow. Without this
-    // the listener's dispose() would snap from a full-black frame straight back
-    // to the lit map. Tokens are un-hidden while the black is still opaque, so
-    // they do not pop in during the fade. Delete both when the strike lands here.
-    endHoldMs: 900,
-    tailFadeMs: 700,
+    // ---- beat 9 (HIT ONLY): the moon is cut in half and parts ----
+    // The white line at beat 7 crossed the WHOLE frame; this is that same cut
+    // reaching the one thing behind everything. splitYFrac therefore defaults to
+    // charYFrac -- the exact y the line was drawn at -- so the two read as one
+    // stroke rather than as two unrelated events. Set it to moonYFrac instead if
+    // you want a true geometric half.
+    splitYFrac: 0.02,
+    splitPauseMs: 260,        // the moon holds, whole, before it lets go
+    splitDriftMs: 3600,       // the drift; inOutQuad, so it eases off rather than stopping dead
+    splitDriftPx: 58,         // how far EACH half travels (top right, bottom left)
+
+    // The ripple, opening in the middle one second after the drift starts. It is
+    // SCHEDULED off the drift, not sequenced after it -- the two overlap.
+    //
+    // This DISTORTS THE MOON rather than drawing rings over it: a displacement
+    // map of horizontal bands shears the image sideways, which is a reflection
+    // breaking up on disturbed water -- the skill's own name. Measured 2026-09-05:
+    // radial ripple maps and ShockwaveFilter both read as a lumpy RIM here and
+    // nothing else, because this moon is a flat opaque plateau and a displacement
+    // filter can only show what has detail under it. The disc's edges are the
+    // only signal it has, and band-shear is what moves them. Give the moon a
+    // textured surface and the radial forms become available again.
+    rippleDelayMs: 1000,      // the spec's one second
+    rippleRiseMs: 700,        // amplitude swelling in
+    rippleHoldMs: 1200,       // held at full strength
+    rippleFallMs: 1900,       // and dying away
+    rippleAmpPx: 30,          // peak displacement, in screen px
+    rippleRings: 4,           // concentric rings from each origin out to the map's edge
+    rippleFlattenY: 1,        // 1 = truly circular; <1 squashes into ellipses
+    // Several disturbances struck ALONG the cut rather than one in the middle.
+    // They are ordered in the direction the blade travelled and staggered, so
+    // the water breaks the way the stroke ran. Each is its own displacement
+    // pass, and passes COMPOSE -- where two overlap the shear adds.
+    rippleOrigins: 3,
+    rippleAlongFrac: 0.80,    // how far out the outermost sit, in moon radii
+    rippleStaggerMs: 240,     // between one origin and the next
+    // The rings TRAVEL by the map growing: the whole concentric pattern scales
+    // out from its own centre, which is what a ring expanding across water is.
+    // Multiples of the moon's DIAMETER.
+    rippleFromFrac: 0.40,
+    rippleToFrac: 2.40,
+    // Where the map's own falloff begins, as a fraction of its radius. Measured
+    // 2026-09-05: a falloff peaking at the CENTRE puts the displacement on the
+    // flat plateau, where it cannot be seen, and leaves ~3 px of 24 at the rim,
+    // which is the only edge a flat disc has. Keep the plateau out past the rim.
+    rippleEdge: 0.74,
+    rippleXFrac: 0,           // nudge the centre off the moon's, in screen heights
+    rippleYFrac: 0,
+    rippleTexSize: 512,
+
+    // ---- beat 10 (HIT): the white-out, and the world coming back ----
+    // The rise runs UNDER the whole of beat 9 and its duration IS beat 9's, by
+    // construction -- so "white by the end" cannot drift out of true when the
+    // drift or the ripple are retuned. Everything else then happens hidden: the
+    // composition is struck, the tokens come back and the real camera walks home
+    // with nothing on screen to see it.
+    whiteColor: "#ffffff",
+    whiteStartMs: 1600,       // measured from the DRIFT's start, so it lands 600 ms
+                              // into the ripple: the rings bite, and then the light
+                              // takes the frame while they are still spreading
+    whiteRiseMs: 1200,        // the fade itself
+    whiteHoldMs: 2000,        // the spec's two seconds of pure white
+    whiteFadeOutMs: 420,      // "under half a second"
+    camReturnMs: 600,         // the camera easing home, inside the white hold
+
+    // How long an asset may take to decode before the shot gives up on it. This
+    // is ALSO a term in the outer's completion budget, so the two cannot drift:
+    // see the note beside toBranch for what happened when they did.
+    assetSettleCapMs: 6000,
 
     moonTexSize: 512,
     glowTexSize: 512,
@@ -296,18 +381,22 @@
     const t = setTimeout(() => { Hooks.off(name, id); resolve(); }, ms);
   });
 
-  // hit/miss is NOT on the animation payload -- executeAnimationScript builds
-  // that from caster, targets and script metadata only. But the ANIMATION state
-  // runs after the accuracy roll, so the result is readable here, in the outer,
-  // which has full page scope. The inner gets it through params.
-  let outcomes = [];
-  try {
-    const dir = globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.();
-    const rows = dir?.ctx?.actionResult?.perTargetResults;
-    if (Array.isArray(rows)) {
-      outcomes = rows.map((r) => ({ tokenUuid: r && r.tokenUuid, hit: !!(r && r.hit) }));
-    }
-  } catch (e) { console.warn("[ZeroPower] could not read hit/miss; assuming a hit.", e); }
+  // hit/miss now RIDES the payload: the ANIMATION state runs after the accuracy
+  // roll, so the FSM stamps payload.outcomes from the action result, and the
+  // Anim Studio bench forges the same field from its Outcome selector -- which
+  // is what makes the miss ending rehearsable outside combat. The live-director
+  // read stays as the fallback for a payload built before that field existed.
+  // The inner gets it through params either way.
+  let outcomes = Array.isArray(P.outcomes) ? P.outcomes : [];
+  if (!outcomes.length) {
+    try {
+      const dir = globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.();
+      const rows = dir?.ctx?.actionResult?.perTargetResults;
+      if (Array.isArray(rows)) {
+        outcomes = rows.map((r) => ({ tokenUuid: r && r.tokenUuid, hit: !!(r && r.hit) }));
+      }
+    } catch (e) { console.warn("[ZeroPower] could not read hit/miss; assuming a hit.", e); }
+  }
 
   Hooks.callAll("oni:animationStart", { local: true, world: false });
 
@@ -325,7 +414,7 @@
     // against defaults once, and say so out loud.
     const DEF = {
       blackFadeMs: 0, blackColor: '#000000', blackHoldMs: 1000,
-      blackoutSfx: 'Bell3', blackoutSfxVol: 0.9,
+      blackoutSfx: 'Soundboard/Bell1', blackoutSfxVol: 0.9,
       revealMs: 900, moonHoldMs: 3000,
       moonRadiusFrac: 0.34, moonYFrac: 0.0, moonCore: '#ffffff', moonRim: '#e8f1ff',
       glowScale: 1.18, glowColor: '#cfe4ff', glowAlpha: 0.5,
@@ -350,13 +439,21 @@
       stabFlashPeak: 0.95, stabFlashInMs: 40, stabFlashOutMs: 190,
       stabShakeMs: 260, stabShakeIntensity: 9,
       postStabMs: 2000, forceOutcome: '',
-      missZoomIn: 2.1, missZoomMs: 2100, missDamageDelayMs: 500,
+      missZoomIn: 2.1, missZoomMs: 2100, missDamageDelayMs: 0,
       missEmoteUrl: 'https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Emotes%20Icon/RO/Sob.webm',
       missEmoteScale: 0.62, missEmoteFlip: true, missEmoteOffX: 0.20, missEmoteOffY: -0.46,
       missRetreatDelayMs: 1000, missRetreatPx: 70, missArrivePx: 70,
       missFadeOutMs: 520, missFadeInMs: 420,
-      endHoldMs: 900, tailFadeMs: 700,
-      moonTexSize: 512, glowTexSize: 512,
+      splitYFrac: 0.02, splitPauseMs: 260, splitDriftMs: 3600,
+      splitDriftPx: 58,
+      rippleDelayMs: 1000, rippleRiseMs: 700, rippleHoldMs: 1200, rippleFallMs: 1900,
+      rippleAmpPx: 30, rippleRings: 4, rippleFlattenY: 1,
+      rippleOrigins: 3, rippleAlongFrac: 0.80, rippleStaggerMs: 240,
+      whiteColor: '#ffffff', whiteStartMs: 1600, whiteRiseMs: 1200, whiteHoldMs: 2000,
+      whiteFadeOutMs: 420, camReturnMs: 600,
+      rippleFromFrac: 0.40, rippleToFrac: 2.40, rippleEdge: 0.74,
+      rippleXFrac: 0, rippleYFrac: 0, rippleTexSize: 512,
+      assetSettleCapMs: 6000, moonTexSize: 512, glowTexSize: 512,
     };
     const C = {};
     const stale = [];
@@ -818,7 +915,7 @@
       cutinSpr.anchor.set(0.5, 1);
       cutinSpr.alpha = 0;
       cutinLayer.addChild(cutinSpr);
-      cutinReady = settle(cutinSpr, null, 6000);
+      cutinReady = settle(cutinSpr, null, C.assetSettleCapMs);
     } else {
       console.warn('[ZeroPower] no cut-in art on this actor; the cut-in beat will be skipped.');
     }
@@ -838,7 +935,7 @@
       emoteVid = made.video;
       emote.alpha = 0;
       emote.anchor.set(0.5, 0.5);
-      emoteReady = settle(emote, emoteVid, 6000).then(async () => {
+      emoteReady = settle(emote, emoteVid, C.assetSettleCapMs).then(async () => {
         if (!emoteVid || emoteVid.readyState < 2) {
           console.warn('[ZeroPower] the sob emote never buffered a frame (readyState ' +
             (emoteVid ? emoteVid.readyState : '?') + '); the miss beat will skip it.');
@@ -1066,18 +1163,21 @@
 
     const forced = String(C.forceOutcome || '').toLowerCase();
     let didHit = true;
+    // The outcome the OUTER resolved -- payload.outcomes (the real roll in play,
+    // the Preview Bench's Outcome selector out of it), falling back to the live
+    // director -- handed down through params.
+    const outs = (ctx.params && ctx.params.outcomes) || [];
+    let source = 'no outcome data, assumed';
     if (forced === 'hit' || forced === 'miss') {
       didHit = (forced === 'hit');
+      source = 'forced by CFG';
     } else {
-      // The real roll, read in the OUTER (which has full page scope) and handed
-      // down through params -- the animation payload itself carries no hit/miss.
-      const outs = (ctx.params && ctx.params.outcomes) || [];
       const tUuid = (target.document && target.document.uuid) || '';
       const row = outs.find ? outs.find((o) => o && o.tokenUuid === tUuid) : null;
-      if (row) didHit = !!row.hit;
-      else if (outs.length) didHit = !!outs[0].hit;
+      if (row) { didHit = !!row.hit; source = 'this target row'; }
+      else if (outs.length) { didHit = !!outs[0].hit; source = 'first outcome row'; }
     }
-    console.log('[ZeroPower] outcome:', didHit ? 'HIT' : 'MISS', forced ? '(forced)' : '(from the director)');
+    console.log('[ZeroPower] outcome:', didHit ? 'HIT' : 'MISS', '(' + source + ')');
 
     if (!didHit) {
       // ---- MISS ------------------------------------------------------------
@@ -1109,7 +1209,10 @@
       const stabX = tgtC.x + (cryScreenDx - tgtScreenDx) / scale;
       const stabY = tgtC.y;
 
-      root.visible = false;
+      // Every token back, the stand-in placed and the camera panned FIRST --
+      // all of it under the sheet, which is still up, so none of it is seen. It
+      // also means the damage feedback (DOM, projected from the token's real
+      // world centre) is placed against the FINAL camera however early it fires.
       for (let i = 0; i < restores.length; i++) { try { restores[i](); } catch (e) {} }
 
       // Her stand-in, placed on the frame she was just occupying -- and FACING
@@ -1130,10 +1233,20 @@
         canvas.pan({ x: tgtC.x - tgtScreenDx / scale, y: tgtC.y - rowDy / scale, scale });
       } catch (e) { console.warn('[ZeroPower] could not hold the frame across the cut.', e); }
 
-      // A beat, then the miss lands -- number and SFX, on the real token, on the
+      // Now the reveal and the miss, ordered by the sign of the beat between
+      // them. Either way the number and its SFX land on the real token, on the
       // real battlefield, which is the only place either can be correct.
-      await oni.wait(C.missDamageDelayMs);
-      oni.fireDone();
+      const missLead = Number(C.missDamageDelayMs) || 0;
+      const revealWorld = () => { root.visible = false; };
+      if (missLead >= 0) {
+        revealWorld();
+        if (missLead > 0) await oni.wait(missLead);
+        oni.fireDone();
+      } else {
+        oni.fireDone();
+        await oni.wait(-missLead);
+        revealWorld();
+      }
 
       // Her reaction, beside the face of the stand-in (not of her real token,
       // which is still hidden a long way off).
@@ -1219,18 +1332,254 @@
       if (ghost) ghost.alpha = 0;
       try { await camDone; } catch (e) {}
     } else {
-      // ---- HIT -- NOT AUTHORED YET -----------------------------------------
-      // Placeholder so the cinematic ends cleanly: hold, put the tokens back
-      // under the still-opaque black, then lift it. Replace wholesale when the
-      // hit continuation is specified.
-      await oni.wait(C.endHoldMs);
+      // ---- HIT -- beat 9: the moon comes apart ------------------------------
+      // The cut crossed the whole frame; the moon is simply the last thing it
+      // reaches. Two fresh copies of disc+halo, each clipped to one side of the
+      // cut, replace the single moon on the frame they appear -- same textures,
+      // same place, so the handoff cannot be seen. Each mask is a CHILD of the
+      // half it clips, which is the whole trick: the clip travels with the half,
+      // so each keeps its flat cut edge the entire way out instead of sliding
+      // out through a stationary window.
+      const splitY = C.splitYFrac * H;
+      const yCut = splitY - C.moonYFrac * H;   // the cut, in moon-local space
+      // Masks and the drift both have to outrun the HALO, not the disc -- the
+      // glow reaches moonRadiusFrac * glowScale * H, well past the rim.
+      const span = Math.max(W, H) * 2;
+
+      const makeHalf = (isTop, parent) => {
+        const half = new PIXI.Container();
+        half.zIndex = 0;
+        half.position.copyFrom(moonWrap.position);
+        const g = new PIXI.Sprite(glow.texture);
+        g.anchor.set(0.5);
+        g.width = glow.width; g.height = glow.height;
+        g.blendMode = PIXI.BLEND_MODES.ADD;
+        half.addChild(g);
+        const d = new PIXI.Sprite(disc.texture);
+        d.anchor.set(0.5);
+        d.width = disc.width; d.height = disc.height;
+        half.addChild(d);
+        const m = new PIXI.Graphics();
+        m.beginFill(0xffffff, 1);
+        m.drawRect(-span, isTop ? yCut - span : yCut, span * 2, span);
+        m.endFill();
+        half.addChild(m);
+        half.mask = m;
+        parent.addChild(half);
+        return half;
+      };
+      // Both halves live under ONE parent so the ripple can distort them as a
+      // single image. Masks stay on the CHILDREN: a filter over a masked parent
+      // fights its own clip, but filter-on-parent / mask-on-child composes.
+      const moonSplit = new PIXI.Container();
+      moonSplit.zIndex = 0;
+      comp.addChild(moonSplit);
+      const moonTop = makeHalf(true, moonSplit);
+      const moonBot = makeHalf(false, moonSplit);
+      moonWrap.alpha = 0;
+
+      // The displacement map: horizontal bands, strongest at the centre and
+      // falling off to nothing at the edge. R is the x offset, G the y, 128 is
+      // "no shift". Baked once per session like the moon's own textures.
+      const rippleMap = (() => {
+        // v2 in the key because the SHAPE changed (bands -> rings): texCache is
+        // session-scoped, so without the bump a page that already ran the old
+        // build would keep serving the old map for the rest of its life.
+        const key = 'ripplemap:v2:' + C.rippleTexSize + ':' + C.rippleRings + ':' + C.rippleEdge;
+        const cached = texCache[key];
+        if (cached && !cached.destroyed && cached.baseTexture && !cached.baseTexture.destroyed) return cached;
+        const MP = C.rippleTexSize;
+        const cv = document.createElement('canvas');
+        cv.width = MP; cv.height = MP;
+        const g2 = cv.getContext('2d');
+        const img = g2.createImageData(MP, MP);
+        for (let y = 0; y < MP; y++) {
+          for (let x = 0; x < MP; x++) {
+            const nx = (x - MP / 2) / (MP / 2);
+            const ny = (y - MP / 2) / (MP / 2);
+            const r = Math.sqrt(nx * nx + ny * ny) || 1e-6;
+            // Flat across the disc, then eased to nothing by the map's edge, so
+            // the rings are at FULL strength where the rim is and stop cleanly
+            // rather than dragging the black beyond it.
+            const e = Math.max(0.05, Math.min(0.98, C.rippleEdge));
+            const k = r <= e ? 1 : Math.max(0, 1 - (r - e) / (1 - e));
+            const fall = k * k * (3 - 2 * k);            // smoothstep, no hard step at the rim
+            // Concentric rings pushed ALONG the radius -- the offset direction
+            // is the outward unit vector, which is what makes them read as rings
+            // spreading from the origin rather than as a wobble in one axis.
+            const wave = Math.sin(r * C.rippleRings * Math.PI * 2) * fall;
+            const i = (y * MP + x) * 4;
+            img.data[i] = 128 + Math.max(-127, Math.min(127, (nx / r) * wave * 127));
+            img.data[i + 1] = 128 + Math.max(-127, Math.min(127, (ny / r) * wave * 127));
+            img.data[i + 2] = 128;
+            img.data[i + 3] = 255;
+          }
+        }
+        g2.putImageData(img, 0, 0);
+        const tex = PIXI.Texture.from(cv);
+        texCache[key] = tex;
+        return tex;
+      })();
+
+      // The map sprite is SAMPLED, never drawn -- it has to be in the tree for
+      // its transform to be live, but renderable false keeps it off screen.
+      const mapSpan0 = moonR * 2 * C.rippleFromFrac;
+      const mapSpan1 = moonR * 2 * C.rippleToFrac;
+      const Displacement = PIXI.DisplacementFilter
+        || (PIXI.filters && PIXI.filters.DisplacementFilter) || null;
+
+      // The origins, spread along the cut and ordered the way the blade ran, so
+      // the water breaks left-to-right or right-to-left with the stroke instead
+      // of blooming symmetrically out of the middle.
+      const originCount = Math.max(1, Math.round(C.rippleOrigins));
+      const alongHalf = C.rippleAlongFrac * moonR;
+      const originXs = [];
+      for (let i = 0; i < originCount; i++) {
+        const f = originCount === 1 ? 0 : (i / (originCount - 1)) * 2 - 1;   // -1 .. 1
+        originXs.push(f * alongHalf);
+      }
+      if (!dirRight) originXs.reverse();
+
+      // Each origin gets its OWN map sprite (sampled, never drawn) and its own
+      // displacement pass. Chained passes compose, so overlapping disturbances
+      // add rather than replace -- which is what two ripple fronts meeting does.
+      const rips = [];
+      for (let i = 0; i < originCount; i++) {
+        const spr = new PIXI.Sprite(rippleMap);
+        spr.anchor.set(0.5);
+        spr.position.set(C.rippleXFrac * H + originXs[i], splitY + C.rippleYFrac * H);
+        spr.width = mapSpan0;
+        spr.height = mapSpan0;
+        spr.renderable = false;
+        comp.addChild(spr);
+        let f = null;
+        if (Displacement) {
+          f = new Displacement(spr, 0);
+          f.scale.x = 0; f.scale.y = 0;
+          // Without padding the shear is clipped at the container's own bounds
+          // and the wave flattens exactly where it should be largest.
+          f.padding = C.rippleAmpPx * 3;
+        }
+        rips.push({ spr, filter: f, delay: i * C.rippleStaggerMs, y0: spr.y });
+      }
+      const ripFilters = rips.map((r) => r.filter).filter(Boolean);
+      if (ripFilters.length) moonSplit.filters = ripFilters;
+      else console.warn('[ZeroPower] no DisplacementFilter in this PIXI; the moon parts without the ripple.');
+
+      // The white-out. Oversized like the black sheet so a mid-shot resize
+      // cannot expose an edge, and ABOVE both the composition and the black.
+      const white = new PIXI.Graphics();
+      white.beginFill(hexNum(C.whiteColor), 1);
+      white.drawRect(-1.5 * W, -1.5 * H, 3 * W, 3 * H);
+      white.endFill();
+      white.alpha = 0;
+      white.zIndex = 5;
+      root.addChild(white);
+
+      // The cut has landed but nothing has moved yet: the halves are sitting
+      // exactly where the whole moon was, so this beat reads as the moon holding
+      // together for a moment before it lets go.
+      await oni.wait(C.splitPauseMs);
+
+      // Top right, bottom left. Started, NOT awaited: the ripple is scheduled
+      // one second off this moment, so the two beats have to overlap.
+      const drift = oni.tween({
+        duration: C.splitDriftMs, ease: oni.EASE.inOutQuad,
+        onUpdate: (v) => {
+          if (moonTop.destroyed || moonBot.destroyed) return;
+          moonTop.x = C.splitDriftPx * v;
+          moonBot.x = -C.splitDriftPx * v;
+        },
+      });
+
+      // Amplitude swells, holds, then dies -- a disturbance, not a steady state.
+      // Underneath it the map DRIFTS (the bands travelling outward) and GROWS
+      // (the disturbed patch spreading from the middle), which is what turns a
+      // static sine into moving water.
+      const oneRipMs = C.rippleRiseMs + C.rippleHoldMs + C.rippleFallMs;
+      const ripSpanMs = oneRipMs + (originCount - 1) * C.rippleStaggerMs;
+      const ripple = (async () => {
+        await oni.wait(C.rippleDelayMs);
+        if (!ripFilters.length) return;
+        await oni.tween({
+          duration: ripSpanMs, ease: oni.EASE.linear,
+          onUpdate: (v, t) => {
+            const ms = t * ripSpanMs;
+            for (let i = 0; i < rips.length; i++) {
+              const r = rips[i];
+              if (!r.filter || r.spr.destroyed) continue;
+              // Each origin lives its own life, offset by its place in the cut.
+              const lm = ms - r.delay;
+              if (lm <= 0 || lm >= oneRipMs) { r.filter.scale.x = 0; continue; }
+              const amp = lm < C.rippleRiseMs
+                ? oni.EASE.outQuad(lm / C.rippleRiseMs)
+                : lm < C.rippleRiseMs + C.rippleHoldMs
+                  ? 1
+                  : 1 - oni.EASE.inOutQuad((lm - C.rippleRiseMs - C.rippleHoldMs) / C.rippleFallMs);
+              // Both axes: a radial map with y pinned to 0 would collapse the
+              // rings back into a horizontal wobble.
+              r.filter.scale.x = C.rippleAmpPx * amp;
+              r.filter.scale.y = C.rippleAmpPx * amp * C.rippleFlattenY;
+              const lt = lm / oneRipMs;
+              // The rings travelling outward from their own origin. The map
+              // stays centred and SCALES, so the pattern expands rather than
+              // sliding. outQuad: fast at first and slowing, as a real one does.
+              const grow = mapSpan0 + (mapSpan1 - mapSpan0) * oni.EASE.outQuad(lt);
+              r.spr.width = grow;
+              r.spr.height = grow;
+            }
+          },
+        });
+        for (const r of rips) if (r.filter) r.filter.scale.x = 0;
+      })();
+
+      // The light takes the frame WHILE the ripple is still spreading -- it runs
+      // on its own clock off the drift's start rather than being pinned to the
+      // end of the beat, so the rings are swallowed rather than allowed to finish.
+      const whiten = (async () => {
+        await oni.wait(Math.max(0, C.whiteStartMs));
+        await oni.tween({
+          duration: Math.max(1, C.whiteRiseMs), ease: oni.EASE.inOutQuad,
+          onUpdate: (v) => { if (!white.destroyed) white.alpha = v; },
+        });
+      })();
+
+      // ONLY the whiten is awaited. Once the sheet is opaque nothing behind it
+      // can be seen, so waiting out the drift and the ripple would buy nothing
+      // but ~3.5 s of runtime -- which this shot cannot spare (see the note on
+      // the 35 s gate). Both keep running harmlessly behind the white and stop
+      // on their own; every onUpdate already guards on destroyed.
+      await whiten;
+      white.alpha = 1;
+
+      // ---- beat 10: everything that follows happens UNDER the white ---------
+      // Which is the whole point of it. The composition is struck, every token
+      // comes back and the real camera walks home -- none of it visible, so the
+      // white lifts on the ordinary battlefield rather than on a handover.
+      comp.visible = false;
+      bg.alpha = 0;
       for (let i = 0; i < restores.length; i++) { try { restores[i](); } catch (e) {} }
       restoreCaster();
+      // The cinematic camera is fake and never moved this one, but a reaction,
+      // a token drag or a previous shot may have. Walk it home either way; if
+      // it is already there the pan is a no-op.
+      let camHome = null;
+      try {
+        camHome = canvas.animatePan({ x: cam0.x, y: cam0.y, scale: cam0.scale, duration: C.camReturnMs });
+      } catch (e) {
+        try { canvas.pan({ x: cam0.x, y: cam0.y, scale: cam0.scale }); } catch (e2) {}
+      }
+      await oni.wait(C.whiteHoldMs);
+      try { await camHome; } catch (e) {}
+
       await oni.tween({
-        duration: C.tailFadeMs, ease: oni.EASE.inQuad,
-        onUpdate: (v) => { root.alpha = 1 - v; },
+        duration: C.whiteFadeOutMs, ease: oni.EASE.inQuad,
+        onUpdate: (v) => { if (!white.destroyed) white.alpha = 1 - v; },
       });
+      white.alpha = 0;
       root.alpha = 0;
+      // The gate fires just below, so the damage lands on the frame the white
+      // clears -- on the real target, on the real battlefield.
     }
 
     // ---- THE DAMAGE GATE (hit path; the miss path already fired it) --------
@@ -1271,13 +1620,30 @@
                  + CFG.cutinSlideInMs + CFG.cutinHoldMs + CFG.cutinSlideOutMs
                  + CFG.preCloseMs + CFG.closeMs
                  + CFG.stabSweepMs + CFG.stabLineHoldMs + CFG.stabLineFadeMs
-                 + CFG.postStabMs;
+                 + CFG.postStabMs
+                 // The cut-in's decode is awaited INSIDE this stretch and is not
+                 // a beat length, so a sum of the beats understates the real run
+                 // by up to the settle cap. Measured 2026-09-05: nominal 15.1 s
+                 // against ~20.5 s actual. That shortfall is not cosmetic -- once
+                 // the hit tail grew past it, the onceHook TIMEOUT beat the
+                 // inner's own fireDone and emitted animationEnd early, so damage
+                 // landed on a fully white screen. Anything awaited in here that
+                 // is not a beat has to be counted here too.
+                 + CFG.assetSettleCapMs;
   // The miss tail runs damage-delay -> emote -> retreat, with the camera pull
   // overlapping the retreat, so its length is the delay plus the longer of the
   // two concurrent moves.
-  const missTail = CFG.missDamageDelayMs + CFG.missRetreatDelayMs
+  // abs: missDamageDelayMs is a signed OFFSET between the reveal and the miss,
+  // and either sign costs the same wall-clock before the retreat starts.
+  const missTail = Math.abs(CFG.missDamageDelayMs) + CFG.missRetreatDelayMs
                  + Math.max(CFG.missZoomMs, CFG.missFadeOutMs + CFG.missFadeInMs);
-  const preDone = toBranch + Math.max(missTail, CFG.endHoldMs + CFG.tailFadeMs);
+  // The HIT tail is gated by the WHITE, not by the ripple: the light closes the
+  // frame while the drift and the ripple are still running, and they are left
+  // behind it rather than awaited. So the beat is the pause, the whiten, then
+  // the hold and the lift -- the ripple's own length never enters into it.
+  const hitTail = CFG.splitPauseMs + CFG.whiteStartMs + CFG.whiteRiseMs
+                + CFG.whiteHoldMs + CFG.whiteFadeOutMs;
+  const preDone = toBranch + Math.max(missTail, hitTail);
   await onceHook(doneHook, preDone + 6000);
   Hooks.callAll("oni:animationEnd", {
     local: true, world: false,

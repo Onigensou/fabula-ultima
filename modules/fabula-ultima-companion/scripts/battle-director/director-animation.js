@@ -266,6 +266,7 @@ async function executeAnimationScript({
   timingOffset,
   casterTokenUuid,
   targetTokenUuids,
+  outcomes = null,
   abortPromise = null,
   timeoutMs = 35000,
 }) {
@@ -303,6 +304,13 @@ async function executeAnimationScript({
     animationScriptRaw: script,
     animation_damage_timing_options: timingMode,
     animation_damage_timing_offset:  timingOffset,
+    // Per-target accuracy outcome, [{ tokenUuid, hit, crit }], when the caller
+    // knows it. The accuracy roll is settled before ANIMATION runs, so the FSM
+    // fills this from the action result; the Anim Studio bench fills it from its
+    // Outcome selector, which is how a miss cinematic gets rehearsed outside
+    // combat. `null` means "unknown" — a branching script should assume a hit,
+    // which is what every script did before this field existed.
+    outcomes: outcomes ?? null,
   };
 
   const fn = compileScript(script);
@@ -381,6 +389,27 @@ async function executeAnimationScript({
 // ActionAnimationHandler convention. globalThis.__PAYLOAD / __TARGETS are also
 // published so animation scripts that reference those globals continue to work.
 
+// The accuracy roll is settled by the time ANIMATION runs, so the per-target
+// hit/miss is readable here and can ride the payload. A script that branches on
+// the outcome (Crysta's Zero Power) then reads ONE field instead of reaching
+// into the live director — which is also what lets the Anim Studio bench forge
+// the branch without a per-script CFG switch. Returns null when there is nothing
+// to report, so "unknown" stays distinguishable from "everything missed".
+function outcomesFromDirector(director) {
+  try {
+    const rows = director?.ctx?.actionResult?.perTargetResults;
+    if (!Array.isArray(rows) || !rows.length) return null;
+    return rows.map((r) => ({
+      tokenUuid: r?.tokenUuid ?? null,
+      hit: !!r?.hit,
+      crit: !!r?.crit,
+    }));
+  } catch (e) {
+    warn("[BD Anim] could not read per-target outcomes", e);
+    return null;
+  }
+}
+
 export async function playDirectorAnimation({ spec, director, casterTokenUuid, targetTokenUuids }) {
   const { script, timingMode, timingOffset } = spec;
 
@@ -394,6 +423,7 @@ export async function playDirectorAnimation({ spec, director, casterTokenUuid, t
     await executeAnimationScript({
       script, timingMode, timingOffset,
       casterTokenUuid, targetTokenUuids,
+      outcomes: outcomesFromDirector(director),
       abortPromise, timeoutMs: 35000,
     });
     log("[BD Anim] gate resolved — advancing to RESOLVE");
@@ -487,6 +517,10 @@ export async function playSkillAnimation({ skillUuid, casterTokenUuid, targetTok
 // script should be passed via `spec` from resolveAnimationSpec (already
 // _stripHtml'd).
 //
+// `outcomes` ([{ tokenUuid, hit, crit }]) is forged, not rolled: the bench's
+// Outcome selector puts it on the payload so a script that branches on hit/miss
+// can have either ending rehearsed. Leave it null to mean "unknown".
+//
 // Returns { ok, ms } so the bench can report duration / loop.
 export async function previewAnimation({
   spec = null,
@@ -495,6 +529,7 @@ export async function previewAnimation({
   timingOffset = 0,
   casterTokenUuid = null,
   targetTokenUuids = [],
+  outcomes = null,
   timeoutMs = 35000,
 } = {}) {
   const s = spec?.script ?? script;
@@ -513,6 +548,7 @@ export async function previewAnimation({
       timingOffset: offset,
       casterTokenUuid,
       targetTokenUuids,
+      outcomes,
       abortPromise: null,
       timeoutMs,
     });

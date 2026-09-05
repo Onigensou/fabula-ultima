@@ -165,9 +165,17 @@
     // Manifest names: HitSlashS/M, SE_BTL_HitSlashL/M/S for contact;
     // SE_SWINGA-H, Slash1-5, Sword1-5 for a whiff.
     cutHitSfx:  "HitSlashS",
-    cutMissSfx: "SE_SWINGC",
-    // The Anim Studio bench has no action result to read, so previews use
-    // this to demo one branch or the other.
+    // The SAME cue the Battle Director floats when a miss is applied
+    // (director-vfx playMissVfx -> Sound/Miss.ogg at 0.4), so the animation and
+    // the resolution agree instead of offering two different ideas of a miss.
+    // FOLDER-QUALIFIED on purpose: there is a "Miss" in Sound/ AND in
+    // Sound/Soundboard/, and a bare name resolves by manifest order -- which
+    // would pick the Soundboard one and quietly stop matching.
+    cutMissSfx: "Sound/Miss",
+    cutMissSfxVol: 0.4,       // BD's own level for this cue
+    // Last resort only: used when NEITHER the payload nor a live director can
+    // say what happened. The bench's Outcome selector forges payload.outcomes,
+    // so it no longer lands here.
     previewOutcome: "hit",
     slashImpactMs: 200,    // NATIVE-time ms into the FINAL cut when it connects -> DAMAGE
     slashHoldMs: 420,      // NATIVE-time ms to let the rest of the arc play out
@@ -196,21 +204,28 @@
     imageUrl = props[CFG.spriteProp] || props.sprite_battle || props.sprite_standard || "";
   } catch (e) { console.warn("[CrescentCut] could not resolve caster art", e); }
 
-  // Did the attack LAND? The ANIMATION state runs AFTER the accuracy roll, so
-  // the director's action result already knows -- perTargetResults[].hit. There
-  // is no hit/miss field on the animation payload itself, hence reading it here
-  // in the OUTER (which has full page scope) and handing it to the inner.
-  // Unknown (an Anim Studio preview, no active battle) => CFG.previewOutcome.
+  // Did the attack LAND? It RIDES THE PAYLOAD now: the ANIMATION state runs
+  // after the accuracy roll, so the FSM stamps payload.outcomes from the action
+  // result, and the Anim Studio bench forges the same field from its Outcome
+  // selector -- which is what makes the miss audio auditionable with no battle.
+  // Before this the outer read the live director ONLY, so a bench preview always
+  // fell through to previewOutcome ("hit") and the whiff could never be heard.
+  // The director read stays as the fallback for a payload built before the field
+  // existed; if neither can say, CFG.previewOutcome decides.
   let outcome = null;
+  const pickRow = (rows) => {
+    if (!Array.isArray(rows) || !rows.length) return null;
+    const want = targetUuids[0] ?? null;
+    return rows.find((r) => r && r.tokenUuid === want) ?? rows[0];
+  };
   try {
-    const dir = globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.();
-    const rows = dir?.ctx?.actionResult?.perTargetResults ?? [];
-    if (rows.length) {
-      const want = targetUuids[0] ?? null;
-      const row = rows.find((r) => r && r.tokenUuid === want) ?? rows[0];
-      if (row && row.hit !== null && row.hit !== undefined) outcome = row.hit ? "hit" : "miss";
+    let row = pickRow(P.outcomes);
+    if (!row) {
+      const dir = globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.();
+      row = pickRow(dir?.ctx?.actionResult?.perTargetResults);
     }
-  } catch (e) { /* no live battle -> fall back to the preview outcome */ }
+    if (row && row.hit !== null && row.hit !== undefined) outcome = row.hit ? "hit" : "miss";
+  } catch (e) { /* no payload, no live battle -> fall back to the preview outcome */ }
 
   const onceHook = (name, ms) => new Promise((resolve) => {
     const id = Hooks.once(name, () => { clearTimeout(t); resolve(); });
@@ -585,7 +600,12 @@
         // feedback, and doubling them was the stacking you heard before.
         if (i < slashes.length - 1) {
           const nm = (outcome === 'miss') ? cfg.cutMissSfx : cfg.cutHitSfx;
-          if (nm) oni.sfx(nm, { volume: cfg.volume });
+          // This script has no DEF coercion pass, so a bench CFG box captured
+          // before cutMissSfxVol existed feeds undefined -- which oni.sfx would
+          // take as a volume. Fall back rather than play at nothing.
+          const nv = (outcome === 'miss' && typeof cfg.cutMissSfxVol === 'number')
+            ? cfg.cutMissSfxVol : cfg.volume;
+          if (nm) oni.sfx(nm, { volume: nv });
         }
         try {
           sl.video.playbackRate = spd;

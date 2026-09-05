@@ -54,7 +54,7 @@ import { initDirectorCutin } from "./director-cutin.js";
 import { initDirectorRoundBanner, hideRoundBanner, refreshTurnActions as bannerRefreshTurnActions, showRoundBannerForResume, showRoundBannerForResumeFromState } from "./director-round-banner.js";
 import { initDirectorBattleLoader } from "./director-battle-loader.js";
 import { initIconFocusTuner } from "./icon-focus-tuner.js";
-import { stopBattleBgm, preloadDirectorSfx, playResourceLossVfx } from "./director-vfx.js";
+import { stopBattleBgm, preloadDirectorSfx, playResourceLossVfx, playMissVfx } from "./director-vfx.js";
 import { initDirectorSfx, collapseSidebarLocal } from "./director-sfx.js";
 import { initSfxAudition } from "./sfx-audition.js";
 import { initDamageNumbers, emitDamageNumber, renderDamageNumberLocal } from "./damage-numbers/director-damage-numbers.js";
@@ -994,6 +994,9 @@ Hooks.once("ready", () => {
   // animation's impact moment. Same path applyDamageToTarget drives in battle;
   // does NOT touch HP/MP (cosmetic only).
   studio.previewDamageVfx = (payload) => { try { playResourceLossVfx(payload); } catch (e) { warn("previewDamageVfx threw", e); } };
+  // The miss twin of the above — the same word RESOLVE floats on a dodged
+  // attack, so the bench can rehearse a miss ending with the real feedback.
+  studio.previewMissVfx = (payload) => { try { playMissVfx(payload); } catch (e) { warn("previewMissVfx threw", e); } };
   const exp = (api.experimental = api.experimental ?? {});
   // Automated playtest harness (GM-only, dev). Runs a real hands-free battle and
   // reports how it went — see sim/sim-run.js. `sim.abort()` is the panic valve if

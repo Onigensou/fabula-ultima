@@ -12,6 +12,11 @@
 //     script textarea.
 //   - Caster = the controlled token; Targets = your current user targets
 //     (re-read live at each Run so you can retarget without reopening).
+//   - Outcome (hit / miss): forged onto the animation payload as
+//     `payload.outcomes`, the same field the FSM fills from the accuracy roll,
+//     so a script that branches on hit/miss can have EITHER ending rehearsed
+//     here. The impact indicator follows it — a damage number or the real MISS
+//     word + whiff.
 //   - Replay + Loop.
 //   - Live CFG panel: the `const CFG = {…}` block is auto-extracted into an
 //     editable box; edit numbers and hit Run to see the change instantly. The
@@ -128,7 +133,15 @@
       if (spliced !== script) script = spliced;
     }
 
-    // Optional damage-number preview config (fired at impact, below).
+    // Accuracy outcome. Forged onto the payload so a branching script takes the
+    // chosen ending — the bench's whole reason for having the control. Built per
+    // target; with no target we still send one anonymous row, because otherwise
+    // the selector would silently mean nothing.
+    const isMiss = (root.querySelector(".as-outcome")?.value ?? "hit") === "miss";
+    const outcomes = (targetUuids.length ? targetUuids : [null])
+      .map((u) => ({ tokenUuid: u, hit: !isMiss, crit: false }));
+
+    // Optional impact-indicator preview config (fired at the damage gate, below).
     const dmgOn = !!root.querySelector(".as-dmg")?.checked;
     const dmgCfg = {
       amount: Number(root.querySelector(".as-dmg-amt")?.value ?? 0) || 0,
@@ -136,6 +149,7 @@
       affinity: root.querySelector(".as-dmg-aff")?.value ?? "NE",
       isCrit: !!root.querySelector(".as-dmg-crit")?.checked,
     };
+    for (const o of outcomes) o.crit = o.hit && dmgCfg.isCrit;
     // Whom the numbers pop on: the targets, or the caster if none (self FX).
     const dmgTokens = targetUuids.length ? targetUuids : (casterUuid ? [casterUuid] : []);
 
@@ -145,16 +159,21 @@
     do {
       let res;
       try {
-        res = await api.preview({ script, timingMode, timingOffset, casterTokenUuid: casterUuid, targetTokenUuids: targetUuids });
+        res = await api.preview({ script, timingMode, timingOffset, casterTokenUuid: casterUuid, targetTokenUuids: targetUuids, outcomes });
       } catch (e) {
         console.error(TAG, "preview threw", e);
         res = { ok: false, ms: 0, error: String(e?.message ?? e) };
       }
       // preview() resolves at the damage gate (impact / set timing), so firing
       // the dummy number here makes it pop exactly when a real hit would land.
-      if (res.ok && dmgOn && dmgTokens.length && typeof api.previewDamageVfx === "function") {
+      // On a miss it is the MISS word + whiff instead — the same pair RESOLVE
+      // floats on a dodged attack. A cinematic that pops its OWN miss number
+      // (Crysta's Zero Power does, at its own beat) wants this box UNCHECKED,
+      // exactly as for a script that owns its damage number.
+      if (res.ok && dmgOn && dmgTokens.length) {
         for (const t of dmgTokens) {
-          api.previewDamageVfx({ tokenUuid: t, resource: "hp", amount: dmgCfg.amount, element: dmgCfg.element, affinity: dmgCfg.affinity, isCrit: dmgCfg.isCrit });
+          if (isMiss) api.previewMissVfx?.({ tokenUuid: t });
+          else api.previewDamageVfx?.({ tokenUuid: t, resource: "hp", amount: dmgCfg.amount, element: dmgCfg.element, affinity: dmgCfg.affinity, isCrit: dmgCfg.isCrit });
         }
       }
       if (statusEl) {
@@ -270,7 +289,12 @@
 
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.82em;
                   padding:5px 7px;background:rgba(0,0,0,.12);border-radius:4px;">
-        <label title="Pop a dummy damage number on the target(s) at the impact moment, like real play"><input type="checkbox" class="as-dmg"/> Damage #</label>
+        <label title="Forged onto the animation payload as payload.outcomes — the same field the director fills from the accuracy roll. A script that branches on hit/miss takes this ending.">Outcome
+          <select class="as-outcome">
+            <option value="hit" selected>hit</option>
+            <option value="miss">miss</option>
+          </select></label>
+        <label title="Pop a dummy impact indicator on the target(s) at the damage gate, like real play"><input type="checkbox" class="as-dmg"/> <span class="as-dmg-label">Damage #</span></label>
         <input type="number" class="as-dmg-amt" value="120" min="0" style="width:60px;" title="dummy amount"/>
         <select class="as-dmg-el" title="element (colour)">
           <option value="physical">physical</option><option value="fire" selected>fire</option>
@@ -296,6 +320,18 @@
 
   function wire(html) {
     const root = html[0] ?? html;
+
+    // A miss has no amount, element, affinity or crit — grey them out rather
+    // than leaving four live controls that feed nothing.
+    const syncOutcome = () => {
+      const miss = (root.querySelector(".as-outcome")?.value ?? "hit") === "miss";
+      for (const sel of [".as-dmg-amt", ".as-dmg-el", ".as-dmg-aff", ".as-dmg-crit"]) {
+        const el = root.querySelector(sel);
+        if (el) { el.disabled = miss; el.style.opacity = miss ? ".4" : ""; }
+      }
+      const lbl = root.querySelector(".as-dmg-label");
+      if (lbl) lbl.textContent = miss ? "MISS #" : "Damage #";
+    };
 
     const syncPanes = () => {
       const mode = root.querySelector('input[name="as-mode"]:checked')?.value ?? "skill";
@@ -323,12 +359,14 @@
       clearTimeout(st); st = setTimeout(() => refreshCfg(root), 300);
     });
 
+    root.querySelector(".as-outcome")?.addEventListener("change", syncOutcome);
     root.querySelector(".as-loop")?.addEventListener("change", (e) => { _loop = e.target.checked; });
     root.querySelector(".as-run")?.addEventListener("click", () => run(root));
     root.querySelector(".as-sfx")?.addEventListener("click", () => studioApi()?.openSfxBrowser?.());
     root.querySelector(".as-brief")?.addEventListener("click", () => studioApi()?.openBriefBuilder?.());
 
     refreshCasterInfo(root);
+    syncOutcome();
     syncPanes();
   }
 
