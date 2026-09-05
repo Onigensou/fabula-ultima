@@ -147,6 +147,7 @@
     "scripts/map-system/movementControl-passDialog.js",
     "scripts/map-system/movementControl-cameraRuntime.js",
     "scripts/map-system/movementControl-bootstrap.js",
+    "scripts/map-system/depth-index.js",
     "scripts/check-requester/cr-api.js",
     "scripts/check-requester/cr-sound-manager.js",
     "scripts/check-requester/cr-group-check.js",
