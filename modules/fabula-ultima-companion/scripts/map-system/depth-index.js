@@ -273,9 +273,22 @@
     const doc = token.document;
     const { anchorX, anchorY, fit, scaleX, scaleY } = doc.texture ?? {};
 
-    // token.center is derived from document x/y + size, and document x/y is the
-    // live animated position during a move.
-    const f = factorForY(token.center?.y ?? doc.y, cfg);
+    const size = token.getSize?.() ?? {
+      width:  doc.width  * canvas.grid.size,
+      height: doc.height * canvas.grid.size
+    };
+
+    // Depth is sampled at the token's FEET — the bottom edge of its footprint —
+    // not its centre. The feet are where the token actually stands on the
+    // ground plane, so a large token and a small one standing on the same spot
+    // get the same depth, and a line picked on the artwork means "where a token
+    // standing here is this big".
+    //
+    // document.x/y is the LIVE INTERPOLATED position during an animated move
+    // (Token#animate merges each frame into the document), so this ramps
+    // smoothly across the walk rather than snapping on the first frame.
+    const footY = doc.y + size.height;
+    const f = factorForY(footY, cfg);
 
     let sx = num(scaleX, 1) * f;
     let sy = num(scaleY, 1) * f;
@@ -287,18 +300,20 @@
       sy *= token.ring.subjectScaleAdjustment;
     }
 
-    const size = token.getSize?.() ?? { width: doc.width * canvas.grid.size, height: doc.height * canvas.grid.size };
-
-    // Height the mesh would have at the token's TRUE scale, needed to work out
-    // how far to push the sprite back down after shrinking it.
-    const baseHeight = Math.abs(size.height * num(scaleY, 1));
-
     mesh.resize(size.width, size.height, { fit: fit ?? "fill", scaleX: sx, scaleY: sy });
 
     // Keep the feet planted. Scaling about the mesh anchor lifts the sprite off
-    // the path as it shrinks; shifting down by the height we just lost puts the
-    // bottom edge back where it was.
+    // the path as it shrinks; shifting it back down by the height just lost
+    // puts the bottom edge where it was.
     //
+    // The displayed height is read back off the mesh rather than computed as
+    // size.height * scaleY: resize() derives its own ratio from the texture,
+    // and the two only agree for fit "fill". SpriteMesh#height is
+    // |scale.y| * texture.orig.height, i.e. the real drawn height under every
+    // fit mode. f is clamped well above zero, so the divide is safe.
+    const scaledHeight = Math.abs(mesh.height);
+    const baseHeight = scaledHeight / f;
+
     // The anchor is read live rather than from the document because the bounce
     // system forces anchor.y = 1.0 on the tokens it animates.
     const bounce = getBounceEntry(token.id);
@@ -312,10 +327,10 @@
     if (bounce) syncBounceBase(token);
 
     // Depth ordering: within the TOKENS sort layer, PrimaryCanvasGroup breaks
-    // elevation ties on mesh.sort, so a larger y draws in front. The setter
-    // flags the parent sortDirty by itself.
+    // elevation ties on mesh.sort, so a larger foot y draws in front. The
+    // setter flags the parent sortDirty by itself.
     if (cfg.sort) {
-      const key = Math.round(token.center?.y ?? doc.y);
+      const key = Math.round(footY);
       if (mesh.sort !== key) mesh.sort = key;
     }
 
@@ -430,7 +445,8 @@
     factorForToken(token) {
       const cfg = getConfig();
       if (!cfg || !token) return null;
-      return factorForY(token.center?.y ?? token.document?.y, cfg);
+      const size = token.getSize?.() ?? { width: 0, height: 0 };
+      return factorForY((token.document?.y ?? 0) + size.height, cfg);
     }
   };
 
