@@ -191,3 +191,12 @@ worlds/*/sim-logs/
 # this file (nothing at root is tracked unless explicitly un-ignored); recorded
 # here only so the omission reads as deliberate. They are the publisher's
 # copyrighted books, so this directory must never gain an `!` exception.
+
+# session-budget maps a dungeon tile layout to wall-clock session length, so a
+# night gets sized before it is built rather than discovered at 01:30. Shared
+# because the cost table is a design decision the whole table lives with, and
+# because it encodes two things the code alone does not say out loud: the random
+# battle pity chain pins encounters near 47% whatever the configured rate, and a
+# session affords exactly one narrative beat.
+!/tools/session-budget/
+!/tools/session-budget/**

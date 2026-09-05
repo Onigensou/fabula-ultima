@@ -1,0 +1,56 @@
+{
+  "_comment": [
+    "Reference shape for a session that actually lands on 00:00.",
+    "P50 23:37, P80 23:53. ONE narrative beat, 6 random battle tiles, a camp",
+    "tile as a mid-session safe stop, everything else cheap. ~145 pre-tempo",
+    "minutes of content against a 157m P80 budget.",
+    "Compare against example-fafnir-b1-b2.json, which adds a second story-class",
+    "tile (a Rare Monster) and busts the window by ~40 minutes."
+  ],
+  "name": "REFERENCE — a night that fits the window",
+  "session": {
+    "start": "20:30",
+    "target": "00:00",
+    "hardStop": "01:00"
+  },
+  "segments": [
+    {
+      "name": "Approach",
+      "scene": "Level 1",
+      "tiles": {
+        "random_battle": 3,
+        "skill_check": 1,
+        "gold": 1,
+        "trap": 2,
+        "blank": 6
+      }
+    },
+    {
+      "name": "Rest point",
+      "scene": "Level 1",
+      "tiles": {
+        "camp": 1
+      }
+    },
+    {
+      "name": "Descent",
+      "scene": "Level 2",
+      "tiles": {
+        "random_battle": 3,
+        "skill_check": 1,
+        "treasure": 1,
+        "blank": 5
+      }
+    },
+    {
+      "name": "The beat",
+      "scene": "Level 2",
+      "tiles": {
+        "story": 1
+      },
+      "beats": {
+        "story": "the one narrative beat of the night"
+      }
+    }
+  ]
+}

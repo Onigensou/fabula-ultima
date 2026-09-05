@@ -1,0 +1,36 @@
+{
+  "name": "FAFNIR CASTLE B1–B2  (example plan)",
+  "session": { "start": "20:30", "target": "00:00", "hardStop": "01:00" },
+  "segments": [
+    {
+      "name": "B1 descent",
+      "scene": "Fafnir B1",
+      "tiles": {
+        "random_battle": 5,
+        "skill_check": 1,
+        "treasure": 1,
+        "gold": 1,
+        "trap": 2,
+        "blank": 5
+      }
+    },
+    {
+      "name": "B1 throne",
+      "scene": "Fafnir B1",
+      "tiles": { "story": 1 },
+      "beats": { "story": "Throne Confrontation" }
+    },
+    {
+      "name": "B2 approach",
+      "scene": "Fafnir B2",
+      "tiles": {
+        "random_battle": 3,
+        "skill_check": 1,
+        "consumable": 1,
+        "blank": 3,
+        "rare_monster": 1
+      },
+      "beats": { "rare_monster": "Gilded Wyrm" }
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+{
+  "_comment": [
+    "Session Time Budget Estimator — cost model.",
+    "EDIT THIS FILE to recalibrate. Never edit the code to change a number.",
+    "",
+    "Durations are minutes as [min, mode, max] and sampled beta-PERT, so `mode`",
+    "is the honest most-likely value, NOT the midpoint. Push `mode` toward `max`",
+    "for things that overrun (story beats) and toward `min` for things that",
+    "usually go fast (loot pickups).",
+    "",
+    "`p` is the probability the tile actually costs `event` time rather than",
+    "`pass` time. It is 1.0 for everything except random_battle (see below) and",
+    "dirt (skill-check gated)."
+  ],
+
+  "session": {
+    "_comment": "Defaults; a plan file may override any of these.",
+    "start": "20:30",
+    "target": "00:00",
+    "hardStop": "01:00"
+  },
+
+  "tempo": {
+    "_comment": [
+      "Correlated whole-night speed multiplier, applied to CONTENT minutes only.",
+      "Right-skewed on purpose: sessions run long far more often than short.",
+      "Overheads are inelastic and are not multiplied by this."
+    ],
+    "pert": [0.90, 1.00, 1.30]
+  },
+
+  "overheads": {
+    "_comment": "Inelastic minutes. Not scaled by tempo.",
+    "open":  { "pert": [5, 7, 10],   "note": "arrival, recap, shopping, gear" },
+    "close": { "pert": [7, 10, 14],  "note": "save ceremony, next-week logistics" },
+    "sceneTransition": { "pert": [3, 5, 8], "note": "per scene change" },
+    "postBattleTail":  { "pert": [1, 2, 3], "note": "per TRIGGERED battle: roulette, level-up, healing" },
+    "break": {
+      "pert": [12, 15, 20],
+      "_comment": "auto rule: 1 break once content passes `firstAt`, 2 once past `secondAt`",
+      "firstAt": 100,
+      "secondAt": 220,
+      "max": 2
+    }
+  },
+
+  "randomBattle": {
+    "_comment": [
+      "P(battle) is NOT the configured random_battle_percentage. dp-random-battle.js",
+      "runs a pity chain (miss: +20..30 pts, hit: halve, floored at",
+      "minimum_encounter_percentage) which converges to ~47% regardless of the",
+      "configured base rate. Verified by 2M-step Monte Carlo:",
+      "  min= 5% -> 46.4%   min=15% -> 46.8%   min=30% -> 50.3%",
+      "Raise this only if you also raise minimum_encounter_percentage above ~25."
+    ],
+    "steadyStateByMinimum": { "5": 0.464, "10": 0.465, "15": 0.468, "20": 0.475, "25": 0.486, "30": 0.503 }
+  },
+
+  "classes": {
+    "battle":      { "label": "Battle",       "p": 0.47, "event": [10, 12, 15], "pass": [2, 3, 3], "storyClass": false, "battleTail": true },
+    "story":       { "label": "Story",        "p": 1.0,  "event": [30, 34, 40], "storyClass": true, "narrativeBeat": true },
+    "finalStory":  { "label": "Final Story",  "p": 1.0,  "event": [40, 48, 60], "storyClass": true, "narrativeBeat": true },
+    "rareMonster": { "label": "Rare Monster", "p": 1.0,  "event": [30, 34, 40], "storyClass": true },
+    "challenge":   { "label": "Challenge",    "p": 1.0,  "event": [10, 12, 15], "storyClass": false },
+    "loot":        { "label": "Loot",         "p": 1.0,  "event": [5, 7, 10],   "storyClass": false },
+    "minigame":    { "label": "Minigame",     "p": 1.0,  "event": [8, 11, 15],  "storyClass": false },
+    "camp":        { "label": "Camp",         "p": 1.0,  "event": [10, 13, 20], "storyClass": false, "safeStop": true },
+    "effect":      { "label": "Effect",       "p": 1.0,  "event": [0, 1, 3],    "storyClass": false },
+    "terrain":     { "label": "Terrain",      "p": 1.0,  "event": [0, 0.5, 2],  "storyClass": false },
+    "other":       { "label": "Other",        "p": 1.0,  "event": [0, 2, 5],    "storyClass": false }
+  },
+
+  "typeToClass": {
+    "_comment": [
+      "Keys are DP.TILE_TYPES from dp-constants.js, plus name-based fallbacks for",
+      "tiles that exist as templates but have no TILE_TYPES entry.",
+      "TRAP: `rare_monster` is NOT in TILE_TYPES and infers as UNKNOWN in",
+      "dp-tile-state.js — a scene reader must match it by name or it prices a",
+      "34-minute tile at zero."
+    ],
+
+    "random_battle": "battle",
+    "battle": "battle",
+
+    "story": "story",
+    "final": "finalStory",
+    "final_story": "finalStory",
+    "rare_monster": "rareMonster",
+    "raremonster": "rareMonster",
+
+    "skill_check": "challenge",
+    "hazard": "challenge",
+    "gusty": "challenge",
+    "obstacle": "challenge",
+    "alert": "challenge",
+
+    "treasure": "loot",
+    "gold": "loot",
+    "weapon": "loot",
+    "armor": "loot",
+    "accessory": "loot",
+    "consumable": "loot",
+    "item": "loot",
+
+    "fishing": "minigame",
+    "gathering": "minigame",
+    "recipe": "minigame",
+    "dirt": "minigame",
+
+    "camp": "camp",
+
+    "trap": "effect",
+    "scorched": "effect",
+    "burning": "effect",
+    "water": "effect",
+    "vertigo": "effect",
+    "slippery": "effect",
+    "poison": "effect",
+    "freeze": "effect",
+
+    "blank": "terrain",
+    "travel": "terrain",
+    "door": "terrain",
+    "force_move": "terrain",
+
+    "settlement": "other",
+    "healing": "other",
+    "stealth": "other",
+    "event": "other",
+    "advantage": "other",
+    "chaos": "other",
+    "unknown": "other"
+  },
+
+  "guidelines": {
+    "storyClassShareWarn": 0.30,
+    "narrativeBeatsPerSession": 1,
+    "_comment": [
+      "Warn when story-class tiles exceed this share of content minutes.",
+      "narrativeBeatsPerSession: a session wants EXACTLY one Story or Final Story",
+      "tile. Zero is a boring night (no plot revealed); two overshoots the window.",
+      "Rare Monster is story-CLASS in cost but is not a narrative beat."
+    ]
+  }
+}
