@@ -1,0 +1,79 @@
+{
+  "_id": "OksWc0PJglEi3ZgZ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1788603572804,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215133.445.png",
+  "name": "Birth of the Cruel: Dismiss",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "availability_formula": "OWN_PERSISTENT_SUMMON_COUNT >= 1",
+      "availability_reason": "You have no Minion to destroy",
+      "class": "Necromancer",
+      "cost": "",
+      "description": "<p>Destroy your Minion. You may do this <strong>at any time</strong>; if you want to create a new Minion, you must first destroy the current one.</p><p>When your Minion is destroyed, your <strong>maximum HP and MP</strong> scores <strong>return to normal</strong>.</p>",
+      "duration": "",
+      "effect_table": {
+        "0": {
+          "chain_steps": "botcd_untoll,botcd_destroy",
+          "consume_self": false,
+          "effect_kind": "chain",
+          "effect_label": "botcd_dismiss",
+          "from_resource": "",
+          "menu_label": "",
+          "to_resource": ""
+        },
+        "1": {
+          "consume_self": false,
+          "effect_kind": "destroy_summon",
+          "effect_label": "botcd_destroy",
+          "from_resource": "",
+          "menu_label": "",
+          "only_clones": "true",
+          "target_ref": "own_persistent_summons",
+          "to_resource": ""
+        },
+        "2": {
+          "ae_template_ref": "Grave Toll",
+          "consume_self": false,
+          "effect_kind": "remove_ae",
+          "effect_label": "botcd_untoll",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "self",
+          "to_resource": ""
+        }
+      },
+      "heroic_requirement": "you must have mastered the Necromancer Class.",
+      "isHeroic": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Birth of the Cruel: Dismiss",
+      "on_activate_effect_ref": "botcd_dismiss",
+      "reaction_config_table": {},
+      "skill_target": "Self",
+      "skill_type": "Active"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2788278388,
+    "unique": false,
+    "uniqueId": "OksWc0PJglEi3ZgZ"
+  },
+  "type": "equippableItem"
+}

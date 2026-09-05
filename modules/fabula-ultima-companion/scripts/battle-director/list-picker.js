@@ -357,6 +357,19 @@ function ensureStyles() {
       background: #9c2320; border-color: #631513; color: #fff;
       filter: saturate(2.6) contrast(1.12);
       box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+      /* This badge carries an AUTHORED sentence (availability_reason), unlike the
+         short cost/HR badges. Badges are white-space:nowrap, and the row is
+         40px / 1fr / auto — so an unbounded reason grows the auto column and
+         squeezes the 1fr column holding the skill NAME. Cap it and ellipsize: a
+         long reason degrades gracefully instead of crushing the thing it is
+         explaining. The full text stays reachable via the row's title attribute.
+         (No backticks in here: this whole block is inside a JS template literal,
+         and one would terminate it. node --check does NOT catch that — it parses
+         the file as a script; only a module import does.) */
+      max-width: 30ch;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .fud-lp-card .fud-lp-cancel {
       margin-top: 8px;

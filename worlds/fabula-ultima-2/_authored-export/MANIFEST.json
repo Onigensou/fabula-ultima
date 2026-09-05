@@ -3437,6 +3437,12 @@
         "effects": 1
       },
       {
+        "id": "OksWc0PJglEi3ZgZ",
+        "name": "Birth of the Cruel: Dismiss",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "cy0XWEqKnjvJ9B4c",
         "name": "Bishop's Edict",
         "type": "equippableItem",
@@ -19697,6 +19703,10 @@
           {
             "id": "fjrhRNjINs8xk7Lp",
             "name": "Birth of the Cruel"
+          },
+          {
+            "id": "FneDU0fqFXi4pv3g",
+            "name": "Birth of the Cruel: Dismiss"
           },
           {
             "id": "yyaIgdJIFgxPgS4Z",

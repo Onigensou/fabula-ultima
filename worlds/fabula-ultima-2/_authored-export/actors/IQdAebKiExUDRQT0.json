@@ -373,13 +373,6 @@
               "from_resource": "",
               "menu_label": "",
               "on_empty": "abort",
-              "summon_clone_target": "true",
-              "summon_count": "1",
-              "summon_folder": "Blue's PC",
-              "summon_max": "1",
-              "summon_overrides": "{\"species\":\"UNDEAD\",\"affinity_4\":\"IM\"}",
-              "summon_persist": "false",
-              "summon_strip_types": "weapon,armor,shield,accessory",
               "target_ref": "self",
               "to_resource": ""
             },
@@ -445,6 +438,47 @@
               "menu_label": "",
               "only_clones": "true",
               "target_ref": "own_summons",
+              "to_resource": ""
+            },
+            "7": {
+              "chain_steps": "botc_rest_hp,botc_rest_mp,botc_rest_clear",
+              "consume_self": false,
+              "effect_kind": "chain",
+              "effect_label": "botc_rest",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
+            },
+            "8": {
+              "consume_self": false,
+              "effect_kind": "set_resource",
+              "effect_label": "botc_rest_hp",
+              "from_resource": "",
+              "grant_amount": "MAX_HP",
+              "grant_resource": "hp",
+              "menu_label": "",
+              "target_ref": "own_persistent_summons",
+              "to_resource": ""
+            },
+            "9": {
+              "consume_self": false,
+              "effect_kind": "set_resource",
+              "effect_label": "botc_rest_mp",
+              "from_resource": "",
+              "grant_amount": "MAX_MP",
+              "grant_resource": "mp",
+              "menu_label": "",
+              "target_ref": "own_persistent_summons",
+              "to_resource": ""
+            },
+            "10": {
+              "consume_self": false,
+              "effect_kind": "remove_ae",
+              "effect_label": "botc_rest_clear",
+              "filter_tag": "debuff,buff",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "own_persistent_summons",
               "to_resource": ""
             }
           },
@@ -525,6 +559,28 @@
               "reaction_status_filter": "",
               "reaction_subject_kind": "",
               "reaction_trigger": "creature_defeated",
+              "requires_skill": ""
+            },
+            "3": {
+              "condition_formula": "OWN_PERSISTENT_SUMMON_COUNT >= 1",
+              "reaction_action_intent": "",
+              "reaction_action_kind": "",
+              "reaction_action_target": "",
+              "reaction_cause_filter": "",
+              "reaction_damage_source": "",
+              "reaction_effect_ref": "botc_rest",
+              "reaction_max_per_round": "",
+              "reaction_origin_filter": "",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "on",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
+              "reaction_source": "",
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "party_rested",
               "requires_skill": ""
             }
           },

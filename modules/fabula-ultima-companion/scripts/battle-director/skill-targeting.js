@@ -95,7 +95,26 @@ const RESERVED_REFS = {
   // candidate_source of the same name, so a row can `target_ref: "own_summons"`
   // (Zero Power shatters every summon). mode "all" → every own summon, no prompt.
   own_summons:           { candidate_source: "own_summons", mode: "all" },
+  // The reactor's own PERSISTENT summons (Birth of the Cruel's reanimated Minion,
+  // a captured monster). Unlike own_summons — which reads the combat/canvas token
+  // list and is therefore EMPTY outside a conflict — this walks `game.actors` for
+  // the persisted world Actor, so an out-of-conflict trigger (party_rested) can
+  // still act on a standing minion that has no token anywhere. mode "all" -> every
+  // persistent summon, no prompt.
+  own_persistent_summons: { candidate_source: "own_persistent_summons", mode: "all" },
 };
+
+// The reserved target_ref vocabulary, published for the reaction-config lint.
+// It used to keep its OWN hand-written copy of this list, which had already gone
+// stale for own_summons / own_numen / last_summoned / self_or_my_focus /
+// trigger_attacker — every one of them reported a false TARGET_REF_UNRESOLVED.
+// Derive, don't mirror.
+export const RESERVED_TARGET_REF_NAMES = Object.freeze(Object.keys(RESERVED_REFS));
+try {
+  globalThis.FUCompanion = globalThis.FUCompanion || {};
+  globalThis.FUCompanion.api = globalThis.FUCompanion.api || {};
+  globalThis.FUCompanion.api.targetRefs = { reserved: new Set(RESERVED_TARGET_REF_NAMES) };
+} catch (_e) { /* non-Foundry context (node --check, tooling) */ }
 
 // Public — resolve a target_ref to a token list within a chain context.
 // Returns `{ ok, tokens: TokenDocument[], reason? }`. `ok: false` aborts
@@ -584,6 +603,7 @@ async function buildCandidatePool(source, ctx) {
     case "self":                return collectSelfTokens(ctx);
     case "self_or_my_focus":    return collectSelfOrMyFocusTokens(ctx);
     case "own_summons":         return collectOwnSummons(ctx);
+    case "own_persistent_summons": return collectOwnPersistentSummons(ctx);
     case "own_numen":           return collectOwnNumen(ctx);
     case "last_summoned":       return collectLastSummoned(ctx);
     case "action_targets":      return collectActionTargets(ctx);
@@ -632,6 +652,50 @@ function collectOwnSummons(ctx) {
     if (String(f.summonedBy ?? "") !== meUuid) continue;
     if (!(f.isSummon || f.isPhantasm)) continue;
     out.push(t);
+  }
+  return out;
+}
+
+// "own_persistent_summons" — the reactor's own PERSISTENT summons, resolved from
+// the persisted world Actor rather than from the combat roster.
+//
+// Every other candidate_source reads `collectCombatTokens`, which walks dCombat ->
+// game.combat -> the ACTIVE scene's canvas. All three are empty out of conflict,
+// and a persistent summon has no token between battles at all
+// (reAddPersistentSummons spawns a fresh one at conflict_start — "the prior
+// battle's token is gone"). So a party_rested / session_started row could never
+// reach a standing minion through own_summons; it resolved to `[]` and the chain
+// died on `no-targets`.
+//
+// It ALWAYS yields the world Actor, wrapped in an ACTOR CARRIER
+// `{ actor, uuid, name, actorOnly: true }` — it never resolves a TokenDocument.
+// Effect kinds read `token.actor` and treat `token.uuid` as optional (VFX only),
+// so the resource / AE handlers work unchanged. The carrier is reachable ONLY
+// through this ref, so no existing targeting row can be handed one.
+//
+// 🩸 Preferring a token here is WRONG, and the first draft did it. A summoned
+// minion's token spawns UNLINKED (director-init.js stamps `actorLink = false` for
+// a clone whose prototypeToken says so, which is the overwhelming majority of NPCs),
+// and on an unlinked token `token.actor` is the SYNTHETIC DELTA actor. A restore
+// written through it lands on the token delta and evaporates when that token is
+// deleted — while reAddPersistentSummons re-spawns next battle from the WORLD actor.
+// The whole point of this ref is to reach the PERSISTED actor; a token branch
+// inverts that. (`Actor#getActiveTokens` would not have helped anyway: it reads
+// `canvas.tokens.placeables`, i.e. the ACTIVE SCENE ONLY — see the all-scenes note
+// in skill-effects.js firePreAcceptedCandidate. It is not a cross-scene walk.)
+//
+// Callers that DO want live token identity inside a conflict already have
+// `own_summons`, which reads the combat roster.
+function collectOwnPersistentSummons(ctx) {
+  const meUuid = String(ctx.reactorActor?.uuid ?? ctx.reactorToken?.actor?.uuid ?? "").trim();
+  if (!meUuid) return [];
+  const NS = "fabula-ultima-companion";
+  const out = [];
+  for (const a of (globalThis.game?.actors?.contents ?? [])) {
+    const f = a?.flags?.[NS] ?? {};
+    if (!f.isPersistentSummon) continue;
+    if (String(f.summonOwnerActorUuid ?? "") !== meUuid) continue;
+    out.push({ actor: a, uuid: a.uuid, name: a.name, actorOnly: true });
   }
   return out;
 }

@@ -28,6 +28,7 @@ const { dataWitness } = require("../lib/data-witness");
 const { collectStructure } = require("../lib/collect-structure");
 const { diffStructure } = require("../lib/structure-fingerprint");
 const { runCensus } = require("../lib/census");
+const { runFormulaAudit, selfTest: formulaSelfTest } = require("../lib/formula-audit");
 const { checkPayloadParity } = require("../lib/payload-parity");
 const DATA_KEY = dataWitness().key;
 
@@ -345,6 +346,50 @@ async function main() {
     console.log("PERMISSIVE answer — the gate PASSES under test and refuses in play. Add each");
     console.log("to `harnessActionBase` in _test-harness-director.js, or list it in");
     console.log("HARNESS_EXEMPT (lib/payload-parity.js) with the reason it cannot apply.");
+    return 1;
+  }
+
+  // ── formulas ─────────────────────────────────────────────────────────────
+  // Do the authored GATE formulas actually mean anything? Game-CLOSED. Catches
+  // the two silent failure modes the evaluator has: unparseable text (which
+  // returns the caller's fallback — skill-picker passes 1, so the gate simply
+  // does not apply) and a typo'd identifier (which folds to 0, permanently
+  // blocking the skill while showing its authored reason, indistinguishable
+  // from working correctly).
+  if (cmd === "formulas") {
+    if (a["self-test"]) {
+      const t = formulaSelfTest();
+      for (const x of t) console.log(`  ${x.pass ? "PASS" : "FAIL"}  ${x.name}${x.detail ? "  " + x.detail : ""}`);
+      const bad = t.filter((x) => !x.pass).length;
+      console.log(bad
+        ? `\n${bad} self-test(s) FAILING — the audit cannot be trusted`
+        : "\n✓ self-test: the audit catches what it claims to catch");
+      return bad ? 1 : 0;
+    }
+    const t0 = Date.now();
+    const r = runFormulaAudit();
+    const took = ((Date.now() - t0) / 1000).toFixed(1);
+    if (r.engineMissing) { console.log("✗ formulas: skill-formulas.js not found."); return 1; }
+    if (r.exportMissing) { console.log("✗ formulas: no authored export — run `world-export export` first."); return 1; }
+    if (a.json) { console.log(JSON.stringify(r, null, 1)); return (r.unparseable.length || r.unknown.length) ? 1 : 0; }
+
+    console.log(`formulas — ${r.formulaCount} authored gate formula(s) vs ${r.vocabSize} identifiers ` +
+                `+ ${r.prefixCount} dynamic prefixes, ${took}s`);
+    for (const u of r.unparseable) {
+      console.log(`  ✗ UNPARSEABLE  ${u.where} · ${u.field}`);
+      console.log(`      "${u.formula}"  — ${u.problems.join("; ")}`);
+      console.log(`      evaluateFormula returns the CALLER's fallback; skill-picker passes 1, so this gate is INERT.`);
+    }
+    for (const u of r.unknown) {
+      console.log(`  ✗ UNKNOWN IDENTIFIER  ${u.id}  (${u.uses.length} use${u.uses.length === 1 ? "" : "s"})`);
+      for (const use of u.uses.slice(0, 4)) console.log(`      ${use.where} · ${use.field}: "${use.formula}"`);
+      if (u.uses.length > 4) console.log(`      … and ${u.uses.length - 4} more`);
+      console.log(`      resolves to 0 — a ">= N" gate is then permanently FALSE and the skill stays greyed out.`);
+    }
+    if (!r.unparseable.length && !r.unknown.length) {
+      console.log("✓ every authored gate formula parses and every identifier resolves.");
+      return 0;
+    }
     return 1;
   }
 

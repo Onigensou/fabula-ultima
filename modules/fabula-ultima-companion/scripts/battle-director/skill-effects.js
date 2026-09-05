@@ -3967,6 +3967,10 @@ async function applyDestroySummonEffect(row, ctx) {
   const tr = await resolveTargetRef(row.target_ref || "self", ctx);
   if (onlyClones && tr.ok && Array.isArray(tr.tokens)) {
     tr.tokens = tr.tokens.filter((t) => {
+      // An actor CARRIER (own_persistent_summons, out of conflict) has no token
+      // flags — it IS the persisted clone, so judge it on the ACTOR's own
+      // isPersistentSummon stamp instead of the token's cloneActorUuid.
+      if (t?.actorOnly) return !!t.actor?.flags?.["fabula-ultima-companion"]?.isPersistentSummon;
       const f = t?.flags?.["fabula-ultima-companion"] ?? t?.document?.flags?.["fabula-ultima-companion"] ?? {};
       return !!f.cloneActorUuid;
     });
@@ -3984,6 +3988,51 @@ async function applyDestroySummonEffect(row, ctx) {
   const applied = [];
   for (const token of tr.tokens) {
     const actor = token.actor;
+
+    // ── ACTOR-CARRIER branch (own_persistent_summons, no TokenDocument) ───────
+    // A standing persistent summon between battles has no token anywhere, so the
+    // token pipeline below has nothing to act on and `bd.removeCombatant` has no
+    // uuid to take. Destroying it means deleting the PERSISTED world Actor — that
+    // Actor is the minion. Any live token is despawned first so an in-conflict
+    // dismiss still clears the board.
+    //
+    // Guarded hard on isPersistentSummon: this branch DELETES a world Actor, and
+    // it must never be reachable for anything but a summon the reactor owns.
+    if (token?.actorOnly) {
+      const pf = actor?.flags?.["fabula-ultima-companion"] ?? {};
+      if (!pf.isPersistentSummon) {
+        warn(`skill-effects.destroy_summon: refusing to delete non-summon actor ${actor?.name}`);
+        continue;
+      }
+      try {
+        // ALL scenes, not Actor#getActiveTokens — that reads canvas.tokens.placeables
+        // (the active scene only), and a standing minion can be parked anywhere.
+        const live = [];
+        for (const sc of (globalThis.game?.scenes?.contents ?? [])) {
+          for (const td of (sc.tokens ?? [])) if (td?.actorId === actor.id) live.push(td);
+        }
+        for (const td of live) {
+          let removed = false;
+          if (typeof bd?.removeCombatant === "function") {
+            // removeCombatant RESOLVES {ok:false} for "GM only" / "no active battle" /
+            // "combatant not found" — it does not throw. Out of conflict the second of
+            // those is the normal case, so the delete fallback must still run.
+            try { const r = await bd.removeCombatant({ tokenUuid: td.uuid }); removed = !!r?.ok; }
+            catch (_e) { removed = false; }
+          }
+          if (removed) continue;
+          try { await (td.document?.delete?.() ?? td.delete?.()); }
+          catch (e) { warn(`skill-effects.destroy_summon: token delete failed for ${td.uuid}`, e); }
+        }
+      } catch (e) { warn("skill-effects.destroy_summon: carrier token despawn threw", e); }
+      try {
+        await actor.delete();
+        applied.push(actor.uuid);
+        log(`skill-effects.destroy_summon: deleted persistent summon actor ${actor.name}`);
+      } catch (e) { warn(`skill-effects.destroy_summon: actor delete threw for ${actor?.name}`, e); }
+      continue;
+    }
+
     // Capture clone-cleanup flags BEFORE despawn (the token is gone afterward). A
     // summon_clone_target spawn carries the persisted clone-actor uuid; delete it
     // on despawn unless summon_persist archived it.
@@ -4051,6 +4100,15 @@ async function applyDestroySummonEffect(row, ctx) {
         if (ca?.documentName === "Actor") await ca.delete();
       } catch (e) { warn("skill-effects.destroy_summon: clone actor delete threw", e); }
     }
+  }
+  // Had targets but destroyed NOTHING ⇒ report failure so the enclosing chain
+  // halts. Previously this returned ok:true unconditionally, which let a follow-up
+  // step run as if the destroy had happened (Birth of the Cruel: Dismiss would
+  // refund the Grave Toll while the Minion was still alive). `suppress_defeat`
+  // keeps its tolerant contract — a silent mass-shatter of nothing is still fine.
+  if (!applied.length && !suppressDefeat) {
+    warn(`skill-effects.destroy_summon: ${tr.tokens.length} target(s) resolved but none were destroyed ("${row.effect_label}")`);
+    return { ok: false, kind: "destroy_summon", reason: "destroy-failed", applied };
   }
   return { ok: true, kind: "destroy_summon", applied };
 }

@@ -1,1 +1,37 @@
 
+
+/* ── Skill sheet: the availability-gate pair ────────────────────────────────
+   "Usable When" + "Unavailable Reason" live in their own panel in the skill
+   header (see tools/csb-template/scripts/_add-availability-gate-fields.js).
+
+   Two problems this solves, both measured rather than guessed:
+
+   1. WIDTH. The header is a wrapping flex row and CSB's `full-size` is
+      `flex: 1 1 0`, so two loose fields share a row at ~223px each — narrower
+      than the formulas people actually write. `OWN_PERSISTENT_SUMMON_COUNT >= 1`
+      and `AE_CHARGES_BRAINWAVE_CLOCK >= 4` are both 31 chars and clipped
+      mid-identifier. Worse, a bare nested panel is CONTENT-sized inside that
+      flex row, which collapsed the two inputs to 82px and 58px.
+
+   2. REFLOW. With the fields loose, hiding "Unavailable Reason" pulled the whole
+      tail across columns — Duration, Range, Action Keywords and Level each moved
+      depending on whether a gate was set. ~2312 of 2325 skills have no gate, so
+      the gated sheet became the odd one out exactly when a GM is comparing a
+      working example against their own.
+
+   `flex: 1 0 100%` forces the panel onto its own full-width row: the inputs get
+   roughly double the width, and the conditional hide reflows only INSIDE this
+   panel, leaving every field below it in a stable column. */
+.fud-availability-gate {
+  /* The header is a GRID, so width comes from the column span (set as colSpan: 2
+     on the component), not from flex. A flex rule here computes but does nothing.
+     What is still worth stating is the INNER layout: the two fields share the row. */
+  grid-column: 1 / -1;
+  gap: 4px;
+  align-items: center;
+}
+/* Each field takes an equal share of the row, and shrinks rather than overflowing. */
+.fud-availability-gate > * {
+  flex: 1 1 0;
+  min-width: 0;
+}

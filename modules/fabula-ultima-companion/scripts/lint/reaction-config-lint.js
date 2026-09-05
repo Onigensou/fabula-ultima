@@ -202,10 +202,26 @@
   // Reserved target_ref words resolved by the targeting resolver
   // (skill-targeting.js RESERVED_REFS) — these are NOT effect_labels, so a
   // target_ref check must accept them without demanding a matching row.
-  const RESERVED_TARGET_REFS    = new Set([
-    "self", "action_targets", "hit_action_targets", "ally_action_targets",
-    "enemy_action_targets", "trigger_actor", "trigger_subject", "cover_target",
+  // Fallback only. The live list is published by skill-targeting.js as
+  // `FUCompanion.api.targetRefs.reserved`; this hand-written mirror had already
+  // drifted (own_summons, own_numen, last_summoned, self_or_my_focus,
+  // trigger_attacker were all missing) and every drop reported a false
+  // TARGET_REF_UNRESOLVED on a perfectly good row.
+  const RESERVED_TARGET_REFS_FALLBACK = new Set([
+    "self", "self_or_my_focus", "action_targets", "hit_action_targets",
+    "ally_action_targets", "enemy_action_targets", "trigger_actor",
+    "trigger_attacker", "trigger_subject", "cause_actor", "cover_target",
+    "own_numen", "own_summons", "own_persistent_summons",
+    "save_failed_targets", "contest_won_targets", "contest_lost_targets",
+    "save_tier_1", "save_tier_2", "save_tier_3", "save_tier_4",
+    "save_tier_5", "save_tier_6", "save_tier_7", "save_tier_8",
   ]);
+  function getReservedTargetRefs() {
+    const reg = globalThis.FUCompanion?.api?.targetRefs;
+    if (reg?.reserved instanceof Set && reg.reserved.size) return reg.reserved;
+    return RESERVED_TARGET_REFS_FALLBACK;
+  }
+
   // Kinds that operate on tokens and therefore require a target_ref. apply_ae
   // is conditional (target_prompt: "visible" bypasses), handled inline.
   const KINDS_REQUIRING_TARGET_REF = new Set([
@@ -505,7 +521,7 @@
       }
       // Reserved words (self / action_targets / …) are resolved by the
       // targeting resolver, not by an effect_label — they're always valid.
-      if (RESERVED_TARGET_REFS.has(tref)) continue;
+      if (getReservedTargetRefs().has(tref)) continue;
       const tRow = labelToRow.get(tref);
       if (!tRow) {
         issues.push(mkIssue({
