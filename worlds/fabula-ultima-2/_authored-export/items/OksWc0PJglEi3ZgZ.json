@@ -67,6 +67,8 @@
       "name": "Birth of the Cruel: Dismiss",
       "on_activate_effect_ref": "botcd_dismiss",
       "reaction_config_table": {},
+      "skill_free_action": true,
+      "skill_skip_action_card": true,
       "skill_target": "Self",
       "skill_type": "Active"
     },

@@ -2,7 +2,7 @@
   "_id": "IQdAebKiExUDRQT0",
   "_stats": {
     "compendiumSource": null,
-    "coreVersion": "12.331",
+    "coreVersion": "12.343",
     "createdTime": 1757423887681,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
@@ -16,6 +16,87 @@
   "folder": "tmNVy5jIbM9rzx80",
   "img": "https://tiermaker.com/images/media/template_images/2024/16720717/fabula-ultima-classes-16720717/fabula-ultima-bonus-01-necromancer.png",
   "items": [
+    {
+      "_id": "BFubGFMKDspGDLWb",
+      "_stats": {
+        "compendiumSource": "Item.OksWc0PJglEi3ZgZ",
+        "coreVersion": "12.343",
+        "createdTime": 1788690380986,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215133.445.png",
+      "name": "Birth of the Cruel: Dismiss",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "availability_formula": "OWN_PERSISTENT_SUMMONS_MINION >= 1",
+          "availability_reason": "You have no Minion to destroy",
+          "class": "Necromancer",
+          "cost": "",
+          "description": "<p>Destroy your Minion. You may do this <strong>at any time</strong>; if you want to create a new Minion, you must first destroy the current one.</p><p>When your Minion is destroyed, your <strong>maximum HP and MP</strong> scores <strong>return to normal</strong>.</p>",
+          "duration": "",
+          "effect_table": {
+            "0": {
+              "chain_steps": "botcd_untoll,botcd_destroy",
+              "consume_self": false,
+              "effect_kind": "chain",
+              "effect_label": "botcd_dismiss",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
+            },
+            "1": {
+              "consume_self": false,
+              "effect_kind": "destroy_summon",
+              "effect_label": "botcd_destroy",
+              "from_resource": "",
+              "menu_label": "",
+              "only_clones": "true",
+              "target_ref": "own_persistent_summons_minion",
+              "to_resource": ""
+            },
+            "2": {
+              "ae_template_ref": "Grave Toll",
+              "consume_self": false,
+              "effect_kind": "remove_ae",
+              "effect_label": "botcd_untoll",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "self",
+              "to_resource": ""
+            }
+          },
+          "heroic_requirement": "you must have mastered the Necromancer Class.",
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Birth of the Cruel: Dismiss",
+          "on_activate_effect_ref": "botcd_dismiss",
+          "reaction_config_table": {},
+          "skill_free_action": true,
+          "skill_skip_action_card": true,
+          "skill_target": "Self",
+          "skill_type": "Active"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 736024833,
+        "unique": false,
+        "uniqueId": "OksWc0PJglEi3ZgZ"
+      },
+      "type": "equippableItem"
+    },
     {
       "_id": "gC4dIre6omZJ2yPl",
       "_stats": {
@@ -349,6 +430,7 @@
         "props": {
           "check_bonus": "0",
           "class": "Necromancer",
+          "companion_skills": "Birth of the Cruel: Dismiss",
           "cost": "",
           "damage_bonus": "",
           "defense_target_type": "def",
@@ -541,7 +623,7 @@
               "reaction_max_per_round": "",
               "reaction_origin_filter": "",
               "reaction_ownership": "",
-              "reaction_passive_mode": "on",
+              "reaction_passive_mode": "force",
               "reaction_requires_weapon_used": false,
               "reaction_resource_filter": "",
               "reaction_responder": "",
@@ -563,7 +645,7 @@
               "reaction_max_per_round": "",
               "reaction_origin_filter": "",
               "reaction_ownership": "",
-              "reaction_passive_mode": "on",
+              "reaction_passive_mode": "force",
               "reaction_requires_weapon_used": false,
               "reaction_resource_filter": "",
               "reaction_responder": "",
@@ -585,7 +667,7 @@
               "reaction_max_per_round": "",
               "reaction_origin_filter": "",
               "reaction_ownership": "",
-              "reaction_passive_mode": "on",
+              "reaction_passive_mode": "force",
               "reaction_requires_weapon_used": false,
               "reaction_resource_filter": "",
               "reaction_responder": "",

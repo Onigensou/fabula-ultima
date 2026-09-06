@@ -47,6 +47,7 @@
       "Monk",
       "Moses",
       "Mutant",
+      "Necromancer",
       "Oki (Copy)",
       "Orator",
       "Pirate",
@@ -71,7 +72,7 @@
       "Zarg"
     ],
     "enemyTarget": "Test Target Enemy",
-    "count": 486,
+    "count": 487,
     "engineVersion": "1.0.424",
     "override": {
       "SL": 5,
@@ -4828,6 +4829,19 @@
       "perTarget": [],
       "roll": null,
       "skill": "Toxicophora",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Necromancer / Birth of the Cruel: Dismiss": {
+      "caster": "Necromancer",
+      "element": null,
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": false,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Birth of the Cruel: Dismiss",
       "skillType": "Active",
       "targets": 1
     },
