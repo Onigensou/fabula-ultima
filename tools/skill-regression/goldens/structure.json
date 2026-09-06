@@ -1,6 +1,6 @@
 {
- "capturedAt": "2026-08-20T17:20:38.087Z",
- "count": 2115,
+ "capturedAt": "2026-09-06T17:17:28.626Z",
+ "count": 2203,
  "structure": {
   "(world) / Absorb MP": {
    "props": {
@@ -2791,10 +2791,10 @@
       "consume_self=true damage_amount=CUR_HP - 1 damage_operation=cap damage_stage=incoming effect_kind=adjust_damage effect_label=bortd_cap grant_amount=SL * AE_CHARGES_GRAVE_POINTS grant_resource=hp target_ref=bortd_self",
       "charge_ae_name=Grave Points charge_amount=0 charge_operation=set effect_kind=grant effect_label=bortd_heal grant_amount=SL_BEYOND_THE_REALMS_OF_DEATH * AE_CHARGES_GRAVE_POINTS - 1 grant_resource=hp target_ref=self",
       "charge_ae_name=Grave Points charge_amount=0 charge_operation=set effect_kind=adjust_charges effect_label=bortd_zero target_ref=self",
-      "chain_steps=bortd_cap, bortd_heal, bortd_zero effect_kind=chain effect_label=bortd_death",
-      "consume_self=true damage_amount=CUR_HP - 1 damage_operation=cap damage_stage=incoming effect_kind=adjust_damage effect_label=bortd_cap",
-      "effect_kind=grant effect_label=bortd_heal grant_amount=SL_BEYOND_THE_REALMS_OF_DEATH * AE_CHARGES_GRAVE_POINTS - 1 grant_resource=hp target_ref=self",
-      "charge_ae_name=Grave Points charge_amount=0 charge_operation=set effect_kind=adjust_charges effect_label=bortd_zero target_ref=self"
+      "$deleted=true chain_steps=bortd_cap, bortd_heal, bortd_zero effect_kind=chain effect_label=bortd_death",
+      "$deleted=true consume_self=true damage_amount=CUR_HP - 1 damage_operation=cap damage_stage=incoming effect_kind=adjust_damage effect_label=bortd_cap",
+      "$deleted=true effect_kind=grant effect_label=bortd_heal grant_amount=SL_BEYOND_THE_REALMS_OF_DEATH * AE_CHARGES_GRAVE_POINTS - 1 grant_resource=hp target_ref=self",
+      "$deleted=true charge_ae_name=Grave Points charge_amount=0 charge_operation=set effect_kind=adjust_charges effect_label=bortd_zero target_ref=self"
      ]
     },
     {
@@ -3084,6 +3084,7 @@
   "(world) / Birth of the Cruel": {
    "props": {
     "class": "Necromancer",
+    "companion_skills": "Birth of the Cruel: Dismiss",
     "defense_target_type": "def",
     "heroic_requirement": "you must have mastered the Necromancer Class.",
     "isHeroic": "true",
@@ -3092,17 +3093,24 @@
    },
    "effects": [
     "chain_steps=botc_cost,botc_summon,botc_toll effect_kind=chain effect_label=botc_chain",
-    "charge_key=grave count=2 effect_kind=consume_charge effect_label=botc_cost on_empty=abort summon_clone_target=true summon_count=1 summon_folder=Blue's PC summon_max=1 summon_overrides={\"species\":\"UNDEAD\",\"affinity_4\":\"IM\"} summon_persist=false summon_strip_types=weapon,armor,shield,accessory target_ref=self",
+    "charge_key=grave count=2 effect_kind=consume_charge effect_label=botc_cost on_empty=abort target_ref=self",
     "ae_duplicate_mode=replace ae_template_ref=Grave Toll effect_kind=apply_ae effect_label=botc_toll target_ref=self",
-    "effect_kind=summon effect_label=botc_summon summon_act_this_round=false summon_clone_target=true summon_count=1 summon_folder=Blue's PC summon_max=1 summon_overrides={\"species\":\"UNDEAD\",\"npc_rank\":\"soldier\",\"affinity_4\":\"IM\",\"affinity_8\":\"VU\",\"affinity_9\":\"IM\",\"max_hp\":\"=floor(MAX_HP*(1-(1-RANK_IS_SOLDIER)*0.5))\",\"current_hp\":\"=floor(MAX_HP*(1-(1-RANK_IS_SOLDIER)*0.5))\",\"current_mp\":\"=MAX_MP\"} summon_persist=true summon_strip_types=weapon,armor,shield,accessory target_ref=trigger_subject",
+    "effect_kind=summon effect_label=botc_summon summon_act_this_round=false summon_clone_suffix=(Reanimated) summon_clone_target=true summon_count=1 summon_folder=Blue's PC summon_kind=minion summon_max=1 summon_overrides={\"species\":\"UNDEAD\",\"npc_rank\":\"soldier\",\"affinity_4\":\"IM\",\"affinity_8\":\"VU\",\"affinity_9\":\"IM\",\"max_hp\":\"=floor(MAX_HP*(1-(1-RANK_IS_SOLDIER)*0.5))\",\"current_hp\":\"=floor(MAX_HP*(1-(1-RANK_IS_SOLDIER)*0.5))\",\"current_mp\":\"=MAX_MP\"} summon_persist=true summon_strip_types=weapon,armor,shield,accessory summon_turns_per_round=0 target_ref=trigger_subject",
     "ae_duplicate_mode=remove ae_template_ref=Grave Toll effect_kind=apply_ae effect_label=botc_untoll target_ref=self",
     "chain_steps=botc_destroy_minion,botc_untoll effect_kind=chain effect_label=botc_ko_cleanup",
-    "effect_kind=destroy_summon effect_label=botc_destroy_minion only_clones=true target_ref=own_summons"
+    "effect_kind=destroy_summon effect_label=botc_destroy_minion only_clones=true target_ref=own_summons",
+    "chain_steps=botc_rest_hp,botc_rest_mp,botc_rest_clear effect_kind=chain effect_label=botc_rest",
+    "effect_kind=set_resource effect_label=botc_rest_hp grant_amount=MAX_HP grant_resource=hp target_ref=own_persistent_summons_minion",
+    "effect_kind=set_resource effect_label=botc_rest_mp grant_amount=MAX_MP grant_resource=mp target_ref=own_persistent_summons_minion",
+    "effect_kind=remove_ae effect_label=botc_rest_clear filter_tag=debuff,buff target_ref=own_persistent_summons_minion",
+    "action_ref=Attack,Skill effect_kind=free_action effect_label=botc_minion_free performer_ref=own_minions"
    ],
    "reactions": [
-    "condition_formula=(TARGET_SPECIES_IS_BEAST + TARGET_SPECIES_IS_HUMANOID + TARGET_SPECIES_IS_MONSTER + TARGET_SPECIES_IS_PLANT) >= 1 && TARGET_IS_VILLAIN == 0 && OWN_PERSISTENT_SUMMON_COUNT == 0 && AE_CHARGES_GRAVE_POINTS >= 2 reaction_effect_ref=botc_chain reaction_passive_mode=ask reaction_source=enemy reaction_trigger=creature_defeated",
-    "condition_formula=SUBJECT_IS_MY_SUMMON == 1 && AE_COUNT_GRAVE_TOLL >= 1 reaction_effect_ref=botc_untoll reaction_passive_mode=on reaction_trigger=creature_defeated",
-    "condition_formula=AE_COUNT_GRAVE_TOLL >= 1 reaction_effect_ref=botc_ko_cleanup reaction_passive_mode=on reaction_source=self reaction_trigger=creature_defeated"
+    "condition_formula=(TARGET_SPECIES_IS_BEAST + TARGET_SPECIES_IS_HUMANOID + TARGET_SPECIES_IS_MONSTER + TARGET_SPECIES_IS_PLANT) >= 1 && TARGET_IS_VILLAIN == 0 && OWN_PERSISTENT_SUMMONS_MINION == 0 && AE_CHARGES_GRAVE_POINTS >= 2 reaction_effect_ref=botc_chain reaction_passive_mode=ask reaction_source=enemy reaction_trigger=creature_defeated",
+    "condition_formula=SUBJECT_IS_MY_SUMMON == 1 && AE_COUNT_GRAVE_TOLL >= 1 reaction_effect_ref=botc_untoll reaction_passive_mode=force reaction_trigger=creature_defeated",
+    "condition_formula=AE_COUNT_GRAVE_TOLL >= 1 reaction_effect_ref=botc_ko_cleanup reaction_passive_mode=force reaction_source=self reaction_trigger=creature_defeated",
+    "condition_formula=OWN_PERSISTENT_SUMMONS_MINION >= 1 reaction_effect_ref=botc_rest reaction_passive_mode=force reaction_trigger=party_rested",
+    "condition_formula=OWN_MINION_COUNT >= 1 reaction_effect_ref=botc_minion_free reaction_passive_mode=force reaction_source=self reaction_trigger=turn_end"
    ],
    "aes": [
     {
@@ -3120,6 +3128,26 @@
      ]
     }
    ]
+  },
+  "(world) / Birth of the Cruel: Dismiss": {
+   "props": {
+    "availability_formula": "OWN_PERSISTENT_SUMMONS_MINION >= 1",
+    "availability_reason": "You have no Minion to destroy",
+    "class": "Necromancer",
+    "heroic_requirement": "you must have mastered the Necromancer Class.",
+    "on_activate_effect_ref": "botcd_dismiss",
+    "skill_free_action": "true",
+    "skill_skip_action_card": "true",
+    "skill_target": "Self",
+    "skill_type": "Active"
+   },
+   "effects": [
+    "chain_steps=botcd_untoll,botcd_destroy effect_kind=chain effect_label=botcd_dismiss",
+    "effect_kind=destroy_summon effect_label=botcd_destroy only_clones=true target_ref=own_persistent_summons_minion",
+    "ae_template_ref=Grave Toll effect_kind=remove_ae effect_label=botcd_untoll target_ref=self"
+   ],
+   "reactions": [],
+   "aes": []
   },
   "(world) / Black Belt": {
    "props": {
@@ -3833,6 +3861,23 @@
     "type_damage": "Heal"
    },
    "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "(world) / Break Free": {
+   "props": {
+    "check_difficulty_level": "10",
+    "check_mode": "open",
+    "isCheck": "true",
+    "on_activate_effect_ref": "break_free_try",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "MIG",
+    "skill_target": "Self",
+    "skill_type": "Active"
+   },
+   "effects": [
+    "condition_formula=TOTAL >= 10 effect_kind=break_free effect_label=break_free_try target_ref=self"
+   ],
    "reactions": [],
    "aes": []
   },
@@ -5129,6 +5174,22 @@
    "reactions": [],
    "aes": []
   },
+  "(world) / Clock Interaction": {
+   "props": {
+    "check_mode": "open",
+    "isCheck": "true",
+    "on_activate_effect_ref": "clock_pick",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "INS",
+    "skill_target": "Self",
+    "skill_type": "Active"
+   },
+   "effects": [
+    "clock_mode=roll effect_kind=open_action_menu effect_label=clock_pick menu_dynamic_source=clock"
+   ],
+   "reactions": [],
+   "aes": []
+  },
   "(world) / Cognitive Focus": {
    "props": {
     "class": "Esper",
@@ -5398,9 +5459,12 @@
     "isReaction": "true",
     "skill_type": "Passive"
    },
-   "effects": [],
+   "effects": [
+    "action_ref=Attack effect_kind=free_action effect_label=ca_free free_hr_as_zero=true free_weapon_range=melee target_ref=trigger_attacker"
+   ],
    "reactions": [
-    "reaction_action_intent=harmful reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_hit_by_action"
+    "condition_formula=ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT % 2 == 0 reaction_action_intent=harmful reaction_damage_source=enemy reaction_effect_ref=ca_free reaction_passive_mode=ask reaction_passive_target=self reaction_source=self reaction_trigger=creature_hit_by_action",
+    "condition_formula=ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT % 2 == 0 reaction_action_intent=harmful reaction_effect_ref=ca_free reaction_passive_mode=ask reaction_passive_target=self reaction_source=enemy reaction_trigger=creature_miss_action"
    ],
    "aes": []
   },
@@ -5587,23 +5651,108 @@
   },
   "(world) / Create Phantasm: Numen": {
    "props": {
+    "availability_formula": "OWN_NUMEN_COUNT == 0",
+    "availability_reason": "Numen already active",
+    "class": "Illusionist",
     "cost": "50 MP",
     "duration": "Scene",
+    "heroic_requirement": "You must have mastered the Illusionist Class.",
+    "isHeroic": "true",
     "isReaction": "true",
     "on_activate_effect_ref": "numen_do",
+    "pre_activate_effect_ref": "numen_pre",
+    "rolled_atr1": "INS",
+    "rolled_atr2": "WLP",
+    "skill_range": "Any",
     "skill_target": "Self",
     "skill_type": "Spell"
    },
    "effects": [
-    "chain_steps=numen_summon, numen_act_next effect_kind=chain effect_label=numen_do summon_actor=ZPPCxB0eOJPulEHv summon_count=1",
-    "effect_kind=summon effect_label=numen_summon summon_actor=ZPPCxB0eOJPulEHv summon_count=1 summon_type=numen",
-    "effect_kind=take_turn_next effect_label=numen_act_next target_ref=numen_summon",
-    "effect_kind=take_turn_next effect_label=numen_after_owner target_ref=own_numen"
+    "chain_steps=numen_essence, numen_gate effect_kind=chain effect_label=numen_pre",
+    "chain_steps=numen_summon, numen_target, numen_asc_1, numen_asc_2, numen_essence effect_kind=chain effect_label=numen_do",
+    "effect_kind=summon effect_label=numen_summon summon_actor=ZPPCxB0eOJPulEHv summon_count=1 summon_max=1 summon_overrides={\"current_hp\":\"2*INS_BASE_DIE + CHAR_LEVEL\",\"max_hp\":\"2*INS_BASE_DIE + CHAR_LEVEL\",\"current_mp\":\"30 + (CHAR_LEVEL >= 20) * 10 + (CHAR_LEVEL >= 40) * 10\",\"max_mp\":\"30 + (CHAR_LEVEL >= 20) * 10 + (CHAR_LEVEL >= 40) * 10\"} summon_turns_per_round=0 summon_type=numen",
+    "auto_target=skip candidate_source=last_summoned effect_kind=targeting effect_label=numen_target mode=all skip_when_passive=true",
+    "chain_steps=numen_ae_asc1 condition_formula=CHAR_LEVEL >= 20 && CHAR_LEVEL < 40 effect_kind=chain effect_label=numen_asc_1",
+    "chain_steps=numen_ae_asc2 condition_formula=CHAR_LEVEL >= 40 effect_kind=chain effect_label=numen_asc_2",
+    "ae_duration_rounds=scene ae_template_ref=Numen Ascendance I effect_kind=apply_ae effect_label=numen_ae_asc1 target_ref=numen_target",
+    "ae_duration_rounds=scene ae_template_ref=Numen Ascendance II effect_kind=apply_ae effect_label=numen_ae_asc2 target_ref=numen_target",
+    "effect_kind=open_action_menu effect_label=numen_essence menu_option_refs=numen_ess_ravana, numen_ess_asura, numen_ess_diablos",
+    "ae_duration_rounds=scene ae_template_ref=Numen Essence: Ravana effect_kind=apply_ae effect_label=numen_ess_ravana target_ref=numen_target",
+    "ae_duration_rounds=scene ae_template_ref=Numen Essence: Asura effect_kind=apply_ae effect_label=numen_ess_asura target_ref=numen_target",
+    "ae_duration_rounds=scene ae_template_ref=Numen Essence: Diablos effect_kind=apply_ae effect_label=numen_ess_diablos target_ref=numen_target",
+    "action_ref=Attack,Skill effect_kind=free_action effect_label=numen_free performer_ref=own_numen",
+    "auto_target=skip candidate_source=self condition_formula=OWN_NUMEN_COUNT == 0 effect_kind=targeting effect_label=numen_gate mode=all on_condition_fail=abort skip_when_passive=true"
    ],
    "reactions": [
-    "condition_formula=OWN_NUMEN_COUNT >= 1 reaction_effect_ref=numen_after_owner reaction_passive_mode=force reaction_source=self reaction_trigger=turn_start"
+    "condition_formula=OWN_NUMEN_COUNT >= 1 reaction_effect_ref=numen_free reaction_passive_mode=force reaction_source=self reaction_trigger=turn_end"
    ],
-   "aes": []
+   "aes": [
+    {
+     "name": "Numen Ascendance I",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "extra_damage_mod_all mode2 = 4"
+     ]
+    },
+    {
+     "name": "Numen Ascendance II",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "extra_damage_mod_all mode2 = 6"
+     ]
+    },
+    {
+     "name": "Numen Essence: Asura",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "override_all_damage_type mode5 = Light"
+     ]
+    },
+    {
+     "name": "Numen Essence: Diablos",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "override_all_damage_type mode5 = Dark"
+     ]
+    },
+    {
+     "name": "Numen Essence: Ravana",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "override_all_damage_type mode5 = Physical"
+     ]
+    }
+   ]
   },
   "(world) / Create Phantasm: Strike": {
    "props": {
@@ -6157,6 +6306,17 @@
      "changes": []
     },
     {
+     "name": "Armor Stripped",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": null,
+     "changes": []
+    },
+    {
      "name": "Bane",
      "transfer": false,
      "disabled": false,
@@ -6224,9 +6384,11 @@
       "debuff"
      ],
      "family": null,
-     "lifetime": null,
-     "charges": null,
-     "changes": []
+     "lifetime": "target_turn_end",
+     "charges": 3,
+     "changes": [
+      "check_mod_accuracy mode2 = -2"
+     ]
     },
     {
      "name": "Break",
@@ -6348,6 +6510,20 @@
      "charges": 3,
      "changes": [
       "bonus_ins mode2 = -2"
+     ]
+    },
+    {
+     "name": "Deadly Temptation",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": "",
+     "charges": null,
+     "changes": [
+      "allegiance_override mode5 = ally:enemy",
+      "disable_action_intent mode5 = aid, neutral"
      ]
     },
     {
@@ -6639,6 +6815,17 @@
      "tags": [],
      "family": null,
      "lifetime": null,
+     "charges": null,
+     "changes": []
+    },
+    {
+     "name": "Lance Spent",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": "persistent_counter",
      "charges": null,
      "changes": []
     },
@@ -6956,6 +7143,17 @@
      ]
     },
     {
+     "name": "Weapon Stripped",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": null,
+     "changes": []
+    },
+    {
      "name": "Wet",
      "transfer": false,
      "disabled": false,
@@ -6984,9 +7182,11 @@
       "debuff"
      ],
      "family": null,
-     "lifetime": null,
-     "charges": null,
-     "changes": []
+     "lifetime": "target_turn_end",
+     "charges": 3,
+     "changes": [
+      "mp_receiving_mod_all mode2 = -0.5"
+     ]
     },
     {
      "name": "Zombie",
@@ -14489,11 +14689,11 @@
    },
    "effects": [
     "candidate_source=self chain_steps=lion_cleanse effect_kind=chain effect_label=d_root",
-    "chain_steps=d_cost, d_untoken, d_mark_gen, d_mark_self, lion_cleanse count=1 effect_kind=remove_tagged_ae effect_label=lion_cleanse filter_tag=debuff target_ref=self",
-    "consume_amount=10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_LION_DANCE == 0) consume_resource=mp effect_kind=consume_resource effect_label=d_cost on_empty=abort target_ref=self",
-    "count=all effect_kind=remove_tagged_ae effect_label=d_untoken filter_tag=dance-token target_ref=self",
-    "ae_duplicate_mode=replace ae_template_ref=Dancing effect_kind=apply_ae effect_label=d_mark_gen target_ref=d_self",
-    "ae_duplicate_mode=replace ae_template_ref=Dancing Lion Dance effect_kind=apply_ae effect_label=d_mark_self target_ref=d_self",
+    "$deleted=true chain_steps=d_cost, d_untoken, d_mark_gen, d_mark_self, lion_cleanse count=1 effect_kind=remove_tagged_ae effect_label=lion_cleanse filter_tag=debuff target_ref=self",
+    "$deleted=true consume_amount=10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_LION_DANCE == 0) consume_resource=mp effect_kind=consume_resource effect_label=d_cost on_empty=abort target_ref=self",
+    "$deleted=true count=all effect_kind=remove_tagged_ae effect_label=d_untoken filter_tag=dance-token target_ref=self",
+    "$deleted=true ae_duplicate_mode=replace ae_template_ref=Dancing effect_kind=apply_ae effect_label=d_mark_gen target_ref=d_self",
+    "$deleted=true ae_duplicate_mode=replace ae_template_ref=Dancing Lion Dance effect_kind=apply_ae effect_label=d_mark_self target_ref=d_self",
     "count=1 effect_kind=remove_tagged_ae effect_label=lion_cleanse filter_tag=debuff target_ref=self"
    ],
    "reactions": [],
@@ -17271,7 +17471,7 @@
   },
   "(world) / Muleta": {
    "props": {
-    "active_effect_config_table": "#sha1:3412f9dd9ea5689f (304 chars)",
+    "active_effect_config_table": "#sha1:05d54771001f4745 (303 chars)",
     "check_bonus": "1",
     "class": "Matador",
     "cost": "1 Adoration",
@@ -17281,7 +17481,6 @@
     "isCheck": "true",
     "isFacet": "true",
     "on_activate_effect_ref": "mul_cost",
-    "post_damage_effect_ref": "mul_chance",
     "rolled_atr1": "DEX",
     "rolled_atr2": "DEX",
     "skill_range": "Melee",
@@ -17292,9 +17491,11 @@
    "effects": [
     "charge_key=adoration count=1 effect_kind=consume_charge effect_label=mul_cost on_empty=abort target_ref=self",
     "chance_percent=50 chance_then_ref=mul_bleed effect_kind=chance effect_label=mul_chance",
-    "ae_duplicate_mode=replace ae_template_ref=Bleed effect_kind=apply_ae effect_label=mul_bleed target_ref=hit_action_targets"
+    "ae_duplicate_mode=replace ae_template_ref=Bleed effect_kind=apply_ae effect_label=mul_bleed target_ref=trigger_subject"
    ],
-   "reactions": [],
+   "reactions": [
+    "reaction_effect_ref=mul_chance reaction_passive_mode=force reaction_source=self reaction_source_skill=Muleta reaction_trigger=creature_deals_damage"
+   ],
    "aes": []
   },
   "(world) / Multi Shatter": {
@@ -17328,9 +17529,9 @@
     "item_cost": "1500",
     "item_quantity": "1",
     "item_rarity": "Rare",
-    "item_skill_passive": "#sha1:39db816ce9c6bd25 (251 chars)",
+    "item_skill_passive": "#sha1:9cb6fd093c392da4 (570 chars)",
     "item_type": "weapon",
-    "related_item_list": "{\"ryWjpp391Ib6Yhvq\":{\"name\":\"Muscly Arm (Passive)\",\"id\":\"${item.id}\",\"uuid\":\"Item.ryWjpp391Ib6Yhvq\",\"related_item_description\":\"<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>\"}}",
+    "related_item_list": "#sha1:3b8c6ee979ab29fa (541 chars)",
     "rolled_atr1": "MIG",
     "rolled_atr2": "MIG",
     "skill_target": "One Enemy",
@@ -17378,7 +17579,8 @@
    },
    "effects": [
     "ae_template_ref=Stagger effect_kind=apply_ae effect_label=ma_stagger target_ref=trigger_subject",
-    "ae_template_ref=Frightened effect_kind=apply_ae effect_label=ma_fright target_ref=trigger_subject"
+    "ae_template_ref=Frightened effect_kind=apply_ae effect_label=ma_fright target_ref=trigger_subject",
+    "check_buff_action=intimidation check_buff_amount=1 effect_kind=check_buff effect_label=ma_intimidation_buff"
    ],
    "reactions": [
     "condition_formula=HIT_MARGIN >= 5 reaction_effect_ref=ma_stagger reaction_passive_mode=force reaction_requires_weapon_used=true reaction_source=self reaction_trigger=creature_deals_damage",
@@ -18030,11 +18232,11 @@
    },
    "effects": [
     "candidate_source=self chain_steps=ouro_turn effect_kind=chain effect_label=d_root",
-    "chain_steps=d_cost, d_untoken, d_mark_gen, d_mark_self, ouro_turn effect_kind=take_turn_next effect_label=ouro_turn target_ref=action_targets",
-    "consume_amount=10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_OUROBOROS_DANCE == 0) consume_resource=mp effect_kind=consume_resource effect_label=d_cost on_empty=abort target_ref=self",
-    "count=all effect_kind=remove_tagged_ae effect_label=d_untoken filter_tag=dance-token target_ref=self",
-    "ae_duplicate_mode=replace ae_template_ref=Dancing effect_kind=apply_ae effect_label=d_mark_gen target_ref=d_self",
-    "ae_duplicate_mode=replace ae_template_ref=Dancing Ouroboros Dance effect_kind=apply_ae effect_label=d_mark_self target_ref=d_self",
+    "$deleted=true chain_steps=d_cost, d_untoken, d_mark_gen, d_mark_self, ouro_turn effect_kind=take_turn_next effect_label=ouro_turn target_ref=action_targets",
+    "$deleted=true consume_amount=10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_OUROBOROS_DANCE == 0) consume_resource=mp effect_kind=consume_resource effect_label=d_cost on_empty=abort target_ref=self",
+    "$deleted=true count=all effect_kind=remove_tagged_ae effect_label=d_untoken filter_tag=dance-token target_ref=self",
+    "$deleted=true ae_duplicate_mode=replace ae_template_ref=Dancing effect_kind=apply_ae effect_label=d_mark_gen target_ref=d_self",
+    "$deleted=true ae_duplicate_mode=replace ae_template_ref=Dancing Ouroboros Dance effect_kind=apply_ae effect_label=d_mark_self target_ref=d_self",
     "effect_kind=take_turn_next effect_label=ouro_turn target_ref=action_targets"
    ],
    "reactions": [],
@@ -19922,6 +20124,18 @@
     }
    ]
   },
+  "(world) / Reveal": {
+   "props": {
+    "on_activate_effect_ref": "reveal_strip",
+    "skill_target": "All Enemy",
+    "skill_type": "Active"
+   },
+   "effects": [
+    "ae_template_ref=Hidden count=all effect_kind=remove_ae effect_label=reveal_strip target_ref=action_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
   "(world) / Revenge Sword": {
    "props": {
     "category": "Sword",
@@ -20311,19 +20525,68 @@
    "reactions": [],
    "aes": []
   },
-  "(world) / Rock your World": {
+  "(world) / Rock your World #TA0NJN": {
    "props": {
     "class": "NPC",
     "cost": "30 MP",
     "custom_logic_action": "#sha1:73d82a6e3d4c6f40 (6997 chars)",
     "custom_logic_resolution": "#sha1:4551540d6b391e39 (3749 chars)",
     "defense_target_type": "def",
-    "duration": "Instantaneous",
+    "duration": "Scene",
+    "on_activate_effect_ref": "ryw_menu",
     "skill_range": "Range",
     "skill_target": "All Ally",
     "skill_type": "Spell"
    },
-   "effects": [],
+   "effects": [
+    "effect_kind=open_action_menu effect_label=ryw_menu menu_option_refs=ryw_strong, ryw_swift, ryw_awake, ryw_focus",
+    "ae_duplicate_mode=replace ae_template_ref=Strong effect_kind=apply_ae effect_label=ryw_strong target_ref=action_targets",
+    "ae_duplicate_mode=replace ae_template_ref=Swift effect_kind=apply_ae effect_label=ryw_swift target_ref=action_targets",
+    "ae_duplicate_mode=replace ae_template_ref=Awake effect_kind=apply_ae effect_label=ryw_awake target_ref=action_targets",
+    "ae_duplicate_mode=replace ae_template_ref=Focus effect_kind=apply_ae effect_label=ryw_focus target_ref=action_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "(world) / Rock your World #e5Vpkz": {
+   "props": {
+    "class": "NPC",
+    "cost": "30 MP",
+    "defense_target_type": "def",
+    "duration": "Scene",
+    "on_activate_effect_ref": "ryw_menu",
+    "skill_range": "Range",
+    "skill_target": "All Ally",
+    "skill_type": "Spell"
+   },
+   "effects": [
+    "effect_kind=open_action_menu effect_label=ryw_menu menu_option_refs=ryw_strong, ryw_swift, ryw_awake, ryw_focus",
+    "ae_duplicate_mode=replace ae_template_ref=Strong effect_kind=apply_ae effect_label=ryw_strong target_ref=action_targets",
+    "ae_duplicate_mode=replace ae_template_ref=Swift effect_kind=apply_ae effect_label=ryw_swift target_ref=action_targets",
+    "ae_duplicate_mode=replace ae_template_ref=Awake effect_kind=apply_ae effect_label=ryw_awake target_ref=action_targets",
+    "ae_duplicate_mode=replace ae_template_ref=Focus effect_kind=apply_ae effect_label=ryw_focus target_ref=action_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "(world) / Rock your World #tajK6b": {
+   "props": {
+    "class": "NPC",
+    "cost": "30 MP",
+    "defense_target_type": "def",
+    "duration": "Scene",
+    "on_activate_effect_ref": "ryw_menu",
+    "skill_range": "Range",
+    "skill_target": "All Ally",
+    "skill_type": "Spell"
+   },
+   "effects": [
+    "effect_kind=open_action_menu effect_label=ryw_menu menu_option_refs=ryw_strong, ryw_swift, ryw_awake, ryw_focus",
+    "ae_duplicate_mode=replace ae_template_ref=Strong effect_kind=apply_ae effect_label=ryw_strong target_ref=action_targets",
+    "ae_duplicate_mode=replace ae_template_ref=Swift effect_kind=apply_ae effect_label=ryw_swift target_ref=action_targets",
+    "ae_duplicate_mode=replace ae_template_ref=Awake effect_kind=apply_ae effect_label=ryw_awake target_ref=action_targets",
+    "ae_duplicate_mode=replace ae_template_ref=Focus effect_kind=apply_ae effect_label=ryw_focus target_ref=action_targets"
+   ],
    "reactions": [],
    "aes": []
   },
@@ -20534,6 +20797,22 @@
     "weapon_range": "Ranged"
    },
    "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "(world) / Run Away": {
+   "props": {
+    "on_activate_effect_ref": "run_root",
+    "skill_target": "Self",
+    "skill_type": "Active"
+   },
+   "effects": [
+    "chain_steps=run_check, run_mark_escaped, run_leave effect_kind=chain effect_label=run_root",
+    "candidate_source=combat category=ally effect_kind=targeting effect_label=run_party_pool mode=all",
+    "effect_kind=group_check effect_label=run_check gc_attr1=dex gc_attr2=ins gc_dl=7 + 3*((ENEMY_AVG_LEVEL - PARTY_AVG_LEVEL) >= 1) + 3*((ENEMY_AVG_LEVEL - PARTY_AVG_LEVEL) >= 10) gc_helper_bonus=1 gc_leader=self gc_on_error=fail gc_timeout=20000 gc_var=ESCAPE target_ref=run_party_pool",
+    "condition_formula=VAR_ESCAPE == 1 effect_kind=set_battle_outcome effect_label=run_mark_escaped outcome_value=escaped",
+    "condition_formula=VAR_ESCAPE == 1 effect_kind=leave_combat effect_label=run_leave target_ref=run_party_pool"
+   ],
    "reactions": [],
    "aes": []
   },
@@ -23760,9 +24039,9 @@
     "item_cost": "2500",
     "item_quantity": "1",
     "item_rarity": "Uncommon",
-    "item_skill_passive": "#sha1:5368f4eea7a5fb06 (254 chars)",
+    "item_skill_passive": "#sha1:bdaefae688c87d62 (433 chars)",
     "item_type": "weapon",
-    "related_item_list": "{\"fMn2bdJP0BI5d7Cq\":{\"name\":\"The Tormentor (Passive)\",\"id\":\"${item.id}\",\"uuid\":\"Item.fMn2bdJP0BI5d7Cq\",\"related_item_description\":\"<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>\"}}",
+    "related_item_list": "#sha1:825151c2b56144a6 (404 chars)",
     "rolled_atr1": "DEX",
     "rolled_atr2": "MIG",
     "set_name": "<Set Name>",
@@ -25771,9 +26050,9 @@
     "item_cost": "2000",
     "item_quantity": "1",
     "item_rarity": "Rare",
-    "item_skill_passive": "#sha1:f9e6bd0aacf144e4 (252 chars)",
+    "item_skill_passive": "#sha1:e11dc0173373388a (301 chars)",
     "item_type": "weapon",
-    "related_item_list": "{\"8rxdGdcaGpaqA7mc\":{\"name\":\"Windpiercer (Passive)\",\"id\":\"${item.id}\",\"uuid\":\"Item.8rxdGdcaGpaqA7mc\",\"related_item_description\":\"<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>\"}}",
+    "related_item_list": "#sha1:7bd08a3260cc179f (272 chars)",
     "rolled_atr1": "DEX",
     "rolled_atr2": "INS",
     "skill_target": "One Enemy",
@@ -26634,15 +26913,98 @@
    "reactions": [],
    "aes": []
   },
+  "Aero Gorger / Aero Explosion": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=boom_damage, boom_rider effect_kind=chain effect_label=boom_chain",
+    "candidate_source=combat category=enemy effect_kind=targeting effect_label=boom_targets exclude_self=true mode=all",
+    "damage_amount=max(TARGET_LEVEL, 15) * TARGET_AE_CHARGES_EATEN * TARGET_AE_CHARGES_EATEN / 3 damage_cause=damage damage_element=air effect_kind=deal_damage effect_label=boom_damage target_ref=boom_targets",
+    "ae_duplicate_mode=stack ae_template_ref=Obscure effect_kind=apply_ae effect_label=boom_rider target_ref=boom_targets"
+   ],
+   "reactions": [
+    "reaction_effect_ref=boom_chain reaction_passive_mode=force reaction_source=self reaction_trigger=creature_defeated"
+   ],
+   "aes": []
+  },
+  "Aero Gorger / Bump": {
+   "props": {
+    "check_bonus": "1",
+    "class": "NPC",
+    "damage_bonus": "5",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "MIG",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Physical"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Aero Gorger / Consume Air": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "ae_duplicate_mode=add_charges ae_template_ref=Eaten effect_kind=apply_ae effect_label=absorb_feed target_ref=self"
+   ],
+   "reactions": [
+    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_AIR == 1 reaction_cause_filter=damage reaction_effect_ref=absorb_feed reaction_passive_mode=force reaction_resource_filter=hp reaction_trigger=creature_gain_resource"
+   ],
+   "aes": []
+  },
+  "Aero Gorger / Puff Up": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=puff_swell, puff_pop effect_kind=chain effect_label=puff_chain",
+    "ae_duplicate_mode=add_charges ae_template_ref=Eaten effect_kind=apply_ae effect_label=puff_swell target_ref=self",
+    "condition_formula=AE_CHARGES_EATEN >= 3 consume_amount=CUR_HP consume_can_defeat=true consume_resource=hp effect_kind=consume_resource effect_label=puff_pop on_empty=drain target_ref=self"
+   ],
+   "reactions": [
+    "reaction_effect_ref=puff_chain reaction_passive_mode=force reaction_source=self reaction_trigger=turn_start"
+   ],
+   "aes": [
+    {
+     "name": "Eaten",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "gorger_eaten"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": null,
+     "changes": []
+    }
+   ]
+  },
   "Aero Gorger / Ventus": {
    "props": {
-    "class": "Elementalist",
+    "check_bonus": "1",
+    "class": "NPC",
     "cost": "10 x T MP",
-    "damage_bonus": "25",
+    "damage_bonus": "15",
     "defense_target_type": "mdef",
     "duration": "Instantaneous",
     "isCheck": "true",
-    "isFacet": "true",
     "isOffensiveSpell": "true",
     "rolled_atr1": "INS",
     "rolled_atr2": "WLP",
@@ -26977,24 +27339,24 @@
     "ae_duplicate_mode=replace ae_template_ref=Enchanted effect_kind=apply_ae effect_label=aspect_ench target_ref=self"
    ],
    "reactions": [
-    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_FIRE == 1 reaction_cause_filter=damage reaction_effect_ref=aspect_set_fire reaction_passive_mode=on reaction_resource_filter=hp reaction_trigger=creature_lose_resource",
-    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1 reaction_cause_filter=damage reaction_effect_ref=aspect_set_bolt reaction_passive_mode=on reaction_resource_filter=hp reaction_trigger=creature_lose_resource",
-    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_ICE == 1 reaction_cause_filter=damage reaction_effect_ref=aspect_set_ice reaction_passive_mode=on reaction_resource_filter=hp reaction_trigger=creature_lose_resource",
-    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_AIR == 1 reaction_cause_filter=damage reaction_effect_ref=aspect_set_air reaction_passive_mode=on reaction_resource_filter=hp reaction_trigger=creature_lose_resource",
-    "condition_formula=AE_COUNT_FIRE_ASPECT > 0 reaction_effect_ref=slash_fire reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash reaction_trigger=creature_will_deal_damage",
-    "condition_formula=AE_COUNT_BOLT_ASPECT > 0 reaction_effect_ref=slash_bolt reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash reaction_trigger=creature_will_deal_damage",
-    "condition_formula=AE_COUNT_ICE_ASPECT > 0 reaction_effect_ref=slash_ice reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash reaction_trigger=creature_will_deal_damage",
-    "condition_formula=AE_COUNT_AIR_ASPECT > 0 reaction_effect_ref=slash_air reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash reaction_trigger=creature_will_deal_damage",
-    "condition_formula=AE_COUNT_BOLT_ASPECT > 0 reaction_effect_ref=mark_bolt reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash reaction_trigger=creature_deals_damage",
-    "condition_formula=AE_COUNT_ICE_ASPECT > 0 reaction_effect_ref=mark_ice reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash reaction_trigger=creature_deals_damage",
-    "condition_formula=AE_COUNT_AIR_ASPECT > 0 reaction_effect_ref=mark_air reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash reaction_trigger=creature_deals_damage",
-    "condition_formula=AE_COUNT_FIRE_ASPECT > 0 reaction_effect_ref=slash_fire reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash (Enchanted) reaction_trigger=creature_will_deal_damage",
-    "condition_formula=AE_COUNT_BOLT_ASPECT > 0 reaction_effect_ref=slash_bolt reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash (Enchanted) reaction_trigger=creature_will_deal_damage",
-    "condition_formula=AE_COUNT_ICE_ASPECT > 0 reaction_effect_ref=slash_ice reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash (Enchanted) reaction_trigger=creature_will_deal_damage",
-    "condition_formula=AE_COUNT_AIR_ASPECT > 0 reaction_effect_ref=slash_air reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash (Enchanted) reaction_trigger=creature_will_deal_damage",
-    "condition_formula=AE_COUNT_BOLT_ASPECT > 0 reaction_effect_ref=mark_bolt reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash (Enchanted) reaction_trigger=creature_deals_damage",
-    "condition_formula=AE_COUNT_ICE_ASPECT > 0 reaction_effect_ref=mark_ice reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash (Enchanted) reaction_trigger=creature_deals_damage",
-    "condition_formula=AE_COUNT_AIR_ASPECT > 0 reaction_effect_ref=mark_air reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash (Enchanted) reaction_trigger=creature_deals_damage"
+    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_FIRE == 1 reaction_cause_filter=damage reaction_effect_ref=aspect_set_fire reaction_max_scope=round reaction_passive_mode=on reaction_resource_filter=hp reaction_trigger=creature_lose_resource",
+    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1 reaction_cause_filter=damage reaction_effect_ref=aspect_set_bolt reaction_max_scope=round reaction_passive_mode=on reaction_resource_filter=hp reaction_trigger=creature_lose_resource",
+    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_ICE == 1 reaction_cause_filter=damage reaction_effect_ref=aspect_set_ice reaction_max_scope=round reaction_passive_mode=on reaction_resource_filter=hp reaction_trigger=creature_lose_resource",
+    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_AIR == 1 reaction_cause_filter=damage reaction_effect_ref=aspect_set_air reaction_max_scope=round reaction_passive_mode=on reaction_resource_filter=hp reaction_trigger=creature_lose_resource",
+    "condition_formula=AE_COUNT_FIRE_ASPECT > 0 reaction_effect_ref=slash_fire reaction_max_scope=round reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash reaction_trigger=creature_will_deal_damage",
+    "condition_formula=AE_COUNT_BOLT_ASPECT > 0 reaction_effect_ref=slash_bolt reaction_max_scope=round reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash reaction_trigger=creature_will_deal_damage",
+    "condition_formula=AE_COUNT_ICE_ASPECT > 0 reaction_effect_ref=slash_ice reaction_max_scope=round reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash reaction_trigger=creature_will_deal_damage",
+    "condition_formula=AE_COUNT_AIR_ASPECT > 0 reaction_effect_ref=slash_air reaction_max_scope=round reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash reaction_trigger=creature_will_deal_damage",
+    "condition_formula=AE_COUNT_BOLT_ASPECT > 0 reaction_effect_ref=mark_bolt reaction_max_scope=round reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash reaction_trigger=creature_deals_damage",
+    "condition_formula=AE_COUNT_ICE_ASPECT > 0 reaction_effect_ref=mark_ice reaction_max_scope=round reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash reaction_trigger=creature_deals_damage",
+    "condition_formula=AE_COUNT_AIR_ASPECT > 0 reaction_effect_ref=mark_air reaction_max_scope=round reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash reaction_trigger=creature_deals_damage",
+    "condition_formula=AE_COUNT_FIRE_ASPECT > 0 reaction_effect_ref=slash_fire reaction_max_scope=round reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash (Enchanted) reaction_trigger=creature_will_deal_damage",
+    "condition_formula=AE_COUNT_BOLT_ASPECT > 0 reaction_effect_ref=slash_bolt reaction_max_scope=round reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash (Enchanted) reaction_trigger=creature_will_deal_damage",
+    "condition_formula=AE_COUNT_ICE_ASPECT > 0 reaction_effect_ref=slash_ice reaction_max_scope=round reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash (Enchanted) reaction_trigger=creature_will_deal_damage",
+    "condition_formula=AE_COUNT_AIR_ASPECT > 0 reaction_effect_ref=slash_air reaction_max_scope=round reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash (Enchanted) reaction_trigger=creature_will_deal_damage",
+    "condition_formula=AE_COUNT_BOLT_ASPECT > 0 reaction_effect_ref=mark_bolt reaction_max_scope=round reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash (Enchanted) reaction_trigger=creature_deals_damage",
+    "condition_formula=AE_COUNT_ICE_ASPECT > 0 reaction_effect_ref=mark_ice reaction_max_scope=round reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash (Enchanted) reaction_trigger=creature_deals_damage",
+    "condition_formula=AE_COUNT_AIR_ASPECT > 0 reaction_effect_ref=mark_air reaction_max_scope=round reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash (Enchanted) reaction_trigger=creature_deals_damage"
    ],
    "aes": [
     {
@@ -29040,9 +29402,9 @@
     "item_cost": "1500",
     "item_quantity": "1",
     "item_rarity": "Rare",
-    "item_skill_passive": "#sha1:9316b307b2e99f1c (274 chars)",
+    "item_skill_passive": "#sha1:9c238c2bd28508ae (593 chars)",
     "item_type": "weapon",
-    "related_item_list": "#sha1:28b7530bf01b59bd (245 chars)",
+    "related_item_list": "#sha1:854eb41fa85dc75b (564 chars)",
     "rolled_atr1": "MIG",
     "rolled_atr2": "MIG",
     "type_damage": "Physical",
@@ -29087,7 +29449,8 @@
    },
    "effects": [
     "ae_template_ref=Stagger effect_kind=apply_ae effect_label=ma_stagger target_ref=trigger_subject",
-    "ae_template_ref=Frightened effect_kind=apply_ae effect_label=ma_fright target_ref=trigger_subject"
+    "ae_template_ref=Frightened effect_kind=apply_ae effect_label=ma_fright target_ref=trigger_subject",
+    "check_buff_action=intimidation check_buff_amount=1 effect_kind=check_buff effect_label=ma_intimidation_buff"
    ],
    "reactions": [
     "condition_formula=HIT_MARGIN >= 5 reaction_effect_ref=ma_stagger reaction_passive_mode=force reaction_requires_weapon_used=true reaction_source=self reaction_trigger=creature_deals_damage",
@@ -30134,7 +30497,7 @@
   },
   "Blanche / Muleta": {
    "props": {
-    "active_effect_config_table": "#sha1:3412f9dd9ea5689f (304 chars)",
+    "active_effect_config_table": "#sha1:05d54771001f4745 (303 chars)",
     "check_bonus": "1",
     "class": "Matador",
     "cost": "1 Adoration",
@@ -30154,9 +30517,11 @@
    "effects": [
     "charge_key=adoration count=1 effect_kind=consume_charge effect_label=mul_cost on_empty=abort target_ref=self",
     "chance_percent=50 chance_then_ref=mul_bleed effect_kind=chance effect_label=mul_chance",
-    "ae_duplicate_mode=replace ae_template_ref=Bleed effect_kind=apply_ae effect_label=mul_bleed target_ref=hit_action_targets"
+    "ae_duplicate_mode=replace ae_template_ref=Bleed effect_kind=apply_ae effect_label=mul_bleed target_ref=trigger_subject"
    ],
-   "reactions": [],
+   "reactions": [
+    "reaction_effect_ref=mul_chance reaction_passive_mode=force reaction_source=self reaction_source_skill=Muleta reaction_trigger=creature_deals_damage"
+   ],
    "aes": []
   },
   "Blanche / Pases": {
@@ -31106,6 +31471,101 @@
     "rolled_atr2": "INS",
     "type_damage": "Poison",
     "weapon_range": "Ranged"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Carlbero / Mind Sap": {
+   "props": {
+    "check_bonus": "5",
+    "class": "NPC",
+    "damage_bonus": "50",
+    "defense_target_type": "mdef",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isReaction": "true",
+    "rolled_atr1": "INS",
+    "rolled_atr2": "WLP",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Active",
+    "type_damage": "Dark"
+   },
+   "effects": [
+    "chain_steps=cb_sap_take,cb_sap_gain effect_kind=chain effect_label=cb_sap",
+    "damage_amount=10 damage_cause=damage damage_element=dark damage_resource=mp effect_kind=deal_damage effect_label=cb_sap_take target_ref=hit_action_targets",
+    "effect_kind=grant effect_label=cb_sap_gain grant_amount=10 grant_resource=mp target_ref=self"
+   ],
+   "reactions": [
+    "condition_formula=HP_DEALT > 0 reaction_effect_ref=cb_sap reaction_passive_mode=force reaction_source=self reaction_source_skill=Mind Sap reaction_trigger=creature_deals_damage"
+   ],
+   "aes": []
+  },
+  "Carlbero / Stinky Breath": {
+   "props": {
+    "class": "NPC",
+    "cost": "50 MP",
+    "defense_target_type": "mdef",
+    "duration": "Instantaneous",
+    "on_activate_effect_ref": "cb_breath",
+    "skill_range": "Range",
+    "skill_target": "All Enemies",
+    "skill_type": "Spell"
+   },
+   "effects": [
+    "chain_steps=cb_save,cb_dmg,cb_t1,cb_t2,cb_t3,cb_t4,cb_t5,cb_t6 effect_kind=chain effect_label=cb_breath",
+    "effect_kind=save_check effect_label=cb_save save_attr1=ins save_attr2=wlp save_dl=16 save_mode=interactive save_tiers=16,14,12,10,8,6 target_ref=action_targets",
+    "damage_amount=20 damage_cause=damage damage_element=poison damage_resource=hp effect_kind=deal_damage effect_label=cb_dmg target_ref=action_targets",
+    "ae_duplicate_mode=replace ae_name_pool=Slow, Dazed, Weak, Shaken, Poisoned, Enraged ae_pool_skip_existing=1 effect_kind=apply_ae effect_label=cb_t1 target_ref=save_tier_1",
+    "ae_duplicate_mode=replace ae_name_pool=Slow, Dazed, Weak, Shaken, Poisoned, Enraged ae_pool_skip_existing=1 effect_kind=apply_ae effect_label=cb_t2 target_ref=save_tier_2",
+    "ae_duplicate_mode=replace ae_duration_rounds=2 ae_name_pool=Frightened, Paralyzed, Silence, Disarmed, Confused ae_pool_skip_existing=1 effect_kind=apply_ae effect_label=cb_t3 target_ref=save_tier_3",
+    "ae_duplicate_mode=replace ae_duration_rounds=2 ae_name_pool=Frightened, Paralyzed, Silence, Disarmed, Confused ae_pool_skip_existing=1 effect_kind=apply_ae effect_label=cb_t4 target_ref=save_tier_4",
+    "ae_duplicate_mode=replace ae_duration_rounds=2 ae_name_pool=Burn, Blind, Envenomed, Cursed, Bleed, Wither ae_pool_skip_existing=1 effect_kind=apply_ae effect_label=cb_t5 target_ref=save_tier_5",
+    "ae_duplicate_mode=replace ae_duration_rounds=2 ae_name_pool=Burn, Blind, Envenomed, Cursed, Bleed, Wither ae_pool_skip_existing=1 effect_kind=apply_ae effect_label=cb_t6 target_ref=save_tier_6"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "Carlbero / Tentacle Grab": {
+   "props": {
+    "check_bonus": "5",
+    "class": "NPC",
+    "damage_bonus": "35",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "on_activate_effect_ref": "cb_grab",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "MIG",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Physical"
+   },
+   "effects": [
+    "chain_steps=cb_gsave,cb_ghold effect_kind=chain effect_label=cb_grab",
+    "effect_kind=save_check effect_label=cb_gsave save_attr1=dex save_attr2=mig save_dl=13 save_mode=interactive target_ref=action_targets",
+    "ae_duplicate_mode=skip ae_template_ref=Grappled effect_kind=apply_ae effect_label=cb_ghold target_ref=save_failed_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "Carlbero / Tentacle Slap": {
+   "props": {
+    "action_keywords": "multi",
+    "check_bonus": "5",
+    "class": "NPC",
+    "damage_bonus": "40",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "MIG",
+    "skill_range": "Melee",
+    "skill_target": "Up to three creatures",
+    "skill_type": "Attack",
+    "type_damage": "Physical"
    },
    "effects": [],
    "reactions": [],
@@ -33106,10 +33566,116 @@
     }
    ]
   },
-  "Crysta / Crescent Cut": {
+  "Cryo Gorger / Bump": {
+   "props": {
+    "check_bonus": "1",
+    "class": "NPC",
+    "damage_bonus": "5",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "MIG",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Physical"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Cryo Gorger / Consume Ice": {
    "props": {
     "class": "NPC",
-    "cost": "10 MP",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "ae_duplicate_mode=add_charges ae_template_ref=Eaten effect_kind=apply_ae effect_label=absorb_feed target_ref=self"
+   ],
+   "reactions": [
+    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_ICE == 1 reaction_cause_filter=damage reaction_effect_ref=absorb_feed reaction_passive_mode=force reaction_resource_filter=hp reaction_trigger=creature_gain_resource"
+   ],
+   "aes": []
+  },
+  "Cryo Gorger / Cryo Explosion": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=boom_damage, boom_rider effect_kind=chain effect_label=boom_chain",
+    "candidate_source=combat category=enemy effect_kind=targeting effect_label=boom_targets exclude_self=true mode=all",
+    "damage_amount=max(TARGET_LEVEL, 15) * TARGET_AE_CHARGES_EATEN * TARGET_AE_CHARGES_EATEN / 3 damage_cause=damage damage_element=ice effect_kind=deal_damage effect_label=boom_damage target_ref=boom_targets",
+    "ae_duplicate_mode=stack ae_template_ref=Slow effect_kind=apply_ae effect_label=boom_rider target_ref=boom_targets"
+   ],
+   "reactions": [
+    "reaction_effect_ref=boom_chain reaction_passive_mode=force reaction_source=self reaction_trigger=creature_defeated"
+   ],
+   "aes": []
+  },
+  "Cryo Gorger / Glacies": {
+   "props": {
+    "check_bonus": "1",
+    "class": "NPC",
+    "cost": "10 x T MP",
+    "damage_bonus": "15",
+    "defense_target_type": "mdef",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isOffensiveSpell": "true",
+    "rolled_atr1": "INS",
+    "rolled_atr2": "WLP",
+    "skill_range": "Range",
+    "skill_target": "Up to three creatures",
+    "skill_type": "Spell",
+    "type_damage": "Ice"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Cryo Gorger / Puff Up": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=puff_swell, puff_pop effect_kind=chain effect_label=puff_chain",
+    "ae_duplicate_mode=add_charges ae_template_ref=Eaten effect_kind=apply_ae effect_label=puff_swell target_ref=self",
+    "condition_formula=AE_CHARGES_EATEN >= 3 consume_amount=CUR_HP consume_can_defeat=true consume_resource=hp effect_kind=consume_resource effect_label=puff_pop on_empty=drain target_ref=self"
+   ],
+   "reactions": [
+    "reaction_effect_ref=puff_chain reaction_passive_mode=force reaction_source=self reaction_trigger=turn_start"
+   ],
+   "aes": [
+    {
+     "name": "Eaten",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "gorger_eaten"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": null,
+     "changes": []
+    }
+   ]
+  },
+  "Crysta / Crescent Cut": {
+   "props": {
+    "action_keywords": "ignore_immunity",
+    "check_bonus": "6",
+    "class": "NPC",
+    "cost": "25 MP",
     "damage_bonus": "25",
     "defense_target_type": "def",
     "duration": "Instantaneous",
@@ -33119,25 +33685,66 @@
     "skill_range": "Melee",
     "skill_target": "One Creature",
     "skill_type": "Active",
-    "type_damage": "Light"
+    "type_damage": "Physical"
    },
    "effects": [],
    "reactions": [],
    "aes": []
   },
-  "Crysta / Moonlight Blade": {
+  "Crysta / Deadly Shame": {
    "props": {
     "class": "NPC",
-    "damage_bonus": "18",
-    "defense_target_type": "mdef",
+    "defense_target_type": "def",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "auto_confirm_when_obvious=true auto_target=skip candidate_source=self count=1 effect_kind=targeting effect_label=ds_self iteration_mode=together mode=exact skip_when_passive=true",
+    "chain_steps=ds_mp, ds_zp effect_kind=chain effect_label=ds_reward",
+    "effect_kind=grant effect_label=ds_mp grant_amount=10 grant_resource=mp target_ref=ds_self",
+    "effect_kind=grant effect_label=ds_zp grant_amount=1 grant_resource=zero_power target_ref=ds_self"
+   ],
+   "reactions": [
+    "reaction_effect_ref=ds_reward reaction_passive_mode=force reaction_passive_target=self reaction_source=self reaction_trigger=creature_miss_action",
+    "condition_formula=ACTION_ROLLS_ACCURACY == 1 reaction_effect_ref=ds_reward reaction_passive_mode=force reaction_passive_target=self reaction_source=self reaction_trigger=creature_hit_by_action"
+   ],
+   "aes": []
+  },
+  "Crysta / Moonlight Blade": {
+   "props": {
+    "action_keywords": "ignore_immunity",
+    "class": "NPC",
+    "damage_bonus": "14",
+    "defense_target_type": "def",
     "duration": "Instantaneous",
     "isCheck": "true",
-    "rolled_atr1": "INS",
-    "rolled_atr2": "WLP",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "INS",
     "skill_range": "Melee",
     "skill_target": "One Creature",
     "skill_type": "Attack",
-    "type_damage": "Light"
+    "type_damage": "Physical"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Crysta / Zero Power: Water-Moon Mirage": {
+   "props": {
+    "action_keywords": "ignore_immunity",
+    "check_bonus": "5",
+    "class": "NPC",
+    "cost": "6 Zero Power",
+    "damage_bonus": "60",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isZeroPower": "true",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "INS",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Active",
+    "type_damage": "Physical"
    },
    "effects": [],
    "reactions": [],
@@ -33546,10 +34153,10 @@
    "effects": [
     "candidate_source=self effect_kind=targeting effect_label=d_self",
     "chain_steps=lion_cleanse effect_kind=chain effect_label=d_root",
-    "consume_amount=10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_LION_DANCE == 0) consume_resource=mp effect_kind=consume_resource effect_label=d_cost on_empty=abort target_ref=self",
-    "count=all effect_kind=remove_tagged_ae effect_label=d_untoken filter_tag=dance-token target_ref=self",
-    "ae_duplicate_mode=replace ae_template_ref=Dancing effect_kind=apply_ae effect_label=d_mark_gen target_ref=d_self",
-    "ae_duplicate_mode=replace ae_template_ref=Dancing Lion Dance effect_kind=apply_ae effect_label=d_mark_self target_ref=d_self",
+    "$deleted=true consume_amount=10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_LION_DANCE == 0) consume_resource=mp effect_kind=consume_resource effect_label=d_cost on_empty=abort target_ref=self",
+    "$deleted=true count=all effect_kind=remove_tagged_ae effect_label=d_untoken filter_tag=dance-token target_ref=self",
+    "$deleted=true ae_duplicate_mode=replace ae_template_ref=Dancing effect_kind=apply_ae effect_label=d_mark_gen target_ref=d_self",
+    "$deleted=true ae_duplicate_mode=replace ae_template_ref=Dancing Lion Dance effect_kind=apply_ae effect_label=d_mark_self target_ref=d_self",
     "count=1 effect_kind=remove_tagged_ae effect_label=lion_cleanse filter_tag=debuff target_ref=self"
    ],
    "reactions": [],
@@ -33688,10 +34295,10 @@
    "effects": [
     "candidate_source=self effect_kind=targeting effect_label=d_self",
     "chain_steps=ouro_turn effect_kind=chain effect_label=d_root",
-    "consume_amount=10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_OUROBOROS_DANCE == 0) consume_resource=mp effect_kind=consume_resource effect_label=d_cost on_empty=abort target_ref=self",
-    "count=all effect_kind=remove_tagged_ae effect_label=d_untoken filter_tag=dance-token target_ref=self",
-    "ae_duplicate_mode=replace ae_template_ref=Dancing effect_kind=apply_ae effect_label=d_mark_gen target_ref=d_self",
-    "ae_duplicate_mode=replace ae_template_ref=Dancing Ouroboros Dance effect_kind=apply_ae effect_label=d_mark_self target_ref=d_self",
+    "$deleted=true consume_amount=10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_OUROBOROS_DANCE == 0) consume_resource=mp effect_kind=consume_resource effect_label=d_cost on_empty=abort target_ref=self",
+    "$deleted=true count=all effect_kind=remove_tagged_ae effect_label=d_untoken filter_tag=dance-token target_ref=self",
+    "$deleted=true ae_duplicate_mode=replace ae_template_ref=Dancing effect_kind=apply_ae effect_label=d_mark_gen target_ref=d_self",
+    "$deleted=true ae_duplicate_mode=replace ae_template_ref=Dancing Ouroboros Dance effect_kind=apply_ae effect_label=d_mark_self target_ref=d_self",
     "effect_kind=take_turn_next effect_label=ouro_turn target_ref=action_targets"
    ],
    "reactions": [],
@@ -34172,6 +34779,199 @@
     }
    ]
   },
+  "Death Gazer / Death Gaze": {
+   "props": {
+    "class": "NPC",
+    "cost": "40 MP",
+    "defense_target_type": "mdef",
+    "duration": "Instantaneous",
+    "on_activate_effect_ref": "dg_gaze",
+    "skill_range": "Range",
+    "skill_target": "One Enemy",
+    "skill_type": "Spell"
+   },
+   "effects": [
+    "chain_steps=dg_save,dg_kill effect_kind=chain effect_label=dg_gaze",
+    "effect_kind=save_check effect_label=dg_save save_attr1=ins save_attr2=wlp save_dl=13 target_ref=action_targets",
+    "damage_amount=CUR_HP damage_cause=damage damage_element=dark damage_ignore_affinity=true damage_keywords=crush effect_kind=deal_damage effect_label=dg_kill target_ref=save_failed_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "Death Gazer / Eye Beam": {
+   "props": {
+    "check_bonus": "5",
+    "class": "NPC",
+    "damage_bonus": "22",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "INS",
+    "rolled_atr2": "WLP",
+    "skill_range": "Range",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Dark"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Death Gazer / Mind Sear": {
+   "props": {
+    "check_bonus": "5",
+    "class": "NPC",
+    "cost": "10 MP",
+    "damage_bonus": "35",
+    "defense_target_type": "mdef",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isOffensiveSpell": "true",
+    "rolled_atr1": "INS",
+    "rolled_atr2": "WLP",
+    "skill_range": "Range",
+    "skill_target": "One Enemy",
+    "skill_type": "Spell",
+    "type_damage": "Dark"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Dire Orc / Brutish Fury": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "damage_amount=25 damage_operation=add damage_stage=outgoing effect_kind=adjust_damage effect_label=do_rage"
+   ],
+   "reactions": [
+    "condition_formula=CUR_HP * 2 <= MAX_HP reaction_effect_ref=do_rage reaction_passive_mode=force reaction_source=self reaction_trigger=creature_will_deal_damage"
+   ],
+   "aes": []
+  },
+  "Dire Orc / Cleaver": {
+   "props": {
+    "check_bonus": "5",
+    "class": "NPC",
+    "damage_bonus": "38",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "MIG",
+    "rolled_atr2": "DEX",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Physical"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Dire Orc / Skull Splitter": {
+   "props": {
+    "action_keywords": "pierce",
+    "check_bonus": "3",
+    "class": "NPC",
+    "damage_bonus": "58",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "MIG",
+    "rolled_atr2": "MIG",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Physical"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Dire Orc / War Howl": {
+   "props": {
+    "class": "NPC",
+    "cost": "20 MP",
+    "defense_target_type": "mdef",
+    "duration": "3 Rounds",
+    "on_activate_effect_ref": "do_howl",
+    "skill_range": "Any",
+    "skill_target": "All Enemies",
+    "skill_type": "Active"
+   },
+   "effects": [
+    "ae_duplicate_mode=replace ae_template_ref=Shaken effect_kind=apply_ae effect_label=do_howl target_ref=action_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "Dragon Guard / Flame Breath": {
+   "props": {
+    "check_bonus": "5",
+    "class": "NPC",
+    "cost": "30 MP",
+    "damage_bonus": "20",
+    "defense_target_type": "mdef",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isOffensiveSpell": "true",
+    "rolled_atr1": "MIG",
+    "rolled_atr2": "WLP",
+    "skill_range": "Range",
+    "skill_target": "All Enemies",
+    "skill_type": "Spell",
+    "type_damage": "Fire"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Dragon Guard / Saber": {
+   "props": {
+    "check_bonus": "5",
+    "class": "NPC",
+    "damage_bonus": "25",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "MIG",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Physical"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Dragon Guard / Suppressing Sweep": {
+   "props": {
+    "check_bonus": "5",
+    "class": "NPC",
+    "cost": "10 MP",
+    "damage_bonus": "15",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "on_activate_effect_ref": "ss_slow",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "MIG",
+    "skill_range": "Melee",
+    "skill_target": "Up to 2 Creature",
+    "skill_type": "Active",
+    "type_damage": "Physical"
+   },
+   "effects": [
+    "ae_duplicate_mode=replace ae_template_ref=Slow effect_kind=apply_ae effect_label=ss_slow target_ref=hit_action_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
   "Drakora / Bolt Breath": {
    "props": {
     "class": "NPC",
@@ -34186,6 +34986,99 @@
    },
    "effects": [],
    "reactions": [],
+   "aes": []
+  },
+  "Drakoza / Dragon Claw": {
+   "props": {
+    "check_bonus": "7",
+    "class": "NPC",
+    "damage_bonus": "20",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "MIG",
+    "rolled_atr2": "DEX",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Physical"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Drakoza / Drako Fury": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "ae_duplicate_mode=add_charges ae_initial_charges=TRIGGER_AMOUNT ae_template_ref=Fury effect_kind=apply_ae effect_label=fury_bank target_ref=self"
+   ],
+   "reactions": [
+    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_AMOUNT > 0 reaction_effect_ref=fury_bank reaction_passive_mode=force reaction_resource_filter=hp reaction_trigger=creature_lose_resource"
+   ],
+   "aes": [
+    {
+     "name": "Fury",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "fury"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": null,
+     "changes": []
+    }
+   ]
+  },
+  "Drakoza / Tail Swipe": {
+   "props": {
+    "action_keywords": "multi",
+    "check_bonus": "7",
+    "class": "NPC",
+    "damage_bonus": "12",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "MIG",
+    "skill_range": "Melee",
+    "skill_target": "Up to two creatures",
+    "skill_type": "Attack",
+    "type_damage": "Physical"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Drakoza / Thrash": {
+   "props": {
+    "check_bonus": "7",
+    "class": "NPC",
+    "damage_bonus": "18",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "MIG",
+    "rolled_atr2": "MIG",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Physical"
+   },
+   "effects": [
+    "chain_steps=thrash_bonus, thrash_spend effect_kind=chain effect_label=thrash_payback",
+    "damage_amount=ceil(AE_CHARGES_FURY * 0.5) damage_operation=add damage_stage=outgoing effect_kind=adjust_damage effect_label=thrash_bonus",
+    "ae_template_ref=Fury count=all effect_kind=remove_ae effect_label=thrash_spend include_persistent=true target_ref=self"
+   ],
+   "reactions": [
+    "condition_formula=AE_CHARGES_FURY > 0 reaction_effect_ref=thrash_payback reaction_passive_mode=force reaction_source=self reaction_source_skill=Thrash reaction_trigger=creature_will_deal_damage"
+   ],
    "aes": []
   },
   "Dryad / Charm": {
@@ -35429,6 +36322,27 @@
    "reactions": [],
    "aes": []
   },
+  "EXFURSION Party / Rock your World": {
+   "props": {
+    "class": "NPC",
+    "cost": "30 MP",
+    "defense_target_type": "def",
+    "duration": "Scene",
+    "on_activate_effect_ref": "ryw_menu",
+    "skill_range": "Range",
+    "skill_target": "All Ally",
+    "skill_type": "Spell"
+   },
+   "effects": [
+    "effect_kind=open_action_menu effect_label=ryw_menu menu_option_refs=ryw_strong, ryw_swift, ryw_awake, ryw_focus",
+    "ae_duplicate_mode=replace ae_template_ref=Strong effect_kind=apply_ae effect_label=ryw_strong target_ref=action_targets",
+    "ae_duplicate_mode=replace ae_template_ref=Swift effect_kind=apply_ae effect_label=ryw_swift target_ref=action_targets",
+    "ae_duplicate_mode=replace ae_template_ref=Awake effect_kind=apply_ae effect_label=ryw_awake target_ref=action_targets",
+    "ae_duplicate_mode=replace ae_template_ref=Focus effect_kind=apply_ae effect_label=ryw_focus target_ref=action_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
   "EXFURSION Party / Slimy Jacket": {
    "props": {
     "category": "Arcane",
@@ -35531,9 +36445,9 @@
     "item_cost": "2500",
     "item_quantity": "1",
     "item_rarity": "Uncommon",
-    "item_skill_passive": "#sha1:b5800f4941a47d1f (277 chars)",
+    "item_skill_passive": "#sha1:d84f63219b146cee (456 chars)",
     "item_type": "weapon",
-    "related_item_list": "#sha1:9342d4128fa96507 (248 chars)",
+    "related_item_list": "#sha1:e38a1948f4b71745 (427 chars)",
     "rolled_atr1": "DEX",
     "rolled_atr2": "MIG",
     "set_name": "<Set Name>",
@@ -35731,6 +36645,110 @@
    "effects": [],
    "reactions": [],
    "aes": []
+  },
+  "Electro Gorger / Bump": {
+   "props": {
+    "check_bonus": "1",
+    "class": "NPC",
+    "damage_bonus": "5",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "MIG",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Physical"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Electro Gorger / Consume Bolt": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "ae_duplicate_mode=add_charges ae_template_ref=Eaten effect_kind=apply_ae effect_label=absorb_feed target_ref=self"
+   ],
+   "reactions": [
+    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1 reaction_cause_filter=damage reaction_effect_ref=absorb_feed reaction_passive_mode=force reaction_resource_filter=hp reaction_trigger=creature_gain_resource"
+   ],
+   "aes": []
+  },
+  "Electro Gorger / Electro Explosion": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=boom_damage, boom_rider effect_kind=chain effect_label=boom_chain",
+    "candidate_source=combat category=enemy effect_kind=targeting effect_label=boom_targets exclude_self=true mode=all",
+    "damage_amount=max(TARGET_LEVEL, 15) * TARGET_AE_CHARGES_EATEN * TARGET_AE_CHARGES_EATEN / 3 damage_cause=damage damage_element=bolt effect_kind=deal_damage effect_label=boom_damage target_ref=boom_targets",
+    "ae_duplicate_mode=stack ae_template_ref=Dazed effect_kind=apply_ae effect_label=boom_rider target_ref=boom_targets"
+   ],
+   "reactions": [
+    "reaction_effect_ref=boom_chain reaction_passive_mode=force reaction_source=self reaction_trigger=creature_defeated"
+   ],
+   "aes": []
+  },
+  "Electro Gorger / Fulgur": {
+   "props": {
+    "check_bonus": "1",
+    "class": "NPC",
+    "cost": "10 x T MP",
+    "damage_bonus": "15",
+    "defense_target_type": "mdef",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isOffensiveSpell": "true",
+    "rolled_atr1": "INS",
+    "rolled_atr2": "WLP",
+    "skill_range": "Range",
+    "skill_target": "Up to three creatures",
+    "skill_type": "Spell",
+    "type_damage": "Bolt"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Electro Gorger / Puff Up": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=puff_swell, puff_pop effect_kind=chain effect_label=puff_chain",
+    "ae_duplicate_mode=add_charges ae_template_ref=Eaten effect_kind=apply_ae effect_label=puff_swell target_ref=self",
+    "condition_formula=AE_CHARGES_EATEN >= 3 consume_amount=CUR_HP consume_can_defeat=true consume_resource=hp effect_kind=consume_resource effect_label=puff_pop on_empty=drain target_ref=self"
+   ],
+   "reactions": [
+    "reaction_effect_ref=puff_chain reaction_passive_mode=force reaction_source=self reaction_trigger=turn_start"
+   ],
+   "aes": [
+    {
+     "name": "Eaten",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "gorger_eaten"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": null,
+     "changes": []
+    }
+   ]
   },
   "Electro Slime / Electro Explosion": {
    "props": {
@@ -37286,10 +38304,10 @@
       "consume_self=true damage_amount=CUR_HP - 1 damage_operation=cap damage_stage=incoming effect_kind=adjust_damage effect_label=bortd_cap grant_amount=SL * AE_CHARGES_GRAVE_POINTS grant_resource=hp target_ref=bortd_self",
       "charge_ae_name=Grave Points charge_amount=0 charge_operation=set effect_kind=grant effect_label=bortd_heal grant_amount=SL_BEYOND_THE_REALMS_OF_DEATH * AE_CHARGES_GRAVE_POINTS - 1 grant_resource=hp target_ref=self",
       "charge_ae_name=Grave Points charge_amount=0 charge_operation=set effect_kind=adjust_charges effect_label=bortd_zero target_ref=self",
-      "consume_self=true damage_amount=CUR_HP - 1 damage_operation=cap damage_stage=incoming effect_kind=adjust_damage effect_label=bortd_cap",
-      "chain_steps=bortd_cap, bortd_heal, bortd_zero effect_kind=chain effect_label=bortd_death",
-      "effect_kind=grant effect_label=bortd_heal grant_amount=SL_BEYOND_THE_REALMS_OF_DEATH * AE_CHARGES_GRAVE_POINTS - 1 grant_resource=hp target_ref=self",
-      "charge_ae_name=Grave Points charge_amount=0 charge_operation=set effect_kind=adjust_charges effect_label=bortd_zero target_ref=self"
+      "$deleted=true consume_self=true damage_amount=CUR_HP - 1 damage_operation=cap damage_stage=incoming effect_kind=adjust_damage effect_label=bortd_cap",
+      "$deleted=true chain_steps=bortd_cap, bortd_heal, bortd_zero effect_kind=chain effect_label=bortd_death",
+      "$deleted=true effect_kind=grant effect_label=bortd_heal grant_amount=SL_BEYOND_THE_REALMS_OF_DEATH * AE_CHARGES_GRAVE_POINTS - 1 grant_resource=hp target_ref=self",
+      "$deleted=true charge_ae_name=Grave Points charge_amount=0 charge_operation=set effect_kind=adjust_charges effect_label=bortd_zero target_ref=self"
      ]
     },
     {
@@ -37739,9 +38757,12 @@
     "isReaction": "true",
     "skill_type": "Passive"
    },
-   "effects": [],
+   "effects": [
+    "action_ref=Attack effect_kind=free_action effect_label=ca_free free_hr_as_zero=true free_weapon_range=melee target_ref=trigger_attacker"
+   ],
    "reactions": [
-    "reaction_action_intent=harmful reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_hit_by_action"
+    "condition_formula=ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT % 2 == 0 reaction_action_intent=harmful reaction_damage_source=enemy reaction_effect_ref=ca_free reaction_passive_mode=ask reaction_passive_target=self reaction_source=self reaction_trigger=creature_hit_by_action",
+    "condition_formula=ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT % 2 == 0 reaction_action_intent=harmful reaction_effect_ref=ca_free reaction_passive_mode=ask reaction_passive_target=self reaction_source=enemy reaction_trigger=creature_miss_action"
    ],
    "aes": []
   },
@@ -38901,6 +39922,110 @@
     "skill_target": "Up to three creature",
     "skill_type": "Attack",
     "type_damage": "Physical"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Geo Gorger / Bump": {
+   "props": {
+    "check_bonus": "1",
+    "class": "NPC",
+    "damage_bonus": "5",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "MIG",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Physical"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Geo Gorger / Consume Earth": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "ae_duplicate_mode=add_charges ae_template_ref=Eaten effect_kind=apply_ae effect_label=absorb_feed target_ref=self"
+   ],
+   "reactions": [
+    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_EARTH == 1 reaction_cause_filter=damage reaction_effect_ref=absorb_feed reaction_passive_mode=force reaction_resource_filter=hp reaction_trigger=creature_gain_resource"
+   ],
+   "aes": []
+  },
+  "Geo Gorger / Geo Explosion": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=boom_damage, boom_rider effect_kind=chain effect_label=boom_chain",
+    "candidate_source=combat category=enemy effect_kind=targeting effect_label=boom_targets exclude_self=true mode=all",
+    "damage_amount=max(TARGET_LEVEL, 15) * TARGET_AE_CHARGES_EATEN * TARGET_AE_CHARGES_EATEN / 3 damage_cause=damage damage_element=earth effect_kind=deal_damage effect_label=boom_damage target_ref=boom_targets",
+    "ae_duplicate_mode=stack ae_template_ref=Weak effect_kind=apply_ae effect_label=boom_rider target_ref=boom_targets"
+   ],
+   "reactions": [
+    "reaction_effect_ref=boom_chain reaction_passive_mode=force reaction_source=self reaction_trigger=creature_defeated"
+   ],
+   "aes": []
+  },
+  "Geo Gorger / Puff Up": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=puff_swell, puff_pop effect_kind=chain effect_label=puff_chain",
+    "ae_duplicate_mode=add_charges ae_template_ref=Eaten effect_kind=apply_ae effect_label=puff_swell target_ref=self",
+    "condition_formula=AE_CHARGES_EATEN >= 3 consume_amount=CUR_HP consume_can_defeat=true consume_resource=hp effect_kind=consume_resource effect_label=puff_pop on_empty=drain target_ref=self"
+   ],
+   "reactions": [
+    "reaction_effect_ref=puff_chain reaction_passive_mode=force reaction_source=self reaction_trigger=turn_start"
+   ],
+   "aes": [
+    {
+     "name": "Eaten",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "gorger_eaten"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": null,
+     "changes": []
+    }
+   ]
+  },
+  "Geo Gorger / Terra": {
+   "props": {
+    "check_bonus": "1",
+    "class": "NPC",
+    "cost": "10 x T MP",
+    "damage_bonus": "15",
+    "defense_target_type": "mdef",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isOffensiveSpell": "true",
+    "rolled_atr1": "INS",
+    "rolled_atr2": "WLP",
+    "skill_range": "Range",
+    "skill_target": "Up to three creatures",
+    "skill_type": "Spell",
+    "type_damage": "Earth"
    },
    "effects": [],
    "reactions": [],
@@ -41613,9 +42738,9 @@
     "item_cost": "2000",
     "item_quantity": "1",
     "item_rarity": "Rare",
-    "item_skill_passive": "#sha1:9d6e91e50a62baf1 (275 chars)",
+    "item_skill_passive": "#sha1:6e2224d84a2a05fc (324 chars)",
     "item_type": "weapon",
-    "related_item_list": "#sha1:735ab9c432e3b1c1 (246 chars)",
+    "related_item_list": "#sha1:5fee14bd21320deb (295 chars)",
     "rolled_atr1": "DEX",
     "rolled_atr2": "INS",
     "type_damage": "Air",
@@ -43756,9 +44881,9 @@
     "item_cost": "2000",
     "item_quantity": "1",
     "item_rarity": "Rare",
-    "item_skill_passive": "#sha1:d559b1426adfbf1d (275 chars)",
+    "item_skill_passive": "#sha1:60449d0dcbf05932 (324 chars)",
     "item_type": "weapon",
-    "related_item_list": "#sha1:a3156de81541aa66 (246 chars)",
+    "related_item_list": "#sha1:46d65d178ce51fcd (295 chars)",
     "rolled_atr1": "DEX",
     "rolled_atr2": "INS",
     "type_damage": "Air",
@@ -43846,23 +44971,108 @@
   },
   "Illusionist / Create Phantasm: Numen": {
    "props": {
+    "availability_formula": "OWN_NUMEN_COUNT == 0",
+    "availability_reason": "Numen already active",
+    "class": "Illusionist",
     "cost": "50 MP",
     "duration": "Scene",
+    "heroic_requirement": "You must have mastered the Illusionist Class.",
+    "isHeroic": "true",
     "isReaction": "true",
     "on_activate_effect_ref": "numen_do",
+    "pre_activate_effect_ref": "numen_pre",
+    "rolled_atr1": "INS",
+    "rolled_atr2": "WLP",
+    "skill_range": "Any",
     "skill_target": "Self",
     "skill_type": "Spell"
    },
    "effects": [
-    "chain_steps=numen_summon, numen_act_next effect_kind=chain effect_label=numen_do summon_actor=ZPPCxB0eOJPulEHv summon_count=1",
-    "effect_kind=summon effect_label=numen_summon summon_actor=ZPPCxB0eOJPulEHv summon_count=1 summon_type=numen",
-    "effect_kind=take_turn_next effect_label=numen_act_next target_ref=numen_summon",
-    "effect_kind=take_turn_next effect_label=numen_after_owner target_ref=own_numen"
+    "chain_steps=numen_essence, numen_gate effect_kind=chain effect_label=numen_pre",
+    "chain_steps=numen_summon, numen_target, numen_asc_1, numen_asc_2, numen_essence effect_kind=chain effect_label=numen_do",
+    "effect_kind=summon effect_label=numen_summon summon_actor=ZPPCxB0eOJPulEHv summon_count=1 summon_max=1 summon_overrides={\"current_hp\":\"2*INS_BASE_DIE + CHAR_LEVEL\",\"max_hp\":\"2*INS_BASE_DIE + CHAR_LEVEL\",\"current_mp\":\"30 + (CHAR_LEVEL >= 20) * 10 + (CHAR_LEVEL >= 40) * 10\",\"max_mp\":\"30 + (CHAR_LEVEL >= 20) * 10 + (CHAR_LEVEL >= 40) * 10\"} summon_turns_per_round=0 summon_type=numen",
+    "auto_target=skip candidate_source=last_summoned effect_kind=targeting effect_label=numen_target mode=all skip_when_passive=true",
+    "chain_steps=numen_ae_asc1 condition_formula=CHAR_LEVEL >= 20 && CHAR_LEVEL < 40 effect_kind=chain effect_label=numen_asc_1",
+    "chain_steps=numen_ae_asc2 condition_formula=CHAR_LEVEL >= 40 effect_kind=chain effect_label=numen_asc_2",
+    "ae_duration_rounds=scene ae_template_ref=Numen Ascendance I effect_kind=apply_ae effect_label=numen_ae_asc1 target_ref=numen_target",
+    "ae_duration_rounds=scene ae_template_ref=Numen Ascendance II effect_kind=apply_ae effect_label=numen_ae_asc2 target_ref=numen_target",
+    "effect_kind=open_action_menu effect_label=numen_essence menu_option_refs=numen_ess_ravana, numen_ess_asura, numen_ess_diablos",
+    "ae_duration_rounds=scene ae_template_ref=Numen Essence: Ravana effect_kind=apply_ae effect_label=numen_ess_ravana target_ref=numen_target",
+    "ae_duration_rounds=scene ae_template_ref=Numen Essence: Asura effect_kind=apply_ae effect_label=numen_ess_asura target_ref=numen_target",
+    "ae_duration_rounds=scene ae_template_ref=Numen Essence: Diablos effect_kind=apply_ae effect_label=numen_ess_diablos target_ref=numen_target",
+    "action_ref=Attack,Skill effect_kind=free_action effect_label=numen_free performer_ref=own_numen",
+    "auto_target=skip candidate_source=self condition_formula=OWN_NUMEN_COUNT == 0 effect_kind=targeting effect_label=numen_gate mode=all on_condition_fail=abort skip_when_passive=true"
    ],
    "reactions": [
-    "condition_formula=OWN_NUMEN_COUNT >= 1 reaction_effect_ref=numen_after_owner reaction_passive_mode=force reaction_source=self reaction_trigger=turn_start"
+    "condition_formula=OWN_NUMEN_COUNT >= 1 reaction_effect_ref=numen_free reaction_passive_mode=force reaction_source=self reaction_trigger=turn_end"
    ],
-   "aes": []
+   "aes": [
+    {
+     "name": "Numen Ascendance I",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "extra_damage_mod_all mode2 = 4"
+     ]
+    },
+    {
+     "name": "Numen Ascendance II",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "extra_damage_mod_all mode2 = 6"
+     ]
+    },
+    {
+     "name": "Numen Essence: Asura",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "override_all_damage_type mode5 = Light"
+     ]
+    },
+    {
+     "name": "Numen Essence: Diablos",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "override_all_damage_type mode5 = Dark"
+     ]
+    },
+    {
+     "name": "Numen Essence: Ravana",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "override_all_damage_type mode5 = Physical"
+     ]
+    }
+   ]
   },
   "Illusionist / Create Phantasm: Strike": {
    "props": {
@@ -44049,6 +45259,84 @@
    "reactions": [
     "condition_formula=SUBJECT_IS_MY_PHANTASM == 1 reaction_effect_ref=pe_recover reaction_passive_mode=on reaction_source=all reaction_trigger=creature_defeated"
    ],
+   "aes": []
+  },
+  "Imp / Pitchfork": {
+   "props": {
+    "check_bonus": "5",
+    "class": "NPC",
+    "damage_bonus": "15",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "MIG",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Physical"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Imp / Prank": {
+   "props": {
+    "class": "NPC",
+    "cost": "10 MP",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "on_activate_effect_ref": "pk_go",
+    "skill_range": "Melee",
+    "skill_target": "One Enemy",
+    "skill_type": "Active"
+   },
+   "effects": [
+    "chain_steps=pk_disarm,pk_confuse effect_kind=chain effect_label=pk_go",
+    "ae_duplicate_mode=replace ae_template_ref=Disarmed effect_kind=apply_ae effect_label=pk_disarm target_ref=action_targets",
+    "ae_duplicate_mode=replace ae_template_ref=Confused effect_kind=apply_ae effect_label=pk_confuse target_ref=action_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "Imp / Strip Armor": {
+   "props": {
+    "class": "NPC",
+    "cost": "10 MP",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "on_activate_effect_ref": "sa_go",
+    "skill_range": "Melee",
+    "skill_target": "One Enemy",
+    "skill_type": "Active"
+   },
+   "effects": [
+    "chain_steps=sa_contest,sa_take,sa_mark effect_kind=chain effect_label=sa_go",
+    "contest_attr1=dex contest_attr2=ins contest_bonus=5 contest_max_rerolls=5 effect_kind=contest_check effect_label=sa_contest save_attr1=dex save_attr2=ins save_mode=interactive target_ref=action_targets",
+    "effect_kind=hide_item effect_label=sa_take hide_item_slot=armor target_ref=contest_lost_targets",
+    "ae_duplicate_mode=replace ae_template_ref=Armor Stripped effect_kind=apply_ae effect_label=sa_mark target_ref=contest_lost_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "Imp / Strip Weapon": {
+   "props": {
+    "class": "NPC",
+    "cost": "10 MP",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "on_activate_effect_ref": "sw_go",
+    "skill_range": "Melee",
+    "skill_target": "One Enemy",
+    "skill_type": "Active"
+   },
+   "effects": [
+    "chain_steps=sw_contest,sw_take,sw_mark effect_kind=chain effect_label=sw_go",
+    "contest_attr1=dex contest_attr2=ins contest_bonus=5 contest_max_rerolls=5 effect_kind=contest_check effect_label=sw_contest save_attr1=dex save_attr2=ins save_mode=interactive target_ref=action_targets",
+    "effect_kind=hide_item effect_label=sw_take hide_item_slot=weapon target_ref=contest_lost_targets",
+    "ae_duplicate_mode=replace ae_template_ref=Weapon Stripped effect_kind=apply_ae effect_label=sw_mark target_ref=contest_lost_targets"
+   ],
+   "reactions": [],
    "aes": []
   },
   "Inferex (Backup) / Blast Breath": {
@@ -44568,6 +45856,66 @@
    "reactions": [
     "condition_formula=AFFECTED_BY_HEX == 1 reaction_cause_filter=damage reaction_damage_source=ally reaction_effect_ref=ripple_strike reaction_passive_mode=ask reaction_resource_filter=hp reaction_source=enemy reaction_trigger=creature_lose_resource"
    ],
+   "aes": []
+  },
+  "Iron Colossus / Grinding Quake": {
+   "props": {
+    "check_bonus": "4",
+    "class": "NPC",
+    "cost": "30 MP",
+    "damage_bonus": "20",
+    "defense_target_type": "mdef",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isOffensiveSpell": "true",
+    "rolled_atr1": "MIG",
+    "rolled_atr2": "WLP",
+    "skill_range": "Any",
+    "skill_target": "All Enemies",
+    "skill_type": "Spell",
+    "type_damage": "Earth"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Iron Colossus / Seismic Stomp": {
+   "props": {
+    "action_keywords": "multi",
+    "check_bonus": "3",
+    "class": "NPC",
+    "damage_bonus": "16",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "MIG",
+    "rolled_atr2": "DEX",
+    "skill_range": "Melee",
+    "skill_target": "Up to three creatures",
+    "skill_type": "Attack",
+    "type_damage": "Earth"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Iron Colossus / Siege Fist": {
+   "props": {
+    "check_bonus": "5",
+    "class": "NPC",
+    "damage_bonus": "34",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "MIG",
+    "rolled_atr2": "MIG",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Physical"
+   },
+   "effects": [],
+   "reactions": [],
    "aes": []
   },
   "Ishasha Isu / Loudhailer": {
@@ -45204,10 +46552,10 @@
       "consume_self=true damage_amount=CUR_HP - 1 damage_operation=cap damage_stage=incoming effect_kind=adjust_damage effect_label=bortd_cap grant_amount=SL * AE_CHARGES_GRAVE_POINTS grant_resource=hp target_ref=bortd_self",
       "charge_ae_name=Grave Points charge_amount=0 charge_operation=set effect_kind=grant effect_label=bortd_heal grant_amount=SL_BEYOND_THE_REALMS_OF_DEATH * AE_CHARGES_GRAVE_POINTS - 1 grant_resource=hp target_ref=self",
       "charge_ae_name=Grave Points charge_amount=0 charge_operation=set effect_kind=adjust_charges effect_label=bortd_zero target_ref=self",
-      "chain_steps=bortd_cap, bortd_heal, bortd_zero effect_kind=chain effect_label=bortd_death",
-      "consume_self=true damage_amount=CUR_HP - 1 damage_operation=cap damage_stage=incoming effect_kind=adjust_damage effect_label=bortd_cap",
-      "effect_kind=grant effect_label=bortd_heal grant_amount=SL_BEYOND_THE_REALMS_OF_DEATH * AE_CHARGES_GRAVE_POINTS - 1 grant_resource=hp target_ref=self",
-      "charge_ae_name=Grave Points charge_amount=0 charge_operation=set effect_kind=adjust_charges effect_label=bortd_zero target_ref=self"
+      "$deleted=true chain_steps=bortd_cap, bortd_heal, bortd_zero effect_kind=chain effect_label=bortd_death",
+      "$deleted=true consume_self=true damage_amount=CUR_HP - 1 damage_operation=cap damage_stage=incoming effect_kind=adjust_damage effect_label=bortd_cap",
+      "$deleted=true effect_kind=grant effect_label=bortd_heal grant_amount=SL_BEYOND_THE_REALMS_OF_DEATH * AE_CHARGES_GRAVE_POINTS - 1 grant_resource=hp target_ref=self",
+      "$deleted=true charge_ae_name=Grave Points charge_amount=0 charge_operation=set effect_kind=adjust_charges effect_label=bortd_zero target_ref=self"
      ]
     },
     {
@@ -45232,6 +46580,7 @@
   "Keren / Birth of the Cruel": {
    "props": {
     "class": "Necromancer",
+    "companion_skills": "Birth of the Cruel: Dismiss",
     "defense_target_type": "def",
     "heroic_requirement": "you must have mastered the Necromancer Class.",
     "isHeroic": "true",
@@ -45240,17 +46589,24 @@
    },
    "effects": [
     "chain_steps=botc_cost,botc_summon,botc_toll effect_kind=chain effect_label=botc_chain",
-    "charge_key=grave count=2 effect_kind=consume_charge effect_label=botc_cost on_empty=abort summon_clone_target=true summon_count=1 summon_folder=Blue's PC summon_max=1 summon_overrides={\"species\":\"UNDEAD\",\"affinity_4\":\"IM\"} summon_persist=false summon_strip_types=weapon,armor,shield,accessory target_ref=self",
+    "charge_key=grave count=2 effect_kind=consume_charge effect_label=botc_cost on_empty=abort target_ref=self",
     "ae_duplicate_mode=replace ae_template_ref=Grave Toll effect_kind=apply_ae effect_label=botc_toll target_ref=self",
-    "effect_kind=summon effect_label=botc_summon summon_act_this_round=false summon_clone_target=true summon_count=1 summon_folder=Blue's PC summon_max=1 summon_overrides={\"species\":\"UNDEAD\",\"npc_rank\":\"soldier\",\"affinity_4\":\"IM\",\"affinity_8\":\"VU\",\"affinity_9\":\"IM\",\"max_hp\":\"=floor(MAX_HP*(1-(1-RANK_IS_SOLDIER)*0.5))\",\"current_hp\":\"=floor(MAX_HP*(1-(1-RANK_IS_SOLDIER)*0.5))\",\"current_mp\":\"=MAX_MP\"} summon_persist=true summon_strip_types=weapon,armor,shield,accessory target_ref=trigger_subject",
+    "effect_kind=summon effect_label=botc_summon summon_act_this_round=false summon_clone_suffix=(Reanimated) summon_clone_target=true summon_count=1 summon_folder=Blue's PC summon_kind=minion summon_max=1 summon_overrides={\"species\":\"UNDEAD\",\"npc_rank\":\"soldier\",\"affinity_4\":\"IM\",\"affinity_8\":\"VU\",\"affinity_9\":\"IM\",\"max_hp\":\"=floor(MAX_HP*(1-(1-RANK_IS_SOLDIER)*0.5))\",\"current_hp\":\"=floor(MAX_HP*(1-(1-RANK_IS_SOLDIER)*0.5))\",\"current_mp\":\"=MAX_MP\"} summon_persist=true summon_strip_types=weapon,armor,shield,accessory summon_turns_per_round=0 target_ref=trigger_subject",
     "ae_duplicate_mode=remove ae_template_ref=Grave Toll effect_kind=apply_ae effect_label=botc_untoll target_ref=self",
     "chain_steps=botc_destroy_minion,botc_untoll effect_kind=chain effect_label=botc_ko_cleanup",
-    "effect_kind=destroy_summon effect_label=botc_destroy_minion only_clones=true target_ref=own_summons"
+    "effect_kind=destroy_summon effect_label=botc_destroy_minion only_clones=true target_ref=own_summons",
+    "chain_steps=botc_rest_hp,botc_rest_mp,botc_rest_clear effect_kind=chain effect_label=botc_rest",
+    "effect_kind=set_resource effect_label=botc_rest_hp grant_amount=MAX_HP grant_resource=hp target_ref=own_persistent_summons_minion",
+    "effect_kind=set_resource effect_label=botc_rest_mp grant_amount=MAX_MP grant_resource=mp target_ref=own_persistent_summons_minion",
+    "effect_kind=remove_ae effect_label=botc_rest_clear filter_tag=debuff,buff target_ref=own_persistent_summons_minion",
+    "action_ref=Attack,Skill effect_kind=free_action effect_label=botc_minion_free performer_ref=own_minions"
    ],
    "reactions": [
-    "condition_formula=(TARGET_SPECIES_IS_BEAST + TARGET_SPECIES_IS_HUMANOID + TARGET_SPECIES_IS_MONSTER + TARGET_SPECIES_IS_PLANT) >= 1 && TARGET_IS_VILLAIN == 0 && OWN_PERSISTENT_SUMMON_COUNT == 0 && AE_CHARGES_GRAVE_POINTS >= 2 reaction_effect_ref=botc_chain reaction_passive_mode=ask reaction_source=enemy reaction_trigger=creature_defeated",
-    "condition_formula=SUBJECT_IS_MY_SUMMON == 1 && AE_COUNT_GRAVE_TOLL >= 1 reaction_effect_ref=botc_untoll reaction_passive_mode=on reaction_trigger=creature_defeated",
-    "condition_formula=AE_COUNT_GRAVE_TOLL >= 1 reaction_effect_ref=botc_ko_cleanup reaction_passive_mode=on reaction_source=self reaction_trigger=creature_defeated"
+    "condition_formula=(TARGET_SPECIES_IS_BEAST + TARGET_SPECIES_IS_HUMANOID + TARGET_SPECIES_IS_MONSTER + TARGET_SPECIES_IS_PLANT) >= 1 && TARGET_IS_VILLAIN == 0 && OWN_PERSISTENT_SUMMONS_MINION == 0 && AE_CHARGES_GRAVE_POINTS >= 2 reaction_effect_ref=botc_chain reaction_max_scope=round reaction_passive_mode=ask reaction_source=enemy reaction_trigger=creature_defeated",
+    "condition_formula=SUBJECT_IS_MY_SUMMON == 1 && AE_COUNT_GRAVE_TOLL >= 1 reaction_effect_ref=botc_untoll reaction_max_scope=round reaction_passive_mode=force reaction_trigger=creature_defeated",
+    "condition_formula=AE_COUNT_GRAVE_TOLL >= 1 reaction_effect_ref=botc_ko_cleanup reaction_max_scope=round reaction_passive_mode=force reaction_source=self reaction_trigger=creature_defeated",
+    "condition_formula=OWN_PERSISTENT_SUMMONS_MINION >= 1 reaction_effect_ref=botc_rest reaction_max_scope=round reaction_passive_mode=force reaction_trigger=party_rested",
+    "condition_formula=OWN_MINION_COUNT >= 1 reaction_effect_ref=botc_minion_free reaction_max_scope=round reaction_passive_mode=force reaction_source=self reaction_trigger=turn_end"
    ],
    "aes": [
     {
@@ -45268,6 +46624,27 @@
      ]
     }
    ]
+  },
+  "Keren / Birth of the Cruel: Dismiss": {
+   "props": {
+    "availability_formula": "OWN_PERSISTENT_SUMMONS_MINION >= 1",
+    "availability_reason": "You have no Minion to destroy",
+    "class": "Necromancer",
+    "defense_target_type": "default",
+    "heroic_requirement": "you must have mastered the Necromancer Class.",
+    "on_activate_effect_ref": "botcd_dismiss",
+    "skill_free_action": "true",
+    "skill_skip_action_card": "true",
+    "skill_target": "Self",
+    "skill_type": "Active"
+   },
+   "effects": [
+    "chain_steps=botcd_untoll,botcd_destroy effect_kind=chain effect_label=botcd_dismiss",
+    "effect_kind=destroy_summon effect_label=botcd_destroy only_clones=true target_ref=own_persistent_summons_minion",
+    "ae_template_ref=Grave Toll effect_kind=remove_ae effect_label=botcd_untoll target_ref=self"
+   ],
+   "reactions": [],
+   "aes": []
   },
   "Keren / Brainwave Discharge": {
    "props": {
@@ -45478,15 +46855,17 @@
   },
   "Keren / Create Phantasm: Numen": {
    "props": {
+    "availability_formula": "OWN_NUMEN_COUNT == 0",
+    "availability_reason": "Numen already active",
     "class": "Illusionist",
     "cost": "50 MP",
     "defense_target_type": "def",
     "duration": "Scene",
     "heroic_requirement": "You must have mastered the Illusionist Class.",
     "isHeroic": "true",
-    "isOffensiveSpell": "true",
     "isReaction": "true",
     "on_activate_effect_ref": "numen_do",
+    "pre_activate_effect_ref": "numen_pre",
     "rolled_atr1": "INS",
     "rolled_atr2": "WLP",
     "skill_range": "Any",
@@ -45494,15 +46873,91 @@
     "skill_type": "Spell"
    },
    "effects": [
-    "chain_steps=numen_summon, numen_act_next effect_kind=chain effect_label=numen_do summon_actor=ZPPCxB0eOJPulEHv summon_count=1",
-    "effect_kind=summon effect_label=numen_summon summon_actor=ZPPCxB0eOJPulEHv summon_count=1 summon_type=numen",
-    "effect_kind=take_turn_next effect_label=numen_act_next target_ref=numen_summon",
-    "effect_kind=take_turn_next effect_label=numen_after_owner target_ref=own_numen"
+    "chain_steps=numen_essence, numen_gate effect_kind=chain effect_label=numen_pre",
+    "chain_steps=numen_summon, numen_target, numen_asc_1, numen_asc_2, numen_essence effect_kind=chain effect_label=numen_do",
+    "effect_kind=summon effect_label=numen_summon summon_actor=ZPPCxB0eOJPulEHv summon_count=1 summon_max=1 summon_overrides={\"current_hp\":\"2*INS_BASE_DIE + CHAR_LEVEL\",\"max_hp\":\"2*INS_BASE_DIE + CHAR_LEVEL\",\"current_mp\":\"30 + (CHAR_LEVEL >= 20) * 10 + (CHAR_LEVEL >= 40) * 10\",\"max_mp\":\"30 + (CHAR_LEVEL >= 20) * 10 + (CHAR_LEVEL >= 40) * 10\"} summon_turns_per_round=0 summon_type=numen",
+    "auto_confirm_when_obvious=true auto_target=skip candidate_source=last_summoned effect_kind=targeting effect_label=numen_target iteration_mode=together mode=all skip_when_passive=true",
+    "chain_steps=numen_ae_asc1 condition_formula=CHAR_LEVEL >= 20 && CHAR_LEVEL < 40 effect_kind=chain effect_label=numen_asc_1",
+    "chain_steps=numen_ae_asc2 condition_formula=CHAR_LEVEL >= 40 effect_kind=chain effect_label=numen_asc_2",
+    "ae_duplicate_mode=replace ae_duration_rounds=scene ae_template_ref=Numen Ascendance I effect_kind=apply_ae effect_label=numen_ae_asc1 target_ref=numen_target",
+    "ae_duplicate_mode=replace ae_duration_rounds=scene ae_template_ref=Numen Ascendance II effect_kind=apply_ae effect_label=numen_ae_asc2 target_ref=numen_target",
+    "ae_duplicate_mode=replace effect_kind=open_action_menu effect_label=numen_essence menu_option_refs=numen_ess_ravana, numen_ess_asura, numen_ess_diablos",
+    "ae_duplicate_mode=replace ae_duration_rounds=scene ae_template_ref=Numen Essence: Ravana effect_kind=apply_ae effect_label=numen_ess_ravana target_ref=numen_target",
+    "ae_duplicate_mode=replace ae_duration_rounds=scene ae_template_ref=Numen Essence: Asura effect_kind=apply_ae effect_label=numen_ess_asura target_ref=numen_target",
+    "ae_duplicate_mode=replace ae_duration_rounds=scene ae_template_ref=Numen Essence: Diablos effect_kind=apply_ae effect_label=numen_ess_diablos target_ref=numen_target",
+    "action_ref=Attack,Skill effect_kind=free_action effect_label=numen_free performer_ref=own_numen",
+    "auto_confirm_when_obvious=true auto_target=skip candidate_source=self condition_formula=OWN_NUMEN_COUNT == 0 effect_kind=targeting effect_label=numen_gate iteration_mode=together mode=all on_condition_fail=abort skip_when_passive=true"
    ],
    "reactions": [
-    "condition_formula=OWN_NUMEN_COUNT >= 1 reaction_effect_ref=numen_after_owner reaction_passive_mode=force reaction_source=self reaction_trigger=turn_start"
+    "condition_formula=OWN_NUMEN_COUNT >= 1 reaction_effect_ref=numen_free reaction_max_scope=round reaction_passive_mode=force reaction_source=self reaction_trigger=turn_end"
    ],
-   "aes": []
+   "aes": [
+    {
+     "name": "Numen Ascendance I",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "extra_damage_mod_all mode2 = 4"
+     ]
+    },
+    {
+     "name": "Numen Ascendance II",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "extra_damage_mod_all mode2 = 6"
+     ]
+    },
+    {
+     "name": "Numen Essence: Asura",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "override_all_damage_type mode5 = Light"
+     ]
+    },
+    {
+     "name": "Numen Essence: Diablos",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "override_all_damage_type mode5 = Dark"
+     ]
+    },
+    {
+     "name": "Numen Essence: Ravana",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "override_all_damage_type mode5 = Physical"
+     ]
+    }
+   ]
   },
   "Keren / Create Phantasm: Strike": {
    "props": {
@@ -46022,6 +47477,7 @@
   "Keren / See you later": {
    "props": {
     "class": "Rogue",
+    "defense_target_type": "default",
     "duration": "Instantaneous",
     "on_activate_effect_ref": "syl_root",
     "skill_target": "Self",
@@ -46374,9 +47830,12 @@
     "isReaction": "true",
     "skill_type": "Passive"
    },
-   "effects": [],
+   "effects": [
+    "action_ref=Attack effect_kind=free_action effect_label=ca_free free_hr_as_zero=true free_weapon_range=melee target_ref=trigger_attacker"
+   ],
    "reactions": [
-    "reaction_action_intent=harmful reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_hit_by_action"
+    "condition_formula=ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT % 2 == 0 reaction_action_intent=harmful reaction_damage_source=enemy reaction_effect_ref=ca_free reaction_passive_mode=ask reaction_passive_target=self reaction_source=self reaction_trigger=creature_hit_by_action",
+    "condition_formula=ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT % 2 == 0 reaction_action_intent=harmful reaction_effect_ref=ca_free reaction_passive_mode=ask reaction_passive_target=self reaction_source=enemy reaction_trigger=creature_miss_action"
    ],
    "aes": []
   },
@@ -46831,12 +48290,12 @@
     "skill_type": "Passive"
    },
    "effects": [
-    "effect_kind=grant effect_label=charge_mp grant_amount=20 grant_resource=mp target_ref=self",
-    "effect_kind=grant effect_label=charge_overflow grant_amount=max(0, CUR_MP + 20 - MAX_MP) grant_resource=shield target_ref=self",
+    "effect_kind=grant effect_label=charge_mp grant_amount=ceil(DAMAGE_DEALT * 0.2) grant_resource=mp target_ref=self",
+    "effect_kind=grant effect_label=charge_overflow grant_amount=max(0, CUR_MP + ceil(DAMAGE_DEALT * 0.2) - MAX_MP) grant_resource=shield target_ref=self",
     "chain_steps=charge_overflow, charge_mp effect_kind=chain effect_label=charge_horn"
    ],
    "reactions": [
-    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1 reaction_effect_ref=charge_horn reaction_passive_mode=on reaction_source=self reaction_trigger=creature_lose_resource"
+    "condition_formula=TRIGGER_DAMAGE_IS_BOLT == 1 && CAUSE_IS_SELF == 0 reaction_effect_ref=charge_horn reaction_passive_mode=on reaction_resource_filter=hp reaction_trigger=creature_lose_resource"
    ],
    "aes": []
   },
@@ -46845,8 +48304,8 @@
     "action_keywords": "pierce, overflow",
     "check_bonus": "9",
     "class": "NPC",
-    "cost": "50 MP",
-    "damage_bonus": "45",
+    "cost": "0 MP",
+    "damage_bonus": "30",
     "defense_target_type": "mdef",
     "duration": "Instantaneous",
     "isCheck": "true",
@@ -46860,10 +48319,14 @@
     "type_damage": "Bolt"
    },
    "effects": [
-    "ae_chance_percent=50 ae_duplicate_mode=replace ae_template_ref=Paralyzed effect_kind=apply_ae effect_label=apply_paralyzed target_ref=hit_action_targets"
+    "ae_chance_percent=min(75, 25 + CUR_MP) ae_duplicate_mode=replace ae_template_ref=Paralyzed effect_kind=apply_ae effect_label=apply_paralyzed target_ref=hit_action_targets",
+    "damage_amount=min(75, CUR_MP) damage_operation=add damage_stage=outgoing effect_kind=adjust_damage effect_label=rail_charge_bonus",
+    "effect_kind=consume_resource effect_label=rail_drain grant_amount=CUR_MP grant_resource=mp on_empty=skip target_ref=self",
+    "chain_steps=apply_paralyzed, rail_drain effect_kind=chain effect_label=rail_chain"
    ],
    "reactions": [
-    "reaction_effect_ref=apply_paralyzed reaction_passive_mode=on reaction_source=self reaction_source_skill=Rail Stream reaction_trigger=creature_deals_damage"
+    "reaction_effect_ref=rail_chain reaction_passive_mode=force reaction_source=self reaction_source_skill=Rail Stream reaction_trigger=creature_deals_damage",
+    "reaction_effect_ref=rail_charge_bonus reaction_passive_mode=force reaction_source=self reaction_source_skill=Rail Stream reaction_trigger=creature_will_deal_damage"
    ],
    "aes": []
   },
@@ -47006,6 +48469,74 @@
     "type_damage": "Fire"
    },
    "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Life Gorger / Consume Life": {
+   "props": {
+    "check_bonus": "1",
+    "class": "NPC",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "on_activate_effect_ref": "consume_chain",
+    "skill_range": "Range",
+    "skill_target": "One Creature",
+    "skill_type": "Active"
+   },
+   "effects": [
+    "chain_steps=consume_bite, consume_feed effect_kind=chain effect_label=consume_chain",
+    "damage_amount=ceil(CUR_HP * 0.5) damage_cause=damage damage_element=elementless damage_ignore_affinity=true damage_resource=hp effect_kind=deal_damage effect_label=consume_bite target_ref=action_targets",
+    "ae_duplicate_mode=skip ae_template_ref=Eaten effect_kind=apply_ae effect_label=consume_feed target_ref=self"
+   ],
+   "reactions": [],
+   "aes": [
+    {
+     "name": "Eaten",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "gorger_eaten"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": null,
+     "changes": []
+    }
+   ]
+  },
+  "Life Gorger / Life Residue": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "effect_kind=set_resource effect_label=residue_give grant_amount=MAX_HP grant_resource=hp target_ref=cause_actor"
+   ],
+   "reactions": [
+    "condition_formula=AE_CHARGES_EATEN >= 1 reaction_effect_ref=residue_give reaction_passive_mode=force reaction_source=self reaction_trigger=creature_defeated"
+   ],
+   "aes": []
+  },
+  "Life Gorger / Run Away": {
+   "props": {
+    "check_bonus": "1",
+    "class": "NPC",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "on_activate_effect_ref": "run_away",
+    "skill_range": "Any",
+    "skill_target": "Self",
+    "skill_type": "Active"
+   },
+   "effects": [
+    "chain_steps=escape_check, escape_flee effect_kind=chain effect_label=run_away",
+    "candidate_source=combat category=enemy effect_kind=targeting effect_label=escape_party exclude_self=true mode=all",
+    "effect_kind=group_check effect_label=escape_check gc_attr1=dex gc_attr2=ins gc_dl=15 gc_helper_bonus=1 gc_mode=designated gc_on_error=fail gc_timeout=60000 gc_var=escape target_ref=escape_party",
+    "condition_formula=VAR_ESCAPE == 0 effect_kind=leave_combat effect_label=escape_flee target_ref=self"
+   ],
    "reactions": [],
    "aes": []
   },
@@ -47212,6 +48743,74 @@
     "type_damage": "MP Burn"
    },
    "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Mana Gorger / Consume Mana": {
+   "props": {
+    "check_bonus": "1",
+    "class": "NPC",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "on_activate_effect_ref": "consume_chain",
+    "skill_range": "Range",
+    "skill_target": "One Creature",
+    "skill_type": "Active"
+   },
+   "effects": [
+    "chain_steps=consume_drain, consume_feed effect_kind=chain effect_label=consume_chain",
+    "damage_amount=CUR_MP damage_cause=damage damage_element=elementless damage_ignore_affinity=true damage_resource=mp effect_kind=deal_damage effect_label=consume_drain target_ref=action_targets",
+    "ae_duplicate_mode=skip ae_template_ref=Eaten effect_kind=apply_ae effect_label=consume_feed target_ref=self"
+   ],
+   "reactions": [],
+   "aes": [
+    {
+     "name": "Eaten",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "gorger_eaten"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": null,
+     "changes": []
+    }
+   ]
+  },
+  "Mana Gorger / Mana Residue": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "effect_kind=set_resource effect_label=residue_give grant_amount=MAX_MP grant_resource=mp target_ref=cause_actor"
+   ],
+   "reactions": [
+    "condition_formula=AE_CHARGES_EATEN >= 1 reaction_effect_ref=residue_give reaction_passive_mode=force reaction_source=self reaction_trigger=creature_defeated"
+   ],
+   "aes": []
+  },
+  "Mana Gorger / Run Away": {
+   "props": {
+    "check_bonus": "1",
+    "class": "NPC",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "on_activate_effect_ref": "run_away",
+    "skill_range": "Any",
+    "skill_target": "Self",
+    "skill_type": "Active"
+   },
+   "effects": [
+    "chain_steps=escape_check, escape_flee effect_kind=chain effect_label=run_away",
+    "candidate_source=combat category=enemy effect_kind=targeting effect_label=escape_party exclude_self=true mode=all",
+    "effect_kind=group_check effect_label=escape_check gc_attr1=dex gc_attr2=ins gc_dl=15 gc_helper_bonus=1 gc_mode=designated gc_on_error=fail gc_timeout=60000 gc_var=escape target_ref=escape_party",
+    "condition_formula=VAR_ESCAPE == 0 effect_kind=leave_combat effect_label=escape_flee target_ref=self"
+   ],
    "reactions": [],
    "aes": []
   },
@@ -47492,7 +49091,7 @@
   },
   "Matador / Muleta": {
    "props": {
-    "active_effect_config_table": "#sha1:86e79bb6d7e90ba9 (304 chars)",
+    "active_effect_config_table": "#sha1:f66a5db8e0a43990 (303 chars)",
     "check_bonus": "1",
     "class": "Matador",
     "cost": "1 Adoration",
@@ -47512,9 +49111,11 @@
    "effects": [
     "charge_key=adoration count=1 effect_kind=consume_charge effect_label=mul_cost on_empty=abort target_ref=self",
     "chance_percent=50 chance_then_ref=mul_bleed effect_kind=chance effect_label=mul_chance",
-    "ae_duplicate_mode=replace ae_template_ref=Bleed effect_kind=apply_ae effect_label=mul_bleed target_ref=hit_action_targets"
+    "ae_duplicate_mode=replace ae_template_ref=Bleed effect_kind=apply_ae effect_label=mul_bleed target_ref=trigger_subject"
    ],
-   "reactions": [],
+   "reactions": [
+    "reaction_effect_ref=mul_chance reaction_passive_mode=force reaction_source=self reaction_source_skill=Muleta reaction_trigger=creature_deals_damage"
+   ],
    "aes": []
   },
   "Matador / Pases": {
@@ -47634,6 +49235,156 @@
    ],
    "aes": []
   },
+  "Mist Dragon / Illusory Form": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "ae_duplicate_mode=skip ae_template_ref=Illusory Form effect_kind=apply_ae effect_label=mist_gather target_ref=self",
+    "ae_template_ref=Illusory Form count=all effect_kind=remove_ae effect_label=mist_scatter include_persistent=true target_ref=self"
+   ],
+   "reactions": [
+    "reaction_effect_ref=mist_gather reaction_passive_mode=force reaction_trigger=conflict_start",
+    "reaction_effect_ref=mist_gather reaction_passive_mode=force reaction_trigger=round_end",
+    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_AIR == 1 reaction_effect_ref=mist_scatter reaction_passive_mode=force reaction_resource_filter=hp reaction_trigger=creature_lose_resource"
+   ],
+   "aes": [
+    {
+     "name": "Illusory Form",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "illusory-form"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": null,
+     "changes": [
+      "affinity_1 mode5 = aeAffinityFloor(\"RS\")"
+     ]
+    }
+   ]
+  },
+  "Mist Dragon / Mist Breath": {
+   "props": {
+    "check_bonus": "8",
+    "class": "NPC",
+    "cost": "50 MP",
+    "damage_bonus": "38",
+    "defense_target_type": "mdef",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isOffensiveSpell": "true",
+    "rolled_atr1": "WLP",
+    "rolled_atr2": "WLP",
+    "skill_range": "Any",
+    "skill_target": "Up to three creatures",
+    "skill_type": "Spell",
+    "type_damage": "Air"
+   },
+   "effects": [
+    "ae_chance_percent=50 ae_duplicate_mode=skip ae_template_ref=Blind effect_kind=apply_ae effect_label=blind_rider target_ref=hit_action_targets"
+   ],
+   "reactions": [
+    "reaction_effect_ref=blind_rider reaction_passive_mode=force reaction_source=self reaction_source_skill=Mist Breath reaction_trigger=creature_deals_damage"
+   ],
+   "aes": []
+  },
+  "Mist Dragon / Mist Claw": {
+   "props": {
+    "check_bonus": "8",
+    "class": "NPC",
+    "damage_bonus": "18",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "WLP",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Air"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Mist Dragon / Phantom Shift: Mana Stinger": {
+   "props": {
+    "check_bonus": "8",
+    "class": "NPC",
+    "damage_bonus": "20",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "MIG",
+    "skill_range": "Range",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Air"
+   },
+   "effects": [
+    "damage_amount=min(ceil(TARGET_MAX_MP * 0.2), TARGET_CURRENT_MP) damage_operation=add damage_stage=outgoing effect_kind=adjust_damage effect_label=stinger_bonus",
+    "damage_amount=min(ceil(TARGET_MAX_MP * 0.2), TARGET_CURRENT_MP) damage_resource=mp damage_verbosity=full effect_kind=deal_damage effect_label=stinger_burn target_ref=trigger_subject"
+   ],
+   "reactions": [
+    "reaction_effect_ref=stinger_bonus reaction_passive_mode=force reaction_source=self reaction_source_skill=Phantom Shift: Mana Stinger reaction_trigger=creature_will_deal_damage",
+    "reaction_effect_ref=stinger_burn reaction_passive_mode=force reaction_source=self reaction_source_skill=Phantom Shift: Mana Stinger reaction_trigger=creature_deals_damage"
+   ],
+   "aes": []
+  },
+  "Mist Dragon / Phantom Shift: Thunder Strike": {
+   "props": {
+    "check_bonus": "8",
+    "class": "NPC",
+    "damage_bonus": "30",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "MIG",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Air"
+   },
+   "effects": [
+    "ae_chance_percent=40 ae_duplicate_mode=skip ae_template_ref=Blind effect_kind=apply_ae effect_label=blind_rider target_ref=hit_action_targets"
+   ],
+   "reactions": [
+    "reaction_effect_ref=blind_rider reaction_passive_mode=force reaction_source=self reaction_source_skill=Phantom Shift: Thunder Strike reaction_trigger=creature_deals_damage"
+   ],
+   "aes": []
+  },
+  "Mist Dragon / Phantom Shift: Venomstone Spines": {
+   "props": {
+    "action_keywords": "multi",
+    "check_bonus": "8",
+    "class": "NPC",
+    "damage_bonus": "14",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "INS",
+    "rolled_atr2": "MIG",
+    "skill_range": "Range",
+    "skill_target": "Up to two creatures",
+    "skill_type": "Attack",
+    "type_damage": "Air"
+   },
+   "effects": [
+    "ae_chance_percent=50 ae_duplicate_mode=skip ae_template_ref=Blind effect_kind=apply_ae effect_label=blind_rider target_ref=hit_action_targets"
+   ],
+   "reactions": [
+    "reaction_effect_ref=blind_rider reaction_passive_mode=force reaction_source=self reaction_source_skill=Phantom Shift: Venomstone Spines reaction_trigger=creature_deals_damage"
+   ],
+   "aes": []
+  },
   "Moses / Adrenaline": {
    "props": {
     "class": "Fury",
@@ -47689,9 +49440,12 @@
     "isReaction": "true",
     "skill_type": "Passive"
    },
-   "effects": [],
+   "effects": [
+    "action_ref=Attack effect_kind=free_action effect_label=ca_free free_hr_as_zero=true free_weapon_range=melee target_ref=trigger_attacker"
+   ],
    "reactions": [
-    "reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_hit_by_action"
+    "condition_formula=ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT % 2 == 0 reaction_action_intent=harmful reaction_damage_source=enemy reaction_effect_ref=ca_free reaction_passive_mode=ask reaction_passive_target=self reaction_source=self reaction_trigger=creature_hit_by_action",
+    "condition_formula=ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT % 2 == 0 reaction_action_intent=harmful reaction_effect_ref=ca_free reaction_passive_mode=ask reaction_passive_target=self reaction_source=enemy reaction_trigger=creature_miss_action"
    ],
    "aes": []
   },
@@ -47918,10 +49672,10 @@
       "consume_self=true damage_amount=CUR_HP - 1 damage_operation=cap damage_stage=incoming effect_kind=adjust_damage effect_label=bortd_cap grant_amount=SL * AE_CHARGES_GRAVE_POINTS grant_resource=hp target_ref=bortd_self",
       "charge_ae_name=Grave Points charge_amount=0 charge_operation=set effect_kind=grant effect_label=bortd_heal grant_amount=SL_BEYOND_THE_REALMS_OF_DEATH * AE_CHARGES_GRAVE_POINTS - 1 grant_resource=hp target_ref=self",
       "charge_ae_name=Grave Points charge_amount=0 charge_operation=set effect_kind=adjust_charges effect_label=bortd_zero target_ref=self",
-      "consume_self=true damage_amount=CUR_HP - 1 damage_operation=cap damage_stage=incoming effect_kind=adjust_damage effect_label=bortd_cap",
-      "chain_steps=bortd_cap, bortd_heal, bortd_zero effect_kind=chain effect_label=bortd_death",
-      "effect_kind=grant effect_label=bortd_heal grant_amount=SL_BEYOND_THE_REALMS_OF_DEATH * AE_CHARGES_GRAVE_POINTS - 1 grant_resource=hp target_ref=self",
-      "charge_ae_name=Grave Points charge_amount=0 charge_operation=set effect_kind=adjust_charges effect_label=bortd_zero target_ref=self"
+      "$deleted=true consume_self=true damage_amount=CUR_HP - 1 damage_operation=cap damage_stage=incoming effect_kind=adjust_damage effect_label=bortd_cap",
+      "$deleted=true chain_steps=bortd_cap, bortd_heal, bortd_zero effect_kind=chain effect_label=bortd_death",
+      "$deleted=true effect_kind=grant effect_label=bortd_heal grant_amount=SL_BEYOND_THE_REALMS_OF_DEATH * AE_CHARGES_GRAVE_POINTS - 1 grant_resource=hp target_ref=self",
+      "$deleted=true charge_ae_name=Grave Points charge_amount=0 charge_operation=set effect_kind=adjust_charges effect_label=bortd_zero target_ref=self"
      ]
     },
     {
@@ -47946,6 +49700,7 @@
   "Necromancer / Birth of the Cruel": {
    "props": {
     "class": "Necromancer",
+    "companion_skills": "Birth of the Cruel: Dismiss",
     "defense_target_type": "def",
     "heroic_requirement": "you must have mastered the Necromancer Class.",
     "isHeroic": "true",
@@ -47954,17 +49709,24 @@
    },
    "effects": [
     "chain_steps=botc_cost,botc_summon,botc_toll effect_kind=chain effect_label=botc_chain",
-    "charge_key=grave count=2 effect_kind=consume_charge effect_label=botc_cost on_empty=abort summon_clone_target=true summon_count=1 summon_folder=Blue's PC summon_max=1 summon_overrides={\"species\":\"UNDEAD\",\"affinity_4\":\"IM\"} summon_persist=false summon_strip_types=weapon,armor,shield,accessory target_ref=self",
+    "charge_key=grave count=2 effect_kind=consume_charge effect_label=botc_cost on_empty=abort target_ref=self",
     "ae_duplicate_mode=replace ae_template_ref=Grave Toll effect_kind=apply_ae effect_label=botc_toll target_ref=self",
-    "effect_kind=summon effect_label=botc_summon summon_act_this_round=false summon_clone_target=true summon_count=1 summon_folder=Blue's PC summon_max=1 summon_overrides={\"species\":\"UNDEAD\",\"npc_rank\":\"soldier\",\"affinity_4\":\"IM\",\"affinity_8\":\"VU\",\"affinity_9\":\"IM\",\"max_hp\":\"=floor(MAX_HP*(1-(1-RANK_IS_SOLDIER)*0.5))\",\"current_hp\":\"=floor(MAX_HP*(1-(1-RANK_IS_SOLDIER)*0.5))\",\"current_mp\":\"=MAX_MP\"} summon_persist=true summon_strip_types=weapon,armor,shield,accessory target_ref=trigger_subject",
+    "effect_kind=summon effect_label=botc_summon summon_act_this_round=false summon_clone_suffix=(Reanimated) summon_clone_target=true summon_count=1 summon_folder=Blue's PC summon_kind=minion summon_max=1 summon_overrides={\"species\":\"UNDEAD\",\"npc_rank\":\"soldier\",\"affinity_4\":\"IM\",\"affinity_8\":\"VU\",\"affinity_9\":\"IM\",\"max_hp\":\"=floor(MAX_HP*(1-(1-RANK_IS_SOLDIER)*0.5))\",\"current_hp\":\"=floor(MAX_HP*(1-(1-RANK_IS_SOLDIER)*0.5))\",\"current_mp\":\"=MAX_MP\"} summon_persist=true summon_strip_types=weapon,armor,shield,accessory summon_turns_per_round=0 target_ref=trigger_subject",
     "ae_duplicate_mode=remove ae_template_ref=Grave Toll effect_kind=apply_ae effect_label=botc_untoll target_ref=self",
     "chain_steps=botc_destroy_minion,botc_untoll effect_kind=chain effect_label=botc_ko_cleanup",
-    "effect_kind=destroy_summon effect_label=botc_destroy_minion only_clones=true target_ref=own_summons"
+    "effect_kind=destroy_summon effect_label=botc_destroy_minion only_clones=true target_ref=own_summons",
+    "chain_steps=botc_rest_hp,botc_rest_mp,botc_rest_clear effect_kind=chain effect_label=botc_rest",
+    "effect_kind=set_resource effect_label=botc_rest_hp grant_amount=MAX_HP grant_resource=hp target_ref=own_persistent_summons_minion",
+    "effect_kind=set_resource effect_label=botc_rest_mp grant_amount=MAX_MP grant_resource=mp target_ref=own_persistent_summons_minion",
+    "effect_kind=remove_ae effect_label=botc_rest_clear filter_tag=debuff,buff target_ref=own_persistent_summons_minion",
+    "action_ref=Attack,Skill effect_kind=free_action effect_label=botc_minion_free performer_ref=own_minions"
    ],
    "reactions": [
-    "condition_formula=(TARGET_SPECIES_IS_BEAST + TARGET_SPECIES_IS_HUMANOID + TARGET_SPECIES_IS_MONSTER + TARGET_SPECIES_IS_PLANT) >= 1 && TARGET_IS_VILLAIN == 0 && OWN_PERSISTENT_SUMMON_COUNT == 0 && AE_CHARGES_GRAVE_POINTS >= 2 reaction_effect_ref=botc_chain reaction_passive_mode=ask reaction_source=enemy reaction_trigger=creature_defeated",
-    "condition_formula=SUBJECT_IS_MY_SUMMON == 1 && AE_COUNT_GRAVE_TOLL >= 1 reaction_effect_ref=botc_untoll reaction_passive_mode=on reaction_trigger=creature_defeated",
-    "condition_formula=AE_COUNT_GRAVE_TOLL >= 1 reaction_effect_ref=botc_ko_cleanup reaction_passive_mode=on reaction_source=self reaction_trigger=creature_defeated"
+    "condition_formula=(TARGET_SPECIES_IS_BEAST + TARGET_SPECIES_IS_HUMANOID + TARGET_SPECIES_IS_MONSTER + TARGET_SPECIES_IS_PLANT) >= 1 && TARGET_IS_VILLAIN == 0 && OWN_PERSISTENT_SUMMONS_MINION == 0 && AE_CHARGES_GRAVE_POINTS >= 2 reaction_effect_ref=botc_chain reaction_passive_mode=ask reaction_source=enemy reaction_trigger=creature_defeated",
+    "condition_formula=SUBJECT_IS_MY_SUMMON == 1 && AE_COUNT_GRAVE_TOLL >= 1 reaction_effect_ref=botc_untoll reaction_passive_mode=force reaction_trigger=creature_defeated",
+    "condition_formula=AE_COUNT_GRAVE_TOLL >= 1 reaction_effect_ref=botc_ko_cleanup reaction_passive_mode=force reaction_source=self reaction_trigger=creature_defeated",
+    "condition_formula=OWN_PERSISTENT_SUMMONS_MINION >= 1 reaction_effect_ref=botc_rest reaction_passive_mode=force reaction_trigger=party_rested",
+    "condition_formula=OWN_MINION_COUNT >= 1 reaction_effect_ref=botc_minion_free reaction_passive_mode=force reaction_source=self reaction_trigger=turn_end"
    ],
    "aes": [
     {
@@ -47982,6 +49744,26 @@
      ]
     }
    ]
+  },
+  "Necromancer / Birth of the Cruel: Dismiss": {
+   "props": {
+    "availability_formula": "OWN_PERSISTENT_SUMMONS_MINION >= 1",
+    "availability_reason": "You have no Minion to destroy",
+    "class": "Necromancer",
+    "heroic_requirement": "you must have mastered the Necromancer Class.",
+    "on_activate_effect_ref": "botcd_dismiss",
+    "skill_free_action": "true",
+    "skill_skip_action_card": "true",
+    "skill_target": "Self",
+    "skill_type": "Active"
+   },
+   "effects": [
+    "chain_steps=botcd_untoll,botcd_destroy effect_kind=chain effect_label=botcd_dismiss",
+    "effect_kind=destroy_summon effect_label=botcd_destroy only_clones=true target_ref=own_persistent_summons_minion",
+    "ae_template_ref=Grave Toll effect_kind=remove_ae effect_label=botcd_untoll target_ref=self"
+   ],
+   "reactions": [],
+   "aes": []
   },
   "Necromancer / Fear Is the Key": {
    "props": {
@@ -48660,9 +50442,12 @@
     "isReaction": "true",
     "skill_type": "Passive"
    },
-   "effects": [],
+   "effects": [
+    "action_ref=Attack effect_kind=free_action effect_label=ca_free free_hr_as_zero=true free_weapon_range=melee target_ref=trigger_attacker"
+   ],
    "reactions": [
-    "reaction_action_intent=harmful reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_hit_by_action"
+    "condition_formula=ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT % 2 == 0 reaction_action_intent=harmful reaction_damage_source=enemy reaction_effect_ref=ca_free reaction_passive_mode=ask reaction_passive_target=self reaction_source=self reaction_trigger=creature_hit_by_action",
+    "condition_formula=ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT % 2 == 0 reaction_action_intent=harmful reaction_effect_ref=ca_free reaction_passive_mode=ask reaction_passive_target=self reaction_source=enemy reaction_trigger=creature_miss_action"
    ],
    "aes": []
   },
@@ -48863,6 +50648,110 @@
    "reactions": [],
    "aes": []
   },
+  "Phobo Gorger / Bump": {
+   "props": {
+    "check_bonus": "1",
+    "class": "NPC",
+    "damage_bonus": "5",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "MIG",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Physical"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Phobo Gorger / Consume Dark": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "ae_duplicate_mode=add_charges ae_template_ref=Eaten effect_kind=apply_ae effect_label=absorb_feed target_ref=self"
+   ],
+   "reactions": [
+    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_DARK == 1 reaction_cause_filter=damage reaction_effect_ref=absorb_feed reaction_passive_mode=force reaction_resource_filter=hp reaction_trigger=creature_gain_resource"
+   ],
+   "aes": []
+  },
+  "Phobo Gorger / Phobo Explosion": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=boom_damage, boom_rider effect_kind=chain effect_label=boom_chain",
+    "candidate_source=combat category=enemy effect_kind=targeting effect_label=boom_targets exclude_self=true mode=all",
+    "damage_amount=max(TARGET_LEVEL, 15) * TARGET_AE_CHARGES_EATEN * TARGET_AE_CHARGES_EATEN / 3 damage_cause=damage damage_element=dark effect_kind=deal_damage effect_label=boom_damage target_ref=boom_targets",
+    "ae_duplicate_mode=stack ae_template_ref=Shaken effect_kind=apply_ae effect_label=boom_rider target_ref=boom_targets"
+   ],
+   "reactions": [
+    "reaction_effect_ref=boom_chain reaction_passive_mode=force reaction_source=self reaction_trigger=creature_defeated"
+   ],
+   "aes": []
+  },
+  "Phobo Gorger / Puff Up": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=puff_swell, puff_pop effect_kind=chain effect_label=puff_chain",
+    "ae_duplicate_mode=add_charges ae_template_ref=Eaten effect_kind=apply_ae effect_label=puff_swell target_ref=self",
+    "condition_formula=AE_CHARGES_EATEN >= 3 consume_amount=CUR_HP consume_can_defeat=true consume_resource=hp effect_kind=consume_resource effect_label=puff_pop on_empty=drain target_ref=self"
+   ],
+   "reactions": [
+    "reaction_effect_ref=puff_chain reaction_passive_mode=force reaction_source=self reaction_trigger=turn_start"
+   ],
+   "aes": [
+    {
+     "name": "Eaten",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "gorger_eaten"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": null,
+     "changes": []
+    }
+   ]
+  },
+  "Phobo Gorger / Umbra": {
+   "props": {
+    "check_bonus": "1",
+    "class": "NPC",
+    "cost": "10 x T MP",
+    "damage_bonus": "15",
+    "defense_target_type": "mdef",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isOffensiveSpell": "true",
+    "rolled_atr1": "INS",
+    "rolled_atr2": "WLP",
+    "skill_range": "Range",
+    "skill_target": "Up to three creatures",
+    "skill_type": "Spell",
+    "type_damage": "Dark"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
   "Pomme / Apple": {
    "props": {
     "damage_bonus": "10",
@@ -49024,6 +50913,110 @@
    "reactions": [],
    "aes": []
   },
+  "Pyro Gorger / Bump": {
+   "props": {
+    "check_bonus": "1",
+    "class": "NPC",
+    "damage_bonus": "5",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "MIG",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Physical"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Pyro Gorger / Consume Fire": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "ae_duplicate_mode=add_charges ae_template_ref=Eaten effect_kind=apply_ae effect_label=absorb_feed target_ref=self"
+   ],
+   "reactions": [
+    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_FIRE == 1 reaction_cause_filter=damage reaction_effect_ref=absorb_feed reaction_passive_mode=force reaction_resource_filter=hp reaction_trigger=creature_gain_resource"
+   ],
+   "aes": []
+  },
+  "Pyro Gorger / Ignis": {
+   "props": {
+    "check_bonus": "1",
+    "class": "NPC",
+    "cost": "10 x T MP",
+    "damage_bonus": "15",
+    "defense_target_type": "mdef",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isOffensiveSpell": "true",
+    "rolled_atr1": "INS",
+    "rolled_atr2": "WLP",
+    "skill_range": "Range",
+    "skill_target": "Up to three creatures",
+    "skill_type": "Spell",
+    "type_damage": "Fire"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Pyro Gorger / Puff Up": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=puff_swell, puff_pop effect_kind=chain effect_label=puff_chain",
+    "ae_duplicate_mode=add_charges ae_template_ref=Eaten effect_kind=apply_ae effect_label=puff_swell target_ref=self",
+    "condition_formula=AE_CHARGES_EATEN >= 3 consume_amount=CUR_HP consume_can_defeat=true consume_resource=hp effect_kind=consume_resource effect_label=puff_pop on_empty=drain target_ref=self"
+   ],
+   "reactions": [
+    "reaction_effect_ref=puff_chain reaction_passive_mode=force reaction_source=self reaction_trigger=turn_start"
+   ],
+   "aes": [
+    {
+     "name": "Eaten",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "gorger_eaten"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": null,
+     "changes": []
+    }
+   ]
+  },
+  "Pyro Gorger / Pyro Explosion": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=boom_damage, boom_rider effect_kind=chain effect_label=boom_chain",
+    "candidate_source=combat category=enemy effect_kind=targeting effect_label=boom_targets exclude_self=true mode=all",
+    "damage_amount=max(TARGET_LEVEL, 15) * TARGET_AE_CHARGES_EATEN * TARGET_AE_CHARGES_EATEN / 3 damage_cause=damage damage_element=fire effect_kind=deal_damage effect_label=boom_damage target_ref=boom_targets",
+    "ae_duplicate_mode=stack ae_template_ref=Burn effect_kind=apply_ae effect_label=boom_rider target_ref=boom_targets"
+   ],
+   "reactions": [
+    "reaction_effect_ref=boom_chain reaction_passive_mode=force reaction_source=self reaction_trigger=creature_defeated"
+   ],
+   "aes": []
+  },
   "Pyromancer / Chain Fireball": {
    "props": {
     "class": "Pyromancer",
@@ -49113,9 +51106,12 @@
     "isReaction": "true",
     "skill_type": "Passive"
    },
-   "effects": [],
+   "effects": [
+    "action_ref=Attack effect_kind=free_action effect_label=ca_free free_hr_as_zero=true free_weapon_range=melee target_ref=trigger_attacker"
+   ],
    "reactions": [
-    "reaction_passive_mode=ask reaction_source=all reaction_trigger=creature_hit_by_action"
+    "condition_formula=ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT % 2 == 0 reaction_action_intent=harmful reaction_damage_source=enemy reaction_effect_ref=ca_free reaction_passive_mode=ask reaction_passive_target=self reaction_source=self reaction_trigger=creature_hit_by_action",
+    "condition_formula=ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT % 2 == 0 reaction_action_intent=harmful reaction_effect_ref=ca_free reaction_passive_mode=ask reaction_passive_target=self reaction_source=enemy reaction_trigger=creature_miss_action"
    ],
    "aes": []
   },
@@ -49591,6 +51587,145 @@
      ]
     }
    ]
+  },
+  "Roo / Approach": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=ap_mark, ap_tick, ap_slide effect_kind=chain effect_label=ap_step",
+    "chain_steps=ap_mark, ap_tick, ap_melee, ap_slide effect_kind=chain effect_label=ap_arrive",
+    "candidate_source=combat category=enemy count=1 effect_kind=targeting effect_label=ap_victim exclude_self=true mode=random",
+    "ae_duplicate_mode=replace ae_template_ref=Marked condition_formula=COMBAT_MAX_AE_CHARGES_MARKED == 0 effect_kind=apply_ae effect_label=ap_mark target_ref=ap_victim",
+    "ae_duplicate_mode=add_charges ae_initial_charges=1 ae_template_ref=Approach effect_kind=apply_ae effect_label=ap_tick target_ref=self",
+    "ae_duplicate_mode=replace ae_template_ref=In Melee Range effect_kind=apply_ae effect_label=ap_melee target_ref=self",
+    "action_ref=Approach effect_kind=play_animation effect_label=ap_slide target_ref=ap_target",
+    "candidate_source=combat category=enemy effect_kind=targeting effect_label=ap_target exclude_self=true mode=all target_filter=AE_CHARGES_MARKED > 0"
+   ],
+   "reactions": [
+    "condition_formula=AE_CHARGES_APPROACH < 2 reaction_effect_ref=ap_step reaction_isPassive=true reaction_passive_mode=force reaction_source=self reaction_trigger=turn_start",
+    "condition_formula=AE_CHARGES_APPROACH >= 2 reaction_effect_ref=ap_arrive reaction_isPassive=true reaction_passive_mode=force reaction_source=self reaction_trigger=turn_start"
+   ],
+   "aes": [
+    {
+     "name": "Approach",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "roo_clock"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": 3,
+     "changes": []
+    },
+    {
+     "name": "In Melee Range",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "roo_marker"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": 3,
+     "changes": []
+    },
+    {
+     "name": "Marked",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "roo_mark"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": 3,
+     "changes": []
+    }
+   ]
+  },
+  "Roo / Chef's Knife": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isReaction": "true",
+    "on_activate_effect_ref": "ck_knife",
+    "skill_range": "Melee",
+    "skill_target": "One Random Creature",
+    "skill_type": "Active"
+   },
+   "effects": [
+    "chain_steps=ck_cut, ck_mark effect_kind=chain effect_label=ck_knife",
+    "damage_amount=9999 damage_cause=damage damage_element=dark damage_keywords=ignore_immunity effect_kind=deal_damage effect_label=ck_cut target_ref=action_targets",
+    "ae_duplicate_mode=replace ae_template_ref=Knife Drawn effect_kind=apply_ae effect_label=ck_mark target_ref=self",
+    "action_pool_focus=true effect_kind=targeting effect_label=ck_focus focus_max_formula=AE_CHARGES_MARKED",
+    "chain_steps=ck_escaped, ck_vanish effect_kind=chain effect_label=ck_leave",
+    "condition_formula=ALLY_COUNT == 0 effect_kind=set_battle_outcome effect_label=ck_escaped outcome_value=escaped",
+    "effect_kind=leave_combat effect_label=ck_vanish target_ref=self"
+   ],
+   "reactions": [
+    "condition_formula=AE_COUNT_KNIFE_DRAWN > 0 reaction_effect_ref=ck_leave reaction_isPassive=true reaction_passive_mode=force reaction_source=self reaction_trigger=turn_end"
+   ],
+   "aes": [
+    {
+     "name": "Knife Drawn",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "roo_marker"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": null,
+     "changes": []
+    }
+   ]
+  },
+  "Roo / Empty Stare": {
+   "props": {
+    "class": "NPC",
+    "cost": "10 MP",
+    "defense_target_type": "mdef",
+    "duration": "3 Rounds",
+    "on_activate_effect_ref": "es_fear",
+    "skill_range": "Range",
+    "skill_target": "One Creature",
+    "skill_type": "Spell"
+   },
+   "effects": [
+    "ae_duplicate_mode=replace ae_template_ref=Frightened effect_kind=apply_ae effect_label=es_fear target_ref=action_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "Roo / Karma": {
+   "props": {
+    "class": "NPC",
+    "cost": "10 MP",
+    "defense_target_type": "mdef",
+    "duration": "Instantaneous",
+    "on_activate_effect_ref": "ka_karma",
+    "skill_range": "Range",
+    "skill_target": "One Creature",
+    "skill_type": "Spell"
+   },
+   "effects": [
+    "chain_steps=ka_roll, ka_hit, ka_curse effect_kind=chain effect_label=ka_karma",
+    "dice_count=1 dice_faces=100 effect_kind=roll_dice effect_label=ka_roll prompt_var=karma",
+    "damage_amount=VAR_KARMA damage_cause=damage damage_element=dark effect_kind=deal_damage effect_label=ka_hit target_ref=action_targets",
+    "ae_duplicate_mode=replace ae_template_ref=Cursed effect_kind=apply_ae effect_label=ka_curse target_ref=action_targets"
+   ],
+   "reactions": [],
+   "aes": []
   },
   "Roselie / Cataclysm": {
    "props": {
@@ -51624,6 +53759,71 @@
    "reactions": [],
    "aes": []
   },
+  "Succubus / Charm": {
+   "props": {
+    "class": "NPC",
+    "cost": "10 MP",
+    "defense_target_type": "mdef",
+    "duration": "3 Rounds",
+    "on_activate_effect_ref": "sc_charm",
+    "skill_range": "Range",
+    "skill_target": "One Enemy",
+    "skill_type": "Spell"
+   },
+   "effects": [
+    "chain_steps=sc_save,sc_hold,sc_tempt effect_kind=chain effect_label=sc_charm",
+    "effect_kind=save_check effect_label=sc_save save_attr1=ins save_attr2=wlp save_dl=15 target_ref=action_targets",
+    "ae_duplicate_mode=replace ae_template_ref=Charmed effect_kind=apply_ae effect_label=sc_hold target_ref=save_failed_targets",
+    "ae_duplicate_mode=replace ae_template_ref=Deadly Temptation effect_kind=apply_ae effect_label=sc_tempt target_ref=save_failed_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "Succubus / Draining Kiss": {
+   "props": {
+    "check_bonus": "5",
+    "class": "NPC",
+    "cost": "20 MP",
+    "damage_bonus": "32",
+    "defense_target_type": "mdef",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isOffensiveSpell": "true",
+    "isReaction": "true",
+    "rolled_atr1": "INS",
+    "rolled_atr2": "WLP",
+    "skill_range": "Melee",
+    "skill_target": "One Enemy",
+    "skill_type": "Spell",
+    "type_damage": "Dark"
+   },
+   "effects": [
+    "effect_kind=grant effect_label=sk_drain grant_amount=ceil(HP_DEALT * 0.5) grant_resource=hp target_ref=self"
+   ],
+   "reactions": [
+    "condition_formula=HP_DEALT > 0 reaction_effect_ref=sk_drain reaction_passive_mode=force reaction_source=self reaction_source_skill=Draining Kiss reaction_trigger=creature_deals_damage"
+   ],
+   "aes": []
+  },
+  "Succubus / Rake": {
+   "props": {
+    "check_bonus": "5",
+    "class": "NPC",
+    "damage_bonus": "18",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "WLP",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Dark"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
   "Surtur / Adrenaline": {
    "props": {
     "class": "Fury",
@@ -51738,9 +53938,12 @@
     "isReaction": "true",
     "skill_type": "Passive"
    },
-   "effects": [],
+   "effects": [
+    "action_ref=Attack effect_kind=free_action effect_label=ca_free free_hr_as_zero=true free_weapon_range=melee target_ref=trigger_attacker"
+   ],
    "reactions": [
-    "reaction_passive_mode=ask reaction_source=all reaction_trigger=creature_hit_by_action"
+    "condition_formula=ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT % 2 == 0 reaction_action_intent=harmful reaction_damage_source=enemy reaction_effect_ref=ca_free reaction_passive_mode=ask reaction_passive_target=self reaction_source=self reaction_trigger=creature_hit_by_action",
+    "condition_formula=ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT % 2 == 0 reaction_action_intent=harmful reaction_effect_ref=ca_free reaction_passive_mode=ask reaction_passive_target=self reaction_source=enemy reaction_trigger=creature_miss_action"
    ],
    "aes": []
   },
@@ -52809,9 +55012,12 @@
     "isReaction": "true",
     "skill_type": "Passive"
    },
-   "effects": [],
+   "effects": [
+    "action_ref=Attack effect_kind=free_action effect_label=ca_free free_hr_as_zero=true free_weapon_range=melee target_ref=trigger_attacker"
+   ],
    "reactions": [
-    "reaction_action_intent=harmful reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_hit_by_action"
+    "condition_formula=ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT % 2 == 0 reaction_action_intent=harmful reaction_damage_source=enemy reaction_effect_ref=ca_free reaction_passive_mode=ask reaction_passive_target=self reaction_source=self reaction_trigger=creature_hit_by_action",
+    "condition_formula=ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT % 2 == 0 reaction_action_intent=harmful reaction_effect_ref=ca_free reaction_passive_mode=ask reaction_passive_target=self reaction_source=enemy reaction_trigger=creature_miss_action"
    ],
    "aes": []
   },
@@ -54325,11 +56531,11 @@
    },
    "effects": [
     "candidate_source=self chain_steps=lion_cleanse effect_kind=chain effect_label=d_root",
-    "chain_steps=d_cost, d_untoken, d_mark_gen, d_mark_self, lion_cleanse count=1 effect_kind=remove_tagged_ae effect_label=lion_cleanse filter_tag=debuff target_ref=self",
-    "consume_amount=10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_LION_DANCE == 0) consume_resource=mp effect_kind=consume_resource effect_label=d_cost on_empty=abort target_ref=self",
-    "count=all effect_kind=remove_tagged_ae effect_label=d_untoken filter_tag=dance-token target_ref=self",
-    "ae_duplicate_mode=replace ae_template_ref=Dancing effect_kind=apply_ae effect_label=d_mark_gen target_ref=d_self",
-    "ae_duplicate_mode=replace ae_template_ref=Dancing Lion Dance effect_kind=apply_ae effect_label=d_mark_self target_ref=d_self",
+    "$deleted=true chain_steps=d_cost, d_untoken, d_mark_gen, d_mark_self, lion_cleanse count=1 effect_kind=remove_tagged_ae effect_label=lion_cleanse filter_tag=debuff target_ref=self",
+    "$deleted=true consume_amount=10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_LION_DANCE == 0) consume_resource=mp effect_kind=consume_resource effect_label=d_cost on_empty=abort target_ref=self",
+    "$deleted=true count=all effect_kind=remove_tagged_ae effect_label=d_untoken filter_tag=dance-token target_ref=self",
+    "$deleted=true ae_duplicate_mode=replace ae_template_ref=Dancing effect_kind=apply_ae effect_label=d_mark_gen target_ref=d_self",
+    "$deleted=true ae_duplicate_mode=replace ae_template_ref=Dancing Lion Dance effect_kind=apply_ae effect_label=d_mark_self target_ref=d_self",
     "count=1 effect_kind=remove_tagged_ae effect_label=lion_cleanse filter_tag=debuff target_ref=self"
    ],
    "reactions": [],
@@ -54540,11 +56746,11 @@
    },
    "effects": [
     "candidate_source=self chain_steps=ouro_turn effect_kind=chain effect_label=d_root",
-    "chain_steps=d_cost, d_untoken, d_mark_gen, d_mark_self, ouro_turn effect_kind=take_turn_next effect_label=ouro_turn target_ref=action_targets",
-    "consume_amount=10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_OUROBOROS_DANCE == 0) consume_resource=mp effect_kind=consume_resource effect_label=d_cost on_empty=abort target_ref=self",
-    "count=all effect_kind=remove_tagged_ae effect_label=d_untoken filter_tag=dance-token target_ref=self",
-    "ae_duplicate_mode=replace ae_template_ref=Dancing effect_kind=apply_ae effect_label=d_mark_gen target_ref=d_self",
-    "ae_duplicate_mode=replace ae_template_ref=Dancing Ouroboros Dance effect_kind=apply_ae effect_label=d_mark_self target_ref=d_self",
+    "$deleted=true chain_steps=d_cost, d_untoken, d_mark_gen, d_mark_self, ouro_turn effect_kind=take_turn_next effect_label=ouro_turn target_ref=action_targets",
+    "$deleted=true consume_amount=10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_OUROBOROS_DANCE == 0) consume_resource=mp effect_kind=consume_resource effect_label=d_cost on_empty=abort target_ref=self",
+    "$deleted=true count=all effect_kind=remove_tagged_ae effect_label=d_untoken filter_tag=dance-token target_ref=self",
+    "$deleted=true ae_duplicate_mode=replace ae_template_ref=Dancing effect_kind=apply_ae effect_label=d_mark_gen target_ref=d_self",
+    "$deleted=true ae_duplicate_mode=replace ae_template_ref=Dancing Ouroboros Dance effect_kind=apply_ae effect_label=d_mark_self target_ref=d_self",
     "effect_kind=take_turn_next effect_label=ouro_turn target_ref=action_targets"
    ],
    "reactions": [],
@@ -55689,6 +57895,65 @@
    "reactions": [],
    "aes": []
   },
+  "⭐️ Hilde-Fafnir / Dragoon Lance": {
+   "props": {
+    "check_bonus": "8",
+    "class": "NPC",
+    "damage_bonus": "52",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "MIG",
+    "rolled_atr2": "DEX",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Physical"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "⭐️ Hilde-Fafnir / Lance of Ruin": {
+   "props": {
+    "class": "NPC",
+    "cost": "50 MP",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "on_activate_effect_ref": "lr_lance",
+    "skill_range": "Any",
+    "skill_target": "All Enemies",
+    "skill_type": "Active"
+   },
+   "effects": [
+    "chain_steps=lr_ruin,lr_spend effect_kind=chain effect_label=lr_lance",
+    "damage_amount=CUR_HP - 1 damage_cause=damage damage_element=dark damage_ignore_affinity=true damage_keywords=crush effect_kind=deal_damage effect_label=lr_ruin target_ref=action_targets",
+    "ae_duplicate_mode=replace ae_template_ref=Lance Spent effect_kind=apply_ae effect_label=lr_spend target_ref=self"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "⭐️ Hilde-Fafnir / Wyrmbreath": {
+   "props": {
+    "check_bonus": "8",
+    "class": "NPC",
+    "cost": "40 MP",
+    "damage_bonus": "44",
+    "defense_target_type": "mdef",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isOffensiveSpell": "true",
+    "rolled_atr1": "INS",
+    "rolled_atr2": "WLP",
+    "skill_range": "Any",
+    "skill_target": "All Enemies",
+    "skill_type": "Spell",
+    "type_damage": "Dark"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
   "⭐️ Jack / Burning Arrow": {
    "props": {
     "active_effect_config_table": "#sha1:ac6f444926944642 (305 chars)",
@@ -56130,12 +58395,19 @@
     "custom_logic_action": "#sha1:73d82a6e3d4c6f40 (6997 chars)",
     "custom_logic_resolution": "#sha1:4551540d6b391e39 (3749 chars)",
     "defense_target_type": "def",
-    "duration": "Instantaneous",
+    "duration": "Scene",
+    "on_activate_effect_ref": "ryw_menu",
     "skill_range": "Range",
     "skill_target": "All Ally",
     "skill_type": "Spell"
    },
-   "effects": [],
+   "effects": [
+    "effect_kind=open_action_menu effect_label=ryw_menu menu_option_refs=ryw_strong, ryw_swift, ryw_awake, ryw_focus",
+    "ae_duplicate_mode=replace ae_template_ref=Strong effect_kind=apply_ae effect_label=ryw_strong target_ref=action_targets",
+    "ae_duplicate_mode=replace ae_template_ref=Swift effect_kind=apply_ae effect_label=ryw_swift target_ref=action_targets",
+    "ae_duplicate_mode=replace ae_template_ref=Awake effect_kind=apply_ae effect_label=ryw_awake target_ref=action_targets",
+    "ae_duplicate_mode=replace ae_template_ref=Focus effect_kind=apply_ae effect_label=ryw_focus target_ref=action_targets"
+   ],
    "reactions": [],
    "aes": []
   },
@@ -56502,9 +58774,12 @@
     "isReaction": "true",
     "skill_type": "Passive"
    },
-   "effects": [],
+   "effects": [
+    "action_ref=Attack effect_kind=free_action effect_label=ca_free free_hr_as_zero=true free_weapon_range=melee target_ref=trigger_attacker"
+   ],
    "reactions": [
-    "reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_hit_by_action"
+    "condition_formula=ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT % 2 == 0 reaction_action_intent=harmful reaction_damage_source=enemy reaction_effect_ref=ca_free reaction_passive_mode=ask reaction_passive_target=self reaction_source=self reaction_trigger=creature_hit_by_action",
+    "condition_formula=ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT % 2 == 0 reaction_action_intent=harmful reaction_effect_ref=ca_free reaction_passive_mode=ask reaction_passive_target=self reaction_source=enemy reaction_trigger=creature_miss_action"
    ],
    "aes": []
   },
@@ -56648,9 +58923,12 @@
     "isReaction": "true",
     "skill_type": "Passive"
    },
-   "effects": [],
+   "effects": [
+    "action_ref=Attack effect_kind=free_action effect_label=ca_free free_hr_as_zero=true free_weapon_range=melee target_ref=trigger_attacker"
+   ],
    "reactions": [
-    "reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_hit_by_action"
+    "condition_formula=ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT % 2 == 0 reaction_action_intent=harmful reaction_damage_source=enemy reaction_effect_ref=ca_free reaction_passive_mode=ask reaction_passive_target=self reaction_source=self reaction_trigger=creature_hit_by_action",
+    "condition_formula=ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT % 2 == 0 reaction_action_intent=harmful reaction_effect_ref=ca_free reaction_passive_mode=ask reaction_passive_target=self reaction_source=enemy reaction_trigger=creature_miss_action"
    ],
    "aes": []
   },
