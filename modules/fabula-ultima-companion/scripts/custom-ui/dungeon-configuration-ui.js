@@ -708,7 +708,7 @@
                   <input type="number" class="oni-depth-far-y" step="1"
                          name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${DEPTH_FAR_Y_KEY}"
                          placeholder="scene top" style="flex:0 0 120px;" />
-                  <button type="button" class="oni-pick-depth-y" data-depth-target="far" style="flex-shrink:0;">
+                  <button type="button" class="oni-pick-depth-y" data-depth-target="far" style="flex:0 0 auto;white-space:nowrap;">
                     <i class="fas fa-crosshairs"></i> Pick on map
                   </button>
                 </div>
@@ -724,7 +724,7 @@
                   <input type="number" class="oni-depth-near-y" step="1"
                          name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${DEPTH_NEAR_Y_KEY}"
                          placeholder="scene bottom" style="flex:0 0 120px;" />
-                  <button type="button" class="oni-pick-depth-y" data-depth-target="near" style="flex-shrink:0;">
+                  <button type="button" class="oni-pick-depth-y" data-depth-target="near" style="flex:0 0 auto;white-space:nowrap;">
                     <i class="fas fa-crosshairs"></i> Pick on map
                   </button>
                 </div>
