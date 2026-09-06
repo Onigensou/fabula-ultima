@@ -841,6 +841,11 @@ export function gmOverrideDeltaRows(perTargetResults, gmOverride) {
       tokenUuid: row.tokenUuid ?? null, actorUuid: row.actorUuid ?? null,
       defense: row.defense, hit: !!row.hit, crit: !!row.crit,
       damage: row.damage, affinity: row.affinity ?? null,
+      // Fickle (see check.js): this delta drives the repaint on the GM card AND
+      // on every player mirror. Without the chance the shared patcher falls back
+      // to resultLabelFor's HIT/MISS branch, so a GM hand-setting a verdict would
+      // print the concealed outcome to the whole table.
+      ...(typeof row.hitChance === "number" ? { hitChance: row.hitChance } : {}),
       fields: {
         hit: ov.hit === true || ov.hit === false,
         damage: toInt(ov.damage) != null,

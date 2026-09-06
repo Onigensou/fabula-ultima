@@ -25,7 +25,7 @@ import { applyAffinityToDamage, readWeaponEfficiency, snapshotTargetForToken, re
 import { applyClassAffinityAndMult, crushAffinity,
   bypassAffinity, affinityBypassRank } from "./damage-ruleset.js";
 import { resolveResourceDef } from "./resources.js";
-import { deriveCheck, decideHit } from "./check.js";
+import { deriveCheck, decideHit, buildCheckDistribution, checkHitChance } from "./check.js";
 import { applyGmDamageInput, gmDamageInput, applyGmPrimaryOverrides } from "./gm-card-override.js";
 import { previewEffectRow, resolveDamageElementOverride,
   computeSenderDamageBonuses, applyDamageOp, describeGrant,
@@ -123,6 +123,22 @@ function makeStudiedGate(attacker) {
 function parseActionKeywords(view) {
   const raw = view?.source?.system?.props?.action_keywords ?? "";
   return String(raw).split(/[,\n]+/).map((s) => s.trim().toLowerCase()).filter(Boolean);
+}
+
+// Every inherent action keyword that applies to THIS action, from both places one
+// can live: the action's own item props and — for an Attack, whose `view.source`
+// is null — the weapon snapshot. describePrimary already unions these, but only
+// on the damage path: it returns early for a restore / status / pure-Check action
+// without a `keywords` array at all. Keywords that speak to the CHECK rather than
+// to damage (Fickle) must be readable there too, so the union lives here.
+function collectActionKeywords({ view, weapon, kind, primary = null }) {
+  const set = new Set(Array.isArray(primary?.keywords) ? primary.keywords : []);
+  for (const k of parseActionKeywords(view)) set.add(k);
+  if (kind === "Attack") {
+    for (const k of String(weapon?.actionKeywords ?? "")
+      .split(/[,\n]+/).map((s) => s.trim().toLowerCase()).filter(Boolean)) set.add(k);
+  }
+  return [...set];
 }
 
 function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = null, chainVars = null }) {
@@ -329,6 +345,25 @@ function computeCheck({ view, ar, attacker, weapon, primary, liveAttacker, dice,
     check.invertHit = false;
   }
 
+  // `Fickle` — CONCEAL this action's accuracy. The dice read "?", the total reads
+  // as the range it could have been, and each target row shows a chance to hit
+  // instead of HIT/MISS. Display-only: nothing here touches the verdict.
+  //
+  // Stamped on the CHECK for the same reason `invertHit` above is — every
+  // recompute mirror (reaction accuracy/defense overrides, the invoke reroll, the
+  // card-mutation DOM patchers) reads the action's roll, so a flag carried there
+  // survives a reaction rewriting the card by construction. A flag passed as an
+  // argument would have to be remembered at each of those sites, and forgetting
+  // one un-hides the roll mid-action — exactly the failure Fickle exists to
+  // prevent.
+  check.fickle = collectActionKeywords({ view, weapon, kind, primary }).includes("fickle");
+  if (check.fickle) {
+    check.fickleDist = buildCheckDistribution({
+      dA, dB, props, fumbleThreshold: fumbleThr, checkBonus: baseBonus,
+    });
+    check.fickleRange = { min: check.fickleDist.min, max: check.fickleDist.max };
+  }
+
   if (!required && kind !== "Hinder" && kind !== "Study") {
     // Auto-hit skill — no roll. Leave dice null.
     return check;
@@ -373,6 +408,13 @@ function computeCheck({ view, ar, attacker, weapon, primary, liveAttacker, dice,
 // against the FINAL verdict, so a GM-forced miss on a pierce action still deals
 // its half damage — the GM overruled the hit, not the keyword.
 function resolveTargetOutcome({ check, kind, primary, defStat, rolled, isPreRoll, hitOverride = null }) {
+  // Fickle: the odds this row shows INSTEAD of its verdict, derived here in the
+  // shared hit decision so it can never disagree with the `hit` beside it about
+  // which total and which defence were compared. Null when the action is not
+  // Fickle, when no Check was rolled, or when the roll CRIT (which reveals).
+  const _hitChance = (check.fickle && rolled)
+    ? checkHitChance(check, check.total, defStat)
+    : null;
   let hit = !rolled;            // auto-hit when no roll required
   let pierceMiss = false;
   if (rolled) {
@@ -397,6 +439,9 @@ function resolveTargetOutcome({ check, kind, primary, defStat, rolled, isPreRoll
     margin: rolled ? (check.total - defStat) : null,
     gmForced,
     tier: null, source: null,
+    // checkHitChance returns null for a revealed Critical, so the key is simply
+    // absent there and the row falls through to its normal HIT/damage verb.
+    ...(_hitChance == null ? {} : { hitChance: _hitChance }),
   };
   return { hit, pierceMiss, outcome };
 }
@@ -1102,6 +1147,7 @@ function flattenRow(r, kind) {
       hit: !!o.hit, crit: !!o.crit, affinity: "NE", studied: t.studied ?? true,
       grantAmount: heal.value, grantResource: heal.resource,
       resourceCur: heal.resourceCur, resourceMax: heal.resourceMax,
+      ...(typeof o.hitChance === "number" ? { hitChance: o.hitChance } : {}),
       ...(heal.vismagusSuppressed ? { vismagusSuppressed: true } : {}),
     };
   }
@@ -1114,6 +1160,8 @@ function flattenRow(r, kind) {
     tokenUuid: t.tokenUuid, actorUuid: t.actorUuid, name: t.name, tokenImg: t.img,
     disposition: t.disposition, defense: t.defenseShown ?? 0,
     hit: !!o.hit, crit: !!o.crit, affinity: dmg.affinity ?? "NE", studied: t.studied ?? true,
+    // Only present on a Fickle action, so a normal row keeps its exact shape.
+    ...(typeof o.hitChance === "number" ? { hitChance: o.hitChance } : {}),
   };
   const out = {
     damageModParts: dmg.breakdown ?? [],
@@ -1153,6 +1201,16 @@ export function projectProfileToActionResult(profile, baseAr = {}, targets = nul
       // recompute mirror (which reads ar.roll) would silently fall back to the
       // normal rule and flip a Trick hit into a miss.
       ...(check.invertHit ? { invertHit: true } : {}),
+      // Fickle rides the roll for the same reason, and carries the distribution
+      // with it: every recompute mirror needs to re-derive the odds, and they all
+      // already hold the roll. The baseline the odds are measured against is
+      // DERIVED from rA + rB + checkBonus in checkHitChance, never carried — see
+      // the note there on why a stored copy goes stale on a reroll.
+      ...(check.fickle ? {
+        fickle: true,
+        fickleDist: check.fickleDist ?? null,
+        fickleRange: check.fickleRange ?? null,
+      } : {}),
     };
   }
 
@@ -1169,9 +1227,14 @@ export function projectProfileToActionResult(profile, baseAr = {}, targets = nul
   // base / baseParts / finalIfHit so the Damage Preview tooltip itemizes the
   // bonus and its "Final on hit" matches the actual per-target total instead of
   // omitting it. Per-target rows still carry their own exact numbers.
+  // Fickle: take the FIRST row, hit or not. The headline is a preview of what the
+  // action would do, and gating it on `hit` makes the printed range and element
+  // change depending on whether anything landed — a hit/miss tell that survives
+  // every display gate downstream, because it is baked into the number itself.
+  const _fickleRep = !!check.fickle;
   const repReactionParts = (() => {
     for (const r of (profile.perTarget ?? [])) {
-      if (!r.outcome?.hit) continue;
+      if (!_fickleRep && !r.outcome?.hit) continue;
       const dmg = (r.effects ?? []).find((x) => x.type === "resource_delta" && x.valence === "harmful" && x.damageClass === "primary");
       if (dmg && Array.isArray(dmg.reactionParts) && dmg.reactionParts.length) return dmg.reactionParts;
     }
@@ -1188,7 +1251,7 @@ export function projectProfileToActionResult(profile, baseAr = {}, targets = nul
   // numeric repReactionParts fold above).
   const repOverrideElement = (() => {
     for (const r of (profile.perTarget ?? [])) {
-      if (!r.outcome?.hit) continue;
+      if (!_fickleRep && !r.outcome?.hit) continue;   // Fickle — see _fickleRep above
       const dmg = (r.effects ?? []).find((x) => x.type === "resource_delta" && x.valence === "harmful" && x.damageClass === "primary");
       if (dmg && dmg.overrideElement) return dmg.overrideElement;
     }
@@ -1390,6 +1453,10 @@ export async function recomputeActionProfile({ ar, targets = null, acceptedReact
         row.rawDamage = newHit ? row.rawDamage : 0;
         row.damage = newHit ? row.damage : 0;
         row.accuracyBlocked = !newHit;
+        // Fickle: the shown odds move with the boosted total, or the row would
+        // keep advertising the pre-reaction chance.
+        const newChance = checkHitChance(ar.roll, newTotal, def);
+        if (newChance == null) delete row.hitChance; else row.hitChance = newChance;
         if (newHit && row.tokenUuid) newHits.push(row.tokenUuid);
       }
       delta.hitTokenUuids = newHits;
@@ -1421,6 +1488,9 @@ export async function recomputeActionProfile({ ar, targets = null, acceptedReact
         row.crit = isCrit && newHit;
         row.rawDamage = newHit ? row.rawDamage : 0;
         row.damage = newHit ? row.damage : 0;
+        // Fickle: re-derive against the RAISED defence (see the accuracy twin).
+        const newChance = checkHitChance(ar.roll, effTotal, newDef);
+        if (newChance == null) delete row.hitChance; else row.hitChance = newChance;
       }
       // Rebuild the hit list from the final per-target state (covers a +DEF miss).
       if (flipped) delta.hitTokenUuids = delta.perTargetResults.filter((r) => r.hit && r.tokenUuid).map((r) => r.tokenUuid);

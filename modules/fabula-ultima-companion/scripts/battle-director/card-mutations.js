@@ -39,7 +39,7 @@
 
 import { log, warn } from "./logger.js";
 import { resolveTargetRef as resolveBdTargetRef, makeChainContext as makeBdChainContext } from "./skill-targeting.js";
-import { deriveCheck, decideHit } from "./check.js";
+import { deriveCheck, decideHit, checkHitChance } from "./check.js";
 import { resolvesVsMagicDefense } from "./snapshot.js";
 import {
   composeGmRoll, gmDamageInput, composeGmDefenseOverrides, gmHitOverrideMap,
@@ -242,6 +242,14 @@ function recomputePerTargetForRedirect({ ar, reactor, reactorTok, applyAffinityT
     damage: finalDamage,
     affinity: affinityCode,
     studied: false,
+    // Fickle: a redirect (Protect) moves the action onto a DIFFERENT defence, so
+    // the odds are re-derived for the new defender. This row is hand-built rather
+    // than run through buildPerTarget, so the stamp has to be repeated here — the
+    // alternative is a redirected row that reveals HIT/MISS on a concealed action.
+    ...(() => {
+      const c = checkHitChance(ar.roll, total, newDef);
+      return c == null ? {} : { hitChance: c };
+    })(),
   };
 }
 
@@ -828,7 +836,10 @@ async function applyAdjustAccuracyMutation(ctx, cand, row) {
     // Decide this target's hit against the composed total (shared rule: crit
     // hits, fumble misses, else total ≥ def — and a checkless action auto-hits).
     const newHit = decideHit(ctx.ar?.roll, newTotal, def);
-    ctx.perTargets[i] = {
+    // Fickle: the % this row shows moves with the composed total. Absent on a
+    // normal action (checkHitChance returns null), so the row shape is unchanged.
+    const newChance = checkHitChance(ctx.ar?.roll, newTotal, def);
+    const nextRow = {
       ...pt,
       hit: newHit,
       crit: isCrit && newHit,
@@ -836,6 +847,8 @@ async function applyAdjustAccuracyMutation(ctx, cand, row) {
       damage: newHit ? pt.damage : 0,
       accuracyBlocked: !newHit,
     };
+    if (newChance == null) delete nextRow.hitChance; else nextRow.hitChance = newChance;
+    ctx.perTargets[i] = nextRow;
   }
 
   const parts = Array.isArray(prev?.parts) ? [...prev.parts] : [];
@@ -1130,9 +1143,11 @@ async function applyAdjustDefenseMutation(ctx, cand, row) {
   const oldDef = Number(pt.defense ?? 10);
   const newDef = applyDefenseOp(oldDef, op, amount);
   const newHit = decideHit(ctx.ar?.roll, accuracyTotal, newDef);
+  // Fickle: re-derive the shown odds against the RAISED defence (see adjust_accuracy).
+  const newChance = checkHitChance(ctx.ar?.roll, accuracyTotal, newDef);
   const via = cand?.carrierName ?? cand?.reactorActorName ?? "reaction";
 
-  ctx.perTargets[idx] = {
+  const nextDefRow = {
     ...pt,
     defense: newDef,
     hit: newHit,
@@ -1141,6 +1156,8 @@ async function applyAdjustDefenseMutation(ctx, cand, row) {
     damage: newHit ? pt.damage : 0,
     defenseOverride: { from: oldDef, to: newDef, via, reactorName: cand?.reactorActorName ?? null },
   };
+  if (newChance == null) delete nextDefRow.hitChance; else nextDefRow.hitChance = newChance;
+  ctx.perTargets[idx] = nextDefRow;
   log(`adjust_defense: ${op} ${amount} on ${pt.name ?? reactorUuid} — DEF ${oldDef} → ${newDef}; hit ${pt.hit ? "Y" : "N"}→${newHit ? "Y" : "N"} (via ${via})`);
   return "applied";
 }
@@ -1819,6 +1836,26 @@ export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = 
       checkBonus: (Number(ar.roll.checkBonus) || 0) + sumParts,
       checkBonusParts: [...(ar.roll.checkBonusParts ?? []), ...accuracyOverride.parts],
       total: Number(accuracyOverride.to),
+    };
+  }
+  // Fickle (see check.js): the concealment fields ride `ar.roll`. The GM-roll and
+  // check_reroll branches above build a FRESH object from a different source, so
+  // they would drop them — and the card re-renders its accuracy fieldset FROM
+  // this object, so the panel would un-hide itself the moment a reaction touched
+  // the check. That is precisely the failure mode "Fickle must survive reactions"
+  // names, so re-graft here rather than at each branch.
+  //
+  // The shown RANGE moves with any check bonus the override added: the
+  // distribution was enumerated at the base bonus, a reroll leaves the bonus (and
+  // so the range) alone, and an accuracy bump shifts the whole curve.
+  if (accuracyRoll && ar?.roll?.fickle) {
+    const shift = (Number(accuracyRoll.checkBonus) || 0) - (Number(ar.roll.checkBonus) || 0);
+    const baseRange = ar.roll.fickleRange ?? null;
+    accuracyRoll = {
+      ...accuracyRoll,
+      fickle: true,
+      fickleDist: ar.roll.fickleDist ?? null,
+      fickleRange: baseRange ? { min: baseRange.min + shift, max: baseRange.max + shift } : null,
     };
   }
   // DEF vs MDEF for the re-rendered accuracy fieldset (icon + "vs Defense" text).

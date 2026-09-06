@@ -7,7 +7,7 @@
 // Dynamically imported by action-card.js on first invoke click.
 
 import { log, warn } from "../logger.js";
-import { decideHit } from "../check.js";
+import { decideHit, checkHitChance, isConcealedRoll } from "../check.js";
 import { freezeActionResult } from "../snapshot.js";
 import {
   canPay, payPoint, readActorBonds,
@@ -76,7 +76,12 @@ async function recomputeArAfterInvoke(ar, newRoll) {
     perTargetResults = (ar.perTargetResults ?? []).map((r) => {
       const def = r.defense ?? 0;
       const hit = decideHit(newRoll, newRoll.total, def);   // shared hit rule
-      return { ...r, isCrit: newRoll.isCrit, isFumble: newRoll.isFumble, hit };
+      const chance = checkHitChance(newRoll, newRoll.total, def);   // Fickle only
+      const next = { ...r, isCrit: newRoll.isCrit, isFumble: newRoll.isFumble, hit };
+      // A reroll that CRITS reveals the outcome, so any percentage the row was
+      // carrying has to go with it.
+      if (chance == null) delete next.hitChance; else next.hitChance = chance;
+      return next;
     });
   }
 
@@ -97,16 +102,38 @@ async function recomputeArAfterInvoke(ar, newRoll) {
 export function patchCardDom(root, newAr, invokeState) {
   const roll = newAr.roll;
   if (!roll) return;
+  // Fickle (see check.js): the accuracy of this action is CONCEALED. An invoke
+  // re-rolls it, and every write below would repaint the panel with the real
+  // faces / total / crit banner — un-hiding mid-action the one thing the keyword
+  // exists to hide. The dice, the total and the crit-fumble surfaces are left
+  // exactly as buildAccuracyHTML drew them; only the per-target rows repaint,
+  // and those now carry the recomputed CHANCE rather than a verdict.
+  const concealed = isConcealedRoll(roll);
 
   try {
     // ── Accuracy: die results ────────────────────────────────────────────────
-    const dieBlocks = root.querySelectorAll(".fud-bf-acc-row .die-block");
-    if (dieBlocks[0]) dieBlocks[0].querySelector(".die-result").textContent = roll.rA;
-    if (dieBlocks[1]) dieBlocks[1].querySelector(".die-result").textContent = roll.rB;
+    if (!concealed) {
+      const dieBlocks = root.querySelectorAll(".fud-bf-acc-row .die-block");
+      if (dieBlocks[0]) dieBlocks[0].querySelector(".die-result").textContent = roll.rA;
+      if (dieBlocks[1]) dieBlocks[1].querySelector(".die-result").textContent = roll.rB;
+    }
 
     // ── Accuracy: total (animated number roll + bounce) ──────────────────────
-    const totalEl = root.querySelector(".fud-bf-acc-row .total");
-    if (totalEl) animateAccTotal(totalEl, roll.total);
+    // Concealed: never the number — but the BAND still has to follow. A committed
+    // Bond folds its bonus in before the histogram is rebuilt, so the range really
+    // does move (7–23 → 10–26 for +3); skipping the write left the card asserting
+    // a range that was no longer true, next to a bonus pill that had already
+    // updated. Written directly, not tweened: it is a range, not a number.
+    if (concealed) {
+      const bandEl = root.querySelector(".fud-bf-acc-row .total");
+      const range = roll.fickleRange;
+      if (bandEl && range && Number.isFinite(Number(range.min)) && Number.isFinite(Number(range.max))) {
+        bandEl.textContent = `${Number(range.min)}–${Number(range.max)}`;
+      }
+    } else {
+      const totalEl = root.querySelector(".fud-bf-acc-row .total");
+      if (totalEl) animateAccTotal(totalEl, roll.total);
+    }
 
     // ── Accuracy: checkBonus pill ─────────────────────────────────────────────
     const accRow = root.querySelector(".fud-bf-acc-row");
@@ -128,7 +155,7 @@ export function patchCardDom(root, newAr, invokeState) {
     }
 
     // ── Accuracy: crit/fumble class + float banner ───────────────────────────
-    const accDiv = root.querySelector(".fud-bf-acc");
+    const accDiv = concealed ? null : root.querySelector(".fud-bf-acc");
     if (accDiv) {
       accDiv.classList.toggle("is-crit",   roll.isCrit && !roll.isFumble);
       accDiv.classList.toggle("is-fumble", !!roll.isFumble);
@@ -163,9 +190,13 @@ export function patchCardDom(root, newAr, invokeState) {
     const dmgNumber = root.querySelector(".fud-bf-dmg-number");
     if (dmgNumber && newAr.damage) {
       const ignoreHR = !!newAr.damage.ignoreHR;
-      const shown    = roll.isFumble ? "—" : (newAr.damage.finalIfHit ?? 0);
-      const hrPill   = (!ignoreHR && !roll.isFumble) ? `<span class="hr-pill">+HR</span>` : "";
-      dmgNumber.innerHTML = `${shown}${hrPill}`;
+      // Concealed: `finalIfHit` is HR + base, so printing it hands back the High
+      // Roll by subtraction. Leave the range buildDamagePreviewHTML drew.
+      if (!concealed || ignoreHR) {
+        const shown  = (!concealed && roll.isFumble) ? "—" : (newAr.damage.finalIfHit ?? 0);
+        const hrPill = (!ignoreHR && !roll.isFumble) ? `<span class="hr-pill">+HR</span>` : "";
+        dmgNumber.innerHTML = `${shown}${hrPill}`;
+      }
     }
 
     // ── Per-target result rows (index-ordered, same order as perTargetResults) ─
@@ -224,7 +255,15 @@ export async function handleInvokeTrait({ director, ar, root, invokeState, prePi
     ui.notifications?.warn("No accuracy roll to reroll.");
     return false;
   }
-  if (ar.roll.isFumble) {
+  // Fickle (see check.js): this refusal NAMES the fumble, and it fires before the
+  // point is paid — so unlocking the button without this branch just moved the
+  // leak from a lock icon to a toast. Under concealment the invoke goes through
+  // and the point IS spent: a Fumble still auto-misses, so the reroll buys the
+  // actor nothing, and that is the bet the keyword asks them to make. The
+  // alternative — a silent refusal — is equally a tell (nothing happens), and
+  // keeping the lock is the tell we started from. There is no third option that
+  // both conceals and protects the point.
+  if (ar.roll.isFumble && !isConcealedRoll(ar.roll)) {
     ui.notifications?.warn("Invoke Trait cannot be used on a Fumble.");
     return false;
   }
@@ -301,7 +340,7 @@ export async function handleInvokeBond({ director, ar, root, invokeState, prePic
     ui.notifications?.warn("No accuracy roll to modify.");
     return false;
   }
-  if (ar.roll.isFumble) {
+  if (ar.roll.isFumble && !isConcealedRoll(ar.roll)) {   // Fickle — see the Trait twin above
     ui.notifications?.warn("Invoke Bond cannot be used on a Fumble.");
     return false;
   }

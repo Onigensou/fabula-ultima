@@ -218,3 +218,143 @@ export const decideHit = (roll, total, defense) =>
   : roll.isFumble ? false
   : roll.invertHit ? Number(total) < Number(defense ?? 10)
   : Number(total) >= Number(defense ?? 10);
+
+// ── Fickle: the concealed check ──────────────────────────────────────────────
+// The `Fickle` action keyword hides an action's accuracy: the card shows "?" for
+// each die and the possible TOTAL RANGE instead of the rolled total, and each
+// per-target row shows a CHANCE TO HIT instead of HIT/MISS. Nothing about the
+// mechanics changes — the real roll still decides, it is simply not shown.
+//
+// Concealment only works if the % is honest, so the chance is enumerated over
+// the ACTUAL die faces through `deriveCheck` — the same rule that produced the
+// real roll — rather than approximated. dA/dB are ≤ d12, so this is ≤ 144 cheap
+// iterations, run ONCE per action at check time.
+//
+// Returns { n, crit, fumble, counts, min, max }: `counts` is a histogram of the
+// non-terminal totals (a Critical always hits and a Fumble always misses, so
+// they are counted separately and never compared to a defense). Histogram, not a
+// flat list — this object rides the action result into every player mirror's
+// broadcast, so it stays ~20 keys instead of 144 entries.
+export function buildCheckDistribution({ dA, dB, props = null, fumbleThreshold = 1, checkBonus = 0 } = {}) {
+  const sa = Math.max(1, Number(dA) || 0);
+  const sb = Math.max(1, Number(dB) || 0);
+  // A PLAIN object, not Object.create(null): this rides the actionResult through
+  // freezeActionResult and the structured-clone broadcast to every player mirror,
+  // and Foundry's own deep-walk helpers assume an ordinary prototype. Keys are
+  // stringified integers, so there is nothing for a prototype key to collide with.
+  const counts = {};
+  let n = 0, crit = 0, fumble = 0, min = Infinity, max = -Infinity;
+  for (let a = 1; a <= sa; a++) {
+    for (let b = 1; b <= sb; b++) {
+      const d = deriveCheck({ rA: a, rB: b, props, fumbleThreshold, checkBonus });
+      n++;
+      if (d.total < min) min = d.total;
+      if (d.total > max) max = d.total;
+      if (d.isCrit) { crit++; continue; }
+      if (d.isFumble) { fumble++; continue; }
+      counts[d.total] = (counts[d.total] ?? 0) + 1;
+    }
+  }
+  // The bonus the histogram was ENUMERATED at, carried with it. checkHitChance
+  // measures a later adjustment against this rather than against whatever
+  // `roll.checkBonus` currently says — see the note there.
+  return { n, crit, fumble, counts, checkBonus: Number(checkBonus) || 0,
+           min: n ? min : 0, max: n ? max : 0 };
+}
+
+// Chance (0..1) that a Fickle action hits `defense`, or null when the roll is
+// not Fickle. Deliberately shaped like `decideHit` — same argument order, same
+// call sites — because every place that decides a hit must also refresh the
+// chance, or a reaction that moves the accuracy total / the target's defense
+// would leave a stale percentage standing next to a changed verdict.
+//
+// `total` is the EFFECTIVE accuracy total being compared (post accuracy-override).
+// The distribution was enumerated from the unmodified check, so the gap between
+// `total` and the roll's OWN unmodified total is the shift a reaction applied, and
+// every outcome in the histogram moves by it — which is exactly how an
+// adjust_accuracy changes the odds, not just the one rolled result.
+//
+// That base is reconstructed from the DICE plus the bonus the DISTRIBUTION was
+// enumerated at (`dist.checkBonus`) — never from a stored total, and never from
+// the roll's CURRENT checkBonus. Both alternatives are wrong in opposite
+// directions, and both were shipped and caught:
+//
+//   • A stored base goes stale the moment something REPLACES the dice.
+//     check_reroll and set_check_die rebuild the roll as `{ ...roll, rA, rB,
+//     total }`, so a carried-over base survives against a new total and the
+//     shift becomes the reroll's delta — the percentage would literally encode
+//     how far the reroll moved the number (21 → 8 reading as 71% → 4%), off a
+//     panel that claims the roll is hidden.
+//
+//   • The roll's CURRENT checkBonus goes stale the other way, when something
+//     adds to the bonus WITHOUT re-enumerating. A GM typing "+5 accuracy"
+//     produces a roll whose checkBonus and total both already contain the +5, so
+//     base === total, the shift computes as zero, and the odds stay put while the
+//     displayed range moves — two numbers on one card disagreeing about the same
+//     action.
+//
+// `dist.checkBonus` is immune to both: it moves only when the histogram is
+// actually rebuilt (which computeCheck does when it folds a committed Bond bonus
+// in), so a dice swap shifts by zero and a bonus laid on top shifts by exactly
+// that bonus.
+// Is this roll's outcome hidden from the table right now?
+//
+// THE SINGLE PREDICATE every display surface asks. Fickle hides the roll — with
+// one exception, which is a game rule rather than a rendering detail: a CRITICAL
+// announces itself as normal. A crit is a spectacle, and it auto-hits every
+// target, so there is nothing left to be uncertain about; the keyword's tension
+// lives in the ordinary rolls and the fumbles, which stay hidden.
+//
+// Routing every surface through one function is what makes that exception cheap.
+// The crit banner, the Opportunity note, the cut-in, the real dice and total, the
+// per-target verbs and the crit-gated reaction pills all come back on a crit
+// because each of them is already gated on "is this concealed", not on "is this
+// Fickle". It also closes a leak by construction: a reaction row conditioned on
+// ATTACK_IS_CRIT renders only on a crit, so its mere presence used to announce
+// the hidden outcome. Now a crit is public, so the pill tells nobody anything
+// they were not already being shown.
+export function isConcealedRoll(roll) {
+  if (!roll?.fickle) return false;
+  return !(roll.isCrit && !roll.isFumble);
+}
+
+export function checkHitChance(roll, total, defense) {
+  // A revealed Critical shows its real verdict, so there is no chance to quote —
+  // null here is what stops every caller stamping `hitChance` onto those rows,
+  // which is what lets resultLabelFor fall through to the normal HIT/damage verb.
+  if (!isConcealedRoll(roll)) return null;
+  const dist = roll?.fickleDist;
+  if (!dist || !dist.n) return null;
+  const def = Number(defense ?? 10);
+  const rA = Number(roll.rA), rB = Number(roll.rB);
+  // Pre-roll (dice not yet known) has no base to measure against — no shift.
+  const base = (Number.isFinite(rA) && Number.isFinite(rB))
+    ? rA + rB + (Number(dist.checkBonus) || 0)
+    : NaN;
+  const eff = Number(total);
+  const shift = (Number.isFinite(base) && Number.isFinite(eff)) ? eff - base : 0;
+  return chanceAtShift(dist, shift, def, !!roll.invertHit);
+}
+
+// The histogram lookup itself, with the shift given outright. Split out because a
+// caller can know the shift directly and NOT the base — the Bond hover preview on
+// a player mirror is exactly that: it knows the bonus it is previewing, and it
+// must not need the concealed dice to work out what that bonus buys.
+export function chanceAtShift(dist, shift, defense, inverted = false) {
+  if (!dist || !dist.n) return null;
+  const def = Number(defense ?? 10);
+  const d = Number(shift) || 0;
+  let hits = dist.crit;                       // a Critical always hits
+  for (const key of Object.keys(dist.counts ?? {})) {
+    const v = Number(key) + d;
+    if (inverted ? v < def : v >= def) hits += dist.counts[key];
+  }
+  return hits / dist.n;                       // Fumbles are absent → never hit
+}
+
+// Percent string for a card ("62%"). Kept beside the math so the GM card, the
+// player mirror and the tooltips can never round differently.
+export function formatHitChance(chance) {
+  const p = Math.round((Number(chance) || 0) * 100);
+  return `${Math.max(0, Math.min(100, p))}%`;
+}

@@ -33,6 +33,7 @@ import { resourceLabel } from "./resources.js";
 import { computeEffectiveCost, formatCostMap } from "./skill-cost.js";
 import { displayElement } from "./skill-formulas.js";
 import { lookupTerm } from "./keyword-registry.js";
+import { formatHitChance, isConcealedRoll } from "./check.js";
 import { toggleKeywordTooltip, dismissKeywordTooltip } from "./keyword-tooltip.js";
 import { isAutoFireReactionMode } from "./reaction-modes.js";
 import { resolvesVsMagicDefense, freezeActionResult, hasUnconditionalTargetBlock } from "./snapshot.js";
@@ -545,6 +546,44 @@ export function ensureStyles() {
       color: #1f1f1f;
       text-shadow: 0 0 9px rgba(0, 0, 0, 0.45);
     }
+    /* Fickle — the roll is concealed (see check.js). The dice read "?" and the
+       total slot holds a RANGE ("5 - 27"), which is roughly three times as wide
+       as a total, so it is shrunk to fit the slot the way .is-blocked's word is.
+       Violet, distinct from the crit red / fumble black it stands in place of. */
+    .fud-bf-card .fud-bf-acc.is-fickle .total {
+      font-size: 15px;
+      letter-spacing: 0;
+      white-space: nowrap;
+      color: #6b3fa0;
+      text-shadow: 0 0 9px rgba(107, 63, 160, 0.35);
+    }
+    /* The range needs the width the spacer was hogging: let the spacer collapse
+       to nothing and the total-wrap refuse to shrink, so the band is never cut
+       off at the card edge (it was rendering as "7 - 2"). */
+    .fud-bf-card .fud-bf-acc.is-fickle .fud-bf-acc-row { gap: 4px; }
+    .fud-bf-card .fud-bf-acc.is-fickle .fud-bf-acc-row .spacer { flex: 0 1 4px; min-width: 0; }
+    .fud-bf-card .fud-bf-acc.is-fickle .fud-bf-acc-row .total-wrap { flex: 0 0 auto; margin-left: auto; }
+    .fud-bf-card .fud-bf-acc.is-fickle .fud-bf-acc-row .strike-icon { width: 18px; height: 18px; }
+    /* "?" is narrower than a two-digit face — reclaim the reserved width. */
+    .fud-bf-card .fud-bf-acc.is-fickle .die-block .die-result { min-width: 10px; }
+    .fud-bf-card .fud-bf-acc.is-fickle .die-block .die-result {
+      color: #6b3fa0;
+      font-style: italic;
+    }
+    /* Sits where the Opportunity note does, and reads calmer — it is a standing
+       property of the action, not an event that just happened. */
+    .fud-bf-card .fud-bf-fickle {
+      margin-top: 6px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(107, 63, 160, 0.55);
+      background: linear-gradient(180deg, #f3ecfb, #e2d3f5);
+      color: #4b2a72;
+      font-size: 10.5px;
+      font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase;
+      text-align: center;
+    }
+    .fud-bf-card .fud-bf-fickle i.fa-solid { margin-right: 5px; color: #6b3fa0; }
     /* Accuracy overridden by a reaction (Crossfire) — the attack is blocked.
        Shrink the word to fit the slot + tint it so it reads as a negation of
        the roll, not a number. */
@@ -881,6 +920,13 @@ export function ensureStyles() {
         0 1px 0 #5a3a12;
     }
     .fud-bf-card .fud-bf-target-row .t-result.resist { color: #5a6a85; font-weight: 800; }
+    /* Fickle — one neutral hue for EVERY row, hit or miss. The classes above are
+       outcome colours; any of them would read the concealed result off the card
+       without a word being printed. */
+    .fud-bf-card .fud-bf-target-row .t-result.fickle {
+      color: #6b3fa0; font-weight: 900;
+      text-shadow: 0 0 8px rgba(107, 63, 160, 0.28);
+    }
     /* Healing / resource-restore / shield rows — recipe-grant skills.
        Distinct hues from damage so a Heal vs an Attack reads at a glance. */
     .fud-bf-card .fud-bf-target-row .t-result.heal       { color: #2a8a3a; font-weight: 800; text-shadow: 0 0 6px rgba(42,138,58,0.25); }
@@ -2426,7 +2472,17 @@ function animateCardNumber(el, from, to, setText) {
 function buildAccuracyHTML({ roll, isSpellish = false, legendSuffix = "", hideDefenseIcon = false, legendOverride = null }) {
   if (!roll) return "";
   const { A1, A2, dA, dB, rA, rB, total, hr, checkBonus, checkBonusParts, isCrit, isFumble, opportunities, dieSwap } = roll;
-  const accCls = isFumble ? "is-fumble" : isCrit ? "is-crit" : "";
+  // ── Fickle (see check.js) ────────────────────────────────────────────────
+  // The action's accuracy is CONCEALED: each die reads "?", the total reads as
+  // the range it could have landed in, and the crit / fumble / Opportunity
+  // surfaces are withheld — every one of them announces the outcome, which is
+  // the whole thing the keyword hides. The roll itself is untouched; this panel
+  // just declines to print it.
+  const fickle = isConcealedRoll(roll);
+  const accCls = fickle ? "is-fickle" : isFumble ? "is-fumble" : isCrit ? "is-crit" : "";
+  const cbNum  = Number(checkBonus) || 0;
+  const accMin = Number(roll.fickleRange?.min ?? (2 + cbNum));
+  const accMax = Number(roll.fickleRange?.max ?? ((Number(dA) || 0) + (Number(dB) || 0) + cbNum));
   // Pre-roll Attribute-die swap (Psychokinesis): a small note under the dice
   // showing what was replaced (e.g. "Psychokinesis: DEX → WLP"), so the auto-swap
   // is transparent rather than a silent change.
@@ -2435,8 +2491,10 @@ function buildAccuracyHTML({ roll, isSpellish = false, legendSuffix = "", hideDe
     ? `<div class="fud-bf-die-swap" style="font-size:11px; opacity:0.82; margin-top:3px;"><i class="fa-solid fa-arrow-right-arrow-left" style="font-size:10px;"></i> ${dieSwapList.map((d) => `${escapeHtml(d.label || "Die swap")}: ${escapeHtml(d.from)} → ${escapeHtml(d.to)}`).join("; ")}</div>`
     : "";
 
-  const dieA = `<span class="die-block">${attrIconHTML(A1)} <span class="attr">${escapeHtml(A1)}</span> <span class="die-size">d${dA}</span> <span class="die-result">${rA}</span></span>`;
-  const dieB = `<span class="die-block">${attrIconHTML(A2)} <span class="attr">${escapeHtml(A2)}</span> <span class="die-size">d${dB}</span> <span class="die-result">${rB}</span></span>`;
+  const faceA = fickle ? "?" : rA;
+  const faceB = fickle ? "?" : rB;
+  const dieA = `<span class="die-block">${attrIconHTML(A1)} <span class="attr">${escapeHtml(A1)}</span> <span class="die-size">d${dA}</span> <span class="die-result">${faceA}</span></span>`;
+  const dieB = `<span class="die-block">${attrIconHTML(A2)} <span class="attr">${escapeHtml(A2)}</span> <span class="die-size">d${dB}</span> <span class="die-result">${faceB}</span></span>`;
   const bonusPart = (Number(checkBonus) || 0) !== 0
     ? `<span class="bonus">${checkBonus >= 0 ? "+" : ""}${checkBonus}</span>`
     : "";
@@ -2451,13 +2509,19 @@ function buildAccuracyHTML({ roll, isSpellish = false, legendSuffix = "", hideDe
 
   // Float banner + per-RAW Opportunity note when crit (Core p.68: a crit
   // generates opportunities for the attacker).
-  const banner = isCrit
-    ? `<div class="float-banner crit"><i class="fa-solid fa-crown"></i>Critical!</div>`
-    : isFumble
-      ? `<div class="float-banner fumble"><i class="fa-solid fa-skull"></i>Fumble!</div>`
-      : "";
-  const opportunityNote = opportunities
+  const banner = fickle
+    ? ""
+    : isCrit
+      ? `<div class="float-banner crit"><i class="fa-solid fa-crown"></i>Critical!</div>`
+      : isFumble
+        ? `<div class="float-banner fumble"><i class="fa-solid fa-skull"></i>Fumble!</div>`
+        : "";
+  const opportunityNote = (opportunities && !fickle)
     ? `<div class="fud-bf-opportunity"><i class="fa-solid fa-bolt"></i> Opportunity!</div>`
+    : "";
+  // Says WHY the panel is blank, so a concealed roll never reads as a bug.
+  const fickleNote = fickle
+    ? `<div class="fud-bf-fickle"><i class="fa-solid fa-dice"></i> Fickle — the roll is hidden</div>`
     : "";
 
   const baseLegend = legendOverride ?? "Accuracy Check";
@@ -2488,7 +2552,19 @@ function buildAccuracyHTML({ roll, isSpellish = false, legendSuffix = "", hideDe
       + `</ul>`
     : "";
 
-  const tipBody = [
+  // The hover is the SAME leak as the panel — it printed every die face and the
+  // exact total. On a Fickle action it explains the range and the bonus instead,
+  // and says nothing that narrows the result.
+  const tipBody = (fickle ? [
+    `<p><b>Fickle.</b> This action's accuracy is hidden — the dice were rolled and
+      the result is real, it is simply not shown.</p>`,
+    `<p><b>${escapeHtml(A1)}:</b> 1d${dA} &nbsp; <b>${escapeHtml(A2)}:</b> 1d${dB}</p>`,
+    `<p style="margin-bottom:0;"><b>Check Bonus:</b> ${cbStr}</p>${breakdownHTML}`,
+    `<p style="margin-top:6px;"><b>Possible total:</b> <b>${accMin}</b> to <b>${accMax}</b></p>`,
+    hideDefenseIcon
+      ? `<p style="opacity:0.75;">Open Check — no defense compared.</p>`
+      : `<p style="opacity:0.75;">Each target row shows its chance to beat that target's <b>${isSpellish ? "Magic Defense" : "Defense"}</b>.</p>`,
+  ] : [
     `<p><b>${escapeHtml(A1)}:</b> 1d${dA} → <b>${rA}</b></p>`,
     `<p><b>${escapeHtml(A2)}:</b> 1d${dB} → <b>${rB}</b></p>`,
     `<p style="margin-bottom:0;"><b>Check Bonus:</b> ${cbStr}</p>${breakdownHTML}`,
@@ -2499,7 +2575,7 @@ function buildAccuracyHTML({ roll, isSpellish = false, legendSuffix = "", hideDe
     hideDefenseIcon
       ? `<p style="opacity:0.75;">Open Check — no defense compared.</p>`
       : `<p style="opacity:0.75;">Compares vs target's <b>${isSpellish ? "Magic Defense" : "Defense"}</b>.</p>`,
-  ].filter(Boolean).join("");
+  ]).filter(Boolean).join("");
   const tipAttrs = ` data-fud-equip-desc="${escapeHtml(tipBody)}" data-fud-equip-desc-name="${escapeHtml(baseLegend)}"`;
 
   return `
@@ -2514,11 +2590,12 @@ function buildAccuracyHTML({ roll, isSpellish = false, legendSuffix = "", hideDe
           <span class="spacer"></span>
           <span class="total-wrap">
             ${defenseIconHTML}
-            <span class="total">${total}</span>
+            <span class="total">${fickle ? `${accMin}–${accMax}` : total}</span>
           </span>
         </div>
         ${banner}
         ${opportunityNote}
+        ${fickleNote}
         ${dieSwapNote}
       </div>
     </fieldset>
@@ -2555,8 +2632,38 @@ function buildDamagePreviewHTML({ damage, roll, legendSuffix = "" }) {
     : (isMpDamage ? "rgba(30,108,255,0.45)" : (ELEMENT_GLOW[elemKey] ?? ELEMENT_GLOW.physical));
 
   // Final shown is HR + base. If the roll is a fumble, show "—".
-  const shown = roll?.isFumble ? "—" : (damage.finalIfHit ?? 0);
-  const hrPill = (damage.ignoreHR || roll?.isFumble) ? "" : `<span class="hr-pill">+HR</span>`;
+  //
+  // Fickle (see check.js): `finalIfHit` is HR + base, so printing one number
+  // hands the High Roll straight back by subtraction — and HR is half the
+  // accuracy roll the keyword just hid. A "—" would give away a fumble the same
+  // way. So a concealed action shows the RANGE the damage could land in, which
+  // is the damage twin of the accuracy panel's range and leaks nothing. An
+  // ignoreHR action (two-weapon, hrAsZero grant) has no HR in the number, so it
+  // prints normally.
+  // TWO separate things, and conflating them was a leak:
+  //
+  //  • `concealed` — this action's roll is hidden, so NO fumble tell may print.
+  //    The "—" and the "fumble auto-misses" line appear if and only if the roll
+  //    fumbled, which announces it outright. This holds even when there is no HR
+  //    to protect (an ignoreHR two-weapon swing or an hrAsZero grant): ignoreHR
+  //    removes the HR inference, not the fumble tell.
+  //  • `showRange` — the headline itself would give HR away, so print the band
+  //    instead of the number. Only when HR is actually IN the number: an ignoreHR
+  //    action's figure is HR-free already, and a heal's headline is the granted
+  //    amount, where a range would misreport what the target recovers.
+  const concealed = isConcealedRoll(roll);
+  const showRange = concealed && !damage.ignoreHR && !isHealing;
+  const maxHR = Math.max(Number(roll?.dA) || 0, Number(roll?.dB) || 0);
+  // The HR-free floor. Read `damage.base` (+ any accepted reaction bonus) rather
+  // than subtracting `roll.hr` off finalIfHit: on a FUMBLE the projection already
+  // zeroed HR out of finalIfHit, so subtracting again dropped the whole band by HR
+  // — and anyone who knows the base (the tooltip prints it) reads the fumble off
+  // the low bound. base is HR-free whatever the roll did.
+  const dmgFloor = Math.max(0, (Number(damage.base) || 0) + (Number(damage.cardReactionBonus) || 0));
+  const shown = showRange
+    ? `${dmgFloor + 1}–${dmgFloor + maxHR}`   // en dash, matching the accuracy band
+    : ((roll?.isFumble && !concealed) ? "—" : (damage.finalIfHit ?? 0));
+  const hrPill = (damage.ignoreHR || showRange || (roll?.isFumble && !concealed)) ? "" : `<span class="hr-pill">+HR</span>`;
   const label = isHealing
     ? (resourceKey === "hp" ? "Heal" : "Restore")
     : (isMpDamage ? "MP Damage" : "Damage");
@@ -2571,7 +2678,9 @@ function buildDamagePreviewHTML({ damage, roll, legendSuffix = "" }) {
   // HR line — when HR is forced to 0, name the ACTUAL source (Two-Weapon vs a
   // free-action grant like Hawkeye take-aim / Soaring Strike) via
   // damage.hrZeroReason; fall back to "no Check rolled" for a no-Check action.
-  const hrLine = (!damage.ignoreHR && roll)
+  const hrLine = (concealed && !damage.ignoreHR)
+    ? `<p><b>HR:</b> hidden — 1 to ${maxHR} (Fickle)</p>`
+    : (!damage.ignoreHR && roll)
     ? `<p><b>HR:</b> ${hrVal} (from accuracy roll)</p>`
     : damage.hrZeroReason
       ? `<p><b>HR:</b> — (${escapeHtml(damage.hrZeroReason)})</p>`
@@ -2579,7 +2688,11 @@ function buildDamagePreviewHTML({ damage, roll, legendSuffix = "" }) {
         ? `<p><b>HR:</b> — (HR treated as 0)</p>`
         : `<p><b>HR:</b> — (no Check rolled)</p>`;
   const cardReactionBonus = Number(damage.cardReactionBonus ?? 0) || 0;
-  const formula = roll?.isFumble
+  const formula = showRange
+    ? `<p style="margin-top:6px;"><b>Final on hit:</b> HR + ${baseVal}${cardReactionBonus > 0 ? ` + ${cardReactionBonus} (passive)` : ""} = <b>${dmgFloor + 1} to ${dmgFloor + maxHR}</b></p>`
+    // A concealed ignoreHR action keeps its exact number (no HR to hide) but must
+    // still not print the fumble line.
+    : (roll?.isFumble && !concealed)
     ? `<p><b>Final:</b> — (fumble auto-misses)</p>`
     : cardReactionBonus > 0
       ? `<p style="margin-top:6px;"><b>Final on hit:</b> ${hrVal} + ${baseVal} + ${cardReactionBonus} (passive) = <b>${damage.finalIfHit ?? 0}</b></p>`
@@ -2668,6 +2781,18 @@ function buildAffinityTagHTML({ affinity, hit, studied }) {
 // naturally on the card. Affinity rows are still gated NE for MP
 // damage, so AB / IM never appear there in practice.
 export function resultLabelFor(r, { hasDamage = true } = {}) {
+  // Fickle (see check.js) — FIRST, before every other branch, because every one
+  // of them announces the outcome one way or another: the verb, the damage
+  // number (0 on a miss), even "FULL · NO EFFECT". `hitChance` is stamped on the
+  // row only for a Fickle action, so its presence IS the concealment flag, and a
+  // normal row can never reach this branch. The number shown is the honest odds
+  // this roll had against THIS target's defense, not a guess.
+  // ...but NOT over a grant row: a heal/restore lands whether or not the Check
+  // hit, so its amount tells nobody anything, and "58%" where "HEALED 40 HP"
+  // belongs is simply wrong. The grant branch below owns those rows.
+  if (typeof r.hitChance === "number" && typeof r.grantAmount !== "number") {
+    return `<span class="t-num">${formatHitChance(r.hitChance)}</span>`;
+  }
   // Recipe-grant rows (Heal, MP restore, future shield) — show what
   // the target will recover. `grantResource` picks the unit/verb. These
   // always succeed (no Check), so check the grant before hit semantics.
@@ -2724,6 +2849,10 @@ export function resultLabelFor(r, { hasDamage = true } = {}) {
 }
 
 export function resultClsFor(r) {
+  // Fickle: one neutral hue for every row. The normal classes are outcome
+  // colours (muted for a miss, gold for vulnerable) — any of them would read the
+  // result off the card without a word being printed.
+  if (typeof r.hitChance === "number" && typeof r.grantAmount !== "number") return "fickle";
   if (!r.hit) return "miss";
   // Nullified hit (Ninja Log) — muted, same as IM/miss, since 0 landed.
   if (r.damageOverride && Number(r.damageOverride.to) <= 0 && Number(r.damageOverride.from) > 0) return "miss";
@@ -2816,7 +2945,13 @@ function buildPerTargetHTML({ perTargetResults, legendSuffix = "", weapon = null
     } else {
       defLabel = `${defLabelTag} ${r.defense}`;
     }
-    const aff = buildAffinityTagHTML({ affinity: r.affinity, hit: r.hit, studied: r.studied });
+    // Fickle: the affinity pill renders only for a HIT, so its presence or
+    // absence alone tells the table whether the concealed roll landed. Withheld
+    // for the same reason the verb is.
+    const concealed = typeof r.hitChance === "number" && typeof r.grantAmount !== "number";
+    const aff = concealed
+      ? ""
+      : buildAffinityTagHTML({ affinity: r.affinity, hit: r.hit, studied: r.studied });
 
     // Per-target tooltip — surfaces weapon/element/affinity context for
     // this specific target. Deliberately does NOT repeat the damage
@@ -2833,13 +2968,18 @@ function buildPerTargetHTML({ perTargetResults, legendSuffix = "", weapon = null
     // element to route through affinity, so skip those tooltip lines.
     if (hasDamage) {
       tipLines.push(`<p><b>Element:</b> ${escapeHtml(elemLabel)}</p>`);
+      // The affinity line is a property of the TARGET, not of the roll, so it is
+      // safe to keep under concealment — unlike the pill above, which renders
+      // only on a hit.
       tipLines.push(affinityLineHTML(r.affinity, elemLabel));
       // Target-specific damage modifiers (incoming reduction + crit
       // bonus/multiplier) so the GM sees why this target's number differs
       // from the headline. Source/amount shape matches the Accuracy /
       // Damage panel breakdowns. Negative amounts (reductions) render with
       // a minus sign.
-      const modParts = Array.isArray(r.damageModParts)
+      // Concealed: this list is derived from the damage that actually landed, so
+      // it is populated on a hit and empty on a miss — the outcome, spelled out.
+      const modParts = (!concealed && Array.isArray(r.damageModParts))
         ? r.damageModParts.filter((p) => p && Number(p.amount) !== 0)
         : [];
       if (modParts.length) {
@@ -2869,7 +3009,10 @@ function buildPerTargetHTML({ perTargetResults, legendSuffix = "", weapon = null
       const sign = d > 0 ? "+" : "−";
       tipLines.push(`<p style="margin:4px 0 0;"><b>Damage Mods:</b></p><div style="display:flex;justify-content:space-between;gap:10px;opacity:0.9;"><span>${escapeHtml(dmo.via ?? "Reaction")}</span><span>${sign}${Math.abs(d)}</span></div>`);
     }
-    if (roll?.isFumble) {
+    if (concealed) {
+      tipLines.push(`<p><b>Hit Check:</b> <b>Fickle</b> — the roll is hidden.`
+        + ` Chance to beat ${defLabelTag} ${r.defense}: <b>${formatHitChance(r.hitChance)}</b></p>`);
+    } else if (roll?.isFumble) {
       tipLines.push(`<p><b>Hit Check:</b> Fumble — auto-miss</p>`);
     } else if (r.crit) {
       tipLines.push(`<p><b>Hit Check:</b> Critical — auto-hit</p>`);
@@ -2881,7 +3024,10 @@ function buildPerTargetHTML({ perTargetResults, legendSuffix = "", weapon = null
       // No-Check skill (rare) — no hit roll, defaults to hit on damage.
       tipLines.push(`<p><b>Hit Check:</b> Auto-hit (no Check)</p>`);
     }
-    if (hasDamage && r.hit && r.affinity === "AB") {
+    if (concealed) {
+      // Both notes below are gated on `r.hit`, so either one appearing reveals
+      // the landed result. Nothing affinity-specific is said on a hidden roll.
+    } else if (hasDamage && r.hit && r.affinity === "AB") {
       tipLines.push(`<p style="opacity:0.85;">Damage is reversed into healing.</p>`);
     } else if (hasDamage && r.hit && r.affinity === "IM") {
       tipLines.push(`<p style="opacity:0.85;">Target negates all damage of this element.</p>`);
@@ -2955,7 +3101,10 @@ function appendTargetRow(root, r, kind, payload) {
     } else {
       const cls = resultClsFor(r);
       const label = resultLabelFor(r, { hasDamage });
-      const aff = buildAffinityTagHTML({ affinity: r.affinity, hit: r.hit, studied: r.studied });
+      // Fickle: an affinity pill only renders on a hit — see buildPerTargetHTML.
+      const aff = typeof r.hitChance === "number"
+        ? ""
+        : buildAffinityTagHTML({ affinity: r.affinity, hit: r.hit, studied: r.studied });
       div.innerHTML =
         `<span class="t-name">${escapeHtml(r.name ?? "?")}${aff ? ` ${aff}` : ""}</span>`
         + `<span class="t-def">${defLabelTag} ${r.defense}</span>`
@@ -3455,6 +3604,11 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
       // Tooltip — rebuild the per-target hover body to reflect the
       // redirect target's stats so it no longer shows the original.
       rowEl.setAttribute("data-fud-equip-desc-name", `${newName} ← ${fromName}`);
+      // Fickle: a redirect is a REACTION rewriting the card, which is exactly
+      // where concealment is easiest to lose — this hover printed the total, the
+      // comparison and the verdict outright. Under concealment it prints the
+      // odds against the protector's defence instead.
+      const rConcealed = typeof r.newHitChance === "number";
       const verdict = r.newHit
         ? (r.newCrit ? "Critical — auto-hit" : "hit")
         : "missed";
@@ -3466,7 +3620,11 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
         `<small>(via ${escapeHtml(r.via ?? "reaction")})</small></p>` +
         `<p><b>Element:</b> ${escapeHtml(elemLabel)}</p>` +
         `<p><b>Affinity:</b> ${escapeHtml(r.newAffinity ?? "NE")}</p>` +
-        `<p><b>Hit Check:</b> Total ${total} ${cmp} ${defLabelTag} ${r.newDefense} — ${verdict}</p>`;
+        (rConcealed
+          ? `<p><b>Hit Check:</b> <b>Fickle</b> — the roll is hidden.`
+            + ` Chance to beat ${defLabelTag} ${r.newDefense}:`
+            + ` <b>${formatHitChance(r.newHitChance)}</b></p>`
+          : `<p><b>Hit Check:</b> Total ${total} ${cmp} ${defLabelTag} ${r.newDefense} — ${verdict}</p>`);
       rowEl.setAttribute("data-fud-equip-desc", tipBody);
 
       if (hasDamageRows) {
@@ -3477,6 +3635,7 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
           const shim = {
             hit: r.newHit, crit: r.newCrit, affinity: r.newAffinity,
             damage: r.newDamage, resource: r.resource,
+            ...(rConcealed ? { hitChance: r.newHitChance } : {}),
           };
           const oldTNum = parseInt(resultSpan.querySelector(".t-num")?.textContent ?? "", 10);
           resultSpan.className = `t-result ${resultClsFor(shim)}`;
@@ -3508,6 +3667,7 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
     const defSpan = rowEl.querySelector(".t-def");
     if (defSpan) defSpan.textContent = `${defLabelTag} ${d.to}`;
     // Hover — re-derive the Hit Check vs the NEW DEF + itemize the +DEF source.
+    const dConcealed = typeof d.hitChance === "number";   // Fickle
     const verdict = d.hit ? (d.crit ? "Critical — auto-hit" : "hit") : "missed";
     const cmp = d.hit ? "≥" : "&lt;";
     const total = rollTotal ?? "?";
@@ -3519,11 +3679,15 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
       `<p><b>Affinity:</b> ${escapeHtml(d.affinity ?? "NE")}</p>` +
       `<p style="margin:4px 0 0;"><b>${defLabelTag} Mods:</b></p>` +
       `<div style="display:flex;justify-content:space-between;gap:10px;opacity:0.9;"><span>${escapeHtml(d.via ?? "Reaction")}</span><span>${sign}${Math.abs(dd)}</span></div>` +
-      `<p><b>Hit Check:</b> Total ${total} ${cmp} ${defLabelTag} ${d.to} — ${verdict}</p>`);
+      (dConcealed
+        ? `<p><b>Hit Check:</b> <b>Fickle</b> — the roll is hidden.`
+          + ` Chance to beat ${defLabelTag} ${d.to}: <b>${formatHitChance(d.hitChance)}</b></p>`
+        : `<p><b>Hit Check:</b> Total ${total} ${cmp} ${defLabelTag} ${d.to} — ${verdict}</p>`));
     // Verdict — re-derive (keep it authoritative alongside the DEF/hover).
     const resultSpan = rowEl.querySelector(".t-result");
     if (resultSpan) {
-      const shim = { hit: d.hit, crit: d.crit, affinity: d.affinity, damage: d.damage };
+      const shim = { hit: d.hit, crit: d.crit, affinity: d.affinity, damage: d.damage,
+        ...(dConcealed ? { hitChance: d.hitChance } : {}) };
       resultSpan.className = `t-result ${resultClsFor(shim)}`;
       resultSpan.innerHTML = resultLabelFor(shim);
     }
@@ -3556,7 +3720,8 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
     }
     const resultSpan = rowEl.querySelector(".t-result");
     if (resultSpan && (g.fields?.hit || g.fields?.damage)) {
-      const shim = { hit: g.hit, crit: g.crit, affinity: g.affinity, damage: g.damage };
+      const shim = { hit: g.hit, crit: g.crit, affinity: g.affinity, damage: g.damage,
+        ...(typeof g.hitChance === "number" ? { hitChance: g.hitChance } : {}) };   // Fickle
       const oldTNum = parseInt(resultSpan.querySelector(".t-num")?.textContent ?? "", 10);
       resultSpan.className = `t-result ${resultClsFor(shim)} is-gm-edited`;
       resultSpan.innerHTML = resultLabelFor(shim);
@@ -3572,7 +3737,11 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
     rowEl.setAttribute("data-fud-equip-desc",
       `<p><b>GM override</b> — set by hand: ${escapeHtml(edited.join(", "))}</p>` +
       `<p><b>Affinity:</b> ${escapeHtml(g.affinity ?? "NE")}</p>` +
-      `<p>${g.hit ? "Hits" : "Misses"}${g.fields?.damage ? ` for ${g.damage}` : ""} — this figure overrides the engine's.</p>`);
+      // Fickle: "Hits"/"Misses" is the verdict in plain words, and the damage
+      // figure is only printed on a hit. Say that the table set it, not what it is.
+      (typeof g.hitChance === "number"
+        ? `<p><b>Fickle</b> — the roll is hidden. The GM has set this row's outcome by hand.</p>`
+        : `<p>${g.hit ? "Hits" : "Misses"}${g.fields?.damage ? ` for ${g.damage}` : ""} — this figure overrides the engine's.</p>`));
   }
   // Reaction pills a GM target removal has made moot. Marked here rather than at
   // the decision site because the prune happens in the mutation pass, which runs
@@ -3726,10 +3895,15 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
       isSpellish: !!delta.accuracyIsSpellish,
       legendOverride: legendText || null,
     });
-    const totalEl = rootEl.querySelector(".fud-bf-acc .total");
+    // Fickle: the total span holds a RANGE ("5 - 27"), and both writes below
+    // would replace it with the real number — animateCardNumber falls back to
+    // setting the target value outright when the start value isn't numeric.
+    // `.is-fickle` is stamped by buildAccuracyHTML, so it is on the freshly
+    // rebuilt fieldset too and survives as the card's own record of concealment.
+    const totalEl = rootEl.querySelector(".fud-bf-acc:not(.is-fickle) .total");
     if (totalEl) animateCardNumber(totalEl, oldTotal, Number(delta.accuracyRoll.total), (v) => { totalEl.textContent = String(v); });
   } else {
-    const accTotal = rootEl.querySelector(".fud-bf-acc .total");
+    const accTotal = rootEl.querySelector(".fud-bf-acc:not(.is-fickle) .total");
     if (accTotal && rollTotal != null) accTotal.textContent = String(rollTotal);
   }
   // Cost adjustment (adjust_cost reaction: Hypercognition discount / Cataclysm
@@ -3840,7 +4014,11 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
     // badge would go stale against the new element while the verb updated.
     const nameSpan = rowEl.querySelector(".t-name");
     if (nameSpan) {
-      const aff = buildAffinityTagHTML({ affinity: entry.affinity, hit: entry.hit, studied: entry.studied });
+      // Fickle: the badge renders only on a hit, so repainting it here would
+      // announce the concealed verdict the result span just declined to print.
+      const aff = typeof entry.hitChance === "number"
+        ? ""
+        : buildAffinityTagHTML({ affinity: entry.affinity, hit: entry.hit, studied: entry.studied });
       nameSpan.innerHTML = `${escapeHtml(entry.name ?? "")}${aff ? ` ${aff}` : ""}`;
     }
   }
@@ -3862,8 +4040,12 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
         dmgFieldset.outerHTML = newHTML;
         const refreshed = rootEl.querySelector(".fud-bf-dmg");
         if (refreshed && wasBlocked) refreshed.classList.add("is-blocked-dmg");
-        // Skip fumbles — they show "—", not a number.
-        if (refreshed && !headlineRoll?.isFumble) {
+        // Skip fumbles — they show "—", not a number. And skip a CONCEALED
+        // action: the builder just drew a band ("61–72"), and setLeadingNumberText
+        // replaces the whole leading text node, so tweening would print the exact
+        // finalIfHit over it. animateCardNumber writes the target value even when
+        // from === to, so there is no "unchanged" case that saves us.
+        if (refreshed && !headlineRoll?.isFumble && !isConcealedRoll(headlineRoll)) {
           const numEl = refreshed.querySelector(".fud-bf-dmg-number");
           if (numEl) animateCardNumber(numEl, oldShown, Number(delta.damageHeadline.damage?.finalIfHit), (v) => setLeadingNumberText(numEl, v));
         }
@@ -3954,7 +4136,12 @@ function buildAttackCard({ attacker, weapon, targets, roll, damage, perTargetRes
       ${tryBuild("perTarget", () => buildPerTargetHTML({ perTargetResults, weapon, element: damage?.element, roll, isSpellish: vsMDef }))}
       ${tryBuild("attackEffect", () => buildEffectSectionHTML({ descriptionHtml: weapon?.descriptionHtml }))}
     `,
-    buttons: buildButtonsHTML({ isFumble: !!roll?.isFumble, invokeCapability: attacker?.invokeCapability ?? "full", invokePointCount: attacker?.invokePointCount ?? null }),
+    // Fickle: the Invoke buttons LOCK on a fumble, with a lock icon and a tooltip
+    // that names it — the loudest tell on the card. On a concealed roll they stay
+    // live, which does mean a player can spend an invoke on a fumble they could
+    // not have known about. That is the trade the keyword makes: you are betting
+    // on a roll you cannot see. (Rank locks are unrelated and still apply.)
+    buttons: buildButtonsHTML({ isFumble: !isConcealedRoll(roll) && !!roll?.isFumble, invokeCapability: attacker?.invokeCapability ?? "full", invokePointCount: attacker?.invokePointCount ?? null }),
   };
 }
 
@@ -5287,7 +5474,8 @@ function buildSkillCard(payload) {
     // Spell card is a reactable trigger; allowing cancel would silently
     // undo passive reactions that have already fired. GM uses the
     // rewind tool to back out the whole turn.
-    buttons: buildButtonsHTML({ isFumble: !!roll?.isFumble, hasRoll: !!roll, invokeCapability: attacker?.invokeCapability ?? "full", invokePointCount: attacker?.invokePointCount ?? null }),
+    // Fickle: fumble lock withheld — see the Attack card's note above.
+    buttons: buildButtonsHTML({ isFumble: !isConcealedRoll(roll) && !!roll?.isFumble, hasRoll: !!roll, invokeCapability: attacker?.invokeCapability ?? "full", invokePointCount: attacker?.invokePointCount ?? null }),
   };
 }
 
@@ -5446,7 +5634,12 @@ function projectActionCardRenderPayload(payload) {
 //
 // Player code never mutates or returns this — the GM re-derives from its own
 // cardAr — so a lossy projection cannot corrupt GM state.
-function projectActionResultForRender(ar) {
+// Exported so the mirror payload can be ASSERTED, not just read. This projection
+// enumerates its fields, which makes it the one place a new roll-level flag
+// silently fails to reach player clients — concealment included. Same reason
+// composeActionCardObject / composeActionCardRenderPayload are exported for the
+// director harness's render capture.
+export function projectActionResultForRender(ar) {
   if (!ar) return null;
   const roll = ar.roll ?? null;
   const tier = ar.tier ?? null;
@@ -5465,6 +5658,16 @@ function projectActionResultForRender(ar) {
       total: roll.total, checkBonus: roll.checkBonus,
       isCrit: roll.isCrit, isFumble: roll.isFumble,
       opportunities: roll.opportunities ?? null,
+      // Fickle MUST cross the wire. This projection ENUMERATES, so without these
+      // every mirror computes `concealed === false` and patchCardDom repaints the
+      // real dice, the real total, the crit/fumble banner and HIT/MISS on every
+      // row — one invoke would un-hide the action for the whole table. Same trap
+      // the `invertHit` note in projectProfileToActionResult warns about.
+      ...(roll.fickle ? {
+        fickle: true,
+        fickleDist: roll.fickleDist ?? null,
+        fickleRange: roll.fickleRange ?? null,
+      } : {}),
     } : null,
     // Presence of the damage object (not just its values) switches the row
     // labels between HIT/MISS and SUCCESS/FAILED — keep null vs object exact.
@@ -5498,6 +5701,9 @@ function projectActionResultForRender(ar) {
         hit: r.hit, crit: r.crit, isCrit: r.isCrit,
         damage: r.damage, affinity: r.affinity ?? null,
         resource: r.resource ?? null,
+        // Fickle: without this the mirror's repaint calls resultLabelFor with no
+        // chance and prints "HIT 34" over the concealed percentage.
+        ...(typeof r.hitChance === "number" ? { hitChance: r.hitChance } : {}),
         // Read by the bond preview to recompute hit/miss; dropping it would
         // make every studied row preview as a Hit.
         defense: r.defense ?? null,
@@ -8271,6 +8477,11 @@ export async function postActionCard({ director, kind, payload }) {
               newHit: !!entry.hit,
               newCrit: !!entry.crit,
               newDamage: entry.damage,
+              // Fickle: the concealed odds, re-derived against the PROTECTOR's
+              // defence. These delta payloads enumerate their fields, so a
+              // concealed row that crossed the wire without this would repaint
+              // itself as a plain HIT/MISS on every mirror.
+              ...(typeof entry.hitChance === "number" ? { newHitChance: entry.hitChance } : {}),
               fromName: rf.name,
               via: rf.via,
             });
@@ -8293,6 +8504,7 @@ export async function postActionCard({ director, kind, payload }) {
               resourceCur: entry.resourceCur, resourceMax: entry.resourceMax,
               vismagusSuppressed: !!entry.vismagusSuppressed,
               studied: entry.studied, hit: entry.hit, crit: entry.crit,
+              ...(typeof entry.hitChance === "number" ? { hitChance: entry.hitChance } : {}),  // Fickle
             });
             // First boosted target drives the headline (common single-target heal).
             if (grantHeadline == null && typeof orig?.grantAmount === "number" && entry.grantAmount !== orig.grantAmount) {
@@ -8315,6 +8527,7 @@ export async function postActionCard({ director, kind, payload }) {
               via: entry.defenseOverride.via,
               hit: !!entry.hit, crit: !!entry.crit, damage: entry.damage,
               affinity: entry.affinity ?? null,
+              ...(typeof entry.hitChance === "number" ? { hitChance: entry.hitChance } : {}),  // Fickle
             });
           }
           // Cost adjustment (adjust_cost reaction: Hypercognition discount /
@@ -8512,6 +8725,8 @@ export async function postActionCard({ director, kind, payload }) {
                 damage: entry.damage,
                 resource: entry.resource ?? null,
                 studied: entry.studied,
+                ...(typeof entry.hitChance === "number" ? { hitChance: entry.hitChance } : {}),  // Fickle
+
                 damageOverride: entry.damageOverride
                   ? { from: entry.damageOverride.from ?? null, to: entry.damageOverride.to ?? null }
                   : null,
@@ -8889,8 +9104,14 @@ export async function postActionCard({ director, kind, payload }) {
       const newAr = cardAr;
       const roll  = newAr?.roll;
       if (!roll) return;
-      const intense  = !!(roll.isCrit || roll.isFumble);
-      const rollLite = { rA: roll.rA, rB: roll.rB, dA: roll.dA, dB: roll.dB, total: roll.total, isCrit: !!roll.isCrit, isFumble: !!roll.isFumble };
+      // Fickle: `rollLite` is what every OTHER client animates from, and `intense`
+      // is set if and only if the roll crit or fumbled — so both are tells. Ship
+      // the concealed marker and withhold the faces / the crit-fumble flavour.
+      const concealed = isConcealedRoll(roll);
+      const intense  = !concealed && !!(roll.isCrit || roll.isFumble);
+      const rollLite = concealed
+        ? { rA: null, rB: null, dA: roll.dA, dB: roll.dB, total: null, isCrit: false, isFumble: false, fickle: true }
+        : { rA: roll.rA, rB: roll.rB, dA: roll.dA, dB: roll.dB, total: roll.total, isCrit: !!roll.isCrit, isFumble: !!roll.isFumble };
       const menuSpec = {
         kind: "invoke-trait-reroll",
         combatId: director.combatId,
@@ -8907,12 +9128,17 @@ export async function postActionCard({ director, kind, payload }) {
       //    if a player acted), then patch the card + chime.
       try {
         const hud = await import("./invoke/invoke-hud.js");
-        await hud.animateInvokeReroll({ choice, rA: roll.rA, rB: roll.rB, dA: roll.dA, dB: roll.dB, intense });
+        await hud.animateInvokeReroll({ choice, rA: roll.rA, rB: roll.rB, dA: roll.dA, dB: roll.dB, intense, concealed });
         const worker = await import(`./invoke/invoke-worker.js?cb=${Date.now()}`);
         worker.patchCardDom(root, newAr, invokeState);
-        hud.playTraitResultChime(oldTotal, roll.total);
+        // The up/down chime says whether the reroll improved the total — audible,
+        // and just as much a reveal as printing it. Silent under concealment.
+        if (!concealed) hud.playTraitResultChime(oldTotal, roll.total);
       } catch (e) { warn("presentTraitReroll: local present threw", e); }
-      if (roll.isCrit && !roll.isFumble) {
+      // The crit cut-in is a full-screen flourish that plays if and only if the
+      // roll crit — fired PRE-confirm, while the card still says the roll is
+      // hidden. (The RESOLVE-time cut-in is post-confirm and stays.)
+      if (roll.isCrit && !roll.isFumble && !concealed) {
         try { (await import("./director-cutin.js")).playCritCutin(newAr); } catch {}
       }
       _specHudShownLocally = false; // the animation tore down any local spectator HUD
@@ -10280,13 +10506,13 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     (async () => {
       try {
         const hud = await import("./invoke/invoke-hud.js");
-        await hud.animateInvokeReroll({ choice: menuSpec.choice, rA: r.rA, rB: r.rB, dA: r.dA, dB: r.dB, intense: !!menuSpec.intense });
+        await hud.animateInvokeReroll({ choice: menuSpec.choice, rA: r.rA, rB: r.rB, dA: r.dA, dB: r.dB, intense: !!menuSpec.intense, concealed: isConcealedRoll(r) });
         const wrapper = document.getElementById(MIRROR_ROOT_ID);
         if (wrapper) {
           const w = await import(`./invoke/invoke-worker.js?cb=${Date.now()}`);
           w.patchCardDom(wrapper, playerAr, playerInvokeState);
         }
-        hud.playTraitResultChime(menuSpec.oldTotal, r.total);
+        if (!isConcealedRoll(r)) hud.playTraitResultChime(menuSpec.oldTotal, r.total);   // see presentTraitReroll
         // NOTE: the crit cut-in is fired ONCE by the GM (presentTraitReroll) and
         // socket-broadcast to every client, so we must NOT call it here too.
       } catch (e) { warn("invoke-trait-reroll receiver threw", e); }

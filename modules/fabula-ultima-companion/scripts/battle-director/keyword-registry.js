@@ -127,6 +127,10 @@ const KW_EXTRA = [
   ["Thievery",      "KjziTkOpdzd99KZa", "09_NIN/mug.png"],
   ["Snipe",         "2JlZwoTU5Ql7sUyS", "12_MCH/heartbreak.png"],
   ["Trick",         "1v5xrozP0fHlnjQj", "09_NIN/trick_attack.png"],
+  // Authored 2026-09-07, NOT harvested from the repository journal like the rest
+  // — the journal entry is created alongside it by
+  // tools/safe-edit/_author-fickle-keyword.js and carries this same text.
+  ["Fickle",        "FicKLeKeyWord001", "BLU/peculiar_light.png"],
   ["Strike Damage", "ZunRGiMDSgAapm5G", null],
   ["Magic Damage",  "XYQUsuXPU0CQjEYa", null],
   ["Melee",         "10LjF01NAYNKpRvn", null],
@@ -240,6 +244,7 @@ const DESC = {
   "tQE9WGDt0bNhgxXw": "<ul><li><p>This attack ignores <strong>【Protect】</strong> and <strong>【Cover】</strong> or any similar effects.</p></li></ul>",
   "KjziTkOpdzd99KZa": "<ul><li>This Action reduce the target <strong>Inventory Point</strong> by X on hit</li><li>If your Max IP is more than 0, you also gain Inventory Points equal to the amount the target loss as well (You cannot gain more IP than your max IP)</li></ul>",
   "2JlZwoTU5Ql7sUyS": "<p>This <strong>Action</strong> grant additional effects when the Accuracy check is equal to or more than X.</p>",
+  "FicKLeKeyWord001": "<ul><li><p>The <strong>Accuracy Check</strong> for this action is hidden. Its dice are not shown, and its total is shown only as the range it could fall in.</p></li><li><p>Against each target, the result is shown as a <strong>chance to hit</strong> instead of a hit or a miss.</p></li><li><p>A <strong>Critical Hit</strong> is the exception &mdash; it always reveals itself, and the action resolves in the open as normal.</p></li><li><p>Nothing else changes: the Check is rolled normally and decides the outcome normally &mdash; you simply do not get to see it.</p></li></ul>",
   "1v5xrozP0fHlnjQj": "<ul><li><p><strong>Actions</strong> with this keyword will have their success conditions reversed: an accuracy check result <strong>lower</strong> than the target's defense counts as a <strong>hit</strong>, while a result <strong>higher</strong> than the target's defense counts as a <strong>miss</strong>.</p></li></ul>",
   "ZunRGiMDSgAapm5G": "<ul><li>Any damage that targeted the target's Defense is consider \"Strike Damage\"</li></ul>",
   "XYQUsuXPU0CQjEYa": "<ul><li>Any damage that targeted the target Magic Defense is considered <strong>\"Magic Damage\"</strong></li></ul>",

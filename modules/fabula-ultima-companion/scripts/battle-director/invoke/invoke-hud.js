@@ -11,6 +11,7 @@
 // persists across cache-busted invoke-worker loads.
 
 import { playSfx } from "../director-sfx.js";
+import { chanceAtShift, formatHitChance, isConcealedRoll } from "../check.js";
 
 const HUD_ID    = "fud-invoke-hud";
 const DIMMER_ID = "fud-invoke-dimmer";
@@ -564,9 +565,19 @@ function _previewBondOnCard(root, ar, bonus) {
   const roll     = ar.roll;
   const newCB    = (Number(roll.checkBonus) || 0) + bonus;
   const newTotal = (Number(roll.rA) || 0) + (Number(roll.rB) || 0) + newCB;
+  // Fickle (see check.js): every write below un-hides the roll — the total IS
+  // rA + rB + bonus, i.e. the sum of both concealed dice handed over outright,
+  // and the per-row labels are the verdict. Preview the SHIFTED range and the
+  // SHIFTED odds instead: the player still sees exactly what the Bond buys them,
+  // which is the whole point of the hover, without being told the result.
+  const concealed = isConcealedRoll(roll);
 
   const totalEl = root.querySelector(".fud-bf-acc-row .total");
-  if (totalEl) totalEl.textContent = newTotal;
+  if (totalEl) {
+    totalEl.textContent = concealed
+      ? `${(Number(roll.fickleRange?.min) || 0) + bonus}–${(Number(roll.fickleRange?.max) || 0) + bonus}`
+      : newTotal;
+  }
 
   const accRow = root.querySelector(".fud-bf-acc-row");
   if (accRow) {
@@ -595,6 +606,15 @@ function _previewBondOnCard(root, ar, bonus) {
     if (r.studied === false) return;
     const resultEl = row.querySelector(".t-result");
     if (!resultEl) return;
+    if (concealed) {
+      // The shift IS the bonus being previewed — say so, rather than deriving it
+      // from a base that needs the concealed dice. That keeps this working on a
+      // client that was never sent them.
+      const c = chanceAtShift(roll.fickleDist, bonus, r.defense ?? 0, !!roll.invertHit);
+      resultEl.className   = "t-result fickle";
+      resultEl.innerHTML   = `<span class="t-num">${c == null ? "?" : formatHitChance(c)}</span>`;
+      return;
+    }
     const hit   = roll.isCrit || (!roll.isFumble && newTotal >= (r.defense ?? 0));
     const cls   = roll.isCrit ? "crit" : hit ? "hit" : "miss";
     const label = roll.isCrit ? "Critical Hit" : hit ? "Hit" : "Miss";
@@ -606,9 +626,14 @@ function _previewBondOnCard(root, ar, bonus) {
 function _restoreCardFromAr(root, ar) {
   if (!root || !ar?.roll) return;
   const roll = ar.roll;
+  const concealed = isConcealedRoll(roll);   // Fickle — see _previewBondOnCard
 
   const totalEl = root.querySelector(".fud-bf-acc-row .total");
-  if (totalEl) totalEl.textContent = roll.total;
+  if (totalEl) {
+    totalEl.textContent = concealed
+      ? `${Number(roll.fickleRange?.min) || 0}–${Number(roll.fickleRange?.max) || 0}`
+      : roll.total;
+  }
 
   const accRow = root.querySelector(".fud-bf-acc-row");
   if (accRow) {
@@ -638,6 +663,12 @@ function _restoreCardFromAr(root, ar) {
     if (!r || r.studied === false) return; // keep ??? masking for unstudied targets
     const resultEl = row.querySelector(".t-result");
     if (!resultEl || resultEl.textContent.trim() === "???") return;
+    if (concealed) {
+      resultEl.className = "t-result fickle";
+      resultEl.innerHTML = `<span class="t-num">${
+        typeof r.hitChance === "number" ? formatHitChance(r.hitChance) : "?"}</span>`;
+      return;
+    }
     const cls   = r.isCrit ? "crit" : r.hit ? "hit" : "miss";
     const label = r.isCrit ? "Critical Hit" : r.hit ? "Hit" : "Miss";
     resultEl.className   = `t-result ${cls}`;
@@ -676,19 +707,26 @@ export function showTraitHUD({ roll, root, tokenUuid = null, onSelectionChange =
   _playHud(SFX.trait, 0.3);
 
   const { A1, A2, dA, dB, rA, rB } = roll;
+  // Fickle (see check.js): this action's dice are concealed on the card. Printing
+  // them here — in large type, and again on every spectator's mirror — ends the
+  // concealment the moment the button is pressed. The chooser still works: you
+  // pick a die by its ATTRIBUTE and size, which is all you are entitled to know.
+  const concealed = isConcealedRoll(roll);
+  const faceA = concealed ? "?" : esc(rA);
+  const faceB = concealed ? "?" : esc(rB);
   const html = `<div class="fud-ih-card">
     <div class="fud-ih-header">Invoke Trait</div>
-    <div class="fud-ih-title">Choose which die to reroll</div>
+    <div class="fud-ih-title">${concealed ? "Choose which die to reroll (hidden)" : "Choose which die to reroll"}</div>
     <div class="fud-ih-dice-grid">
       <div class="fud-ih-die" data-which="A" tabindex="0" role="checkbox" aria-checked="false">
         <img class="fud-ih-die-icon" src="${iconFor(A1)}" alt="${esc(A1)}">
         <span class="fud-ih-die-label">d${esc(dA)}</span>
-        <span class="fud-ih-die-val">${esc(rA)}</span>
+        <span class="fud-ih-die-val">${faceA}</span>
       </div>
       <div class="fud-ih-die" data-which="B" tabindex="0" role="checkbox" aria-checked="false">
         <img class="fud-ih-die-icon" src="${iconFor(A2)}" alt="${esc(A2)}">
         <span class="fud-ih-die-label">d${esc(dB)}</span>
-        <span class="fud-ih-die-val">${esc(rB)}</span>
+        <span class="fud-ih-die-val">${faceB}</span>
       </div>
     </div>
     <div class="fud-ih-hint">Click one or both to select. Click again to deselect.</div>
@@ -909,6 +947,9 @@ export function showTraitSpectator({ roll, actorName, root, tokenUuid = null }) 
   _playHud(SFX.trait, 0.3);
 
   const { A1, A2, dA, dB, rA, rB } = roll;
+  const concealed = isConcealedRoll(roll);                       // Fickle — see showTraitHUD
+  const faceA = concealed ? "?" : esc(rA);
+  const faceB = concealed ? "?" : esc(rB);
   const who = esc(actorName || "The attacker");
   const html = `<div class="fud-ih-card">
     <div class="fud-ih-header">Invoke Trait</div>
@@ -918,12 +959,12 @@ export function showTraitSpectator({ roll, actorName, root, tokenUuid = null }) 
       <div class="fud-ih-die" data-which="A">
         <img class="fud-ih-die-icon" src="${iconFor(A1)}" alt="${esc(A1)}">
         <span class="fud-ih-die-label">d${esc(dA)}</span>
-        <span class="fud-ih-die-val">${esc(rA)}</span>
+        <span class="fud-ih-die-val">${faceA}</span>
       </div>
       <div class="fud-ih-die" data-which="B">
         <img class="fud-ih-die-icon" src="${iconFor(A2)}" alt="${esc(A2)}">
         <span class="fud-ih-die-label">d${esc(dB)}</span>
-        <span class="fud-ih-die-val">${esc(rB)}</span>
+        <span class="fud-ih-die-val">${faceB}</span>
       </div>
     </div>
     <div class="fud-ih-hint">Waiting for ${who} to choose which die to reroll…</div>
@@ -1016,7 +1057,10 @@ function _activeTraitHudEl() {
 // then a case-based deceleration with staggered "is this it?" holds, ending on
 // a scale-stamp. Ported from the Check-requester roll feel; landing is silent
 // (the up/down chime plays on the card update). `intense` = more dramatic holds.
-async function _tumbleDieVal(numEl, finalValue, faces, { intense = false } = {}) {
+// `landAs` replaces the settled face with a literal (Fickle passes "?"), so the
+// die never displays a value it is meant to hide. The tumble frames themselves
+// stay random — they are noise either way.
+async function _tumbleDieVal(numEl, finalValue, faces, { intense = false, landAs = null } = {}) {
   if (!numEl) return;
   faces = Math.max(2, Number(faces) || 6);
   finalValue = Math.max(1, Math.min(faces, Number(finalValue) || 1));
@@ -1043,6 +1087,17 @@ async function _tumbleDieVal(numEl, finalValue, faces, { intense = false } = {})
     const v = (isLast && bridge !== null) ? bridge : pick();
     await show(v, 40 + Math.floor(Math.random() * 20));
   }
+  if (landAs != null) {
+    // Concealed: tumble, then settle straight onto the placeholder. Skipping the
+    // deceleration sequence is deliberate — those frames walk toward the real
+    // value, so they narrow it even before the final write lands.
+    await show(pick(), approach); await _wait(stagger);
+    numEl.classList.remove("is-landing");
+    void numEl.offsetWidth;
+    numEl.textContent = String(landAs);
+    numEl.classList.add("is-landing");
+    return;
+  }
   if (decelCase === 0)      { await show(finalValue, approach); await _wait(stagger); }
   else if (decelCase === 1) { await show(seq[0], approach); await _wait(stagger); }
   else if (decelCase === 2) { await show(seq[0], approach); await _wait(shortHold); await show(seq[1], tick); await _wait(stagger); }
@@ -1057,9 +1112,14 @@ async function _tumbleDieVal(numEl, finalValue, faces, { intense = false } = {})
 // Animate the reroll on the current trait HUD, then despawn it (panel + dimmer
 // + aura). No-op if no trait HUD is up on this client (the caller still patches
 // the card). Both selected dice animate at once for choice "AB".
-export async function animateInvokeReroll({ choice, rA, rB, dA, dB, intense = false } = {}) {
+export async function animateInvokeReroll({ choice, rA, rB, dA, dB, intense = false, concealed = false } = {}) {
   const el = _activeTraitHudEl();
   if (!el) return;
+  // Fickle: the tumble LANDS on the real face and leaves it in the slot, so the
+  // reroll animation is a full reveal of the new die. Keep the theatre — the die
+  // still tumbles — but land it back on "?" and drop the crit/fumble `intense`
+  // flavour, which is itself a tell.
+  if (concealed) intense = false;
   el.classList.add("is-committing");
   _playHud(SFX.dice, 0.8); // roll sound at the start; landing is silent
 
@@ -1071,8 +1131,17 @@ export async function animateInvokeReroll({ choice, rA, rB, dA, dB, intense = fa
   const wantB = choice === "B" || choice === "AB";
 
   const jobs = [];
-  if (wantA && valA) { dieAEl.classList.add("is-rolling"); jobs.push(_tumbleDieVal(valA, rA, dA, { intense }).then(() => dieAEl.classList.remove("is-rolling"))); }
-  if (wantB && valB) { dieBEl.classList.add("is-rolling"); jobs.push(_tumbleDieVal(valB, rB, dB, { intense }).then(() => dieBEl.classList.remove("is-rolling"))); }
+  const land = (dieEl, valEl) => {
+    dieEl.classList.remove("is-rolling");
+    if (concealed) valEl.textContent = "?";      // belt-and-braces; see landAs below
+  };
+  // The tumble's own final frame. Correcting it AFTER _tumbleDieVal resolved left
+  // the landed face on screen for the best part of a second — and on a remote
+  // client the shipped face is null, which clamps to 1, so every spectator watched
+  // the die settle on a roll that never happened.
+  const landAs = concealed ? "?" : null;
+  if (wantA && valA) { dieAEl.classList.add("is-rolling"); jobs.push(_tumbleDieVal(valA, rA, dA, { intense, landAs }).then(() => land(dieAEl, valA))); }
+  if (wantB && valB) { dieBEl.classList.add("is-rolling"); jobs.push(_tumbleDieVal(valB, rB, dB, { intense, landAs }).then(() => land(dieBEl, valB))); }
   await Promise.all(jobs);
 
   await _wait(1650); // linger so the rerolled number reads before proceeding
