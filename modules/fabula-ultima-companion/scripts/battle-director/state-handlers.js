@@ -107,6 +107,7 @@ import { isAutopilotEnabled, isAiControlledTurn, isAiControlledCombatant, autopi
 import { isSummonAutopilotEnabled, isAutomatedSummon, isAutomatedSummonTurn, summonVetoMs, isGuestActor } from "./summon-autopilot.js";
 import { resolveAnimationSpec, playDirectorAnimation } from "./director-animation.js";
 import { witnessNpcAbility, witnessFiredCandidate } from "./encyclopedia-witness.js";
+import { SimMode } from "./sim/sim-mode.js";
 
 // Install a director-scoped watcher that releases Guard / Covered AEs
 // when their associated actor drops to 0 HP. RAW Core p.70:
@@ -5824,30 +5825,35 @@ const Confirm = {
     // full card and the flag simply does not apply this time. Same for a summon's
     // armed auto-confirm, which is a card affordance.
     let result = null;
-    if (!autoConfirm) {
-      try {
-        const qaSkill = ar?.skillUuid ? await fromUuid(ar.skillUuid).catch(() => null) : null;
-        if (qaSkill?.system?.props?.skill_skip_action_card === true) {
-          // Three refusals, each because the card is the ONLY place that
-          // affordance exists. The flag is a request; anything the player would
-          // lose outranks it.
-          const refuse =
-            cardReactions.length ? `${cardReactions.length} reaction(s) are live`
-            // A roll means an accuracy/damage preview AND the Fabula-Point invoke
-            // offer — invoke is available to every PC (invoke-core: no npc_rank →
-            // "full"), and it is only reachable from the card. Skipping it would
-            // silently take a player's invoke away on a rolled action.
-            : ar?.roll ? "the action has a roll (invoke + damage preview live on the card)"
-            : null;
-          if (refuse) {
-            log(`CONFIRM: "${qaSkill.name}" asks to skip the card, but ${refuse} — posting the full card`);
-          } else {
-            log(`CONFIRM: "${qaSkill.name}" skips the action card — quick confirm`);
-            result = await quickConfirmAction(director, qaSkill, ar, attackerActor);
-          }
+    try {
+      const qaSkill = ar?.skillUuid ? await fromUuid(ar.skillUuid).catch(() => null) : null;
+      if (qaSkill?.system?.props?.skill_skip_action_card === true) {
+        // Refusals, each because skipping the card would take away something the
+        // card is the ONLY place to get. The flag is a request; anything the
+        // player (or the run) would lose outranks it. The decision is ALWAYS
+        // logged — a silent no-op here is indistinguishable from "the branch is
+        // broken", which is exactly what a first verification run hit.
+        const refuse =
+          // 🩸 A SIM owns its own confirm: postActionCard auto-confirms under
+          // SimMode (action-card.js:9950). Replacing the card with a picker would
+          // bypass that and hang the run on a prompt nobody clicks.
+          SimMode.active ? "a sim run owns the confirm"
+          : autoConfirm ? "a summon auto-confirm is armed"
+          : cardReactions.length ? `${cardReactions.length} reaction(s) are live`
+          // A roll means an accuracy/damage preview AND the Fabula-Point invoke
+          // offer — invoke is available to every PC (invoke-core: no npc_rank →
+          // "full"), and it is only reachable from the card. Skipping it would
+          // silently take a player's invoke away on a rolled action.
+          : ar?.roll ? "the action has a roll (invoke + damage preview live on the card)"
+          : null;
+        if (refuse) {
+          log(`CONFIRM: "${qaSkill.name}" asks to skip the card, but ${refuse} — posting the full card`);
+        } else {
+          log(`CONFIRM: "${qaSkill.name}" skips the action card — quick confirm`);
+          result = await quickConfirmAction(director, qaSkill, ar, attackerActor);
         }
-      } catch (e) { warn("CONFIRM: skip-action-card check threw — posting the normal card", e); }
-    }
+      }
+    } catch (e) { warn("CONFIRM: skip-action-card check threw — posting the normal card", e); }
 
     if (!result) result = await postActionCard({
       director,
@@ -6864,7 +6870,42 @@ const Resolve = {
       if (!topIsFreeAction(director.ctx) && ar?.skillUuid) {
         const actingSkill = await fromUuid(ar.skillUuid).catch(() => null);
         authoredFreeReturn = actingSkill?.system?.props?.skill_free_action === true;
-        if (authoredFreeReturn) log(`RESOLVE: "${actingSkill.name}" is an authored free action — the turn is NOT spent`);
+
+        // 🩸 ONCE PER SKILL PER TURN — the anti-spin guard, and it is load-bearing
+        // for the AUTOPILOT. A free return routes CLEANUP → DECLARE, and on an
+        // AI-controlled turn DECLARE re-asks the ActionReader, which reads the
+        // same Action Pattern and can hand back the same skill. There is no
+        // repeat guard on that path: `SimMode.declaredThisTurn`
+        // (enemy-autopilot.js:525) only guards the SIM player-brain, not
+        // `decideViaActionReader`. So an AI actor with a free-action skill in its
+        // pattern would declare → resolve → return to DECLARE → declare the same
+        // thing, forever, wedging the turn system with no error.
+        //
+        // Keyed per SKILL rather than a flat per-turn cap so a legitimate mixed
+        // sequence still works (free toggle, then a real action). On the second
+        // attempt the skill still RESOLVES normally — it just spends the turn,
+        // which ends the loop safely rather than refusing the action.
+        //
+        // Nothing in the world pairs a free-action skill with an Action Pattern
+        // today (the Dismiss is a PC skill), so this is a latent trap being
+        // closed, not an observed bug.
+        if (authoredFreeReturn) {
+          const turnKey = summonTurnKey(director, ar.attacker);
+          // Single-slot, replaced when the turn changes — an object keyed by
+          // turnKey would grow for the whole battle and never be read again.
+          let seen = director.ctx.freeReturnsThisTurn;
+          if (!seen || seen.turnKey !== turnKey) {
+            seen = director.ctx.freeReturnsThisTurn = { turnKey, skills: new Set() };
+          }
+          const spent = seen.skills;
+          if (spent.has(ar.skillUuid)) {
+            authoredFreeReturn = false;
+            warn(`RESOLVE: "${actingSkill?.name}" already took its free return this turn — spending the turn instead (anti-spin guard)`);
+          } else {
+            spent.add(ar.skillUuid);
+            log(`RESOLVE: "${actingSkill.name}" is an authored free action — the turn is NOT spent`);
+          }
+        }
       }
     } catch (e) { warn("RESOLVE: skill_free_action read threw — treating the action as turn-spending", e); }
     const freeReturn = equipFreeReturn || dominationFreeReturn || authoredFreeReturn;
