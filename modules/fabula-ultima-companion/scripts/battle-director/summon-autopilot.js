@@ -210,3 +210,118 @@ export function isAutomatedSummonTurn(director, snap = null) {
     return false;
   }
 }
+
+// ── Fallback brain: a pattern for a summon that was never authored one ───────
+//
+// An unpatterned summon falls through to the manual Octopath menu, which on the
+// table is INDISTINGUISHABLE from the feature being off. That is tolerable for a
+// bespoke summon somebody authored (Crysta's Numen), and intolerable for Birth of
+// the Cruel, whose summon is a CLONE OF WHATEVER DIED: the donor is arbitrary, so
+// the pattern cannot be authored ahead of time. Measured across the export, 29 of
+// the 63 reanimatable donors (species beast/humanoid/monster/plant, non-Villain)
+// carry an empty `action_pattern_table` — Wolf, Boa, Prickle Boar, Orc Bandit,
+// Aeroshroom and both Drakes among them.
+//
+// So: when an automated summon has no authored rows, synthesize one row per
+// action it actually carries and let the normal pipeline decide between them.
+// This is not a second brain — every downstream stage (conditions, matching,
+// targeting, focus weighting) runs exactly as it does for a patterned monster.
+//
+// The precedent is `sim/player-brain.js`, which drives a PC — an actor with no
+// `action_pattern_table` prop at all — by writing rows onto
+// `ctx.actorData.actionPatternRowsRaw`, the one field readPatternTable reads. Same
+// injection, no action-reader edit.
+//
+// 🪤 Only EXPLICITLY typed actions qualify. `toBundle` maps a blank skill_type to
+// Skill, but on a donor blank overwhelmingly means an inert gear shell (18 of 40
+// items across an 11-donor sample, every one of them also blank skill_target), and
+// a synthesized pattern made of gear shells is worse than no pattern: it matches
+// nothing and burns the turn. Passives are excluded for the same reason. If
+// nothing qualifies we return [] and the existing manual failsafe stands.
+const SYNTH_ACTIONABLE_SKILL_TYPES = new Set(["attack", "spell", "active", "skill"]);
+
+// Priority is a WEIGHTED WINDOW, not a ranking: getPriorityWeight scores a gap of
+// 0/1/2 from the top row as 3/2/1 and a gap >= 3 as 0 (never picked). Offensive
+// rows sit at 5 and self-targeted ones at 3, so a self-buff stays reachable
+// (gap 2 => weight 1 against an attack's 3) without becoming what the minion does
+// every turn. Equal priorities tie at gap 0, which rolls a fair die across the
+// creature's offensive kit — variety, not a fixed rotation.
+const SYNTH_PRIORITY_OFFENSIVE = 5;
+const SYNTH_PRIORITY_SELF = 3;
+
+// Is this combatant one the ActionReader may be asked to decide for as a party
+// summon? Deliberately NOT `isAutomatedSummon`.
+//
+// `isAutomatedSummon` folds in `isSummonAutopilotEnabled()`, which is two things at
+// once: a GM-facing on/off switch, and `if (SimMode.active) return false`. Neither
+// belongs in this question. The switch decides whether the engine ASKS the
+// ActionReader; this only answers "if asked, may this creature borrow a synthesized
+// pattern". The SimMode early-out exists to stop a second CONFIRM timer being armed
+// on top of the sim's own — nothing to do with deciding.
+//
+// ⚠ Do NOT read this as "and therefore the fallback brain now runs in a sim". It
+// does not, for a free-action grant — which is Birth of the Cruel's ONLY path.
+// `autopilotDecideAction` short-circuits under SimMode: a grant carrying
+// enabledLabels goes straight to `simFallbackBundle` -> the player brain -> Guard,
+// and never reaches `decideViaActionReader`, so neither injection point is on that
+// path. Verified against enemy-autopilot.js, not assumed. Routing the sim's
+// free-action frame through the synthesized pattern is a separate, unmade change.
+// What this predicate buys today is the REAL-PLAY path, and a rationale that
+// survives reading.
+//
+// Party side still applies — an enemy necromancer's minions belong to the GM's own
+// autopilot toggle.
+export function isBrainDrivableSummon(dc) {
+  if (!isSummonCombatant(dc)) return false;
+  return String(dc?.side ?? "") === "party";
+}
+
+export function synthesizeSummonPatternRows(actorData) {
+  const items = Array.isArray(actorData?.items) ? actorData.items : [];
+  const rows = [];
+  for (const it of items) {
+    const name = String(it?.name ?? "").trim();
+    if (!name) continue;
+    const st = String(it?.skillType ?? "").trim().toLowerCase();
+    if (!SYNTH_ACTIONABLE_SKILL_TYPES.has(st)) continue;
+    const selfOnly = String(it?.skillTarget ?? "").trim().toLowerCase() === "self";
+    rows.push({
+      rowKey: `synth_${rows.length}`,
+      rowIndex: rows.length,
+      data: {
+        action_pattern_name: name,
+        action_pattern_condition: "always",
+        action_pattern_priority: selfOnly ? SYNTH_PRIORITY_SELF : SYNTH_PRIORITY_OFFENSIVE,
+        // Target Focus left BLANK on purpose — blank resolves to "auto", which
+        // already blends affinity multipliers with a mild low-HP bias. That is a
+        // better generic default than any mode we could name here, and it invents
+        // no vocabulary.
+      },
+    });
+  }
+  return rows;
+}
+
+// Should this ActionReader run fall back to a synthesized pattern? Only for a
+// combatant the summon autopilot is actually driving — an unpatterned MONSTER
+// still drops to the manual menu, which is the documented opt-out ("leave its
+// pattern blank" is how a dev keeps a specific GM actor off the AI).
+export function maybeInjectSummonFallbackPattern(ctx, combatant) {
+  try {
+    if (!isBrainDrivableSummon(combatant)) return false;
+    const ad = ctx?.actorData;
+    if (!ad) return false;
+    if (Array.isArray(ad.actionPatternRowsRaw) && ad.actionPatternRowsRaw.length) return false;
+    const rows = synthesizeSummonPatternRows(ad);
+    if (!rows.length) {
+      log(`summon-autopilot: ${ad.identity?.actorName ?? "summon"} has no authored pattern and no typed actions — falling back to the manual menu`);
+      return false;
+    }
+    ad.actionPatternRowsRaw = rows;
+    log(`summon-autopilot: synthesized ${rows.length} fallback pattern row(s) for ${ad.identity?.actorName ?? "summon"} (${rows.map((r) => r.data.action_pattern_name).join(", ")})`);
+    return true;
+  } catch (e) {
+    warn("maybeInjectSummonFallbackPattern threw", e);
+    return false;
+  }
+}

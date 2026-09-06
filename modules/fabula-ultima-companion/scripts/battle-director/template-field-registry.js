@@ -491,6 +491,12 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // spawn holds a turn at all — a sheet save that stripped it would hand the
   // creature a second activation with nothing to show that anything changed.
   textCol("summon_turns_per_round", "Summon: Turns/Round", { tooltip: 'summon: pin the spawn\'s activation count instead of reading it off the actor (activation + bonus_activation). Blank = untouched. "0" = the summon never takes a turn of its own — for a creature whose whole activation is a granted free action (Create Phantasm: Numen acts at the end of its summoner\'s turn). Distinct from Act This Round, which only suppresses the first round; this pin lasts the spawn\'s lifetime.', vis: SUMMON_VIS }),
+  // summon_kind — the KIND slot a persistent summon occupies, per OWNER. Declared
+  // for the same reason Turns/Round is: it decides whether a second persistent
+  // summon can exist at all, and a sheet save that stripped it would silently
+  // merge two creatures into one cap with nothing to show for it.
+  textCol("summon_kind", "Summon: Kind", { tooltip: 'summon: names the slot this persistent summon occupies, per owner (e.g. "minion", "captured"). Scopes Summon: Max, the OWN_PERSISTENT_SUMMONS_<KIND> identifier and the own_persistent_summons_<kind> / own_summon_tokens_<kind> target refs, so two persistent-summon skills on the same character do not compete for one slot. Blank = the shared unnamed bucket (legacy).', vis: SUMMON_VIS }),
+  textCol("summon_clone_suffix", "Summon: Clone Suffix", { tooltip: "summon (clone rows): what to append to the source creature's name for the clone. Blank = \"(Reanimated)\", Birth of the Cruel's wording. A captured monster or a doppelganger wants its own.", vis: SUMMON_VIS }),
   // adjust_charges config — charge arithmetic on a target's named charge-AE
   // (Enkindle: double the target's Burn = Burn × 2). Mirrors adjust_damage.
   textCol("charge_ae_name", "Charge AE Name", { tooltip: "adjust_charges: the charge-AE to modify, by name (e.g. Burn).", vis: ADJUST_CHARGES_VIS }),

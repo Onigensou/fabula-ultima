@@ -532,6 +532,29 @@ function computeLayout({ party, enemies, scene }) {
 // Returns the created TokenDocument array. Tokens are placed at the layout
 // positions, with alpha = 0 so the entrance animation can fade them in.
 
+// Should this spawn's token be LINKED to its actor?
+//
+// Normally: PCs linked, NPCs unlinked (an unlinked token gets a synthetic delta
+// actor, so ten goblins off one sheet keep separate HP).
+//
+// A PERSISTENT SUMMON inverts that. Its Actor is not a shared sheet — it is a
+// unique standing creature created for exactly one owner, with exactly one token
+// at a time, and its state is meant to OUTLIVE the battle. Unlinked, every write
+// during a fight (damage, MP, AEs) lands on the token delta and evaporates when
+// `cleanupDirectorSpawnedTokens` deletes that token at battle end — measured
+// 2026-09-06: 20 damage took the delta 53 -> 33 while the world Actor stayed 53,
+// and the minion rejoined the next battle at full HP.
+//
+// The ACTOR itself carries the signal (`isPersistentSummon`), so both spawn paths
+// get this for free and no caller has to remember to ask — including
+// `reAddPersistentSummons`, which spawns through addCombatant.
+function shouldLinkSpawnedToken(actor, disposition, proto) {
+  try {
+    if (actor?.flags?.[FLAG_NS]?.isPersistentSummon) return true;
+  } catch { /* fall through to the normal rule */ }
+  return disposition === 1 ? !!proto?.actorLink : false;
+}
+
 async function spawnTokensHidden({ scene, layout, disposition }) {
   if (!layout?.length) return [];
   const tokensData = [];
@@ -566,7 +589,7 @@ async function spawnTokensHidden({ scene, layout, disposition }) {
     td.x = Math.round(item.pos.x - (width * gridSize) / 2);
     td.y = Math.round(item.pos.y - (height * gridSize) / 2);
     td.actorId = actor.id;
-    td.actorLink = disposition === 1 ? !!proto?.actorLink : false; // PCs linked, NPCs unlinked
+    td.actorLink = shouldLinkSpawnedToken(actor, disposition, proto); // PCs + persistent summons linked, other NPCs unlinked
     td.disposition = disposition;
     td.hidden = false;
     td.alpha = 0; // start invisible — entrance animation fades in
@@ -658,7 +681,7 @@ export async function spawnLiveDirectorTokens({ scene, actorUuids, disposition, 
     td.x = Math.round(center.x - (width * grid) / 2);
     td.y = Math.round(center.y - (height * grid) / 2);
     td.actorId = actor.id;
-    td.actorLink = disposition === 1 ? !!proto?.actorLink : false;
+    td.actorLink = shouldLinkSpawnedToken(actor, disposition, proto);
     td.disposition = disposition;
     td.hidden = false;
     td.alpha = 1;

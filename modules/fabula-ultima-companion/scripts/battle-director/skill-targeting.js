@@ -102,6 +102,17 @@ const RESERVED_REFS = {
   // still act on a standing minion that has no token anywhere. mode "all" -> every
   // persistent summon, no prompt.
   own_persistent_summons: { candidate_source: "own_persistent_summons", mode: "all" },
+  // The reactor's own reanimated MINIONS, by live token (Birth of the Cruel).
+  // The token-identity twin of own_persistent_summons, and the clone-specific
+  // twin of own_numen: combat-roster tokens carrying `cloneActorUuid`.
+  //
+  // 🩸 Neither neighbour can stand in for it on a free_action grant. A
+  // performer_ref reads `pr.tokens[0]` and needs a real TokenDocument:
+  // own_persistent_summons yields an ACTOR CARRIER by design (it would enqueue an
+  // Actor uuid into `reactorTokenUuid`), and own_summons returns the Numen and the
+  // phantasms too — with both a Numen and a Minion out, [0] is a coin flip and the
+  // Minion's grant lands on the Numen. mode "all" -> every own minion, no prompt.
+  own_minions:           { candidate_source: "own_minions", mode: "all" },
 };
 
 // The reserved target_ref vocabulary, published for the reaction-config lint.
@@ -110,10 +121,54 @@ const RESERVED_REFS = {
 // trigger_attacker — every one of them reported a false TARGET_REF_UNRESOLVED.
 // Derive, don't mirror.
 export const RESERVED_TARGET_REF_NAMES = Object.freeze(Object.keys(RESERVED_REFS));
+
+// Reserved target_ref PREFIXES — families resolved by prefix in
+// buildCandidatePool rather than by a registry key, so a new persistent-summon
+// kind needs no entry here. Published for the same reason the names are: the
+// reaction lint would otherwise report TARGET_REF_UNRESOLVED on
+// `own_persistent_summons_minion` — a perfectly good ref — and the last time that
+// list was a hand-written mirror it had already drifted on five entries.
+export const RESERVED_TARGET_REF_PREFIXES = Object.freeze([
+  "own_persistent_summons_",
+  "own_summon_tokens_",
+]);
+
+// THE single source of truth for "is this authored target_ref a reserved word".
+//
+// Returns the targeting CONFIG to resolve, or null. `resolveTargetRef` consumes it
+// and `isReservedTargetRef` (published for the reaction lint) is defined AS it, on
+// purpose: the first cut had the lint answering from the prefix list while
+// resolveTargetRef answered from `RESERVED_REFS` alone, so every
+// `own_persistent_summons_<kind>` ref fell through to the effect_table lookup,
+// returned `no-row`, and resolved NOTHING — while the lint reported it valid. The
+// two must not be able to disagree again.
+//
+// A prefixed ref passes its full name through as the candidate_source; the prefix
+// families are dispatched by `buildCandidatePool`. mode "all" mirrors the
+// un-suffixed entries — take every match, never prompt.
+function reservedRefConfigFor(key) {
+  const k = String(key ?? "").trim();
+  if (!k) return null;
+  if (Object.prototype.hasOwnProperty.call(RESERVED_REFS, k)) return RESERVED_REFS[k];
+  for (const p of RESERVED_TARGET_REF_PREFIXES) {
+    if (k.startsWith(p) && k.length > p.length) return { candidate_source: k, mode: "all" };
+  }
+  return null;
+}
+
+/** Does this authored target_ref resolve to a reserved word or reserved family? */
+export function isReservedTargetRef(ref) {
+  return reservedRefConfigFor(ref) !== null;
+}
+
 try {
   globalThis.FUCompanion = globalThis.FUCompanion || {};
   globalThis.FUCompanion.api = globalThis.FUCompanion.api || {};
-  globalThis.FUCompanion.api.targetRefs = { reserved: new Set(RESERVED_TARGET_REF_NAMES) };
+  globalThis.FUCompanion.api.targetRefs = {
+    reserved: new Set(RESERVED_TARGET_REF_NAMES),
+    prefixes: [...RESERVED_TARGET_REF_PREFIXES],
+    isReserved: isReservedTargetRef,
+  };
 } catch (_e) { /* non-Foundry context (node --check, tooling) */ }
 
 // Public — resolve a target_ref to a token list within a chain context.
@@ -185,9 +240,11 @@ export async function resolveTargetRef(targetRef, ctx) {
     return result;
   }
 
-  // Reserved word sugar.
-  if (Object.prototype.hasOwnProperty.call(RESERVED_REFS, key)) {
-    const result = await resolveTargetingRow(RESERVED_REFS[key], ctx);
+  // Reserved word sugar — exact names AND the prefix families
+  // (own_persistent_summons_<kind> / own_summon_tokens_<kind>).
+  const reservedCfg = reservedRefConfigFor(key);
+  if (reservedCfg) {
+    const result = await resolveTargetingRow(reservedCfg, ctx);
     ctx.resolvedTargets.set(key, result);
     return result;
   }
@@ -599,11 +656,27 @@ async function promptBdPick({ row, pool, n, mode, ctx, locked = false }) {
 // ── Candidate pool builders ──────────────────────────────────────────────
 
 async function buildCandidatePool(source, ctx) {
+  // Kind-scoped persistent-summon refs, resolved by PREFIX so a new summon type
+  // needs no registry entry per kind:
+  //   own_persistent_summons_<kind>  -> the persisted world Actor (works out of
+  //                                     conflict; yields an actor carrier)
+  //   own_summon_tokens_<kind>       -> the live token (needs a conflict; what a
+  //                                     free_action performer_ref requires)
+  // See RESERVED_REFS for why the two are not interchangeable.
+  if (typeof source === "string") {
+    if (source.startsWith("own_persistent_summons_")) {
+      return collectOwnPersistentSummons(ctx, source.slice("own_persistent_summons_".length));
+    }
+    if (source.startsWith("own_summon_tokens_")) {
+      return collectOwnPersistentSummonTokens(ctx, source.slice("own_summon_tokens_".length));
+    }
+  }
   switch (source) {
     case "self":                return collectSelfTokens(ctx);
     case "self_or_my_focus":    return collectSelfOrMyFocusTokens(ctx);
     case "own_summons":         return collectOwnSummons(ctx);
     case "own_persistent_summons": return collectOwnPersistentSummons(ctx);
+    case "own_minions":         return collectOwnMinions(ctx);
     case "own_numen":           return collectOwnNumen(ctx);
     case "last_summoned":       return collectLastSummoned(ctx);
     case "action_targets":      return collectActionTargets(ctx);
@@ -686,16 +759,59 @@ function collectOwnSummons(ctx) {
 //
 // Callers that DO want live token identity inside a conflict already have
 // `own_summons`, which reads the combat roster.
-function collectOwnPersistentSummons(ctx) {
+function collectOwnPersistentSummons(ctx, kind = null) {
   const meUuid = String(ctx.reactorActor?.uuid ?? ctx.reactorToken?.actor?.uuid ?? "").trim();
   if (!meUuid) return [];
   const NS = "fabula-ultima-companion";
+  const want = kind ? String(kind).toLowerCase() : null;
   const out = [];
   for (const a of (globalThis.game?.actors?.contents ?? [])) {
     const f = a?.flags?.[NS] ?? {};
     if (!f.isPersistentSummon) continue;
     if (String(f.summonOwnerActorUuid ?? "") !== meUuid) continue;
+    const k = String(f.persistentSummonKind ?? "").toLowerCase();
+    if (want && k && k !== want) continue;   // unstamped = legacy, still matches
     out.push({ actor: a, uuid: a.uuid, name: a.name, actorOnly: true });
+  }
+  return out;
+}
+
+// "own_minions" — the reactor's own reanimated minions, as LIVE TOKENS.
+//
+// Same population as own_persistent_summons, resolved the other way round: that
+// ref walks `game.actors` and yields an actor carrier so an OUT-of-conflict
+// trigger (party_rested) can reach a minion that has no token. This one walks the
+// combat roster, so an IN-conflict grant gets real token identity.
+//
+// A minion is discriminated by the `cloneActorUuid` token flag — the same marker
+// `destroy_summon only_clones` uses — which is what separates it from the Numen
+// and from the Illusionist's phantasms. Without that split, Birth of the Cruel's
+// turn_end grant and Create Phantasm: Numen's would fight over `pr.tokens[0]`.
+function collectOwnMinions(ctx) { return collectOwnPersistentSummonTokens(ctx, "minion"); }
+
+// The kind-scoped live-token collector behind `own_minions` and the
+// `own_persistent_summons_<kind>` family.
+//
+// `kind` null = every persistent clone this actor owns, whatever its kind.
+// A named kind matches `persistentSummonKind`, and ALSO matches a clone carrying
+// NO kind at all — those predate `summon_kind` and would otherwise become
+// invisible to the very ref that used to resolve them, which is a silent
+// "the summon stopped acting" rather than an error. Remove the fallback once no
+// unstamped persistent clone can exist.
+function collectOwnPersistentSummonTokens(ctx, kind = null) {
+  const meUuid = String(ctx.reactorActor?.uuid ?? ctx.reactorToken?.actor?.uuid ?? "").trim();
+  if (!meUuid) return [];
+  const NS = "fabula-ultima-companion";
+  const want = kind ? String(kind).toLowerCase() : null;
+  const out = [];
+  for (const t of collectCombatTokens(ctx)) {
+    if (!t?.actor) continue;
+    const f = t.flags?.[NS] ?? {};
+    if (String(f.summonedBy ?? "") !== meUuid) continue;
+    if (!f.cloneActorUuid) continue;
+    const k = String(f.persistentSummonKind ?? "").toLowerCase();
+    if (want && k && k !== want) continue;
+    out.push(t);
   }
   return out;
 }

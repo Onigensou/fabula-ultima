@@ -35,6 +35,7 @@ import { ActionReaderCore } from "../action-reader/actionReader-core.js";
 import { resolveActionReaderPerformer } from "../action-reader/actionReader-resolvePerformer.js";
 import { buildActionReaderContext } from "../action-reader/actionReader-buildContext.js";
 import { readActionReaderPatternTable } from "../action-reader/actionReader-readPatternTable.js";
+import { isBrainDrivableSummon, maybeInjectSummonFallbackPattern, synthesizeSummonPatternRows } from "./summon-autopilot.js";
 import { evaluateActionReaderConditions } from "../action-reader/actionReader-evaluateConditions.js";
 import { matchAndPickActionReaderAction } from "../action-reader/actionReader-matchAndPickAction.js";
 import { parseActionReaderTargetRule } from "../action-reader/actionReader-parseTargetRule.js";
@@ -240,7 +241,7 @@ async function think(token, range) {
 // Chain the pipeline for a single token, stopping before AnnounceResult. Returns
 // the ActionReader context (with chosenAction + chosenTargets) or null on any
 // stage failure. Never throws.
-async function runActionReader({ token, combat, combatant, activationIndex, director = null }) {
+async function runActionReader({ token, combat, combatant, activationIndex, director = null, directorCombatant = null }) {
   try {
     let ctx = ActionReaderCore.createBaseContext();
 
@@ -253,6 +254,12 @@ async function runActionReader({ token, combat, combatant, activationIndex, dire
       ? { activationIndex: Math.trunc(activationIndex) }
       : {};
     await buildActionReaderContext(ctx, { overrides });
+    // A summon the autopilot is driving but nobody authored a pattern for gets one
+    // synthesized from its own actions. Must sit between BuildContext (which fills
+    // actionPatternRowsRaw) and ReadPatternTable (which is the only reader of it).
+    // No-op for everything else, including an unpatterned MONSTER — a blank pattern
+    // is that dev's documented way to keep a GM actor off the AI.
+    maybeInjectSummonFallbackPattern(ctx, directorCombatant);
     await readActionReaderPatternTable(ctx);
     await evaluateActionReaderConditions(ctx);
     await matchAndPickActionReaderAction(ctx);
@@ -568,7 +575,7 @@ async function decideViaActionReader(director, snap) {
     const pip = (inSim && !SimMode.showPip()) ? { remove() {} } : showThinkingPip(token);
     let ctx = null;
     try {
-      ctx = await runActionReader({ token, combat, combatant, activationIndex, director });
+      ctx = await runActionReader({ token, combat, combatant, activationIndex, director, directorCombatant: dc });
       await jitterDelay(inSim ? SimMode.thinkRange() : AUTOPILOT_TIMING.decision);
     } finally {
       pip.remove();
@@ -701,6 +708,22 @@ function grantIsAmbiguous(allow) {
 // the patterned bundle when the grant permits what the pattern chose, else null.
 // The grant keeps the final say — this decides WHICH action, never WHETHER one
 // is allowed.
+// The minimal item shape `synthesizeSummonPatternRows` reads, built straight off
+// an actor. BuildContext produces the same three fields inside `actorData.items`,
+// but the pattern gate below runs BEFORE any ActionReader context exists, and
+// building one just to answer "could we synthesize anything?" would cost a full
+// pipeline setup per free-action frame.
+function collectSynthItemShapes(actor) {
+  return ActionReaderCore.getActorItems(actor).map((item) => {
+    const props = ActionReaderCore.getItemProps(item);
+    return {
+      name: item?.name ?? "",
+      skillType: String(props?.[ActionReaderCore.keys.skillType] ?? ""),
+      skillTarget: String(props?.[ActionReaderCore.keys.skillTarget] ?? ""),
+    };
+  });
+}
+
 async function tryPatternedGrantPick(director, snap, actor, allow, grant) {
   // decideViaActionReader is grant-BLIND — it is handed the director and snap,
   // never the grant (contrast the sim twin, which passes it to decidePlayerAction).
@@ -724,7 +747,21 @@ async function tryPatternedGrantPick(director, snap, actor, allow, grant) {
   const hasPattern = Object.values(
     actor?.system?.props?.[ActionReaderCore.keys.actionPatternTableKey] ?? {}
   ).some((r) => r && !r[ActionReaderCore.keys.actionPatternDeletedKey]);
-  if (!hasPattern) return null;
+  // 🪤 This gate reads the ACTOR's authored table directly, so it short-circuits
+  // BEFORE decideViaActionReader — which is where a synthesized pattern gets
+  // injected. Leaving it as a bare `if (!hasPattern) return null` would make the
+  // fallback dead code on the ONE path that needs it most: a Numen-style summon
+  // acts through a free-action grant at its owner's turn end, never through a turn
+  // of its own, so this is the only route Birth of the Cruel's Minion ever takes.
+  // An automated summon with synthesizable actions is therefore allowed through;
+  // decideViaActionReader still returns null if nothing is feasible.
+  if (!hasPattern) {
+    const sdc = director?.dCombat?.findByTokenId?.(snap?.tokenId) ?? null;
+    const canSynthesize = isBrainDrivableSummon(sdc)
+      && synthesizeSummonPatternRows({ items: collectSynthItemShapes(actor) }).length > 0;
+    if (!canSynthesize) return null;
+    log(`autopilot: ${snap.name} has no authored pattern but is an automated summon — trying a synthesized one`);
+  }
 
   const patterned = await decideViaActionReader(director, snap);
   const cmd = patterned?.command ?? patterned?.bundle?.command ?? null;

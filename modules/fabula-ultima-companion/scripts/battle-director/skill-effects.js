@@ -8874,8 +8874,23 @@ async function applyFreeActionEffect(row, ctx) {
       const tokDoc = tok?.document ?? tok ?? null;
       const pActor = tokDoc?.actor ?? tok?.actor ?? null;
       if (pActor) { performer = pActor; performerToken = tokDoc; }
-      else warn(`skill-effects.free_action: performer_ref "${performerRefRaw}" resolved no actor — defaulting to reactor`);
-    } catch (e) { warn(`skill-effects.free_action: performer_ref "${performerRefRaw}" resolve threw`, e); }
+      else {
+        // 🩸 ABORT, never fall back to the reactor. Silently retargeting the grant
+        // was permissive in the worst direction: an author who NAMES a performer
+        // never means "give it to the reaction's bearer instead". Birth of the
+        // Cruel grants its Minion an action at Keren's turn end — with the old
+        // fallback, a turn where the Minion was off-field handed KEREN a free
+        // Attack/Skill every round, reported as success. The same hole sat under
+        // Create Phantasm: Numen (own_numen) and Glowstick (glowstick_ally).
+        // A BLANK performer_ref still means "the reactor" — that default is
+        // untouched; only a set-and-unresolved ref fails now, and it fails closed.
+        warn(`skill-effects.free_action: performer_ref "${performerRefRaw}" resolved no actor — ABORTING the grant (not defaulting to the reactor)`);
+        return { ok: false, kind: "free_action", reason: "performer-unresolved" };
+      }
+    } catch (e) {
+      warn(`skill-effects.free_action: performer_ref "${performerRefRaw}" resolve threw`, e);
+      return { ok: false, kind: "free_action", reason: "performer-resolve-threw" };
+    }
   }
 
   const resolver = buildSkillResolver({
@@ -9989,6 +10004,20 @@ async function applySummonEffect(row, ctx) {
   const persistClone = row.summon_persist === true
     || String(row.summon_persist ?? "").trim().toLowerCase() === "true";
   const summonFolderName = String(row.summon_folder ?? "").trim();
+  // summon_kind — the KIND of persistent summon this row creates ("minion",
+  // "captured", "doppelganger"…). Scopes the cap, the counts and the target refs
+  // so two persistent-summon skills owned by the SAME character do not fight over
+  // one slot. Without it every non-phantasm/non-Numen spawn shares one bucket,
+  // which is precisely how a phantasm once filled Birth of the Cruel's
+  // `summon_max: 1` for four weeks (report 2026-07-28-botc-summon-max) — one
+  // layer up, and waiting for the second persistent summon.
+  // Blank = the legacy unnamed bucket, so existing rows are unaffected.
+  const summonKind = String(row.summon_kind ?? "").trim().toLowerCase();
+  // summon_clone_suffix — what to call the clone. Was hard-coded "(Reanimated)",
+  // which is Birth of the Cruel's word for it; a captured monster or a
+  // doppelganger needs its own. Blank keeps the historical default so BotC's
+  // existing actors keep their names.
+  const cloneSuffix = String(row.summon_clone_suffix ?? "").trim() || "(Reanimated)";
   const stripTypes = String(row.summon_strip_types ?? "")
     .split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
 
@@ -10118,6 +10147,17 @@ async function applySummonEffect(row, ctx) {
       if (String(f.summonedBy ?? "") !== summonerUuid) continue;
       if (asPhantasm) { if (f.isPhantasm) n++; continue; }
       if (asNumen)    { if (f.isNumen)    n++; continue; }
+      // A row that names its KIND counts only that kind. This is the same
+      // argument as the phantasm/Numen branches above, generalized: a slot is
+      // per-kind or it is not a slot.
+      // Unstamped legacy clones count toward ANY named kind — same rule as the
+      // identifier and the target refs. Strict here would leave `summon_max: 1`
+      // open for a creature the refs can still see.
+      if (summonKind) {
+        const k = String(f.persistentSummonKind ?? "");
+        if (!k || k === summonKind) n++;
+        continue;
+      }
       if (f.isSummon && !f.isPhantasm && !f.isNumen) n++;
     }
     return n;
@@ -10170,7 +10210,7 @@ async function applySummonEffect(row, ctx) {
     for (const src of srcActors) {
       const data = src.toObject();
       delete data._id;
-      data.name = `${src.name} (Reanimated)`;
+      data.name = `${src.name} ${cloneSuffix}`;
       if (folderId) data.folder = folderId;
       if (stripTypes.length && Array.isArray(data.items)) {
         data.items = data.items.filter((it) => !stripTypes.includes(String(it.system?.props?.item_type ?? "").toLowerCase()));
@@ -10181,7 +10221,28 @@ async function applySummonEffect(row, ctx) {
       // next fights. (Reanimated minion, captured monster, permanent doppelganger.)
       if (persistClone) {
         data.flags = data.flags ?? {};
-        data.flags[FLAG_NS] = { ...(data.flags[FLAG_NS] ?? {}), isPersistentSummon: true, summonOwnerActorUuid: summonerUuid };
+        data.flags[FLAG_NS] = {
+          ...(data.flags[FLAG_NS] ?? {}),
+          isPersistentSummon: true,
+          summonOwnerActorUuid: summonerUuid,
+          // 🩸 The activation pin has to live on the ACTOR for a PERSISTED summon.
+          // `combatantPinnedTurns` reads a TOKEN flag, and a persistent summon's
+          // token is destroyed at battle end and rebuilt by reAddPersistentSummons
+          // next conflict — which re-stamped isSummon/summonedBy/cloneActorUuid/
+          // deleteCloneOnDeath but NOT turnsPerRound. So the pin silently expired
+          // after battle 1: `_effectiveActivation` fell through to
+          // `readActivations(cloneActor)` = 1 and the Minion took a turn of its own
+          // AND still got Birth of the Cruel's turn_end free action — acting twice
+          // per round, the exact opposite of what the pin is for. The Numen never
+          // hit this because it is re-summoned (and so re-pinned) every cast.
+          // Same reason the pin cannot simply be re-derived: the summoning ROW is
+          // long gone by the time the next battle starts.
+          ...(turnsPerRoundPin !== null ? { summonTurnsPerRound: turnsPerRoundPin } : {}),
+          // The kind travels on the ACTOR, not just the token — the token is
+          // rebuilt every battle, and the per-owner/per-kind counts have to answer
+          // out of conflict too (where there is no token at all).
+          ...(summonKind ? { persistentSummonKind: summonKind } : {}),
+        };
       }
       let clone = null;
       try { clone = await Actor.create(data); } catch (e) { warn(`skill-effects.summon: clone create failed for ${src.name}`, e); }
@@ -10245,6 +10306,12 @@ async function applySummonEffect(row, ctx) {
         const out = await spawnLiveDirectorTokens({ scene, actorUuids: [actor.uuid], disposition, anchor: spawnAnchor });
         tokenDoc = out?.[0] ?? null;
       } catch (e) { warn(`skill-effects.summon: spawn threw for ${actor.name}`, e); }
+      // No orphan cleanup here on purpose. The post-loop sweep below already
+      // deletes an unspawned clone, guarded on `unit._spawned` — and that guard is
+      // load-bearing: with `summon_count > 1`, copy 1 can spawn and copy 2 fail, so
+      // an unguarded delete here would destroy a clone whose token is already live.
+      // Persistent summons now spawn LINKED, which makes that worse than a leak —
+      // deleting the Actor takes the live token with it.
       if (!tokenDoc) { warn(`skill-effects.summon: spawn produced no token for ${actor.name}`); continue; }
       let c = null;
       try {
@@ -10275,6 +10342,7 @@ async function applySummonEffect(row, ctx) {
           ...(asPhantasm ? { [`flags.${FLAG_NS}.isPhantasm`]: true } : {}),
           ...(asNumen ? { [`flags.${FLAG_NS}.isNumen`]: true } : {}),
           ...(turnsPerRoundPin !== null ? { [`flags.${FLAG_NS}.turnsPerRound`]: turnsPerRoundPin } : {}),
+          ...(summonKind ? { [`flags.${FLAG_NS}.persistentSummonKind`]: summonKind } : {}),
           ...(unit.cloneUuid ? {
             [`flags.${FLAG_NS}.cloneActorUuid`]: unit.cloneUuid,
             [`flags.${FLAG_NS}.deleteCloneOnDespawn`]: unit.deleteOnDespawn,
@@ -10399,12 +10467,42 @@ export async function reAddPersistentSummons(director) {
       const td = await fromUuid(res.tokenUuid).catch(() => null);
       const tdoc = td?.document ?? td ?? null;
       if (tdoc) {
+        // Re-stamp the activation pin from the ACTOR. Without this the rebuilt
+        // token carries no `turnsPerRound` flag, combatantPinnedTurns returns null,
+        // and a Minion pinned to 0 turns at summon time silently regains a full turn
+        // from its second battle onward — while still receiving its owner's turn_end
+        // free action. See the stamp in applySummonEffect for the full trail.
+        const pin = actor.flags?.[FLAG_NS]?.summonTurnsPerRound;
+        // A clone created BEFORE this stamp existed carries no pin, so the re-stamp
+        // below is skipped and `_effectiveActivation` falls back to the actor's own
+        // activation — the double-acting bug, for exactly the summons that predate
+        // the fix. We cannot infer the intended pin here (the summoning row is long
+        // gone), and defaulting it to 0 would be wrong for a persistent summon that
+        // is MEANT to take its own turn. So make it loud instead of silent: this
+        // world has no such actor (measured), but another store may.
+        if (pin === undefined || pin === null || pin === "") {
+          warn(`reAddPersistentSummons: "${actor.name}" has no summonTurnsPerRound flag `
+            + `(clone predates the activation-pin stamp) — its turns/round will be read off the `
+            + `actor. If it is meant to hold none, set flags.${FLAG_NS}.summonTurnsPerRound = 0 on it.`);
+        }
         await tdoc.update({
           [`flags.${FLAG_NS}.isSummon`]: true,
           [`flags.${FLAG_NS}.summonedBy`]: owner,
           [`flags.${FLAG_NS}.cloneActorUuid`]: actor.uuid,
           [`flags.${FLAG_NS}.deleteCloneOnDeath`]: true,
+          ...(actor.flags?.[FLAG_NS]?.persistentSummonKind
+            ? { [`flags.${FLAG_NS}.persistentSummonKind`]: actor.flags[FLAG_NS].persistentSummonKind } : {}),
+          ...(pin !== undefined && pin !== null && pin !== ""
+            ? { [`flags.${FLAG_NS}.turnsPerRound`]: pin } : {}),
         });
+        // The combatant was built by addCombatant BEFORE the flag landed, so its
+        // turnsPerRound/turnsRemaining were read off the actor. Correct them now
+        // rather than waiting for the next round wrap to recompute.
+        if (pin !== undefined && pin !== null && pin !== "") {
+          const n = Math.max(0, Math.floor(Number(pin) || 0));
+          const c = (dc.combatants ?? []).find((x) => x.tokenDoc?.uuid === tdoc.uuid);
+          if (c) { c.turnsPerRound = n; c.turnsRemaining = Math.min(c.turnsRemaining ?? 0, n); }
+        }
       }
       added++;
       log(`reAddPersistentSummons: re-added ${actor.name} (owner ${owner})`);

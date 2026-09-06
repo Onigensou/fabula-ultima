@@ -222,6 +222,24 @@
     return RESERVED_TARGET_REFS_FALLBACK;
   }
 
+  // Reserved target_ref FAMILIES resolved by prefix, not by a registry key
+  // (`own_persistent_summons_<kind>`, `own_summon_tokens_<kind>`). A name check
+  // alone reports TARGET_REF_UNRESOLVED on every one of them. Prefer the live
+  // predicate; the fallback list mirrors skill-targeting and is only for a lint
+  // that runs before the ES module loads.
+  const RESERVED_TARGET_REF_PREFIXES_FALLBACK = [
+    "own_persistent_summons_", "own_summon_tokens_",
+  ];
+  function isReservedTargetRef(ref) {
+    const reg = globalThis.FUCompanion?.api?.targetRefs;
+    if (typeof reg?.isReserved === "function") return reg.isReserved(ref);
+    const r = String(ref ?? "").trim();
+    if (getReservedTargetRefs().has(r)) return true;
+    const prefixes = Array.isArray(reg?.prefixes) && reg.prefixes.length
+      ? reg.prefixes : RESERVED_TARGET_REF_PREFIXES_FALLBACK;
+    return prefixes.some((p) => r.startsWith(p) && r.length > p.length);
+  }
+
   // Kinds that operate on tokens and therefore require a target_ref. apply_ae
   // is conditional (target_prompt: "visible" bypasses), handled inline.
   const KINDS_REQUIRING_TARGET_REF = new Set([
@@ -521,7 +539,7 @@
       }
       // Reserved words (self / action_targets / …) are resolved by the
       // targeting resolver, not by an effect_label — they're always valid.
-      if (getReservedTargetRefs().has(tref)) continue;
+      if (isReservedTargetRef(tref)) continue;
       const tRow = labelToRow.get(tref);
       if (!tRow) {
         issues.push(mkIssue({

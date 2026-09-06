@@ -743,6 +743,20 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // gates Create Phantasm: Numen to one Numen (availability_formula
       // "OWN_NUMEN_COUNT == 0"). Subset of OWN_SUMMON_COUNT.
       case "OWN_NUMEN_COUNT": return ownSummonCount(actor, { numenOnly: true });
+      // Live reanimated MINIONS on the field (Birth of the Cruel), by the
+      // `cloneActorUuid` token flag. Deliberately NOT the same question as
+      // OWN_PERSISTENT_SUMMON_COUNT, which counts the persisted world Actor
+      // whether or not it is anywhere on a canvas.
+      //
+      // 🩸 Use THIS one to gate anything that then resolves `own_minions`. The
+      // raise gate wants the persistent count (a standing minion blocks a second
+      // raise even between battles); a turn_end free-action grant wants this one,
+      // because a gate that passes while the performer resolves nothing used to
+      // hand the SUMMONER the free action instead (that fallback now aborts, but
+      // the gate should still not disagree with the ref it feeds).
+      // `ownMinionCount` walks the SAME list `own_minions` does, in the same
+      // precedence — see its note for why sharing the discriminator was not enough.
+      case "OWN_MINION_COUNT": return ownMinionCount(actor);
       // Number of PHANTASM summons (token flag isPhantasm) THIS actor has out —
       // gates the regular Create Phantasm skills to a 3-Phantasm cap
       // ("OWN_PHANTASM_COUNT < 3"). Excludes the Numen, which is a full own-turn
@@ -1731,6 +1745,20 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         //   AE_COUNT_SOUL_LINK → number of "Soul Link" AEs
         // Counts AE INSTANCES (presence), NOT charges — for stack/charge totals
         // (e.g. Burn stacks under the charge-as-stack model) use AE_CHARGES_<NAME>.
+        // OWN_PERSISTENT_SUMMONS_<KIND> — how many persistent summons of ONE kind
+        // this actor owns (world Actors, so it answers out of conflict too).
+        //
+        // The un-suffixed OWN_PERSISTENT_SUMMON_COUNT is every kind at once, which
+        // is the right gate for "do I have a standing creature at all" and the
+        // WRONG one the moment a character can own two different kinds: Birth of
+        // the Cruel's one-at-a-time gate would refuse to raise a Minion because the
+        // owner happened to have a captured monster. Author the kind-scoped form on
+        // any skill whose cap is about ITS OWN creature.
+        //   e.g. OWN_PERSISTENT_SUMMONS_MINION == 0
+        if (name.startsWith("OWN_PERSISTENT_SUMMONS_")) {
+          const kind = name.slice("OWN_PERSISTENT_SUMMONS_".length).toLowerCase();
+          return kind ? ownPersistentSummonCount(actor, kind) : 0;
+        }
         if (name.startsWith("AE_COUNT_")) {
           const needle = name
             .slice("AE_COUNT_".length)
@@ -2761,19 +2789,69 @@ function ownSummonCount(actor, { numenOnly = false, phantasmOnly = false } = {})
   return n;
 }
 
+// Count live reanimated MINIONS the way `own_minions` resolves them.
+//
+// 🩸 This deliberately does NOT reuse ownSummonCount(minionOnly). Sharing the
+// `cloneActorUuid` discriminator is not the same as asking the same question:
+// ownSummonCount walks `canvas.tokens.placeables`, while skill-targeting's
+// `collectCombatTokens` walks dCombat -> game.combat -> canvas AND drops
+// untargetable tokens. Those two lists disagree in both directions, and each
+// disagreement is silent:
+//   - on canvas but not in dCombat (or hidden): the gate said 1, the ref returned
+//     [] and the grant aborted -> the Minion just never acts, with only a warn.
+//   - in dCombat but not a canvas placeable (the documented mid-session-token
+//     hazard): the gate said 0 and the reaction never fired at all, which reads
+//     as "the feature is dead" rather than "the gate read the wrong list".
+// So mirror the precedence exactly. The untargetable filter is intentionally NOT
+// mirrored: a hidden minion should still be counted as existing, and if the ref
+// then declines to resolve it, the grant fails closed rather than misfiring.
+function ownMinionCount(actor) {
+  const meUuid = String(actor?.uuid ?? "").trim();
+  if (!meUuid) return 0;
+  const NS = "fabula-ultima-companion";
+  const dc = globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.()?.dCombat ?? null;
+  let list = [];
+  if (dc?.combatants?.length) list = dc.combatants.map((c) => c.tokenDoc).filter(Boolean);
+  else if (globalThis.game?.combat?.combatants?.size) list = [...game.combat.combatants].map((c) => c.token).filter(Boolean);
+  else list = (globalThis.canvas?.tokens?.placeables ?? []).map((t) => t.document).filter(Boolean);
+  let n = 0;
+  for (const td of list) {
+    const f = td.flags?.[NS] ?? {};
+    if (String(f.summonedBy ?? "") !== meUuid) continue;
+    if (!f.cloneActorUuid) continue;
+    n++;
+  }
+  return n;
+}
+
 // Count PERSISTENT-summon minions (world Actors flagged isPersistentSummon, owned
 // by this actor via summonOwnerActorUuid) — the cross-battle-authoritative twin of
 // ownSummonCount. Counts the persisted Actor, not a live token, so a standing ally
 // counts whether or not it's on the current field; Phantasms are never flagged
 // isPersistentSummon so they never count. Powers Birth of the Cruel's one-at-a-time.
-function ownPersistentSummonCount(actor) {
+function ownPersistentSummonCount(actor, kind = null) {
   const meUuid = String(actor?.uuid ?? "").trim();
   if (!meUuid) return 0;
   const NS = "fabula-ultima-companion";
+  const want = kind ? String(kind).toLowerCase() : null;
   let n = 0;
   for (const a of (globalThis.game?.actors?.contents ?? [])) {
     const f = a?.flags?.[NS] ?? {};
-    if (f.isPersistentSummon && String(f.summonOwnerActorUuid ?? "") === meUuid) n++;
+    if (!f.isPersistentSummon) continue;
+    if (String(f.summonOwnerActorUuid ?? "") !== meUuid) continue;
+    // No kind asked for = every kind (the historical behaviour of the
+    // un-suffixed identifier; do not narrow it, existing gates depend on it).
+    //
+    // 🩸 An UNSTAMPED clone (created before `summon_kind` existed) counts for ANY
+    // requested kind, matching `collectOwnPersistentSummonTokens`. The two must
+    // agree: when this was strict and the ref permissive, a legacy Minion made
+    // `OWN_PERSISTENT_SUMMONS_MINION` read 0 — so the one-at-a-time gate let a
+    // SECOND minion be raised — while `own_minions` still resolved the old one, so
+    // Dismiss acted on an ambiguous set. A restricting gate must never see FEWER
+    // creatures than the ref it feeds.
+    const k = String(f.persistentSummonKind ?? "");
+    if (want && k && k !== want) continue;
+    n++;
   }
   return n;
 }
