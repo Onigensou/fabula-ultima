@@ -21,7 +21,7 @@ import { requestTargeting } from "./target-picker.js";
 // before it chooses an action. See target-survey.js's header for why the count
 // and the pick must come from one place.
 import { surveyActionTargets } from "./target-survey.js";
-import { postActionCard, BattlefieldActionCard, composeActionCardRenderPayload } from "./action-card.js";
+import { postActionCard, BattlefieldActionCard, composeActionCardRenderPayload, ownerUserIdForActor } from "./action-card.js";
 import { pickWeaponMode, WeaponModePicker } from "./weapon-mode-picker.js";
 import { pickAttributePair, AttributePairPicker } from "./attribute-pair-picker.js";
 import { runDirectorInit } from "./director-init.js";
@@ -4732,6 +4732,63 @@ const Compute = {
 };
 
 // ─── CONFIRM ───────────────────────────────────────────────────────────
+// Quick-action confirm — the lightweight stand-in for the battlefield Action
+// Card when a skill declares `skill_skip_action_card`.
+//
+// Returns the same shape CONFIRM reads off postActionCard: `{ confirmed }`. Every
+// other field the card can return (statusValue / equipmentSelections /
+// weaponFormSelections / itemSelection / reactionDecisions) is read behind an
+// `if (result.X)` guard downstream, so omitting them is safe — this path is only
+// ever taken for an action that has none of them.
+//
+// Cancelling counts as CANCEL_ACTION, matching the card's own close behaviour:
+// nothing is spent until CONFIRM_ACTION.
+//
+// 🩸 IT MUST RENDER ON THE ACTING PLAYER'S CLIENT, NOT THE GM'S. Every
+// state-handler runs GM-side (postActionCard's own first line is
+// `if (!game.user?.isGM) return { confirmed: false }` — the card reaches players
+// as a broadcast mirror). A bare local `new Dialog(...)` here would open on the
+// GM's screen only: the player clicks their skill, then the FSM hangs on a
+// prompt they cannot see, and the GM has to confirm the player's action for
+// them. That is strictly worse than the card this replaces, and the shape of
+// the bug is invisible to any single-client test.
+//
+// So it goes through `remotePick` — the same GM→owner round-trip the reaction
+// pills' secondary pickers use. It RACES the player's client against a GM-local
+// copy, so a disconnected player never wedges the turn; whoever answers first
+// wins and the other side is torn down. An actor with no active non-GM owner
+// (an NPC, or a PC whose player is offline) falls through to the GM-local
+// picker, which is the correct place for it.
+async function quickConfirmAction(director, skill, ar, attackerActor) {
+  const { pickFromList } = await import("./list-picker.js");
+  const name = skill?.name ?? ar?.kind ?? "Action";
+  const listArgs = {
+    title: name,
+    subtitle: ar?.attacker?.name ?? null,
+    options: [
+      { primary: `Use ${name}`, value: 1, imageUrl: skill?.img || null },
+      { primary: "Cancel", value: 0 },
+    ],
+    cancelLabel: "Cancel",
+  };
+
+  let picked = null;
+  const ownerUserId = game.user?.isGM ? ownerUserIdForActor(attackerActor) : null;
+  const channel = director?.intentChannel ?? null;
+  if (ownerUserId && channel) {
+    const { remotePick, REMOTE_PICK_KINDS } = await import("./remote-pick.js");
+    picked = await remotePick({
+      channel, targetUserId: ownerUserId, combatId: director?.combatId ?? null,
+      kind: REMOTE_PICK_KINDS.LIST, onTimeoutValue: null, spec: listArgs,
+    });
+  } else {
+    picked = await pickFromList(listArgs);
+  }
+  // pickFromList resolves the chosen row's `value`; only the accept row is 1.
+  // Cancel / close / timeout all land here as not-1 → CANCEL_ACTION.
+  return { confirmed: picked === 1 };
+}
+
 const Confirm = {
   async onEnter(director) {
     const ar = director.ctx.actionResult;
@@ -5754,7 +5811,45 @@ const Confirm = {
       }
     } catch (e) { warn("CONFIRM: summon auto-confirm arm threw — card stays manual", e); }
 
-    const result = await postActionCard({
+    // ── Quick-action path — `skill_skip_action_card` ────────────────────────
+    // A self-contained action (no target picking, no damage preview) gets a plain
+    // confirm instead of the battlefield card: click the skill -> Confirm -> it
+    // resolves. Everything downstream is unchanged; only the surface differs.
+    //
+    // 🩸 The flag is a REQUEST, not a command, and this is the whole safety
+    // story: the Action Card is the ONLY place pre-resolve reaction pills are
+    // offered (they were scanned into `cardReactions` above). Skipping the card
+    // with reactions live would silently take away a player's chance to react —
+    // a permissive failure nobody would ever see. So a live reaction re-posts the
+    // full card and the flag simply does not apply this time. Same for a summon's
+    // armed auto-confirm, which is a card affordance.
+    let result = null;
+    if (!autoConfirm) {
+      try {
+        const qaSkill = ar?.skillUuid ? await fromUuid(ar.skillUuid).catch(() => null) : null;
+        if (qaSkill?.system?.props?.skill_skip_action_card === true) {
+          // Three refusals, each because the card is the ONLY place that
+          // affordance exists. The flag is a request; anything the player would
+          // lose outranks it.
+          const refuse =
+            cardReactions.length ? `${cardReactions.length} reaction(s) are live`
+            // A roll means an accuracy/damage preview AND the Fabula-Point invoke
+            // offer — invoke is available to every PC (invoke-core: no npc_rank →
+            // "full"), and it is only reachable from the card. Skipping it would
+            // silently take a player's invoke away on a rolled action.
+            : ar?.roll ? "the action has a roll (invoke + damage preview live on the card)"
+            : null;
+          if (refuse) {
+            log(`CONFIRM: "${qaSkill.name}" asks to skip the card, but ${refuse} — posting the full card`);
+          } else {
+            log(`CONFIRM: "${qaSkill.name}" skips the action card — quick confirm`);
+            result = await quickConfirmAction(director, qaSkill, ar, attackerActor);
+          }
+        }
+      } catch (e) { warn("CONFIRM: skip-action-card check threw — posting the normal card", e); }
+    }
+
+    if (!result) result = await postActionCard({
       director,
       kind: ar.kind,
       payload: {
@@ -6753,7 +6848,26 @@ const Resolve = {
     // the boss returns to the action menu with its turn action intact (same
     // return path as the free Equipment transform).
     const dominationFreeReturn = ar?.kind === "Domination" && !topIsFreeAction(director.ctx);
-    const freeReturn = equipFreeReturn || dominationFreeReturn;
+    // AUTHORED free action — `skill_free_action` on the skill itself. The same
+    // return-to-menu path as the two cases above, but declarable instead of
+    // hard-coded: before this, "does not spend the turn" existed only as those
+    // two `ar` special cases, so a third one meant a third disjunct here.
+    // Birth of the Cruel's Dismiss is the first user — RAW grants the release
+    // "at any time", and spending the turn action on it was the closest the
+    // engine could previously get.
+    //
+    // Resolved from the acting skill, not from `ar`, because nothing upstream
+    // stamps it onto the action result. Failure is closed: an unreadable or
+    // absent prop leaves the action costing the turn, which is the status quo.
+    let authoredFreeReturn = false;
+    try {
+      if (!topIsFreeAction(director.ctx) && ar?.skillUuid) {
+        const actingSkill = await fromUuid(ar.skillUuid).catch(() => null);
+        authoredFreeReturn = actingSkill?.system?.props?.skill_free_action === true;
+        if (authoredFreeReturn) log(`RESOLVE: "${actingSkill.name}" is an authored free action — the turn is NOT spent`);
+      }
+    } catch (e) { warn("RESOLVE: skill_free_action read threw — treating the action as turn-spending", e); }
+    const freeReturn = equipFreeReturn || dominationFreeReturn || authoredFreeReturn;
     if (director.dCombat && !topIsFreeAction(director.ctx) && !freeReturn) {
       director.dCombat.currentTurnResolved = true;
     }

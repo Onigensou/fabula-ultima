@@ -71,6 +71,34 @@ const isFacet = (i) => {
   return String(p.skill_type ?? "") === "Spell";
 };
 
+/**
+ * Companion skills named by this one, as `idKey`s.
+ *
+ * A COMPANION is a skill that comes WITH its parent rather than being bought:
+ * Birth of the Cruel's "Dismiss" is the release for the Minion the parent
+ * raises, and RAW hands it over as part of the same Heroic Skill ("You may also
+ * destroy your Minion at any time"). Splitting it into a second document is an
+ * engine necessity — there is no out-of-conflict entry point for an Active skill
+ * — not a second purchase.
+ *
+ * Why a NAME list and not `system.container`: the container model is this
+ * world's GEAR idiom (a `_skill` inside a weapon/armour shell), and the engine
+ * already reads containment as "gear-attached" in places that would then want to
+ * equip-gate the child. Names also survive the copy onto a PC untouched, where a
+ * parent id would have to be re-stamped on every grant.
+ *
+ * `companion_skills` is a DECLARED column on the skill template — see
+ * tools/csb-template/scripts/_add-companion-skills-field.js. It has to be:
+ * `reloadTemplate()` prunes every undeclared prop, and the failure direction
+ * here is silent (a pruned list means the companion is never granted AND
+ * becomes purchasable again, which is the exact trap this closes).
+ */
+const companionKeysOf = (item) =>
+  String(item.system?.props?.companion_skills ?? "")
+    .split(/[,\n]/)
+    .map((s) => idKey(s.trim()))
+    .filter(Boolean);
+
 const stripHtml = (h) => String(h ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 
 const WORD_COUNT = { a: 1, an: 1, one: 1, two: 2, three: 3, four: 4, five: 5 };
@@ -115,12 +143,46 @@ function readSkill(item) {
     requirement: p.heroic_requirement ?? "",
     isHeroic: p.isHeroic === true,
     isFacet: p.isFacet === true,
+    // Companions this skill brings with it when granted (idKeys; usually empty).
+    companions: companionKeysOf(item),
   };
 }
 
 function readClass(actor, folderName) {
   const p = actor.system?.props ?? {};
   const items = actor.items?.contents ?? [];
+  // Every companion claimed by any skill on this actor. Built once per class so
+  // the three filters below agree.
+  //
+  // 🩸 A skill may NOT claim itself. The field lives on the parent's own sheet
+  // and is labelled "Grants Companion Skills", so typing the parent's own name
+  // into it is a natural authoring slip — and without this guard the parent
+  // withholds ITSELF from `skills`, `heroics` and `facets` at once. It then
+  // vanishes from the class browser and `validateSpend` answers
+  // `skill_not_in_class`, indistinguishable from "this class doesn't have that
+  // skill". Silent, and the authored value still looks right on the sheet.
+  //
+  // A key matching NO item on the actor is inert (it withholds nothing) but is
+  // still a mistake — almost always a typo or a renamed skill — so it is warned
+  // about rather than swallowed. That is the only signal an author gets that the
+  // companion will never be granted.
+  const claimed = new Set();
+  for (const i of items) {
+    const self = idKey(i.name);
+    for (const k of companionKeysOf(i)) {
+      if (k === self) {
+        warn(`${actor.name}: skill "${i.name}" names ITSELF in companion_skills — ignored `
+          + `(it would remove the skill from the class entirely)`);
+        continue;
+      }
+      claimed.add(k);
+    }
+  }
+  const present = new Set(items.map((i) => idKey(i.name)));
+  for (const k of claimed) {
+    if (!present.has(k)) warn(`${actor.name}: companion_skills names "${k}", which is not a skill on this class — it can never be granted`);
+  }
+  const isCompanion = (i) => claimed.has(idKey(i.name));
   return {
     id: actor.id,
     uuid: actor.uuid,
@@ -144,9 +206,19 @@ function readClass(actor, folderName) {
       martialArmor: p.martialArmor_equippable === true,
       martialShield: p.martialShield_equippable === true,
     },
-    skills: items.filter((i) => !isHeroic(i) && !isFacet(i)).map(readSkill),
-    heroics: items.filter(isHeroic).map(readSkill),
-    facets: items.filter(isFacet).map(readSkill),
+    // A companion is claimed by SOME skill on this class actor, so it must be
+    // withheld from all three offer lists — it is granted with its parent, never
+    // bought. Without this the Dismiss lands in `skills` (it is isHeroic:false,
+    // isFacet:false, skill_type "Active"), where the buy path checks only class
+    // membership / points / max_level and never looks at heroic_requirement — so
+    // a level-1 Necromancer could spend a Skill Point on a release for a Minion
+    // they cannot raise, and the class would advertise 6 base skills where every
+    // other Classic Class has 5.
+    skills: items.filter((i) => !isCompanion(i) && !isHeroic(i) && !isFacet(i)).map(readSkill),
+    heroics: items.filter((i) => !isCompanion(i) && isHeroic(i)).map(readSkill),
+    facets: items.filter((i) => !isCompanion(i) && isFacet(i)).map(readSkill),
+    // Resolvable by the grant path; not offered anywhere in the browser.
+    companions: items.filter(isCompanion).map(readSkill),
   };
 }
 

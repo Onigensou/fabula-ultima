@@ -35,6 +35,101 @@ const RULE = LEVELUP.RULE;
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
+/**
+ * Grant the companion skills a just-taken skill brings with it.
+ *
+ * A COMPANION comes WITH its parent instead of being bought — Birth of the
+ * Cruel's "Dismiss" is the release for the Minion the parent raises, and RAW
+ * hands it over as part of the same Heroic Skill. `class-registry` withholds
+ * companions from `skills` / `heroics` / `facets` so they can never be
+ * purchased; this is the only path that hands one out.
+ *
+ * WHEN THIS RUNS, precisely — it is NOT a general backfill, and an earlier
+ * version of this comment wrongly claimed it was:
+ *   - every purchase of a base-skill parent, including a level-up of one the
+ *     actor already holds (applySpend step 2b), EXCEPT once that skill is at
+ *     max SL, where validateSpend answers `skill_maxed` before step 2b;
+ *   - the moment a heroic parent is taken, and never again — `availableHeroics`
+ *     skips a heroic the actor already holds (`if (held.has(h.key)) continue`),
+ *     so applyHeroic cannot re-run for it.
+ * So a character who ALREADY holds a parent when a companion is first declared
+ * on it may never receive that companion. Declaring a companion on an existing
+ * skill therefore needs an explicit backfill for current holders — check them,
+ * do not assume the next level-up will heal it. (For Birth of the Cruel it was
+ * a no-op: Keren is the only holder and already carried the Dismiss.)
+ *
+ * Companions are PERMANENT once granted. Nothing mirrors this on refund: a
+ * companion was never bought, so there is no point to give back, and deleting it
+ * would destroy a document the player may have since customised. A refund of the
+ * parent therefore leaves the companion in place — harmless, since a companion's
+ * own availability gate simply stops passing (the Dismiss greys out with "You
+ * have no Minion to destroy"). Refunding the COMPANION is refused with
+ * `skill_not_found`, which is correct: it is not in `cls.skills` to refund.
+ *
+ * Anything already held is skipped, which also makes a re-run inert.
+ *
+ * Non-fatal by design, resolve AND write alike: the parent skill is already
+ * written by the time this runs and the Skill Point has not yet been debited, so
+ * letting anything throw out of here would surface as a failed spend that had in
+ * fact half-applied — the exact case the ORDERING note at the top of this file
+ * exists to prevent. A miss is logged instead.
+ *
+ * `classes` is a LIST because a Heroic Skill can be offered by more than one
+ * class (`availableHeroics` collects them into `offer.from`), and the companion
+ * document lives on whichever class actor declares it — not necessarily the
+ * first one that happened to offer the parent.
+ *
+ * @returns {Promise<string[]>} names actually granted
+ */
+async function grantCompanions(actor, classes, skill) {
+  try {
+    return await grantCompanionsInner(actor, classes, skill);
+  } catch (e) {
+    // Everything here is best-effort — see the "Non-fatal by design" note above.
+    err("grantCompanions threw", e);
+    return [];
+  }
+}
+
+async function grantCompanionsInner(actor, classes, skill) {
+  const wanted = skill?.companions ?? [];
+  if (!wanted.length) return [];
+  const from = (Array.isArray(classes) ? classes : [classes]).filter(Boolean);
+
+  const held = indexActorSkills(actor);
+  const seen = new Set();
+  const create = [];
+  const granted = [];
+
+  for (const key of wanted) {
+    if (!key || seen.has(key) || held.has(key)) continue;
+    seen.add(key);
+    let src = null;
+    for (const cls of from) {
+      src = cls.companions?.find((c) => c.key === key);
+      if (src) break;
+    }
+    if (!src) {
+      warn(`companion "${key}" named by ${skill.name} is on no offering class `
+        + `(${from.map((c) => c.name).join(", ") || "none"}) — skipped`);
+      continue;
+    }
+    const doc = await fromUuid(src.uuid);
+    if (!doc) { warn(`companion ${src.name} (${src.uuid}) did not resolve — skipped`); continue; }
+    const data = doc.toObject();
+    delete data._id;
+    foundry.utils.setProperty(data, "system.props.level", 1);
+    create.push(data);
+    granted.push(src.name);
+  }
+
+  if (create.length) {
+    await actor.createEmbeddedDocuments("Item", create);
+    log(`companions: ${actor.name} ← ${granted.join(", ")} (with ${skill.name})`);
+  }
+  return granted;
+}
+
 const resolveActor = (uuid) => {
   const doc = (typeof fromUuidSync === "function" ? fromUuidSync(uuid) : null) ?? null;
   if (doc?.documentName === "Actor") return doc;
@@ -324,6 +419,11 @@ async function applySpend({ actorUuid, classKey, skillUuid, benefit, facetUuids,
       await actor.createEmbeddedDocuments("Item", [data]);
     }
 
+    // 2b. Companion skills that come WITH this one (see grantCompanions). Runs
+    //     on a raise as well as a first take, so a character who took the parent
+    //     before its companion existed picks it up without a migration.
+    await grantCompanions(actor, [cls], skill);
+
     // 3. Facets. Skills like Dance or Elemental Magic award a spell/dance/
     //    symbol per level ("see Facet"); the window asks which and passes the
     //    chosen uuids. Anything already held is skipped rather than duplicated.
@@ -489,6 +589,11 @@ async function applyHeroic({ actorUuid, skillUuid }) {
     foundry.utils.setProperty(data, "system.props.level", 1);
     await actor.createEmbeddedDocuments("Item", [data]);
 
+    // Companions ride along with the heroic that names them — Birth of the Cruel
+    // brings its Dismiss. Searched across every class that offered this heroic,
+    // since the companion lives on whichever one declares it.
+    await grantCompanions(actor, offer.from, offer.skill);
+
     log(`heroic: ${actor.name} → ${offer.skill.name}`);
     // Heroic picks are free — no Skill Point moves.
     return { ok: true, name: offer.skill.name, slots: heroicSlots(actor) };
@@ -517,6 +622,37 @@ const REQ_OPTS = { timeoutMs: LEVELUP.REQUEST_TIMEOUT_MS };
 
 // ── public API ─────────────────────────────────────────────────────────────
 
+/**
+ * Grant every companion this actor's HELD skills declare but that they lack.
+ *
+ * This is the BACKFILL lever, and it exists because `grantCompanions` only fires
+ * on a purchase: a heroic is never re-offered once held (`availableHeroics` skips
+ * it) and a base skill at max SL fails `validateSpend` before the grant runs. So
+ * declaring a companion on a skill characters ALREADY hold reaches none of them.
+ * Run this once after declaring one:
+ *
+ *   FUCompanion.api.levelUp.reconcileCompanions(actor)
+ *
+ * Idempotent — anything already held is skipped, so a second run grants nothing.
+ * Returns the names granted, so an empty array is a real "nothing was missing".
+ */
+export async function reconcileCompanions(actor) {
+  if (!actor) return [];
+  const granted = [];
+  for (const cls of getRegistry().list) {
+    for (const skill of [...cls.skills, ...cls.heroics, ...cls.facets]) {
+      if (!skill.companions?.length) continue;
+      // Only parents this actor actually holds. `held` is re-read inside
+      // grantCompanions on every call, so grants made earlier in this loop are
+      // seen by later ones and nothing is created twice.
+      if (!indexActorSkills(actor).has(skill.key)) continue;
+      granted.push(...(await grantCompanions(actor, [cls], skill)));
+    }
+  }
+  if (granted.length) log(`reconcileCompanions: ${actor.name} ← ${granted.join(", ")}`);
+  return granted;
+}
+
 export const spendPoint  = (p) => request(LEVELUP.MSG.SPEND_REQ,  p, REQ_OPTS);
 export const refundPoint = (p) => request(LEVELUP.MSG.REFUND_REQ, p, REQ_OPTS);
 export const pickHeroic  = (p) => request(LEVELUP.MSG.HEROIC_REQ, p, REQ_OPTS);
@@ -537,6 +673,10 @@ function registerApi() {
   globalThis.FUCompanion.api.levelUp = {
     getState, spendPoint, refundPoint, pickHeroic, healPoints,
     heroicSlots, gateState, invalidateRegistry,
+    // The companion backfill lever — see reconcileCompanions. Exposed because
+    // declaring a companion on an already-held skill reaches nobody otherwise,
+    // and a GM needs a way to run it without a level-up.
+    reconcileCompanions,
   };
 }
 

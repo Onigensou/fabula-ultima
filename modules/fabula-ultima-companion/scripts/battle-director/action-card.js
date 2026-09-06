@@ -47,7 +47,12 @@ import { simInvoke } from "./sim/invoke-brain.js";
 
 // Resolve which active non-GM user owns the given actor doc. Returns
 // userId or null. Deterministic on multi-owner actors (sort by id).
-function ownerUserIdForActor(actor) {
+//
+// Exported because the quick-action confirm (state-handlers.js) needs the same
+// answer the card uses to decide whose mirror is interactive. Re-deriving it
+// there would be a second copy of "who owns this actor" free to drift from the
+// one that decides who may press Confirm.
+export function ownerUserIdForActor(actor) {
   if (!actor) return null;
   const candidates = (game.users?.contents ?? []).filter((u) => {
     if (u.isGM) return false;
