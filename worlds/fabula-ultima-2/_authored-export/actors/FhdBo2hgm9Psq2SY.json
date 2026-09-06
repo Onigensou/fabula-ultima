@@ -1593,6 +1593,7 @@
               "effect_label": "d_root"
             },
             "2": {
+              "$deleted": true,
               "consume_amount": "10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_LION_DANCE == 0)",
               "consume_resource": "mp",
               "effect_kind": "consume_resource",
@@ -1601,6 +1602,7 @@
               "target_ref": "self"
             },
             "3": {
+              "$deleted": true,
               "count": "all",
               "effect_kind": "remove_tagged_ae",
               "effect_label": "d_untoken",
@@ -1608,6 +1610,7 @@
               "target_ref": "self"
             },
             "4": {
+              "$deleted": true,
               "ae_duplicate_mode": "replace",
               "ae_template_ref": "Dancing",
               "effect_kind": "apply_ae",
@@ -1615,6 +1618,7 @@
               "target_ref": "d_self"
             },
             "5": {
+              "$deleted": true,
               "ae_duplicate_mode": "replace",
               "ae_template_ref": "Dancing Lion Dance",
               "effect_kind": "apply_ae",
@@ -2752,6 +2756,7 @@
               "effect_label": "d_root"
             },
             "2": {
+              "$deleted": true,
               "consume_amount": "10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_OUROBOROS_DANCE == 0)",
               "consume_resource": "mp",
               "effect_kind": "consume_resource",
@@ -2760,6 +2765,7 @@
               "target_ref": "self"
             },
             "3": {
+              "$deleted": true,
               "count": "all",
               "effect_kind": "remove_tagged_ae",
               "effect_label": "d_untoken",
@@ -2767,6 +2773,7 @@
               "target_ref": "self"
             },
             "4": {
+              "$deleted": true,
               "ae_duplicate_mode": "replace",
               "ae_template_ref": "Dancing",
               "effect_kind": "apply_ae",
@@ -2774,6 +2781,7 @@
               "target_ref": "d_self"
             },
             "5": {
+              "$deleted": true,
               "ae_duplicate_mode": "replace",
               "ae_template_ref": "Dancing Ouroboros Dance",
               "effect_kind": "apply_ae",

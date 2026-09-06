@@ -234,6 +234,7 @@
                     "target_ref": "self"
                   },
                   "bortd_cap": {
+                    "$deleted": true,
                     "consume_self": true,
                     "damage_amount": "CUR_HP - 1",
                     "damage_operation": "cap",
@@ -242,11 +243,13 @@
                     "effect_label": "bortd_cap"
                   },
                   "bortd_death": {
+                    "$deleted": true,
                     "chain_steps": "bortd_cap, bortd_heal, bortd_zero",
                     "effect_kind": "chain",
                     "effect_label": "bortd_death"
                   },
                   "bortd_heal": {
+                    "$deleted": true,
                     "effect_kind": "grant",
                     "effect_label": "bortd_heal",
                     "grant_amount": "SL_BEYOND_THE_REALMS_OF_DEATH * AE_CHARGES_GRAVE_POINTS - 1",
@@ -254,6 +257,7 @@
                     "target_ref": "self"
                   },
                   "bortd_zero": {
+                    "$deleted": true,
                     "charge_ae_name": "Grave Points",
                     "charge_amount": "0",
                     "charge_operation": "set",

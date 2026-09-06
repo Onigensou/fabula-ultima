@@ -1266,7 +1266,7 @@
         "props": {
           "active_effect_config_table": {
             "0": {
-              "$deleted": false,
+              "$deleted": true,
               "active_effect_application": "add",
               "active_effect_apply_mode": "percentage",
               "active_effect_dice_1": "",
@@ -1308,7 +1308,7 @@
               "ae_template_ref": "Bleed",
               "effect_kind": "apply_ae",
               "effect_label": "mul_bleed",
-              "target_ref": "hit_action_targets"
+              "target_ref": "trigger_subject"
             }
           },
           "heroic_requirement": "",
@@ -1324,7 +1324,16 @@
           "name": "Muleta",
           "on_activate_effect_ref": "mul_cost",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "reaction_effect_ref": "mul_chance",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_source_skill": "Muleta",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
           "skill_animation_default": "",
