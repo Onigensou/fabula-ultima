@@ -209,15 +209,26 @@ for (const r of out.sort((a, b) => rowVerdict(a).localeCompare(rowVerdict(b)) ||
   console.log(`   text : ${r.text ? r.text.slice(0, 200) : "(NONE)"}`);
   console.log(`   wrote: ${r.writes.join(" ; ").slice(0, 150)}`);
   for (const f of r.findings) console.log(`     ${f.verdict.padEnd(8)} ${f.detail} — ${f.why}`);
-  if (r.adj) console.log(`   ADJUDICATED ${r.adj.verdict}: ${r.adj.why}`);
+  if (r.adj) console.log(`   ADJUDICATED ${r.adj.verdict}${r.adj.fixed ? " (since FIXED)" : ""}: ${r.adj.why}`);
+  if (r.adj?.fixed) console.log(`   FIXED: ${r.adj.fixed}`);
 }
 
 const openReview = out.filter((r) => rowVerdict(r) === "REVIEW" && !r.adj);
+// A DEFECT whose adjudication carries a `fixed` note is HISTORY, not an open
+// item — the scorecard read "DEFECT:1" for two weeks after Windpiercer's
+// description was repaired, which is the one number a reader acts on.
+const openDefects = out.filter((r) => r.adj?.verdict === "DEFECT" && !r.adj.fixed);
 const adjTally = {};
-for (const r of out) if (r.adj) adjTally[r.adj.verdict] = (adjTally[r.adj.verdict] ?? 0) + 1;
+for (const r of out) {
+  if (!r.adj) continue;
+  const k = r.adj.verdict === "DEFECT" && r.adj.fixed ? "DEFECT (fixed)" : r.adj.verdict;
+  adjTally[k] = (adjTally[k] ?? 0) + 1;
+}
 console.log(`
 === adjudication ===`);
 console.log(`  human-settled : ${JSON.stringify(adjTally)}`);
+console.log(`  DEFECT still OPEN: ${openDefects.length}`);
+for (const r of openDefects) console.log(`    - ${r.who} / ${r.name} #${r.row}`);
 console.log(`  REVIEW still needing a human: ${openReview.length}`);
 for (const r of openReview) console.log(`    - ${r.who} / ${r.name} #${r.row}`);
 
