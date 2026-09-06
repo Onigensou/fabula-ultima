@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-09-06T17:17:28.626Z",
+ "capturedAt": "2026-09-06T18:45:24.907Z",
  "count": 2203,
  "structure": {
   "(world) / Absorb MP": {
@@ -33730,7 +33730,7 @@
   },
   "Crysta / Zero Power: Water-Moon Mirage": {
    "props": {
-    "action_keywords": "ignore_immunity",
+    "action_keywords": "ignore_immunity, fickle",
     "check_bonus": "5",
     "class": "NPC",
     "cost": "6 Zero Power",
