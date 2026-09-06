@@ -352,7 +352,7 @@
           "cost": "",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<p>When a non-Villain NPC you can see that belongs to the <strong>beast</strong>, <strong>humanoid</strong>, <strong>monster</strong>, or <strong>plant</strong> Species dies, you may spend <strong>2 Grave Points</strong> and <strong>reduce your maximum HP and MP</strong> by an amount equal to that NPC’s <strong>level</strong>. If you do, their corpse becomes a <strong>Minion</strong> who obeys your telepathic commands:</p>\n<ul>\n  <li>Its Species becomes <strong>undead</strong> and it receives all undead rules. The new Affinities to \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span>, \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span>, and \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> damage overwrite any preexisting Affinity, but the original Species’ rules are otherwise maintained.</li>\n  <li>Its <strong>Rank</strong> becomes <strong>soldier</strong>; if the original creature was an <strong>elite</strong> or <strong>champion</strong>, the GM must reduce the Minion’s HP and MP accordingly (<strong>Skills are maintained</strong>).</li>\n  <li>The newly created Minion is a completely new creature and has <strong>full HP</strong>, <strong>full MP</strong>, and <strong>no status effects</strong>. It retains the original creature’s <strong>equipment</strong>.</li>\n  <li>Your Minion takes its own turn during conflicts, and the GM must count it as an <strong>additional Player Character</strong> when designing a conflict.</li>\n  <li>When you <strong>rest</strong>, your Minion also gains the full benefits of resting.</li>\n  <li>If your Minion is reduced to <strong>0 HP</strong>, if you are <strong>more than 1 travel day</strong> away from it, or if you <strong>die</strong> or <strong>fall unconscious</strong>, your Minion is immediately <strong>destroyed</strong>.</li>\n  <li>You may also destroy your Minion <strong>at any time</strong>; if you want to create a new Minion, you must first destroy the current one.</li>\n  <li>If your Minion is destroyed, your <strong>maximum HP and MP</strong> scores <strong>return to normal</strong>.</li>\n</ul>\n",
+          "description": "<p>When a non-Villain NPC you can see that belongs to the <strong>beast</strong>, <strong>humanoid</strong>, <strong>monster</strong>, or <strong>plant</strong> Species dies, you may spend <strong>2 Grave Points</strong> and <strong>reduce your maximum HP and MP</strong> by an amount equal to that NPC’s <strong>level</strong>. If you do, their corpse becomes a <strong>Minion</strong> who obeys your telepathic commands:</p>\n<ul>\n  <li>Its Species becomes <strong>undead</strong> and it receives all undead rules. The new Affinities to \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span>, \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span>, and \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> damage overwrite any preexisting Affinity, but the original Species’ rules are otherwise maintained.</li>\n  <li>Its <strong>Rank</strong> becomes <strong>soldier</strong>; if the original creature was an <strong>elite</strong> or <strong>champion</strong>, the GM must reduce the Minion’s HP and MP accordingly (<strong>Skills are maintained</strong>).</li>\n  <li>The newly created Minion is a completely new creature and has <strong>full HP</strong>, <strong>full MP</strong>, and <strong>no status effects</strong>. It retains the original creature’s <strong>equipment</strong>.</li>\n  <li>Your Minion acts at the <strong>end of your turn</strong>: it performs a <strong>free action</strong> — one Attack or Skill of its own — chosen and driven automatically. It holds <strong>no turn of its own</strong> in the initiative order, so the GM does <strong>not</strong> count it as an additional Player Character when designing a conflict. <em>(Homebrew: by the printed text the Minion takes its own turn and does count as an extra PC.)</em></li>\n  <li>When you <strong>rest</strong>, your Minion also gains the full benefits of resting.</li>\n  <li>If your Minion is reduced to <strong>0 HP</strong>, if you are <strong>more than 1 travel day</strong> away from it, or if you <strong>die</strong> or <strong>fall unconscious</strong>, your Minion is immediately <strong>destroyed</strong>.</li>\n  <li>You may also destroy your Minion <strong>at any time</strong>; if you want to create a new Minion, you must first destroy the current one.</li>\n  <li>If your Minion is destroyed, your <strong>maximum HP and MP</strong> scores <strong>return to normal</strong>.</li>\n</ul>\n",
           "duration": "",
           "effect_table": {
             "0": {
@@ -397,13 +397,16 @@
               "from_resource": "",
               "menu_label": "",
               "summon_act_this_round": "false",
+              "summon_clone_suffix": "(Reanimated)",
               "summon_clone_target": "true",
               "summon_count": "1",
               "summon_folder": "Blue's PC",
+              "summon_kind": "minion",
               "summon_max": "1",
               "summon_overrides": "{\"species\":\"UNDEAD\",\"npc_rank\":\"soldier\",\"affinity_4\":\"IM\",\"affinity_8\":\"VU\",\"affinity_9\":\"IM\",\"max_hp\":\"=floor(MAX_HP*(1-(1-RANK_IS_SOLDIER)*0.5))\",\"current_hp\":\"=floor(MAX_HP*(1-(1-RANK_IS_SOLDIER)*0.5))\",\"current_mp\":\"=MAX_MP\"}",
               "summon_persist": "true",
               "summon_strip_types": "weapon,armor,shield,accessory",
+              "summon_turns_per_round": "0",
               "target_ref": "trigger_subject",
               "to_resource": ""
             },
@@ -457,7 +460,7 @@
               "grant_amount": "MAX_HP",
               "grant_resource": "hp",
               "menu_label": "",
-              "target_ref": "own_persistent_summons",
+              "target_ref": "own_persistent_summons_minion",
               "to_resource": ""
             },
             "9": {
@@ -468,7 +471,7 @@
               "grant_amount": "MAX_MP",
               "grant_resource": "mp",
               "menu_label": "",
-              "target_ref": "own_persistent_summons",
+              "target_ref": "own_persistent_summons_minion",
               "to_resource": ""
             },
             "10": {
@@ -478,7 +481,17 @@
               "filter_tag": "debuff,buff",
               "from_resource": "",
               "menu_label": "",
-              "target_ref": "own_persistent_summons",
+              "target_ref": "own_persistent_summons_minion",
+              "to_resource": ""
+            },
+            "11": {
+              "action_ref": "Attack,Skill",
+              "consume_self": false,
+              "effect_kind": "free_action",
+              "effect_label": "botc_minion_free",
+              "from_resource": "",
+              "menu_label": "",
+              "performer_ref": "own_minions",
               "to_resource": ""
             }
           },
@@ -496,7 +509,7 @@
           "pre_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
-              "condition_formula": "(TARGET_SPECIES_IS_BEAST + TARGET_SPECIES_IS_HUMANOID + TARGET_SPECIES_IS_MONSTER + TARGET_SPECIES_IS_PLANT) >= 1 && TARGET_IS_VILLAIN == 0 && OWN_PERSISTENT_SUMMON_COUNT == 0 && AE_CHARGES_GRAVE_POINTS >= 2",
+              "condition_formula": "(TARGET_SPECIES_IS_BEAST + TARGET_SPECIES_IS_HUMANOID + TARGET_SPECIES_IS_MONSTER + TARGET_SPECIES_IS_PLANT) >= 1 && TARGET_IS_VILLAIN == 0 && OWN_PERSISTENT_SUMMONS_MINION == 0 && AE_CHARGES_GRAVE_POINTS >= 2",
               "reaction_action_intent": "",
               "reaction_action_kind": "",
               "reaction_action_target": "",
@@ -562,7 +575,7 @@
               "requires_skill": ""
             },
             "3": {
-              "condition_formula": "OWN_PERSISTENT_SUMMON_COUNT >= 1",
+              "condition_formula": "OWN_PERSISTENT_SUMMONS_MINION >= 1",
               "reaction_action_intent": "",
               "reaction_action_kind": "",
               "reaction_action_target": "",
@@ -581,6 +594,28 @@
               "reaction_status_filter": "",
               "reaction_subject_kind": "",
               "reaction_trigger": "party_rested",
+              "requires_skill": ""
+            },
+            "4": {
+              "condition_formula": "OWN_MINION_COUNT >= 1",
+              "reaction_action_intent": "",
+              "reaction_action_kind": "",
+              "reaction_action_target": "",
+              "reaction_cause_filter": "",
+              "reaction_damage_source": "",
+              "reaction_effect_ref": "botc_minion_free",
+              "reaction_max_per_round": "",
+              "reaction_origin_filter": "",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "force",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "turn_end",
               "requires_skill": ""
             }
           },

@@ -23,7 +23,7 @@
   "sort": 0,
   "system": {
     "props": {
-      "availability_formula": "OWN_PERSISTENT_SUMMON_COUNT >= 1",
+      "availability_formula": "OWN_PERSISTENT_SUMMONS_MINION >= 1",
       "availability_reason": "You have no Minion to destroy",
       "class": "Necromancer",
       "cost": "",
@@ -46,7 +46,7 @@
           "from_resource": "",
           "menu_label": "",
           "only_clones": "true",
-          "target_ref": "own_persistent_summons",
+          "target_ref": "own_persistent_summons_minion",
           "to_resource": ""
         },
         "2": {
@@ -71,7 +71,7 @@
       "skill_type": "Active"
     },
     "template": "j0F5Msw5RZ8aIB3j",
-    "templateSystemUniqueVersion": 2788278388,
+    "templateSystemUniqueVersion": 736024833,
     "unique": false,
     "uniqueId": "OksWc0PJglEi3ZgZ"
   },

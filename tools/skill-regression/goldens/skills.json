@@ -71,8 +71,8 @@
       "Zarg"
     ],
     "enemyTarget": "Test Target Enemy",
-    "count": 484,
-    "engineVersion": "1.0.423",
+    "count": 486,
+    "engineVersion": "1.0.424",
     "override": {
       "SL": 5,
       "CHAR_LEVEL": 50,
@@ -897,6 +897,32 @@
         "hr": 6
       },
       "skill": "Crescent Cut",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Crysta / Zero Power: Water-Moon Mirage": {
+      "caster": "Crysta",
+      "element": "physical",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 66,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Zero Power: Water-Moon Mirage",
       "skillType": "Active",
       "targets": 1
     },
@@ -3990,6 +4016,19 @@
       ],
       "roll": null,
       "skill": "Skyfall Dive",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Keren / Birth of the Cruel: Dismiss": {
+      "caster": "Keren",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": false,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Birth of the Cruel: Dismiss",
       "skillType": "Active",
       "targets": 1
     },
