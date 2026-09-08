@@ -125,7 +125,8 @@ Cripple is the same two rows with the condition inverted
 > row never runs and Horn Rush has been dealing flat damage to Crisis targets
 > since it shipped. This is the `REACTION_FLAG_MISSING` lint case. **It is a
 > one-field bug fix, not a balance change** — but flipping it roughly doubles
-> Horn Rush against a Crisis PC (~150 → ~300), so fix it deliberately and re-check
+> Horn Rush against a Crisis PC (~82 → ~164 — lethal to any PC in Crisis), so fix
+> it deliberately and re-check
 > Kirin, don't let it ride in on an unrelated push. `cripple`: zero existing uses,
 > nothing to migrate.
 
@@ -486,7 +487,7 @@ Notes worth carrying:
    `damage_weapon_type` field on the row, blank = today's behaviour.
 3. **Kirin's `Horn Rush` has `isReaction: false`** (§0.4), so its Execute has
    never fired. One field, but flipping it roughly doubles the attack against a
-   Crisis PC — fix it on its own, not folded into an unrelated push.
+   Crisis PC (~82 → ~164) — fix it on its own, not folded into an unrelated push.
 4. **The stale comments** that cost this review two passes: `action-profile.js`'s
    "PHASE 0 — no FSM caller invokes this yet" header, and the EF-inert-for-spells
    note in `reference_monster_actor_setup` (**already corrected**).
@@ -666,7 +667,7 @@ more time to matter. **Read any Rakshasa verdict as a floor.**
    adapted party, extrapolated through the solo correction). Confirm, or hold it
    until a live run?
 3. **Kirin's `isReaction: false`** — fix it (Execute starts working, Horn Rush
-   roughly doubles vs a Crisis PC) or leave it and re-tune Kirin first?
+   ~82 → ~164 vs a Crisis PC) or leave it and re-tune Kirin first?
 4. **Does Rakshasa go on the Valley of the Dragon encounter table**, or stay a
    hand-placed event? Asura's arena-scene dependency is still open.
 
