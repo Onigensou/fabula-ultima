@@ -16,6 +16,7 @@ const R = require("./rules");
 const { extractActions } = require("./skills");
 const U = require("./utility");
 const RX = require("./reactions");
+const ST = require("./stances");
 
 const ATTR_KEYS = { DEX: "dex", INS: "ins", MIG: "mig", WLP: "wlp" };
 
@@ -38,9 +39,25 @@ function makeCombatant(actor, side) {
     utility: ex.utility,
     // Declared reactions (reactions.js). `ex.passives` was write-only before —
     // extracted, counted, never consulted.
-    reactions: RX.declaredReactions(ex.passives),
+    //
+    // Scanned across EVERY item, not just Passives. A live reaction row lives on
+    // whatever item carries it, and for the conditional-keyword pattern that is
+    // the ATTACK itself: Kirin's Horn Rush is `skill_type: "Attack"` carrying a
+    // `creature_will_deal_damage` row that doubles its own damage. Restricting
+    // the scan to Passives made every reaction of that shape invisible.
+    reactions: RX.declaredReactions([...ex.passives, ...ex.actions, ...ex.utility]),
+    // Undeclared stays PASSIVE-only: an ordinary Attack is not a missing
+    // reaction, and counting it as one would bury the real gaps in noise.
     undeclaredReactions: RX.undeclaredReactions(ex.passives),
     counters: {},          // stack_burst accumulators, keyed by counter name
+    // Stance cycle (stances.js). `stance` is the form currently held; null means
+    // the actor must arm before it may strike. `stanceCycle` is derived from the
+    // actions themselves, so a spec cannot forget to opt in.
+    stance: null,
+    stanceCycle: ST.hasStanceCycle(ex.actions),
+    // Weapon-read freshness counters, family -> n. Owned by the reactor: the
+    // window is per-monster state, not per-attacker.
+    weaponReads: {},
     shield: 0,
     alive: true,
     // Per-run accounting, split per spec D3.
@@ -237,6 +254,31 @@ function runReactionEffect(state, reactor, reaction, ctx) {
       return;
     }
 
+    case "weapon_read": {
+      const fam = String(ctx.weaponFamily ?? "").toLowerCase();
+      if (!fam) return;
+      reactor.weaponReads = reactor.weaponReads ?? {};
+      // Eviction stops at Crisis when the entry says so — that IS the Crisis
+      // passive, so it is read here rather than needing its own registry row.
+      const inCrisis = reactor.hp > 0 && reactor.hp <= reactor.maxHp / 2;
+      const evict = e.evict !== false && !(reaction.evictUntilCrisis && inCrisis);
+      const pct = RX.applyWeaponRead(
+        reactor.weaponReads, reactor.actor.efficiency, fam,
+        { window: e.window, curve: e.curve, evict },
+      );
+      state.log.push({
+        round: state.round, actor: reactor.name, action: reaction.name,
+        reaction: true, weaponRead: fam, efficiency: pct, frozen: !evict,
+      });
+      return;
+    }
+
+    // Handled at the damage seam, not here: by the time a reaction effect runs
+    // the damage has already been written. `collect` is called separately from
+    // resolveAction for this kind — see damageMultiplierFor().
+    case "damage_mult":
+      return;
+
     case "burst": {
       // Indiscriminate — hits everything else in the conflict, allies included.
       for (const c of state.combatants) {
@@ -302,6 +344,28 @@ function onHpMoved(state, source, target, out, element, cause) {
   }
 }
 
+// Product of every `damage_mult` reaction the actor holds that fires for this
+// (action, victim) pair. 1.0 when none do, so the common path is a no-op.
+//
+// Crisis is read from live HP, not from a status flag, mirroring the live
+// definition `current_hp <= crisis_hp ?? ceil(max_hp/2)`. A target this hit
+// pushes INTO Crisis therefore does NOT earn Execute — the multiplier is
+// decided before the damage lands, as it is in play.
+function damageMultiplierFor(actor, action, victim) {
+  if (!actor?.reactions?.length) return 1;
+  const ctx = {
+    sourceAction: action.name,
+    victim,
+    victimInCrisis: victim.hp > 0 && victim.hp <= victim.maxHp / 2,
+    element: action.element,
+  };
+  let mult = 1;
+  for (const r of RX.collect(actor, RX.TRIGGERS.ON_DEAL_DAMAGE, ctx)) {
+    if (r.effect?.kind === "damage_mult") mult *= Number(r.effect.factor) || 1;
+  }
+  return mult;
+}
+
 function resolveAction(state, actor, action, targets, { free = false } = {}) {
   const a = attrs(actor);
   const dieA = a[action.attrA] ?? 8;
@@ -316,8 +380,20 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
     const dl = action.defenseTarget === "mdef" ? target.actor.mdef : target.actor.def;
     const check = R.accuracyCheck(state.rng, { dieA, dieB, bonus, dl });
 
+    // ON_ATTACKED fires on hit AND miss — the defining property of the family of
+    // reactions gated on `creature_hit_by_action` + `creature_miss_action`
+    // together. Both of those are POST-resolve, so the attack that triggers a
+    // read must not be scored against the read it caused: firing this before the
+    // damage put every swing at the window's floor and cost ~2x the mechanic's
+    // real weight. On a miss there is no damage step, so it fires here.
+    const attackedCtx = {
+      hit: check.hit, weaponFamily: action.weaponFamily ?? null,
+      element: action.element, attacker: actor, victim: target, damage: 0,
+    };
+
     if (!check.hit) {
       state.log.push({ round: state.round, actor: actor.name, action: action.name, target: target.name, miss: true });
+      fireReactions(state, target, RX.TRIGGERS.ON_ATTACKED, attackedCtx);
       continue;
     }
 
@@ -325,7 +401,25 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
     // Opportunity, which the model does not resolve (spec Part 6 — the party
     // always taking Advantage is a live-sim simplification with no offline
     // analogue yet). So a crit here is only an auto-hit. Flagged, not silent.
-    const base = R.outgoingDamage({ hr: check.hr, damageBonus: action.damageBonus + extra });
+    // Conditional keyword multipliers (Execute / Cripple) apply at the OUTGOING
+    // stage, matching `damage_stage: "outgoing"` on the live adjust_damage row —
+    // so weapon efficiency and element affinity both scale the doubled figure.
+    // Collected rather than dispatched: the multiplier has to reach the number
+    // before it is written, which is upstream of where reaction effects run.
+    let base = R.outgoingDamage({ hr: check.hr, damageBonus: action.damageBonus + extra });
+    base = Math.ceil(base * damageMultiplierFor(actor, action, target));
+
+    // Record the efficiency this swing actually landed at, per family. Sampled
+    // here — after any read the attack itself triggered, which is the number
+    // that reached the damage — rather than reconstructed later.
+    if (action.weaponFamily && target.actor?.efficiency) {
+      const fam = String(action.weaponFamily).toLowerCase();
+      state.laneStats = state.laneStats ?? {};
+      const lane = (state.laneStats[fam] = state.laneStats[fam] ?? { swings: 0, effSum: 0 });
+      lane.swings++;
+      lane.effSum += Number(target.actor.efficiency[fam] ?? 100) || 100;
+    }
+
     const out = R.incomingDamage(
       { ...target.actor, damageReduction: reductionFor(target, action.element) },
       {
@@ -375,6 +469,12 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
     });
 
     fireReactions(state, victim, RX.TRIGGERS.ON_TARGETED, targetedCtx);
+    // Post-resolve, per the trigger's live timing (see attackedCtx above).
+    // Fired on `target`, not `victim`: a Protect redirect changes who took the
+    // damage, but the creature that was ATTACKED is still the one that reads
+    // the weapon.
+    attackedCtx.damage = out.damage;
+    fireReactions(state, target, RX.TRIGGERS.ON_ATTACKED, attackedCtx);
     onHpMoved(state, actor, victim, out, action.element, "damage");
   }
 }
@@ -392,10 +492,21 @@ function chooseAction(state, actor) {
     // the actor as a normal Attack item (and off the sheet's attack_list), so
     // without this it would be offered as a turn action.
     if (RX.REACTION_ONLY_ACTIONS.has(act.name)) return false;
+    // Stance legality, before targeting: an unarmed stance monster has exactly
+    // one legal move and must not be scored against attacks it cannot make.
+    if (!ST.isLegal(act, actor)) return false;
+    if (act.stanceGrants) return true;         // arming: no targets, no cost
     const t = chooseTargets(state, actor, act);
     return t.length > 0 && canAfford(actor, act, t.length);
   });
   if (!affordable.length) return null;
+
+  // An arming action deals no damage, so the damage-maximising scorer below
+  // would never pick it. When it is legal it is also the ONLY legal move (see
+  // stances.isLegal), so take it directly rather than teaching the scorer to
+  // value a turn that sets up a future one.
+  const arming = affordable.find((a) => a.stanceGrants);
+  if (arming) return { action: arming, targets: [], score: 0, arming: true };
 
   let best = null;
   for (const act of affordable) {
@@ -485,6 +596,19 @@ function takeTurn(state, actor, { granted = false } = {}) {
   let action = pick?.action ?? null;
   let targets = pick?.targets ?? null;
 
+  // Arming spends the whole activation and produces no damage. This is the
+  // cadence the whole stance abstraction exists to model — a 4-activation boss
+  // that must arm before each strike lands 2 attacks per round, not 4.
+  if (pick?.arming) {
+    const stance = ST.arm(actor, action, state.rng);
+    state.log.push({
+      round: state.round, actor: actor.name, action: action.name,
+      stance, arming: true,
+    });
+    actor.baseActionsTaken++;
+    return;
+  }
+
   if (!action) {
     let w = weaponAction(actor);
     if (w) {
@@ -500,6 +624,10 @@ function takeTurn(state, actor, { granted = false } = {}) {
     state.log.push({ round: state.round, actor: actor.name, action: "(guard)", idle: true });
   } else {
     resolveAction(state, actor, action, targets);
+    // A strike spends the stance that permitted it — which is what forces the
+    // next activation back onto the arming action. Consumed even if every
+    // target was missed: in play the form is committed the moment it swings.
+    ST.consume(actor, action);
   }
 
   if (granted) actor.grantedActionsTaken++;
@@ -590,8 +718,31 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
       name: c.name, side: c.side, hp: c.hp, maxHp: c.maxHp, alive: c.alive,
       damageDealt: c.damageDealt, reactionsFired: c.reactionsFired ?? 0,
     })),
+    // Per-lane weapon-efficiency pressure. Only populated when something in the
+    // fight actually reads weapon families, so it costs nothing otherwise.
+    //
+    // This exists because a weapon-rotation mechanic is designed as a TEMPO
+    // ("show it four different weapons and the first recovers") but experienced
+    // as a MULTIPLIER, and the two only agree if the party can actually field
+    // that many lanes. Without this table a design that collapses to one lane
+    // reads as a plain damage nerf and nothing says why.
+    laneReport: state.laneStats ? summariseLanes(state.laneStats) : null,
     log: state.log,
   };
+}
+
+// swings + summed efficiency per family -> mean efficiency and damage share.
+function summariseLanes(stats) {
+  const total = Object.values(stats).reduce((s, l) => s + l.swings, 0);
+  const out = {};
+  for (const [fam, l] of Object.entries(stats)) {
+    out[fam] = {
+      swings: l.swings,
+      share: total ? l.swings / total : 0,
+      meanEfficiency: l.swings ? l.effSum / l.swings : 100,
+    };
+  }
+  return out;
 }
 
 module.exports = { runBattle, makeCombatant, initiative, refreshFocus, weaponAction };

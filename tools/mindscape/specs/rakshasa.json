@@ -1,0 +1,118 @@
+{
+  "_comment": "PAPER DESIGN — docs/rakshasa-design-proposal.md. Not in the world. Numbers here are the proposal's starting block (§2, §5), not a tuned build. Spec format: an actor document with the same system.props keys a real CSB actor uses, plus mindscape_* modelling fields (ruleset Part 8).",
+  "name": "Rakshasa",
+  "system": {
+    "props": {
+      "level": "40",
+      "npc_rank": "elite",
+      "species": "Demon",
+      "activation": "4",
+
+      "max_hp": "840", "current_hp": "840",
+      "max_mp": "45",  "current_mp": "45",
+
+      "dex_base": "10", "ins_base": "8", "mig_base": "10", "wlp_base": "8",
+      "def_mod": "+4", "mdef_mod": "+4",
+      "_defense_comment": "CSB derives these (DEX die + def_mod / INS die + mdef_mod) and stores the result; the loader reads the STORED value. Stating them here is the same discipline the design doc demands of the built actor — re-stamp, never leave a donor's numbers on disk.",
+      "defense": "14", "magic_defense": "12",
+      "init": "12",
+
+      "_affinity_comment": "VU light · RS dark · RS poison · NA rest (§2). Keys: 1 physical 2 air 3 bolt 4 dark 5 earth 6 fire 7 ice 8 light 9 poison.",
+      "affinity_1": "NA", "affinity_2": "NA", "affinity_3": "NA",
+      "affinity_4": "RS", "affinity_5": "NA", "affinity_6": "NA",
+      "affinity_7": "NA", "affinity_8": "VU", "affinity_9": "RS",
+
+      "_ef_comment": "All lanes start neutral. Adaptive Defense is the only thing that moves them — a static profile would fight the dynamic one (§2).",
+      "arcane_ef": "100", "bow_ef": "100", "brawling_ef": "100",
+      "dagger_ef": "100", "firearm_ef": "100", "flail_ef": "100",
+      "heavy_ef": "100", "spear_ef": "100", "sword_ef": "100",
+      "thrown_ef": "100",
+
+      "condition_disarmed": "IM", "condition_frightened": "IM",
+      "condition_slow": "RS", "condition_weak": "RS"
+    }
+  },
+  "items": [
+    {
+      "name": "Form Shift",
+      "props": {
+        "skill_type": "Active",
+        "skill_target": "Self",
+        "cost": "-",
+        "mindscape_stance_grants": "Sword,Bow,Throwing,Flail",
+        "_comment": "Live: one apply_ae row over a 4-name pool with ae_pool_skip_existing, so it never redraws the form it holds. Costs the activation — that is why the strikes are double potency."
+      }
+    },
+    {
+      "name": "Execute",
+      "props": {
+        "skill_type": "Attack",
+        "skill_target": "One Creature",
+        "cost": "-",
+        "rolled_atr1": "MIG", "rolled_atr2": "DEX",
+        "check_bonus": "5",
+        "damage_bonus": "30",
+        "type_damage": "Physical",
+        "defense_target_type": "def",
+        "action_keywords": "execute",
+        "mindscape_stance_requires": "Sword",
+        "_comment": "200% vs a target IN Crisis, via the Execute reaction entry (Kirin's Horn Rush pattern). ~51 raw normally, ~102 into Crisis."
+      }
+    },
+    {
+      "name": "Cripple",
+      "props": {
+        "skill_type": "Attack",
+        "skill_target": "One Creature",
+        "cost": "-",
+        "rolled_atr1": "MIG", "rolled_atr2": "MIG",
+        "check_bonus": "5",
+        "damage_bonus": "28",
+        "type_damage": "Physical",
+        "defense_target_type": "def",
+        "action_keywords": "cripple",
+        "mindscape_stance_requires": "Flail",
+        "_comment": "200% vs a target NOT in Crisis. The DEF debuff rider is NOT modelled — flagged in the run notes."
+      }
+    },
+    {
+      "name": "Chakram",
+      "props": {
+        "skill_type": "Attack",
+        "skill_target": "Up to three creatures",
+        "cost": "-",
+        "rolled_atr1": "DEX", "rolled_atr2": "INS",
+        "check_bonus": "5",
+        "damage_bonus": "16",
+        "type_damage": "Physical",
+        "defense_target_type": "def",
+        "action_keywords": "multi",
+        "mindscape_stance_requires": "Throwing",
+        "_comment": "Bleed rider NOT modelled (no DoT layer offline) — reads slightly LOW."
+      }
+    },
+    {
+      "name": "Rain of Arrows",
+      "props": {
+        "skill_type": "Attack",
+        "skill_target": "All Enemies",
+        "cost": "30 MP",
+        "rolled_atr1": "DEX", "rolled_atr2": "INS",
+        "check_bonus": "5",
+        "damage_bonus": "11",
+        "type_damage": "Physical",
+        "defense_target_type": "def",
+        "action_keywords": "overflow",
+        "mindscape_stance_requires": "Bow",
+        "_comment": "Overflow rolls ONE accuracy check live; the model rolls per target, so its variance is understated (the mean is not)."
+      }
+    },
+    {
+      "name": "Adaptive Defense",
+      "props": {
+        "skill_type": "Passive",
+        "_comment": "Registry entry in lib/reactions.js. 5-slot LRU window, curve 25/40/60/80, eviction stops at Crisis (Ten Thousand Arms)."
+      }
+    }
+  ]
+}

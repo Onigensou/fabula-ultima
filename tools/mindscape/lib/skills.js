@@ -16,6 +16,7 @@
 // Animal Fur is not. Only Active/Spell rows are held to the modelling bar.
 
 const { evaluate: evaluateFormula } = require("./formula");
+const ST = require("./stances");
 
 // "Attack" is the MONSTER action type and was missing from this set at first.
 // Its absence gave Asura zero damage actions — a boss that could not attack —
@@ -105,11 +106,34 @@ function extractAction(item, actor = null) {
   const skillType = s(p.skill_type).toLowerCase();
 
   if (PASSIVE_SKILL_TYPES.has(skillType)) {
-    return { kind: "passive", name: item.name, id: item.id };
+    // `props` is carried so a registry entry can be TUNED from the sheet/spec
+    // rather than from source. Balance dials belong in data — otherwise every
+    // sweep is a code edit, and a code edit is not something a design doc can
+    // record or a reviewer can diff.
+    return { kind: "passive", name: item.name, id: item.id, props: p };
   }
   if (!ACTION_SKILL_TYPES.has(skillType)) {
     // Equipment, materials, consumables. Not an action, not a gap.
     return { kind: "non-action", name: item.name, id: item.id };
+  }
+
+  // An ARMING action (stances.js) deals no damage and rolls no accuracy, so
+  // every check below would classify it as unmodelled utility and count it as a
+  // coverage gap. It is neither: it is fully modelled, it just has no damage to
+  // parse. Returned early, before the damage-shaped reasons are collected.
+  const stance = ST.readStanceFields(p);
+  if (stance?.stanceGrants) {
+    return {
+      kind: "action",
+      name: item.name, id: item.id, skillType: s(p.skill_type),
+      attrA: "mig", attrB: "mig",       // never rolled — arming performs no check
+      damageBonus: 0, checkBonus: 0,
+      element: "physical", defenseTarget: "def",
+      target: { side: "self", count: 1 },
+      cost: parseCost(p.cost),
+      keywords: null, weaponFamily: null,
+      ...stance,
+    };
   }
 
   const reasons = [];
@@ -186,9 +210,30 @@ function extractAction(item, actor = null) {
     target,
     cost,
     keywords: s(p.action_keywords) || null,
-    // Spells carry no weapon family, so weapon efficiency is inert for them.
-    weaponFamily: null,
+    // ── Weapon family ─────────────────────────────────────────────────────
+    // CORRECTED 2026-09-08. This used to be a flat `null` with the comment
+    // "spells carry no weapon family, so weapon efficiency is inert for them".
+    // That is not what the live engine does: action-profile.js:242 sets
+    // `weaponKey = (isSpell && !isMpDamage) ? "arcane" : null`, so a cast spell
+    // is scored against the target's `arcane_ef` and has been since 6f8f73a2.
+    // Hina is the party's largest single damage source and casts almost every
+    // turn, so treating her output as EF-exempt silently removed the entire
+    // efficiency axis from most of the party's damage.
+    //
+    // A weapon-shaped Attack takes the wielder's equipped family. Actives keep
+    // null: what they swing with is not on the sheet, so a guess here would be
+    // the kind of plausible invention this tool refuses to make.
+    weaponFamily: resolveWeaponFamily(skillType, actor),
+    ...(stance ?? {}),
   };
+}
+
+// Live parity: Spell -> "arcane"; Attack -> the equipped weapon's family;
+// anything else -> null (inert, and honestly so).
+function resolveWeaponFamily(skillType, actor) {
+  if (skillType === "spell") return "arcane";
+  if (skillType === "attack") return actor?.weapon?.family ?? null;
+  return null;
 }
 
 // ── The utility registry ────────────────────────────────────────────────────

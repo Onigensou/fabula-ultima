@@ -67,7 +67,8 @@ t("chain reaction ignores non-Bolt", () => {
 // ── Registry hygiene ────────────────────────────────────────────────────────
 t("every registry entry has a known trigger and an effect kind", () => {
   const triggers = new Set(Object.values(RX.TRIGGERS));
-  const kinds = new Set(["free_attack", "stack_burst", "burst", "grant_mp"]);
+  const kinds = new Set(["free_attack", "stack_burst", "burst", "grant_mp",
+                         "weapon_read", "damage_mult"]);
   for (const [name, r] of Object.entries(RX.REACTION_REGISTRY)) {
     assert.ok(triggers.has(r.trigger), `${name}: unknown trigger ${r.trigger}`);
     assert.ok(kinds.has(r.effect.kind), `${name}: unknown effect ${r.effect.kind}`);

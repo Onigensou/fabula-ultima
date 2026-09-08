@@ -10,6 +10,7 @@
 // The game must be CLOSED — Foundry holds an exclusive lock on the world DB.
 
 const { loadParty, loadNamed, validate, resolveCurrentGame } = require("../lib/load-actors");
+const { loadEnemyFiles } = require("../lib/enemy-file");
 const { buildCoverage, extractActions } = require("../lib/skills");
 const { runBattle } = require("../lib/engine");
 const { resolveEvent } = require("../lib/conflict-events");
@@ -29,6 +30,7 @@ function parseArgs(argv) {
     else if (a === "--force") out.force = true;
     else if (a === "--verbose" || a === "-v") out.verbose = true;
     else if (a === "--conflict-event" || a === "-c") out.conflictEvent = next();
+    else if (a === "--enemy-file" || a === "-f") (out.enemyFiles = out.enemyFiles ?? []).push(next());
     else if (a === "--help" || a === "-h") out.help = true;
   }
   return out;
@@ -61,11 +63,16 @@ function verdict(stats) {
 
 async function main() {
   const args = parseArgs(process.argv);
-  if (args.help || !args.enemies?.length) {
+  if (args.help || (!args.enemies?.length && !args.enemyFiles?.length)) {
     console.log(`
 Mindscape — offline Monte Carlo balance runs (game must be CLOSED)
 
-  --enemies, -e  comma-separated actor names   (required)
+  --enemies, -e  comma-separated actor names from the world
+  --enemy-file, -f  JSON spec for a monster that does not exist yet (repeatable).
+                 Lets a design be measured BEFORE it is built. A spec is an
+                 actor document with the same system.props keys, loaded through
+                 the same model as a world actor. See specs/ for an example.
+                 One of --enemies or --enemy-file is required.
   --runs, -n     iterations (default 1000)
   --seed         run label, for reproducibility (default "mindscape")
   --party        override the Current Game party
@@ -82,9 +89,20 @@ Mindscape — offline Monte Carlo balance runs (game must be CLOSED)
 
   const game = await resolveCurrentGame();
   const party = await loadParty({ partyName: args.partyName });
-  const enemies = await loadNamed(args.enemies);
+  const enemies = [
+    ...(args.enemies?.length ? await loadNamed(args.enemies) : []),
+    ...(args.enemyFiles?.length ? loadEnemyFiles(args.enemyFiles) : []),
+  ];
 
   console.log(`\nMindscape — ${game.gameName}  ·  ${game.partyName}`);
+  // Say it loudly. A verdict about a monster that does not exist yet is a
+  // different kind of claim from one about a monster on the sheet, and the
+  // distinction must survive being pasted into a design doc.
+  const paper = enemies.filter((e) => e.fromSpec);
+  if (paper.length) {
+    console.log(`⚠ PAPER DESIGN — ${paper.map((e) => e.name).join(", ")} `
+      + `loaded from a spec file, not the world. These numbers describe a proposal.`);
+  }
   console.log(`${party.map((p) => p.name).join(", ")}  vs  ${enemies.map((e) => `${e.name} (L${e.level}, ${e.turnsPerRound} act)`).join(" + ")}`);
 
   // Structural validation first: a model that could not fight must never be
@@ -149,6 +167,7 @@ if you accept a partial model. Use --verbose to see every gap.`);
   const rounds = [], hps = [], dprs = [], rds = [];
   const outcomes = { victory: 0, defeat: 0, overtime: 0, "mutual-destruction": 0, inconclusive: 0 };
   const downs = new Map();
+  const lanes = new Map();
 
   for (let i = 0; i < args.runs; i++) {
     const rng = new Rng(`${args.seed}:${i}`);
@@ -159,6 +178,14 @@ if you accept a partial model. Use --verbose to see every gap.`);
     dprs.push(r.baselineDpr);
     rds.push(r.roundDensity);
     for (const d of r.downs) downs.set(d.name, (downs.get(d.name) ?? 0) + 1);
+    if (r.laneReport) {
+      for (const [fam, l] of Object.entries(r.laneReport)) {
+        const acc = lanes.get(fam) ?? { swings: 0, effSum: 0 };
+        acc.swings += l.swings;
+        acc.effSum += l.meanEfficiency * l.swings;
+        lanes.set(fam, acc);
+      }
+    }
   }
 
   const sr = rounds.slice().sort((a, b) => a - b);
@@ -201,6 +228,30 @@ if you accept a partial model. Use --verbose to see every gap.`);
   const meanDpr = dprs.reduce((a, b) => a + b, 0) / dprs.length;
   const meanRd = rds.reduce((a, b) => a + b, 0) / rds.length;
   const anyDowns = [...downs.values()].some((n) => n > 0);
+  // Weapon-lane pressure. Printed only when something actually read weapon
+  // families, so ordinary fights are unaffected.
+  //
+  // A rotation mechanic is DESIGNED as a tempo and EXPERIENCED as a multiplier,
+  // and those agree only if the party can field as many lanes as the window
+  // expects. `lanes` is that reality check: how many distinct families the party
+  // brought, how its damage was spread across them, and what efficiency each one
+  // actually swung at.
+  if (lanes.size) {
+    const totalSwings = [...lanes.values()].reduce((s, l) => s + l.swings, 0);
+    console.log(`\nweapon lanes  (${lanes.size} distinct famil${lanes.size === 1 ? "y" : "ies"} fielded by the party)`);
+    const rows = [...lanes.entries()].sort((a, b) => b[1].swings - a[1].swings);
+    for (const [fam, l] of rows) {
+      const share = totalSwings ? l.swings / totalSwings : 0;
+      const meanEff = l.swings ? l.effSum / l.swings : 100;
+      console.log(`  ${fam.padEnd(10)} ${pct(share).padStart(4)} of swings   mean efficiency ${meanEff.toFixed(0)}%`);
+    }
+    if (lanes.size <= 3) {
+      console.log(`  ⚠ Only ${lanes.size} lanes. A rotation window wider than this can never`);
+      console.log(`    open — the party has nothing left to rotate to, so the mechanic acts`);
+      console.log(`    as a flat multiplier and its tempo dial is inert.`);
+    }
+  }
+
   console.log(`\nmeasured constants  (feed docs/monster-balance-design.md)`);
   console.log(`  BaselineDPR   ${meanDpr.toFixed(1)}   (party damage / round, base actions only)`);
   console.log(`  RoundDensity  ${meanRd.toFixed(2)}   (actions / headcount / round)`);

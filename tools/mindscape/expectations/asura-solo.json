@@ -1,0 +1,42 @@
+{
+  "id": "asura-solo",
+  "encounter": ["Asura"],
+  "party": "<current game>",
+  "capturedAt": "2026-09-08",
+  "conflictEvent": null,
+
+  "why": "The published calibration (inferex-centuaros) is a TWO-enemy fight, and the party's multi-target actions all collapse to one target against a solo boss. Reading a solo verdict through a multi-enemy bias understates the party badly. This is the solo anchor.",
+
+  "mindscape": {
+    "runs": 500,
+    "seed": "asura-ctl",
+    "expectedRounds": 12,
+    "medianRounds": 5,
+    "medianHp": 0.0,
+    "defeatRate": 0.99,
+    "baselineDpr": 95.2
+  },
+
+  "live": {
+    "source": "docs/asura-live-test-report.md, 4 sim battles 2026-08-19",
+    "rounds": 4,
+    "partyHpRemaining": 0.21,
+    "outcome": "victory, 3 of 4 PCs dead",
+    "note": "Asura carries 900 HP, so the party cleared ~900 HP in ~4 rounds ⇒ live effective DPR ≈ 225."
+  },
+
+  "bias": {
+    "soloDprRatio": 2.4,
+    "derivation": "live 225 / mindscape 95.2",
+    "direction": "PESSIMISTIC — Mindscape understates party output against a SOLO boss by roughly 2.4x, well beyond the ~1.3x implied by the two-enemy calibration.",
+    "confidence": "LOW — a single live data point against one monster. Treat 2.4 as an order-of-magnitude correction, not a constant. Re-derive it the next time any solo boss is live-tested.",
+    "knownCauses": [
+      "Blanche has ZERO modelled damage actions: she attacks through Dual Shieldbearer's Twin Shields, a virtual attack exposed by an AE, which the loader does not model. A quarter of the party deals no damage.",
+      "Zarg has no modelled damage skills and falls back to his bow weapon action alone.",
+      "Multi-target actions (Glacies, Tafallera) collapse to one target and lose most of their value.",
+      "Summons, Zero Power, Fabula Point invokes and the party reaction layer are all unmodelled — and a long solo fight gives every one of them more time to matter than a 2-round group fight does."
+    ]
+  },
+
+  "howToRead": "For a SOLO boss, multiply Mindscape's BaselineDPR by ~2.4 before deriving an HP budget. The round count and party-HP figures are correspondingly pessimistic and should not be read literally at all — Mindscape calls Asura a 99% defeat where live was a victory at 21%."
+}
