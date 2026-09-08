@@ -72,14 +72,17 @@ const SND = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
 
 /* ── Weapon icons for Form Shift announcements ───────────────────────────── */
 //
-// Every one of these is an asset ALREADY in use elsewhere in this world, so
-// they are known to resolve. A Form Shift whose icon 404s still runs (the
-// sprite is skipped) but the announcement loses half its point.
+// Every one of these was probed with loadTexture against the LIVE client and
+// returned a real 256x256 texture. Being referenced elsewhere in the world is
+// NOT evidence a path resolves: the first pass picked four such paths and three
+// were dead — two Forge GIFs (a .gif never binds as a PIXI texture at all) and
+// a core icon whose real filename differs. A Form Shift whose icon 404s still
+// runs, but the announcement loses half its point.
 const ICON_W = {
   sword:   "icons/weapons/swords/greatsword-guard-gold-worn.webp",
-  bow:     "icons/weapons/ranged/bow-recurve-yellow.webp",
-  chakram: ITEM + "Ring.gif",
-  mace:    ITEM + "Mace.gif",
+  bow:     "icons/weapons/bows/shortbow-recurve.webp",
+  chakram: "icons/weapons/thrown/shuriken-blue.webp",
+  mace:    "icons/weapons/maces/mace-round-spiked-black.webp",
 };
 
 const SFX = {
