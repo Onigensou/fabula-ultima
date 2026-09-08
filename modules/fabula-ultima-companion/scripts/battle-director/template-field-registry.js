@@ -93,6 +93,9 @@ const ADJUST_GRANT_VIS = `equalText(sameRow("effect_kind",''), "adjust_grant")`;
 const GROUP_CHECK_VIS = `equalText(sameRow("effect_kind",''), "group_check")`;
 const SET_OUTCOME_VIS = `equalText(sameRow("effect_kind",''), "set_battle_outcome")`;
 const CLOCK_VIS       = `equalText(sameRow("effect_kind",''), "clock_advance")`;
+// weapon_read — the adaptive weapon-efficiency window (Rakshasa's Adaptive
+// Defense). See skill-effects.applyWeaponReadEffect.
+const WEAPON_READ_VIS = `equalText(sameRow("effect_kind",''), "weapon_read")`;
 const SAVE_CHECK_VIS  = `equalText(sameRow("effect_kind",''), "save_check")`;
 // contest_check — performer AND target both roll; higher total wins, ties reroll.
 // It borrows save_check's TARGET-side columns (save_attr1/2 name the attributes
@@ -699,6 +702,10 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
     { key: "fixed", value: "Fixed — move a flat number of sections" },
   ], { tooltip: "clock_advance: \"roll\" reuses the action card's check, so a better roll fills more sections. \"fixed\" ignores the roll.", vis: CLOCK_VIS, defaultValue: "roll" }),
   textCol("clock_sections", "Clock Sections", { tooltip: "clock_advance (fixed mode only): how many sections to move. Number or formula.", vis: CLOCK_VIS }),
+
+  textCol("read_window", "Read Window", { tooltip: "weapon_read: how many DIFFERENT weapon categories must be shown before a read lane returns to full efficiency. 4 means the lane itself plus four others — five distinct categories in total. Default 4.", vis: WEAPON_READ_VIS }),
+  textCol("read_curve", "Read Curve", { tooltip: "weapon_read: comma list of efficiency percentages, from a JUST-READ lane down to one step from clear. \"25,40,60,80\" = 25% right after you use it, climbing as other categories are shown; a fully cleared lane is always 100%. Values are floored at 1 — never author 0, since readWeaponEfficiency treats a stored 0 as 100%.", vis: WEAPON_READ_VIS }),
+  textCol("read_evict", "Read Evict", { tooltip: "weapon_read: \"0\" freezes recovery — lanes only ever fall, nothing steps back up. That is how a Crisis phase that stops forgetting is authored: a second row gated on Crisis, not a second mechanic. Default \"1\" (normal recovery).", vis: WEAPON_READ_VIS }),
   textCol("gc_timeout", "Group Check Timeout (ms)", { tooltip: "group_check: ms before a participant's roll panel auto-confirms. Blank waits indefinitely — set this for anything that runs inside a combat turn so one disconnected player cannot stall it.", vis: GROUP_CHECK_VIS }),
   selectCol("gc_on_error", "Group Check On Error", [
     { key: "fail", value: "Fail — treat as leader FAIL (default)" },

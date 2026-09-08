@@ -531,7 +531,19 @@
       preAffinityBreakdown = breakdown;
 
       // Step 9a: Weapon efficiency
+      //
+      // A stored 0 means "unset", NOT "immune". This path used to honour 0
+      // literally while the BD path (snapshot.readWeaponEfficiency, `v > 0`)
+      // folded it to 100 — so the same sheet value produced full damage through
+      // an attack and ZERO damage through a tile / hazard / consumable.
+      //
+      // The safe reading is the BD one, and the content proves it: Bandit Fafnir
+      // stores 0 in all TEN efficiency fields and Wind Orb in two. Those are
+      // authored blanks, not a design intent to be untouchable by every weapon in
+      // the game — which is exactly what honouring 0 here made them, on this path
+      // only. Aligned to the dominant path; a real reduction is authored as 1-99.
       weaponEfficiencyUsed = _num(props[weaponType], 100);
+      if (!(weaponEfficiencyUsed > 0)) weaponEfficiencyUsed = 100;
       finalValue = Math.ceil(finalValue * (weaponEfficiencyUsed / 100));
 
       // Step 9b: Element affinity (skipped entirely when ignoreAffinity — the

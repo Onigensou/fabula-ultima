@@ -4255,7 +4255,139 @@ async function applyTriggerOpportunityEffect(row, ctx) {
   return { ok: picked.length > 0, kind: "trigger_opportunity", count: picked.length, picked };
 }
 
+// ── effect_kind: "weapon_read" ───────────────────────────────────────────────
+// "It learns the weapon you just hit it with." A least-recently-used window over
+// weapon-efficiency lanes: attacking with family X drops X's efficiency to the
+// floor and lets every OTHER lane recover one step, so a lane only returns to
+// full once `read_window` DIFFERENT families have been shown. Rakshasa's
+// Adaptive Defense; see docs/rakshasa-design-proposal.md §4.
+//
+// WHY THIS IS CODE AND NOT AUTHORED ROWS
+// The declarative layer has no ordered-list or counter-arithmetic primitive, so
+// expressing the window in data needs four tier AEs per lane plus a step-down row
+// per (lane x tier) across two triggers — ~100 rows for ten lanes, none of which
+// the reaction linter can check for ordering errors. This is ~70 lines, is a pure
+// state transition over one flag, and any future "it adapts to X" monster is one
+// authored row.
+//
+// STATE lives in ONE actor flag (`weaponReads`: family -> freshness counter) and
+// the derived `<family>_ef` props are rewritten from it on every read. Deriving
+// the whole table each time rather than nudging one lane is deliberate: the other
+// lanes moved too, and a table that only refreshed the attacked lane drifts out of
+// step with its own counters within two swings.
+//
+// Fields:
+//   read_window  — how many OTHER families fully clear a lane (default 4)
+//   read_curve   — comma list, counter=window..1 -> EF%. Default "25,40,60,80".
+//                  Counter 0 (cleared) is always 100.
+//   read_evict   — "0"/"false" freezes recovery: nothing steps down, so lanes only
+//                  ever fall. That is how a Crisis phase that stops forgetting is
+//                  authored — a second row gated on Crisis, not a second mechanic.
+//
+// ⚠ Values are floored at 1, never 0. `readWeaponEfficiency` (snapshot.js:125)
+// treats a stored 0 as 100 while apply-damage-core honours it, so a 0 lane would
+// behave differently depending on which damage path fired.
+const WEAPON_READ_FAMILIES = Object.freeze([
+  "arcane", "bow", "brawling", "dagger", "firearm", "flail", "heavy",
+  "spear", "sword", "thrown",
+]);
+
+// Which lane did this attack come from? Resolution order matters — see §4.4.
+//   1. the weapon item        (a SHIELD maps to brawling: a shield cannot be
+//                              wielded as a weapon, so a shield attack is always
+//                              a virtual brawling profile)
+//   2. payload.weaponType     (the only thing a VIRTUAL attack carries — Dual
+//                              Shieldbearer's Twin Shields has no item, so no
+//                              weaponUuid, and step 1 finds nothing)
+//   3. a Spell                -> arcane, matching action-profile.js:242, which is
+//                              the engine's own "spells count as Arcane" rule
+// Returns null when nothing resolves, so the row fails CLOSED rather than
+// charging some arbitrary lane.
+async function resolveWeaponReadFamily(payload) {
+  const norm = (v) => {
+    const s = String(v ?? "").trim().toLowerCase();
+    return WEAPON_READ_FAMILIES.includes(s) ? s : null;
+  };
+
+  const uuid = String(payload?.weaponUuid ?? "").trim();
+  if (uuid) {
+    let item = null;
+    try { item = await fromUuid(uuid); } catch (_e) { item = null; }
+    const p = item?.system?.props ?? null;
+    if (p) {
+      if (String(p.item_type ?? "").toLowerCase() === "shield") return "brawling";
+      const cat = norm(p.category ?? p.weapon_type ?? p.type);
+      if (cat) return cat;
+    }
+  }
+
+  const fromPayload = norm(payload?.weaponType);
+  if (fromPayload) return fromPayload;
+
+  const kind = String(payload?.actionKind ?? "").toLowerCase();
+  if (kind === "spell") return "arcane";
+
+  return null;
+}
+
+function weaponReadEfficiency(counter, window, curve) {
+  if (!(counter > 0)) return 100;
+  const idx = Math.min(Math.max(window - counter, 0), curve.length - 1);
+  const v = Number(curve[idx]);
+  return Number.isFinite(v) ? Math.max(1, v) : 100;
+}
+
+async function applyWeaponReadEffect(row, ctx) {
+  const actor = ctx.reactorActor ?? ctx.casterActor ?? null;
+  if (!actor) { warn("skill-effects.weapon_read: no reactor actor"); return { ok: false, kind: "weapon_read" }; }
+
+  const family = await resolveWeaponReadFamily(ctx.payload);
+  if (!family) {
+    log("skill-effects.weapon_read: no weapon family on the payload — no read (fails closed)");
+    return { ok: false, kind: "weapon_read", reason: "no_family" };
+  }
+
+  const window = Math.max(1, Math.floor(Number(row.read_window ?? 4) || 4));
+  const curve = String(row.read_curve ?? "25,40,60,80")
+    .split(/[,\s]+/).map(Number).filter((n) => Number.isFinite(n));
+  if (!curve.length) curve.push(25);
+
+  const evictRaw = String(row.read_evict ?? "1").trim().toLowerCase();
+  const evict = !(evictRaw === "0" || evictRaw === "false" || evictRaw === "no");
+
+  const counters = { ...(actor.getFlag?.(FLAG_NS, "weaponReads") ?? {}) };
+  if (evict) {
+    for (const k of Object.keys(counters)) {
+      if (k !== family && counters[k] > 0) counters[k] -= 1;
+    }
+  }
+  counters[family] = window;
+
+  const props = {};
+  for (const [k, n] of Object.entries(counters)) {
+    if (!WEAPON_READ_FAMILIES.includes(k)) continue;
+    props[`system.props.${k}_ef`] = String(weaponReadEfficiency(n, window, curve));
+  }
+
+  // ONE write: the derived props and the state they derive from land together, so
+  // a crash can never leave the table disagreeing with its own counters.
+  try {
+    await actor.update({ ...props, [`flags.${FLAG_NS}.weaponReads`]: counters });
+  } catch (e) {
+    warn("skill-effects.weapon_read: actor.update failed", e);
+    return { ok: false, kind: "weapon_read" };
+  }
+
+  const shown = weaponReadEfficiency(counters[family], window, curve);
+  log(`skill-effects.weapon_read: ${actor.name} read ${family} -> ${shown}%`
+    + `${evict ? "" : " (FROZEN — nothing recovers)"}`
+    + `  [${Object.entries(counters).map(([k, n]) => `${k}:${n}`).join(" ")}]`);
+
+  return { ok: true, kind: "weapon_read", family, efficiency: shown, frozen: !evict };
+}
+
 const EFFECT_KIND_DISPATCH = {
+  weapon_read:         applyWeaponReadEffect,
   targeting:           applyTargetingEffect,
   trigger_opportunity: applyTriggerOpportunityEffect,
   grant:               grantRun,             // UNIFIED (see grantRun)
