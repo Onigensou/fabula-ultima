@@ -21642,8 +21642,16 @@
             "name": "Devour"
           },
           {
+            "id": "RkExecVolley0001",
+            "name": "Executioner's Volley"
+          },
+          {
             "id": "RkFormShift01AAA",
             "name": "Form Shift"
+          },
+          {
+            "id": "RkFormShiftCris1",
+            "name": "Form Shift (Dual)"
           },
           {
             "id": "RkCrippleFlail01",
@@ -21654,12 +21662,16 @@
             "name": "Rain of Arrows"
           },
           {
+            "id": "RkRendingOrbit01",
+            "name": "Rending Orbit"
+          },
+          {
             "id": "RkExecuteSword01",
             "name": "Saber"
           },
           {
-            "id": "RkTenThousandArm",
-            "name": "Ten Thousand Arms"
+            "id": "RkSeveringVerd01",
+            "name": "Severing Verdict"
           }
         ],
         "effects": 0
