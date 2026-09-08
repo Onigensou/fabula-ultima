@@ -11,12 +11,42 @@ That document is the thing to disagree with; this directory is just its implemen
 # the game must be CLOSED — Foundry holds an exclusive lock on the world DB
 node bin/mindscape.js --enemies "Inferex,Centuaros" --runs 2000
 node bin/mindscape.js --enemies Asura --runs 500 --seed asura-v3 --verbose
-node test/rules.test.js
+
+# a monster that does not exist yet -- measure the design before building it
+node bin/mindscape.js --enemy-file specs/rakshasa.json --runs 500 --force
+
+# find the value of a dial by measuring instead of arguing
+node bin/sweep.js -f specs/rakshasa.json --dial mindscape_read_curve \
+  --on "Adaptive Defense" --values "25,40,60,80|50,65,80,95" --runs 400
+
+node test/rules.test.js && node test/reactions.test.js && node test/weapon-read.test.js
 ```
+
+## Measuring a design before it is built
+
+`--enemy-file` takes a JSON spec — an actor document carrying the same
+`system.props` keys a real CSB actor does, loaded through the **same**
+`toCombatModel` as a world actor. That constraint is the point: a spec that could
+describe a creature the world cannot hold would be measuring something that can
+never exist. Runs print a loud `PAPER DESIGN` banner so a verdict about a
+proposal can never be mistaken for one about a monster on the sheet.
+
+Specs may also carry `mindscape_*` fields — modelling scaffolding that has no CSB
+equivalent (stance cycles, reaction dials). They are namespaced so they can never
+collide with a sheet column, and they let a balance sweep be a data edit rather
+than a source edit. See `specs/rakshasa.json`.
+
+> ⚠ **Solo bosses read very pessimistically.** The published calibration is a
+> *two-enemy* fight, and the party's multi-target actions collapse to one target
+> against a single monster — measured 164.6 DPR vs a pair, 95.2 vs solo Asura.
+> Worse, Blanche contributes **zero** modelled damage (her Twin Shields is an
+> AE-exposed virtual attack the loader does not model). Read a solo verdict
+> through `expectations/asura-solo.json`, not the Inferex one.
 
 | flag | |
 |---|---|
-| `--enemies, -e` | comma-separated actor names (required) |
+| `--enemies, -e` | comma-separated actor names from the world |
+| `--enemy-file, -f` | JSON spec for a monster not in the world yet (repeatable) |
 | `--runs, -n` | iterations (default 1000) |
 | `--seed` | run label; same seed reproduces the run exactly |
 | `--party` | override the Current Game party |
