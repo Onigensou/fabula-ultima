@@ -44,16 +44,71 @@ function splitList(raw) {
     .filter(Boolean);
 }
 
-// Read the stance fields off a skill item's props. Returns null for the ~all of
-// actions that declare neither, so the common path allocates nothing.
-function readStanceFields(props) {
-  const grants = splitList(props?.mindscape_stance_grants);
-  const requires = String(props?.mindscape_stance_requires ?? "").trim() || null;
-  if (!grants.length && !requires) return null;
-  return {
-    stanceGrants: grants.length ? grants : null,
-    stanceRequires: requires,
-  };
+// Read the stance fields for a skill.
+//
+// Two sources, in order:
+//   1. `mindscape_stance_*` on the item — an explicit declaration, used by paper
+//      specs where there is no action_pattern_table to infer from.
+//   2. INFERRED from the shipped data, so a monster already in the world models
+//      correctly with nothing authored for the sim's benefit. Inference beats
+//      declaration here: a hand-maintained mirror of live data drifts, and the
+//      drift is silent.
+//
+// The inference is deliberately narrow, and both halves must agree:
+//   · a skill the action_pattern gates on `self_has_status: "X"` REQUIRES X
+//   · a skill whose apply_ae draws from a pool of names, where those names are
+//     the very statuses other rows gate on, GRANTS one of them
+// So "an action that hands out the states other actions are locked behind" is
+// what identifies the cycle — not a name, a flag, or a guess about intent.
+function readStanceFields(props, actor, itemName) {
+  const declaredGrants = splitList(props?.mindscape_stance_grants);
+  const declaredRequires = String(props?.mindscape_stance_requires ?? "").trim() || null;
+  if (declaredGrants.length || declaredRequires) {
+    return {
+      stanceGrants: declaredGrants.length ? declaredGrants : null,
+      stanceRequires: declaredRequires,
+    };
+  }
+
+  const gated = gatedStatuses(actor);
+  if (!gated.size) return null;
+
+  // REQUIRES — this skill's own row in the pattern gates on a status.
+  const name = String(itemName ?? "").trim().toLowerCase();
+  for (const row of patternRows(actor)) {
+    if (String(row.action_pattern_name ?? "").trim().toLowerCase() !== name) continue;
+    if (String(row.action_pattern_condition ?? "").trim().toLowerCase() !== "self_has_status") continue;
+    const st = String(row.action_pattern_string ?? "").trim();
+    if (st) return { stanceGrants: null, stanceRequires: st };
+  }
+
+  // GRANTS — a self-targeted apply_ae drawing from a pool of those same statuses.
+  for (const row of Object.values(props?.effect_table ?? {})) {
+    if (row?.$deleted) continue;
+    if (String(row.effect_kind ?? "").trim().toLowerCase() !== "apply_ae") continue;
+    const pool = splitList(row.ae_name_pool);
+    if (pool.length < 2) continue;
+    if (!pool.every((n) => gated.has(n.toLowerCase()))) continue;
+    return { stanceGrants: pool, stanceRequires: null };
+  }
+
+  return null;
+}
+
+function patternRows(actor) {
+  const t = actor?._rawProps?.action_pattern_table ?? {};
+  return Object.values(t).filter((r) => r && !r.$deleted);
+}
+
+// Every status the action pattern locks an action behind.
+function gatedStatuses(actor) {
+  const out = new Set();
+  for (const row of patternRows(actor)) {
+    if (String(row.action_pattern_condition ?? "").trim().toLowerCase() !== "self_has_status") continue;
+    const st = String(row.action_pattern_string ?? "").trim();
+    if (st) out.add(st.toLowerCase());
+  }
+  return out;
 }
 
 // Is this action legal for the actor right now?

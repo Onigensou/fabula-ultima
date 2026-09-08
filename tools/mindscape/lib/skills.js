@@ -121,7 +121,7 @@ function extractAction(item, actor = null) {
   // every check below would classify it as unmodelled utility and count it as a
   // coverage gap. It is neither: it is fully modelled, it just has no damage to
   // parse. Returned early, before the damage-shaped reasons are collected.
-  const stance = ST.readStanceFields(p);
+  const stance = ST.readStanceFields(p, actor, item.name);
   if (stance?.stanceGrants) {
     return {
       kind: "action",

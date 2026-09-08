@@ -1,6 +1,8 @@
-# Rakshasa — design proposal (v2, FOR REVIEW — nothing built)
+# Rakshasa — design + as-built record
 
-**Status:** plan only. No actor, no items, no world writes, no code changes.
+**Status: BUILT 2026-09-08.** `Actor.Rk5haXsaDemonAAA`, folder **Current Dungeon**.
+Build script `tools/safe-edit/bin/_build-rakshasa.js` (re-runnable, dry-run by
+default). Engine support in `444b848b`. **NOT live-tested** — see §12.
 **Role:** Valley of the Dragon *event encounter*, solo, strong Elite, 4 activations.
 **Counterpart to:** [Asura](./asura-rework-proposal.md) — read that doc's §9 and
 `asura-live-test-report.md` before trusting any number here.
@@ -722,3 +724,44 @@ One implementation question remains, and it is mine rather than a design call:
 > are what the sheet displays and what "Weapon Efficiency" means in the game's own
 > language. But if the `weapon_read` kind is rejected, that is the direction the
 > fallback design would take.
+
+---
+
+## 12. As-built — what is done and what is NOT
+
+**Built 2026-09-08.** `Actor.Rk5haXsaDemonAAA`, folder *Current Dungeon*.
+Rebuild with `node bin/_build-rakshasa.js --apply` from `tools/safe-edit`
+(dry-run by default). Backup `20260908-131809-fabula-ultima-2-actors`.
+
+| | |
+|---|---|
+| Actor | L40 Demon elite · 4 activations · 840 HP / 45 MP · DEF 14 / MDEF 12 · init 12 |
+| Affinity | VU light · RS dark · RS poison |
+| Conditions | IM disarmed, frightened · RS slow, weak |
+| Weapon Efficiency | all ten lanes at 100 — Adaptive Defense is the only thing that moves them |
+| Items | Form Shift · Execute · Cripple · Chakram · Rain of Arrows · Devour · Adaptive Defense · Ten Thousand Arms |
+| AEs | 4 stance AEs on Form Shift, `Crippled` on Cripple |
+| Sheet mirrors | attack_list 4 · skill_active_list 2 · skill_passive_list 2 |
+
+**Verified offline:**
+- `isReaction: true` on every item carrying reaction rows (the flag that killed
+  Kirin's identical Execute), `false` on the one that carries none.
+- The sim now **infers the stance cycle from the shipped `action_pattern_table`**
+  rather than from a hand-kept spec, and reads it correctly: Form Shift grants
+  all four stances, each attack requires its own, zero unmodelled actions.
+- Simmed as built: DPR 47.1 against the paper spec's 46.9 — the built actor and
+  the design agree.
+
+**NOT done, and none of it is optional before this sees a table:**
+1. **No live test.** Everything above is offline. The Asura precedent is that
+   automation looked correct and was substantially broken in play.
+2. **`runReactionLint` has not run** — it needs the game open. Run it first; it
+   is the only thing that catches a dead reaction row.
+3. **The art is a guess.** `Rakshasa_Standard.png` follows the Bestiary naming
+   convention but nobody has confirmed the file exists on the Forge.
+4. **`Crippled` uses an AE in MULTIPLY mode on the derived `defense` prop.**
+   Unverified that CSB honours that. If it does not, fall back to a flat negative
+   `bonus_defense` **and change the action text**, which currently promises a
+   halving.
+5. **Loot, steal table, animations** — deferred as usual.
+6. **Not on the encounter table**, by decision: hand-placed only.
