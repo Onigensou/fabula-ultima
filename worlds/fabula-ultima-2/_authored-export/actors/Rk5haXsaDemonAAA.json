@@ -52,7 +52,7 @@
           "cost": "-",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the Rakshasa is attacked with a weapon, whether or not the attack hits</p></li></ul><p>The Rakshasa has held every weapon there is. The Weapon Efficiency of the category that just struck it drops sharply, and every other category recovers a step. A category returns to full only once four <em>different</em> ones have been shown to it.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the Rakshasa is attacked with a weapon</p></li></ul><p>Lower the efficiency of the triggering weapon type, but increase efficiency against other weapons.</p>",
           "details_roller": "Show",
           "duration": "Scene",
           "effect_table": {
@@ -112,7 +112,7 @@
           "uuid": "Actor.Rk5haXsaDemonAAA.Item.RkAdaptiveDef001"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 736024833,
+        "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "vdEX0eAROfOYjHED"
       },
@@ -154,7 +154,7 @@
           "cost": "-",
           "damage_bonus": "16",
           "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Multi (3)</strong></a></p></li></ul><p>Three rings leave three hands at once and come back wet. Deal <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage and inflict <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Bleed</strong></a>. Only usable in Throwing form.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Multi (3)</strong></a></p></li></ul><p>Throw a chakram that bounces between three enemies. Deal <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage and inflict <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Bleed</strong></a>. Only usable in Throwing form.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
@@ -206,7 +206,7 @@
           "uuid": "Actor.Rk5haXsaDemonAAA.Item.RkChakramThrow01"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 736024833,
+        "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "A87i0WJvlVD1w3E7"
       },
@@ -262,7 +262,7 @@
       },
       "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
-      "name": "Cripple",
+      "name": "Mace",
       "ownership": {
         "default": 0
       },
@@ -281,7 +281,7 @@
           "cost": "-",
           "damage_bonus": "28",
           "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.qXBYN6c9FMZzmS2n\" data-id=\"qXBYN6c9FMZzmS2n\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Cripple</strong></a></p></li></ul><p>The flail comes around low and takes the legs out. Deal <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature and halve its Defence until the effect is removed. Only usable in Flail form.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.qXBYN6c9FMZzmS2n\" data-id=\"qXBYN6c9FMZzmS2n\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Cripple</strong></a></p></li></ul><p>Attack with a Pollachi. Deal <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature and halve its Defence until the effect is removed. Only usable in Flail form.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
@@ -324,7 +324,7 @@
           "isZeroPower": false,
           "level": "1",
           "max_level": "1",
-          "name": "Cripple",
+          "name": "Mace",
           "on_activate_effect_ref": "cr_debuff",
           "optional_params": {},
           "reaction_config_table": {
@@ -334,7 +334,7 @@
               "reaction_effect_ref": "cr_double",
               "reaction_passive_mode": "force",
               "reaction_source": "self",
-              "reaction_source_skill": "Cripple",
+              "reaction_source_skill": "Mace",
               "reaction_trigger": "creature_will_deal_damage"
             }
           },
@@ -351,7 +351,7 @@
           "uuid": "Actor.Rk5haXsaDemonAAA.Item.RkCrippleFlail01"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 736024833,
+        "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "A87i0WJvlVD1w3E7"
       },
@@ -392,7 +392,7 @@
           "cost": "-",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<p>It stops fighting for a moment and eats. This attack cannot miss. Deal <strong>moderate</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature and recover HP equal to half the damage dealt.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.CRPjA4dHUYLSAh0M\" data-id=\"CRPjA4dHUYLSAh0M\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Drain</strong></a></p></li></ul><p>It stops fighting for a moment and eats. This attack cannot miss. Deal <strong>moderate</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature and recover HP equal to half the damage dealt.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
@@ -443,7 +443,7 @@
           "uuid": "Actor.Rk5haXsaDemonAAA.Item.RkDevourManEat01"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278388,
+        "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "yWlkWZC2vLf4J5Pv"
       },
@@ -466,7 +466,7 @@
       },
       "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
-      "name": "Execute",
+      "name": "Saber",
       "ownership": {
         "default": 0
       },
@@ -485,7 +485,7 @@
           "cost": "-",
           "damage_bonus": "30",
           "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.KHCaZjNmClkp7yfM\" data-id=\"KHCaZjNmClkp7yfM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Execute</strong></a></p></li></ul><p>A single downward cut, delivered like a chore. Deal <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature. Only usable in Sword form.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.KHCaZjNmClkp7yfM\" data-id=\"KHCaZjNmClkp7yfM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Execute</strong></a></p></li></ul><p>Perform a single downward cut. Deal <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature. Only usable in Sword form.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
@@ -519,7 +519,7 @@
           "isZeroPower": false,
           "level": "1",
           "max_level": "1",
-          "name": "Execute",
+          "name": "Saber",
           "on_activate_effect_ref": "spend_stance",
           "optional_params": {},
           "reaction_config_table": {
@@ -529,7 +529,7 @@
               "reaction_effect_ref": "ex_double",
               "reaction_passive_mode": "force",
               "reaction_source": "self",
-              "reaction_source_skill": "Execute",
+              "reaction_source_skill": "Saber",
               "reaction_trigger": "creature_will_deal_damage"
             }
           },
@@ -546,7 +546,7 @@
           "uuid": "Actor.Rk5haXsaDemonAAA.Item.RkExecuteSword01"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 736024833,
+        "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "A87i0WJvlVD1w3E7"
       },
@@ -681,7 +681,7 @@
           "cost": "-",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<p>The Rakshasa lets one weapon fall and draws another from the pile at its feet. It changes to a different weapon form: Sword, Bow, Throwing or Flail. It recovers a small amount of MP as it re-grips.</p>",
+          "description": "<p>The Rakshasa changes its form:</p><ul><li><p>Sword</p></li><li><p>Bow</p></li><li><p>Throwing</p></li><li><p>Flail</p></li></ul><p>Then recovers a small amount of MP.</p>",
           "details_roller": "Show",
           "duration": "Scene",
           "effect_table": {
@@ -732,7 +732,7 @@
           "uuid": "Actor.Rk5haXsaDemonAAA.Item.RkFormShift01AAA"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278388,
+        "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "yWlkWZC2vLf4J5Pv"
       },
@@ -774,7 +774,7 @@
           "cost": "30 MP",
           "damage_bonus": "11",
           "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a></p></li></ul><p>It draws and looses faster than a bow should allow, and the sky goes dark. Deal <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to all enemies. Only usable in Bow form.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a></p></li></ul><p>Shoot multiple volleys into the sky which fall down on the enemy. Deal <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to all enemies. Only usable in Bow form.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
@@ -817,7 +817,7 @@
           "uuid": "Actor.Rk5haXsaDemonAAA.Item.RkRainOfArrows01"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 736024833,
+        "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "A87i0WJvlVD1w3E7"
       },
@@ -859,7 +859,7 @@
           "cost": "-",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the Rakshasa is attacked with a weapon, while at <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Crisis</strong></a></p></li></ul><p>It stops setting its weapons down. What it has learned, it keeps: Weapon Efficiency no longer recovers, and every category it is shown falls further.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the Rakshasa is attacked with a weapon, while at <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Crisis</strong></a></p></li></ul><p>Weapon efficiency no longer recovers. Every weapon type the Rakshasa is shown drops further, and none of them climb back.</p>",
           "details_roller": "Show",
           "duration": "Scene",
           "effect_table": {
@@ -919,7 +919,7 @@
           "uuid": "Actor.Rk5haXsaDemonAAA.Item.RkTenThousandArm"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 736024833,
+        "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "vdEX0eAROfOYjHED"
       },
@@ -1123,7 +1123,7 @@
           "action_pattern_cooldown": "0",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Execute",
+          "action_pattern_name": "Saber",
           "action_pattern_priority": "8",
           "action_pattern_string": "Sword Stance",
           "action_pattern_target_focus": "lowest_hp",
@@ -1162,7 +1162,7 @@
           "action_pattern_cooldown": "0",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Cripple",
+          "action_pattern_name": "Mace",
           "action_pattern_priority": "8",
           "action_pattern_string": "Flail Stance",
           "action_pattern_target_focus": "highest_hp",
@@ -1211,7 +1211,7 @@
       "attack_list": {
         "RkChakramThrow01": {
           "active_target": "Up to three creatures",
-          "attack_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Multi (3)</strong></a></p></li></ul><p>Three rings leave three hands at once and come back wet. Deal <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage and inflict <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Bleed</strong></a>. Only usable in Throwing form.</p>",
+          "attack_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Multi (3)</strong></a></p></li></ul><p>Throw a chakram that bounces between three enemies. Deal <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage and inflict <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Bleed</strong></a>. Only usable in Throwing form.</p>",
           "attribute_die1": "DEX",
           "attribute_die2": "INS",
           "id": "${item.id}",
@@ -1221,27 +1221,27 @@
         },
         "RkCrippleFlail01": {
           "active_target": "One Creature",
-          "attack_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.qXBYN6c9FMZzmS2n\" data-id=\"qXBYN6c9FMZzmS2n\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Cripple</strong></a></p></li></ul><p>The flail comes around low and takes the legs out. Deal <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature and halve its Defence until the effect is removed. Only usable in Flail form.</p>",
+          "attack_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.qXBYN6c9FMZzmS2n\" data-id=\"qXBYN6c9FMZzmS2n\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Cripple</strong></a></p></li></ul><p>Attack with a Pollachi. Deal <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature and halve its Defence until the effect is removed. Only usable in Flail form.</p>",
           "attribute_die1": "MIG",
           "attribute_die2": "MIG",
           "id": "${item.id}",
-          "name": "Cripple",
+          "name": "Mace",
           "roll": "",
           "uuid": "Actor.Rk5haXsaDemonAAA.Item.RkCrippleFlail01"
         },
         "RkExecuteSword01": {
           "active_target": "One Creature",
-          "attack_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.KHCaZjNmClkp7yfM\" data-id=\"KHCaZjNmClkp7yfM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Execute</strong></a></p></li></ul><p>A single downward cut, delivered like a chore. Deal <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature. Only usable in Sword form.</p>",
+          "attack_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.KHCaZjNmClkp7yfM\" data-id=\"KHCaZjNmClkp7yfM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Execute</strong></a></p></li></ul><p>Perform a single downward cut. Deal <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature. Only usable in Sword form.</p>",
           "attribute_die1": "MIG",
           "attribute_die2": "DEX",
           "id": "${item.id}",
-          "name": "Execute",
+          "name": "Saber",
           "roll": "",
           "uuid": "Actor.Rk5haXsaDemonAAA.Item.RkExecuteSword01"
         },
         "RkRainOfArrows01": {
           "active_target": "All Enemies",
-          "attack_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a></p></li></ul><p>It draws and looses faster than a bow should allow, and the sky goes dark. Deal <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to all enemies. Only usable in Bow form.</p>",
+          "attack_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a></p></li></ul><p>Shoot multiple volleys into the sky which fall down on the enemy. Deal <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to all enemies. Only usable in Bow form.</p>",
           "attribute_die1": "DEX",
           "attribute_die2": "INS",
           "id": "${item.id}",
@@ -1423,7 +1423,7 @@
       "skill_active_list": {
         "RkDevourManEat01": {
           "active_cost": "-",
-          "active_description": "<p>It stops fighting for a moment and eats. This attack cannot miss. Deal <strong>moderate</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature and recover HP equal to half the damage dealt.</p>",
+          "active_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.CRPjA4dHUYLSAh0M\" data-id=\"CRPjA4dHUYLSAh0M\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Drain</strong></a></p></li></ul><p>It stops fighting for a moment and eats. This attack cannot miss. Deal <strong>moderate</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature and recover HP equal to half the damage dealt.</p>",
           "active_duration": "Instantaneous",
           "active_target": "One Creature",
           "id": "${item.id}",
@@ -1433,7 +1433,7 @@
         },
         "RkFormShift01AAA": {
           "active_cost": "-",
-          "active_description": "<p>The Rakshasa lets one weapon fall and draws another from the pile at its feet. It changes to a different weapon form: Sword, Bow, Throwing or Flail. It recovers a small amount of MP as it re-grips.</p>",
+          "active_description": "<p>The Rakshasa changes its form:</p><ul><li><p>Sword</p></li><li><p>Bow</p></li><li><p>Throwing</p></li><li><p>Flail</p></li></ul><p>Then recovers a small amount of MP.</p>",
           "active_duration": "Scene",
           "active_target": "Self",
           "id": "${item.id}",
@@ -1446,14 +1446,14 @@
         "RkAdaptiveDef001": {
           "id": "${item.id}",
           "name": "Adaptive Defense",
-          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the Rakshasa is attacked with a weapon, whether or not the attack hits</p></li></ul><p>The Rakshasa has held every weapon there is. The Weapon Efficiency of the category that just struck it drops sharply, and every other category recovers a step. A category returns to full only once four <em>different</em> ones have been shown to it.</p>",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the Rakshasa is attacked with a weapon</p></li></ul><p>Lower the efficiency of the triggering weapon type, but increase efficiency against other weapons.</p>",
           "roll": "",
           "uuid": "Actor.Rk5haXsaDemonAAA.Item.RkAdaptiveDef001"
         },
         "RkTenThousandArm": {
           "id": "${item.id}",
           "name": "Ten Thousand Arms",
-          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the Rakshasa is attacked with a weapon, while at <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Crisis</strong></a></p></li></ul><p>It stops setting its weapons down. What it has learned, it keeps: Weapon Efficiency no longer recovers, and every category it is shown falls further.</p>",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the Rakshasa is attacked with a weapon, while at <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Crisis</strong></a></p></li></ul><p>Weapon efficiency no longer recovers. Every weapon type the Rakshasa is shown drops further, and none of them climb back.</p>",
           "roll": "",
           "uuid": "Actor.Rk5haXsaDemonAAA.Item.RkTenThousandArm"
         }

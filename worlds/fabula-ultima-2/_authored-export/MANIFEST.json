@@ -21638,24 +21638,24 @@
             "name": "Chakram"
           },
           {
-            "id": "RkCrippleFlail01",
-            "name": "Cripple"
-          },
-          {
             "id": "RkDevourManEat01",
             "name": "Devour"
-          },
-          {
-            "id": "RkExecuteSword01",
-            "name": "Execute"
           },
           {
             "id": "RkFormShift01AAA",
             "name": "Form Shift"
           },
           {
+            "id": "RkCrippleFlail01",
+            "name": "Mace"
+          },
+          {
             "id": "RkRainOfArrows01",
             "name": "Rain of Arrows"
+          },
+          {
+            "id": "RkExecuteSword01",
+            "name": "Saber"
           },
           {
             "id": "RkTenThousandArm",
