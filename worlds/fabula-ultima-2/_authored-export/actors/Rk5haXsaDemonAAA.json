@@ -373,6 +373,7 @@
         }
       },
       "folder": null,
+      "img": "icons/svg/item-bag.svg",
       "name": "Devour",
       "ownership": {
         "default": 0
@@ -565,10 +566,26 @@
       "effects": [
         {
           "_id": "RkAeStanceBow001",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>A recurve strung with something pale.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -576,22 +593,42 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Bow Stance",
           "origin": "Actor.Rk5haXsaDemonAAA.Item.RkFormShift01AAA",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "rakshasa_stance"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "RkAeStanceFlail1",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>A haft, a chain, and a weight.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -599,22 +636,42 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Flail Stance",
           "origin": "Actor.Rk5haXsaDemonAAA.Item.RkFormShift01AAA",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "rakshasa_stance"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "RkAeStanceSword1",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>A long straight blade, held low.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -622,22 +679,42 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Sword Stance",
           "origin": "Actor.Rk5haXsaDemonAAA.Item.RkFormShift01AAA",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "rakshasa_stance"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "RkAeStanceThrow1",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>Three rings, spinning on three fingers.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -645,15 +722,19 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Throwing Stance",
           "origin": "Actor.Rk5haXsaDemonAAA.Item.RkFormShift01AAA",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "rakshasa_stance"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         }
       ],
       "flags": {
@@ -662,6 +743,7 @@
         }
       },
       "folder": null,
+      "img": "icons/svg/item-bag.svg",
       "name": "Form Shift",
       "ownership": {
         "default": 0
@@ -675,7 +757,7 @@
           "ae_template_ref": "",
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
-          "animation_script": "<p>// Form Shift — generated by tools/anim-studio/lib/dungeon-templates.js</p><p>// Re-run tools/safe-edit/bin/_build-dungeon-animations.js to regenerate.</p><p>(async () =&gt; {</p><p></p><p>const CFG = {\"verb\":\"draws\",\"forms\":{\"Sword Stance\":{\"label\":\"Sword\",\"icon\":\"icons/weapons/swords/greatsword-guard-gold-worn.webp\"},\"Bow Stance\":{\"label\":\"Bow\",\"icon\":\"icons/weapons/ranged/bow-recurve-yellow.webp\"},\"Throwing Stance\":{\"label\":\"Chakram\",\"icon\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Ring.gif\"},\"Flail Stance\":{\"label\":\"Mace\",\"icon\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Mace.gif\"}},\"fallbackForm\":\"weapon\",\"panelMs\":380,\"panelHoldMs\":1500,\"panelOutMs\":340,\"panelTop\":0.11,\"panelSlide\":46,\"panelBg\":\"rgba(18,14,30,0.88)\",\"panelBorder\":\"rgba(255,232,180,0.65)\",\"textColor\":\"#f4ecd8\",\"accentColor\":\"#ffcf5c\",\"fontSize\":26,\"panelPadX\":34,\"panelPadY\":16,\"iconSize\":132,\"iconRise\":96,\"iconInMs\":260,\"iconHoldMs\":620,\"iconOutMs\":320,\"iconBlinks\":3,\"sfx\":\"Cursor2\",\"sfxVol\":0.5,\"totalTimeoutMs\":12000};</p><p>const ASSETS = {};</p><p>const ANIM_KEY = \"oni.dungeon.rakshasa-form-shift\";</p><p>const TAG = \"[ONI][Anim][Form Shift]\";</p><p></p><p>const P = globalThis.__PAYLOAD ?? payload ?? {};</p><p>function tokFromUuid(u) { try { const d = fromUuidSync?.(u); return d?.object ?? null; } catch (_) { return null; } }</p><p>function resolveSource() {</p><p>  for (const c of [P?.casterTokenUuid, P?.sourceTokenUuid, P?.tokenUuid]) { const t = tokFromUuid(c); if (t) return t; }</p><p>  return canvas?.tokens?.controlled?.[0] ?? null;</p><p>}</p><p>function resolveTargets() {</p><p>  const out = [];</p><p>  const arg = Array.isArray(targets) ? targets : [];</p><p>  for (const t of arg) if (t?.center) out.push(t);</p><p>  if (!out.length &amp;&amp; Array.isArray(globalThis.__TARGETS)) for (const t of globalThis.__TARGETS) if (t?.center) out.push(t);</p><p>  return out;</p><p>}</p><p>const sourceToken  = resolveSource();</p><p>const partyTargets = resolveTargets();</p><p></p><p>const doneHook = 'oni.anim.' + ANIM_KEY + '.' + (foundry?.utils?.randomID?.(8) ?? String(Date.now()));</p><p>function onceHook(hookName, timeoutMs) {</p><p>  return new Promise((resolve) =&gt; {</p><p>    let settled = false;</p><p>    const timer = setTimeout(() =&gt; { if (settled) return; settled = true; Hooks.off(hookName, h); resolve({ ok: false, timeout: true }); }, timeoutMs);</p><p>    const h = (d) =&gt; { if (settled) return; settled = true; clearTimeout(timer); Hooks.off(hookName, h); resolve(d ?? { ok: true }); };</p><p>    Hooks.on(hookName, h);</p><p>  });</p><p>}</p><p>function emitLocal(n, d) { try { Hooks.callAll(n, d); } catch (_) {} }</p><p></p><p>const scriptSource = String.raw`</p><p>const cfg = ctx.params.cfg || {};</p><p>const A = ctx.params.assets || {};</p><p>const caster = ctx.casterToken;</p><p>const tgts = (ctx.targetTokens || []).filter(t =&gt; t &amp;&amp; t.center);</p><p>const prime = tgts[0] || null;</p><p>const S = oni.screenLive();</p><p>const E = oni.EASE;</p><p>const ctr = (t) =&gt; (t &amp;&amp; t.center) ? t.center : { x: 0, y: 0 };</p><p>const home = caster ? { x: caster.center.x, y: caster.center.y } : { x: 0, y: 0 };</p><p>function centroid(list) {</p><p>  if (!list.length) return home;</p><p>  let x = 0, y = 0;</p><p>  for (const t of list) { const c = ctr(t); x += c.x; y += c.y; }</p><p>  return { x: x / list.length, y: y / list.length };</p><p>}</p><p>// Centre of the authored play area (the v2 conflict scene stage rect).</p><p>// A pull-back should frame the arena, so it wants a FIXED point: aiming at</p><p>// the caster turns a zoom-out into a pan, and aiming at a centroid makes the</p><p>// framing drift with wherever the combatants happen to be standing.</p><p>function stageCentre() {</p><p>  const f = canvas.scene &amp;&amp; canvas.scene.flags ? canvas.scene.flags['fabula-ultima-companion'] : null;</p><p>  const sr = f &amp;&amp; f.conflict ? f.conflict.stage : null;</p><p>  if (sr) return { x: sr.x + sr.w / 2, y: sr.y + sr.h / 2 };</p><p>  return centroid(tgts.concat(caster ? [caster] : []));</p><p>}</p><p>function playSfx(k, v) { if (!cfg[k]) return; oni.sfx(cfg[k], { volume: cfg[v] == null ? 0.6 : cfg[v], fadeAfter: cfg[k + 'Fade'] || 0, fadeMs: cfg[k + 'FadeMs'] || 400 }); }</p><p>async function fxWebm(url, x, y, o) {</p><p>  if (!url) return null;</p><p>  o = o || {};</p><p>  return oni.webm(url, { size: o.size || S.wLen(320), x: x, y: y, angle: o.angle || 0,</p><p>    alpha: o.alpha == null ? 1 : o.alpha, zIndex: o.z || 95000, parent: o.parent || null });</p><p>}</p><p>async function fxBeam(url, from, to, o) {</p><p>  if (!url) return null;</p><p>  o = o || {};</p><p>  const dist = Math.hypot(to.x - from.x, to.y - from.y);</p><p>  const ang = Math.atan2(to.y - from.y, to.x - from.x);</p><p>  const r = await oni.webm(url, { size: dist, x: from.x, y: from.y, parent: o.parent || null, zIndex: o.z || 95000 });</p><p>  if (!r || !r.sprite) return null;</p><p>  const sp = r.sprite;</p><p>  sp.anchor.set(0, 0.5);</p><p>  sp.width = dist * (o.lengthScale || 1);</p><p>  sp.height = dist * (o.thickness || 0.25);</p><p>  sp.position.set(from.x, from.y);</p><p>  sp.rotation = ang;</p><p>  return r;</p><p>}</p><p>let fired = false;</p><p>function done() { if (fired) return; fired = true; oni.fireDone(); }</p><p>async function shakeTarget(t, ms, amp) {</p><p>  if (!t) return;</p><p>  const spr = oni.cloneToken(t);</p><p>  if (!spr) return;</p><p>  const restore = oni.hideToken(t);</p><p>  const c = ctr(t);</p><p>  await oni.tween({ from: 0, to: 1, duration: ms, ease: E.linear, onUpdate: (v) =&gt; {</p><p>    const decay = 1 - v;</p><p>    spr.position.set(c.x + (Math.random() * 2 - 1) * amp * decay, c.y + (Math.random() * 2 - 1) * amp * decay);</p><p>  } });</p><p>  spr.position.set(c.x, c.y);</p><p>  restore();</p><p>  try { spr.destroy(); } catch (e) {}</p><p>}</p><p>function streak(x1, y1, x2, y2, color, width, host) {</p><p>  const g = new PIXI.Graphics();</p><p>  g.lineStyle({ width: width, color: color, alpha: 1, cap: 'round' });</p><p>  g.moveTo(x1, y1); g.lineTo(x2, y2);</p><p>  g.blendMode = PIXI.BLEND_MODES.ADD;</p><p>  (host || canvas.stage).addChild(g);</p><p>  return g;</p><p>}</p><p></p><p>if (!caster) { done(); return; }</p><p>const host = oni.layer({ zIndex: 94000 });</p><p></p><p>// Which stance is the Rakshasa actually holding? Read it off the actor so</p><p>// the animation follows the pool draw instead of duplicating it.</p><p>let formKey = null;</p><p>try {</p><p>  const eff = caster.actor &amp;&amp; caster.actor.effects ? Array.from(caster.actor.effects) : [];</p><p>  for (const e of eff) {</p><p>    const nm = String((e &amp;&amp; (e.name || e.label)) || '').trim();</p><p>    if (nm &amp;&amp; cfg.forms[nm]) { formKey = nm; break; }</p><p>  }</p><p>} catch (e) {}</p><p>const form = formKey ? cfg.forms[formKey] : null;</p><p>const formName = form ? form.label : cfg.fallbackForm;</p><p>const formIcon = form ? form.icon : null;</p><p>const who = (caster.document &amp;&amp; caster.document.name) || (caster.actor &amp;&amp; caster.actor.name) || 'The Rakshasa';</p><p></p><p>playSfx('sfx', 'sfxVol');</p><p></p><p>// ── The panel (DOM, screen space) ──────────────────────────────────────</p><p>const view = canvas.app &amp;&amp; canvas.app.view;</p><p>const rect = view &amp;&amp; view.getBoundingClientRect ? view.getBoundingClientRect() : null;</p><p>const panel = document.createElement('div');</p><p>panel.className = 'oni-anim-formshift';</p><p>panel.style.cssText = [</p><p>  'position: fixed',</p><p>  'pointer-events: none',</p><p>  'z-index: 90',</p><p>  'left: ' + ((rect ? rect.left + rect.width / 2 : window.innerWidth / 2)) + 'px',</p><p>  'top: ' + ((rect ? rect.top + rect.height * cfg.panelTop : window.innerHeight * cfg.panelTop)) + 'px',</p><p>  'transform: translate(-50%, 0)',</p><p>  'padding: ' + cfg.panelPadY + 'px ' + cfg.panelPadX + 'px',</p><p>  'background: ' + cfg.panelBg,</p><p>  'border: 2px solid ' + cfg.panelBorder,</p><p>  'border-radius: 10px',</p><p>  'box-shadow: 0 6px 22px rgba(0,0,0,0.55)',</p><p>  'color: ' + cfg.textColor,</p><p>  'font-size: ' + cfg.fontSize + 'px',</p><p>  'font-weight: 600',</p><p>  'letter-spacing: 0.5px',</p><p>  'white-space: nowrap',</p><p>  'opacity: 0',</p><p>].join('; ');</p><p>// The weapon name is the one word the player needs, so it is the only</p><p>// coloured token in the line.</p><p>const accent = document.createElement('span');</p><p>accent.style.cssText = 'color: ' + cfg.accentColor + '; font-weight: 800';</p><p>accent.textContent = formName;</p><p>panel.appendChild(document.createTextNode(who + ' ' + cfg.verb + ' its '));</p><p>panel.appendChild(accent);</p><p>document.body.appendChild(panel);</p><p></p><p>// Slide + fade together, in and out.</p><p>const slideIn = oni.tween({ from: 0, to: 1, duration: cfg.panelMs, ease: E.outCubic, onUpdate: (v) =&gt; {</p><p>  panel.style.opacity = String(v);</p><p>  panel.style.transform = 'translate(-50%, ' + ((1 - v) * -cfg.panelSlide) + 'px)';</p><p>} });</p><p></p><p>// ── The weapon icon (PIXI, anchored over the head) ─────────────────────</p><p>let iconSprite = null;</p><p>if (formIcon) {</p><p>  try {</p><p>    const tex = await loadTexture(formIcon);</p><p>    if (tex) {</p><p>      iconSprite = new PIXI.Sprite(tex);</p><p>      iconSprite.anchor.set(0.5);</p><p>      const sz = S.wLen(cfg.iconSize);</p><p>      iconSprite.width = sz; iconSprite.height = sz;</p><p>      iconSprite.alpha = 0;</p><p>      host.addChild(iconSprite);</p><p>    }</p><p>  } catch (e) {}</p><p>}</p><p>function placeIcon(lift) {</p><p>  if (!iconSprite) return;</p><p>  const b = caster.mesh ? caster.mesh.height : (caster.h || 100);</p><p>  iconSprite.position.set(caster.center.x, caster.center.y - b * 0.5 - S.wLen(cfg.iconRise) * lift);</p><p>}</p><p>placeIcon(1);</p><p></p><p>if (iconSprite) {</p><p>  await oni.tween({ from: 0, to: 1, duration: cfg.iconInMs, ease: E.outCubic, onUpdate: (v) =&gt; {</p><p>    iconSprite.alpha = v;</p><p>    iconSprite.scale.set((0.7 + 0.3 * v) * (S.wLen(cfg.iconSize) / (iconSprite.texture.width || 1)));</p><p>    placeIcon(0.65 + 0.35 * v);</p><p>  } });</p><p>  // Blink: alpha pulses without the sprite ever leaving, so it reads as a</p><p>  // flash rather than a stutter.</p><p>  const per = Math.max(80, Math.floor(cfg.iconHoldMs / Math.max(1, cfg.iconBlinks)));</p><p>  for (let i = 0; i &lt; cfg.iconBlinks; i++) {</p><p>    await oni.tween({ from: 1, to: 0.25, duration: per / 2, ease: E.inOutQuad,</p><p>      onUpdate: (v) =&gt; { iconSprite.alpha = v; placeIcon(1); } });</p><p>    await oni.tween({ from: 0.25, to: 1, duration: per / 2, ease: E.inOutQuad,</p><p>      onUpdate: (v) =&gt; { iconSprite.alpha = v; placeIcon(1); } });</p><p>  }</p><p>} else {</p><p>  await wait(cfg.iconInMs + cfg.iconHoldMs);</p><p>}</p><p></p><p>await slideIn;</p><p>// Form Shift deals no damage, but the gate still has to open or BD waits</p><p>// out the whole timeout before the next activation.</p><p>done();</p><p></p><p>await wait(cfg.panelHoldMs);</p><p></p><p>const outs = [];</p><p>outs.push(oni.tween({ from: 1, to: 0, duration: cfg.panelOutMs, ease: E.inQuad, onUpdate: (v) =&gt; {</p><p>  panel.style.opacity = String(v);</p><p>  panel.style.transform = 'translate(-50%, ' + ((1 - v) * -cfg.panelSlide * 0.6) + 'px)';</p><p>} }));</p><p>if (iconSprite) {</p><p>  outs.push(oni.tween({ from: 1, to: 0, duration: cfg.iconOutMs, ease: E.inQuad,</p><p>    onUpdate: (v) =&gt; { iconSprite.alpha = v; placeIcon(1 + (1 - v) * 0.4); } }));</p><p>}</p><p>await Promise.all(outs);</p><p></p><p>try { panel.remove(); } catch (e) {}</p><p>try { if (iconSprite) iconSprite.destroy(); } catch (e) {}</p><p>done();</p><p>`;</p><p></p><p>try {</p><p>  emitLocal('oni:animationStart', { type: ANIM_KEY, sceneId: canvas.scene?.id ?? null });</p><p>  const waitDone = onceHook(doneHook, CFG.totalTimeoutMs || 15000);</p><p>  await game.ONI.pseudo.play({</p><p>    scriptId: ANIM_KEY,</p><p>    scriptSource,</p><p>    casterTokenUuid: sourceToken?.document?.uuid ?? null,</p><p>    targetTokenUuids: partyTargets.map(t =&gt; t.document.uuid),</p><p>    params: { doneHook, cfg: CFG, assets: ASSETS },</p><p>    meta: { source: \"Form Shift\" },</p><p>  });</p><p>  const result = await waitDone;</p><p>  if (!result?.ok) console.warn(TAG, 'pseudo non-OK / timeout', result);</p><p>} catch (err) {</p><p>  console.error(TAG, 'orchestration crashed', err);</p><p>} finally {</p><p>  emitLocal('oni:animationEnd', { type: ANIM_KEY, timestamp: Date.now() });</p><p>}</p><p></p><p>})();</p>",
+          "animation_script": "<p>// Form Shift — generated by tools/anim-studio/lib/dungeon-templates.js</p><p>// Re-run tools/safe-edit/bin/_build-dungeon-animations.js to regenerate.</p><p>(async () =&gt; {</p><p></p><p>const CFG = {\"verb\":\"draws\",\"forms\":{\"Sword Stance\":{\"label\":\"Sword\",\"icon\":\"icons/weapons/swords/greatsword-guard-gold-worn.webp\"},\"Bow Stance\":{\"label\":\"Bow\",\"icon\":\"icons/weapons/bows/shortbow-recurve.webp\"},\"Throwing Stance\":{\"label\":\"Chakram\",\"icon\":\"icons/weapons/thrown/shuriken-blue.webp\"},\"Flail Stance\":{\"label\":\"Mace\",\"icon\":\"icons/weapons/maces/mace-round-spiked-black.webp\"}},\"fallbackForm\":\"weapon\",\"panelMs\":380,\"panelHoldMs\":1500,\"panelOutMs\":340,\"panelTop\":0.11,\"panelSlide\":46,\"parchmentTop\":\"#f6f1e6\",\"parchmentBot\":\"#ebe3d0\",\"strokeColor\":\"#7a6a55\",\"textColor\":\"#3a3228\",\"accentColor\":\"#8a4b22\",\"fontSize\":26,\"panelPadX\":34,\"panelPadY\":16,\"medallionBg\":1380639,\"medallionRim\":16764764,\"iconSize\":128,\"iconRise\":62,\"iconInMs\":260,\"iconHoldMs\":620,\"iconOutMs\":320,\"iconBlinks\":3,\"sfx\":\"Cursor2\",\"sfxVol\":0.5,\"totalTimeoutMs\":12000};</p><p>const ASSETS = {};</p><p>const ANIM_KEY = \"oni.dungeon.rakshasa-form-shift\";</p><p>const TAG = \"[ONI][Anim][Form Shift]\";</p><p></p><p>const P = globalThis.__PAYLOAD ?? payload ?? {};</p><p>function tokFromUuid(u) { try { const d = fromUuidSync?.(u); return d?.object ?? null; } catch (_) { return null; } }</p><p>function resolveSource() {</p><p>  for (const c of [P?.casterTokenUuid, P?.sourceTokenUuid, P?.tokenUuid]) { const t = tokFromUuid(c); if (t) return t; }</p><p>  return canvas?.tokens?.controlled?.[0] ?? null;</p><p>}</p><p>function resolveTargets() {</p><p>  const out = [];</p><p>  const arg = Array.isArray(targets) ? targets : [];</p><p>  for (const t of arg) if (t?.center) out.push(t);</p><p>  if (!out.length &amp;&amp; Array.isArray(globalThis.__TARGETS)) for (const t of globalThis.__TARGETS) if (t?.center) out.push(t);</p><p>  return out;</p><p>}</p><p>const sourceToken  = resolveSource();</p><p>const partyTargets = resolveTargets();</p><p></p><p>const doneHook = 'oni.anim.' + ANIM_KEY + '.' + (foundry?.utils?.randomID?.(8) ?? String(Date.now()));</p><p>function onceHook(hookName, timeoutMs) {</p><p>  return new Promise((resolve) =&gt; {</p><p>    let settled = false;</p><p>    const timer = setTimeout(() =&gt; { if (settled) return; settled = true; Hooks.off(hookName, h); resolve({ ok: false, timeout: true }); }, timeoutMs);</p><p>    const h = (d) =&gt; { if (settled) return; settled = true; clearTimeout(timer); Hooks.off(hookName, h); resolve(d ?? { ok: true }); };</p><p>    Hooks.on(hookName, h);</p><p>  });</p><p>}</p><p>function emitLocal(n, d) { try { Hooks.callAll(n, d); } catch (_) {} }</p><p></p><p>const scriptSource = String.raw`</p><p>const cfg = ctx.params.cfg || {};</p><p>const A = ctx.params.assets || {};</p><p>const caster = ctx.casterToken;</p><p>const tgts = (ctx.targetTokens || []).filter(t =&gt; t &amp;&amp; t.center);</p><p>const prime = tgts[0] || null;</p><p>const S = oni.screenLive();</p><p>const E = oni.EASE;</p><p>const ctr = (t) =&gt; (t &amp;&amp; t.center) ? t.center : { x: 0, y: 0 };</p><p>const home = caster ? { x: caster.center.x, y: caster.center.y } : { x: 0, y: 0 };</p><p>function centroid(list) {</p><p>  if (!list.length) return home;</p><p>  let x = 0, y = 0;</p><p>  for (const t of list) { const c = ctr(t); x += c.x; y += c.y; }</p><p>  return { x: x / list.length, y: y / list.length };</p><p>}</p><p>// Centre of the authored play area (the v2 conflict scene stage rect).</p><p>// A pull-back should frame the arena, so it wants a FIXED point: aiming at</p><p>// the caster turns a zoom-out into a pan, and aiming at a centroid makes the</p><p>// framing drift with wherever the combatants happen to be standing.</p><p>function stageCentre() {</p><p>  const f = canvas.scene &amp;&amp; canvas.scene.flags ? canvas.scene.flags['fabula-ultima-companion'] : null;</p><p>  const sr = f &amp;&amp; f.conflict ? f.conflict.stage : null;</p><p>  if (sr) return { x: sr.x + sr.w / 2, y: sr.y + sr.h / 2 };</p><p>  return centroid(tgts.concat(caster ? [caster] : []));</p><p>}</p><p>function playSfx(k, v) { if (!cfg[k]) return; oni.sfx(cfg[k], { volume: cfg[v] == null ? 0.6 : cfg[v], fadeAfter: cfg[k + 'Fade'] || 0, fadeMs: cfg[k + 'FadeMs'] || 400 }); }</p><p>async function fxWebm(url, x, y, o) {</p><p>  if (!url) return null;</p><p>  o = o || {};</p><p>  return oni.webm(url, { size: o.size || S.wLen(320), x: x, y: y, angle: o.angle || 0,</p><p>    alpha: o.alpha == null ? 1 : o.alpha, zIndex: o.z || 95000, parent: o.parent || null });</p><p>}</p><p>async function fxBeam(url, from, to, o) {</p><p>  if (!url) return null;</p><p>  o = o || {};</p><p>  const dist = Math.hypot(to.x - from.x, to.y - from.y);</p><p>  const ang = Math.atan2(to.y - from.y, to.x - from.x);</p><p>  const r = await oni.webm(url, { size: dist, x: from.x, y: from.y, parent: o.parent || null, zIndex: o.z || 95000 });</p><p>  if (!r || !r.sprite) return null;</p><p>  const sp = r.sprite;</p><p>  sp.anchor.set(0, 0.5);</p><p>  sp.width = dist * (o.lengthScale || 1);</p><p>  sp.height = dist * (o.thickness || 0.25);</p><p>  sp.position.set(from.x, from.y);</p><p>  sp.rotation = ang;</p><p>  return r;</p><p>}</p><p>let fired = false;</p><p>function done() { if (fired) return; fired = true; oni.fireDone(); }</p><p>async function shakeTarget(t, ms, amp) {</p><p>  if (!t) return;</p><p>  const spr = oni.cloneToken(t);</p><p>  if (!spr) return;</p><p>  const restore = oni.hideToken(t);</p><p>  const c = ctr(t);</p><p>  await oni.tween({ from: 0, to: 1, duration: ms, ease: E.linear, onUpdate: (v) =&gt; {</p><p>    const decay = 1 - v;</p><p>    spr.position.set(c.x + (Math.random() * 2 - 1) * amp * decay, c.y + (Math.random() * 2 - 1) * amp * decay);</p><p>  } });</p><p>  spr.position.set(c.x, c.y);</p><p>  restore();</p><p>  try { spr.destroy(); } catch (e) {}</p><p>}</p><p>function streak(x1, y1, x2, y2, color, width, host) {</p><p>  const g = new PIXI.Graphics();</p><p>  g.lineStyle({ width: width, color: color, alpha: 1, cap: 'round' });</p><p>  g.moveTo(x1, y1); g.lineTo(x2, y2);</p><p>  g.blendMode = PIXI.BLEND_MODES.ADD;</p><p>  (host || canvas.stage).addChild(g);</p><p>  return g;</p><p>}</p><p></p><p>if (!caster) { done(); return; }</p><p>const host = oni.layer({ zIndex: 94000 });</p><p></p><p>// Which stance is the Rakshasa actually holding? Read it off the actor so</p><p>// the animation follows the pool draw instead of duplicating it.</p><p>let formKey = null;</p><p>try {</p><p>  const eff = caster.actor &amp;&amp; caster.actor.effects ? Array.from(caster.actor.effects) : [];</p><p>  for (const e of eff) {</p><p>    const nm = String((e &amp;&amp; (e.name || e.label)) || '').trim();</p><p>    if (nm &amp;&amp; cfg.forms[nm]) { formKey = nm; break; }</p><p>  }</p><p>} catch (e) {}</p><p>const form = formKey ? cfg.forms[formKey] : null;</p><p>const formName = form ? form.label : cfg.fallbackForm;</p><p>const formIcon = form ? form.icon : null;</p><p>const who = (caster.document &amp;&amp; caster.document.name) || (caster.actor &amp;&amp; caster.actor.name) || 'The Rakshasa';</p><p></p><p>playSfx('sfx', 'sfxVol');</p><p></p><p>// ── The panel (DOM, screen space) ──────────────────────────────────────</p><p>const view = canvas.app &amp;&amp; canvas.app.view;</p><p>const rect = view &amp;&amp; view.getBoundingClientRect ? view.getBoundingClientRect() : null;</p><p>const panel = document.createElement('div');</p><p>panel.className = 'oni-anim-formshift';</p><p>panel.style.cssText = [</p><p>  'position: fixed',</p><p>  'pointer-events: none',</p><p>  'z-index: 90',</p><p>  'left: ' + ((rect ? rect.left + rect.width / 2 : window.innerWidth / 2)) + 'px',</p><p>  'top: ' + ((rect ? rect.top + rect.height * cfg.panelTop : window.innerHeight * cfg.panelTop)) + 'px',</p><p>  'transform: translate(-50%, 0)',</p><p>  'padding: ' + cfg.panelPadY + 'px ' + cfg.panelPadX + 'px',</p><p>  'background: linear-gradient(180deg, ' + cfg.parchmentTop + ', ' + cfg.parchmentBot + ')',</p><p>  'border: 2px solid ' + cfg.strokeColor,</p><p>  'border-radius: 14px',</p><p>  // Same two-part shadow the action card uses: a deep drop to lift it off</p><p>  // the canvas, plus a 1px inset highlight that gives the parchment an edge.</p><p>  'box-shadow: 0 16px 48px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.5) inset',</p><p>  'color: ' + cfg.textColor,</p><p>  'font-family: \"Inter\", \"Signika\", \"Segoe UI\", system-ui, sans-serif',</p><p>  'font-size: ' + cfg.fontSize + 'px',</p><p>  'font-weight: 600',</p><p>  'letter-spacing: 0.2px',</p><p>  'white-space: nowrap',</p><p>  'opacity: 0',</p><p>].join('; ');</p><p>// The weapon name is the one word the player needs, so it is the only</p><p>// coloured token in the line. Ink-on-parchment needs a DARK accent to stay</p><p>// legible — the gold that reads well on the BD's dark header bars would be</p><p>// near-invisible here.</p><p>const accent = document.createElement('span');</p><p>accent.style.cssText = 'color: ' + cfg.accentColor + '; font-weight: 800';</p><p>accent.textContent = formName;</p><p>panel.appendChild(document.createTextNode(who + ' ' + cfg.verb + ' its '));</p><p>panel.appendChild(accent);</p><p>document.body.appendChild(panel);</p><p></p><p>// Slide + fade together, in and out.</p><p>const slideIn = oni.tween({ from: 0, to: 1, duration: cfg.panelMs, ease: E.outCubic, onUpdate: (v) =&gt; {</p><p>  panel.style.opacity = String(v);</p><p>  panel.style.transform = 'translate(-50%, ' + ((1 - v) * -cfg.panelSlide) + 'px)';</p><p>} });</p><p></p><p>// ── The weapon icon (PIXI, anchored over the head) ─────────────────────</p><p>//</p><p>// Drawn as a MEDALLION, not a bare sprite. Foundry's core weapon icons are</p><p>// square art with an opaque dark background baked in, so pasting one on the</p><p>// canvas reads as a stray screenshot. A circular mask plus a rim turns that</p><p>// background into a deliberate frame.</p><p>let iconGroup = null;</p><p>if (formIcon) {</p><p>  try {</p><p>    const tex = await loadTexture(formIcon);</p><p>    if (tex) {</p><p>      const sz = S.wLen(cfg.iconSize);</p><p>      const r = sz * 0.5;</p><p>      iconGroup = new PIXI.Container();</p><p>      iconGroup.alpha = 0;</p><p></p><p>      const backing = new PIXI.Graphics();</p><p>      backing.beginFill(cfg.medallionBg, 0.92);</p><p>      backing.drawCircle(0, 0, r);</p><p>      backing.endFill();</p><p>      iconGroup.addChild(backing);</p><p></p><p>      const sp = new PIXI.Sprite(tex);</p><p>      sp.anchor.set(0.5);</p><p>      sp.width = sz; sp.height = sz;</p><p>      const mask = new PIXI.Graphics();</p><p>      mask.beginFill(0xffffff); mask.drawCircle(0, 0, r * 0.94); mask.endFill();</p><p>      sp.mask = mask;</p><p>      iconGroup.addChild(mask);</p><p>      iconGroup.addChild(sp);</p><p></p><p>      const rim = new PIXI.Graphics();</p><p>      rim.lineStyle({ width: Math.max(2, sz * 0.045), color: cfg.medallionRim, alpha: 1 });</p><p>      rim.drawCircle(0, 0, r * 0.96);</p><p>      iconGroup.addChild(rim);</p><p></p><p>      const glow = new PIXI.Graphics();</p><p>      glow.lineStyle({ width: Math.max(2, sz * 0.10), color: cfg.medallionRim, alpha: 0.28 });</p><p>      glow.drawCircle(0, 0, r * 1.06);</p><p>      glow.blendMode = PIXI.BLEND_MODES.ADD;</p><p>      iconGroup.addChild(glow);</p><p></p><p>      host.addChild(iconGroup);</p><p>    }</p><p>  } catch (e) {}</p><p>}</p><p>function placeIcon(lift) {</p><p>  if (!iconGroup) return;</p><p>  const b = caster.mesh ? caster.mesh.height : (caster.h || 100);</p><p>  iconGroup.position.set(caster.center.x, caster.center.y - b * 0.5 - S.wLen(cfg.iconRise) * lift);</p><p>}</p><p>placeIcon(1);</p><p></p><p>if (iconGroup) {</p><p>  await oni.tween({ from: 0, to: 1, duration: cfg.iconInMs, ease: E.outCubic, onUpdate: (v) =&gt; {</p><p>    iconGroup.alpha = v;</p><p>    iconGroup.scale.set(0.72 + 0.28 * v);</p><p>    placeIcon(0.65 + 0.35 * v);</p><p>  } });</p><p>  // Blink: alpha pulses without the medallion ever leaving, so it reads as a</p><p>  // flash rather than a stutter.</p><p>  const per = Math.max(80, Math.floor(cfg.iconHoldMs / Math.max(1, cfg.iconBlinks)));</p><p>  for (let i = 0; i &lt; cfg.iconBlinks; i++) {</p><p>    await oni.tween({ from: 1, to: 0.3, duration: per / 2, ease: E.inOutQuad,</p><p>      onUpdate: (v) =&gt; { iconGroup.alpha = v; placeIcon(1); } });</p><p>    await oni.tween({ from: 0.3, to: 1, duration: per / 2, ease: E.inOutQuad,</p><p>      onUpdate: (v) =&gt; { iconGroup.alpha = v; placeIcon(1); } });</p><p>  }</p><p>} else {</p><p>  await wait(cfg.iconInMs + cfg.iconHoldMs);</p><p>}</p><p></p><p>await slideIn;</p><p>// Form Shift deals no damage, but the gate still has to open or BD waits</p><p>// out the whole timeout before the next activation.</p><p>done();</p><p></p><p>await wait(cfg.panelHoldMs);</p><p></p><p>const outs = [];</p><p>outs.push(oni.tween({ from: 1, to: 0, duration: cfg.panelOutMs, ease: E.inQuad, onUpdate: (v) =&gt; {</p><p>  panel.style.opacity = String(v);</p><p>  panel.style.transform = 'translate(-50%, ' + ((1 - v) * -cfg.panelSlide * 0.6) + 'px)';</p><p>} }));</p><p>if (iconGroup) {</p><p>  outs.push(oni.tween({ from: 1, to: 0, duration: cfg.iconOutMs, ease: E.inQuad,</p><p>    onUpdate: (v) =&gt; { iconGroup.alpha = v; placeIcon(1 + (1 - v) * 0.4); } }));</p><p>}</p><p>await Promise.all(outs);</p><p></p><p>try { panel.remove(); } catch (e) {}</p><p>try { if (iconGroup) iconGroup.destroy({ children: true }); } catch (e) {}</p><p>done();</p><p>`;</p><p></p><p>try {</p><p>  emitLocal('oni:animationStart', { type: ANIM_KEY, sceneId: canvas.scene?.id ?? null });</p><p>  const waitDone = onceHook(doneHook, CFG.totalTimeoutMs || 15000);</p><p>  await game.ONI.pseudo.play({</p><p>    scriptId: ANIM_KEY,</p><p>    scriptSource,</p><p>    casterTokenUuid: sourceToken?.document?.uuid ?? null,</p><p>    targetTokenUuids: partyTargets.map(t =&gt; t.document.uuid),</p><p>    params: { doneHook, cfg: CFG, assets: ASSETS },</p><p>    meta: { source: \"Form Shift\" },</p><p>  });</p><p>  const result = await waitDone;</p><p>  if (!result?.ok) console.warn(TAG, 'pseudo non-OK / timeout', result);</p><p>} catch (err) {</p><p>  console.error(TAG, 'orchestration crashed', err);</p><p>} finally {</p><p>  emitLocal('oni:animationEnd', { type: ANIM_KEY, timestamp: Date.now() });</p><p>}</p><p></p><p>})();</p>",
           "check_bonus": "0",
           "class": "NPC",
           "cost": "-",
@@ -931,7 +1013,6 @@
     "default": 0
   },
   "prototypeToken": {
-    "actorId": "Rk5haXsaDemonAAA",
     "actorLink": false,
     "alpha": 1,
     "appendNumber": false,
