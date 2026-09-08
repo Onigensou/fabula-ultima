@@ -168,6 +168,7 @@ if you accept a partial model. Use --verbose to see every gap.`);
   const outcomes = { victory: 0, defeat: 0, overtime: 0, "mutual-destruction": 0, inconclusive: 0 };
   const downs = new Map();
   const lanes = new Map();
+  const crisis = [];
 
   for (let i = 0; i < args.runs; i++) {
     const rng = new Rng(`${args.seed}:${i}`);
@@ -178,6 +179,7 @@ if you accept a partial model. Use --verbose to see every gap.`);
     dprs.push(r.baselineDpr);
     rds.push(r.roundDensity);
     for (const d of r.downs) downs.set(d.name, (downs.get(d.name) ?? 0) + 1);
+    for (const c of r.crisisRounds ?? []) if (c.round != null) crisis.push(c.round);
     if (r.laneReport) {
       for (const [fam, l] of Object.entries(r.laneReport)) {
         const acc = lanes.get(fam) ?? { swings: 0, effSum: 0 };
@@ -228,6 +230,26 @@ if you accept a partial model. Use --verbose to see every gap.`);
   const meanDpr = dprs.reduce((a, b) => a + b, 0) / dprs.length;
   const meanRd = rds.reduce((a, b) => a + b, 0) / rds.length;
   const anyDowns = [...downs.values()].some((n) => n > 0);
+  // When the phase change lands. A boss whose Crisis passive is the whole second
+  // half of the fight needs this as directly as it needs the round count: a
+  // phase that arrives on the last round is a phase that never happened. Printed
+  // only when at least one enemy actually reached Crisis.
+  if (crisis.length) {
+    const sc = crisis.slice().sort((a, b) => a - b);
+    const share = crisis.length / (args.runs * enemies.length);
+    console.log(`\ncrisis reached  round p25 ${quantile(sc, 0.25).toFixed(1)}`
+      + `  median ${quantile(sc, 0.5).toFixed(1)}`
+      + `  p75 ${quantile(sc, 0.75).toFixed(1)}`
+      + `   (in ${pct(share)} of runs)`);
+    const med = quantile(sc, 0.5);
+    const endRounds = stats.medianRounds;
+    if (endRounds) {
+      const frac = med / endRounds;
+      console.log(`  the phase change lands ${pct(frac)} of the way through the fight`
+        + ` (round ${med.toFixed(1)} of ${endRounds})`);
+    }
+  }
+
   // Weapon-lane pressure. Printed only when something actually read weapon
   // families, so ordinary fights are unaffected.
   //

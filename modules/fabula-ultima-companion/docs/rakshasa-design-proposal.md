@@ -589,7 +589,46 @@ spells and Keren's phantasms are the same lane, so the party's *default* rotatio
 is narrower than its headcount suggests. That is a reason to expect the party to
 reach for second weapons, which is exactly the behaviour the design wants.
 
-### 9.3 HP is the open question
+### 9.3 Pacing — Crisis at the start of round 3, fight ends ~5.5–6 (SETTLED)
+
+The brief: Crisis should land at the **start of round 3** so the phase change has
+time to matter, and the fight should run **5.5–6 rounds** total.
+
+**The phase change is real and measurable.** With eviction frozen at Crisis
+(Ten Thousand Arms), party damage per hit drops to **55% of its pre-Crisis
+rate** — measured over 200 runs, 651 pre-Crisis hits vs 2219 post:
+
+| | damage per hit |
+|---|---|
+| before Crisis | 22.1 |
+| after Crisis | **12.1 (55%)** |
+
+That slowdown is what makes the requested shape arrive on its own: the first
+half of the HP bar goes fast, the second half takes roughly twice as long.
+
+**Measured shape** (`bin/sweep.js --dial max_hp --on actor`):
+
+| monster HP | fight ends | Crisis lands | shape |
+|---|---|---|---|
+| **200** | **5.5 rounds** | **round 2.0** | ✅ 2 rounds, then 3.5 |
+| 250 | 7 | 3.0 | too long |
+| 350 | 9 | 4.0 | far too long |
+
+200 HP gives exactly the requested pacing **in the sim**, whose party is
+unadapted (§9.2) and which under-rates solo fights. Scaling by the measured
+ratio of live to modelled phase-1 output — `87.8` (read disabled) `× 2.25` (solo
+correction) `× 0.80` (adapted efficiency) `≈ 158` live DPR against the sim's
+`38` — gives **×4.1**, so:
+
+> **HP ≈ 840.** The number in §2 was a guess; it now has a derivation, and it
+> lands the fight at Crisis on round 3 and a finish around round 5.5–6.
+
+**And it self-regulates, which is the nicest property here.** That 840 assumes a
+party that rotates its weapons. A party that does not adapt simply takes much
+longer to chew through the same bar — the fight gets *longer*, not unwinnable.
+The punishment for ignoring the mechanic is exactly the right shape.
+
+### 9.4 The solo-target correction
 
 Every configuration ran out the round budget — but so does the read-disabled
 control (10 rounds, 95% win), so **HP is the larger error**, independent of the
@@ -609,7 +648,7 @@ Applying it to the *adapted* party (80% efficiency ⇒ ~70 DPR modelled ⇒ ~158
 live): a 5-round fight wants **~790 HP**. **840 is close to right, and I would
 leave it** pending a live run.
 
-### 9.4 A model fix this uncovered — Blanche now fights
+### 9.5 A model fix this uncovered — Blanche now fights
 
 She had **zero** modelled damage in every Mindscape run ever recorded. Her attack
 is Dual Shieldbearer's *Twin Shields*, a virtual attack exposed by an AE:
@@ -627,7 +666,7 @@ Calibration case moved 165.5 → **171.2 DPR** (3 rounds, 53% → 56% party HP) 
 that is Blanche's damage arriving, and every past Mindscape verdict was
 correspondingly pessimistic.
 
-### 9.5 Still not modelled, and it all points one way
+### 9.6 Still not modelled, and it all points one way
 
 Summons, Zero Power, Fabula Point invokes, the party reaction layer, and weapon
 swapping — every one of them favours the party, and a long solo fight gives each
@@ -661,15 +700,20 @@ more time to matter. **Read any Rakshasa verdict as a floor.**
 
 ## 11. Open questions
 
+**All four design questions are now settled** (2026-09-08):
+
+| | Ruling |
+|---|---|
+| Fight length | **~5.5–6 rounds, Crisis at the start of round 3.** HP **840**, derived in §9.3 rather than guessed. |
+| Execute / Cripple lethality | **Accepted.** A wounded PC can be finished by the Sword stance, telegraphed one activation ahead. |
+| Kirin's `isReaction: false` | **Fix it.** A move that works unexpectedly is worse than a dangerous one. |
+| Placement | **Hand-placed event**, not on the encounter table. |
+
+One implementation question remains, and it is mine rather than a design call:
+
 1. **`weapon_read` effect kind — approved?** The one piece of real engine work
-   the design asks for; the alternative is ~100 brittle authored rows.
-2. **HP 840** — the sim supports it (§9.3: ~790 for a 5-round fight against an
-   adapted party, extrapolated through the solo correction). Confirm, or hold it
-   until a live run?
-3. **Kirin's `isReaction: false`** — fix it (Execute starts working, Horn Rush
-   ~82 → ~164 vs a Crisis PC) or leave it and re-tune Kirin first?
-4. **Does Rakshasa go on the Valley of the Dragon encounter table**, or stay a
-   hand-placed event? Asura's arena-scene dependency is still open.
+   the design asks for; the alternative is ~100 brittle authored rows. Nothing
+   player-facing changes either way.
 
 > **Worth noting for later, not now:** the same `creature_will_deal_damage` +
 > `adjust_damage multiply` pattern could in principle carry Adaptive Defense too,

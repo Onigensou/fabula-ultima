@@ -65,6 +65,7 @@ function makeCombatant(actor, side) {
     grantedActionsTaken: 0,
     damageDealt: 0,
     downedOnRound: null,
+    crisisOnRound: null,
   };
 }
 
@@ -319,6 +320,7 @@ function applyFlatDamage(state, source, target, amount, element, label, cause = 
     target.hp -= out.damage;
     if (source.side !== target.side) source.damageDealt += out.damage;
     if (target.hp <= 0) { target.hp = 0; target.alive = false; target.downedOnRound = state.round; }
+    noteCrisis(state, target);
   }
   state.log.push({
     round: state.round, actor: source.name, action: label, target: target.name,
@@ -351,6 +353,15 @@ function onHpMoved(state, source, target, out, element, cause) {
 // definition `current_hp <= crisis_hp ?? ceil(max_hp/2)`. A target this hit
 // pushes INTO Crisis therefore does NOT earn Execute — the multiplier is
 // decided before the damage lands, as it is in play.
+// Stamp the round a creature first crossed into Crisis. Called from BOTH HP-write
+// sites; a creature healed back above half keeps its FIRST crossing, because a
+// designer timing a phase change cares when it started, not when it last was.
+function noteCrisis(state, c) {
+  if (c.crisisOnRound == null && c.alive && c.hp > 0 && c.hp <= c.maxHp / 2) {
+    c.crisisOnRound = state.round;
+  }
+}
+
 function damageMultiplierFor(actor, action, victim) {
   if (!actor?.reactions?.length) return 1;
   const ctx = {
@@ -461,6 +472,7 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
         victim.alive = false;
         victim.downedOnRound = state.round;
       }
+      noteCrisis(state, victim);
     }
 
     state.log.push({
@@ -708,6 +720,15 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
     rounds,
     partyHpRemaining: maxHp ? curHp / maxHp : null,
     downs: partyC.filter((c) => !c.alive).map((c) => ({ name: c.name, round: c.downedOnRound })),
+    // When each enemy crossed into Crisis (HP <= half). A designer picking WHEN
+    // a phase change lands needs this as directly as they need the round count:
+    // "the fight switches up at Crisis" is a promise about a moment, and a
+    // moment that arrives on the last round is a phase that never happened.
+    // Recorded at the crossing, so a creature healed back above half keeps its
+    // first crossing rather than reporting the last one.
+    crisisRounds: combatants
+      .filter((c) => c.side === "enemy")
+      .map((c) => ({ name: c.name, round: c.crisisOnRound ?? null })),
     // Spec D3: strictly separated so they can never double-count.
     baselineDpr: rounds ? partyDamage / rounds : 0,
     baseActions, grantedActions,

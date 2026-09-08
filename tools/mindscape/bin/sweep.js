@@ -46,8 +46,8 @@ const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "mindscape-sweep-"));
 const cli = path.join(__dirname, "mindscape.js");
 
 console.log(`\nSweeping ${args.dial} on "${args.on}"  ·  ${args.runs} runs each\n`);
-console.log("value".padEnd(22) + "rounds".padEnd(9) + "partyHP".padEnd(10) + "DPR".padEnd(8) + "outcome");
-console.log("─".repeat(72));
+console.log("value".padEnd(22) + "rounds".padEnd(9) + "crisis".padEnd(9) + "partyHP".padEnd(10) + "DPR".padEnd(8) + "outcome");
+console.log("─".repeat(82));
 
 for (const v of args.values) {
   const doc = JSON.parse(JSON.stringify(base));
@@ -81,12 +81,13 @@ for (const v of args.values) {
   const rounds = /rounds\s+min \d+\s+p25 \S+\s+median (\S+)/.exec(out)?.[1] ?? "?";
   const hp = /party HP\s+p25 \S+\s+median (\S+)/.exec(out)?.[1] ?? "?";
   const dpr = /BaselineDPR\s+(\S+)/.exec(out)?.[1] ?? "?";
+  const cris = /crisis reached\s+round p25 \S+\s+median (\S+)/.exec(out)?.[1] ?? "—";
   const win = /victory\s+(\S+)/.exec(out)?.[1] ?? "0%";
   const over = /overtime\s+(\S+)/.exec(out)?.[1] ?? "0%";
   const def = /defeat\s+(\S+)/.exec(out)?.[1] ?? "0%";
   const outcome = `win ${win} · over ${over} · loss ${def}`;
 
-  console.log(String(v).padEnd(22) + String(rounds).padEnd(9) + String(hp).padEnd(10) + String(dpr).padEnd(8) + outcome);
+  console.log(String(v).padEnd(22) + String(rounds).padEnd(9) + String(cris).padEnd(9) + String(hp).padEnd(10) + String(dpr).padEnd(8) + outcome);
 }
 
 fs.rmSync(tmp, { recursive: true, force: true });
