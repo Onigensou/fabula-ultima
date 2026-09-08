@@ -51,7 +51,9 @@ console.log("─".repeat(72));
 
 for (const v of args.values) {
   const doc = JSON.parse(JSON.stringify(base));
-  const item = (doc.items ?? []).find((i) => i.name === args.on);
+  // --on "actor" targets the actor sheet itself (max_hp, defense, ...), which is
+  // the most common dial of all and used to require hand-editing the spec.
+  const item = args.on === "actor" ? { props: doc.system.props } : (doc.items ?? []).find((i) => i.name === args.on);
   if (!item) { console.error(`no item named "${args.on}" in the spec`); process.exit(1); }
   item.props[args.dial] = v;
   for (const kv of args.extra ?? []) {

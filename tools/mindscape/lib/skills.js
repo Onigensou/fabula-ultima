@@ -272,6 +272,33 @@ function extractActions(actor) {
     unmodelledUtility: [],  // utility with no registry entry — also a gap
     nonActions: 0,
   };
+  // Attacks exposed by an AE rather than owned as an item (Dual Shieldbearer's
+  // Twin Shields). Without these a two-shield character has no attack at all —
+  // `resolveAttackerWeapon` refuses a shield and there is no item to extract —
+  // so Blanche dealt zero damage in every run before this.
+  for (const v of actor.virtualAttacks ?? []) {
+    const dmg = evaluateFormula(v.damageBonusRaw, actor);
+    if (!dmg.ok) {
+      // Same refusal policy as any other unparseable damage action: report the
+      // gap, never invent a number.
+      out.unmodelled.push({ kind: "unmodelled", name: v.name, id: `virtual:${v.name}`,
+        skillType: "Attack", reasons: [dmg.reason] });
+      continue;
+    }
+    out.actions.push({
+      kind: "action", name: v.name, id: `virtual:${v.name}`, skillType: "Attack",
+      attrA: v.attrA, attrB: v.attrB,
+      damageBonus: dmg.value, damageBonusApproximate: !!dmg.approximate,
+      checkBonus: v.checkBonus,
+      element: v.element, defenseTarget: "def",
+      target: { side: "enemy", count: 1 },
+      cost: { resource: null, amount: 0 },
+      keywords: null,
+      weaponFamily: v.family,
+      virtual: true,
+    });
+  }
+
   for (const item of actor.items ?? []) {
     const r = extractAction(item, actor);
 

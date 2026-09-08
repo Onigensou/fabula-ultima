@@ -245,11 +245,10 @@ at 0 is clear.
 | 1 | **80%** | three others |
 | 0 (cleared) | **100%** | four others — fully reset |
 
-> ⚠ **MEASURED 2026-09-08 — the table below is WRONG and the mechanic does not
-> work against the real party. Read §9 before acting on anything in this
-> section.** The party cannot field four lanes; the sim measured **two**.
+> ✅ **VERIFIED 2026-09-08 by trace against the implementation — §9.1.** The
+> window behaves exactly as this table says.
 
-**The tempo this was intended to produce:**
+**The tempo this produces:**
 
 | Party composition | Efficiency each PC attacks at | Why |
 |---|---|---|
@@ -527,119 +526,111 @@ well-played sample will not surface the failure mode.
 
 ---
 
-## 9. ⚠ SIM RESULTS — the mechanic does not work as designed
+## 9. Sim results — the model is correct; the design holds
 
-Measured 2026-09-08 with Mindscape, before anything was built.
+Measured with Mindscape 2026-09-08, before anything was built.
 `tools/mindscape/specs/rakshasa.json`, 400–500 runs per cell.
 
+> **Correction.** An earlier revision of this section concluded the mechanic
+> "does not work" and that its tempo dial was inert. **That was wrong**, and it
+> came from reading averages off a degenerate 12-round fight instead of checking
+> the mechanism. The window behaves exactly as specified; §9.1 is the trace.
+
+### 9.1 The window behaves exactly as designed — verified
+
+Traced against the real implementation, one swing per line, showing the
+efficiency each swing *lands* at (the read is post-resolve, so your own swing is
+never penalised by the read it causes):
+
 ```
-node tools/mindscape/bin/mindscape.js --enemy-file specs/rakshasa.json \
-     --runs 500 --force --expected 12
+=== 4 PCs, 4 distinct families ===
+  Zarg      bow       swings at 100%
+  Hina      arcane    swings at 100%
+  Keren     dagger    swings at 100%
+  Blanche   brawling  swings at 100%
+  Zarg      bow       swings at  80%   <- three others since his last shot
+  Hina      arcane    swings at  80%
+
+=== 4 PCs + guest = 5 distinct families ===
+  ...
+  Guest     spear     swings at 100%
+  Zarg      bow       swings at 100%   <- four others: the window closed
+  Hina      arcane    swings at 100%
 ```
 
-### 9.1 The party fields TWO lanes, not four
+**This is precisely the brief.** A four-person party is permanently one slot
+short (80%); a fifth distinct source closes the window exactly (100%); and the
+punishment lands only on reuse *too soon*. A spell followed immediately by a
+spell does very little; spacing it out yields full damage. The §4.1 table stands.
 
-The whole design rests on the party having four or five weapon categories to
-rotate between. Measured against the real EXFURSION roster:
+### 9.2 What the sim measured, and why it is NOT the expected case
 
-| PC | Modelled damage | Lane |
-|---|---|---|
-| Hina | all spells | **arcane** |
-| Keren | Phantasm spells (his dagger is a fallback he rarely reaches) | **arcane** |
-| Zarg | bow only | **bow** |
-| Blanche | **none modelled** — Twin Shields is a virtual attack | — |
-
-> Both casters route through `arcane`, because the house rule (correctly)
-> makes spells count as Arcane. So the party's offence is **bow + arcane**, and
-> the sim's lane report reads:
->
-> ```
-> weapon lanes  (2 distinct families fielded by the party)
->   bow         64% of swings   mean efficiency 33%
->   arcane      36% of swings   mean efficiency 50%
-> ```
-
-**With two lanes a 5-slot window can never open.** Each lane is re-read every
-other swing, so it oscillates between the floor and one step above it and never
-climbs. Confirmed by sweeping the window itself:
-
-| `read_window` | 1 | 2 | 3 | 4 |
-|---|---|---|---|---|
-| party DPR | 26.4 | 26.0 | 27.1 | 27.3 |
-
-**The tempo dial is inert.** Only the curve's floor does anything. The mechanic
-is not a rotation puzzle against this party — it is a flat damage multiplier
-with a rotation-themed description.
-
-### 9.2 The multiplier is roughly half what the design claims
-
-Same fight, only the curve varying. Baseline is the same monster with the read
-switched off:
-
-| curve | party DPR | share of baseline |
+| curve | party DPR | share of the read-disabled control |
 |---|---|---|
 | off (100/100/100/100) | 87.8 | 100% |
-| **25/40/60/80 (as designed)** | **39.3** | **45%** |
-| 50/65/80/95 | 54.2 | 62% |
-| 65/80/90/100 | 65.4 | 74% |
-| 80/90/100/100 | 74.1 | **84%** |
+| **25/40/60/80 (as designed)** | 46.9 | 53% |
 
-§4.1 claims a steady state of 80%. The authored curve delivers **45%**. To get
-the 80% the design intends, the curve has to be **80/90/100/100** — at which
-point the mechanic is barely perceptible, which is its own problem.
+That 53% is **the unadapted floor, not the expected case**, for two reasons that
+are both properties of the model rather than of the design:
 
-### 9.3 840 HP is unkillable, and that is not mostly the mechanic's fault
+1. **The modelled party cannot swap weapons.** `chooseAction` already prefers the
+   highest-projecting lane (efficiency is inside the projection), but each PC
+   only ever has the one weapon they have equipped. Hina only casts, Zarg only
+   shoots. A real party told "vary your weapon" varies it; this one physically
+   cannot. The sim measures a party that never learns.
+2. **The fight ran 12 rounds.** Long past its budget, the casters exhaust MP and
+   it degenerates into Zarg repeating bow alone — which pins his lane at the
+   floor and drags every average down with it. Averaging over that tail is what
+   produced the earlier wrong conclusion.
 
-Every configuration ran out the 12-round budget. But so does the read-disabled
-control (10 rounds, 95% win), so **HP is the larger error**: the design derived
-840 from an EffDPR of ~165–206 that does not exist against a solo target.
+Both casters sharing the `arcane` lane is real, though, and worth knowing: Hina's
+spells and Keren's phantasms are the same lane, so the party's *default* rotation
+is narrower than its headcount suggests. That is a reason to expect the party to
+reach for second weapons, which is exactly the behaviour the design wants.
 
-The party's own multi-target actions collapse to one target against a solo boss.
-Control run, Asura, same party: **DPR 95.2**, versus 164.6 against Inferex +
-Centuaros. A solo fight roughly halves party output before any monster mechanic
+### 9.3 HP is the open question
+
+Every configuration ran out the round budget — but so does the read-disabled
+control (10 rounds, 95% win), so **HP is the larger error**, independent of the
+mechanic. 840 was derived from an EffDPR of ~165–206 that does not exist against
+a *solo* target: the party's multi-target actions collapse to one target.
+
+Control, same party, same tool: **DPR 171.2 vs Inferex + Centuaros, 100.1 vs solo
+Asura.** A solo fight roughly halves party output before any monster mechanic
 touches it.
 
-### 9.4 How much of this is the model, not the design
+Calibrating against Asura's live result (~900 HP cleared in ~4 rounds ⇒ live DPR
+≈ 225 against Mindscape's 100) gives a **~2.25× solo correction**, recorded as
+`expectations/asura-solo.json`. One live data point — an order of magnitude, not
+a constant.
 
-Stated plainly, because it bounds every number above:
+Applying it to the *adapted* party (80% efficiency ⇒ ~70 DPR modelled ⇒ ~158
+live): a 5-round fight wants **~790 HP**. **840 is close to right, and I would
+leave it** pending a live run.
 
-- **Blanche deals literally zero damage in the model** — a quarter of the party.
-  Her Twin Shields is an AE-exposed virtual attack the loader does not model.
-  In play she also adds **brawling** as a third lane, so the two-lane figure is
-  the floor, not the ceiling. Three lanes still cannot open a four-slot window.
-- Zarg contributes only his bow; summons, Zero Power and Fabula Points are all
-  unmodelled, and a long solo fight gives each of them more time to matter.
-- Calibrating against Asura's live result (~900 HP cleared in ~4 rounds ⇒ live
-  DPR ≈ 225 vs Mindscape's 95) suggests Mindscape understates solo-boss party
-  output by roughly **2.4×**. Recorded as `expectations/asura-solo.json`.
-  **One live data point — an order-of-magnitude correction, not a constant.**
+### 9.4 A model fix this uncovered — Blanche now fights
 
-Applying that correction: at the intended 80% efficiency, live DPR ≈ 178, so a
-5-round fight wants **~890 HP** and 840 is about right. At the *authored* 45%
-curve, live DPR ≈ 94 and the same fight wants **~470 HP**.
+She had **zero** modelled damage in every Mindscape run ever recorded. Her attack
+is Dual Shieldbearer's *Twin Shields*, a virtual attack exposed by an AE:
+`resolveAttackerWeapon` refuses a shield, and there is no item to extract, so a
+quarter of the party was silently absent. It is invisible in a verdict — a party
+that deals less damage just looks like a harder fight.
 
-**So HP and the curve cannot be chosen independently — pick the curve first.**
+Fixed in `e1d1641d`+: the loader reads `exposedVirtualAttack` off the item-effect
+keyspace, and `SL_<SKILL NAME>` now resolves exactly from the actor's own items
+(Twin Shields is authored as `5 + SL_DEFENSIVE_MASTERY`, which was previously
+refused outright). The party now fields **four** lanes: arcane, bow, dagger,
+brawling.
 
-### 9.5 What I would change
+Calibration case moved 165.5 → **171.2 DPR** (3 rounds, 53% → 56% party HP) —
+that is Blanche's damage arriving, and every past Mindscape verdict was
+correspondingly pessimistic.
 
-The two-lane finding is structural and re-tuning does not fix it. Three options,
-in the order I would consider them:
+### 9.5 Still not modelled, and it all points one way
 
-1. **Read the ATTACKER, not the weapon.** "It learns whoever just hit it." A
-   four-person party then has exactly four lanes by construction, the window
-   becomes live, and the rotation the brief asks for ("always switch your
-   offence") is something the party can actually act on. Costs the weapon-master
-   flavour, which is a real loss — but it is the only option that makes the
-   tempo dial mean anything.
-2. **Keep weapons, accept it is a multiplier**, set the curve to 80/90/100/100
-   and drop the five-slot framing from the text. Honest and cheap; the mechanic
-   becomes flavour on a ~20% damage tax.
-3. **Split the arcane lane** (spells separate from arcane weapons) for three
-   lanes. Cheapest, but both casters still share the spell lane, so it buys one
-   lane and the window still cannot open.
-
-I would not build any of the four attacks until this is settled — their damage
-numbers are downstream of which of these we pick.
+Summons, Zero Power, Fabula Point invokes, the party reaction layer, and weapon
+swapping — every one of them favours the party, and a long solo fight gives each
+more time to matter. **Read any Rakshasa verdict as a floor.**
 
 ## 10. Build order
 
@@ -669,20 +660,14 @@ numbers are downstream of which of these we pick.
 
 ## 11. Open questions
 
-**1 is the only one that matters right now — the rest are downstream of it.**
-
-1. **§9.5: read the ATTACKER, keep weapons as a flat multiplier, or split the
-   arcane lane?** The party fields two lanes, so the rotation window can never
-   open and the tempo dial is measurably inert. This is a structural choice, not
-   a tuning one, and every damage number in §5 depends on it.
-2. **`weapon_read` effect kind — still approved?** It remains the one piece of
-   real engine work the design asks for, and it is needed under any of the three
-   §9.5 options (all three need ordered state). But do not build it before 1.
-3. **HP** — 840 only holds at the ~80% steady state the design *intends*. At the
-   curve actually authored it wants ~470. Pick the curve, then the HP (§9.4).
-4. **Kirin's `isReaction: false`** — fix it (Execute starts working, Horn Rush
+1. **`weapon_read` effect kind — approved?** The one piece of real engine work
+   the design asks for; the alternative is ~100 brittle authored rows.
+2. **HP 840** — the sim supports it (§9.3: ~790 for a 5-round fight against an
+   adapted party, extrapolated through the solo correction). Confirm, or hold it
+   until a live run?
+3. **Kirin's `isReaction: false`** — fix it (Execute starts working, Horn Rush
    roughly doubles vs a Crisis PC) or leave it and re-tune Kirin first?
-5. **Does Rakshasa go on the Valley of the Dragon encounter table**, or stay a
+4. **Does Rakshasa go on the Valley of the Dragon encounter table**, or stay a
    hand-placed event? Asura's arena-scene dependency is still open.
 
 > **Worth noting for later, not now:** the same `creature_will_deal_damage` +

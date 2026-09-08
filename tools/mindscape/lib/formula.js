@@ -19,12 +19,32 @@
 // its action unmodelled rather than resolve to a plausible number.
 
 // Identifiers whose value is known from the actor at load time.
+//
+// `SL_<SKILL NAME>` is resolved EXACTLY — the named skill's own `level` prop off
+// the actor's item list, with underscores standing in for spaces
+// (`SL_DEFENSIVE_MASTERY` -> the "Defensive Mastery" item, level 4). This is a
+// real read, not the `SL: 1` floor, so it is not flagged approximate.
+//
+// It matters more than it looks: Dual Shieldbearer's Twin Shields is authored as
+// `5 + SL_DEFENSIVE_MASTERY`, and without this the whole attack was refused —
+// leaving a two-shield character with no attack at all.
+//
+// A skill the actor does not have resolves to 0 rather than refusing: that is
+// what a skill at level zero means, and it is the same answer the live sheet
+// gives.
 function knownVars(actor) {
-  return {
+  const vars = {
     CHAR_LEVEL: Number(actor?.level) || 0,
     SL: 1,   // Skill Level. Not stored per-actor; 1 is the floor, and any use of
              // SL is reported by the caller as an approximation rather than hidden.
   };
+  for (const item of actor?.items ?? []) {
+    const lvl = Number(item?.props?.level);
+    if (!Number.isFinite(lvl)) continue;
+    const key = `SL_${String(item.name ?? "").trim().toUpperCase().replace(/[^A-Z0-9]+/g, "_")}`;
+    if (key !== "SL_") vars[key] = lvl;
+  }
+  return vars;
 }
 
 // Functions the sheet uses.

@@ -245,10 +245,23 @@ if you accept a partial model. Use --verbose to see every gap.`);
       const meanEff = l.swings ? l.effSum / l.swings : 100;
       console.log(`  ${fam.padEnd(10)} ${pct(share).padStart(4)} of swings   mean efficiency ${meanEff.toFixed(0)}%`);
     }
-    if (lanes.size <= 3) {
-      console.log(`  ⚠ Only ${lanes.size} lanes. A rotation window wider than this can never`);
-      console.log(`    open — the party has nothing left to rotate to, so the mechanic acts`);
-      console.log(`    as a flat multiplier and its tempo dial is inert.`);
+    // ⚠ Read this carefully before concluding anything about a rotation design.
+    //
+    // These means are for the party AS MODELLED, and the model does not adapt:
+    // `chooseAction` already prefers whichever lane projects highest (efficiency
+    // is inside projectDamage), but each PC only ever has the ONE weapon they
+    // have equipped, and nothing swaps weapons mid-fight. A real party told
+    // "vary your weapon" varies it; this one cannot.
+    //
+    // So a low mean here measures the UNADAPTED case — the floor, not the
+    // expected case. It is evidence about how hard the mechanic punishes
+    // repetition, NOT evidence that the rotation cannot be performed.
+    console.log(`  · Means are for the party as modelled, which does NOT swap weapons.`);
+    console.log(`    Treat them as the unadapted floor, not the expected case.`);
+    if (lanes.size < 4) {
+      console.log(`  · Only ${lanes.size} lanes were fielded, so a window wider than ${lanes.size} never`);
+      console.log(`    opened in these runs. Check whether the party is CARRYING other`);
+      console.log(`    weapon categories before reading that as a property of the design.`);
     }
   }
 

@@ -264,14 +264,65 @@ function toCombatModel(doc) {
 // Iterating the collection and keeping everything with a `name` therefore yields
 // ~2800 non-actors that all look like actors — an embedded item has a name, an
 // id and a system.props, so nothing downstream would notice. Filter by KEY.
+const FLAG_NS = "fabula-ultima-companion";
 const ACTOR_KEY = /^!actors!([^!.]+)$/;
 const ITEM_KEY  = /^!actors\.items!([^!.]+)\.([^!.]+)$/;
+// Effects owned by an actor's items. Almost all are ordinary buffs, but a few
+// EXPOSE AN ATTACK the actor has no item for — see below.
+const ITEM_EFFECT_KEY = /^!actors\.items\.effects!([^!.]+)\.([^!.]+)\.([^!.]+)$/;
+
+// ── Virtual attacks ─────────────────────────────────────────────────────────
+// An AE can carry `flags["fabula-ultima-companion"].exposedVirtualAttack`, which
+// grants its owner an attack profile that exists on NO item. Dual Shieldbearer's
+// "Twin Shields" is the shipped instance: with two shields equipped it exposes a
+// MIG+MIG Brawling attack.
+//
+// This was the single largest hole in the model. `resolveAttackerWeapon` returns
+// null for a shield (attributes SHI+SHI), and there is no item to extract, so a
+// two-shield character had NO attack at all — Blanche contributed exactly zero
+// damage to every run ever measured, a quarter of the party silently absent.
+// Worse, it is invisible: a party that deals less damage just looks like a
+// harder fight.
+//
+// `condition_formula` is NOT evaluated here. Offline we cannot resolve
+// EQUIPPED_SHIELD_COUNT the way the live snapshot does, so instead of guessing
+// we check the CONCRETE precondition the formula stands for — the equipped
+// shield count off the actor's own item list. A gated profile whose condition we
+// cannot express is skipped, never assumed.
+function readVirtualAttack(effectDoc) {
+  if (!effectDoc || effectDoc.disabled === true) return null;
+  const spec = effectDoc?.flags?.[FLAG_NS]?.exposedVirtualAttack;
+  const p = spec?.profile;
+  if (!p) return null;
+  return {
+    name: String(p.name ?? effectDoc.name ?? "Virtual Attack"),
+    attrA: String(p.A1 ?? "MIG").toLowerCase(),
+    attrB: String(p.A2 ?? "MIG").toLowerCase(),
+    damageBonusRaw: p.damageBonus ?? p.damage_bonus ?? 0,
+    checkBonus: Number(p.checkBonus ?? p.check_bonus ?? 0) || 0,
+    element: String(p.damageType ?? p.type_damage ?? "Physical").toLowerCase(),
+    range: String(p.range ?? "Melee").toLowerCase(),
+    family: String(p.weaponType ?? p.category ?? "brawling").toLowerCase(),
+    conditionFormula: String(spec.condition_formula ?? "").trim() || null,
+  };
+}
+
+// The one condition we can honestly evaluate offline. Anything else is refused.
+function virtualAttackAvailable(v, model) {
+  if (!v.conditionFormula) return true;
+  const m = /^EQUIPPED_SHIELD_COUNT\s*>=\s*(\d+)$/.exec(v.conditionFormula);
+  if (!m) return false;
+  const shields = (model.items ?? []).filter((i) =>
+    String(i.props?.item_type ?? "").toLowerCase() === "shield" && i.props?.isEquipped).length;
+  return shields >= Number(m[1]);
+}
 
 // Every actor in the world, as combat models, with embedded items attached.
 async function loadAll({ world = DEFAULT_WORLD } = {}) {
   return withCollection("actors", world, async (db) => {
     const actors = new Map();     // actorId -> model
     const itemsByActor = new Map();
+    const virtualByActor = new Map();
 
     for await (const [key, value] of db.iterator()) {
       const a = ACTOR_KEY.exec(key);
@@ -288,11 +339,25 @@ async function loadAll({ world = DEFAULT_WORLD } = {}) {
           type: value.type ?? null,
           props: value.system?.props ?? {},
         });
+        continue;
+      }
+      const ve = ITEM_EFFECT_KEY.exec(key);
+      if (ve) {
+        const v = readVirtualAttack(value);
+        if (v) {
+          if (!virtualByActor.has(ve[1])) virtualByActor.set(ve[1], []);
+          virtualByActor.get(ve[1]).push(v);
+        }
       }
     }
 
     for (const [actorId, model] of actors) {
       model.items = itemsByActor.get(actorId) ?? [];
+
+      // Attacks granted by an AE rather than owned as an item. Filtered by the
+      // concrete precondition, never by guessing at the formula.
+      model.virtualAttacks = (virtualByActor.get(actorId) ?? [])
+        .filter((v) => virtualAttackAvailable(v, model));
 
       // Resolve the equipped weapon's FAMILY from its item `category`
       // ("Bow", "Dagger", "Arcane"). The actor sheet names the weapon but not
