@@ -33,7 +33,14 @@ const IDS = {
   RK_RAIN:     "RkRainOfArrows01",
   RK_DEVOUR:   "RkDevourManEat01",
   RK_ADAPT:    "RkAdaptiveDef001",
-  RK_ARMS:     "RkTenThousandArm",
+  // Crisis kit — the dual-arm phase.
+  RK_SHIFT2:   "RkFormShiftCris1",
+  RK_VOLLEY:   "RkExecVolley0001",
+  RK_ORBIT:    "RkRendingOrbit01",
+  RK_VERDICT:  "RkSeveringVerd01",
+  AE_C_SB:     "RkAeComboSwdBow1",
+  AE_C_FT:     "RkAeComboFlaThr1",
+  AE_C_SF:     "RkAeComboSwdFla1",
   AE_SWORD:    "RkAeStanceSword1",
   AE_BOW:      "RkAeStanceBow001",
   AE_THROW:    "RkAeStanceThrow1",
@@ -99,10 +106,24 @@ const DESC = {
     bullets(trig("the Rakshasa is attacked with a weapon")) +
     "<p>Lower the efficiency of the triggering weapon type, but increase efficiency " +
     "against other weapons.</p>",
-  arms:
-    bullets(trig("the Rakshasa is attacked with a weapon, while at " + L_CRISIS)) +
-    "<p>Weapon efficiency no longer recovers. Every weapon type the Rakshasa is shown " +
-    "drops further, and none of them climb back.</p>",
+  shift2:
+    "<p>The Rakshasa arms two weapons at once:</p>" +
+    bullets("Sword and Bow", "Flail and Throwing", "Sword and Flail") +
+    "<p>Then recovers a small amount of MP.</p>",
+  volley:
+    bullets(L_EXECUTE, L_OVERFLOW) +
+    "<p>The Rakshasa looses a volley and cuts down whatever is still standing. " +
+    `Deal <strong>heavy</strong>&nbsp;${L.physical}&nbsp;damage to all enemies. ` +
+    "Only usable while armed with Sword and Bow.</p>",
+  orbit:
+    bullets(L_CRIPPLE, L_MULTI) +
+    "<p>Chakrams orbit the Rakshasa on their chains and tear outward. " +
+    `Deal <strong>heavy</strong>&nbsp;${L.physical}&nbsp;damage to three creatures and inflict ${L_BLEED}. ` +
+    "Only usable while armed with Flail and Throwing.</p>",
+  verdict:
+    "<p>The Rakshasa raises both arms and brings them down as one. " +
+    `Deal <strong>colossal</strong>&nbsp;${L.physical}&nbsp;damage to one creature. ` +
+    "Only usable while armed with Sword and Flail.</p>",
 };
 
 // Bestiary voice, unlinked prose, as approved.
@@ -121,6 +142,23 @@ const STANCES = [
   { id: IDS.AE_FLAIL, name: "Flail Stance",    blurb: "A haft, a chain, and a weight." },
 ];
 
+// The Crisis combos. Only these THREE pairings exist — the other three possible
+// pairs are never drawn, so there is no undefined combination to design a
+// fallback for.
+//
+// ⚠ The action pattern cannot express "holds Sword AND Bow": its conditions take
+// ONE status string and there is no formula/AND form. So a combo is a single AE
+// naming the pair, not two stance AEs an attack tests for. Same fiction,
+// expressible mechanics.
+const COMBOS = [
+  { id: IDS.AE_C_SB, name: "Sword and Bow Stance",
+    blurb: "A blade in two hands, a drawn bow in the other two." },
+  { id: IDS.AE_C_FT, name: "Flail and Throwing Stance",
+    blurb: "Chains in two hands, rings spinning in the other two." },
+  { id: IDS.AE_C_SF, name: "Sword and Flail Stance",
+    blurb: "Every arm holding something heavy. Nothing left in reserve." },
+];
+
 // Every attack spends the stance that permitted it. Authored once — four copies
 // of a removal row is four chances to typo the AE name.
 //   ⚠ include_persistent is REQUIRED. selectAEsOnActor skips persistent_counter
@@ -134,7 +172,17 @@ const consumeStance = (stanceName) => ({
   },
 });
 
-run(async ({ changes }) => {
+// The combo twin. Separate label so a combo attack cannot accidentally spend a
+// single stance, or vice versa.
+const consumeCombo = (comboName) => ({
+  "9": {
+    $deleted: false, effect_kind: "remove_ae", effect_label: "spend_combo",
+    ae_template_ref: comboName, target_ref: "self",
+    include_persistent: "true", count: "1",
+  },
+});
+
+run(async ({ changes, deletes }) => {
   const donorActor   = await getByKey("actors", `!actors!${DONOR_ACTOR}`);
   const donorAttack  = await getByKey("actors", `!actors.items!${DONOR_ACTOR}.${DONOR_ATTACK}`);
   const donorPassive = await getByKey("actors", `!actors.items!${DONOR_ACTOR}.${DONOR_PASSIVE}`);
@@ -317,12 +365,16 @@ run(async ({ changes }) => {
   // ── Adaptive Defense ─────────────────────────────────────────────────────
   // Two rows, one per trigger, because "it does not matter whether the attack
   // hits" is exactly the creature_hit_by_action + creature_miss_action pair.
-  // Gated OUT of Crisis; Ten Thousand Arms takes over there.
+  //
+  // UNGATED. It used to carry `HAS_STATUS_CRISIS == 0` so Ten Thousand Arms
+  // could take over the window at Crisis; that passive is gone (the Crisis
+  // identity is now the dual-arm combo, and stacking a second escalation on top
+  // of it overloads the phase). The read window therefore behaves identically
+  // in both halves of the fight, which is also one less thing to explain.
   const readRow = (idx, trigger, ref) => ({
     [String(idx)]: {
       $deleted: false, reaction_trigger: trigger,
       reaction_source: "self",
-      condition_formula: "HAS_STATUS_CRISIS == 0",
       reaction_passive_mode: "force", reaction_effect_ref: ref,
     },
   });
@@ -346,37 +398,130 @@ run(async ({ changes }) => {
     },
   }), "NEW item — Adaptive Defense (5-slot weapon-read window)"]);
 
-  // ── Ten Thousand Arms ────────────────────────────────────────────────────
-  // The SAME mechanism with eviction switched off — one field, not a second
-  // system. Its own item rather than a third row on Adaptive Defense so the
-  // party sees a named passive appear when the fight changes.
-  const armsRow = (idx, trigger) => ({
-    [String(idx)]: {
-      $deleted: false, reaction_trigger: trigger,
-      reaction_source: "self",
-      condition_formula: "HAS_STATUS_CRISIS == 1",
-      reaction_passive_mode: "force", reaction_effect_ref: "tta_read",
-    },
-  });
-  changes.push([ik(IDS.RK_ARMS), skill(donorPassive, IDS.RK_ARMS, "Ten Thousand Arms", ICON.passive, {
-    skill_type: "Passive", skill_target: "-", skill_range: "-",
+  // ── Crisis: Form Shift (dual-arm) ────────────────────────────────────────
+  // Same shape as the normal Form Shift, drawing from the COMBO pool instead.
+  //
+  // ⚠ It CLEARS the single-stance tag first. Without that, a Rakshasa holding
+  // "Bow Stance" as it crosses into Crisis would hold a single AND a combo
+  // stance, and Rain of Arrows would compete with the combo attack at the same
+  // priority — a coin flip the player would read as the monster glitching.
+  const shift2 = skill(donorSpell, IDS.RK_SHIFT2, "Form Shift (Dual)", ICON.active, {
+    skill_type: "Active", skill_target: "Self", skill_range: "-",
     rolled_atr1: "-", rolled_atr2: "-",
-    check_bonus: "0", damage_bonus: "", type_damage: "",
-    isCheck: false, isOffensiveSpell: false, isReaction: true,
+    check_bonus: "0", damage_bonus: "", type_damage: "", defense_target_type: "def",
+    isCheck: false, isOffensiveSpell: false, isReaction: false,
     cost: "-", duration: "Scene", details_roller: "Show",
-    action_keywords: "", description: DESC.arms,
-    reaction_config_table: {
-      ...armsRow(0, "creature_hit_by_action"),
-      ...armsRow(1, "creature_miss_action"),
-    },
+    action_keywords: "", description: DESC.shift2,
+    on_activate_effect_ref: "fs2_clear",
     effect_table: {
       "0": {
-        $deleted: false, effect_kind: "weapon_read", effect_label: "tta_read",
-        target_ref: "self",
-        read_window: "4", read_curve: "25,40,60,80", read_evict: "0",
+        $deleted: false, effect_kind: "remove_ae", effect_label: "fs2_clear",
+        filter_tag: "rakshasa_stance", target_ref: "self",
+        include_persistent: "true", count: "all", chain_steps: "fs2_draw",
+      },
+      "1": {
+        $deleted: false, effect_kind: "apply_ae", effect_label: "fs2_draw",
+        ae_name_pool: COMBOS.map((c) => c.name).join(","),
+        ae_pool_skip_existing: "1",
+        target_ref: "self", ae_duplicate_mode: "replace",
+        chain_steps: "fs2_mp",
+      },
+      "2": {
+        $deleted: false, effect_kind: "grant", effect_label: "fs2_mp",
+        grant_resource: "mp", grant_amount: "15", target_ref: "self",
       },
     },
-  }), "NEW item — Ten Thousand Arms (Crisis: the window stops evicting)"]);
+  });
+  shift2.effects = COMBOS.map((c) => c.id);
+  changes.push([ik(IDS.RK_SHIFT2), shift2,
+    "NEW item — Form Shift (Dual) (Crisis: draws a combo, clears single stances)"]);
+
+  for (const c of COMBOS) {
+    changes.push([aek(IDS.RK_SHIFT2, c.id), {
+      _id: c.id, name: c.name, img: ICON.active, icon: ICON.active,
+      transfer: false, disabled: false, changes: [], statuses: [],
+      description: "<p>" + c.blurb + "</p>",
+      duration: {}, origin: `Actor.${A}.Item.${IDS.RK_SHIFT2}`,
+      // A DIFFERENT tag from the single stances, so fs2_clear cannot wipe the
+      // combo it just drew.
+      system: { tags: ["rakshasa_combo"] },
+      flags: { "fabula-ultima-companion": { crossScene: false, charges: 1, lifetimeMode: "persistent_counter" } },
+    }, "NEW AE — " + c.name]);
+  }
+
+  // ── Crisis: the three combo attacks ──────────────────────────────────────
+  // A combo is NOT its two components fired back to back. It takes elements
+  // from each: one damage profile, and the keywords of both halves.
+
+  // Sword + Bow — bow-tier damage across the line, doubling on anyone already
+  // down. The finisher for a party that has taken casualties.
+  changes.push([ik(IDS.RK_VOLLEY), attack(IDS.RK_VOLLEY, "Executioner's Volley", {
+    skill_target: "All Enemies", skill_range: "Range",
+    rolled_atr1: "DEX", rolled_atr2: "INS", damage_bonus: "14",
+    action_keywords: "execute, overflow", description: DESC.volley,
+    isReaction: true,
+    on_activate_effect_ref: "spend_combo",
+    reaction_config_table: {
+      "0": {
+        $deleted: false, reaction_trigger: "creature_will_deal_damage",
+        reaction_source: "self", reaction_source_skill: "Executioner's Volley",
+        condition_formula: "TARGET_AE_COUNT_CRISIS > 0",
+        reaction_passive_mode: "force", reaction_effect_ref: "ev_double",
+      },
+    },
+    effect_table: {
+      "0": { $deleted: false, effect_kind: "adjust_damage", effect_label: "ev_double",
+             damage_operation: "multiply", damage_amount: "2", damage_stage: "outgoing" },
+      ...consumeCombo("Sword and Bow Stance"),
+    },
+  }), "NEW item — Executioner's Volley (Sword+Bow: overflow + execute)"]);
+
+  // Flail + Throwing — chakram damage across three, doubling on the healthy.
+  // The opener half of the pair, and the reason a fresh party cannot relax.
+  changes.push([ik(IDS.RK_ORBIT), attack(IDS.RK_ORBIT, "Rending Orbit", {
+    skill_target: "Up to three creatures", skill_range: "Range",
+    rolled_atr1: "DEX", rolled_atr2: "MIG", damage_bonus: "18",
+    action_keywords: "cripple, multi", description: DESC.orbit,
+    isReaction: true,
+    on_activate_effect_ref: "ro_bleed",
+    reaction_config_table: {
+      "0": {
+        $deleted: false, reaction_trigger: "creature_will_deal_damage",
+        reaction_source: "self", reaction_source_skill: "Rending Orbit",
+        condition_formula: "TARGET_AE_COUNT_CRISIS == 0",
+        reaction_passive_mode: "force", reaction_effect_ref: "ro_double",
+      },
+    },
+    effect_table: {
+      "0": { $deleted: false, effect_kind: "adjust_damage", effect_label: "ro_double",
+             damage_operation: "multiply", damage_amount: "2", damage_stage: "outgoing" },
+      "1": { $deleted: false, effect_kind: "apply_ae", effect_label: "ro_bleed",
+             ae_template_ref: "Bleed", target_ref: "action_targets",
+             ae_duplicate_mode: "replace", chain_steps: "spend_combo" },
+      ...consumeCombo("Flail and Throwing Stance"),
+    },
+  }), "NEW item — Rending Orbit (Flail+Throwing: cripple + Bleed, 3 targets)"]);
+
+  // Sword + Flail — NO keyword. Deliberately sized to kill any unguarded PC and
+  // to be survivable by every guarded one:
+  //   kills the tank unguarded   raw - 4 >= 166  ->  raw >= 170
+  //   squishiest survives Guard  ceil(raw / 2) < 98  ->  raw <= 195
+  // a ~25-point window. HR (MIG+MIG) spans 2..20 and the L40 flat is +10, so
+  // bonus 162 gives raw 174..192 — lethal at every roll (measured: 158 only
+  // killed the tank on a high roll, landing 162-168 against her 166), and
+  // survivable at every roll if the target Guards (worst case leaves Hina 2 HP).
+  // The window is ~25 points wide, so this is a TIGHT number: re-check it if the
+  // party gains HP or the flat level bonus changes. Guard forces RS on all elements, so the halving
+  // is reliable; a PC already below full still dies through it, which is the
+  // point. Do NOT add a keyword here: doubling this is an unconditional TPK.
+  changes.push([ik(IDS.RK_VERDICT), attack(IDS.RK_VERDICT, "Severing Verdict", {
+    skill_target: "One Creature", skill_range: "Melee",
+    rolled_atr1: "MIG", rolled_atr2: "MIG", damage_bonus: "162",
+    action_keywords: "", description: DESC.verdict,
+    isReaction: false,
+    on_activate_effect_ref: "spend_combo",
+    effect_table: { ...consumeCombo("Sword and Flail Stance") },
+  }), "NEW item — Severing Verdict (Sword+Flail: one-shot unless Guarded)"]);
 
   // ── Actor ────────────────────────────────────────────────────────────────
   const a = blankActor(donorActor, A, "Rakshasa", FOLDER, ART, SCALE);
@@ -391,10 +536,14 @@ run(async ({ changes }) => {
     // DONOR's stored numbers to disk even though CSB recomputes them live, so an
     // offline read (export, preflight, co-dev) would otherwise see Ampere's.
     def_mod: "+4", mdef_mod: "+4", defense: 14, magic_defense: 12,
-    // 840 derived in the design doc §9.3, not guessed: Mindscape puts the
-    // requested pacing (Crisis on round 3, finish ~5.5) at 200 HP against its
-    // own unadapted party, and the measured live-to-modelled ratio is ~4.1.
-    max_hp: "840", current_hp: "840", max_mp: "45", current_mp: "45",
+    // 1150. Ten Thousand Arms used to halve party output after Crisis, and that
+  // brake is what made the second half of the bar take twice as long as the
+  // first; without it the party keeps full output throughout, so the SAME 5.5-6
+  // round shape needs a bigger bar. Mindscape puts that shape at ~285 HP against
+  // its own unadapted party, and the measured live-to-modelled ratio is ~4.2.
+  // Crisis still lands at the start of round 3 on its own: with a uniform party
+  // rate, half the bar IS the midpoint of the fight.
+    max_hp: "1200", current_hp: "1200", max_mp: "45", current_mp: "45",
     init: "12", max_zero: "6", ultima_points: "3",
     zenit_reward_min: "1400", zenit_reward_max: "1400",
     study_text: STUDY,
@@ -431,12 +580,32 @@ run(async ({ changes }) => {
       active_target: "All Enemies", attribute_die1: "DEX", attribute_die2: "INS",
       attack_description: DESC.rain, roll: "",
     },
+    [IDS.RK_VOLLEY]: {
+      name: "Executioner's Volley", id: "${item.id}", uuid: `Actor.${A}.Item.${IDS.RK_VOLLEY}`,
+      active_target: "All Enemies", attribute_die1: "DEX", attribute_die2: "INS",
+      attack_description: DESC.volley, roll: "",
+    },
+    [IDS.RK_ORBIT]: {
+      name: "Rending Orbit", id: "${item.id}", uuid: `Actor.${A}.Item.${IDS.RK_ORBIT}`,
+      active_target: "Up to three creatures", attribute_die1: "DEX", attribute_die2: "MIG",
+      attack_description: DESC.orbit, roll: "",
+    },
+    [IDS.RK_VERDICT]: {
+      name: "Severing Verdict", id: "${item.id}", uuid: `Actor.${A}.Item.${IDS.RK_VERDICT}`,
+      active_target: "One Creature", attribute_die1: "MIG", attribute_die2: "MIG",
+      attack_description: DESC.verdict, roll: "",
+    },
   };
   p.skill_active_list = {
     [IDS.RK_SHIFT]: {
       name: "Form Shift", id: "${item.id}", uuid: `Actor.${A}.Item.${IDS.RK_SHIFT}`,
       active_target: "Self", active_cost: "-", active_duration: "Scene",
       active_description: DESC.shift, roll: "",
+    },
+    [IDS.RK_SHIFT2]: {
+      name: "Form Shift (Dual)", id: "${item.id}", uuid: `Actor.${A}.Item.${IDS.RK_SHIFT2}`,
+      active_target: "Self", active_cost: "-", active_duration: "Scene",
+      active_description: DESC.shift2, roll: "",
     },
     [IDS.RK_DEVOUR]: {
       name: "Devour", id: "${item.id}", uuid: `Actor.${A}.Item.${IDS.RK_DEVOUR}`,
@@ -448,10 +617,6 @@ run(async ({ changes }) => {
     [IDS.RK_ADAPT]: {
       name: "Adaptive Defense", id: "${item.id}", uuid: `Actor.${A}.Item.${IDS.RK_ADAPT}`,
       passive_description: DESC.adapt, roll: "",
-    },
-    [IDS.RK_ARMS]: {
-      name: "Ten Thousand Arms", id: "${item.id}", uuid: `Actor.${A}.Item.${IDS.RK_ARMS}`,
-      passive_description: DESC.arms, roll: "",
     },
   };
 
@@ -471,19 +636,36 @@ run(async ({ changes }) => {
       action_pattern_condition: "self_has_status", action_pattern_string: stance,
       action_pattern_value_1: "0", action_pattern_value_2: "100",
       action_pattern_priority: "8",
-      action_pattern_target_focus: name === "Saber" ? "lowest_hp"
-        : name === "Mace" ? "highest_hp" : "auto",
+      // Focus follows the keyword: an `execute` row hunts the wounded, a
+      // `cripple` row hunts the healthy, so each doubling actually pays out.
+      // Severing Verdict carries no keyword and takes the weakest — it is a
+      // kill, not a setup.
+      action_pattern_target_focus:
+        (name === "Saber" || name === "Severing Verdict") ? "lowest_hp"
+        : (name === "Mace" || name === "Rending Orbit") ? "highest_hp"
+        : "auto",
       action_pattern_cooldown: "0", action_pattern_hp_reserve: "0", action_pattern_hp_ceiling: "0",
     },
   });
+  // The two Form Shifts are separated by the `hp` gate, which is an INCLUSIVE
+  // PERCENT RANGE — 51-100 and 0-50 partition the bar exactly, so precisely one
+  // is ever legal and Crisis flips the whole kit over in one step.
   p.action_pattern_table = {
     ...atk(0, "Saber", "Sword Stance"),
     ...atk(1, "Rain of Arrows", "Bow Stance"),
     ...atk(2, "Chakram", "Throwing Stance"),
     ...atk(3, "Mace", "Flail Stance"),
+    ...atk(6, "Executioner's Volley", "Sword and Bow Stance"),
+    ...atk(7, "Rending Orbit", "Flail and Throwing Stance"),
+    ...atk(8, "Severing Verdict", "Sword and Flail Stance"),
     "4": { $deleted: false, action_pattern_name: "Form Shift",
-           action_pattern_condition: "always", action_pattern_string: "",
-           action_pattern_value_1: "0", action_pattern_value_2: "100",
+           action_pattern_condition: "hp", action_pattern_string: "",
+           action_pattern_value_1: "51", action_pattern_value_2: "100",
+           action_pattern_priority: "4", action_pattern_target_focus: "auto",
+           action_pattern_cooldown: "0", action_pattern_hp_reserve: "0", action_pattern_hp_ceiling: "0" },
+    "9": { $deleted: false, action_pattern_name: "Form Shift (Dual)",
+           action_pattern_condition: "hp", action_pattern_string: "",
+           action_pattern_value_1: "0", action_pattern_value_2: "50",
            action_pattern_priority: "4", action_pattern_target_focus: "auto",
            action_pattern_cooldown: "0", action_pattern_hp_reserve: "0", action_pattern_hp_ceiling: "0" },
     "5": { $deleted: false, action_pattern_name: "Devour",
@@ -495,7 +677,15 @@ run(async ({ changes }) => {
 
   a.items = [
     IDS.RK_SHIFT, IDS.RK_SABER, IDS.RK_MACE, IDS.RK_CHAKRAM,
-    IDS.RK_RAIN, IDS.RK_DEVOUR, IDS.RK_ADAPT, IDS.RK_ARMS,
+    IDS.RK_RAIN, IDS.RK_DEVOUR, IDS.RK_ADAPT,
+    IDS.RK_VOLLEY, IDS.RK_ORBIT, IDS.RK_VERDICT, IDS.RK_SHIFT2,
   ];
-  changes.push([`!actors!${A}`, a, "NEW actor — Rakshasa (L40 elite, Demon, 4 activations, 840 HP)"]);
+  changes.push([`!actors!${A}`, a, "NEW actor — Rakshasa (L40 elite, Demon, 4 activations)"]);
+
+  // Ten Thousand Arms is RETIRED — the Crisis identity is the dual-arm combo,
+  // and stacking a second escalation on top of it overloaded the phase. The doc
+  // must be dropped, not merely unlisted: an item left in the keyspace while the
+  // actor's items[] no longer names it is an orphan the sheet can still render.
+  deletes.push([`!actors.items!${A}.RkTenThousandArm`,
+    "Ten Thousand Arms — retired, replaced by the dual-arm Crisis combos"]);
 }, "valley-of-the-dragon: Rakshasa");

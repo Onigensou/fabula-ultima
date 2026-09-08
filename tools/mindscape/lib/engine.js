@@ -261,6 +261,9 @@ function runReactionEffect(state, reactor, reaction, ctx) {
       reactor.weaponReads = reactor.weaponReads ?? {};
       // Eviction stops at Crisis when the entry says so — that IS the Crisis
       // passive, so it is read here rather than needing its own registry row.
+      // `evictUntilCrisis` (a registry entry freezing the window at Crisis) is
+      // still honoured — no entry uses it since Ten Thousand Arms was retired,
+      // but the hook costs nothing and the next adaptive monster may want it.
       const inCrisis = reactor.hp > 0 && reactor.hp <= reactor.maxHp / 2;
       const evict = e.evict !== false && !(reaction.evictUntilCrisis && inCrisis);
       const pct = RX.applyWeaponRead(

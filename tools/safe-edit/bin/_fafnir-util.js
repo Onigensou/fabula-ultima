@@ -89,19 +89,32 @@ function makeSkill(src, actorId, id, name, img, props) {
 
 // `collection` is the LevelDB collection every change key belongs to; a run
 // writes exactly one. `label` names the run in the safe-edit journal.
+// A build may also DELETE keys — a rework that drops an item has to, or the doc
+// survives in the keyspace while the actor's items[] no longer lists it, which
+// is an orphan the sheet can still render. `deletes` is [key, note] pairs and is
+// optional; a build that never pushes one behaves exactly as before.
 async function run(build, label, collection = "actors") {
   const changes = [];
-  await build({ changes });
+  const deletes = [];
+  await build({ changes, deletes });
 
   const ID_OK = /^[A-Za-z0-9]{16}$/;
-  for (const [key] of changes) {
+  for (const [key] of changes.concat(deletes)) {
     for (const seg of key.split("!").pop().split(".")) {
       if (!ID_OK.test(seg)) throw new Error(`bad document id "${seg}" in key ${key} (must be 16 chars of [A-Za-z0-9])`);
     }
   }
+  // A key on both sides means the build both writes and drops it — always a
+  // bug, and the outcome would depend on statement order.
+  const written = new Set(changes.map((c) => c[0]));
+  for (const [key] of deletes) {
+    if (written.has(key)) throw new Error(`key is both written and deleted: ${key}`);
+  }
 
-  console.log(`\n${APPLY ? "APPLY" : "DRY-RUN"} — ${changes.length} writes to "${collection}"\n`);
+  console.log(`\n${APPLY ? "APPLY" : "DRY-RUN"} — ${changes.length} writes`
+    + (deletes.length ? `, ${deletes.length} deletes` : "") + ` to "${collection}"\n`);
   for (const [key, , note] of changes) console.log(`  ${key}\n    ${note}`);
+  for (const [key, note] of deletes) console.log(`  DELETE ${key}\n    ${note}`);
 
   if (!APPLY) { console.log("\n(dry run — pass --apply to write)"); return; }
 
@@ -110,15 +123,20 @@ async function run(build, label, collection = "actors") {
   const db = await openCollection(collection);
   try {
     for (const [key, value] of changes) await db.put(key, value);
+    for (const [key] of deletes) await db.del(key);
   } finally {
     await db.close();
   }
   journal.append({
-    uuid: `collection:${collection}`, collection, key: changes.map((c) => c[0]).join(","),
+    uuid: `collection:${collection}`, collection,
+    key: changes.map((c) => c[0]).concat(deletes.map((d) => d[0])).join(","),
     beforeHash: null, afterHash: null, backupPath, patch: null,
-    note: `${label}: ${changes.length} docs — ${changes.map((c) => c[2]).join("; ")}`,
+    note: `${label}: ${changes.length} docs`
+      + (deletes.length ? `, ${deletes.length} deleted` : "")
+      + ` — ${changes.map((c) => c[2]).concat(deletes.map((d) => "DELETE " + d[1])).join("; ")}`,
   });
-  console.log(`\nwrote ${changes.length} docs`);
+  console.log(`\nwrote ${changes.length} docs`
+    + (deletes.length ? `, deleted ${deletes.length}` : ""));
 }
 
 module.exports = { blankActor, makeSkill, run, APPLY };

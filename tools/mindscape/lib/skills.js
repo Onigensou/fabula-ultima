@@ -122,6 +122,7 @@ function extractAction(item, actor = null) {
   // coverage gap. It is neither: it is fully modelled, it just has no damage to
   // parse. Returned early, before the damage-shaped reasons are collected.
   const stance = ST.readStanceFields(p, actor, item.name);
+  const hpGate = ST.readHpGate(actor, item.name);
   if (stance?.stanceGrants) {
     return {
       kind: "action",
@@ -132,6 +133,7 @@ function extractAction(item, actor = null) {
       target: { side: "self", count: 1 },
       cost: parseCost(p.cost),
       keywords: null, weaponFamily: null,
+      hpGate,
       ...stance,
     };
   }
@@ -224,6 +226,7 @@ function extractAction(item, actor = null) {
     // null: what they swing with is not on the sheet, so a guess here would be
     // the kind of plausible invention this tool refuses to make.
     weaponFamily: resolveWeaponFamily(skillType, actor),
+    hpGate,
     ...(stance ?? {}),
   };
 }

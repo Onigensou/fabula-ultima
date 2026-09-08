@@ -100,6 +100,36 @@ function patternRows(actor) {
   return Object.values(t).filter((r) => r && !r.$deleted);
 }
 
+// The `hp` pattern condition, as an inclusive PERCENT range — the form the live
+// evaluator uses (value_1/value_2 are min%/max%, NOT a threshold plus a chance).
+//
+// Without this the model cannot see a phase change that is expressed as two
+// rows split across the HP bar: both would read legal at once and the greedy
+// picker would silently take whichever came first in item order, so a whole
+// Crisis kit could look like it never existed. Returns null for every other
+// condition, which is the common case.
+function readHpGate(actor, itemName) {
+  const name = String(itemName ?? "").trim().toLowerCase();
+  for (const row of patternRows(actor)) {
+    if (String(row.action_pattern_name ?? "").trim().toLowerCase() !== name) continue;
+    if (String(row.action_pattern_condition ?? "").trim().toLowerCase() !== "hp") continue;
+    const a = Number(row.action_pattern_value_1);
+    const b = Number(row.action_pattern_value_2);
+    if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
+    return { min: Math.min(a, b), max: Math.max(a, b) };
+  }
+  return null;
+}
+
+// Percent of max HP, ceil'd — matches evaluatePercentageRangeCondition.
+function hpGateOpen(gate, actor) {
+  if (!gate) return true;
+  const max = actor?.maxHp || 0;
+  if (!max) return true;
+  const pct = Math.ceil((actor.hp / max) * 100);
+  return pct >= gate.min && pct <= gate.max;
+}
+
 // Every status the action pattern locks an action behind.
 function gatedStatuses(actor) {
   const out = new Set();
@@ -117,6 +147,8 @@ function gatedStatuses(actor) {
 // a stance must spend it before re-arming, which is what stops the model from
 // burning every activation on Form Shift when that scores no damage.
 function isLegal(action, actor) {
+  // An hp-gated row is simply not on the menu outside its band.
+  if (!hpGateOpen(action?.hpGate, actor)) return false;
   if (action?.stanceRequires) return actor.stance === action.stanceRequires;
   if (action?.stanceGrants) return actor.stance == null;
   // An actor inside a stance cycle must not fall back on its unstanced actions;
@@ -146,4 +178,4 @@ function consume(actor, action) {
   if (action?.stanceRequires && actor.stance === action.stanceRequires) actor.stance = null;
 }
 
-module.exports = { readStanceFields, isLegal, hasStanceCycle, arm, consume, splitList };
+module.exports = { readStanceFields, isLegal, hasStanceCycle, arm, consume, splitList, readHpGate, hpGateOpen };

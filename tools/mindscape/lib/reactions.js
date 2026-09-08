@@ -145,14 +145,13 @@ const REACTION_REGISTRY = Object.freeze({
       kind: "weapon_read",
       window: 4,
       curve: [25, 40, 60, 80],
-      // Crisis flips this to false via `evictUntilCrisis` below.
       evict: true,
     },
-    // The Crisis passive is the SAME mechanism with eviction switched off, so
-    // it is a property of this entry rather than a second reaction — mirroring
-    // the design, where it is one field on one row.
-    evictUntilCrisis: true,
-    note: "5-slot LRU window; Ten Thousand Arms stops eviction at Crisis",
+    // Ten Thousand Arms is RETIRED: the Crisis identity is now the dual-arm
+    // combo, so the read window behaves identically in both halves of the
+    // fight. One less escalation stacked on the phase, and one less rule to
+    // explain at the table.
+    note: "5-slot LRU window, ungated — same before and after Crisis",
   },
 
   // ⚠ Keyed by ACTION name, not by keyword name. "Saber" is the action; the
@@ -166,6 +165,22 @@ const REACTION_REGISTRY = Object.freeze({
     gate: (ctx) => ctx.sourceAction === "Saber" && ctx.victimInCrisis,
     effect: { kind: "damage_mult", factor: 2 },
     note: "Execute keyword — 200% to a creature IN Crisis; the finisher half",
+  },
+
+  // ── Crisis combos ─────────────────────────────────────────────────────────
+  // Same authored pattern as Saber/Mace, on the dual-arm actions.
+  "Executioner's Volley": {
+    trigger: TRIGGERS.ON_DEAL_DAMAGE,
+    gate: (ctx) => ctx.sourceAction === "Executioner's Volley" && ctx.victimInCrisis,
+    effect: { kind: "damage_mult", factor: 2 },
+    note: "Execute keyword on the Sword+Bow combo — doubles on a Crisis victim",
+  },
+
+  "Rending Orbit": {
+    trigger: TRIGGERS.ON_DEAL_DAMAGE,
+    gate: (ctx) => ctx.sourceAction === "Rending Orbit" && !ctx.victimInCrisis,
+    effect: { kind: "damage_mult", factor: 2 },
+    note: "Cripple keyword on the Flail+Throwing combo — doubles on a healthy victim",
   },
 
   "Mace": {
