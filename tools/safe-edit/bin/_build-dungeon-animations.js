@@ -28,6 +28,7 @@ const { openCollection } = require("../lib/db");
 const ANIM_LIB = path.resolve(__dirname, "..", "..", "anim-studio");
 const T = require(path.join(ANIM_LIB, "lib", "dungeon-templates.js"));
 const G = require(path.join(ANIM_LIB, "lib", "dungeon-signatures.js"));
+const RK = require(path.join(ANIM_LIB, "lib", "rakshasa-signatures.js"));
 const { encode, validate } = require(path.join(ANIM_LIB, "lib", "encode.js"));
 
 /* ── Palette ─────────────────────────────────────────────────────────────── */
@@ -50,6 +51,7 @@ const C = {
 /* ── Shared VFX assets ───────────────────────────────────────────────────── */
 
 const JB = "modules/JB2A_DnD5e/Library/";
+const ITEM = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/";
 const FX = {
   impactOrange: JB + "Generic/Impact/Impact_10_Regular_Orange_400x400.webm",
   impactYellow: JB + "Generic/Impact/Impact_06_Regular_Yellow_400x400.webm",
@@ -67,6 +69,19 @@ const FX = {
 };
 
 const SND = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
+
+/* ── Weapon icons for Form Shift announcements ───────────────────────────── */
+//
+// Every one of these is an asset ALREADY in use elsewhere in this world, so
+// they are known to resolve. A Form Shift whose icon 404s still runs (the
+// sprite is skipped) but the announcement loses half its point.
+const ICON_W = {
+  sword:   "icons/weapons/swords/greatsword-guard-gold-worn.webp",
+  bow:     "icons/weapons/ranged/bow-recurve-yellow.webp",
+  chakram: ITEM + "Ring.gif",
+  mace:    ITEM + "Mace.gif",
+};
+
 const SFX = {
   windWalk: SND + "WindWalk.wav",
   earth4:   SND + "Soundboard/Earth4.ogg",
@@ -573,6 +588,47 @@ const REGISTRY = {
                impact: false,
                holdWebm: FX.smokePuff, holdWebmSize: 300, holdWebmRepeatMs: 460,
                sfx: "Cursor2", sfxVol: 0.4, sfxArrive: SFX.spook, sfxArriveVol: 0.6 },
+      }),
+    },
+  },
+
+  // ── Rakshasa ───────────────────────────────────────────────────────────
+  // The Shift/Strike cycle: Form Shift announces, the strike pays it off.
+  "Rk5haXsaDemonAAA": {
+    actorName: "Rakshasa",
+    items: {
+      "Form Shift": () => RK.formShift({
+        key: "rakshasa-form-shift", name: "Form Shift",
+        cfg: {
+          verb: "draws",
+          // Keyed by the stance AE Form Shift just applied — the animation
+          // reads the result rather than re-rolling the pool.
+          forms: {
+            "Sword Stance":    { label: "Sword",    icon: ICON_W.sword },
+            "Bow Stance":      { label: "Bow",      icon: ICON_W.bow },
+            "Throwing Stance": { label: "Chakram",  icon: ICON_W.chakram },
+            "Flail Stance":    { label: "Mace",     icon: ICON_W.mace },
+          },
+          sfx: "Cursor2", sfxVol: 0.5,
+        },
+      }),
+      "Saber": () => RK.dashStrike({
+        key: "rakshasa-saber", name: "Saber",
+        cfg: { impact: "slash", slashCount: 2,
+               sfx: "Cursor2", sfxVol: 0.4, sfxImpact: "Attack3", sfxImpactVol: 0.6 },
+      }),
+      "Mace": () => RK.dashStrike({
+        key: "rakshasa-mace", name: "Mace",
+        cfg: { impact: "blunt", lungeMs: 440, holdMs: 160, shakeAmp: 14, shakeMs: 560,
+               sfx: "Cursor2", sfxVol: 0.4, sfxImpact: "Explosion1", sfxImpactVol: 0.6 },
+      }),
+      "Chakram": () => RK.chakramBounce({
+        key: "rakshasa-chakram", name: "Chakram",
+        cfg: { sfxThrow: "Cursor2", sfxThrowVol: 0.45, sfxHit: "Attack2", sfxHitVol: 0.55 },
+      }),
+      "Rain of Arrows": () => RK.arrowRain({
+        key: "rakshasa-rain-of-arrows", name: "Rain of Arrows",
+        cfg: { sfxDraw: "Cursor2", sfxDrawVol: 0.45, sfxVolley: "Attack2", sfxVolleyVol: 0.4 },
       }),
     },
   },
