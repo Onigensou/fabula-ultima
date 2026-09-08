@@ -109,26 +109,26 @@ t("Adaptive Defense fails CLOSED with no weapon family", () => {
   assert.strictEqual(entry.gate({ weaponFamily: "bow" }), true);
 });
 
-t("Execute fires only on a Crisis victim, Cripple only on a healthy one", () => {
-  const ex = RX.REACTION_REGISTRY["Execute"], cr = RX.REACTION_REGISTRY["Cripple"];
-  assert.strictEqual(ex.gate({ sourceAction: "Execute", victimInCrisis: true }), true);
-  assert.strictEqual(ex.gate({ sourceAction: "Execute", victimInCrisis: false }), false);
-  assert.strictEqual(cr.gate({ sourceAction: "Cripple", victimInCrisis: false }), true);
-  assert.strictEqual(cr.gate({ sourceAction: "Cripple", victimInCrisis: true }), false);
+t("Saber (execute) fires only on a Crisis victim, Mace (cripple) only on a healthy one", () => {
+  const ex = RX.REACTION_REGISTRY["Saber"], cr = RX.REACTION_REGISTRY["Mace"];
+  assert.strictEqual(ex.gate({ sourceAction: "Saber", victimInCrisis: true }), true);
+  assert.strictEqual(ex.gate({ sourceAction: "Saber", victimInCrisis: false }), false);
+  assert.strictEqual(cr.gate({ sourceAction: "Mace", victimInCrisis: false }), true);
+  assert.strictEqual(cr.gate({ sourceAction: "Mace", victimInCrisis: true }), false);
 });
 
 t("the keyword pair is mutually exclusive — never both on one victim", () => {
-  const ex = RX.REACTION_REGISTRY["Execute"], cr = RX.REACTION_REGISTRY["Cripple"];
+  const ex = RX.REACTION_REGISTRY["Saber"], cr = RX.REACTION_REGISTRY["Mace"];
   for (const inCrisis of [true, false]) {
-    const both = ex.gate({ sourceAction: "Execute", victimInCrisis: inCrisis })
-              && cr.gate({ sourceAction: "Execute", victimInCrisis: inCrisis });
+    const both = ex.gate({ sourceAction: "Saber", victimInCrisis: inCrisis })
+              && cr.gate({ sourceAction: "Saber", victimInCrisis: inCrisis });
     assert.strictEqual(both, false);
   }
 });
 
 t("a keyword reaction is scoped to its own skill", () => {
   // Without the sourceAction gate every attack the monster made would double.
-  const ex = RX.REACTION_REGISTRY["Execute"];
+  const ex = RX.REACTION_REGISTRY["Saber"];
   assert.strictEqual(ex.gate({ sourceAction: "Chakram", victimInCrisis: true }), false);
 });
 
@@ -150,7 +150,7 @@ t("an untuned entry keeps the registry's own numbers", () => {
 
 // ── Stances ─────────────────────────────────────────────────────────────────
 const armAct = { name: "Form Shift", stanceGrants: ["Sword", "Bow", "Throwing", "Flail"] };
-const swordAct = { name: "Execute", stanceRequires: "Sword" };
+const swordAct = { name: "Saber", stanceRequires: "Sword" };
 const plainAct = { name: "Devour" };
 
 t("unarmed, only the arming action is legal", () => {

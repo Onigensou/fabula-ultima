@@ -25,8 +25,10 @@ const FOLDER = "4gMC1IxdJlF59BSi";
 const IDS = {
   RK:          "Rk5haXsaDemonAAA",
   RK_SHIFT:    "RkFormShift01AAA",
-  RK_EXECUTE:  "RkExecuteSword01",
-  RK_CRIPPLE:  "RkCrippleFlail01",
+  // ⚠ The ID constants keep their original spelling — an id is opaque and
+  // renaming it would orphan the document. The ACTION NAMES are Saber and Mace.
+  RK_SABER:    "RkExecuteSword01",
+  RK_MACE:     "RkCrippleFlail01",
   RK_CHAKRAM:  "RkChakramThrow01",
   RK_RAIN:     "RkRainOfArrows01",
   RK_DEVOUR:   "RkDevourManEat01",
@@ -56,45 +58,51 @@ const L_MULTI   = link("JournalEntry.Gm3upxgpUVoLSK5u", "Multi (3)");
 const L_OVERFLOW = link("JournalEntry.NUaxIAIPUu5Qnk8l", "Overflow");
 const L_BLEED   = link("JournalEntry.GePNxftPupElcCWp", "Bleed");
 const L_CRISIS  = link("JournalEntry.GJevbCPM8cffm1QM", "Crisis");
+const L_DRAIN   = link("JournalEntry.CRPjA4dHUYLSAh0M", "Drain");
 
-// Action text: a plain systemic sentence plus the effect. Keywords ride as a
-// leading bullet list and are NEVER restated — the link carries the rules.
+// ── Action text ────────────────────────────────────────────────────────────
+// These are TOOLTIPS. Informative first, flavour second — one plain sentence of
+// what the action looks like, then exactly what it does. Not poetry: a player
+// reading this mid-turn needs the rule, not an image.
+//
+// Keywords ride as a leading bullet list and are NEVER restated in the body —
+// the link carries the rules text.
 const DESC = {
   shift:
-    "<p>The Rakshasa lets one weapon fall and draws another from the pile at its feet. " +
-    "It changes to a different weapon form: Sword, Bow, Throwing or Flail. " +
-    "It recovers a small amount of MP as it re-grips.</p>",
-  execute:
+    "<p>The Rakshasa changes its form:</p>" +
+    bullets("Sword", "Bow", "Throwing", "Flail") +
+    "<p>Then recovers a small amount of MP.</p>",
+  saber:
     bullets(L_EXECUTE) +
-    "<p>A single downward cut, delivered like a chore. Deal <strong>heavy</strong>&nbsp;" +
+    "<p>Perform a single downward cut. Deal <strong>heavy</strong>&nbsp;" +
     `${L.physical}&nbsp;damage to one creature. Only usable in Sword form.</p>`,
-  cripple:
+  mace:
     bullets(L_CRIPPLE) +
-    "<p>The flail comes around low and takes the legs out. Deal <strong>heavy</strong>&nbsp;" +
+    "<p>Attack with a Pollachi. Deal <strong>heavy</strong>&nbsp;" +
     `${L.physical}&nbsp;damage to one creature and halve its Defence until the effect is ` +
     "removed. Only usable in Flail form.</p>",
   chakram:
     bullets(L_MULTI) +
-    "<p>Three rings leave three hands at once and come back wet. Deal <strong>heavy</strong>&nbsp;" +
+    "<p>Throw a chakram that bounces between three enemies. Deal <strong>heavy</strong>&nbsp;" +
     `${L.physical}&nbsp;damage and inflict ${L_BLEED}. Only usable in Throwing form.</p>`,
   rain:
     bullets(L_OVERFLOW) +
-    "<p>It draws and looses faster than a bow should allow, and the sky goes dark. " +
+    "<p>Shoot multiple volleys into the sky which fall down on the enemy. " +
     `Deal <strong>heavy</strong>&nbsp;${L.physical}&nbsp;damage to all enemies. ` +
     "Only usable in Bow form.</p>",
   devour:
+    bullets(L_DRAIN) +
     "<p>It stops fighting for a moment and eats. This attack cannot miss. Deal " +
     `<strong>moderate</strong>&nbsp;${L.physical}&nbsp;damage to one creature and recover ` +
     "HP equal to half the damage dealt.</p>",
   adapt:
-    bullets(trig("the Rakshasa is attacked with a weapon, whether or not the attack hits")) +
-    "<p>The Rakshasa has held every weapon there is. The Weapon Efficiency of the category " +
-    "that just struck it drops sharply, and every other category recovers a step. A category " +
-    "returns to full only once four <em>different</em> ones have been shown to it.</p>",
+    bullets(trig("the Rakshasa is attacked with a weapon")) +
+    "<p>Lower the efficiency of the triggering weapon type, but increase efficiency " +
+    "against other weapons.</p>",
   arms:
     bullets(trig("the Rakshasa is attacked with a weapon, while at " + L_CRISIS)) +
-    "<p>It stops setting its weapons down. What it has learned, it keeps: Weapon Efficiency " +
-    "no longer recovers, and every category it is shown falls further.</p>",
+    "<p>Weapon efficiency no longer recovers. Every weapon type the Rakshasa is shown " +
+    "drops further, and none of them climb back.</p>",
 };
 
 // Bestiary voice, unlinked prose, as approved.
@@ -196,16 +204,16 @@ run(async ({ changes }) => {
   // isReaction TRUE: the doubling is a reaction row on this very item, and
   // reaction-triggerCore skips every row on an item without the flag. That one
   // field is why Kirin's identical Execute never fired.
-  changes.push([ik(IDS.RK_EXECUTE), attack(IDS.RK_EXECUTE, "Execute", {
+  changes.push([ik(IDS.RK_SABER), attack(IDS.RK_SABER, "Saber", {
     skill_target: "One Creature", skill_range: "Melee",
     rolled_atr1: "MIG", rolled_atr2: "DEX", damage_bonus: "30",
-    action_keywords: "execute", description: DESC.execute,
+    action_keywords: "execute", description: DESC.saber,
     isReaction: true,
     on_activate_effect_ref: "spend_stance",
     reaction_config_table: {
       "0": {
         $deleted: false, reaction_trigger: "creature_will_deal_damage",
-        reaction_source: "self", reaction_source_skill: "Execute",
+        reaction_source: "self", reaction_source_skill: "Saber",
         condition_formula: "TARGET_AE_COUNT_CRISIS > 0",
         reaction_passive_mode: "force", reaction_effect_ref: "ex_double",
       },
@@ -218,16 +226,16 @@ run(async ({ changes }) => {
   }), "NEW item — Execute (Sword form, 200% vs a Crisis target)"]);
 
   // Cripple — 200% into a HEALTHY target. The opener half, plus a DEF debuff.
-  changes.push([ik(IDS.RK_CRIPPLE), attack(IDS.RK_CRIPPLE, "Cripple", {
+  changes.push([ik(IDS.RK_MACE), attack(IDS.RK_MACE, "Mace", {
     skill_target: "One Creature", skill_range: "Melee",
     rolled_atr1: "MIG", rolled_atr2: "MIG", damage_bonus: "28",
-    action_keywords: "cripple", description: DESC.cripple,
+    action_keywords: "cripple", description: DESC.mace,
     isReaction: true,
     on_activate_effect_ref: "cr_debuff",
     reaction_config_table: {
       "0": {
         $deleted: false, reaction_trigger: "creature_will_deal_damage",
-        reaction_source: "self", reaction_source_skill: "Cripple",
+        reaction_source: "self", reaction_source_skill: "Mace",
         condition_formula: "TARGET_AE_COUNT_CRISIS == 0",
         reaction_passive_mode: "force", reaction_effect_ref: "cr_double",
       },
@@ -248,12 +256,12 @@ run(async ({ changes }) => {
   //   ⚠ VERIFY LIVE that CSB honours MULTIPLY on a derived prop. If it does not,
   //   the fallback is `bonus_defense` with a flat negative, and the action text
   //   must stop promising a percentage.
-  changes.push([aek(IDS.RK_CRIPPLE, IDS.AE_CRIPPLED), {
+  changes.push([aek(IDS.RK_MACE, IDS.AE_CRIPPLED), {
     _id: IDS.AE_CRIPPLED, name: "Crippled", img: ICON.melee, icon: ICON.melee,
     transfer: false, disabled: false, statuses: [],
     description: "<p>A knee that no longer takes weight. Defence is halved.</p>",
     changes: [{ key: "defense", mode: 1, value: "0.5", priority: 20 }],
-    duration: {}, origin: `Actor.${A}.Item.${IDS.RK_CRIPPLE}`,
+    duration: {}, origin: `Actor.${A}.Item.${IDS.RK_MACE}`,
     system: { tags: ["cleansable", "rakshasa_debuff"] },
     flags: { "fabula-ultima-companion": { crossScene: false } },
   }, "NEW AE — Crippled (DEF x0.5, cleansable)"]);
@@ -403,15 +411,15 @@ run(async ({ changes }) => {
   });
 
   p.attack_list = {
-    [IDS.RK_EXECUTE]: {
-      name: "Execute", id: "${item.id}", uuid: `Actor.${A}.Item.${IDS.RK_EXECUTE}`,
+    [IDS.RK_SABER]: {
+      name: "Saber", id: "${item.id}", uuid: `Actor.${A}.Item.${IDS.RK_SABER}`,
       active_target: "One Creature", attribute_die1: "MIG", attribute_die2: "DEX",
-      attack_description: DESC.execute, roll: "",
+      attack_description: DESC.saber, roll: "",
     },
-    [IDS.RK_CRIPPLE]: {
-      name: "Cripple", id: "${item.id}", uuid: `Actor.${A}.Item.${IDS.RK_CRIPPLE}`,
+    [IDS.RK_MACE]: {
+      name: "Mace", id: "${item.id}", uuid: `Actor.${A}.Item.${IDS.RK_MACE}`,
       active_target: "One Creature", attribute_die1: "MIG", attribute_die2: "MIG",
-      attack_description: DESC.cripple, roll: "",
+      attack_description: DESC.mace, roll: "",
     },
     [IDS.RK_CHAKRAM]: {
       name: "Chakram", id: "${item.id}", uuid: `Actor.${A}.Item.${IDS.RK_CHAKRAM}`,
@@ -463,16 +471,16 @@ run(async ({ changes }) => {
       action_pattern_condition: "self_has_status", action_pattern_string: stance,
       action_pattern_value_1: "0", action_pattern_value_2: "100",
       action_pattern_priority: "8",
-      action_pattern_target_focus: name === "Execute" ? "lowest_hp"
-        : name === "Cripple" ? "highest_hp" : "auto",
+      action_pattern_target_focus: name === "Saber" ? "lowest_hp"
+        : name === "Mace" ? "highest_hp" : "auto",
       action_pattern_cooldown: "0", action_pattern_hp_reserve: "0", action_pattern_hp_ceiling: "0",
     },
   });
   p.action_pattern_table = {
-    ...atk(0, "Execute", "Sword Stance"),
+    ...atk(0, "Saber", "Sword Stance"),
     ...atk(1, "Rain of Arrows", "Bow Stance"),
     ...atk(2, "Chakram", "Throwing Stance"),
-    ...atk(3, "Cripple", "Flail Stance"),
+    ...atk(3, "Mace", "Flail Stance"),
     "4": { $deleted: false, action_pattern_name: "Form Shift",
            action_pattern_condition: "always", action_pattern_string: "",
            action_pattern_value_1: "0", action_pattern_value_2: "100",
@@ -486,7 +494,7 @@ run(async ({ changes }) => {
   };
 
   a.items = [
-    IDS.RK_SHIFT, IDS.RK_EXECUTE, IDS.RK_CRIPPLE, IDS.RK_CHAKRAM,
+    IDS.RK_SHIFT, IDS.RK_SABER, IDS.RK_MACE, IDS.RK_CHAKRAM,
     IDS.RK_RAIN, IDS.RK_DEVOUR, IDS.RK_ADAPT, IDS.RK_ARMS,
   ];
   changes.push([`!actors!${A}`, a, "NEW actor — Rakshasa (L40 elite, Demon, 4 activations, 840 HP)"]);

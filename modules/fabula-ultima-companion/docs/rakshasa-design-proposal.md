@@ -362,8 +362,8 @@ Flail therefore carry much smaller bonuses than v1, and are conditional:
 
 | Form | Skill | Keyword | Target | `damage_bonus` | Raw when keyword misses | **Raw when it lands** |
 |---|---|---|---|---|---|---|
-| **Sword** | Execute | `execute` | One Creature | **30** | ~51 | **~102** (target in Crisis) |
-| **Flail** | Cripple | `cripple` | One Creature | **28** | ~49 | **~98** (target not in Crisis) |
+| **Sword** | Saber | `execute` | One Creature | **30** | ~51 | **~102** (target in Crisis) |
+| **Flail** | Mace | `cripple` | One Creature | **28** | ~49 | **~98** (target not in Crisis) |
 | **Throwing** | Chakram | `multi` (3) | Up to three creatures | **16** | — | ~37 ea = **~111** |
 | **Bow** | Rain of Arrows | `overflow` | All Enemy, 30 MP | **11** | — | ~32 ea = **~128** |
 
@@ -374,24 +374,24 @@ All four resolve vs **DEF**.
 
 This is the part I think is genuinely good, and it came out of your own naming:
 
-- **Flail/Cripple hunts the healthy** (`target_focus: "highest_hp"`). Reliably
+- **Mace hunts the healthy** (`target_focus: "highest_hp"`). Reliably
   ~98 plus a DEF debuff — the opener.
-- **Sword/Execute hunts the wounded** (`target_focus: "lowest_hp"`). ~102 on a
+- **Saber hunts the wounded** (`target_focus: "lowest_hp"`). ~102 on a
   PC in Crisis, a limp **51** on anyone healthy.
 - So **"is anyone in Crisis?" becomes the party's own lever.** Keep everybody
   above half and the Sword stance is a wasted activation. Let someone slip and
   the next Sword telegraph is a death sentence they have one turn to answer.
 
-> ⚠ **Execute is lethal by construction and that needs sim attention.** A PC in
+> ⚠ **Saber is lethal by construction and that needs sim attention.** A PC in
 > Crisis is at ≤ half HP (Hina ≤49, Keren ≤48, Zarg ≤55, Blanche ≤83); ~102 kills
 > any of them. That is what the keyword *means*, and the party has two real
 > answers — heal out of Crisis, or **Blanche's Protect**, which redirects the
-> single-target hit onto DEF 19+. But if the sim shows Execute reliably
-> converting one downed PC into a chain of them, the dial is Sword's bonus (30),
+> single-target hit onto DEF 19+. But if the sim shows Saber reliably
+> converting one downed PC into a chain of them, the dial is Saber's bonus (30),
 > not the keyword.
 
 **Riders:** Chakram → **Bleed** (existing common AE, `charges 3`,
-`target_turn_end`). Cripple → a cleansable DEF debuff; `defense` is CSB-derived,
+`target_turn_end`). Mace → a cleansable DEF debuff; `defense` is CSB-derived,
 so a literal −50% needs an AE in **MULTIPLY** mode (the AE manager supports it —
 **verify live that CSB honours it on a derived prop**), with a flat
 `bonus_defense: -6` as the fallback. If MULTIPLY does not take, say "reduces
@@ -433,13 +433,13 @@ alone is too soft.
 
 Copied from Kirin's working pattern (§0.4). Two rows per skill, four rows total.
 
-**Sword — Execute** (200% to a creature **in** Crisis):
+**Sword — Saber**, carrying the `execute` keyword (200% to a creature **in** Crisis):
 
 ```jsonc
 "reaction_config_table": { "0": {
   "reaction_trigger":      "creature_will_deal_damage",
   "reaction_source":       "self",
-  "reaction_source_skill": "Execute",
+  "reaction_source_skill": "Saber",
   "condition_formula":     "TARGET_AE_COUNT_CRISIS > 0",
   "reaction_passive_mode": "force",
   "reaction_effect_ref":   "sword_execute"
@@ -450,7 +450,7 @@ Copied from Kirin's working pattern (§0.4). Two rows per skill, four rows total
 } }
 ```
 
-**Flail — Cripple** (200% to a creature **not** in Crisis): identical, with
+**Flail — Mace**, carrying the `cripple` keyword (200% to a creature **not** in Crisis): identical, with
 `condition_formula: "TARGET_AE_COUNT_CRISIS == 0"` and its own `effect_label`.
 
 **Both items need `isReaction: true`** — the flag that killed Kirin's copy. Run
@@ -468,7 +468,7 @@ Notes worth carrying:
   `TARGET_AE_COUNT_CRISIS` does, and it is what Kirin already relies on, so
   Rakshasa inherits the same exposure rather than inventing a new one: the AE is
   maintained by the crisis-reactor and could in principle lag a mid-card heal.
-  Worth one dry-run probe (heal a PC out of Crisis, then swing Execute in the
+  Worth one dry-run probe (heal a PC out of Crisis, then swing Saber in the
   same round) — if it lags, that is a Kirin bug too, and a shared fix.
 - **Pre-damage by construction.** The trigger fires before the damage lands, so a
   target this attack pushes *into* Crisis does not retroactively earn the 200%.
@@ -524,7 +524,7 @@ well-played sample will not surface the failure mode.
   **Measure before the first tuning pass.**
 - `BaselineDPR` is unverified at this tier, and **Asura's 900 inherits the EF
   error from §0.1**, so "parity with Asura" is a shakier anchor than it looks.
-- Dial order: **Sword's bonus** (Execute lethality) → the read curve → HP last.
+- Dial order: **Saber's bonus** (Execute-keyword lethality) → the read curve → HP last.
   Per-hit damage moves the fight; HP only moves its length.
 
 ---
@@ -739,7 +739,7 @@ Rebuild with `node bin/_build-rakshasa.js --apply` from `tools/safe-edit`
 | Affinity | VU light · RS dark · RS poison |
 | Conditions | IM disarmed, frightened · RS slow, weak |
 | Weapon Efficiency | all ten lanes at 100 — Adaptive Defense is the only thing that moves them |
-| Items | Form Shift · Execute · Cripple · Chakram · Rain of Arrows · Devour · Adaptive Defense · Ten Thousand Arms |
+| Items | Form Shift · Saber · Mace · Chakram · Rain of Arrows · Devour · Adaptive Defense · Ten Thousand Arms |
 | AEs | 4 stance AEs on Form Shift, `Crippled` on Cripple |
 | Sheet mirrors | attack_list 4 · skill_active_list 2 · skill_passive_list 2 |
 

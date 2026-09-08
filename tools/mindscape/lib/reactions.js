@@ -155,21 +155,24 @@ const REACTION_REGISTRY = Object.freeze({
     note: "5-slot LRU window; Ten Thousand Arms stops eviction at Crisis",
   },
 
-  "Execute": {
+  // ⚠ Keyed by ACTION name, not by keyword name. "Saber" is the action; the
+  // keyword it carries is `execute`. Naming an action after its own keyword is
+  // the anti-pattern — a keyword is a property, not an identity.
+  "Saber": {
     trigger: TRIGGERS.ON_DEAL_DAMAGE,
     // Live: creature_will_deal_damage + condition_formula TARGET_AE_COUNT_CRISIS > 0
-    // + adjust_damage multiply 2. Copied from Kirin's Horn Rush, which is the
-    // shipped instance of this pattern.
-    gate: (ctx) => ctx.sourceAction === "Execute" && ctx.victimInCrisis,
+    // + adjust_damage multiply 2, scoped by reaction_source_skill: "Saber".
+    // Copied from Kirin's Horn Rush, the shipped instance of this pattern.
+    gate: (ctx) => ctx.sourceAction === "Saber" && ctx.victimInCrisis,
     effect: { kind: "damage_mult", factor: 2 },
-    note: "200% to a creature IN Crisis — the finisher half of the pair",
+    note: "Execute keyword — 200% to a creature IN Crisis; the finisher half",
   },
 
-  "Cripple": {
+  "Mace": {
     trigger: TRIGGERS.ON_DEAL_DAMAGE,
-    gate: (ctx) => ctx.sourceAction === "Cripple" && !ctx.victimInCrisis,
+    gate: (ctx) => ctx.sourceAction === "Mace" && !ctx.victimInCrisis,
     effect: { kind: "damage_mult", factor: 2 },
-    note: "200% to a creature NOT in Crisis — the opener half of the pair",
+    note: "Cripple keyword — 200% to a creature NOT in Crisis; the opener half",
   },
 });
 
