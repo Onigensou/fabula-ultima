@@ -78,6 +78,60 @@
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
+    },
+    {
+      "_id": "uYjFKDFHOyGEfQnX",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1788964296606,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "uYjFKDFHOyGEfQnX",
+          "originalParentId": "IKPhMTEbTEqnH5dT",
+          "originalUuid": "Actor.IKPhMTEbTEqnH5dT.ActiveEffect.uYjFKDFHOyGEfQnX"
+        },
+        "fabula-ultima-companion": {
+          "bdDefeated": true,
+          "preventFreeAttack": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Incapacitate.png",
+      "name": "KO",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "4g2B0rdJ3SiUQvUv"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
     }
   ],
   "flags": {
