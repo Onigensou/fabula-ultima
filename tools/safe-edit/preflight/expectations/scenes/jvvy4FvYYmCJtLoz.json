@@ -4,7 +4,7 @@
   "tokens": [],
   "tokensFull": [],
   "notes": [],
-  "tileCount": 1,
+  "tileCount": 0,
   "full": {
     "folder": null,
     "name": "Training Ground",
@@ -13,7 +13,7 @@
     "navOrder": 1000000,
     "navName": "Training Ground",
     "background": {
-      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Battlemap/Eisendrache_Battlemap001.png",
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Battlemap/Eisendrache_Battlemap001_v2.webp",
       "scaleX": 1,
       "scaleY": 1,
       "offsetX": 0,
@@ -27,14 +27,14 @@
     },
     "foreground": null,
     "foregroundElevation": 999,
-    "thumb": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/base64data/Scene/28bf9e008e8ef5397d7d4a0747497a6d.webp",
-    "width": 1682,
-    "height": 788,
+    "thumb": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/base64data/Scene/ba17aec7589131a0359af52af0c73e08.webp",
+    "width": 2560,
+    "height": 1270,
     "padding": 0,
     "initial": {
-      "x": 771,
-      "y": 399,
-      "scale": 1.2687237223069694
+      "x": null,
+      "y": null,
+      "scale": null
     },
     "backgroundColor": "#000000",
     "grid": {
@@ -1072,11 +1072,21 @@
             "wellspring_earth": true,
             "wellspring_fire": true,
             "wellspring_bolt": true,
-            "wellspring_ice": true
+            "wellspring_ice": true,
+            "conflictEvent": ""
           },
           "sceneNetwork": "[]"
         },
-        "campSceneUuid": ""
+        "campSceneUuid": "",
+        "conflict": {
+          "version": 2,
+          "stage": {
+            "x": 439,
+            "y": 241,
+            "w": 1682,
+            "h": 788
+          }
+        }
       },
       "custom-system-builder": {},
       "1000-fish": {},
@@ -1105,7 +1115,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.4",
       "createdTime": 1762515389849,
-      "modifiedTime": 1786846686360,
+      "modifiedTime": 1788963140104,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "environment": {
@@ -1155,555 +1165,95 @@
     "walls": [
       {
         "c": [
-          637,
-          575,
-          599,
-          575
+          2121,
+          1029,
+          439,
+          1029
         ],
-        "light": 20,
         "move": 20,
         "sight": 20,
         "sound": 20,
+        "light": 20,
         "dir": 0,
         "door": 0,
         "ds": 0,
-        "flags": {},
-        "_id": "7BKPli8vS0CmpZ1I",
         "threshold": {
           "light": null,
           "sight": null,
           "sound": null,
           "attenuation": false
-        }
-      },
-      {
-        "_id": "8MJltmpO9zlEHR2S",
-        "c": [
-          12,
-          775,
-          1337,
-          775
-        ],
-        "light": 20,
-        "move": 20,
-        "sight": 20,
-        "sound": 20,
-        "dir": 0,
-        "door": 0,
-        "ds": 0,
-        "flags": {},
-        "threshold": {
-          "light": null,
-          "sight": null,
-          "sound": null,
-          "attenuation": false
-        }
-      },
-      {
-        "_id": "9dKlAIqSDxgVXcDB",
-        "c": [
-          424,
-          575,
-          424,
-          613
-        ],
-        "light": 20,
-        "move": 20,
-        "sight": 20,
-        "sound": 20,
-        "dir": 0,
-        "door": 0,
-        "ds": 0,
-        "flags": {},
-        "threshold": {
-          "light": null,
-          "sight": null,
-          "sound": null,
-          "attenuation": false
-        }
-      },
-      {
-        "_id": "BFnqmt1VqoZeG2Gz",
-        "c": [
-          12,
-          12,
-          1337,
-          12
-        ],
-        "light": 20,
-        "move": 20,
-        "sight": 20,
-        "sound": 20,
-        "dir": 0,
-        "door": 0,
-        "ds": 0,
-        "flags": {},
-        "threshold": {
-          "light": null,
-          "sight": null,
-          "sound": null,
-          "attenuation": false
-        }
-      },
-      {
-        "_id": "BoydYRASdEmgpnma",
-        "c": [
-          462,
-          575,
-          424,
-          575
-        ],
-        "light": 20,
-        "move": 20,
-        "sight": 20,
-        "sound": 20,
-        "dir": 0,
-        "door": 0,
-        "ds": 0,
-        "flags": {},
-        "threshold": {
-          "light": null,
-          "sight": null,
-          "sound": null,
-          "attenuation": false
-        }
+        },
+        "_id": "AxJ7MIMnUEb1Ixit",
+        "flags": {}
       },
       {
         "c": [
-          1050,
-          613,
-          1012,
-          613
+          2121,
+          241,
+          2121,
+          1029
         ],
-        "light": 20,
         "move": 20,
         "sight": 20,
         "sound": 20,
+        "light": 20,
         "dir": 0,
         "door": 0,
         "ds": 0,
-        "flags": {},
-        "_id": "FWWsNFDhtmstL44P",
         "threshold": {
           "light": null,
           "sight": null,
           "sound": null,
           "attenuation": false
-        }
+        },
+        "_id": "RD7ezSpIC9iKgSUE",
+        "flags": {}
       },
       {
         "c": [
-          837,
-          562,
-          837,
-          600
+          439,
+          1029,
+          439,
+          241
         ],
-        "light": 20,
         "move": 20,
         "sight": 20,
         "sound": 20,
+        "light": 20,
         "dir": 0,
         "door": 0,
         "ds": 0,
-        "flags": {},
-        "_id": "Hw1eochgdtGpLzPJ",
         "threshold": {
           "light": null,
           "sight": null,
           "sound": null,
           "attenuation": false
-        }
-      },
-      {
-        "_id": "IX3O3xHxuCdksEmd",
-        "c": [
-          1337,
-          12,
-          1337,
-          775
-        ],
-        "light": 20,
-        "move": 20,
-        "sight": 20,
-        "sound": 20,
-        "dir": 0,
-        "door": 0,
-        "ds": 0,
-        "flags": {},
-        "threshold": {
-          "light": null,
-          "sight": null,
-          "sound": null,
-          "attenuation": false
-        }
-      },
-      {
-        "_id": "JwdSrwRrkGnm3FqZ",
-        "c": [
-          12,
-          775,
-          12,
-          12
-        ],
-        "light": 20,
-        "move": 20,
-        "sight": 20,
-        "sound": 20,
-        "dir": 0,
-        "door": 0,
-        "ds": 0,
-        "flags": {},
-        "threshold": {
-          "light": null,
-          "sight": null,
-          "sound": null,
-          "attenuation": false
-        }
+        },
+        "_id": "ZH3ch2Lrxz5FASoc",
+        "flags": {}
       },
       {
         "c": [
-          799,
-          562,
-          799,
-          600
+          439,
+          241,
+          2121,
+          241
         ],
-        "light": 20,
         "move": 20,
         "sight": 20,
         "sound": 20,
+        "light": 20,
         "dir": 0,
         "door": 0,
         "ds": 0,
-        "flags": {},
-        "_id": "L93zA3FzA6rwNzC7",
         "threshold": {
           "light": null,
           "sight": null,
           "sound": null,
           "attenuation": false
-        }
-      },
-      {
-        "c": [
-          1050,
-          575,
-          1050,
-          613
-        ],
-        "light": 20,
-        "move": 20,
-        "sight": 20,
-        "sound": 20,
-        "dir": 0,
-        "door": 0,
-        "ds": 0,
-        "flags": {},
-        "_id": "MW6KWnT6upsTseuJ",
-        "threshold": {
-          "light": null,
-          "sight": null,
-          "sound": null,
-          "attenuation": false
-        }
-      },
-      {
-        "c": [
-          637,
-          613,
-          599,
-          613
-        ],
-        "light": 20,
-        "move": 20,
-        "sight": 20,
-        "sound": 20,
-        "dir": 0,
-        "door": 0,
-        "ds": 0,
-        "flags": {},
-        "_id": "OYuHBQBHpJ1IZwtc",
-        "threshold": {
-          "light": null,
-          "sight": null,
-          "sound": null,
-          "attenuation": false
-        }
-      },
-      {
-        "c": [
-          837,
-          600,
-          799,
-          600
-        ],
-        "light": 20,
-        "move": 20,
-        "sight": 20,
-        "sound": 20,
-        "dir": 0,
-        "door": 0,
-        "ds": 0,
-        "flags": {},
-        "_id": "VLCj31sjyKKzHRYp",
-        "threshold": {
-          "light": null,
-          "sight": null,
-          "sound": null,
-          "attenuation": false
-        }
-      },
-      {
-        "_id": "VlxB6jdxrj7zOTa5",
-        "c": [
-          25,
-          512,
-          87,
-          512
-        ],
-        "light": 20,
-        "move": 20,
-        "sight": 20,
-        "sound": 20,
-        "dir": 0,
-        "door": 0,
-        "ds": 0,
-        "flags": {},
-        "threshold": {
-          "light": null,
-          "sight": null,
-          "sound": null,
-          "attenuation": false
-        }
-      },
-      {
-        "_id": "XHUXvd8hsQpaJVJa",
-        "c": [
-          25,
-          512,
-          112,
-          725
-        ],
-        "light": 20,
-        "move": 20,
-        "sight": 20,
-        "sound": 20,
-        "dir": 0,
-        "door": 0,
-        "ds": 0,
-        "flags": {},
-        "threshold": {
-          "light": null,
-          "sight": null,
-          "sound": null,
-          "attenuation": false
-        }
-      },
-      {
-        "c": [
-          837,
-          562,
-          799,
-          562
-        ],
-        "light": 20,
-        "move": 20,
-        "sight": 20,
-        "sound": 20,
-        "dir": 0,
-        "door": 0,
-        "ds": 0,
-        "flags": {},
-        "_id": "XIj1WoFYH1vSPPLU",
-        "threshold": {
-          "light": null,
-          "sight": null,
-          "sound": null,
-          "attenuation": false
-        }
-      },
-      {
-        "_id": "Z2JIBOYAi81aVM1B",
-        "c": [
-          175,
-          725,
-          112,
-          725
-        ],
-        "light": 20,
-        "move": 20,
-        "sight": 20,
-        "sound": 20,
-        "dir": 0,
-        "door": 0,
-        "ds": 0,
-        "flags": {},
-        "threshold": {
-          "light": null,
-          "sight": null,
-          "sound": null,
-          "attenuation": false
-        }
-      },
-      {
-        "c": [
-          599,
-          575,
-          599,
-          613
-        ],
-        "light": 20,
-        "move": 20,
-        "sight": 20,
-        "sound": 20,
-        "dir": 0,
-        "door": 0,
-        "ds": 0,
-        "flags": {},
-        "_id": "dEzrffimyuSgy8gW",
-        "threshold": {
-          "light": null,
-          "sight": null,
-          "sound": null,
-          "attenuation": false
-        }
-      },
-      {
-        "_id": "iLXFbcXaVj1xUEm8",
-        "c": [
-          462,
-          613,
-          424,
-          613
-        ],
-        "light": 20,
-        "move": 20,
-        "sight": 20,
-        "sound": 20,
-        "dir": 0,
-        "door": 0,
-        "ds": 0,
-        "flags": {},
-        "threshold": {
-          "light": null,
-          "sight": null,
-          "sound": null,
-          "attenuation": false
-        }
-      },
-      {
-        "c": [
-          637,
-          575,
-          637,
-          613
-        ],
-        "light": 20,
-        "move": 20,
-        "sight": 20,
-        "sound": 20,
-        "dir": 0,
-        "door": 0,
-        "ds": 0,
-        "flags": {},
-        "_id": "kDxpXcS3kqq6l1HC",
-        "threshold": {
-          "light": null,
-          "sight": null,
-          "sound": null,
-          "attenuation": false
-        }
-      },
-      {
-        "c": [
-          1012,
-          575,
-          1012,
-          613
-        ],
-        "light": 20,
-        "move": 20,
-        "sight": 20,
-        "sound": 20,
-        "dir": 0,
-        "door": 0,
-        "ds": 0,
-        "flags": {},
-        "_id": "kw1hfzeAkPFyN6wS",
-        "threshold": {
-          "light": null,
-          "sight": null,
-          "sound": null,
-          "attenuation": false
-        }
-      },
-      {
-        "_id": "noxK6278Up30LkrU",
-        "c": [
-          87,
-          512,
-          175,
-          725
-        ],
-        "light": 20,
-        "move": 20,
-        "sight": 20,
-        "sound": 20,
-        "dir": 0,
-        "door": 0,
-        "ds": 0,
-        "flags": {},
-        "threshold": {
-          "light": null,
-          "sight": null,
-          "sound": null,
-          "attenuation": false
-        }
-      },
-      {
-        "_id": "xcyrTppErqrUWAG8",
-        "c": [
-          462,
-          575,
-          462,
-          613
-        ],
-        "light": 20,
-        "move": 20,
-        "sight": 20,
-        "sound": 20,
-        "dir": 0,
-        "door": 0,
-        "ds": 0,
-        "flags": {},
-        "threshold": {
-          "light": null,
-          "sight": null,
-          "sound": null,
-          "attenuation": false
-        }
-      },
-      {
-        "c": [
-          1050,
-          575,
-          1012,
-          575
-        ],
-        "light": 20,
-        "move": 20,
-        "sight": 20,
-        "sound": 20,
-        "dir": 0,
-        "door": 0,
-        "ds": 0,
-        "flags": {},
-        "_id": "zfMg4hw66tziWbYy",
-        "threshold": {
-          "light": null,
-          "sight": null,
-          "sound": null,
-          "attenuation": false
-        }
+        },
+        "_id": "xSKEfp50Qyv4cYcC",
+        "flags": {}
       }
     ]
   }
