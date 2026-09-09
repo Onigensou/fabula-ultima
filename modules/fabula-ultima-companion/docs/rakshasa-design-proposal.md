@@ -380,16 +380,16 @@ All four resolve vs **DEF**.
 
 Raw = `HR + damage_bonus`. HR ≈ 7.15 (two d10) or 6.55 (d10+d8).
 
-| Skill | Roll | `damage_bonus` | Raw | Keyword fires | Doubled | Per use |
+| Skill | Class | Roll | `damage_bonus` | Raw | Keyword fires | Doubled |
 |---|---|---|---|---|---|---|
-| Saber | MIG+DEX | **60** | 67 | target at or below 50% HP | 134 | 67 |
-| Mace | MIG+MIG | **40** | 47 | target healthy | 94 | ~94 early |
-| Chakram x3 | DEX+INS | **20** | 27 ea | — | — | 80 |
-| Rain of Arrows x4 | DEX+INS | **15** | 22 ea | — | — | 87 (30 MP) |
-| Executioner's Volley x4 | DEX+INS | **18** | 25 ea | vs Crisis targets | 50 ea | 99-198 |
-| Rending Orbit x3 | DEX+MIG | **22** | 29 ea | vs healthy targets | 58 ea | 86-173 |
-| Severing Verdict | MIG+MIG | **162** | 169 | — | — | 169 |
-| Devour | auto-hit | flat 45 | 45 | — | — | 45, heals 22 |
+| Saber | Strike | MIG+DEX | **60** | 67 | target at or below 50% HP | 134 |
+| Mace | **Magic** | MIG+MIG | **40** | 47 | target healthy | 94 |
+| Chakram x3 | **Magic** | DEX+INS | **20** | 27 ea | — | — |
+| Rain of Arrows x4 | Strike | DEX+INS | **15** | 22 ea | — | — |
+| Executioner's Volley x4 | Strike | DEX+INS | **18** | 25 ea | vs Crisis targets | 50 ea |
+| Rending Orbit x3 | **Magic** | DEX+MIG | **22** | 29 ea | vs healthy targets | 58 ea |
+| Severing Verdict | Strike | MIG+MIG | **162** | 169 | — | — |
+| Devour | none | auto-hit | flat 45 | 45 | — | — |
 
 **Why these moved.** v2 sized Saber and Mace at half, expecting the keyword to
 supply the rest. Measured, that failed in both directions: Execute needs a
@@ -406,6 +406,52 @@ The target focus keeps the spikes fair — Mace hunts `highest_hp`, so its
 doubled ~94 lands on Blanche (166 HP) rather than Hina (98); Saber hunts
 `lowest_hp`, so its doubled ~134 is an execution. Severing Verdict stays the
 largest single hit, so the hierarchy holds.
+
+### 5.4 Accuracy classes (added 2026-09-09)
+
+The kit was 100% Strike, and one item switches that off. **Ghostly Sheet** sets
+`affinity_class_strike = IM` with `damage_taken_mult = 2`, so a single PC
+wearing it took **zero** from every action the Rakshasa owned. Devour was the
+only valve, and it is Crisis-gated on a 3-turn cooldown.
+
+Sword and Bow stay Strike; Flail and Throwing become Magic; each combo follows
+its lead weapon. `defense_target_type` is the entire switch --
+`resolvesVsMagicDefense()` (snapshot.js) takes the explicit per-item value over
+the Spell default, and action-profile.js derives the damage CLASS from the check
+that was actually made: vs DEF is `strike`, vs MDEF is `magic`. They therefore
+remain **Attacks dealing Physical damage** -- no Spell conversion, no
+`arcane_ef` routing, no keyword or animation change. Asura's own Elemental Slash
+(Enchanted) already ships in this shape, as do a dozen other monsters.
+
+Ghostly Sheet now costs what it should: its wearer blanks the 4 Strike actions
+but takes DOUBLE from the 3 Magic ones. The halves also land on different PCs --
+Hina is DEF 8 / MDEF 14, Zarg is DEF 14 / MDEF 9 -- so no single defence answers
+the fight.
+
+NOT restated in the action text: no shipped monster does it, and the action card
+already shows which defence a check resolved against.
+
+**This made the fight harder and that was accepted rather than compensated.**
+Party mean MDEF (12.75) is below mean DEF (14), so the same numbers connect more
+often. Mindscape, 2000 runs at the ~6-round pacing proxy:
+
+| | damage pass | + accuracy mix |
+|---|---|---|
+| EnemyDPR | 76.5 | **84.1** |
+| party HP | median 30%, p25 0% | median **24%**, p25 0% |
+| outcomes | victory 56% / defeat 26% | victory **51%** / defeat **32%** |
+| KO rate | 63 / 47 / 43 / 32 | **61 / 50 / 48 / 38** (Hina/Keren/Zarg/Blanche) |
+| Crisis | round 3-4 of 7 | round 3 of 7, 99% of runs |
+
+A −30% trim to the Magic half (Mace 28, Chakram 14, Orbit 15) would restore the
+earlier band and was measured at victory 58% / defeat 25%. Deliberately not
+taken.
+
+**Unmeasurable, stated instead:** Mindscape's `rules.js` carries a damage-class
+affinity axis but nothing populates it -- the loader never reads the flag and the
+engine never passes a class -- so the Ghostly Sheet scenario itself cannot be
+simulated. The claims above about that item are arithmetic from its own AE, not
+a measurement.
 
 ### 5.2 What the keywords buy, tactically
 
@@ -801,6 +847,18 @@ model and cannot serve as a baseline; that is worth fixing before the next pass.
 
 Still NOT live-tested. No Battle Director battle has ever been run against this
 actor, in either phase.
+
+## 11c. Accuracy-class pass — 2026-09-09
+
+Full detail in §5.4. Headline: the kit was 100% Strike and Ghostly Sheet
+(`affinity_class_strike = IM`) blanked it outright. Flail and Throwing, and the
+combo that leads with a flail, now check vs MDEF. Accepted as a difficulty
+increase rather than compensated: victory 56% -> 51%, defeat 26% -> 32%,
+EnemyDPR 76.5 -> 84.1, party HP median 30% -> 24% (2000 runs, pacing proxy).
+
+Worth carrying forward when any future monster kit is reviewed: **check the
+accuracy-class spread, not just the damage.** A kit that is all one class is one
+item away from doing nothing, and nothing in the build tooling flags it.
 
 ## 12. As-built — what is done and what is NOT
 
