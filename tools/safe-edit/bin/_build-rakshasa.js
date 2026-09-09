@@ -49,11 +49,16 @@ const IDS = {
 };
 const A = IDS.RK;
 
-// ⚠ PLACEHOLDER ART — follows the Bestiary naming convention
-// (Asura_Standard.png), but nobody has confirmed this file exists on the Forge.
-// If the token renders blank, that is this line, not the build.
+// Sprite confirmed live 2026-09-09 (274x310 PNG). The earlier note here called
+// it a placeholder because the file did not exist on the Forge yet.
 const ART = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa_Standard.png";
-const SCALE = 2.0;   // Asura is 2.25; Rakshasa reads slightly smaller. Eyeball live.
+// Token is 1x1 like every other boss, so rendered height is ~110 * scale.
+// Asura sits at 2.25 (~248px) and Kirin at 2.28 (~251px); 2.3 puts Rakshasa
+// level with them rather than the 11% under that 2.0 gave. It was set to 2.0
+// before the art existed, on a guess that it should read smaller — the actual
+// sprite is both TALLER and WIDER than Asura's, and this is the same tier with
+// a bigger HP pool, so reading under them was the wrong instinct.
+const SCALE = 2.3;
 
 const ik = (i) => `!actors.items!${A}.${i}`;
 const aek = (i, ae) => `!actors.items.effects!${A}.${i}.${ae}`;
