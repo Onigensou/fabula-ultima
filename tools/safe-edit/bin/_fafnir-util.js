@@ -121,12 +121,46 @@ async function run(build, label, collection = "actors") {
   const backupPath = snapshotCollection(collection);
   console.log(`\nbackup: ${backupPath}`);
   const db = await openCollection(collection);
+  let preserved = 0;
   try {
+    // ── Carry animations across a rebuild ────────────────────────────────
+    // A monster build writes WHOLE documents, so re-running one silently
+    // discarded every animation_script that _build-dungeon-animations.js had
+    // authored. That is exactly what happened to Rakshasa: the Crisis rework
+    // rebuilt the actor and blanked all four shipped animations, and the loss
+    // was invisible — the export report counts it as a MODIFIED doc, not a
+    // removal, so the "no removals, safe to submit" gate passed and it shipped.
+    //
+    // The two tools own different fields, so the mechanics build no longer gets
+    // to speak for the animation one: whatever is already on disk wins for these
+    // keys unless the build explicitly sets them.
+    const ANIM_KEYS = ["animation_script", "skill_animation_mode", "animation_preload_urls",
+                       "animation_damage_timing_options", "animation_damage_timing_offset"];
+    for (const change of changes) {
+      const [key, value] = change;
+      if (!/^!actors\.items!/.test(key)) continue;
+      const props = value?.system?.props;
+      if (!props) continue;
+      let existing = null;
+      try { existing = await db.get(key); } catch (e) { existing = null; }
+      const old = existing?.system?.props;
+      if (!old) continue;
+      for (const k of ANIM_KEYS) {
+        const incoming = props[k];
+        const blank = incoming == null || incoming === "" || incoming === "default";
+        if (blank && old[k] != null && old[k] !== "" && old[k] !== "default") {
+          props[k] = old[k];
+          preserved++;
+        }
+      }
+    }
+
     for (const [key, value] of changes) await db.put(key, value);
     for (const [key] of deletes) await db.del(key);
   } finally {
     await db.close();
   }
+  if (preserved) console.log(`preserved ${preserved} animation field(s) from the existing docs`);
   journal.append({
     uuid: `collection:${collection}`, collection,
     key: changes.map((c) => c[0]).concat(deletes.map((d) => d[0])).join(","),
