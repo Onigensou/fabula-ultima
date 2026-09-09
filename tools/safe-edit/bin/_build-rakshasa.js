@@ -241,6 +241,27 @@ run(async ({ changes, deletes }) => {
     }, `NEW AE — ${s.name}`]);
   }
 
+  // ── Accuracy classes ─────────────────────────────────────────────────────
+  // The kit was 100% Strike, which one item shuts off outright: Ghostly Sheet
+  // sets affinity_class_strike = IM (and damage_taken_mult = 2), so a single
+  // PC wearing it took ZERO from every action the Rakshasa owns. Devour was the
+  // only valve, and it is Crisis-gated on a 3-turn cooldown.
+  //
+  // Half the kit now checks vs MDEF, which reads as the `magic` class. Sword
+  // and Bow stay Strike, Flail and Throwing become Magic, and each combo
+  // follows its lead weapon. No single class affinity answers the whole fight,
+  // and the two halves land on different PCs: Hina is DEF 8 / MDEF 14, Zarg is
+  // DEF 14 / MDEF 9, so neither defence alone covers the party.
+  //
+  // `defense_target_type` is the entire switch -- see resolvesVsMagicDefense()
+  // in snapshot.js, and action-profile.js, which derives the damage class from
+  // the check that was actually made rather than from the action kind. These
+  // stay Attacks dealing Physical damage; the same shape Asura's own Elemental
+  // Slash (Enchanted) already ships with, plus a dozen other monsters.
+  //
+  // Deliberately NOT restated in the action text: no shipped monster does, and
+  // the action card already shows which defence a check resolved against.
+
   // ── The four forms ───────────────────────────────────────────────────────
   // Damage sized so each strike is worth ~2 normal actions, because Form Shift
   // spent one — and sized so the UNDOUBLED strike already is, because the
@@ -295,6 +316,7 @@ run(async ({ changes, deletes }) => {
   // Cripple — 200% into a HEALTHY target. The opener half, plus a DEF debuff.
   changes.push([ik(IDS.RK_MACE), attack(IDS.RK_MACE, "Mace", {
     skill_target: "One Creature", skill_range: "Melee",
+    defense_target_type: "mdef",
     rolled_atr1: "MIG", rolled_atr2: "MIG", damage_bonus: "40",
     action_keywords: "cripple", description: DESC.mace,
     isReaction: true,
@@ -337,6 +359,7 @@ run(async ({ changes, deletes }) => {
   // damage in damage_bonus.
   changes.push([ik(IDS.RK_CHAKRAM), attack(IDS.RK_CHAKRAM, "Chakram", {
     skill_target: "Up to three creatures", skill_range: "Range",
+    defense_target_type: "mdef",
     rolled_atr1: "DEX", rolled_atr2: "INS", damage_bonus: "20",
     action_keywords: "multi", description: DESC.chakram,
     isReaction: false,
@@ -499,6 +522,7 @@ run(async ({ changes, deletes }) => {
   // The opener half of the pair, and the reason a fresh party cannot relax.
   changes.push([ik(IDS.RK_ORBIT), attack(IDS.RK_ORBIT, "Rending Orbit", {
     skill_target: "Up to three creatures", skill_range: "Range",
+    defense_target_type: "mdef",
     rolled_atr1: "DEX", rolled_atr2: "MIG", damage_bonus: "22",
     action_keywords: "cripple, multi", description: DESC.orbit,
     isReaction: true,
