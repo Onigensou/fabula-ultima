@@ -371,6 +371,7 @@
         }
       },
       "folder": null,
+      "img": "icons/svg/item-bag.svg",
       "name": "Devour",
       "ownership": {
         "default": 0
@@ -666,10 +667,26 @@
       "effects": [
         {
           "_id": "RkAeStanceBow001",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>A recurve strung with something pale.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -677,22 +694,42 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Bow Stance",
           "origin": "Actor.Rk5haXsaDemonAAA.Item.RkFormShift01AAA",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "rakshasa_stance"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "RkAeStanceFlail1",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>A haft, a chain, and a weight.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -700,22 +737,42 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Flail Stance",
           "origin": "Actor.Rk5haXsaDemonAAA.Item.RkFormShift01AAA",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "rakshasa_stance"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "RkAeStanceSword1",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>A long straight blade, held low.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -723,22 +780,42 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Sword Stance",
           "origin": "Actor.Rk5haXsaDemonAAA.Item.RkFormShift01AAA",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "rakshasa_stance"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "RkAeStanceThrow1",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>Three rings, spinning on three fingers.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -746,15 +823,19 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Throwing Stance",
           "origin": "Actor.Rk5haXsaDemonAAA.Item.RkFormShift01AAA",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "rakshasa_stance"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         }
       ],
       "flags": {
@@ -763,6 +844,7 @@
         }
       },
       "folder": null,
+      "img": "icons/svg/item-bag.svg",
       "name": "Form Shift",
       "ownership": {
         "default": 0
@@ -852,10 +934,26 @@
       "effects": [
         {
           "_id": "RkAeComboFlaThr1",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>Chains in two hands, rings spinning in the other two.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -863,22 +961,42 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Flail and Throwing Stance",
           "origin": "Actor.Rk5haXsaDemonAAA.Item.RkFormShiftCris1",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "rakshasa_combo"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "RkAeComboSwdBow1",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>A blade in two hands, a drawn bow in the other two.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -886,22 +1004,42 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Sword and Bow Stance",
           "origin": "Actor.Rk5haXsaDemonAAA.Item.RkFormShiftCris1",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "rakshasa_combo"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "RkAeComboSwdFla1",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>Every arm holding something heavy. Nothing left in reserve.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -909,15 +1047,19 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Sword and Flail Stance",
           "origin": "Actor.Rk5haXsaDemonAAA.Item.RkFormShiftCris1",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "rakshasa_combo"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         }
       ],
       "flags": {
@@ -926,6 +1068,7 @@
         }
       },
       "folder": null,
+      "img": "icons/svg/item-bag.svg",
       "name": "Form Shift (Dual)",
       "ownership": {
         "default": 0
@@ -1300,7 +1443,6 @@
     "default": 0
   },
   "prototypeToken": {
-    "actorId": "Rk5haXsaDemonAAA",
     "actorLink": false,
     "alpha": 1,
     "appendNumber": false,
@@ -1474,8 +1616,8 @@
       "offsetX": 0,
       "offsetY": 0,
       "rotation": 0,
-      "scaleX": 2,
-      "scaleY": 2,
+      "scaleX": 2.3,
+      "scaleY": 2.3,
       "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa_Standard.png",
       "tint": "#ffffff"
     },
