@@ -7,6 +7,7 @@
 //   node bin/_build-dungeon-animations.js            # dry run, validates only
 //   node bin/_build-dungeon-animations.js --write    # write to LevelDB
 //   node bin/_build-dungeon-animations.js --write --only "Thrash"
+//   node bin/_build-dungeon-animations.js --only "Thrash" --emit out.json
 //
 // GAME MUST BE CLOSED for --write (safe-edit opens LevelDB directly).
 //
@@ -681,10 +682,11 @@ function parseArgs(argv) {
   return flags;
 }
 
-async function loadCopySources() {
+async function loadCopySources(needed) {
   const out = {};
   const byColl = {};
   for (const [name, spec] of Object.entries(COPY_FROM)) {
+    if (needed && !needed.has(name)) continue;
     (byColl[spec.collection] ||= []).push([name, spec.id]);
   }
   for (const [coll, wants] of Object.entries(byColl)) {
@@ -706,8 +708,18 @@ async function main() {
   const write = !!flags.write;
   const only = typeof flags.only === "string" ? flags.only.toLowerCase() : null;
 
-  const copies = await loadCopySources();
-  console.log(`copy sources loaded: ${Object.keys(copies).join(", ")}`);
+  // Which COPY sources does THIS run actually need? Anything filtered out by
+  // --only must not drag the database open behind it.
+  const needed = new Set();
+  for (const entry of Object.values(REGISTRY)) {
+    for (const [itemName, gen] of Object.entries(entry.items)) {
+      if (gen !== "COPY") continue;
+      if (only && !itemName.toLowerCase().includes(only) && !entry.actorName.toLowerCase().includes(only)) continue;
+      needed.add(itemName);
+    }
+  }
+  const copies = await loadCopySources(needed);
+  console.log(`copy sources loaded: ${Object.keys(copies).join(", ") || "(none needed)"}`);
 
   // Build + validate everything BEFORE opening the actors DB for writing, so a
   // generator bug can never leave the store half-written.
@@ -743,6 +755,16 @@ async function main() {
   }
   console.log(`\n${jobs.length} script(s) built and validated.`);
 
+  // --emit writes the validated, ENCODED scripts to a JSON file instead of the
+  // database. The store can only be written with the game closed, but a live
+  // review session is exactly when a tuning pass needs to land; emitting lets
+  // the same validated output be pushed through the test bridge, so the world
+  // never receives a script that did not go through validate() here.
+  if (typeof flags.emit === "string") {
+    fs.writeFileSync(flags.emit, JSON.stringify(jobs, null, 2));
+    console.log("emitted " + jobs.length + " script(s) to " + flags.emit);
+    return;
+  }
   if (!write) {
     for (const j of jobs) console.log(`  [dry] ${j.actorName.padEnd(16)} ${j.itemName.padEnd(32)} ${j.mode}${j.len ? " " + j.len + "b" : ""}`);
     console.log("\nDry run — pass --write to apply. GAME MUST BE CLOSED.");

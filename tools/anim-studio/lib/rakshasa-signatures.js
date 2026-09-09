@@ -28,6 +28,17 @@
 
 const { shell, inner } = require("./dungeon-templates.js");
 
+// JB2A impact clips. Named here rather than in the build script because these
+// are the kit's signature hits, not per-action dressing: Saber and the combo
+// that contains Saber have to show the same steel, and that only holds if both
+// read the URL from one place.
+const JB = "modules/JB2A_DnD5e/Library/Generic/Impact/";
+const FX = {
+  slash:   JB + "Impact_04_Regular_Blue_400x400.webm",
+  blunt:   JB + "Impact_05_Regular_Orange_400x400.webm",
+  verdict: JB + "ImpactFire01_01_Regular_Orange_600x600.webm",
+};
+
 /* ── Fragments ───────────────────────────────────────────────────────────── */
 
 // Everything the rest of the body depends on. `clone: false` for a move that
@@ -57,36 +68,10 @@ const dashHome = () => [
   "} });",
 ];
 
-// Crossing streaks, perpendicular to the approach. The clean cut.
-const slashAt = () => [
-  "{",
-  "  const perp = Math.atan2(dy, dx) + Math.PI / 2;",
-  "  const len = S.wLen(cfg.slashLen);",
-  "  for (let i = 0; i < cfg.slashCount; i++) {",
-  "    const off = (i - (cfg.slashCount - 1) / 2) * S.wLen(26);",
-  "    const ox = Math.cos(perp + Math.PI / 2) * off, oy = Math.sin(perp + Math.PI / 2) * off;",
-  "    const g = streak(",
-  "      t.x + Math.cos(perp) * len + ox, t.y + Math.sin(perp) * len + oy,",
-  "      t.x - Math.cos(perp) * len + ox, t.y - Math.sin(perp) * len + oy,",
-  "      cfg.slashColor, S.wLen(cfg.slashWidth), host);",
-  "    oni.tween({ from: 1, to: 0, duration: cfg.slashFadeMs, ease: E.inQuad, onUpdate: (v) => { g.alpha = v; } });",
-  "    if (i < cfg.slashCount - 1) await wait(cfg.slashGapMs);",
-  "  }",
-  "}",
-];
-
-// An expanding shockwave plus a short squash on the clone. Weight, not edge.
-const bluntAt = () => [
-  "{",
-  "  const ring = new PIXI.Graphics();",
-  "  ring.blendMode = PIXI.BLEND_MODES.ADD;",
-  "  host.addChild(ring);",
-  "  const maxR = S.wLen(cfg.ringMaxRadius);",
-  "  oni.tween({ from: 0, to: 1, duration: cfg.ringMs, ease: E.outCubic, onUpdate: (v) => {",
-  "    ring.clear();",
-  "    ring.lineStyle({ width: S.wLen(cfg.ringWidth) * (1 - v * 0.6), color: cfg.ringColor, alpha: 1 - v });",
-  "    ring.drawCircle(t.x, t.y, maxR * v);",
-  "  }, onComplete: () => { try { ring.destroy(); } catch (e) {} } });",
+// A short squash on the CLONE, so a heavy hit moves the body that threw it.
+// Split out because it belongs to the weight of a blow, not to the clip: the
+// flail and the Verdict both want it, the sword cut does not.
+const cloneSquash = () => [
   "  if (clone) {",
   "    const sy = clone.scale.y, sx = clone.scale.x;",
   "    oni.tween({ from: 0, to: 1, duration: 260, ease: E.outQuad, onUpdate: (v) => {",
@@ -94,8 +79,33 @@ const bluntAt = () => [
   "      clone.scale.set(sx * (1 + k * 0.10), sy * (1 - k * 0.12));",
   "    }, onComplete: () => { try { clone.scale.set(sx, sy); } catch (e) {} } });",
   "  }",
+];
+
+// The point of contact. One fragment for every impact in the kit — the drawn
+// streaks and the expanding ring that used to live here read as placeholder
+// geometry beside the rest of the shot, so both are now library clips.
+//
+// The size is a SCREEN length fed through S.wLen, so the clip keeps its
+// apparent scale at any zoom. Its "ended" promise is parked in the shakes
+// array, which closeStage already awaits, so the host layer is never torn down
+// part-way through playback — the gate has already opened by then, so waiting
+// the clip out costs the fight nothing.
+const impactWebm = (urlKey, sizeKey, { squash = false } = {}) => [
+  "{",
+  "  const fx = await fxWebm(cfg." + urlKey + ", t.x, t.y, {",
+  "    size: S.wLen(cfg." + sizeKey + "), parent: host, z: 96000 });",
+  "  if (fx && fx.ended) shakes.push(fx.ended);",
+  ...(squash ? cloneSquash() : []),
   "}",
 ];
+
+const slashAt = () => impactWebm("slashWebm", "slashWebmSize");
+const bluntAt = () => impactWebm("bluntWebm", "bluntWebmSize", { squash: true });
+
+// Severing Verdict only. Sword and flail land as ONE blow there, so it shows a
+// single larger clip rather than the blue-and-orange pair the other combos
+// stack — the point of the shot is that it does not look like a Mace hit.
+const verdictAt = () => impactWebm("verdictWebm", "verdictWebmSize", { squash: true });
 
 const impactBurst = () => [
   "oni.particles({ x: t.x, y: t.y, count: cfg.particles, color: cfg.color,",
@@ -244,9 +254,11 @@ const BASE = {
   color: 0xffe9c4, particles: 20, particleRadius: 120, particleSize: 11,
   shakeMs: 460, shakeAmp: 9,
   lungeMs: 400, holdMs: 110, returnMs: 500,
-  slashColor: 0xffffff, slashWidth: 10, slashCount: 2,
-  slashGapMs: 100, slashFadeMs: 280, slashLen: 95,
-  ringColor: 0xffd9a0, ringWidth: 7, ringMaxRadius: 150, ringMs: 380,
+  // Impact clips. ringColor/ringWidth stay because ringFlight still draws the
+  // thrown chakram itself — only the IMPACTS became library clips.
+  slashWebm: FX.slash, slashWebmSize: 300,
+  bluntWebm: FX.blunt, bluntWebmSize: 330,
+  ringColor: 0xffd9a0, ringWidth: 7,
   ringGlow: 0x6fd8ff, ringRadius: 34, ringSquash: 0.42,
   outMs: 420, betweenMs: 300, backMs: 480, arc: 0.18,
   trail: true, trailEveryMs: 28, trailLife: 260,
@@ -379,11 +391,14 @@ function comboOrbit(opts = {}) {
 function comboVerdict(opts = {}) {
   const cfg = mk({
     lungeMs: 420, holdMs: 220, returnMs: 520,
-    slashCount: 3, slashGapMs: 0, slashWidth: 13, slashLen: 115,
-    ringMaxRadius: 210, ringWidth: 10,
+    // Roughly twice the single-weapon clips, which is the whole read: one blow,
+    // bigger than either weapon lands on its own.
+    verdictWebm: FX.verdict, verdictWebmSize: 620,
     particles: 34, particleRadius: 170,
     shakeMs: 620, shakeAmp: 18,
-    shakeScreenMs: 520, shakeScreenAmp: 14,
+    // Raised from 520/14. The combined clip is a much larger event than the two
+    // it replaced, and the old shake was reading as ambient under it.
+    shakeScreenMs: 620, shakeScreenAmp: 20,
     flashMs: 90, flashAlpha: 0.55,
   }, opts);
   return build(opts, cfg, [
@@ -392,10 +407,9 @@ function comboVerdict(opts = {}) {
     "playSfx('sfx', 'sfxVol');",
     ...dashIn(),
     "playSfx('sfxImpact', 'sfxImpactVol');",
-    "// Both halves land together — the shockwave is started without awaiting so",
-    "// the streaks draw over it on the same frame rather than after it.",
-    ...bluntAt(),
-    ...slashAt(),
+    "// Sword and flail resolve as a single blow, so this is ONE clip and not the",
+    "// two the other combos stack — see verdictAt.",
+    ...verdictAt(),
     ...impactBurst(),
     "// The extra weight. A short white flash and a hard screenshake, fired but",
     "// NOT awaited: the gate opens on the impact, and the flash is a tail.",
