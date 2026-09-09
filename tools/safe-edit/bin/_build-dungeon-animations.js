@@ -615,6 +615,19 @@ const REGISTRY = {
           sfx: "Cursor2", sfxVol: 0.5,
         },
       }),
+      // The Crisis shift announces a PAIR, so the medallion takes two icons.
+      "Form Shift (Dual)": () => RK.formShift({
+        key: "rakshasa-form-shift-dual", name: "Form Shift (Dual)",
+        cfg: {
+          verb: "arms",
+          forms: {
+            "Sword and Bow Stance":      { label: "Sword and Bow",      icon: [ICON_W.sword, ICON_W.bow] },
+            "Flail and Throwing Stance": { label: "Flail and Chakram",  icon: [ICON_W.mace, ICON_W.chakram] },
+            "Sword and Flail Stance":    { label: "Sword and Flail",    icon: [ICON_W.sword, ICON_W.mace] },
+          },
+          sfx: "Cursor2", sfxVol: 0.55,
+        },
+      }),
       "Saber": () => RK.dashStrike({
         key: "rakshasa-saber", name: "Saber",
         cfg: { impact: "slash", slashCount: 2,
@@ -632,6 +645,23 @@ const REGISTRY = {
       "Rain of Arrows": () => RK.arrowRain({
         key: "rakshasa-rain-of-arrows", name: "Rain of Arrows",
         cfg: { sfxDraw: "Cursor2", sfxDrawVol: 0.45, sfxVolley: "Attack2", sfxVolleyVol: 0.4 },
+      }),
+
+      // ── Crisis combos ──────────────────────────────────────────────────
+      // Each is its two component moves played AT ONCE, sharing one stage.
+      "Executioner's Volley": () => RK.comboVolley({
+        key: "rakshasa-exec-volley", name: "Executioner's Volley",
+        cfg: { sfx: "Cursor2", sfxVol: 0.4, sfxImpact: "Attack3", sfxImpactVol: 0.6,
+               sfxVolley: "Attack2", sfxVolleyVol: 0.4 },
+      }),
+      "Rending Orbit": () => RK.comboOrbit({
+        key: "rakshasa-rending-orbit", name: "Rending Orbit",
+        cfg: { sfx: "Cursor2", sfxVol: 0.4, sfxImpact: "Explosion1", sfxImpactVol: 0.6,
+               sfxHit: "Attack2", sfxHitVol: 0.55 },
+      }),
+      "Severing Verdict": () => RK.comboVerdict({
+        key: "rakshasa-severing-verdict", name: "Severing Verdict",
+        cfg: { sfx: "Cursor2", sfxVol: 0.45, sfxImpact: "Explosion2", sfxImpactVol: 0.9 },
       }),
     },
   },

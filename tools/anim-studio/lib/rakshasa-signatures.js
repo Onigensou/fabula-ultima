@@ -1,519 +1,415 @@
 "use strict";
 //
-// Rakshasa — bespoke action animations.
+// Rakshasa — action animations.
 //
 // Kept separate from dungeon-signatures.js because these are one monster's kit
-// and share a private helper (dashStrike) that nothing else wants. They ride the
+// and share a private fragment library that nothing else wants. They ride the
 // same `shell` / `inner` plumbing, so storage, the done-gate and the pseudo
 // broadcast behave identically to every other shipped animation.
 //
-// ⚠ NO BACKTICKS ANYWHERE IN AN INNER BODY — not even inside a // comment. The
+// ── WHY FRAGMENTS ───────────────────────────────────────────────────────────
+// The Crisis combos are, by design, their two component moves played at once.
+// Concatenating two finished animation bodies does NOT produce that: each one
+// independently calls oni.layer(), oni.cloneToken() and oni.hideToken(), so you
+// would get two host layers, two caster clones and two hide/restore pairs
+// fighting each other — and duplicate `const host` / `clone` / `t` that will not
+// even compile in one scope.
+//
+// So the shared stage is owned ONCE and the moves are phases inside it:
+//   one host layer · one caster clone · one hide/restore · one done()
+// Every action below is assembled from the same fragments, which is also what
+// makes "a combo is its components" true in the code and not just in the design
+// doc — a tuning fix to the dash reaches all six actions instead of one.
+//
+// ⚠ NO BACKTICKS ANYWHERE IN A FRAGMENT — not even inside a // comment. The
 // inner is embedded in a String.raw`…` template by shell(), so one stray
 // backtick closes the template early and breaks the outer parse. Use single
 // quotes in inner comments. encode.validate() asserts the file has exactly two.
 
 const { shell, inner } = require("./dungeon-templates.js");
 
-/* ── Shared: dash in, strike, dash home ──────────────────────────────────── */
-//
-// Saber and Mace are the same shot with a different impact. Written once and
-// parameterised rather than copied, so a tuning fix to the dash cannot land on
-// one and miss the other.
-//
-//   impact: "slash" — crossing streaks, the clean cut
-//   impact: "blunt" — an expanding shockwave ring, a heavier drop, no streaks
-function dashStrike(opts = {}) {
-  const cfg = Object.assign({
-    impact: "slash",
-    color: 0xffe9c4, slashColor: 0xffffff, slashWidth: 10,
-    slashCount: 2, slashGapMs: 100, slashFadeMs: 280, slashLen: 95,
-    ringColor: 0xffd9a0, ringWidth: 7, ringMaxRadius: 150, ringMs: 380,
-    lungeMs: 400, holdMs: 110, returnMs: 500,
-    standoff: 0.62, shakeMs: 460, shakeAmp: 9,
-    particles: 20, particleRadius: 120, particleSize: 11,
-    donePhase: "impact",
-    sfx: null, sfxVol: 0.6, sfxImpact: null, sfxImpactVol: 0.7,
-    totalTimeoutMs: 12000,
-  }, opts.cfg || {});
+/* ── Fragments ───────────────────────────────────────────────────────────── */
 
-  const body = [
+// Everything the rest of the body depends on. `clone: false` for a move that
+// never leaves home (the plain Chakram throw), so no clone/hide pair is created
+// and nothing has to be restored.
+const openStage = ({ clone = true, z = 93000 } = {}) => [
+  "const host = oni.layer({ zIndex: " + z + " });",
+  "const shakes = [];",
+  "// Geometry, resolved once. 't' is the primary target and 'land' the point the",
+  "// dash stops at — short of the target, so the clone never sits on top of it.",
+  "const t = prime ? ctr(prime) : { x: home.x + 200, y: home.y };",
+  "const dx = t.x - home.x, dy = t.y - home.y;",
+  "const land = { x: home.x + dx * cfg.standoff, y: home.y + dy * cfg.standoff };",
+  clone ? "const clone = oni.cloneToken(caster, { parent: host });" : "const clone = null;",
+  clone ? "const restoreCaster = oni.hideToken(caster);" : "const restoreCaster = () => {};",
+];
+
+const dashIn = () => [
+  "await oni.tween({ from: 0, to: 1, duration: cfg.lungeMs, ease: E.inOutQuad, onUpdate: (v) => {",
+  "  if (clone) clone.position.set(home.x + (land.x - home.x) * v, home.y + (land.y - home.y) * v);",
+  "} });",
+];
+
+const dashHome = () => [
+  "await oni.tween({ from: 0, to: 1, duration: cfg.returnMs, ease: E.inOutQuad, onUpdate: (v) => {",
+  "  if (clone) clone.position.set(land.x + (home.x - land.x) * v, land.y + (home.y - land.y) * v);",
+  "} });",
+];
+
+// Crossing streaks, perpendicular to the approach. The clean cut.
+const slashAt = () => [
+  "{",
+  "  const perp = Math.atan2(dy, dx) + Math.PI / 2;",
+  "  const len = S.wLen(cfg.slashLen);",
+  "  for (let i = 0; i < cfg.slashCount; i++) {",
+  "    const off = (i - (cfg.slashCount - 1) / 2) * S.wLen(26);",
+  "    const ox = Math.cos(perp + Math.PI / 2) * off, oy = Math.sin(perp + Math.PI / 2) * off;",
+  "    const g = streak(",
+  "      t.x + Math.cos(perp) * len + ox, t.y + Math.sin(perp) * len + oy,",
+  "      t.x - Math.cos(perp) * len + ox, t.y - Math.sin(perp) * len + oy,",
+  "      cfg.slashColor, S.wLen(cfg.slashWidth), host);",
+  "    oni.tween({ from: 1, to: 0, duration: cfg.slashFadeMs, ease: E.inQuad, onUpdate: (v) => { g.alpha = v; } });",
+  "    if (i < cfg.slashCount - 1) await wait(cfg.slashGapMs);",
+  "  }",
+  "}",
+];
+
+// An expanding shockwave plus a short squash on the clone. Weight, not edge.
+const bluntAt = () => [
+  "{",
+  "  const ring = new PIXI.Graphics();",
+  "  ring.blendMode = PIXI.BLEND_MODES.ADD;",
+  "  host.addChild(ring);",
+  "  const maxR = S.wLen(cfg.ringMaxRadius);",
+  "  oni.tween({ from: 0, to: 1, duration: cfg.ringMs, ease: E.outCubic, onUpdate: (v) => {",
+  "    ring.clear();",
+  "    ring.lineStyle({ width: S.wLen(cfg.ringWidth) * (1 - v * 0.6), color: cfg.ringColor, alpha: 1 - v });",
+  "    ring.drawCircle(t.x, t.y, maxR * v);",
+  "  }, onComplete: () => { try { ring.destroy(); } catch (e) {} } });",
+  "  if (clone) {",
+  "    const sy = clone.scale.y, sx = clone.scale.x;",
+  "    oni.tween({ from: 0, to: 1, duration: 260, ease: E.outQuad, onUpdate: (v) => {",
+  "      const k = Math.sin(v * Math.PI);",
+  "      clone.scale.set(sx * (1 + k * 0.10), sy * (1 - k * 0.12));",
+  "    }, onComplete: () => { try { clone.scale.set(sx, sy); } catch (e) {} } });",
+  "  }",
+  "}",
+];
+
+const impactBurst = () => [
+  "oni.particles({ x: t.x, y: t.y, count: cfg.particles, color: cfg.color,",
+  "  size: cfg.particleSize, radius: S.wLen(cfg.particleRadius), life: 760,",
+  "  gravity: S.wLen(40), blend: PIXI.BLEND_MODES.ADD, parent: host });",
+  "shakes.push(shakeTarget(prime, cfg.shakeMs, S.wLen(cfg.shakeAmp)));",
+];
+
+// Volleys falling along a FIXED screen-space diagonal, so every arrow in every
+// volley is visibly parallel. Spawn points come from S2W screen fractions read
+// live: "from the top of the screen" has to mean the viewport, and a camera move
+// mid-volley would otherwise rain arrows into empty map.
+//
+// Returns a promise array the caller awaits — the whole point of a combo is that
+// this runs WHILE the melee half plays.
+const arrowVolleys = () => [
+  "function dropArrow(landX, landY, delayMs) {",
+  "  const dirW = S.S2W(cfg.fallDx, cfg.fallDy);",
+  "  const zeroW = S.S2W(0, 0);",
+  "  const vx = dirW.x - zeroW.x, vy = dirW.y - zeroW.y;",
+  "  const vlen = Math.hypot(vx, vy) || 1;",
+  "  const ux = vx / vlen, uy = vy / vlen;",
+  "  const travel = Math.abs(S.hPx(1 - cfg.originY));",
+  "  const startX = landX - ux * travel, startY = landY - uy * travel;",
+  "  const ang = Math.atan2(uy, ux);",
+  "  const L = S.wLen(cfg.arrowLen);",
+  "  const g = new PIXI.Graphics();",
+  "  g.blendMode = PIXI.BLEND_MODES.ADD;",
+  "  host.addChild(g);",
+  "  const draw = (x, y, a) => {",
+  "    g.clear();",
+  "    g.lineStyle({ width: S.wLen(cfg.arrowWidth) * 2.4, color: cfg.arrowGlow, alpha: 0.35 * a, cap: 'round' });",
+  "    g.moveTo(x - Math.cos(ang) * L, y - Math.sin(ang) * L); g.lineTo(x, y);",
+  "    g.lineStyle({ width: S.wLen(cfg.arrowWidth), color: cfg.arrowColor, alpha: a, cap: 'round' });",
+  "    g.moveTo(x - Math.cos(ang) * L, y - Math.sin(ang) * L); g.lineTo(x, y);",
+  "  };",
+  "  return (async () => {",
+  "    if (delayMs) await wait(delayMs);",
+  "    await oni.tween({ from: 0, to: 1, duration: cfg.arrowMs, ease: E.inQuad, onUpdate: (v) => {",
+  "      draw(startX + (landX - startX) * v, startY + (landY - startY) * v, 1);",
+  "    } });",
+  "    oni.particles({ x: landX, y: landY, count: cfg.hitParticles, color: cfg.arrowColor,",
+  "      size: cfg.hitSize, radius: S.wLen(cfg.hitRadius), life: 520,",
+  "      blend: PIXI.BLEND_MODES.ADD, parent: host });",
+  "    try { g.destroy(); } catch (e) {}",
+  "  })();",
+  "}",
+  "async function runVolleys() {",
+  "  const flights = [];",
+  "  const aim = tgts.length ? centroid(tgts) : t;",
+  "  for (let v = 0; v < cfg.volleys; v++) {",
+  "    playSfx('sfxVolley', 'sfxVolleyVol');",
+  "    for (let i = 0; i < cfg.perVolley; i++) {",
+  "      const tg = tgts.length ? tgts[(v * cfg.perVolley + i) % tgts.length] : null;",
+  "      const base = tg ? ctr(tg) : aim;",
+  "      const jx = (Math.random() * 2 - 1) * S.wLen(cfg.spreadX * 120);",
+  "      const jy = (Math.random() * 2 - 1) * S.wLen(40);",
+  "      flights.push(dropArrow(base.x + jx, base.y + jy, i * cfg.arrowStaggerMs));",
+  "    }",
+  "    for (const tg of tgts) shakes.push(shakeTarget(tg, cfg.shakeMs, S.wLen(cfg.shakeAmp)));",
+  "    if (v < cfg.volleys - 1) await wait(cfg.volleyGapMs);",
+  "  }",
+  "  await Promise.all(flights);",
+  "}",
+];
+
+// The bouncing ring. `originExpr` is a JS expression for where it launches —
+// `home` for the plain throw, `land` for the combo, where the Rakshasa is
+// already in melee and the rings spin out of him. Launching from an empty home
+// square during a combo would read as a second, invisible caster.
+const ringFlight = (originExpr) => [
+  "const ring = new PIXI.Graphics();",
+  "ring.blendMode = PIXI.BLEND_MODES.ADD;",
+  "host.addChild(ring);",
+  "const R = S.wLen(cfg.ringRadius);",
+  "let spin = 0;",
+  "function drawRing(x, y) {",
+  "  ring.clear();",
+  "  // Squashing the vertical axis with the spin reads as a disc seen at a",
+  "  // shallow angle, which is what sells 'thrown ring' over 'floating bubble'.",
+  "  const sq = cfg.ringSquash + (1 - cfg.ringSquash) * Math.abs(Math.cos(spin));",
+  "  ring.lineStyle({ width: S.wLen(cfg.ringWidth) * 2.2, color: cfg.ringGlow, alpha: 0.35 });",
+  "  ring.drawEllipse(x, y, R, R * sq);",
+  "  ring.lineStyle({ width: S.wLen(cfg.ringWidth), color: cfg.ringColor, alpha: 1 });",
+  "  ring.drawEllipse(x, y, R, R * sq);",
+  "}",
+  "function arcPoint(a, b, v, lift) {",
+  "  const x = a.x + (b.x - a.x) * v;",
+  "  const y = a.y + (b.y - a.y) * v;",
+  "  const d = Math.hypot(b.x - a.x, b.y - a.y);",
+  "  return { x: x, y: y - Math.sin(v * Math.PI) * d * lift };",
+  "}",
+  "let lastTrail = 0;",
+  "function trailAt(x, y) {",
+  "  if (!cfg.trail) return;",
+  "  const now = performance.now();",
+  "  if (now - lastTrail < cfg.trailEveryMs) return;",
+  "  lastTrail = now;",
+  "  const g = new PIXI.Graphics();",
+  "  g.blendMode = PIXI.BLEND_MODES.ADD;",
+  "  g.lineStyle({ width: S.wLen(cfg.ringWidth) * 0.8, color: cfg.ringGlow, alpha: 0.5 });",
+  "  g.drawEllipse(x, y, R * 0.9, R * 0.9 * cfg.ringSquash);",
+  "  host.addChild(g);",
+  "  oni.tween({ from: 0.5, to: 0, duration: cfg.trailLife, ease: E.linear,",
+  "    onUpdate: (v) => { g.alpha = v; }, onComplete: () => { try { g.destroy(); } catch (e) {} } });",
+  "}",
+  "async function flyRing(a, b, ms) {",
+  "  await oni.tween({ from: 0, to: 1, duration: ms, ease: E.inOutQuad, onUpdate: (v) => {",
+  "    spin += 0.35;",
+  "    const p = arcPoint(a, b, v, cfg.arc);",
+  "    drawRing(p.x, p.y);",
+  "    trailAt(p.x, p.y);",
+  "  } });",
+  "}",
+  "async function runRing() {",
+  "  const origin = " + originExpr + ";",
+  "  drawRing(origin.x, origin.y);",
+  "  const hops = tgts.slice(0, 3);",
+  "  let from = { x: origin.x, y: origin.y };",
+  "  for (let i = 0; i < hops.length; i++) {",
+  "    const c = ctr(hops[i]);",
+  "    await flyRing(from, c, i === 0 ? cfg.outMs : cfg.betweenMs);",
+  "    playSfx('sfxHit', 'sfxHitVol');",
+  "    oni.particles({ x: c.x, y: c.y, count: cfg.hitParticles, color: cfg.ringColor,",
+  "      size: cfg.hitSize, radius: S.wLen(cfg.hitRadius), life: 620,",
+  "      blend: PIXI.BLEND_MODES.ADD, parent: host });",
+  "    shakes.push(shakeTarget(hops[i], cfg.shakeMs, S.wLen(cfg.shakeAmp)));",
+  "    from = c;",
+  "  }",
+  "  await flyRing(from, { x: origin.x, y: origin.y }, cfg.backMs);",
+  "  try { ring.destroy(); } catch (e) {}",
+  "}",
+];
+
+const closeStage = () => [
+  "restoreCaster();",
+  "await Promise.all(shakes);",
+  "done();",
+];
+
+/* ── Shared cfg defaults ─────────────────────────────────────────────────── */
+// One table so a combo inherits the same numbers its components use; a shot that
+// never touches a given fragment simply ignores that fragment's keys.
+const BASE = {
+  standoff: 0.62,
+  color: 0xffe9c4, particles: 20, particleRadius: 120, particleSize: 11,
+  shakeMs: 460, shakeAmp: 9,
+  lungeMs: 400, holdMs: 110, returnMs: 500,
+  slashColor: 0xffffff, slashWidth: 10, slashCount: 2,
+  slashGapMs: 100, slashFadeMs: 280, slashLen: 95,
+  ringColor: 0xffd9a0, ringWidth: 7, ringMaxRadius: 150, ringMs: 380,
+  ringGlow: 0x6fd8ff, ringRadius: 34, ringSquash: 0.42,
+  outMs: 420, betweenMs: 300, backMs: 480, arc: 0.18,
+  trail: true, trailEveryMs: 28, trailLife: 260,
+  hitParticles: 14, hitRadius: 90, hitSize: 9,
+  volleys: 4, perVolley: 7, volleyGapMs: 260, arrowMs: 420, arrowStaggerMs: 45,
+  arrowLen: 46, arrowWidth: 3, arrowColor: 0xffe6b0, arrowGlow: 0xffb347,
+  fallDx: 0.26, fallDy: 1.15, spreadX: 0.55, originY: -0.12,
+  totalTimeoutMs: 14000,
+};
+const mk = (extra, opts) => Object.assign({}, BASE, extra, opts.cfg || {});
+const build = (opts, cfg, lines) =>
+  shell({ key: opts.key, name: opts.name, cfg, inner: inner(lines.join("\n")) });
+
+/* ── Singles ─────────────────────────────────────────────────────────────── */
+
+// Saber and Mace: dash in, strike, dash home. Same shot, different impact.
+function dashStrike(opts = {}) {
+  const cfg = mk({ impact: "slash", donePhase: "impact" }, opts);
+  return build(opts, cfg, [
     "if (!caster || !prime) { done(); return; }",
-    "const host = oni.layer({ zIndex: 93000 });",
-    "const t = ctr(prime);",
-    "const dx = t.x - home.x, dy = t.y - home.y;",
-    "const land = { x: home.x + dx * cfg.standoff, y: home.y + dy * cfg.standoff };",
-    "",
-    "const clone = oni.cloneToken(caster, { parent: host });",
-    "const restoreCaster = oni.hideToken(caster);",
+    ...openStage(),
     "playSfx('sfx', 'sfxVol');",
-    "",
-    "// Dash in.",
-    "await oni.tween({ from: 0, to: 1, duration: cfg.lungeMs, ease: E.inOutQuad, onUpdate: (v) => {",
-    "  if (clone) clone.position.set(home.x + (land.x - home.x) * v, home.y + (land.y - home.y) * v);",
-    "} });",
-    "",
+    ...dashIn(),
     "playSfx('sfxImpact', 'sfxImpactVol');",
-    "",
     "if (cfg.impact === 'blunt') {",
-    "  // Blunt: one expanding ring plus a short squash on the clone. Reads as",
-    "  // weight rather than edge — no streaks at all.",
-    "  const ring = new PIXI.Graphics();",
-    "  ring.blendMode = PIXI.BLEND_MODES.ADD;",
-    "  host.addChild(ring);",
-    "  const maxR = S.wLen(cfg.ringMaxRadius);",
-    "  oni.tween({ from: 0, to: 1, duration: cfg.ringMs, ease: E.outCubic, onUpdate: (v) => {",
-    "    ring.clear();",
-    "    ring.lineStyle({ width: S.wLen(cfg.ringWidth) * (1 - v * 0.6), color: cfg.ringColor, alpha: 1 - v });",
-    "    ring.drawCircle(t.x, t.y, maxR * v);",
-    "  }, onComplete: () => { try { ring.destroy(); } catch (e) {} } });",
-    "  if (clone) {",
-    "    const sy = clone.scale.y, sx = clone.scale.x;",
-    "    oni.tween({ from: 0, to: 1, duration: 260, ease: E.outQuad, onUpdate: (v) => {",
-    "      const k = Math.sin(v * Math.PI);",
-    "      clone.scale.set(sx * (1 + k * 0.10), sy * (1 - k * 0.12));",
-    "    }, onComplete: () => { try { clone.scale.set(sx, sy); } catch (e) {} } });",
-    "  }",
+    ...bluntAt(),
     "} else {",
-    "  // Slash: streaks crossing the target, perpendicular to the approach.",
-    "  const perp = Math.atan2(dy, dx) + Math.PI / 2;",
-    "  const len = S.wLen(cfg.slashLen);",
-    "  for (let i = 0; i < cfg.slashCount; i++) {",
-    "    const off = (i - (cfg.slashCount - 1) / 2) * S.wLen(26);",
-    "    const ox = Math.cos(perp + Math.PI / 2) * off, oy = Math.sin(perp + Math.PI / 2) * off;",
-    "    const g = streak(",
-    "      t.x + Math.cos(perp) * len + ox, t.y + Math.sin(perp) * len + oy,",
-    "      t.x - Math.cos(perp) * len + ox, t.y - Math.sin(perp) * len + oy,",
-    "      cfg.slashColor, S.wLen(cfg.slashWidth), host);",
-    "    oni.tween({ from: 1, to: 0, duration: cfg.slashFadeMs, ease: E.inQuad, onUpdate: (v) => { g.alpha = v; } });",
-    "    if (i < cfg.slashCount - 1) await wait(cfg.slashGapMs);",
-    "  }",
+    ...slashAt(),
     "}",
-    "",
-    "oni.particles({ x: t.x, y: t.y, count: cfg.particles, color: cfg.color,",
-    "  size: cfg.particleSize, radius: S.wLen(cfg.particleRadius), life: 760,",
-    "  gravity: S.wLen(40), blend: PIXI.BLEND_MODES.ADD, parent: host });",
-    "const shaking = shakeTarget(prime, cfg.shakeMs, S.wLen(cfg.shakeAmp));",
+    ...impactBurst(),
     "// Damage lands on the hit, not after the walk home.",
     "if (cfg.donePhase === 'impact') done();",
-    "",
     "await wait(cfg.holdMs);",
-    "await oni.tween({ from: 0, to: 1, duration: cfg.returnMs, ease: E.inOutQuad, onUpdate: (v) => {",
-    "  if (clone) clone.position.set(land.x + (home.x - land.x) * v, land.y + (home.y - land.y) * v);",
-    "} });",
-    "restoreCaster();",
-    "await shaking;",
-    "done();",
-  ].join("\n");
-
-  return shell({ key: opts.key, name: opts.name, cfg, inner: inner(body) });
+    ...dashHome(),
+    ...closeStage(),
+  ]);
 }
 
-/* ── S1 · Chakram — bouncing ring ────────────────────────────────────────── */
-//
-// A ring leaves the caster, strikes each target in turn, and comes home. Drawn
-// as a flat ellipse rather than a circle: squashing the vertical axis reads as a
-// disc seen at a shallow angle, which is what sells "thrown ring" instead of
-// "floating bubble". It spins on its own axis the whole flight.
+// Chakram: a pure throw, no dash — the ring leaves from home and returns there.
 function chakramBounce(opts = {}) {
-  const cfg = Object.assign({
-    ringColor: 0xd8f2ff, ringGlow: 0x6fd8ff,
-    ringRadius: 34, ringWidth: 6, ringSquash: 0.42,
-    spinMs: 260,
-    outMs: 420, betweenMs: 300, backMs: 480,
-    arc: 0.18,
-    trail: true, trailEveryMs: 28, trailLife: 260,
-    hitParticles: 14, hitRadius: 90, hitSize: 9,
-    shakeMs: 380, shakeAmp: 8,
-    sfxThrow: null, sfxThrowVol: 0.6, sfxHit: null, sfxHitVol: 0.65,
-    totalTimeoutMs: 14000,
-  }, opts.cfg || {});
-
-  const body = [
+  const cfg = mk({}, opts);
+  return build(opts, cfg, [
     "if (!caster || !tgts.length) { done(); return; }",
-    "const host = oni.layer({ zIndex: 93000 });",
-    "",
-    "// The ring itself. Redrawn each frame so the spin can squash it live.",
-    "const ring = new PIXI.Graphics();",
-    "ring.blendMode = PIXI.BLEND_MODES.ADD;",
-    "host.addChild(ring);",
-    "const R = S.wLen(cfg.ringRadius);",
-    "let spin = 0;",
-    "function drawRing(x, y) {",
-    "  ring.clear();",
-    "  // Two passes: a wide soft glow under a bright core.",
-    "  const sq = cfg.ringSquash + (1 - cfg.ringSquash) * Math.abs(Math.cos(spin));",
-    "  ring.lineStyle({ width: S.wLen(cfg.ringWidth) * 2.2, color: cfg.ringGlow, alpha: 0.35 });",
-    "  ring.drawEllipse(x, y, R, R * sq);",
-    "  ring.lineStyle({ width: S.wLen(cfg.ringWidth), color: cfg.ringColor, alpha: 1 });",
-    "  ring.drawEllipse(x, y, R, R * sq);",
-    "}",
-    "",
-    "// Quadratic arc so a bounce curves instead of sliding along a ruler.",
-    "function arcPoint(a, b, v, lift) {",
-    "  const x = a.x + (b.x - a.x) * v;",
-    "  const y = a.y + (b.y - a.y) * v;",
-    "  const d = Math.hypot(b.x - a.x, b.y - a.y);",
-    "  return { x: x, y: y - Math.sin(v * Math.PI) * d * lift };",
-    "}",
-    "",
-    "let lastTrail = 0;",
-    "function trailAt(x, y) {",
-    "  if (!cfg.trail) return;",
-    "  const now = performance.now();",
-    "  if (now - lastTrail < cfg.trailEveryMs) return;",
-    "  lastTrail = now;",
-    "  const g = new PIXI.Graphics();",
-    "  g.blendMode = PIXI.BLEND_MODES.ADD;",
-    "  g.lineStyle({ width: S.wLen(cfg.ringWidth) * 0.8, color: cfg.ringGlow, alpha: 0.5 });",
-    "  g.drawEllipse(x, y, R * 0.9, R * 0.9 * cfg.ringSquash);",
-    "  host.addChild(g);",
-    "  oni.tween({ from: 0.5, to: 0, duration: cfg.trailLife, ease: E.linear,",
-    "    onUpdate: (v) => { g.alpha = v; }, onComplete: () => { try { g.destroy(); } catch (e) {} } });",
-    "}",
-    "",
-    "async function fly(a, b, ms) {",
-    "  await oni.tween({ from: 0, to: 1, duration: ms, ease: E.inOutQuad, onUpdate: (v) => {",
-    "    spin += 0.35;",
-    "    const p = arcPoint(a, b, v, cfg.arc);",
-    "    drawRing(p.x, p.y);",
-    "    trailAt(p.x, p.y);",
-    "  } });",
-    "}",
-    "",
+    ...openStage({ clone: false }),
     "playSfx('sfxThrow', 'sfxThrowVol');",
-    "drawRing(home.x, home.y);",
-    "",
-    "// Multi 3: up to three distinct targets, in the order BD handed them over.",
-    "const hops = tgts.slice(0, 3);",
-    "const shakes = [];",
-    "let from = { x: home.x, y: home.y };",
-    "for (let i = 0; i < hops.length; i++) {",
-    "  const c = ctr(hops[i]);",
-    "  await fly(from, c, i === 0 ? cfg.outMs : cfg.betweenMs);",
-    "  playSfx('sfxHit', 'sfxHitVol');",
-    "  oni.particles({ x: c.x, y: c.y, count: cfg.hitParticles, color: cfg.ringColor,",
-    "    size: cfg.hitSize, radius: S.wLen(cfg.hitRadius), life: 620,",
-    "    blend: PIXI.BLEND_MODES.ADD, parent: host });",
-    "  shakes.push(shakeTarget(hops[i], cfg.shakeMs, S.wLen(cfg.shakeAmp)));",
-    "  from = c;",
-    "}",
-    "",
-    "// Every target has been struck — damage lands here, before the catch.",
+    ...ringFlight("home"),
+    "await runRing();",
     "done();",
-    "",
-    "await fly(from, { x: home.x, y: home.y }, cfg.backMs);",
-    "try { ring.destroy(); } catch (e) {}",
-    "await Promise.all(shakes);",
-    "done();",
-  ].join("\n");
-
-  return shell({ key: opts.key, name: opts.name, cfg, inner: inner(body) });
+    ...closeStage(),
+  ]);
 }
 
-/* ── S2 · Rain of Arrows — diagonal volley ───────────────────────────────── */
-//
-// The caster steps forward and looses upward; arrows then fall from off the top
-// of the screen on a down-right diagonal, in waves, across the whole enemy line.
-//
-// Screen-anchored on purpose: "from the top of the screen" has to mean the
-// viewport, so spawn points come from S.S2W(fraction) and are re-read live —
-// a camera move mid-volley would otherwise leave arrows raining into empty map.
+// Rain of Arrows: step forward, then volleys. Overflow is one check for the
+// whole line, so damage lands once, after the last arrow comes down.
 function arrowRain(opts = {}) {
-  const cfg = Object.assign({
-    stepMs: 320, stepDist: 0.16, returnMs: 460,
-    volleys: 4, perVolley: 7, volleyGapMs: 260, arrowMs: 420, arrowStaggerMs: 45,
-    arrowLen: 46, arrowWidth: 3, arrowColor: 0xffe6b0, arrowGlow: 0xffb347,
-    // Down-RIGHT diagonal: dx>0, dy>0. Expressed in screen fractions so the
-    // angle is what the player sees regardless of zoom.
-    fallDx: 0.26, fallDy: 1.15,
-    spreadX: 0.55, originY: -0.12,
-    hitParticles: 8, hitRadius: 70, hitSize: 8,
-    shakeMs: 420, shakeAmp: 7,
-    sfxDraw: null, sfxDrawVol: 0.6, sfxVolley: null, sfxVolleyVol: 0.5,
-    totalTimeoutMs: 16000,
-  }, opts.cfg || {});
-
-  const body = [
+  const cfg = mk({ standoff: 0.16, lungeMs: 320, returnMs: 460 }, opts);
+  return build(opts, cfg, [
     "if (!caster) { done(); return; }",
-    "const host = oni.layer({ zIndex: 93000 });",
-    "const clone = oni.cloneToken(caster, { parent: host });",
-    "const restoreCaster = oni.hideToken(caster);",
-    "",
-    "// Step forward, toward the enemy line if there is one.",
-    "const aim = tgts.length ? centroid(tgts) : { x: home.x + 200, y: home.y };",
-    "const ax = aim.x - home.x, ay = aim.y - home.y;",
-    "const alen = Math.hypot(ax, ay) || 1;",
-    "const step = { x: home.x + (ax / alen) * S.wLen(180) * cfg.stepDist * 5,",
-    "               y: home.y + (ay / alen) * S.wLen(180) * cfg.stepDist * 5 };",
+    ...openStage(),
     "playSfx('sfxDraw', 'sfxDrawVol');",
-    "await oni.tween({ from: 0, to: 1, duration: cfg.stepMs, ease: E.outQuad, onUpdate: (v) => {",
-    "  if (clone) clone.position.set(home.x + (step.x - home.x) * v, home.y + (step.y - home.y) * v);",
-    "} });",
-    "",
-    "// One falling arrow. Travels along a fixed screen-space diagonal, so every",
-    "// arrow in every volley is visibly parallel.",
-    "function dropArrow(landX, landY, delayMs) {",
-    "  const dirW = S.S2W(cfg.fallDx, cfg.fallDy);",
-    "  const zeroW = S.S2W(0, 0);",
-    "  const vx = dirW.x - zeroW.x, vy = dirW.y - zeroW.y;",
-    "  const vlen = Math.hypot(vx, vy) || 1;",
-    "  const ux = vx / vlen, uy = vy / vlen;",
-    "  const travel = Math.abs(S.hPx(1 - cfg.originY));",
-    "  const startX = landX - ux * travel, startY = landY - uy * travel;",
-    "  const ang = Math.atan2(uy, ux);",
-    "  const L = S.wLen(cfg.arrowLen);",
-    "  const g = new PIXI.Graphics();",
-    "  g.blendMode = PIXI.BLEND_MODES.ADD;",
-    "  host.addChild(g);",
-    "  const draw = (x, y, a) => {",
-    "    g.clear();",
-    "    g.lineStyle({ width: S.wLen(cfg.arrowWidth) * 2.4, color: cfg.arrowGlow, alpha: 0.35 * a, cap: 'round' });",
-    "    g.moveTo(x - Math.cos(ang) * L, y - Math.sin(ang) * L); g.lineTo(x, y);",
-    "    g.lineStyle({ width: S.wLen(cfg.arrowWidth), color: cfg.arrowColor, alpha: a, cap: 'round' });",
-    "    g.moveTo(x - Math.cos(ang) * L, y - Math.sin(ang) * L); g.lineTo(x, y);",
-    "  };",
-    "  return (async () => {",
-    "    if (delayMs) await wait(delayMs);",
-    "    await oni.tween({ from: 0, to: 1, duration: cfg.arrowMs, ease: E.inQuad, onUpdate: (v) => {",
-    "      draw(startX + (landX - startX) * v, startY + (landY - startY) * v, 1);",
-    "    } });",
-    "    oni.particles({ x: landX, y: landY, count: cfg.hitParticles, color: cfg.arrowColor,",
-    "      size: cfg.hitSize, radius: S.wLen(cfg.hitRadius), life: 520,",
-    "      blend: PIXI.BLEND_MODES.ADD, parent: host });",
-    "    try { g.destroy(); } catch (e) {}",
-    "  })();",
-    "}",
-    "",
-    "const flights = [];",
-    "const shakes = [];",
-    "for (let v = 0; v < cfg.volleys; v++) {",
-    "  playSfx('sfxVolley', 'sfxVolleyVol');",
-    "  for (let i = 0; i < cfg.perVolley; i++) {",
-    "    // Land on a target when there is one, else scatter across the line.",
-    "    const t = tgts.length ? tgts[(v * cfg.perVolley + i) % tgts.length] : null;",
-    "    const base = t ? ctr(t) : aim;",
-    "    const jx = (Math.random() * 2 - 1) * S.wLen(cfg.spreadX * 120);",
-    "    const jy = (Math.random() * 2 - 1) * S.wLen(40);",
-    "    flights.push(dropArrow(base.x + jx, base.y + jy, i * cfg.arrowStaggerMs));",
-    "  }",
-    "  for (const t of tgts) shakes.push(shakeTarget(t, cfg.shakeMs, S.wLen(cfg.shakeAmp)));",
-    "  if (v < cfg.volleys - 1) await wait(cfg.volleyGapMs);",
-    "}",
-    "",
-    "await Promise.all(flights);",
-    "// Overflow is one Accuracy Check for the whole line, so damage lands once,",
-    "// after the last arrow has come down.",
+    ...dashIn(),
+    ...arrowVolleys(),
+    "await runVolleys();",
     "done();",
-    "",
-    "await oni.tween({ from: 0, to: 1, duration: cfg.returnMs, ease: E.inOutQuad, onUpdate: (v) => {",
-    "  if (clone) clone.position.set(step.x + (home.x - step.x) * v, step.y + (home.y - step.y) * v);",
-    "} });",
-    "restoreCaster();",
-    "await Promise.all(shakes);",
-    "done();",
-  ].join("\n");
-
-  return shell({ key: opts.key, name: opts.name, cfg, inner: inner(body) });
+    ...dashHome(),
+    ...closeStage(),
+  ]);
 }
 
-/* ── S3 · Form Shift — announcement panel + weapon flash ─────────────────── */
+/* ── Crisis combos ───────────────────────────────────────────────────────── */
 //
-// Two beats at once: a Final Fantasy style system panel slides in and announces
-// the switch, and the weapon's icon flashes over the Rakshasa's head.
-//
-// The panel is DOM, not PIXI. It has to sit above the canvas in crisp screen
-// space at any zoom, and it is text — PIXI text at canvas scale goes soft the
-// moment the camera moves. The icon is PIXI, because it is anchored to a token
-// and must track it.
-//
-// Which weapon it announces is read from the ACTOR at run time (the stance AE
-// Form Shift just applied), never passed in — the animation must not need to
-// know which branch the pool drew.
-function formShift(opts = {}) {
-  const cfg = Object.assign({
-    verb: "draws",
-    // stance AE name -> [display name, icon url]. Filled by the build script.
-    forms: {},
-    fallbackForm: "weapon",
-    panelMs: 380, panelHoldMs: 1500, panelOutMs: 340,
-    panelTop: 0.11, panelSlide: 46,
-    // Battle Director house theme — the same tokens turn-ui.js defines and
-    // action-card.js paints its panels with, so an announcement reads as part
-    // of the system rather than as a separate overlay that happens to be on
-    // screen at the same time. Warm parchment field, gold-brown stroke, ink
-    // text; the accent is the gold the BD uses for its own header bars.
-    parchmentTop: "#f6f1e6", parchmentBot: "#ebe3d0",
-    strokeColor: "#7a6a55",
-    textColor: "#3a3228", accentColor: "#8a4b22",
-    fontSize: 26, panelPadX: 34, panelPadY: 16,
-    medallionBg: 0x15111f, medallionRim: 0xffcf5c,
-    iconSize: 128, iconRise: 62, iconInMs: 260, iconHoldMs: 620, iconOutMs: 320,
-    iconBlinks: 3,
-    sfx: null, sfxVol: 0.6,
-    totalTimeoutMs: 12000,
-  }, opts.cfg || {});
+// A combo is its two components playing AT ONCE, not one after the other. Each
+// starts its ranged half without awaiting it, plays the melee half over the top,
+// and only then awaits both — so the two overlap instead of queueing, and the
+// whole shot stays near the length of a single.
 
-  const body = [
+// Sword + Bow. Dash in and cut the primary while arrows fall across the line.
+// No origin conflict: the arrows come from off-screen, so the caster being in
+// melee does not fight the volley.
+function comboVolley(opts = {}) {
+  const cfg = mk({ lungeMs: 360, volleys: 3, perVolley: 6 }, opts);
+  return build(opts, cfg, [
     "if (!caster) { done(); return; }",
-    "const host = oni.layer({ zIndex: 94000 });",
-    "",
-    "// Which stance is the Rakshasa actually holding? Read it off the actor so",
-    "// the animation follows the pool draw instead of duplicating it.",
-    "let formKey = null;",
-    "try {",
-    "  const eff = caster.actor && caster.actor.effects ? Array.from(caster.actor.effects) : [];",
-    "  for (const e of eff) {",
-    "    const nm = String((e && (e.name || e.label)) || '').trim();",
-    "    if (nm && cfg.forms[nm]) { formKey = nm; break; }",
-    "  }",
-    "} catch (e) {}",
-    "const form = formKey ? cfg.forms[formKey] : null;",
-    "const formName = form ? form.label : cfg.fallbackForm;",
-    "const formIcon = form ? form.icon : null;",
-    "const who = (caster.document && caster.document.name) || (caster.actor && caster.actor.name) || 'The Rakshasa';",
-    "",
+    ...openStage(),
     "playSfx('sfx', 'sfxVol');",
-    "",
-    "// ── The panel (DOM, screen space) ──────────────────────────────────────",
-    "const view = canvas.app && canvas.app.view;",
-    "const rect = view && view.getBoundingClientRect ? view.getBoundingClientRect() : null;",
-    "const panel = document.createElement('div');",
-    "panel.className = 'oni-anim-formshift';",
-    "panel.style.cssText = [",
-    "  'position: fixed',",
-    "  'pointer-events: none',",
-    "  'z-index: 90',",
-    "  'left: ' + ((rect ? rect.left + rect.width / 2 : window.innerWidth / 2)) + 'px',",
-    "  'top: ' + ((rect ? rect.top + rect.height * cfg.panelTop : window.innerHeight * cfg.panelTop)) + 'px',",
-    "  'transform: translate(-50%, 0)',",
-    "  'padding: ' + cfg.panelPadY + 'px ' + cfg.panelPadX + 'px',",
-    "  'background: linear-gradient(180deg, ' + cfg.parchmentTop + ', ' + cfg.parchmentBot + ')',",
-    "  'border: 2px solid ' + cfg.strokeColor,",
-    "  'border-radius: 14px',",
-    "  // Same two-part shadow the action card uses: a deep drop to lift it off",
-    "  // the canvas, plus a 1px inset highlight that gives the parchment an edge.",
-    "  'box-shadow: 0 16px 48px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.5) inset',",
-    "  'color: ' + cfg.textColor,",
-    "  'font-family: \"Inter\", \"Signika\", \"Segoe UI\", system-ui, sans-serif',",
-    "  'font-size: ' + cfg.fontSize + 'px',",
-    "  'font-weight: 600',",
-    "  'letter-spacing: 0.2px',",
-    "  'white-space: nowrap',",
-    "  'opacity: 0',",
-    "].join('; ');",
-    "// The weapon name is the one word the player needs, so it is the only",
-    "// coloured token in the line. Ink-on-parchment needs a DARK accent to stay",
-    "// legible — the gold that reads well on the BD's dark header bars would be",
-    "// near-invisible here.",
-    "const accent = document.createElement('span');",
-    "accent.style.cssText = 'color: ' + cfg.accentColor + '; font-weight: 800';",
-    "accent.textContent = formName;",
-    "panel.appendChild(document.createTextNode(who + ' ' + cfg.verb + ' its '));",
-    "panel.appendChild(accent);",
-    "document.body.appendChild(panel);",
-    "",
-    "// Slide + fade together, in and out.",
-    "const slideIn = oni.tween({ from: 0, to: 1, duration: cfg.panelMs, ease: E.outCubic, onUpdate: (v) => {",
-    "  panel.style.opacity = String(v);",
-    "  panel.style.transform = 'translate(-50%, ' + ((1 - v) * -cfg.panelSlide) + 'px)';",
-    "} });",
-    "",
-    "// ── The weapon icon (PIXI, anchored over the head) ─────────────────────",
-    "//",
-    "// Drawn as a MEDALLION, not a bare sprite. Foundry's core weapon icons are",
-    "// square art with an opaque dark background baked in, so pasting one on the",
-    "// canvas reads as a stray screenshot. A circular mask plus a rim turns that",
-    "// background into a deliberate frame.",
-    "let iconGroup = null;",
-    "if (formIcon) {",
-    "  try {",
-    "    const tex = await loadTexture(formIcon);",
-    "    if (tex) {",
-    "      const sz = S.wLen(cfg.iconSize);",
-    "      const r = sz * 0.5;",
-    "      iconGroup = new PIXI.Container();",
-    "      iconGroup.alpha = 0;",
-    "",
-    "      const backing = new PIXI.Graphics();",
-    "      backing.beginFill(cfg.medallionBg, 0.92);",
-    "      backing.drawCircle(0, 0, r);",
-    "      backing.endFill();",
-    "      iconGroup.addChild(backing);",
-    "",
-    "      const sp = new PIXI.Sprite(tex);",
-    "      sp.anchor.set(0.5);",
-    "      sp.width = sz; sp.height = sz;",
-    "      const mask = new PIXI.Graphics();",
-    "      mask.beginFill(0xffffff); mask.drawCircle(0, 0, r * 0.94); mask.endFill();",
-    "      sp.mask = mask;",
-    "      iconGroup.addChild(mask);",
-    "      iconGroup.addChild(sp);",
-    "",
-    "      const rim = new PIXI.Graphics();",
-    "      rim.lineStyle({ width: Math.max(2, sz * 0.045), color: cfg.medallionRim, alpha: 1 });",
-    "      rim.drawCircle(0, 0, r * 0.96);",
-    "      iconGroup.addChild(rim);",
-    "",
-    "      const glow = new PIXI.Graphics();",
-    "      glow.lineStyle({ width: Math.max(2, sz * 0.10), color: cfg.medallionRim, alpha: 0.28 });",
-    "      glow.drawCircle(0, 0, r * 1.06);",
-    "      glow.blendMode = PIXI.BLEND_MODES.ADD;",
-    "      iconGroup.addChild(glow);",
-    "",
-    "      host.addChild(iconGroup);",
-    "    }",
-    "  } catch (e) {}",
-    "}",
-    "function placeIcon(lift) {",
-    "  if (!iconGroup) return;",
-    "  const b = caster.mesh ? caster.mesh.height : (caster.h || 100);",
-    "  iconGroup.position.set(caster.center.x, caster.center.y - b * 0.5 - S.wLen(cfg.iconRise) * lift);",
-    "}",
-    "placeIcon(1);",
-    "",
-    "if (iconGroup) {",
-    "  await oni.tween({ from: 0, to: 1, duration: cfg.iconInMs, ease: E.outCubic, onUpdate: (v) => {",
-    "    iconGroup.alpha = v;",
-    "    iconGroup.scale.set(0.72 + 0.28 * v);",
-    "    placeIcon(0.65 + 0.35 * v);",
-    "  } });",
-    "  // Blink: alpha pulses without the medallion ever leaving, so it reads as a",
-    "  // flash rather than a stutter.",
-    "  const per = Math.max(80, Math.floor(cfg.iconHoldMs / Math.max(1, cfg.iconBlinks)));",
-    "  for (let i = 0; i < cfg.iconBlinks; i++) {",
-    "    await oni.tween({ from: 1, to: 0.3, duration: per / 2, ease: E.inOutQuad,",
-    "      onUpdate: (v) => { iconGroup.alpha = v; placeIcon(1); } });",
-    "    await oni.tween({ from: 0.3, to: 1, duration: per / 2, ease: E.inOutQuad,",
-    "      onUpdate: (v) => { iconGroup.alpha = v; placeIcon(1); } });",
-    "  }",
-    "} else {",
-    "  await wait(cfg.iconInMs + cfg.iconHoldMs);",
-    "}",
-    "",
-    "await slideIn;",
-    "// Form Shift deals no damage, but the gate still has to open or BD waits",
-    "// out the whole timeout before the next activation.",
+    ...arrowVolleys(),
+    "// Volleys start NOW and run under everything below.",
+    "const volleying = runVolleys();",
+    ...dashIn(),
+    "playSfx('sfxImpact', 'sfxImpactVol');",
+    ...slashAt(),
+    ...impactBurst(),
+    "await wait(cfg.holdMs);",
+    ...dashHome(),
+    "// Overflow is ONE check for the whole line, so damage lands once — after",
+    "// the last arrow, not on the melee cut, which is early and cosmetic here.",
+    "await volleying;",
     "done();",
-    "",
-    "await wait(cfg.panelHoldMs);",
-    "",
-    "const outs = [];",
-    "outs.push(oni.tween({ from: 1, to: 0, duration: cfg.panelOutMs, ease: E.inQuad, onUpdate: (v) => {",
-    "  panel.style.opacity = String(v);",
-    "  panel.style.transform = 'translate(-50%, ' + ((1 - v) * -cfg.panelSlide * 0.6) + 'px)';",
-    "} }));",
-    "if (iconGroup) {",
-    "  outs.push(oni.tween({ from: 1, to: 0, duration: cfg.iconOutMs, ease: E.inQuad,",
-    "    onUpdate: (v) => { iconGroup.alpha = v; placeIcon(1 + (1 - v) * 0.4); } }));",
-    "}",
-    "await Promise.all(outs);",
-    "",
-    "try { panel.remove(); } catch (e) {}",
-    "try { if (iconGroup) iconGroup.destroy({ children: true }); } catch (e) {}",
-    "done();",
-  ].join("\n");
-
-  return shell({ key: opts.key, name: opts.name, cfg, inner: inner(body) });
+    ...closeStage(),
+  ]);
 }
 
-module.exports = { dashStrike, chakramBounce, arrowRain, formShift };
+// Flail + Throwing. Dash in, blunt impact, and the rings spinning out of the
+// LANDED position — he is in melee, so launching from an empty home square
+// would read as a second, invisible caster.
+function comboOrbit(opts = {}) {
+  const cfg = mk({ lungeMs: 380, outMs: 360, betweenMs: 280, backMs: 420 }, opts);
+  return build(opts, cfg, [
+    "if (!caster || !tgts.length) { done(); return; }",
+    ...openStage(),
+    "playSfx('sfx', 'sfxVol');",
+    ...dashIn(),
+    "playSfx('sfxImpact', 'sfxImpactVol');",
+    ...ringFlight("land"),
+    "const ringing = runRing();",
+    ...bluntAt(),
+    ...impactBurst(),
+    "// Every target has to have been struck before damage lands.",
+    "await ringing;",
+    "done();",
+    "await wait(cfg.holdMs);",
+    ...dashHome(),
+    ...closeStage(),
+  ]);
+}
+
+// Sword + Flail. Both impacts on the SAME target on the same frame, with weight
+// the other two do not get: this is the ~166 kill, and it must not look like an
+// ordinary Mace hit.
+function comboVerdict(opts = {}) {
+  const cfg = mk({
+    lungeMs: 420, holdMs: 220, returnMs: 520,
+    slashCount: 3, slashGapMs: 0, slashWidth: 13, slashLen: 115,
+    ringMaxRadius: 210, ringWidth: 10,
+    particles: 34, particleRadius: 170,
+    shakeMs: 620, shakeAmp: 18,
+    shakeScreenMs: 520, shakeScreenAmp: 14,
+    flashMs: 90, flashAlpha: 0.55,
+  }, opts);
+  return build(opts, cfg, [
+    "if (!caster || !prime) { done(); return; }",
+    ...openStage(),
+    "playSfx('sfx', 'sfxVol');",
+    ...dashIn(),
+    "playSfx('sfxImpact', 'sfxImpactVol');",
+    "// Both halves land together — the shockwave is started without awaiting so",
+    "// the streaks draw over it on the same frame rather than after it.",
+    ...bluntAt(),
+    ...slashAt(),
+    ...impactBurst(),
+    "// The extra weight. A short white flash and a hard screenshake, fired but",
+    "// NOT awaited: the gate opens on the impact, and the flash is a tail.",
+    "oni.screenshake({ duration: cfg.shakeScreenMs, intensity: cfg.shakeScreenAmp });",
+    "oni.whiteout({ fadeIn: cfg.flashMs, hold: 40, fadeOut: cfg.flashMs * 2, alpha: cfg.flashAlpha });",
+    "done();",
+    "await wait(cfg.holdMs);",
+    ...dashHome(),
+    ...closeStage(),
+  ]);
+}
+
+module.exports = {
+  dashStrike, chakramBounce, arrowRain,
+  comboVolley, comboOrbit, comboVerdict,
+  formShift: require("./rakshasa-formshift.js").formShift,
+};
