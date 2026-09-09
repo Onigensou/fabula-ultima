@@ -31,6 +31,7 @@ function parseArgs(argv) {
     else if (a === "--verbose" || a === "-v") out.verbose = true;
     else if (a === "--conflict-event" || a === "-c") out.conflictEvent = next();
     else if (a === "--enemy-file" || a === "-f") (out.enemyFiles = out.enemyFiles ?? []).push(next());
+    else if (a === "--set") (out.sets = out.sets ?? []).push(next());
     else if (a === "--help" || a === "-h") out.help = true;
   }
   return out;
@@ -77,6 +78,9 @@ Mindscape — offline Monte Carlo balance runs (game must be CLOSED)
   --seed         run label, for reproducibility (default "mindscape")
   --party        override the Current Game party
   --expected     round budget before "unresolved" (default 7)
+  --set          patch a loaded enemy in memory, repeatable:
+                 --set "Saber:damage_bonus=70"  or  --set "actor:max_hp=1000".
+                 Sweeps the REAL built actor without editing the world.
   --force        report even when coverage is below the bar
   --verbose, -v  print every coverage warning
   --conflict-event, -c  scene rule to layer on (e.g. lightning-storm).
@@ -103,6 +107,43 @@ Mindscape — offline Monte Carlo balance runs (game must be CLOSED)
     console.log(`⚠ PAPER DESIGN — ${paper.map((e) => e.name).join(", ")} `
       + `loaded from a spec file, not the world. These numbers describe a proposal.`);
   }
+  // --set patches a loaded enemy IN MEMORY, so a dial can be swept against the
+  // real built actor instead of a hand-maintained spec copy that drifts from it.
+  // Nothing is written back; the world is opened read-only either way.
+  for (const spec of args.sets ?? []) {
+    const m = /^([^:]+):([^=]+)=(.*)$/.exec(spec);
+    if (!m) { console.error('bad --set (want "Item:prop=value" or "actor:prop=value"): ' + spec); process.exit(2); }
+    const [, whoRaw, propRaw, value] = m;
+    const who = whoRaw.trim(), prop = propRaw.trim();
+    let hits = 0;
+    for (const e of enemies) {
+      if (who.toLowerCase() === 'actor') {
+        e._rawProps[prop] = value;
+        // The loader DERIVES the scalars the engine actually reads (hp.max,
+        // def, ...) at load time, so patching the raw prop alone is a silent
+        // no-op: the run looks patched and behaves exactly as before.
+        const n = Number(value);
+        if (Number.isFinite(n)) {
+          if (prop === 'max_hp') e.hp.max = n;
+          else if (prop === 'current_hp') e.hp.cur = n;
+          else if (prop === 'max_mp') e.mp.max = n;
+          else if (prop === 'current_mp') e.mp.cur = n;
+          else if (prop === 'defense') e.def = n;
+          else if (prop === 'magic_defense') e.mdef = n;
+        }
+        hits++; continue;
+      }
+      for (const it of e.items ?? []) {
+        if (String(it.name).trim().toLowerCase() !== who.toLowerCase()) continue;
+        it.props[prop] = value; hits++;
+      }
+    }
+    // A typo in an item name would otherwise sweep a dial that changes nothing
+    // and read as 'this knob does not matter'.
+    if (!hits) { console.error('--set matched nothing: ' + spec); process.exit(2); }
+    console.log('  --set ' + who + '.' + prop + ' = ' + value + '  (' + hits + ' match' + (hits === 1 ? '' : 'es') + ')');
+  }
+
   console.log(`${party.map((p) => p.name).join(", ")}  vs  ${enemies.map((e) => `${e.name} (L${e.level}, ${e.turnsPerRound} act)`).join(" + ")}`);
 
   // Structural validation first: a model that could not fight must never be
@@ -169,6 +210,10 @@ if you accept a partial model. Use --verbose to see every gap.`);
   const downs = new Map();
   const lanes = new Map();
   const crisis = [];
+  // Enemy-side pressure. baselineDpr answers how fast the PARTY kills; a
+  // designer tuning a boss damage number needs the other direction, and the
+  // engine already tracks damageDealt per combatant on both sides.
+  const eDprs = [], ePools = [], eByName = new Map();
 
   for (let i = 0; i < args.runs; i++) {
     const rng = new Rng(`${args.seed}:${i}`);
@@ -179,6 +224,20 @@ if you accept a partial model. Use --verbose to see every gap.`);
     dprs.push(r.baselineDpr);
     rds.push(r.roundDensity);
     for (const d of r.downs) downs.set(d.name, (downs.get(d.name) ?? 0) + 1);
+    {
+      const cs = r.combatants ?? [];
+      let dealt = 0;
+      for (const c of cs) {
+        if (c.side !== 'enemy') continue;
+        dealt += c.damageDealt ?? 0;
+        const acc = eByName.get(c.name) ?? { dealt: 0, rounds: 0 };
+        acc.dealt += c.damageDealt ?? 0; acc.rounds += r.rounds;
+        eByName.set(c.name, acc);
+      }
+      if (r.rounds) eDprs.push(dealt / r.rounds);
+      const pool = cs.filter((c) => c.side === 'party').reduce((t, c) => t + (c.maxHp ?? 0), 0);
+      if (pool) ePools.push(pool);
+    }
     for (const c of r.crisisRounds ?? []) if (c.round != null) crisis.push(c.round);
     if (r.laneReport) {
       for (const [fam, l] of Object.entries(r.laneReport)) {
@@ -230,6 +289,8 @@ if you accept a partial model. Use --verbose to see every gap.`);
   const meanDpr = dprs.reduce((a, b) => a + b, 0) / dprs.length;
   const meanRd = rds.reduce((a, b) => a + b, 0) / rds.length;
   const anyDowns = [...downs.values()].some((n) => n > 0);
+  const meanEDpr = eDprs.length ? eDprs.reduce((a, b) => a + b, 0) / eDprs.length : 0;
+  const meanPool = ePools.length ? ePools.reduce((a, b) => a + b, 0) / ePools.length : 0;
   // When the phase change lands. A boss whose Crisis passive is the whole second
   // half of the fight needs this as directly as it needs the round count: a
   // phase that arrives on the last round is a phase that never happened. Printed
@@ -248,6 +309,25 @@ if you accept a partial model. Use --verbose to see every gap.`);
       console.log(`  the phase change lands ${pct(frac)} of the way through the fight`
         + ` (round ${med.toFixed(1)} of ${endRounds})`);
     }
+  }
+
+  // The other half of the read: how hard the enemy side hits, in the same
+  // units and over the same fight as BaselineDPR. Tuning a boss damage number
+  // from party-HP-remaining alone is guesswork, because healing hides in it.
+  if (meanEDpr > 0) {
+    console.log('');
+    console.log('enemy pressure  (how hard the other side hits)');
+    console.log('  EnemyDPR      ' + meanEDpr.toFixed(1) + '   (damage dealt to the party / round)');
+    if (meanPool) {
+      console.log('  party pool    ' + meanPool.toFixed(0) + ' HP  ->  ' + pct(meanEDpr / meanPool) + ' of the pool per round');
+      console.log('  rounds to wipe ' + (meanPool / meanEDpr).toFixed(1) + '  (ignoring healing and revives)');
+    }
+    if (eByName.size > 1) {
+      for (const [n, acc] of [...eByName.entries()].sort((a, b) => b[1].dealt - a[1].dealt)) {
+        console.log('  ' + n.padEnd(16) + (acc.rounds ? acc.dealt / acc.rounds : 0).toFixed(1) + ' /round');
+      }
+    }
+    console.log('  - Damage DEALT, before healing. Party HP remaining is the net figure.');
   }
 
   // Weapon-lane pressure. Printed only when something actually read weapon

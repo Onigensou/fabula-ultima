@@ -357,8 +357,9 @@ per hit × 4 activations; Rakshasa gets **2** attacks per round, so per-attack
 parity is ~106. That is Asura's baseline *without* the Lightning Storm and Quad,
 which is where Asura's excess actually came from.
 
-**The 200% now comes from the keywords, not from `damage_bonus`.** Sword and
-Flail therefore carry much smaller bonuses than v1, and are conditional:
+**REVISED 2026-09-09 — see §5.3.** The table below is the ORIGINAL v2 sizing,
+kept because the reasoning that produced it is what turned out to be wrong.
+Live numbers are in §5.3.
 
 | Form | Skill | Keyword | Target | `damage_bonus` | Raw when keyword misses | **Raw when it lands** |
 |---|---|---|---|---|---|---|
@@ -367,8 +368,44 @@ Flail therefore carry much smaller bonuses than v1, and are conditional:
 | **Throwing** | Chakram | `multi` (3) | Up to three creatures | **16** | — | ~37 ea = **~111** |
 | **Bow** | Rain of Arrows | `overflow` | All Enemy, 30 MP | **11** | — | ~32 ea = **~128** |
 
-(HR = two actor dice ≈ 11, plus the L40 flat +10.) Mean ≈ **110** — on target.
+(This line assumed HR ≈ 11 *and* an automatic L40 flat +10. Both were wrong:
+HR is the HIGHER of two dice, so ~7.15 for two d10s, and the system adds no
+level bonus at all — live damage is `HR + damage_bonus + sheet modifiers`
+(`action-profile.js:565`), matching Mindscape's `HR + damage_bonus`. The FU
+NPC flat bonus must be BAKED INTO the authored number by the designer. Do not
+'restore the missing +10' on top of §5.3 — it is already accounted for.)
 All four resolve vs **DEF**.
+
+### 5.3 Live damage table (as built, 2026-09-09)
+
+Raw = `HR + damage_bonus`. HR ≈ 7.15 (two d10) or 6.55 (d10+d8).
+
+| Skill | Roll | `damage_bonus` | Raw | Keyword fires | Doubled | Per use |
+|---|---|---|---|---|---|---|
+| Saber | MIG+DEX | **60** | 67 | target at or below 50% HP | 134 | 67 |
+| Mace | MIG+MIG | **40** | 47 | target healthy | 94 | ~94 early |
+| Chakram x3 | DEX+INS | **20** | 27 ea | — | — | 80 |
+| Rain of Arrows x4 | DEX+INS | **15** | 22 ea | — | — | 87 (30 MP) |
+| Executioner's Volley x4 | DEX+INS | **18** | 25 ea | vs Crisis targets | 50 ea | 99-198 |
+| Rending Orbit x3 | DEX+MIG | **22** | 29 ea | vs healthy targets | 58 ea | 86-173 |
+| Severing Verdict | MIG+MIG | **162** | 169 | — | — | 169 |
+| Devour | auto-hit | flat 45 | 45 | — | — | 45, heals 22 |
+
+**Why these moved.** v2 sized Saber and Mace at half, expecting the keyword to
+supply the rest. Measured, that failed in both directions: Execute needs a
+target already at or below half HP, which almost never holds in the opening,
+so Saber delivered **37** while Mace and both AoEs delivered ~**70** — for the
+same two activations, since every strike costs a Form Shift first. Cripple is
+the mirror: strong early, halved once the party is wounded. The base now
+stands alone and the doubling is a spike rather than a prerequisite.
+
+For tier context: Asura's Elemental Slash is **+42** with no setup cost;
+Kirin's Horn Rush is **+62**. Saber at +30 was below both while costing more.
+
+The target focus keeps the spikes fair — Mace hunts `highest_hp`, so its
+doubled ~94 lands on Blanche (166 HP) rather than Hina (98); Saber hunts
+`lowest_hp`, so its doubled ~134 is an execution. Severing Verdict stays the
+largest single hit, so the hierarchy holds.
 
 ### 5.2 What the keywords buy, tactically
 
@@ -726,6 +763,44 @@ One implementation question remains, and it is mine rather than a design call:
 > fallback design would take.
 
 ---
+
+## 11b. Balance pass — 2026-09-09
+
+Mindscape, 800 runs, party EXFURSION (L41, 471 HP pool).
+
+**Read the first run correctly or it lies.** At the actor's real 1200 HP the
+modelled party cannot close the fight inside the round budget, so Crisis was
+reached in **2% of runs** and the whole combo half went unmeasured — the report
+said EnemyDPR 32.7, which is the pre-Crisis number only. Pacing the fight to its
+realistic ~6 rounds (`--set actor:max_hp=350`, from the 2.25x solo-boss
+calibration in expectations/asura-solo.json) is what exposes the real shape.
+
+| | before | after |
+|---|---|---|
+| EnemyDPR | 71.1 | **76.5** (16% of the party pool per round) |
+| party HP | median 35%, p25 11% | median **30%**, p25 **0%** |
+| outcomes | victory 65% / defeat 20% | victory **56%** / defeat **26%** |
+| KO rate | Hina 58 / Keren 38 / Zarg 38 / Blanche 25 | **63 / 47 / 43 / 32** |
+| Crisis | round 3 of 7 (100% of runs) | round 3-4 of 7 (100%) |
+
+This is the PESSIMISTIC floor and must not be read as the expected fight:
+
+- 62% of party turn-spendable actions are unmodelled (Zarg has **zero** modelled
+  damage skills, Blanche one; her Adoration kit is entirely absent).
+- The modelled party never swaps weapons, so Adaptive Defense pins it at 43-80%
+  efficiency for the whole fight. Checked the sheets: the party carries **six**
+  families (Hina Arcane/Bow/Thrown, Keren Dagger/Bow, Zarg Bow/Sword/Arcane,
+  Blanche shield = Brawling), so the 5-lane reset IS satisfiable in play and real
+  efficiency will run well above the modelled floor.
+- Devour (45 auto-hit + 22 self-heal) has no reactions-registry entry, so real
+  Crisis pressure is slightly ABOVE these numbers.
+
+Benchmark used: Kirin measures 81.0 EnemyDPR in the same model and the tool calls
+it "A REAL FIGHT". Asura measures **zero** enemy damage — it is broken in the
+model and cannot serve as a baseline; that is worth fixing before the next pass.
+
+Still NOT live-tested. No Battle Director battle has ever been run against this
+actor, in either phase.
 
 ## 12. As-built — what is done and what is NOT
 

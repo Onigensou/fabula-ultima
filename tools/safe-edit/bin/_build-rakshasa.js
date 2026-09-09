@@ -243,8 +243,22 @@ run(async ({ changes, deletes }) => {
 
   // ── The four forms ───────────────────────────────────────────────────────
   // Damage sized so each strike is worth ~2 normal actions, because Form Shift
-  // spent one. Execute/Cripple carry HALF that in damage_bonus and get the rest
-  // from their keyword's conditional doubling (authored below, Kirin's pattern).
+  // spent one — and sized so the UNDOUBLED strike already is, because the
+  // keyword doubling is conditional on the target and therefore absent for
+  // most of the fight.
+  //
+  // The first pass sized these at half, assuming the keyword would make up the
+  // difference. Measured, that was wrong in both directions: Execute needs a
+  // target already at or below half HP, which almost never holds early, so
+  // Saber spent the opening delivering 37 where Mace and both AoEs delivered
+  // ~70; Cripple is the mirror, strong early and halved once the party is
+  // wounded. Base now stands on its own and the doubling is a spike, not a
+  // prerequisite. Mindscape 2026-09-09: victory 65%/defeat 20% -> 56%/28% at
+  // the ~6-round pacing proxy, party HP median 35% -> 33%.
+  //
+  // The target focus keeps the spikes fair: Mace hunts highest_hp so its
+  // doubled ~94 lands on the tank, Saber hunts lowest_hp so its doubled ~134 is
+  // an execution. Severing Verdict (169) stays the largest single hit.
   const attack = (id, name, props) => skill(donorAttack, id, name, ICON.melee, {
     skill_type: "Attack", class: "NPC",
     check_bonus: "5", type_damage: "Physical", defense_target_type: "def",
@@ -259,7 +273,7 @@ run(async ({ changes, deletes }) => {
   // field is why Kirin's identical Execute never fired.
   changes.push([ik(IDS.RK_SABER), attack(IDS.RK_SABER, "Saber", {
     skill_target: "One Creature", skill_range: "Melee",
-    rolled_atr1: "MIG", rolled_atr2: "DEX", damage_bonus: "30",
+    rolled_atr1: "MIG", rolled_atr2: "DEX", damage_bonus: "60",
     action_keywords: "execute", description: DESC.saber,
     isReaction: true,
     on_activate_effect_ref: "spend_stance",
@@ -281,7 +295,7 @@ run(async ({ changes, deletes }) => {
   // Cripple — 200% into a HEALTHY target. The opener half, plus a DEF debuff.
   changes.push([ik(IDS.RK_MACE), attack(IDS.RK_MACE, "Mace", {
     skill_target: "One Creature", skill_range: "Melee",
-    rolled_atr1: "MIG", rolled_atr2: "MIG", damage_bonus: "28",
+    rolled_atr1: "MIG", rolled_atr2: "MIG", damage_bonus: "40",
     action_keywords: "cripple", description: DESC.mace,
     isReaction: true,
     on_activate_effect_ref: "cr_debuff",
@@ -323,7 +337,7 @@ run(async ({ changes, deletes }) => {
   // damage in damage_bonus.
   changes.push([ik(IDS.RK_CHAKRAM), attack(IDS.RK_CHAKRAM, "Chakram", {
     skill_target: "Up to three creatures", skill_range: "Range",
-    rolled_atr1: "DEX", rolled_atr2: "INS", damage_bonus: "16",
+    rolled_atr1: "DEX", rolled_atr2: "INS", damage_bonus: "20",
     action_keywords: "multi", description: DESC.chakram,
     isReaction: false,
     on_activate_effect_ref: "ch_bleed",
@@ -339,7 +353,7 @@ run(async ({ changes, deletes }) => {
   // Form Shift returns 15, so it is affordable roughly every other cycle.
   changes.push([ik(IDS.RK_RAIN), attack(IDS.RK_RAIN, "Rain of Arrows", {
     skill_target: "All Enemies", skill_range: "Range",
-    rolled_atr1: "DEX", rolled_atr2: "INS", damage_bonus: "11",
+    rolled_atr1: "DEX", rolled_atr2: "INS", damage_bonus: "15",
     action_keywords: "overflow", cost: "30 MP", description: DESC.rain,
     isReaction: false,
     on_activate_effect_ref: "spend_stance",
@@ -462,7 +476,7 @@ run(async ({ changes, deletes }) => {
   // down. The finisher for a party that has taken casualties.
   changes.push([ik(IDS.RK_VOLLEY), attack(IDS.RK_VOLLEY, "Executioner's Volley", {
     skill_target: "All Enemies", skill_range: "Range",
-    rolled_atr1: "DEX", rolled_atr2: "INS", damage_bonus: "14",
+    rolled_atr1: "DEX", rolled_atr2: "INS", damage_bonus: "18",
     action_keywords: "execute, overflow", description: DESC.volley,
     isReaction: true,
     on_activate_effect_ref: "spend_combo",
@@ -485,7 +499,7 @@ run(async ({ changes, deletes }) => {
   // The opener half of the pair, and the reason a fresh party cannot relax.
   changes.push([ik(IDS.RK_ORBIT), attack(IDS.RK_ORBIT, "Rending Orbit", {
     skill_target: "Up to three creatures", skill_range: "Range",
-    rolled_atr1: "DEX", rolled_atr2: "MIG", damage_bonus: "18",
+    rolled_atr1: "DEX", rolled_atr2: "MIG", damage_bonus: "22",
     action_keywords: "cripple, multi", description: DESC.orbit,
     isReaction: true,
     on_activate_effect_ref: "ro_bleed",
