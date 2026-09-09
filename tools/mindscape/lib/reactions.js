@@ -53,6 +53,11 @@ const TRIGGERS = Object.freeze({
 //                  and reset. Models the AE-charge idiom without an AE system.
 // `weapon_read`  — the reactor's own weapon-efficiency table adapts to the
 //                  family that just attacked it. See WEAPON READ below.
+// `damage_add`   — add a FLAT amount to the damage the reactor is about to
+//                  deal. Distinct from damage_mult because the live rows are
+//                  distinct: `damage_operation: "add"` vs `"multiply"`, and a
+//                  boss that stacks several additive riders on every swing
+//                  behaves very differently from one that doubles a few.
 // `damage_mult`  — multiply the damage the reactor is about to deal to one
 //                  victim. Models a conditional keyword (Execute / Cripple),
 //                  which lives on the sheet as an `adjust_damage` reaction row
@@ -183,8 +188,52 @@ const REACTION_REGISTRY = Object.freeze({
     note: "Cripple keyword on the Flail+Throwing combo — doubles on a healthy victim",
   },
 
-  "Mace": {
+  // ── Asura ─────────────────────────────────────────────────────────────────
+  // Asura's damage is not in its damage_bonus. Three passives stack additively
+  // onto EVERY slash, four times a round, and none of them were modelled: the
+  // measured EnemyDPR of 126.4 was a floor, not the figure.
+  //
+  // Two are registered here. Ascension and Quad-Elemental Slash are NOT, and
+  // that is deliberate -- see the note on Ascension below.
+  "Elemental Aspect": {
     trigger: TRIGGERS.ON_DEAL_DAMAGE,
+    // Live: adjust_damage `slash_bonus`, +10 outgoing, riding the Aspect the
+    // enchant set. In the model an armed Asura always holds one, so the gate is
+    // simply 'has armed' -- which is also why it must NOT fire before the first
+    // enchant, when the plain slash is what swings.
+    gate: (ctx) => !!ctx.attackerStance,
+    effect: { kind: "damage_add", amount: 10 },
+    note: "+10 outgoing on every slash once enchanted",
+  },
+
+  "Four-Armed Fury": {
+    trigger: TRIGGERS.ON_DEAL_DAMAGE,
+    // Live: adjust_damage `fury_crisis`, +20 outgoing. Gated on ASURA being in
+    // Crisis, not the victim -- it is the boss's own second wind.
+    gate: (ctx) => !!ctx.attackerInCrisis,
+    effect: { kind: "damage_add", amount: 20 },
+    note: "+20 outgoing while Asura itself is in Crisis",
+  },
+
+  // NOT REGISTERED, and left to report as a coverage gap on purpose:
+  //
+  //   Ascension            +8 per charge (AE_CHARGES_ASCENSION * 8), up to +32
+  //   Quad-Elemental Slash 4 x 45 flat, party-wide, resets the Marks
+  //
+  // Both depend on a state this model cannot hold. Live, Asura spends four
+  // activations on four DIFFERENT Sword Enchants -- each gated on lacking its
+  // own Mark -- accumulating one Ascension charge apiece, then spends Quad to
+  // cash them and reset. `stances.js` carries a single-valued stance, so it
+  // arms ONCE and holds Enchanted forever: the model can reach 1 charge, never
+  // 4, and Quad's precondition never arrives.
+  //
+  // Registering an approximation here would put a number on the report that
+  // nothing in the data supports. Declaring nothing keeps both in the
+  // unmodelled list, where a reader can see them. Asura therefore still reads
+  // LOW by roughly +8..32 per slash plus a 180-point party-wide hit every third
+  // round; modelling them needs multi-status state in stances.js first.
+
+  "Mace": {    trigger: TRIGGERS.ON_DEAL_DAMAGE,
     gate: (ctx) => ctx.sourceAction === "Mace" && !ctx.victimInCrisis,
     effect: { kind: "damage_mult", factor: 2 },
     note: "Cripple keyword — 200% to a creature NOT in Crisis; the opener half",

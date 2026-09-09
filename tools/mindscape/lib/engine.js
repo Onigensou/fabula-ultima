@@ -365,12 +365,34 @@ function noteCrisis(state, c) {
   }
 }
 
-function damageMultiplierFor(actor, action, victim) {
-  if (!actor?.reactions?.length) return 1;
+// Flat additive riders (live: adjust_damage with damage_operation "add"). Kept
+// separate from the multiplier because the two compose in a fixed order: adds
+// land on the base, then multipliers scale the sum -- which is what
+// damage_stage "outgoing" means on both rows.
+function damageAddFor(actor, action, victim) {
+  if (!actor?.reactions?.length) return 0;
   const ctx = {
     sourceAction: action.name,
     victim,
     victimInCrisis: victim.hp > 0 && victim.hp <= victim.maxHp / 2,
+    attackerInCrisis: actor.hp > 0 && actor.hp <= actor.maxHp / 2,
+    attackerStance: actor.stance ?? null,
+    element: action.element,
+  };
+  let add = 0;
+  for (const r of RX.collect(actor, RX.TRIGGERS.ON_DEAL_DAMAGE, ctx)) {
+    if (r.effect?.kind === "damage_add") add += Number(r.effect.amount) || 0;
+  }
+  return add;
+}
+
+function damageMultiplierFor(actor, action, victim) {  if (!actor?.reactions?.length) return 1;
+  const ctx = {
+    sourceAction: action.name,
+    victim,
+    victimInCrisis: victim.hp > 0 && victim.hp <= victim.maxHp / 2,
+    attackerInCrisis: actor.hp > 0 && actor.hp <= actor.maxHp / 2,
+    attackerStance: actor.stance ?? null,
     element: action.element,
   };
   let mult = 1;
@@ -420,7 +442,10 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
     // so weapon efficiency and element affinity both scale the doubled figure.
     // Collected rather than dispatched: the multiplier has to reach the number
     // before it is written, which is upstream of where reaction effects run.
-    let base = R.outgoingDamage({ hr: check.hr, damageBonus: action.damageBonus + extra });
+    let base = R.outgoingDamage({
+      hr: check.hr,
+      damageBonus: action.damageBonus + extra + damageAddFor(actor, action, target),
+    });
     base = Math.ceil(base * damageMultiplierFor(actor, action, target));
 
     // Record the efficiency this swing actually landed at, per family. Sampled

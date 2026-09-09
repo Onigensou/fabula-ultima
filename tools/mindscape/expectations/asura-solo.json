@@ -27,7 +27,7 @@
     "soloDprRatio": 2.25,
     "derivation": "live 225 / mindscape 100.1",
     "direction": "PESSIMISTIC — Mindscape understates party output against a SOLO boss by roughly 2.25x, well beyond the ~1.3x implied by the two-enemy calibration.",
-    "confidence": "LOW — a single live data point against one monster. Treat 2.25 as an order-of-magnitude correction, not a constant. Re-derive it the next time any solo boss is live-tested.",
+    "confidence": "LOW, and now also STALE — the 2.25 ratio divides live 225 by a mindscape baselineDpr of 100.1 that was measured against an Asura missing two of its passives. The live half is still the best anchor available; re-derive the ratio the next time any solo boss is live-tested, and do not treat 2.25 as more than an order-of-magnitude correction.",
     "knownCauses": [
       "FIXED 2026-09-08: Blanche now fights. Twin Shields (an exposedVirtualAttack AE) is modelled and SL_<SKILL> resolves from the actor items, so she is no longer absent. This is why the ratio moved 2.4 -> 2.25.",
       "Zarg has no modelled damage skills and falls back to his bow weapon action alone.",
@@ -35,5 +35,28 @@
       "Summons, Zero Power, Fabula Point invokes and the party reaction layer are all unmodelled — and a long solo fight gives every one of them more time to matter than a 2-round group fight does."
     ]
   },
-  "howToRead": "For a SOLO boss, multiply Mindscape BaselineDPR by ~2.25 before deriving an HP budget. Round count and party-HP figures stay pessimistic and should not be read literally: Mindscape calls Asura a 98% defeat where live was a victory at 21%."
+  "howToRead": "For a SOLO boss, multiply Mindscape BaselineDPR by ~2.25 before deriving an HP budget. Round count and party-HP figures stay pessimistic and should not be read literally: Mindscape calls Asura a 98% defeat where live was a victory at 21%.",
+  "modelHistory": [
+    {
+      "date": "2026-09-09",
+      "what": "Asura stopped acting entirely and was repaired; two of its passives are now modelled.",
+      "detail": "Between this file's capture and 2026-09-09, stance-cycle inference (713f0742) made every Asura action illegal -- it dealt ZERO damage and the report called the fight TRIVIAL at 100% party HP. Fixed in stances.js: requires-without-grants is a lockout, not a cycle. The repaired model reproduced this file's figures (defeat 0.98, median 5 rounds), which is what confirmed the fix rather than a coincidence. Elemental Aspect (+10 outgoing once enchanted) and Four-Armed Fury (+20 while Asura is in Crisis) are now registered in lib/reactions.js. They were never modelled before, so every earlier Asura number in this file -- baselineDpr 100.1 included -- was measured against a weaker Asura than the one on the sheet.",
+      "remeasured": {
+        "runs": 800,
+        "seed": "asura-reg",
+        "medianRounds": 4,
+        "medianHp": 0,
+        "defeatRate": 1,
+        "baselineDpr": 107.2,
+        "enemyDpr": 154
+      },
+      "stillUnmodelled": [
+        "Ascension: +8 per charge, up to +32 on every slash. Needs multi-status state -- live Asura",
+        "spends four activations on four different Sword Enchants to bank four charges, and",
+        "stances.js holds a single-valued stance, so the model arms once and can never reach 4.",
+        "Quad-Elemental Slash: 4 x 45 flat, party-wide, every third round; gated on those 4 charges.",
+        "EnemyDPR 154.0 is therefore still a FLOOR."
+      ]
+    }
+  ]
 }
