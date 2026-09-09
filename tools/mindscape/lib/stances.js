@@ -37,6 +37,28 @@
 // faithful TODAY — but a future Rakshasa that picks its form tactically (say,
 // Sword whenever a PC is in Crisis) would be modelled as dumber than it plays.
 
+// GRANTS THE INFERENCE CANNOT SEE.
+//
+// The inference below reads an action's OWN effect_table. Asura's arming works
+// differently: 'Sword Enchant - Fire' applies only a self-buff, and it is the
+// PASSIVE 'Elemental Aspect' that stamps `Enchanted` (and the Aspect) when an
+// enchant is used, with `Ascension` stamping the Mark. The link between action
+// and status therefore lives in the live trigger graph, which this model does
+// not read at all -- no amount of local inference can recover it.
+//
+// Declared here rather than as mindscape_* props on the world actor: the world
+// is the game's data, not the simulator's, and a sim-only prop on a shipped
+// monster is exactly the kind of thing that gets wiped by the next rebuild.
+//
+// `persistent` means the status is NOT spent by the action it gates -- see
+// stanceConsumes below.
+const GRANT_OVERRIDES = {
+  "sword enchant - fire": { grants: ["Enchanted"], persistent: true },
+  "sword enchant - bolt": { grants: ["Enchanted"], persistent: true },
+  "sword enchant - ice":  { grants: ["Enchanted"], persistent: true },
+  "sword enchant - air":  { grants: ["Enchanted"], persistent: true },
+};
+
 function splitList(raw) {
   return String(raw ?? "")
     .split(/[,\n]/)
@@ -61,6 +83,9 @@ function splitList(raw) {
 // So "an action that hands out the states other actions are locked behind" is
 // what identifies the cycle — not a name, a flag, or a guess about intent.
 function readStanceFields(props, actor, itemName) {
+  const override = GRANT_OVERRIDES[String(itemName ?? "").trim().toLowerCase()];
+  if (override) return { stanceGrants: override.grants, stanceRequires: null };
+
   const declaredGrants = splitList(props?.mindscape_stance_grants);
   const declaredRequires = String(props?.mindscape_stance_requires ?? "").trim() || null;
   if (declaredGrants.length || declaredRequires) {
@@ -79,7 +104,7 @@ function readStanceFields(props, actor, itemName) {
     if (String(row.action_pattern_name ?? "").trim().toLowerCase() !== name) continue;
     if (String(row.action_pattern_condition ?? "").trim().toLowerCase() !== "self_has_status") continue;
     const st = String(row.action_pattern_string ?? "").trim();
-    if (st) return { stanceGrants: null, stanceRequires: st };
+    if (st) return { stanceGrants: null, stanceRequires: st, stanceConsumes: spendsStatus(props, st) };
   }
 
   // GRANTS — a self-targeted apply_ae drawing from a pool of those same statuses.
@@ -93,6 +118,26 @@ function readStanceFields(props, actor, itemName) {
   }
 
   return null;
+}
+
+// Does this action SPEND the status it is gated on?
+//
+// Rakshasa's strikes each carry a remove_ae naming their own stance, which is
+// what makes Shift -> Strike -> Shift -> Strike a cadence rather than one Shift
+// followed by unlimited strikes. Asura's enchanted slash carries no such row:
+// `Enchanted` persists, so it arms ONCE and then swings for the rest of the
+// fight. Treating every gated action as consuming would have halved Asura's
+// output; treating none as consuming would have doubled Rakshasa's. The
+// distinction is in the data, so read it rather than assuming either way.
+function spendsStatus(props, status) {
+  const want = String(status ?? "").trim().toLowerCase();
+  if (!want) return false;
+  for (const row of Object.values(props?.effect_table ?? {})) {
+    if (row?.$deleted) continue;
+    if (String(row.effect_kind ?? "").trim().toLowerCase() !== "remove_ae") continue;
+    if (String(row.ae_template_ref ?? "").trim().toLowerCase() === want) return true;
+  }
+  return false;
 }
 
 function patternRows(actor) {
@@ -159,8 +204,26 @@ function isLegal(action, actor) {
 
 // Does this actor participate in the stance cycle at all? Derived from its
 // actions so a spec cannot forget to declare it.
+// A cycle exists only if something can actually ARM it. Asura reached this file
+// with two actions gated on statuses and nothing recognised as granting them:
+// every gated action was illegal for want of the status, and isLegal's
+// `stanceCycle` guard then made its ONE ungated attack illegal too, so the
+// monster silently did nothing for an entire run and reported 100% party HP.
+// A monster that cannot act is never the answer -- if nothing grants, there is
+// no cycle to protect and the ungated actions must stay available.
 function hasStanceCycle(actions) {
-  return (actions ?? []).some((a) => a.stanceGrants || a.stanceRequires);
+  const list = actions ?? [];
+  const grants = list.some((a) => a.stanceGrants);
+  const requires = list.some((a) => a.stanceRequires);
+  return grants && requires;
+}
+
+// Reported by the caller so the lockout can never be silent again.
+function brokenCycle(actions) {
+  const list = actions ?? [];
+  if (list.some((a) => a.stanceGrants)) return null;
+  const req = [...new Set(list.filter((a) => a.stanceRequires).map((a) => a.stanceRequires))];
+  return req.length ? req : null;
 }
 
 // Apply an arming action. Returns the stance taken, or null if it could not arm.
@@ -175,7 +238,8 @@ function arm(actor, action, rng) {
 
 // A strike spends the stance it required.
 function consume(actor, action) {
+  if (action?.stanceConsumes === false) return;
   if (action?.stanceRequires && actor.stance === action.stanceRequires) actor.stance = null;
 }
 
-module.exports = { readStanceFields, isLegal, hasStanceCycle, arm, consume, splitList, readHpGate, hpGateOpen };
+module.exports = { readStanceFields, isLegal, hasStanceCycle, brokenCycle, arm, consume, splitList, readHpGate, hpGateOpen };

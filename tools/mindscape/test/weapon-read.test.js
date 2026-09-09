@@ -186,7 +186,31 @@ t("a strike consumes the stance that permitted it", () => {
 
 t("hasStanceCycle is derived, so a spec cannot forget to opt in", () => {
   assert.strictEqual(ST.hasStanceCycle([plainAct]), false);
-  assert.strictEqual(ST.hasStanceCycle([plainAct, swordAct]), true);
+  // A cycle needs BOTH halves. Requires-without-grants is not a cycle, it is a
+  // lockout -- see the next test.
+  assert.strictEqual(ST.hasStanceCycle([plainAct, armAct, swordAct]), true);
+});
+
+// REGRESSION (2026-09-09). Asura gates two attacks on statuses granted by a
+// PASSIVE, which the inference cannot see, so it had requires and no grants.
+// hasStanceCycle said true, every gated action was illegal for want of the
+// status, and isLegal's stanceCycle guard then made its one UNGATED attack
+// illegal too. The monster silently did nothing for a whole run and the report
+// called it a TRIVIAL fight at 100% party HP.
+t("requires without grants is a lockout, not a cycle", () => {
+  assert.strictEqual(ST.hasStanceCycle([plainAct, swordAct]), false);
+  assert.deepStrictEqual(ST.brokenCycle([plainAct, swordAct]), ["Sword"]);
+  // and with an arming action present there is nothing broken to report
+  assert.strictEqual(ST.brokenCycle([plainAct, armAct, swordAct]), null);
+});
+
+t("a gated action only spends its status when the data says so", () => {
+  // Rakshasa's strikes carry a remove_ae naming their stance; Asura's enchanted
+  // slash does not, so Enchanted persists and it arms once for the whole fight.
+  const persistent = { name: "Elemental Slash (Enchanted)", stanceRequires: "Enchanted", stanceConsumes: false };
+  const actor = { stance: "Enchanted", stanceCycle: true };
+  ST.consume(actor, persistent);
+  assert.strictEqual(actor.stance, "Enchanted");
 });
 
 console.log(`\n${pass} passed, ${fail} failed`);

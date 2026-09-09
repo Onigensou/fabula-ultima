@@ -12,6 +12,7 @@
 const { loadParty, loadNamed, validate, resolveCurrentGame } = require("../lib/load-actors");
 const { loadEnemyFiles } = require("../lib/enemy-file");
 const { buildCoverage, extractActions } = require("../lib/skills");
+const ST = require("../lib/stances");
 const { runBattle } = require("../lib/engine");
 const { resolveEvent } = require("../lib/conflict-events");
 const RX = require("../lib/reactions");
@@ -173,11 +174,25 @@ Mindscape — offline Monte Carlo balance runs (game must be CLOSED)
   // change what the bar means; but leaving it out of the printout entirely is
   // how the whole layer stayed invisible in the first place.
   const rxLines = [];
+  const brokenLines = [];
   for (const c of combatants) {
     const ex = extractActions(c.actor);
+    // A creature gated on statuses that nothing in the model grants cannot
+    // act at all. That used to pass as a fight result: Asura reported 100%
+    // party HP because it silently never attacked once.
+    const broken = ST.brokenCycle(ex.actions);
+    if (broken) brokenLines.push({ name: c.actor.name, statuses: broken });
     const declared = RX.declaredReactions(ex.passives).map((r) => r.name);
     const undeclared = RX.undeclaredReactions(ex.passives);
     if (declared.length || undeclared.length) rxLines.push({ name: c.actor.name, declared, undeclared });
+  }
+  if (brokenLines.length) {
+    console.log('');
+    for (const b of brokenLines) {
+      console.log('  ⚠ ' + b.name + ': actions are gated on [' + b.statuses.join(', ')
+        + '] and NOTHING in the model grants them. Those actions can never be'
+        + ' chosen -- its damage is understated, possibly to zero.');
+    }
   }
   const totDeclared = rxLines.reduce((s, r) => s + r.declared.length, 0);
   if (totDeclared || rxLines.some((r) => r.undeclared.length)) {
