@@ -60,11 +60,24 @@ than a source edit. See `specs/rakshasa.json`.
 
 ## Measuring paper equipment
 
-`--equip "<PC>=<item.json>"` swaps one party member's main-hand weapon for a spec item,
-in memory — the world loadout is never touched. A spec is an item document (paste one
-out of `_authored-export/items/`) plus optional gear-skill sub-items; a gear skill is
-modelled when its name is in `REACTION_REGISTRY`. Run it against a control arm with the
-same stats and no passive, on the same seed, and compare the PC's row in `party output`:
+`--equip "<PC>[:<slot>]=<source>"` changes one slot of a party member's loadout, in
+memory — the world loadout is never touched. Slots: `main` (default), `off`, `armor`,
+`acc1`, `acc2`. A source is a paper spec (an item document — paste one out of
+`_authored-export/items/` — plus optional `effects` and gear-skill sub-items) or
+`item:<name>` / `item:#<id>` for a real world item. `--unequip "<PC>:<slot>"` empties a
+slot. The sheet is re-derived (DEF, MDEF, HP, affinities, modifiers, attribute dice) and
+set bonuses are reconciled — take off a Swift Swimmers piece and Wet goes with it. A PC
+whose real kit does not rebuild (`node bin/verify-loadouts.js`) is refused. Ruleset
+Parts 6d–6f.
+
+```bash
+node bin/mindscape.js -e "Inferex,Centuaros" --force \
+  --equip "Zarg:armor=item:Brigandine" --unequip "Keren:acc1"
+```
+
+A gear skill is modelled when its name is in `REACTION_REGISTRY`. For an A/B, run a
+control arm with the same stats and no passive, on the same seed, and compare the PC's
+row in `party output`:
 
 ```bash
 for arm in chassis-whip explosion-whip; do

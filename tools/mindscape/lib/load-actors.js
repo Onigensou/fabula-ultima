@@ -362,6 +362,10 @@ async function loadAll({ world = DEFAULT_WORLD } = {}) {
           name: value.name,
           type: value.type ?? null,
           props: value.system?.props ?? {},
+          // For loadout swaps: set-bonus grant tags live in flags, and a weapon's gear
+          // skills point at it through `system.container` and must leave with it.
+          flags: value.flags ?? {},
+          container: value.system?.container ?? null,
         });
         continue;
       }
@@ -390,29 +394,38 @@ async function loadAll({ world = DEFAULT_WORLD } = {}) {
       model.actorEffects = effectsByActor.get(actorId) ?? [];
 
       // Attacks granted by an AE rather than owned as an item. Filtered by the
-      // concrete precondition, never by guessing at the formula.
-      model.virtualAttacks = (virtualByActor.get(actorId) ?? [])
-        .filter((v) => virtualAttackAvailable(v, model));
+      // concrete precondition, never by guessing at the formula. The unfiltered list
+      // is kept as well: a loadout swap can change the shield count that decides
+      // availability, and must re-filter rather than re-load.
+      model.virtualAttacksAll = virtualByActor.get(actorId) ?? [];
+      model.virtualAttacks = model.virtualAttacksAll.filter((v) => virtualAttackAvailable(v, model));
 
-      // Resolve the equipped weapon's FAMILY from its item `category`
-      // ("Bow", "Dagger", "Arcane"). The actor sheet names the weapon but not
-      // its family, and without the family the weapon-efficiency axis never
-      // fires at all.
-      const w = model.weapon;
-      if (w?.name) {
-        const item = model.items.find((i) => i.name === w.name);
-        const cat = String(item?.props?.category ?? "").trim().toLowerCase();
-        if (cat && WEAPON_FAMILIES.includes(cat)) w.family = cat;
-        // A shield in the main hand is not a weapon, so it gets no family and
-        // (via its SHI+SHI attributes) no attack either.
-        w.itemType = String(item?.props?.item_type ?? "").trim().toLowerCase() || null;
-        // Melee vs ranged decides WHICH contextual accuracy modifier applies —
-        // Zarg's +4 check_mod_ranged only reaches his bow through this field.
-        w.range = /ranged/i.test(String(item?.props?.weapon_range ?? "")) ? "ranged" : "melee";
-      }
+      attachWeaponDetails(model);
     }
     return [...actors.values()];
   });
+}
+
+// Resolve the equipped weapon's FAMILY, item type and range from its item. The
+// actor sheet names the weapon but not its family, and without the family the
+// weapon-efficiency axis never fires at all. Shared with lib/loadout-swap.js, which
+// changes the weapon and must resolve it exactly the way a load does.
+//
+// An EQUIPPED item of that name wins over an unequipped one: a character can carry
+// two copies (Hina holds two Arch Ice Wands), and only the worn one is the weapon.
+function attachWeaponDetails(model) {
+  const w = model.weapon;
+  if (!w?.name) return;
+  const named = (model.items ?? []).filter((i) => i.name === w.name);
+  const item = named.find((i) => i.props?.isEquipped === true || i.props?.isEquipped === "true") ?? named[0];
+  const cat = String(item?.props?.category ?? "").trim().toLowerCase();
+  w.family = cat && WEAPON_FAMILIES.includes(cat) ? cat : null;
+  // A shield in the main hand is not a weapon, so it gets no family and
+  // (via its SHI+SHI attributes) no attack either.
+  w.itemType = String(item?.props?.item_type ?? "").trim().toLowerCase() || null;
+  // Melee vs ranged decides WHICH contextual accuracy modifier applies —
+  // Zarg's +4 check_mod_ranged only reaches his bow through this field.
+  w.range = /ranged/i.test(String(item?.props?.weapon_range ?? "")) ? "ranged" : "melee";
 }
 
 // Named actors only. Throws on a miss rather than returning a short list — a
@@ -564,4 +577,5 @@ module.exports = {
   AFFINITY_KEY, ELEMENTS, WEAPON_FAMILIES, STATUS_STEPS, CURRENT_GAME_ACTOR_ID,
   loadAll, loadNamed, loadParty, listParties, resolveCurrentGame,
   validate, toCombatModel, isNpc,
+  attachWeaponDetails, virtualAttackAvailable,
 };

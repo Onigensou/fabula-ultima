@@ -17,7 +17,8 @@ const { runBattle } = require("../lib/engine");
 const { resolveEvent } = require("../lib/conflict-events");
 const RX = require("../lib/reactions");
 const { Rng } = require("../lib/rng");
-const { applyEquipFiles } = require("../lib/equip-file");
+const { applyLoadoutArgs } = require("../lib/loadout-swap");
+const { loadWorldItems } = require("../lib/world-items");
 
 function parseArgs(argv) {
   const out = { runs: 1000, seed: "mindscape", force: false, verbose: false, expectedRounds: 7 };
@@ -35,6 +36,7 @@ function parseArgs(argv) {
     else if (a === "--enemy-file" || a === "-f") (out.enemyFiles = out.enemyFiles ?? []).push(next());
     else if (a === "--set") (out.sets = out.sets ?? []).push(next());
     else if (a === "--equip") (out.equips = out.equips ?? []).push(next());
+    else if (a === "--unequip") (out.unequips = out.unequips ?? []).push(next());
     else if (a === "--help" || a === "-h") out.help = true;
   }
   return out;
@@ -77,10 +79,14 @@ Mindscape — offline Monte Carlo balance runs (game must be CLOSED)
                  actor document with the same system.props keys, loaded through
                  the same model as a world actor. See specs/ for an example.
                  One of --enemies or --enemy-file is required.
-  --equip        "<PC>=<item.json>" — swap that party member's main-hand weapon
-                 for a paper item, IN MEMORY (repeatable, one per PC). Measures
-                 an item before it is built; the world loadout is untouched.
-                 See specs/equipment/ and ruleset Part 6d.
+  --equip        "<PC>[:<slot>]=<source>" — change one slot of a party member's
+                 loadout IN MEMORY (repeatable). Slots: main (default), off,
+                 armor, acc1, acc2. Source: a paper spec file, or item:<name>
+                 (item:#<id>) for a real world item. The sheet is re-derived and
+                 set bonuses reconciled; a PC whose real kit does not rebuild
+                 (bin/verify-loadouts.js) is refused. World loadouts are untouched.
+                 See specs/equipment/ and ruleset Parts 6d-6f.
+  --unequip      "<PC>:<slot>" — empty a slot (not main), same rules as --equip.
   --runs, -n     iterations (default 1000)
   --seed         run label, for reproducibility (default "mindscape")
   --party        override the Current Game party
@@ -114,13 +120,30 @@ Mindscape — offline Monte Carlo balance runs (game must be CLOSED)
     console.log(`⚠ PAPER DESIGN — ${paper.map((e) => e.name).join(", ")} `
       + `loaded from a spec file, not the world. These numbers describe a proposal.`);
   }
-  // --equip swaps a party member's main-hand weapon for a paper item, IN MEMORY.
-  // Announced as loudly as a paper monster: a verdict about paper gear must never
-  // read as one about the character's real kit.
-  const equipped = args.equips?.length ? applyEquipFiles(args.equips, party) : [];
-  for (const e of equipped) {
-    console.log(`⚠ PAPER EQUIPMENT — ${e.pc} wields ${e.item} (replacing ${e.displaced ?? "nothing"}), `
-      + `from ${e.file}. In memory only; the world loadout is untouched.`);
+  // --equip / --unequip change a party member's loadout IN MEMORY (lib/loadout-swap.js):
+  // any slot, a paper spec or a real world item, with the sheet re-derived and set
+  // bonuses reconciled. Announced as loudly as a paper monster — a verdict about
+  // swapped gear must never read as one about the character's real kit.
+  if (args.equips?.length || args.unequips?.length) {
+    const worldItems = await loadWorldItems();
+    const reports = applyLoadoutArgs({ equips: args.equips, unequips: args.unequips }, party, { worldItems });
+    for (const r of reports) {
+      console.log(`⚠ LOADOUT CHANGED — ${r.pc}. In memory only; the world loadout is untouched.`);
+      for (const c of r.changes) {
+        console.log(`    ${c.slot.padEnd(5)} ${c.from}  ->  ${c.to}${c.origin ? `   [${c.origin}]` : ""}`);
+      }
+      for (const k of ["weapon", "dice", "def", "mdef", "hp", "affinities", "accuracy", "reduction", "virtualAttacks"]) {
+        if (String(r.before[k]) === String(r.after[k])) continue;
+        console.log(`    ${k.padEnd(14)} ${r.before[k]}  ->  ${r.after[k]}`);
+      }
+      for (const x of r.setBonus.removed) console.log(`    set bonus LOST    ${x}`);
+      for (const x of r.setBonus.added) console.log(`    set bonus GAINED  ${x}`);
+      for (const x of r.setBonus.missing) console.log(`    ⚠ set bonus not resolvable: ${x}`);
+      for (const w of r.warnings) console.log(`    ⚠ ${w}`);
+      for (const u of r.unresolved) console.log(`    ? ${u.key}: ${u.source} — ${u.reason}`);
+      const states = [...new Set(r.situational.map((x) => x.state))];
+      if (states.length) console.log(`    ~ values that depend on fight state, taken as stored: ${states.join(", ")}`);
+    }
   }
   // --set patches a loaded enemy IN MEMORY, so a dial can be swept against the
   // real built actor instead of a hand-maintained spec copy that drifts from it.

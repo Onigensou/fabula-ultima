@@ -361,6 +361,50 @@ tagged `flags["fabula-ultima-companion"].setBonus = "Swift Swimmers:2:ae"` that
 Vulnerability are correct at all times — and a swap that removes either piece must
 remove the Wet grant with it. Crisis and `STATUS_COUNT` genuinely are fight state.
 
+## Part 6f — Full-loadout swaps (added 2026-09-13)
+
+```
+--equip   "<PC>[:<slot>]=<source>"     slots: main (default), off, armor, acc1, acc2
+--unequip "<PC>:<slot>"                source: a paper spec file, or item:<name> / item:#<id>
+```
+
+`lib/loadout-swap.js` changes a loadout **in memory** — no world loadout changes. Per PC,
+in this order, mirroring `equipment-swap.js` and `set-bonus.js`:
+
+1. **Gate** — the PC's real kit must rebuild onto the stored sheet (Part 6e), or the swap
+   is refused.
+2. **Legality** — the slot takes that item type; a two-handed weapon goes in the main hand
+   only and frees the off hand; nothing enters the off hand under a two-handed main; a
+   shield in the main hand needs **Dual Shieldbearer** (exact name). Martial proficiency
+   is not checked — live treats it as a UI predicate, not a gate.
+3. **Unequip / equip** — `isEquipped` flips; an item's contained sub-items (gear skills)
+   leave and arrive with it.
+4. **Slot props** — `main_hand`, `main_attrib_1/2`, `weapon1_base_mod/damage/damagetype`
+   (and their derived twins), the `off_*` set, `accessory_name` / `accessory2_name`.
+5. **Set bonuses** — count equipped `isSet` pieces per `set_name`; drop managed grants
+   (`flags.setBonus` / `setBonusSkill`) whose threshold is no longer met; add newly met
+   ones from the world's Equipment Set definitions (AE from the set's own effects first,
+   then the `activeEffectContainer` libraries; skills contained by the set definition).
+6. **Re-derive** the sheet (Part 6e) and refresh the combat model through `toCombatModel`,
+   re-resolving the weapon and virtual-attack availability (a shield swap can remove Twin
+   Shields).
+
+A paper **armor or shield** spec with no DEF/MDEF effects receives the world's standard
+ones ("Armor DEF"/"Armor MDEF", "DEF UP"/"MDEF UP") and says so: in this world defence lives
+in the effects, so an effect-less spec would add no defence at all.
+
+### Two model corrections made alongside
+Both change every run, not only swaps, and are recorded in
+`expectations/inferex-centuaros.json` → `modelHistory`:
+- **Attribute dice come from `<attr>_current`** (capped d12), as the live snapshot rolls
+  them — not `<attr>_base`. Calibration unchanged.
+- **A weapon swing counts `weapon1_mod`**, the weapon's own accuracy bonus. Calibration
+  moved 55% → 58% party HP, DPR 170.9 → 180.0 — toward live.
+
+### Not modelled
+Unarmed Strike (the main hand cannot be emptied) · off-hand weapon attacks · the
+set-bonus signature refresh (a grant present under its tag is kept as-is).
+
 ## Part 7 — NOT MODELLED
 
 **This section is load-bearing.** The previous log-only attempt failed by *silently
