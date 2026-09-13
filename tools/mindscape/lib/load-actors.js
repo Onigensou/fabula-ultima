@@ -51,17 +51,29 @@ function num(v, d = 0) {
   return Number.isFinite(n) ? n : d;
 }
 
-// Attribute die size. Stored as `<attr>_base` (verified against the live world:
-// Hina reads dex_base 6 / ins_base 12 / mig_base 8 / wlp_base 10 at L41). The
-// `_current` spelling does NOT exist on these sheets — status die-steps are
-// carried by the `is<Status>` flags below and applied by the model, not baked
-// into a second prop.
+// Attribute die size, AS THE LIVE ENGINE ROLLS IT: `<attr>_current` first, capped
+// at d12 — the same precedence and cap as snapshot.js `attrDieSize` and cr-api's
+// getDieSize — falling back to `<attr>_base` for sheets that do not derive the
+// current value (NPCs).
+//
+// CORRECTED 2026-09-13. This used to read `<attr>_base` only, with a comment that
+// "the `_current` spelling does NOT exist on these sheets". It does: CSB derives
+// it as `override_<attr> > 0 ? override : <attr>_base + bonus_<attr>`, and it is
+// what every live roll reads. Reading base dropped every override die — Keren's
+// Swimsuit (d12 DEX while Wet, from the Swift Swimmers set) rolled d8 in the model.
+//
+// Status die-steps: the live template's `bonus_<attr>` is a flat 0, so statuses are
+// not folded into `_current` by the sheet; the `is<Status>` flags below are still
+// applied by the model on top.
 //
 // Returns null rather than 0 when absent: a silent 0 makes a character roll d0
 // and deal no damage, which reads as a balance result instead of a load failure.
+const MAX_ATTR_DIE = 12;
 function attrDie(props, key) {
+  const current = num(props[`${key}_current`], 0);
+  if (current >= 4) return Math.min(current, MAX_ATTR_DIE);
   const base = num(props[`${key}_base`], 0);
-  return base > 0 ? base : null;   // null = "not found", surfaced by validate()
+  return base > 0 ? Math.min(base, MAX_ATTR_DIE) : null;   // null = "not found", surfaced by validate()
 }
 
 // The six die-stepping statuses (project_fu_core_math). Each drops one attribute

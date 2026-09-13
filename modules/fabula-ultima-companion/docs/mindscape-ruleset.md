@@ -350,13 +350,16 @@ paper equipment** — a swap computed on a model that cannot rebuild the real ki
 a character that does not exist. First run, 2026-09-13: **4/4 reproduce**, after fixing
 `bonus_hp` (Blanche was 5 short against the stale template copy).
 
-### Situational state is baked into the stored sheet
+### Situational state
 Effects gated on a state (`ae("Wet")`, `aeWhen("Crisis")`, `STATUS_COUNT`) are evaluated
-against the actor's **stored** effects, which is why they reproduce — and listed.
-Consequence for every Mindscape run, not just equipment: the sheet is modelled in
-whatever state it was saved in. **Keren was saved Wet**, so the model has been fighting
-with her Diver Goggle's +3 accuracy, the Swimsuit's d12 DEX die and a bolt
-Vulnerability active at all times.
+against the actor's **stored** effects — which is why they reproduce — and listed.
+
+Not every such state is transient. **Keren's Wet is permanent by design**: it is the
+2-piece bonus of the *Swift Swimmers* set (Swimsuit + Diver Goggle), an actor effect
+tagged `flags["fabula-ultima-companion"].setBonus = "Swift Swimmers:2:ae"` that
+`set-bonus.js` keeps while both pieces are worn. Her +3 accuracy, d12 DEX and bolt
+Vulnerability are correct at all times — and a swap that removes either piece must
+remove the Wet grant with it. Crisis and `STATUS_COUNT` genuinely are fight state.
 
 ## Part 7 — NOT MODELLED
 
