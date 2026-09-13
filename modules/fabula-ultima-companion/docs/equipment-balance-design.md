@@ -370,10 +370,22 @@ row in `party output`. Specs live in `tools/mindscape/specs/equipment/`.
   (fire absorb/resist, Paladin MDEF, Protect from armor) and more than doubles the damage
   it deals. One refined weapon alone turns a wall into a close call. Judge gear against
   the encounter it meets, not in a vacuum.
+- **Blank-slate parties DONE** (ruleset Part 6g). `--party-archetype <preset> --level N`
+  builds a generic party by the character-creation rules at any level, and
+  `--neutral-encounter` builds enemies by the rulebook NPC formula with no affinities. The
+  **L20 and L50 checks can now be measured**, not only priced on paper. Default power
+  `table` carries a skill layer calibrated to the real party on basic gear (k = 3.78).
+  Baseline table: `tools/mindscape/expectations/archetype-sweep.json`.
+- **Measure on archetypes first, the real party second.** An item's value is *archetype
+  preset + item* vs *archetype preset* at the same level, power and seed, across the four
+  presets — report the spread, because composition moves results more than level does.
+  The real party is a cross-check for skill-specific interactions archetypes cannot show.
 - **NOT BUILT:** the vanilla reference set itself, so the Part 5 budgets remain placeholders.
 
-Limits: only the loaded party's level (L41), so L20/L50 stay paper checks; basic-attack
-riders only on a weapon-only PC; off-hand weapon attacks and Unarmed Strike unmodelled.
+Limits: archetypes have no class-skill identities (a rider that depends on a specific skill
+needs the real party or the live sim); basic-attack riders measure best on the Striker or
+Ranger (weapon-only kits); off-hand weapon attacks and Unarmed Strike unmodelled; the skill
+layer is one L41 anchor, extrapolated to other levels.
 
 ---
 

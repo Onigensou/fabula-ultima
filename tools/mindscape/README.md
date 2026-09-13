@@ -103,6 +103,26 @@ done
 > weapon-only (Zarg today): party policy swings the weapon only when no skill is
 > affordable. See ruleset Part 6d.
 
+## Blank-slate parties and neutral encounters
+
+The Current Game party is one roster at one level. To balance for any party, build one by
+the rulebook's character-creation rules and fight enemies built by its NPC rules (ruleset
+Part 6g):
+
+```bash
+# a generic party at level 30, table power, vs four rulebook soldiers of level 30
+node bin/mindscape.js --party-archetype standard --level 30 --neutral-encounter normal --force
+
+# the rulebook floor (no class skills) against two elites
+node bin/mindscape.js --party-archetype physical --level 20 --power raw --neutral-encounter elite-pair --force
+
+node bin/calibrate-archetypes.js     # re-fit the table-power skill layer (k)
+node bin/archetype-sweep.js --out expectations/archetype-sweep.json   # the baseline table
+```
+
+Presets: `standard`, `double-caster`, `no-healer`, `physical`. `--equip` and
+`--baseline-gear` work on archetypes exactly as on a loaded party.
+
 ## What it is for, and what it is not
 
 It answers **"is the math right?"** — rounds, HP remaining, KO risk, action economy. It
@@ -170,6 +190,12 @@ lib/conflict-events.js layered scene rules — Lightning Storm (spec Part 6c)
 lib/equip-file.js      --equip: paper main-hand weapons, in memory (spec Part 6d)
 lib/loadout.js         rebuilds a PC's gear-dependent sheet numbers from scratch (spec Part 6e)
 bin/verify-loadouts.js round-trip gate: every PC's real kit must reproduce (read-only)
+lib/archetype-party.js blank-slate parties by the character-creation rules (spec Part 6g)
+lib/neutral-encounter.js enemies by the rulebook NPC formula, no affinities (spec Part 6g)
+bin/calibrate-archetypes.js fit the table-power skill layer k (read-only)
+bin/archetype-sweep.js presets x levels x power x encounter baseline table
+test/archetype.test.js rulebook goldens (Camilla, Soldier, Sage, Healer, Ranger), rules
+test/neutral-encounter.test.js rulebook NPC numbers
 test/loadout.test.js   effect evaluator, armor/Dodge/Wet rules, max_hp, the gate
 lib/engine.js          the combat loop
 lib/rng.js             seeded RNG — same seed, same run

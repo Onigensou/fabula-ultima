@@ -445,6 +445,78 @@ on the calibration pair Mindscape reads about one round long against live.
 Unarmed Strike (the main hand cannot be emptied) · off-hand weapon attacks · the
 set-bonus signature refresh (a grant present under its tag is kept as-is).
 
+## Part 6g — Blank-slate archetype parties (added 2026-09-13)
+
+The game runs a different party every run, so gear and encounters should be measured
+against *a* party, at *any* level — not only today's roster at L41.
+
+```
+--party-archetype standard|double-caster|no-healer|physical   --level 5-50   --power raw|table
+--neutral-encounter normal|elite-pair   [--encounter-level N] [--hp-scale x] [--damage-scale x]
+```
+
+### Built by the character-creation rules (`lib/archetype-party.js`)
+| Rule | Core rulebook |
+|---|---|
+| Level 5 = 3 + 2 levels in the first two classes; later levels master classes in order (≤ 10 per class, ≤ 3 unmastered) | p.160, p.227 |
+| Attribute spreads Jack / Average / Specialized; +1 die step at 20 and 40, max d12 | p.162, p.227 |
+| HP = level + 5 × base MIG; MP = level + 5 × base WLP; +5 per matching class free benefit | p.163 |
+| DEF / MDEF from dice and **basic** gear only | p.164–169 |
+
+| Role | Book archetype (L5) | Dice | Basic gear | Turn |
+|---|---|---|---|---|
+| Tank | Soldier | MIG d10 · DEX d8 · WLP d8 · INS d6 | Bronze Sword, Brigadine, Runic Shield | attack + Protect |
+| Caster | Sage | INS d10 · WLP d10 · DEX d6 · MIG d6 | Tome, Sage Robe | spells |
+| Support | Healer | WLP d10 · INS d8 · MIG d8 · DEX d6 | Staff, Sage Robe | Heal + spell |
+| Ranger | Ranger | DEX d10 · INS d8 · MIG d8 · WLP d6 | Shortbow, Silk Shirt | attack |
+| Striker | melee Weaponmaster/Rogue | DEX d10 · MIG d8 · INS d8 · WLP d6 | Greatsword, Combat Tunic | attack |
+
+Presets: **standard** (Striker, Caster, Tank, Support) · **double-caster** · **no-healer**
+(Ranger for Support) · **physical** (Ranger for Caster; the Support only heals).
+
+Generic kits, shaped like the world's own spells: single target HR+25 for 20 MP, up to three
+targets HR+15 for 10 MP each; Heal and Protect through the utility registry. The sheet is
+built like a real one (real basic-gear items with their effects) and re-derived by Part 6e,
+so `--equip` and `--baseline-gear` work unchanged and the round-trip gate passes.
+
+**Verified** against the book: Camilla (pp.161–165) 40 HP / 50 MP / DEF 11 / MDEF 13, and
+the p.169 "d8 DEX + brigandine + bronze shield = Defense 12" example. On the real world's
+basic gear the L5 Tank, Caster and Support reproduce Soldier, Sage and Healer exactly.
+
+⚠ The world's martial armor effect **raises** DEF to its value (UPGRADE) rather than
+replacing the DEX die as p.169 describes; the archetypes follow the world, because the model
+must match live. It only matters for a d12-DEX character in martial armor.
+
+### Power modes
+- **raw** — the rulebook floor. No class skills at all, so it reads far below a real
+  character of the same level.
+- **table** (default) — adds a skill layer: `+floor(L/10)` to all checks (the rulebook NPC
+  accuracy gradient; the real L41 party averages about +4) and `+round(k × L/10)` damage.
+  **k = 3.78** (+15 at L41), fitted by `bin/calibrate-archetypes.js` so the standard preset
+  at L41 matches the **real party on basic gear** (59.9 DPR vs Inferex + Centuaros). The fully
+  geared party would give k = 16.95; rejected, since it folds gear into the layer. Defense is
+  not fitted. Record: `expectations/archetype-calibration.json`.
+
+### Neutral encounters (`lib/neutral-encounter.js`)
+Official NPC construction: Standard array, die steps at 20/40/60, HP = 2L + 5 × MIG, accuracy
+`floor(L/10)`, attack HR+5 and Breath HR+10 plus the +0/+5/+10/+15 level bonus, elites ×2 HP.
+No affinities, efficiency 100, half physical vs DEF, half magic vs MDEF. **normal** = four
+soldiers (the rulebook budget for four PCs); **elite-pair** = two elites.
+
+### The baseline sweep
+`bin/archetype-sweep.js` → `expectations/archetype-sweep.json`: every preset × L20/30/41/50
+× raw/table × both encounters, 1000 runs a row. Readings (model rounds):
+- **Table power keeps pace with the rulebook NPC curve.** The standard preset lands a median
+  3–4 rounds against a normal fight at every level, with 66–76% party HP left.
+- **Composition dominates level.** Double-caster is fastest; physical (no offensive magic)
+  takes about twice as long; no-healer sits between.
+- **Raw power is a floor** — 6–7 rounds and 72–76% defeat against normal fights from L41.
+
+### Not modelled
+Class-skill identities (Counterattack, Dances, Zero Power, summons) · IP benefits (IP is not
+spent by any modelled action) · free actions (Acceleration, High Speed) · off-hand attacks.
+`k` is one L41 anchor; other levels extrapolate linearly.
+
 ## Part 7 — NOT MODELLED
 
 **This section is load-bearing.** The previous log-only attempt failed by *silently
