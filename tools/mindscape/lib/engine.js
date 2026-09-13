@@ -369,32 +369,43 @@ function noteCrisis(state, c) {
 // separate from the multiplier because the two compose in a fixed order: adds
 // land on the base, then multipliers scale the sum -- which is what
 // damage_stage "outgoing" means on both rows.
-function damageAddFor(actor, action, victim) {
-  if (!actor?.reactions?.length) return 0;
-  const ctx = {
+// One context for both damage-seam collectors, so an add and a multiplier can
+// never disagree about which swing they are looking at.
+function riderCtx(state, actor, action, victim) {
+  return {
     sourceAction: action.name,
     victim,
     victimInCrisis: victim.hp > 0 && victim.hp <= victim.maxHp / 2,
     attackerInCrisis: actor.hp > 0 && actor.hp <= actor.maxHp / 2,
     attackerStance: actor.stance ?? null,
     element: action.element,
+    // Equipment riders gate on WHEN and on WHAT KIND of swing. An even-round
+    // bonus that cannot see the round reads it as undefined; one that cannot
+    // tell a basic attack from a skill fires on both.
+    round: state.round,
+    isBasicAttack: !!action.basicAttack,
   };
+}
+
+function damageAddFor(state, actor, action, victim) {
+  if (!actor?.reactions?.length) return 0;
+  const ctx = riderCtx(state, actor, action, victim);
   let add = 0;
   for (const r of RX.collect(actor, RX.TRIGGERS.ON_DEAL_DAMAGE, ctx)) {
-    if (r.effect?.kind === "damage_add") add += Number(r.effect.amount) || 0;
+    if (r.effect?.kind !== "damage_add") continue;
+    add += Number(r.effect.amount) || 0;
+    // Level-scaled rider ("bonus damage equal to your level / 5"). Scaling is
+    // how a gear bonus stays relevant from L20 to L50 — a flat one decays
+    // (docs/equipment-balance-design.md, Part 4).
+    const div = Number(r.effect.levelDiv) || 0;
+    if (div > 0) add += Math.floor((Number(actor.actor.level) || 0) / div);
   }
   return add;
 }
 
-function damageMultiplierFor(actor, action, victim) {  if (!actor?.reactions?.length) return 1;
-  const ctx = {
-    sourceAction: action.name,
-    victim,
-    victimInCrisis: victim.hp > 0 && victim.hp <= victim.maxHp / 2,
-    attackerInCrisis: actor.hp > 0 && actor.hp <= actor.maxHp / 2,
-    attackerStance: actor.stance ?? null,
-    element: action.element,
-  };
+function damageMultiplierFor(state, actor, action, victim) {
+  if (!actor?.reactions?.length) return 1;
+  const ctx = riderCtx(state, actor, action, victim);
   let mult = 1;
   for (const r of RX.collect(actor, RX.TRIGGERS.ON_DEAL_DAMAGE, ctx)) {
     if (r.effect?.kind === "damage_mult") mult *= Number(r.effect.factor) || 1;
@@ -444,9 +455,9 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
     // before it is written, which is upstream of where reaction effects run.
     let base = R.outgoingDamage({
       hr: check.hr,
-      damageBonus: action.damageBonus + extra + damageAddFor(actor, action, target),
+      damageBonus: action.damageBonus + extra + damageAddFor(state, actor, action, target),
     });
-    base = Math.ceil(base * damageMultiplierFor(actor, action, target));
+    base = Math.ceil(base * damageMultiplierFor(state, actor, action, target));
 
     // Record the efficiency this swing actually landed at, per family. Sampled
     // here — after any read the attack itself triggered, which is the number
@@ -587,8 +598,41 @@ function weaponAction(actor) {
     cost: { resource: null, amount: 0 },
     keywords: null,
     weaponFamily: actor.actor.weapon?.family ?? null,
-    checkBonus: 0,
+    // The sheet loader never sets this, so world weapons still read 0; a paper
+    // weapon from --equip carries its own check_bonus.
+    checkBonus: Number(w.checkBonus) || 0,
+    // A BASIC attack — what "when you attack with this weapon" means for gear
+    // riders. Skill actions never carry it.
+    basicAttack: true,
   };
+}
+
+// Attack-declaration riders (ON_DECLARE_ATTACK). Anything that changes an
+// attack's REACH must run before targets are chosen, which no post-roll trigger
+// can do. Returns the action unchanged, or a COPY with the raised target count —
+// never a mutation, because a skill action object is shared across turns.
+//
+// Multi N is a maximum, not a sum: a rider wanting 3 on a Barraged shot (2)
+// yields 3, not 5.
+function declareRiders(state, actor, action) {
+  if (!actor?.reactions?.length) return action;
+  const ctx = {
+    round: state.round, sourceAction: action.name,
+    isBasicAttack: !!action.basicAttack, attacker: actor,
+  };
+  let out = action;
+  for (const r of RX.collect(actor, RX.TRIGGERS.ON_DECLARE_ATTACK, ctx)) {
+    if (r.effect?.kind !== "target_count") continue;
+    const want = Number(r.effect.count) || 0;
+    if (want > (out.target?.count ?? 1)) {
+      out = { ...out, target: { ...out.target, count: want } };
+      state.log.push({
+        round: state.round, actor: actor.name, action: r.name,
+        reaction: true, announce: true, targetCount: want,
+      });
+    }
+  }
+  return out;
 }
 
 function takeTurn(state, actor, { granted = false } = {}) {
@@ -655,6 +699,8 @@ function takeTurn(state, actor, { granted = false } = {}) {
       // Barrage buys REACH on a ranged shot, so it fires whenever payable.
       const barraged = U.tryBarrage(actor, w);
       if (barraged) w = barraged;
+      // Gear riders AFTER Barrage, so a larger Multi wins over Barrage's 2.
+      w = declareRiders(state, actor, w);
       action = w;
       targets = chooseTargets(state, actor, w);
     }
@@ -766,6 +812,9 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
     combatants: combatants.map((c) => ({
       name: c.name, side: c.side, hp: c.hp, maxHp: c.maxHp, alive: c.alive,
       damageDealt: c.damageDealt, reactionsFired: c.reactionsFired ?? 0,
+      // Per-combatant turn counts, so an equipment A/B can see whether an arm
+      // changed how often the wielder swings (Acceleration, fight length).
+      baseActionsTaken: c.baseActionsTaken, grantedActionsTaken: c.grantedActionsTaken,
     })),
     // Per-lane weapon-efficiency pressure. Only populated when something in the
     // fight actually reads weapon families, so it costs nothing otherwise.

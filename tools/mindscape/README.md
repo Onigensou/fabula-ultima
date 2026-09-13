@@ -19,7 +19,7 @@ node bin/mindscape.js --enemy-file specs/rakshasa.json --runs 500 --force
 node bin/sweep.js -f specs/rakshasa.json --dial mindscape_read_curve \
   --on "Adaptive Defense" --values "25,40,60,80|50,65,80,95" --runs 400
 
-node test/rules.test.js && node test/reactions.test.js && node test/weapon-read.test.js
+node test/rules.test.js && node test/reactions.test.js && node test/weapon-read.test.js && node test/equip.test.js
 ```
 
 ## Measuring a design before it is built
@@ -47,12 +47,32 @@ than a source edit. See `specs/rakshasa.json`.
 |---|---|
 | `--enemies, -e` | comma-separated actor names from the world |
 | `--enemy-file, -f` | JSON spec for a monster not in the world yet (repeatable) |
+| `--equip` | `"<PC>=<item.json>"` — swap that PC's main-hand weapon for a paper item, in memory (repeatable, one per PC) |
 | `--runs, -n` | iterations (default 1000) |
 | `--seed` | run label; same seed reproduces the run exactly |
 | `--party` | override the Current Game party |
 | `--expected` | round budget before "unresolved" (default 7) |
 | `--force` | report even when coverage is below the bar |
 | `--verbose, -v` | print every coverage warning |
+
+## Measuring paper equipment
+
+`--equip "<PC>=<item.json>"` swaps one party member's main-hand weapon for a spec item,
+in memory — the world loadout is never touched. A spec is an item document (paste one
+out of `_authored-export/items/`) plus optional gear-skill sub-items; a gear skill is
+modelled when its name is in `REACTION_REGISTRY`. Run it against a control arm with the
+same stats and no passive, on the same seed, and compare the PC's row in `party output`:
+
+```bash
+for arm in chassis-whip explosion-whip; do
+  node bin/mindscape.js -f specs/equipment/dummies-n3.json \
+    --equip "Zarg=specs/equipment/$arm.json" --runs 1000 --seed whip-n3 --force
+done
+```
+
+> ⚠ A rider on BASIC attacks is only measurable on a PC whose modelled kit is
+> weapon-only (Zarg today): party policy swings the weapon only when no skill is
+> affordable. See ruleset Part 6d.
 
 ## What it is for, and what it is not
 
@@ -118,10 +138,12 @@ lib/formula.js         safe evaluator for sheet formulas; refuses runtime state
 lib/rules.js           checks + the damage pipeline (spec Parts 1-2), pure
 lib/reactions.js       reaction registry + gates (spec Part 6b), pure
 lib/conflict-events.js layered scene rules — Lightning Storm (spec Part 6c)
+lib/equip-file.js      --equip: paper main-hand weapons, in memory (spec Part 6d)
 lib/engine.js          the combat loop
 lib/rng.js             seeded RNG — same seed, same run
 test/rules.test.js     30 tests, plain node
 test/reactions.test.js 22 tests, plain node
+test/equip.test.js     --equip loading, array registry rows, attack-declaration riders
 ```
 
 `node_modules` is resolved from `tools/safe-edit`; this directory must never carry one.

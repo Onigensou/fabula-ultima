@@ -279,6 +279,47 @@ Rod forever and eats 30 Bolt every turn — a spec violation that inflates a squ
 down-rate. The strike resolves through the normal incoming pipeline, so an absorbing
 holder is healed and still registers a bolt event for its passives.
 
+## Part 6d — Paper equipment (added 2026-09-13)
+
+`--equip "<PC>=<item.json>"` swaps one party member's main-hand weapon for a spec item
+**in memory** (`lib/equip-file.js`). It exists to measure an item priced by
+`equipment-balance-design.md` without touching a real loadout — equipping a test item on
+a real actor changes a player's sheet. A spec is a Foundry item document (the same
+`system.props` keys an equipment item carries) plus optional embedded gear-skill
+sub-items; a gear skill is modelled only when its name is in the reaction registry.
+Refused, never approximated: a non-weapon, an unknown `category` (the EF axis would go
+inert), a formula `damage_bonus`, a non-positive `damage_bonus`.
+
+### Attack-declaration riders
+A fourth trigger fires on the ACTOR **before targets are chosen** — the only point at
+which a rider can change an attack's reach. Today it fires for weapon swings only.
+
+| trigger | fires on | context |
+|---|---|---|
+| `on_declare_attack` | the ATTACKER, before targeting (weapon swings) | `round, sourceAction, isBasicAttack, attacker` |
+
+Effect `target_count` raises the target count to **at least** N — Multi N as a maximum,
+not a sum, so it composes with Barrage's Multi 2 by taking the larger. The damage seam
+(`damage_add`, `damage_mult`) now also sees `round` and `isBasicAttack`, and `damage_add`
+takes an optional `levelDiv`: `amount + floor(level / levelDiv)`.
+
+### Array registry entries
+A registry value may be an **array of rows** — one mechanic with several hook points
+(Explosion Whip: reach before targeting, damage at the seam). The rows share one gate so
+they cannot disagree about which swing qualifies. Tuning dials are **kind-scoped** —
+`mindscape_target_count` reaches only a `target_count` row, `mindscape_damage_add` and
+`mindscape_damage_add_level_div` only a `damage_add` row — because every row reads the
+same item's props.
+
+### What it does not see
+- **A basic attack is the fallback swing.** Party policy swings the weapon only when no
+  modelled skill is affordable, so a rider on basic attacks is measurable only on a PC
+  whose modelled kit is weapon-only (Zarg today). A real player may *choose* a basic
+  attack on the round the rider pays; the model never makes that choice, so it reads such
+  an item as a **floor** on a PC with a damage kit.
+- Off-hand, armor and accessory swaps.
+- Any party level but the one loaded. The level band's low end stays a paper check.
+
 ## Part 7 — NOT MODELLED
 
 **This section is load-bearing.** The previous log-only attempt failed by *silently

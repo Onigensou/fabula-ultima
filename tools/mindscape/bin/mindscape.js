@@ -17,6 +17,7 @@ const { runBattle } = require("../lib/engine");
 const { resolveEvent } = require("../lib/conflict-events");
 const RX = require("../lib/reactions");
 const { Rng } = require("../lib/rng");
+const { applyEquipFiles } = require("../lib/equip-file");
 
 function parseArgs(argv) {
   const out = { runs: 1000, seed: "mindscape", force: false, verbose: false, expectedRounds: 7 };
@@ -33,6 +34,7 @@ function parseArgs(argv) {
     else if (a === "--conflict-event" || a === "-c") out.conflictEvent = next();
     else if (a === "--enemy-file" || a === "-f") (out.enemyFiles = out.enemyFiles ?? []).push(next());
     else if (a === "--set") (out.sets = out.sets ?? []).push(next());
+    else if (a === "--equip") (out.equips = out.equips ?? []).push(next());
     else if (a === "--help" || a === "-h") out.help = true;
   }
   return out;
@@ -75,6 +77,10 @@ Mindscape — offline Monte Carlo balance runs (game must be CLOSED)
                  actor document with the same system.props keys, loaded through
                  the same model as a world actor. See specs/ for an example.
                  One of --enemies or --enemy-file is required.
+  --equip        "<PC>=<item.json>" — swap that party member's main-hand weapon
+                 for a paper item, IN MEMORY (repeatable, one per PC). Measures
+                 an item before it is built; the world loadout is untouched.
+                 See specs/equipment/ and ruleset Part 6d.
   --runs, -n     iterations (default 1000)
   --seed         run label, for reproducibility (default "mindscape")
   --party        override the Current Game party
@@ -107,6 +113,14 @@ Mindscape — offline Monte Carlo balance runs (game must be CLOSED)
   if (paper.length) {
     console.log(`⚠ PAPER DESIGN — ${paper.map((e) => e.name).join(", ")} `
       + `loaded from a spec file, not the world. These numbers describe a proposal.`);
+  }
+  // --equip swaps a party member's main-hand weapon for a paper item, IN MEMORY.
+  // Announced as loudly as a paper monster: a verdict about paper gear must never
+  // read as one about the character's real kit.
+  const equipped = args.equips?.length ? applyEquipFiles(args.equips, party) : [];
+  for (const e of equipped) {
+    console.log(`⚠ PAPER EQUIPMENT — ${e.pc} wields ${e.item} (replacing ${e.displaced ?? "nothing"}), `
+      + `from ${e.file}. In memory only; the world loadout is untouched.`);
   }
   // --set patches a loaded enemy IN MEMORY, so a dial can be swept against the
   // real built actor instead of a hand-maintained spec copy that drifts from it.
@@ -229,6 +243,9 @@ if you accept a partial model. Use --verbose to see every gap.`);
   // designer tuning a boss damage number needs the other direction, and the
   // engine already tracks damageDealt per combatant on both sides.
   const eDprs = [], ePools = [], eByName = new Map();
+  // Per-PC output. Party-level BaselineDPR cannot show what ONE item did: an
+  // equipment A/B changes one character, and the other three's variance buries it.
+  const pByName = new Map();
 
   for (let i = 0; i < args.runs; i++) {
     const rng = new Rng(`${args.seed}:${i}`);
@@ -243,6 +260,12 @@ if you accept a partial model. Use --verbose to see every gap.`);
       const cs = r.combatants ?? [];
       let dealt = 0;
       for (const c of cs) {
+        if (c.side === 'party') {
+          const acc = pByName.get(c.name) ?? { dealt: 0, rounds: 0, runs: 0, turns: 0 };
+          acc.dealt += c.damageDealt ?? 0; acc.rounds += r.rounds; acc.runs++;
+          acc.turns += (c.baseActionsTaken ?? 0) + (c.grantedActionsTaken ?? 0);
+          pByName.set(c.name, acc);
+        }
         if (c.side !== 'enemy') continue;
         dealt += c.damageDealt ?? 0;
         const acc = eByName.get(c.name) ?? { dealt: 0, rounds: 0 };
@@ -343,6 +366,21 @@ if you accept a partial model. Use --verbose to see every gap.`);
       }
     }
     console.log('  - Damage DEALT, before healing. Party HP remaining is the net figure.');
+  }
+
+  // Per-PC output, in the units the equipment guide prices in: damage per round
+  // and per FIGHT. An --equip A/B reads the wielder's row across two arms on the
+  // same seed; turns/round shows whether the arm changed how often they acted.
+  if (pByName.size) {
+    console.log('');
+    console.log('party output  (per PC — compare this row across --equip arms)');
+    for (const [n, acc] of pByName) {
+      const perRound = acc.rounds ? acc.dealt / acc.rounds : 0;
+      const perFight = acc.runs ? acc.dealt / acc.runs : 0;
+      const turns = acc.rounds ? acc.turns / acc.rounds : 0;
+      console.log('  ' + n.padEnd(11) + perRound.toFixed(1).padStart(7) + ' /round '
+        + perFight.toFixed(1).padStart(8) + ' /fight   ' + turns.toFixed(2) + ' turns/round');
+    }
   }
 
   // Weapon-lane pressure. Printed only when something actually read weapon

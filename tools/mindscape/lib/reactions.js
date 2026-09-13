@@ -44,7 +44,21 @@ const TRIGGERS = Object.freeze({
   // elite, which is not a rounding error.
   // ctx: { hit, weaponFamily, element, attacker, damage }
   ON_ATTACKED: "on_attacked",
+  // The actor is about to swing — BEFORE targets are chosen. It exists because
+  // a rider that changes an attack's REACH (Multi N) has to act before target
+  // selection, which no post-roll trigger can reach. Fired on the ACTOR, for
+  // weapon swings (engine.takeTurn). Added for paper equipment, 2026-09-13.
+  // ctx: { round, sourceAction, isBasicAttack, attacker }
+  ON_DECLARE_ATTACK: "on_declare_attack",
 });
+
+// Round parity for equipment riders. `round > 0` is load-bearing: 0 % 2 === 0
+// is TRUE — the same trap as Overload Riposte's roll-less check — so a swing
+// with no round threaded through would otherwise qualify every time.
+function evenRoundBasicAttack(ctx) {
+  const round = Number(ctx?.round);
+  return !!ctx?.isBasicAttack && round > 0 && round % 2 === 0;
+}
 
 // ── Effects ─────────────────────────────────────────────────────────────────
 // `free_attack`  — the reactor immediately performs one of its own actions.
@@ -62,6 +76,10 @@ const TRIGGERS = Object.freeze({
 //                  victim. Models a conditional keyword (Execute / Cripple),
 //                  which lives on the sheet as an `adjust_damage` reaction row
 //                  rather than as engine code.
+// `target_count` — raise the declared attack's target count to AT LEAST
+//                  `count` (Multi N). ON_DECLARE_ATTACK only; a maximum, not a
+//                  sum. `damage_add` may also carry `levelDiv`, adding
+//                  floor(level / levelDiv) — a gear bonus that scales.
 //
 // ── WEAPON READ ─────────────────────────────────────────────────────────────
 // A least-recently-used window over weapon families. Each family carries a
@@ -238,6 +256,33 @@ const REACTION_REGISTRY = Object.freeze({
     effect: { kind: "damage_mult", factor: 2 },
     note: "Cripple keyword — 200% to a creature NOT in Crisis; the opener half",
   },
+
+  // ── Paper equipment ───────────────────────────────────────────────────────
+  // PAPER DESIGN, not in the world. docs/equipment-balance-design.md, Part 9.
+  // Carried by the gear-skill sub-item of an --equip spec (lib/equip-file.js),
+  // so it only exists on a combatant actually holding the weapon.
+  //
+  // An ARRAY entry: one mechanic, two hook points. Reach (Multi) has to land
+  // before targets are chosen; the bonus lands per victim at the damage seam.
+  // Both rows share one gate so they can never disagree about which swing
+  // qualifies.
+  //
+  // "When you attack with this weapon" means a BASIC attack only (design ruling
+  // 2026-09-13) — a skill that swings the weapon does not qualify.
+  "Explosion Whip (Passive)": [
+    {
+      trigger: TRIGGERS.ON_DECLARE_ATTACK,
+      gate: evenRoundBasicAttack,
+      effect: { kind: "target_count", count: 3 },
+      note: "even rounds: the basic attack gains Multi 3 (dial: mindscape_target_count)",
+    },
+    {
+      trigger: TRIGGERS.ON_DEAL_DAMAGE,
+      gate: evenRoundBasicAttack,
+      effect: { kind: "damage_add", amount: 10, levelDiv: 0 },
+      note: "even rounds: +10 per target (dials: mindscape_damage_add, mindscape_damage_add_level_div)",
+    },
+  ],
 });
 
 // ── Weapon read: the pure state transition ──────────────────────────────────
@@ -278,10 +323,19 @@ function efficiencyForCounter(n, window, curve) {
   return Number.isFinite(v) ? v : 100;
 }
 
+// A registry value is ONE row or an ARRAY of rows. An array is one mechanic with
+// several hook points (Explosion Whip: reach before targeting, damage at the
+// seam). Every consumer goes through here, so none can forget the shape.
+function registryRows(entry) {
+  if (!entry) return [];
+  return Array.isArray(entry) ? entry : [entry];
+}
+
 // Actions that exist only to be fired BY a reaction must never be picked as a
 // turn action. Derived from the registry so a new entry cannot forget it.
 const REACTION_ONLY_ACTIONS = Object.freeze(new Set(
   Object.values(REACTION_REGISTRY)
+    .flatMap(registryRows)
     .filter((r) => r.effect.kind === "free_attack" && r.effect.target === "attacker")
     .map((r) => r.effect.actionName),
 ));
@@ -291,9 +345,9 @@ const REACTION_ONLY_ACTIONS = Object.freeze(new Set(
 function declaredReactions(passives) {
   const out = [];
   for (const p of passives ?? []) {
-    const entry = REACTION_REGISTRY[p.name];
-    if (!entry) continue;
-    out.push({ name: p.name, ...entry, effect: applyTuning(entry.effect, p.props) });
+    for (const row of registryRows(REACTION_REGISTRY[p.name])) {
+      out.push({ name: p.name, ...row, effect: applyTuning(row.effect, p.props) });
+    }
   }
   return out;
 }
@@ -321,6 +375,20 @@ function applyTuning(effect, props) {
 
   const factor = n(props.mindscape_damage_factor);
   if (Number.isFinite(factor)) out.factor = factor;
+
+  // Kind-scoped: an ARRAY entry's rows all read ONE item's props, so a dial may
+  // only reach the row whose effect it names. Without the scope, a count dial
+  // would land on the damage row too and every row would drift together.
+  if (out.kind === "target_count") {
+    const count = n(props.mindscape_target_count);
+    if (Number.isFinite(count) && count >= 1) out.count = count;
+  }
+  if (out.kind === "damage_add") {
+    const amount = n(props.mindscape_damage_add);
+    if (Number.isFinite(amount)) out.amount = amount;
+    const div = n(props.mindscape_damage_add_level_div);
+    if (Number.isFinite(div) && div >= 0) out.levelDiv = div;
+  }
 
   return out;
 }
@@ -352,6 +420,6 @@ const MAX_REACTION_DEPTH = 2;
 
 module.exports = {
   TRIGGERS, REACTION_REGISTRY, REACTION_ONLY_ACTIONS, MAX_REACTION_DEPTH,
-  declaredReactions, undeclaredReactions, collect,
+  declaredReactions, undeclaredReactions, collect, registryRows,
   applyWeaponRead, efficiencyForCounter,
 };

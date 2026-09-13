@@ -68,11 +68,16 @@ t("chain reaction ignores non-Bolt", () => {
 t("every registry entry has a known trigger and an effect kind", () => {
   const triggers = new Set(Object.values(RX.TRIGGERS));
   const kinds = new Set(["free_attack", "stack_burst", "burst", "grant_mp",
-                         "weapon_read", "damage_mult", "damage_add"]);
-  for (const [name, r] of Object.entries(RX.REACTION_REGISTRY)) {
-    assert.ok(triggers.has(r.trigger), `${name}: unknown trigger ${r.trigger}`);
-    assert.ok(kinds.has(r.effect.kind), `${name}: unknown effect ${r.effect.kind}`);
-    assert.strictEqual(typeof r.gate, "function", `${name}: no gate`);
+                         "weapon_read", "damage_mult", "damage_add", "target_count"]);
+  // An entry is one row or an ARRAY of rows; every row must stand on its own.
+  for (const [name, entry] of Object.entries(RX.REACTION_REGISTRY)) {
+    const rows = RX.registryRows(entry);
+    assert.ok(rows.length > 0, `${name}: empty entry`);
+    for (const r of rows) {
+      assert.ok(triggers.has(r.trigger), `${name}: unknown trigger ${r.trigger}`);
+      assert.ok(kinds.has(r.effect.kind), `${name}: unknown effect ${r.effect.kind}`);
+      assert.strictEqual(typeof r.gate, "function", `${name}: no gate`);
+    }
   }
 });
 t("a counter payload is excluded from turn-action selection", () => {
