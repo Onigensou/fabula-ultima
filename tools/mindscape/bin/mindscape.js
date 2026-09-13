@@ -83,12 +83,17 @@ Mindscape — offline Monte Carlo balance runs (game must be CLOSED)
                  One of --enemies or --enemy-file is required.
   --equip        "<PC>[:<slot>]=<source>" — change one slot of a party member's
                  loadout IN MEMORY (repeatable). Slots: main (default), off,
-                 armor, acc1, acc2. Source: a paper spec file, or item:<name>
-                 (item:#<id>) for a real world item. The sheet is re-derived and
+                 armor, acc1, acc2. Source: a paper spec file, item:<name>
+                 (item:#<id>) for a real world item, or own:<name> (own:#<id>)
+                 for an item the PC already carries. The sheet is re-derived and
                  set bonuses reconciled; a PC whose real kit does not rebuild
                  (bin/verify-loadouts.js) is refused. World loadouts are untouched.
                  See specs/equipment/ and ruleset Parts 6d-6f.
   --unequip      "<PC>:<slot>" — empty a slot (not main), same rules as --equip.
+  --baseline-gear  "all" | "Hina,Zarg" — every slot of those PCs to its same-class
+                 BASIC item: the 0% chassis of docs/equipment-balance-design.md.
+                 --equip/--unequip apply on top, e.g. own:<name> to put one of the
+                 PC's real items back and measure it against basic gear.
   --runs, -n     iterations (default 1000)
   --seed         run label, for reproducibility (default "mindscape")
   --party        override the Current Game party
@@ -341,6 +346,17 @@ if you accept a partial model. Use --verbose to see every gap.`);
   for (const k of [...hist.keys()].sort((a, b) => a - b)) {
     const n = hist.get(k);
     console.log(`  ${String(k).padStart(2)}  ${"█".repeat(Math.max(1, Math.round((n / args.runs) * 50)))} ${pct(n / args.runs)}`);
+  }
+
+  // Fight-length bands for NON-boss encounters (user ruling 2026-09-13): 1 round is too
+  // easy, 2-3 is standard, 4+ is too long. Printed from RAW model rounds — on the
+  // calibration pair Mindscape runs about one round LONG against live
+  // (expectations/inferex-centuaros.json), so read a "3" as a live "2".
+  {
+    const share = (fn) => pct(rounds.filter(fn).length / rounds.length);
+    console.log(`\nfight-length bands  (non-boss: 1 too easy · 2-3 standard · 4+ too long)`);
+    console.log(`  1 round ${share((r) => r <= 1)}   ·   2-3 rounds ${share((r) => r >= 2 && r <= 3)}   ·   4+ rounds ${share((r) => r >= 4)}`);
+    console.log(`  · raw model rounds; Mindscape reads about one round LONG vs live on the calibration pair`);
   }
 
   console.log(`\noutcomes`);

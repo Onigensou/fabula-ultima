@@ -280,7 +280,19 @@ function unequip(model, item) {
     .map((it) => (it === item ? { ...it, props: { ...it.props, isEquipped: false } } : it));
 }
 
-function equip(model, item, subItems) {
+function equip(model, item, subItems, { own = false } = {}) {
+  if (own) {
+    // Already carried: switch it on IN PLACE. Its sub-items never left the model
+    // (unequip keeps them), and the equip gate lets them through again.
+    let worn = null;
+    model.items = (model.items ?? []).map((it) => {
+      if (it.id !== item.id) return it;
+      worn = { ...it, props: { ...it.props, isEquipped: true } };
+      return worn;
+    });
+    if (!worn) throw new Error(`Mindscape: ${model.name} no longer carries "${item.name}" [${item.id}]`);
+    return worn;
+  }
   const worn = { ...item, props: { ...item.props, isEquipped: true } };
   model.items = [...(model.items ?? []), worn, ...subItems.map((sub) => ({ ...sub, container: worn.id }))];
   return worn;
@@ -438,9 +450,18 @@ function applySwaps(model, swaps, { worldItems = null, requireVerified = true } 
       throw new Error(`Mindscape: ${where} — the main hand cannot be emptied (Unarmed Strike is not modelled)`);
     }
 
+    if (swap.source?.own) {
+      // Read the carried copy as it is NOW, not as it was when the source resolved: an
+      // earlier swap in this same call may have changed it.
+      const carried = (model.items ?? []).find((it) => it.id === newItem.id);
+      if (carried && isTrue(carried.props?.isEquipped) && carried.id !== oldItem?.id) {
+        throw new Error(`Mindscape: ${where} — "${newItem.name}" is already worn in another slot; unequip it there first`);
+      }
+    }
+
     if (oldItem) unequip(model, oldItem);
     if (newItem) {
-      equip(model, newItem, swap.source.subItems ?? []);
+      equip(model, newItem, swap.source.subItems ?? [], { own: !!swap.source.own });
       if (swap.slot === "main" && isTwoHanded(newItem) && slots.off) {
         unequip(model, slots.off);
         writeSlotProps(props, "off", null);
@@ -477,7 +498,10 @@ function applyLoadoutArgs({ equips = [], unequips = [] }, party, { worldItems = 
   };
   for (const raw of equips) {
     const a = parseSlotArg(raw);
-    add(find(a.pc, raw), { slot: a.slot, source: resolveSource(a.source, { worldItems }) }, raw);
+    const model = find(a.pc, raw);
+    // Resolved against the model AS IT IS NOW — after --baseline-gear, if any — so an
+    // own:<name> finds the carried item in its current state.
+    add(model, { slot: a.slot, source: resolveSource(a.source, { worldItems, model }) }, raw);
   }
   for (const raw of unequips) {
     const a = parseSlotArg(raw, { requireSource: false });

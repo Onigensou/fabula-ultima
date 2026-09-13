@@ -348,10 +348,32 @@ result. Those items become the canon new designs are compared to.
 Each run is an **A/B against a chassis arm** on the same seed; read the wielder's
 row in `party output`. Specs live in `tools/mindscape/specs/equipment/`.
 
-**Status:** tooling **DONE**; first item (Explosion Whip, Part 9 D) measured. The
-vanilla reference set itself is **NOT BUILT** yet. Limits: only the loaded party's
-level (L41) can be simmed, so L20/L50 stay paper checks; only main-hand weapons;
-basic-attack riders only on a weapon-only PC.
+**Status (2026-09-13):**
+- **Full loadouts DONE.** `--equip "<PC>[:<slot>]=<source>"` covers main, off, armor
+  and both accessories, from a paper spec, a world item (`item:<name>`) or the PC's own
+  inventory (`own:<name>`); the sheet is re-derived and set bonuses reconciled
+  (ruleset Parts 6d–6f). A PC whose real kit does not rebuild is refused
+  (`bin/verify-loadouts.js`).
+- **The 0% chassis is real.** `--baseline-gear all` swaps every slot to its same-class
+  basic item. Measure an item as *baseline + that item* against *baseline*, same seed.
+- **Fight length is reported** in the non-boss bands (1 too easy · 2–3 standard · 4+ too
+  long), from raw model rounds — read a model "3" as a live "2".
+- **First read** (Inferex + Centuaros, seed `gear`, 2000 runs, raw model rounds):
+
+  | Loadout | Verdict | Rounds 1 / 2–3 / 4+ | Party DPR | Enemy DPR |
+  |---|---|---|---|---|
+  | Real gear | 3 rounds, 50% party HP | 0% / 94% / 6% | 150 | 85 |
+  | Baseline gear (all four) | **defeat 81%** | 0% / 15% / 85% | 61 | 165 |
+  | Baseline + Zarg's own +5 bow | 4 rounds, 22% party HP | 0% / 23% / 77% | 93 | 143 |
+
+  Gear is doing most of the work in this fight: it halves the damage the party takes
+  (fire absorb/resist, Paladin MDEF, Protect from armor) and more than doubles the damage
+  it deals. One refined weapon alone turns a wall into a close call. Judge gear against
+  the encounter it meets, not in a vacuum.
+- **NOT BUILT:** the vanilla reference set itself, so the Part 5 budgets remain placeholders.
+
+Limits: only the loaded party's level (L41), so L20/L50 stay paper checks; basic-attack
+riders only on a weapon-only PC; off-hand weapon attacks and Unarmed Strike unmodelled.
 
 ---
 

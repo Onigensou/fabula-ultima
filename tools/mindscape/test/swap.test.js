@@ -235,5 +235,30 @@ t("martial paper armor without item_baseDef is refused", () => {
   assert.throws(() => SW.sourceFromDoc({ name: "Bad", system: { props: { item_type: "armor", isMartial: true } } }, "bad.json"), /item_baseDef/);
 });
 
+// ── own:<name> — the PC's own inventory ─────────────────────────────────────
+t("own:<name> puts a carried item back, with its granted skills, without duplicating it", () => {
+  const { extractActions } = require("../lib/skills");
+  const m = archer();
+  SW.applySwaps(m, [{ slot: "main", source: fromWorld("Whip") }], { worldItems: W });
+  const back = SW.resolveSource("own:Bow", { model: m });
+  assert.ok(back.own);
+  SW.applySwaps(m, [{ slot: "main", source: back }], { worldItems: W });
+  assert.strictEqual(m.weapon.name, "Bow");
+  assert.strictEqual(m.weapon.family, "bow");
+  const passives = extractActions(m).passives.map((p) => p.name);
+  assert.ok(passives.includes("Bow Trick"), "the bow's skill is back");
+  assert.ok(!passives.includes("Explosion Whip (Passive)"), "the whip's skill is gated again");
+  assert.strictEqual(m.items.filter((i) => i.name === "Bow").length, 1, "switched on in place, not duplicated");
+});
+t("own: refuses an item the PC does not carry", () => {
+  assert.throws(() => SW.resolveSource("own:Excalibur", { model: archer() }), /carries no equipment named "Excalibur"/);
+});
+t("own: refuses an item already worn in another slot", () => {
+  const m = archer();
+  SW.applySwaps(m, [{ slot: "acc1", source: fromWorld("Ruby Pendant") }], { worldItems: W });
+  const again = SW.resolveSource("own:Ruby Pendant", { model: m });
+  assert.throws(() => SW.applySwaps(m, [{ slot: "acc2", source: again }], { worldItems: W }), /already worn/);
+});
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

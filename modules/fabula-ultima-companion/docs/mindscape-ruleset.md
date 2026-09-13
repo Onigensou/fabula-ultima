@@ -365,8 +365,14 @@ remove the Wet grant with it. Crisis and `STATUS_COUNT` genuinely are fight stat
 
 ```
 --equip   "<PC>[:<slot>]=<source>"     slots: main (default), off, armor, acc1, acc2
---unequip "<PC>:<slot>"                source: a paper spec file, or item:<name> / item:#<id>
+--unequip "<PC>:<slot>"                source: a paper spec file, item:<name> / item:#<id>,
+                                               or own:<name> / own:#<id>
 ```
+
+`own:` takes an item the PC already **carries** — a refined weapon lives on the actor, not
+among the world items. It is switched on in place (never duplicated), its granted skills
+come back with it, and it is refused if already worn in another slot or if the PC carries
+two differing copies under that name.
 
 `lib/loadout-swap.js` changes a loadout **in memory** — no world loadout changes. Per PC,
 in this order, mirroring `equipment-swap.js` and `set-bonus.js`:
@@ -423,6 +429,17 @@ Both change every run, not only swaps, and are recorded in
   them — not `<attr>_base`. Calibration unchanged.
 - **A weapon swing counts `weapon1_mod`**, the weapon's own accuracy bonus. Calibration
   moved 55% → 58% party HP, DPR 170.9 → 180.0 — toward live.
+
+### Granted skills follow their item
+A PC's skill contained by a gear item is usable only while that item is equipped (live:
+skill-picker equip gate, `containerReactionInPlay`), unless it declares `Versatile`. A swap
+therefore gates skills on and off rather than deleting them. NPCs are not gated — live
+counts a USED NPC weapon as in play, and the model has no used-weapon signal.
+
+### Fight-length bands
+Every run prints the share of fights ending in **1 round (too easy) · 2–3 (standard) ·
+4+ (too long)** — the non-boss bands (user ruling 2026-09-13). They are raw model rounds;
+on the calibration pair Mindscape reads about one round long against live.
 
 ### Not modelled
 Unarmed Strike (the main hand cannot be emptied) · off-hand weapon attacks · the

@@ -64,7 +64,9 @@ than a source edit. See `specs/rakshasa.json`.
 memory — the world loadout is never touched. Slots: `main` (default), `off`, `armor`,
 `acc1`, `acc2`. A source is a paper spec (an item document — paste one out of
 `_authored-export/items/` — plus optional `effects` and gear-skill sub-items) or
-`item:<name>` / `item:#<id>` for a real world item. `--unequip "<PC>:<slot>"` empties a
+`item:<name>` / `item:#<id>` for a real world item, or `own:<name>` / `own:#<id>` for an
+item the PC already carries (a refined weapon lives on the actor, not among the world
+items). `--unequip "<PC>:<slot>"` empties a
 slot. The sheet is re-derived (DEF, MDEF, HP, affinities, modifiers, attribute dice) and
 set bonuses are reconciled — take off a Swift Swimmers piece and Wet goes with it. A PC
 whose real kit does not rebuild (`node bin/verify-loadouts.js`) is refused. Ruleset
@@ -72,7 +74,18 @@ Parts 6d–6f.
 
 ```bash
 node bin/mindscape.js -e "Inferex,Centuaros" --force \
-  --equip "Zarg:armor=item:Brigandine" --unequip "Keren:acc1"
+  --equip "Zarg:armor=item:Brigadine" --unequip "Keren:acc1"
+```
+
+`--baseline-gear "all"` (or `"Hina,Zarg"`) swaps every slot to its same-class **basic**
+item — the 0% loadout the equipment guide prices against. Run it beside the real loadout
+on the same seed to see what the gear is worth, or add an `--equip` on top to measure one
+item against basic gear:
+
+```bash
+node bin/mindscape.js -e "Inferex,Centuaros" --force --seed gear --baseline-gear all
+node bin/mindscape.js -e "Inferex,Centuaros" --force --seed gear --baseline-gear all \
+  --equip "Zarg=own:+5 Zarg's Bow"
 ```
 
 A gear skill is modelled when its name is in `REACTION_REGISTRY`. For an A/B, run a
