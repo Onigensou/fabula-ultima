@@ -19,7 +19,10 @@ node bin/mindscape.js --enemy-file specs/rakshasa.json --runs 500 --force
 node bin/sweep.js -f specs/rakshasa.json --dial mindscape_read_curve \
   --on "Adaptive Defense" --values "25,40,60,80|50,65,80,95" --runs 400
 
-node test/rules.test.js && node test/reactions.test.js && node test/weapon-read.test.js && node test/equip.test.js
+node test/rules.test.js && node test/reactions.test.js && node test/weapon-read.test.js && node test/equip.test.js && node test/loadout.test.js
+
+# loadout round-trip gate: can the model rebuild every PC's real kit? (read-only)
+node bin/verify-loadouts.js
 ```
 
 ## Measuring a design before it is built
@@ -139,6 +142,9 @@ lib/rules.js           checks + the damage pipeline (spec Parts 1-2), pure
 lib/reactions.js       reaction registry + gates (spec Part 6b), pure
 lib/conflict-events.js layered scene rules — Lightning Storm (spec Part 6c)
 lib/equip-file.js      --equip: paper main-hand weapons, in memory (spec Part 6d)
+lib/loadout.js         rebuilds a PC's gear-dependent sheet numbers from scratch (spec Part 6e)
+bin/verify-loadouts.js round-trip gate: every PC's real kit must reproduce (read-only)
+test/loadout.test.js   effect evaluator, armor/Dodge/Wet rules, max_hp, the gate
 lib/engine.js          the combat loop
 lib/rng.js             seeded RNG — same seed, same run
 test/rules.test.js     30 tests, plain node

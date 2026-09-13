@@ -320,6 +320,44 @@ same item's props.
 - Off-hand, armor and accessory swaps.
 - Any party level but the one loaded. The level band's low end stays a paper check.
 
+## Part 6e — The loadout model (added 2026-09-13)
+
+A PC's DEF, MDEF, max HP, affinities and check/damage modifiers are stored **finished**:
+CSB derived them from the template plus every Active Effect the character carries —
+equipment *and* skills. Swapping armor, a shield or an accessory therefore cannot be a
+lookup: Dodge (+SL DEF) switches off under martial armor, Magical Artillery needs an
+arcane weapon, the Swimsuit's Wet override changes the DEX die `base_defense` reads.
+
+`lib/loadout.js` re-derives those numbers **from scratch**, mirroring:
+
+| Rule | Source |
+|---|---|
+| `defense = base_defense + bonus_defense`; `base_defense = dex_current`; `dex_current = override_dex > 0 ? clamp(override_dex) : clamp(dex_base + bonus_dex)` | the **live** template actor `OmwL5UqoVwjshkJo` |
+| `max_hp = level + 5·MIG + 5·HP benefits + bonus_hp` | live template — the module's JSON copy is **stale** here (says `skill_hp`) |
+| per key, ascending priority (default mode × 10); an item's value phrase sees the item's props + `target` | CSB `getSortedActiveEffects` |
+| CUSTOM mode against the actor's props + `current` | CSB `applyCustomActiveEffectChange` |
+| `aeWhen` / `aeEquippedWhen` / `aeNotEquippedWhen` / `aeSlotEquippedWhen` / `aeAffinityFloor`; a false gate is ADD 0, MULTIPLY 1, affinity `NA` | `syntaxExtender-conditionalChangeGate.js` |
+| `ae()`, `hasWeapon()`, `fetchFromParent()`; `STATUS_COUNT` → 0 | `active-effect-syntax-extender.js` |
+| an unequipped item contributes nothing | `equipment-swap.js` disables its effects |
+
+The value phrases are evaluated by a small parser, never `eval`. An effect it cannot read
+is **reported**, never zeroed.
+
+### The round-trip gate
+`bin/verify-loadouts.js` rebuilds every party member from their REAL loadout and
+compares 59 keys with the stored sheet. **A PC that does not reproduce must not be given
+paper equipment** — a swap computed on a model that cannot rebuild the real kit measures
+a character that does not exist. First run, 2026-09-13: **4/4 reproduce**, after fixing
+`bonus_hp` (Blanche was 5 short against the stale template copy).
+
+### Situational state is baked into the stored sheet
+Effects gated on a state (`ae("Wet")`, `aeWhen("Crisis")`, `STATUS_COUNT`) are evaluated
+against the actor's **stored** effects, which is why they reproduce — and listed.
+Consequence for every Mindscape run, not just equipment: the sheet is modelled in
+whatever state it was saved in. **Keren was saved Wet**, so the model has been fighting
+with her Diver Goggle's +3 accuracy, the Swimsuit's d12 DEX die and a bolt
+Vulnerability active at all times.
+
 ## Part 7 — NOT MODELLED
 
 **This section is load-bearing.** The previous log-only attempt failed by *silently
