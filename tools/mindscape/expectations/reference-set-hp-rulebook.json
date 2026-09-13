@@ -1,0 +1,4586 @@
+{
+  "id": "reference-set",
+  "capturedAt": "2026-09-13",
+  "runs": 1000,
+  "seed": "reference-set",
+  "power": "table",
+  "k": 3.54,
+  "mode": "neutral",
+  "encounterSet": null,
+  "enemyDefense": "dice",
+  "levels": [
+    35,
+    38,
+    40,
+    46,
+    48,
+    50
+  ],
+  "scopes": [
+    {
+      "id": "L35",
+      "group": "L35",
+      "label": "rulebook normal L35",
+      "level": 35,
+      "enemies": [
+        "Sparring Brute A",
+        "Sparring Brute B",
+        "Sparring Adept A",
+        "Sparring Adept B"
+      ],
+      "conflictEvent": null,
+      "unmodelled": []
+    },
+    {
+      "id": "L38",
+      "group": "L38",
+      "label": "rulebook normal L38",
+      "level": 38,
+      "enemies": [
+        "Sparring Brute A",
+        "Sparring Brute B",
+        "Sparring Adept A",
+        "Sparring Adept B"
+      ],
+      "conflictEvent": null,
+      "unmodelled": []
+    },
+    {
+      "id": "L40",
+      "group": "L40",
+      "label": "rulebook normal L40",
+      "level": 40,
+      "enemies": [
+        "Sparring Brute A",
+        "Sparring Brute B",
+        "Sparring Adept A",
+        "Sparring Adept B"
+      ],
+      "conflictEvent": null,
+      "unmodelled": []
+    },
+    {
+      "id": "L46",
+      "group": "L46",
+      "label": "rulebook normal L46",
+      "level": 46,
+      "enemies": [
+        "Sparring Brute A",
+        "Sparring Brute B",
+        "Sparring Adept A",
+        "Sparring Adept B"
+      ],
+      "conflictEvent": null,
+      "unmodelled": []
+    },
+    {
+      "id": "L48",
+      "group": "L48",
+      "label": "rulebook normal L48",
+      "level": 48,
+      "enemies": [
+        "Sparring Brute A",
+        "Sparring Brute B",
+        "Sparring Adept A",
+        "Sparring Adept B"
+      ],
+      "conflictEvent": null,
+      "unmodelled": []
+    },
+    {
+      "id": "L50",
+      "group": "L50",
+      "label": "rulebook normal L50",
+      "level": 50,
+      "enemies": [
+        "Sparring Brute A",
+        "Sparring Brute B",
+        "Sparring Adept A",
+        "Sparring Adept B"
+      ],
+      "conflictEvent": null,
+      "unmodelled": []
+    }
+  ],
+  "presets": [
+    "standard",
+    "double-caster",
+    "no-healer",
+    "physical"
+  ],
+  "guide": {
+    "hitRate": 0.49,
+    "accuracyPerPoint": 0.17,
+    "defensePerPoint": 0.175,
+    "rsShare": 0.5,
+    "actionsPerFight": 2.5
+  },
+  "baselines": [
+    {
+      "scope": "L35",
+      "group": "L35",
+      "level": 35,
+      "preset": "standard",
+      "meanRounds": 3.586,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 47,
+        "fourPlus": 53
+      },
+      "partyHp": 0.7614388059701507,
+      "defeatRate": 0,
+      "partyTakenPerRound": 35.24565
+    },
+    {
+      "scope": "L35",
+      "group": "L35",
+      "level": 35,
+      "preset": "double-caster",
+      "meanRounds": 3.217,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 77,
+        "fourPlus": 23
+      },
+      "partyHp": 0.745382758620688,
+      "defeatRate": 0,
+      "partyTakenPerRound": 31.670269047618998
+    },
+    {
+      "scope": "L35",
+      "group": "L35",
+      "level": 35,
+      "preset": "no-healer",
+      "meanRounds": 4.413,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 4,
+        "fourPlus": 96
+      },
+      "partyHp": 0.6217529411764716,
+      "defeatRate": 0,
+      "partyTakenPerRound": 30.21745119047619
+    },
+    {
+      "scope": "L35",
+      "group": "L35",
+      "level": 35,
+      "preset": "physical",
+      "meanRounds": 6.511,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 0.5494399999999992,
+      "defeatRate": 0,
+      "partyTakenPerRound": 31.72830833333328
+    },
+    {
+      "scope": "L38",
+      "group": "L38",
+      "level": 38,
+      "preset": "standard",
+      "meanRounds": 3.594,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 45,
+        "fourPlus": 55
+      },
+      "partyHp": 0.7575216138328531,
+      "defeatRate": 0,
+      "partyTakenPerRound": 35.853409523809525
+    },
+    {
+      "scope": "L38",
+      "group": "L38",
+      "level": 38,
+      "preset": "double-caster",
+      "meanRounds": 3.167,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 81,
+        "fourPlus": 19
+      },
+      "partyHp": 0.7523410596026467,
+      "defeatRate": 0,
+      "partyTakenPerRound": 31.870233333333335
+    },
+    {
+      "scope": "L38",
+      "group": "L38",
+      "level": 38,
+      "preset": "no-healer",
+      "meanRounds": 4.379,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 2,
+        "fourPlus": 98
+      },
+      "partyHp": 0.6290142045454543,
+      "defeatRate": 0,
+      "partyTakenPerRound": 30.701576190476196
+    },
+    {
+      "scope": "L38",
+      "group": "L38",
+      "level": 38,
+      "preset": "physical",
+      "meanRounds": 6.422,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 0.5703701657458567,
+      "defeatRate": 0,
+      "partyTakenPerRound": 32.021582539682534
+    },
+    {
+      "scope": "L40",
+      "group": "L40",
+      "level": 40,
+      "preset": "standard",
+      "meanRounds": 4.072,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 32,
+        "fourPlus": 68
+      },
+      "partyHp": 0.6306739726027397,
+      "defeatRate": 0.001,
+      "partyTakenPerRound": 47.20820793650794
+    },
+    {
+      "scope": "L40",
+      "group": "L40",
+      "level": 40,
+      "preset": "double-caster",
+      "meanRounds": 3.205,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 80,
+        "fourPlus": 20
+      },
+      "partyHp": 0.6504312499999996,
+      "defeatRate": 0,
+      "partyTakenPerRound": 41.00792857142863
+    },
+    {
+      "scope": "L40",
+      "group": "L40",
+      "level": 40,
+      "preset": "no-healer",
+      "meanRounds": 5.877,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 1,
+        "fourPlus": 99
+      },
+      "partyHp": 0.42909189189189145,
+      "defeatRate": 0.013,
+      "partyTakenPerRound": 38.92786666666666
+    },
+    {
+      "scope": "L40",
+      "group": "L40",
+      "level": 40,
+      "preset": "physical",
+      "meanRounds": 6.954,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 0.5139105263157896,
+      "defeatRate": 0.031,
+      "partyTakenPerRound": 41.78063253968253
+    },
+    {
+      "scope": "L46",
+      "group": "L46",
+      "level": 46,
+      "preset": "standard",
+      "meanRounds": 3.841,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 38,
+        "fourPlus": 62
+      },
+      "partyHp": 0.6882431077694242,
+      "defeatRate": 0,
+      "partyTakenPerRound": 50.59154801587301
+    },
+    {
+      "scope": "L46",
+      "group": "L46",
+      "level": 46,
+      "preset": "double-caster",
+      "meanRounds": 3.353,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 68,
+        "fourPlus": 32
+      },
+      "partyHp": 0.7047077363896858,
+      "defeatRate": 0,
+      "partyTakenPerRound": 42.2520436507936
+    },
+    {
+      "scope": "L46",
+      "group": "L46",
+      "level": 46,
+      "preset": "no-healer",
+      "meanRounds": 5.237,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 0.5022648514851494,
+      "defeatRate": 0.004,
+      "partyTakenPerRound": 40.995711507936534
+    },
+    {
+      "scope": "L46",
+      "group": "L46",
+      "level": 46,
+      "preset": "physical",
+      "meanRounds": 7.144,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 0.48810386473430034,
+      "defeatRate": 0.014,
+      "partyTakenPerRound": 41.65863571428567
+    },
+    {
+      "scope": "L48",
+      "group": "L48",
+      "level": 48,
+      "preset": "standard",
+      "meanRounds": 3.757,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 40,
+        "fourPlus": 60
+      },
+      "partyHp": 0.7202678132678132,
+      "defeatRate": 0,
+      "partyTakenPerRound": 51.12807420634924
+    },
+    {
+      "scope": "L48",
+      "group": "L48",
+      "level": 48,
+      "preset": "double-caster",
+      "meanRounds": 3.321,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 70,
+        "fourPlus": 30
+      },
+      "partyHp": 0.7242969187675073,
+      "defeatRate": 0,
+      "partyTakenPerRound": 42.51012222222221
+    },
+    {
+      "scope": "L48",
+      "group": "L48",
+      "level": 48,
+      "preset": "no-healer",
+      "meanRounds": 5.025,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 0.5257184466019418,
+      "defeatRate": 0.003,
+      "partyTakenPerRound": 41.62699047619048
+    },
+    {
+      "scope": "L48",
+      "group": "L48",
+      "level": 48,
+      "preset": "physical",
+      "meanRounds": 7.139,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 0.4825118483412334,
+      "defeatRate": 0.011,
+      "partyTakenPerRound": 41.530761111111104
+    },
+    {
+      "scope": "L50",
+      "group": "L50",
+      "level": 50,
+      "preset": "standard",
+      "meanRounds": 3.627,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 46,
+        "fourPlus": 54
+      },
+      "partyHp": 0.7351831325301206,
+      "defeatRate": 0,
+      "partyTakenPerRound": 53.86924761904761
+    },
+    {
+      "scope": "L50",
+      "group": "L50",
+      "level": 50,
+      "preset": "double-caster",
+      "meanRounds": 3.228,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 78,
+        "fourPlus": 22
+      },
+      "partyHp": 0.7328849315068487,
+      "defeatRate": 0.001,
+      "partyTakenPerRound": 43.56587619047613
+    },
+    {
+      "scope": "L50",
+      "group": "L50",
+      "level": 50,
+      "preset": "no-healer",
+      "meanRounds": 4.709,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 0.5367071428571436,
+      "defeatRate": 0,
+      "partyTakenPerRound": 44.540081746031746
+    },
+    {
+      "scope": "L50",
+      "group": "L50",
+      "level": 50,
+      "preset": "physical",
+      "meanRounds": 7.198,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 0.43847674418604665,
+      "defeatRate": 0.014,
+      "partyTakenPerRound": 42.36303571428573
+    }
+  ],
+  "rows": [
+    {
+      "id": "hp-10",
+      "effect": "max-hp",
+      "magnitude": 10,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L35",
+      "group": "L35",
+      "level": 35,
+      "preset": "standard",
+      "paperPct": 5.586116179821753,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 35.24565,
+        "withItem": 34.97507261904765
+      },
+      "baseline": {
+        "perAction": 73.30651666666671,
+        "takenPerRound": 20.181133333333335,
+        "defPerRound": 17.926183333333338,
+        "mdefPerRound": 2.2549500000000013,
+        "downRate": 0.271,
+        "defeatRate": 0,
+        "partyHp": 0.7614388059701507,
+        "meanRounds": 3.586,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 47,
+          "fourPlus": 53
+        },
+        "actionsPerFight": 2.922,
+        "actionsPerRound": 0.835916666666666,
+        "downShare": 0.12729999999999975,
+        "damagePerHit": 17.796333002973242,
+        "maxHp": 65
+      },
+      "withItem": {
+        "perAction": 71.26951666666666,
+        "takenPerRound": 23.046492857142837,
+        "downRate": 0.266,
+        "defeatRate": 0,
+        "partyHp": 0.7662927536231879,
+        "meanRounds": 3.626,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 42,
+          "fourPlus": 59
+        },
+        "actionsPerFight": 3.006,
+        "downShare": 0.11834761904761885,
+        "damagePerHit": 18.112579863406037,
+        "maxHp": 75
+      }
+    },
+    {
+      "id": "hp-25",
+      "effect": "max-hp",
+      "magnitude": 25,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L35",
+      "group": "L35",
+      "level": 35,
+      "preset": "standard",
+      "paperPct": 13.965290449554379,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 35.24565,
+        "withItem": 38.21152460317463
+      },
+      "baseline": {
+        "perAction": 73.30651666666671,
+        "takenPerRound": 20.181133333333335,
+        "defPerRound": 17.926183333333338,
+        "mdefPerRound": 2.2549500000000013,
+        "downRate": 0.271,
+        "defeatRate": 0,
+        "partyHp": 0.7614388059701507,
+        "meanRounds": 3.586,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 47,
+          "fourPlus": 53
+        },
+        "actionsPerFight": 2.922,
+        "actionsPerRound": 0.835916666666666,
+        "downShare": 0.12729999999999975,
+        "damagePerHit": 17.796333002973242,
+        "maxHp": 65
+      },
+      "withItem": {
+        "perAction": 67.91558333333334,
+        "takenPerRound": 0,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.6935166666666659,
+        "meanRounds": 3.899,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 25,
+          "fourPlus": 75
+        },
+        "actionsPerFight": 3.664,
+        "downShare": 0,
+        "damagePerHit": null,
+        "maxHp": 90
+      }
+    },
+    {
+      "id": "hp-50",
+      "effect": "max-hp",
+      "magnitude": 50,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L35",
+      "group": "L35",
+      "level": 35,
+      "preset": "standard",
+      "paperPct": 27.930580899108758,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 35.24565,
+        "withItem": 38.21152460317463
+      },
+      "baseline": {
+        "perAction": 73.30651666666671,
+        "takenPerRound": 20.181133333333335,
+        "defPerRound": 17.926183333333338,
+        "mdefPerRound": 2.2549500000000013,
+        "downRate": 0.271,
+        "defeatRate": 0,
+        "partyHp": 0.7614388059701507,
+        "meanRounds": 3.586,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 47,
+          "fourPlus": 53
+        },
+        "actionsPerFight": 2.922,
+        "actionsPerRound": 0.835916666666666,
+        "downShare": 0.12729999999999975,
+        "damagePerHit": 17.796333002973242,
+        "maxHp": 65
+      },
+      "withItem": {
+        "perAction": 67.91558333333334,
+        "takenPerRound": 0,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.7134181818181822,
+        "meanRounds": 3.899,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 25,
+          "fourPlus": 75
+        },
+        "actionsPerFight": 3.664,
+        "downShare": 0,
+        "damagePerHit": null,
+        "maxHp": 115
+      }
+    },
+    {
+      "id": "hp-10",
+      "effect": "max-hp",
+      "magnitude": 10,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L35",
+      "group": "L35",
+      "level": 35,
+      "preset": "double-caster",
+      "paperPct": 5.586116179821753,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 31.670269047618998,
+        "withItem": 31.871766666666623
+      },
+      "baseline": {
+        "perAction": 78.4605833333334,
+        "takenPerRound": 24.939490476190482,
+        "defPerRound": 14.221226190476196,
+        "mdefPerRound": 10.718264285714282,
+        "downRate": 0.644,
+        "defeatRate": 0,
+        "partyHp": 0.745382758620688,
+        "meanRounds": 3.217,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 77,
+          "fourPlus": 23
+        },
+        "actionsPerFight": 1.869,
+        "actionsPerRound": 0.6053857142857153,
+        "downShare": 0.34699761904761917,
+        "damagePerHit": 20.018542037084075,
+        "maxHp": 65
+      },
+      "withItem": {
+        "perAction": 67.97816666666667,
+        "takenPerRound": 6.551583333333334,
+        "downRate": 0.049,
+        "defeatRate": 0,
+        "partyHp": 0.7476333333333348,
+        "meanRounds": 3.178,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 80,
+          "fourPlus": 20
+        },
+        "actionsPerFight": 2.839,
+        "downShare": 0.014766666666666666,
+        "damagePerHit": 18.470099667774086,
+        "maxHp": 75
+      }
+    },
+    {
+      "id": "hp-25",
+      "effect": "max-hp",
+      "magnitude": 25,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L35",
+      "group": "L35",
+      "level": 35,
+      "preset": "double-caster",
+      "paperPct": 13.965290449554379,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 31.670269047618998,
+        "withItem": 32.12989999999996
+      },
+      "baseline": {
+        "perAction": 78.4605833333334,
+        "takenPerRound": 24.939490476190482,
+        "defPerRound": 14.221226190476196,
+        "mdefPerRound": 10.718264285714282,
+        "downRate": 0.644,
+        "defeatRate": 0,
+        "partyHp": 0.745382758620688,
+        "meanRounds": 3.217,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 77,
+          "fourPlus": 23
+        },
+        "actionsPerFight": 1.869,
+        "actionsPerRound": 0.6053857142857153,
+        "downShare": 0.34699761904761917,
+        "damagePerHit": 20.018542037084075,
+        "maxHp": 65
+      },
+      "withItem": {
+        "perAction": 67.59531666666668,
+        "takenPerRound": 0.010444444444444445,
+        "downRate": 0.001,
+        "defeatRate": 0.001,
+        "partyHp": 0.7536412698412706,
+        "meanRounds": 3.238,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 77,
+          "fourPlus": 24
+        },
+        "actionsPerFight": 2.933,
+        "downShare": 0,
+        "damagePerHit": 15.666666666666666,
+        "maxHp": 90
+      }
+    },
+    {
+      "id": "hp-50",
+      "effect": "max-hp",
+      "magnitude": 50,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L35",
+      "group": "L35",
+      "level": 35,
+      "preset": "double-caster",
+      "paperPct": 27.930580899108758,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 31.670269047618998,
+        "withItem": 32.12616666666662
+      },
+      "baseline": {
+        "perAction": 78.4605833333334,
+        "takenPerRound": 24.939490476190482,
+        "defPerRound": 14.221226190476196,
+        "mdefPerRound": 10.718264285714282,
+        "downRate": 0.644,
+        "defeatRate": 0,
+        "partyHp": 0.745382758620688,
+        "meanRounds": 3.217,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 77,
+          "fourPlus": 23
+        },
+        "actionsPerFight": 1.869,
+        "actionsPerRound": 0.6053857142857153,
+        "downShare": 0.34699761904761917,
+        "damagePerHit": 20.018542037084075,
+        "maxHp": 65
+      },
+      "withItem": {
+        "perAction": 67.59425000000002,
+        "takenPerRound": 0.0094,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.7717441176470574,
+        "meanRounds": 3.239,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 77,
+          "fourPlus": 24
+        },
+        "actionsPerFight": 2.934,
+        "downShare": 0,
+        "damagePerHit": 15.666666666666666,
+        "maxHp": 115
+      }
+    },
+    {
+      "id": "hp-10",
+      "effect": "max-hp",
+      "magnitude": 10,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L35",
+      "group": "L35",
+      "level": 35,
+      "preset": "no-healer",
+      "paperPct": 5.586116179821753,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 30.21745119047619,
+        "withItem": 30.72309523809525
+      },
+      "baseline": {
+        "perAction": 80.16086666666665,
+        "takenPerRound": 14.813847619047612,
+        "defPerRound": 13.263415476190476,
+        "mdefPerRound": 1.550432142857144,
+        "downRate": 0.541,
+        "defeatRate": 0,
+        "partyHp": 0.6217529411764716,
+        "meanRounds": 4.413,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 4,
+          "fourPlus": 96
+        },
+        "actionsPerFight": 2.645,
+        "actionsPerRound": 0.6306309523809508,
+        "downShare": 0.30061904761904745,
+        "damagePerHit": 17.91550861589772,
+        "maxHp": 65
+      },
+      "withItem": {
+        "perAction": 78.22241666666673,
+        "takenPerRound": 17.55345357142856,
+        "downRate": 0.444,
+        "defeatRate": 0,
+        "partyHp": 0.6347857142857155,
+        "meanRounds": 4.26,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 5,
+          "fourPlus": 95
+        },
+        "actionsPerFight": 2.833,
+        "downShare": 0.2294690476190471,
+        "damagePerHit": 18.177876324217788,
+        "maxHp": 75
+      }
+    },
+    {
+      "id": "hp-25",
+      "effect": "max-hp",
+      "magnitude": 25,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L35",
+      "group": "L35",
+      "level": 35,
+      "preset": "no-healer",
+      "paperPct": 13.965290449554379,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 30.21745119047619,
+        "withItem": 32.50623333333335
+      },
+      "baseline": {
+        "perAction": 80.16086666666665,
+        "takenPerRound": 14.813847619047612,
+        "defPerRound": 13.263415476190476,
+        "mdefPerRound": 1.550432142857144,
+        "downRate": 0.541,
+        "defeatRate": 0,
+        "partyHp": 0.6217529411764716,
+        "meanRounds": 4.413,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 4,
+          "fourPlus": 96
+        },
+        "actionsPerFight": 2.645,
+        "actionsPerRound": 0.6306309523809508,
+        "downShare": 0.30061904761904745,
+        "damagePerHit": 17.91550861589772,
+        "maxHp": 65
+      },
+      "withItem": {
+        "perAction": 71.81895000000003,
+        "takenPerRound": 0,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.6470931506849306,
+        "meanRounds": 4.07,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 4,
+          "fourPlus": 96
+        },
+        "actionsPerFight": 3.634,
+        "downShare": 0,
+        "damagePerHit": null,
+        "maxHp": 90
+      }
+    },
+    {
+      "id": "hp-50",
+      "effect": "max-hp",
+      "magnitude": 50,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L35",
+      "group": "L35",
+      "level": 35,
+      "preset": "no-healer",
+      "paperPct": 27.930580899108758,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 30.21745119047619,
+        "withItem": 32.50623333333335
+      },
+      "baseline": {
+        "perAction": 80.16086666666665,
+        "takenPerRound": 14.813847619047612,
+        "defPerRound": 13.263415476190476,
+        "mdefPerRound": 1.550432142857144,
+        "downRate": 0.541,
+        "defeatRate": 0,
+        "partyHp": 0.6217529411764716,
+        "meanRounds": 4.413,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 4,
+          "fourPlus": 96
+        },
+        "actionsPerFight": 2.645,
+        "actionsPerRound": 0.6306309523809508,
+        "downShare": 0.30061904761904745,
+        "damagePerHit": 17.91550861589772,
+        "maxHp": 65
+      },
+      "withItem": {
+        "perAction": 71.81895000000003,
+        "takenPerRound": 0,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.6697153846153855,
+        "meanRounds": 4.07,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 4,
+          "fourPlus": 96
+        },
+        "actionsPerFight": 3.634,
+        "downShare": 0,
+        "damagePerHit": null,
+        "maxHp": 115
+      }
+    },
+    {
+      "id": "hp-10",
+      "effect": "max-hp",
+      "magnitude": 10,
+      "slot": "armor",
+      "wearer": "Support",
+      "scope": "L35",
+      "group": "L35",
+      "level": 35,
+      "preset": "physical",
+      "paperPct": 5.586116179821753,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 31.72830833333328,
+        "withItem": 30.383414682539694
+      },
+      "baseline": {
+        "perAction": 22.270299999999985,
+        "takenPerRound": 16.167318253968247,
+        "defPerRound": 12.35905238095239,
+        "mdefPerRound": 3.808265873015876,
+        "downRate": 0.72,
+        "defeatRate": 0,
+        "partyHp": 0.5494399999999992,
+        "meanRounds": 6.511,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 2.175,
+        "actionsPerRound": 0.36726785714285926,
+        "downShare": 0.49378730158730455,
+        "damagePerHit": 18.312579415501904,
+        "maxHp": 75
+      },
+      "withItem": {
+        "perAction": 20.546948015873014,
+        "takenPerRound": 0.011800000000000001,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.6959833333333334,
+        "meanRounds": 5.825,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 5.1,
+        "downShare": 0,
+        "damagePerHit": 16.857142857142858,
+        "maxHp": 85
+      }
+    },
+    {
+      "id": "hp-25",
+      "effect": "max-hp",
+      "magnitude": 25,
+      "slot": "armor",
+      "wearer": "Support",
+      "scope": "L35",
+      "group": "L35",
+      "level": 35,
+      "preset": "physical",
+      "paperPct": 13.965290449554379,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 31.72830833333328,
+        "withItem": 30.383414682539694
+      },
+      "baseline": {
+        "perAction": 22.270299999999985,
+        "takenPerRound": 16.167318253968247,
+        "defPerRound": 12.35905238095239,
+        "mdefPerRound": 3.808265873015876,
+        "downRate": 0.72,
+        "defeatRate": 0,
+        "partyHp": 0.5494399999999992,
+        "meanRounds": 6.511,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 2.175,
+        "actionsPerRound": 0.36726785714285926,
+        "downShare": 0.49378730158730455,
+        "damagePerHit": 18.312579415501904,
+        "maxHp": 75
+      },
+      "withItem": {
+        "perAction": 20.54964801587301,
+        "takenPerRound": 0.011800000000000001,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.7080106666666657,
+        "meanRounds": 5.825,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 5.1,
+        "downShare": 0,
+        "damagePerHit": 16.857142857142858,
+        "maxHp": 100
+      }
+    },
+    {
+      "id": "hp-50",
+      "effect": "max-hp",
+      "magnitude": 50,
+      "slot": "armor",
+      "wearer": "Support",
+      "scope": "L35",
+      "group": "L35",
+      "level": 35,
+      "preset": "physical",
+      "paperPct": 27.930580899108758,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 31.72830833333328,
+        "withItem": 30.383414682539694
+      },
+      "baseline": {
+        "perAction": 22.270299999999985,
+        "takenPerRound": 16.167318253968247,
+        "defPerRound": 12.35905238095239,
+        "mdefPerRound": 3.808265873015876,
+        "downRate": 0.72,
+        "defeatRate": 0,
+        "partyHp": 0.5494399999999992,
+        "meanRounds": 6.511,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 2.175,
+        "actionsPerRound": 0.36726785714285926,
+        "downShare": 0.49378730158730455,
+        "damagePerHit": 18.312579415501904,
+        "maxHp": 75
+      },
+      "withItem": {
+        "perAction": 20.54964801587301,
+        "takenPerRound": 0.011800000000000001,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.7262599999999998,
+        "meanRounds": 5.825,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 5.1,
+        "downShare": 0,
+        "damagePerHit": 16.857142857142858,
+        "maxHp": 125
+      }
+    },
+    {
+      "id": "hp-10",
+      "effect": "max-hp",
+      "magnitude": 10,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L38",
+      "group": "L38",
+      "level": 38,
+      "preset": "standard",
+      "paperPct": 5.023780983602828,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 35.853409523809525,
+        "withItem": 35.29281785714286
+      },
+      "baseline": {
+        "perAction": 77.79670000000002,
+        "takenPerRound": 21.1598738095238,
+        "defPerRound": 18.855502380952373,
+        "mdefPerRound": 2.304371428571428,
+        "downRate": 0.301,
+        "defeatRate": 0,
+        "partyHp": 0.7575216138328531,
+        "meanRounds": 3.594,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 45,
+          "fourPlus": 55
+        },
+        "actionsPerFight": 2.959,
+        "actionsPerRound": 0.8393357142857129,
+        "downShare": 0.12901428571428544,
+        "damagePerHit": 17.864775413711584,
+        "maxHp": 68
+      },
+      "withItem": {
+        "perAction": 76.7754,
+        "takenPerRound": 23.905923809523777,
+        "downRate": 0.304,
+        "defeatRate": 0,
+        "partyHp": 0.7543641456582625,
+        "meanRounds": 3.642,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 40,
+          "fourPlus": 60
+        },
+        "actionsPerFight": 2.938,
+        "downShare": 0.13699761904761887,
+        "damagePerHit": 18.367653367653368,
+        "maxHp": 78
+      }
+    },
+    {
+      "id": "hp-25",
+      "effect": "max-hp",
+      "magnitude": 25,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L38",
+      "group": "L38",
+      "level": 38,
+      "preset": "standard",
+      "paperPct": 12.559452459007067,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 35.853409523809525,
+        "withItem": 38.677571428571426
+      },
+      "baseline": {
+        "perAction": 77.79670000000002,
+        "takenPerRound": 21.1598738095238,
+        "defPerRound": 18.855502380952373,
+        "mdefPerRound": 2.304371428571428,
+        "downRate": 0.301,
+        "defeatRate": 0,
+        "partyHp": 0.7575216138328531,
+        "meanRounds": 3.594,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 45,
+          "fourPlus": 55
+        },
+        "actionsPerFight": 2.959,
+        "actionsPerRound": 0.8393357142857129,
+        "downShare": 0.12901428571428544,
+        "damagePerHit": 17.864775413711584,
+        "maxHp": 68
+      },
+      "withItem": {
+        "perAction": 71.7766238095239,
+        "takenPerRound": 0.008,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.6858629032258072,
+        "meanRounds": 3.954,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 21,
+          "fourPlus": 79
+        },
+        "actionsPerFight": 3.712,
+        "downShare": 0,
+        "damagePerHit": 16,
+        "maxHp": 93
+      }
+    },
+    {
+      "id": "hp-50",
+      "effect": "max-hp",
+      "magnitude": 50,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L38",
+      "group": "L38",
+      "level": 38,
+      "preset": "standard",
+      "paperPct": 25.118904918014135,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 35.853409523809525,
+        "withItem": 38.677571428571426
+      },
+      "baseline": {
+        "perAction": 77.79670000000002,
+        "takenPerRound": 21.1598738095238,
+        "defPerRound": 18.855502380952373,
+        "mdefPerRound": 2.304371428571428,
+        "downRate": 0.301,
+        "defeatRate": 0,
+        "partyHp": 0.7575216138328531,
+        "meanRounds": 3.594,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 45,
+          "fourPlus": 55
+        },
+        "actionsPerFight": 2.959,
+        "actionsPerRound": 0.8393357142857129,
+        "downShare": 0.12901428571428544,
+        "damagePerHit": 17.864775413711584,
+        "maxHp": 68
+      },
+      "withItem": {
+        "perAction": 71.7766238095239,
+        "takenPerRound": 0.008,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.7056448362720434,
+        "meanRounds": 3.954,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 21,
+          "fourPlus": 79
+        },
+        "actionsPerFight": 3.712,
+        "downShare": 0,
+        "damagePerHit": 16,
+        "maxHp": 118
+      }
+    },
+    {
+      "id": "hp-10",
+      "effect": "max-hp",
+      "magnitude": 10,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L38",
+      "group": "L38",
+      "level": 38,
+      "preset": "double-caster",
+      "paperPct": 5.023780983602828,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 31.870233333333335,
+        "withItem": 31.969009523809525
+      },
+      "baseline": {
+        "perAction": 80.67150000000002,
+        "takenPerRound": 26.04506904761904,
+        "defPerRound": 14.769092857142876,
+        "mdefPerRound": 11.275976190476188,
+        "downRate": 0.632,
+        "defeatRate": 0,
+        "partyHp": 0.7523410596026467,
+        "meanRounds": 3.167,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 81,
+          "fourPlus": 19
+        },
+        "actionsPerFight": 1.92,
+        "actionsPerRound": 0.6275761904761908,
+        "downShare": 0.32314047619047637,
+        "damagePerHit": 20.007866273353,
+        "maxHp": 68
+      },
+      "withItem": {
+        "perAction": 70.37546666666667,
+        "takenPerRound": 5.686414285714282,
+        "downRate": 0.038,
+        "defeatRate": 0,
+        "partyHp": 0.7577724358974347,
+        "meanRounds": 3.147,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 83,
+          "fourPlus": 17
+        },
+        "actionsPerFight": 2.858,
+        "downShare": 0.009971428571428572,
+        "damagePerHit": 18.76171875,
+        "maxHp": 78
+      }
+    },
+    {
+      "id": "hp-25",
+      "effect": "max-hp",
+      "magnitude": 25,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L38",
+      "group": "L38",
+      "level": 38,
+      "preset": "double-caster",
+      "paperPct": 12.559452459007067,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 31.870233333333335,
+        "withItem": 32.20056428571427
+      },
+      "baseline": {
+        "perAction": 80.67150000000002,
+        "takenPerRound": 26.04506904761904,
+        "defPerRound": 14.769092857142876,
+        "mdefPerRound": 11.275976190476188,
+        "downRate": 0.632,
+        "defeatRate": 0,
+        "partyHp": 0.7523410596026467,
+        "meanRounds": 3.167,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 81,
+          "fourPlus": 19
+        },
+        "actionsPerFight": 1.92,
+        "actionsPerRound": 0.6275761904761908,
+        "downShare": 0.32314047619047637,
+        "damagePerHit": 20.007866273353,
+        "maxHp": 68
+      },
+      "withItem": {
+        "perAction": 70.16411904761905,
+        "takenPerRound": 0.004900000000000001,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.7636330275229346,
+        "meanRounds": 3.183,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 81,
+          "fourPlus": 19
+        },
+        "actionsPerFight": 2.924,
+        "downShare": 0,
+        "damagePerHit": 16.333333333333332,
+        "maxHp": 93
+      }
+    },
+    {
+      "id": "hp-50",
+      "effect": "max-hp",
+      "magnitude": 50,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L38",
+      "group": "L38",
+      "level": 38,
+      "preset": "double-caster",
+      "paperPct": 25.118904918014135,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 31.870233333333335,
+        "withItem": 32.20056428571427
+      },
+      "baseline": {
+        "perAction": 80.67150000000002,
+        "takenPerRound": 26.04506904761904,
+        "defPerRound": 14.769092857142876,
+        "mdefPerRound": 11.275976190476188,
+        "downRate": 0.632,
+        "defeatRate": 0,
+        "partyHp": 0.7523410596026467,
+        "meanRounds": 3.167,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 81,
+          "fourPlus": 19
+        },
+        "actionsPerFight": 1.92,
+        "actionsPerRound": 0.6275761904761908,
+        "downShare": 0.32314047619047637,
+        "damagePerHit": 20.007866273353,
+        "maxHp": 68
+      },
+      "withItem": {
+        "perAction": 70.16411904761905,
+        "takenPerRound": 0.004900000000000001,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.7804204545454527,
+        "meanRounds": 3.183,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 81,
+          "fourPlus": 19
+        },
+        "actionsPerFight": 2.924,
+        "downShare": 0,
+        "damagePerHit": 16.333333333333332,
+        "maxHp": 118
+      }
+    },
+    {
+      "id": "hp-10",
+      "effect": "max-hp",
+      "magnitude": 10,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L38",
+      "group": "L38",
+      "level": 38,
+      "preset": "no-healer",
+      "paperPct": 5.023780983602828,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 30.701576190476196,
+        "withItem": 30.86991190476193
+      },
+      "baseline": {
+        "perAction": 85.36415000000002,
+        "takenPerRound": 15.563610714285712,
+        "defPerRound": 13.965823809523808,
+        "mdefPerRound": 1.5977869047619053,
+        "downRate": 0.534,
+        "defeatRate": 0,
+        "partyHp": 0.6290142045454543,
+        "meanRounds": 4.379,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 2,
+          "fourPlus": 98
+        },
+        "actionsPerFight": 2.655,
+        "actionsPerRound": 0.6297511904761885,
+        "downShare": 0.2904488095238092,
+        "damagePerHit": 17.9375,
+        "maxHp": 68
+      },
+      "withItem": {
+        "perAction": 83.41310000000007,
+        "takenPerRound": 18.366692857142848,
+        "downRate": 0.454,
+        "defeatRate": 0,
+        "partyHp": 0.6451988950276247,
+        "meanRounds": 4.271,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 2,
+          "fourPlus": 98
+        },
+        "actionsPerFight": 2.8,
+        "downShare": 0.23028571428571373,
+        "damagePerHit": 18.430466714048805,
+        "maxHp": 78
+      }
+    },
+    {
+      "id": "hp-25",
+      "effect": "max-hp",
+      "magnitude": 25,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L38",
+      "group": "L38",
+      "level": 38,
+      "preset": "no-healer",
+      "paperPct": 12.559452459007067,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 30.701576190476196,
+        "withItem": 32.90353333333333
+      },
+      "baseline": {
+        "perAction": 85.36415000000002,
+        "takenPerRound": 15.563610714285712,
+        "defPerRound": 13.965823809523808,
+        "mdefPerRound": 1.5977869047619053,
+        "downRate": 0.534,
+        "defeatRate": 0,
+        "partyHp": 0.6290142045454543,
+        "meanRounds": 4.379,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 2,
+          "fourPlus": 98
+        },
+        "actionsPerFight": 2.655,
+        "actionsPerRound": 0.6297511904761885,
+        "downShare": 0.2904488095238092,
+        "damagePerHit": 17.9375,
+        "maxHp": 68
+      },
+      "withItem": {
+        "perAction": 76.00724999999996,
+        "takenPerRound": 0,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.6557771883289167,
+        "meanRounds": 4.089,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 2,
+          "fourPlus": 98
+        },
+        "actionsPerFight": 3.628,
+        "downShare": 0,
+        "damagePerHit": null,
+        "maxHp": 93
+      }
+    },
+    {
+      "id": "hp-50",
+      "effect": "max-hp",
+      "magnitude": 50,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L38",
+      "group": "L38",
+      "level": 38,
+      "preset": "no-healer",
+      "paperPct": 25.118904918014135,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 30.701576190476196,
+        "withItem": 32.90353333333333
+      },
+      "baseline": {
+        "perAction": 85.36415000000002,
+        "takenPerRound": 15.563610714285712,
+        "defPerRound": 13.965823809523808,
+        "mdefPerRound": 1.5977869047619053,
+        "downRate": 0.534,
+        "defeatRate": 0,
+        "partyHp": 0.6290142045454543,
+        "meanRounds": 4.379,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 2,
+          "fourPlus": 98
+        },
+        "actionsPerFight": 2.655,
+        "actionsPerRound": 0.6297511904761885,
+        "downShare": 0.2904488095238092,
+        "damagePerHit": 17.9375,
+        "maxHp": 68
+      },
+      "withItem": {
+        "perAction": 76.00724999999996,
+        "takenPerRound": 0,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.6771840796019913,
+        "meanRounds": 4.089,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 2,
+          "fourPlus": 98
+        },
+        "actionsPerFight": 3.628,
+        "downShare": 0,
+        "damagePerHit": null,
+        "maxHp": 118
+      }
+    },
+    {
+      "id": "hp-10",
+      "effect": "max-hp",
+      "magnitude": 10,
+      "slot": "armor",
+      "wearer": "Support",
+      "scope": "L38",
+      "group": "L38",
+      "level": 38,
+      "preset": "physical",
+      "paperPct": 5.023780983602828,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 32.021582539682534,
+        "withItem": 30.471301587301568
+      },
+      "baseline": {
+        "perAction": 22.694383333333317,
+        "takenPerRound": 17.373707142857135,
+        "defPerRound": 12.434940873015877,
+        "mdefPerRound": 4.938766269841276,
+        "downRate": 0.706,
+        "defeatRate": 0,
+        "partyHp": 0.5703701657458567,
+        "meanRounds": 6.422,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 2.248,
+        "actionsPerRound": 0.38042698412698595,
+        "downShare": 0.47896150793651093,
+        "damagePerHit": 18.505078326734377,
+        "maxHp": 78
+      },
+      "withItem": {
+        "perAction": 20.679977380952387,
+        "takenPerRound": 0.0073,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.7158736559139772,
+        "meanRounds": 5.776,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 5.005,
+        "downShare": 0,
+        "damagePerHit": 18.25,
+        "maxHp": 88
+      }
+    },
+    {
+      "id": "hp-25",
+      "effect": "max-hp",
+      "magnitude": 25,
+      "slot": "armor",
+      "wearer": "Support",
+      "scope": "L38",
+      "group": "L38",
+      "level": 38,
+      "preset": "physical",
+      "paperPct": 12.559452459007067,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 32.021582539682534,
+        "withItem": 30.471301587301568
+      },
+      "baseline": {
+        "perAction": 22.694383333333317,
+        "takenPerRound": 17.373707142857135,
+        "defPerRound": 12.434940873015877,
+        "mdefPerRound": 4.938766269841276,
+        "downRate": 0.706,
+        "defeatRate": 0,
+        "partyHp": 0.5703701657458567,
+        "meanRounds": 6.422,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 2.248,
+        "actionsPerRound": 0.38042698412698595,
+        "downShare": 0.47896150793651093,
+        "damagePerHit": 18.505078326734377,
+        "maxHp": 78
+      },
+      "withItem": {
+        "perAction": 20.679977380952387,
+        "takenPerRound": 0.0073,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.7268863049095626,
+        "meanRounds": 5.776,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 5.005,
+        "downShare": 0,
+        "damagePerHit": 18.25,
+        "maxHp": 103
+      }
+    },
+    {
+      "id": "hp-50",
+      "effect": "max-hp",
+      "magnitude": 50,
+      "slot": "armor",
+      "wearer": "Support",
+      "scope": "L38",
+      "group": "L38",
+      "level": 38,
+      "preset": "physical",
+      "paperPct": 25.118904918014135,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 32.021582539682534,
+        "withItem": 30.471301587301568
+      },
+      "baseline": {
+        "perAction": 22.694383333333317,
+        "takenPerRound": 17.373707142857135,
+        "defPerRound": 12.434940873015877,
+        "mdefPerRound": 4.938766269841276,
+        "downRate": 0.706,
+        "defeatRate": 0,
+        "partyHp": 0.5703701657458567,
+        "meanRounds": 6.422,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 2.248,
+        "actionsPerRound": 0.38042698412698595,
+        "downShare": 0.47896150793651093,
+        "damagePerHit": 18.505078326734377,
+        "maxHp": 78
+      },
+      "withItem": {
+        "perAction": 20.679977380952387,
+        "takenPerRound": 0.0073,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.7434587378640778,
+        "meanRounds": 5.776,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 5.005,
+        "downShare": 0,
+        "damagePerHit": 18.25,
+        "maxHp": 128
+      }
+    },
+    {
+      "id": "hp-10",
+      "effect": "max-hp",
+      "magnitude": 10,
+      "slot": "armor",
+      "wearer": "Tank",
+      "scope": "L40",
+      "group": "L40",
+      "level": 40,
+      "preset": "standard",
+      "paperPct": 4.680704096169954,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 47.20820793650794,
+        "withItem": 47.873272222222226
+      },
+      "baseline": {
+        "perAction": 27.321276190476222,
+        "takenPerRound": 26.161738095238114,
+        "defPerRound": 13.680890079365078,
+        "mdefPerRound": 12.480848015873013,
+        "downRate": 0.171,
+        "defeatRate": 0.001,
+        "partyHp": 0.6306739726027397,
+        "meanRounds": 4.072,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 32,
+          "fourPlus": 68
+        },
+        "actionsPerFight": 3.3,
+        "actionsPerRound": 0.8370039682539677,
+        "downShare": 0.053926587301587316,
+        "damagePerHit": 26.041367766618844,
+        "maxHp": 115
+      },
+      "withItem": {
+        "perAction": 27.384516666666684,
+        "takenPerRound": 25.5117523809524,
+        "downRate": 0.202,
+        "defeatRate": 0,
+        "partyHp": 0.6180560000000002,
+        "meanRounds": 3.936,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 34,
+          "fourPlus": 66
+        },
+        "actionsPerFight": 3.14,
+        "downShare": 0.06162539682539679,
+        "damagePerHit": 26.207269914926528,
+        "maxHp": 125
+      }
+    },
+    {
+      "id": "hp-25",
+      "effect": "max-hp",
+      "magnitude": 25,
+      "slot": "armor",
+      "wearer": "Tank",
+      "scope": "L40",
+      "group": "L40",
+      "level": 40,
+      "preset": "standard",
+      "paperPct": 11.701760240424885,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 47.20820793650794,
+        "withItem": 49.054834920634896
+      },
+      "baseline": {
+        "perAction": 27.321276190476222,
+        "takenPerRound": 26.161738095238114,
+        "defPerRound": 13.680890079365078,
+        "mdefPerRound": 12.480848015873013,
+        "downRate": 0.171,
+        "defeatRate": 0.001,
+        "partyHp": 0.6306739726027397,
+        "meanRounds": 4.072,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 32,
+          "fourPlus": 68
+        },
+        "actionsPerFight": 3.3,
+        "actionsPerRound": 0.8370039682539677,
+        "downShare": 0.053926587301587316,
+        "damagePerHit": 26.041367766618844,
+        "maxHp": 115
+      },
+      "withItem": {
+        "perAction": 27.34986666666668,
+        "takenPerRound": 21.93155317460316,
+        "downRate": 0.031,
+        "defeatRate": 0,
+        "partyHp": 0.6347564102564107,
+        "meanRounds": 3.857,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 37,
+          "fourPlus": 63
+        },
+        "actionsPerFight": 3.441,
+        "downShare": 0.01099920634920635,
+        "damagePerHit": 26.901686286986955,
+        "maxHp": 140
+      }
+    },
+    {
+      "id": "hp-50",
+      "effect": "max-hp",
+      "magnitude": 50,
+      "slot": "armor",
+      "wearer": "Tank",
+      "scope": "L40",
+      "group": "L40",
+      "level": 40,
+      "preset": "standard",
+      "paperPct": 23.40352048084977,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 47.20820793650794,
+        "withItem": 49.40714444444442
+      },
+      "baseline": {
+        "perAction": 27.321276190476222,
+        "takenPerRound": 26.161738095238114,
+        "defPerRound": 13.680890079365078,
+        "mdefPerRound": 12.480848015873013,
+        "downRate": 0.171,
+        "defeatRate": 0.001,
+        "partyHp": 0.6306739726027397,
+        "meanRounds": 4.072,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 32,
+          "fourPlus": 68
+        },
+        "actionsPerFight": 3.3,
+        "actionsPerRound": 0.8370039682539677,
+        "downShare": 0.053926587301587316,
+        "damagePerHit": 26.041367766618844,
+        "maxHp": 115
+      },
+      "withItem": {
+        "perAction": 27.348466666666674,
+        "takenPerRound": 20.234866666666658,
+        "downRate": 0.001,
+        "defeatRate": 0,
+        "partyHp": 0.6456626506024095,
+        "meanRounds": 3.845,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 37,
+          "fourPlus": 63
+        },
+        "actionsPerFight": 3.505,
+        "downShare": 0.0003333333333333333,
+        "damagePerHit": 27.31629392971246,
+        "maxHp": 165
+      }
+    },
+    {
+      "id": "hp-10",
+      "effect": "max-hp",
+      "magnitude": 10,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L40",
+      "group": "L40",
+      "level": 40,
+      "preset": "double-caster",
+      "paperPct": 4.680704096169954,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 41.00792857142863,
+        "withItem": 40.638616666666714
+      },
+      "baseline": {
+        "perAction": 99.47733333333335,
+        "takenPerRound": 25.291404761904733,
+        "defPerRound": 12.045319047619058,
+        "mdefPerRound": 13.246085714285709,
+        "downRate": 0.932,
+        "defeatRate": 0,
+        "partyHp": 0.6504312499999996,
+        "meanRounds": 3.205,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 80,
+          "fourPlus": 20
+        },
+        "actionsPerFight": 1.171,
+        "actionsPerRound": 0.3771095238095215,
+        "downShare": 0.6080571428571436,
+        "damagePerHit": 25.89788617886179,
+        "maxHp": 70
+      },
+      "withItem": {
+        "perAction": 73.10491666666674,
+        "takenPerRound": 15.03566666666667,
+        "downRate": 0.078,
+        "defeatRate": 0,
+        "partyHp": 0.6826333333333309,
+        "meanRounds": 3.228,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 77,
+          "fourPlus": 23
+        },
+        "actionsPerFight": 2.831,
+        "downShare": 0.02481666666666666,
+        "damagePerHit": 23.854900095147478,
+        "maxHp": 80
+      }
+    },
+    {
+      "id": "hp-25",
+      "effect": "max-hp",
+      "magnitude": 25,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L40",
+      "group": "L40",
+      "level": 40,
+      "preset": "double-caster",
+      "paperPct": 11.701760240424885,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 41.00792857142863,
+        "withItem": 40.265723809523855
+      },
+      "baseline": {
+        "perAction": 99.47733333333335,
+        "takenPerRound": 25.291404761904733,
+        "defPerRound": 12.045319047619058,
+        "mdefPerRound": 13.246085714285709,
+        "downRate": 0.932,
+        "defeatRate": 0,
+        "partyHp": 0.6504312499999996,
+        "meanRounds": 3.205,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 80,
+          "fourPlus": 20
+        },
+        "actionsPerFight": 1.171,
+        "actionsPerRound": 0.3771095238095215,
+        "downShare": 0.6080571428571436,
+        "damagePerHit": 25.89788617886179,
+        "maxHp": 70
+      },
+      "withItem": {
+        "perAction": 72.26375000000009,
+        "takenPerRound": 0.5558904761904762,
+        "downRate": 0.001,
+        "defeatRate": 0,
+        "partyHp": 0.6924144927536265,
+        "meanRounds": 3.31,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 71,
+          "fourPlus": 29
+        },
+        "actionsPerFight": 2.952,
+        "downShare": 0.00042857142857142855,
+        "damagePerHit": 23.85185185185185,
+        "maxHp": 95
+      }
+    },
+    {
+      "id": "hp-50",
+      "effect": "max-hp",
+      "magnitude": 50,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L40",
+      "group": "L40",
+      "level": 40,
+      "preset": "double-caster",
+      "paperPct": 23.40352048084977,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 41.00792857142863,
+        "withItem": 40.23586666666671
+      },
+      "baseline": {
+        "perAction": 99.47733333333335,
+        "takenPerRound": 25.291404761904733,
+        "defPerRound": 12.045319047619058,
+        "mdefPerRound": 13.246085714285709,
+        "downRate": 0.932,
+        "defeatRate": 0,
+        "partyHp": 0.6504312499999996,
+        "meanRounds": 3.205,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 80,
+          "fourPlus": 20
+        },
+        "actionsPerFight": 1.171,
+        "actionsPerRound": 0.3771095238095215,
+        "downShare": 0.6080571428571436,
+        "damagePerHit": 25.89788617886179,
+        "maxHp": 70
+      },
+      "withItem": {
+        "perAction": 72.25383333333342,
+        "takenPerRound": 0.0031666666666666666,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.713648648648649,
+        "meanRounds": 3.309,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 71,
+          "fourPlus": 29
+        },
+        "actionsPerFight": 2.954,
+        "downShare": 0,
+        "damagePerHit": 19,
+        "maxHp": 120
+      }
+    },
+    {
+      "id": "hp-10",
+      "effect": "max-hp",
+      "magnitude": 10,
+      "slot": "armor",
+      "wearer": "Tank",
+      "scope": "L40",
+      "group": "L40",
+      "level": 40,
+      "preset": "no-healer",
+      "paperPct": 4.680704096169954,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 38.92786666666666,
+        "withItem": 39.20710833333333
+      },
+      "baseline": {
+        "perAction": 27.315999999999978,
+        "takenPerRound": 19.37252579365077,
+        "defPerRound": 10.21979642857142,
+        "mdefPerRound": 9.15272936507936,
+        "downRate": 0.566,
+        "defeatRate": 0.013,
+        "partyHp": 0.42909189189189145,
+        "meanRounds": 5.877,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 1,
+          "fourPlus": 99
+        },
+        "actionsPerFight": 2.967,
+        "actionsPerRound": 0.5780650793650806,
+        "downShare": 0.27856428571428565,
+        "damagePerHit": 26.073477127281347,
+        "maxHp": 115
+      },
+      "withItem": {
+        "perAction": 27.294461904761885,
+        "takenPerRound": 19.643770634920624,
+        "downRate": 0.518,
+        "defeatRate": 0.012,
+        "partyHp": 0.43596842105263156,
+        "meanRounds": 5.792,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 1,
+          "fourPlus": 99
+        },
+        "actionsPerFight": 3.084,
+        "downShare": 0.25410833333333344,
+        "damagePerHit": 26.081145020108824,
+        "maxHp": 125
+      }
+    },
+    {
+      "id": "hp-25",
+      "effect": "max-hp",
+      "magnitude": 25,
+      "slot": "armor",
+      "wearer": "Tank",
+      "scope": "L40",
+      "group": "L40",
+      "level": 40,
+      "preset": "no-healer",
+      "paperPct": 11.701760240424885,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 38.92786666666666,
+        "withItem": 40.45323730158728
+      },
+      "baseline": {
+        "perAction": 27.315999999999978,
+        "takenPerRound": 19.37252579365077,
+        "defPerRound": 10.21979642857142,
+        "mdefPerRound": 9.15272936507936,
+        "downRate": 0.566,
+        "defeatRate": 0.013,
+        "partyHp": 0.42909189189189145,
+        "meanRounds": 5.877,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 1,
+          "fourPlus": 99
+        },
+        "actionsPerFight": 2.967,
+        "actionsPerRound": 0.5780650793650806,
+        "downShare": 0.27856428571428565,
+        "damagePerHit": 26.073477127281347,
+        "maxHp": 115
+      },
+      "withItem": {
+        "perAction": 27.263573809523788,
+        "takenPerRound": 20.884802380952372,
+        "downRate": 0.341,
+        "defeatRate": 0.003,
+        "partyHp": 0.4754075949367087,
+        "meanRounds": 5.438,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 1,
+          "fourPlus": 99
+        },
+        "actionsPerFight": 3.565,
+        "downShare": 0.15382738095238094,
+        "damagePerHit": 26.075428042572884,
+        "maxHp": 140
+      }
+    },
+    {
+      "id": "hp-50",
+      "effect": "max-hp",
+      "magnitude": 50,
+      "slot": "armor",
+      "wearer": "Tank",
+      "scope": "L40",
+      "group": "L40",
+      "level": 40,
+      "preset": "no-healer",
+      "paperPct": 23.40352048084977,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 38.92786666666666,
+        "withItem": 42.31601547619043
+      },
+      "baseline": {
+        "perAction": 27.315999999999978,
+        "takenPerRound": 19.37252579365077,
+        "defPerRound": 10.21979642857142,
+        "mdefPerRound": 9.15272936507936,
+        "downRate": 0.566,
+        "defeatRate": 0.013,
+        "partyHp": 0.42909189189189145,
+        "meanRounds": 5.877,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 1,
+          "fourPlus": 99
+        },
+        "actionsPerFight": 2.967,
+        "actionsPerRound": 0.5780650793650806,
+        "downShare": 0.27856428571428565,
+        "damagePerHit": 26.073477127281347,
+        "maxHp": 115
+      },
+      "withItem": {
+        "perAction": 27.13626785714287,
+        "takenPerRound": 17.535897619047624,
+        "downRate": 0.011,
+        "defeatRate": 0.001,
+        "partyHp": 0.5129666666666671,
+        "meanRounds": 4.987,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 1,
+          "fourPlus": 99
+        },
+        "actionsPerFight": 4.359,
+        "downShare": 0.002591666666666666,
+        "damagePerHit": 26.991071428571427,
+        "maxHp": 165
+      }
+    },
+    {
+      "id": "hp-10",
+      "effect": "max-hp",
+      "magnitude": 10,
+      "slot": "armor",
+      "wearer": "Tank",
+      "scope": "L40",
+      "group": "L40",
+      "level": 40,
+      "preset": "physical",
+      "paperPct": 4.680704096169954,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 41.78063253968253,
+        "withItem": 43.54745317460317
+      },
+      "baseline": {
+        "perAction": 27.42960714285711,
+        "takenPerRound": 20.959211111111127,
+        "defPerRound": 13.201057142857143,
+        "mdefPerRound": 7.758153968253973,
+        "downRate": 0.67,
+        "defeatRate": 0.031,
+        "partyHp": 0.5139105263157896,
+        "meanRounds": 6.954,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 3.595,
+        "actionsPerRound": 0.5529765873015865,
+        "downShare": 0.31727380952380874,
+        "damagePerHit": 25.6223191566703,
+        "maxHp": 115
+      },
+      "withItem": {
+        "perAction": 27.364171428571403,
+        "takenPerRound": 18.86767896825398,
+        "downRate": 0.503,
+        "defeatRate": 0.029,
+        "partyHp": 0.5503487179487184,
+        "meanRounds": 6.722,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 3.967,
+        "downShare": 0.2457563492063487,
+        "damagePerHit": 25.986795221127647,
+        "maxHp": 125
+      }
+    },
+    {
+      "id": "hp-25",
+      "effect": "max-hp",
+      "magnitude": 25,
+      "slot": "armor",
+      "wearer": "Tank",
+      "scope": "L40",
+      "group": "L40",
+      "level": 40,
+      "preset": "physical",
+      "paperPct": 11.701760240424885,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 41.78063253968253,
+        "withItem": 44.45927896825391
+      },
+      "baseline": {
+        "perAction": 27.42960714285711,
+        "takenPerRound": 20.959211111111127,
+        "defPerRound": 13.201057142857143,
+        "mdefPerRound": 7.758153968253973,
+        "downRate": 0.67,
+        "defeatRate": 0.031,
+        "partyHp": 0.5139105263157896,
+        "meanRounds": 6.954,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 3.595,
+        "actionsPerRound": 0.5529765873015865,
+        "downShare": 0.31727380952380874,
+        "damagePerHit": 25.6223191566703,
+        "maxHp": 115
+      },
+      "withItem": {
+        "perAction": 27.297892857142845,
+        "takenPerRound": 19.112134523809512,
+        "downRate": 0.348,
+        "defeatRate": 0.01,
+        "partyHp": 0.5693456790123447,
+        "meanRounds": 6.474,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 4.622,
+        "downShare": 0.13643690476190495,
+        "damagePerHit": 26.05806314897224,
+        "maxHp": 140
+      }
+    },
+    {
+      "id": "hp-50",
+      "effect": "max-hp",
+      "magnitude": 50,
+      "slot": "armor",
+      "wearer": "Tank",
+      "scope": "L40",
+      "group": "L40",
+      "level": 40,
+      "preset": "physical",
+      "paperPct": 23.40352048084977,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 41.78063253968253,
+        "withItem": 44.90277698412692
+      },
+      "baseline": {
+        "perAction": 27.42960714285711,
+        "takenPerRound": 20.959211111111127,
+        "defPerRound": 13.201057142857143,
+        "mdefPerRound": 7.758153968253973,
+        "downRate": 0.67,
+        "defeatRate": 0.031,
+        "partyHp": 0.5139105263157896,
+        "meanRounds": 6.954,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 3.595,
+        "actionsPerRound": 0.5529765873015865,
+        "downShare": 0.31727380952380874,
+        "damagePerHit": 25.6223191566703,
+        "maxHp": 115
+      },
+      "withItem": {
+        "perAction": 27.167679761904743,
+        "takenPerRound": 18.654348412698443,
+        "downRate": 0.1,
+        "defeatRate": 0.001,
+        "partyHp": 0.5391325581395356,
+        "meanRounds": 6.208,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 5.349,
+        "downShare": 0.023382936507936488,
+        "damagePerHit": 26.200860507246375,
+        "maxHp": 165
+      }
+    },
+    {
+      "id": "hp-10",
+      "effect": "max-hp",
+      "magnitude": 10,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L46",
+      "group": "L46",
+      "level": 46,
+      "preset": "standard",
+      "paperPct": 3.785756305681408,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 50.59154801587301,
+        "withItem": 51.992133333333385
+      },
+      "baseline": {
+        "perAction": 100.90799999999999,
+        "takenPerRound": 24.91882261904762,
+        "defPerRound": 21.220074206349185,
+        "mdefPerRound": 3.698748412698413,
+        "downRate": 0.534,
+        "defeatRate": 0,
+        "partyHp": 0.6882431077694242,
+        "meanRounds": 3.841,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 38,
+          "fourPlus": 62
+        },
+        "actionsPerFight": 2.377,
+        "actionsPerRound": 0.6639646825396823,
+        "downShare": 0.3066686507936517,
+        "damagePerHit": 23.622284692052133,
+        "maxHp": 76
+      },
+      "withItem": {
+        "perAction": 99.53178333333335,
+        "takenPerRound": 28.940200000000004,
+        "downRate": 0.448,
+        "defeatRate": 0,
+        "partyHp": 0.71437163814181,
+        "meanRounds": 3.5,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 53,
+          "fourPlus": 48
+        },
+        "actionsPerFight": 2.72,
+        "downShare": 0.17958333333333365,
+        "damagePerHit": 23.586976962858486,
+        "maxHp": 86
+      }
+    },
+    {
+      "id": "hp-25",
+      "effect": "max-hp",
+      "magnitude": 25,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L46",
+      "group": "L46",
+      "level": 46,
+      "preset": "standard",
+      "paperPct": 9.464390764203518,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 50.59154801587301,
+        "withItem": 50.91318809523811
+      },
+      "baseline": {
+        "perAction": 100.90799999999999,
+        "takenPerRound": 24.91882261904762,
+        "defPerRound": 21.220074206349185,
+        "mdefPerRound": 3.698748412698413,
+        "downRate": 0.534,
+        "defeatRate": 0,
+        "partyHp": 0.6882431077694242,
+        "meanRounds": 3.841,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 38,
+          "fourPlus": 62
+        },
+        "actionsPerFight": 2.377,
+        "actionsPerRound": 0.6639646825396823,
+        "downShare": 0.3066686507936517,
+        "damagePerHit": 23.622284692052133,
+        "maxHp": 76
+      },
+      "withItem": {
+        "perAction": 89.39233333333328,
+        "takenPerRound": 0.17051190476190478,
+        "downRate": 0.001,
+        "defeatRate": 0,
+        "partyHp": 0.6851014150943396,
+        "meanRounds": 3.839,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 23,
+          "fourPlus": 77
+        },
+        "actionsPerFight": 3.497,
+        "downShare": 0.00014285714285714284,
+        "damagePerHit": 24.513513513513512,
+        "maxHp": 101
+      }
+    },
+    {
+      "id": "hp-50",
+      "effect": "max-hp",
+      "magnitude": 50,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L46",
+      "group": "L46",
+      "level": 46,
+      "preset": "standard",
+      "paperPct": 18.928781528407036,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 50.59154801587301,
+        "withItem": 50.90921666666668
+      },
+      "baseline": {
+        "perAction": 100.90799999999999,
+        "takenPerRound": 24.91882261904762,
+        "defPerRound": 21.220074206349185,
+        "mdefPerRound": 3.698748412698413,
+        "downRate": 0.534,
+        "defeatRate": 0,
+        "partyHp": 0.6882431077694242,
+        "meanRounds": 3.841,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 38,
+          "fourPlus": 62
+        },
+        "actionsPerFight": 2.377,
+        "actionsPerRound": 0.6639646825396823,
+        "downShare": 0.3066686507936517,
+        "damagePerHit": 23.622284692052133,
+        "maxHp": 76
+      },
+      "withItem": {
+        "perAction": 89.38786666666661,
+        "takenPerRound": 0,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.7027683741648115,
+        "meanRounds": 3.838,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 23,
+          "fourPlus": 77
+        },
+        "actionsPerFight": 3.498,
+        "downShare": 0,
+        "damagePerHit": null,
+        "maxHp": 126
+      }
+    },
+    {
+      "id": "hp-10",
+      "effect": "max-hp",
+      "magnitude": 10,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L46",
+      "group": "L46",
+      "level": 46,
+      "preset": "double-caster",
+      "paperPct": 3.785756305681408,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 42.2520436507936,
+        "withItem": 43.41446666666664
+      },
+      "baseline": {
+        "perAction": 103.15024999999999,
+        "takenPerRound": 27.99409920634918,
+        "defPerRound": 13.526019047619048,
+        "mdefPerRound": 14.468080158730158,
+        "downRate": 0.79,
+        "defeatRate": 0,
+        "partyHp": 0.7047077363896858,
+        "meanRounds": 3.353,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 68,
+          "fourPlus": 32
+        },
+        "actionsPerFight": 1.486,
+        "actionsPerRound": 0.4662817460317443,
+        "downShare": 0.5166349206349227,
+        "damagePerHit": 25.882603752131892,
+        "maxHp": 76
+      },
+      "withItem": {
+        "perAction": 82.55491666666667,
+        "takenPerRound": 14.253366666666667,
+        "downRate": 0.069,
+        "defeatRate": 0,
+        "partyHp": 0.704490250696379,
+        "meanRounds": 3.221,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 79,
+          "fourPlus": 21
+        },
+        "actionsPerFight": 2.964,
+        "downShare": 0.019633333333333332,
+        "damagePerHit": 23.962311557788944,
+        "maxHp": 86
+      }
+    },
+    {
+      "id": "hp-25",
+      "effect": "max-hp",
+      "magnitude": 25,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L46",
+      "group": "L46",
+      "level": 46,
+      "preset": "double-caster",
+      "paperPct": 9.464390764203518,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 42.2520436507936,
+        "withItem": 43.14788333333329
+      },
+      "baseline": {
+        "perAction": 103.15024999999999,
+        "takenPerRound": 27.99409920634918,
+        "defPerRound": 13.526019047619048,
+        "mdefPerRound": 14.468080158730158,
+        "downRate": 0.79,
+        "defeatRate": 0,
+        "partyHp": 0.7047077363896858,
+        "meanRounds": 3.353,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 68,
+          "fourPlus": 32
+        },
+        "actionsPerFight": 1.486,
+        "actionsPerRound": 0.4662817460317443,
+        "downShare": 0.5166349206349227,
+        "damagePerHit": 25.882603752131892,
+        "maxHp": 76
+      },
+      "withItem": {
+        "perAction": 81.69571666666663,
+        "takenPerRound": 0.3684500000000001,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.7127139037433171,
+        "meanRounds": 3.283,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 75,
+          "fourPlus": 26
+        },
+        "actionsPerFight": 3.069,
+        "downShare": 0,
+        "damagePerHit": 23.194444444444443,
+        "maxHp": 101
+      }
+    },
+    {
+      "id": "hp-50",
+      "effect": "max-hp",
+      "magnitude": 50,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L46",
+      "group": "L46",
+      "level": 46,
+      "preset": "double-caster",
+      "paperPct": 18.928781528407036,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 42.2520436507936,
+        "withItem": 43.09868333333329
+      },
+      "baseline": {
+        "perAction": 103.15024999999999,
+        "takenPerRound": 27.99409920634918,
+        "defPerRound": 13.526019047619048,
+        "mdefPerRound": 14.468080158730158,
+        "downRate": 0.79,
+        "defeatRate": 0,
+        "partyHp": 0.7047077363896858,
+        "meanRounds": 3.353,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 68,
+          "fourPlus": 32
+        },
+        "actionsPerFight": 1.486,
+        "actionsPerRound": 0.4662817460317443,
+        "downShare": 0.5166349206349227,
+        "damagePerHit": 25.882603752131892,
+        "maxHp": 76
+      },
+      "withItem": {
+        "perAction": 81.69571666666663,
+        "takenPerRound": 0,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.7312355889724317,
+        "meanRounds": 3.283,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 75,
+          "fourPlus": 26
+        },
+        "actionsPerFight": 3.069,
+        "downShare": 0,
+        "damagePerHit": null,
+        "maxHp": 126
+      }
+    },
+    {
+      "id": "hp-10",
+      "effect": "max-hp",
+      "magnitude": 10,
+      "slot": "armor",
+      "wearer": "Tank",
+      "scope": "L46",
+      "group": "L46",
+      "level": 46,
+      "preset": "no-healer",
+      "paperPct": 3.785756305681408,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 40.995711507936534,
+        "withItem": 41.798303174603156
+      },
+      "baseline": {
+        "perAction": 29.160880952380936,
+        "takenPerRound": 20.154842063492055,
+        "defPerRound": 10.309829761904775,
+        "mdefPerRound": 9.845012301587293,
+        "downRate": 0.374,
+        "defeatRate": 0.004,
+        "partyHp": 0.5022648514851494,
+        "meanRounds": 5.237,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 3.386,
+        "actionsPerRound": 0.6968214285714295,
+        "downShare": 0.15797142857142865,
+        "damagePerHit": 26.17986881937437,
+        "maxHp": 126
+      },
+      "withItem": {
+        "perAction": 29.14892619047619,
+        "takenPerRound": 21.435490476190484,
+        "downRate": 0.258,
+        "defeatRate": 0.001,
+        "partyHp": 0.5229710144927546,
+        "meanRounds": 5.069,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 3.627,
+        "downShare": 0.1030742063492064,
+        "damagePerHit": 26.09375,
+        "maxHp": 136
+      }
+    },
+    {
+      "id": "hp-25",
+      "effect": "max-hp",
+      "magnitude": 25,
+      "slot": "armor",
+      "wearer": "Tank",
+      "scope": "L46",
+      "group": "L46",
+      "level": 46,
+      "preset": "no-healer",
+      "paperPct": 9.464390764203518,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 40.995711507936534,
+        "withItem": 42.737304761904745
+      },
+      "baseline": {
+        "perAction": 29.160880952380936,
+        "takenPerRound": 20.154842063492055,
+        "defPerRound": 10.309829761904775,
+        "mdefPerRound": 9.845012301587293,
+        "downRate": 0.374,
+        "defeatRate": 0.004,
+        "partyHp": 0.5022648514851494,
+        "meanRounds": 5.237,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 3.386,
+        "actionsPerRound": 0.6968214285714295,
+        "downShare": 0.15797142857142865,
+        "damagePerHit": 26.17986881937437,
+        "maxHp": 126
+      },
+      "withItem": {
+        "perAction": 29.076576190476178,
+        "takenPerRound": 16.983698412698402,
+        "downRate": 0.07,
+        "defeatRate": 0.001,
+        "partyHp": 0.5414662004661991,
+        "meanRounds": 4.859,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 4.015,
+        "downShare": 0.025328968253968256,
+        "damagePerHit": 26.87362281270253,
+        "maxHp": 151
+      }
+    },
+    {
+      "id": "hp-50",
+      "effect": "max-hp",
+      "magnitude": 50,
+      "slot": "armor",
+      "wearer": "Tank",
+      "scope": "L46",
+      "group": "L46",
+      "level": 46,
+      "preset": "no-healer",
+      "paperPct": 18.928781528407036,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 40.995711507936534,
+        "withItem": 43.085774206349214
+      },
+      "baseline": {
+        "perAction": 29.160880952380936,
+        "takenPerRound": 20.154842063492055,
+        "defPerRound": 10.309829761904775,
+        "mdefPerRound": 9.845012301587293,
+        "downRate": 0.374,
+        "defeatRate": 0.004,
+        "partyHp": 0.5022648514851494,
+        "meanRounds": 5.237,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 3.386,
+        "actionsPerRound": 0.6968214285714295,
+        "downShare": 0.15797142857142865,
+        "damagePerHit": 26.17986881937437,
+        "maxHp": 126
+      },
+      "withItem": {
+        "perAction": 29.079778571428555,
+        "takenPerRound": 15.271884920634916,
+        "downRate": 0.001,
+        "defeatRate": 0.001,
+        "partyHp": 0.5681387665198239,
+        "meanRounds": 4.783,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 4.148,
+        "downShare": 0.0005,
+        "damagePerHit": 27.39040060468632,
+        "maxHp": 176
+      }
+    },
+    {
+      "id": "hp-10",
+      "effect": "max-hp",
+      "magnitude": 10,
+      "slot": "armor",
+      "wearer": "Support",
+      "scope": "L46",
+      "group": "L46",
+      "level": 46,
+      "preset": "physical",
+      "paperPct": 3.785756305681408,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 41.65863571428567,
+        "withItem": 41.020437301587336
+      },
+      "baseline": {
+        "perAction": 24.1633027960683,
+        "takenPerRound": 18.760028174603185,
+        "defPerRound": 15.735304761904773,
+        "mdefPerRound": 3.0247234126984126,
+        "downRate": 0.64,
+        "defeatRate": 0.014,
+        "partyHp": 0.48810386473430034,
+        "meanRounds": 7.144,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 2.727,
+        "actionsPerRound": 0.4284829365079364,
+        "downShare": 0.4420388888888901,
+        "damagePerHit": 23.456428438141444,
+        "maxHp": 86
+      },
+      "withItem": {
+        "perAction": 23.125829365079387,
+        "takenPerRound": 4.882204761904763,
+        "downRate": 0.07,
+        "defeatRate": 0.01,
+        "partyHp": 0.5782617924528309,
+        "meanRounds": 6.677,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 5.744,
+        "downShare": 0.02127261904761904,
+        "damagePerHit": 22.88029020556227,
+        "maxHp": 96
+      }
+    },
+    {
+      "id": "hp-25",
+      "effect": "max-hp",
+      "magnitude": 25,
+      "slot": "armor",
+      "wearer": "Support",
+      "scope": "L46",
+      "group": "L46",
+      "level": 46,
+      "preset": "physical",
+      "paperPct": 9.464390764203518,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 41.65863571428567,
+        "withItem": 40.473515873015856
+      },
+      "baseline": {
+        "perAction": 24.1633027960683,
+        "takenPerRound": 18.760028174603185,
+        "defPerRound": 15.735304761904773,
+        "mdefPerRound": 3.0247234126984126,
+        "downRate": 0.64,
+        "defeatRate": 0.014,
+        "partyHp": 0.48810386473430034,
+        "meanRounds": 7.144,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 2.727,
+        "actionsPerRound": 0.4284829365079364,
+        "downShare": 0.4420388888888901,
+        "damagePerHit": 23.456428438141444,
+        "maxHp": 86
+      },
+      "withItem": {
+        "perAction": 23.55433531746034,
+        "takenPerRound": 0.13660277777777777,
+        "downRate": 0.001,
+        "defeatRate": 0.001,
+        "partyHp": 0.5950159453302958,
+        "meanRounds": 6.579,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 5.921,
+        "downShare": 0,
+        "damagePerHit": 23.29090909090909,
+        "maxHp": 111
+      }
+    },
+    {
+      "id": "hp-50",
+      "effect": "max-hp",
+      "magnitude": 50,
+      "slot": "armor",
+      "wearer": "Support",
+      "scope": "L46",
+      "group": "L46",
+      "level": 46,
+      "preset": "physical",
+      "paperPct": 18.928781528407036,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 41.65863571428567,
+        "withItem": 40.470449206349194
+      },
+      "baseline": {
+        "perAction": 24.1633027960683,
+        "takenPerRound": 18.760028174603185,
+        "defPerRound": 15.735304761904773,
+        "mdefPerRound": 3.0247234126984126,
+        "downRate": 0.64,
+        "defeatRate": 0.014,
+        "partyHp": 0.48810386473430034,
+        "meanRounds": 7.144,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 2.727,
+        "actionsPerRound": 0.4284829365079364,
+        "downShare": 0.4420388888888901,
+        "damagePerHit": 23.456428438141444,
+        "maxHp": 86
+      },
+      "withItem": {
+        "perAction": 23.560685317460344,
+        "takenPerRound": 0.1374361111111111,
+        "downRate": 0.001,
+        "defeatRate": 0.001,
+        "partyHp": 0.6166659482758623,
+        "meanRounds": 6.58,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 5.922,
+        "downShare": 0,
+        "damagePerHit": 23.25,
+        "maxHp": 136
+      }
+    },
+    {
+      "id": "hp-10",
+      "effect": "max-hp",
+      "magnitude": 10,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L48",
+      "group": "L48",
+      "level": 48,
+      "preset": "standard",
+      "paperPct": 3.5272248342315704,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 51.12807420634924,
+        "withItem": 52.11351666666671
+      },
+      "baseline": {
+        "perAction": 102.45493333333326,
+        "takenPerRound": 27.248374999999985,
+        "defPerRound": 23.36438373015873,
+        "mdefPerRound": 3.88399126984127,
+        "downRate": 0.464,
+        "defeatRate": 0,
+        "partyHp": 0.7202678132678132,
+        "meanRounds": 3.757,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 40,
+          "fourPlus": 60
+        },
+        "actionsPerFight": 2.571,
+        "actionsPerRound": 0.7194718253968249,
+        "downShare": 0.24402817460317563,
+        "damagePerHit": 23.538552228248054,
+        "maxHp": 78
+      },
+      "withItem": {
+        "perAction": 102.72906666666665,
+        "takenPerRound": 29.83368333333336,
+        "downRate": 0.481,
+        "defeatRate": 0,
+        "partyHp": 0.708832134292566,
+        "meanRounds": 3.49,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 53,
+          "fourPlus": 47
+        },
+        "actionsPerFight": 2.683,
+        "downShare": 0.19085000000000055,
+        "damagePerHit": 23.653299725022915,
+        "maxHp": 88
+      }
+    },
+    {
+      "id": "hp-25",
+      "effect": "max-hp",
+      "magnitude": 25,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L48",
+      "group": "L48",
+      "level": 48,
+      "preset": "standard",
+      "paperPct": 8.818062085578926,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 51.12807420634924,
+        "withItem": 50.400916666666646
+      },
+      "baseline": {
+        "perAction": 102.45493333333326,
+        "takenPerRound": 27.248374999999985,
+        "defPerRound": 23.36438373015873,
+        "mdefPerRound": 3.88399126984127,
+        "downRate": 0.464,
+        "defeatRate": 0,
+        "partyHp": 0.7202678132678132,
+        "meanRounds": 3.757,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 40,
+          "fourPlus": 60
+        },
+        "actionsPerFight": 2.571,
+        "actionsPerRound": 0.7194718253968249,
+        "downShare": 0.24402817460317563,
+        "damagePerHit": 23.538552228248054,
+        "maxHp": 78
+      },
+      "withItem": {
+        "perAction": 91.39163333333336,
+        "takenPerRound": 0.21980000000000002,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.6797430555555557,
+        "meanRounds": 3.864,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 21,
+          "fourPlus": 79
+        },
+        "actionsPerFight": 3.513,
+        "downShare": 0,
+        "damagePerHit": 23.46808510638298,
+        "maxHp": 103
+      }
+    },
+    {
+      "id": "hp-50",
+      "effect": "max-hp",
+      "magnitude": 50,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L48",
+      "group": "L48",
+      "level": 48,
+      "preset": "standard",
+      "paperPct": 17.636124171157853,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 51.12807420634924,
+        "withItem": 50.38294999999997
+      },
+      "baseline": {
+        "perAction": 102.45493333333326,
+        "takenPerRound": 27.248374999999985,
+        "defPerRound": 23.36438373015873,
+        "mdefPerRound": 3.88399126984127,
+        "downRate": 0.464,
+        "defeatRate": 0,
+        "partyHp": 0.7202678132678132,
+        "meanRounds": 3.757,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 40,
+          "fourPlus": 60
+        },
+        "actionsPerFight": 2.571,
+        "actionsPerRound": 0.7194718253968249,
+        "downShare": 0.24402817460317563,
+        "damagePerHit": 23.538552228248054,
+        "maxHp": 78
+      },
+      "withItem": {
+        "perAction": 91.39163333333336,
+        "takenPerRound": 0,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.6974638949671774,
+        "meanRounds": 3.864,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 21,
+          "fourPlus": 79
+        },
+        "actionsPerFight": 3.513,
+        "downShare": 0,
+        "damagePerHit": null,
+        "maxHp": 128
+      }
+    },
+    {
+      "id": "hp-10",
+      "effect": "max-hp",
+      "magnitude": 10,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L48",
+      "group": "L48",
+      "level": 48,
+      "preset": "double-caster",
+      "paperPct": 3.5272248342315704,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 42.51012222222221,
+        "withItem": 43.59695
+      },
+      "baseline": {
+        "perAction": 105.33750000000006,
+        "takenPerRound": 29.654977777777773,
+        "defPerRound": 14.50760000000001,
+        "mdefPerRound": 15.147377777777775,
+        "downRate": 0.73,
+        "defeatRate": 0,
+        "partyHp": 0.7242969187675073,
+        "meanRounds": 3.321,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 70,
+          "fourPlus": 30
+        },
+        "actionsPerFight": 1.594,
+        "actionsPerRound": 0.5036722222222206,
+        "downShare": 0.4710777777777795,
+        "damagePerHit": 25.838779368079937,
+        "maxHp": 78
+      },
+      "withItem": {
+        "perAction": 86.22258333333342,
+        "takenPerRound": 12.826933333333338,
+        "downRate": 0.062,
+        "defeatRate": 0,
+        "partyHp": 0.7183324250681201,
+        "meanRounds": 3.191,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 81,
+          "fourPlus": 19
+        },
+        "actionsPerFight": 2.935,
+        "downShare": 0.01661666666666667,
+        "damagePerHit": 23.949238578680202,
+        "maxHp": 88
+      }
+    },
+    {
+      "id": "hp-25",
+      "effect": "max-hp",
+      "magnitude": 25,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L48",
+      "group": "L48",
+      "level": 48,
+      "preset": "double-caster",
+      "paperPct": 8.818062085578926,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 42.51012222222221,
+        "withItem": 43.27969999999998
+      },
+      "baseline": {
+        "perAction": 105.33750000000006,
+        "takenPerRound": 29.654977777777773,
+        "defPerRound": 14.50760000000001,
+        "mdefPerRound": 15.147377777777775,
+        "downRate": 0.73,
+        "defeatRate": 0,
+        "partyHp": 0.7242969187675073,
+        "meanRounds": 3.321,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 70,
+          "fourPlus": 30
+        },
+        "actionsPerFight": 1.594,
+        "actionsPerRound": 0.5036722222222206,
+        "downShare": 0.4710777777777795,
+        "damagePerHit": 25.838779368079937,
+        "maxHp": 78
+      },
+      "withItem": {
+        "perAction": 85.5158333333334,
+        "takenPerRound": 0.34965,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.7254633507853417,
+        "meanRounds": 3.251,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 77,
+          "fourPlus": 23
+        },
+        "actionsPerFight": 3.023,
+        "downShare": 0,
+        "damagePerHit": 23.26086956521739,
+        "maxHp": 103
+      }
+    },
+    {
+      "id": "hp-50",
+      "effect": "max-hp",
+      "magnitude": 50,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L48",
+      "group": "L48",
+      "level": 48,
+      "preset": "double-caster",
+      "paperPct": 17.636124171157853,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 42.51012222222221,
+        "withItem": 43.22149999999997
+      },
+      "baseline": {
+        "perAction": 105.33750000000006,
+        "takenPerRound": 29.654977777777773,
+        "defPerRound": 14.50760000000001,
+        "mdefPerRound": 15.147377777777775,
+        "downRate": 0.73,
+        "defeatRate": 0,
+        "partyHp": 0.7242969187675073,
+        "meanRounds": 3.321,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 70,
+          "fourPlus": 30
+        },
+        "actionsPerFight": 1.594,
+        "actionsPerRound": 0.5036722222222206,
+        "downShare": 0.4710777777777795,
+        "damagePerHit": 25.838779368079937,
+        "maxHp": 78
+      },
+      "withItem": {
+        "perAction": 85.5158333333334,
+        "takenPerRound": 0,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.7429484029484031,
+        "meanRounds": 3.251,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 77,
+          "fourPlus": 23
+        },
+        "actionsPerFight": 3.023,
+        "downShare": 0,
+        "damagePerHit": null,
+        "maxHp": 128
+      }
+    },
+    {
+      "id": "hp-10",
+      "effect": "max-hp",
+      "magnitude": 10,
+      "slot": "armor",
+      "wearer": "Tank",
+      "scope": "L48",
+      "group": "L48",
+      "level": 48,
+      "preset": "no-healer",
+      "paperPct": 3.5272248342315704,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 41.62699047619048,
+        "withItem": 42.526243650793646
+      },
+      "baseline": {
+        "perAction": 30.0263619047619,
+        "takenPerRound": 20.750903571428566,
+        "defPerRound": 10.521194047619048,
+        "mdefPerRound": 10.229709523809513,
+        "downRate": 0.337,
+        "defeatRate": 0.003,
+        "partyHp": 0.5257184466019418,
+        "meanRounds": 5.025,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 3.443,
+        "actionsPerRound": 0.7258888888888894,
+        "downShare": 0.12718174603174615,
+        "damagePerHit": 26.201216421692852,
+        "maxHp": 128
+      },
+      "withItem": {
+        "perAction": 30.001107142857148,
+        "takenPerRound": 21.915230555555556,
+        "downRate": 0.197,
+        "defeatRate": 0.001,
+        "partyHp": 0.5433127962085293,
+        "meanRounds": 4.869,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 3.687,
+        "downShare": 0.0713650793650794,
+        "damagePerHit": 26.137023370233702,
+        "maxHp": 138
+      }
+    },
+    {
+      "id": "hp-25",
+      "effect": "max-hp",
+      "magnitude": 25,
+      "slot": "armor",
+      "wearer": "Tank",
+      "scope": "L48",
+      "group": "L48",
+      "level": 48,
+      "preset": "no-healer",
+      "paperPct": 8.818062085578926,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 41.62699047619048,
+        "withItem": 43.17870674603174
+      },
+      "baseline": {
+        "perAction": 30.0263619047619,
+        "takenPerRound": 20.750903571428566,
+        "defPerRound": 10.521194047619048,
+        "mdefPerRound": 10.229709523809513,
+        "downRate": 0.337,
+        "defeatRate": 0.003,
+        "partyHp": 0.5257184466019418,
+        "meanRounds": 5.025,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 3.443,
+        "actionsPerRound": 0.7258888888888894,
+        "downShare": 0.12718174603174615,
+        "damagePerHit": 26.201216421692852,
+        "maxHp": 128
+      },
+      "withItem": {
+        "perAction": 29.9703119047619,
+        "takenPerRound": 16.649981746031738,
+        "downRate": 0.051,
+        "defeatRate": 0.001,
+        "partyHp": 0.5595514874141874,
+        "meanRounds": 4.724,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 3.963,
+        "downShare": 0.016194841269841265,
+        "damagePerHit": 27.07826982492276,
+        "maxHp": 153
+      }
+    },
+    {
+      "id": "hp-50",
+      "effect": "max-hp",
+      "magnitude": 50,
+      "slot": "armor",
+      "wearer": "Tank",
+      "scope": "L48",
+      "group": "L48",
+      "level": 48,
+      "preset": "no-healer",
+      "paperPct": 17.636124171157853,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 41.62699047619048,
+        "withItem": 43.42239404761904
+      },
+      "baseline": {
+        "perAction": 30.0263619047619,
+        "takenPerRound": 20.750903571428566,
+        "defPerRound": 10.521194047619048,
+        "mdefPerRound": 10.229709523809513,
+        "downRate": 0.337,
+        "defeatRate": 0.003,
+        "partyHp": 0.5257184466019418,
+        "meanRounds": 5.025,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 3.443,
+        "actionsPerRound": 0.7258888888888894,
+        "downShare": 0.12718174603174615,
+        "damagePerHit": 26.201216421692852,
+        "maxHp": 128
+      },
+      "withItem": {
+        "perAction": 29.985210714285707,
+        "takenPerRound": 14.862885714285708,
+        "downRate": 0.001,
+        "defeatRate": 0.001,
+        "partyHp": 0.5841038961038963,
+        "meanRounds": 4.676,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 4.047,
+        "downShare": 0.0005,
+        "damagePerHit": 27.64128256513026,
+        "maxHp": 178
+      }
+    },
+    {
+      "id": "hp-10",
+      "effect": "max-hp",
+      "magnitude": 10,
+      "slot": "armor",
+      "wearer": "Support",
+      "scope": "L48",
+      "group": "L48",
+      "level": 48,
+      "preset": "physical",
+      "paperPct": 3.5272248342315704,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 41.530761111111104,
+        "withItem": 41.1541765873016
+      },
+      "baseline": {
+        "perAction": 25.5435357142857,
+        "takenPerRound": 18.689451587301583,
+        "defPerRound": 15.34953492063493,
+        "mdefPerRound": 3.3399166666666664,
+        "downRate": 0.677,
+        "defeatRate": 0.011,
+        "partyHp": 0.4825118483412334,
+        "meanRounds": 7.139,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 2.512,
+        "actionsPerRound": 0.39430238095238085,
+        "downShare": 0.4738206349206363,
+        "damagePerHit": 23.526394890099567,
+        "maxHp": 88
+      },
+      "withItem": {
+        "perAction": 24.31590119047621,
+        "takenPerRound": 4.9679436507936545,
+        "downRate": 0.066,
+        "defeatRate": 0.01,
+        "partyHp": 0.573270833333333,
+        "meanRounds": 6.658,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 5.752,
+        "downShare": 0.019082142857142857,
+        "damagePerHit": 22.926698450536353,
+        "maxHp": 98
+      }
+    },
+    {
+      "id": "hp-25",
+      "effect": "max-hp",
+      "magnitude": 25,
+      "slot": "armor",
+      "wearer": "Support",
+      "scope": "L48",
+      "group": "L48",
+      "level": 48,
+      "preset": "physical",
+      "paperPct": 8.818062085578926,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 41.530761111111104,
+        "withItem": 40.65327579365076
+      },
+      "baseline": {
+        "perAction": 25.5435357142857,
+        "takenPerRound": 18.689451587301583,
+        "defPerRound": 15.34953492063493,
+        "mdefPerRound": 3.3399166666666664,
+        "downRate": 0.677,
+        "defeatRate": 0.011,
+        "partyHp": 0.4825118483412334,
+        "meanRounds": 7.139,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 2.512,
+        "actionsPerRound": 0.39430238095238085,
+        "downShare": 0.4738206349206363,
+        "damagePerHit": 23.526394890099567,
+        "maxHp": 88
+      },
+      "withItem": {
+        "perAction": 24.800489682539695,
+        "takenPerRound": 0.15819722222222218,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.5893288590604023,
+        "meanRounds": 6.546,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 5.921,
+        "downShare": 0,
+        "damagePerHit": 23.2,
+        "maxHp": 113
+      }
+    },
+    {
+      "id": "hp-50",
+      "effect": "max-hp",
+      "magnitude": 50,
+      "slot": "armor",
+      "wearer": "Support",
+      "scope": "L48",
+      "group": "L48",
+      "level": 48,
+      "preset": "physical",
+      "paperPct": 17.636124171157853,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 41.530761111111104,
+        "withItem": 40.65267579365076
+      },
+      "baseline": {
+        "perAction": 25.5435357142857,
+        "takenPerRound": 18.689451587301583,
+        "defPerRound": 15.34953492063493,
+        "mdefPerRound": 3.3399166666666664,
+        "downRate": 0.677,
+        "defeatRate": 0.011,
+        "partyHp": 0.4825118483412334,
+        "meanRounds": 7.139,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 2.512,
+        "actionsPerRound": 0.39430238095238085,
+        "downShare": 0.4738206349206363,
+        "damagePerHit": 23.526394890099567,
+        "maxHp": 88
+      },
+      "withItem": {
+        "perAction": 24.807289682539693,
+        "takenPerRound": 0.15759722222222222,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.6109661016949155,
+        "meanRounds": 6.546,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 5.921,
+        "downShare": 0,
+        "damagePerHit": 23.107692307692307,
+        "maxHp": 138
+      }
+    },
+    {
+      "id": "hp-10",
+      "effect": "max-hp",
+      "magnitude": 10,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L50",
+      "group": "L50",
+      "level": 50,
+      "preset": "standard",
+      "paperPct": 3.2863486253853282,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 53.86924761904761,
+        "withItem": 55.19815000000005
+      },
+      "baseline": {
+        "perAction": 107.51083333333335,
+        "takenPerRound": 30.3486642857143,
+        "defPerRound": 25.525073809523825,
+        "mdefPerRound": 4.823590476190474,
+        "downRate": 0.422,
+        "defeatRate": 0,
+        "partyHp": 0.7351831325301206,
+        "meanRounds": 3.627,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 46,
+          "fourPlus": 54
+        },
+        "actionsPerFight": 2.662,
+        "actionsPerRound": 0.7550357142857126,
+        "downShare": 0.1943142857142863,
+        "damagePerHit": 23.593939393939394,
+        "maxHp": 80
+      },
+      "withItem": {
+        "perAction": 110.60708333333336,
+        "takenPerRound": 31.37521666666668,
+        "downRate": 0.601,
+        "defeatRate": 0,
+        "partyHp": 0.6784635294117656,
+        "meanRounds": 3.341,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 67,
+          "fourPlus": 33
+        },
+        "actionsPerFight": 2.473,
+        "downShare": 0.22496666666666795,
+        "damagePerHit": 23.743899657924743,
+        "maxHp": 90
+      }
+    },
+    {
+      "id": "hp-25",
+      "effect": "max-hp",
+      "magnitude": 25,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L50",
+      "group": "L50",
+      "level": 50,
+      "preset": "standard",
+      "paperPct": 8.21587156346332,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 53.86924761904761,
+        "withItem": 50.69711666666664
+      },
+      "baseline": {
+        "perAction": 107.51083333333335,
+        "takenPerRound": 30.3486642857143,
+        "defPerRound": 25.525073809523825,
+        "mdefPerRound": 4.823590476190474,
+        "downRate": 0.422,
+        "defeatRate": 0,
+        "partyHp": 0.7351831325301206,
+        "meanRounds": 3.627,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 46,
+          "fourPlus": 54
+        },
+        "actionsPerFight": 2.662,
+        "actionsPerRound": 0.7550357142857126,
+        "downShare": 0.1943142857142863,
+        "damagePerHit": 23.593939393939394,
+        "maxHp": 80
+      },
+      "withItem": {
+        "perAction": 95.00810000000007,
+        "takenPerRound": 0.20720000000000002,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.651695454545455,
+        "meanRounds": 3.847,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 20,
+          "fourPlus": 80
+        },
+        "actionsPerFight": 3.448,
+        "downShare": 0,
+        "damagePerHit": 23.38095238095238,
+        "maxHp": 105
+      }
+    },
+    {
+      "id": "hp-50",
+      "effect": "max-hp",
+      "magnitude": 50,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L50",
+      "group": "L50",
+      "level": 50,
+      "preset": "standard",
+      "paperPct": 16.43174312692664,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 53.86924761904761,
+        "withItem": 50.67986666666664
+      },
+      "baseline": {
+        "perAction": 107.51083333333335,
+        "takenPerRound": 30.3486642857143,
+        "defPerRound": 25.525073809523825,
+        "mdefPerRound": 4.823590476190474,
+        "downRate": 0.422,
+        "defeatRate": 0,
+        "partyHp": 0.7351831325301206,
+        "meanRounds": 3.627,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 46,
+          "fourPlus": 54
+        },
+        "actionsPerFight": 2.662,
+        "actionsPerRound": 0.7550357142857126,
+        "downShare": 0.1943142857142863,
+        "damagePerHit": 23.593939393939394,
+        "maxHp": 80
+      },
+      "withItem": {
+        "perAction": 95.00810000000007,
+        "takenPerRound": 0,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.6706043010752678,
+        "meanRounds": 3.847,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 20,
+          "fourPlus": 80
+        },
+        "actionsPerFight": 3.448,
+        "downShare": 0,
+        "damagePerHit": null,
+        "maxHp": 130
+      }
+    },
+    {
+      "id": "hp-10",
+      "effect": "max-hp",
+      "magnitude": 10,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L50",
+      "group": "L50",
+      "level": 50,
+      "preset": "double-caster",
+      "paperPct": 3.2863486253853282,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 43.56587619047613,
+        "withItem": 44.62816666666662
+      },
+      "baseline": {
+        "perAction": 112.12649999999998,
+        "takenPerRound": 31.35853095238098,
+        "defPerRound": 14.7614261904762,
+        "mdefPerRound": 16.59710476190476,
+        "downRate": 0.731,
+        "defeatRate": 0.001,
+        "partyHp": 0.7328849315068487,
+        "meanRounds": 3.228,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 78,
+          "fourPlus": 22
+        },
+        "actionsPerFight": 1.558,
+        "actionsPerRound": 0.4995261904761886,
+        "downShare": 0.47380714285714515,
+        "damagePerHit": 25.832855280312906,
+        "maxHp": 80
+      },
+      "withItem": {
+        "perAction": 90.61091666666664,
+        "takenPerRound": 12.234083333333334,
+        "downRate": 0.04,
+        "defeatRate": 0,
+        "partyHp": 0.7219173333333316,
+        "meanRounds": 3.097,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 90,
+          "fourPlus": 10
+        },
+        "actionsPerFight": 2.903,
+        "downShare": 0.009916666666666667,
+        "damagePerHit": 23.890258939580765,
+        "maxHp": 90
+      }
+    },
+    {
+      "id": "hp-25",
+      "effect": "max-hp",
+      "magnitude": 25,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L50",
+      "group": "L50",
+      "level": 50,
+      "preset": "double-caster",
+      "paperPct": 8.21587156346332,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 43.56587619047613,
+        "withItem": 44.486266666666616
+      },
+      "baseline": {
+        "perAction": 112.12649999999998,
+        "takenPerRound": 31.35853095238098,
+        "defPerRound": 14.7614261904762,
+        "mdefPerRound": 16.59710476190476,
+        "downRate": 0.731,
+        "defeatRate": 0.001,
+        "partyHp": 0.7328849315068487,
+        "meanRounds": 3.228,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 78,
+          "fourPlus": 22
+        },
+        "actionsPerFight": 1.558,
+        "actionsPerRound": 0.4995261904761886,
+        "downShare": 0.47380714285714515,
+        "damagePerHit": 25.832855280312906,
+        "maxHp": 80
+      },
+      "withItem": {
+        "perAction": 90.12124999999999,
+        "takenPerRound": 0.2003,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.7299487179487179,
+        "meanRounds": 3.129,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 88,
+          "fourPlus": 12
+        },
+        "actionsPerFight": 2.951,
+        "downShare": 0,
+        "damagePerHit": 24.571428571428573,
+        "maxHp": 105
+      }
+    },
+    {
+      "id": "hp-50",
+      "effect": "max-hp",
+      "magnitude": 50,
+      "slot": "armor",
+      "wearer": "Caster",
+      "scope": "L50",
+      "group": "L50",
+      "level": 50,
+      "preset": "double-caster",
+      "paperPct": 16.43174312692664,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 43.56587619047613,
+        "withItem": 44.481566666666616
+      },
+      "baseline": {
+        "perAction": 112.12649999999998,
+        "takenPerRound": 31.35853095238098,
+        "defPerRound": 14.7614261904762,
+        "mdefPerRound": 16.59710476190476,
+        "downRate": 0.731,
+        "defeatRate": 0.001,
+        "partyHp": 0.7328849315068487,
+        "meanRounds": 3.228,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 78,
+          "fourPlus": 22
+        },
+        "actionsPerFight": 1.558,
+        "actionsPerRound": 0.4995261904761886,
+        "downShare": 0.47380714285714515,
+        "damagePerHit": 25.832855280312906,
+        "maxHp": 80
+      },
+      "withItem": {
+        "perAction": 90.12124999999999,
+        "takenPerRound": 0,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.7462674698795194,
+        "meanRounds": 3.129,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 88,
+          "fourPlus": 12
+        },
+        "actionsPerFight": 2.951,
+        "downShare": 0,
+        "damagePerHit": null,
+        "maxHp": 130
+      }
+    },
+    {
+      "id": "hp-10",
+      "effect": "max-hp",
+      "magnitude": 10,
+      "slot": "armor",
+      "wearer": "Tank",
+      "scope": "L50",
+      "group": "L50",
+      "level": 50,
+      "preset": "no-healer",
+      "paperPct": 3.2863486253853282,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 44.540081746031746,
+        "withItem": 45.59473650793651
+      },
+      "baseline": {
+        "perAction": 31.409240476190483,
+        "takenPerRound": 22.958003968253966,
+        "defPerRound": 11.878973412698416,
+        "mdefPerRound": 11.079030555555544,
+        "downRate": 0.279,
+        "defeatRate": 0,
+        "partyHp": 0.5367071428571436,
+        "meanRounds": 4.709,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 3.55,
+        "actionsPerRound": 0.7855753968253979,
+        "downShare": 0.09142142857142879,
+        "damagePerHit": 25.92957067052581,
+        "maxHp": 130
+      },
+      "withItem": {
+        "perAction": 31.390290476190494,
+        "takenPerRound": 23.936647619047605,
+        "downRate": 0.151,
+        "defeatRate": 0,
+        "partyHp": 0.5498302325581401,
+        "meanRounds": 4.58,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 3.751,
+        "downShare": 0.04644047619047624,
+        "damagePerHit": 25.898622981956315,
+        "maxHp": 140
+      }
+    },
+    {
+      "id": "hp-25",
+      "effect": "max-hp",
+      "magnitude": 25,
+      "slot": "armor",
+      "wearer": "Tank",
+      "scope": "L50",
+      "group": "L50",
+      "level": 50,
+      "preset": "no-healer",
+      "paperPct": 8.21587156346332,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 44.540081746031746,
+        "withItem": 46.05416428571429
+      },
+      "baseline": {
+        "perAction": 31.409240476190483,
+        "takenPerRound": 22.958003968253966,
+        "defPerRound": 11.878973412698416,
+        "mdefPerRound": 11.079030555555544,
+        "downRate": 0.279,
+        "defeatRate": 0,
+        "partyHp": 0.5367071428571436,
+        "meanRounds": 4.709,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 3.55,
+        "actionsPerRound": 0.7855753968253979,
+        "downShare": 0.09142142857142879,
+        "damagePerHit": 25.92957067052581,
+        "maxHp": 130
+      },
+      "withItem": {
+        "perAction": 31.397190476190485,
+        "takenPerRound": 16.243946428571427,
+        "downRate": 0.026,
+        "defeatRate": 0,
+        "partyHp": 0.5646808988764104,
+        "meanRounds": 4.489,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 3.931,
+        "downShare": 0.007963095238095238,
+        "damagePerHit": 27.251680358476474,
+        "maxHp": 155
+      }
+    },
+    {
+      "id": "hp-50",
+      "effect": "max-hp",
+      "magnitude": 50,
+      "slot": "armor",
+      "wearer": "Tank",
+      "scope": "L50",
+      "group": "L50",
+      "level": 50,
+      "preset": "no-healer",
+      "paperPct": 16.43174312692664,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 44.540081746031746,
+        "withItem": 46.160785714285716
+      },
+      "baseline": {
+        "perAction": 31.409240476190483,
+        "takenPerRound": 22.958003968253966,
+        "defPerRound": 11.878973412698416,
+        "mdefPerRound": 11.079030555555544,
+        "downRate": 0.279,
+        "defeatRate": 0,
+        "partyHp": 0.5367071428571436,
+        "meanRounds": 4.709,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 3.55,
+        "actionsPerRound": 0.7855753968253979,
+        "downShare": 0.09142142857142879,
+        "damagePerHit": 25.92957067052581,
+        "maxHp": 130
+      },
+      "withItem": {
+        "perAction": 31.40489047619048,
+        "takenPerRound": 14.409207142857149,
+        "downRate": 0,
+        "defeatRate": 0,
+        "partyHp": 0.5881914893617024,
+        "meanRounds": 4.468,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 3.966,
+        "downShare": 0,
+        "damagePerHit": 27.8503046127067,
+        "maxHp": 180
+      }
+    },
+    {
+      "id": "hp-10",
+      "effect": "max-hp",
+      "magnitude": 10,
+      "slot": "armor",
+      "wearer": "Tank",
+      "scope": "L50",
+      "group": "L50",
+      "level": 50,
+      "preset": "physical",
+      "paperPct": 3.2863486253853282,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 42.36303571428573,
+        "withItem": 42.9385785714286
+      },
+      "baseline": {
+        "perAction": 31.470140476190423,
+        "takenPerRound": 17.727815079365087,
+        "defPerRound": 10.464236904761908,
+        "mdefPerRound": 7.2635781746031824,
+        "downRate": 0.717,
+        "defeatRate": 0.014,
+        "partyHp": 0.43847674418604665,
+        "meanRounds": 7.198,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 3.515,
+        "actionsPerRound": 0.5255273809523795,
+        "downShare": 0.35148690476190425,
+        "damagePerHit": 25.613489499192244,
+        "maxHp": 130
+      },
+      "withItem": {
+        "perAction": 31.44929047619044,
+        "takenPerRound": 18.717538492063486,
+        "downRate": 0.664,
+        "defeatRate": 0.004,
+        "partyHp": 0.4688590909090914,
+        "meanRounds": 6.951,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 3.861,
+        "downShare": 0.2891341269841255,
+        "damagePerHit": 25.572071191081555,
+        "maxHp": 140
+      }
+    },
+    {
+      "id": "hp-25",
+      "effect": "max-hp",
+      "magnitude": 25,
+      "slot": "armor",
+      "wearer": "Tank",
+      "scope": "L50",
+      "group": "L50",
+      "level": 50,
+      "preset": "physical",
+      "paperPct": 8.21587156346332,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 42.36303571428573,
+        "withItem": 45.23736865079371
+      },
+      "baseline": {
+        "perAction": 31.470140476190423,
+        "takenPerRound": 17.727815079365087,
+        "defPerRound": 10.464236904761908,
+        "mdefPerRound": 7.2635781746031824,
+        "downRate": 0.717,
+        "defeatRate": 0.014,
+        "partyHp": 0.43847674418604665,
+        "meanRounds": 7.198,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 3.515,
+        "actionsPerRound": 0.5255273809523795,
+        "downShare": 0.35148690476190425,
+        "damagePerHit": 25.613489499192244,
+        "maxHp": 130
+      },
+      "withItem": {
+        "perAction": 31.444707142857137,
+        "takenPerRound": 16.432894047619044,
+        "downRate": 0.144,
+        "defeatRate": 0.001,
+        "partyHp": 0.48679780219780244,
+        "meanRounds": 6.31,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 5.193,
+        "downShare": 0.05329365079365084,
+        "damagePerHit": 26.15043804755945,
+        "maxHp": 155
+      }
+    },
+    {
+      "id": "hp-50",
+      "effect": "max-hp",
+      "magnitude": 50,
+      "slot": "armor",
+      "wearer": "Tank",
+      "scope": "L50",
+      "group": "L50",
+      "level": 50,
+      "preset": "physical",
+      "paperPct": 16.43174312692664,
+      "simPct": null,
+      "ci95": null,
+      "vsOwnPct": null,
+      "wearerPct": null,
+      "partyTakenPerRound": {
+        "baseline": 42.36303571428573,
+        "withItem": 45.952865079365125
+      },
+      "baseline": {
+        "perAction": 31.470140476190423,
+        "takenPerRound": 17.727815079365087,
+        "defPerRound": 10.464236904761908,
+        "mdefPerRound": 7.2635781746031824,
+        "downRate": 0.717,
+        "defeatRate": 0.014,
+        "partyHp": 0.43847674418604665,
+        "meanRounds": 7.198,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 3.515,
+        "actionsPerRound": 0.5255273809523795,
+        "downShare": 0.35148690476190425,
+        "damagePerHit": 25.613489499192244,
+        "maxHp": 130
+      },
+      "withItem": {
+        "perAction": 31.492292857142868,
+        "takenPerRound": 15.501146031746035,
+        "downRate": 0.008,
+        "defeatRate": 0,
+        "partyHp": 0.5145583333333345,
+        "meanRounds": 6.153,
+        "bands": {
+          "oneRound": 0,
+          "twoToThree": 0,
+          "fourPlus": 100
+        },
+        "actionsPerFight": 5.486,
+        "downShare": 0.0027611111111111105,
+        "damagePerHit": 26.441924778761063,
+        "maxHp": 180
+      }
+    }
+  ]
+}

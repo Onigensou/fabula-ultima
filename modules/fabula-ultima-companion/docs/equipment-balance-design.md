@@ -202,7 +202,7 @@ hit chance against the wearer.
 | **HP restored / prevented** | ~**60 HP ≈ 1 BA** at L30 (Remedy: 50 HP ≈ 0.8 actions); scale by `BA(L) ÷ 34` | Yes |
 | **+1 DEF / MDEF** (P4) | (monster hit-rate points removed ÷ its hit rate) × the damage aimed at that defence that the wearer — **and anyone they protect** — takes per round, ÷ HP-per-BA. Price **party-wide**. Near zero on a character the monsters hit regardless | Only while the wearer's defence sits near the monsters' roll |
 | **Resistance** (P5) | ½ × the damage the wearer takes × **that element's share** of it, ÷ HP-per-BA. Zero against a roster that never deals the element | With the roster's elements |
-| **+ Max HP** (P6, open) | **not damage** — price by KO prevention, below | — |
+| **+ Max HP** (P6) | **not damage**: ≈ 0.6 × KO points prevented on the wearer, capped near one typical monster hit (below) | With the monsters' hit size |
 | **MP cost** | 10 MP ≈ 25–35 damage ≈ **~0.9 BA** at L30 — subtract from the effect | — |
 | **IP cost** | 3 IP ≈ 50 HP ≈ **~0.8 BA** — subtract; IP is contested with potions | — |
 
@@ -276,19 +276,66 @@ Reading P4 off these tables: +1 DEF against an Iron Colossus on a DEF 13 wearer 
 about 5 points of an 85% hit rate — ~6% of the damage aimed at DEF. Against O'zealot, whose
 attack lands 99% at DEF 13, it removes nothing.
 
-### Max HP — KO prevention (P6, still open)
-Max HP does not show up as damage prevented; its value is keeping the most-hit character
-standing. +25 HP on that character cut their KO rate by **41–57 points against rulebook
-enemies** at L35–50, but only **9–16 points against the house roster**, whose hits are
-2–6× larger. Until P6 closes, judge it against **one typical hit of the monsters the item
-will meet**: max HP smaller than one hit buys little.
+### Max HP — KO prevention (P6, closed 2026-09-13)
+Max HP barely shows up as damage prevented. Its value is the share of the fight the wearer
+spends **standing instead of knocked out**.
 
-> **On the split-damage discount.** Spreading damage "kills nothing sooner", so an
-> earlier draft valued extra-target damage at 50 %. The Explosion Whip A/B found
-> the extra hits landing at **full value and shortening fights** (3 targets: 7 → 5
-> rounds). The practice dummies never attack, though, so the *survival* half of the
-> argument — enemies living longer under spread damage — was not tested. Price at
-> full value; revisit if a sim against attacking enemies shows otherwise.
+Measured with +10 / +25 / +50 HP on the most-hit character: 1000 runs per arm, house roster
+and rulebook base (`expectations/reference-set-hp-{house,rulebook}.json`).
+
+```
+value %  ≈  0.6 × KO points prevented                                   (R² 0.75; 0.93 vs the book)
+         ≈  80 × min(HP ÷ typical hit, 1) × share of the fight the wearer spends knocked out
+```
+
+- **One KO prevented keeps about 60 % of a fight's output.** A character who drops usually
+  drops mid-fight.
+- **It caps at about one typical hit.** Past that, the wearer is rarely exactly one hit from
+  dropping. Against the book, +25 and +50 HP measured the same.
+- **It is worth nothing on someone who does not drop.** Wearers knocked out in under 20 % of
+  fights kept ~2 % per hit absorbed.
+
+Output kept on the most-hit character:
+
+| + Max HP | House roster (typical hit 38–48) | Rulebook base (typical hit 19–26) |
+|---|---|---|
+| +10 | 3–7 % | 13–28 % |
+| +25 | 8–17 % | 24–35 % |
+| +50 | 12–20 % | 28–36 % |
+
+**Typical hit** on the most-hit wearer on basic gear: the Wyrmwood 47, the Ancient Temple 48,
+the Valley 38, Fafnir Castle 44.
+
+Price max HP by **the character it keeps alive**:
+- On a fragile, most-hit wearer against our monsters, +25 HP is half a hit and keeps 8–17 %
+  of that wearer's output. That is Uncommon-to-Rare sized.
+- On a Tank who never drops it is worth almost nothing.
+
+`check-item` prints the measured figure as **Kept standing**.
+
+> **On the split-damage discount — measured against enemies that fight back (2026-09-13).**
+> An earlier draft valued extra-target damage at 50 %, because spreading damage "kills
+> nothing sooner". The Explosion Whip A/B used practice dummies, so `bin/spread-test.js`
+> measured it properly.
+> - **Setup:** the Striker with Multi 2 or 3 on every basic attack, against the same Striker
+>   with enough flat single-target damage to deal the same total. Our spawn groups and the
+>   rulebook base, won fights only, 1000 runs per arm (`expectations/spread-test.json`).
+> - **Spread damage ends fights at least as fast as its total.** The median on rows that
+>   needed no extrapolation is about 1.5×: Multi 2 1.57, Multi 3 1.47. By dungeon it runs
+>   1.4–1.7× in ours and 1.1–1.9× against the book. A single-target bonus overkills a
+>   target that was already dying; extra targets put the same damage on fresh HP.
+> - **The exception is a group built around one high-HP enemy.** Inferex with Fire Slimes,
+>   or Iron Colossus with Succubi, measured 0.6–0.9×: the extra hits land on the escorts
+>   while the centrepiece keeps acting.
+> - **Its survival value is much lower, and noisy.** Spread damage cut the party's damage
+>   taken far less than the same damage focused: median ratio 0.56 for Multi 2, about zero
+>   for Multi 3. Removing one attacker early matters.
+> - **Price Multi at full value** as offense (× 0.6–0.9 for items meant for a centrepiece
+>   fight), and count **at most half** of any defensive value claimed for it. This is also why AoE *actions* should deal less per
+>   target than single-target ones: the book's Burst is 15 against a Strike's 25. At equal
+>   per-target damage they would be worth more than their total.
+> - 30 of 52 house group × preset pairs were too lethal on basic gear to time and are
+>   excluded.
 
 ### Flat values decay — the table that explains the whole guide
 
@@ -714,7 +761,7 @@ preset:
 | P3 | Part 4 | A damage rider on a multi-target action is worth × the targets it actually hits. |
 | P4 | Part 4, "+1 DEF / MDEF" | Price from the **enemy's** hit chance against the wearer's defence, party-wide; roughly ⅔ of the current row at L20, falling to ⅕–¼ by L41–50 against rulebook accuracy. |
 | P5 | Part 4 | Keep Resistance at ½ × exposure; scale by the element's share of incoming damage. |
-| P6 | Part 4 | Price max HP by KO prevention (actions kept), not as damage — still open. |
+| P6 | Part 4 | Price max HP by KO prevention, not as damage. **Closed 2026-09-13:** value ≈ 0.6 × KO points prevented ≈ 80 × min(HP ÷ typical hit, 1) × share of the fight spent knocked out. |
 | P7 | Part 5 | Keep the rarity budgets as working values: a whole party in full Legendary offense stays out of the 1-round band here. |
 
 ### The house roster — the live environment
@@ -881,7 +928,8 @@ node bin/check-item.js --item my-item.json [--wearer caster] [--rarity rare]
 - **Party composition** — a support item is worth more in a party with no support.
 - **Utility outside combat** (tracking, crafting, social checks) — unpriced;
   keep it flavourful and cheap.
-- **Survival effects of spread damage** — the whip A/B used non-attacking dummies.
+- **Spread damage in lethal fights.** The spread test timed only groups a basic-gear party
+  wins at least half the time (Part 4).
 - **Absolute precision** — `BA` is a two-anchor line. It is meant to stop
   wandering, not to settle arguments to the decimal.
 
@@ -899,8 +947,9 @@ Encounter    price against the monsters the item meets — house default DEF 12 
 Rider        on a multi-target action × targets actually hit
 +1 DEF/MDEF  monster hit points removed ÷ its hit rate × damage aimed at that defence
 Resistance   ½ × damage taken × element share; offensive elements price the same way
-Max HP       KO prevention, not damage; weigh against one typical monster hit (P6 open)
+Max HP       ≈ 0.6 × KO pts prevented ≈ 80 × min(HP ÷ typical hit, 1) × fight share spent KO'd; ~0 on who never drops
 Multi N      extra targets × attack damage, full value; measured mix 3/17/73/7 → +0.97 (M2) / +1.77 (M3)
+             ends fights ≥ as fast as its total (~1.5×); × 0.6–0.9 vs one high-HP centrepiece; defensive side ≤ ½
 Basic swing  ≈ ¼ BA at L41 — riders on it decay ~3× across the band
 Species      measured share of enemies: Elemental 33 · Beast 25 · Humanoid 16 · Plant 8 · Construct/Undead 5 · Demon/Monster 4 %
 1 BA         extra action · denied enemy action · ~60 HP at L30

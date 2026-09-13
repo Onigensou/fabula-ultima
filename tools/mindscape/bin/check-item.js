@@ -87,7 +87,7 @@ async function main() {
     const gs = sum.byGroup.filter((g) => g.kind === kind);
     if (!gs.length) continue;
     console.log(`### ${label}\n`);
-    console.log(`| Encounters | L | Value % [presets] | Offense | Defense | Party offense | Actions kept | Wearer KO pts | Party loss pts | Rounds | Won in 1 |`);
+    console.log(`| Encounters | L | Value % [presets] | Offense | Defense | Party offense | Kept standing | Wearer KO pts | Party loss pts | Rounds | Won in 1 |`);
     console.log(`|---|---|---|---|---|---|---|---|---|---|---|`);
     for (const g of gs) {
       console.log(`| ${g.group} | ${g.levels.join("/")} | **${f1(g.value)}** [${f1(g.min)}–${f1(g.max)}] | ${f1(g.offense)} | ${f1(g.defense)} `

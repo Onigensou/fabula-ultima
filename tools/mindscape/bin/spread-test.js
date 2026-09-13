@@ -4,7 +4,7 @@
 // Mindscape — does SPREAD damage end fights as fast as the same damage on one target?  READ-ONLY.
 //
 //   node bin/spread-test.js [--encounter-set specs/encounters/house-set.json] [--base-levels 35,50]
-//        [--multi 2,3] [--flat 5,10,20,30] [--presets standard,...] [--runs 500] [--seed spread-test]
+//        [--multi 2,3] [--flat 10,20,40,60] [--presets standard,...] [--runs 1000] [--seed spread-test]
 //        [--out <file.json>]
 //
 // The guide prices extra targets (Multi N) at FULL value: extra targets x the rider's damage.
@@ -47,6 +47,9 @@ function arg(name, fallback) {
 const list = (v) => String(v).split(",").map((x) => x.trim()).filter(Boolean);
 const f2 = (x) => (x == null || !Number.isFinite(x) ? "—" : x.toFixed(2));
 const mean = (xs) => { const v = xs.filter(Number.isFinite); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+// Efficiencies are ratios whose denominator line can be nearly flat (a flat bonus that only
+// overkills a dying soldier), so single rows run to 10-30x. Medians, not means.
+const median = (xs) => { const v = xs.filter(Number.isFinite).sort((a, b) => a - b); return v.length ? v[Math.floor(v.length / 2)] : null; };
 
 // Pure: least squares y = a + b x. Exported for tests.
 function fitLine(xs, ys) {
@@ -162,15 +165,16 @@ async function main() {
   console.log(`1.00 = spread damage is worth its full total; below 1 = a split-damage discount. "taken" = the same from party damage taken.\n`);
   const table = (label, keyFn) => {
     console.log(`### ${label}\n`);
-    console.log(`| Group | Multi | Striker damage gain | Flat-equivalent by damage | Rounds efficiency | Taken efficiency | Rows |`);
-    console.log(`|---|---|---|---|---|---|---|`);
+    console.log(`| Group | Multi | Striker damage gain | Flat-equivalent by damage | Rounds efficiency (median) | … not extrapolated | Taken efficiency (median) | Rows |`);
+    console.log(`|---|---|---|---|---|---|---|---|`);
     const keys = [...new Set(rows.map((r) => `${keyFn(r)}\u0000${r.multi}`))];
     for (const k of keys) {
       const [g, n] = k.split("\u0000");
       const rs = rows.filter((r) => keyFn(r) === g && String(r.multi) === n);
-      const ext = rs.filter((r) => r.extrapolated).length;
+      const clean = rs.filter((r) => !r.extrapolated);
       console.log(`| ${g} | ${n} | +${f2(mean(rs.map((r) => r.dealtGainPct)))}% | +${f2(mean(rs.map((r) => r.xDamage)))} `
-        + `| **${f2(mean(rs.map((r) => r.roundsEfficiency)))}** | ${f2(mean(rs.map((r) => r.takenEfficiency)))} | ${rs.length}${ext ? ` (${ext} extrapolated)` : ""} |`);
+        + `| **${f2(median(rs.map((r) => r.roundsEfficiency)))}** | ${f2(median(clean.map((r) => r.roundsEfficiency)))} (${clean.length}) `
+        + `| ${f2(median(rs.map((r) => r.takenEfficiency)))} | ${rs.length} |`);
     }
     console.log("");
   };
@@ -178,7 +182,9 @@ async function main() {
   table("By enemies in the fight", (r) => `${r.enemies} enemies${r.kind === "base" ? " (rulebook)" : ""}`);
   const all = (n) => rows.filter((r) => r.multi === n);
   for (const n of multis) {
-    console.log(`Multi ${n}, all rows: rounds efficiency ${f2(mean(all(n).map((r) => r.roundsEfficiency)))}, taken efficiency ${f2(mean(all(n).map((r) => r.takenEfficiency)))}`);
+    const clean = all(n).filter((r) => !r.extrapolated);
+    console.log(`Multi ${n}, all rows (medians): rounds efficiency ${f2(median(all(n).map((r) => r.roundsEfficiency)))}`
+      + ` (not extrapolated ${f2(median(clean.map((r) => r.roundsEfficiency)))}, ${clean.length} rows), taken efficiency ${f2(median(all(n).map((r) => r.takenEfficiency)))}`);
   }
   console.log(`\n${rows.length} rows · ${skipped.length} group × preset skipped as too lethal to time (loss ≥ ${100 * MAX_LOSS}%)`
     + `${skipped.length ? `:\n  · ${skipped.join("\n  · ")}` : ""}`);

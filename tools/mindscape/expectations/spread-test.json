@@ -1,0 +1,3964 @@
+{
+  "id": "spread-test",
+  "capturedAt": "2026-09-13",
+  "runs": 1000,
+  "seed": "spread-test",
+  "power": "table",
+  "k": 3.54,
+  "presets": [
+    "standard",
+    "double-caster",
+    "no-healer",
+    "physical"
+  ],
+  "multis": [
+    2,
+    3
+  ],
+  "flats": [
+    10,
+    20,
+    40,
+    60
+  ],
+  "encounterSet": "specs/encounters/house-set.json",
+  "baseLevels": [
+    35,
+    50
+  ],
+  "maxLoss": 0.5,
+  "skipped": [
+    "wyrm-1 standard (basic gear loses 100%)",
+    "wyrm-1 double-caster (basic gear loses 97%)",
+    "wyrm-1 no-healer (basic gear loses 100%)",
+    "wyrm-1 physical (basic gear loses 100%)",
+    "wyrm-2 no-healer (basic gear loses 100%)",
+    "wyrm-4 standard (basic gear loses 66%)",
+    "wyrm-4 no-healer (basic gear loses 79%)",
+    "wyrm-4 physical (basic gear loses 77%)",
+    "temple-1 physical (basic gear loses 100%)",
+    "temple-2 standard (basic gear loses 60%)",
+    "temple-2 no-healer (basic gear loses 100%)",
+    "temple-2 physical (basic gear loses 85%)",
+    "valley-1 standard (basic gear loses 100%)",
+    "valley-1 double-caster (basic gear loses 100%)",
+    "valley-1 no-healer (basic gear loses 100%)",
+    "valley-1 physical (basic gear loses 100%)",
+    "valley-2 standard (basic gear loses 100%)",
+    "valley-2 double-caster (basic gear loses 100%)",
+    "valley-2 no-healer (basic gear loses 100%)",
+    "valley-2 physical (basic gear loses 100%)",
+    "valley-4 standard (basic gear loses 70%)",
+    "valley-4 no-healer (basic gear loses 96%)",
+    "valley-4 physical (basic gear loses 96%)",
+    "fafnir-2 standard (basic gear loses 75%)",
+    "fafnir-2 double-caster (basic gear loses 58%)",
+    "fafnir-2 no-healer (basic gear loses 83%)",
+    "fafnir-2 physical (basic gear loses 88%)",
+    "fafnir-3 double-caster (basic gear loses 79%)",
+    "fafnir-3 no-healer (basic gear loses 99%)",
+    "fafnir-3 physical (basic gear loses 71%)"
+  ],
+  "rows": [
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "kind": "house",
+      "level": 40,
+      "enemies": 3,
+      "preset": "standard",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 17.638769047619036,
+          "rounds": 5.184890656063618,
+          "taken": 93.40280357142842,
+          "loss": 0.485,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 23.71541547619047,
+          "rounds": 4.909722222222222,
+          "taken": 94.16696746031737,
+          "loss": 0.416,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 29.967784126984082,
+          "rounds": 4.712948517940718,
+          "taken": 94.64544563492056,
+          "loss": 0.353,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 44.06304444444443,
+          "rounds": 4.325065274151436,
+          "taken": 96.10057579365075,
+          "loss": 0.232,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 59.32786190476188,
+          "rounds": 3.915576694411415,
+          "taken": 96.2375345238095,
+          "loss": 0.158,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 24.125878571428547,
+        "rounds": 4.967687074829932,
+        "taken": 93.63855277777789,
+        "loss": 0.399,
+        "wonInOne": 0
+      },
+      "xDamage": 10.47269917588403,
+      "xRounds": 8.679948052849939,
+      "xTaken": 0.21705464388804008,
+      "roundsEfficiency": 0.828816707810882,
+      "takenEfficiency": 0.02072575944775172,
+      "extrapolated": false,
+      "dealtGainPct": 36.77756370808184
+    },
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "kind": "house",
+      "level": 40,
+      "enemies": 3,
+      "preset": "standard",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 17.638769047619036,
+          "rounds": 5.184890656063618,
+          "taken": 93.40280357142842,
+          "loss": 0.485,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 23.71541547619047,
+          "rounds": 4.909722222222222,
+          "taken": 94.16696746031737,
+          "loss": 0.416,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 29.967784126984082,
+          "rounds": 4.712948517940718,
+          "taken": 94.64544563492056,
+          "loss": 0.353,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 44.06304444444443,
+          "rounds": 4.325065274151436,
+          "taken": 96.10057579365075,
+          "loss": 0.232,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 59.32786190476188,
+          "rounds": 3.915576694411415,
+          "taken": 96.2375345238095,
+          "loss": 0.158,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 27.89878134920637,
+        "rounds": 4.945161290322581,
+        "taken": 93.46503134920627,
+        "loss": 0.366,
+        "wonInOne": 0
+      },
+      "xDamage": 15.888677778736998,
+      "xRounds": 9.769605024063006,
+      "xTaken": -3.2998458600363243,
+      "roundsEfficiency": 0.6148784159457981,
+      "takenEfficiency": -0.2076853660190868,
+      "extrapolated": false,
+      "dealtGainPct": 58.16739407318381
+    },
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "kind": "house",
+      "level": 40,
+      "enemies": 3,
+      "preset": "double-caster",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 23.990959523809526,
+          "rounds": 2.3114406779661016,
+          "taken": 67.83354761904762,
+          "loss": 0.056,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 31.559692857142853,
+          "rounds": 2.2851153039832286,
+          "taken": 66.84530476190477,
+          "loss": 0.046,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 39.31105,
+          "rounds": 2.2274143302180685,
+          "taken": 65.43836666666668,
+          "loss": 0.037,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 55.001916666666666,
+          "rounds": 2.1487179487179486,
+          "taken": 63.19573333333334,
+          "loss": 0.025,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 70.36738333333332,
+          "rounds": 2.1448979591836737,
+          "taken": 62.89036666666668,
+          "loss": 0.02,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 42.64666666666667,
+        "rounds": 2.0456905503634477,
+        "taken": 73.83645714285713,
+        "loss": 0.037,
+        "wonInOne": 16
+      },
+      "xDamage": 24.194081154983976,
+      "xRounds": 84.80909203311434,
+      "xTaken": -72.32744982973158,
+      "roundsEfficiency": 3.5053652787985166,
+      "takenEfficiency": -2.9894687616533906,
+      "extrapolated": true,
+      "dealtGainPct": 77.7614047672521
+    },
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "kind": "house",
+      "level": 40,
+      "enemies": 3,
+      "preset": "double-caster",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 23.990959523809526,
+          "rounds": 2.3114406779661016,
+          "taken": 67.83354761904762,
+          "loss": 0.056,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 31.559692857142853,
+          "rounds": 2.2851153039832286,
+          "taken": 66.84530476190477,
+          "loss": 0.046,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 39.31105,
+          "rounds": 2.2274143302180685,
+          "taken": 65.43836666666668,
+          "loss": 0.037,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 55.001916666666666,
+          "rounds": 2.1487179487179486,
+          "taken": 63.19573333333334,
+          "loss": 0.025,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 70.36738333333332,
+          "rounds": 2.1448979591836737,
+          "taken": 62.89036666666668,
+          "loss": 0.02,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 53.22243333333332,
+        "rounds": 2.0218295218295217,
+        "taken": 77.96039999999998,
+        "loss": 0.038,
+        "wonInOne": 20
+      },
+      "xDamage": 37.840751348913855,
+      "xRounds": 92.7001762919011,
+      "xTaken": -119.5013136793815,
+      "roundsEfficiency": 2.449744600395253,
+      "takenEfficiency": -3.1580058381375546,
+      "extrapolated": true,
+      "dealtGainPct": 121.84370441921419
+    },
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "kind": "house",
+      "level": 40,
+      "enemies": 3,
+      "preset": "physical",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 18.88427658730157,
+          "rounds": 4.745762711864407,
+          "taken": 97.56742103174601,
+          "loss": 0.115,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 25.236180952380938,
+          "rounds": 4.514069264069264,
+          "taken": 97.59549126984129,
+          "loss": 0.076,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 32.090281746031756,
+          "rounds": 4.240976645435244,
+          "taken": 98.29028849206345,
+          "loss": 0.058,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 46.248367857142895,
+          "rounds": 3.824016563146998,
+          "taken": 98.39939444444444,
+          "loss": 0.034,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 60.81371825396829,
+          "rounds": 3.59979633401222,
+          "taken": 96.91873015873013,
+          "loss": 0.018,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 25.666207142857147,
+        "rounds": 4.411700975081256,
+        "taken": 99.32690476190473,
+        "loss": 0.076,
+        "wonInOne": 0
+      },
+      "xDamage": 10.339296902707375,
+      "xRounds": 14.34246638720493,
+      "xTaken": -214.12625544014,
+      "roundsEfficiency": 1.3871800492980633,
+      "takenEfficiency": -20.709943573055767,
+      "extrapolated": false,
+      "dealtGainPct": 35.91310752203225
+    },
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "kind": "house",
+      "level": 40,
+      "enemies": 3,
+      "preset": "physical",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 18.88427658730157,
+          "rounds": 4.745762711864407,
+          "taken": 97.56742103174601,
+          "loss": 0.115,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 25.236180952380938,
+          "rounds": 4.514069264069264,
+          "taken": 97.59549126984129,
+          "loss": 0.076,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 32.090281746031756,
+          "rounds": 4.240976645435244,
+          "taken": 98.29028849206345,
+          "loss": 0.058,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 46.248367857142895,
+          "rounds": 3.824016563146998,
+          "taken": 98.39939444444444,
+          "loss": 0.034,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 60.81371825396829,
+          "rounds": 3.59979633401222,
+          "taken": 96.91873015873013,
+          "loss": 0.018,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 29.444281746031745,
+        "rounds": 4.190274841437632,
+        "taken": 100.25459126984126,
+        "loss": 0.054,
+        "wonInOne": 0
+      },
+      "xDamage": 15.723841616450306,
+      "xRounds": 25.724953748200736,
+      "xTaken": -355.77465071234894,
+      "roundsEfficiency": 1.6360476260004586,
+      "takenEfficiency": -22.62644583879152,
+      "extrapolated": false,
+      "dealtGainPct": 55.91956414063051
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "kind": "house",
+      "level": 35,
+      "enemies": 3,
+      "preset": "standard",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 14.50355158730158,
+          "rounds": 3.3276209677419355,
+          "taken": 62.027715873015836,
+          "loss": 0.006,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 19.695763492063477,
+          "rounds": 3.2532663316582915,
+          "taken": 61.69703888888881,
+          "loss": 0.003,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 24.54019285714286,
+          "rounds": 3.2331658291457286,
+          "taken": 61.687405555555486,
+          "loss": 0.003,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 34.389984920634916,
+          "rounds": 3.217871485943775,
+          "taken": 61.636122222222156,
+          "loss": 0.002,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 44.12031031746027,
+          "rounds": 3.217871485943775,
+          "taken": 61.636122222222156,
+          "loss": 0.002,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 30.893849999999993,
+        "rounds": 2.524,
+        "taken": 67.73824999999997,
+        "loss": 0,
+        "wonInOne": 0
+      },
+      "xDamage": 32.995824257951135,
+      "xRounds": 505.62174591291085,
+      "xTaken": -1188.5339470894353,
+      "roundsEfficiency": 15.323810127006274,
+      "takenEfficiency": -36.02073819395585,
+      "extrapolated": true,
+      "dealtGainPct": 113.00886071966507
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "kind": "house",
+      "level": 35,
+      "enemies": 3,
+      "preset": "standard",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 14.50355158730158,
+          "rounds": 3.3276209677419355,
+          "taken": 62.027715873015836,
+          "loss": 0.006,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 19.695763492063477,
+          "rounds": 3.2532663316582915,
+          "taken": 61.69703888888881,
+          "loss": 0.003,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 24.54019285714286,
+          "rounds": 3.2331658291457286,
+          "taken": 61.687405555555486,
+          "loss": 0.003,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 34.389984920634916,
+          "rounds": 3.217871485943775,
+          "taken": 61.636122222222156,
+          "loss": 0.002,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 44.12031031746027,
+          "rounds": 3.217871485943775,
+          "taken": 61.636122222222156,
+          "loss": 0.002,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 47.344442857142866,
+        "rounds": 2.156156156156156,
+        "taken": 83.68598333333333,
+        "loss": 0.001,
+        "wonInOne": 12
+      },
+      "xDamage": 66.4131162693121,
+      "xRounds": 748.6462874107514,
+      "xTaken": -4415.974779135486,
+      "roundsEfficiency": 11.27256676790941,
+      "takenEfficiency": -66.49250972094501,
+      "extrapolated": true,
+      "dealtGainPct": 226.43344336841437
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "kind": "house",
+      "level": 35,
+      "enemies": 3,
+      "preset": "double-caster",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 20.00250000000002,
+          "rounds": 2.204,
+          "taken": 75.99548333333331,
+          "loss": 0,
+          "wonInOne": 11
+        },
+        {
+          "x": 10,
+          "dealt": 26.54950000000001,
+          "rounds": 2.18,
+          "taken": 76.34514999999999,
+          "loss": 0,
+          "wonInOne": 11
+        },
+        {
+          "x": 20,
+          "dealt": 33.06291666666664,
+          "rounds": 2.176,
+          "taken": 76.38123333333333,
+          "loss": 0,
+          "wonInOne": 11
+        },
+        {
+          "x": 40,
+          "dealt": 46.104583333333316,
+          "rounds": 2.176,
+          "taken": 76.38223333333332,
+          "loss": 0,
+          "wonInOne": 11
+        },
+        {
+          "x": 60,
+          "dealt": 59.13591666666666,
+          "rounds": 2.176,
+          "taken": 76.38223333333332,
+          "loss": 0,
+          "wonInOne": 11
+        }
+      ],
+      "arm": {
+        "dealt": 35.830416666666665,
+        "rounds": 1.997,
+        "taken": 62.93958333333332,
+        "loss": 0,
+        "wonInOne": 10
+      },
+      "xDamage": 24.25075505901936,
+      "xRounds": 569.0909090909099,
+      "xTaken": -2882.5227674451294,
+      "roundsEfficiency": 23.466935677091552,
+      "takenEfficiency": -118.86321726601494,
+      "extrapolated": true,
+      "dealtGainPct": 79.12969212181792
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "kind": "house",
+      "level": 35,
+      "enemies": 3,
+      "preset": "double-caster",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 20.00250000000002,
+          "rounds": 2.204,
+          "taken": 75.99548333333331,
+          "loss": 0,
+          "wonInOne": 11
+        },
+        {
+          "x": 10,
+          "dealt": 26.54950000000001,
+          "rounds": 2.18,
+          "taken": 76.34514999999999,
+          "loss": 0,
+          "wonInOne": 11
+        },
+        {
+          "x": 20,
+          "dealt": 33.06291666666664,
+          "rounds": 2.176,
+          "taken": 76.38123333333333,
+          "loss": 0,
+          "wonInOne": 11
+        },
+        {
+          "x": 40,
+          "dealt": 46.104583333333316,
+          "rounds": 2.176,
+          "taken": 76.38223333333332,
+          "loss": 0,
+          "wonInOne": 11
+        },
+        {
+          "x": 60,
+          "dealt": 59.13591666666666,
+          "rounds": 2.176,
+          "taken": 76.38223333333332,
+          "loss": 0,
+          "wonInOne": 11
+        }
+      ],
+      "arm": {
+        "dealt": 54.92016666666667,
+        "rounds": 1.646,
+        "taken": 43.98983333333334,
+        "loss": 0,
+        "wonInOne": 39
+      },
+      "xDamage": 53.52543239281689,
+      "xRounds": 1597.2727272727277,
+      "xTaken": -7008.670837960844,
+      "roundsEfficiency": 29.84137924473977,
+      "takenEfficiency": -130.94094759524833,
+      "extrapolated": true,
+      "dealtGainPct": 174.56651251926814
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "kind": "house",
+      "level": 35,
+      "enemies": 3,
+      "preset": "no-healer",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 15.660344444444444,
+          "rounds": 3.06312625250501,
+          "taken": 59.45136825396826,
+          "loss": 0.002,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 20.90745555555557,
+          "rounds": 3.00802407221665,
+          "taken": 59.87582063492066,
+          "loss": 0.003,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 26.022733333333345,
+          "rounds": 2.9779559118236474,
+          "taken": 60.45161825396828,
+          "loss": 0.002,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 36.222122222222225,
+          "rounds": 2.958917835671343,
+          "taken": 60.64970158730161,
+          "loss": 0.002,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 46.45601111111113,
+          "rounds": 2.958917835671343,
+          "taken": 60.64970158730161,
+          "loss": 0.002,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 32.83448333333333,
+        "rounds": 2.411,
+        "taken": 58.527450000000016,
+        "loss": 0,
+        "wonInOne": 0
+      },
+      "xDamage": 33.378379780364774,
+      "xRounds": 400.34500356136397,
+      "xTaken": -61.56640627010028,
+      "roundsEfficiency": 11.994141303313699,
+      "takenEfficiency": -1.8444995435733356,
+      "extrapolated": true,
+      "dealtGainPct": 109.6664185760069
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "kind": "house",
+      "level": 35,
+      "enemies": 3,
+      "preset": "no-healer",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 15.660344444444444,
+          "rounds": 3.06312625250501,
+          "taken": 59.45136825396826,
+          "loss": 0.002,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 20.90745555555557,
+          "rounds": 3.00802407221665,
+          "taken": 59.87582063492066,
+          "loss": 0.003,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 26.022733333333345,
+          "rounds": 2.9779559118236474,
+          "taken": 60.45161825396828,
+          "loss": 0.002,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 36.222122222222225,
+          "rounds": 2.958917835671343,
+          "taken": 60.64970158730161,
+          "loss": 0.002,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 46.45601111111113,
+          "rounds": 2.958917835671343,
+          "taken": 60.64970158730161,
+          "loss": 0.002,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 48.48213333333336,
+        "rounds": 2.092,
+        "taken": 56.551516666666686,
+        "loss": 0,
+        "wonInOne": 12
+      },
+      "xDamage": 63.915787535499476,
+      "xRounds": 605.3903992346014,
+      "xTaken": -164.05793242465006,
+      "roundsEfficiency": 9.471688022280278,
+      "takenEfficiency": -2.5667826174171853,
+      "extrapolated": true,
+      "dealtGainPct": 209.58535749532987
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "kind": "house",
+      "level": 35,
+      "enemies": 3,
+      "preset": "physical",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 17.96948095238095,
+          "rounds": 3.181181181181181,
+          "taken": 63.56748174603169,
+          "loss": 0.001,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 23.928527777777777,
+          "rounds": 3.09009009009009,
+          "taken": 64.66189841269838,
+          "loss": 0.001,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 30.14157500000001,
+          "rounds": 2.991991991991992,
+          "taken": 65.4591428571428,
+          "loss": 0.001,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 42.332421428571394,
+          "rounds": 2.955955955955956,
+          "taken": 65.43131190476186,
+          "loss": 0.001,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 54.326802380952365,
+          "rounds": 2.955955955955956,
+          "taken": 65.43131190476186,
+          "loss": 0.001,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 31.44406666666666,
+        "rounds": 2.512,
+        "taken": 73.6217166666667,
+        "loss": 0,
+        "wonInOne": 0
+      },
+      "xDamage": 22.219610664255956,
+      "xRounds": 173.65259926918387,
+      "xTaken": 359.4913960899737,
+      "roundsEfficiency": 7.8152854203036854,
+      "takenEfficiency": 16.179014183550798,
+      "extrapolated": true,
+      "dealtGainPct": 74.98594839769335
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "kind": "house",
+      "level": 35,
+      "enemies": 3,
+      "preset": "physical",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 17.96948095238095,
+          "rounds": 3.181181181181181,
+          "taken": 63.56748174603169,
+          "loss": 0.001,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 23.928527777777777,
+          "rounds": 3.09009009009009,
+          "taken": 64.66189841269838,
+          "loss": 0.001,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 30.14157500000001,
+          "rounds": 2.991991991991992,
+          "taken": 65.4591428571428,
+          "loss": 0.001,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 42.332421428571394,
+          "rounds": 2.955955955955956,
+          "taken": 65.43131190476186,
+          "loss": 0.001,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 54.326802380952365,
+          "rounds": 2.955955955955956,
+          "taken": 65.43131190476186,
+          "loss": 0.001,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 44.86260833333335,
+        "rounds": 2.306,
+        "taken": 81.62105833333332,
+        "loss": 0,
+        "wonInOne": 2
+      },
+      "xDamage": 44.316324437348115,
+      "xRounds": 231.80632399512785,
+      "xTaken": 665.7205769247145,
+      "roundsEfficiency": 5.230720889834679,
+      "takenEfficiency": 15.022016951470606,
+      "extrapolated": true,
+      "dealtGainPct": 149.6600121740805
+    },
+    {
+      "scope": "wyrm-4",
+      "group": "The Wyrmwood",
+      "kind": "house",
+      "level": 35,
+      "enemies": 3,
+      "preset": "double-caster",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 25.02936666666668,
+          "rounds": 2.8946784922394677,
+          "taken": 78.73100952380955,
+          "loss": 0.098,
+          "wonInOne": 3
+        },
+        {
+          "x": 10,
+          "dealt": 33.46320000000003,
+          "rounds": 2.7973713033954,
+          "taken": 78.65734523809525,
+          "loss": 0.087,
+          "wonInOne": 3
+        },
+        {
+          "x": 20,
+          "dealt": 42.307064285714226,
+          "rounds": 2.564516129032258,
+          "taken": 80.26761190476192,
+          "loss": 0.07,
+          "wonInOne": 8
+        },
+        {
+          "x": 40,
+          "dealt": 60.68005000000002,
+          "rounds": 2.2076612903225805,
+          "taken": 78.7884666666667,
+          "loss": 0.008,
+          "wonInOne": 14
+        },
+        {
+          "x": 60,
+          "dealt": 77.96738333333329,
+          "rounds": 2.2076612903225805,
+          "taken": 78.77246666666669,
+          "loss": 0.008,
+          "wonInOne": 14
+        }
+      ],
+      "arm": {
+        "dealt": 43.869539285714296,
+        "rounds": 2.4372146118721463,
+        "taken": 80.4988773809524,
+        "loss": 0.124,
+        "wonInOne": 11
+      },
+      "xDamage": 21.473630817586184,
+      "xRounds": 33.65715048804251,
+      "xTaken": -553.4970118797723,
+      "roundsEfficiency": 1.567371199307312,
+      "takenEfficiency": -25.7756602309879,
+      "extrapolated": false,
+      "dealtGainPct": 75.27227064893482
+    },
+    {
+      "scope": "wyrm-4",
+      "group": "The Wyrmwood",
+      "kind": "house",
+      "level": 35,
+      "enemies": 3,
+      "preset": "double-caster",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 25.02936666666668,
+          "rounds": 2.8946784922394677,
+          "taken": 78.73100952380955,
+          "loss": 0.098,
+          "wonInOne": 3
+        },
+        {
+          "x": 10,
+          "dealt": 33.46320000000003,
+          "rounds": 2.7973713033954,
+          "taken": 78.65734523809525,
+          "loss": 0.087,
+          "wonInOne": 3
+        },
+        {
+          "x": 20,
+          "dealt": 42.307064285714226,
+          "rounds": 2.564516129032258,
+          "taken": 80.26761190476192,
+          "loss": 0.07,
+          "wonInOne": 8
+        },
+        {
+          "x": 40,
+          "dealt": 60.68005000000002,
+          "rounds": 2.2076612903225805,
+          "taken": 78.7884666666667,
+          "loss": 0.008,
+          "wonInOne": 14
+        },
+        {
+          "x": 60,
+          "dealt": 77.96738333333329,
+          "rounds": 2.2076612903225805,
+          "taken": 78.77246666666669,
+          "loss": 0.008,
+          "wonInOne": 14
+        }
+      ],
+      "arm": {
+        "dealt": 58.56728928571428,
+        "rounds": 2.156418554476807,
+        "taken": 81.12098095238095,
+        "loss": 0.073,
+        "wonInOne": 13
+      },
+      "xDamage": 38.023266389129915,
+      "xRounds": 55.785900055831505,
+      "xTaken": -801.1835865451908,
+      "roundsEfficiency": 1.467151703510132,
+      "takenEfficiency": -21.07087745555266,
+      "extrapolated": false,
+      "dealtGainPct": 133.99429184803287
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "kind": "house",
+      "level": 38,
+      "enemies": 3,
+      "preset": "standard",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 15.823249999999993,
+          "rounds": 2.268,
+          "taken": 35.13691666666667,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 20.560750000000006,
+          "rounds": 2.258,
+          "taken": 35.26825,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 25.51341666666668,
+          "rounds": 2.255,
+          "taken": 35.19075000000001,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 35.20216666666667,
+          "rounds": 2.239,
+          "taken": 35.20833333333334,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 45.87008333333331,
+          "rounds": 2.212,
+          "taken": 35.22725,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 29.65566666666669,
+        "rounds": 2.126,
+        "taken": 35.508,
+        "loss": 0,
+        "wonInOne": 0
+      },
+      "xDamage": 28.125379202578458,
+      "xRounds": 160.8108108108116,
+      "xTaken": 451.02418783527094,
+      "roundsEfficiency": 5.717640628150852,
+      "takenEfficiency": 16.036199355275617,
+      "extrapolated": true,
+      "dealtGainPct": 87.41830323521846
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "kind": "house",
+      "level": 38,
+      "enemies": 3,
+      "preset": "standard",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 15.823249999999993,
+          "rounds": 2.268,
+          "taken": 35.13691666666667,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 20.560750000000006,
+          "rounds": 2.258,
+          "taken": 35.26825,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 25.51341666666668,
+          "rounds": 2.255,
+          "taken": 35.19075000000001,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 35.20216666666667,
+          "rounds": 2.239,
+          "taken": 35.20833333333334,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 45.87008333333331,
+          "rounds": 2.212,
+          "taken": 35.22725,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 33.36391666666667,
+        "rounds": 2.096,
+        "taken": 34.89224999999998,
+        "loss": 0,
+        "wonInOne": 0
+      },
+      "xDamage": 35.54855899784533,
+      "xRounds": 194.40154440154512,
+      "xTaken": -416.42242687994155,
+      "roundsEfficiency": 5.468619541324535,
+      "takenEfficiency": -11.71418585223614,
+      "extrapolated": true,
+      "dealtGainPct": 110.85375423295898
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "kind": "house",
+      "level": 38,
+      "enemies": 3,
+      "preset": "double-caster",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 15.0775,
+          "rounds": 1.623,
+          "taken": 7.799666666666667,
+          "loss": 0,
+          "wonInOne": 38
+        },
+        {
+          "x": 10,
+          "dealt": 19.9385,
+          "rounds": 1.61,
+          "taken": 7.778666666666667,
+          "loss": 0,
+          "wonInOne": 39
+        },
+        {
+          "x": 20,
+          "dealt": 24.279666666666664,
+          "rounds": 1.747,
+          "taken": 14.507666666666667,
+          "loss": 0,
+          "wonInOne": 28
+        },
+        {
+          "x": 40,
+          "dealt": 34.514833333333335,
+          "rounds": 1.599,
+          "taken": 10.144,
+          "loss": 0,
+          "wonInOne": 41
+        },
+        {
+          "x": 60,
+          "dealt": 44.24,
+          "rounds": 1.525,
+          "taken": 7.869166666666667,
+          "loss": 0,
+          "wonInOne": 48
+        }
+      ],
+      "arm": {
+        "dealt": 28.23916666666667,
+        "rounds": 1.604,
+        "taken": 8.132833333333332,
+        "loss": 0,
+        "wonInOne": 40
+      },
+      "xDamage": 27.290782717802255,
+      "xRounds": 35.2711703139868,
+      "xTaken": 755.6101515685555,
+      "roundsEfficiency": 1.2924206197640056,
+      "takenEfficiency": 27.687375601567403,
+      "extrapolated": true,
+      "dealtGainPct": 87.29342839772289
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "kind": "house",
+      "level": 38,
+      "enemies": 3,
+      "preset": "double-caster",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 15.0775,
+          "rounds": 1.623,
+          "taken": 7.799666666666667,
+          "loss": 0,
+          "wonInOne": 38
+        },
+        {
+          "x": 10,
+          "dealt": 19.9385,
+          "rounds": 1.61,
+          "taken": 7.778666666666667,
+          "loss": 0,
+          "wonInOne": 39
+        },
+        {
+          "x": 20,
+          "dealt": 24.279666666666664,
+          "rounds": 1.747,
+          "taken": 14.507666666666667,
+          "loss": 0,
+          "wonInOne": 28
+        },
+        {
+          "x": 40,
+          "dealt": 34.514833333333335,
+          "rounds": 1.599,
+          "taken": 10.144,
+          "loss": 0,
+          "wonInOne": 41
+        },
+        {
+          "x": 60,
+          "dealt": 44.24,
+          "rounds": 1.525,
+          "taken": 7.869166666666667,
+          "loss": 0,
+          "wonInOne": 48
+        }
+      ],
+      "arm": {
+        "dealt": 32.03966666666667,
+        "rounds": 1.579,
+        "taken": 6.7105,
+        "loss": 0,
+        "wonInOne": 43
+      },
+      "xDamage": 35.089033648823,
+      "xRounds": 49.06755470980036,
+      "xTaken": 1453.4910116319995,
+      "roundsEfficiency": 1.3983729275897643,
+      "takenEfficiency": 41.422942169875185,
+      "extrapolated": true,
+      "dealtGainPct": 112.49986182501522
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "kind": "house",
+      "level": 38,
+      "enemies": 3,
+      "preset": "no-healer",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 15.62033095238093,
+          "rounds": 3.4285714285714284,
+          "taken": 48.64352857142857,
+          "loss": 0.055,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 20.174327380952374,
+          "rounds": 3.346832814122534,
+          "taken": 48.2848404761905,
+          "loss": 0.037,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 23.947739285714302,
+          "rounds": 3.346432264736298,
+          "taken": 48.57896904761905,
+          "loss": 0.033,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 32.22542500000002,
+          "rounds": 3.339795918367347,
+          "taken": 48.35947857142858,
+          "loss": 0.02,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 36.71323333333331,
+          "rounds": 3.7800429184549356,
+          "taken": 51.90556904761904,
+          "loss": 0.068,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 24.030399999999986,
+        "rounds": 3.4136460554371,
+        "taken": 51.83447500000003,
+        "loss": 0.062,
+        "wonInOne": 0
+      },
+      "xDamage": 21.2135047403005,
+      "xRounds": 19.565747635704803,
+      "xTaken": 80.99423019552569,
+      "roundsEfficiency": 0.9223250884392827,
+      "takenEfficiency": 3.8180503970028274,
+      "extrapolated": true,
+      "dealtGainPct": 53.84053048080361
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "kind": "house",
+      "level": 38,
+      "enemies": 3,
+      "preset": "no-healer",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 15.62033095238093,
+          "rounds": 3.4285714285714284,
+          "taken": 48.64352857142857,
+          "loss": 0.055,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 20.174327380952374,
+          "rounds": 3.346832814122534,
+          "taken": 48.2848404761905,
+          "loss": 0.037,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 23.947739285714302,
+          "rounds": 3.346432264736298,
+          "taken": 48.57896904761905,
+          "loss": 0.033,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 32.22542500000002,
+          "rounds": 3.339795918367347,
+          "taken": 48.35947857142858,
+          "loss": 0.02,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 36.71323333333331,
+          "rounds": 3.7800429184549356,
+          "taken": 51.90556904761904,
+          "loss": 0.068,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 26.442253571428587,
+        "rounds": 3.424083769633508,
+        "taken": 51.15083452380957,
+        "loss": 0.045,
+        "wonInOne": 0
+      },
+      "xDamage": 27.981150392519208,
+      "xRounds": 21.501775231696204,
+      "xTaken": 66.96575565089377,
+      "roundsEfficiency": 0.7684378565594904,
+      "takenEfficiency": 2.393245263740019,
+      "extrapolated": false,
+      "dealtGainPct": 69.2810072465086
+    },
+    {
+      "scope": "temple-2",
+      "group": "Ancient Temple",
+      "kind": "house",
+      "level": 40,
+      "enemies": 3,
+      "preset": "double-caster",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 25.09924920634921,
+          "rounds": 2.8221830985915495,
+          "taken": 113.29533571428567,
+          "loss": 0.432,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 32.49255277777775,
+          "rounds": 2.778368794326241,
+          "taken": 112.04074801587304,
+          "loss": 0.436,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 40.85833333333334,
+          "rounds": 2.8115015974440896,
+          "taken": 109.95744999999997,
+          "loss": 0.374,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 55.682033333333294,
+          "rounds": 2.717201166180758,
+          "taken": 109.33061666666661,
+          "loss": 0.314,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 71.26744999999994,
+          "rounds": 2.71671388101983,
+          "taken": 108.75679999999994,
+          "loss": 0.294,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 42.037545238095255,
+        "rounds": 2.4389901823281908,
+        "taken": 102.28634047619047,
+        "loss": 0.287,
+        "wonInOne": 0
+      },
+      "xDamage": 22.0458276048841,
+      "xRounds": 204.54735687923406,
+      "xTaken": 140.68866307169924,
+      "roundsEfficiency": 9.278279797212877,
+      "takenEfficiency": 6.3816457968005995,
+      "extrapolated": true,
+      "dealtGainPct": 67.48526974847225
+    },
+    {
+      "scope": "temple-2",
+      "group": "Ancient Temple",
+      "kind": "house",
+      "level": 40,
+      "enemies": 3,
+      "preset": "double-caster",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 25.09924920634921,
+          "rounds": 2.8221830985915495,
+          "taken": 113.29533571428567,
+          "loss": 0.432,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 32.49255277777775,
+          "rounds": 2.778368794326241,
+          "taken": 112.04074801587304,
+          "loss": 0.436,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 40.85833333333334,
+          "rounds": 2.8115015974440896,
+          "taken": 109.95744999999997,
+          "loss": 0.374,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 55.682033333333294,
+          "rounds": 2.717201166180758,
+          "taken": 109.33061666666661,
+          "loss": 0.314,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 71.26744999999994,
+          "rounds": 2.71671388101983,
+          "taken": 108.75679999999994,
+          "loss": 0.294,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 55.662930952380954,
+        "rounds": 2.185770750988142,
+        "taken": 104.90937142857145,
+        "loss": 0.241,
+        "wonInOne": 7
+      },
+      "xDamage": 39.75471037695943,
+      "xRounds": 341.46794290566584,
+      "xTaken": 104.8320115996121,
+      "roundsEfficiency": 8.589370659924864,
+      "takenEfficiency": 2.6369708295087824,
+      "extrapolated": true,
+      "dealtGainPct": 121.77129879367159
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "kind": "house",
+      "level": 48,
+      "enemies": 2,
+      "preset": "standard",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 34.48838333333332,
+          "rounds": 2.7156398104265405,
+          "taken": 116.49511666666663,
+          "loss": 0.156,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 44.12116666666667,
+          "rounds": 2.582513661202186,
+          "taken": 118.07146666666662,
+          "loss": 0.085,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 50.79381666666667,
+          "rounds": 2.229357798165138,
+          "taken": 111.60793333333328,
+          "loss": 0.019,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 72.34166666666665,
+          "rounds": 2.1162324649298596,
+          "taken": 107.97766666666662,
+          "loss": 0.002,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 93.82733333333333,
+          "rounds": 2.057,
+          "taken": 105.08708333333334,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 59.584099999999985,
+        "rounds": 2.0798362333674514,
+        "taken": 79.29216666666669,
+        "loss": 0.023,
+        "wonInOne": 3
+      },
+      "xDamage": 26.474636302814137,
+      "xRounds": 49.464565744601416,
+      "xTaken": 176.15268515682553,
+      "roundsEfficiency": 1.868375647500153,
+      "takenEfficiency": 6.653639473721544,
+      "extrapolated": true,
+      "dealtGainPct": 72.7657090334282
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "kind": "house",
+      "level": 48,
+      "enemies": 2,
+      "preset": "standard",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 34.48838333333332,
+          "rounds": 2.7156398104265405,
+          "taken": 116.49511666666663,
+          "loss": 0.156,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 44.12116666666667,
+          "rounds": 2.582513661202186,
+          "taken": 118.07146666666662,
+          "loss": 0.085,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 50.79381666666667,
+          "rounds": 2.229357798165138,
+          "taken": 111.60793333333328,
+          "loss": 0.019,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 72.34166666666665,
+          "rounds": 2.1162324649298596,
+          "taken": 107.97766666666662,
+          "loss": 0.002,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 93.82733333333333,
+          "rounds": 2.057,
+          "taken": 105.08708333333334,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 59.584099999999985,
+        "rounds": 2.0798362333674514,
+        "taken": 79.29216666666669,
+        "loss": 0.023,
+        "wonInOne": 3
+      },
+      "xDamage": 26.474636302814137,
+      "xRounds": 49.464565744601416,
+      "xTaken": 176.15268515682553,
+      "roundsEfficiency": 1.868375647500153,
+      "takenEfficiency": 6.653639473721544,
+      "extrapolated": true,
+      "dealtGainPct": 72.7657090334282
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "kind": "house",
+      "level": 48,
+      "enemies": 2,
+      "preset": "double-caster",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 34.123483333333276,
+          "rounds": 2.8641456582633054,
+          "taken": 101.11421666666675,
+          "loss": 0.286,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 43.805649999999986,
+          "rounds": 2.8775757575757575,
+          "taken": 97.16868333333332,
+          "loss": 0.175,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 54.1195166666667,
+          "rounds": 2.7968586387434553,
+          "taken": 94.9227,
+          "loss": 0.045,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 78.47551666666669,
+          "rounds": 2.13682092555332,
+          "taken": 113.96908333333334,
+          "loss": 0.006,
+          "wonInOne": 5
+        },
+        {
+          "x": 60,
+          "dealt": 90.55418333333331,
+          "rounds": 2.0691382765531063,
+          "taken": 99.98441666666665,
+          "loss": 0.002,
+          "wonInOne": 5
+        }
+      ],
+      "arm": {
+        "dealt": 69.44623333333334,
+        "rounds": 1.9794816414686824,
+        "taken": 94.1823166666667,
+        "loss": 0.074,
+        "wonInOne": 14
+      },
+      "xDamage": 35.45603515502594,
+      "xRounds": 61.68145936741716,
+      "xTaken": -43.54748884800115,
+      "roundsEfficiency": 1.739660373691663,
+      "takenEfficiency": -1.2282108999947852,
+      "extrapolated": false,
+      "dealtGainPct": 103.51449075392398
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "kind": "house",
+      "level": 48,
+      "enemies": 2,
+      "preset": "double-caster",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 34.123483333333276,
+          "rounds": 2.8641456582633054,
+          "taken": 101.11421666666675,
+          "loss": 0.286,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 43.805649999999986,
+          "rounds": 2.8775757575757575,
+          "taken": 97.16868333333332,
+          "loss": 0.175,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 54.1195166666667,
+          "rounds": 2.7968586387434553,
+          "taken": 94.9227,
+          "loss": 0.045,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 78.47551666666669,
+          "rounds": 2.13682092555332,
+          "taken": 113.96908333333334,
+          "loss": 0.006,
+          "wonInOne": 5
+        },
+        {
+          "x": 60,
+          "dealt": 90.55418333333331,
+          "rounds": 2.0691382765531063,
+          "taken": 99.98441666666665,
+          "loss": 0.002,
+          "wonInOne": 5
+        }
+      ],
+      "arm": {
+        "dealt": 69.44623333333334,
+        "rounds": 1.9794816414686824,
+        "taken": 94.1823166666667,
+        "loss": 0.074,
+        "wonInOne": 14
+      },
+      "xDamage": 35.45603515502594,
+      "xRounds": 61.68145936741716,
+      "xTaken": -43.54748884800115,
+      "roundsEfficiency": 1.739660373691663,
+      "takenEfficiency": -1.2282108999947852,
+      "extrapolated": false,
+      "dealtGainPct": 103.51449075392398
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "kind": "house",
+      "level": 48,
+      "enemies": 2,
+      "preset": "no-healer",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 34.55205,
+          "rounds": 2.5322763306908267,
+          "taken": 105.48388333333327,
+          "loss": 0.117,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 47.3729833333333,
+          "rounds": 2.3162303664921464,
+          "taken": 102.91471666666665,
+          "loss": 0.045,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 59.67775000000001,
+          "rounds": 2.181725888324873,
+          "taken": 101.8016833333334,
+          "loss": 0.015,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 72.07216666666669,
+          "rounds": 2.118236472945892,
+          "taken": 83.83750000000006,
+          "loss": 0.002,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 69.07324999999997,
+          "rounds": 2.052,
+          "taken": 51.17666666666666,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 58.94843333333332,
+        "rounds": 2.0594159113796575,
+        "taken": 76.51631666666668,
+        "loss": 0.007,
+        "wonInOne": 0
+      },
+      "xDamage": 30.14350787333676,
+      "xRounds": 51.303324591876375,
+      "xTaken": 39.92979036552299,
+      "roundsEfficiency": 1.701969286635561,
+      "takenEfficiency": 1.324656391462741,
+      "extrapolated": false,
+      "dealtGainPct": 70.60762916623852
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "kind": "house",
+      "level": 48,
+      "enemies": 2,
+      "preset": "no-healer",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 34.55205,
+          "rounds": 2.5322763306908267,
+          "taken": 105.48388333333327,
+          "loss": 0.117,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 47.3729833333333,
+          "rounds": 2.3162303664921464,
+          "taken": 102.91471666666665,
+          "loss": 0.045,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 59.67775000000001,
+          "rounds": 2.181725888324873,
+          "taken": 101.8016833333334,
+          "loss": 0.015,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 72.07216666666669,
+          "rounds": 2.118236472945892,
+          "taken": 83.83750000000006,
+          "loss": 0.002,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 69.07324999999997,
+          "rounds": 2.052,
+          "taken": 51.17666666666666,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 58.94843333333332,
+        "rounds": 2.0594159113796575,
+        "taken": 76.51631666666668,
+        "loss": 0.007,
+        "wonInOne": 0
+      },
+      "xDamage": 30.14350787333676,
+      "xRounds": 51.303324591876375,
+      "xTaken": 39.92979036552299,
+      "roundsEfficiency": 1.701969286635561,
+      "takenEfficiency": 1.324656391462741,
+      "extrapolated": false,
+      "dealtGainPct": 70.60762916623852
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "kind": "house",
+      "level": 48,
+      "enemies": 2,
+      "preset": "physical",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 35.38186666666668,
+          "rounds": 3.026315789473684,
+          "taken": 95.9745305555554,
+          "loss": 0.126,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 47.71337777777781,
+          "rounds": 2.800632911392405,
+          "taken": 93.73881388888886,
+          "loss": 0.052,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 59.0790888888889,
+          "rounds": 2.58546571136131,
+          "taken": 93.64686388888889,
+          "loss": 0.023,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 82.45408333333329,
+          "rounds": 2.27979797979798,
+          "taken": 80.5592416666666,
+          "loss": 0.01,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 99.12191666666664,
+          "rounds": 2.1485943775100402,
+          "taken": 48.681341666666704,
+          "loss": 0.004,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 62.50453333333332,
+        "rounds": 2.246435845213849,
+        "taken": 89.57505000000005,
+        "loss": 0.018,
+        "wonInOne": 0
+      },
+      "xDamage": 23.904987214796027,
+      "xRounds": 47.92868688716515,
+      "xTaken": 16.77399464688499,
+      "roundsEfficiency": 2.004966012175887,
+      "takenEfficiency": 0.7016943575900639,
+      "extrapolated": false,
+      "dealtGainPct": 76.656969295006
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "kind": "house",
+      "level": 48,
+      "enemies": 2,
+      "preset": "physical",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 35.38186666666668,
+          "rounds": 3.026315789473684,
+          "taken": 95.9745305555554,
+          "loss": 0.126,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 47.71337777777781,
+          "rounds": 2.800632911392405,
+          "taken": 93.73881388888886,
+          "loss": 0.052,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 59.0790888888889,
+          "rounds": 2.58546571136131,
+          "taken": 93.64686388888889,
+          "loss": 0.023,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 82.45408333333329,
+          "rounds": 2.27979797979798,
+          "taken": 80.5592416666666,
+          "loss": 0.01,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 99.12191666666664,
+          "rounds": 2.1485943775100402,
+          "taken": 48.681341666666704,
+          "loss": 0.004,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 62.50453333333332,
+        "rounds": 2.246435845213849,
+        "taken": 89.57505000000005,
+        "loss": 0.018,
+        "wonInOne": 0
+      },
+      "xDamage": 23.904987214796027,
+      "xRounds": 47.92868688716515,
+      "xTaken": 16.77399464688499,
+      "roundsEfficiency": 2.004966012175887,
+      "takenEfficiency": 0.7016943575900639,
+      "extrapolated": false,
+      "dealtGainPct": 76.656969295006
+    },
+    {
+      "scope": "valley-4",
+      "group": "Valley of the Dragon",
+      "kind": "house",
+      "level": 46,
+      "enemies": 2,
+      "preset": "double-caster",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 22.540533333333332,
+          "rounds": 2.495833333333333,
+          "taken": 119.35553333333336,
+          "loss": 0.28,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 29.450200000000027,
+          "rounds": 2.4324324324324325,
+          "taken": 112.65279999999996,
+          "loss": 0.223,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 36.02716666666665,
+          "rounds": 2.3069053708439897,
+          "taken": 108.45129999999997,
+          "loss": 0.218,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 49.45811666666667,
+          "rounds": 2.2571075401730534,
+          "taken": 103.05153333333328,
+          "loss": 0.191,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 64.63928333333331,
+          "rounds": 2.3189755529685683,
+          "taken": 99.13109999999996,
+          "loss": 0.141,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 42.782600000000016,
+        "rounds": 1.996590909090909,
+        "taken": 118.99284999999999,
+        "loss": 0.12,
+        "wonInOne": 18
+      },
+      "xDamage": 29.385930556583034,
+      "xRounds": 143.70370868507254,
+      "xTaken": -6.665265551658965,
+      "roundsEfficiency": 4.890221475490422,
+      "takenEfficiency": -0.2268182570847944,
+      "extrapolated": true,
+      "dealtGainPct": 89.80296236705439
+    },
+    {
+      "scope": "valley-4",
+      "group": "Valley of the Dragon",
+      "kind": "house",
+      "level": 46,
+      "enemies": 2,
+      "preset": "double-caster",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 22.540533333333332,
+          "rounds": 2.495833333333333,
+          "taken": 119.35553333333336,
+          "loss": 0.28,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 29.450200000000027,
+          "rounds": 2.4324324324324325,
+          "taken": 112.65279999999996,
+          "loss": 0.223,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 36.02716666666665,
+          "rounds": 2.3069053708439897,
+          "taken": 108.45129999999997,
+          "loss": 0.218,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 49.45811666666667,
+          "rounds": 2.2571075401730534,
+          "taken": 103.05153333333328,
+          "loss": 0.191,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 64.63928333333331,
+          "rounds": 2.3189755529685683,
+          "taken": 99.13109999999996,
+          "loss": 0.141,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 42.782600000000016,
+        "rounds": 1.996590909090909,
+        "taken": 118.99284999999999,
+        "loss": 0.12,
+        "wonInOne": 18
+      },
+      "xDamage": 29.385930556583034,
+      "xRounds": 143.70370868507254,
+      "xTaken": -6.665265551658965,
+      "roundsEfficiency": 4.890221475490422,
+      "takenEfficiency": -0.2268182570847944,
+      "extrapolated": true,
+      "dealtGainPct": 89.80296236705439
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "kind": "house",
+      "level": 50,
+      "enemies": 3,
+      "preset": "standard",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 24.338953968253964,
+          "rounds": 4.191532258064516,
+          "taken": 62.453729365079376,
+          "loss": 0.008,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 31.062828174603183,
+          "rounds": 4.078156312625251,
+          "taken": 62.63418412698411,
+          "loss": 0.002,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 37.95364285714285,
+          "rounds": 3.9629258517034067,
+          "taken": 61.8998761904762,
+          "loss": 0.002,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 51.762699999999995,
+          "rounds": 3.775,
+          "taken": 62.823758333333316,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 63.53964999999996,
+          "rounds": 3.473,
+          "taken": 62.25942142857139,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 35.393847619047605,
+        "rounds": 3.830830830830831,
+        "taken": 62.55994404761907,
+        "loss": 0.001,
+        "wonInOne": 0
+      },
+      "xDamage": 16.374064815805585,
+      "xRounds": 31.59455432440122,
+      "xTaken": -315.4795504288055,
+      "roundsEfficiency": 1.929548629482862,
+      "takenEfficiency": -19.267027093008625,
+      "extrapolated": false,
+      "dealtGainPct": 45.420578325645685
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "kind": "house",
+      "level": 50,
+      "enemies": 3,
+      "preset": "standard",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 24.338953968253964,
+          "rounds": 4.191532258064516,
+          "taken": 62.453729365079376,
+          "loss": 0.008,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 31.062828174603183,
+          "rounds": 4.078156312625251,
+          "taken": 62.63418412698411,
+          "loss": 0.002,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 37.95364285714285,
+          "rounds": 3.9629258517034067,
+          "taken": 61.8998761904762,
+          "loss": 0.002,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 51.762699999999995,
+          "rounds": 3.775,
+          "taken": 62.823758333333316,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 63.53964999999996,
+          "rounds": 3.473,
+          "taken": 62.25942142857139,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 43.849409523809555,
+        "rounds": 3.468,
+        "taken": 66.73704761904757,
+        "loss": 0,
+        "wonInOne": 0
+      },
+      "xDamage": 29.21667270991616,
+      "xRounds": 62.68374022442239,
+      "xTaken": -10102.058598390158,
+      "roundsEfficiency": 2.1454784001857776,
+      "takenEfficiency": -345.76348575659375,
+      "extrapolated": false,
+      "dealtGainPct": 80.16143824834737
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "kind": "house",
+      "level": 50,
+      "enemies": 3,
+      "preset": "double-caster",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 25.854566666666695,
+          "rounds": 2.487,
+          "taken": 69.87533333333334,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 32.65505,
+          "rounds": 2.386,
+          "taken": 68.188,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 38.75848333333334,
+          "rounds": 2.849,
+          "taken": 66.39100000000002,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 53.76918333333332,
+          "rounds": 2.364,
+          "taken": 66.24328333333332,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 67.6982666666667,
+          "rounds": 2.303,
+          "taken": 64.91896666666668,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 47.210233333333306,
+        "rounds": 2.277,
+        "taken": 67.59846666666668,
+        "loss": 0,
+        "wonInOne": 0
+      },
+      "xDamage": 30.93741017616201,
+      "xRounds": 80.5882352941175,
+      "xTaken": 19.57088409373911,
+      "roundsEfficiency": 2.6048798149307464,
+      "takenEfficiency": 0.6325960700103762,
+      "extrapolated": true,
+      "dealtGainPct": 82.59920555620704
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "kind": "house",
+      "level": 50,
+      "enemies": 3,
+      "preset": "double-caster",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 25.854566666666695,
+          "rounds": 2.487,
+          "taken": 69.87533333333334,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 32.65505,
+          "rounds": 2.386,
+          "taken": 68.188,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 38.75848333333334,
+          "rounds": 2.849,
+          "taken": 66.39100000000002,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 53.76918333333332,
+          "rounds": 2.364,
+          "taken": 66.24328333333332,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 67.6982666666667,
+          "rounds": 2.303,
+          "taken": 64.91896666666668,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 60.785333333333355,
+        "rounds": 2.165,
+        "taken": 65.5784166666667,
+        "loss": 0,
+        "wonInOne": 0
+      },
+      "xDamage": 50.29156838279566,
+      "xRounds": 111.03585657370502,
+      "xTaken": 46.90359078939804,
+      "roundsEfficiency": 2.2078423907672264,
+      "takenEfficiency": 0.9326332881963446,
+      "extrapolated": true,
+      "dealtGainPct": 135.10482351924915
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "kind": "house",
+      "level": 50,
+      "enemies": 3,
+      "preset": "no-healer",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 22.32483968253966,
+          "rounds": 5.464558342420938,
+          "taken": 59.50035555555552,
+          "loss": 0.08,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 28.85284642857144,
+          "rounds": 5.180962343096234,
+          "taken": 60.13598333333328,
+          "loss": 0.044,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 35.13901111111109,
+          "rounds": 4.814358974358974,
+          "taken": 58.53711587301583,
+          "loss": 0.025,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 45.85514166666669,
+          "rounds": 4.4062816616008105,
+          "taken": 53.66088333333333,
+          "loss": 0.013,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 57.422705952380966,
+          "rounds": 4.31425702811245,
+          "taken": 52.09576428571429,
+          "loss": 0.004,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 33.65390873015871,
+        "rounds": 4.754582484725051,
+        "taken": 60.145201984126906,
+        "loss": 0.017,
+        "wonInOne": 0
+      },
+      "xDamage": 18.623629221945055,
+      "xRounds": 30.156817223186973,
+      "xTaken": 2.936026140067839,
+      "roundsEfficiency": 1.6192771486049478,
+      "takenEfficiency": 0.15765059028388453,
+      "extrapolated": false,
+      "dealtGainPct": 50.74647436989013
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "kind": "house",
+      "level": 50,
+      "enemies": 3,
+      "preset": "no-healer",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 22.32483968253966,
+          "rounds": 5.464558342420938,
+          "taken": 59.50035555555552,
+          "loss": 0.08,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 28.85284642857144,
+          "rounds": 5.180962343096234,
+          "taken": 60.13598333333328,
+          "loss": 0.044,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 35.13901111111109,
+          "rounds": 4.814358974358974,
+          "taken": 58.53711587301583,
+          "loss": 0.025,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 45.85514166666669,
+          "rounds": 4.4062816616008105,
+          "taken": 53.66088333333333,
+          "loss": 0.013,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 57.422705952380966,
+          "rounds": 4.31425702811245,
+          "taken": 52.09576428571429,
+          "loss": 0.004,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 39.66643333333334,
+        "rounds": 4.489878542510121,
+        "taken": 60.79524285714288,
+        "loss": 0.012,
+        "wonInOne": 0
+      },
+      "xDamage": 29.02236505062125,
+      "xRounds": 43.657552254722475,
+      "xTaken": -1.5271222988320254,
+      "roundsEfficiency": 1.504272728241627,
+      "takenEfficiency": -0.05261880953424697,
+      "extrapolated": false,
+      "dealtGainPct": 77.67846890455657
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "kind": "house",
+      "level": 50,
+      "enemies": 3,
+      "preset": "physical",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 22.76940952380954,
+          "rounds": 6.149217809867629,
+          "taken": 59.11278611111115,
+          "loss": 0.162,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 28.6697591269841,
+          "rounds": 5.398296059637913,
+          "taken": 57.51360119047629,
+          "loss": 0.059,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 34.99458571428571,
+          "rounds": 5.258947368421053,
+          "taken": 57.80426031746042,
+          "loss": 0.048,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 47.73145992063489,
+          "rounds": 4.711675126903553,
+          "taken": 54.19925753968257,
+          "loss": 0.015,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 59.5214416666667,
+          "rounds": 4.466666666666667,
+          "taken": 53.80336269841273,
+          "loss": 0.01,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 33.69146587301585,
+        "rounds": 5.500527983104541,
+        "taken": 57.36315674603174,
+        "loss": 0.049,
+        "wonInOne": 0
+      },
+      "xDamage": 17.821028624612495,
+      "xRounds": 14.257357675653394,
+      "xTaken": 16.58011064186061,
+      "roundsEfficiency": 0.8000300081423279,
+      "takenEfficiency": 0.9303677689492029,
+      "extrapolated": false,
+      "dealtGainPct": 47.96811413921527
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "kind": "house",
+      "level": 50,
+      "enemies": 3,
+      "preset": "physical",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 22.76940952380954,
+          "rounds": 6.149217809867629,
+          "taken": 59.11278611111115,
+          "loss": 0.162,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 28.6697591269841,
+          "rounds": 5.398296059637913,
+          "taken": 57.51360119047629,
+          "loss": 0.059,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 34.99458571428571,
+          "rounds": 5.258947368421053,
+          "taken": 57.80426031746042,
+          "loss": 0.048,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 47.73145992063489,
+          "rounds": 4.711675126903553,
+          "taken": 54.19925753968257,
+          "loss": 0.015,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 59.5214416666667,
+          "rounds": 4.466666666666667,
+          "taken": 53.80336269841273,
+          "loss": 0.01,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 40.00810833333335,
+        "rounds": 5.225,
+        "taken": 58.423990079365076,
+        "loss": 0.04,
+        "wonInOne": 0
+      },
+      "xDamage": 28.059834978147364,
+      "xRounds": 24.915375641864784,
+      "xTaken": 5.179201989189594,
+      "roundsEfficiency": 0.8879373546305086,
+      "takenEfficiency": 0.18457706516175484,
+      "extrapolated": false,
+      "dealtGainPct": 75.70990715195151
+    },
+    {
+      "scope": "fafnir-3",
+      "group": "Fafnir Castle",
+      "kind": "house",
+      "level": 50,
+      "enemies": 3,
+      "preset": "standard",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 18.94474841269843,
+          "rounds": 8.48165137614679,
+          "taken": 61.89460436507943,
+          "loss": 0.493,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 24.01392936507939,
+          "rounds": 8.23972602739726,
+          "taken": 60.80090952380955,
+          "loss": 0.441,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 29.097075396825407,
+          "rounds": 7.97093023255814,
+          "taken": 60.47960595238093,
+          "loss": 0.419,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 39.34919603174603,
+          "rounds": 7.762820512820513,
+          "taken": 60.01615674603172,
+          "loss": 0.376,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 48.81548214285712,
+          "rounds": 7.585483870967742,
+          "taken": 59.72499166666657,
+          "loss": 0.319,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 24.2833662698413,
+        "rounds": 8.485106382978723,
+        "taken": 61.08459523809527,
+        "loss": 0.458,
+        "wonInOne": 0
+      },
+      "xDamage": 10.468469276278443,
+      "xRounds": -6.936377599236095,
+      "xTaken": 10.298387708855206,
+      "roundsEfficiency": -0.6625971205698554,
+      "takenEfficiency": 0.9837529668440981,
+      "extrapolated": false,
+      "dealtGainPct": 28.17993536174098
+    },
+    {
+      "scope": "fafnir-3",
+      "group": "Fafnir Castle",
+      "kind": "house",
+      "level": 50,
+      "enemies": 3,
+      "preset": "standard",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 18.94474841269843,
+          "rounds": 8.48165137614679,
+          "taken": 61.89460436507943,
+          "loss": 0.493,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 24.01392936507939,
+          "rounds": 8.23972602739726,
+          "taken": 60.80090952380955,
+          "loss": 0.441,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 29.097075396825407,
+          "rounds": 7.97093023255814,
+          "taken": 60.47960595238093,
+          "loss": 0.419,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 39.34919603174603,
+          "rounds": 7.762820512820513,
+          "taken": 60.01615674603172,
+          "loss": 0.376,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 48.81548214285712,
+          "rounds": 7.585483870967742,
+          "taken": 59.72499166666657,
+          "loss": 0.319,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 26.761751190476172,
+        "rounds": 8.242214532871973,
+        "taken": 61.17948492063484,
+        "loss": 0.456,
+        "wonInOne": 0
+      },
+      "xDamage": 15.428461588853677,
+      "xRounds": 9.835627422094634,
+      "xTaken": 7.326519738185921,
+      "roundsEfficiency": 0.6374989084589225,
+      "takenEfficiency": 0.47487040078441645,
+      "extrapolated": false,
+      "dealtGainPct": 41.2621092003423
+    },
+    {
+      "scope": "L35",
+      "group": "rulebook L35",
+      "kind": "base",
+      "level": 35,
+      "enemies": 4,
+      "preset": "standard",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 28.734850000000005,
+          "rounds": 3.559,
+          "taken": 35.50624999999998,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 38.46763333333332,
+          "rounds": 3.299,
+          "taken": 34.40913333333335,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 48.14391666666666,
+          "rounds": 3.153,
+          "taken": 34.471683333333345,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 67.43066666666671,
+          "rounds": 3.179,
+          "taken": 34.74660000000002,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 87.03791666666658,
+          "rounds": 3.017,
+          "taken": 32.61350000000003,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 50.2202166666667,
+        "rounds": 3.177,
+        "taken": 33.792166666666674,
+        "loss": 0,
+        "wonInOne": 0
+      },
+      "xDamage": 22.1439771977037,
+      "xRounds": 34.71082089552237,
+      "xTaken": 41.169530901667244,
+      "roundsEfficiency": 1.5675061704417685,
+      "takenEfficiency": 1.859175094613829,
+      "extrapolated": false,
+      "dealtGainPct": 74.77111126964884
+    },
+    {
+      "scope": "L35",
+      "group": "rulebook L35",
+      "kind": "base",
+      "level": 35,
+      "enemies": 4,
+      "preset": "standard",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 28.734850000000005,
+          "rounds": 3.559,
+          "taken": 35.50624999999998,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 38.46763333333332,
+          "rounds": 3.299,
+          "taken": 34.40913333333335,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 48.14391666666666,
+          "rounds": 3.153,
+          "taken": 34.471683333333345,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 67.43066666666671,
+          "rounds": 3.179,
+          "taken": 34.74660000000002,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 87.03791666666658,
+          "rounds": 3.017,
+          "taken": 32.61350000000003,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 68.6510833333334,
+        "rounds": 2.925,
+        "taken": 32.45891666666665,
+        "loss": 0,
+        "wonInOne": 0
+      },
+      "xDamage": 41.13249432474574,
+      "xRounds": 68.79664179104476,
+      "xTaken": 77.4623477601098,
+      "roundsEfficiency": 1.6725618740231851,
+      "takenEfficiency": 1.8832397361690665,
+      "extrapolated": true,
+      "dealtGainPct": 138.91227319207647
+    },
+    {
+      "scope": "L35",
+      "group": "rulebook L35",
+      "kind": "base",
+      "level": 35,
+      "enemies": 4,
+      "preset": "double-caster",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 28.601866666666677,
+          "rounds": 3.2032032032032034,
+          "taken": 31.847949999999994,
+          "loss": 0.001,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 38.33358333333332,
+          "rounds": 3.132,
+          "taken": 31.887133333333306,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 48.275016666666644,
+          "rounds": 3.026,
+          "taken": 30.15534999999999,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 67.48240000000001,
+          "rounds": 2.707,
+          "taken": 35.65503333333334,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 87.11458333333321,
+          "rounds": 2.641,
+          "taken": 32.90258333333332,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 50.15716666666666,
+        "rounds": 2.901,
+        "taken": 31.908416666666653,
+        "loss": 0,
+        "wonInOne": 0
+      },
+      "xDamage": 22.09470020267138,
+      "xRounds": 29.971212595169302,
+      "xTaken": 12.336692268796268,
+      "roundsEfficiency": 1.3564887651901973,
+      "takenEfficiency": 0.5583552687130233,
+      "extrapolated": false,
+      "dealtGainPct": 75.36326300381319
+    },
+    {
+      "scope": "L35",
+      "group": "rulebook L35",
+      "kind": "base",
+      "level": 35,
+      "enemies": 4,
+      "preset": "double-caster",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 28.601866666666677,
+          "rounds": 3.2032032032032034,
+          "taken": 31.847949999999994,
+          "loss": 0.001,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 38.33358333333332,
+          "rounds": 3.132,
+          "taken": 31.887133333333306,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 48.275016666666644,
+          "rounds": 3.026,
+          "taken": 30.15534999999999,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 67.48240000000001,
+          "rounds": 2.707,
+          "taken": 35.65503333333334,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 87.11458333333321,
+          "rounds": 2.641,
+          "taken": 32.90258333333332,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 72.06249999999996,
+        "rounds": 2.518,
+        "taken": 34.13033333333333,
+        "loss": 0,
+        "wonInOne": 0
+      },
+      "xDamage": 44.581457066244056,
+      "xRounds": 67.21290126829716,
+      "xTaken": 64.5718598603441,
+      "roundsEfficiency": 1.5076425422440725,
+      "takenEfficiency": 1.448401737170593,
+      "extrapolated": false,
+      "dealtGainPct": 151.95033890561896
+    },
+    {
+      "scope": "L35",
+      "group": "rulebook L35",
+      "kind": "base",
+      "level": 35,
+      "enemies": 4,
+      "preset": "no-healer",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 28.733802380952373,
+          "rounds": 4.425425425425425,
+          "taken": 30.08367023809524,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 38.38097499999999,
+          "rounds": 4.329,
+          "taken": 30.065309523809532,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 48.27010476190473,
+          "rounds": 3.765,
+          "taken": 30.122340476190463,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 67.64294999999997,
+          "rounds": 3.376,
+          "taken": 29.641833333333306,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 87.0991333333332,
+          "rounds": 3.156,
+          "taken": 27.67243333333333,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 52.71560000000002,
+        "rounds": 3.464,
+        "taken": 30.793683333333323,
+        "loss": 0,
+        "wonInOne": 0
+      },
+      "xDamage": 24.653990394538486,
+      "xRounds": 41.347211115830945,
+      "xTaken": -7.6144222778781865,
+      "roundsEfficiency": 1.6771001551534006,
+      "takenEfficiency": -0.30885151474566097,
+      "extrapolated": false,
+      "dealtGainPct": 83.46197033409396
+    },
+    {
+      "scope": "L35",
+      "group": "rulebook L35",
+      "kind": "base",
+      "level": 35,
+      "enemies": 4,
+      "preset": "no-healer",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 28.733802380952373,
+          "rounds": 4.425425425425425,
+          "taken": 30.08367023809524,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 38.38097499999999,
+          "rounds": 4.329,
+          "taken": 30.065309523809532,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 48.27010476190473,
+          "rounds": 3.765,
+          "taken": 30.122340476190463,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 67.64294999999997,
+          "rounds": 3.376,
+          "taken": 29.641833333333306,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 87.0991333333332,
+          "rounds": 3.156,
+          "taken": 27.67243333333333,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 67.86495000000002,
+        "rounds": 3.139,
+        "taken": 29.294066666666684,
+        "loss": 0,
+        "wonInOne": 0
+      },
+      "xDamage": 40.22222837856351,
+      "xRounds": 55.75107610302641,
+      "xTaken": 31.873351772697177,
+      "roundsEfficiency": 1.3860762655492014,
+      "takenEfficiency": 0.7924312763756303,
+      "extrapolated": false,
+      "dealtGainPct": 136.18506559016245
+    },
+    {
+      "scope": "L35",
+      "group": "rulebook L35",
+      "kind": "base",
+      "level": 35,
+      "enemies": 4,
+      "preset": "physical",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 28.679080555555547,
+          "rounds": 6.451256281407035,
+          "taken": 31.933002380952384,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 38.3876261904762,
+          "rounds": 6.094,
+          "taken": 32.53804642857143,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 48.11761666666663,
+          "rounds": 5.002,
+          "taken": 33.03484166666664,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 67.69647142857148,
+          "rounds": 4.32,
+          "taken": 31.65077142857141,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 87.21151666666668,
+          "rounds": 4.058,
+          "taken": 26.929833333333328,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 50.942340476190466,
+        "rounds": 4.99,
+        "taken": 34.344449999999945,
+        "loss": 0,
+        "wonInOne": 0
+      },
+      "xDamage": 22.848317055797978,
+      "xRounds": 30.67494332002805,
+      "xTaken": -12.11380463953802,
+      "roundsEfficiency": 1.3425471663893946,
+      "takenEfficiency": -0.5301836721695888,
+      "extrapolated": false,
+      "dealtGainPct": 77.6289179756225
+    },
+    {
+      "scope": "L35",
+      "group": "rulebook L35",
+      "kind": "base",
+      "level": 35,
+      "enemies": 4,
+      "preset": "physical",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 28.679080555555547,
+          "rounds": 6.451256281407035,
+          "taken": 31.933002380952384,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 38.3876261904762,
+          "rounds": 6.094,
+          "taken": 32.53804642857143,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 48.11761666666663,
+          "rounds": 5.002,
+          "taken": 33.03484166666664,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 67.69647142857148,
+          "rounds": 4.32,
+          "taken": 31.65077142857141,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 87.21151666666668,
+          "rounds": 4.058,
+          "taken": 26.929833333333328,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 64.28378333333333,
+        "rounds": 4.295,
+        "taken": 38.717449999999985,
+        "loss": 0,
+        "wonInOne": 0
+      },
+      "xDamage": 36.517475915746125,
+      "xRounds": 47.332542298687976,
+      "xTaken": -65.41205286187058,
+      "roundsEfficiency": 1.2961613888072274,
+      "takenEfficiency": -1.7912533991339001,
+      "extrapolated": false,
+      "dealtGainPct": 124.14868987451081
+    },
+    {
+      "scope": "L50",
+      "group": "rulebook L50",
+      "kind": "base",
+      "level": 50,
+      "enemies": 4,
+      "preset": "standard",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 35.6016,
+          "rounds": 3.606,
+          "taken": 54.03201666666667,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 45.39665,
+          "rounds": 3.554,
+          "taken": 52.48998333333335,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 55.28326666666672,
+          "rounds": 3.438,
+          "taken": 50.56561666666669,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 75.00471666666672,
+          "rounds": 3.182,
+          "taken": 52.50351666666669,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 94.78008333333344,
+          "rounds": 3.158,
+          "taken": 51.17674999999999,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 64.26224999999997,
+        "rounds": 3.157,
+        "taken": 52.05233333333337,
+        "loss": 0,
+        "wonInOne": 0
+      },
+      "xDamage": 29.090412491652742,
+      "xRounds": 53.679635761589445,
+      "xTaken": 29.21728196422719,
+      "roundsEfficiency": 1.8452689791522339,
+      "takenEfficiency": 1.0043612125682595,
+      "extrapolated": false,
+      "dealtGainPct": 80.50382567075629
+    },
+    {
+      "scope": "L50",
+      "group": "rulebook L50",
+      "kind": "base",
+      "level": 50,
+      "enemies": 4,
+      "preset": "standard",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 35.6016,
+          "rounds": 3.606,
+          "taken": 54.03201666666667,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 45.39665,
+          "rounds": 3.554,
+          "taken": 52.48998333333335,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 55.28326666666672,
+          "rounds": 3.438,
+          "taken": 50.56561666666669,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 75.00471666666672,
+          "rounds": 3.182,
+          "taken": 52.50351666666669,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 94.78008333333344,
+          "rounds": 3.158,
+          "taken": 51.17674999999999,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 84.01391666666674,
+        "rounds": 3.032,
+        "taken": 48.79616666666667,
+        "loss": 0,
+        "wonInOne": 0
+      },
+      "xDamage": 49.1104401503382,
+      "xRounds": 68.68377483443713,
+      "xTaken": 132.6908238190418,
+      "roundsEfficiency": 1.398557508834792,
+      "takenEfficiency": 2.7018862672141624,
+      "extrapolated": true,
+      "dealtGainPct": 135.98354193819029
+    },
+    {
+      "scope": "L50",
+      "group": "rulebook L50",
+      "kind": "base",
+      "level": 50,
+      "enemies": 4,
+      "preset": "double-caster",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 35.5488166666667,
+          "rounds": 3.221,
+          "taken": 44.268733333333365,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 45.440133333333364,
+          "rounds": 3.106,
+          "taken": 43.37983333333338,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 55.205283333333306,
+          "rounds": 3.097,
+          "taken": 47.303666666666686,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 75.04188333333327,
+          "rounds": 3.008,
+          "taken": 41.99833333333333,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 94.86533333333338,
+          "rounds": 2.626,
+          "taken": 51.65716666666666,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 59.47833333333338,
+        "rounds": 3.013,
+        "taken": 39.92775000000001,
+        "loss": 0,
+        "wonInOne": 0
+      },
+      "xDamage": 24.237888909238222,
+      "xRounds": 25.84254411479538,
+      "xTaken": -36.393180399621976,
+      "roundsEfficiency": 1.0662044129159098,
+      "takenEfficiency": -1.5014995957734087,
+      "extrapolated": false,
+      "dealtGainPct": 67.31452383084478
+    },
+    {
+      "scope": "L50",
+      "group": "rulebook L50",
+      "kind": "base",
+      "level": 50,
+      "enemies": 4,
+      "preset": "double-caster",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 35.5488166666667,
+          "rounds": 3.221,
+          "taken": 44.268733333333365,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 45.440133333333364,
+          "rounds": 3.106,
+          "taken": 43.37983333333338,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 55.205283333333306,
+          "rounds": 3.097,
+          "taken": 47.303666666666686,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 75.04188333333327,
+          "rounds": 3.008,
+          "taken": 41.99833333333333,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 94.86533333333338,
+          "rounds": 2.626,
+          "taken": 51.65716666666666,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 75.08508333333333,
+        "rounds": 2.966,
+        "taken": 39.62891666666667,
+        "loss": 0,
+        "wonInOne": 0
+      },
+      "xDamage": 40.025208876485976,
+      "xRounds": 31.128563118091837,
+      "xTaken": -39.61130543037398,
+      "roundsEfficiency": 0.7777239392841558,
+      "takenEfficiency": -0.9896589310154692,
+      "extrapolated": false,
+      "dealtGainPct": 111.21682906463344
+    },
+    {
+      "scope": "L50",
+      "group": "rulebook L50",
+      "kind": "base",
+      "level": 50,
+      "enemies": 4,
+      "preset": "no-healer",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 33.13989285714284,
+          "rounds": 4.692,
+          "taken": 45.0187273809524,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 42.96150833333332,
+          "rounds": 4.35,
+          "taken": 45.248178174603204,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 51.985640476190454,
+          "rounds": 4.202,
+          "taken": 40.651430952380956,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 70.75138333333334,
+          "rounds": 4.038,
+          "taken": 39.60786666666666,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 89.82905000000002,
+          "rounds": 3.564,
+          "taken": 40.57193333333331,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 54.895116666666716,
+        "rounds": 3.869,
+        "taken": 42.97096666666666,
+        "loss": 0,
+        "wonInOne": 0
+      },
+      "xDamage": 22.984557862875043,
+      "xRounds": 43.81420094127277,
+      "xTaken": 17.472514950824348,
+      "roundsEfficiency": 1.9062451060693248,
+      "takenEfficiency": 0.7601849491760806,
+      "extrapolated": false,
+      "dealtGainPct": 65.6466329064635
+    },
+    {
+      "scope": "L50",
+      "group": "rulebook L50",
+      "kind": "base",
+      "level": 50,
+      "enemies": 4,
+      "preset": "no-healer",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 33.13989285714284,
+          "rounds": 4.692,
+          "taken": 45.0187273809524,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 42.96150833333332,
+          "rounds": 4.35,
+          "taken": 45.248178174603204,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 51.985640476190454,
+          "rounds": 4.202,
+          "taken": 40.651430952380956,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 70.75138333333334,
+          "rounds": 4.038,
+          "taken": 39.60786666666666,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 89.82905000000002,
+          "rounds": 3.564,
+          "taken": 40.57193333333331,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 80.25774999999999,
+        "rounds": 3.204,
+        "taken": 45.420466666666705,
+        "loss": 0,
+        "wonInOne": 0
+      },
+      "xDamage": 49.929363762646965,
+      "xRounds": 83.27603846940866,
+      "xTaken": -10.328603423626982,
+      "roundsEfficiency": 1.66787702053013,
+      "takenEfficiency": -0.20686431080369566,
+      "extrapolated": true,
+      "dealtGainPct": 142.1786646866046
+    },
+    {
+      "scope": "L50",
+      "group": "rulebook L50",
+      "kind": "base",
+      "level": 50,
+      "enemies": 4,
+      "preset": "physical",
+      "multi": 2,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 34.0016734126984,
+          "rounds": 7.023638232271326,
+          "taken": 42.53219523809524,
+          "loss": 0.008,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 42.885697222222255,
+          "rounds": 6.445,
+          "taken": 43.13457698412696,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 52.31500833333334,
+          "rounds": 6.008,
+          "taken": 43.4150297619048,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 67.92001666666665,
+          "rounds": 4.674,
+          "taken": 45.41569999999998,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 93.93123333333337,
+          "rounds": 4.088,
+          "taken": 39.40856666666667,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 55.31089047619046,
+        "rounds": 5.392,
+        "taken": 44.58084999999993,
+        "loss": 0,
+        "wonInOne": 0
+      },
+      "xDamage": 23.02375399530667,
+      "xRounds": 31.055516953826743,
+      "xTaken": -25.692288420997585,
+      "roundsEfficiency": 1.3488468023137028,
+      "takenEfficiency": -1.1159035327703244,
+      "extrapolated": false,
+      "dealtGainPct": 62.671083287135595
+    },
+    {
+      "scope": "L50",
+      "group": "rulebook L50",
+      "kind": "base",
+      "level": 50,
+      "enemies": 4,
+      "preset": "physical",
+      "multi": 3,
+      "flat": [
+        {
+          "x": 0,
+          "dealt": 34.0016734126984,
+          "rounds": 7.023638232271326,
+          "taken": 42.53219523809524,
+          "loss": 0.008,
+          "wonInOne": 0
+        },
+        {
+          "x": 10,
+          "dealt": 42.885697222222255,
+          "rounds": 6.445,
+          "taken": 43.13457698412696,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 20,
+          "dealt": 52.31500833333334,
+          "rounds": 6.008,
+          "taken": 43.4150297619048,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 40,
+          "dealt": 67.92001666666665,
+          "rounds": 4.674,
+          "taken": 45.41569999999998,
+          "loss": 0,
+          "wonInOne": 0
+        },
+        {
+          "x": 60,
+          "dealt": 93.93123333333337,
+          "rounds": 4.088,
+          "taken": 39.40856666666667,
+          "loss": 0,
+          "wonInOne": 0
+        }
+      ],
+      "arm": {
+        "dealt": 72.98083333333341,
+        "rounds": 4.606,
+        "taken": 50.014916666666664,
+        "loss": 0,
+        "wonInOne": 0
+      },
+      "xDamage": 41.15930000892972,
+      "xRounds": 46.59406501776663,
+      "xTaken": -181.7790189118505,
+      "roundsEfficiency": 1.1320422117882911,
+      "takenEfficiency": -4.416474985541849,
+      "extrapolated": false,
+      "dealtGainPct": 114.63894569988338
+    }
+  ]
+}
