@@ -4969,6 +4969,12 @@ const Confirm = {
       skillUuid: ar.skillUuid ?? null,
       weaponUuid: ar.weapon?.uuid ?? null,
       actionIntent: ar.actionIntent,
+      // The BD round, read by ROUND in a reaction's condition_formula
+      // (evaluateConditionFormula takes it from payload.round). Lifecycle
+      // dispatches stamped it; these CONFIRM scans did not, so a round-gated card
+      // reaction ("on an even round": Explosion Whip's +10) read ROUND as 0 here,
+      // was recorded "conditions not met", and never fired on any round.
+      round: director.dCombat?.round ?? 0,
       // Native resource cost of the in-flight action. ONE canonical spelling for
       // the whole family (`costHp`/`costMp`/`costIp`), read by ACTION_COST_HP /
       // _MP / _IP / _TOTAL. The damage scan used to stamp a rival `actionMpCost`

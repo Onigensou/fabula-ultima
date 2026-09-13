@@ -324,7 +324,12 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
     // Targeting text (Option B), mirrors buildPseudoWeaponFromNpcAttack so the
     // Attack TARGET branch honors a weapon's own skill_target (e.g. a whip that
     // hits all enemies). Blank → the branch falls back to "One Enemy".
-    skillTarget: String(weaponItem?.system?.props?.skill_target ?? "").trim().toLowerCase(),
+    // Kept AS AUTHORED, not lower-cased: a count formula's identifiers are
+    // case-sensitive, so "Up to (1 + 2 * (ROUND % 2 == 0 && ROUND > 0)) creatures"
+    // lower-cased to `round` resolved 0 and silently collapsed to one target.
+    // Every mode test on this text is case-insensitive (same fix as the TARGET
+    // survey's, state-handlers resolveActionTargets).
+    skillTarget: String(weaponItem?.system?.props?.skill_target ?? "").trim(),
     // Effect prose (e.g. "On hit, inflicts Bleed") — surfaced in the action
     // card's Effect section. Mirrors the NPC pseudo-weapon so a PC weapon with
     // an on-hit effect shows it on the attack card too.
@@ -997,7 +1002,8 @@ export function resolveVersatileWeapons(actor) {
         canMeleeFlying: attackerCanMeleeFlying(actor, weaponType),
         imageUrl: item.img ?? null,
         uuid: item.uuid ?? null,
-        skillTarget: String(p.skill_target ?? "").trim().toLowerCase(),
+        // As authored — see the weapon snapshot's skillTarget note above.
+        skillTarget: String(p.skill_target ?? "").trim(),
         descriptionHtml: String(p.description ?? ""),
         actionKeywords: String(p.action_keywords ?? ""),
         defenseTargetType: String(p.defense_target_type ?? "").trim().toLowerCase(),

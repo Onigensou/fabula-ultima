@@ -226,6 +226,10 @@ async function buildHarnessActionBase(ar) {
     costHp: Number(ar.costSerialized?.hp ?? 0) || 0,
     costMp: Number(ar.costSerialized?.mp ?? 0) || 0,
     costIp: Number(ar.costSerialized?.ip ?? 0) || 0,
+    // The BD round, mirroring live `actionBase.round`. Read from the harness
+    // combat the simulate publishes (`args.round`, default 1); without it a
+    // round-gated rider ("on an even round") read ROUND as 0 under test.
+    round: Number(globalThis.__fudActiveDCombat?.round ?? 0) || 0,
   };
 
 
@@ -329,6 +333,8 @@ async function buildPerformsActionPayload(ar) {
     isCrit: !!ar.roll?.isCrit,
     isFumble: !!ar.roll?.isFumble,
     checkTotal: Number(ar.roll?.total ?? 0) || 0,
+    // Live `performPayload` spreads `actionBase`, which carries the BD round.
+    round: Number(globalThis.__fudActiveDCombat?.round ?? 0) || 0,
     // From the live `actionBase` spread. Both were MISSING from the first draft
     // of this builder and `parity` caught them the moment it was taught about
     // this scan — which is the argument for teaching it, not for trusting a
