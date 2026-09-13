@@ -351,8 +351,9 @@ if you accept a partial model. Use --verbose to see every gap.`);
       let dealt = 0;
       for (const c of cs) {
         if (c.side === 'party') {
-          const acc = pByName.get(c.name) ?? { dealt: 0, rounds: 0, runs: 0, turns: 0 };
+          const acc = pByName.get(c.name) ?? { dealt: 0, rounds: 0, runs: 0, turns: 0, taken: 0 };
           acc.dealt += c.damageDealt ?? 0; acc.rounds += r.rounds; acc.runs++;
+          acc.taken += c.damageTaken ?? 0;
           acc.turns += (c.baseActionsTaken ?? 0) + (c.grantedActionsTaken ?? 0);
           pByName.set(c.name, acc);
         }
@@ -479,8 +480,10 @@ if you accept a partial model. Use --verbose to see every gap.`);
       const perRound = acc.rounds ? acc.dealt / acc.rounds : 0;
       const perFight = acc.runs ? acc.dealt / acc.runs : 0;
       const turns = acc.rounds ? acc.turns / acc.rounds : 0;
+      const takenPerRound = acc.rounds ? acc.taken / acc.rounds : 0;
       console.log('  ' + n.padEnd(11) + perRound.toFixed(1).padStart(7) + ' /round '
-        + perFight.toFixed(1).padStart(8) + ' /fight   ' + turns.toFixed(2) + ' turns/round');
+        + perFight.toFixed(1).padStart(8) + ' /fight   ' + turns.toFixed(2) + ' turns/round   '
+        + takenPerRound.toFixed(1).padStart(6) + ' taken /round');
     }
   }
 

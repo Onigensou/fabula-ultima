@@ -64,6 +64,11 @@ function makeCombatant(actor, side) {
     baseActionsTaken: 0,
     grantedActionsTaken: 0,
     damageDealt: 0,
+    // Damage this creature actually lost, split by the defence the attack was rolled
+    // against. A defensive item's value is the damage it prevents on its wearer, and a
+    // +DEF item only touches the "def" share. Healing does not subtract.
+    damageTaken: 0,
+    damageTakenBy: { def: 0, mdef: 0, other: 0 },
     downedOnRound: null,
     crisisOnRound: null,
   };
@@ -321,6 +326,8 @@ function applyFlatDamage(state, source, target, amount, element, label, cause = 
     target.hp = Math.min(target.maxHp, target.hp + out.damage);
   } else {
     target.hp -= out.damage;
+    target.damageTaken += out.damage;
+    target.damageTakenBy.other += out.damage;
     if (source.side !== target.side) source.damageDealt += out.damage;
     if (target.hp <= 0) { target.hp = 0; target.alive = false; target.downedOnRound = state.round; }
     noteCrisis(state, target);
@@ -505,6 +512,8 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
     } else {
       // `victim` is the target unless a protector stepped in front.
       victim.hp -= out.damage;
+      victim.damageTaken += out.damage;
+      victim.damageTakenBy[action.defenseTarget === "mdef" ? "mdef" : "def"] += out.damage;
       actor.damageDealt += out.damage;
       if (victim.hp <= 0) {
         victim.hp = 0;
@@ -815,6 +824,7 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
       // Per-combatant turn counts, so an equipment A/B can see whether an arm
       // changed how often the wielder swings (Acceleration, fight length).
       baseActionsTaken: c.baseActionsTaken, grantedActionsTaken: c.grantedActionsTaken,
+      damageTaken: c.damageTaken, damageTakenBy: { ...c.damageTakenBy },
     })),
     // Per-lane weapon-efficiency pressure. Only populated when something in the
     // fight actually reads weapon families, so it costs nothing otherwise.
