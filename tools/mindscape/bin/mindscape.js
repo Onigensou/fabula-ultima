@@ -21,6 +21,7 @@ const { applyLoadoutArgs } = require("../lib/loadout-swap");
 const { loadWorldItems } = require("../lib/world-items");
 const { applyBaselineGear, loadWorldFolders, basicCatalogue } = require("../lib/baseline-gear");
 const { buildArchetypeParty, DEFAULT_SKILL_LAYER_K } = require("../lib/archetype-party");
+const { buildNeutralEncounter } = require("../lib/neutral-encounter");
 
 function parseArgs(argv) {
   const out = { runs: 1000, seed: "mindscape", force: false, verbose: false, expectedRounds: 7 };
@@ -44,6 +45,10 @@ function parseArgs(argv) {
     else if (a === "--level") out.level = Number(next());
     else if (a === "--power") out.power = next();
     else if (a === "--skill-layer-k") out.skillLayerK = Number(next());
+    else if (a === "--neutral-encounter") out.neutralEncounter = next();
+    else if (a === "--encounter-level") out.encounterLevel = Number(next());
+    else if (a === "--hp-scale") out.hpScale = Number(next());
+    else if (a === "--damage-scale") out.damageScale = Number(next());
     else if (a === "--help" || a === "-h") out.help = true;
   }
   return out;
@@ -76,7 +81,7 @@ function verdict(stats) {
 
 async function main() {
   const args = parseArgs(process.argv);
-  if (args.help || (!args.enemies?.length && !args.enemyFiles?.length)) {
+  if (args.help || (!args.enemies?.length && !args.enemyFiles?.length && !args.neutralEncounter)) {
     console.log(`
 Mindscape — offline Monte Carlo balance runs (game must be CLOSED)
 
@@ -101,6 +106,10 @@ Mindscape — offline Monte Carlo balance runs (game must be CLOSED)
   --level        archetype level, 5-50 (default 41)
   --power        raw (rulebook floor) | table (adds the calibrated skill layer; default)
   --skill-layer-k  override the calibrated table-power damage value
+  --neutral-encounter  normal | elite-pair — enemies from the rulebook NPC formula with
+                 no affinities, half physical and half magic (ruleset Part 6g).
+                 Level: --encounter-level, else --level, else the party's level.
+  --hp-scale / --damage-scale  move the rulebook encounter toward this table (default 1)
   --baseline-gear  "all" | "Hina,Zarg" — every slot of those PCs to its same-class
                  BASIC item: the 0% chassis of docs/equipment-balance-design.md.
                  --equip/--unequip apply on top, e.g. own:<name> to put one of the
@@ -143,6 +152,14 @@ Mindscape — offline Monte Carlo balance runs (game must be CLOSED)
   const enemies = [
     ...(args.enemies?.length ? await loadNamed(args.enemies) : []),
     ...(args.enemyFiles?.length ? loadEnemyFiles(args.enemyFiles) : []),
+    ...(args.neutralEncounter
+      ? buildNeutralEncounter(args.neutralEncounter, {
+        level: Number.isFinite(args.encounterLevel) ? args.encounterLevel
+          : Number.isFinite(args.level) ? args.level : Number(party[0]?.level) || 41,
+        hpScale: Number.isFinite(args.hpScale) ? args.hpScale : 1,
+        damageScale: Number.isFinite(args.damageScale) ? args.damageScale : 1,
+      })
+      : []),
   ];
 
   console.log(`\nMindscape — ${game.gameName}  ·  ${game.partyName}`);
