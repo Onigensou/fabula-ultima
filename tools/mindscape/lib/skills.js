@@ -302,7 +302,30 @@ function extractActions(actor) {
     });
   }
 
+  // Skills an item GRANTS (its contained sub-items) are usable only while that item is
+  // EQUIPPED — the live skill-picker equip gate and skill-effects
+  // containerReactionInPlay — unless the skill declares `Versatile` ("this ability can
+  // be used even if you don't have this item equipped"; snapshot.js
+  // skillDeclaresVersatile). Only GEAR containers gate; Arcanum and class items do not.
+  //
+  // ADDED 2026-09-13. Before this, a PC kept every spell of every weapon in the bag:
+  // Hina cast Glacies Finis from an Arch Ice Wand she was not holding. Scoped to PCs:
+  // live lets an NPC's weapon count as "in play" when it is USED even though NPC
+  // weapons are almost never flagged equipped, and the model has no used-weapon signal.
+  const GEAR = new Set(["weapon", "armor", "shield", "accessory"]);
+  const byId = new Map((actor.items ?? []).map((it) => [it.id, it]));
+  const gatedByGear = (item) => {
+    if (actor.isNpc) return false;
+    const parent = byId.get(String(item.container ?? ""));
+    if (!parent) return false;
+    if (!GEAR.has(String(parent.props?.item_type ?? "").trim().toLowerCase())) return false;
+    if (item.props?.versatile === true || item.flags?.["fabula-ultima-companion"]?.versatile === true) return false;
+    return !(parent.props?.isEquipped === true || parent.props?.isEquipped === "true");
+  };
+  out.gatedByGear = [];
+
   for (const item of actor.items ?? []) {
+    if (gatedByGear(item)) { out.gatedByGear.push(item.name); continue; }
     const r = extractAction(item, actor);
 
     if (r.kind === "action")  { out.actions.push(r); continue; }

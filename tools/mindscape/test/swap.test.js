@@ -145,12 +145,21 @@ t("a weapon swap rebuilds the swing: family, damage, element, range, accuracy", 
   assert.strictEqual(swing.checkBonus, 1);
   assert.strictEqual(swing.attrB, "mig");
 });
-t("sub-items travel with their parent", () => {
+t("granted sub-items follow their parent's equip state (the live equip gate)", () => {
+  const { extractActions } = require("../lib/skills");
   const m = archer();
   SW.applySwaps(m, [{ slot: "main", source: fromWorld("Whip") }], { worldItems: W });
-  assert.ok(!m.items.some((i) => i.name === "Bow Trick"), "the bow's gear skill should leave with the bow");
-  const passive = m.items.find((i) => i.name === "Explosion Whip (Passive)");
-  assert.ok(passive && passive.container === "w-whip");
+  const passives = extractActions(m).passives.map((p) => p.name);
+  assert.ok(!passives.includes("Bow Trick"), "the unequipped bow's gear skill must be gated off");
+  assert.ok(passives.includes("Explosion Whip (Passive)"), "the whip's gear skill must be live");
+  assert.ok(m.items.some((i) => i.name === "Bow Trick"), "gated, not deleted — so the bow can be put back");
+});
+t("a Versatile granted skill stays usable with its item unequipped", () => {
+  const { extractActions } = require("../lib/skills");
+  const m = archer();
+  m.items.find((i) => i.name === "Bow Trick").props.versatile = true;
+  SW.applySwaps(m, [{ slot: "main", source: fromWorld("Whip") }], { worldItems: W });
+  assert.ok(extractActions(m).passives.some((p) => p.name === "Bow Trick"));
 });
 t("the main hand cannot be emptied", () => {
   assert.throws(() => SW.applySwaps(archer(), [{ slot: "main", source: null }], { worldItems: W }), /cannot be emptied/);

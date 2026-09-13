@@ -71,7 +71,13 @@
       "date": "2026-09-13",
       "what": "A weapon swing now counts the weapon's own accuracy bonus (weapon1_mod), which the live snapshot reads.",
       "remeasured": { "runs": 2000, "seed": "calib-2026-08-19", "medianRounds": 3, "medianHp": 0.58, "baselineDpr": 180.0, "roundDensity": 1.07, "enemyDpr": 80.2 },
-      "note": "Zarg's bow +1: his damage 88.5 -> 95.7 per round. Moves toward live (2 rounds / 82%); the stated bias still holds, now about -24 points of party HP. THIS is the current regression baseline."
+      "note": "Zarg's bow +1: his damage 88.5 -> 95.7 per round. Moves toward live (2 rounds / 82%); the stated bias still holds, now about -24 points of party HP. Superseded as the baseline by the next entry."
+    },
+    {
+      "date": "2026-09-13",
+      "what": "A PC's skills granted by UNEQUIPPED gear are gated off (live skill-picker equip gate + skill-effects containerReactionInPlay), Versatile excepted. NPCs are not gated.",
+      "remeasured": { "runs": 2000, "seed": "calib-2026-08-19", "medianRounds": 3, "medianHp": 0.50, "baselineDpr": 149.8, "roundDensity": 1.06, "enemyDpr": 83.9 },
+      "note": "Hina had been casting spells from gear she was not holding: Glacies Finis x2 (Arch Ice Wand), Starfall + Starfall Comet (Lunar Bow), Encyclopedia Strike. Her damage 45.4 -> 23.2 per round. Correct by the live rules, and it moves AWAY from live (2 rounds / 82%): the pessimistic bias is now about -32 points of party HP. THIS is the current regression baseline."
     }
   ],
   "bias": {

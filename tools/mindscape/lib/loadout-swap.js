@@ -189,8 +189,29 @@ function worldSource(worldItems, ref) {
   };
 }
 
-function resolveSource(source, { worldItems = null } = {}) {
+// A piece the character already CARRIES — worn elsewhere or in the bag — by name or
+// #id. The point is "baseline + one of this PC's real items": the refined +5 bow lives
+// on the actor, not among the world items. Refused when two copies differ (different
+// refinement would otherwise be picked at random); use own:#<id> then.
+function ownSource(model, ref) {
+  if (!model) throw new Error("Mindscape: an own:<name> source needs the PC it belongs to");
+  const r = s(ref);
+  const gear = (model.items ?? []).filter((it) => EQUIP_TYPES.has(typeOf(it)));
+  const hits = r.startsWith("#")
+    ? gear.filter((it) => it.id === r.slice(1))
+    : gear.filter((it) => s(it.name) === r || s(it.props?.name) === r);
+  if (!hits.length) throw new Error(`Mindscape: ${model.name} carries no equipment ${r.startsWith("#") ? `with id "${r.slice(1)}"` : `named "${r}"`}`);
+  const variants = new Set(hits.map((h) => JSON.stringify({ ...h.props, isEquipped: null })));
+  if (variants.size > 1) {
+    throw new Error(`Mindscape: ${model.name} carries ${hits.length} different "${r}" (${hits.map((h) => h.id).join(", ")}) — pass own:#<id>`);
+  }
+  const item = hits.find((h) => !isTrue(h.props?.isEquipped)) ?? hits[0];
+  return { item, subItems: [], own: true, origin: `${model.name}'s own "${item.name}" [${item.id}]`, warnings: [] };
+}
+
+function resolveSource(source, { worldItems = null, model = null } = {}) {
   const text = s(source);
+  if (text.startsWith("own:")) return ownSource(model, text.slice("own:".length));
   return text.startsWith("item:") ? worldSource(worldItems, text.slice("item:".length)) : readSpecSource(text);
 }
 
@@ -252,10 +273,10 @@ function writeSlotProps(props, slot, item) {
 }
 
 function unequip(model, item) {
-  const id = item.id;
+  // Its granted sub-items STAY on the model. skills.js extractActions gates them off
+  // while the parent is unequipped (the live equip gate, Versatile excepted), so putting
+  // the item back on — own:<name> — brings them straight back.
   model.items = (model.items ?? [])
-    // Sub-items travel with their parent: a weapon's gear skills leave with it.
-    .filter((it) => s(it.container) !== id)
     .map((it) => (it === item ? { ...it, props: { ...it.props, isEquipped: false } } : it));
 }
 
