@@ -1,0 +1,30 @@
+{
+  "_comment": "PAPER EQUIPMENT — isolation arm: the scaled variant's REACH half alone. On even rounds, basic attacks gain Multi 2; no bonus damage. Pairs with explosion-whip-bonus-only.json to split the scaled variant's value.",
+  "name": "Explosion Whip (Multi 2 only)",
+  "system": {
+    "props": {
+      "item_type": "weapon",
+      "item_rarity": "Uncommon",
+      "category": "Flail",
+      "hand_slots": "Two-handed",
+      "damage_bonus": "8",
+      "check_bonus": "0",
+      "type_damage": "Fire",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "weapon_range": "Melee",
+      "skill_target": "One Enemy"
+    }
+  },
+  "items": [
+    {
+      "name": "Explosion Whip (Passive)",
+      "props": {
+        "skill_type": "Passive",
+        "mindscape_target_count": "2",
+        "mindscape_damage_add": "0",
+        "mindscape_damage_add_level_div": "0"
+      }
+    }
+  ]
+}

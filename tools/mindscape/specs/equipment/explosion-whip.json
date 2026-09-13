@@ -1,0 +1,30 @@
+{
+  "_comment": "PAPER EQUIPMENT — Explosion Whip as submitted 2026-09-13. Uncommon. 'When you attack with this weapon, if the Round number is Even, deal 10 bonus damage and gain Multi 3.' Ruling: 'attack' = BASIC attack only. Rows live in lib/reactions.js under the gear-skill name.",
+  "name": "Explosion Whip",
+  "system": {
+    "props": {
+      "item_type": "weapon",
+      "item_rarity": "Uncommon",
+      "category": "Flail",
+      "hand_slots": "Two-handed",
+      "damage_bonus": "8",
+      "check_bonus": "0",
+      "type_damage": "Fire",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "weapon_range": "Melee",
+      "skill_target": "One Enemy"
+    }
+  },
+  "items": [
+    {
+      "name": "Explosion Whip (Passive)",
+      "props": {
+        "skill_type": "Passive",
+        "mindscape_target_count": "3",
+        "mindscape_damage_add": "10",
+        "mindscape_damage_add_level_div": "0"
+      }
+    }
+  ]
+}

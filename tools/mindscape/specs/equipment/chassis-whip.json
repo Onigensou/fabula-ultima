@@ -1,0 +1,20 @@
+{
+  "_comment": "PAPER EQUIPMENT — the control arm for Explosion Whip. docs/equipment-balance-design.md chassis: Flail, the FU basic Chain Whip (+8, DEX+DEX). Same element as the whip so the A/B isolates the passive alone.",
+  "name": "Chassis Whip",
+  "system": {
+    "props": {
+      "item_type": "weapon",
+      "item_rarity": "Common",
+      "category": "Flail",
+      "hand_slots": "Two-handed",
+      "damage_bonus": "8",
+      "check_bonus": "0",
+      "type_damage": "Fire",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "weapon_range": "Melee",
+      "skill_target": "One Enemy"
+    }
+  },
+  "items": []
+}

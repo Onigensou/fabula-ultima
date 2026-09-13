@@ -1,0 +1,13 @@
+[
+  {
+    "_comment": "PAPER DESIGN — neutral practice target for equipment A/B runs. Absent affinity/EF keys load as neutral (readAffinities NE, readEfficiency 100). No actions: it never attacks, so no PC goes down and the constants stay publishable. 200 HP = elite-sized, above the AoE choice band.",
+    "name": "Dummy A",
+    "system": { "props": {
+      "level": "41", "npc_rank": "soldier", "species": "Monster", "activation": "1",
+      "max_hp": "200", "current_hp": "200", "max_mp": "0", "current_mp": "0",
+      "dex_base": "8", "ins_base": "8", "mig_base": "8", "wlp_base": "8",
+      "defense": "13", "magic_defense": "13"
+    } },
+    "items": []
+  }
+]

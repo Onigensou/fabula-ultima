@@ -1,0 +1,30 @@
+{
+  "_comment": "PAPER EQUIPMENT — isolation arm: the scaled variant's DAMAGE half alone. On even rounds, basic attacks deal bonus damage equal to level / 5; no Multi (a target_count of 1 never raises a single-target swing).",
+  "name": "Explosion Whip (bonus only)",
+  "system": {
+    "props": {
+      "item_type": "weapon",
+      "item_rarity": "Uncommon",
+      "category": "Flail",
+      "hand_slots": "Two-handed",
+      "damage_bonus": "8",
+      "check_bonus": "0",
+      "type_damage": "Fire",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "weapon_range": "Melee",
+      "skill_target": "One Enemy"
+    }
+  },
+  "items": [
+    {
+      "name": "Explosion Whip (Passive)",
+      "props": {
+        "skill_type": "Passive",
+        "mindscape_target_count": "1",
+        "mindscape_damage_add": "0",
+        "mindscape_damage_add_level_div": "5"
+      }
+    }
+  ]
+}
