@@ -77,7 +77,13 @@
       "date": "2026-09-13",
       "what": "A PC's skills granted by UNEQUIPPED gear are gated off (live skill-picker equip gate + skill-effects containerReactionInPlay), Versatile excepted. NPCs are not gated.",
       "remeasured": { "runs": 2000, "seed": "calib-2026-08-19", "medianRounds": 3, "medianHp": 0.50, "baselineDpr": 149.8, "roundDensity": 1.06, "enemyDpr": 83.9 },
-      "note": "Hina had been casting spells from gear she was not holding: Glacies Finis x2 (Arch Ice Wand), Starfall + Starfall Comet (Lunar Bow), Encyclopedia Strike. Her damage 45.4 -> 23.2 per round. Correct by the live rules, and it moves AWAY from live (2 rounds / 82%): the pessimistic bias is now about -32 points of party HP. THIS is the current regression baseline."
+      "note": "Hina had been casting spells from gear she was not holding: Glacies Finis x2 (Arch Ice Wand), Starfall + Starfall Comet (Lunar Bow), Encyclopedia Strike. Her damage 45.4 -> 23.2 per round. Correct by the live rules, and it moves AWAY from live (2 rounds / 82%): the pessimistic bias is now about -32 points of party HP. Superseded as the baseline by the next entry."
+    },
+    {
+      "date": "2026-09-13",
+      "what": "Protect re-resolves the redirected hit against the PROTECTOR (live card-mutations redirect_target; the Guardian text 'any Checks ... will be performed against you'): the same roll total vs the protector's DEF/MDEF, damage through the protector's affinities and damage reduction.",
+      "remeasured": { "runs": 2000, "seed": "calib-2026-08-19", "medianRounds": 3, "medianHp": 0.60, "baselineDpr": 149.9, "roundDensity": 1.06, "enemyDpr": 66.7 },
+      "note": "Blanche (DEF 19) had been taking the damage computed for the protected ally: 30.9 taken per round, now 11.9, because protected hits now roll against her defence. Moves TOWARD live (2 rounds / 82%): the bias is now about -22 points of party HP. THIS is the current regression baseline."
     }
   ],
   "bias": {

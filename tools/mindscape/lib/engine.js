@@ -477,18 +477,27 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
       lane.effSum += Number(target.actor.efficiency[fam] ?? 100) || 100;
     }
 
-    const out = R.incomingDamage(
+    const dmgSpec = {
+      base,
+      element: action.element,
+      weaponFamily: action.weaponFamily,
+      keywords: action.keywords,
+    };
+    let out = R.incomingDamage(
       { ...target.actor, damageReduction: reductionFor(target, action.element) },
-      {
-        base,
-        element: action.element,
-        weaponFamily: action.weaponFamily,
-        keywords: action.keywords,
-      },
+      dmgSpec,
     );
 
     // PROTECT: a defensive redirect resolved here rather than on a turn -- the
     // protector steps in front and takes the hit instead.
+    //
+    // CORRECTED 2026-09-13. The protector used to absorb the damage computed for the
+    // ORIGINAL target. Live (card-mutations.js, the redirect_target mutation) and the
+    // skill's own text ("any Checks that are part of the danger will be performed
+    // against you") re-resolve the hit against the PROTECTOR: the same roll total vs the
+    // protector's DEF/MDEF (a crit still hits, a fumble still misses), then damage
+    // through the protector's own affinities and damage reduction. Without this a
+    // Guardian's resistances and defence never touched a hit it protected.
     let victim = target;
     if (out.direction !== "recover" && actor.side === "enemy") {
       const prot = U.findProtector(state, target, out.damage);
@@ -496,6 +505,18 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
         prot.protectedThisRound++;
         victim = prot;
         state.log.push({ round: state.round, actor: prot.name, action: "Protect", target: target.name, protect: true });
+        const protDl = action.defenseTarget === "mdef" ? prot.actor.mdef : prot.actor.def;
+        const protHit = check.crit ? true : (!check.fumble && check.result >= protDl);
+        if (!protHit) {
+          state.log.push({ round: state.round, actor: actor.name, action: action.name, target: prot.name, miss: true, protected: target.name });
+          attackedCtx.victim = prot;
+          fireReactions(state, prot, RX.TRIGGERS.ON_ATTACKED, { ...attackedCtx, hit: false });
+          continue;
+        }
+        out = R.incomingDamage(
+          { ...prot.actor, damageReduction: reductionFor(prot, action.element) },
+          dmgSpec,
+        );
       }
     }
 
