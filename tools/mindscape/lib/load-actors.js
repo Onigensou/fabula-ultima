@@ -207,6 +207,11 @@ function toCombatModel(doc) {
       name:       String(props.main_hand ?? "").trim() || null,
       baseDamage: num(props.weapon1_base_damage),
       baseMod:    num(props.weapon1_base_mod),
+      // The weapon's OWN accuracy bonus. The live snapshot reads `weapon1_mod` as the
+      // attack's accuracy modifier (snapshot.js resolveAttackerWeapon); the model used
+      // to ignore it, so Zarg's bow +1 and every +1 Sword/Dagger never counted.
+      // Added 2026-09-13 — a loadout A/B cannot compare a +1 weapon to a +0 one without it.
+      checkBonus: num(props.weapon1_mod ?? props.weapon1_base_mod),
       element:    String(props.weapon1_damagetype ?? "").trim() || null,
       attrA:      String(props.main_attrib_1 ?? "").trim() || null,
       attrB:      String(props.main_attrib_2 ?? "").trim() || null,
