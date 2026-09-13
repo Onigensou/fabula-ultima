@@ -5465,6 +5465,18 @@
         "effects": 0
       },
       {
+        "id": "UQmfh1jf8CSx6uHU",
+        "name": "Explosion Whip",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "IGxIeTephfjr422G",
+        "name": "Explosion Whip (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "S9EChgOjoB8XNIgi",
         "name": "Explosive Trap",
         "type": "equippableItem",

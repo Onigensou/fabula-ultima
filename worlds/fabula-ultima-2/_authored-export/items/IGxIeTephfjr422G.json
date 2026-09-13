@@ -1,0 +1,68 @@
+{
+  "_id": "IGxIeTephfjr422G",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1789343292594,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/weapons/misc/whip-red-yellow.webp",
+  "name": "Explosion Whip (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "UQmfh1jf8CSx6uHU",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>When you attack with this weapon on an even round, the attack gains @UUID[JournalEntry.Gm3upxgpUVoLSK5u]{Multi 3} and deals 10 extra damage.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "damage_amount": "10",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "xwhip_bonus",
+          "target_ref": ""
+        }
+      },
+      "id": "IGxIeTephfjr422G",
+      "img": "icons/weapons/misc/whip-red-yellow.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Explosion Whip (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ROUND > 0 && ROUND % 2 == 0 && ACTION_IS_ATTACK == 1",
+          "reaction_action_intent": "",
+          "reaction_effect_ref": "xwhip_bonus",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_description": "<ul><li><p>When you attack with this weapon on an even round, the attack gains @UUID[JournalEntry.Gm3upxgpUVoLSK5u]{Multi 3} and deals 10 extra damage.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.IGxIeTephfjr422G"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "IGxIeTephfjr422G"
+  },
+  "type": "equippableItem"
+}
