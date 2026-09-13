@@ -820,8 +820,32 @@ Word bands relative to the chassis: damage **Low −2 · Standard 0 · High +4 �
 Very High +8** (Very High expects a drawback; "moderate" = Standard); accuracy
 **Low −1 · Standard 0 · High +1**. The answer is a stat line, a budget sheet
 against the rarity, the level check at L20 and L50, the assumed uptimes and
-encounter mix, the engine route, and final item text — plus, for a mechanised
-main-hand weapon, an `--equip` A/B.
+encounter mix, the engine route, and final item text — plus a measured check.
+
+### Measuring it — `check-item`
+Write the item as a spec file (any slot), then run from `tools/mindscape`:
+
+```
+node bin/check-item.js --item my-item.json [--wearer caster] [--rarity rare]
+```
+
+- **Spec shape:** an item document.
+  - `system.props`: `item_type`, `item_rarity`, and for weapons the chassis fields.
+  - `effects`: stat passives as Active Effect changes, e.g.
+    `{ "key": "bonus_defense", "mode": 2, "value": "2" }`.
+  - `items`: gear skills — passives and actives as sub-items.
+  - Examples: `specs/equipment/`.
+- **What it prints:**
+  - value % per dungeon on the house roster, and the rulebook base at L20 and L50
+  - offense and defense, fight share kept standing, KO and loss deltas
+  - the level check against the rarity budget
+- **Read "What the model sees" first.** A passive with no registry entry, an active the model
+  cannot parse, or an effect it cannot read measures as **0%**. That is a gap to fill or to
+  price on paper (Part 4), not a verdict on the item.
+- **Weapons** are measured against the basic weapon of their own category (Part 2 chassis).
+  Everything else is measured against the preset's basic kit.
+- Pick the wearer the item is *for*: a spell accessory on the caster, a guard armor on the
+  most-hit.
 
 ---
 

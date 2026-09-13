@@ -128,6 +128,14 @@ node bin/reference-set.js --levels 35,38,40,46,48,50 --enemy-defense dice --out 
 node bin/reference-loadout.js --ladder expectations/reference-set-rulebook.json --out expectations/reference-loadout-rulebook.json
 # the guide's original design-point ladder (neutral, DEF/MDEF 13, L20/30/41/50)
 node bin/reference-set.js --out expectations/reference-set.json
+
+# ONE designed item, any slot: value %, level check, and what the model cannot see (spec Part 6j)
+node bin/check-item.js --item specs/equipment/explosion-whip.json
+node bin/check-item.js --item my-ring.json --wearer caster --rarity rare
+# enemy-count and species mix from the dungeons' Encounter tables
+node bin/encounter-census.js --out expectations/encounter-census.json
+# does spread damage (Multi N) end fights as fast as its damage total?
+node bin/spread-test.js --out expectations/spread-test.json
 ```
 
 Presets: `standard`, `double-caster`, `no-healer`, `physical`. `--equip` and

@@ -317,7 +317,7 @@ same item's props.
   whose modelled kit is weapon-only (Zarg today). A real player may *choose* a basic
   attack on the round the rider pays; the model never makes that choice, so it reads such
   an item as a **floor** on a PC with a damage kit.
-- Off-hand, armor and accessory swaps.
+- ~~Off-hand, armor and accessory swaps.~~ Added in Part 6f.
 - Any party level but the one loaded. The level band's low end stays a paper check.
 
 ## Part 6e — The loadout model (added 2026-09-13)
@@ -587,6 +587,72 @@ Both harnesses can run on this table's real spawn groups instead of rulebook NPC
 
 Outputs: `expectations/reference-set-house.json`, `reference-loadout-house.json`,
 `reference-set-rulebook.json`, `reference-loadout-rulebook.json`.
+
+## Part 6j — One designed item, the encounter census, the spread test (added 2026-09-13)
+
+Three read-only tools for the equipment guide.
+
+### `bin/check-item.js` — one item against its rarity budget
+`--item <spec.json | item:<name>>`, any slot. The shared code lives in `lib/item-check.js`.
+Every archetype preset fights every house spawn group and the rulebook base levels
+(`--base-levels`, default 20 and 50, dice defences) twice, on the same seed: once without
+the item, once with it on its wearer.
+
+- **The 0%.**
+  - A weapon in main or off is measured against the basic weapon of *its own category*
+    (`baseline-gear.js weaponBaseline`, the guide's chassis). Otherwise a Flail would be
+    measured against the Striker's Greatsword and pay for the category change.
+  - Armor, shields and accessories are measured against the preset's basic kit.
+- **Wearer defaults:** a weapon on the Striker, a shield on the Tank, armor on whoever takes
+  the most DEF-rolled damage, an accessory on whoever takes the most damage. `--wearer`
+  overrides.
+- **Prices:**
+  - **Offense** = extra wearer damage per round ÷ (wearer actions per round × BA). This is
+    the ladder's per-action unit, taken per round so granted actions count.
+  - **Defense** = party damage prevented per round ÷ HP-per-BA.
+  - **Value** = offense + defense.
+  - **Kept standing** = points of the fight the wearer no longer spends knocked out
+    (`downShare`). It is not actions per fight, which also falls when an offense item
+    simply ends the fight sooner.
+  - Wearer KO and party loss deltas are also reported.
+- **Level check** (guide Part 5):
+  - The L20 end is rows at L25 or below; the L50 end is rows at L46 or above.
+  - House rows answer when the encounter set has them; otherwise the rulebook base answers,
+    and the output says which.
+- **Coverage:** gear skills with no registry entry, unparseable actives, effects the
+  loadout parser cannot read, and state-gated effects are listed before the numbers. An
+  unseen passive measures as 0%.
+
+### `bin/encounter-census.js` — enemy count and species from the Encounter tables
+Reads every `<Area> - Encounter` RollTable under *The Legend of Dragonslayer* and the
+monsters its rows name.
+- **Row weight:** a row weighs its share of the table's die. A range above the die maximum
+  is boss containment and is never rolled.
+- **Excluded:** starred rows and a lone monster acting more than once per round (Asura,
+  Carlbero).
+- **Aggregates:** by table (each table equal) and by row (each row equal), for all rows and
+  for groups whose highest monster is `--min-level`+.
+- **Output:** enemy-count mix, expected extra targets for Multi 2/3, elite share, and
+  species share of enemies (and of fights with at least one).
+- **Warnings:** a name matching no monster actor — that slot never spawns.
+
+### `bin/spread-test.js` — is spread damage worth its total?
+On the Striker (weapon-only kit, so every swing is a basic attack), same encounter and seed:
+- **Arms:** basic weapon + `Mindscape Multi Rider (Passive)` (every basic attack gains
+  Multi N), against basic weapon + X flat damage for several X.
+- **Fit:** straight lines through the flat arms for Striker damage per round, rounds, and
+  party damage taken.
+- **Spread efficiency** = X_rounds ÷ X_damage, where X_rounds is the flat bonus that ends
+  fights as fast and X_damage the flat bonus dealing as much damage. 1.0 means full value;
+  below 1 means a split-damage discount. The same ratio is also computed from party damage
+  taken.
+
+### Engine and runArm additions
+- Each combatant now counts `hitsTaken` (damaging action hits that landed) and exports
+  `downedOnRound`.
+- `runArm` member stats gained `dealtPerRound`, `actionsPerRound`, `actionsPerFight`,
+  `downShare` and `damagePerHit`, plus `partyDealtPerRound`.
+- Calibration is unchanged (3 rounds / 60% / DPR 149.9 / EnemyDPR 66.7).
 
 ## Part 7 — NOT MODELLED
 
