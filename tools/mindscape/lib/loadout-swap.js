@@ -515,6 +515,6 @@ function applyLoadoutArgs({ equips = [], unequips = [] }, party, { worldItems = 
 module.exports = {
   SLOTS, DUAL_SHIELDBEARER,
   parseSlotArg, checkItemSpec, sourceFromDoc, readSpecSource, resolveSource,
-  currentSlotItems, reconcileSetBonuses, applySwaps, applyLoadoutArgs, snapshotStats,
+  currentSlotItems, reconcileSetBonuses, applySwaps, applyLoadoutArgs, snapshotStats, writeSlotProps,
   standardArmorEffects, standardShieldEffects,
 };
