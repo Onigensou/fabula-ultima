@@ -492,8 +492,9 @@ must match live. It only matters for a d12-DEX character in martial armor.
   character of the same level.
 - **table** (default) — adds a skill layer: `+floor(L/10)` to all checks (the rulebook NPC
   accuracy gradient; the real L41 party averages about +4) and `+round(k × L/10)` damage.
-  **k = 3.78** (+15 at L41), fitted by `bin/calibrate-archetypes.js` so the standard preset
-  at L41 matches the **real party on basic gear** (59.9 DPR vs Inferex + Centuaros). The fully
+  **k = 3.54** (+15 at L41), fitted by `bin/calibrate-archetypes.js` so the standard preset
+  at L41 matches the **real party on basic gear** (59.0 DPR vs Inferex + Centuaros; re-fitted
+  from 3.78 after the Part 6h Protect correction). The fully
   geared party would give k = 16.95; rejected, since it folds gear into the layer. Defense is
   not fitted. Record: `expectations/archetype-calibration.json`.
 
@@ -516,6 +517,24 @@ soldiers (the rulebook budget for four PCs); **elite-pair** = two elites.
 Class-skill identities (Counterattack, Dances, Zero Power, summons) · IP benefits (IP is not
 spent by any modelled action) · free actions (Acceleration, High Speed) · off-hand attacks.
 `k` is one L41 anchor; other levels extrapolate linearly.
+
+## Part 6h — Protect resolves against the protector (corrected 2026-09-13)
+
+A redirected hit is re-resolved against the **protector**, as live does
+(`card-mutations.js`, the `redirect_target` mutation) and as the Guardian skill says ("any
+Checks that are part of the danger will be performed against you"):
+
+1. The protect decision is made on the damage the hit would deal the original target.
+2. The **same roll total** is compared with the protector's DEF (or MDEF for a magic
+   check). A critical still hits; a fumble still misses. A miss deals nothing and fires the
+   protector's on-attacked reactions.
+3. On a hit, damage runs through the normal pipeline with the **protector's** affinities
+   and damage reduction.
+
+Before this, the protector took the damage computed for the ally it covered, so a Guardian's
+defence, resistances and reduction never touched a protected hit. Measured on the
+calibration pair: Blanche 30.9 → 11.9 damage taken per round; party HP left 50% → 60%
+(`expectations/inferex-centuaros.json` → `modelHistory`). Test: `test/protect.test.js`.
 
 ## Part 7 — NOT MODELLED
 

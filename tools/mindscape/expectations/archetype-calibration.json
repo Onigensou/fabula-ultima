@@ -6,17 +6,17 @@
   "encounter": ["Inferex", "Centuaros"],
   "runs": 2000,
   "seed": "calib-2026-08-19",
-  "k": 3.78,
+  "k": 3.54,
   "skillLayerAtL41": { "accuracy": 4, "damage": 15 },
   "realFullGear": {
     "party": "EXFURSION Party",
-    "baselineDpr": 149.8, "meanHp": 0.506, "meanRounds": 2.86, "enemyDpr": 83.9, "defeatRate": 0,
+    "baselineDpr": 149.9, "meanHp": 0.608, "meanRounds": 2.86, "enemyDpr": 66.7, "defeatRate": 0,
     "bands": { "oneRound": 0, "twoToThree": 94, "fourPlus": 6 }, "partyHpPool": 471
   },
   "realBasicGear": {
     "party": "EXFURSION Party",
-    "baselineDpr": 59.9, "meanHp": 0.054, "meanRounds": 4.73, "enemyDpr": 163.9, "defeatRate": 0.805,
-    "bands": { "oneRound": 0, "twoToThree": 15, "fourPlus": 85 }, "partyHpPool": 401
+    "baselineDpr": 59.0, "meanHp": 0.078, "meanRounds": 4.95, "enemyDpr": 160.4, "defeatRate": 0.747,
+    "bands": { "oneRound": 0, "twoToThree": 12, "fourPlus": 88 }, "partyHpPool": 401
   },
   "archetypeRaw": {
     "baselineDpr": 25.2, "meanHp": 0, "meanRounds": 2.73, "enemyDpr": 185.8, "defeatRate": 1,
@@ -29,15 +29,19 @@
   "fullGearFitForReference": {
     "k": 16.95,
     "archetypeTable": {
-      "baselineDpr": 148.7, "meanHp": 0.155, "meanRounds": 2.81, "enemyDpr": 156, "defeatRate": 0.602,
+      "baselineDpr": 148.8, "meanHp": 0.155, "meanRounds": 2.81, "enemyDpr": 156, "defeatRate": 0.602,
       "bands": { "oneRound": 1, "twoToThree": 80, "fourPlus": 19 }, "partyHpPool": 379
     },
     "note": "What k would be if gear were folded into the skill layer (+69 damage at L41). Not used: it double-counts gear, and every item measured on top would read cheaper."
   },
+  "history": [
+    { "date": "2026-09-13", "k": 3.78, "target": 59.9, "why": "first fit" },
+    { "date": "2026-09-13", "k": 3.54, "target": 59.0, "why": "re-fit after the Protect redirect correction (engine.js): a protected hit is now re-checked and damaged against the protector, which lengthens the real party's basic-gear fights slightly and moved its DPR. Both values give +15 damage at L41; they differ by about 1 damage at L50." }
+  ],
   "readings": [
-    "Offense is calibrated; defense is NOT fitted. On basic gear this fire-themed fight is a near-certain loss for both parties (real 81% defeat, archetypes 99.9%). Archetypes survive slightly worse: a 21-point smaller HP pool and no class defensive skills (Blanche's damage reduction, Keren's phantasms).",
-    "The fight ends sooner for archetypes (2.7 rounds) only because they are wiped sooner; the real party on basic gear drags to 4.7 rounds.",
+    "Offense is calibrated; defense is NOT fitted. On basic gear this fire-themed fight is a near-certain loss for both parties (real 75% defeat, archetypes 99.9%). Archetypes survive slightly worse: a 22-point smaller HP pool and no class defensive skills (Blanche's damage reduction, Keren's phantasms).",
+    "The fight ends sooner for archetypes (2.7 rounds) only because they are wiped sooner; the real party on basic gear drags to 5.0 rounds.",
     "k is a single L41 anchor. At other levels the +round(k x L/10) damage and +floor(L/10) accuracy extrapolate linearly.",
-    "Bisection steps between 59.5 and 61.0 DPR: damage is integer-rounded, so k is meaningful to about +-0.1."
+    "Damage is integer-rounded, so archetype DPR steps between 58.0 and 59.5 and cannot land exactly on 59.0; k is meaningful to about +-0.1."
   ]
 }

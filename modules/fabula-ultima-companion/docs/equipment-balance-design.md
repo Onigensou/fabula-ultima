@@ -374,7 +374,7 @@ row in `party output`. Specs live in `tools/mindscape/specs/equipment/`.
   builds a generic party by the character-creation rules at any level, and
   `--neutral-encounter` builds enemies by the rulebook NPC formula with no affinities. The
   **L20 and L50 checks can now be measured**, not only priced on paper. Default power
-  `table` carries a skill layer calibrated to the real party on basic gear (k = 3.78).
+  `table` carries a skill layer calibrated to the real party on basic gear (k = 3.54).
   Baseline table: `tools/mindscape/expectations/archetype-sweep.json`.
 - **Measure on archetypes first, the real party second.** An item's value is *archetype
   preset + item* vs *archetype preset* at the same level, power and seed, across the four
