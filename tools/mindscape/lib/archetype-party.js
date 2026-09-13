@@ -51,9 +51,12 @@ const DIE_STEPS = [6, 8, 10, 12];
 const MILESTONES = [20, 40];
 const POWER_MODES = new Set(["raw", "table"]);
 
-// Calibrated 2026-09-13 — see expectations/archetype-calibration.json. Damage added per
-// 10 character levels in "table" mode.
-const DEFAULT_SKILL_LAYER_K = null;   // set by the calibration commit; null refuses table mode
+// Damage added per 10 character levels in "table" mode. Calibrated 2026-09-13 by
+// bin/calibrate-archetypes.js: the standard preset at L41 matches the real party ON BASIC
+// GEAR (59.9 party DPR vs Inferex + Centuaros), giving +15 damage at L41. Fitting the
+// fully geared party instead gives 16.95 (+69) — rejected, it folds gear into the skill
+// layer. See expectations/archetype-calibration.json before changing it.
+const DEFAULT_SKILL_LAYER_K = 3.78;
 
 function s(v) { return String(v ?? "").trim(); }
 function clone(v) { return v == null ? v : JSON.parse(JSON.stringify(v)); }
