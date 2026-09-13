@@ -318,17 +318,30 @@ and affinities pull it below paper.
 | "When you reduce an enemy to 0 HP" | ~1 in a 2-enemy fight — use 0.5 as uptime |
 | "On even rounds" | uptime **0.45** (2-round fight 50 %, 3-round 33 %, boss ~50 %) |
 
-### Encounter size (default mix)
+### Encounter size (measured mix)
 
-Anything that depends on how many enemies are present uses this mix until
-encounter sizes are measured across the dungeon rosters:
+Measured 2026-09-13 from the world's Encounter tables (`bin/encounter-census.js`,
+`expectations/encounter-census.json`). This replaces the earlier guess of 20 / 30 / 50.
+- **Rows counted:** every non-boss spawn row once, for groups whose highest monster is L20+.
+- **Weighting:** by row. Table weighting lets a one-row table (the Vastwind cave's lone
+  elite) count as much as a 26-row dungeon.
 
 | Enemies | Share | Extra targets for Multi 2 | for Multi 3 |
 |---|---|---|---|
-| 1 (solo / boss) | 20 % | 0 | 0 |
-| 2 | 30 % | 1 | 1 |
-| 3+ | 50 % | 1 | 2 |
-| **Expected** | | **0.8** | **1.3** |
+| 1 | 3 % | 0 | 0 |
+| 2 | 17 % | 1 | 1 |
+| 3 | 73 % | 1 | 2 |
+| 4+ | 7 % | 1 | 2 |
+| **Expected** | | **0.97** | **1.77** |
+
+- **Our spawn groups are mostly threes.** A Multi 3 rider has about 35 % more extra
+  targets than the old mix priced (1.77 vs 1.3). Part 9 D's paper numbers used the old
+  mix.
+- **Boss and solo fights** (Asura, Carlbero, the starred rows) are excluded. Weigh them in
+  by judgment for an item meant for bosses.
+- **Price in the dungeon where the item drops.**
+  - Valley of the Dragon is 38 % two-enemy groups: Multi 3 there is +1.62.
+  - Fafnir Castle is 26 % four-plus groups: +1.87.
 
 ### Uptime — the conditional discount
 
@@ -339,9 +352,22 @@ Class- or skill-specific conditions ("Flail attacks", "Frenetic Footwork SL+2")
 are what Magic: The Gathering calls **parasitic** — they need a specific other
 piece to function — and usually have very low uptime.
 
-**Species conditions: assume an even spread** across the 8 canonical species →
-**12.5 % uptime per species named** (ruling 2026-09-13, until species frequency
-across the rosters is measured).
+**Species conditions: use the measured share of enemies.** The 2026-09-13 ruling was an even
+spread (12.5 % per species) *until measured*. The same census measures it: non-boss spawn
+rows L20+, each row once. The value is the share of enemies of that species, with the share
+of fights that contain at least one in brackets.
+
+| Species | Uptime | Species | Uptime |
+|---|---|---|---|
+| Elemental | **33 %** (51 %) | Construct | 5 % (10 %) |
+| Beast | **25 %** (47 %) | Undead | 5 % (9 %) |
+| Humanoid | 16 % (25 %) | Demon | 4 % (7 %) |
+| Plant | 8 % (19 %) | Monster | 4 % (8 %) |
+
+- **Use the share of enemies** for a damage bonus against the species.
+- **Use the share of fights** for an effect that switches on when one is present.
+- **The mix is lopsided.** "vs Elemental" is worth eight times "vs Demon". Price it in the
+  dungeon where the item drops: the census prints every table.
 
 ---
 
@@ -874,9 +900,9 @@ Rider        on a multi-target action × targets actually hit
 +1 DEF/MDEF  monster hit points removed ÷ its hit rate × damage aimed at that defence
 Resistance   ½ × damage taken × element share; offensive elements price the same way
 Max HP       KO prevention, not damage; weigh against one typical monster hit (P6 open)
-Multi N      extra targets × attack damage, full value; mix 20/30/50 → +0.8 (M2) / +1.3 (M3)
+Multi N      extra targets × attack damage, full value; measured mix 3/17/73/7 → +0.97 (M2) / +1.77 (M3)
 Basic swing  ≈ ¼ BA at L41 — riders on it decay ~3× across the band
-Species      even spread → 12.5 % uptime per species
+Species      measured share of enemies: Elemental 33 · Beast 25 · Humanoid 16 · Plant 8 · Construct/Undead 5 · Demon/Monster 4 %
 1 BA         extra action · denied enemy action · ~60 HP at L30
 ```
 **Never:** calibrate against legacy items · ship a strictly-better item ·
