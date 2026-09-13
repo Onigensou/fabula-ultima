@@ -134,10 +134,30 @@ t("simValue: offense per action / BA, defense prevented per round / HP-per-BA, m
   assert.ok(Math.abs(def.pct - 10) < 1e-9);
   assert.strictEqual(RS.simValue(entry("max-hp", 10, "armor"), 30, {}, {}).pct, null);
 });
+t("simValue: with both arms, defence is priced PARTY-wide; the wearer figure is kept", () => {
+  const S = (mean) => ({ mean, se: 0 });
+  const arms = { baseline: { partyTakenPerRound: S(60) }, withItem: { partyTakenPerRound: S(51) } };
+  const v = RS.simValue(entry("defense", 3, "armor"), 30, { takenPerRound: S(20) }, { takenPerRound: S(20) }, arms);
+  assert.ok(Math.abs(v.pct - 15) < 1e-9, `party-wide ${v.pct}`);
+  assert.ok(Math.abs(v.wearerPct) < 1e-9, `a protector's own intake can stay flat while the party takes less (${v.wearerPct})`);
+});
+t("runArm reports party-wide damage taken per round", () => {
+  const p = party();
+  const arm = RS.runArm(p, buildNeutralEncounter("normal", { level: 41 }), { runs: 20, seed: "ref-party" });
+  const sum = p.reduce((s, m) => s + arm.members[m.name].takenPerRound.mean, 0);
+  assert.ok(Math.abs(arm.partyTakenPerRound.mean - sum) < 1e-9, `${arm.partyTakenPerRound.mean} vs ${sum}`);
+});
 t("the ladder file loads and every effect is known", () => {
   const items = RS.loadReferenceSet();
-  assert.strictEqual(items.length, 21);
+  assert.strictEqual(items.length, 24);
   assert.deepStrictEqual([...new Set(items.map((i) => i.effect))].sort(), [...RS.EFFECTS].sort());
+  assert.deepStrictEqual(items.filter((i) => i.wearer === "tank").map((i) => i.id), ["def-1-tank", "def-2-tank", "def-3-tank"]);
+});
+t("a role wearer picks that role, or nobody when the preset lacks it", () => {
+  const p = party();
+  assert.strictEqual(RS.pickWearer(p, { wearer: "tank" }, {}).name, "Tank");
+  const dc = A.buildArchetypeParty("double-caster", { level: 41, power: "table", k: 3.54, catalogue });
+  assert.strictEqual(RS.pickWearer(dc, { wearer: "tank" }, {}), null);
 });
 
 console.log(`\n${pass} passed, ${fail} failed`);

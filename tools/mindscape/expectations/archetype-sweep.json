@@ -3,7 +3,7 @@
   "capturedAt": "2026-09-13",
   "runs": 1000,
   "seed": "archetype-sweep",
-  "k": 3.78,
+  "k": 3.54,
   "levels": [
     20,
     30,
@@ -24,12 +24,12 @@
         "twoToThree": 1,
         "fourPlus": 99
       },
-      "partyHp": 44,
+      "partyHp": 45,
       "defeat": 14,
       "overtime": 6,
-      "downsPerFight": 1.68,
-      "partyDpr": 62.3,
-      "enemyDpr": 31.4
+      "downsPerFight": 1.66,
+      "partyDpr": 62.8,
+      "enemyDpr": 30.6
     },
     {
       "kind": "normal",
@@ -64,12 +64,12 @@
         "twoToThree": 0,
         "fourPlus": 100
       },
-      "partyHp": 33,
+      "partyHp": 35,
       "defeat": 13,
       "overtime": 14,
-      "downsPerFight": 2.13,
-      "partyDpr": 47.4,
-      "enemyDpr": 25.8
+      "downsPerFight": 2.05,
+      "partyDpr": 47.8,
+      "enemyDpr": 25.1
     },
     {
       "kind": "normal",
@@ -84,12 +84,12 @@
         "twoToThree": 0,
         "fourPlus": 100
       },
-      "partyHp": 28,
+      "partyHp": 27,
       "defeat": 30,
       "overtime": 33,
       "downsPerFight": 2.47,
       "partyDpr": 34.8,
-      "enemyDpr": 33
+      "enemyDpr": 32.8
     },
     {
       "kind": "normal",
@@ -101,15 +101,15 @@
       "medianRounds": 3,
       "bands": {
         "oneRound": 0,
-        "twoToThree": 76,
-        "fourPlus": 24
+        "twoToThree": 75,
+        "fourPlus": 25
       },
       "partyHp": 70,
       "defeat": 0,
       "overtime": 0,
-      "downsPerFight": 0.58,
-      "partyDpr": 124.7,
-      "enemyDpr": 31.8
+      "downsPerFight": 0.61,
+      "partyDpr": 120.5,
+      "enemyDpr": 30.7
     },
     {
       "kind": "normal",
@@ -121,14 +121,14 @@
       "medianRounds": 3,
       "bands": {
         "oneRound": 0,
-        "twoToThree": 83,
-        "fourPlus": 17
+        "twoToThree": 82,
+        "fourPlus": 18
       },
       "partyHp": 67,
       "defeat": 2,
       "overtime": 0,
-      "downsPerFight": 1.07,
-      "partyDpr": 143.9,
+      "downsPerFight": 1.09,
+      "partyDpr": 138.9,
       "enemyDpr": 28.9
     },
     {
@@ -141,15 +141,15 @@
       "medianRounds": 4,
       "bands": {
         "oneRound": 0,
-        "twoToThree": 32,
-        "fourPlus": 68
+        "twoToThree": 21,
+        "fourPlus": 79
       },
-      "partyHp": 62,
+      "partyHp": 61,
       "defeat": 0,
       "overtime": 0,
-      "downsPerFight": 0.61,
-      "partyDpr": 101.2,
-      "enemyDpr": 27
+      "downsPerFight": 0.73,
+      "partyDpr": 93.9,
+      "enemyDpr": 25.4
     },
     {
       "kind": "normal",
@@ -164,12 +164,12 @@
         "twoToThree": 0,
         "fourPlus": 100
       },
-      "partyHp": 60,
-      "defeat": 1,
-      "overtime": 1,
-      "downsPerFight": 0.94,
-      "partyDpr": 67,
-      "enemyDpr": 29.6
+      "partyHp": 55,
+      "defeat": 2,
+      "overtime": 2,
+      "downsPerFight": 1.13,
+      "partyDpr": 62.9,
+      "enemyDpr": 29.1
     },
     {
       "kind": "normal",
@@ -188,7 +188,7 @@
       "defeat": 24,
       "overtime": 15,
       "downsPerFight": 1.98,
-      "partyDpr": 58,
+      "partyDpr": 58.1,
       "enemyDpr": 37.1
     },
     {
@@ -227,9 +227,9 @@
       "partyHp": 20,
       "defeat": 30,
       "overtime": 34,
-      "downsPerFight": 2.81,
-      "partyDpr": 43.6,
-      "enemyDpr": 32.4
+      "downsPerFight": 2.79,
+      "partyDpr": 43.8,
+      "enemyDpr": 32.3
     },
     {
       "kind": "normal",
@@ -261,15 +261,15 @@
       "medianRounds": 3,
       "bands": {
         "oneRound": 0,
-        "twoToThree": 63,
-        "fourPlus": 37
+        "twoToThree": 64,
+        "fourPlus": 36
       },
       "partyHp": 76,
       "defeat": 0,
       "overtime": 0,
       "downsPerFight": 0.32,
-      "partyDpr": 142,
-      "enemyDpr": 34.6
+      "partyDpr": 142.1,
+      "enemyDpr": 34.5
     },
     {
       "kind": "normal",
@@ -304,12 +304,12 @@
         "twoToThree": 9,
         "fourPlus": 91
       },
-      "partyHp": 59,
+      "partyHp": 60,
       "defeat": 0,
       "overtime": 0,
-      "downsPerFight": 0.68,
+      "downsPerFight": 0.67,
       "partyDpr": 110.8,
-      "enemyDpr": 29.6
+      "enemyDpr": 29
     },
     {
       "kind": "normal",
@@ -324,12 +324,12 @@
         "twoToThree": 0,
         "fourPlus": 100
       },
-      "partyHp": 55,
+      "partyHp": 56,
       "defeat": 0,
       "overtime": 1,
-      "downsPerFight": 1.16,
-      "partyDpr": 76.3,
-      "enemyDpr": 32
+      "downsPerFight": 1.15,
+      "partyDpr": 76.4,
+      "enemyDpr": 31.9
     },
     {
       "kind": "normal",
@@ -429,7 +429,7 @@
       "overtime": 0,
       "downsPerFight": 0.83,
       "partyDpr": 155.9,
-      "enemyDpr": 48
+      "enemyDpr": 47.8
     },
     {
       "kind": "normal",
@@ -469,7 +469,7 @@
       "overtime": 1,
       "downsPerFight": 1.4,
       "partyDpr": 115.1,
-      "enemyDpr": 39.2
+      "enemyDpr": 39.1
     },
     {
       "kind": "normal",
@@ -489,7 +489,7 @@
       "overtime": 2,
       "downsPerFight": 1.19,
       "partyDpr": 86,
-      "enemyDpr": 42.6
+      "enemyDpr": 42.5
     },
     {
       "kind": "normal",
@@ -507,8 +507,8 @@
       "partyHp": 11,
       "defeat": 72,
       "overtime": 14,
-      "downsPerFight": 3.4,
-      "partyDpr": 55.6,
+      "downsPerFight": 3.39,
+      "partyDpr": 55.7,
       "enemyDpr": 67.2
     },
     {
@@ -578,18 +578,18 @@
       "preset": "standard",
       "partyHpPool": 415,
       "enemyHpPool": 580,
-      "medianRounds": 3,
+      "medianRounds": 4,
       "bands": {
         "oneRound": 0,
-        "twoToThree": 53,
-        "fourPlus": 47
+        "twoToThree": 48,
+        "fourPlus": 52
       },
       "partyHp": 74,
       "defeat": 0,
       "overtime": 0,
-      "downsPerFight": 0.42,
-      "partyDpr": 194.8,
-      "enemyDpr": 54.3
+      "downsPerFight": 0.45,
+      "partyDpr": 190.8,
+      "enemyDpr": 53.7
     },
     {
       "kind": "normal",
@@ -601,15 +601,15 @@
       "medianRounds": 3,
       "bands": {
         "oneRound": 0,
-        "twoToThree": 82,
-        "fourPlus": 18
+        "twoToThree": 78,
+        "fourPlus": 22
       },
-      "partyHp": 74,
+      "partyHp": 73,
       "defeat": 0,
       "overtime": 0,
-      "downsPerFight": 0.76,
-      "partyDpr": 211.7,
-      "enemyDpr": 43.2
+      "downsPerFight": 0.8,
+      "partyDpr": 209.8,
+      "enemyDpr": 43.5
     },
     {
       "kind": "normal",
@@ -621,15 +621,15 @@
       "medianRounds": 4,
       "bands": {
         "oneRound": 0,
-        "twoToThree": 1,
-        "fourPlus": 99
+        "twoToThree": 0,
+        "fourPlus": 100
       },
-      "partyHp": 55,
+      "partyHp": 54,
       "defeat": 0,
       "overtime": 0,
-      "downsPerFight": 1.07,
-      "partyDpr": 150.8,
-      "enemyDpr": 44.5
+      "downsPerFight": 1.13,
+      "partyDpr": 144.7,
+      "enemyDpr": 44.2
     },
     {
       "kind": "normal",
@@ -644,12 +644,12 @@
         "twoToThree": 0,
         "fourPlus": 100
       },
-      "partyHp": 46,
-      "defeat": 1,
-      "overtime": 1,
-      "downsPerFight": 1.56,
-      "partyDpr": 94.1,
-      "enemyDpr": 42.5
+      "partyHp": 45,
+      "defeat": 2,
+      "overtime": 2,
+      "downsPerFight": 1.59,
+      "partyDpr": 90.9,
+      "enemyDpr": 42.3
     },
     {
       "kind": "elite-pair",
@@ -664,12 +664,12 @@
         "twoToThree": 0,
         "fourPlus": 100
       },
-      "partyHp": 74,
+      "partyHp": 76,
       "defeat": 0,
       "overtime": 0,
-      "downsPerFight": 0.2,
-      "partyDpr": 71.6,
-      "enemyDpr": 20.6
+      "downsPerFight": 0.16,
+      "partyDpr": 72.1,
+      "enemyDpr": 19.2
     },
     {
       "kind": "elite-pair",
@@ -704,12 +704,12 @@
         "twoToThree": 0,
         "fourPlus": 100
       },
-      "partyHp": 63,
+      "partyHp": 66,
       "defeat": 0,
       "overtime": 1,
-      "downsPerFight": 0.52,
-      "partyDpr": 62.5,
-      "enemyDpr": 17.6
+      "downsPerFight": 0.42,
+      "partyDpr": 63,
+      "enemyDpr": 16.3
     },
     {
       "kind": "elite-pair",
@@ -727,9 +727,9 @@
       "partyHp": 74,
       "defeat": 0,
       "overtime": 2,
-      "downsPerFight": 0.29,
+      "downsPerFight": 0.28,
       "partyDpr": 48.9,
-      "enemyDpr": 19.8
+      "enemyDpr": 19.7
     },
     {
       "kind": "elite-pair",
@@ -741,15 +741,15 @@
       "medianRounds": 3,
       "bands": {
         "oneRound": 0,
-        "twoToThree": 71,
-        "fourPlus": 30
+        "twoToThree": 63,
+        "fourPlus": 37
       },
-      "partyHp": 79,
+      "partyHp": 82,
       "defeat": 0,
       "overtime": 0,
       "downsPerFight": 0.01,
-      "partyDpr": 114,
-      "enemyDpr": 20.7
+      "partyDpr": 110.8,
+      "enemyDpr": 19
     },
     {
       "kind": "elite-pair",
@@ -761,15 +761,15 @@
       "medianRounds": 3,
       "bands": {
         "oneRound": 0,
-        "twoToThree": 87,
-        "fourPlus": 13
+        "twoToThree": 81,
+        "fourPlus": 19
       },
-      "partyHp": 82,
+      "partyHp": 81,
       "defeat": 0,
       "overtime": 0,
-      "downsPerFight": 0.42,
-      "partyDpr": 126.2,
-      "enemyDpr": 19.3
+      "downsPerFight": 0.45,
+      "partyDpr": 120.7,
+      "enemyDpr": 19.2
     },
     {
       "kind": "elite-pair",
@@ -781,15 +781,15 @@
       "medianRounds": 4,
       "bands": {
         "oneRound": 0,
-        "twoToThree": 34,
-        "fourPlus": 66
+        "twoToThree": 19,
+        "fourPlus": 81
       },
-      "partyHp": 76,
+      "partyHp": 79,
       "defeat": 0,
       "overtime": 0,
-      "downsPerFight": 0,
-      "partyDpr": 102,
-      "enemyDpr": 18
+      "downsPerFight": 0.01,
+      "partyDpr": 96.5,
+      "enemyDpr": 15.2
     },
     {
       "kind": "elite-pair",
@@ -804,12 +804,12 @@
         "twoToThree": 0,
         "fourPlus": 100
       },
-      "partyHp": 79,
+      "partyHp": 80,
       "defeat": 0,
       "overtime": 0,
-      "downsPerFight": 0.02,
-      "partyDpr": 80.5,
-      "enemyDpr": 19.8
+      "downsPerFight": 0.03,
+      "partyDpr": 76.2,
+      "enemyDpr": 19.7
     },
     {
       "kind": "elite-pair",
@@ -864,12 +864,12 @@
         "twoToThree": 0,
         "fourPlus": 100
       },
-      "partyHp": 56,
+      "partyHp": 57,
       "defeat": 0,
       "overtime": 4,
-      "downsPerFight": 0.77,
-      "partyDpr": 61.3,
-      "enemyDpr": 20.1
+      "downsPerFight": 0.7,
+      "partyDpr": 61.4,
+      "enemyDpr": 19.6
     },
     {
       "kind": "elite-pair",
@@ -888,8 +888,8 @@
       "defeat": 0,
       "overtime": 10,
       "downsPerFight": 0.31,
-      "partyDpr": 48.7,
-      "enemyDpr": 22.4
+      "partyDpr": 48.8,
+      "enemyDpr": 22.3
     },
     {
       "kind": "elite-pair",
@@ -968,8 +968,8 @@
       "defeat": 0,
       "overtime": 0,
       "downsPerFight": 0.01,
-      "partyDpr": 89.4,
-      "enemyDpr": 22.1
+      "partyDpr": 89.5,
+      "enemyDpr": 22
     },
     {
       "kind": "elite-pair",
@@ -1024,12 +1024,12 @@
         "twoToThree": 0,
         "fourPlus": 100
       },
-      "partyHp": 36,
+      "partyHp": 37,
       "defeat": 0,
       "overtime": 53,
-      "downsPerFight": 2.15,
-      "partyDpr": 52.9,
-      "enemyDpr": 28.6
+      "downsPerFight": 2.11,
+      "partyDpr": 53.1,
+      "enemyDpr": 28.5
     },
     {
       "kind": "elite-pair",
@@ -1049,7 +1049,7 @@
       "overtime": 75,
       "downsPerFight": 0.67,
       "partyDpr": 47.1,
-      "enemyDpr": 31.6
+      "enemyDpr": 31.5
     },
     {
       "kind": "elite-pair",
@@ -1128,7 +1128,7 @@
       "defeat": 0,
       "overtime": 0,
       "downsPerFight": 0.01,
-      "partyDpr": 106.2,
+      "partyDpr": 106.3,
       "enemyDpr": 29.5
     },
     {
@@ -1187,8 +1187,8 @@
       "partyHp": 31,
       "defeat": 0,
       "overtime": 86,
-      "downsPerFight": 2.36,
-      "partyDpr": 51.4,
+      "downsPerFight": 2.35,
+      "partyDpr": 51.6,
       "enemyDpr": 31.6
     },
     {
@@ -1209,7 +1209,7 @@
       "overtime": 99,
       "downsPerFight": 1.19,
       "partyDpr": 44.7,
-      "enemyDpr": 34.6
+      "enemyDpr": 34.5
     },
     {
       "kind": "elite-pair",
@@ -1218,18 +1218,18 @@
       "preset": "standard",
       "partyHpPool": 415,
       "enemyHpPool": 580,
-      "medianRounds": 3,
+      "medianRounds": 4,
       "bands": {
         "oneRound": 0,
-        "twoToThree": 52,
-        "fourPlus": 48
+        "twoToThree": 38,
+        "fourPlus": 62
       },
       "partyHp": 83,
       "defeat": 0,
       "overtime": 0,
       "downsPerFight": 0,
-      "partyDpr": 178.2,
-      "enemyDpr": 32.9
+      "partyDpr": 172.3,
+      "enemyDpr": 32
     },
     {
       "kind": "elite-pair",
@@ -1241,15 +1241,15 @@
       "medianRounds": 3,
       "bands": {
         "oneRound": 0,
-        "twoToThree": 79,
-        "fourPlus": 21
+        "twoToThree": 76,
+        "fourPlus": 24
       },
       "partyHp": 78,
       "defeat": 0,
       "overtime": 0,
       "downsPerFight": 0.65,
-      "partyDpr": 199.4,
-      "enemyDpr": 32.4
+      "partyDpr": 194.3,
+      "enemyDpr": 32.8
     },
     {
       "kind": "elite-pair",
@@ -1268,8 +1268,8 @@
       "defeat": 0,
       "overtime": 0,
       "downsPerFight": 0,
-      "partyDpr": 154.9,
-      "enemyDpr": 28.1
+      "partyDpr": 155.2,
+      "enemyDpr": 28.3
     },
     {
       "kind": "elite-pair",
@@ -1284,12 +1284,12 @@
         "twoToThree": 0,
         "fourPlus": 100
       },
-      "partyHp": 85,
+      "partyHp": 84,
       "defeat": 0,
       "overtime": 0,
       "downsPerFight": 0.03,
-      "partyDpr": 122.1,
-      "enemyDpr": 30.5
+      "partyDpr": 120.5,
+      "enemyDpr": 31.2
     }
   ]
 }

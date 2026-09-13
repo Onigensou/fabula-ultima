@@ -62,10 +62,12 @@ async function main() {
         const arm = RS.runArm(party, enemies, { runs, seed });
         const b = baseline.members[wearer.name];
         const i = arm.members[wearer.name];
-        const sim = RS.simValue(entry, level, b, i);
+        const sim = RS.simValue(entry, level, b, i, { baseline, withItem: arm });
         rows.push({
           ...entry, level, preset, wearer: wearer.name,
           paperPct: RS.paperValue(entry, level, b), simPct: sim.pct, ci95: sim.ci95, vsOwnPct: sim.vsOwn,
+          wearerPct: sim.wearerPct,
+          partyTakenPerRound: { baseline: baseline.partyTakenPerRound.mean, withItem: arm.partyTakenPerRound.mean },
           baseline: { perAction: b.perAction.mean, takenPerRound: b.takenPerRound.mean, defPerRound: b.defPerRound.mean,
             mdefPerRound: b.mdefPerRound.mean, downRate: b.downRate, defeatRate: baseline.defeatRate,
             partyHp: baseline.partyHp, meanRounds: baseline.meanRounds, bands: baseline.bands },
@@ -78,7 +80,8 @@ async function main() {
 
   console.log(`\nReference ladder — ${power} power (k ${DEFAULT_SKILL_LAYER_K}), neutral "normal" encounter at `
     + `${enemyDefense == null ? "rulebook DEF/MDEF (dice)" : `DEF/MDEF ${enemyDefense}`}, ${runs} runs per arm, seed "${seed}"`);
-  console.log(`Offense % = extra damage per wearer action / BA(L). Defense % = damage prevented per round / HP-per-BA(L).`);
+  console.log(`Offense % = extra damage per wearer action / BA(L). Defense % = damage prevented per round across the PARTY / HP-per-BA(L)`
+    + ` (wearer-only figure in the JSON as wearerPct).`);
   console.log(`Cells: mean sim % across presets [lowest–highest preset]; paper % from guide Part 4 in brackets.\n`);
   for (const effect of RS.EFFECTS) {
     const ids = [...new Set(rows.filter((r) => r.effect === effect).map((r) => r.id))];

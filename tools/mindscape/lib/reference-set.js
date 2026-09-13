@@ -7,11 +7,16 @@
 // seed — without the item and with it — and the difference is priced in the guide's unit:
 //
 //   offense   % = extra damage per wearer ACTION / BA(L)
-//   defense   % = damage prevented per ROUND / HP-per-BA(L)
+//   defense   % = damage prevented per ROUND across the WHOLE PARTY / HP-per-BA(L)
+//               (the wearer-only figure is kept beside it)
 //   max HP      reported as survival deltas only (the metric has no damage term)
 //
 //   BA(L)        = 34 x 1.036^(L - 30)            guide Part 3
 //   HP-per-BA(L) = 60 x BA(L) / 34                guide Part 4 ("~60 HP = 1 BA at L30")
+//
+// Why party-wide for defence: a protector with more DEF stays healthier, so it steps in
+// front of MORE hits. Its own damage taken can stay flat while the party takes less — the
+// wearer-only number undercounts exactly the characters defence items are built for.
 //
 // Beside each measurement sits the guide's PAPER price for the same item, so the ladder
 // answers "is the pricing table right?" row by row. Defensive paper prices need the
@@ -35,6 +40,8 @@ const GUIDE = Object.freeze({
 });
 
 const EFFECTS = Object.freeze(["weapon-damage", "weapon-accuracy", "spell-damage", "defense", "magic-defense", "max-hp", "physical-resistance"]);
+const OFFENSE = new Set(["weapon-damage", "weapon-accuracy", "spell-damage"]);
+const ROLES = ["striker", "caster", "tank", "support", "ranger"];
 
 function BA(level) { return 34 * Math.pow(1.036, level - 30); }
 function hpPerBA(level) { return (60 * BA(level)) / 34; }
@@ -114,9 +121,10 @@ function meanSe(xs) {
   return { mean, se: Math.sqrt(v / xs.length), n: xs.length };
 }
 
-// One arm: per-member samples, one per run.
+// One arm: per-member samples and party totals, one sample per run.
 function runArm(party, enemies, { runs, seed, expectedRounds = 10 }) {
   const members = new Map(party.map((p) => [p.name, { perAction: [], takenPerRound: [], defPerRound: [], mdefPerRound: [], downs: 0 }]));
+  const partyTaken = [];
   const rounds = [];
   let defeats = 0, hp = 0;
   for (let i = 0; i < runs; i++) {
@@ -124,9 +132,11 @@ function runArm(party, enemies, { runs, seed, expectedRounds = 10 }) {
     rounds.push(r.rounds);
     hp += r.partyHpRemaining ?? 0;
     if (r.outcome === "defeat" || r.outcome === "mutual-destruction") defeats++;
+    let taken = 0;
     for (const c of r.combatants ?? []) {
       const m = members.get(c.name);
       if (!m) continue;
+      taken += c.damageTaken ?? 0;
       const actions = (c.baseActionsTaken ?? 0) + (c.grantedActionsTaken ?? 0);
       if (actions > 0) m.perAction.push((c.damageDealt ?? 0) / actions);
       if (r.rounds > 0) {
@@ -136,6 +146,7 @@ function runArm(party, enemies, { runs, seed, expectedRounds = 10 }) {
       }
       if (!c.alive) m.downs++;
     }
+    if (r.rounds > 0) partyTaken.push(taken / r.rounds);
   }
   const summary = {};
   for (const [name, m] of members) {
@@ -147,14 +158,16 @@ function runArm(party, enemies, { runs, seed, expectedRounds = 10 }) {
   }
   const pct = (fn) => Math.round((rounds.filter(fn).length / runs) * 100);
   return {
-    members: summary, defeatRate: defeats / runs, partyHp: hp / runs,
+    members: summary, partyTakenPerRound: meanSe(partyTaken),
+    defeatRate: defeats / runs, partyHp: hp / runs,
     meanRounds: rounds.reduce((a, b) => a + b, 0) / runs,
     bands: { oneRound: pct((x) => x <= 1), twoToThree: pct((x) => x >= 2 && x <= 3), fourPlus: pct((x) => x >= 4) },
   };
 }
 
 function pickWearer(party, entry, baseline) {
-  if (entry.wearer === "striker" || entry.wearer === "caster") {
+  // A role name (striker, caster, tank, support, ranger): the preset's first member of it.
+  if (ROLES.includes(entry.wearer)) {
     return party.find((p) => p.fromArchetype?.role === entry.wearer) ?? null;
   }
   // A defensive item goes where the damage it can stop actually lands: +DEF on whoever
@@ -196,21 +209,25 @@ function paperValue(entry, level, base) {
   }
 }
 
-// Sim price with a 95% interval, from two arms' per-run samples.
-function simValue(entry, level, base, item) {
-  const offense = entry.effect === "weapon-damage" || entry.effect === "weapon-accuracy" || entry.effect === "spell-damage";
-  if (entry.effect === "max-hp") return { pct: null, ci95: null, vsOwn: null };
-  const [b, i, unit] = offense
-    ? [base.perAction, item.perAction, BA(level)]
-    : [base.takenPerRound, item.takenPerRound, hpPerBA(level)];
-  if (b.mean == null || i.mean == null) return { pct: null, ci95: null, vsOwn: null };
-  const delta = offense ? i.mean - b.mean : b.mean - i.mean;
+function priced(b, i, unit, sign) {
+  if (b?.mean == null || i?.mean == null) return { pct: null, ci95: null };
   const se = Math.sqrt((b.se ?? 0) ** 2 + (i.se ?? 0) ** 2);
-  return {
-    pct: (100 * delta) / unit,
-    ci95: (100 * 1.96 * se) / unit,
-    vsOwn: b.mean ? (100 * delta) / b.mean : null,
-  };
+  return { pct: (100 * sign * (i.mean - b.mean)) / unit, ci95: (100 * 1.96 * se) / unit };
+}
+
+// Sim price with a 95% interval. `base`/`item` are the WEARER's member stats; `arms` (the
+// two whole arms) makes defence party-wide. Without `arms`, defence falls back to the
+// wearer — kept for callers that only have member stats.
+function simValue(entry, level, base, item, arms = null) {
+  if (entry.effect === "max-hp") return { pct: null, ci95: null, vsOwn: null, wearerPct: null };
+  if (OFFENSE.has(entry.effect)) {
+    const p = priced(base.perAction, item.perAction, BA(level), +1);
+    return { ...p, vsOwn: base.perAction?.mean ? (100 * (item.perAction.mean - base.perAction.mean)) / base.perAction.mean : null, wearerPct: p.pct };
+  }
+  const wearer = priced(base.takenPerRound, item.takenPerRound, hpPerBA(level), -1);
+  if (!arms) return { ...wearer, vsOwn: null, wearerPct: wearer.pct };
+  const partyWide = priced(arms.baseline.partyTakenPerRound, arms.withItem.partyTakenPerRound, hpPerBA(level), -1);
+  return { ...partyWide, vsOwn: null, wearerPct: wearer.pct };
 }
 
 module.exports = {

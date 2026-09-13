@@ -5,7 +5,8 @@
     "caster": "the preset's first Caster (skipped on presets without one)",
     "most-hit": "whichever member takes the most damage per round in the preset baseline run (max HP, physical resistance)",
     "most-hit-def": "whichever member takes the most DEF-rolled damage per round in the baseline run (+DEF items)",
-    "most-hit-mdef": "whichever member takes the most MDEF-rolled damage per round in the baseline run (+MDEF items)"
+    "most-hit-mdef": "whichever member takes the most MDEF-rolled damage per round in the baseline run (+MDEF items)",
+    "tank": "the preset's Tank (DEF 12 from Brigadine + Runic Shield; holds Protect). Skipped on presets without one. Tests defence on a character whose DEF sits near the enemy's roll."
   },
   "items": [
     {
@@ -105,6 +106,27 @@
       "magnitude": 3,
       "slot": "armor",
       "wearer": "most-hit-def"
+    },
+    {
+      "id": "def-1-tank",
+      "effect": "defense",
+      "magnitude": 1,
+      "slot": "armor",
+      "wearer": "tank"
+    },
+    {
+      "id": "def-2-tank",
+      "effect": "defense",
+      "magnitude": 2,
+      "slot": "armor",
+      "wearer": "tank"
+    },
+    {
+      "id": "def-3-tank",
+      "effect": "defense",
+      "magnitude": 3,
+      "slot": "armor",
+      "wearer": "tank"
     },
     {
       "id": "mdef-1",
