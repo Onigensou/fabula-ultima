@@ -90,19 +90,23 @@ function weaponDoc(base, label, patch) {
 
 function measure(party, striker, scope, runs, seed) {
   const arm = RS.runArm(party, scope.enemies, { runs, seed, conflictEvent: scope.conflictEvent ?? null });
+  // Rounds of WON fights: a wipe ends a fight early too, and would read as "faster".
   return {
-    dealt: arm.members[striker].dealtPerRound.mean, rounds: arm.meanRounds, taken: arm.partyTakenPerRound.mean,
+    dealt: arm.members[striker].dealtPerRound.mean, rounds: arm.meanWonRounds, taken: arm.partyTakenPerRound.mean,
     loss: arm.defeatRate, wonInOne: arm.wonBands.oneRound,
   };
 }
 
+// A group the party loses at least this often says nothing about how fast damage ends fights.
+const MAX_LOSS = 0.5;
+
 async function main() {
-  const runs = Number(arg("--runs", 500));
+  const runs = Number(arg("--runs", 1000));
   const seed = arg("--seed", "spread-test");
   const power = arg("--power", "table");
   const presets = list(arg("--presets", Object.keys(PRESETS).join(",")));
   const multis = list(arg("--multi", "2,3")).map(Number);
-  const flats = list(arg("--flat", "5,10,20,30")).map(Number);
+  const flats = list(arg("--flat", "10,20,40,60")).map(Number);
   const encounterSet = arg("--encounter-set", "specs/encounters/house-set.json");
   const baseLevels = list(arg("--base-levels", "35,50")).map(Number);
   const out = arg("--out", null);
@@ -116,6 +120,7 @@ async function main() {
 
   const t0 = Date.now();
   const rows = [];
+  const skipped = [];
   for (const scope of scopes) {
     for (const preset of presets) {
       const build = () => buildArchetypeParty(preset, { level: scope.level, power, catalogue });
@@ -130,6 +135,10 @@ async function main() {
       const strikerName = base.find((m) => m.fromArchetype?.role === "striker")?.name;
       if (!strikerName) continue;
       const flat = [{ x: 0, ...measure(base, strikerName, scope, runs, seed) }];
+      if (flat[0].loss >= MAX_LOSS || flat[0].rounds == null) {
+        skipped.push(`${scope.id} ${preset} (basic gear loses ${Math.round(100 * flat[0].loss)}%)`);
+        continue;
+      }
       for (const x of flats) {
         const { party, name } = withWeapon((w) => weaponDoc(w, `+${x}`, (d) => {
           d.system.props.damage_bonus = String((Number(w.props.damage_bonus) || 0) + x);
@@ -171,12 +180,14 @@ async function main() {
   for (const n of multis) {
     console.log(`Multi ${n}, all rows: rounds efficiency ${f2(mean(all(n).map((r) => r.roundsEfficiency)))}, taken efficiency ${f2(mean(all(n).map((r) => r.takenEfficiency)))}`);
   }
-  console.log(`\n${rows.length} rows · ${((Date.now() - t0) / 1000).toFixed(0)}s`);
+  console.log(`\n${rows.length} rows · ${skipped.length} group × preset skipped as too lethal to time (loss ≥ ${100 * MAX_LOSS}%)`
+    + `${skipped.length ? `:\n  · ${skipped.join("\n  · ")}` : ""}`);
+  console.log(`Rounds are WON fights only. ${((Date.now() - t0) / 1000).toFixed(0)}s`);
 
   if (out) {
     fs.writeFileSync(path.resolve(out), `${JSON.stringify({
       id: "spread-test", capturedAt: new Date().toISOString().slice(0, 10), runs, seed, power, k: DEFAULT_SKILL_LAYER_K,
-      presets, multis, flats, encounterSet, baseLevels, rows,
+      presets, multis, flats, encounterSet, baseLevels, maxLoss: MAX_LOSS, skipped, rows,
     }, null, 2)}\n`);
     console.log(`wrote ${path.resolve(out)}`);
   }

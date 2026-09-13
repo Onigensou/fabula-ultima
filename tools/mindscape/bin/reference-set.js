@@ -85,10 +85,11 @@ async function main() {
             mdefPerRound: b.mdefPerRound.mean, downRate: b.downRate, defeatRate: baseline.defeatRate,
             partyHp: baseline.partyHp, meanRounds: baseline.meanRounds, bands: baseline.bands,
             actionsPerFight: b.actionsPerFight.mean, actionsPerRound: b.actionsPerRound.mean,
-            damagePerHit: b.damagePerHit, maxHp: maxHpBefore },
+            downShare: b.downShare.mean, damagePerHit: b.damagePerHit, maxHp: maxHpBefore },
           withItem: { perAction: i.perAction.mean, takenPerRound: i.takenPerRound.mean, downRate: i.downRate,
             defeatRate: withItem.defeatRate, partyHp: withItem.partyHp, meanRounds: withItem.meanRounds, bands: withItem.bands,
-            actionsPerFight: i.actionsPerFight.mean, damagePerHit: i.damagePerHit, maxHp: wearer.hp?.max ?? null },
+            actionsPerFight: i.actionsPerFight.mean, downShare: i.downShare.mean, damagePerHit: i.damagePerHit,
+            maxHp: wearer.hp?.max ?? null },
         });
       }
     }

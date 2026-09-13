@@ -239,6 +239,9 @@ function runArm(party, enemies, { runs, seed, expectedRounds = 10, conflictEvent
     members: summary, partyTakenPerRound: meanSe(partyTaken), partyDealtPerRound: meanSe(partyDealt),
     defeatRate: defeats / runs, partyHp: hp / runs,
     meanRounds: rounds.reduce((a, b) => a + b, 0) / runs,
+    // Rounds of WON fights only: a wipe also ends a fight early, so all-fight rounds can
+    // fall when an item makes the party lose faster.
+    meanWonRounds: wonRounds.length ? wonRounds.reduce((a, b) => a + b, 0) / wonRounds.length : null,
     bands: bandsOf(rounds), wonBands: bandsOf(wonRounds),
   };
 }
