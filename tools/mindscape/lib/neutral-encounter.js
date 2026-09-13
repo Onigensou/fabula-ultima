@@ -82,11 +82,17 @@ const KINDS = Object.freeze({
   "elite-pair": [{ t: "brute", rank: "elite" }, { t: "caster", rank: "elite" }],
 });
 
-function buildNeutralEncounter(kind, { level, hpScale = 1, damageScale = 1 } = {}) {
+// `defense`: when set, every enemy's DEF and MDEF is this number instead of its dice.
+// The equipment guide prices at the design point DEF 13 (Part 4); rulebook NPCs sit at
+// DEF 8-10, where the archetypes hit ~95% of the time and accuracy is nearly worthless.
+// Measuring gear at the guide's own assumption tests the guide; the dice are the
+// sensitivity check.
+function buildNeutralEncounter(kind, { level, hpScale = 1, damageScale = 1, defense = null } = {}) {
   const roster = KINDS[kind];
   if (!roster) throw new Error(`Mindscape: unknown neutral encounter "${kind}" (kinds: ${Object.keys(KINDS).join(", ")})`);
   if (!Number.isInteger(level) || level < 5 || level > 60) throw new Error(`Mindscape: neutral encounter level must be 5-60 (got ${level})`);
   if (!(hpScale > 0) || !(damageScale > 0)) throw new Error("Mindscape: hpScale and damageScale must be above 0");
+  if (defense != null && !(Number.isInteger(defense) && defense > 0)) throw new Error(`Mindscape: neutral encounter defense must be a positive integer (got ${defense})`);
 
   const counts = {};
   return roster.map(({ t, rank }, i) => {
@@ -113,12 +119,13 @@ function buildNeutralEncounter(kind, { level, hpScale = 1, damageScale = 1 } = {
         level: String(level), npc_rank: rank, species: "Monster", activation: "1",
         max_hp: String(hp), current_hp: String(hp), max_mp: String(mp), current_mp: String(mp),
         dex_base: String(dice.dex), ins_base: String(dice.ins), mig_base: String(dice.mig), wlp_base: String(dice.wlp),
-        defense: String(dice.dex), magic_defense: String(dice.ins),
+        defense: String(defense ?? dice.dex), magic_defense: String(defense ?? dice.ins),
       } },
     });
     model.items = actions;
-    model.fromSpec = `neutral encounter "${kind}" (rulebook NPC formula, hp x${hpScale}, damage x${damageScale})`;
-    model.neutral = { kind, rank, template: t, dice, hp, hpScale, damageScale };
+    model.fromSpec = `neutral encounter "${kind}" (rulebook NPC formula, hp x${hpScale}, damage x${damageScale}`
+      + `${defense != null ? `, DEF/MDEF ${defense}` : ""})`;
+    model.neutral = { kind, rank, template: t, dice, hp, hpScale, damageScale, defense };
     return model;
   });
 }

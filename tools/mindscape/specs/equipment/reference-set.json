@@ -1,0 +1,159 @@
+{
+  "_comment": "PAPER EQUIPMENT — the vanilla reference ladder for docs/equipment-balance-design.md Part 8. Each entry is a plain item: the wearer's own basic item (or an empty accessory slot) plus ONE effect of the given magnitude, no flavour. Measured by bin/reference-set.js on blank-slate archetypes (ruleset Part 6g) against neutral rulebook encounters. A ladder of magnitudes per effect, not one item per rarity: some effects are lumpy (+1 accuracy is already priced near a Rare), so the price CURVE is what gets measured and the rarity fit is read off it.",
+  "wearers": {
+    "striker": "the preset's Striker (every preset has one; weapon-only kit, so every swing is the weapon)",
+    "caster": "the preset's first Caster (skipped on presets without one)",
+    "most-hit": "whichever member takes the most damage per round in the preset baseline run (max HP, physical resistance)",
+    "most-hit-def": "whichever member takes the most DEF-rolled damage per round in the baseline run (+DEF items)",
+    "most-hit-mdef": "whichever member takes the most MDEF-rolled damage per round in the baseline run (+MDEF items)"
+  },
+  "items": [
+    {
+      "id": "dmg-2",
+      "effect": "weapon-damage",
+      "magnitude": 2,
+      "slot": "main",
+      "wearer": "striker"
+    },
+    {
+      "id": "dmg-5",
+      "effect": "weapon-damage",
+      "magnitude": 5,
+      "slot": "main",
+      "wearer": "striker"
+    },
+    {
+      "id": "dmg-10",
+      "effect": "weapon-damage",
+      "magnitude": 10,
+      "slot": "main",
+      "wearer": "striker"
+    },
+    {
+      "id": "dmg-15",
+      "effect": "weapon-damage",
+      "magnitude": 15,
+      "slot": "main",
+      "wearer": "striker"
+    },
+    {
+      "id": "dmg-22",
+      "effect": "weapon-damage",
+      "magnitude": 22,
+      "slot": "main",
+      "wearer": "striker"
+    },
+    {
+      "id": "acc-1",
+      "effect": "weapon-accuracy",
+      "magnitude": 1,
+      "slot": "main",
+      "wearer": "striker"
+    },
+    {
+      "id": "acc-2",
+      "effect": "weapon-accuracy",
+      "magnitude": 2,
+      "slot": "main",
+      "wearer": "striker"
+    },
+    {
+      "id": "spl-2",
+      "effect": "spell-damage",
+      "magnitude": 2,
+      "slot": "acc1",
+      "wearer": "caster"
+    },
+    {
+      "id": "spl-5",
+      "effect": "spell-damage",
+      "magnitude": 5,
+      "slot": "acc1",
+      "wearer": "caster"
+    },
+    {
+      "id": "spl-10",
+      "effect": "spell-damage",
+      "magnitude": 10,
+      "slot": "acc1",
+      "wearer": "caster"
+    },
+    {
+      "id": "spl-15",
+      "effect": "spell-damage",
+      "magnitude": 15,
+      "slot": "acc1",
+      "wearer": "caster"
+    },
+    {
+      "id": "def-1",
+      "effect": "defense",
+      "magnitude": 1,
+      "slot": "armor",
+      "wearer": "most-hit-def"
+    },
+    {
+      "id": "def-2",
+      "effect": "defense",
+      "magnitude": 2,
+      "slot": "armor",
+      "wearer": "most-hit-def"
+    },
+    {
+      "id": "def-3",
+      "effect": "defense",
+      "magnitude": 3,
+      "slot": "armor",
+      "wearer": "most-hit-def"
+    },
+    {
+      "id": "mdef-1",
+      "effect": "magic-defense",
+      "magnitude": 1,
+      "slot": "armor",
+      "wearer": "most-hit-mdef"
+    },
+    {
+      "id": "mdef-2",
+      "effect": "magic-defense",
+      "magnitude": 2,
+      "slot": "armor",
+      "wearer": "most-hit-mdef"
+    },
+    {
+      "id": "mdef-3",
+      "effect": "magic-defense",
+      "magnitude": 3,
+      "slot": "armor",
+      "wearer": "most-hit-mdef"
+    },
+    {
+      "id": "hp-10",
+      "effect": "max-hp",
+      "magnitude": 10,
+      "slot": "armor",
+      "wearer": "most-hit"
+    },
+    {
+      "id": "hp-25",
+      "effect": "max-hp",
+      "magnitude": 25,
+      "slot": "armor",
+      "wearer": "most-hit"
+    },
+    {
+      "id": "hp-50",
+      "effect": "max-hp",
+      "magnitude": 50,
+      "slot": "armor",
+      "wearer": "most-hit"
+    },
+    {
+      "id": "rs-phys",
+      "effect": "physical-resistance",
+      "magnitude": 1,
+      "slot": "acc1",
+      "wearer": "most-hit"
+    }
+  ]
+}

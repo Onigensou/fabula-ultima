@@ -73,6 +73,13 @@ t("hpScale and damageScale move the rulebook numbers and are recorded", () => {
   assert.ok(extractActions(b).actions[0].damageBonus > 15 * 2, "the whole expected hit doubles, not just the bonus");
   assert.deepStrictEqual([b.neutral.hpScale, b.neutral.damageScale], [1.5, 2]);
 });
+t("defense override sets DEF and MDEF on every enemy; default is the dice", () => {
+  for (const e of N.buildNeutralEncounter("normal", { level: 41, defense: 13 })) {
+    assert.deepStrictEqual([e.def, e.mdef], [13, 13], e.name);
+  }
+  assert.strictEqual(brute(41).def, 10);
+  assert.throws(() => N.buildNeutralEncounter("normal", { level: 41, defense: 0 }), /positive integer/);
+});
 t("bad kind, level or scale is refused", () => {
   assert.throws(() => N.buildNeutralEncounter("swarm", { level: 20 }), /unknown neutral encounter/);
   assert.throws(() => N.buildNeutralEncounter("normal", { level: 70 }), /5-60/);
