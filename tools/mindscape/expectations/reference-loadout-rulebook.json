@@ -129,6 +129,11 @@
         "twoToThree": 48,
         "fourPlus": 52
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 48,
+        "fourPlus": 52
+      },
       "partyHp": 75,
       "defeat": 0
     },
@@ -148,6 +153,11 @@
       },
       "meanRounds": 3.168,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 83,
+        "fourPlus": 17
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 83,
         "fourPlus": 17
@@ -175,6 +185,11 @@
         "twoToThree": 94,
         "fourPlus": 6
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 94,
+        "fourPlus": 6
+      },
       "partyHp": 80,
       "defeat": 0
     },
@@ -194,6 +209,11 @@
       },
       "meanRounds": 2.658,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 98,
         "fourPlus": 2
@@ -221,6 +241,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 81,
       "defeat": 0
     },
@@ -235,6 +260,11 @@
       "magnitudes": {},
       "meanRounds": 3.234,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 79,
+        "fourPlus": 21
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 79,
         "fourPlus": 21
@@ -262,6 +292,11 @@
         "twoToThree": 88,
         "fourPlus": 12
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 88,
+        "fourPlus": 12
+      },
       "partyHp": 75,
       "defeat": 0
     },
@@ -281,6 +316,11 @@
       },
       "meanRounds": 2.762,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 98,
         "fourPlus": 2
@@ -308,6 +348,11 @@
         "twoToThree": 99,
         "fourPlus": 1
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
       "partyHp": 80,
       "defeat": 0
     },
@@ -331,6 +376,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 83,
       "defeat": 0
     },
@@ -345,6 +395,11 @@
       "magnitudes": {},
       "meanRounds": 4.42,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 3,
+        "fourPlus": 97
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 3,
         "fourPlus": 97
@@ -372,6 +427,11 @@
         "twoToThree": 15,
         "fourPlus": 85
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 15,
+        "fourPlus": 85
+      },
       "partyHp": 66,
       "defeat": 0
     },
@@ -395,6 +455,11 @@
         "twoToThree": 70,
         "fourPlus": 30
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 70,
+        "fourPlus": 30
+      },
       "partyHp": 71,
       "defeat": 0
     },
@@ -414,6 +479,11 @@
       },
       "meanRounds": 2.984,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 95,
+        "fourPlus": 5
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 95,
         "fourPlus": 5
@@ -441,6 +511,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 81,
       "defeat": 0
     },
@@ -455,6 +530,11 @@
       "magnitudes": {},
       "meanRounds": 6.486,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
@@ -482,6 +562,11 @@
         "twoToThree": 0,
         "fourPlus": 100
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
       "partyHp": 67,
       "defeat": 0
     },
@@ -501,6 +586,11 @@
       },
       "meanRounds": 4.54,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
@@ -528,6 +618,11 @@
         "twoToThree": 19,
         "fourPlus": 81
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 19,
+        "fourPlus": 81
+      },
       "partyHp": 76,
       "defeat": 0
     },
@@ -551,6 +646,11 @@
         "twoToThree": 92,
         "fourPlus": 8
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 92,
+        "fourPlus": 8
+      },
       "partyHp": 81,
       "defeat": 0
     },
@@ -565,6 +665,11 @@
       "magnitudes": {},
       "meanRounds": 3.586,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 46,
+        "fourPlus": 54
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 46,
         "fourPlus": 54
@@ -592,6 +697,11 @@
         "twoToThree": 84,
         "fourPlus": 16
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 84,
+        "fourPlus": 16
+      },
       "partyHp": 80,
       "defeat": 0
     },
@@ -611,6 +721,11 @@
       },
       "meanRounds": 2.956,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 96,
+        "fourPlus": 4
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 96,
         "fourPlus": 4
@@ -638,6 +753,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 80,
       "defeat": 0
     },
@@ -661,6 +781,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 80,
       "defeat": 0
     },
@@ -675,6 +800,11 @@
       "magnitudes": {},
       "meanRounds": 3.182,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 81,
+        "fourPlus": 19
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 81,
         "fourPlus": 19
@@ -702,6 +832,11 @@
         "twoToThree": 85,
         "fourPlus": 15
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 85,
+        "fourPlus": 15
+      },
       "partyHp": 76,
       "defeat": 0
     },
@@ -721,6 +856,11 @@
       },
       "meanRounds": 2.596,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 98,
         "fourPlus": 2
@@ -748,6 +888,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 81,
       "defeat": 0
     },
@@ -771,6 +916,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 84,
       "defeat": 0
     },
@@ -785,6 +935,11 @@
       "magnitudes": {},
       "meanRounds": 4.388,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 2,
+        "fourPlus": 98
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 2,
         "fourPlus": 98
@@ -812,6 +967,11 @@
         "twoToThree": 20,
         "fourPlus": 80
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 20,
+        "fourPlus": 80
+      },
       "partyHp": 67,
       "defeat": 0
     },
@@ -831,6 +991,11 @@
       },
       "meanRounds": 3.246,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 77,
+        "fourPlus": 23
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 77,
         "fourPlus": 23
@@ -858,6 +1023,11 @@
         "twoToThree": 97,
         "fourPlus": 3
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 97,
+        "fourPlus": 3
+      },
       "partyHp": 77,
       "defeat": 0
     },
@@ -881,6 +1051,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 81,
       "defeat": 0
     },
@@ -895,6 +1070,11 @@
       "magnitudes": {},
       "meanRounds": 6.462,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
@@ -922,6 +1102,11 @@
         "twoToThree": 0,
         "fourPlus": 100
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
       "partyHp": 68,
       "defeat": 0
     },
@@ -941,6 +1126,11 @@
       },
       "meanRounds": 4.476,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
@@ -968,6 +1158,11 @@
         "twoToThree": 22,
         "fourPlus": 78
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 22,
+        "fourPlus": 78
+      },
       "partyHp": 77,
       "defeat": 0
     },
@@ -991,6 +1186,11 @@
         "twoToThree": 93,
         "fourPlus": 7
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 93,
+        "fourPlus": 7
+      },
       "partyHp": 83,
       "defeat": 0
     },
@@ -1005,6 +1205,11 @@
       "magnitudes": {},
       "meanRounds": 4.044,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 31,
+        "fourPlus": 69
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 31,
         "fourPlus": 69
@@ -1032,6 +1237,11 @@
         "twoToThree": 75,
         "fourPlus": 25
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 75,
+        "fourPlus": 25
+      },
       "partyHp": 70,
       "defeat": 0
     },
@@ -1051,6 +1261,11 @@
       },
       "meanRounds": 3.148,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 83,
+        "fourPlus": 17
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 83,
         "fourPlus": 17
@@ -1078,6 +1293,11 @@
         "twoToThree": 98,
         "fourPlus": 2
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
       "partyHp": 70,
       "defeat": 0
     },
@@ -1101,6 +1321,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 72,
       "defeat": 0
     },
@@ -1118,6 +1343,11 @@
         "oneRound": 0,
         "twoToThree": 78,
         "fourPlus": 22
+      },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 78,
+        "fourPlus": 21
       },
       "partyHp": 64,
       "defeat": 0
@@ -1138,6 +1368,11 @@
       },
       "meanRounds": 3.118,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 87,
+        "fourPlus": 13
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 87,
         "fourPlus": 13
@@ -1165,6 +1400,11 @@
         "twoToThree": 97,
         "fourPlus": 3
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 97,
+        "fourPlus": 3
+      },
       "partyHp": 68,
       "defeat": 0
     },
@@ -1184,6 +1424,11 @@
       },
       "meanRounds": 2.288,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 99,
         "fourPlus": 1
@@ -1211,6 +1456,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 75,
       "defeat": 0
     },
@@ -1225,6 +1475,11 @@
       "magnitudes": {},
       "meanRounds": 5.766,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 1,
+        "fourPlus": 99
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 1,
         "fourPlus": 99
@@ -1252,6 +1507,11 @@
         "twoToThree": 14,
         "fourPlus": 86
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 14,
+        "fourPlus": 86
+      },
       "partyHp": 54,
       "defeat": 0
     },
@@ -1271,6 +1531,11 @@
       },
       "meanRounds": 3.644,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 47,
+        "fourPlus": 53
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 47,
         "fourPlus": 53
@@ -1298,6 +1563,11 @@
         "twoToThree": 80,
         "fourPlus": 20
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 80,
+        "fourPlus": 20
+      },
       "partyHp": 68,
       "defeat": 0
     },
@@ -1321,6 +1591,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 76,
       "defeat": 0
     },
@@ -1338,6 +1613,11 @@
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
+      },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 93
       },
       "partyHp": 52,
       "defeat": 3
@@ -1358,6 +1638,11 @@
       },
       "meanRounds": 5.262,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
@@ -1385,6 +1670,11 @@
         "twoToThree": 0,
         "fourPlus": 100
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
       "partyHp": 72,
       "defeat": 0
     },
@@ -1404,6 +1694,11 @@
       },
       "meanRounds": 3.92,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 19,
+        "fourPlus": 81
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 19,
         "fourPlus": 81
@@ -1431,6 +1726,11 @@
         "twoToThree": 93,
         "fourPlus": 7
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 93,
+        "fourPlus": 7
+      },
       "partyHp": 88,
       "defeat": 0
     },
@@ -1445,6 +1745,11 @@
       "magnitudes": {},
       "meanRounds": 3.788,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 38,
+        "fourPlus": 62
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 38,
         "fourPlus": 62
@@ -1472,6 +1777,11 @@
         "twoToThree": 78,
         "fourPlus": 22
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 78,
+        "fourPlus": 22
+      },
       "partyHp": 79,
       "defeat": 0
     },
@@ -1491,6 +1801,11 @@
       },
       "meanRounds": 3.056,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 92,
+        "fourPlus": 8
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 92,
         "fourPlus": 8
@@ -1518,6 +1833,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 79,
       "defeat": 0
     },
@@ -1541,6 +1861,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 77,
       "defeat": 0
     },
@@ -1555,6 +1880,11 @@
       "magnitudes": {},
       "meanRounds": 3.33,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 70,
+        "fourPlus": 30
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 70,
         "fourPlus": 30
@@ -1582,6 +1912,11 @@
         "twoToThree": 86,
         "fourPlus": 14
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 86,
+        "fourPlus": 14
+      },
       "partyHp": 71,
       "defeat": 0
     },
@@ -1601,6 +1936,11 @@
       },
       "meanRounds": 2.754,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 97,
+        "fourPlus": 3
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 97,
         "fourPlus": 3
@@ -1628,6 +1968,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 75,
       "defeat": 0
     },
@@ -1651,6 +1996,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 78,
       "defeat": 0
     },
@@ -1668,6 +2018,11 @@
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
+      },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 99
       },
       "partyHp": 51,
       "defeat": 0
@@ -1688,6 +2043,11 @@
       },
       "meanRounds": 3.796,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 39,
+        "fourPlus": 61
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 39,
         "fourPlus": 61
@@ -1715,6 +2075,11 @@
         "twoToThree": 65,
         "fourPlus": 35
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 65,
+        "fourPlus": 35
+      },
       "partyHp": 67,
       "defeat": 0
     },
@@ -1734,6 +2099,11 @@
       },
       "meanRounds": 2.86,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 95,
+        "fourPlus": 5
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 95,
         "fourPlus": 5
@@ -1761,6 +2131,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 78,
       "defeat": 0
     },
@@ -1778,6 +2153,11 @@
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
+      },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 96
       },
       "partyHp": 51,
       "defeat": 1
@@ -1798,6 +2178,11 @@
       },
       "meanRounds": 5.164,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
@@ -1825,6 +2210,11 @@
         "twoToThree": 0,
         "fourPlus": 100
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
       "partyHp": 72,
       "defeat": 0
     },
@@ -1844,6 +2234,11 @@
       },
       "meanRounds": 3.564,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 46,
+        "fourPlus": 54
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 46,
         "fourPlus": 54
@@ -1871,6 +2266,11 @@
         "twoToThree": 94,
         "fourPlus": 6
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 94,
+        "fourPlus": 6
+      },
       "partyHp": 83,
       "defeat": 0
     },
@@ -1885,6 +2285,11 @@
       "magnitudes": {},
       "meanRounds": 3.714,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 40,
+        "fourPlus": 60
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 40,
         "fourPlus": 60
@@ -1912,6 +2317,11 @@
         "twoToThree": 80,
         "fourPlus": 20
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 80,
+        "fourPlus": 20
+      },
       "partyHp": 82,
       "defeat": 0
     },
@@ -1931,6 +2341,11 @@
       },
       "meanRounds": 2.968,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 97,
+        "fourPlus": 3
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 97,
         "fourPlus": 3
@@ -1958,6 +2373,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 80,
       "defeat": 0
     },
@@ -1981,6 +2401,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 79,
       "defeat": 0
     },
@@ -1995,6 +2420,11 @@
       "magnitudes": {},
       "meanRounds": 3.3,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 72,
+        "fourPlus": 28
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 72,
         "fourPlus": 28
@@ -2022,6 +2452,11 @@
         "twoToThree": 88,
         "fourPlus": 12
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 88,
+        "fourPlus": 12
+      },
       "partyHp": 73,
       "defeat": 0
     },
@@ -2041,6 +2476,11 @@
       },
       "meanRounds": 2.652,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 98,
         "fourPlus": 2
@@ -2068,6 +2508,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 77,
       "defeat": 0
     },
@@ -2091,6 +2536,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 80,
       "defeat": 0
     },
@@ -2108,6 +2558,11 @@
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
+      },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 99
       },
       "partyHp": 53,
       "defeat": 0
@@ -2128,6 +2583,11 @@
       },
       "meanRounds": 3.67,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 44,
+        "fourPlus": 56
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 44,
         "fourPlus": 56
@@ -2155,6 +2615,11 @@
         "twoToThree": 82,
         "fourPlus": 18
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 82,
+        "fourPlus": 18
+      },
       "partyHp": 69,
       "defeat": 0
     },
@@ -2174,6 +2639,11 @@
       },
       "meanRounds": 2.834,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 98,
         "fourPlus": 2
@@ -2201,6 +2671,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 78,
       "defeat": 0
     },
@@ -2218,6 +2693,11 @@
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
+      },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 96
       },
       "partyHp": 49,
       "defeat": 1
@@ -2238,6 +2718,11 @@
       },
       "meanRounds": 5.024,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
@@ -2265,6 +2750,11 @@
         "twoToThree": 1,
         "fourPlus": 99
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 1,
+        "fourPlus": 99
+      },
       "partyHp": 74,
       "defeat": 0
     },
@@ -2284,6 +2774,11 @@
       },
       "meanRounds": 3.454,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 56,
+        "fourPlus": 44
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 56,
         "fourPlus": 44
@@ -2311,6 +2806,11 @@
         "twoToThree": 95,
         "fourPlus": 5
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 95,
+        "fourPlus": 5
+      },
       "partyHp": 82,
       "defeat": 0
     },
@@ -2325,6 +2825,11 @@
       "magnitudes": {},
       "meanRounds": 3.61,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 45,
+        "fourPlus": 55
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 45,
         "fourPlus": 55
@@ -2352,6 +2857,11 @@
         "twoToThree": 83,
         "fourPlus": 17
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 83,
+        "fourPlus": 17
+      },
       "partyHp": 84,
       "defeat": 0
     },
@@ -2371,6 +2881,11 @@
       },
       "meanRounds": 2.984,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 97,
+        "fourPlus": 3
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 97,
         "fourPlus": 3
@@ -2398,6 +2913,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 82,
       "defeat": 0
     },
@@ -2421,6 +2941,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 80,
       "defeat": 0
     },
@@ -2435,6 +2960,11 @@
       "magnitudes": {},
       "meanRounds": 3.232,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 78,
+        "fourPlus": 22
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 78,
         "fourPlus": 22
@@ -2458,6 +2988,11 @@
       },
       "meanRounds": 3,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 97,
+        "fourPlus": 3
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 97,
         "fourPlus": 3
@@ -2485,6 +3020,11 @@
         "twoToThree": 99,
         "fourPlus": 1
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
       "partyHp": 75,
       "defeat": 0
     },
@@ -2504,6 +3044,11 @@
       },
       "meanRounds": 2.122,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 100,
         "fourPlus": 0
@@ -2531,6 +3076,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 80,
       "defeat": 0
     },
@@ -2545,6 +3095,11 @@
       "magnitudes": {},
       "meanRounds": 4.74,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
@@ -2572,6 +3127,11 @@
         "twoToThree": 51,
         "fourPlus": 49
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 51,
+        "fourPlus": 49
+      },
       "partyHp": 65,
       "defeat": 0
     },
@@ -2595,6 +3155,11 @@
         "twoToThree": 89,
         "fourPlus": 11
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 89,
+        "fourPlus": 11
+      },
       "partyHp": 70,
       "defeat": 0
     },
@@ -2614,6 +3179,11 @@
       },
       "meanRounds": 2.724,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 100,
         "fourPlus": 0
@@ -2641,6 +3211,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 78,
       "defeat": 0
     },
@@ -2658,6 +3233,11 @@
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
+      },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 97
       },
       "partyHp": 46,
       "defeat": 1
@@ -2678,6 +3258,11 @@
       },
       "meanRounds": 4.878,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
@@ -2705,6 +3290,11 @@
         "twoToThree": 1,
         "fourPlus": 99
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 1,
+        "fourPlus": 99
+      },
       "partyHp": 72,
       "defeat": 0
     },
@@ -2724,6 +3314,11 @@
       },
       "meanRounds": 3.232,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 77,
+        "fourPlus": 23
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 77,
         "fourPlus": 23
@@ -2751,6 +3346,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 80,
       "defeat": 0
     },
@@ -2765,6 +3365,11 @@
       "magnitudes": {},
       "meanRounds": 3.678,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 34,
+        "fourPlus": 66
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 34,
         "fourPlus": 66
@@ -2792,6 +3397,11 @@
         "twoToThree": 81,
         "fourPlus": 19
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 81,
+        "fourPlus": 19
+      },
       "partyHp": 80,
       "defeat": 0
     },
@@ -2815,6 +3425,11 @@
         "twoToThree": 93,
         "fourPlus": 7
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 93,
+        "fourPlus": 7
+      },
       "partyHp": 83,
       "defeat": 0
     },
@@ -2834,6 +3449,11 @@
       },
       "meanRounds": 3.004,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 100,
         "fourPlus": 0
@@ -2861,6 +3481,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 86,
       "defeat": 0
     },
@@ -2875,6 +3500,11 @@
       "magnitudes": {},
       "meanRounds": 3.344,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 69,
+        "fourPlus": 31
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 69,
         "fourPlus": 31
@@ -2902,6 +3532,11 @@
         "twoToThree": 91,
         "fourPlus": 9
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 91,
+        "fourPlus": 9
+      },
       "partyHp": 84,
       "defeat": 0
     },
@@ -2921,6 +3556,11 @@
       },
       "meanRounds": 2.89,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 96,
+        "fourPlus": 4
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 96,
         "fourPlus": 4
@@ -2948,6 +3588,11 @@
         "twoToThree": 99,
         "fourPlus": 1
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
       "partyHp": 86,
       "defeat": 0
     },
@@ -2971,6 +3616,11 @@
         "twoToThree": 99,
         "fourPlus": 1
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
       "partyHp": 89,
       "defeat": 0
     },
@@ -2985,6 +3635,11 @@
       "magnitudes": {},
       "meanRounds": 4.08,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
@@ -3012,6 +3667,11 @@
         "twoToThree": 47,
         "fourPlus": 53
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 47,
+        "fourPlus": 53
+      },
       "partyHp": 80,
       "defeat": 0
     },
@@ -3031,6 +3691,11 @@
       },
       "meanRounds": 3.146,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 85,
+        "fourPlus": 15
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 85,
         "fourPlus": 15
@@ -3058,6 +3723,11 @@
         "twoToThree": 99,
         "fourPlus": 1
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
       "partyHp": 85,
       "defeat": 0
     },
@@ -3081,6 +3751,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 86,
       "defeat": 0
     },
@@ -3095,6 +3770,11 @@
       "magnitudes": {},
       "meanRounds": 5.116,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
@@ -3122,6 +3802,11 @@
         "twoToThree": 0,
         "fourPlus": 100
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
       "partyHp": 81,
       "defeat": 0
     },
@@ -3141,6 +3826,11 @@
       },
       "meanRounds": 3.726,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 28,
+        "fourPlus": 72
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 28,
         "fourPlus": 72
@@ -3168,6 +3858,11 @@
         "twoToThree": 87,
         "fourPlus": 13
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 87,
+        "fourPlus": 13
+      },
       "partyHp": 81,
       "defeat": 0
     },
@@ -3191,6 +3886,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 84,
       "defeat": 0
     },
@@ -3205,6 +3905,11 @@
       "magnitudes": {},
       "meanRounds": 3.7,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 32,
+        "fourPlus": 68
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 32,
         "fourPlus": 68
@@ -3232,6 +3937,11 @@
         "twoToThree": 82,
         "fourPlus": 18
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 82,
+        "fourPlus": 18
+      },
       "partyHp": 81,
       "defeat": 0
     },
@@ -3251,6 +3961,11 @@
       },
       "meanRounds": 3.04,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 96,
+        "fourPlus": 4
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 96,
         "fourPlus": 4
@@ -3278,6 +3993,11 @@
         "twoToThree": 99,
         "fourPlus": 1
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
       "partyHp": 84,
       "defeat": 0
     },
@@ -3301,6 +4021,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 86,
       "defeat": 0
     },
@@ -3315,6 +4040,11 @@
       "magnitudes": {},
       "meanRounds": 3.268,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 76,
+        "fourPlus": 24
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 76,
         "fourPlus": 24
@@ -3342,6 +4072,11 @@
         "twoToThree": 94,
         "fourPlus": 6
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 94,
+        "fourPlus": 6
+      },
       "partyHp": 85,
       "defeat": 0
     },
@@ -3361,6 +4096,11 @@
       },
       "meanRounds": 2.79,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 98,
         "fourPlus": 2
@@ -3388,6 +4128,11 @@
         "twoToThree": 99,
         "fourPlus": 1
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
       "partyHp": 87,
       "defeat": 0
     },
@@ -3411,6 +4156,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 90,
       "defeat": 0
     },
@@ -3425,6 +4175,11 @@
       "magnitudes": {},
       "meanRounds": 4.14,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
@@ -3452,6 +4207,11 @@
         "twoToThree": 49,
         "fourPlus": 51
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 49,
+        "fourPlus": 51
+      },
       "partyHp": 81,
       "defeat": 0
     },
@@ -3471,6 +4231,11 @@
       },
       "meanRounds": 3.086,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 91,
+        "fourPlus": 9
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 91,
         "fourPlus": 9
@@ -3498,6 +4263,11 @@
         "twoToThree": 99,
         "fourPlus": 1
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
       "partyHp": 86,
       "defeat": 0
     },
@@ -3521,6 +4291,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 87,
       "defeat": 0
     },
@@ -3535,6 +4310,11 @@
       "magnitudes": {},
       "meanRounds": 5.17,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
@@ -3562,6 +4342,11 @@
         "twoToThree": 0,
         "fourPlus": 100
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
       "partyHp": 83,
       "defeat": 0
     },
@@ -3581,6 +4366,11 @@
       },
       "meanRounds": 3.712,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 29,
+        "fourPlus": 71
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 29,
         "fourPlus": 71
@@ -3608,6 +4398,11 @@
         "twoToThree": 83,
         "fourPlus": 17
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 83,
+        "fourPlus": 17
+      },
       "partyHp": 82,
       "defeat": 0
     },
@@ -3631,6 +4426,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 85,
       "defeat": 0
     },
@@ -3645,6 +4445,11 @@
       "magnitudes": {},
       "meanRounds": 3.67,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 34,
+        "fourPlus": 66
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 34,
         "fourPlus": 66
@@ -3672,6 +4477,11 @@
         "twoToThree": 78,
         "fourPlus": 22
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 78,
+        "fourPlus": 22
+      },
       "partyHp": 79,
       "defeat": 0
     },
@@ -3695,6 +4505,11 @@
         "twoToThree": 98,
         "fourPlus": 2
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
       "partyHp": 81,
       "defeat": 0
     },
@@ -3714,6 +4529,11 @@
       },
       "meanRounds": 3,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 100,
         "fourPlus": 0
@@ -3741,6 +4561,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 82,
       "defeat": 0
     },
@@ -3755,6 +4580,11 @@
       "magnitudes": {},
       "meanRounds": 3.316,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 70,
+        "fourPlus": 30
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 70,
         "fourPlus": 30
@@ -3782,6 +4612,11 @@
         "twoToThree": 94,
         "fourPlus": 6
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 94,
+        "fourPlus": 6
+      },
       "partyHp": 75,
       "defeat": 0
     },
@@ -3801,6 +4636,11 @@
       },
       "meanRounds": 2.586,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 99,
         "fourPlus": 1
@@ -3828,6 +4668,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 79,
       "defeat": 0
     },
@@ -3851,6 +4696,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 85,
       "defeat": 0
     },
@@ -3865,6 +4715,11 @@
       "magnitudes": {},
       "meanRounds": 4.086,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
@@ -3892,6 +4747,11 @@
         "twoToThree": 56,
         "fourPlus": 44
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 56,
+        "fourPlus": 44
+      },
       "partyHp": 75,
       "defeat": 0
     },
@@ -3911,6 +4771,11 @@
       },
       "meanRounds": 3.02,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 98,
         "fourPlus": 2
@@ -3938,6 +4803,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 82,
       "defeat": 0
     },
@@ -3961,6 +4831,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 82,
       "defeat": 0
     },
@@ -3975,6 +4850,11 @@
       "magnitudes": {},
       "meanRounds": 5.17,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
@@ -4002,6 +4882,11 @@
         "twoToThree": 0,
         "fourPlus": 100
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
       "partyHp": 77,
       "defeat": 0
     },
@@ -4021,6 +4906,11 @@
       },
       "meanRounds": 3.534,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 47,
+        "fourPlus": 53
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 47,
         "fourPlus": 53
@@ -4048,6 +4938,11 @@
         "twoToThree": 89,
         "fourPlus": 11
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 89,
+        "fourPlus": 11
+      },
       "partyHp": 76,
       "defeat": 0
     },
@@ -4071,6 +4966,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 81,
       "defeat": 0
     },
@@ -4085,6 +4985,11 @@
       "magnitudes": {},
       "meanRounds": 3.618,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 39,
+        "fourPlus": 61
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 39,
         "fourPlus": 61
@@ -4112,6 +5017,11 @@
         "twoToThree": 88,
         "fourPlus": 12
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 88,
+        "fourPlus": 12
+      },
       "partyHp": 76,
       "defeat": 0
     },
@@ -4131,6 +5041,11 @@
       },
       "meanRounds": 3.006,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 99,
         "fourPlus": 1
@@ -4158,6 +5073,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 82,
       "defeat": 0
     },
@@ -4181,6 +5101,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 83,
       "defeat": 0
     },
@@ -4195,6 +5120,11 @@
       "magnitudes": {},
       "meanRounds": 3.398,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 62,
+        "fourPlus": 38
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 62,
         "fourPlus": 38
@@ -4222,6 +5152,11 @@
         "twoToThree": 94,
         "fourPlus": 6
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 94,
+        "fourPlus": 6
+      },
       "partyHp": 79,
       "defeat": 0
     },
@@ -4241,6 +5176,11 @@
       },
       "meanRounds": 2.712,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 99,
         "fourPlus": 1
@@ -4268,6 +5208,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 84,
       "defeat": 0
     },
@@ -4291,6 +5236,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 87,
       "defeat": 0
     },
@@ -4305,6 +5255,11 @@
       "magnitudes": {},
       "meanRounds": 4.098,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
@@ -4332,6 +5287,11 @@
         "twoToThree": 61,
         "fourPlus": 39
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 61,
+        "fourPlus": 39
+      },
       "partyHp": 77,
       "defeat": 0
     },
@@ -4351,6 +5311,11 @@
       },
       "meanRounds": 3.014,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 99,
         "fourPlus": 1
@@ -4378,6 +5343,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 83,
       "defeat": 0
     },
@@ -4401,6 +5371,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 84,
       "defeat": 0
     },
@@ -4415,6 +5390,11 @@
       "magnitudes": {},
       "meanRounds": 5.216,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
@@ -4442,6 +5422,11 @@
         "twoToThree": 0,
         "fourPlus": 100
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
       "partyHp": 80,
       "defeat": 0
     },
@@ -4461,6 +5446,11 @@
       },
       "meanRounds": 3.432,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 57,
+        "fourPlus": 43
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 57,
         "fourPlus": 43
@@ -4488,6 +5478,11 @@
         "twoToThree": 93,
         "fourPlus": 7
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 93,
+        "fourPlus": 7
+      },
       "partyHp": 80,
       "defeat": 0
     },
@@ -4511,6 +5506,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 83,
       "defeat": 0
     },
@@ -4525,6 +5525,11 @@
       "magnitudes": {},
       "meanRounds": 3.658,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 35,
+        "fourPlus": 65
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 35,
         "fourPlus": 65
@@ -4552,6 +5557,11 @@
         "twoToThree": 86,
         "fourPlus": 14
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 86,
+        "fourPlus": 14
+      },
       "partyHp": 77,
       "defeat": 0
     },
@@ -4575,6 +5585,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 82,
       "defeat": 0
     },
@@ -4594,6 +5609,11 @@
       },
       "meanRounds": 3,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 100,
         "fourPlus": 0
@@ -4621,6 +5641,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 84,
       "defeat": 0
     },
@@ -4635,6 +5660,11 @@
       "magnitudes": {},
       "meanRounds": 3.382,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 64,
+        "fourPlus": 36
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 64,
         "fourPlus": 36
@@ -4662,6 +5692,11 @@
         "twoToThree": 94,
         "fourPlus": 6
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 94,
+        "fourPlus": 6
+      },
       "partyHp": 80,
       "defeat": 0
     },
@@ -4681,6 +5716,11 @@
       },
       "meanRounds": 2.724,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 100,
         "fourPlus": 0
@@ -4708,6 +5748,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 86,
       "defeat": 0
     },
@@ -4731,6 +5776,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 88,
       "defeat": 0
     },
@@ -4745,6 +5795,11 @@
       "magnitudes": {},
       "meanRounds": 4.09,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
@@ -4772,6 +5827,11 @@
         "twoToThree": 62,
         "fourPlus": 38
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 62,
+        "fourPlus": 38
+      },
       "partyHp": 77,
       "defeat": 0
     },
@@ -4791,6 +5851,11 @@
       },
       "meanRounds": 3.004,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 100,
         "fourPlus": 0
@@ -4818,6 +5883,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 84,
       "defeat": 0
     },
@@ -4841,6 +5911,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 84,
       "defeat": 0
     },
@@ -4855,6 +5930,11 @@
       "magnitudes": {},
       "meanRounds": 5.214,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
@@ -4882,6 +5962,11 @@
         "twoToThree": 0,
         "fourPlus": 100
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
       "partyHp": 80,
       "defeat": 0
     },
@@ -4901,6 +5986,11 @@
       },
       "meanRounds": 3.176,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 82,
+        "fourPlus": 18
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 82,
         "fourPlus": 18
@@ -4928,6 +6018,11 @@
         "twoToThree": 98,
         "fourPlus": 2
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
       "partyHp": 82,
       "defeat": 0
     },
@@ -4951,6 +6046,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 84,
       "defeat": 0
     },
@@ -4965,6 +6065,11 @@
       "magnitudes": {},
       "meanRounds": 3.614,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 39,
+        "fourPlus": 61
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 39,
         "fourPlus": 61
@@ -4992,6 +6097,11 @@
         "twoToThree": 93,
         "fourPlus": 7
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 93,
+        "fourPlus": 7
+      },
       "partyHp": 76,
       "defeat": 0
     },
@@ -5011,6 +6121,11 @@
       },
       "meanRounds": 3.002,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 100,
         "fourPlus": 0
@@ -5038,6 +6153,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 83,
       "defeat": 0
     },
@@ -5061,6 +6181,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 84,
       "defeat": 0
     },
@@ -5075,6 +6200,11 @@
       "magnitudes": {},
       "meanRounds": 3.256,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 75,
+        "fourPlus": 25
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 75,
         "fourPlus": 25
@@ -5102,6 +6232,11 @@
         "twoToThree": 97,
         "fourPlus": 3
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 97,
+        "fourPlus": 3
+      },
       "partyHp": 80,
       "defeat": 0
     },
@@ -5121,6 +6256,11 @@
       },
       "meanRounds": 2.726,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 100,
         "fourPlus": 0
@@ -5148,6 +6288,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 88,
       "defeat": 0
     },
@@ -5171,6 +6316,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 88,
       "defeat": 0
     },
@@ -5185,6 +6335,11 @@
       "magnitudes": {},
       "meanRounds": 4.038,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
@@ -5212,6 +6367,11 @@
         "twoToThree": 80,
         "fourPlus": 20
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 80,
+        "fourPlus": 20
+      },
       "partyHp": 78,
       "defeat": 0
     },
@@ -5231,6 +6391,11 @@
       },
       "meanRounds": 3,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 100,
         "fourPlus": 0
@@ -5258,6 +6423,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 84,
       "defeat": 0
     },
@@ -5281,6 +6451,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 84,
       "defeat": 0
     },
@@ -5295,6 +6470,11 @@
       "magnitudes": {},
       "meanRounds": 5.096,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 0,
         "fourPlus": 100
@@ -5322,6 +6502,11 @@
         "twoToThree": 0,
         "fourPlus": 100
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
       "partyHp": 78,
       "defeat": 0
     },
@@ -5341,6 +6526,11 @@
       },
       "meanRounds": 3.058,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 94,
+        "fourPlus": 6
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 94,
         "fourPlus": 6
@@ -5368,6 +6558,11 @@
         "twoToThree": 100,
         "fourPlus": 0
       },
+      "wonBands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
       "partyHp": 83,
       "defeat": 0
     },
@@ -5387,6 +6582,11 @@
       },
       "meanRounds": 2.364,
       "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "wonBands": {
         "oneRound": 0,
         "twoToThree": 100,
         "fourPlus": 0

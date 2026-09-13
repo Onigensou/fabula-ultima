@@ -120,9 +120,14 @@ node bin/calibrate-archetypes.js     # re-fit the table-power skill layer (k)
 node bin/archetype-sweep.js --out expectations/archetype-sweep.json   # the baseline table
 
 # equipment: price the reference ladder, then check full loadouts per rarity (spec Part 6i)
+# the house roster (primary): real spawn groups with their conflict events
+node bin/reference-set.js --encounter-set specs/encounters/house-set.json --out expectations/reference-set-house.json
+node bin/reference-loadout.js --ladder expectations/reference-set-house.json --out expectations/reference-loadout-house.json
+# the rulebook base at the same levels, for comparison
+node bin/reference-set.js --levels 35,38,40,46,48,50 --enemy-defense dice --out expectations/reference-set-rulebook.json
+node bin/reference-loadout.js --ladder expectations/reference-set-rulebook.json --out expectations/reference-loadout-rulebook.json
+# the guide's original design-point ladder (neutral, DEF/MDEF 13, L20/30/41/50)
 node bin/reference-set.js --out expectations/reference-set.json
-node bin/reference-set.js --enemy-defense dice --out expectations/reference-set-dice.json
-node bin/reference-loadout.js --out expectations/reference-loadout.json
 ```
 
 Presets: `standard`, `double-caster`, `no-healer`, `physical`. `--equip` and

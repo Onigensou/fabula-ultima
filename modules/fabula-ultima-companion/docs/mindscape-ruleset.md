@@ -563,6 +563,31 @@ results live in equipment guide Part 10.
 Damage taken is tracked per combatant and split by the defence rolled against (`damageTaken`,
 `damageTakenBy`), which the defensive prices need.
 
+### Encounter sets — the house roster
+Both harnesses can run on this table's real spawn groups instead of rulebook NPCs.
+
+- **`--encounter-set specs/encounters/house-set.json`** (reference-set.js). The file lists
+  13 groups copied from the dungeons' Encounter tables: the Wyrmwood, the Ancient Temple, the
+  Valley of the Dragon (under its lightning-storm conflict event) and Fafnir Castle.
+  - Each group names a level, its enemies (exact world actor names, loaded from LevelDB)
+    and an optional conflict event.
+  - Each group is its own scope with its own measured curves; tables are grouped by dungeon.
+  - Passives the sim does not model are listed per group in the output.
+- **Neutral mode** (no `--encounter-set`) builds rulebook "normal" encounters at `--levels`
+  (comma list) with `--enemy-defense 13|dice`. The **rulebook base** for the house set is
+  `--levels 35,38,40,46,48,50 --enemy-defense dice`: the same levels, pure book NPCs.
+- **`bin/reference-loadout.js --ladder <file>`** rebuilds the ladder's own scopes (the
+  encounter set, or the neutral levels plus the elite pair) and sizes loadouts from that
+  ladder's curves.
+  - A caster whose spell curve is not positive for a group — the Wyrmwood's fire absorbers
+    heal the archetype Caster — spends its budget on weapon damage, and the row records it.
+- **Fight-length bands.** `bands` counts every fight; `wonBands` counts only victories, both as
+  shares of all fights. The guide's "1 round = too easy" reads `wonBands.oneRound`: a party
+  wiped in one round is the opposite problem.
+
+Outputs: `expectations/reference-set-house.json`, `reference-loadout-house.json`,
+`reference-set-rulebook.json`, `reference-loadout-rulebook.json`.
+
 ## Part 7 — NOT MODELLED
 
 **This section is load-bearing.** The previous log-only attempt failed by *silently
