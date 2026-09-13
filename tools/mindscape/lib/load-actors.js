@@ -323,6 +323,13 @@ async function loadAll({ world = DEFAULT_WORLD } = {}) {
     const actors = new Map();     // actorId -> model
     const itemsByActor = new Map();
     const virtualByActor = new Map();
+    // Effects are kept for the loadout model (lib/loadout.js), which re-derives
+    // gear-dependent sheet numbers. Read-only; combat never looks at them.
+    const effectsByItem = new Map();    // "<actorId>.<itemId>" -> [effect doc]
+    const effectsByActor = new Map();   // actorId -> [effect doc]
+    // An actor's OWN effects (statuses, "Wet"). An item's ae("Wet") gate reads the
+    // bearer's effects, not the item's, so a rebuild needs them.
+    const ACTOR_EFFECT_KEY = /^!actors\.effects!([^!.]+)\.([^!.]+)$/;
 
     for await (const [key, value] of db.iterator()) {
       const a = ACTOR_KEY.exec(key);
@@ -343,16 +350,27 @@ async function loadAll({ world = DEFAULT_WORLD } = {}) {
       }
       const ve = ITEM_EFFECT_KEY.exec(key);
       if (ve) {
+        const itemKey = `${ve[1]}.${ve[2]}`;
+        if (!effectsByItem.has(itemKey)) effectsByItem.set(itemKey, []);
+        effectsByItem.get(itemKey).push(value);
         const v = readVirtualAttack(value);
         if (v) {
           if (!virtualByActor.has(ve[1])) virtualByActor.set(ve[1], []);
           virtualByActor.get(ve[1]).push(v);
         }
+        continue;
+      }
+      const ae = ACTOR_EFFECT_KEY.exec(key);
+      if (ae && value) {
+        if (!effectsByActor.has(ae[1])) effectsByActor.set(ae[1], []);
+        effectsByActor.get(ae[1]).push(value);
       }
     }
 
     for (const [actorId, model] of actors) {
       model.items = itemsByActor.get(actorId) ?? [];
+      for (const item of model.items) item.effects = effectsByItem.get(`${actorId}.${item.id}`) ?? [];
+      model.actorEffects = effectsByActor.get(actorId) ?? [];
 
       // Attacks granted by an AE rather than owned as an item. Filtered by the
       // concrete precondition, never by guessing at the formula.
