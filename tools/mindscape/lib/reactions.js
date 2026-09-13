@@ -283,6 +283,14 @@ const REACTION_REGISTRY = Object.freeze({
       note: "even rounds: +10 per target (dials: mindscape_damage_add, mindscape_damage_add_level_div)",
     },
   ],
+  // Spread-damage test rider (bin/spread-test.js): EVERY basic attack gains Multi N, no
+  // round gate, so the only difference from a single-target arm is where the damage lands.
+  "Mindscape Multi Rider (Passive)": {
+    trigger: TRIGGERS.ON_DECLARE_ATTACK,
+    gate: (ctx) => !!ctx?.isBasicAttack,
+    effect: { kind: "target_count", count: 2 },
+    note: "test rider: basic attacks gain Multi N (dial: mindscape_target_count)",
+  },
 });
 
 // ── Weapon read: the pure state transition ──────────────────────────────────

@@ -179,8 +179,10 @@ function meanSe(xs) {
 
 // One arm: per-member samples and party totals, one sample per run.
 function runArm(party, enemies, { runs, seed, expectedRounds = 10, conflictEvent = null }) {
-  const members = new Map(party.map((p) => [p.name, { perAction: [], takenPerRound: [], defPerRound: [], mdefPerRound: [], downs: 0 }]));
+  const members = new Map(party.map((p) => [p.name, { perAction: [], takenPerRound: [], defPerRound: [], mdefPerRound: [], downs: 0,
+    dealtPerRound: [], actionsPerRound: [], actionsPerFight: [], downShare: [], hitsTaken: 0, actionDamageTaken: 0 }]));
   const partyTaken = [];
+  const partyDealt = [];
   const rounds = [];
   const wonRounds = [];
   let defeats = 0, hp = 0;
@@ -190,21 +192,30 @@ function runArm(party, enemies, { runs, seed, expectedRounds = 10, conflictEvent
     if (r.outcome === "victory") wonRounds.push(r.rounds);
     hp += r.partyHpRemaining ?? 0;
     if (r.outcome === "defeat" || r.outcome === "mutual-destruction") defeats++;
-    let taken = 0;
+    let taken = 0, dealt = 0;
     for (const c of r.combatants ?? []) {
       const m = members.get(c.name);
       if (!m || c.side !== "party") continue;
       taken += c.damageTaken ?? 0;
+      dealt += c.damageDealt ?? 0;
       const actions = (c.baseActionsTaken ?? 0) + (c.grantedActionsTaken ?? 0);
       if (actions > 0) m.perAction.push((c.damageDealt ?? 0) / actions);
+      m.actionsPerFight.push(actions);
       if (r.rounds > 0) {
         m.takenPerRound.push((c.damageTaken ?? 0) / r.rounds);
         m.defPerRound.push((c.damageTakenBy?.def ?? 0) / r.rounds);
         m.mdefPerRound.push((c.damageTakenBy?.mdef ?? 0) / r.rounds);
+        m.dealtPerRound.push((c.damageDealt ?? 0) / r.rounds);
+        m.actionsPerRound.push(actions / r.rounds);
+        // Share of the fight spent knocked out: rounds after the one it fell in. Unlike
+        // actions per fight, it does not move just because the fight got shorter.
+        m.downShare.push(c.downedOnRound ? Math.max(0, r.rounds - c.downedOnRound) / r.rounds : 0);
       }
+      m.hitsTaken += c.hitsTaken ?? 0;
+      m.actionDamageTaken += (c.damageTakenBy?.def ?? 0) + (c.damageTakenBy?.mdef ?? 0);
       if (!c.alive) m.downs++;
     }
-    if (r.rounds > 0) partyTaken.push(taken / r.rounds);
+    if (r.rounds > 0) { partyTaken.push(taken / r.rounds); partyDealt.push(dealt / r.rounds); }
   }
   const summary = {};
   for (const [name, m] of members) {
@@ -212,6 +223,10 @@ function runArm(party, enemies, { runs, seed, expectedRounds = 10, conflictEvent
       perAction: meanSe(m.perAction), takenPerRound: meanSe(m.takenPerRound),
       defPerRound: meanSe(m.defPerRound), mdefPerRound: meanSe(m.mdefPerRound),
       downRate: m.downs / runs,
+      dealtPerRound: meanSe(m.dealtPerRound), actionsPerRound: meanSe(m.actionsPerRound),
+      actionsPerFight: meanSe(m.actionsPerFight), downShare: meanSe(m.downShare),
+      // Mean damage of one landed action hit — the unit max HP is priced against.
+      damagePerHit: m.hitsTaken ? m.actionDamageTaken / m.hitsTaken : null,
     };
   }
   // Bands are shares of ALL fights. `bands` counts every outcome; `wonBands` only victories,
@@ -221,7 +236,7 @@ function runArm(party, enemies, { runs, seed, expectedRounds = 10, conflictEvent
     return { oneRound: pct((x) => x <= 1), twoToThree: pct((x) => x >= 2 && x <= 3), fourPlus: pct((x) => x >= 4) };
   };
   return {
-    members: summary, partyTakenPerRound: meanSe(partyTaken),
+    members: summary, partyTakenPerRound: meanSe(partyTaken), partyDealtPerRound: meanSe(partyDealt),
     defeatRate: defeats / runs, partyHp: hp / runs,
     meanRounds: rounds.reduce((a, b) => a + b, 0) / runs,
     bands: bandsOf(rounds), wonBands: bandsOf(wonRounds),

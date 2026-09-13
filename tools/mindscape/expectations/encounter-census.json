@@ -1,0 +1,2810 @@
+{
+  "id": "encounter-census",
+  "capturedAt": "2026-09-13",
+  "minLevel": 20,
+  "overall": {
+    "tables": 10,
+    "counts": {
+      "1": 0.11766233766233768,
+      "2": 0.10875591075591078,
+      "3": 0.7184435564435565,
+      "4": 0.03271395271395272,
+      "5+": 0.022424242424242423
+    },
+    "extraTargets": {
+      "2": 0.8823376623376622,
+      "3": 1.655919413919414
+    },
+    "species": {
+      "CONSTRUCT": 0.049141414141414125,
+      "ELEMENTAL": 0.23735139860139873,
+      "PLANT": 0.0631125541125541,
+      "BEAST": 0.22595673770673777,
+      "HUMANOID": 0.2336601176601176,
+      "UNDEAD": 0.1238888888888889,
+      "DEMON": 0.03033333333333334,
+      "MONSTER": 0.03655555555555555
+    },
+    "speciesPresent": {
+      "CONSTRUCT": 0.09078787878787878,
+      "ELEMENTAL": 0.3857842157842158,
+      "PLANT": 0.16032467532467531,
+      "BEAST": 0.42398901098901104,
+      "HUMANOID": 0.3103526473526473,
+      "UNDEAD": 0.14533333333333331,
+      "DEMON": 0.06,
+      "MONSTER": 0.06666666666666667
+    },
+    "eliteShare": 0.20394860694860695,
+    "meanEnemies": 2.733481851481851
+  },
+  "band": {
+    "tables": 8,
+    "counts": {
+      "1": 0.1589330808080808,
+      "2": 0.12146076146076151,
+      "3": 0.6526675407925409,
+      "4": 0.03890831390831392,
+      "5+": 0.02803030303030303
+    },
+    "extraTargets": {
+      "2": 0.8410669191919192,
+      "3": 1.560673076923077
+    },
+    "species": {
+      "CONSTRUCT": 0.061426767676767656,
+      "ELEMENTAL": 0.2933906371406373,
+      "PLANT": 0.0719297138047138,
+      "BEAST": 0.21254678192178195,
+      "HUMANOID": 0.12223387723387716,
+      "UNDEAD": 0.15486111111111112,
+      "DEMON": 0.037916666666666675,
+      "MONSTER": 0.04569444444444444
+    },
+    "speciesPresent": {
+      "CONSTRUCT": 0.11348484848484847,
+      "ELEMENTAL": 0.4681429681429682,
+      "PLANT": 0.18488005050505052,
+      "BEAST": 0.393974358974359,
+      "HUMANOID": 0.20817890442890444,
+      "UNDEAD": 0.18166666666666664,
+      "DEMON": 0.075,
+      "MONSTER": 0.08333333333333333
+    },
+    "eliteShare": 0.2755210761460762,
+    "meanEnemies": 2.655641996891997
+  },
+  "tables": [
+    {
+      "table": "Ancient Temple - Encounter",
+      "dungeon": "Ancient Temple",
+      "formula": "1d11",
+      "all": {
+        "weight": 1.0000000000000002,
+        "counts": {
+          "1": 0.0909090909090909,
+          "2": 0.0909090909090909,
+          "3": 0.7272727272727273,
+          "5+": 0.0909090909090909
+        },
+        "extraTargets": {
+          "2": 0.9090909090909091,
+          "3": 1.727272727272727
+        },
+        "species": {
+          "CONSTRUCT": 0.3636363636363635,
+          "ELEMENTAL": 0.2424242424242424,
+          "PLANT": 0.12121212121212119,
+          "BEAST": 0.1969696969696969,
+          "HUMANOID": 0.07575757575757575
+        },
+        "speciesPresent": {
+          "CONSTRUCT": 0.4545454545454545,
+          "ELEMENTAL": 0.3636363636363636,
+          "PLANT": 0.27272727272727265,
+          "BEAST": 0.27272727272727265,
+          "HUMANOID": 0.1818181818181818
+        },
+        "eliteShare": 0.3333333333333333,
+        "meanEnemies": 2.909090909090908
+      },
+      "band": {
+        "weight": 1.0000000000000002,
+        "counts": {
+          "1": 0.0909090909090909,
+          "2": 0.0909090909090909,
+          "3": 0.7272727272727273,
+          "5+": 0.0909090909090909
+        },
+        "extraTargets": {
+          "2": 0.9090909090909091,
+          "3": 1.727272727272727
+        },
+        "species": {
+          "CONSTRUCT": 0.3636363636363635,
+          "ELEMENTAL": 0.2424242424242424,
+          "PLANT": 0.12121212121212119,
+          "BEAST": 0.1969696969696969,
+          "HUMANOID": 0.07575757575757575
+        },
+        "speciesPresent": {
+          "CONSTRUCT": 0.4545454545454545,
+          "ELEMENTAL": 0.3636363636363636,
+          "PLANT": 0.27272727272727265,
+          "BEAST": 0.27272727272727265,
+          "HUMANOID": 0.1818181818181818
+        },
+        "eliteShare": 0.3333333333333333,
+        "meanEnemies": 2.909090909090908
+      },
+      "bossRows": [],
+      "rows": [
+        {
+          "range": [
+            7,
+            7
+          ],
+          "weight": 1,
+          "monsters": [
+            "O'zealot",
+            "O'lmek",
+            "O'zealot"
+          ],
+          "boss": false,
+          "level": 38
+        },
+        {
+          "range": [
+            10,
+            10
+          ],
+          "weight": 1,
+          "monsters": [
+            "O'zealot",
+            "Pyrefly",
+            "O'zealot"
+          ],
+          "boss": false,
+          "level": 35
+        },
+        {
+          "range": [
+            5,
+            5
+          ],
+          "weight": 1,
+          "monsters": [
+            "O'lmek"
+          ],
+          "boss": false,
+          "level": 38
+        },
+        {
+          "range": [
+            9,
+            9
+          ],
+          "weight": 1,
+          "monsters": [
+            "Pyrefly",
+            "Dryad",
+            "Pyrefly"
+          ],
+          "boss": false,
+          "level": 34
+        },
+        {
+          "range": [
+            2,
+            2
+          ],
+          "weight": 1,
+          "monsters": [
+            "Salamander",
+            "Dryad",
+            "Inferex"
+          ],
+          "boss": false,
+          "level": 40
+        },
+        {
+          "range": [
+            4,
+            4
+          ],
+          "weight": 1,
+          "monsters": [
+            "Dryad",
+            "Centuaros",
+            "Dryad"
+          ],
+          "boss": false,
+          "level": 40
+        },
+        {
+          "range": [
+            8,
+            8
+          ],
+          "weight": 1,
+          "monsters": [
+            "Pyrefly",
+            "Pyrefly",
+            "Pyrefly",
+            "Pyrefly",
+            "Pyrefly"
+          ],
+          "boss": false,
+          "level": 32
+        },
+        {
+          "range": [
+            6,
+            6
+          ],
+          "weight": 1,
+          "monsters": [
+            "O'zealot",
+            "O'zealot",
+            "O'zealot"
+          ],
+          "boss": false,
+          "level": 35
+        },
+        {
+          "range": [
+            1,
+            1
+          ],
+          "weight": 1,
+          "monsters": [
+            "Salamander",
+            "Inferex",
+            "Salamander"
+          ],
+          "boss": false,
+          "level": 40
+        },
+        {
+          "range": [
+            3,
+            3
+          ],
+          "weight": 1,
+          "monsters": [
+            "Centuaros",
+            "Inferex"
+          ],
+          "boss": false,
+          "level": 40
+        },
+        {
+          "range": [
+            11,
+            11
+          ],
+          "weight": 1,
+          "monsters": [
+            "Pyrefly",
+            "O'lmek",
+            "Pyrefly"
+          ],
+          "boss": false,
+          "level": 38
+        }
+      ]
+    },
+    {
+      "table": "Bandits Hideout - Encounter",
+      "dungeon": "Bandits Hideout",
+      "formula": "1d29",
+      "all": {
+        "weight": 1.0000000000000002,
+        "counts": {
+          "2": 0.07999999999999999,
+          "3": 0.92
+        },
+        "extraTargets": {
+          "2": 1,
+          "3": 1.9200000000000002
+        },
+        "species": {
+          "HUMANOID": 0.5333333333333328,
+          "UNDEAD": 0.19999999999999996,
+          "BEAST": 0.15333333333333332,
+          "PLANT": 0.07333333333333332,
+          "CONSTRUCT": 0.039999999999999994
+        },
+        "speciesPresent": {
+          "HUMANOID": 0.6799999999999999,
+          "UNDEAD": 0.31999999999999995,
+          "BEAST": 0.27999999999999997,
+          "PLANT": 0.19999999999999996,
+          "CONSTRUCT": 0.11999999999999997
+        },
+        "eliteShare": 0.15999999999999998,
+        "meanEnemies": 2.9200000000000013
+      },
+      "band": {
+        "weight": 1.0000000000000002,
+        "counts": {
+          "2": 0.07999999999999999,
+          "3": 0.92
+        },
+        "extraTargets": {
+          "2": 1,
+          "3": 1.9200000000000002
+        },
+        "species": {
+          "HUMANOID": 0.5333333333333328,
+          "UNDEAD": 0.19999999999999996,
+          "BEAST": 0.15333333333333332,
+          "PLANT": 0.07333333333333332,
+          "CONSTRUCT": 0.039999999999999994
+        },
+        "speciesPresent": {
+          "HUMANOID": 0.6799999999999999,
+          "UNDEAD": 0.31999999999999995,
+          "BEAST": 0.27999999999999997,
+          "PLANT": 0.19999999999999996,
+          "CONSTRUCT": 0.11999999999999997
+        },
+        "eliteShare": 0.15999999999999998,
+        "meanEnemies": 2.9200000000000013
+      },
+      "bossRows": [],
+      "rows": [
+        {
+          "range": [
+            22,
+            22
+          ],
+          "weight": 1,
+          "monsters": [
+            "Elite Bandit",
+            "Bandit Roo",
+            "Elite Bandit"
+          ],
+          "boss": false,
+          "level": 30
+        },
+        {
+          "range": [
+            24,
+            24
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit Wolf",
+            "Bandit Wolf",
+            "Bandit Wolf"
+          ],
+          "boss": false,
+          "level": 25
+        },
+        {
+          "range": [
+            6,
+            6
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit Wolf",
+            "Bandit Shroom",
+            "Bandit Scorpion"
+          ],
+          "boss": false,
+          "level": 26
+        },
+        {
+          "range": [
+            20,
+            20
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit Scorpion",
+            "Bandit Zombie",
+            "Bandit Wolf"
+          ],
+          "boss": false,
+          "level": 28
+        },
+        {
+          "range": [
+            25,
+            25
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit Zombie",
+            "Bandit Zombie",
+            "Bandit Zombie"
+          ],
+          "boss": false,
+          "level": 28
+        },
+        {
+          "range": [
+            1,
+            1
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit",
+            "Goblin Bandit",
+            "Bandit"
+          ],
+          "boss": false,
+          "level": 24
+        },
+        {
+          "range": [
+            15,
+            15
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit Berserker",
+            "Bandit Berserker"
+          ],
+          "boss": false,
+          "level": 30
+        },
+        {
+          "range": [
+            14,
+            14
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit",
+            "Elite Bandit",
+            "Bandit"
+          ],
+          "boss": false,
+          "level": 30
+        },
+        {
+          "range": [
+            17,
+            17
+          ],
+          "weight": 1,
+          "monsters": [
+            "Goblin Bandit",
+            "Goblin Bandit",
+            "Goblin Bandit"
+          ],
+          "boss": false,
+          "level": 24
+        },
+        {
+          "range": [
+            7,
+            7
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit",
+            "Bandit Shroom",
+            "Bandit"
+          ],
+          "boss": false,
+          "level": 26
+        },
+        {
+          "range": [
+            18,
+            18
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit Scorpion",
+            "Bandit Roo",
+            "Bandit Shroom"
+          ],
+          "boss": false,
+          "level": 26
+        },
+        {
+          "range": [
+            3,
+            3
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit Archer",
+            "Bandit Berserker",
+            "Bandit Archer"
+          ],
+          "boss": false,
+          "level": 30
+        },
+        {
+          "range": [
+            23,
+            23
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit Shroom",
+            "Bandit Scorpion"
+          ],
+          "boss": false,
+          "level": 26
+        },
+        {
+          "range": [
+            19,
+            19
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit Roo",
+            "Bandit Golem",
+            "Elite Bandit"
+          ],
+          "boss": false,
+          "level": 30
+        },
+        {
+          "range": [
+            16,
+            16
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit Archer",
+            "Bandit Berserker",
+            "Elite Bandit"
+          ],
+          "boss": false,
+          "level": 30
+        },
+        {
+          "range": [
+            12,
+            12
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit Mage",
+            "Bandit Golem",
+            "Bandit Mage"
+          ],
+          "boss": false,
+          "level": 29
+        },
+        {
+          "range": [
+            4,
+            4
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit Archer",
+            "Bandit Golem",
+            "Bandit Archer"
+          ],
+          "boss": false,
+          "level": 29
+        },
+        {
+          "range": [
+            11,
+            11
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit Archer",
+            "Bandit Berserker",
+            "Bandit Mage"
+          ],
+          "boss": false,
+          "level": 30
+        },
+        {
+          "range": [
+            21,
+            21
+          ],
+          "weight": 1,
+          "monsters": [
+            "Goblin Bandit",
+            "Bandit Shroom",
+            "Bandit Wolf"
+          ],
+          "boss": false,
+          "level": 26
+        },
+        {
+          "range": [
+            13,
+            13
+          ],
+          "weight": 1,
+          "monsters": [
+            "Elite Bandit",
+            "Bandit Archer",
+            "Bandit"
+          ],
+          "boss": false,
+          "level": 30
+        },
+        {
+          "range": [
+            2,
+            2
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit",
+            "Bandit Archer",
+            "Bandit"
+          ],
+          "boss": false,
+          "level": 27
+        },
+        {
+          "range": [
+            10,
+            10
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit Zombie",
+            "Bandit Mage",
+            "Bandit Zombie"
+          ],
+          "boss": false,
+          "level": 28
+        },
+        {
+          "range": [
+            9,
+            9
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit Zombie",
+            "Bandit Zombie",
+            "Bandit Zombie"
+          ],
+          "boss": false,
+          "level": 28
+        },
+        {
+          "range": [
+            8,
+            8
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit Roo",
+            "Bandit Roo",
+            "Bandit Roo"
+          ],
+          "boss": false,
+          "level": 25
+        },
+        {
+          "range": [
+            5,
+            5
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit Archer",
+            "Bandit Wolf",
+            "Bandit Archer"
+          ],
+          "boss": false,
+          "level": 27
+        }
+      ]
+    },
+    {
+      "table": "Eisendrache Highroad - Encounter",
+      "dungeon": "Eisendrache City",
+      "formula": "1d1",
+      "all": {
+        "weight": 1,
+        "counts": {
+          "3": 1
+        },
+        "extraTargets": {
+          "2": 1,
+          "3": 2
+        },
+        "species": {
+          "HUMANOID": 1
+        },
+        "speciesPresent": {
+          "HUMANOID": 1
+        },
+        "eliteShare": 0,
+        "meanEnemies": 3
+      },
+      "band": {
+        "weight": 0,
+        "counts": {},
+        "extraTargets": {},
+        "species": {},
+        "speciesPresent": {},
+        "eliteShare": 0,
+        "meanEnemies": 0
+      },
+      "bossRows": [],
+      "rows": [
+        {
+          "range": [
+            1,
+            1
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit",
+            "Bandit",
+            "Bandit"
+          ],
+          "boss": false,
+          "level": 13
+        }
+      ]
+    },
+    {
+      "table": "Fafnir Castle - Encounter",
+      "dungeon": "Fafnir Castle",
+      "formula": "1d16",
+      "all": {
+        "weight": 0.9375,
+        "counts": {
+          "2": 0.13333333333333333,
+          "3": 0.6,
+          "4": 0.13333333333333333,
+          "5+": 0.13333333333333333
+        },
+        "extraTargets": {
+          "2": 1,
+          "3": 1.8666666666666667
+        },
+        "species": {
+          "DEMON": 0.3033333333333334,
+          "MONSTER": 0.3655555555555555,
+          "HUMANOID": 0.20444444444444446,
+          "CONSTRUCT": 0.08777777777777777,
+          "UNDEAD": 0.03888888888888888
+        },
+        "speciesPresent": {
+          "DEMON": 0.6,
+          "MONSTER": 0.6666666666666666,
+          "HUMANOID": 0.3333333333333333,
+          "CONSTRUCT": 0.3333333333333333,
+          "UNDEAD": 0.13333333333333333
+        },
+        "eliteShare": 0.08777777777777777,
+        "meanEnemies": 3.2666666666666666
+      },
+      "band": {
+        "weight": 0.9375,
+        "counts": {
+          "2": 0.13333333333333333,
+          "3": 0.6,
+          "4": 0.13333333333333333,
+          "5+": 0.13333333333333333
+        },
+        "extraTargets": {
+          "2": 1,
+          "3": 1.8666666666666667
+        },
+        "species": {
+          "DEMON": 0.3033333333333334,
+          "MONSTER": 0.3655555555555555,
+          "HUMANOID": 0.20444444444444446,
+          "CONSTRUCT": 0.08777777777777777,
+          "UNDEAD": 0.03888888888888888
+        },
+        "speciesPresent": {
+          "DEMON": 0.6,
+          "MONSTER": 0.6666666666666666,
+          "HUMANOID": 0.3333333333333333,
+          "CONSTRUCT": 0.3333333333333333,
+          "UNDEAD": 0.13333333333333333
+        },
+        "eliteShare": 0.08777777777777777,
+        "meanEnemies": 3.2666666666666666
+      },
+      "bossRows": [
+        "Carlbero"
+      ],
+      "rows": [
+        {
+          "range": [
+            16,
+            16
+          ],
+          "weight": 1,
+          "monsters": [
+            "Carlbero"
+          ],
+          "boss": true,
+          "level": 50
+        },
+        {
+          "range": [
+            3,
+            3
+          ],
+          "weight": 1,
+          "monsters": [
+            "Imp",
+            "Dire Orc",
+            "Imp"
+          ],
+          "boss": false,
+          "level": 50
+        },
+        {
+          "range": [
+            14,
+            14
+          ],
+          "weight": 1,
+          "monsters": [
+            "Imp",
+            "Dragon Guard",
+            "Iron Colossus",
+            "Dragon Guard",
+            "Imp"
+          ],
+          "boss": false,
+          "level": 52
+        },
+        {
+          "range": [
+            7,
+            7
+          ],
+          "weight": 1,
+          "monsters": [
+            "Imp",
+            "Dragon Guard",
+            "Imp"
+          ],
+          "boss": false,
+          "level": 50
+        },
+        {
+          "range": [
+            15,
+            15
+          ],
+          "weight": 1,
+          "monsters": [
+            "Death Gazer",
+            "Succubus",
+            "Iron Colossus",
+            "Succubus",
+            "Death Gazer"
+          ],
+          "boss": false,
+          "level": 52
+        },
+        {
+          "range": [
+            13,
+            13
+          ],
+          "weight": 1,
+          "monsters": [
+            "Imp",
+            "Death Gazer",
+            "Roo",
+            "Imp"
+          ],
+          "boss": false,
+          "level": 50
+        },
+        {
+          "range": [
+            4,
+            4
+          ],
+          "weight": 1,
+          "monsters": [
+            "Succubus",
+            "Dire Orc",
+            "Succubus"
+          ],
+          "boss": false,
+          "level": 50
+        },
+        {
+          "range": [
+            8,
+            8
+          ],
+          "weight": 1,
+          "monsters": [
+            "Death Gazer",
+            "Succubus",
+            "Death Gazer"
+          ],
+          "boss": false,
+          "level": 50
+        },
+        {
+          "range": [
+            10,
+            10
+          ],
+          "weight": 1,
+          "monsters": [
+            "Succubus",
+            "Iron Colossus",
+            "Succubus"
+          ],
+          "boss": false,
+          "level": 52
+        },
+        {
+          "range": [
+            11,
+            11
+          ],
+          "weight": 1,
+          "monsters": [
+            "Dragon Guard",
+            "Roo",
+            "Dragon Guard"
+          ],
+          "boss": false,
+          "level": 50
+        },
+        {
+          "range": [
+            12,
+            12
+          ],
+          "weight": 1,
+          "monsters": [
+            "Dire Orc",
+            "Death Gazer",
+            "Iron Colossus",
+            "Succubus"
+          ],
+          "boss": false,
+          "level": 52
+        },
+        {
+          "range": [
+            2,
+            2
+          ],
+          "weight": 1,
+          "monsters": [
+            "Dragon Guard",
+            "Dragon Guard"
+          ],
+          "boss": false,
+          "level": 50
+        },
+        {
+          "range": [
+            1,
+            1
+          ],
+          "weight": 1,
+          "monsters": [
+            "Dire Orc",
+            "Dire Orc"
+          ],
+          "boss": false,
+          "level": 50
+        },
+        {
+          "range": [
+            9,
+            9
+          ],
+          "weight": 1,
+          "monsters": [
+            "Dire Orc",
+            "Iron Colossus",
+            "Dire Orc"
+          ],
+          "boss": false,
+          "level": 52
+        },
+        {
+          "range": [
+            6,
+            6
+          ],
+          "weight": 1,
+          "monsters": [
+            "Dire Orc",
+            "Death Gazer",
+            "Dire Orc"
+          ],
+          "boss": false,
+          "level": 50
+        },
+        {
+          "range": [
+            5,
+            5
+          ],
+          "weight": 1,
+          "monsters": [
+            "Dragon Guard",
+            "Death Gazer",
+            "Dragon Guard"
+          ],
+          "boss": false,
+          "level": 50
+        }
+      ]
+    },
+    {
+      "table": "Overworld - Encounter",
+      "dungeon": "Overworld",
+      "formula": "1d6",
+      "all": {
+        "weight": 0.9999999999999999,
+        "counts": {
+          "3": 1
+        },
+        "extraTargets": {
+          "2": 1,
+          "3": 2
+        },
+        "species": {
+          "ELEMENTAL": 0.3333333333333334,
+          "BEAST": 0.5555555555555558,
+          "HUMANOID": 0.11111111111111112
+        },
+        "speciesPresent": {
+          "ELEMENTAL": 0.5000000000000001,
+          "BEAST": 1,
+          "HUMANOID": 0.16666666666666669
+        },
+        "eliteShare": 0,
+        "meanEnemies": 3.0000000000000004
+      },
+      "band": {
+        "weight": 0,
+        "counts": {},
+        "extraTargets": {},
+        "species": {},
+        "speciesPresent": {},
+        "eliteShare": 0,
+        "meanEnemies": 0
+      },
+      "bossRows": [],
+      "rows": [
+        {
+          "range": [
+            4,
+            4
+          ],
+          "weight": 1,
+          "monsters": [
+            "Slime",
+            "Wolf",
+            "Life Gorger"
+          ],
+          "boss": false,
+          "level": 15
+        },
+        {
+          "range": [
+            3,
+            3
+          ],
+          "weight": 1,
+          "monsters": [
+            "Slime",
+            "Wolf",
+            "Slime"
+          ],
+          "boss": false,
+          "level": 13
+        },
+        {
+          "range": [
+            1,
+            1
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit",
+            "Wolf",
+            "Bandit"
+          ],
+          "boss": false,
+          "level": 13
+        },
+        {
+          "range": [
+            5,
+            5
+          ],
+          "weight": 1,
+          "monsters": [
+            "Slime",
+            "Wolf",
+            "Mana Gorger"
+          ],
+          "boss": false,
+          "level": 15
+        },
+        {
+          "range": [
+            6,
+            6
+          ],
+          "weight": 1,
+          "monsters": [
+            "Wolf",
+            "Boa",
+            "Wolf"
+          ],
+          "boss": false,
+          "level": 15
+        },
+        {
+          "range": [
+            2,
+            2
+          ],
+          "weight": 1,
+          "monsters": [
+            "Wolf",
+            "Wolf",
+            "Wolf"
+          ],
+          "boss": false,
+          "level": 13
+        }
+      ]
+    },
+    {
+      "table": "The Wyrmwood - Encounter",
+      "dungeon": "The Wyrmwood",
+      "formula": "1d22",
+      "all": {
+        "weight": 0.9999999999999997,
+        "counts": {
+          "2": 0.22727272727272738,
+          "3": 0.7272727272727274,
+          "4": 0.04545454545454547
+        },
+        "extraTargets": {
+          "2": 1,
+          "3": 1.7727272727272727
+        },
+        "species": {
+          "HUMANOID": 0.0681818181818182,
+          "BEAST": 0.4166666666666666,
+          "ELEMENTAL": 0.33333333333333326,
+          "PLANT": 0.18181818181818182
+        },
+        "speciesPresent": {
+          "HUMANOID": 0.18181818181818188,
+          "BEAST": 0.7272727272727274,
+          "ELEMENTAL": 0.5909090909090912,
+          "PLANT": 0.4090909090909093
+        },
+        "eliteShare": 0.18181818181818188,
+        "meanEnemies": 2.8181818181818175
+      },
+      "band": {
+        "weight": 0.9999999999999997,
+        "counts": {
+          "2": 0.22727272727272738,
+          "3": 0.7272727272727274,
+          "4": 0.04545454545454547
+        },
+        "extraTargets": {
+          "2": 1,
+          "3": 1.7727272727272727
+        },
+        "species": {
+          "HUMANOID": 0.0681818181818182,
+          "BEAST": 0.4166666666666666,
+          "ELEMENTAL": 0.33333333333333326,
+          "PLANT": 0.18181818181818182
+        },
+        "speciesPresent": {
+          "HUMANOID": 0.18181818181818188,
+          "BEAST": 0.7272727272727274,
+          "ELEMENTAL": 0.5909090909090912,
+          "PLANT": 0.4090909090909093
+        },
+        "eliteShare": 0.18181818181818188,
+        "meanEnemies": 2.8181818181818175
+      },
+      "bossRows": [],
+      "rows": [
+        {
+          "range": [
+            1,
+            1
+          ],
+          "weight": 1,
+          "monsters": [
+            "Centuaros",
+            "Inferex"
+          ],
+          "boss": false,
+          "level": 40
+        },
+        {
+          "range": [
+            12,
+            12
+          ],
+          "weight": 1,
+          "monsters": [
+            "Burning Hand",
+            "Hellhound"
+          ],
+          "boss": false,
+          "level": 35
+        },
+        {
+          "range": [
+            17,
+            17
+          ],
+          "weight": 1,
+          "monsters": [
+            "Pyrefly",
+            "Marigold",
+            "Dryad"
+          ],
+          "boss": false,
+          "level": 34
+        },
+        {
+          "range": [
+            3,
+            3
+          ],
+          "weight": 1,
+          "monsters": [
+            "Fire Slime",
+            "Centuaros",
+            "Fire Slime"
+          ],
+          "boss": false,
+          "level": 40
+        },
+        {
+          "range": [
+            7,
+            7
+          ],
+          "weight": 1,
+          "monsters": [
+            "Hellhound",
+            "Salamander",
+            "Marigold"
+          ],
+          "boss": false,
+          "level": 35
+        },
+        {
+          "range": [
+            18,
+            18
+          ],
+          "weight": 1,
+          "monsters": [
+            "Dryad",
+            "Pyrefly",
+            "Dryad"
+          ],
+          "boss": false,
+          "level": 34
+        },
+        {
+          "range": [
+            21,
+            21
+          ],
+          "weight": 1,
+          "monsters": [
+            "Inferex",
+            "Inferex"
+          ],
+          "boss": false,
+          "level": 40
+        },
+        {
+          "range": [
+            10,
+            10
+          ],
+          "weight": 1,
+          "monsters": [
+            "Burning Hand",
+            "Salamander"
+          ],
+          "boss": false,
+          "level": 35
+        },
+        {
+          "range": [
+            16,
+            16
+          ],
+          "weight": 1,
+          "monsters": [
+            "Pyrefly",
+            "Salamander",
+            "Dryad"
+          ],
+          "boss": false,
+          "level": 35
+        },
+        {
+          "range": [
+            2,
+            2
+          ],
+          "weight": 1,
+          "monsters": [
+            "Fire Slime",
+            "Inferex",
+            "Fire Slime"
+          ],
+          "boss": false,
+          "level": 40
+        },
+        {
+          "range": [
+            20,
+            20
+          ],
+          "weight": 1,
+          "monsters": [
+            "Centuaros",
+            "Hellhound",
+            "Salamander"
+          ],
+          "boss": false,
+          "level": 40
+        },
+        {
+          "range": [
+            19,
+            19
+          ],
+          "weight": 1,
+          "monsters": [
+            "Pyrefly",
+            "Inferex",
+            "Pyrefly"
+          ],
+          "boss": false,
+          "level": 40
+        },
+        {
+          "range": [
+            14,
+            14
+          ],
+          "weight": 1,
+          "monsters": [
+            "Salamander",
+            "Hellhound",
+            "Dryad"
+          ],
+          "boss": false,
+          "level": 35
+        },
+        {
+          "range": [
+            13,
+            13
+          ],
+          "weight": 1,
+          "monsters": [
+            "Burning Hand",
+            "Fire Slime",
+            "Salamander"
+          ],
+          "boss": false,
+          "level": 35
+        },
+        {
+          "range": [
+            4,
+            4
+          ],
+          "weight": 1,
+          "monsters": [
+            "Salamander",
+            "Dryad",
+            "Salamander"
+          ],
+          "boss": false,
+          "level": 35
+        },
+        {
+          "range": [
+            22,
+            22
+          ],
+          "weight": 1,
+          "monsters": [
+            "Centuaros",
+            "Dryad",
+            "Marigold"
+          ],
+          "boss": false,
+          "level": 40
+        },
+        {
+          "range": [
+            8,
+            8
+          ],
+          "weight": 1,
+          "monsters": [
+            "Hellhound",
+            "Fire Slime",
+            "Salamander"
+          ],
+          "boss": false,
+          "level": 35
+        },
+        {
+          "range": [
+            15,
+            15
+          ],
+          "weight": 1,
+          "monsters": [
+            "Pyrefly",
+            "Pyrefly",
+            "Pyrefly"
+          ],
+          "boss": false,
+          "level": 32
+        },
+        {
+          "range": [
+            11,
+            11
+          ],
+          "weight": 1,
+          "monsters": [
+            "Salamander",
+            "Hellhound"
+          ],
+          "boss": false,
+          "level": 35
+        },
+        {
+          "range": [
+            9,
+            9
+          ],
+          "weight": 1,
+          "monsters": [
+            "Fire Slime",
+            "Fire Slime",
+            "Fire Slime",
+            "Fire Slime"
+          ],
+          "boss": false,
+          "level": 30
+        },
+        {
+          "range": [
+            6,
+            6
+          ],
+          "weight": 1,
+          "monsters": [
+            "Fire Slime",
+            "Inferex",
+            "Dryad"
+          ],
+          "boss": false,
+          "level": 40
+        },
+        {
+          "range": [
+            5,
+            5
+          ],
+          "weight": 1,
+          "monsters": [
+            "Salamander",
+            "Marigold",
+            "Salamander"
+          ],
+          "boss": false,
+          "level": 35
+        }
+      ]
+    },
+    {
+      "table": "Valley of the Dragon - Encounter",
+      "dungeon": "Valley of the Dragon",
+      "formula": "1d27",
+      "all": {
+        "weight": 0.9629629629629624,
+        "counts": {
+          "2": 0.38461538461538486,
+          "3": 0.5384615384615388,
+          "4": 0.07692307692307697
+        },
+        "extraTargets": {
+          "2": 1,
+          "3": 1.6153846153846163
+        },
+        "species": {
+          "ELEMENTAL": 0.6602564102564108,
+          "BEAST": 0.3269230769230771,
+          "HUMANOID": 0.012820512820512829
+        },
+        "speciesPresent": {
+          "ELEMENTAL": 0.8461538461538463,
+          "BEAST": 0.5384615384615388,
+          "HUMANOID": 0.038461538461538484
+        },
+        "eliteShare": 0.12179487179487186,
+        "meanEnemies": 2.692307692307694
+      },
+      "band": {
+        "weight": 0.9629629629629624,
+        "counts": {
+          "2": 0.38461538461538486,
+          "3": 0.5384615384615388,
+          "4": 0.07692307692307697
+        },
+        "extraTargets": {
+          "2": 1,
+          "3": 1.6153846153846163
+        },
+        "species": {
+          "ELEMENTAL": 0.6602564102564108,
+          "BEAST": 0.3269230769230771,
+          "HUMANOID": 0.012820512820512829
+        },
+        "speciesPresent": {
+          "ELEMENTAL": 0.8461538461538463,
+          "BEAST": 0.5384615384615388,
+          "HUMANOID": 0.038461538461538484
+        },
+        "eliteShare": 0.12179487179487186,
+        "meanEnemies": 2.692307692307694
+      },
+      "bossRows": [
+        "Asura"
+      ],
+      "rows": [
+        {
+          "range": [
+            11,
+            11
+          ],
+          "weight": 1,
+          "monsters": [
+            "Skizzik",
+            "Kirin",
+            "Skizzik"
+          ],
+          "boss": false,
+          "level": 50
+        },
+        {
+          "range": [
+            13,
+            13
+          ],
+          "weight": 1,
+          "monsters": [
+            "Mana Ray",
+            "Mana Ray"
+          ],
+          "boss": false,
+          "level": 45
+        },
+        {
+          "range": [
+            5,
+            5
+          ],
+          "weight": 1,
+          "monsters": [
+            "Skizzik",
+            "Lightning Prism"
+          ],
+          "boss": false,
+          "level": 48
+        },
+        {
+          "range": [
+            10,
+            10
+          ],
+          "weight": 1,
+          "monsters": [
+            "Lightning Prism",
+            "Kirin",
+            "Lightning Prism"
+          ],
+          "boss": false,
+          "level": 50
+        },
+        {
+          "range": [
+            22,
+            22
+          ],
+          "weight": 1,
+          "monsters": [
+            "Skizzik",
+            "Obsidrax"
+          ],
+          "boss": false,
+          "level": 48
+        },
+        {
+          "range": [
+            4,
+            4
+          ],
+          "weight": 1,
+          "monsters": [
+            "Electro Slime",
+            "Lightning Prism",
+            "Electro Slime"
+          ],
+          "boss": false,
+          "level": 45
+        },
+        {
+          "range": [
+            15,
+            15
+          ],
+          "weight": 1,
+          "monsters": [
+            "Ampere",
+            "Skizzik"
+          ],
+          "boss": false,
+          "level": 48
+        },
+        {
+          "range": [
+            21,
+            21
+          ],
+          "weight": 1,
+          "monsters": [
+            "Electro Slime",
+            "Obsidrax",
+            "Lightning Prism",
+            "Electro Slime"
+          ],
+          "boss": false,
+          "level": 46
+        },
+        {
+          "range": [
+            24,
+            24
+          ],
+          "weight": 1,
+          "monsters": [
+            "Drakoza",
+            "Drakoza"
+          ],
+          "boss": false,
+          "level": 43
+        },
+        {
+          "range": [
+            25,
+            25
+          ],
+          "weight": 1,
+          "monsters": [
+            "Drakoza",
+            "Skizzik"
+          ],
+          "boss": false,
+          "level": 48
+        },
+        {
+          "range": [
+            26,
+            26
+          ],
+          "weight": 1,
+          "monsters": [
+            "Mist Dragon",
+            "Obsidrax"
+          ],
+          "boss": false,
+          "level": 46
+        },
+        {
+          "range": [
+            18,
+            18
+          ],
+          "weight": 1,
+          "monsters": [
+            "Ampere",
+            "Mana Ray",
+            "Kirin"
+          ],
+          "boss": false,
+          "level": 50
+        },
+        {
+          "range": [
+            27,
+            27
+          ],
+          "weight": 1,
+          "monsters": [
+            "Mist Dragon",
+            "Mana Ray",
+            "Drakoza"
+          ],
+          "boss": false,
+          "level": 45
+        },
+        {
+          "range": [
+            7,
+            7
+          ],
+          "weight": 1,
+          "monsters": [
+            "Lightning Prism",
+            "Skizzik",
+            "Lightning Prism"
+          ],
+          "boss": false,
+          "level": 48
+        },
+        {
+          "range": [
+            8,
+            8
+          ],
+          "weight": 1,
+          "monsters": [
+            "Skizzik",
+            "Lightning Prism",
+            "Skizzik"
+          ],
+          "boss": false,
+          "level": 48
+        },
+        {
+          "range": [
+            23,
+            23
+          ],
+          "weight": 1,
+          "monsters": [
+            "Obsidrax",
+            "Kirin",
+            "Skizzik"
+          ],
+          "boss": false,
+          "level": 50
+        },
+        {
+          "range": [
+            9,
+            9
+          ],
+          "weight": 1,
+          "monsters": [
+            "Electro Slime",
+            "Kirin",
+            "Electro Slime"
+          ],
+          "boss": false,
+          "level": 50
+        },
+        {
+          "range": [
+            20,
+            20
+          ],
+          "weight": 1,
+          "monsters": [
+            "Gigas",
+            "Electro Slime",
+            "Electro Slime"
+          ],
+          "boss": false,
+          "level": 45
+        },
+        {
+          "range": [
+            6,
+            6
+          ],
+          "weight": 1,
+          "monsters": [
+            "Skizzik",
+            "Skizzik"
+          ],
+          "boss": false,
+          "level": 48
+        },
+        {
+          "range": [
+            2,
+            2
+          ],
+          "weight": 1,
+          "monsters": [
+            "Electro Slime",
+            "Electro Slime",
+            "Electro Slime",
+            "Electro Slime"
+          ],
+          "boss": false,
+          "level": 40
+        },
+        {
+          "range": [
+            12,
+            12
+          ],
+          "weight": 1,
+          "monsters": [
+            "Kirin",
+            "Skizzik",
+            "Lightning Prism"
+          ],
+          "boss": false,
+          "level": 50
+        },
+        {
+          "range": [
+            14,
+            14
+          ],
+          "weight": 1,
+          "monsters": [
+            "Ampere",
+            "Mana Ray"
+          ],
+          "boss": false,
+          "level": 45
+        },
+        {
+          "range": [
+            1,
+            1
+          ],
+          "weight": 1,
+          "monsters": [
+            "Electro Slime",
+            "Electro Slime",
+            "Electro Slime"
+          ],
+          "boss": false,
+          "level": 40
+        },
+        {
+          "range": [
+            16,
+            16
+          ],
+          "weight": 1,
+          "monsters": [
+            "Ampere",
+            "Lightning Prism"
+          ],
+          "boss": false,
+          "level": 45
+        },
+        {
+          "range": [
+            17,
+            17
+          ],
+          "weight": 1,
+          "monsters": [
+            "Mana Ray",
+            "Lightning Prism",
+            "Mana Ray"
+          ],
+          "boss": false,
+          "level": 45
+        },
+        {
+          "range": [
+            19,
+            19
+          ],
+          "weight": 1,
+          "monsters": [
+            "Asura"
+          ],
+          "boss": true,
+          "level": 38
+        },
+        {
+          "range": [
+            3,
+            3
+          ],
+          "weight": 1,
+          "monsters": [
+            "Electro Slime",
+            "Skizzik",
+            "Electro Slime"
+          ],
+          "boss": false,
+          "level": 48
+        }
+      ]
+    },
+    {
+      "table": "Vastwind Field - Encounter",
+      "dungeon": "Vastwind Field",
+      "formula": "1d28",
+      "all": {
+        "weight": 0.9999999999999997,
+        "counts": {
+          "1": 0.035714285714285726,
+          "2": 0.07142857142857145,
+          "3": 0.8214285714285714,
+          "4": 0.07142857142857145
+        },
+        "extraTargets": {
+          "2": 0.9642857142857143,
+          "3": 1.8571428571428574
+        },
+        "species": {
+          "ELEMENTAL": 0.47916666666666713,
+          "BEAST": 0.36011904761904795,
+          "PLANT": 0.11309523809523814,
+          "HUMANOID": 0.04761904761904763
+        },
+        "speciesPresent": {
+          "ELEMENTAL": 0.8571428571428572,
+          "BEAST": 0.8214285714285714,
+          "PLANT": 0.32142857142857145,
+          "HUMANOID": 0.07142857142857145
+        },
+        "eliteShare": 0.07142857142857145,
+        "meanEnemies": 2.92857142857143
+      },
+      "band": {
+        "weight": 0.6428571428571427,
+        "counts": {
+          "1": 0.055555555555555566,
+          "2": 0.055555555555555566,
+          "3": 0.8333333333333334,
+          "4": 0.055555555555555566
+        },
+        "extraTargets": {
+          "2": 0.9444444444444444,
+          "3": 1.8333333333333335
+        },
+        "species": {
+          "ELEMENTAL": 0.5694444444444449,
+          "BEAST": 0.3564814814814816,
+          "PLANT": 0.07407407407407408
+        },
+        "speciesPresent": {
+          "ELEMENTAL": 0.9444444444444444,
+          "BEAST": 0.8333333333333334,
+          "PLANT": 0.22222222222222227
+        },
+        "eliteShare": 0.11111111111111113,
+        "meanEnemies": 2.8888888888888897
+      },
+      "bossRows": [],
+      "rows": [
+        {
+          "range": [
+            14,
+            14
+          ],
+          "weight": 1,
+          "monsters": [
+            "Sylph",
+            "Prickle Boar",
+            "Aeroshroom"
+          ],
+          "boss": false,
+          "level": 23
+        },
+        {
+          "range": [
+            23,
+            23
+          ],
+          "weight": 1,
+          "monsters": [
+            "Wind Slime",
+            "Slime",
+            "Wind Slime",
+            "Slime"
+          ],
+          "boss": false,
+          "level": 15
+        },
+        {
+          "range": [
+            19,
+            19
+          ],
+          "weight": 1,
+          "monsters": [
+            "Wolf",
+            "Pakopon",
+            "Mana Gorger"
+          ],
+          "boss": false,
+          "level": 15
+        },
+        {
+          "range": [
+            10,
+            10
+          ],
+          "weight": 1,
+          "monsters": [
+            "Rock Golem",
+            "Earth Hand",
+            "Wind Slime"
+          ],
+          "boss": false,
+          "level": 25
+        },
+        {
+          "range": [
+            28,
+            28
+          ],
+          "weight": 1,
+          "monsters": [
+            "Valor",
+            "Aeroshroom",
+            "Valor"
+          ],
+          "boss": false,
+          "level": 20
+        },
+        {
+          "range": [
+            22,
+            22
+          ],
+          "weight": 1,
+          "monsters": [
+            "Wolf",
+            "Boa",
+            "Slime"
+          ],
+          "boss": false,
+          "level": 15
+        },
+        {
+          "range": [
+            26,
+            26
+          ],
+          "weight": 1,
+          "monsters": [
+            "Sylph",
+            "Rock Golem",
+            "Prickle Boar"
+          ],
+          "boss": false,
+          "level": 25
+        },
+        {
+          "range": [
+            8,
+            8
+          ],
+          "weight": 1,
+          "monsters": [
+            "Boa",
+            "Aeroshroom",
+            "Wind Slime"
+          ],
+          "boss": false,
+          "level": 15
+        },
+        {
+          "range": [
+            3,
+            3
+          ],
+          "weight": 1,
+          "monsters": [
+            "Wind Slime",
+            "Aeroshroom",
+            "Pakopon"
+          ],
+          "boss": false,
+          "level": 15
+        },
+        {
+          "range": [
+            12,
+            12
+          ],
+          "weight": 1,
+          "monsters": [
+            "Boa",
+            "Earth Hand",
+            "Aero Gorger"
+          ],
+          "boss": false,
+          "level": 22
+        },
+        {
+          "range": [
+            15,
+            15
+          ],
+          "weight": 1,
+          "monsters": [
+            "Sylph",
+            "Prickle Boar",
+            "Earth Hand"
+          ],
+          "boss": false,
+          "level": 23
+        },
+        {
+          "range": [
+            6,
+            6
+          ],
+          "weight": 1,
+          "monsters": [
+            "Valor",
+            "Aero Gorger",
+            "Pakopon"
+          ],
+          "boss": false,
+          "level": 20
+        },
+        {
+          "range": [
+            24,
+            24
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit",
+            "Wolf",
+            "Bandit"
+          ],
+          "boss": false,
+          "level": 13
+        },
+        {
+          "range": [
+            16,
+            16
+          ],
+          "weight": 1,
+          "monsters": [
+            "Valor",
+            "Wolf",
+            "Wind Slime"
+          ],
+          "boss": false,
+          "level": 20
+        },
+        {
+          "range": [
+            20,
+            20
+          ],
+          "weight": 1,
+          "monsters": [
+            "Wind Slime",
+            "Valor",
+            "Geo Gorger"
+          ],
+          "boss": false,
+          "level": 20
+        },
+        {
+          "range": [
+            21,
+            21
+          ],
+          "weight": 1,
+          "monsters": [
+            "Earth Hand",
+            "Aeroshroom",
+            "Valor"
+          ],
+          "boss": false,
+          "level": 22
+        },
+        {
+          "range": [
+            9,
+            9
+          ],
+          "weight": 1,
+          "monsters": [
+            "Valor",
+            "Earth Hand",
+            "Wind Slime"
+          ],
+          "boss": false,
+          "level": 22
+        },
+        {
+          "range": [
+            17,
+            17
+          ],
+          "weight": 1,
+          "monsters": [
+            "Prickle Boar",
+            "Wolf",
+            "Aeroshroom"
+          ],
+          "boss": false,
+          "level": 18
+        },
+        {
+          "range": [
+            18,
+            18
+          ],
+          "weight": 1,
+          "monsters": [
+            "Valor",
+            "Boa",
+            "Life Gorger"
+          ],
+          "boss": false,
+          "level": 20
+        },
+        {
+          "range": [
+            5,
+            5
+          ],
+          "weight": 1,
+          "monsters": [
+            "Rock Golem",
+            "Wind Slime",
+            "Aeroshroom"
+          ],
+          "boss": false,
+          "level": 25
+        },
+        {
+          "range": [
+            13,
+            13
+          ],
+          "weight": 1,
+          "monsters": [
+            "Sylph",
+            "Valor",
+            "Earth Hand",
+            "Wind Slime"
+          ],
+          "boss": false,
+          "level": 23
+        },
+        {
+          "range": [
+            27,
+            27
+          ],
+          "weight": 1,
+          "monsters": [
+            "Slime",
+            "Pakopon",
+            "Sylph"
+          ],
+          "boss": false,
+          "level": 23
+        },
+        {
+          "range": [
+            1,
+            1
+          ],
+          "weight": 1,
+          "monsters": [
+            "Wind Orb"
+          ],
+          "boss": false,
+          "level": 30
+        },
+        {
+          "range": [
+            7,
+            7
+          ],
+          "weight": 1,
+          "monsters": [
+            "Earth Hand",
+            "Wind Slime",
+            "Pakopon"
+          ],
+          "boss": false,
+          "level": 22
+        },
+        {
+          "range": [
+            11,
+            11
+          ],
+          "weight": 1,
+          "monsters": [
+            "Valor",
+            "Aero Gorger"
+          ],
+          "boss": false,
+          "level": 20
+        },
+        {
+          "range": [
+            2,
+            2
+          ],
+          "weight": 1,
+          "monsters": [
+            "Wind Slime",
+            "Aeroshroom"
+          ],
+          "boss": false,
+          "level": 15
+        },
+        {
+          "range": [
+            25,
+            25
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit",
+            "Prickle Boar",
+            "Bandit"
+          ],
+          "boss": false,
+          "level": 18
+        },
+        {
+          "range": [
+            4,
+            4
+          ],
+          "weight": 1,
+          "monsters": [
+            "Prickle Boar",
+            "Wind Slime",
+            "Aeroshroom"
+          ],
+          "boss": false,
+          "level": 18
+        }
+      ]
+    },
+    {
+      "table": "Vastwind Field (Cave) - Encounter",
+      "dungeon": "Vastwind Field",
+      "formula": "1d1",
+      "all": {
+        "weight": 1,
+        "counts": {
+          "1": 1
+        },
+        "extraTargets": {
+          "2": 0,
+          "3": 0
+        },
+        "species": {
+          "UNDEAD": 1
+        },
+        "speciesPresent": {
+          "UNDEAD": 1
+        },
+        "eliteShare": 1,
+        "meanEnemies": 1
+      },
+      "band": {
+        "weight": 1,
+        "counts": {
+          "1": 1
+        },
+        "extraTargets": {
+          "2": 0,
+          "3": 0
+        },
+        "species": {
+          "UNDEAD": 1
+        },
+        "speciesPresent": {
+          "UNDEAD": 1
+        },
+        "eliteShare": 1,
+        "meanEnemies": 1
+      },
+      "bossRows": [],
+      "rows": [
+        {
+          "range": [
+            1,
+            1
+          ],
+          "weight": 1,
+          "monsters": [
+            "Crysta"
+          ],
+          "boss": false,
+          "level": 30
+        }
+      ]
+    },
+    {
+      "table": "Vastwind Field (Lower Road) - Encounter",
+      "dungeon": "Vastwind Field",
+      "formula": "1d20",
+      "all": {
+        "weight": 1.0000000000000002,
+        "counts": {
+          "1": 0.04999999999999999,
+          "2": 0.09999999999999998,
+          "3": 0.85
+        },
+        "extraTargets": {
+          "2": 0.9500000000000001,
+          "3": 1.8000000000000003
+        },
+        "species": {
+          "HUMANOID": 0.28333333333333327,
+          "BEAST": 0.24999999999999992,
+          "ELEMENTAL": 0.32499999999999996,
+          "PLANT": 0.14166666666666664
+        },
+        "speciesPresent": {
+          "HUMANOID": 0.44999999999999984,
+          "BEAST": 0.5999999999999999,
+          "ELEMENTAL": 0.7,
+          "PLANT": 0.39999999999999986
+        },
+        "eliteShare": 0.08333333333333333,
+        "meanEnemies": 2.7999999999999985
+      },
+      "band": {
+        "weight": 0.39999999999999997,
+        "counts": {
+          "1": 0.12500000000000003,
+          "3": 0.875
+        },
+        "extraTargets": {
+          "2": 0.875,
+          "3": 1.75
+        },
+        "species": {
+          "ELEMENTAL": 0.5416666666666667,
+          "HUMANOID": 0.08333333333333334,
+          "BEAST": 0.25,
+          "PLANT": 0.12500000000000003
+        },
+        "speciesPresent": {
+          "ELEMENTAL": 1,
+          "HUMANOID": 0.25000000000000006,
+          "BEAST": 0.5000000000000001,
+          "PLANT": 0.3750000000000001
+        },
+        "eliteShare": 0.20833333333333337,
+        "meanEnemies": 2.750000000000001
+      },
+      "bossRows": [],
+      "rows": [
+        {
+          "range": [
+            16,
+            16
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit",
+            "Boa",
+            "Bandit"
+          ],
+          "boss": false,
+          "level": 15
+        },
+        {
+          "range": [
+            11,
+            11
+          ],
+          "weight": 1,
+          "monsters": [
+            "Wolf",
+            "Boa",
+            "Slime"
+          ],
+          "boss": false,
+          "level": 15
+        },
+        {
+          "range": [
+            14,
+            14
+          ],
+          "weight": 1,
+          "monsters": [
+            "Sylph",
+            "Rock Golem",
+            "Bandit"
+          ],
+          "boss": false,
+          "level": 25
+        },
+        {
+          "range": [
+            18,
+            18
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit",
+            "Aeroshroom",
+            "Bandit"
+          ],
+          "boss": false,
+          "level": 15
+        },
+        {
+          "range": [
+            7,
+            7
+          ],
+          "weight": 1,
+          "monsters": [
+            "Boa",
+            "Aeroshroom",
+            "Wind Slime"
+          ],
+          "boss": false,
+          "level": 15
+        },
+        {
+          "range": [
+            15,
+            15
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit",
+            "Bandit"
+          ],
+          "boss": false,
+          "level": 13
+        },
+        {
+          "range": [
+            3,
+            3
+          ],
+          "weight": 1,
+          "monsters": [
+            "Wind Slime",
+            "Aeroshroom",
+            "Pakopon"
+          ],
+          "boss": false,
+          "level": 15
+        },
+        {
+          "range": [
+            8,
+            8
+          ],
+          "weight": 1,
+          "monsters": [
+            "Boa",
+            "Earth Hand",
+            "Aero Gorger"
+          ],
+          "boss": false,
+          "level": 22
+        },
+        {
+          "range": [
+            6,
+            6
+          ],
+          "weight": 1,
+          "monsters": [
+            "Valor",
+            "Aero Gorger",
+            "Pakopon"
+          ],
+          "boss": false,
+          "level": 20
+        },
+        {
+          "range": [
+            12,
+            12
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit",
+            "Wolf",
+            "Bandit"
+          ],
+          "boss": false,
+          "level": 13
+        },
+        {
+          "range": [
+            9,
+            9
+          ],
+          "weight": 1,
+          "monsters": [
+            "Valor",
+            "Wolf",
+            "Wind Slime"
+          ],
+          "boss": false,
+          "level": 20
+        },
+        {
+          "range": [
+            20,
+            20
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit",
+            "Earth Hand",
+            "Aeroshroom"
+          ],
+          "boss": false,
+          "level": 22
+        },
+        {
+          "range": [
+            17,
+            17
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit",
+            "Bandit",
+            "Bandit"
+          ],
+          "boss": false,
+          "level": 13
+        },
+        {
+          "range": [
+            10,
+            10
+          ],
+          "weight": 1,
+          "monsters": [
+            "Earth Hand",
+            "Aeroshroom",
+            "Valor"
+          ],
+          "boss": false,
+          "level": 22
+        },
+        {
+          "range": [
+            5,
+            5
+          ],
+          "weight": 1,
+          "monsters": [
+            "Rock Golem",
+            "Wind Slime",
+            "Aeroshroom"
+          ],
+          "boss": false,
+          "level": 25
+        },
+        {
+          "range": [
+            1,
+            1
+          ],
+          "weight": 1,
+          "monsters": [
+            "Wind Orb"
+          ],
+          "boss": false,
+          "level": 30
+        },
+        {
+          "range": [
+            19,
+            19
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit",
+            "Pakopon",
+            "Wind Slime"
+          ],
+          "boss": false,
+          "level": 15
+        },
+        {
+          "range": [
+            2,
+            2
+          ],
+          "weight": 1,
+          "monsters": [
+            "Wind Slime",
+            "Aeroshroom"
+          ],
+          "boss": false,
+          "level": 15
+        },
+        {
+          "range": [
+            13,
+            13
+          ],
+          "weight": 1,
+          "monsters": [
+            "Bandit",
+            "Prickle Boar",
+            "Bandit"
+          ],
+          "boss": false,
+          "level": 18
+        },
+        {
+          "range": [
+            4,
+            4
+          ],
+          "weight": 1,
+          "monsters": [
+            "Prickle Boar",
+            "Wind Slime",
+            "Aeroshroom"
+          ],
+          "boss": false,
+          "level": 18
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    "Eisendrache Burning - Encounter: formula \"\" is not NdM — every row counted",
+    "Vastwind Field - Encounter [11-11]: \"Slyph\" matches no monster actor — that slot never spawns",
+    "Vastwind Field (Lower Road) - Encounter [15-15]: \"Slyph\" matches no monster actor — that slot never spawns"
+  ]
+}

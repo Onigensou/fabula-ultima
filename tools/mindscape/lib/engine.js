@@ -69,6 +69,9 @@ function makeCombatant(actor, side) {
     // +DEF item only touches the "def" share. Healing does not subtract.
     damageTaken: 0,
     damageTakenBy: { def: 0, mdef: 0, other: 0 },
+    // Damaging action hits that landed on this creature (after Protect). Max HP is priced
+    // against the size of a typical hit, which is damageTaken by action / hitsTaken.
+    hitsTaken: 0,
     downedOnRound: null,
     crisisOnRound: null,
   };
@@ -535,6 +538,7 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
       victim.hp -= out.damage;
       victim.damageTaken += out.damage;
       victim.damageTakenBy[action.defenseTarget === "mdef" ? "mdef" : "def"] += out.damage;
+      if (out.damage > 0) victim.hitsTaken++;
       actor.damageDealt += out.damage;
       if (victim.hp <= 0) {
         victim.hp = 0;
@@ -845,7 +849,8 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
       // Per-combatant turn counts, so an equipment A/B can see whether an arm
       // changed how often the wielder swings (Acceleration, fight length).
       baseActionsTaken: c.baseActionsTaken, grantedActionsTaken: c.grantedActionsTaken,
-      damageTaken: c.damageTaken, damageTakenBy: { ...c.damageTakenBy },
+      damageTaken: c.damageTaken, damageTakenBy: { ...c.damageTakenBy }, hitsTaken: c.hitsTaken,
+      downedOnRound: c.downedOnRound,
     })),
     // Per-lane weapon-efficiency pressure. Only populated when something in the
     // fight actually reads weapon families, so it costs nothing otherwise.

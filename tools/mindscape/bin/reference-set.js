@@ -70,6 +70,7 @@ async function main() {
         const wearer = RS.pickWearer(party, entry, baseline);
         const where = { scope: scope.id, group: scope.group, level: scope.level, preset };
         if (!wearer) { rows.push({ ...entry, ...where, skipped: `no ${entry.wearer} in ${preset}` }); continue; }
+        const maxHpBefore = wearer.hp?.max ?? null;
         applySwaps(wearer, [{ slot: entry.slot, source: RS.makeReferenceSource(wearer, entry) }], { worldItems });
         const withItem = RS.runArm(party, scope.enemies, arm);
         const b = baseline.members[wearer.name];
@@ -82,9 +83,12 @@ async function main() {
           partyTakenPerRound: { baseline: baseline.partyTakenPerRound.mean, withItem: withItem.partyTakenPerRound.mean },
           baseline: { perAction: b.perAction.mean, takenPerRound: b.takenPerRound.mean, defPerRound: b.defPerRound.mean,
             mdefPerRound: b.mdefPerRound.mean, downRate: b.downRate, defeatRate: baseline.defeatRate,
-            partyHp: baseline.partyHp, meanRounds: baseline.meanRounds, bands: baseline.bands },
+            partyHp: baseline.partyHp, meanRounds: baseline.meanRounds, bands: baseline.bands,
+            actionsPerFight: b.actionsPerFight.mean, actionsPerRound: b.actionsPerRound.mean,
+            damagePerHit: b.damagePerHit, maxHp: maxHpBefore },
           withItem: { perAction: i.perAction.mean, takenPerRound: i.takenPerRound.mean, downRate: i.downRate,
-            defeatRate: withItem.defeatRate, partyHp: withItem.partyHp, meanRounds: withItem.meanRounds, bands: withItem.bands },
+            defeatRate: withItem.defeatRate, partyHp: withItem.partyHp, meanRounds: withItem.meanRounds, bands: withItem.bands,
+            actionsPerFight: i.actionsPerFight.mean, damagePerHit: i.damagePerHit, maxHp: wearer.hp?.max ?? null },
         });
       }
     }
