@@ -1,0 +1,5859 @@
+{
+  "id": "reference-loadout",
+  "capturedAt": "2026-09-13",
+  "runs": 500,
+  "seed": "reference-loadout",
+  "power": "table",
+  "k": 3.54,
+  "ladder": "expectations/reference-set-house.json",
+  "mode": "encounter-set",
+  "budgets": {
+    "common": 5,
+    "uncommon": 10,
+    "rare": 15,
+    "legendary": 22.5
+  },
+  "slopes": {
+    "weapon-damage@wyrm-1": 1.0420746587281222,
+    "spell-damage@wyrm-1": 1.8694658520625054,
+    "weapon-damage@wyrm-2": 1.4321510415689844,
+    "spell-damage@wyrm-2": 0,
+    "weapon-damage@wyrm-3": 1.5611965542844968,
+    "spell-damage@wyrm-3": 1.208039032545109,
+    "weapon-damage@wyrm-4": 1.9544474014235138,
+    "spell-damage@wyrm-4": 1.367022570239078,
+    "weapon-damage@temple-1": 0.9627971055607156,
+    "spell-damage@temple-1": 7.91327358305086,
+    "weapon-damage@temple-2": 1.6726517347918521,
+    "spell-damage@temple-2": 0.4283137367623391,
+    "weapon-damage@valley-1": 1.3293090666954994,
+    "spell-damage@valley-1": 2.9907224325615425,
+    "weapon-damage@valley-2": 1.5847268656602531,
+    "spell-damage@valley-2": 2.6955856924058637,
+    "weapon-damage@valley-3": 1.6552660268934136,
+    "spell-damage@valley-3": 2.0948382666996683,
+    "weapon-damage@valley-4": 1.087663156695304,
+    "spell-damage@valley-4": 3.3261328340216347,
+    "weapon-damage@fafnir-1": 0.9937736759078349,
+    "spell-damage@fafnir-1": 1.4032192806178156,
+    "weapon-damage@fafnir-2": 1.4247334344594822,
+    "spell-damage@fafnir-2": 3.108583062904783,
+    "weapon-damage@fafnir-3": 0.7571310336466326,
+    "spell-damage@fafnir-3": 3.7581340684132676
+  },
+  "scopes": [
+    {
+      "id": "wyrm-1",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Centuaros, Inferex",
+      "level": 40,
+      "conflictEvent": null
+    },
+    {
+      "id": "wyrm-2",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Fire Slime, Inferex, Fire Slime",
+      "level": 40,
+      "conflictEvent": null
+    },
+    {
+      "id": "wyrm-3",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Pyrefly, Salamander, Dryad",
+      "level": 35,
+      "conflictEvent": null
+    },
+    {
+      "id": "wyrm-4",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Hellhound, Salamander, Marigold",
+      "level": 35,
+      "conflictEvent": null
+    },
+    {
+      "id": "temple-1",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — O'zealot, O'lmek, O'zealot",
+      "level": 38,
+      "conflictEvent": null
+    },
+    {
+      "id": "temple-2",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — Salamander, Dryad, Inferex",
+      "level": 40,
+      "conflictEvent": null
+    },
+    {
+      "id": "valley-1",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Skizzik, Kirin, Skizzik",
+      "level": 50,
+      "conflictEvent": "lightning-storm"
+    },
+    {
+      "id": "valley-2",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Ampere, Mana Ray, Kirin",
+      "level": 50,
+      "conflictEvent": "lightning-storm"
+    },
+    {
+      "id": "valley-3",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Drakoza, Skizzik",
+      "level": 48,
+      "conflictEvent": "lightning-storm"
+    },
+    {
+      "id": "valley-4",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Mist Dragon, Obsidrax",
+      "level": 46,
+      "conflictEvent": "lightning-storm"
+    },
+    {
+      "id": "fafnir-1",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Imp, Dragon Guard, Imp",
+      "level": 50,
+      "conflictEvent": null
+    },
+    {
+      "id": "fafnir-2",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Dire Orc, Death Gazer, Dire Orc",
+      "level": 50,
+      "conflictEvent": null
+    },
+    {
+      "id": "fafnir-3",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Succubus, Iron Colossus, Succubus",
+      "level": 50,
+      "conflictEvent": null
+    }
+  ],
+  "rows": [
+    {
+      "scope": "wyrm-1",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Centuaros, Inferex",
+      "level": 40,
+      "preset": "standard",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 2.458,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 96,
+        "fourPlus": 4
+      },
+      "partyHp": 0,
+      "defeat": 100
+    },
+    {
+      "scope": "wyrm-1",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Centuaros, Inferex",
+      "level": 40,
+      "preset": "standard",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +14",
+        "Caster": "spell +8",
+        "Tank": "weapon +14",
+        "Support": "spell +8"
+      },
+      "meanRounds": 2.478,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 95,
+        "fourPlus": 5
+      },
+      "partyHp": 0,
+      "defeat": 99
+    },
+    {
+      "scope": "wyrm-1",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Centuaros, Inferex",
+      "level": 40,
+      "preset": "standard",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +29",
+        "Caster": "spell +16",
+        "Tank": "weapon +29",
+        "Support": "spell +16"
+      },
+      "meanRounds": 2.5,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 92,
+        "fourPlus": 8
+      },
+      "partyHp": 1,
+      "defeat": 97
+    },
+    {
+      "scope": "wyrm-1",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Centuaros, Inferex",
+      "level": 40,
+      "preset": "standard",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +43",
+        "Caster": "spell +24",
+        "Tank": "weapon +43",
+        "Support": "spell +24"
+      },
+      "meanRounds": 2.84,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 81,
+        "fourPlus": 19
+      },
+      "partyHp": 6,
+      "defeat": 89
+    },
+    {
+      "scope": "wyrm-1",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Centuaros, Inferex",
+      "level": 40,
+      "preset": "standard",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +65",
+        "Caster": "spell +36",
+        "Tank": "weapon +65",
+        "Support": "spell +36"
+      },
+      "meanRounds": 3.006,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 76,
+        "fourPlus": 24
+      },
+      "partyHp": 11,
+      "defeat": 80
+    },
+    {
+      "scope": "wyrm-1",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Centuaros, Inferex",
+      "level": 40,
+      "preset": "double-caster",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 2.412,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 91,
+        "fourPlus": 9
+      },
+      "partyHp": 1,
+      "defeat": 98
+    },
+    {
+      "scope": "wyrm-1",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Centuaros, Inferex",
+      "level": 40,
+      "preset": "double-caster",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +14",
+        "Caster": "spell +8",
+        "Caster II": "spell +8",
+        "Support": "spell +8"
+      },
+      "meanRounds": 2.586,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 88,
+        "fourPlus": 12
+      },
+      "partyHp": 4,
+      "defeat": 88
+    },
+    {
+      "scope": "wyrm-1",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Centuaros, Inferex",
+      "level": 40,
+      "preset": "double-caster",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +29",
+        "Caster": "spell +16",
+        "Caster II": "spell +16",
+        "Support": "spell +16"
+      },
+      "meanRounds": 2.56,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 90,
+        "fourPlus": 10
+      },
+      "partyHp": 9,
+      "defeat": 72
+    },
+    {
+      "scope": "wyrm-1",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Centuaros, Inferex",
+      "level": 40,
+      "preset": "double-caster",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +43",
+        "Caster": "spell +24",
+        "Caster II": "spell +24",
+        "Support": "spell +24"
+      },
+      "meanRounds": 2.612,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 90,
+        "fourPlus": 10
+      },
+      "partyHp": 18,
+      "defeat": 43
+    },
+    {
+      "scope": "wyrm-1",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Centuaros, Inferex",
+      "level": 40,
+      "preset": "double-caster",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +65",
+        "Caster": "spell +36",
+        "Caster II": "spell +36",
+        "Support": "spell +36"
+      },
+      "meanRounds": 2.288,
+      "bands": {
+        "oneRound": 13,
+        "twoToThree": 79,
+        "fourPlus": 7
+      },
+      "partyHp": 25,
+      "defeat": 28
+    },
+    {
+      "scope": "wyrm-1",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Centuaros, Inferex",
+      "level": 40,
+      "preset": "no-healer",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 2.406,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
+      "partyHp": 0,
+      "defeat": 100
+    },
+    {
+      "scope": "wyrm-1",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Centuaros, Inferex",
+      "level": 40,
+      "preset": "no-healer",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +14",
+        "Ranger": "weapon +14",
+        "Caster": "spell +8",
+        "Tank": "weapon +14"
+      },
+      "meanRounds": 2.438,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 97,
+        "fourPlus": 3
+      },
+      "partyHp": 0,
+      "defeat": 100
+    },
+    {
+      "scope": "wyrm-1",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Centuaros, Inferex",
+      "level": 40,
+      "preset": "no-healer",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +29",
+        "Ranger": "weapon +29",
+        "Caster": "spell +16",
+        "Tank": "weapon +29"
+      },
+      "meanRounds": 2.482,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 95,
+        "fourPlus": 5
+      },
+      "partyHp": 0,
+      "defeat": 98
+    },
+    {
+      "scope": "wyrm-1",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Centuaros, Inferex",
+      "level": 40,
+      "preset": "no-healer",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +43",
+        "Ranger": "weapon +43",
+        "Caster": "spell +24",
+        "Tank": "weapon +43"
+      },
+      "meanRounds": 2.902,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 81,
+        "fourPlus": 19
+      },
+      "partyHp": 1,
+      "defeat": 97
+    },
+    {
+      "scope": "wyrm-1",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Centuaros, Inferex",
+      "level": 40,
+      "preset": "no-healer",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +65",
+        "Ranger": "weapon +65",
+        "Caster": "spell +36",
+        "Tank": "weapon +65"
+      },
+      "meanRounds": 2.948,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 81,
+        "fourPlus": 19
+      },
+      "partyHp": 6,
+      "defeat": 75
+    },
+    {
+      "scope": "wyrm-1",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Centuaros, Inferex",
+      "level": 40,
+      "preset": "physical",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.116,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 85,
+        "fourPlus": 15
+      },
+      "partyHp": 0,
+      "defeat": 100
+    },
+    {
+      "scope": "wyrm-1",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Centuaros, Inferex",
+      "level": 40,
+      "preset": "physical",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +14",
+        "Ranger": "weapon +14",
+        "Tank": "weapon +14",
+        "Support": "weapon +14"
+      },
+      "meanRounds": 3.336,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 78,
+        "fourPlus": 22
+      },
+      "partyHp": 1,
+      "defeat": 97
+    },
+    {
+      "scope": "wyrm-1",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Centuaros, Inferex",
+      "level": 40,
+      "preset": "physical",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +29",
+        "Ranger": "weapon +29",
+        "Tank": "weapon +29",
+        "Support": "weapon +29"
+      },
+      "meanRounds": 3.702,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 56,
+        "fourPlus": 44
+      },
+      "partyHp": 8,
+      "defeat": 79
+    },
+    {
+      "scope": "wyrm-1",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Centuaros, Inferex",
+      "level": 40,
+      "preset": "physical",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +43",
+        "Ranger": "weapon +43",
+        "Tank": "weapon +43",
+        "Support": "weapon +43"
+      },
+      "meanRounds": 3.628,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 59,
+        "fourPlus": 41
+      },
+      "partyHp": 12,
+      "defeat": 73
+    },
+    {
+      "scope": "wyrm-1",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Centuaros, Inferex",
+      "level": 40,
+      "preset": "physical",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +65",
+        "Ranger": "weapon +65",
+        "Tank": "weapon +65",
+        "Support": "weapon +65"
+      },
+      "meanRounds": 3.684,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 46,
+        "fourPlus": 54
+      },
+      "partyHp": 21,
+      "defeat": 49
+    },
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Fire Slime, Inferex, Fire Slime",
+      "level": 40,
+      "preset": "standard",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 5.906,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 6,
+        "fourPlus": 94
+      },
+      "partyHp": 20,
+      "defeat": 43
+    },
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Fire Slime, Inferex, Fire Slime",
+      "level": 40,
+      "preset": "standard",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +10",
+        "Caster": "weapon +10",
+        "Tank": "weapon +10",
+        "Support": "weapon +10"
+      },
+      "meanRounds": 5.42,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 11,
+        "fourPlus": 89
+      },
+      "partyHp": 27,
+      "defeat": 33
+    },
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Fire Slime, Inferex, Fire Slime",
+      "level": 40,
+      "preset": "standard",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +21",
+        "Caster": "weapon +21",
+        "Tank": "weapon +21",
+        "Support": "weapon +21"
+      },
+      "meanRounds": 4.91,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 16,
+        "fourPlus": 84
+      },
+      "partyHp": 33,
+      "defeat": 25
+    },
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Fire Slime, Inferex, Fire Slime",
+      "level": 40,
+      "preset": "standard",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +31",
+        "Caster": "weapon +31",
+        "Tank": "weapon +31",
+        "Support": "weapon +31"
+      },
+      "meanRounds": 4.57,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 22,
+        "fourPlus": 78
+      },
+      "partyHp": 39,
+      "defeat": 20
+    },
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Fire Slime, Inferex, Fire Slime",
+      "level": 40,
+      "preset": "standard",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +47",
+        "Caster": "weapon +47",
+        "Tank": "weapon +47",
+        "Support": "weapon +47"
+      },
+      "meanRounds": 4.022,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 39,
+        "fourPlus": 61
+      },
+      "partyHp": 46,
+      "defeat": 13
+    },
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Fire Slime, Inferex, Fire Slime",
+      "level": 40,
+      "preset": "double-caster",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 2.408,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 93,
+        "fourPlus": 7
+      },
+      "partyHp": 54,
+      "defeat": 6
+    },
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Fire Slime, Inferex, Fire Slime",
+      "level": 40,
+      "preset": "double-caster",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +10",
+        "Caster": "weapon +10",
+        "Caster II": "weapon +10",
+        "Support": "weapon +10"
+      },
+      "meanRounds": 2.346,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 95,
+        "fourPlus": 5
+      },
+      "partyHp": 56,
+      "defeat": 4
+    },
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Fire Slime, Inferex, Fire Slime",
+      "level": 40,
+      "preset": "double-caster",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +21",
+        "Caster": "weapon +21",
+        "Caster II": "weapon +21",
+        "Support": "weapon +21"
+      },
+      "meanRounds": 2.276,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 96,
+        "fourPlus": 4
+      },
+      "partyHp": 57,
+      "defeat": 4
+    },
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Fire Slime, Inferex, Fire Slime",
+      "level": 40,
+      "preset": "double-caster",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +31",
+        "Caster": "weapon +31",
+        "Caster II": "weapon +31",
+        "Support": "weapon +31"
+      },
+      "meanRounds": 2.218,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 97,
+        "fourPlus": 3
+      },
+      "partyHp": 59,
+      "defeat": 3
+    },
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Fire Slime, Inferex, Fire Slime",
+      "level": 40,
+      "preset": "double-caster",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +47",
+        "Caster": "weapon +47",
+        "Caster II": "weapon +47",
+        "Support": "weapon +47"
+      },
+      "meanRounds": 2.182,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "partyHp": 59,
+      "defeat": 2
+    },
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Fire Slime, Inferex, Fire Slime",
+      "level": 40,
+      "preset": "no-healer",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 4.706,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 12,
+        "fourPlus": 88
+      },
+      "partyHp": 0,
+      "defeat": 100
+    },
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Fire Slime, Inferex, Fire Slime",
+      "level": 40,
+      "preset": "no-healer",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +10",
+        "Ranger": "weapon +10",
+        "Caster": "weapon +10",
+        "Tank": "weapon +10"
+      },
+      "meanRounds": 4.688,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 12,
+        "fourPlus": 88
+      },
+      "partyHp": 0,
+      "defeat": 98
+    },
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Fire Slime, Inferex, Fire Slime",
+      "level": 40,
+      "preset": "no-healer",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +21",
+        "Ranger": "weapon +21",
+        "Caster": "weapon +21",
+        "Tank": "weapon +21"
+      },
+      "meanRounds": 4.586,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 16,
+        "fourPlus": 84
+      },
+      "partyHp": 2,
+      "defeat": 92
+    },
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Fire Slime, Inferex, Fire Slime",
+      "level": 40,
+      "preset": "no-healer",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +31",
+        "Ranger": "weapon +31",
+        "Caster": "weapon +31",
+        "Tank": "weapon +31"
+      },
+      "meanRounds": 4.284,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 29,
+        "fourPlus": 71
+      },
+      "partyHp": 7,
+      "defeat": 75
+    },
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Fire Slime, Inferex, Fire Slime",
+      "level": 40,
+      "preset": "no-healer",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +47",
+        "Ranger": "weapon +47",
+        "Caster": "weapon +47",
+        "Tank": "weapon +47"
+      },
+      "meanRounds": 3.468,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 61,
+        "fourPlus": 39
+      },
+      "partyHp": 23,
+      "defeat": 39
+    },
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Fire Slime, Inferex, Fire Slime",
+      "level": 40,
+      "preset": "physical",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 4.928,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 3,
+        "fourPlus": 97
+      },
+      "partyHp": 41,
+      "defeat": 13
+    },
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Fire Slime, Inferex, Fire Slime",
+      "level": 40,
+      "preset": "physical",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +10",
+        "Ranger": "weapon +10",
+        "Tank": "weapon +10",
+        "Support": "weapon +10"
+      },
+      "meanRounds": 3.782,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 40,
+        "fourPlus": 60
+      },
+      "partyHp": 55,
+      "defeat": 3
+    },
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Fire Slime, Inferex, Fire Slime",
+      "level": 40,
+      "preset": "physical",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +21",
+        "Ranger": "weapon +21",
+        "Tank": "weapon +21",
+        "Support": "weapon +21"
+      },
+      "meanRounds": 3.278,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 71,
+        "fourPlus": 29
+      },
+      "partyHp": 62,
+      "defeat": 1
+    },
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Fire Slime, Inferex, Fire Slime",
+      "level": 40,
+      "preset": "physical",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +31",
+        "Ranger": "weapon +31",
+        "Tank": "weapon +31",
+        "Support": "weapon +31"
+      },
+      "meanRounds": 2.82,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 89,
+        "fourPlus": 11
+      },
+      "partyHp": 65,
+      "defeat": 0
+    },
+    {
+      "scope": "wyrm-2",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Fire Slime, Inferex, Fire Slime",
+      "level": 40,
+      "preset": "physical",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +47",
+        "Ranger": "weapon +47",
+        "Tank": "weapon +47",
+        "Support": "weapon +47"
+      },
+      "meanRounds": 2.552,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 95,
+        "fourPlus": 5
+      },
+      "partyHp": 70,
+      "defeat": 0
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Pyrefly, Salamander, Dryad",
+      "level": 35,
+      "preset": "standard",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.364,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 69,
+        "fourPlus": 31
+      },
+      "partyHp": 51,
+      "defeat": 0
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Pyrefly, Salamander, Dryad",
+      "level": 35,
+      "preset": "standard",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +10",
+        "Caster": "spell +12",
+        "Tank": "weapon +10",
+        "Support": "spell +12"
+      },
+      "meanRounds": 2.728,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 86,
+        "fourPlus": 14
+      },
+      "partyHp": 53,
+      "defeat": 0
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Pyrefly, Salamander, Dryad",
+      "level": 35,
+      "preset": "standard",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +19",
+        "Caster": "spell +25",
+        "Tank": "weapon +19",
+        "Support": "spell +25"
+      },
+      "meanRounds": 2.152,
+      "bands": {
+        "oneRound": 17,
+        "twoToThree": 76,
+        "fourPlus": 7
+      },
+      "partyHp": 56,
+      "defeat": 0
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Pyrefly, Salamander, Dryad",
+      "level": 35,
+      "preset": "standard",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +29",
+        "Caster": "spell +37",
+        "Tank": "weapon +29",
+        "Support": "spell +37"
+      },
+      "meanRounds": 2.144,
+      "bands": {
+        "oneRound": 17,
+        "twoToThree": 76,
+        "fourPlus": 7
+      },
+      "partyHp": 56,
+      "defeat": 0
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Pyrefly, Salamander, Dryad",
+      "level": 35,
+      "preset": "standard",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +43",
+        "Caster": "spell +56",
+        "Tank": "weapon +43",
+        "Support": "spell +56"
+      },
+      "meanRounds": 1.966,
+      "bands": {
+        "oneRound": 28,
+        "twoToThree": 67,
+        "fourPlus": 5
+      },
+      "partyHp": 57,
+      "defeat": 0
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Pyrefly, Salamander, Dryad",
+      "level": 35,
+      "preset": "double-caster",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 2.174,
+      "bands": {
+        "oneRound": 13,
+        "twoToThree": 85,
+        "fourPlus": 2
+      },
+      "partyHp": 66,
+      "defeat": 0
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Pyrefly, Salamander, Dryad",
+      "level": 35,
+      "preset": "double-caster",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +10",
+        "Caster": "spell +12",
+        "Caster II": "spell +12",
+        "Support": "spell +12"
+      },
+      "meanRounds": 1.928,
+      "bands": {
+        "oneRound": 21,
+        "twoToThree": 78,
+        "fourPlus": 1
+      },
+      "partyHp": 67,
+      "defeat": 0
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Pyrefly, Salamander, Dryad",
+      "level": 35,
+      "preset": "double-caster",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +19",
+        "Caster": "spell +25",
+        "Caster II": "spell +25",
+        "Support": "spell +25"
+      },
+      "meanRounds": 1.366,
+      "bands": {
+        "oneRound": 65,
+        "twoToThree": 35,
+        "fourPlus": 0
+      },
+      "partyHp": 92,
+      "defeat": 0
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Pyrefly, Salamander, Dryad",
+      "level": 35,
+      "preset": "double-caster",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +29",
+        "Caster": "spell +37",
+        "Caster II": "spell +37",
+        "Support": "spell +37"
+      },
+      "meanRounds": 1.372,
+      "bands": {
+        "oneRound": 64,
+        "twoToThree": 36,
+        "fourPlus": 0
+      },
+      "partyHp": 92,
+      "defeat": 0
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Pyrefly, Salamander, Dryad",
+      "level": 35,
+      "preset": "double-caster",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +43",
+        "Caster": "spell +56",
+        "Caster II": "spell +56",
+        "Support": "spell +56"
+      },
+      "meanRounds": 1.204,
+      "bands": {
+        "oneRound": 80,
+        "twoToThree": 20,
+        "fourPlus": 0
+      },
+      "partyHp": 96,
+      "defeat": 0
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Pyrefly, Salamander, Dryad",
+      "level": 35,
+      "preset": "no-healer",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.138,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 76,
+        "fourPlus": 24
+      },
+      "partyHp": 52,
+      "defeat": 0
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Pyrefly, Salamander, Dryad",
+      "level": 35,
+      "preset": "no-healer",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +10",
+        "Ranger": "weapon +10",
+        "Caster": "spell +12",
+        "Tank": "weapon +10"
+      },
+      "meanRounds": 2.636,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 91,
+        "fourPlus": 9
+      },
+      "partyHp": 54,
+      "defeat": 0
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Pyrefly, Salamander, Dryad",
+      "level": 35,
+      "preset": "no-healer",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +19",
+        "Ranger": "weapon +19",
+        "Caster": "spell +25",
+        "Tank": "weapon +19"
+      },
+      "meanRounds": 2.048,
+      "bands": {
+        "oneRound": 21,
+        "twoToThree": 74,
+        "fourPlus": 5
+      },
+      "partyHp": 59,
+      "defeat": 0
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Pyrefly, Salamander, Dryad",
+      "level": 35,
+      "preset": "no-healer",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +29",
+        "Ranger": "weapon +29",
+        "Caster": "spell +37",
+        "Tank": "weapon +29"
+      },
+      "meanRounds": 2.07,
+      "bands": {
+        "oneRound": 18,
+        "twoToThree": 76,
+        "fourPlus": 5
+      },
+      "partyHp": 59,
+      "defeat": 0
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Pyrefly, Salamander, Dryad",
+      "level": 35,
+      "preset": "no-healer",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +43",
+        "Ranger": "weapon +43",
+        "Caster": "spell +56",
+        "Tank": "weapon +43"
+      },
+      "meanRounds": 1.882,
+      "bands": {
+        "oneRound": 34,
+        "twoToThree": 62,
+        "fourPlus": 5
+      },
+      "partyHp": 60,
+      "defeat": 0
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Pyrefly, Salamander, Dryad",
+      "level": 35,
+      "preset": "physical",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.23,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 69,
+        "fourPlus": 31
+      },
+      "partyHp": 55,
+      "defeat": 0
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Pyrefly, Salamander, Dryad",
+      "level": 35,
+      "preset": "physical",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +10",
+        "Ranger": "weapon +10",
+        "Tank": "weapon +10",
+        "Support": "weapon +10"
+      },
+      "meanRounds": 2.582,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 89,
+        "fourPlus": 11
+      },
+      "partyHp": 55,
+      "defeat": 0
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Pyrefly, Salamander, Dryad",
+      "level": 35,
+      "preset": "physical",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +19",
+        "Ranger": "weapon +19",
+        "Tank": "weapon +19",
+        "Support": "weapon +19"
+      },
+      "meanRounds": 2.382,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 92,
+        "fourPlus": 8
+      },
+      "partyHp": 54,
+      "defeat": 0
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Pyrefly, Salamander, Dryad",
+      "level": 35,
+      "preset": "physical",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +29",
+        "Ranger": "weapon +29",
+        "Tank": "weapon +29",
+        "Support": "weapon +29"
+      },
+      "meanRounds": 2.382,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 92,
+        "fourPlus": 8
+      },
+      "partyHp": 54,
+      "defeat": 0
+    },
+    {
+      "scope": "wyrm-3",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Pyrefly, Salamander, Dryad",
+      "level": 35,
+      "preset": "physical",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +43",
+        "Ranger": "weapon +43",
+        "Tank": "weapon +43",
+        "Support": "weapon +43"
+      },
+      "meanRounds": 1.866,
+      "bands": {
+        "oneRound": 34,
+        "twoToThree": 63,
+        "fourPlus": 3
+      },
+      "partyHp": 57,
+      "defeat": 0
+    },
+    {
+      "scope": "wyrm-4",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Hellhound, Salamander, Marigold",
+      "level": 35,
+      "preset": "standard",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.142,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 67,
+        "fourPlus": 33
+      },
+      "partyHp": 8,
+      "defeat": 64
+    },
+    {
+      "scope": "wyrm-4",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Hellhound, Salamander, Marigold",
+      "level": 35,
+      "preset": "standard",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +8",
+        "Caster": "spell +11",
+        "Tank": "weapon +8",
+        "Support": "spell +11"
+      },
+      "meanRounds": 3.194,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 61,
+        "fourPlus": 39
+      },
+      "partyHp": 12,
+      "defeat": 55
+    },
+    {
+      "scope": "wyrm-4",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Hellhound, Salamander, Marigold",
+      "level": 35,
+      "preset": "standard",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +15",
+        "Caster": "spell +22",
+        "Tank": "weapon +15",
+        "Support": "spell +22"
+      },
+      "meanRounds": 3.56,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 54,
+        "fourPlus": 46
+      },
+      "partyHp": 15,
+      "defeat": 49
+    },
+    {
+      "scope": "wyrm-4",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Hellhound, Salamander, Marigold",
+      "level": 35,
+      "preset": "standard",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +23",
+        "Caster": "spell +33",
+        "Tank": "weapon +23",
+        "Support": "spell +33"
+      },
+      "meanRounds": 2.746,
+      "bands": {
+        "oneRound": 3,
+        "twoToThree": 80,
+        "fourPlus": 17
+      },
+      "partyHp": 26,
+      "defeat": 36
+    },
+    {
+      "scope": "wyrm-4",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Hellhound, Salamander, Marigold",
+      "level": 35,
+      "preset": "standard",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +35",
+        "Caster": "spell +49",
+        "Tank": "weapon +35",
+        "Support": "spell +49"
+      },
+      "meanRounds": 1.868,
+      "bands": {
+        "oneRound": 30,
+        "twoToThree": 67,
+        "fourPlus": 3
+      },
+      "partyHp": 50,
+      "defeat": 5
+    },
+    {
+      "scope": "wyrm-4",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Hellhound, Salamander, Marigold",
+      "level": 35,
+      "preset": "double-caster",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 2.896,
+      "bands": {
+        "oneRound": 2,
+        "twoToThree": 80,
+        "fourPlus": 18
+      },
+      "partyHp": 50,
+      "defeat": 7
+    },
+    {
+      "scope": "wyrm-4",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Hellhound, Salamander, Marigold",
+      "level": 35,
+      "preset": "double-caster",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +8",
+        "Caster": "spell +11",
+        "Caster II": "spell +11",
+        "Support": "spell +11"
+      },
+      "meanRounds": 2.416,
+      "bands": {
+        "oneRound": 4,
+        "twoToThree": 90,
+        "fourPlus": 6
+      },
+      "partyHp": 57,
+      "defeat": 5
+    },
+    {
+      "scope": "wyrm-4",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Hellhound, Salamander, Marigold",
+      "level": 35,
+      "preset": "double-caster",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +15",
+        "Caster": "spell +22",
+        "Caster II": "spell +22",
+        "Support": "spell +22"
+      },
+      "meanRounds": 1.882,
+      "bands": {
+        "oneRound": 27,
+        "twoToThree": 69,
+        "fourPlus": 4
+      },
+      "partyHp": 74,
+      "defeat": 3
+    },
+    {
+      "scope": "wyrm-4",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Hellhound, Salamander, Marigold",
+      "level": 35,
+      "preset": "double-caster",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +23",
+        "Caster": "spell +33",
+        "Caster II": "spell +33",
+        "Support": "spell +33"
+      },
+      "meanRounds": 1.418,
+      "bands": {
+        "oneRound": 63,
+        "twoToThree": 37,
+        "fourPlus": 1
+      },
+      "partyHp": 91,
+      "defeat": 0
+    },
+    {
+      "scope": "wyrm-4",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Hellhound, Salamander, Marigold",
+      "level": 35,
+      "preset": "double-caster",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +35",
+        "Caster": "spell +49",
+        "Caster II": "spell +49",
+        "Support": "spell +49"
+      },
+      "meanRounds": 1.28,
+      "bands": {
+        "oneRound": 73,
+        "twoToThree": 27,
+        "fourPlus": 0
+      },
+      "partyHp": 93,
+      "defeat": 0
+    },
+    {
+      "scope": "wyrm-4",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Hellhound, Salamander, Marigold",
+      "level": 35,
+      "preset": "no-healer",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.13,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 73,
+        "fourPlus": 27
+      },
+      "partyHp": 9,
+      "defeat": 76
+    },
+    {
+      "scope": "wyrm-4",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Hellhound, Salamander, Marigold",
+      "level": 35,
+      "preset": "no-healer",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +8",
+        "Ranger": "weapon +8",
+        "Caster": "spell +11",
+        "Tank": "weapon +8"
+      },
+      "meanRounds": 3.156,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 75,
+        "fourPlus": 25
+      },
+      "partyHp": 33,
+      "defeat": 24
+    },
+    {
+      "scope": "wyrm-4",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Hellhound, Salamander, Marigold",
+      "level": 35,
+      "preset": "no-healer",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +15",
+        "Ranger": "weapon +15",
+        "Caster": "spell +22",
+        "Tank": "weapon +15"
+      },
+      "meanRounds": 2.752,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 85,
+        "fourPlus": 15
+      },
+      "partyHp": 36,
+      "defeat": 22
+    },
+    {
+      "scope": "wyrm-4",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Hellhound, Salamander, Marigold",
+      "level": 35,
+      "preset": "no-healer",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +23",
+        "Ranger": "weapon +23",
+        "Caster": "spell +33",
+        "Tank": "weapon +23"
+      },
+      "meanRounds": 2.612,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 87,
+        "fourPlus": 13
+      },
+      "partyHp": 39,
+      "defeat": 21
+    },
+    {
+      "scope": "wyrm-4",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Hellhound, Salamander, Marigold",
+      "level": 35,
+      "preset": "no-healer",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +35",
+        "Ranger": "weapon +35",
+        "Caster": "spell +49",
+        "Tank": "weapon +35"
+      },
+      "meanRounds": 1.626,
+      "bands": {
+        "oneRound": 43,
+        "twoToThree": 57,
+        "fourPlus": 0
+      },
+      "partyHp": 60,
+      "defeat": 2
+    },
+    {
+      "scope": "wyrm-4",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Hellhound, Salamander, Marigold",
+      "level": 35,
+      "preset": "physical",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 4.016,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 50,
+        "fourPlus": 50
+      },
+      "partyHp": 11,
+      "defeat": 74
+    },
+    {
+      "scope": "wyrm-4",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Hellhound, Salamander, Marigold",
+      "level": 35,
+      "preset": "physical",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +8",
+        "Ranger": "weapon +8",
+        "Tank": "weapon +8",
+        "Support": "weapon +8"
+      },
+      "meanRounds": 3.618,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 57,
+        "fourPlus": 43
+      },
+      "partyHp": 33,
+      "defeat": 27
+    },
+    {
+      "scope": "wyrm-4",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Hellhound, Salamander, Marigold",
+      "level": 35,
+      "preset": "physical",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +15",
+        "Ranger": "weapon +15",
+        "Tank": "weapon +15",
+        "Support": "weapon +15"
+      },
+      "meanRounds": 3.286,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 71,
+        "fourPlus": 29
+      },
+      "partyHp": 37,
+      "defeat": 22
+    },
+    {
+      "scope": "wyrm-4",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Hellhound, Salamander, Marigold",
+      "level": 35,
+      "preset": "physical",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +23",
+        "Ranger": "weapon +23",
+        "Tank": "weapon +23",
+        "Support": "weapon +23"
+      },
+      "meanRounds": 2.764,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 87,
+        "fourPlus": 13
+      },
+      "partyHp": 36,
+      "defeat": 20
+    },
+    {
+      "scope": "wyrm-4",
+      "group": "The Wyrmwood",
+      "label": "The Wyrmwood — Hellhound, Salamander, Marigold",
+      "level": 35,
+      "preset": "physical",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +35",
+        "Ranger": "weapon +35",
+        "Tank": "weapon +35",
+        "Support": "weapon +35"
+      },
+      "meanRounds": 1.998,
+      "bands": {
+        "oneRound": 22,
+        "twoToThree": 75,
+        "fourPlus": 3
+      },
+      "partyHp": 51,
+      "defeat": 3
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — O'zealot, O'lmek, O'zealot",
+      "level": 38,
+      "preset": "standard",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 2.284,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
+      "partyHp": 77,
+      "defeat": 0
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — O'zealot, O'lmek, O'zealot",
+      "level": 38,
+      "preset": "standard",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +16",
+        "Caster": "spell +2",
+        "Tank": "weapon +16",
+        "Support": "spell +2"
+      },
+      "meanRounds": 2.174,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 78,
+      "defeat": 0
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — O'zealot, O'lmek, O'zealot",
+      "level": 38,
+      "preset": "standard",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +31",
+        "Caster": "spell +4",
+        "Tank": "weapon +31",
+        "Support": "spell +4"
+      },
+      "meanRounds": 2.074,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 79,
+      "defeat": 0
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — O'zealot, O'lmek, O'zealot",
+      "level": 38,
+      "preset": "standard",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +47",
+        "Caster": "spell +6",
+        "Tank": "weapon +47",
+        "Support": "spell +6"
+      },
+      "meanRounds": 2.032,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 80,
+      "defeat": 0
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — O'zealot, O'lmek, O'zealot",
+      "level": 38,
+      "preset": "standard",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +70",
+        "Caster": "spell +9",
+        "Tank": "weapon +70",
+        "Support": "spell +9"
+      },
+      "meanRounds": 2.026,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 81,
+      "defeat": 0
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — O'zealot, O'lmek, O'zealot",
+      "level": 38,
+      "preset": "double-caster",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 1.644,
+      "bands": {
+        "oneRound": 36,
+        "twoToThree": 64,
+        "fourPlus": 0
+      },
+      "partyHp": 94,
+      "defeat": 0
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — O'zealot, O'lmek, O'zealot",
+      "level": 38,
+      "preset": "double-caster",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +16",
+        "Caster": "spell +2",
+        "Caster II": "spell +2",
+        "Support": "spell +2"
+      },
+      "meanRounds": 1.644,
+      "bands": {
+        "oneRound": 36,
+        "twoToThree": 64,
+        "fourPlus": 0
+      },
+      "partyHp": 93,
+      "defeat": 0
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — O'zealot, O'lmek, O'zealot",
+      "level": 38,
+      "preset": "double-caster",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +31",
+        "Caster": "spell +4",
+        "Caster II": "spell +4",
+        "Support": "spell +4"
+      },
+      "meanRounds": 1.602,
+      "bands": {
+        "oneRound": 40,
+        "twoToThree": 60,
+        "fourPlus": 0
+      },
+      "partyHp": 94,
+      "defeat": 0
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — O'zealot, O'lmek, O'zealot",
+      "level": 38,
+      "preset": "double-caster",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +47",
+        "Caster": "spell +6",
+        "Caster II": "spell +6",
+        "Support": "spell +6"
+      },
+      "meanRounds": 1.428,
+      "bands": {
+        "oneRound": 57,
+        "twoToThree": 43,
+        "fourPlus": 0
+      },
+      "partyHp": 98,
+      "defeat": 0
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — O'zealot, O'lmek, O'zealot",
+      "level": 38,
+      "preset": "double-caster",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +70",
+        "Caster": "spell +9",
+        "Caster II": "spell +9",
+        "Support": "spell +9"
+      },
+      "meanRounds": 1.412,
+      "bands": {
+        "oneRound": 59,
+        "twoToThree": 41,
+        "fourPlus": 0
+      },
+      "partyHp": 97,
+      "defeat": 0
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — O'zealot, O'lmek, O'zealot",
+      "level": 38,
+      "preset": "no-healer",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.526,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 63,
+        "fourPlus": 37
+      },
+      "partyHp": 54,
+      "defeat": 6
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — O'zealot, O'lmek, O'zealot",
+      "level": 38,
+      "preset": "no-healer",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +16",
+        "Ranger": "weapon +16",
+        "Caster": "spell +2",
+        "Tank": "weapon +16"
+      },
+      "meanRounds": 3.372,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 67,
+        "fourPlus": 33
+      },
+      "partyHp": 57,
+      "defeat": 1
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — O'zealot, O'lmek, O'zealot",
+      "level": 38,
+      "preset": "no-healer",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +31",
+        "Ranger": "weapon +31",
+        "Caster": "spell +4",
+        "Tank": "weapon +31"
+      },
+      "meanRounds": 3.55,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 55,
+        "fourPlus": 45
+      },
+      "partyHp": 52,
+      "defeat": 4
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — O'zealot, O'lmek, O'zealot",
+      "level": 38,
+      "preset": "no-healer",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +47",
+        "Ranger": "weapon +47",
+        "Caster": "spell +6",
+        "Tank": "weapon +47"
+      },
+      "meanRounds": 2.888,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 92,
+        "fourPlus": 8
+      },
+      "partyHp": 65,
+      "defeat": 0
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — O'zealot, O'lmek, O'zealot",
+      "level": 38,
+      "preset": "no-healer",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +70",
+        "Ranger": "weapon +70",
+        "Caster": "spell +9",
+        "Tank": "weapon +70"
+      },
+      "meanRounds": 2.298,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "partyHp": 75,
+      "defeat": 0
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — O'zealot, O'lmek, O'zealot",
+      "level": 38,
+      "preset": "physical",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 5.614,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 0,
+      "defeat": 100
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — O'zealot, O'lmek, O'zealot",
+      "level": 38,
+      "preset": "physical",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +16",
+        "Ranger": "weapon +16",
+        "Tank": "weapon +16",
+        "Support": "weapon +16"
+      },
+      "meanRounds": 5.518,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 3,
+      "defeat": 90
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — O'zealot, O'lmek, O'zealot",
+      "level": 38,
+      "preset": "physical",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +31",
+        "Ranger": "weapon +31",
+        "Tank": "weapon +31",
+        "Support": "weapon +31"
+      },
+      "meanRounds": 4.802,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 13,
+        "fourPlus": 87
+      },
+      "partyHp": 21,
+      "defeat": 51
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — O'zealot, O'lmek, O'zealot",
+      "level": 38,
+      "preset": "physical",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +47",
+        "Ranger": "weapon +47",
+        "Tank": "weapon +47",
+        "Support": "weapon +47"
+      },
+      "meanRounds": 4.458,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 20,
+        "fourPlus": 80
+      },
+      "partyHp": 28,
+      "defeat": 31
+    },
+    {
+      "scope": "temple-1",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — O'zealot, O'lmek, O'zealot",
+      "level": 38,
+      "preset": "physical",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +70",
+        "Ranger": "weapon +70",
+        "Tank": "weapon +70",
+        "Support": "weapon +70"
+      },
+      "meanRounds": 3.066,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 74,
+        "fourPlus": 26
+      },
+      "partyHp": 57,
+      "defeat": 7
+    },
+    {
+      "scope": "temple-2",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — Salamander, Dryad, Inferex",
+      "level": 40,
+      "preset": "standard",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.846,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 55,
+        "fourPlus": 45
+      },
+      "partyHp": 12,
+      "defeat": 62
+    },
+    {
+      "scope": "temple-2",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — Salamander, Dryad, Inferex",
+      "level": 40,
+      "preset": "standard",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +9",
+        "Caster": "spell +35",
+        "Tank": "weapon +9",
+        "Support": "spell +35"
+      },
+      "meanRounds": 2.9,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 79,
+        "fourPlus": 21
+      },
+      "partyHp": 25,
+      "defeat": 41
+    },
+    {
+      "scope": "temple-2",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — Salamander, Dryad, Inferex",
+      "level": 40,
+      "preset": "standard",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +18",
+        "Caster": "spell +70",
+        "Tank": "weapon +18",
+        "Support": "spell +70"
+      },
+      "meanRounds": 2.052,
+      "bands": {
+        "oneRound": 38,
+        "twoToThree": 55,
+        "fourPlus": 7
+      },
+      "partyHp": 38,
+      "defeat": 34
+    },
+    {
+      "scope": "temple-2",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — Salamander, Dryad, Inferex",
+      "level": 40,
+      "preset": "standard",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +27",
+        "Caster": "spell +105",
+        "Tank": "weapon +27",
+        "Support": "spell +105"
+      },
+      "meanRounds": 2.052,
+      "bands": {
+        "oneRound": 38,
+        "twoToThree": 55,
+        "fourPlus": 7
+      },
+      "partyHp": 38,
+      "defeat": 34
+    },
+    {
+      "scope": "temple-2",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — Salamander, Dryad, Inferex",
+      "level": 40,
+      "preset": "standard",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +40",
+        "Caster": "spell +158",
+        "Tank": "weapon +40",
+        "Support": "spell +158"
+      },
+      "meanRounds": 2.422,
+      "bands": {
+        "oneRound": 32,
+        "twoToThree": 50,
+        "fourPlus": 18
+      },
+      "partyHp": 58,
+      "defeat": 9
+    },
+    {
+      "scope": "temple-2",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — Salamander, Dryad, Inferex",
+      "level": 40,
+      "preset": "double-caster",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 2.934,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 82,
+        "fourPlus": 18
+      },
+      "partyHp": 26,
+      "defeat": 38
+    },
+    {
+      "scope": "temple-2",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — Salamander, Dryad, Inferex",
+      "level": 40,
+      "preset": "double-caster",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +9",
+        "Caster": "spell +35",
+        "Caster II": "spell +35",
+        "Support": "spell +35"
+      },
+      "meanRounds": 2.308,
+      "bands": {
+        "oneRound": 13,
+        "twoToThree": 77,
+        "fourPlus": 10
+      },
+      "partyHp": 38,
+      "defeat": 20
+    },
+    {
+      "scope": "temple-2",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — Salamander, Dryad, Inferex",
+      "level": 40,
+      "preset": "double-caster",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +18",
+        "Caster": "spell +70",
+        "Caster II": "spell +70",
+        "Support": "spell +70"
+      },
+      "meanRounds": 1.18,
+      "bands": {
+        "oneRound": 85,
+        "twoToThree": 15,
+        "fourPlus": 1
+      },
+      "partyHp": 90,
+      "defeat": 2
+    },
+    {
+      "scope": "temple-2",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — Salamander, Dryad, Inferex",
+      "level": 40,
+      "preset": "double-caster",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +27",
+        "Caster": "spell +105",
+        "Caster II": "spell +105",
+        "Support": "spell +105"
+      },
+      "meanRounds": 1.106,
+      "bands": {
+        "oneRound": 90,
+        "twoToThree": 10,
+        "fourPlus": 0
+      },
+      "partyHp": 94,
+      "defeat": 0
+    },
+    {
+      "scope": "temple-2",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — Salamander, Dryad, Inferex",
+      "level": 40,
+      "preset": "double-caster",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +40",
+        "Caster": "spell +158",
+        "Caster II": "spell +158",
+        "Support": "spell +158"
+      },
+      "meanRounds": 1.042,
+      "bands": {
+        "oneRound": 96,
+        "twoToThree": 4,
+        "fourPlus": 0
+      },
+      "partyHp": 95,
+      "defeat": 0
+    },
+    {
+      "scope": "temple-2",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — Salamander, Dryad, Inferex",
+      "level": 40,
+      "preset": "no-healer",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 4.56,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 33,
+        "fourPlus": 67
+      },
+      "partyHp": 0,
+      "defeat": 100
+    },
+    {
+      "scope": "temple-2",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — Salamander, Dryad, Inferex",
+      "level": 40,
+      "preset": "no-healer",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +9",
+        "Ranger": "weapon +9",
+        "Caster": "spell +35",
+        "Tank": "weapon +9"
+      },
+      "meanRounds": 4.588,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 33,
+        "fourPlus": 67
+      },
+      "partyHp": 0,
+      "defeat": 100
+    },
+    {
+      "scope": "temple-2",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — Salamander, Dryad, Inferex",
+      "level": 40,
+      "preset": "no-healer",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +18",
+        "Ranger": "weapon +18",
+        "Caster": "spell +70",
+        "Tank": "weapon +18"
+      },
+      "meanRounds": 4.582,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 33,
+        "fourPlus": 67
+      },
+      "partyHp": 0,
+      "defeat": 99
+    },
+    {
+      "scope": "temple-2",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — Salamander, Dryad, Inferex",
+      "level": 40,
+      "preset": "no-healer",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +27",
+        "Ranger": "weapon +27",
+        "Caster": "spell +105",
+        "Tank": "weapon +27"
+      },
+      "meanRounds": 4.578,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 33,
+        "fourPlus": 67
+      },
+      "partyHp": 0,
+      "defeat": 99
+    },
+    {
+      "scope": "temple-2",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — Salamander, Dryad, Inferex",
+      "level": 40,
+      "preset": "no-healer",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +40",
+        "Ranger": "weapon +40",
+        "Caster": "spell +158",
+        "Tank": "weapon +40"
+      },
+      "meanRounds": 4.544,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 20,
+        "fourPlus": 80
+      },
+      "partyHp": 3,
+      "defeat": 91
+    },
+    {
+      "scope": "temple-2",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — Salamander, Dryad, Inferex",
+      "level": 40,
+      "preset": "physical",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 6.088,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 5,
+      "defeat": 82
+    },
+    {
+      "scope": "temple-2",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — Salamander, Dryad, Inferex",
+      "level": 40,
+      "preset": "physical",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +9",
+        "Ranger": "weapon +9",
+        "Tank": "weapon +9",
+        "Support": "weapon +9"
+      },
+      "meanRounds": 5.442,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 1,
+        "fourPlus": 99
+      },
+      "partyHp": 13,
+      "defeat": 57
+    },
+    {
+      "scope": "temple-2",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — Salamander, Dryad, Inferex",
+      "level": 40,
+      "preset": "physical",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +18",
+        "Ranger": "weapon +18",
+        "Tank": "weapon +18",
+        "Support": "weapon +18"
+      },
+      "meanRounds": 4.974,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 6,
+        "fourPlus": 94
+      },
+      "partyHp": 18,
+      "defeat": 42
+    },
+    {
+      "scope": "temple-2",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — Salamander, Dryad, Inferex",
+      "level": 40,
+      "preset": "physical",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +27",
+        "Ranger": "weapon +27",
+        "Tank": "weapon +27",
+        "Support": "weapon +27"
+      },
+      "meanRounds": 4.418,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 18,
+        "fourPlus": 82
+      },
+      "partyHp": 26,
+      "defeat": 24
+    },
+    {
+      "scope": "temple-2",
+      "group": "Ancient Temple",
+      "label": "Ancient Temple — Salamander, Dryad, Inferex",
+      "level": 40,
+      "preset": "physical",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +40",
+        "Ranger": "weapon +40",
+        "Tank": "weapon +40",
+        "Support": "weapon +40"
+      },
+      "meanRounds": 2.85,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 86,
+        "fourPlus": 14
+      },
+      "partyHp": 60,
+      "defeat": 1
+    },
+    {
+      "scope": "valley-1",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Skizzik, Kirin, Skizzik",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 2.47,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
+      "partyHp": 0,
+      "defeat": 100
+    },
+    {
+      "scope": "valley-1",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Skizzik, Kirin, Skizzik",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +11",
+        "Caster": "spell +5",
+        "Tank": "weapon +11",
+        "Support": "spell +5"
+      },
+      "meanRounds": 2.644,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "partyHp": 0,
+      "defeat": 100
+    },
+    {
+      "scope": "valley-1",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Skizzik, Kirin, Skizzik",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +23",
+        "Caster": "spell +10",
+        "Tank": "weapon +23",
+        "Support": "spell +10"
+      },
+      "meanRounds": 2.906,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 83,
+        "fourPlus": 17
+      },
+      "partyHp": 0,
+      "defeat": 98
+    },
+    {
+      "scope": "valley-1",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Skizzik, Kirin, Skizzik",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +34",
+        "Caster": "spell +15",
+        "Tank": "weapon +34",
+        "Support": "spell +15"
+      },
+      "meanRounds": 2.916,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 80,
+        "fourPlus": 20
+      },
+      "partyHp": 1,
+      "defeat": 97
+    },
+    {
+      "scope": "valley-1",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Skizzik, Kirin, Skizzik",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +51",
+        "Caster": "spell +23",
+        "Tank": "weapon +51",
+        "Support": "spell +23"
+      },
+      "meanRounds": 3.39,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 59,
+        "fourPlus": 41
+      },
+      "partyHp": 6,
+      "defeat": 73
+    },
+    {
+      "scope": "valley-1",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Skizzik, Kirin, Skizzik",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 2.126,
+      "bands": {
+        "oneRound": 1,
+        "twoToThree": 99,
+        "fourPlus": 0
+      },
+      "partyHp": 0,
+      "defeat": 100
+    },
+    {
+      "scope": "valley-1",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Skizzik, Kirin, Skizzik",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +11",
+        "Caster": "spell +5",
+        "Caster II": "spell +5",
+        "Support": "spell +5"
+      },
+      "meanRounds": 2.28,
+      "bands": {
+        "oneRound": 1,
+        "twoToThree": 99,
+        "fourPlus": 0
+      },
+      "partyHp": 0,
+      "defeat": 100
+    },
+    {
+      "scope": "valley-1",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Skizzik, Kirin, Skizzik",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +23",
+        "Caster": "spell +10",
+        "Caster II": "spell +10",
+        "Support": "spell +10"
+      },
+      "meanRounds": 2.372,
+      "bands": {
+        "oneRound": 1,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "partyHp": 0,
+      "defeat": 100
+    },
+    {
+      "scope": "valley-1",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Skizzik, Kirin, Skizzik",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +34",
+        "Caster": "spell +15",
+        "Caster II": "spell +15",
+        "Support": "spell +15"
+      },
+      "meanRounds": 2.444,
+      "bands": {
+        "oneRound": 1,
+        "twoToThree": 96,
+        "fourPlus": 3
+      },
+      "partyHp": 0,
+      "defeat": 98
+    },
+    {
+      "scope": "valley-1",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Skizzik, Kirin, Skizzik",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +51",
+        "Caster": "spell +23",
+        "Caster II": "spell +23",
+        "Support": "spell +23"
+      },
+      "meanRounds": 2.74,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 93,
+        "fourPlus": 7
+      },
+      "partyHp": 3,
+      "defeat": 81
+    },
+    {
+      "scope": "valley-1",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Skizzik, Kirin, Skizzik",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 2.618,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 0,
+      "defeat": 100
+    },
+    {
+      "scope": "valley-1",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Skizzik, Kirin, Skizzik",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +11",
+        "Ranger": "weapon +11",
+        "Caster": "spell +5",
+        "Tank": "weapon +11"
+      },
+      "meanRounds": 2.644,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "partyHp": 0,
+      "defeat": 100
+    },
+    {
+      "scope": "valley-1",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Skizzik, Kirin, Skizzik",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +23",
+        "Ranger": "weapon +23",
+        "Caster": "spell +10",
+        "Tank": "weapon +23"
+      },
+      "meanRounds": 3.172,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 77,
+        "fourPlus": 23
+      },
+      "partyHp": 18,
+      "defeat": 33
+    },
+    {
+      "scope": "valley-1",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Skizzik, Kirin, Skizzik",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +34",
+        "Ranger": "weapon +34",
+        "Caster": "spell +15",
+        "Tank": "weapon +34"
+      },
+      "meanRounds": 3.022,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 86,
+        "fourPlus": 14
+      },
+      "partyHp": 20,
+      "defeat": 28
+    },
+    {
+      "scope": "valley-1",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Skizzik, Kirin, Skizzik",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +51",
+        "Ranger": "weapon +51",
+        "Caster": "spell +23",
+        "Tank": "weapon +51"
+      },
+      "meanRounds": 2.506,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 97,
+        "fourPlus": 3
+      },
+      "partyHp": 30,
+      "defeat": 17
+    },
+    {
+      "scope": "valley-1",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Skizzik, Kirin, Skizzik",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 2.59,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
+      "partyHp": 0,
+      "defeat": 100
+    },
+    {
+      "scope": "valley-1",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Skizzik, Kirin, Skizzik",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +11",
+        "Ranger": "weapon +11",
+        "Tank": "weapon +11",
+        "Support": "weapon +11"
+      },
+      "meanRounds": 2.648,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "partyHp": 0,
+      "defeat": 100
+    },
+    {
+      "scope": "valley-1",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Skizzik, Kirin, Skizzik",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +23",
+        "Ranger": "weapon +23",
+        "Tank": "weapon +23",
+        "Support": "weapon +23"
+      },
+      "meanRounds": 3.46,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 58,
+        "fourPlus": 42
+      },
+      "partyHp": 25,
+      "defeat": 39
+    },
+    {
+      "scope": "valley-1",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Skizzik, Kirin, Skizzik",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +34",
+        "Ranger": "weapon +34",
+        "Tank": "weapon +34",
+        "Support": "weapon +34"
+      },
+      "meanRounds": 3.302,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 70,
+        "fourPlus": 30
+      },
+      "partyHp": 30,
+      "defeat": 30
+    },
+    {
+      "scope": "valley-1",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Skizzik, Kirin, Skizzik",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +51",
+        "Ranger": "weapon +51",
+        "Tank": "weapon +51",
+        "Support": "weapon +51"
+      },
+      "meanRounds": 2.89,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 86,
+        "fourPlus": 14
+      },
+      "partyHp": 35,
+      "defeat": 14
+    },
+    {
+      "scope": "valley-2",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Ampere, Mana Ray, Kirin",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 2.236,
+      "bands": {
+        "oneRound": 6,
+        "twoToThree": 91,
+        "fourPlus": 3
+      },
+      "partyHp": 0,
+      "defeat": 100
+    },
+    {
+      "scope": "valley-2",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Ampere, Mana Ray, Kirin",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +9",
+        "Caster": "spell +6",
+        "Tank": "weapon +9",
+        "Support": "spell +6"
+      },
+      "meanRounds": 2.224,
+      "bands": {
+        "oneRound": 6,
+        "twoToThree": 91,
+        "fourPlus": 3
+      },
+      "partyHp": 0,
+      "defeat": 100
+    },
+    {
+      "scope": "valley-2",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Ampere, Mana Ray, Kirin",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +19",
+        "Caster": "spell +11",
+        "Tank": "weapon +19",
+        "Support": "spell +11"
+      },
+      "meanRounds": 2.252,
+      "bands": {
+        "oneRound": 6,
+        "twoToThree": 89,
+        "fourPlus": 5
+      },
+      "partyHp": 0,
+      "defeat": 99
+    },
+    {
+      "scope": "valley-2",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Ampere, Mana Ray, Kirin",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +28",
+        "Caster": "spell +17",
+        "Tank": "weapon +28",
+        "Support": "spell +17"
+      },
+      "meanRounds": 2.224,
+      "bands": {
+        "oneRound": 7,
+        "twoToThree": 84,
+        "fourPlus": 9
+      },
+      "partyHp": 2,
+      "defeat": 92
+    },
+    {
+      "scope": "valley-2",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Ampere, Mana Ray, Kirin",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +43",
+        "Caster": "spell +25",
+        "Tank": "weapon +43",
+        "Support": "spell +25"
+      },
+      "meanRounds": 2.486,
+      "bands": {
+        "oneRound": 4,
+        "twoToThree": 80,
+        "fourPlus": 16
+      },
+      "partyHp": 5,
+      "defeat": 79
+    },
+    {
+      "scope": "valley-2",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Ampere, Mana Ray, Kirin",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 2.032,
+      "bands": {
+        "oneRound": 8,
+        "twoToThree": 90,
+        "fourPlus": 2
+      },
+      "partyHp": 0,
+      "defeat": 100
+    },
+    {
+      "scope": "valley-2",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Ampere, Mana Ray, Kirin",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +9",
+        "Caster": "spell +6",
+        "Caster II": "spell +6",
+        "Support": "spell +6"
+      },
+      "meanRounds": 2.05,
+      "bands": {
+        "oneRound": 8,
+        "twoToThree": 89,
+        "fourPlus": 3
+      },
+      "partyHp": 0,
+      "defeat": 99
+    },
+    {
+      "scope": "valley-2",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Ampere, Mana Ray, Kirin",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +19",
+        "Caster": "spell +11",
+        "Caster II": "spell +11",
+        "Support": "spell +11"
+      },
+      "meanRounds": 2.116,
+      "bands": {
+        "oneRound": 8,
+        "twoToThree": 90,
+        "fourPlus": 2
+      },
+      "partyHp": 1,
+      "defeat": 98
+    },
+    {
+      "scope": "valley-2",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Ampere, Mana Ray, Kirin",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +28",
+        "Caster": "spell +17",
+        "Caster II": "spell +17",
+        "Support": "spell +17"
+      },
+      "meanRounds": 2.16,
+      "bands": {
+        "oneRound": 7,
+        "twoToThree": 90,
+        "fourPlus": 3
+      },
+      "partyHp": 1,
+      "defeat": 98
+    },
+    {
+      "scope": "valley-2",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Ampere, Mana Ray, Kirin",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +43",
+        "Caster": "spell +25",
+        "Caster II": "spell +25",
+        "Support": "spell +25"
+      },
+      "meanRounds": 2.17,
+      "bands": {
+        "oneRound": 8,
+        "twoToThree": 90,
+        "fourPlus": 2
+      },
+      "partyHp": 2,
+      "defeat": 94
+    },
+    {
+      "scope": "valley-2",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Ampere, Mana Ray, Kirin",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 2.022,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 0,
+      "defeat": 100
+    },
+    {
+      "scope": "valley-2",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Ampere, Mana Ray, Kirin",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +9",
+        "Ranger": "weapon +9",
+        "Caster": "spell +6",
+        "Tank": "weapon +9"
+      },
+      "meanRounds": 2.206,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 96,
+        "fourPlus": 4
+      },
+      "partyHp": 0,
+      "defeat": 98
+    },
+    {
+      "scope": "valley-2",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Ampere, Mana Ray, Kirin",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +19",
+        "Ranger": "weapon +19",
+        "Caster": "spell +11",
+        "Tank": "weapon +19"
+      },
+      "meanRounds": 2.278,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 96,
+        "fourPlus": 4
+      },
+      "partyHp": 1,
+      "defeat": 96
+    },
+    {
+      "scope": "valley-2",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Ampere, Mana Ray, Kirin",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +28",
+        "Ranger": "weapon +28",
+        "Caster": "spell +17",
+        "Tank": "weapon +28"
+      },
+      "meanRounds": 2.304,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 95,
+        "fourPlus": 5
+      },
+      "partyHp": 1,
+      "defeat": 93
+    },
+    {
+      "scope": "valley-2",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Ampere, Mana Ray, Kirin",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +43",
+        "Ranger": "weapon +43",
+        "Caster": "spell +25",
+        "Tank": "weapon +43"
+      },
+      "meanRounds": 2.322,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "partyHp": 2,
+      "defeat": 90
+    },
+    {
+      "scope": "valley-2",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Ampere, Mana Ray, Kirin",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 2.36,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "partyHp": 0,
+      "defeat": 100
+    },
+    {
+      "scope": "valley-2",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Ampere, Mana Ray, Kirin",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +9",
+        "Ranger": "weapon +9",
+        "Tank": "weapon +9",
+        "Support": "weapon +9"
+      },
+      "meanRounds": 2.39,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "partyHp": 0,
+      "defeat": 100
+    },
+    {
+      "scope": "valley-2",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Ampere, Mana Ray, Kirin",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +19",
+        "Ranger": "weapon +19",
+        "Tank": "weapon +19",
+        "Support": "weapon +19"
+      },
+      "meanRounds": 2.444,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 96,
+        "fourPlus": 4
+      },
+      "partyHp": 0,
+      "defeat": 100
+    },
+    {
+      "scope": "valley-2",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Ampere, Mana Ray, Kirin",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +28",
+        "Ranger": "weapon +28",
+        "Tank": "weapon +28",
+        "Support": "weapon +28"
+      },
+      "meanRounds": 2.75,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 81,
+        "fourPlus": 19
+      },
+      "partyHp": 3,
+      "defeat": 89
+    },
+    {
+      "scope": "valley-2",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Ampere, Mana Ray, Kirin",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +43",
+        "Ranger": "weapon +43",
+        "Tank": "weapon +43",
+        "Support": "weapon +43"
+      },
+      "meanRounds": 2.704,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 85,
+        "fourPlus": 15
+      },
+      "partyHp": 5,
+      "defeat": 82
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Drakoza, Skizzik",
+      "level": 48,
+      "preset": "standard",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 2.99,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 77,
+        "fourPlus": 23
+      },
+      "partyHp": 34,
+      "defeat": 17
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Drakoza, Skizzik",
+      "level": 48,
+      "preset": "standard",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +9",
+        "Caster": "spell +7",
+        "Tank": "weapon +9",
+        "Support": "spell +7"
+      },
+      "meanRounds": 2.318,
+      "bands": {
+        "oneRound": 2,
+        "twoToThree": 94,
+        "fourPlus": 5
+      },
+      "partyHp": 50,
+      "defeat": 3
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Drakoza, Skizzik",
+      "level": 48,
+      "preset": "standard",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +18",
+        "Caster": "spell +14",
+        "Tank": "weapon +18",
+        "Support": "spell +14"
+      },
+      "meanRounds": 1.812,
+      "bands": {
+        "oneRound": 28,
+        "twoToThree": 71,
+        "fourPlus": 1
+      },
+      "partyHp": 58,
+      "defeat": 1
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Drakoza, Skizzik",
+      "level": 48,
+      "preset": "standard",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +27",
+        "Caster": "spell +21",
+        "Tank": "weapon +27",
+        "Support": "spell +21"
+      },
+      "meanRounds": 1.742,
+      "bands": {
+        "oneRound": 29,
+        "twoToThree": 70,
+        "fourPlus": 1
+      },
+      "partyHp": 63,
+      "defeat": 0
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Drakoza, Skizzik",
+      "level": 48,
+      "preset": "standard",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +41",
+        "Caster": "spell +32",
+        "Tank": "weapon +41",
+        "Support": "spell +32"
+      },
+      "meanRounds": 1.524,
+      "bands": {
+        "oneRound": 48,
+        "twoToThree": 52,
+        "fourPlus": 0
+      },
+      "partyHp": 65,
+      "defeat": 0
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Drakoza, Skizzik",
+      "level": 48,
+      "preset": "double-caster",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.198,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 70,
+        "fourPlus": 30
+      },
+      "partyHp": 25,
+      "defeat": 32
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Drakoza, Skizzik",
+      "level": 48,
+      "preset": "double-caster",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +9",
+        "Caster": "spell +7",
+        "Caster II": "spell +7",
+        "Support": "spell +7"
+      },
+      "meanRounds": 2.626,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 91,
+        "fourPlus": 9
+      },
+      "partyHp": 39,
+      "defeat": 6
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Drakoza, Skizzik",
+      "level": 48,
+      "preset": "double-caster",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +18",
+        "Caster": "spell +14",
+        "Caster II": "spell +14",
+        "Support": "spell +14"
+      },
+      "meanRounds": 2.022,
+      "bands": {
+        "oneRound": 6,
+        "twoToThree": 94,
+        "fourPlus": 0
+      },
+      "partyHp": 56,
+      "defeat": 1
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Drakoza, Skizzik",
+      "level": 48,
+      "preset": "double-caster",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +27",
+        "Caster": "spell +21",
+        "Caster II": "spell +21",
+        "Support": "spell +21"
+      },
+      "meanRounds": 1.854,
+      "bands": {
+        "oneRound": 18,
+        "twoToThree": 81,
+        "fourPlus": 0
+      },
+      "partyHp": 58,
+      "defeat": 0
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Drakoza, Skizzik",
+      "level": 48,
+      "preset": "double-caster",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +41",
+        "Caster": "spell +32",
+        "Caster II": "spell +32",
+        "Support": "spell +32"
+      },
+      "meanRounds": 1.206,
+      "bands": {
+        "oneRound": 79,
+        "twoToThree": 21,
+        "fourPlus": 0
+      },
+      "partyHp": 65,
+      "defeat": 0
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Drakoza, Skizzik",
+      "level": 48,
+      "preset": "no-healer",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 2.688,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 88,
+        "fourPlus": 12
+      },
+      "partyHp": 37,
+      "defeat": 13
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Drakoza, Skizzik",
+      "level": 48,
+      "preset": "no-healer",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +9",
+        "Ranger": "weapon +9",
+        "Caster": "spell +7",
+        "Tank": "weapon +9"
+      },
+      "meanRounds": 2.228,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 97,
+        "fourPlus": 3
+      },
+      "partyHp": 49,
+      "defeat": 1
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Drakoza, Skizzik",
+      "level": 48,
+      "preset": "no-healer",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +18",
+        "Ranger": "weapon +18",
+        "Caster": "spell +14",
+        "Tank": "weapon +18"
+      },
+      "meanRounds": 1.446,
+      "bands": {
+        "oneRound": 59,
+        "twoToThree": 41,
+        "fourPlus": 1
+      },
+      "partyHp": 77,
+      "defeat": 0
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Drakoza, Skizzik",
+      "level": 48,
+      "preset": "no-healer",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +27",
+        "Ranger": "weapon +27",
+        "Caster": "spell +21",
+        "Tank": "weapon +27"
+      },
+      "meanRounds": 1.356,
+      "bands": {
+        "oneRound": 66,
+        "twoToThree": 34,
+        "fourPlus": 0
+      },
+      "partyHp": 83,
+      "defeat": 0
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Drakoza, Skizzik",
+      "level": 48,
+      "preset": "no-healer",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +41",
+        "Ranger": "weapon +41",
+        "Caster": "spell +32",
+        "Tank": "weapon +41"
+      },
+      "meanRounds": 1.23,
+      "bands": {
+        "oneRound": 78,
+        "twoToThree": 22,
+        "fourPlus": 0
+      },
+      "partyHp": 85,
+      "defeat": 0
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Drakoza, Skizzik",
+      "level": 48,
+      "preset": "physical",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.034,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 83,
+        "fourPlus": 17
+      },
+      "partyHp": 46,
+      "defeat": 14
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Drakoza, Skizzik",
+      "level": 48,
+      "preset": "physical",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +9",
+        "Ranger": "weapon +9",
+        "Tank": "weapon +9",
+        "Support": "weapon +9"
+      },
+      "meanRounds": 2.55,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 95,
+        "fourPlus": 5
+      },
+      "partyHp": 57,
+      "defeat": 2
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Drakoza, Skizzik",
+      "level": 48,
+      "preset": "physical",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +18",
+        "Ranger": "weapon +18",
+        "Tank": "weapon +18",
+        "Support": "weapon +18"
+      },
+      "meanRounds": 1.7,
+      "bands": {
+        "oneRound": 37,
+        "twoToThree": 62,
+        "fourPlus": 1
+      },
+      "partyHp": 77,
+      "defeat": 0
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Drakoza, Skizzik",
+      "level": 48,
+      "preset": "physical",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +27",
+        "Ranger": "weapon +27",
+        "Tank": "weapon +27",
+        "Support": "weapon +27"
+      },
+      "meanRounds": 1.392,
+      "bands": {
+        "oneRound": 64,
+        "twoToThree": 36,
+        "fourPlus": 0
+      },
+      "partyHp": 85,
+      "defeat": 0
+    },
+    {
+      "scope": "valley-3",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Drakoza, Skizzik",
+      "level": 48,
+      "preset": "physical",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +41",
+        "Ranger": "weapon +41",
+        "Tank": "weapon +41",
+        "Support": "weapon +41"
+      },
+      "meanRounds": 1.336,
+      "bands": {
+        "oneRound": 67,
+        "twoToThree": 33,
+        "fourPlus": 0
+      },
+      "partyHp": 86,
+      "defeat": 0
+    },
+    {
+      "scope": "valley-4",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Mist Dragon, Obsidrax",
+      "level": 46,
+      "preset": "standard",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.19,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 79,
+        "fourPlus": 21
+      },
+      "partyHp": 7,
+      "defeat": 72
+    },
+    {
+      "scope": "valley-4",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Mist Dragon, Obsidrax",
+      "level": 46,
+      "preset": "standard",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +14",
+        "Caster": "spell +5",
+        "Tank": "weapon +14",
+        "Support": "spell +5"
+      },
+      "meanRounds": 2.95,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 86,
+        "fourPlus": 14
+      },
+      "partyHp": 15,
+      "defeat": 43
+    },
+    {
+      "scope": "valley-4",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Mist Dragon, Obsidrax",
+      "level": 46,
+      "preset": "standard",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +28",
+        "Caster": "spell +9",
+        "Tank": "weapon +28",
+        "Support": "spell +9"
+      },
+      "meanRounds": 2.426,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 94,
+        "fourPlus": 6
+      },
+      "partyHp": 37,
+      "defeat": 15
+    },
+    {
+      "scope": "valley-4",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Mist Dragon, Obsidrax",
+      "level": 46,
+      "preset": "standard",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +41",
+        "Caster": "spell +14",
+        "Tank": "weapon +41",
+        "Support": "spell +14"
+      },
+      "meanRounds": 2.382,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 95,
+        "fourPlus": 5
+      },
+      "partyHp": 38,
+      "defeat": 12
+    },
+    {
+      "scope": "valley-4",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Mist Dragon, Obsidrax",
+      "level": 46,
+      "preset": "standard",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +62",
+        "Caster": "spell +20",
+        "Tank": "weapon +62",
+        "Support": "spell +20"
+      },
+      "meanRounds": 2.084,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
+      "partyHp": 57,
+      "defeat": 2
+    },
+    {
+      "scope": "valley-4",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Mist Dragon, Obsidrax",
+      "level": 46,
+      "preset": "double-caster",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 2.634,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 90,
+        "fourPlus": 10
+      },
+      "partyHp": 27,
+      "defeat": 34
+    },
+    {
+      "scope": "valley-4",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Mist Dragon, Obsidrax",
+      "level": 46,
+      "preset": "double-caster",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +14",
+        "Caster": "spell +5",
+        "Caster II": "spell +5",
+        "Support": "spell +5"
+      },
+      "meanRounds": 2.14,
+      "bands": {
+        "oneRound": 23,
+        "twoToThree": 70,
+        "fourPlus": 7
+      },
+      "partyHp": 39,
+      "defeat": 17
+    },
+    {
+      "scope": "valley-4",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Mist Dragon, Obsidrax",
+      "level": 46,
+      "preset": "double-caster",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +28",
+        "Caster": "spell +9",
+        "Caster II": "spell +9",
+        "Support": "spell +9"
+      },
+      "meanRounds": 1.892,
+      "bands": {
+        "oneRound": 39,
+        "twoToThree": 57,
+        "fourPlus": 4
+      },
+      "partyHp": 48,
+      "defeat": 6
+    },
+    {
+      "scope": "valley-4",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Mist Dragon, Obsidrax",
+      "level": 46,
+      "preset": "double-caster",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +41",
+        "Caster": "spell +14",
+        "Caster II": "spell +14",
+        "Support": "spell +14"
+      },
+      "meanRounds": 2.114,
+      "bands": {
+        "oneRound": 25,
+        "twoToThree": 72,
+        "fourPlus": 3
+      },
+      "partyHp": 45,
+      "defeat": 6
+    },
+    {
+      "scope": "valley-4",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Mist Dragon, Obsidrax",
+      "level": 46,
+      "preset": "double-caster",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +62",
+        "Caster": "spell +20",
+        "Caster II": "spell +20",
+        "Support": "spell +20"
+      },
+      "meanRounds": 1.736,
+      "bands": {
+        "oneRound": 35,
+        "twoToThree": 64,
+        "fourPlus": 1
+      },
+      "partyHp": 57,
+      "defeat": 2
+    },
+    {
+      "scope": "valley-4",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Mist Dragon, Obsidrax",
+      "level": 46,
+      "preset": "no-healer",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 2.964,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 95,
+        "fourPlus": 5
+      },
+      "partyHp": 0,
+      "defeat": 97
+    },
+    {
+      "scope": "valley-4",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Mist Dragon, Obsidrax",
+      "level": 46,
+      "preset": "no-healer",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +14",
+        "Ranger": "weapon +14",
+        "Caster": "spell +5",
+        "Tank": "weapon +14"
+      },
+      "meanRounds": 3.092,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 84,
+        "fourPlus": 16
+      },
+      "partyHp": 2,
+      "defeat": 84
+    },
+    {
+      "scope": "valley-4",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Mist Dragon, Obsidrax",
+      "level": 46,
+      "preset": "no-healer",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +28",
+        "Ranger": "weapon +28",
+        "Caster": "spell +9",
+        "Tank": "weapon +28"
+      },
+      "meanRounds": 3.01,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 84,
+        "fourPlus": 16
+      },
+      "partyHp": 5,
+      "defeat": 69
+    },
+    {
+      "scope": "valley-4",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Mist Dragon, Obsidrax",
+      "level": 46,
+      "preset": "no-healer",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +41",
+        "Ranger": "weapon +41",
+        "Caster": "spell +14",
+        "Tank": "weapon +41"
+      },
+      "meanRounds": 2.652,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 89,
+        "fourPlus": 11
+      },
+      "partyHp": 23,
+      "defeat": 31
+    },
+    {
+      "scope": "valley-4",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Mist Dragon, Obsidrax",
+      "level": 46,
+      "preset": "no-healer",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +62",
+        "Ranger": "weapon +62",
+        "Caster": "spell +20",
+        "Tank": "weapon +62"
+      },
+      "meanRounds": 2.234,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 97,
+        "fourPlus": 3
+      },
+      "partyHp": 46,
+      "defeat": 8
+    },
+    {
+      "scope": "valley-4",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Mist Dragon, Obsidrax",
+      "level": 46,
+      "preset": "physical",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.798,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 58,
+        "fourPlus": 42
+      },
+      "partyHp": 1,
+      "defeat": 97
+    },
+    {
+      "scope": "valley-4",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Mist Dragon, Obsidrax",
+      "level": 46,
+      "preset": "physical",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +14",
+        "Ranger": "weapon +14",
+        "Tank": "weapon +14",
+        "Support": "weapon +14"
+      },
+      "meanRounds": 3.93,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 48,
+        "fourPlus": 52
+      },
+      "partyHp": 5,
+      "defeat": 84
+    },
+    {
+      "scope": "valley-4",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Mist Dragon, Obsidrax",
+      "level": 46,
+      "preset": "physical",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +28",
+        "Ranger": "weapon +28",
+        "Tank": "weapon +28",
+        "Support": "weapon +28"
+      },
+      "meanRounds": 3.648,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 55,
+        "fourPlus": 45
+      },
+      "partyHp": 26,
+      "defeat": 40
+    },
+    {
+      "scope": "valley-4",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Mist Dragon, Obsidrax",
+      "level": 46,
+      "preset": "physical",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +41",
+        "Ranger": "weapon +41",
+        "Tank": "weapon +41",
+        "Support": "weapon +41"
+      },
+      "meanRounds": 3.266,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 69,
+        "fourPlus": 31
+      },
+      "partyHp": 34,
+      "defeat": 21
+    },
+    {
+      "scope": "valley-4",
+      "group": "Valley of the Dragon",
+      "label": "Valley of the Dragon — Mist Dragon, Obsidrax",
+      "level": 46,
+      "preset": "physical",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +62",
+        "Ranger": "weapon +62",
+        "Tank": "weapon +62",
+        "Support": "weapon +62"
+      },
+      "meanRounds": 2.5,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 94,
+        "fourPlus": 6
+      },
+      "partyHp": 51,
+      "defeat": 7
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Imp, Dragon Guard, Imp",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 4.208,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 6,
+        "fourPlus": 94
+      },
+      "partyHp": 54,
+      "defeat": 1
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Imp, Dragon Guard, Imp",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +15",
+        "Caster": "spell +11",
+        "Tank": "weapon +15",
+        "Support": "spell +11"
+      },
+      "meanRounds": 3.194,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 82,
+        "fourPlus": 18
+      },
+      "partyHp": 61,
+      "defeat": 0
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Imp, Dragon Guard, Imp",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +30",
+        "Caster": "spell +21",
+        "Tank": "weapon +30",
+        "Support": "spell +21"
+      },
+      "meanRounds": 2.634,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "partyHp": 64,
+      "defeat": 0
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Imp, Dragon Guard, Imp",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +45",
+        "Caster": "spell +32",
+        "Tank": "weapon +45",
+        "Support": "spell +32"
+      },
+      "meanRounds": 2.284,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 64,
+      "defeat": 0
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Imp, Dragon Guard, Imp",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +68",
+        "Caster": "spell +48",
+        "Tank": "weapon +68",
+        "Support": "spell +48"
+      },
+      "meanRounds": 2.092,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 64,
+      "defeat": 0
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Imp, Dragon Guard, Imp",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 2.418,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 96,
+        "fourPlus": 4
+      },
+      "partyHp": 65,
+      "defeat": 0
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Imp, Dragon Guard, Imp",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +15",
+        "Caster": "spell +11",
+        "Caster II": "spell +11",
+        "Support": "spell +11"
+      },
+      "meanRounds": 2.398,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 95,
+        "fourPlus": 5
+      },
+      "partyHp": 66,
+      "defeat": 0
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Imp, Dragon Guard, Imp",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +30",
+        "Caster": "spell +21",
+        "Caster II": "spell +21",
+        "Support": "spell +21"
+      },
+      "meanRounds": 2.032,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 72,
+      "defeat": 0
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Imp, Dragon Guard, Imp",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +45",
+        "Caster": "spell +32",
+        "Caster II": "spell +32",
+        "Support": "spell +32"
+      },
+      "meanRounds": 1.67,
+      "bands": {
+        "oneRound": 36,
+        "twoToThree": 64,
+        "fourPlus": 0
+      },
+      "partyHp": 74,
+      "defeat": 0
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Imp, Dragon Guard, Imp",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +68",
+        "Caster": "spell +48",
+        "Caster II": "spell +48",
+        "Support": "spell +48"
+      },
+      "meanRounds": 1.494,
+      "bands": {
+        "oneRound": 51,
+        "twoToThree": 49,
+        "fourPlus": 0
+      },
+      "partyHp": 74,
+      "defeat": 0
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Imp, Dragon Guard, Imp",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 5.538,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 37,
+      "defeat": 6
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Imp, Dragon Guard, Imp",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +15",
+        "Ranger": "weapon +15",
+        "Caster": "spell +11",
+        "Tank": "weapon +15"
+      },
+      "meanRounds": 3.98,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 24,
+        "fourPlus": 76
+      },
+      "partyHp": 50,
+      "defeat": 0
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Imp, Dragon Guard, Imp",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +30",
+        "Ranger": "weapon +30",
+        "Caster": "spell +21",
+        "Tank": "weapon +30"
+      },
+      "meanRounds": 3.24,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 77,
+        "fourPlus": 23
+      },
+      "partyHp": 60,
+      "defeat": 0
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Imp, Dragon Guard, Imp",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +45",
+        "Ranger": "weapon +45",
+        "Caster": "spell +32",
+        "Tank": "weapon +45"
+      },
+      "meanRounds": 2.564,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 97,
+        "fourPlus": 3
+      },
+      "partyHp": 67,
+      "defeat": 0
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Imp, Dragon Guard, Imp",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +68",
+        "Ranger": "weapon +68",
+        "Caster": "spell +48",
+        "Tank": "weapon +68"
+      },
+      "meanRounds": 2.534,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
+      "partyHp": 68,
+      "defeat": 0
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Imp, Dragon Guard, Imp",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 6.482,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 41,
+      "defeat": 14
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Imp, Dragon Guard, Imp",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +15",
+        "Ranger": "weapon +15",
+        "Tank": "weapon +15",
+        "Support": "weapon +15"
+      },
+      "meanRounds": 4.652,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 2,
+        "fourPlus": 98
+      },
+      "partyHp": 56,
+      "defeat": 2
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Imp, Dragon Guard, Imp",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +30",
+        "Ranger": "weapon +30",
+        "Tank": "weapon +30",
+        "Support": "weapon +30"
+      },
+      "meanRounds": 3.14,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 76,
+        "fourPlus": 24
+      },
+      "partyHp": 66,
+      "defeat": 0
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Imp, Dragon Guard, Imp",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +45",
+        "Ranger": "weapon +45",
+        "Tank": "weapon +45",
+        "Support": "weapon +45"
+      },
+      "meanRounds": 2.96,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 85,
+        "fourPlus": 15
+      },
+      "partyHp": 67,
+      "defeat": 0
+    },
+    {
+      "scope": "fafnir-1",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Imp, Dragon Guard, Imp",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +68",
+        "Ranger": "weapon +68",
+        "Tank": "weapon +68",
+        "Support": "weapon +68"
+      },
+      "meanRounds": 2.842,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 91,
+        "fourPlus": 9
+      },
+      "partyHp": 67,
+      "defeat": 0
+    },
+    {
+      "scope": "fafnir-2",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Dire Orc, Death Gazer, Dire Orc",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 5.506,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 7,
+      "defeat": 76
+    },
+    {
+      "scope": "fafnir-2",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Dire Orc, Death Gazer, Dire Orc",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +11",
+        "Caster": "spell +5",
+        "Tank": "weapon +11",
+        "Support": "spell +5"
+      },
+      "meanRounds": 5.366,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 26,
+      "defeat": 19
+    },
+    {
+      "scope": "fafnir-2",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Dire Orc, Death Gazer, Dire Orc",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +21",
+        "Caster": "spell +10",
+        "Tank": "weapon +21",
+        "Support": "spell +10"
+      },
+      "meanRounds": 4.638,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 2,
+        "fourPlus": 98
+      },
+      "partyHp": 37,
+      "defeat": 6
+    },
+    {
+      "scope": "fafnir-2",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Dire Orc, Death Gazer, Dire Orc",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +32",
+        "Caster": "spell +14",
+        "Tank": "weapon +32",
+        "Support": "spell +14"
+      },
+      "meanRounds": 3.884,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 33,
+        "fourPlus": 67
+      },
+      "partyHp": 50,
+      "defeat": 1
+    },
+    {
+      "scope": "fafnir-2",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Dire Orc, Death Gazer, Dire Orc",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +47",
+        "Caster": "spell +22",
+        "Tank": "weapon +47",
+        "Support": "spell +22"
+      },
+      "meanRounds": 3.072,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 91,
+        "fourPlus": 9
+      },
+      "partyHp": 57,
+      "defeat": 0
+    },
+    {
+      "scope": "fafnir-2",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Dire Orc, Death Gazer, Dire Orc",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 4.626,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 7,
+        "fourPlus": 93
+      },
+      "partyHp": 13,
+      "defeat": 56
+    },
+    {
+      "scope": "fafnir-2",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Dire Orc, Death Gazer, Dire Orc",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +11",
+        "Caster": "spell +5",
+        "Caster II": "spell +5",
+        "Support": "spell +5"
+      },
+      "meanRounds": 3.666,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 42,
+        "fourPlus": 58
+      },
+      "partyHp": 44,
+      "defeat": 3
+    },
+    {
+      "scope": "fafnir-2",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Dire Orc, Death Gazer, Dire Orc",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +21",
+        "Caster": "spell +10",
+        "Caster II": "spell +10",
+        "Support": "spell +10"
+      },
+      "meanRounds": 3.118,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 89,
+        "fourPlus": 11
+      },
+      "partyHp": 53,
+      "defeat": 2
+    },
+    {
+      "scope": "fafnir-2",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Dire Orc, Death Gazer, Dire Orc",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +32",
+        "Caster": "spell +14",
+        "Caster II": "spell +14",
+        "Support": "spell +14"
+      },
+      "meanRounds": 3.062,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 93,
+        "fourPlus": 7
+      },
+      "partyHp": 56,
+      "defeat": 1
+    },
+    {
+      "scope": "fafnir-2",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Dire Orc, Death Gazer, Dire Orc",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +47",
+        "Caster": "spell +22",
+        "Caster II": "spell +22",
+        "Support": "spell +22"
+      },
+      "meanRounds": 2.288,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 64,
+      "defeat": 0
+    },
+    {
+      "scope": "fafnir-2",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Dire Orc, Death Gazer, Dire Orc",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 5.84,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 4,
+      "defeat": 83
+    },
+    {
+      "scope": "fafnir-2",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Dire Orc, Death Gazer, Dire Orc",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +11",
+        "Ranger": "weapon +11",
+        "Caster": "spell +5",
+        "Tank": "weapon +11"
+      },
+      "meanRounds": 5.52,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 24,
+      "defeat": 23
+    },
+    {
+      "scope": "fafnir-2",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Dire Orc, Death Gazer, Dire Orc",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +21",
+        "Ranger": "weapon +21",
+        "Caster": "spell +10",
+        "Tank": "weapon +21"
+      },
+      "meanRounds": 4.93,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 2,
+        "fourPlus": 98
+      },
+      "partyHp": 36,
+      "defeat": 8
+    },
+    {
+      "scope": "fafnir-2",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Dire Orc, Death Gazer, Dire Orc",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +32",
+        "Ranger": "weapon +32",
+        "Caster": "spell +14",
+        "Tank": "weapon +32"
+      },
+      "meanRounds": 3.994,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 20,
+        "fourPlus": 80
+      },
+      "partyHp": 49,
+      "defeat": 0
+    },
+    {
+      "scope": "fafnir-2",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Dire Orc, Death Gazer, Dire Orc",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +47",
+        "Ranger": "weapon +47",
+        "Caster": "spell +22",
+        "Tank": "weapon +47"
+      },
+      "meanRounds": 3.09,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 91,
+        "fourPlus": 9
+      },
+      "partyHp": 60,
+      "defeat": 0
+    },
+    {
+      "scope": "fafnir-2",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Dire Orc, Death Gazer, Dire Orc",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 5.882,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 3,
+      "defeat": 88
+    },
+    {
+      "scope": "fafnir-2",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Dire Orc, Death Gazer, Dire Orc",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +11",
+        "Ranger": "weapon +11",
+        "Tank": "weapon +11",
+        "Support": "weapon +11"
+      },
+      "meanRounds": 5.988,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 14,
+      "defeat": 62
+    },
+    {
+      "scope": "fafnir-2",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Dire Orc, Death Gazer, Dire Orc",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +21",
+        "Ranger": "weapon +21",
+        "Tank": "weapon +21",
+        "Support": "weapon +21"
+      },
+      "meanRounds": 5.63,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 27,
+      "defeat": 27
+    },
+    {
+      "scope": "fafnir-2",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Dire Orc, Death Gazer, Dire Orc",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +32",
+        "Ranger": "weapon +32",
+        "Tank": "weapon +32",
+        "Support": "weapon +32"
+      },
+      "meanRounds": 4.74,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 3,
+        "fourPlus": 97
+      },
+      "partyHp": 41,
+      "defeat": 2
+    },
+    {
+      "scope": "fafnir-2",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Dire Orc, Death Gazer, Dire Orc",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +47",
+        "Ranger": "weapon +47",
+        "Tank": "weapon +47",
+        "Support": "weapon +47"
+      },
+      "meanRounds": 3.156,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 85,
+        "fourPlus": 15
+      },
+      "partyHp": 60,
+      "defeat": 0
+    },
+    {
+      "scope": "fafnir-3",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Succubus, Iron Colossus, Succubus",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 8.646,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 17,
+      "defeat": 46
+    },
+    {
+      "scope": "fafnir-3",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Succubus, Iron Colossus, Succubus",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +20",
+        "Caster": "spell +4",
+        "Tank": "weapon +20",
+        "Support": "spell +4"
+      },
+      "meanRounds": 7.884,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 28,
+      "defeat": 33
+    },
+    {
+      "scope": "fafnir-3",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Succubus, Iron Colossus, Succubus",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +40",
+        "Caster": "spell +8",
+        "Tank": "weapon +40",
+        "Support": "spell +8"
+      },
+      "meanRounds": 7.064,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 33,
+      "defeat": 24
+    },
+    {
+      "scope": "fafnir-3",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Succubus, Iron Colossus, Succubus",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +59",
+        "Caster": "spell +12",
+        "Tank": "weapon +59",
+        "Support": "spell +12"
+      },
+      "meanRounds": 6.284,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 38,
+      "defeat": 11
+    },
+    {
+      "scope": "fafnir-3",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Succubus, Iron Colossus, Succubus",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +89",
+        "Caster": "spell +18",
+        "Tank": "weapon +89",
+        "Support": "spell +18"
+      },
+      "meanRounds": 5.17,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 45,
+      "defeat": 1
+    },
+    {
+      "scope": "fafnir-3",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Succubus, Iron Colossus, Succubus",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 7.432,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 7,
+      "defeat": 74
+    },
+    {
+      "scope": "fafnir-3",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Succubus, Iron Colossus, Succubus",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +20",
+        "Caster": "spell +4",
+        "Caster II": "spell +4",
+        "Support": "spell +4"
+      },
+      "meanRounds": 7.152,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 14,
+      "defeat": 58
+    },
+    {
+      "scope": "fafnir-3",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Succubus, Iron Colossus, Succubus",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +40",
+        "Caster": "spell +8",
+        "Caster II": "spell +8",
+        "Support": "spell +8"
+      },
+      "meanRounds": 6.584,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 23,
+      "defeat": 38
+    },
+    {
+      "scope": "fafnir-3",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Succubus, Iron Colossus, Succubus",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +59",
+        "Caster": "spell +12",
+        "Caster II": "spell +12",
+        "Support": "spell +12"
+      },
+      "meanRounds": 5.818,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 30,
+      "defeat": 23
+    },
+    {
+      "scope": "fafnir-3",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Succubus, Iron Colossus, Succubus",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +89",
+        "Caster": "spell +18",
+        "Caster II": "spell +18",
+        "Support": "spell +18"
+      },
+      "meanRounds": 5.156,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 35,
+      "defeat": 11
+    },
+    {
+      "scope": "fafnir-3",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Succubus, Iron Colossus, Succubus",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 6.884,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 0,
+      "defeat": 99
+    },
+    {
+      "scope": "fafnir-3",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Succubus, Iron Colossus, Succubus",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +20",
+        "Ranger": "weapon +20",
+        "Caster": "spell +4",
+        "Tank": "weapon +20"
+      },
+      "meanRounds": 7.66,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 0,
+      "defeat": 95
+    },
+    {
+      "scope": "fafnir-3",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Succubus, Iron Colossus, Succubus",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +40",
+        "Ranger": "weapon +40",
+        "Caster": "spell +8",
+        "Tank": "weapon +40"
+      },
+      "meanRounds": 7.762,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 3,
+      "defeat": 80
+    },
+    {
+      "scope": "fafnir-3",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Succubus, Iron Colossus, Succubus",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +59",
+        "Ranger": "weapon +59",
+        "Caster": "spell +12",
+        "Tank": "weapon +59"
+      },
+      "meanRounds": 6.48,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 17,
+      "defeat": 25
+    },
+    {
+      "scope": "fafnir-3",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Succubus, Iron Colossus, Succubus",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +89",
+        "Ranger": "weapon +89",
+        "Caster": "spell +18",
+        "Tank": "weapon +89"
+      },
+      "meanRounds": 4.882,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 31,
+      "defeat": 5
+    },
+    {
+      "scope": "fafnir-3",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Succubus, Iron Colossus, Succubus",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 7.412,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 10,
+      "defeat": 71
+    },
+    {
+      "scope": "fafnir-3",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Succubus, Iron Colossus, Succubus",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +20",
+        "Ranger": "weapon +20",
+        "Tank": "weapon +20",
+        "Support": "weapon +20"
+      },
+      "meanRounds": 8.408,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 15,
+      "defeat": 59
+    },
+    {
+      "scope": "fafnir-3",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Succubus, Iron Colossus, Succubus",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +40",
+        "Ranger": "weapon +40",
+        "Tank": "weapon +40",
+        "Support": "weapon +40"
+      },
+      "meanRounds": 8.296,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 27,
+      "defeat": 41
+    },
+    {
+      "scope": "fafnir-3",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Succubus, Iron Colossus, Succubus",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +59",
+        "Ranger": "weapon +59",
+        "Tank": "weapon +59",
+        "Support": "weapon +59"
+      },
+      "meanRounds": 6.8,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 52,
+      "defeat": 8
+    },
+    {
+      "scope": "fafnir-3",
+      "group": "Fafnir Castle",
+      "label": "Fafnir Castle — Succubus, Iron Colossus, Succubus",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +89",
+        "Ranger": "weapon +89",
+        "Tank": "weapon +89",
+        "Support": "weapon +89"
+      },
+      "meanRounds": 5.606,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 55,
+      "defeat": 5
+    }
+  ]
+}

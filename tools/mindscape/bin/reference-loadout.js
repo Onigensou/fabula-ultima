@@ -89,7 +89,12 @@ async function main() {
         const party = buildArchetypeParty(preset, { level: scope.level, power, catalogue });
         const magnitudes = {};
         for (const m of party) {
-          const effect = casts(m) ? "spell-damage" : "weapon-damage";
+          // A caster's spells can be worthless against a group: the Wyrmwood's fire roster
+          // ABSORBS the archetype Caster's fire spells, so its measured spell curve is not
+          // positive and the model has it swing its weapon instead. Spend that member's
+          // budget where its damage actually goes, and say so in the row.
+          let effect = casts(m) ? "spell-damage" : "weapon-damage";
+          if (effect === "spell-damage" && !(slope[`spell-damage@${scope.slopeKey}`] > 0)) effect = "weapon-damage";
           const perPoint = slope[`${effect}@${scope.slopeKey}`];
           if (!(perPoint > 0)) throw new Error(`no positive measured ${effect} curve for ${scope.slopeKey} in ${ladderFile}`);
           const magnitude = Math.max(1, Math.round((SLOTS_PER_CHARACTER * budget) / perPoint));

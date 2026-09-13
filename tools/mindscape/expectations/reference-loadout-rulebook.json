@@ -1,0 +1,5398 @@
+{
+  "id": "reference-loadout",
+  "capturedAt": "2026-09-13",
+  "runs": 500,
+  "seed": "reference-loadout",
+  "power": "table",
+  "k": 3.54,
+  "ladder": "expectations/reference-set-rulebook.json",
+  "mode": "neutral",
+  "budgets": {
+    "common": 5,
+    "uncommon": 10,
+    "rare": 15,
+    "legendary": 22.5
+  },
+  "slopes": {
+    "weapon-damage@L35": 2.4090469350658403,
+    "spell-damage@L35": 5.037600660817505,
+    "weapon-damage@L38": 2.157210996634159,
+    "spell-damage@L38": 3.8721901509421204,
+    "weapon-damage@L40": 2.024029909276762,
+    "spell-damage@L40": 4.4966000313792565,
+    "weapon-damage@L46": 1.629658214101394,
+    "spell-damage@L46": 3.209659877833415,
+    "weapon-damage@L48": 1.5200320687161788,
+    "spell-damage@L48": 2.9664364785063575,
+    "weapon-damage@L50": 1.4279731066463552,
+    "spell-damage@L50": 3.0574878641217365
+  },
+  "scopes": [
+    {
+      "id": "L35",
+      "group": "L35",
+      "label": "rulebook normal L35",
+      "level": 35,
+      "conflictEvent": null
+    },
+    {
+      "id": "L38",
+      "group": "L38",
+      "label": "rulebook normal L38",
+      "level": 38,
+      "conflictEvent": null
+    },
+    {
+      "id": "L40",
+      "group": "L40",
+      "label": "rulebook normal L40",
+      "level": 40,
+      "conflictEvent": null
+    },
+    {
+      "id": "L46",
+      "group": "L46",
+      "label": "rulebook normal L46",
+      "level": 46,
+      "conflictEvent": null
+    },
+    {
+      "id": "L48",
+      "group": "L48",
+      "label": "rulebook normal L48",
+      "level": 48,
+      "conflictEvent": null
+    },
+    {
+      "id": "L50",
+      "group": "L50",
+      "label": "rulebook normal L50",
+      "level": 50,
+      "conflictEvent": null
+    },
+    {
+      "id": "L35-elite-pair",
+      "group": "L35",
+      "label": "rulebook elite-pair L35",
+      "level": 35,
+      "conflictEvent": null
+    },
+    {
+      "id": "L38-elite-pair",
+      "group": "L38",
+      "label": "rulebook elite-pair L38",
+      "level": 38,
+      "conflictEvent": null
+    },
+    {
+      "id": "L40-elite-pair",
+      "group": "L40",
+      "label": "rulebook elite-pair L40",
+      "level": 40,
+      "conflictEvent": null
+    },
+    {
+      "id": "L46-elite-pair",
+      "group": "L46",
+      "label": "rulebook elite-pair L46",
+      "level": 46,
+      "conflictEvent": null
+    },
+    {
+      "id": "L48-elite-pair",
+      "group": "L48",
+      "label": "rulebook elite-pair L48",
+      "level": 48,
+      "conflictEvent": null
+    },
+    {
+      "id": "L50-elite-pair",
+      "group": "L50",
+      "label": "rulebook elite-pair L50",
+      "level": 50,
+      "conflictEvent": null
+    }
+  ],
+  "rows": [
+    {
+      "scope": "L35",
+      "group": "L35",
+      "label": "rulebook normal L35",
+      "level": 35,
+      "preset": "standard",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.562,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 48,
+        "fourPlus": 52
+      },
+      "partyHp": 75,
+      "defeat": 0
+    },
+    {
+      "scope": "L35",
+      "group": "L35",
+      "label": "rulebook normal L35",
+      "level": 35,
+      "preset": "standard",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +6",
+        "Caster": "spell +3",
+        "Tank": "weapon +6",
+        "Support": "spell +3"
+      },
+      "meanRounds": 3.168,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 83,
+        "fourPlus": 17
+      },
+      "partyHp": 80,
+      "defeat": 0
+    },
+    {
+      "scope": "L35",
+      "group": "L35",
+      "label": "rulebook normal L35",
+      "level": 35,
+      "preset": "standard",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +12",
+        "Caster": "spell +6",
+        "Tank": "weapon +12",
+        "Support": "spell +6"
+      },
+      "meanRounds": 3.036,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 94,
+        "fourPlus": 6
+      },
+      "partyHp": 80,
+      "defeat": 0
+    },
+    {
+      "scope": "L35",
+      "group": "L35",
+      "label": "rulebook normal L35",
+      "level": 35,
+      "preset": "standard",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +19",
+        "Caster": "spell +9",
+        "Tank": "weapon +19",
+        "Support": "spell +9"
+      },
+      "meanRounds": 2.658,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "partyHp": 81,
+      "defeat": 0
+    },
+    {
+      "scope": "L35",
+      "group": "L35",
+      "label": "rulebook normal L35",
+      "level": 35,
+      "preset": "standard",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +28",
+        "Caster": "spell +13",
+        "Tank": "weapon +28",
+        "Support": "spell +13"
+      },
+      "meanRounds": 2.298,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 81,
+      "defeat": 0
+    },
+    {
+      "scope": "L35",
+      "group": "L35",
+      "label": "rulebook normal L35",
+      "level": 35,
+      "preset": "double-caster",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.234,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 79,
+        "fourPlus": 21
+      },
+      "partyHp": 74,
+      "defeat": 0
+    },
+    {
+      "scope": "L35",
+      "group": "L35",
+      "label": "rulebook normal L35",
+      "level": 35,
+      "preset": "double-caster",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +6",
+        "Caster": "spell +3",
+        "Caster II": "spell +3",
+        "Support": "spell +3"
+      },
+      "meanRounds": 3.018,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 88,
+        "fourPlus": 12
+      },
+      "partyHp": 75,
+      "defeat": 0
+    },
+    {
+      "scope": "L35",
+      "group": "L35",
+      "label": "rulebook normal L35",
+      "level": 35,
+      "preset": "double-caster",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +12",
+        "Caster": "spell +6",
+        "Caster II": "spell +6",
+        "Support": "spell +6"
+      },
+      "meanRounds": 2.762,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "partyHp": 79,
+      "defeat": 0
+    },
+    {
+      "scope": "L35",
+      "group": "L35",
+      "label": "rulebook normal L35",
+      "level": 35,
+      "preset": "double-caster",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +19",
+        "Caster": "spell +9",
+        "Caster II": "spell +9",
+        "Support": "spell +9"
+      },
+      "meanRounds": 2.356,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
+      "partyHp": 80,
+      "defeat": 0
+    },
+    {
+      "scope": "L35",
+      "group": "L35",
+      "label": "rulebook normal L35",
+      "level": 35,
+      "preset": "double-caster",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +28",
+        "Caster": "spell +13",
+        "Caster II": "spell +13",
+        "Support": "spell +13"
+      },
+      "meanRounds": 2.136,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 83,
+      "defeat": 0
+    },
+    {
+      "scope": "L35",
+      "group": "L35",
+      "label": "rulebook normal L35",
+      "level": 35,
+      "preset": "no-healer",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 4.42,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 3,
+        "fourPlus": 97
+      },
+      "partyHp": 62,
+      "defeat": 0
+    },
+    {
+      "scope": "L35",
+      "group": "L35",
+      "label": "rulebook normal L35",
+      "level": 35,
+      "preset": "no-healer",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +6",
+        "Ranger": "weapon +6",
+        "Caster": "spell +3",
+        "Tank": "weapon +6"
+      },
+      "meanRounds": 4.04,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 15,
+        "fourPlus": 85
+      },
+      "partyHp": 66,
+      "defeat": 0
+    },
+    {
+      "scope": "L35",
+      "group": "L35",
+      "label": "rulebook normal L35",
+      "level": 35,
+      "preset": "no-healer",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +12",
+        "Ranger": "weapon +12",
+        "Caster": "spell +6",
+        "Tank": "weapon +12"
+      },
+      "meanRounds": 3.33,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 70,
+        "fourPlus": 30
+      },
+      "partyHp": 71,
+      "defeat": 0
+    },
+    {
+      "scope": "L35",
+      "group": "L35",
+      "label": "rulebook normal L35",
+      "level": 35,
+      "preset": "no-healer",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +19",
+        "Ranger": "weapon +19",
+        "Caster": "spell +9",
+        "Tank": "weapon +19"
+      },
+      "meanRounds": 2.984,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 95,
+        "fourPlus": 5
+      },
+      "partyHp": 76,
+      "defeat": 0
+    },
+    {
+      "scope": "L35",
+      "group": "L35",
+      "label": "rulebook normal L35",
+      "level": 35,
+      "preset": "no-healer",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +28",
+        "Ranger": "weapon +28",
+        "Caster": "spell +13",
+        "Tank": "weapon +28"
+      },
+      "meanRounds": 2.43,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 81,
+      "defeat": 0
+    },
+    {
+      "scope": "L35",
+      "group": "L35",
+      "label": "rulebook normal L35",
+      "level": 35,
+      "preset": "physical",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 6.486,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 56,
+      "defeat": 0
+    },
+    {
+      "scope": "L35",
+      "group": "L35",
+      "label": "rulebook normal L35",
+      "level": 35,
+      "preset": "physical",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +6",
+        "Ranger": "weapon +6",
+        "Tank": "weapon +6",
+        "Support": "weapon +6"
+      },
+      "meanRounds": 4.986,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 67,
+      "defeat": 0
+    },
+    {
+      "scope": "L35",
+      "group": "L35",
+      "label": "rulebook normal L35",
+      "level": 35,
+      "preset": "physical",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +12",
+        "Ranger": "weapon +12",
+        "Tank": "weapon +12",
+        "Support": "weapon +12"
+      },
+      "meanRounds": 4.54,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 70,
+      "defeat": 0
+    },
+    {
+      "scope": "L35",
+      "group": "L35",
+      "label": "rulebook normal L35",
+      "level": 35,
+      "preset": "physical",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +19",
+        "Ranger": "weapon +19",
+        "Tank": "weapon +19",
+        "Support": "weapon +19"
+      },
+      "meanRounds": 3.856,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 19,
+        "fourPlus": 81
+      },
+      "partyHp": 76,
+      "defeat": 0
+    },
+    {
+      "scope": "L35",
+      "group": "L35",
+      "label": "rulebook normal L35",
+      "level": 35,
+      "preset": "physical",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +28",
+        "Ranger": "weapon +28",
+        "Tank": "weapon +28",
+        "Support": "weapon +28"
+      },
+      "meanRounds": 3.078,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 92,
+        "fourPlus": 8
+      },
+      "partyHp": 81,
+      "defeat": 0
+    },
+    {
+      "scope": "L38",
+      "group": "L38",
+      "label": "rulebook normal L38",
+      "level": 38,
+      "preset": "standard",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.586,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 46,
+        "fourPlus": 54
+      },
+      "partyHp": 76,
+      "defeat": 0
+    },
+    {
+      "scope": "L38",
+      "group": "L38",
+      "label": "rulebook normal L38",
+      "level": 38,
+      "preset": "standard",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +7",
+        "Caster": "spell +4",
+        "Tank": "weapon +7",
+        "Support": "spell +4"
+      },
+      "meanRounds": 3.162,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 84,
+        "fourPlus": 16
+      },
+      "partyHp": 80,
+      "defeat": 0
+    },
+    {
+      "scope": "L38",
+      "group": "L38",
+      "label": "rulebook normal L38",
+      "level": 38,
+      "preset": "standard",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +14",
+        "Caster": "spell +8",
+        "Tank": "weapon +14",
+        "Support": "spell +8"
+      },
+      "meanRounds": 2.956,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 96,
+        "fourPlus": 4
+      },
+      "partyHp": 80,
+      "defeat": 0
+    },
+    {
+      "scope": "L38",
+      "group": "L38",
+      "label": "rulebook normal L38",
+      "level": 38,
+      "preset": "standard",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +21",
+        "Caster": "spell +12",
+        "Tank": "weapon +21",
+        "Support": "spell +12"
+      },
+      "meanRounds": 2.5,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 80,
+      "defeat": 0
+    },
+    {
+      "scope": "L38",
+      "group": "L38",
+      "label": "rulebook normal L38",
+      "level": 38,
+      "preset": "standard",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +31",
+        "Caster": "spell +17",
+        "Tank": "weapon +31",
+        "Support": "spell +17"
+      },
+      "meanRounds": 2.19,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 80,
+      "defeat": 0
+    },
+    {
+      "scope": "L38",
+      "group": "L38",
+      "label": "rulebook normal L38",
+      "level": 38,
+      "preset": "double-caster",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.182,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 81,
+        "fourPlus": 19
+      },
+      "partyHp": 76,
+      "defeat": 0
+    },
+    {
+      "scope": "L38",
+      "group": "L38",
+      "label": "rulebook normal L38",
+      "level": 38,
+      "preset": "double-caster",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +7",
+        "Caster": "spell +4",
+        "Caster II": "spell +4",
+        "Support": "spell +4"
+      },
+      "meanRounds": 3.048,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 85,
+        "fourPlus": 15
+      },
+      "partyHp": 76,
+      "defeat": 0
+    },
+    {
+      "scope": "L38",
+      "group": "L38",
+      "label": "rulebook normal L38",
+      "level": 38,
+      "preset": "double-caster",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +14",
+        "Caster": "spell +8",
+        "Caster II": "spell +8",
+        "Support": "spell +8"
+      },
+      "meanRounds": 2.596,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "partyHp": 79,
+      "defeat": 0
+    },
+    {
+      "scope": "L38",
+      "group": "L38",
+      "label": "rulebook normal L38",
+      "level": 38,
+      "preset": "double-caster",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +21",
+        "Caster": "spell +12",
+        "Caster II": "spell +12",
+        "Support": "spell +12"
+      },
+      "meanRounds": 2.244,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 81,
+      "defeat": 0
+    },
+    {
+      "scope": "L38",
+      "group": "L38",
+      "label": "rulebook normal L38",
+      "level": 38,
+      "preset": "double-caster",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +31",
+        "Caster": "spell +17",
+        "Caster II": "spell +17",
+        "Support": "spell +17"
+      },
+      "meanRounds": 2.088,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 84,
+      "defeat": 0
+    },
+    {
+      "scope": "L38",
+      "group": "L38",
+      "label": "rulebook normal L38",
+      "level": 38,
+      "preset": "no-healer",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 4.388,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 2,
+        "fourPlus": 98
+      },
+      "partyHp": 63,
+      "defeat": 0
+    },
+    {
+      "scope": "L38",
+      "group": "L38",
+      "label": "rulebook normal L38",
+      "level": 38,
+      "preset": "no-healer",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +7",
+        "Ranger": "weapon +7",
+        "Caster": "spell +4",
+        "Tank": "weapon +7"
+      },
+      "meanRounds": 3.908,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 20,
+        "fourPlus": 80
+      },
+      "partyHp": 67,
+      "defeat": 0
+    },
+    {
+      "scope": "L38",
+      "group": "L38",
+      "label": "rulebook normal L38",
+      "level": 38,
+      "preset": "no-healer",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +14",
+        "Ranger": "weapon +14",
+        "Caster": "spell +8",
+        "Tank": "weapon +14"
+      },
+      "meanRounds": 3.246,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 77,
+        "fourPlus": 23
+      },
+      "partyHp": 73,
+      "defeat": 0
+    },
+    {
+      "scope": "L38",
+      "group": "L38",
+      "label": "rulebook normal L38",
+      "level": 38,
+      "preset": "no-healer",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +21",
+        "Ranger": "weapon +21",
+        "Caster": "spell +12",
+        "Tank": "weapon +21"
+      },
+      "meanRounds": 2.938,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 97,
+        "fourPlus": 3
+      },
+      "partyHp": 77,
+      "defeat": 0
+    },
+    {
+      "scope": "L38",
+      "group": "L38",
+      "label": "rulebook normal L38",
+      "level": 38,
+      "preset": "no-healer",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +31",
+        "Ranger": "weapon +31",
+        "Caster": "spell +17",
+        "Tank": "weapon +31"
+      },
+      "meanRounds": 2.34,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 81,
+      "defeat": 0
+    },
+    {
+      "scope": "L38",
+      "group": "L38",
+      "label": "rulebook normal L38",
+      "level": 38,
+      "preset": "physical",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 6.462,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 57,
+      "defeat": 0
+    },
+    {
+      "scope": "L38",
+      "group": "L38",
+      "label": "rulebook normal L38",
+      "level": 38,
+      "preset": "physical",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +7",
+        "Ranger": "weapon +7",
+        "Tank": "weapon +7",
+        "Support": "weapon +7"
+      },
+      "meanRounds": 4.92,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 68,
+      "defeat": 0
+    },
+    {
+      "scope": "L38",
+      "group": "L38",
+      "label": "rulebook normal L38",
+      "level": 38,
+      "preset": "physical",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +14",
+        "Ranger": "weapon +14",
+        "Tank": "weapon +14",
+        "Support": "weapon +14"
+      },
+      "meanRounds": 4.476,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 72,
+      "defeat": 0
+    },
+    {
+      "scope": "L38",
+      "group": "L38",
+      "label": "rulebook normal L38",
+      "level": 38,
+      "preset": "physical",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +21",
+        "Ranger": "weapon +21",
+        "Tank": "weapon +21",
+        "Support": "weapon +21"
+      },
+      "meanRounds": 3.828,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 22,
+        "fourPlus": 78
+      },
+      "partyHp": 77,
+      "defeat": 0
+    },
+    {
+      "scope": "L38",
+      "group": "L38",
+      "label": "rulebook normal L38",
+      "level": 38,
+      "preset": "physical",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +31",
+        "Ranger": "weapon +31",
+        "Tank": "weapon +31",
+        "Support": "weapon +31"
+      },
+      "meanRounds": 3.072,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 93,
+        "fourPlus": 7
+      },
+      "partyHp": 83,
+      "defeat": 0
+    },
+    {
+      "scope": "L40",
+      "group": "L40",
+      "label": "rulebook normal L40",
+      "level": 40,
+      "preset": "standard",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 4.044,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 31,
+        "fourPlus": 69
+      },
+      "partyHp": 62,
+      "defeat": 0
+    },
+    {
+      "scope": "L40",
+      "group": "L40",
+      "label": "rulebook normal L40",
+      "level": 40,
+      "preset": "standard",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +7",
+        "Caster": "spell +3",
+        "Tank": "weapon +7",
+        "Support": "spell +3"
+      },
+      "meanRounds": 3.27,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 75,
+        "fourPlus": 25
+      },
+      "partyHp": 70,
+      "defeat": 0
+    },
+    {
+      "scope": "L40",
+      "group": "L40",
+      "label": "rulebook normal L40",
+      "level": 40,
+      "preset": "standard",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +15",
+        "Caster": "spell +7",
+        "Tank": "weapon +15",
+        "Support": "spell +7"
+      },
+      "meanRounds": 3.148,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 83,
+        "fourPlus": 17
+      },
+      "partyHp": 70,
+      "defeat": 0
+    },
+    {
+      "scope": "L40",
+      "group": "L40",
+      "label": "rulebook normal L40",
+      "level": 40,
+      "preset": "standard",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +22",
+        "Caster": "spell +10",
+        "Tank": "weapon +22",
+        "Support": "spell +10"
+      },
+      "meanRounds": 2.718,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "partyHp": 70,
+      "defeat": 0
+    },
+    {
+      "scope": "L40",
+      "group": "L40",
+      "label": "rulebook normal L40",
+      "level": 40,
+      "preset": "standard",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +33",
+        "Caster": "spell +15",
+        "Tank": "weapon +33",
+        "Support": "spell +15"
+      },
+      "meanRounds": 2.216,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 72,
+      "defeat": 0
+    },
+    {
+      "scope": "L40",
+      "group": "L40",
+      "label": "rulebook normal L40",
+      "level": 40,
+      "preset": "double-caster",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.24,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 78,
+        "fourPlus": 22
+      },
+      "partyHp": 64,
+      "defeat": 0
+    },
+    {
+      "scope": "L40",
+      "group": "L40",
+      "label": "rulebook normal L40",
+      "level": 40,
+      "preset": "double-caster",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +7",
+        "Caster": "spell +3",
+        "Caster II": "spell +3",
+        "Support": "spell +3"
+      },
+      "meanRounds": 3.118,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 87,
+        "fourPlus": 13
+      },
+      "partyHp": 64,
+      "defeat": 0
+    },
+    {
+      "scope": "L40",
+      "group": "L40",
+      "label": "rulebook normal L40",
+      "level": 40,
+      "preset": "double-caster",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +15",
+        "Caster": "spell +7",
+        "Caster II": "spell +7",
+        "Support": "spell +7"
+      },
+      "meanRounds": 2.702,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 97,
+        "fourPlus": 3
+      },
+      "partyHp": 68,
+      "defeat": 0
+    },
+    {
+      "scope": "L40",
+      "group": "L40",
+      "label": "rulebook normal L40",
+      "level": 40,
+      "preset": "double-caster",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +22",
+        "Caster": "spell +10",
+        "Caster II": "spell +10",
+        "Support": "spell +10"
+      },
+      "meanRounds": 2.288,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
+      "partyHp": 71,
+      "defeat": 0
+    },
+    {
+      "scope": "L40",
+      "group": "L40",
+      "label": "rulebook normal L40",
+      "level": 40,
+      "preset": "double-caster",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +33",
+        "Caster": "spell +15",
+        "Caster II": "spell +15",
+        "Support": "spell +15"
+      },
+      "meanRounds": 2.026,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 75,
+      "defeat": 0
+    },
+    {
+      "scope": "L40",
+      "group": "L40",
+      "label": "rulebook normal L40",
+      "level": 40,
+      "preset": "no-healer",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 5.766,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 1,
+        "fourPlus": 99
+      },
+      "partyHp": 44,
+      "defeat": 0
+    },
+    {
+      "scope": "L40",
+      "group": "L40",
+      "label": "rulebook normal L40",
+      "level": 40,
+      "preset": "no-healer",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +7",
+        "Ranger": "weapon +7",
+        "Caster": "spell +3",
+        "Tank": "weapon +7"
+      },
+      "meanRounds": 4.54,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 14,
+        "fourPlus": 86
+      },
+      "partyHp": 54,
+      "defeat": 0
+    },
+    {
+      "scope": "L40",
+      "group": "L40",
+      "label": "rulebook normal L40",
+      "level": 40,
+      "preset": "no-healer",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +15",
+        "Ranger": "weapon +15",
+        "Caster": "spell +7",
+        "Tank": "weapon +15"
+      },
+      "meanRounds": 3.644,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 47,
+        "fourPlus": 53
+      },
+      "partyHp": 62,
+      "defeat": 0
+    },
+    {
+      "scope": "L40",
+      "group": "L40",
+      "label": "rulebook normal L40",
+      "level": 40,
+      "preset": "no-healer",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +22",
+        "Ranger": "weapon +22",
+        "Caster": "spell +10",
+        "Tank": "weapon +22"
+      },
+      "meanRounds": 3.092,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 80,
+        "fourPlus": 20
+      },
+      "partyHp": 68,
+      "defeat": 0
+    },
+    {
+      "scope": "L40",
+      "group": "L40",
+      "label": "rulebook normal L40",
+      "level": 40,
+      "preset": "no-healer",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +33",
+        "Ranger": "weapon +33",
+        "Caster": "spell +15",
+        "Tank": "weapon +33"
+      },
+      "meanRounds": 2.232,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 76,
+      "defeat": 0
+    },
+    {
+      "scope": "L40",
+      "group": "L40",
+      "label": "rulebook normal L40",
+      "level": 40,
+      "preset": "physical",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 6.932,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 52,
+      "defeat": 3
+    },
+    {
+      "scope": "L40",
+      "group": "L40",
+      "label": "rulebook normal L40",
+      "level": 40,
+      "preset": "physical",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +7",
+        "Ranger": "weapon +7",
+        "Tank": "weapon +7",
+        "Support": "weapon +7"
+      },
+      "meanRounds": 5.262,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 66,
+      "defeat": 0
+    },
+    {
+      "scope": "L40",
+      "group": "L40",
+      "label": "rulebook normal L40",
+      "level": 40,
+      "preset": "physical",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +15",
+        "Ranger": "weapon +15",
+        "Tank": "weapon +15",
+        "Support": "weapon +15"
+      },
+      "meanRounds": 4.6,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 72,
+      "defeat": 0
+    },
+    {
+      "scope": "L40",
+      "group": "L40",
+      "label": "rulebook normal L40",
+      "level": 40,
+      "preset": "physical",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +22",
+        "Ranger": "weapon +22",
+        "Tank": "weapon +22",
+        "Support": "weapon +22"
+      },
+      "meanRounds": 3.92,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 19,
+        "fourPlus": 81
+      },
+      "partyHp": 79,
+      "defeat": 0
+    },
+    {
+      "scope": "L40",
+      "group": "L40",
+      "label": "rulebook normal L40",
+      "level": 40,
+      "preset": "physical",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +33",
+        "Ranger": "weapon +33",
+        "Tank": "weapon +33",
+        "Support": "weapon +33"
+      },
+      "meanRounds": 3.072,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 93,
+        "fourPlus": 7
+      },
+      "partyHp": 88,
+      "defeat": 0
+    },
+    {
+      "scope": "L46",
+      "group": "L46",
+      "label": "rulebook normal L46",
+      "level": 46,
+      "preset": "standard",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.788,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 38,
+        "fourPlus": 62
+      },
+      "partyHp": 70,
+      "defeat": 0
+    },
+    {
+      "scope": "L46",
+      "group": "L46",
+      "label": "rulebook normal L46",
+      "level": 46,
+      "preset": "standard",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +9",
+        "Caster": "spell +5",
+        "Tank": "weapon +9",
+        "Support": "spell +5"
+      },
+      "meanRounds": 3.224,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 78,
+        "fourPlus": 22
+      },
+      "partyHp": 79,
+      "defeat": 0
+    },
+    {
+      "scope": "L46",
+      "group": "L46",
+      "label": "rulebook normal L46",
+      "level": 46,
+      "preset": "standard",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +18",
+        "Caster": "spell +9",
+        "Tank": "weapon +18",
+        "Support": "spell +9"
+      },
+      "meanRounds": 3.056,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 92,
+        "fourPlus": 8
+      },
+      "partyHp": 80,
+      "defeat": 0
+    },
+    {
+      "scope": "L46",
+      "group": "L46",
+      "label": "rulebook normal L46",
+      "level": 46,
+      "preset": "standard",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +28",
+        "Caster": "spell +14",
+        "Tank": "weapon +28",
+        "Support": "spell +14"
+      },
+      "meanRounds": 2.62,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 79,
+      "defeat": 0
+    },
+    {
+      "scope": "L46",
+      "group": "L46",
+      "label": "rulebook normal L46",
+      "level": 46,
+      "preset": "standard",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +41",
+        "Caster": "spell +21",
+        "Tank": "weapon +41",
+        "Support": "spell +21"
+      },
+      "meanRounds": 2.234,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 77,
+      "defeat": 0
+    },
+    {
+      "scope": "L46",
+      "group": "L46",
+      "label": "rulebook normal L46",
+      "level": 46,
+      "preset": "double-caster",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.33,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 70,
+        "fourPlus": 30
+      },
+      "partyHp": 70,
+      "defeat": 0
+    },
+    {
+      "scope": "L46",
+      "group": "L46",
+      "label": "rulebook normal L46",
+      "level": 46,
+      "preset": "double-caster",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +9",
+        "Caster": "spell +5",
+        "Caster II": "spell +5",
+        "Support": "spell +5"
+      },
+      "meanRounds": 3.118,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 86,
+        "fourPlus": 14
+      },
+      "partyHp": 71,
+      "defeat": 0
+    },
+    {
+      "scope": "L46",
+      "group": "L46",
+      "label": "rulebook normal L46",
+      "level": 46,
+      "preset": "double-caster",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +18",
+        "Caster": "spell +9",
+        "Caster II": "spell +9",
+        "Support": "spell +9"
+      },
+      "meanRounds": 2.754,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 97,
+        "fourPlus": 3
+      },
+      "partyHp": 73,
+      "defeat": 0
+    },
+    {
+      "scope": "L46",
+      "group": "L46",
+      "label": "rulebook normal L46",
+      "level": 46,
+      "preset": "double-caster",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +28",
+        "Caster": "spell +14",
+        "Caster II": "spell +14",
+        "Support": "spell +14"
+      },
+      "meanRounds": 2.23,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 75,
+      "defeat": 0
+    },
+    {
+      "scope": "L46",
+      "group": "L46",
+      "label": "rulebook normal L46",
+      "level": 46,
+      "preset": "double-caster",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +41",
+        "Caster": "spell +21",
+        "Caster II": "spell +21",
+        "Support": "spell +21"
+      },
+      "meanRounds": 2.032,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 78,
+      "defeat": 0
+    },
+    {
+      "scope": "L46",
+      "group": "L46",
+      "label": "rulebook normal L46",
+      "level": 46,
+      "preset": "no-healer",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 5.148,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 51,
+      "defeat": 0
+    },
+    {
+      "scope": "L46",
+      "group": "L46",
+      "label": "rulebook normal L46",
+      "level": 46,
+      "preset": "no-healer",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +9",
+        "Ranger": "weapon +9",
+        "Caster": "spell +5",
+        "Tank": "weapon +9"
+      },
+      "meanRounds": 3.796,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 39,
+        "fourPlus": 61
+      },
+      "partyHp": 63,
+      "defeat": 0
+    },
+    {
+      "scope": "L46",
+      "group": "L46",
+      "label": "rulebook normal L46",
+      "level": 46,
+      "preset": "no-healer",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +18",
+        "Ranger": "weapon +18",
+        "Caster": "spell +9",
+        "Tank": "weapon +18"
+      },
+      "meanRounds": 3.38,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 65,
+        "fourPlus": 35
+      },
+      "partyHp": 67,
+      "defeat": 0
+    },
+    {
+      "scope": "L46",
+      "group": "L46",
+      "label": "rulebook normal L46",
+      "level": 46,
+      "preset": "no-healer",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +28",
+        "Ranger": "weapon +28",
+        "Caster": "spell +14",
+        "Tank": "weapon +28"
+      },
+      "meanRounds": 2.86,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 95,
+        "fourPlus": 5
+      },
+      "partyHp": 74,
+      "defeat": 0
+    },
+    {
+      "scope": "L46",
+      "group": "L46",
+      "label": "rulebook normal L46",
+      "level": 46,
+      "preset": "no-healer",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +41",
+        "Ranger": "weapon +41",
+        "Caster": "spell +21",
+        "Tank": "weapon +41"
+      },
+      "meanRounds": 2.176,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 78,
+      "defeat": 0
+    },
+    {
+      "scope": "L46",
+      "group": "L46",
+      "label": "rulebook normal L46",
+      "level": 46,
+      "preset": "physical",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 7.06,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 51,
+      "defeat": 1
+    },
+    {
+      "scope": "L46",
+      "group": "L46",
+      "label": "rulebook normal L46",
+      "level": 46,
+      "preset": "physical",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +9",
+        "Ranger": "weapon +9",
+        "Tank": "weapon +9",
+        "Support": "weapon +9"
+      },
+      "meanRounds": 5.164,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 64,
+      "defeat": 0
+    },
+    {
+      "scope": "L46",
+      "group": "L46",
+      "label": "rulebook normal L46",
+      "level": 46,
+      "preset": "physical",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +18",
+        "Ranger": "weapon +18",
+        "Tank": "weapon +18",
+        "Support": "weapon +18"
+      },
+      "meanRounds": 4.344,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 72,
+      "defeat": 0
+    },
+    {
+      "scope": "L46",
+      "group": "L46",
+      "label": "rulebook normal L46",
+      "level": 46,
+      "preset": "physical",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +28",
+        "Ranger": "weapon +28",
+        "Tank": "weapon +28",
+        "Support": "weapon +28"
+      },
+      "meanRounds": 3.564,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 46,
+        "fourPlus": 54
+      },
+      "partyHp": 82,
+      "defeat": 0
+    },
+    {
+      "scope": "L46",
+      "group": "L46",
+      "label": "rulebook normal L46",
+      "level": 46,
+      "preset": "physical",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +41",
+        "Ranger": "weapon +41",
+        "Tank": "weapon +41",
+        "Support": "weapon +41"
+      },
+      "meanRounds": 3.064,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 94,
+        "fourPlus": 6
+      },
+      "partyHp": 83,
+      "defeat": 0
+    },
+    {
+      "scope": "L48",
+      "group": "L48",
+      "label": "rulebook normal L48",
+      "level": 48,
+      "preset": "standard",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.714,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 40,
+        "fourPlus": 60
+      },
+      "partyHp": 74,
+      "defeat": 0
+    },
+    {
+      "scope": "L48",
+      "group": "L48",
+      "label": "rulebook normal L48",
+      "level": 48,
+      "preset": "standard",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +10",
+        "Caster": "spell +5",
+        "Tank": "weapon +10",
+        "Support": "spell +5"
+      },
+      "meanRounds": 3.202,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 80,
+        "fourPlus": 20
+      },
+      "partyHp": 82,
+      "defeat": 0
+    },
+    {
+      "scope": "L48",
+      "group": "L48",
+      "label": "rulebook normal L48",
+      "level": 48,
+      "preset": "standard",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +20",
+        "Caster": "spell +10",
+        "Tank": "weapon +20",
+        "Support": "spell +10"
+      },
+      "meanRounds": 2.968,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 97,
+        "fourPlus": 3
+      },
+      "partyHp": 83,
+      "defeat": 0
+    },
+    {
+      "scope": "L48",
+      "group": "L48",
+      "label": "rulebook normal L48",
+      "level": 48,
+      "preset": "standard",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +30",
+        "Caster": "spell +15",
+        "Tank": "weapon +30",
+        "Support": "spell +15"
+      },
+      "meanRounds": 2.604,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 80,
+      "defeat": 0
+    },
+    {
+      "scope": "L48",
+      "group": "L48",
+      "label": "rulebook normal L48",
+      "level": 48,
+      "preset": "standard",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +44",
+        "Caster": "spell +23",
+        "Tank": "weapon +44",
+        "Support": "spell +23"
+      },
+      "meanRounds": 2.242,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 79,
+      "defeat": 0
+    },
+    {
+      "scope": "L48",
+      "group": "L48",
+      "label": "rulebook normal L48",
+      "level": 48,
+      "preset": "double-caster",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.3,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 72,
+        "fourPlus": 28
+      },
+      "partyHp": 72,
+      "defeat": 0
+    },
+    {
+      "scope": "L48",
+      "group": "L48",
+      "label": "rulebook normal L48",
+      "level": 48,
+      "preset": "double-caster",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +10",
+        "Caster": "spell +5",
+        "Caster II": "spell +5",
+        "Support": "spell +5"
+      },
+      "meanRounds": 3.086,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 88,
+        "fourPlus": 12
+      },
+      "partyHp": 73,
+      "defeat": 0
+    },
+    {
+      "scope": "L48",
+      "group": "L48",
+      "label": "rulebook normal L48",
+      "level": 48,
+      "preset": "double-caster",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +20",
+        "Caster": "spell +10",
+        "Caster II": "spell +10",
+        "Support": "spell +10"
+      },
+      "meanRounds": 2.652,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "partyHp": 75,
+      "defeat": 0
+    },
+    {
+      "scope": "L48",
+      "group": "L48",
+      "label": "rulebook normal L48",
+      "level": 48,
+      "preset": "double-caster",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +30",
+        "Caster": "spell +15",
+        "Caster II": "spell +15",
+        "Support": "spell +15"
+      },
+      "meanRounds": 2.202,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 77,
+      "defeat": 0
+    },
+    {
+      "scope": "L48",
+      "group": "L48",
+      "label": "rulebook normal L48",
+      "level": 48,
+      "preset": "double-caster",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +44",
+        "Caster": "spell +23",
+        "Caster II": "spell +23",
+        "Support": "spell +23"
+      },
+      "meanRounds": 2.034,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 80,
+      "defeat": 0
+    },
+    {
+      "scope": "L48",
+      "group": "L48",
+      "label": "rulebook normal L48",
+      "level": 48,
+      "preset": "no-healer",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 4.952,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 53,
+      "defeat": 0
+    },
+    {
+      "scope": "L48",
+      "group": "L48",
+      "label": "rulebook normal L48",
+      "level": 48,
+      "preset": "no-healer",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +10",
+        "Ranger": "weapon +10",
+        "Caster": "spell +5",
+        "Tank": "weapon +10"
+      },
+      "meanRounds": 3.67,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 44,
+        "fourPlus": 56
+      },
+      "partyHp": 64,
+      "defeat": 0
+    },
+    {
+      "scope": "L48",
+      "group": "L48",
+      "label": "rulebook normal L48",
+      "level": 48,
+      "preset": "no-healer",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +20",
+        "Ranger": "weapon +20",
+        "Caster": "spell +10",
+        "Tank": "weapon +20"
+      },
+      "meanRounds": 3.186,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 82,
+        "fourPlus": 18
+      },
+      "partyHp": 69,
+      "defeat": 0
+    },
+    {
+      "scope": "L48",
+      "group": "L48",
+      "label": "rulebook normal L48",
+      "level": 48,
+      "preset": "no-healer",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +30",
+        "Ranger": "weapon +30",
+        "Caster": "spell +15",
+        "Tank": "weapon +30"
+      },
+      "meanRounds": 2.834,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "partyHp": 76,
+      "defeat": 0
+    },
+    {
+      "scope": "L48",
+      "group": "L48",
+      "label": "rulebook normal L48",
+      "level": 48,
+      "preset": "no-healer",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +44",
+        "Ranger": "weapon +44",
+        "Caster": "spell +23",
+        "Tank": "weapon +44"
+      },
+      "meanRounds": 2.176,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 78,
+      "defeat": 0
+    },
+    {
+      "scope": "L48",
+      "group": "L48",
+      "label": "rulebook normal L48",
+      "level": 48,
+      "preset": "physical",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 7.082,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 49,
+      "defeat": 1
+    },
+    {
+      "scope": "L48",
+      "group": "L48",
+      "label": "rulebook normal L48",
+      "level": 48,
+      "preset": "physical",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +10",
+        "Ranger": "weapon +10",
+        "Tank": "weapon +10",
+        "Support": "weapon +10"
+      },
+      "meanRounds": 5.024,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 65,
+      "defeat": 0
+    },
+    {
+      "scope": "L48",
+      "group": "L48",
+      "label": "rulebook normal L48",
+      "level": 48,
+      "preset": "physical",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +20",
+        "Ranger": "weapon +20",
+        "Tank": "weapon +20",
+        "Support": "weapon +20"
+      },
+      "meanRounds": 4.146,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 1,
+        "fourPlus": 99
+      },
+      "partyHp": 74,
+      "defeat": 0
+    },
+    {
+      "scope": "L48",
+      "group": "L48",
+      "label": "rulebook normal L48",
+      "level": 48,
+      "preset": "physical",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +30",
+        "Ranger": "weapon +30",
+        "Tank": "weapon +30",
+        "Support": "weapon +30"
+      },
+      "meanRounds": 3.454,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 56,
+        "fourPlus": 44
+      },
+      "partyHp": 82,
+      "defeat": 0
+    },
+    {
+      "scope": "L48",
+      "group": "L48",
+      "label": "rulebook normal L48",
+      "level": 48,
+      "preset": "physical",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +44",
+        "Ranger": "weapon +44",
+        "Tank": "weapon +44",
+        "Support": "weapon +44"
+      },
+      "meanRounds": 2.998,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 95,
+        "fourPlus": 5
+      },
+      "partyHp": 82,
+      "defeat": 0
+    },
+    {
+      "scope": "L50",
+      "group": "L50",
+      "label": "rulebook normal L50",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.61,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 45,
+        "fourPlus": 55
+      },
+      "partyHp": 75,
+      "defeat": 0
+    },
+    {
+      "scope": "L50",
+      "group": "L50",
+      "label": "rulebook normal L50",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +11",
+        "Caster": "spell +5",
+        "Tank": "weapon +11",
+        "Support": "spell +5"
+      },
+      "meanRounds": 3.172,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 83,
+        "fourPlus": 17
+      },
+      "partyHp": 84,
+      "defeat": 0
+    },
+    {
+      "scope": "L50",
+      "group": "L50",
+      "label": "rulebook normal L50",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +21",
+        "Caster": "spell +10",
+        "Tank": "weapon +21",
+        "Support": "spell +10"
+      },
+      "meanRounds": 2.984,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 97,
+        "fourPlus": 3
+      },
+      "partyHp": 85,
+      "defeat": 0
+    },
+    {
+      "scope": "L50",
+      "group": "L50",
+      "label": "rulebook normal L50",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +32",
+        "Caster": "spell +15",
+        "Tank": "weapon +32",
+        "Support": "spell +15"
+      },
+      "meanRounds": 2.648,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 82,
+      "defeat": 0
+    },
+    {
+      "scope": "L50",
+      "group": "L50",
+      "label": "rulebook normal L50",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +47",
+        "Caster": "spell +22",
+        "Tank": "weapon +47",
+        "Support": "spell +22"
+      },
+      "meanRounds": 2.154,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 80,
+      "defeat": 0
+    },
+    {
+      "scope": "L50",
+      "group": "L50",
+      "label": "rulebook normal L50",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.232,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 78,
+        "fourPlus": 22
+      },
+      "partyHp": 72,
+      "defeat": 0
+    },
+    {
+      "scope": "L50",
+      "group": "L50",
+      "label": "rulebook normal L50",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +11",
+        "Caster": "spell +5",
+        "Caster II": "spell +5",
+        "Support": "spell +5"
+      },
+      "meanRounds": 3,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 97,
+        "fourPlus": 3
+      },
+      "partyHp": 73,
+      "defeat": 0
+    },
+    {
+      "scope": "L50",
+      "group": "L50",
+      "label": "rulebook normal L50",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +21",
+        "Caster": "spell +10",
+        "Caster II": "spell +10",
+        "Support": "spell +10"
+      },
+      "meanRounds": 2.656,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
+      "partyHp": 75,
+      "defeat": 0
+    },
+    {
+      "scope": "L50",
+      "group": "L50",
+      "label": "rulebook normal L50",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +32",
+        "Caster": "spell +15",
+        "Caster II": "spell +15",
+        "Support": "spell +15"
+      },
+      "meanRounds": 2.122,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 78,
+      "defeat": 0
+    },
+    {
+      "scope": "L50",
+      "group": "L50",
+      "label": "rulebook normal L50",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +47",
+        "Caster": "spell +22",
+        "Caster II": "spell +22",
+        "Support": "spell +22"
+      },
+      "meanRounds": 2.03,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 80,
+      "defeat": 0
+    },
+    {
+      "scope": "L50",
+      "group": "L50",
+      "label": "rulebook normal L50",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 4.74,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 53,
+      "defeat": 0
+    },
+    {
+      "scope": "L50",
+      "group": "L50",
+      "label": "rulebook normal L50",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +11",
+        "Ranger": "weapon +11",
+        "Caster": "spell +5",
+        "Tank": "weapon +11"
+      },
+      "meanRounds": 3.526,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 51,
+        "fourPlus": 49
+      },
+      "partyHp": 65,
+      "defeat": 0
+    },
+    {
+      "scope": "L50",
+      "group": "L50",
+      "label": "rulebook normal L50",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +21",
+        "Ranger": "weapon +21",
+        "Caster": "spell +10",
+        "Tank": "weapon +21"
+      },
+      "meanRounds": 3.108,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 89,
+        "fourPlus": 11
+      },
+      "partyHp": 70,
+      "defeat": 0
+    },
+    {
+      "scope": "L50",
+      "group": "L50",
+      "label": "rulebook normal L50",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +32",
+        "Ranger": "weapon +32",
+        "Caster": "spell +15",
+        "Tank": "weapon +32"
+      },
+      "meanRounds": 2.724,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 78,
+      "defeat": 0
+    },
+    {
+      "scope": "L50",
+      "group": "L50",
+      "label": "rulebook normal L50",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +47",
+        "Ranger": "weapon +47",
+        "Caster": "spell +22",
+        "Tank": "weapon +47"
+      },
+      "meanRounds": 2.09,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 78,
+      "defeat": 0
+    },
+    {
+      "scope": "L50",
+      "group": "L50",
+      "label": "rulebook normal L50",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 7.096,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 46,
+      "defeat": 1
+    },
+    {
+      "scope": "L50",
+      "group": "L50",
+      "label": "rulebook normal L50",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +11",
+        "Ranger": "weapon +11",
+        "Tank": "weapon +11",
+        "Support": "weapon +11"
+      },
+      "meanRounds": 4.878,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 64,
+      "defeat": 0
+    },
+    {
+      "scope": "L50",
+      "group": "L50",
+      "label": "rulebook normal L50",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +21",
+        "Ranger": "weapon +21",
+        "Tank": "weapon +21",
+        "Support": "weapon +21"
+      },
+      "meanRounds": 4.052,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 1,
+        "fourPlus": 99
+      },
+      "partyHp": 72,
+      "defeat": 0
+    },
+    {
+      "scope": "L50",
+      "group": "L50",
+      "label": "rulebook normal L50",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +32",
+        "Ranger": "weapon +32",
+        "Tank": "weapon +32",
+        "Support": "weapon +32"
+      },
+      "meanRounds": 3.232,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 77,
+        "fourPlus": 23
+      },
+      "partyHp": 80,
+      "defeat": 0
+    },
+    {
+      "scope": "L50",
+      "group": "L50",
+      "label": "rulebook normal L50",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +47",
+        "Ranger": "weapon +47",
+        "Tank": "weapon +47",
+        "Support": "weapon +47"
+      },
+      "meanRounds": 2.652,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 80,
+      "defeat": 0
+    },
+    {
+      "scope": "L35-elite-pair",
+      "group": "L35",
+      "label": "rulebook elite-pair L35",
+      "level": 35,
+      "preset": "standard",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.678,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 34,
+        "fourPlus": 66
+      },
+      "partyHp": 82,
+      "defeat": 0
+    },
+    {
+      "scope": "L35-elite-pair",
+      "group": "L35",
+      "label": "rulebook elite-pair L35",
+      "level": 35,
+      "preset": "standard",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +6",
+        "Caster": "spell +3",
+        "Tank": "weapon +6",
+        "Support": "spell +3"
+      },
+      "meanRounds": 3.194,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 81,
+        "fourPlus": 19
+      },
+      "partyHp": 80,
+      "defeat": 0
+    },
+    {
+      "scope": "L35-elite-pair",
+      "group": "L35",
+      "label": "rulebook elite-pair L35",
+      "level": 35,
+      "preset": "standard",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +12",
+        "Caster": "spell +6",
+        "Tank": "weapon +12",
+        "Support": "spell +6"
+      },
+      "meanRounds": 3.072,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 93,
+        "fourPlus": 7
+      },
+      "partyHp": 83,
+      "defeat": 0
+    },
+    {
+      "scope": "L35-elite-pair",
+      "group": "L35",
+      "label": "rulebook elite-pair L35",
+      "level": 35,
+      "preset": "standard",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +19",
+        "Caster": "spell +9",
+        "Tank": "weapon +19",
+        "Support": "spell +9"
+      },
+      "meanRounds": 3.004,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 84,
+      "defeat": 0
+    },
+    {
+      "scope": "L35-elite-pair",
+      "group": "L35",
+      "label": "rulebook elite-pair L35",
+      "level": 35,
+      "preset": "standard",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +28",
+        "Caster": "spell +13",
+        "Tank": "weapon +28",
+        "Support": "spell +13"
+      },
+      "meanRounds": 2.504,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 86,
+      "defeat": 0
+    },
+    {
+      "scope": "L35-elite-pair",
+      "group": "L35",
+      "label": "rulebook elite-pair L35",
+      "level": 35,
+      "preset": "double-caster",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.344,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 69,
+        "fourPlus": 31
+      },
+      "partyHp": 82,
+      "defeat": 0
+    },
+    {
+      "scope": "L35-elite-pair",
+      "group": "L35",
+      "label": "rulebook elite-pair L35",
+      "level": 35,
+      "preset": "double-caster",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +6",
+        "Caster": "spell +3",
+        "Caster II": "spell +3",
+        "Support": "spell +3"
+      },
+      "meanRounds": 3.098,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 91,
+        "fourPlus": 9
+      },
+      "partyHp": 84,
+      "defeat": 0
+    },
+    {
+      "scope": "L35-elite-pair",
+      "group": "L35",
+      "label": "rulebook elite-pair L35",
+      "level": 35,
+      "preset": "double-caster",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +12",
+        "Caster": "spell +6",
+        "Caster II": "spell +6",
+        "Support": "spell +6"
+      },
+      "meanRounds": 2.89,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 96,
+        "fourPlus": 4
+      },
+      "partyHp": 86,
+      "defeat": 0
+    },
+    {
+      "scope": "L35-elite-pair",
+      "group": "L35",
+      "label": "rulebook elite-pair L35",
+      "level": 35,
+      "preset": "double-caster",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +19",
+        "Caster": "spell +9",
+        "Caster II": "spell +9",
+        "Support": "spell +9"
+      },
+      "meanRounds": 2.642,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
+      "partyHp": 86,
+      "defeat": 0
+    },
+    {
+      "scope": "L35-elite-pair",
+      "group": "L35",
+      "label": "rulebook elite-pair L35",
+      "level": 35,
+      "preset": "double-caster",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +28",
+        "Caster": "spell +13",
+        "Caster II": "spell +13",
+        "Support": "spell +13"
+      },
+      "meanRounds": 2.276,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
+      "partyHp": 89,
+      "defeat": 0
+    },
+    {
+      "scope": "L35-elite-pair",
+      "group": "L35",
+      "label": "rulebook elite-pair L35",
+      "level": 35,
+      "preset": "no-healer",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 4.08,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 77,
+      "defeat": 0
+    },
+    {
+      "scope": "L35-elite-pair",
+      "group": "L35",
+      "label": "rulebook elite-pair L35",
+      "level": 35,
+      "preset": "no-healer",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +6",
+        "Ranger": "weapon +6",
+        "Caster": "spell +3",
+        "Tank": "weapon +6"
+      },
+      "meanRounds": 3.534,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 47,
+        "fourPlus": 53
+      },
+      "partyHp": 80,
+      "defeat": 0
+    },
+    {
+      "scope": "L35-elite-pair",
+      "group": "L35",
+      "label": "rulebook elite-pair L35",
+      "level": 35,
+      "preset": "no-healer",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +12",
+        "Ranger": "weapon +12",
+        "Caster": "spell +6",
+        "Tank": "weapon +12"
+      },
+      "meanRounds": 3.146,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 85,
+        "fourPlus": 15
+      },
+      "partyHp": 84,
+      "defeat": 0
+    },
+    {
+      "scope": "L35-elite-pair",
+      "group": "L35",
+      "label": "rulebook elite-pair L35",
+      "level": 35,
+      "preset": "no-healer",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +19",
+        "Ranger": "weapon +19",
+        "Caster": "spell +9",
+        "Tank": "weapon +19"
+      },
+      "meanRounds": 3.014,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
+      "partyHp": 85,
+      "defeat": 0
+    },
+    {
+      "scope": "L35-elite-pair",
+      "group": "L35",
+      "label": "rulebook elite-pair L35",
+      "level": 35,
+      "preset": "no-healer",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +28",
+        "Ranger": "weapon +28",
+        "Caster": "spell +13",
+        "Tank": "weapon +28"
+      },
+      "meanRounds": 2.418,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 86,
+      "defeat": 0
+    },
+    {
+      "scope": "L35-elite-pair",
+      "group": "L35",
+      "label": "rulebook elite-pair L35",
+      "level": 35,
+      "preset": "physical",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 5.116,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 83,
+      "defeat": 0
+    },
+    {
+      "scope": "L35-elite-pair",
+      "group": "L35",
+      "label": "rulebook elite-pair L35",
+      "level": 35,
+      "preset": "physical",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +6",
+        "Ranger": "weapon +6",
+        "Tank": "weapon +6",
+        "Support": "weapon +6"
+      },
+      "meanRounds": 4.178,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 81,
+      "defeat": 0
+    },
+    {
+      "scope": "L35-elite-pair",
+      "group": "L35",
+      "label": "rulebook elite-pair L35",
+      "level": 35,
+      "preset": "physical",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +12",
+        "Ranger": "weapon +12",
+        "Tank": "weapon +12",
+        "Support": "weapon +12"
+      },
+      "meanRounds": 3.726,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 28,
+        "fourPlus": 72
+      },
+      "partyHp": 82,
+      "defeat": 0
+    },
+    {
+      "scope": "L35-elite-pair",
+      "group": "L35",
+      "label": "rulebook elite-pair L35",
+      "level": 35,
+      "preset": "physical",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +19",
+        "Ranger": "weapon +19",
+        "Tank": "weapon +19",
+        "Support": "weapon +19"
+      },
+      "meanRounds": 3.132,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 87,
+        "fourPlus": 13
+      },
+      "partyHp": 81,
+      "defeat": 0
+    },
+    {
+      "scope": "L35-elite-pair",
+      "group": "L35",
+      "label": "rulebook elite-pair L35",
+      "level": 35,
+      "preset": "physical",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +28",
+        "Ranger": "weapon +28",
+        "Tank": "weapon +28",
+        "Support": "weapon +28"
+      },
+      "meanRounds": 3.002,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 84,
+      "defeat": 0
+    },
+    {
+      "scope": "L38-elite-pair",
+      "group": "L38",
+      "label": "rulebook elite-pair L38",
+      "level": 38,
+      "preset": "standard",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.7,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 32,
+        "fourPlus": 68
+      },
+      "partyHp": 82,
+      "defeat": 0
+    },
+    {
+      "scope": "L38-elite-pair",
+      "group": "L38",
+      "label": "rulebook elite-pair L38",
+      "level": 38,
+      "preset": "standard",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +7",
+        "Caster": "spell +4",
+        "Tank": "weapon +7",
+        "Support": "spell +4"
+      },
+      "meanRounds": 3.182,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 82,
+        "fourPlus": 18
+      },
+      "partyHp": 81,
+      "defeat": 0
+    },
+    {
+      "scope": "L38-elite-pair",
+      "group": "L38",
+      "label": "rulebook elite-pair L38",
+      "level": 38,
+      "preset": "standard",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +14",
+        "Caster": "spell +8",
+        "Tank": "weapon +14",
+        "Support": "spell +8"
+      },
+      "meanRounds": 3.04,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 96,
+        "fourPlus": 4
+      },
+      "partyHp": 84,
+      "defeat": 0
+    },
+    {
+      "scope": "L38-elite-pair",
+      "group": "L38",
+      "label": "rulebook elite-pair L38",
+      "level": 38,
+      "preset": "standard",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +21",
+        "Caster": "spell +12",
+        "Tank": "weapon +21",
+        "Support": "spell +12"
+      },
+      "meanRounds": 3.006,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
+      "partyHp": 84,
+      "defeat": 0
+    },
+    {
+      "scope": "L38-elite-pair",
+      "group": "L38",
+      "label": "rulebook elite-pair L38",
+      "level": 38,
+      "preset": "standard",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +31",
+        "Caster": "spell +17",
+        "Tank": "weapon +31",
+        "Support": "spell +17"
+      },
+      "meanRounds": 2.224,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 86,
+      "defeat": 0
+    },
+    {
+      "scope": "L38-elite-pair",
+      "group": "L38",
+      "label": "rulebook elite-pair L38",
+      "level": 38,
+      "preset": "double-caster",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.268,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 76,
+        "fourPlus": 24
+      },
+      "partyHp": 83,
+      "defeat": 0
+    },
+    {
+      "scope": "L38-elite-pair",
+      "group": "L38",
+      "label": "rulebook elite-pair L38",
+      "level": 38,
+      "preset": "double-caster",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +7",
+        "Caster": "spell +4",
+        "Caster II": "spell +4",
+        "Support": "spell +4"
+      },
+      "meanRounds": 3.066,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 94,
+        "fourPlus": 6
+      },
+      "partyHp": 85,
+      "defeat": 0
+    },
+    {
+      "scope": "L38-elite-pair",
+      "group": "L38",
+      "label": "rulebook elite-pair L38",
+      "level": 38,
+      "preset": "double-caster",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +14",
+        "Caster": "spell +8",
+        "Caster II": "spell +8",
+        "Support": "spell +8"
+      },
+      "meanRounds": 2.79,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "partyHp": 87,
+      "defeat": 0
+    },
+    {
+      "scope": "L38-elite-pair",
+      "group": "L38",
+      "label": "rulebook elite-pair L38",
+      "level": 38,
+      "preset": "double-caster",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +21",
+        "Caster": "spell +12",
+        "Caster II": "spell +12",
+        "Support": "spell +12"
+      },
+      "meanRounds": 2.55,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
+      "partyHp": 87,
+      "defeat": 0
+    },
+    {
+      "scope": "L38-elite-pair",
+      "group": "L38",
+      "label": "rulebook elite-pair L38",
+      "level": 38,
+      "preset": "double-caster",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +31",
+        "Caster": "spell +17",
+        "Caster II": "spell +17",
+        "Support": "spell +17"
+      },
+      "meanRounds": 2.14,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 90,
+      "defeat": 0
+    },
+    {
+      "scope": "L38-elite-pair",
+      "group": "L38",
+      "label": "rulebook elite-pair L38",
+      "level": 38,
+      "preset": "no-healer",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 4.14,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 77,
+      "defeat": 0
+    },
+    {
+      "scope": "L38-elite-pair",
+      "group": "L38",
+      "label": "rulebook elite-pair L38",
+      "level": 38,
+      "preset": "no-healer",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +7",
+        "Ranger": "weapon +7",
+        "Caster": "spell +4",
+        "Tank": "weapon +7"
+      },
+      "meanRounds": 3.512,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 49,
+        "fourPlus": 51
+      },
+      "partyHp": 81,
+      "defeat": 0
+    },
+    {
+      "scope": "L38-elite-pair",
+      "group": "L38",
+      "label": "rulebook elite-pair L38",
+      "level": 38,
+      "preset": "no-healer",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +14",
+        "Ranger": "weapon +14",
+        "Caster": "spell +8",
+        "Tank": "weapon +14"
+      },
+      "meanRounds": 3.086,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 91,
+        "fourPlus": 9
+      },
+      "partyHp": 85,
+      "defeat": 0
+    },
+    {
+      "scope": "L38-elite-pair",
+      "group": "L38",
+      "label": "rulebook elite-pair L38",
+      "level": 38,
+      "preset": "no-healer",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +21",
+        "Ranger": "weapon +21",
+        "Caster": "spell +12",
+        "Tank": "weapon +21"
+      },
+      "meanRounds": 3.014,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
+      "partyHp": 86,
+      "defeat": 0
+    },
+    {
+      "scope": "L38-elite-pair",
+      "group": "L38",
+      "label": "rulebook elite-pair L38",
+      "level": 38,
+      "preset": "no-healer",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +31",
+        "Ranger": "weapon +31",
+        "Caster": "spell +17",
+        "Tank": "weapon +31"
+      },
+      "meanRounds": 2.416,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 87,
+      "defeat": 0
+    },
+    {
+      "scope": "L38-elite-pair",
+      "group": "L38",
+      "label": "rulebook elite-pair L38",
+      "level": 38,
+      "preset": "physical",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 5.17,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 81,
+      "defeat": 0
+    },
+    {
+      "scope": "L38-elite-pair",
+      "group": "L38",
+      "label": "rulebook elite-pair L38",
+      "level": 38,
+      "preset": "physical",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +7",
+        "Ranger": "weapon +7",
+        "Tank": "weapon +7",
+        "Support": "weapon +7"
+      },
+      "meanRounds": 4.166,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 83,
+      "defeat": 0
+    },
+    {
+      "scope": "L38-elite-pair",
+      "group": "L38",
+      "label": "rulebook elite-pair L38",
+      "level": 38,
+      "preset": "physical",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +14",
+        "Ranger": "weapon +14",
+        "Tank": "weapon +14",
+        "Support": "weapon +14"
+      },
+      "meanRounds": 3.712,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 29,
+        "fourPlus": 71
+      },
+      "partyHp": 85,
+      "defeat": 0
+    },
+    {
+      "scope": "L38-elite-pair",
+      "group": "L38",
+      "label": "rulebook elite-pair L38",
+      "level": 38,
+      "preset": "physical",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +21",
+        "Ranger": "weapon +21",
+        "Tank": "weapon +21",
+        "Support": "weapon +21"
+      },
+      "meanRounds": 3.168,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 83,
+        "fourPlus": 17
+      },
+      "partyHp": 82,
+      "defeat": 0
+    },
+    {
+      "scope": "L38-elite-pair",
+      "group": "L38",
+      "label": "rulebook elite-pair L38",
+      "level": 38,
+      "preset": "physical",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +31",
+        "Ranger": "weapon +31",
+        "Tank": "weapon +31",
+        "Support": "weapon +31"
+      },
+      "meanRounds": 3,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 85,
+      "defeat": 0
+    },
+    {
+      "scope": "L40-elite-pair",
+      "group": "L40",
+      "label": "rulebook elite-pair L40",
+      "level": 40,
+      "preset": "standard",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.67,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 34,
+        "fourPlus": 66
+      },
+      "partyHp": 84,
+      "defeat": 0
+    },
+    {
+      "scope": "L40-elite-pair",
+      "group": "L40",
+      "label": "rulebook elite-pair L40",
+      "level": 40,
+      "preset": "standard",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +7",
+        "Caster": "spell +3",
+        "Tank": "weapon +7",
+        "Support": "spell +3"
+      },
+      "meanRounds": 3.22,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 78,
+        "fourPlus": 22
+      },
+      "partyHp": 79,
+      "defeat": 0
+    },
+    {
+      "scope": "L40-elite-pair",
+      "group": "L40",
+      "label": "rulebook elite-pair L40",
+      "level": 40,
+      "preset": "standard",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +15",
+        "Caster": "spell +7",
+        "Tank": "weapon +15",
+        "Support": "spell +7"
+      },
+      "meanRounds": 3.02,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "partyHp": 81,
+      "defeat": 0
+    },
+    {
+      "scope": "L40-elite-pair",
+      "group": "L40",
+      "label": "rulebook elite-pair L40",
+      "level": 40,
+      "preset": "standard",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +22",
+        "Caster": "spell +10",
+        "Tank": "weapon +22",
+        "Support": "spell +10"
+      },
+      "meanRounds": 3,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 81,
+      "defeat": 0
+    },
+    {
+      "scope": "L40-elite-pair",
+      "group": "L40",
+      "label": "rulebook elite-pair L40",
+      "level": 40,
+      "preset": "standard",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +33",
+        "Caster": "spell +15",
+        "Tank": "weapon +33",
+        "Support": "spell +15"
+      },
+      "meanRounds": 2.196,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 82,
+      "defeat": 0
+    },
+    {
+      "scope": "L40-elite-pair",
+      "group": "L40",
+      "label": "rulebook elite-pair L40",
+      "level": 40,
+      "preset": "double-caster",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.316,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 70,
+        "fourPlus": 30
+      },
+      "partyHp": 71,
+      "defeat": 0
+    },
+    {
+      "scope": "L40-elite-pair",
+      "group": "L40",
+      "label": "rulebook elite-pair L40",
+      "level": 40,
+      "preset": "double-caster",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +7",
+        "Caster": "spell +3",
+        "Caster II": "spell +3",
+        "Support": "spell +3"
+      },
+      "meanRounds": 3.062,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 94,
+        "fourPlus": 6
+      },
+      "partyHp": 75,
+      "defeat": 0
+    },
+    {
+      "scope": "L40-elite-pair",
+      "group": "L40",
+      "label": "rulebook elite-pair L40",
+      "level": 40,
+      "preset": "double-caster",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +15",
+        "Caster": "spell +7",
+        "Caster II": "spell +7",
+        "Support": "spell +7"
+      },
+      "meanRounds": 2.586,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
+      "partyHp": 79,
+      "defeat": 0
+    },
+    {
+      "scope": "L40-elite-pair",
+      "group": "L40",
+      "label": "rulebook elite-pair L40",
+      "level": 40,
+      "preset": "double-caster",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +22",
+        "Caster": "spell +10",
+        "Caster II": "spell +10",
+        "Support": "spell +10"
+      },
+      "meanRounds": 2.39,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 79,
+      "defeat": 0
+    },
+    {
+      "scope": "L40-elite-pair",
+      "group": "L40",
+      "label": "rulebook elite-pair L40",
+      "level": 40,
+      "preset": "double-caster",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +33",
+        "Caster": "spell +15",
+        "Caster II": "spell +15",
+        "Support": "spell +15"
+      },
+      "meanRounds": 2.066,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 85,
+      "defeat": 0
+    },
+    {
+      "scope": "L40-elite-pair",
+      "group": "L40",
+      "label": "rulebook elite-pair L40",
+      "level": 40,
+      "preset": "no-healer",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 4.086,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 70,
+      "defeat": 0
+    },
+    {
+      "scope": "L40-elite-pair",
+      "group": "L40",
+      "label": "rulebook elite-pair L40",
+      "level": 40,
+      "preset": "no-healer",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +7",
+        "Ranger": "weapon +7",
+        "Caster": "spell +3",
+        "Tank": "weapon +7"
+      },
+      "meanRounds": 3.442,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 56,
+        "fourPlus": 44
+      },
+      "partyHp": 75,
+      "defeat": 0
+    },
+    {
+      "scope": "L40-elite-pair",
+      "group": "L40",
+      "label": "rulebook elite-pair L40",
+      "level": 40,
+      "preset": "no-healer",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +15",
+        "Ranger": "weapon +15",
+        "Caster": "spell +7",
+        "Tank": "weapon +15"
+      },
+      "meanRounds": 3.02,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "partyHp": 81,
+      "defeat": 0
+    },
+    {
+      "scope": "L40-elite-pair",
+      "group": "L40",
+      "label": "rulebook elite-pair L40",
+      "level": 40,
+      "preset": "no-healer",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +22",
+        "Ranger": "weapon +22",
+        "Caster": "spell +10",
+        "Tank": "weapon +22"
+      },
+      "meanRounds": 3.004,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 82,
+      "defeat": 0
+    },
+    {
+      "scope": "L40-elite-pair",
+      "group": "L40",
+      "label": "rulebook elite-pair L40",
+      "level": 40,
+      "preset": "no-healer",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +33",
+        "Ranger": "weapon +33",
+        "Caster": "spell +15",
+        "Tank": "weapon +33"
+      },
+      "meanRounds": 2.342,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 82,
+      "defeat": 0
+    },
+    {
+      "scope": "L40-elite-pair",
+      "group": "L40",
+      "label": "rulebook elite-pair L40",
+      "level": 40,
+      "preset": "physical",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 5.17,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 81,
+      "defeat": 0
+    },
+    {
+      "scope": "L40-elite-pair",
+      "group": "L40",
+      "label": "rulebook elite-pair L40",
+      "level": 40,
+      "preset": "physical",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +7",
+        "Ranger": "weapon +7",
+        "Tank": "weapon +7",
+        "Support": "weapon +7"
+      },
+      "meanRounds": 4.208,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 77,
+      "defeat": 0
+    },
+    {
+      "scope": "L40-elite-pair",
+      "group": "L40",
+      "label": "rulebook elite-pair L40",
+      "level": 40,
+      "preset": "physical",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +15",
+        "Ranger": "weapon +15",
+        "Tank": "weapon +15",
+        "Support": "weapon +15"
+      },
+      "meanRounds": 3.534,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 47,
+        "fourPlus": 53
+      },
+      "partyHp": 76,
+      "defeat": 0
+    },
+    {
+      "scope": "L40-elite-pair",
+      "group": "L40",
+      "label": "rulebook elite-pair L40",
+      "level": 40,
+      "preset": "physical",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +22",
+        "Ranger": "weapon +22",
+        "Tank": "weapon +22",
+        "Support": "weapon +22"
+      },
+      "meanRounds": 3.11,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 89,
+        "fourPlus": 11
+      },
+      "partyHp": 76,
+      "defeat": 0
+    },
+    {
+      "scope": "L40-elite-pair",
+      "group": "L40",
+      "label": "rulebook elite-pair L40",
+      "level": 40,
+      "preset": "physical",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +33",
+        "Ranger": "weapon +33",
+        "Tank": "weapon +33",
+        "Support": "weapon +33"
+      },
+      "meanRounds": 3,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 81,
+      "defeat": 0
+    },
+    {
+      "scope": "L46-elite-pair",
+      "group": "L46",
+      "label": "rulebook elite-pair L46",
+      "level": 46,
+      "preset": "standard",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.618,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 39,
+        "fourPlus": 61
+      },
+      "partyHp": 80,
+      "defeat": 0
+    },
+    {
+      "scope": "L46-elite-pair",
+      "group": "L46",
+      "label": "rulebook elite-pair L46",
+      "level": 46,
+      "preset": "standard",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +9",
+        "Caster": "spell +5",
+        "Tank": "weapon +9",
+        "Support": "spell +5"
+      },
+      "meanRounds": 3.122,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 88,
+        "fourPlus": 12
+      },
+      "partyHp": 76,
+      "defeat": 0
+    },
+    {
+      "scope": "L46-elite-pair",
+      "group": "L46",
+      "label": "rulebook elite-pair L46",
+      "level": 46,
+      "preset": "standard",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +18",
+        "Caster": "spell +9",
+        "Tank": "weapon +18",
+        "Support": "spell +9"
+      },
+      "meanRounds": 3.006,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
+      "partyHp": 81,
+      "defeat": 0
+    },
+    {
+      "scope": "L46-elite-pair",
+      "group": "L46",
+      "label": "rulebook elite-pair L46",
+      "level": 46,
+      "preset": "standard",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +28",
+        "Caster": "spell +14",
+        "Tank": "weapon +28",
+        "Support": "spell +14"
+      },
+      "meanRounds": 3,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 82,
+      "defeat": 0
+    },
+    {
+      "scope": "L46-elite-pair",
+      "group": "L46",
+      "label": "rulebook elite-pair L46",
+      "level": 46,
+      "preset": "standard",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +41",
+        "Caster": "spell +21",
+        "Tank": "weapon +41",
+        "Support": "spell +21"
+      },
+      "meanRounds": 2.066,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 83,
+      "defeat": 0
+    },
+    {
+      "scope": "L46-elite-pair",
+      "group": "L46",
+      "label": "rulebook elite-pair L46",
+      "level": 46,
+      "preset": "double-caster",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.398,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 62,
+        "fourPlus": 38
+      },
+      "partyHp": 75,
+      "defeat": 0
+    },
+    {
+      "scope": "L46-elite-pair",
+      "group": "L46",
+      "label": "rulebook elite-pair L46",
+      "level": 46,
+      "preset": "double-caster",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +9",
+        "Caster": "spell +5",
+        "Caster II": "spell +5",
+        "Support": "spell +5"
+      },
+      "meanRounds": 3.06,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 94,
+        "fourPlus": 6
+      },
+      "partyHp": 79,
+      "defeat": 0
+    },
+    {
+      "scope": "L46-elite-pair",
+      "group": "L46",
+      "label": "rulebook elite-pair L46",
+      "level": 46,
+      "preset": "double-caster",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +18",
+        "Caster": "spell +9",
+        "Caster II": "spell +9",
+        "Support": "spell +9"
+      },
+      "meanRounds": 2.712,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
+      "partyHp": 84,
+      "defeat": 0
+    },
+    {
+      "scope": "L46-elite-pair",
+      "group": "L46",
+      "label": "rulebook elite-pair L46",
+      "level": 46,
+      "preset": "double-caster",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +28",
+        "Caster": "spell +14",
+        "Caster II": "spell +14",
+        "Support": "spell +14"
+      },
+      "meanRounds": 2.564,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 84,
+      "defeat": 0
+    },
+    {
+      "scope": "L46-elite-pair",
+      "group": "L46",
+      "label": "rulebook elite-pair L46",
+      "level": 46,
+      "preset": "double-caster",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +41",
+        "Caster": "spell +21",
+        "Caster II": "spell +21",
+        "Support": "spell +21"
+      },
+      "meanRounds": 2.038,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 87,
+      "defeat": 0
+    },
+    {
+      "scope": "L46-elite-pair",
+      "group": "L46",
+      "label": "rulebook elite-pair L46",
+      "level": 46,
+      "preset": "no-healer",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 4.098,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 72,
+      "defeat": 0
+    },
+    {
+      "scope": "L46-elite-pair",
+      "group": "L46",
+      "label": "rulebook elite-pair L46",
+      "level": 46,
+      "preset": "no-healer",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +9",
+        "Ranger": "weapon +9",
+        "Caster": "spell +5",
+        "Tank": "weapon +9"
+      },
+      "meanRounds": 3.392,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 61,
+        "fourPlus": 39
+      },
+      "partyHp": 77,
+      "defeat": 0
+    },
+    {
+      "scope": "L46-elite-pair",
+      "group": "L46",
+      "label": "rulebook elite-pair L46",
+      "level": 46,
+      "preset": "no-healer",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +18",
+        "Ranger": "weapon +18",
+        "Caster": "spell +9",
+        "Tank": "weapon +18"
+      },
+      "meanRounds": 3.014,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 99,
+        "fourPlus": 1
+      },
+      "partyHp": 83,
+      "defeat": 0
+    },
+    {
+      "scope": "L46-elite-pair",
+      "group": "L46",
+      "label": "rulebook elite-pair L46",
+      "level": 46,
+      "preset": "no-healer",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +28",
+        "Ranger": "weapon +28",
+        "Caster": "spell +14",
+        "Tank": "weapon +28"
+      },
+      "meanRounds": 3,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 83,
+      "defeat": 0
+    },
+    {
+      "scope": "L46-elite-pair",
+      "group": "L46",
+      "label": "rulebook elite-pair L46",
+      "level": 46,
+      "preset": "no-healer",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +41",
+        "Ranger": "weapon +41",
+        "Caster": "spell +21",
+        "Tank": "weapon +41"
+      },
+      "meanRounds": 2.342,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 84,
+      "defeat": 0
+    },
+    {
+      "scope": "L46-elite-pair",
+      "group": "L46",
+      "label": "rulebook elite-pair L46",
+      "level": 46,
+      "preset": "physical",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 5.216,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 85,
+      "defeat": 0
+    },
+    {
+      "scope": "L46-elite-pair",
+      "group": "L46",
+      "label": "rulebook elite-pair L46",
+      "level": 46,
+      "preset": "physical",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +9",
+        "Ranger": "weapon +9",
+        "Tank": "weapon +9",
+        "Support": "weapon +9"
+      },
+      "meanRounds": 4.186,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 80,
+      "defeat": 0
+    },
+    {
+      "scope": "L46-elite-pair",
+      "group": "L46",
+      "label": "rulebook elite-pair L46",
+      "level": 46,
+      "preset": "physical",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +18",
+        "Ranger": "weapon +18",
+        "Tank": "weapon +18",
+        "Support": "weapon +18"
+      },
+      "meanRounds": 3.432,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 57,
+        "fourPlus": 43
+      },
+      "partyHp": 78,
+      "defeat": 0
+    },
+    {
+      "scope": "L46-elite-pair",
+      "group": "L46",
+      "label": "rulebook elite-pair L46",
+      "level": 46,
+      "preset": "physical",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +28",
+        "Ranger": "weapon +28",
+        "Tank": "weapon +28",
+        "Support": "weapon +28"
+      },
+      "meanRounds": 3.066,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 93,
+        "fourPlus": 7
+      },
+      "partyHp": 80,
+      "defeat": 0
+    },
+    {
+      "scope": "L46-elite-pair",
+      "group": "L46",
+      "label": "rulebook elite-pair L46",
+      "level": 46,
+      "preset": "physical",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +41",
+        "Ranger": "weapon +41",
+        "Tank": "weapon +41",
+        "Support": "weapon +41"
+      },
+      "meanRounds": 2.994,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 83,
+      "defeat": 0
+    },
+    {
+      "scope": "L48-elite-pair",
+      "group": "L48",
+      "label": "rulebook elite-pair L48",
+      "level": 48,
+      "preset": "standard",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.658,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 35,
+        "fourPlus": 65
+      },
+      "partyHp": 82,
+      "defeat": 0
+    },
+    {
+      "scope": "L48-elite-pair",
+      "group": "L48",
+      "label": "rulebook elite-pair L48",
+      "level": 48,
+      "preset": "standard",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +10",
+        "Caster": "spell +5",
+        "Tank": "weapon +10",
+        "Support": "spell +5"
+      },
+      "meanRounds": 3.14,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 86,
+        "fourPlus": 14
+      },
+      "partyHp": 77,
+      "defeat": 0
+    },
+    {
+      "scope": "L48-elite-pair",
+      "group": "L48",
+      "label": "rulebook elite-pair L48",
+      "level": 48,
+      "preset": "standard",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +20",
+        "Caster": "spell +10",
+        "Tank": "weapon +20",
+        "Support": "spell +10"
+      },
+      "meanRounds": 3.004,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 82,
+      "defeat": 0
+    },
+    {
+      "scope": "L48-elite-pair",
+      "group": "L48",
+      "label": "rulebook elite-pair L48",
+      "level": 48,
+      "preset": "standard",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +30",
+        "Caster": "spell +15",
+        "Tank": "weapon +30",
+        "Support": "spell +15"
+      },
+      "meanRounds": 3,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 82,
+      "defeat": 0
+    },
+    {
+      "scope": "L48-elite-pair",
+      "group": "L48",
+      "label": "rulebook elite-pair L48",
+      "level": 48,
+      "preset": "standard",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +44",
+        "Caster": "spell +23",
+        "Tank": "weapon +44",
+        "Support": "spell +23"
+      },
+      "meanRounds": 2.058,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 84,
+      "defeat": 0
+    },
+    {
+      "scope": "L48-elite-pair",
+      "group": "L48",
+      "label": "rulebook elite-pair L48",
+      "level": 48,
+      "preset": "double-caster",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.382,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 64,
+        "fourPlus": 36
+      },
+      "partyHp": 77,
+      "defeat": 0
+    },
+    {
+      "scope": "L48-elite-pair",
+      "group": "L48",
+      "label": "rulebook elite-pair L48",
+      "level": 48,
+      "preset": "double-caster",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +10",
+        "Caster": "spell +5",
+        "Caster II": "spell +5",
+        "Support": "spell +5"
+      },
+      "meanRounds": 3.062,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 94,
+        "fourPlus": 6
+      },
+      "partyHp": 80,
+      "defeat": 0
+    },
+    {
+      "scope": "L48-elite-pair",
+      "group": "L48",
+      "label": "rulebook elite-pair L48",
+      "level": 48,
+      "preset": "double-caster",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +20",
+        "Caster": "spell +10",
+        "Caster II": "spell +10",
+        "Support": "spell +10"
+      },
+      "meanRounds": 2.724,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 86,
+      "defeat": 0
+    },
+    {
+      "scope": "L48-elite-pair",
+      "group": "L48",
+      "label": "rulebook elite-pair L48",
+      "level": 48,
+      "preset": "double-caster",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +30",
+        "Caster": "spell +15",
+        "Caster II": "spell +15",
+        "Support": "spell +15"
+      },
+      "meanRounds": 2.634,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 86,
+      "defeat": 0
+    },
+    {
+      "scope": "L48-elite-pair",
+      "group": "L48",
+      "label": "rulebook elite-pair L48",
+      "level": 48,
+      "preset": "double-caster",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +44",
+        "Caster": "spell +23",
+        "Caster II": "spell +23",
+        "Support": "spell +23"
+      },
+      "meanRounds": 2.05,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 88,
+      "defeat": 0
+    },
+    {
+      "scope": "L48-elite-pair",
+      "group": "L48",
+      "label": "rulebook elite-pair L48",
+      "level": 48,
+      "preset": "no-healer",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 4.09,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 73,
+      "defeat": 0
+    },
+    {
+      "scope": "L48-elite-pair",
+      "group": "L48",
+      "label": "rulebook elite-pair L48",
+      "level": 48,
+      "preset": "no-healer",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +10",
+        "Ranger": "weapon +10",
+        "Caster": "spell +5",
+        "Tank": "weapon +10"
+      },
+      "meanRounds": 3.378,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 62,
+        "fourPlus": 38
+      },
+      "partyHp": 77,
+      "defeat": 0
+    },
+    {
+      "scope": "L48-elite-pair",
+      "group": "L48",
+      "label": "rulebook elite-pair L48",
+      "level": 48,
+      "preset": "no-healer",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +20",
+        "Ranger": "weapon +20",
+        "Caster": "spell +10",
+        "Tank": "weapon +20"
+      },
+      "meanRounds": 3.004,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 84,
+      "defeat": 0
+    },
+    {
+      "scope": "L48-elite-pair",
+      "group": "L48",
+      "label": "rulebook elite-pair L48",
+      "level": 48,
+      "preset": "no-healer",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +30",
+        "Ranger": "weapon +30",
+        "Caster": "spell +15",
+        "Tank": "weapon +30"
+      },
+      "meanRounds": 2.95,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 84,
+      "defeat": 0
+    },
+    {
+      "scope": "L48-elite-pair",
+      "group": "L48",
+      "label": "rulebook elite-pair L48",
+      "level": 48,
+      "preset": "no-healer",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +44",
+        "Ranger": "weapon +44",
+        "Caster": "spell +23",
+        "Tank": "weapon +44"
+      },
+      "meanRounds": 2.34,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 84,
+      "defeat": 0
+    },
+    {
+      "scope": "L48-elite-pair",
+      "group": "L48",
+      "label": "rulebook elite-pair L48",
+      "level": 48,
+      "preset": "physical",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 5.214,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 85,
+      "defeat": 0
+    },
+    {
+      "scope": "L48-elite-pair",
+      "group": "L48",
+      "label": "rulebook elite-pair L48",
+      "level": 48,
+      "preset": "physical",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +10",
+        "Ranger": "weapon +10",
+        "Tank": "weapon +10",
+        "Support": "weapon +10"
+      },
+      "meanRounds": 4.132,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 80,
+      "defeat": 0
+    },
+    {
+      "scope": "L48-elite-pair",
+      "group": "L48",
+      "label": "rulebook elite-pair L48",
+      "level": 48,
+      "preset": "physical",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +20",
+        "Ranger": "weapon +20",
+        "Tank": "weapon +20",
+        "Support": "weapon +20"
+      },
+      "meanRounds": 3.176,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 82,
+        "fourPlus": 18
+      },
+      "partyHp": 79,
+      "defeat": 0
+    },
+    {
+      "scope": "L48-elite-pair",
+      "group": "L48",
+      "label": "rulebook elite-pair L48",
+      "level": 48,
+      "preset": "physical",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +30",
+        "Ranger": "weapon +30",
+        "Tank": "weapon +30",
+        "Support": "weapon +30"
+      },
+      "meanRounds": 3.02,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 98,
+        "fourPlus": 2
+      },
+      "partyHp": 82,
+      "defeat": 0
+    },
+    {
+      "scope": "L48-elite-pair",
+      "group": "L48",
+      "label": "rulebook elite-pair L48",
+      "level": 48,
+      "preset": "physical",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +44",
+        "Ranger": "weapon +44",
+        "Tank": "weapon +44",
+        "Support": "weapon +44"
+      },
+      "meanRounds": 2.81,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 84,
+      "defeat": 0
+    },
+    {
+      "scope": "L50-elite-pair",
+      "group": "L50",
+      "label": "rulebook elite-pair L50",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.614,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 39,
+        "fourPlus": 61
+      },
+      "partyHp": 82,
+      "defeat": 0
+    },
+    {
+      "scope": "L50-elite-pair",
+      "group": "L50",
+      "label": "rulebook elite-pair L50",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +11",
+        "Caster": "spell +5",
+        "Tank": "weapon +11",
+        "Support": "spell +5"
+      },
+      "meanRounds": 3.072,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 93,
+        "fourPlus": 7
+      },
+      "partyHp": 76,
+      "defeat": 0
+    },
+    {
+      "scope": "L50-elite-pair",
+      "group": "L50",
+      "label": "rulebook elite-pair L50",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +21",
+        "Caster": "spell +10",
+        "Tank": "weapon +21",
+        "Support": "spell +10"
+      },
+      "meanRounds": 3.002,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 82,
+      "defeat": 0
+    },
+    {
+      "scope": "L50-elite-pair",
+      "group": "L50",
+      "label": "rulebook elite-pair L50",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +32",
+        "Caster": "spell +15",
+        "Tank": "weapon +32",
+        "Support": "spell +15"
+      },
+      "meanRounds": 3,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 83,
+      "defeat": 0
+    },
+    {
+      "scope": "L50-elite-pair",
+      "group": "L50",
+      "label": "rulebook elite-pair L50",
+      "level": 50,
+      "preset": "standard",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +47",
+        "Caster": "spell +22",
+        "Tank": "weapon +47",
+        "Support": "spell +22"
+      },
+      "meanRounds": 2.02,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 84,
+      "defeat": 0
+    },
+    {
+      "scope": "L50-elite-pair",
+      "group": "L50",
+      "label": "rulebook elite-pair L50",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 3.256,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 75,
+        "fourPlus": 25
+      },
+      "partyHp": 78,
+      "defeat": 0
+    },
+    {
+      "scope": "L50-elite-pair",
+      "group": "L50",
+      "label": "rulebook elite-pair L50",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +11",
+        "Caster": "spell +5",
+        "Caster II": "spell +5",
+        "Support": "spell +5"
+      },
+      "meanRounds": 3.028,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 97,
+        "fourPlus": 3
+      },
+      "partyHp": 80,
+      "defeat": 0
+    },
+    {
+      "scope": "L50-elite-pair",
+      "group": "L50",
+      "label": "rulebook elite-pair L50",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +21",
+        "Caster": "spell +10",
+        "Caster II": "spell +10",
+        "Support": "spell +10"
+      },
+      "meanRounds": 2.726,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 88,
+      "defeat": 0
+    },
+    {
+      "scope": "L50-elite-pair",
+      "group": "L50",
+      "label": "rulebook elite-pair L50",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +32",
+        "Caster": "spell +15",
+        "Caster II": "spell +15",
+        "Support": "spell +15"
+      },
+      "meanRounds": 2.632,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 88,
+      "defeat": 0
+    },
+    {
+      "scope": "L50-elite-pair",
+      "group": "L50",
+      "label": "rulebook elite-pair L50",
+      "level": 50,
+      "preset": "double-caster",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +47",
+        "Caster": "spell +22",
+        "Caster II": "spell +22",
+        "Support": "spell +22"
+      },
+      "meanRounds": 2.018,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 88,
+      "defeat": 0
+    },
+    {
+      "scope": "L50-elite-pair",
+      "group": "L50",
+      "label": "rulebook elite-pair L50",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 4.038,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 73,
+      "defeat": 0
+    },
+    {
+      "scope": "L50-elite-pair",
+      "group": "L50",
+      "label": "rulebook elite-pair L50",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +11",
+        "Ranger": "weapon +11",
+        "Caster": "spell +5",
+        "Tank": "weapon +11"
+      },
+      "meanRounds": 3.202,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 80,
+        "fourPlus": 20
+      },
+      "partyHp": 78,
+      "defeat": 0
+    },
+    {
+      "scope": "L50-elite-pair",
+      "group": "L50",
+      "label": "rulebook elite-pair L50",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +21",
+        "Ranger": "weapon +21",
+        "Caster": "spell +10",
+        "Tank": "weapon +21"
+      },
+      "meanRounds": 3,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 84,
+      "defeat": 0
+    },
+    {
+      "scope": "L50-elite-pair",
+      "group": "L50",
+      "label": "rulebook elite-pair L50",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +32",
+        "Ranger": "weapon +32",
+        "Caster": "spell +15",
+        "Tank": "weapon +32"
+      },
+      "meanRounds": 2.89,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 84,
+      "defeat": 0
+    },
+    {
+      "scope": "L50-elite-pair",
+      "group": "L50",
+      "label": "rulebook elite-pair L50",
+      "level": 50,
+      "preset": "no-healer",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +47",
+        "Ranger": "weapon +47",
+        "Caster": "spell +22",
+        "Tank": "weapon +47"
+      },
+      "meanRounds": 2.22,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 84,
+      "defeat": 0
+    },
+    {
+      "scope": "L50-elite-pair",
+      "group": "L50",
+      "label": "rulebook elite-pair L50",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "basic",
+      "budgetPct": 0,
+      "magnitudes": {},
+      "meanRounds": 5.096,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 85,
+      "defeat": 0
+    },
+    {
+      "scope": "L50-elite-pair",
+      "group": "L50",
+      "label": "rulebook elite-pair L50",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "common",
+      "budgetPct": 5,
+      "magnitudes": {
+        "Striker": "weapon +11",
+        "Ranger": "weapon +11",
+        "Tank": "weapon +11",
+        "Support": "weapon +11"
+      },
+      "meanRounds": 4.036,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 0,
+        "fourPlus": 100
+      },
+      "partyHp": 78,
+      "defeat": 0
+    },
+    {
+      "scope": "L50-elite-pair",
+      "group": "L50",
+      "label": "rulebook elite-pair L50",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "uncommon",
+      "budgetPct": 10,
+      "magnitudes": {
+        "Striker": "weapon +21",
+        "Ranger": "weapon +21",
+        "Tank": "weapon +21",
+        "Support": "weapon +21"
+      },
+      "meanRounds": 3.058,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 94,
+        "fourPlus": 6
+      },
+      "partyHp": 78,
+      "defeat": 0
+    },
+    {
+      "scope": "L50-elite-pair",
+      "group": "L50",
+      "label": "rulebook elite-pair L50",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "rare",
+      "budgetPct": 15,
+      "magnitudes": {
+        "Striker": "weapon +32",
+        "Ranger": "weapon +32",
+        "Tank": "weapon +32",
+        "Support": "weapon +32"
+      },
+      "meanRounds": 3.002,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 83,
+      "defeat": 0
+    },
+    {
+      "scope": "L50-elite-pair",
+      "group": "L50",
+      "label": "rulebook elite-pair L50",
+      "level": 50,
+      "preset": "physical",
+      "rarity": "legendary",
+      "budgetPct": 22.5,
+      "magnitudes": {
+        "Striker": "weapon +47",
+        "Ranger": "weapon +47",
+        "Tank": "weapon +47",
+        "Support": "weapon +47"
+      },
+      "meanRounds": 2.364,
+      "bands": {
+        "oneRound": 0,
+        "twoToThree": 100,
+        "fourPlus": 0
+      },
+      "partyHp": 83,
+      "defeat": 0
+    }
+  ]
+}
