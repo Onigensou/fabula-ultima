@@ -147,6 +147,22 @@ t("runArm reports party-wide damage taken per round", () => {
   const sum = p.reduce((s, m) => s + arm.members[m.name].takenPerRound.mean, 0);
   assert.ok(Math.abs(arm.partyTakenPerRound.mean - sum) < 1e-9, `${arm.partyTakenPerRound.mean} vs ${sum}`);
 });
+t("neutralScopes: one rulebook scope per level, sharing a slope key across encounter kinds", () => {
+  const normal = RS.neutralScopes([20, 41], { defense: 13 });
+  assert.deepStrictEqual(normal.map((s) => [s.id, s.slopeKey, s.level, s.enemies.length]), [["L20", "L20", 20, 4], ["L41", "L41", 41, 4]]);
+  assert.ok(normal[1].enemies.every((e) => e.def === 13 && e.mdef === 13));
+  const elites = RS.neutralScopes([41], { kind: "elite-pair" });
+  assert.deepStrictEqual([elites[0].id, elites[0].slopeKey, elites[0].enemies.length], ["L41-elite-pair", "L41", 2]);
+  assert.strictEqual(elites[0].conflictEvent, null);
+});
+t("runArm passes the scope's conflict event into every battle", () => {
+  const { resolveEvent } = require("../lib/conflict-events");
+  const p = party();
+  const enemies = buildNeutralEncounter("normal", { level: 41 });
+  const calm = RS.runArm(p, enemies, { runs: 20, seed: "ref-storm" });
+  const storm = RS.runArm(p, enemies, { runs: 20, seed: "ref-storm", conflictEvent: resolveEvent("lightning-storm") });
+  assert.notStrictEqual(storm.partyTakenPerRound.mean, calm.partyTakenPerRound.mean, "the storm should change what the party takes");
+});
 t("the ladder file loads and every effect is known", () => {
   const items = RS.loadReferenceSet();
   assert.strictEqual(items.length, 24);

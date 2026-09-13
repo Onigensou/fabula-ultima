@@ -3,8 +3,8 @@
 //
 // Mindscape — full-loadout band test per rarity (equipment guide Part 5).  READ-ONLY.
 //
-//   node bin/reference-loadout.js [--runs 1000] [--seed reference-loadout]
-//        [--ladder expectations/reference-set.json] [--out expectations/reference-loadout.json]
+//   node bin/reference-loadout.js --ladder <ladder.json> [--runs 1000] [--seed reference-loadout]
+//        [--out <file.json>]
 //
 // The rarity budgets are "% of one character's output per fight" per ITEM. A character
 // wears three slots, so a full loadout at one rarity is worth 3 x the budget. This asks the
@@ -12,19 +12,20 @@
 // rarity, do standard fights stay inside the 2-3 round band, or collapse to 1 round?
 //
 // Each member's whole loadout budget is spent on OFFENSE — the upper bound, because
-// offense is what shortens fights and the measured defensive curves are near zero at this
-// table's accuracies. The magnitude comes from the MEASURED price curve (the ladder's
-// sim % per point at that level, fitted through zero across presets and magnitudes):
-// spell damage for members whose kit casts, weapon damage for everyone else.
-// Enemies: the neutral encounters at the ladder's DEF/MDEF, so the curves apply.
-// The game must be CLOSED (basic-gear catalogue).
+// offense is what shortens fights. The magnitude comes from the ladder's MEASURED price
+// curve for the same scope (sim % per point, fitted through zero across presets and
+// magnitudes): spell damage for members whose kit casts, weapon damage for everyone else.
+//
+// The scopes come from the ladder file itself: an encounter-set ladder re-runs the same
+// live spawn groups with their conflict events; a neutral ladder re-runs its rulebook
+// levels, adding the elite-pair encounter at the same levels (same curves).
+// The game must be CLOSED.
 
 const fs = require("fs");
 const path = require("path");
 const { loadWorldItems } = require("../lib/world-items");
 const { loadWorldFolders, basicCatalogue } = require("../lib/baseline-gear");
 const { buildArchetypeParty, PRESETS, DEFAULT_SKILL_LAYER_K } = require("../lib/archetype-party");
-const { buildNeutralEncounter, KINDS } = require("../lib/neutral-encounter");
 const { applySwaps } = require("../lib/loadout-swap");
 const { extractActions } = require("../lib/skills");
 const RS = require("../lib/reference-set");
@@ -38,16 +39,17 @@ function arg(name, fallback) {
 }
 
 // % of output per point of magnitude, least squares through zero over every measured row.
+// Keyed by scope; ladders written before scopes existed key by level.
 function slopes(ladder) {
-  const out = {};
+  const acc = {};
   for (const r of ladder.rows) {
     if (r.skipped || r.simPct == null || !["weapon-damage", "spell-damage"].includes(r.effect)) continue;
-    const k = `${r.effect}@${r.level}`;
-    out[k] = out[k] ?? { xy: 0, xx: 0 };
-    out[k].xy += r.simPct * r.magnitude;
-    out[k].xx += r.magnitude * r.magnitude;
+    const key = `${r.effect}@${ladder.mode === "encounter-set" ? r.scope : `L${r.level}`}`;
+    acc[key] = acc[key] ?? { xy: 0, xx: 0 };
+    acc[key].xy += r.simPct * r.magnitude;
+    acc[key].xx += r.magnitude * r.magnitude;
   }
-  return Object.fromEntries(Object.entries(out).map(([k, v]) => [k, v.xy / v.xx]));
+  return Object.fromEntries(Object.entries(acc).map(([k, v]) => [k, v.xy / v.xx]));
 }
 
 function casts(member) {
@@ -55,62 +57,77 @@ function casts(member) {
 }
 
 async function main() {
+  const ladderFile = arg("--ladder", null);
+  if (!ladderFile) throw new Error("--ladder <reference-set output json> is required");
   const runs = Number(arg("--runs", 1000));
   const seed = arg("--seed", "reference-loadout");
-  const ladderFile = arg("--ladder", "expectations/reference-set.json");
   const out = arg("--out", null);
 
   const ladder = JSON.parse(fs.readFileSync(path.resolve(ladderFile), "utf8"));
   const slope = slopes(ladder);
-  const defense = ladder.enemyDefense === "dice" ? null : Number(ladder.enemyDefense);
   const power = ladder.power ?? "table";
+  let scopes;
+  if (ladder.mode === "encounter-set") {
+    scopes = await RS.loadEncounterSet(ladder.encounterSet);
+  } else {
+    const defense = ladder.enemyDefense == null || ladder.enemyDefense === "dice" ? null : Number(ladder.enemyDefense);
+    scopes = [...RS.neutralScopes(ladder.levels, { defense }), ...RS.neutralScopes(ladder.levels, { defense, kind: "elite-pair" })];
+  }
 
   const worldItems = await loadWorldItems();
   const folders = await loadWorldFolders();
   const catalogue = basicCatalogue(worldItems, folders);
 
   const rows = [];
-  for (const level of ladder.levels) {
-    for (const kind of Object.keys(KINDS)) {
-      const enemies = buildNeutralEncounter(kind, { level, defense });
-      for (const preset of Object.keys(PRESETS)) {
-        const baseline = RS.runArm(buildArchetypeParty(preset, { level, power, catalogue }), enemies, { runs, seed });
-        rows.push({ level, kind, preset, rarity: "basic", budgetPct: 0, magnitudes: {}, ...summary(baseline) });
-        for (const [rarity, budget] of Object.entries(RARITY_BUDGET)) {
-          const party = buildArchetypeParty(preset, { level, power, catalogue });
-          const magnitudes = {};
-          for (const m of party) {
-            const effect = casts(m) ? "spell-damage" : "weapon-damage";
-            const perPoint = slope[`${effect}@${level}`];
-            if (!(perPoint > 0)) throw new Error(`no measured ${effect} curve at L${level} in ${ladderFile}`);
-            const magnitude = Math.max(1, Math.round((SLOTS_PER_CHARACTER * budget) / perPoint));
-            magnitudes[m.name] = `${effect === "spell-damage" ? "spell" : "weapon"} +${magnitude}`;
-            const entry = { id: `loadout-${rarity}`, effect, magnitude, slot: effect === "spell-damage" ? "acc1" : "main" };
-            applySwaps(m, [{ slot: entry.slot, source: RS.makeReferenceSource(m, entry) }], { worldItems });
-          }
-          rows.push({ level, kind, preset, rarity, budgetPct: budget, magnitudes, ...summary(RS.runArm(party, enemies, { runs, seed })) });
+  for (const scope of scopes) {
+    const arm = { runs, seed, conflictEvent: scope.conflictEvent };
+    for (const preset of Object.keys(PRESETS)) {
+      const baseline = RS.runArm(buildArchetypeParty(preset, { level: scope.level, power, catalogue }), scope.enemies, arm);
+      rows.push({ scope: scope.id, group: scope.group, label: scope.label, level: scope.level, preset,
+        rarity: "basic", budgetPct: 0, magnitudes: {}, ...summary(baseline) });
+      for (const [rarity, budget] of Object.entries(RARITY_BUDGET)) {
+        const party = buildArchetypeParty(preset, { level: scope.level, power, catalogue });
+        const magnitudes = {};
+        for (const m of party) {
+          const effect = casts(m) ? "spell-damage" : "weapon-damage";
+          const perPoint = slope[`${effect}@${scope.slopeKey}`];
+          if (!(perPoint > 0)) throw new Error(`no positive measured ${effect} curve for ${scope.slopeKey} in ${ladderFile}`);
+          const magnitude = Math.max(1, Math.round((SLOTS_PER_CHARACTER * budget) / perPoint));
+          magnitudes[m.name] = `${effect === "spell-damage" ? "spell" : "weapon"} +${magnitude}`;
+          const entry = { id: `loadout-${rarity}`, effect, magnitude, slot: effect === "spell-damage" ? "acc1" : "main" };
+          applySwaps(m, [{ slot: entry.slot, source: RS.makeReferenceSource(m, entry) }], { worldItems });
         }
+        rows.push({ scope: scope.id, group: scope.group, label: scope.label, level: scope.level, preset,
+          rarity, budgetPct: budget, magnitudes, ...summary(RS.runArm(party, scope.enemies, arm)) });
       }
     }
   }
 
-  console.log(`\nFull-loadout band test — ${power} power (k ${DEFAULT_SKILL_LAYER_K}), enemies at ${defense == null ? "rulebook DEF/MDEF" : `DEF/MDEF ${defense}`}, ${runs} runs per row`);
+  console.log(`\nFull-loadout band test — ${power} power (k ${DEFAULT_SKILL_LAYER_K}), ladder ${ladderFile}, ${runs} runs per row`);
   console.log(`Every member wears ${SLOTS_PER_CHARACTER} x the rarity budget, all as offense (upper bound). Model rounds: about one long vs live.\n`);
-  for (const kind of Object.keys(KINDS)) {
-    console.log(`### ${kind}\n`);
-    console.log("| Level | Preset | Loadout | Mean rounds | 1 / 2–3 / 4+ | Party HP left | Defeat | Per-member offense |");
-    console.log("|---|---|---|---|---|---|---|---|");
-    for (const r of rows.filter((x) => x.kind === kind)) {
-      console.log(`| ${r.level} | ${r.preset} | ${r.rarity}${r.budgetPct ? ` (3×${r.budgetPct}%)` : ""} | ${r.meanRounds.toFixed(2)} `
-        + `| ${r.bands.oneRound} / ${r.bands.twoToThree} / ${r.bands.fourPlus} | ${r.partyHp}% | ${r.defeat}% `
-        + `| ${Object.values(r.magnitudes).join(", ") || "—"} |`);
+  const rarities = ["basic", ...Object.keys(RARITY_BUDGET)];
+  for (const scope of scopes) {
+    console.log(`### ${scope.id} — ${scope.label} (L${scope.level}${scope.conflictEventName ? `, ${scope.conflictEventName}` : ""})\n`);
+    console.log(`| Preset | ${rarities.map((r) => `${r} rounds · 1/2–3/4+`).join(" | ")} |`);
+    console.log(`|---|${rarities.map(() => "---").join("|")}|`);
+    for (const preset of Object.keys(PRESETS)) {
+      const cells = rarities.map((rar) => {
+        const r = rows.find((x) => x.scope === scope.id && x.preset === preset && x.rarity === rar);
+        return `${r.meanRounds.toFixed(2)} · ${r.bands.oneRound}/${r.bands.twoToThree}/${r.bands.fourPlus}${r.defeat ? ` · ${r.defeat}% loss` : ""}`;
+      });
+      console.log(`| ${preset} | ${cells.join(" | ")} |`);
     }
     console.log("");
   }
+  const one = rows.filter((r) => r.bands.oneRound > 0);
+  console.log(`rows with any 1-round fights: ${one.length} of ${rows.length}${one.length ? ` (max ${Math.max(...one.map((r) => r.bands.oneRound))}%)` : ""}`);
+
   if (out) {
-    fs.writeFileSync(path.resolve(out), `${JSON.stringify({ id: "reference-loadout", capturedAt: new Date().toISOString().slice(0, 10),
-      runs, seed, power, k: DEFAULT_SKILL_LAYER_K, enemyDefense: defense ?? "dice", budgets: RARITY_BUDGET,
-      slopes: slope, rows }, null, 2)}\n`);
+    fs.writeFileSync(path.resolve(out), `${JSON.stringify({
+      id: "reference-loadout", capturedAt: new Date().toISOString().slice(0, 10), runs, seed, power, k: DEFAULT_SKILL_LAYER_K,
+      ladder: ladderFile, mode: ladder.mode ?? "neutral", budgets: RARITY_BUDGET, slopes: slope,
+      scopes: scopes.map((s) => ({ id: s.id, group: s.group, label: s.label, level: s.level, conflictEvent: s.conflictEventName })),
+      rows }, null, 2)}\n`);
     console.log(`wrote ${path.resolve(out)}`);
   }
 }

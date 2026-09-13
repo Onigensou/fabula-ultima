@@ -1,0 +1,18 @@
+{
+  "_comment": "The LIVE environment for equipment balance: 13 non-boss spawn groups copied verbatim from the world's Encounter roll tables (The Legend of Dragonslayer / <dungeon> / Encounter). Bosses and solo multi-activation monsters are excluded (Asura, Carlbero, Geist, Wandering Flame). The party's level is the group's highest monster level, capped at 50 — the rulebook's 'within a few levels' normal fight. Valley of the Dragon rows carry the Lightning Storm, which that roster is built around. Measured by bin/reference-set.js --encounter-set and bin/reference-loadout.js; the neutral rulebook encounters stay the comparison base.",
+  "encounters": [
+    { "id": "wyrm-1",   "dungeon": "The Wyrmwood",        "level": 40, "enemies": ["Centuaros", "Inferex"] },
+    { "id": "wyrm-2",   "dungeon": "The Wyrmwood",        "level": 40, "enemies": ["Fire Slime", "Inferex", "Fire Slime"] },
+    { "id": "wyrm-3",   "dungeon": "The Wyrmwood",        "level": 35, "enemies": ["Pyrefly", "Salamander", "Dryad"] },
+    { "id": "wyrm-4",   "dungeon": "The Wyrmwood",        "level": 35, "enemies": ["Hellhound", "Salamander", "Marigold"] },
+    { "id": "temple-1", "dungeon": "Ancient Temple",      "level": 38, "enemies": ["O'zealot", "O'lmek", "O'zealot"] },
+    { "id": "temple-2", "dungeon": "Ancient Temple",      "level": 40, "enemies": ["Salamander", "Dryad", "Inferex"] },
+    { "id": "valley-1", "dungeon": "Valley of the Dragon", "level": 50, "enemies": ["Skizzik", "Kirin", "Skizzik"], "conflictEvent": "lightning-storm" },
+    { "id": "valley-2", "dungeon": "Valley of the Dragon", "level": 50, "enemies": ["Ampere", "Mana Ray", "Kirin"], "conflictEvent": "lightning-storm" },
+    { "id": "valley-3", "dungeon": "Valley of the Dragon", "level": 48, "enemies": ["Drakoza", "Skizzik"], "conflictEvent": "lightning-storm" },
+    { "id": "valley-4", "dungeon": "Valley of the Dragon", "level": 46, "enemies": ["Mist Dragon", "Obsidrax"], "conflictEvent": "lightning-storm" },
+    { "id": "fafnir-1", "dungeon": "Fafnir Castle",       "level": 50, "enemies": ["Imp", "Dragon Guard", "Imp"] },
+    { "id": "fafnir-2", "dungeon": "Fafnir Castle",       "level": 50, "enemies": ["Dire Orc", "Death Gazer", "Dire Orc"] },
+    { "id": "fafnir-3", "dungeon": "Fafnir Castle",       "level": 50, "enemies": ["Succubus", "Iron Colossus", "Succubus"] }
+  ]
+}

@@ -1,6 +1,6 @@
 "use strict";
 //
-// Mindscape — the vanilla equipment reference ladder (equipment guide Part 8).
+// Mindscape — the vanilla equipment reference ladder (equipment guide Parts 8 and 10).
 //
 // Each reference item is the wearer's OWN basic item (or an empty accessory slot) plus a
 // single effect. It is measured twice on the same archetype party, level, encounter and
@@ -18,10 +18,13 @@
 // front of MORE hits. Its own damage taken can stay flat while the party takes less — the
 // wearer-only number undercounts exactly the characters defence items are built for.
 //
-// Beside each measurement sits the guide's PAPER price for the same item, so the ladder
-// answers "is the pricing table right?" row by row. Defensive paper prices need the
-// wearer's exposure (how much damage aimed at DEF/MDEF they take), which the guide leaves
-// open; it is taken from the baseline run and labelled as such.
+// SCOPES — what the items are measured against:
+//   neutral        rulebook NPC encounters at chosen levels (the comparison BASE)
+//   encounter set  real spawn groups from the world's Encounter tables, each at its own
+//                  party level, with its dungeon's conflict event (the LIVE environment)
+//
+// Beside each measurement sits the guide's PAPER price for the same item. Defensive paper
+// prices need the wearer's exposure (damage aimed at DEF/MDEF), taken from the baseline.
 
 const fs = require("fs");
 const path = require("path");
@@ -32,9 +35,9 @@ const { currentSlotItems } = require("./loadout-swap");
 const SPEC_FILE = path.join(__dirname, "..", "specs", "equipment", "reference-set.json");
 
 const GUIDE = Object.freeze({
-  hitRate: 0.49,           // Part 4 default target, DEF 13
-  accuracyPerPoint: 0.17,  // +1 accuracy = +17% of affected damage at DEF 13
-  defensePerPoint: 0.175,  // +1 DEF/MDEF = -15-20% of damage aimed at that defence
+  hitRate: 0.49,           // Part 4 default target, DEF 13 (pre-P1 pricing, kept for the paper column)
+  accuracyPerPoint: 0.17,  // +1 accuracy = +17% of affected damage at DEF 13 (pre-P2)
+  defensePerPoint: 0.175,  // +1 DEF/MDEF = -15-20% of damage aimed at that defence (pre-P4)
   rsShare: 0.5,            // Resistance halves the damage it applies to
   actionsPerFight: 2.5,
 });
@@ -54,6 +57,59 @@ function loadReferenceSet(file = SPEC_FILE) {
     if (!(Number(it.magnitude) > 0)) throw new Error(`Mindscape: reference item "${it.id}" needs a magnitude above 0`);
   }
   return doc.items;
+}
+
+// ── Scopes ──────────────────────────────────────────────────────────────────
+// Neutral rulebook encounters, one per level: the comparison base.
+function neutralScopes(levels, { defense = null, kind = "normal" } = {}) {
+  const { buildNeutralEncounter } = require("./neutral-encounter");
+  return levels.map((level) => ({
+    id: `L${level}${kind === "normal" ? "" : `-${kind}`}`, slopeKey: `L${level}`, group: `L${level}`,
+    label: `rulebook ${kind} L${level}${defense != null ? ` (DEF/MDEF ${defense})` : ""}`,
+    level, enemies: buildNeutralEncounter(kind, { level, defense }),
+    conflictEvent: null, conflictEventName: null, unmodelled: [],
+  }));
+}
+
+// Real spawn groups from an encounter-set file (specs/encounters/*.json): the live
+// environment. World monsters are loaded once, by exact name; a missing name refuses the
+// whole set rather than quietly running a smaller fight. Each scope carries the passives
+// the model does NOT simulate, so a reader can see what a result leaves out.
+async function loadEncounterSet(file) {
+  const { loadAll } = require("./load-actors");
+  const { resolveEvent } = require("./conflict-events");
+  const RX = require("./reactions");
+  const { extractActions } = require("./skills");
+
+  const abs = path.resolve(file);
+  const doc = JSON.parse(fs.readFileSync(abs, "utf8"));
+  const all = await loadAll();
+  const byName = new Map();
+  for (const a of all) {
+    if (!a.isNpc) continue;
+    const k = String(a.name ?? "").trim().toLowerCase();
+    if (!byName.has(k)) byName.set(k, a);
+  }
+  const missing = [];
+  const scopes = (doc.encounters ?? []).map((e) => {
+    const enemies = e.enemies.map((n) => {
+      const m = byName.get(String(n).trim().toLowerCase());
+      if (!m) missing.push(`${e.id}: "${n}"`);
+      return m;
+    });
+    if (!Number.isInteger(e.level) || e.level < 5 || e.level > 50) missing.push(`${e.id}: level ${e.level} is not 5-50`);
+    const present = enemies.filter(Boolean);
+    const unmodelled = [...new Set(present.flatMap((m) =>
+      RX.undeclaredReactions(extractActions(m).passives).map((x) => `${m.name}: ${x}`)))];
+    return {
+      id: e.id, slopeKey: e.id, group: e.dungeon, label: `${e.dungeon} — ${e.enemies.join(", ")}`,
+      level: e.level, enemies: present,
+      conflictEvent: e.conflictEvent ? resolveEvent(e.conflictEvent) : null,
+      conflictEventName: e.conflictEvent ?? null, unmodelled,
+    };
+  });
+  if (missing.length) throw new Error(`Mindscape: encounter set ${abs} does not resolve:\n  · ${missing.join("\n  · ")}`);
+  return scopes;
 }
 
 // ── The item ────────────────────────────────────────────────────────────────
@@ -122,20 +178,20 @@ function meanSe(xs) {
 }
 
 // One arm: per-member samples and party totals, one sample per run.
-function runArm(party, enemies, { runs, seed, expectedRounds = 10 }) {
+function runArm(party, enemies, { runs, seed, expectedRounds = 10, conflictEvent = null }) {
   const members = new Map(party.map((p) => [p.name, { perAction: [], takenPerRound: [], defPerRound: [], mdefPerRound: [], downs: 0 }]));
   const partyTaken = [];
   const rounds = [];
   let defeats = 0, hp = 0;
   for (let i = 0; i < runs; i++) {
-    const r = runBattle({ party, enemies, rng: new Rng(`${seed}:${i}`), expectedRounds });
+    const r = runBattle({ party, enemies, rng: new Rng(`${seed}:${i}`), expectedRounds, conflictEvent });
     rounds.push(r.rounds);
     hp += r.partyHpRemaining ?? 0;
     if (r.outcome === "defeat" || r.outcome === "mutual-destruction") defeats++;
     let taken = 0;
     for (const c of r.combatants ?? []) {
       const m = members.get(c.name);
-      if (!m) continue;
+      if (!m || c.side !== "party") continue;
       taken += c.damageTaken ?? 0;
       const actions = (c.baseActionsTaken ?? 0) + (c.grantedActionsTaken ?? 0);
       if (actions > 0) m.perAction.push((c.damageDealt ?? 0) / actions);
@@ -186,7 +242,8 @@ function pickWearer(party, entry, baseline) {
   throw new Error(`Mindscape: unknown reference wearer "${entry.wearer}"`);
 }
 
-// Paper price (guide Part 4) in % of output, from the baseline's exposure where needed.
+// Paper price (guide Part 4, pre-correction) in % of output, from the baseline's exposure
+// where needed. Kept as the reference column the corrections were measured against.
 function paperValue(entry, level, base) {
   const n = Number(entry.magnitude);
   switch (entry.effect) {
@@ -200,7 +257,6 @@ function paperValue(entry, level, base) {
     case "magic-defense":
       return (100 * n * GUIDE.defensePerPoint * (base.mdefPerRound.mean ?? 0)) / hpPerBA(level);
     case "physical-resistance":
-      // The neutral encounter's damage is all physical: full uptime.
       return (100 * GUIDE.rsShare * (base.takenPerRound.mean ?? 0)) / hpPerBA(level);
     case "max-hp":
       return (100 * n) / hpPerBA(level) / GUIDE.actionsPerFight;
@@ -232,5 +288,6 @@ function simValue(entry, level, base, item, arms = null) {
 
 module.exports = {
   GUIDE, EFFECTS, SPEC_FILE, BA, hpPerBA,
-  loadReferenceSet, makeReferenceSource, runArm, pickWearer, paperValue, simValue, meanSe,
+  loadReferenceSet, neutralScopes, loadEncounterSet,
+  makeReferenceSource, runArm, pickWearer, paperValue, simValue, meanSe,
 };
