@@ -182,10 +182,12 @@ function runArm(party, enemies, { runs, seed, expectedRounds = 10, conflictEvent
   const members = new Map(party.map((p) => [p.name, { perAction: [], takenPerRound: [], defPerRound: [], mdefPerRound: [], downs: 0 }]));
   const partyTaken = [];
   const rounds = [];
+  const wonRounds = [];
   let defeats = 0, hp = 0;
   for (let i = 0; i < runs; i++) {
     const r = runBattle({ party, enemies, rng: new Rng(`${seed}:${i}`), expectedRounds, conflictEvent });
     rounds.push(r.rounds);
+    if (r.outcome === "victory") wonRounds.push(r.rounds);
     hp += r.partyHpRemaining ?? 0;
     if (r.outcome === "defeat" || r.outcome === "mutual-destruction") defeats++;
     let taken = 0;
@@ -212,12 +214,17 @@ function runArm(party, enemies, { runs, seed, expectedRounds = 10, conflictEvent
       downRate: m.downs / runs,
     };
   }
-  const pct = (fn) => Math.round((rounds.filter(fn).length / runs) * 100);
+  // Bands are shares of ALL fights. `bands` counts every outcome; `wonBands` only victories,
+  // because "1 round = too easy" is about wins — a party wiped in one round is not easy.
+  const bandsOf = (xs) => {
+    const pct = (fn) => Math.round((xs.filter(fn).length / runs) * 100);
+    return { oneRound: pct((x) => x <= 1), twoToThree: pct((x) => x >= 2 && x <= 3), fourPlus: pct((x) => x >= 4) };
+  };
   return {
     members: summary, partyTakenPerRound: meanSe(partyTaken),
     defeatRate: defeats / runs, partyHp: hp / runs,
     meanRounds: rounds.reduce((a, b) => a + b, 0) / runs,
-    bands: { oneRound: pct((x) => x <= 1), twoToThree: pct((x) => x >= 2 && x <= 3), fourPlus: pct((x) => x >= 4) },
+    bands: bandsOf(rounds), wonBands: bandsOf(wonRounds),
   };
 }
 

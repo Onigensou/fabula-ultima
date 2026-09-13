@@ -118,14 +118,15 @@ async function main() {
     for (const preset of Object.keys(PRESETS)) {
       const cells = rarities.map((rar) => {
         const r = rows.find((x) => x.scope === scope.id && x.preset === preset && x.rarity === rar);
-        return `${r.meanRounds.toFixed(2)} · ${r.bands.oneRound}/${r.bands.twoToThree}/${r.bands.fourPlus}${r.defeat ? ` · ${r.defeat}% loss` : ""}`;
+        return `${r.meanRounds.toFixed(2)} · ${r.bands.oneRound}/${r.bands.twoToThree}/${r.bands.fourPlus}${r.defeat ? ` · ${r.defeat}% loss` : ""}${r.wonBands.oneRound ? ` · won in 1: ${r.wonBands.oneRound}%` : ""}`;
       });
       console.log(`| ${preset} | ${cells.join(" | ")} |`);
     }
     console.log("");
   }
-  const one = rows.filter((r) => r.bands.oneRound > 0);
-  console.log(`rows with any 1-round fights: ${one.length} of ${rows.length}${one.length ? ` (max ${Math.max(...one.map((r) => r.bands.oneRound))}%)` : ""}`);
+  // "Too easy" means WON in one round; a party wiped in one round is the opposite problem.
+  const one = rows.filter((r) => r.wonBands.oneRound > 0);
+  console.log(`rows with any fights won in 1 round: ${one.length} of ${rows.length}${one.length ? ` (max ${Math.max(...one.map((r) => r.wonBands.oneRound))}%)` : ""}`);
 
   if (out) {
     fs.writeFileSync(path.resolve(out), `${JSON.stringify({
@@ -139,7 +140,7 @@ async function main() {
 
 function summary(arm) {
   return {
-    meanRounds: arm.meanRounds, bands: arm.bands,
+    meanRounds: arm.meanRounds, bands: arm.bands, wonBands: arm.wonBands,
     partyHp: Math.round(arm.partyHp * 100), defeat: Math.round(arm.defeatRate * 100),
   };
 }

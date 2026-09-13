@@ -147,6 +147,17 @@ t("runArm reports party-wide damage taken per round", () => {
   const sum = p.reduce((s, m) => s + arm.members[m.name].takenPerRound.mean, 0);
   assert.ok(Math.abs(arm.partyTakenPerRound.mean - sum) < 1e-9, `${arm.partyTakenPerRound.mean} vs ${sum}`);
 });
+t("runArm splits fight length by outcome: won bands never exceed all-fight bands", () => {
+  const p = party();
+  const arm = RS.runArm(p, buildNeutralEncounter("normal", { level: 41 }), { runs: 40, seed: "ref-won" });
+  for (const band of ["oneRound", "twoToThree", "fourPlus"]) {
+    assert.ok(arm.wonBands[band] <= arm.bands[band], `${band}: won ${arm.wonBands[band]} > all ${arm.bands[band]}`);
+  }
+  const won = arm.wonBands.oneRound + arm.wonBands.twoToThree + arm.wonBands.fourPlus;
+  // Overtime and inconclusive fights are neither won nor lost, so won <= not-defeated.
+  assert.ok(won <= 100 * (1 - arm.defeatRate) + 3, `won ${won}% vs ${100 * (1 - arm.defeatRate)}% not defeated`);
+  assert.ok(won > 0, "the L41 standard party wins some rulebook fights");
+});
 t("neutralScopes: one rulebook scope per level, sharing a slope key across encounter kinds", () => {
   const normal = RS.neutralScopes([20, 41], { defense: 13 });
   assert.deepStrictEqual(normal.map((s) => [s.id, s.slopeKey, s.level, s.enemies.length]), [["L20", "L20", 20, 4], ["L41", "L41", 41, 4]]);
