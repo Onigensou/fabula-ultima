@@ -536,6 +536,33 @@ defence, resistances and reduction never touched a protected hit. Measured on th
 calibration pair: Blanche 30.9 → 11.9 damage taken per round; party HP left 50% → 60%
 (`expectations/inferex-centuaros.json` → `modelHistory`). Test: `test/protect.test.js`.
 
+## Part 6i — Equipment reference ladder and loadout band test (added 2026-09-13)
+
+Two read-only harnesses that price equipment against blank-slate archetypes (Part 6g). The
+results live in equipment guide Part 10.
+
+- **`bin/reference-set.js`** measures every item in `specs/equipment/reference-set.json`
+  (one effect on the wearer's own basic item) as an A/B on each preset × level, same
+  encounter and seed.
+  - **Offense** = extra damage per wearer action ÷ BA(L).
+  - **Defense** = damage prevented per round **party-wide** ÷ HP-per-BA(L). The wearer-only
+    figure is kept as `wearerPct`, because a protector with more DEF absorbs more hits.
+  - **Max HP** = survival deltas.
+
+  Paper prices from guide Part 4 sit beside every row, with 95% margins. Enemy DEF/MDEF
+  defaults to 13 (the guide's design point); `--enemy-defense dice` is the rulebook check.
+- **Wearers:**
+  - the role named in the item (striker / caster / tank …)
+  - `most-hit-def` / `most-hit-mdef`: whoever takes the most DEF- / MDEF-rolled damage in
+    the baseline
+  - `most-hit`: whoever takes the most damage overall
+- **`bin/reference-loadout.js`** gives every member a whole loadout (3 × the rarity budget)
+  as offense, sized from the ladder's measured curves, and reports the fight-length bands per
+  rarity.
+
+Damage taken is tracked per combatant and split by the defence rolled against (`damageTaken`,
+`damageTakenBy`), which the defensive prices need.
+
 ## Part 7 — NOT MODELLED
 
 **This section is load-bearing.** The previous log-only attempt failed by *silently

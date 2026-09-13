@@ -118,6 +118,11 @@ node bin/mindscape.js --party-archetype physical --level 20 --power raw --neutra
 
 node bin/calibrate-archetypes.js     # re-fit the table-power skill layer (k)
 node bin/archetype-sweep.js --out expectations/archetype-sweep.json   # the baseline table
+
+# equipment: price the reference ladder, then check full loadouts per rarity (spec Part 6i)
+node bin/reference-set.js --out expectations/reference-set.json
+node bin/reference-set.js --enemy-defense dice --out expectations/reference-set-dice.json
+node bin/reference-loadout.js --out expectations/reference-loadout.json
 ```
 
 Presets: `standard`, `double-caster`, `no-healer`, `physical`. `--equip` and

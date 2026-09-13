@@ -380,7 +380,9 @@ row in `party output`. Specs live in `tools/mindscape/specs/equipment/`.
   preset + item* vs *archetype preset* at the same level, power and seed, across the four
   presets — report the spread, because composition moves results more than level does.
   The real party is a cross-check for skill-specific interactions archetypes cannot show.
-- **NOT BUILT:** the vanilla reference set itself, so the Part 5 budgets remain placeholders.
+- **Reference ladder MEASURED (2026-09-13).** 24 plain items on archetypes at L20/30/41/50,
+  plus a full-loadout band test per rarity — results and **proposed** corrections in
+  Part 10. Part 4 and Part 5 are unchanged until those proposals are accepted.
 
 Limits: archetypes have no class-skill identities (a rider that depends on a specific skill
 needs the real party or the live sim); basic-attack riders measure best on the Striker or
@@ -482,6 +484,95 @@ the same while BA grows; the level bonus grows with it):
 | Even rounds: basic attacks deal **+ level ÷ 3** (single target) | Uncommon, flat across the band — but loses the splash identity |
 
 ---
+
+## Part 10 — Measured reference ladder (2026-09-13)
+
+**Status: MEASURED. The corrections below are PROPOSALS** — Parts 4 and 5 stay as written
+until they are accepted.
+
+### Method
+- **Items:** `tools/mindscape/specs/equipment/reference-set.json`. 24 plain items, each the
+  wearer's own basic item plus ONE effect, in a ladder of magnitudes, because some effects
+  are lumpy: +1 accuracy was already priced near a Rare.
+- **Party:** the four archetype presets, table power (k 3.54), at L20 / 30 / 41 / 50.
+- **Enemies:** the neutral rulebook "normal" encounter (four soldiers) at **DEF/MDEF 13, the
+  guide's own design point**. Rulebook dice defences were run as a sensitivity check
+  (`reference-set-dice.json`); every conclusion below holds there too.
+- **Runs:** 1000 per arm, as an A/B against the same party without the item, same seed.
+- **Pricing:**
+  - **Offense %** = extra damage per wearer action ÷ BA(L).
+  - **Defense %** = damage prevented per round **across the whole party** ÷ HP-per-BA(L).
+    Party-wide, because a protector that gains DEF steps in front of *more* hits.
+- **Reproduce:** `node bin/reference-set.js --out …` · `node bin/reference-loadout.js --out …`
+
+### Results — mean across presets (paper price in brackets)
+| Item | L20 | L30 | L41 | L50 |
+|---|---|---|---|---|
+| Weapon +10 damage (Striker) | 27.3% (20.5) | 22.0% (14.4) | 17.0% (9.8) | 12.9% (7.1) |
+| Weapon +1 accuracy (Striker) | 7.7% (17) | 6.0% (17) | 2.9% (17) | 1.9% (17) |
+| Spell +5 damage (Caster) | 30.9% (10.3) | 26.9% (7.2) | 18.2% (4.9) | 15.9% (3.6) |
+| +3 DEF on the Tank | 6.6% (9.3) | 3.3% (6.3) | 2.4% (6.2) | 1.1% (4.1) |
+| +3 DEF on the most-hit (a Caster) | 3.1% (10.3) | 1.9% (9.5) | 0.8% (7.7) | 0.4% (6.7) |
+| +3 MDEF on the most MDEF-hit | 2.9% (7.6) | 2.0% (6.3) | 1.2% (5.9) | 0.9% (5.0) |
+| Physical resistance (all-physical enemies) | 19.9% (16.3) | 14.0% (12.8) | 12.8% (11.6) | 11.8% (9.6) |
+| +25 max HP on the most-hit | wearer KO rate −38 pts | −40 | −43 | −54 |
+
+Every ladder is linear within its noise. Full tables: `tools/mindscape/expectations/reference-set.json`.
+
+### What the numbers say
+1. **The flat-damage row is right; its hit rate is not.** The Striker hits DEF 13 at
+   63 / 71 / 83 / 88% (exact enumeration), not the 49% the row assumes. Paper × (hit ÷ 49%)
+   reproduces the sim at every level: 2.64 vs 2.73, 2.09 vs 2.2, 1.66 vs 1.7, 1.28 vs 1.29 %
+   per point. Flat damage decays **2.1×** from L20 to L50, not the 2.9× the Part 4 table
+   implies, because the hit rate climbs with level.
+2. **Accuracy is worth what is left to miss.** +1 accuracy adds 8 / 7 / 5 / 4 hit-rate points
+   on 63 / 71 / 83 / 88% bases. The sim lands at about half of even that ratio. The +17%
+   row only holds near a 50% hit rate, and at this table's power level accuracy fades to
+   ~2% by L50 unless the monsters' DEF climbs faster than the party's skill layer.
+3. **A damage bonus on a multi-target action counts once per target.** +X on a Burst that
+   hits three soldiers measured 3–4.5× the single-target paper price.
+4. **DEF/MDEF buys far less than the table says.** The rulebook enemies' accuracy climbs
+   (a brute hits DEF 15 39% of the time at L20 and 70% at L50), so a +3 DEF armor goes from
+   6.6% to 1.1% on a Tank, and near zero on a low-DEF Caster, who gets hit regardless.
+   Defense concentrates on characters whose DEF already sits near the enemy's roll.
+5. **Resistance at full uptime matches the paper price** (half the damage it applies to).
+6. **Max HP does not show up as damage.** Its value is keeping the most-hit character
+   standing: +25 HP cut that character's KO rate by 38–54 points.
+
+### Full loadouts — the budget-size check (Part 5)
+Every member wears **3 × the rarity budget**, all spent as offense (the upper bound, since
+offense is what shortens fights), sized from the measured curves. The same enemies, standard
+preset:
+
+| Mean model rounds | Basic | Common | Uncommon | Rare | Legendary |
+|---|---|---|---|---|---|
+| L20 | 5.41 | 4.83 | 4.04 | 3.89 | 3.58 |
+| L30 | 4.64 | 4.22 | 3.64 | 3.26 | 3.32 |
+| L41 | 4.81 | 4.00 | 3.40 | 3.04 | 2.77 |
+| L50 | 4.22 | 3.54 | 3.11 | 2.83 | 2.56 |
+
+- **No preset, level or encounter ever ended in one round** — 0% in the 1-round band in all
+  160 rows, including full Legendary loadouts.
+- **The Part 4 fight-length formula holds.** rounds ÷ (1 + 3 × budget) predicts the measured
+  rounds within ~10% (L41: 3.70 / 3.32 / 2.87 predicted vs 3.40 / 3.04 / 2.77 measured).
+- **Composition dominates.** The physical preset needs Rare gear just to reach the 2–3 round
+  band that double-caster reaches on Common.
+
+### Proposed corrections (NOT applied)
+| # | Where | Proposal |
+|---|---|---|
+| P1 | Part 4, "+1 damage on hit" | Use the **wearer's hit chance against the expected DEF**, not a fixed 49%. |
+| P2 | Part 4, "+1 accuracy" | Value ≈ ½ × (hit-rate points gained ÷ current hit rate); +17% only near a 50% hit rate. |
+| P3 | Part 4 | A damage rider on a multi-target action is worth × the targets it actually hits. |
+| P4 | Part 4, "+1 DEF / MDEF" | Price from the **enemy's** hit chance against the wearer's defence, party-wide; roughly ⅔ of the current row at L20, falling to ⅕–¼ by L41–50 against rulebook accuracy. |
+| P5 | Part 4 | Keep Resistance at ½ × exposure; scale by the element's share of incoming damage. |
+| P6 | Part 4 | Price max HP by KO prevention (actions kept), not as damage — still open. |
+| P7 | Part 5 | Keep the rarity budgets as working values: a whole party in full Legendary offense stays out of the 1-round band here. |
+
+### What this does not establish
+Rulebook-sized enemy HP rather than this table's larger monsters · one fixed enemy DEF · model
+rounds read about one long vs live · generic archetype kits with one L41 calibration anchor ·
+no interactions between different effects (every item carries exactly one).
 
 ## Authoring an item — what to hand the designer
 
