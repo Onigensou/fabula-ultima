@@ -19,6 +19,7 @@ const RX = require("../lib/reactions");
 const { Rng } = require("../lib/rng");
 const { applyLoadoutArgs } = require("../lib/loadout-swap");
 const { loadWorldItems } = require("../lib/world-items");
+const { applyBaselineGear, loadWorldFolders } = require("../lib/baseline-gear");
 
 function parseArgs(argv) {
   const out = { runs: 1000, seed: "mindscape", force: false, verbose: false, expectedRounds: 7 };
@@ -37,6 +38,7 @@ function parseArgs(argv) {
     else if (a === "--set") (out.sets = out.sets ?? []).push(next());
     else if (a === "--equip") (out.equips = out.equips ?? []).push(next());
     else if (a === "--unequip") (out.unequips = out.unequips ?? []).push(next());
+    else if (a === "--baseline-gear") out.baselineGear = next().split(",").map((s) => s.trim()).filter(Boolean);
     else if (a === "--help" || a === "-h") out.help = true;
   }
   return out;
@@ -124,11 +126,19 @@ Mindscape — offline Monte Carlo balance runs (game must be CLOSED)
   // any slot, a paper spec or a real world item, with the sheet re-derived and set
   // bonuses reconciled. Announced as loudly as a paper monster — a verdict about
   // swapped gear must never read as one about the character's real kit.
-  if (args.equips?.length || args.unequips?.length) {
+  if (args.equips?.length || args.unequips?.length || args.baselineGear?.length) {
     const worldItems = await loadWorldItems();
-    const reports = applyLoadoutArgs({ equips: args.equips, unequips: args.unequips }, party, { worldItems });
+    // --baseline-gear FIRST: every slot to its same-class basic item (lib/baseline-gear.js).
+    // Explicit --equip/--unequip then apply on top, so "baseline + one real item" measures
+    // that single item against basic gear.
+    const reports = [];
+    if (args.baselineGear?.length) {
+      const folders = await loadWorldFolders();
+      reports.push(...applyBaselineGear(party, { names: args.baselineGear, worldItems, folders }));
+    }
+    reports.push(...applyLoadoutArgs({ equips: args.equips, unequips: args.unequips }, party, { worldItems }));
     for (const r of reports) {
-      console.log(`⚠ LOADOUT CHANGED — ${r.pc}. In memory only; the world loadout is untouched.`);
+      console.log(`⚠ LOADOUT CHANGED${r.baseline ? " (BASELINE GEAR)" : ""} — ${r.pc}. In memory only; the world loadout is untouched.`);
       for (const c of r.changes) {
         console.log(`    ${c.slot.padEnd(5)} ${c.from}  ->  ${c.to}${c.origin ? `   [${c.origin}]` : ""}`);
       }

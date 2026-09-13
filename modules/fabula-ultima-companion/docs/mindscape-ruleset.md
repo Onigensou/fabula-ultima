@@ -393,6 +393,29 @@ A paper **armor or shield** spec with no DEF/MDEF effects receives the world's s
 ones ("Armor DEF"/"Armor MDEF", "DEF UP"/"MDEF UP") and says so: in this world defence lives
 in the effects, so an effect-less spec would add no defence at all.
 
+### Baseline gear — the 0% loadout
+`--baseline-gear "all" | "Hina,Zarg"` (`lib/baseline-gear.js`) swaps every slot to the
+rulebook **basic** item of the same class, through the same engine, so the gate, legality
+and set bonuses all hold. It is the chassis `equipment-balance-design.md` prices against:
+run it beside the real loadout on the same seed and the difference is what the gear is
+worth; add an `--equip` on top and you measure one item against basic gear.
+
+Mapping (user ruling 2026-09-13, "same class, use basic equipment" — it keeps
+equipment-conditional skills such as Dodge, Twin Shields and Magical Artillery behaving as
+in real play):
+
+| Worn | Baseline |
+|---|---|
+| weapon | basic weapon of the same category: same hand count, then most shared rolled attributes, then name; if no same-hand basic, the closest converted with the free rule (2H→1H −4, 1H→2H +4) |
+| shield | Bronze Shield; Runic Shield if the worn shield is martial |
+| armor | a basic armor keeps its +0 self (`+4 Combat Tunic` → Combat Tunic); else martial → **Brigadine** (the world's spelling), ordinary → Travel Garb |
+| accessory | emptied |
+
+Basic items are found by an ancestor folder named `Basic Weapon` / `Basic Armor` /
+`Basic Shield`, as character creation finds them. Never picked: Longsword, Magicannon,
+Twin Shield, Twin Runic Shield, Improvised (Melee/Ranged), Unarmed Strike (house or special
+items), No Armor, and Bronze/Steel Plate (their stored DEF shape looks wrong).
+
 ### Two model corrections made alongside
 Both change every run, not only swaps, and are recorded in
 `expectations/inferex-centuaros.json` → `modelHistory`:
