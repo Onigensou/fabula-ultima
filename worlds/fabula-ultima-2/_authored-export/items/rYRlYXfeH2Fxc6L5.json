@@ -15,7 +15,7 @@
   },
   "folder": "ft3358qUh5ZDldYQ",
   "img": "icons/magic/time/hourglass-tilted-glowing-gold.webp",
-  "name": "Chrono (Passive)",
+  "name": "Chronos Sphere (Passive)",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
     "default": 0
@@ -62,7 +62,7 @@
       "img": "icons/magic/time/hourglass-tilted-glowing-gold.webp",
       "isCheck": false,
       "isReaction": true,
-      "name": "Chrono (Passive)",
+      "name": "Chronos Sphere (Passive)",
       "on_activate_effect_ref": "",
       "reaction_config_table": {
         "0": {

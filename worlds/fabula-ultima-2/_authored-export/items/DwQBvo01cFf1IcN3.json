@@ -15,7 +15,7 @@
   },
   "folder": "QGuy8DVLgrvQqs1c",
   "img": "icons/magic/time/hourglass-tilted-glowing-gold.webp",
-  "name": "Chrono",
+  "name": "Chronos Sphere",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
     "default": 3
@@ -76,7 +76,7 @@
       "item_type": "weapon",
       "mimic_ef": "100",
       "monster_ef": "100",
-      "name": "Chrono",
+      "name": "Chronos Sphere",
       "optional_params": {},
       "plant_ef": "100",
       "reaction_config_table": {},
