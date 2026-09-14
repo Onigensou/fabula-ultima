@@ -676,6 +676,78 @@ the same while BA grows; the level bonus grows with it):
 | Even rounds: basic attacks gain **Multi 2** and **+ level ÷ 5** | Rare |
 | Even rounds: basic attacks deal **+ level ÷ 3** (single target) | Uncommon, flat across the band — but loses the splash identity |
 
+*Shipped 2026-09-14 as submitted (Uncommon, Multi 3 + 10): the designer's call.*
+
+### E. Dragonic Scalemail — sizing the Dragon cut (2026-09-14)
+
+*Rare martial armor, 3200z. DEF 13 (one above the top basic plate), MDEF standard. You take X%
+less damage from Dragon-type creatures; your Fire damage is increased by 10%.*
+
+The brief: good stats on their own, plus a niche bonus that is a nice addition against dragons
+and never a free win. The Dragon cut was swept on the Tank with `check-item` (300 runs per
+arm, four presets). The Rare budget is 15%.
+
+| Dragon damage cut | 0% | 5% | **10%** | 15% | 20% | 25% |
+|---|---|---|---|---|---|---|
+| House roster mean | 8.8% | 10.1% | **11.8%** | 14.8% | 17.0% | 18.6% |
+| Valley of the Dragon (where it drops) | 12.3% | 16.2% | **21.9%** | 30.8% | 36.9% | 42.0% |
+
+- **The stats stand on their own.** With no cut at all it reads 8.8% across the roster, and
+  12.9% at rulebook L20.
+- **Dragons are a quarter of the Valley.** Subtype DRAGON covers 23% of Valley enemies and
+  shows up in 42% of its fights; in Fafnir Castle, 20% and 33%. The subtype includes Ampere,
+  Drakoza, Mist Dragon, Obsidrax, Dragon Guard, the Drakes and Fafnir; Kirin is FEY.
+- **No setting shuts dragons down.** The cut protects only the wearer, and Valley fights stay
+  at 2.8 → 2.9 rounds even at 25%.
+- **Shipped at 10%.** The passive adds about 3 points overall, a quarter of the item's value,
+  and about 1.5× Rare in its home dungeon. At 15% the item sits on the Rare edge overall and
+  doubles Rare in the Valley.
+- **The Fire +10% is worth 0 on a physical Tank.** It only pays on a Fire wearer.
+- **Automation.** `creature_targeted_by_action` incoming multiply 0.9, gated on the new
+  `ATTACKER_SUBTYPE_IS_DRAGON`; `creature_will_deal_damage` outgoing multiply 1.1 with
+  `reaction_damage_type: fire`. Action damage only: a dragon's hazard or damage over time is
+  not cut.
+
+### F. Plot Armor — pricing a Fabula Point (2026-09-14)
+
+*Rare armor, 3333z. DEF +0, MDEF +1. When you would be reduced to 0 HP, you may spend 1
+Fabula Point to hold on at 1 HP instead.*
+
+Measured on the most-hit character. The sim always spends a point when the hit is lethal and
+one is left.
+
+| Fabula Points per fight | House roster mean | L20 end | L50 end |
+|---|---|---|---|
+| 3 (the rulebook start) | 40.1% | 80.8% | 34.6% |
+| 1 | 18.2% | 45.8% | 18.4% |
+
+- **Its value is survival turned into output.** The wearer stays standing 5–25 points longer
+  and is knocked out 4–38 points less often. A character who stays up keeps acting, which is
+  the offense column.
+- **The Fabula Point is the whole throttle.** FP is a per-session pool shared with invokes, so
+  three per fight is an upper bound. At one per fight it runs about 1.2× Rare, and strong early.
+  A table that hands out Fabula Points freely makes it Legendary-sized.
+- **Automation.** The Unbreakable pattern: an equip-linked AE on the HP-write path
+  (`creature_takes_damage`, `would_reduce_to_zero`, ask, gated on the new `CUR_FP >= 1`).
+  It caps the hit at `CUR_HP - 1`, then spends 1 FP. It covers every HP write, including
+  damage over time and hazards. Verified live: 2 FP → 1 → 0, then the next lethal hit lands.
+
+### G. Razor Plume (2026-09-14)
+
+*Uncommon Thrown, one-handed, DEX+INS, +4 (the Shuriken chassis), ranged, 1200z. Pierce;
+Conquer 3: inflicts Bleed.*
+
+Measured on the Striker. The Uncommon budget is 10%.
+
+- **5.4% across the roster**, 2.7% at the L20 end and 2.9% at the L50 end. That is under
+  budget, but it misses the ½-budget floor late.
+- **Almost all of it is Pierce** (half damage on a miss). It pays most against high-DEF groups,
+  8–9% in the Wyrmwood and Temple, and little where the party already hits, 3% in the Valley and
+  Fafnir Castle.
+- **Bleed only halves healing received** (3 charges). Against monsters that do not heal it is
+  worth about 0, and the sim does not model it.
+- **Room to grow.** If it should matter at L50, a scaling rider has headroom.
+
 ---
 
 ## Part 10 — Measured reference ladder (2026-09-13)

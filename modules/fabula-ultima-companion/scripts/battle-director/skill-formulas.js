@@ -623,6 +623,10 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "MAX_MP": return readProp(actor, "max_mp");
       case "CUR_IP": return readProp(actor, "current_ip");
       case "MAX_IP": return readProp(actor, "max_ip");
+      // Fabula Points held (resources.js `fp` → fabula_point). Gates a reaction that
+      // SPENDS one ("spend 1 Fabula Point to hold on at 1 HP" — Plot Armor), so the
+      // offer never appears to a creature that cannot pay.
+      case "CUR_FP": return readProp(actor, "fabula_point");
       // Remaining shield buffer (shield_value resource). Symmetric read-token for
       // the grant/set_resource "shield" writers (resources.js) — nothing else
       // could read the live shield before this. Powers "consume any remaining
@@ -1956,6 +1960,23 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         // comma/semicolon/pipe and match ANY entry so a future multi-subtype actor
         // (e.g. "DRAGON, UNDEAD") still answers 1 to both. Case-insensitive;
         // underscores → spaces. Actors with no subtype (PCs) return 0.
+        // Dynamic ATTACKER_SUBTYPE_IS_<X> — the subtype twin of ATTACKER_SPECIES_IS_<X>:
+        // the creature ACTING ON the reactor. On `creature_targeted_by_action` the
+        // subject is the reactor itself, so "damage from Dragon-type creatures"
+        // (Dragonic Scalemail) needs the attacker's subtype_list, which neither
+        // ATTACKER_SPECIES_IS_ (species only) nor SUBTYPE_IS_ (self) can read.
+        if (name.startsWith("ATTACKER_SUBTYPE_IS_")) {
+          const needle = name.slice("ATTACKER_SUBTYPE_IS_".length).replace(/_/g, " ").toLowerCase().trim();
+          const attackerUuid = String(payload?.attackerActorUuid ?? payload?.causeActorUuid ?? "").trim();
+          if (!attackerUuid) return 0;
+          const attacker = _resolveActorByUuidSync(attackerUuid);
+          if (!attacker) return 0;
+          const subtypes = String(attacker?.system?.props?.subtype_list ?? "")
+            .split(/[,;|]/)
+            .map((s) => s.replace(/_/g, " ").toLowerCase().trim())
+            .filter(Boolean);
+          return subtypes.includes(needle) ? 1 : 0;
+        }
         if (name.startsWith("SUBTYPE_IS_") || name.startsWith("TARGET_SUBTYPE_IS_")) {
           const isTarget = name.startsWith("TARGET_");
           const needle = name

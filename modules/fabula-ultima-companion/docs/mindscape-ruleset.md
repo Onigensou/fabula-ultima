@@ -654,6 +654,30 @@ On the Striker (weapon-only kit, so every swing is a basic attack), same encount
   `downShare` and `damagePerHit`, plus `partyDealtPerRound`.
 - Calibration is unchanged (3 rounds / 60% / DPR 149.9 / EnemyDPR 66.7).
 
+## Part 6k — Defender take-hit hook, Pierce, subtypes, Fabula Points (added 2026-09-14)
+
+What Plot Armor, Dragonic Scalemail and Razor Plume needed to be measured.
+
+- **`ON_TAKE_HIT`** fires on the DEFENDER after affinity and Protect, before the HP write.
+  - `damage_taken_mult` effects apply first, rounded up.
+  - Then `survive_at_one`: on a lethal hit, if the victim holds `fpCost` Fabula Points, it
+    spends them and the damage becomes `hp - 1`.
+  - Live counterparts: an incoming `adjust_damage` on `creature_targeted_by_action`, and the
+    HP-write cap at `CUR_HP - 1` (Unbreakable, Mercy, Plot Armor).
+  - Action hits only. Flat bursts and the storm (`applyFlatDamage`) bypass it.
+- **Pierce.** An attack carrying the `pierce` keyword that misses (not a fumble) still deals
+  half damage, rounded down. This matches live "miss-for-half". A weapon's `action_keywords`
+  now reach its weapon attack.
+- **Subtypes.** NPC models carry `subtypes` from `subtype_list`, so "Dragon-type" (DRAGON) can
+  be gated even where the species says BEAST or ELEMENTAL.
+- **Fabula Points.** Archetypes start with 3 FP (rulebook p.33), and `check-item --fp N` sets
+  it. FP is a per-session pool, so `--fp 1` is the realistic single-fight share. Nothing
+  spends FP except gear that says so.
+- **Registry rows:** `Plot Armor (Passive)` (dial `mindscape_fp_cost`) and
+  `Dragonic Scalemail (Passive)` (dial `mindscape_damage_taken_factor`, kind-scoped, so the
+  Fire ×1.1 row is untouched).
+- Calibration unchanged; all suites pass.
+
 ## Part 7 — NOT MODELLED
 
 **This section is load-bearing.** The previous log-only attempt failed by *silently
