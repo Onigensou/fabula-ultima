@@ -739,7 +739,10 @@
     const glow = isItem ? rarityGlow(detail.rarity) : "none";
     const typeLabel = ITEM_TYPE_LABEL[String(detail.itemType ?? "").toLowerCase()] ?? "";
     const sub = isItem ? [typeLabel, detail.rarity].filter(Boolean).join(" · ") : "Reward";
-    const desc = isItem ? await describeHTML(detail.description) : "";
+    // Item descriptions carry Foundry content links (@UUID[Actor.x]{Decoy Doll}).
+    // Nothing enriches them on this path, so show just the label.
+    const rawDesc = String(detail.description ?? "").replace(/@\w+\[[^\]]*\]\{([^}]*)\}/g, "$1");
+    const desc = isItem ? await describeHTML(rawDesc) : "";
 
     return `
       <div class="tr-tip-card">
