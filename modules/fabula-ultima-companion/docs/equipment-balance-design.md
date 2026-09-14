@@ -761,7 +761,7 @@ Tuned with `check-item` on the Striker (300 runs per arm, four presets). The Unc
 - **Bleed only halves healing received** (3 charges). Against monsters that do not heal it is
   worth about 0, and the sim does not model it.
 
-### H. Chrono (2026-09-14)
+### H. Chronos Sphere (2026-09-14)
 
 *Legendary Arcane, two-handed, INS+WLP, **+2**, Dark, melee, 3500z, no drawback (user ruling).
 A hit with the weapon gives the target 1 Chronostasis; at 3 it loses them all and one action.
@@ -779,8 +779,7 @@ the Staff chassis (+6) at +2, the rulebook's Arcane low end.
 - It chains `apply_ae` Chronostasis (`add_charges` 1), then `modify_turns` −1, then `remove_ae`.
   The last two are gated on `TARGET_AE_CHARGES_CHRONOSTASIS >= 3`.
 - Chronostasis is a `persistent_counter` status in the Debuff library, `chargesMax` 3.
-- It is basic attacks only, without an `ACTION_IS_ATTACK` gate (which reads 0 here: the
-  per-target Attack payload carries no `actionKind`). A Skill fires one action-level
+- It is basic attacks only. A Skill fires one action-level
   `creature_deals_damage` with no `weaponUuid`, so `reaction_requires_weapon_used` never passes
   for it. Razor Plume behaves the same way.
 - Time Dilation checks the threshold through a targeting row, `tdil_at3`: action targets with
@@ -810,7 +809,7 @@ effect `stack_deny`. The Legendary budget is 22.5%.
 **Live-verified** on temp clones: stacks 1 → 2 → 3, clear and one action removed; with no action
 left this round the loss carries as turn debt; the wielder never gains a stack. Time Dilation
 applies Swift, or Slow + 1 Chronostasis; a spell stack that reaches 3 costs the action at once,
-and the next Chrono hit starts a fresh stack.
+and the next Chronos Sphere hit starts a fresh stack.
 
 ---
 

@@ -1156,7 +1156,7 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // scope to the Attack action ONLY: e.g. Swordbreaker's on-miss Bane fires on a
       // missed ATTACK, not a missed offensive spell/skill (both stamp actionKind
       // "Skill"). Available wherever the payload carries actionKind (creature_miss_action,
-      // the *_completes_* / performs_action payloads).
+      // the per-hit Attack creature_deals_damage, the *_completes_* / performs_action payloads).
       case "ACTION_IS_ATTACK":
         return String(payload?.actionKind ?? "").toLowerCase() === "attack" ? 1 : 0;
       // 1 if the action is a Spell. Reads payload.actionKind (the real kind on the

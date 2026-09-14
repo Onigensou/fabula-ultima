@@ -181,12 +181,12 @@ t("the level term follows the wielder's level (L20 -> +4)", () => {
 // ── Chrono: stack_deny through a real battle ────────────────────────────────
 function chronoDoc(passiveProps = {}) {
   return {
-    name: "Chrono",
+    name: "Chronos Sphere",
     system: { props: {
       item_type: "weapon", category: "Arcane", damage_bonus: "2", check_bonus: "0",
       type_damage: "Dark", rolled_atr1: "INS", rolled_atr2: "WLP", weapon_range: "Melee",
     } },
-    items: [{ name: "Chrono (Passive)", props: { skill_type: "Passive", ...passiveProps } }],
+    items: [{ name: "Chronos Sphere (Passive)", props: { skill_type: "Passive", ...passiveProps } }],
   };
 }
 function chronoRun(passiveProps, rounds = 9) {

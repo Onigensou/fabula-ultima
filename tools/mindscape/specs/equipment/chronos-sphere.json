@@ -1,0 +1,22 @@
+{
+  "_comment": "Chronos Sphere (requested 2026-09-14 as Chrono). Legendary Arcane, two-handed, INS+WLP, Very Low damage (Staff chassis +6 -> +2), Dark, melee, no drawback (user ruling). Passive: a basic attack that deals damage gives the target 1 Chronostasis; at 3 it loses them all and one action (registry stack_deny). Granted spell Time Dilation (10 MP: Swift, or Slow + 1 Chronostasis) is NOT in this spec -- priced on paper.",
+  "name": "Chronos Sphere",
+  "system": {
+    "props": {
+      "item_type": "weapon",
+      "item_rarity": "Legendary",
+      "category": "Arcane",
+      "hand_slots": "Two-handed",
+      "damage_bonus": "2",
+      "check_bonus": "0",
+      "type_damage": "Dark",
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "weapon_range": "Melee",
+      "skill_target": "One Enemy"
+    }
+  },
+  "items": [
+    { "name": "Chronos Sphere (Passive)", "props": { "skill_type": "Passive" } }
+  ]
+}

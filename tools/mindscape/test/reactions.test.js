@@ -113,14 +113,14 @@ t("Plot Armor saves only a LETHAL hit, and only with a Fabula Point to spend", (
   assert.strictEqual(declared[0].effect.fpCost, 2);
 });
 // ── Chrono (2026-09-14) ─────────────────────────────────────────────────────
-const chrono = RX.REACTION_REGISTRY["Chrono (Passive)"];
+const chrono = RX.REACTION_REGISTRY["Chronos Sphere (Passive)"];
 t("Chrono stacks only on a basic attack that dealt damage", () => {
   assert.strictEqual(chrono.trigger, RX.TRIGGERS.ON_DEAL_DAMAGE);
   assert.strictEqual(chrono.gate({ isBasicAttack: true, damage: 12 }), true);
   assert.strictEqual(chrono.gate({ isBasicAttack: false, damage: 12 }), false, "skill or reaction damage");
   assert.strictEqual(chrono.gate({ isBasicAttack: true, damage: 0 }), false, "absorbed / zero");
   assert.strictEqual(chrono.effect.threshold, 3);
-  const declared = RX.declaredReactions([{ name: "Chrono (Passive)", props: { mindscape_stack_threshold: "2" } }]);
+  const declared = RX.declaredReactions([{ name: "Chronos Sphere (Passive)", props: { mindscape_stack_threshold: "2" } }]);
   assert.strictEqual(declared[0].effect.threshold, 2);
 });
 t("a counter payload is excluded from turn-action selection", () => {

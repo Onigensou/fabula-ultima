@@ -337,7 +337,7 @@ const REACTION_REGISTRY = Object.freeze({
   // Live this is basic attacks only: a Skill fires one action-level creature_deals_damage
   // with no weaponUuid, so reaction_requires_weapon_used never passes for it.
   // The granted spell Time Dilation (Swift, or Slow + 1 Chronostasis) is NOT modelled.
-  "Chrono (Passive)": {
+  "Chronos Sphere (Passive)": {
     trigger: TRIGGERS.ON_DEAL_DAMAGE,
     gate: (ctx) => !!ctx?.isBasicAttack && (ctx?.damage ?? 0) > 0,
     effect: { kind: "stack_deny", counter: "chronostasis", threshold: 3 },

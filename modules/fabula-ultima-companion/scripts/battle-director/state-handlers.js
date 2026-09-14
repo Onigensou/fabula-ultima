@@ -1154,6 +1154,10 @@ async function resolveAction(director, ar, opts = {}) {
             // resolve even when a lethal hit already removed the target's token.
             subjectSnapshot: _subjectSnapshots.get(r.tokenUuid) ?? null,
             actionIntent: ar.actionIntent,
+            // This branch only runs for Attack actions. Without the kind,
+            // ACTION_IS_ATTACK read 0 here and a per-hit attack rider never fired
+            // (Blood Price, Spirit of Vengeance 2-piece).
+            actionKind: "Attack",
             // Acting skill/weapon name for `reaction_source_skill` self-scoping.
             sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
             weaponUuid: ar.weapon?.uuid ?? null,
