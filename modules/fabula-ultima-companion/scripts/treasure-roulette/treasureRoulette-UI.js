@@ -684,6 +684,71 @@
   // --------------------------------------------------------------------------
   // Public: play(packet)
   // --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
+  // The ring — shared by the spin and the Skeletal Key picker
+  // --------------------------------------------------------------------------
+  const STYLE_ID = "oni-treasure-roulette-style"; // shared style across requests
+  const overlayIdFor = (requestId) => `oni-treasure-roulette-${String(requestId)}`;
+
+  /**
+   * Build the overlay, its panels and the responsive ring layout. The picker
+   * opens its screen through this, so what the player picks from is exactly
+   * what a spin would have shown — and play() can adopt that same overlay for
+   * the reveal instead of redrawing it.
+   * @returns {{overlay: HTMLElement, panels: HTMLElement[], entries: object[], dispose: () => void}}
+   */
+  function openRing({ requestId, rows, lootTypeIcon = DEFAULT_LOOT_TYPE_ICON }) {
+    ensureStyleTag(STYLE_ID, { panelBg: PANEL_BG, panelText: PANEL_TEXT });
+
+    const overlayId = overlayIdFor(requestId);
+    document.getElementById(overlayId)?.remove();
+
+    const entries = rows.map((r) => ({
+      icon: r.img || FALLBACK_IMG,
+      name: r.name || "Unknown"
+    }));
+
+    const { overlay, ring } = buildOverlay(overlayId, lootTypeIcon);
+    const panels = createPanels(ring, entries);
+
+    const doLayout = () => {
+      // Once the reveal has taken over, the winner's left/top are pinned to the
+      // centre — re-running the ring solver here would snap it back mid-animation.
+      if (overlay.classList.contains("oni-revealing")) return;
+      const { radius, panelW, panelH, scatterMul, solverPasses } = applyResponsiveSizing(overlay, panels.length);
+      const positions = createStaggeredPositions(panels.length, radius, scatterMul);
+      solveOverlaps(positions, panelW, panelH, solverPasses);
+      applyPositionsToPanels(panels, positions);
+      requestAnimationFrame(() => fitLootNamesToPanels(panels));
+    };
+
+    doLayout();
+    window.addEventListener("resize", doLayout);
+
+    // Click dim does nothing (prevents accidental closing)
+    overlay.addEventListener("mousedown", (ev) => {
+      if (ev.target && ev.target.classList && ev.target.classList.contains("oni-roulette-dim")) {
+        ev.stopPropagation();
+      }
+    });
+
+    const handle = {
+      overlay,
+      panels,
+      entries,
+      dispose: () => window.removeEventListener("resize", doLayout)
+    };
+    overlay._oniRing = handle;
+    return handle;
+  }
+
+  /** Ease a ring out and remove it (the picker's close when nothing follows). */
+  async function closeRing(handle) {
+    if (!handle?.overlay) return;
+    try { handle.dispose(); } catch {}
+    try { await easeOutAndRemove(handle.overlay); } catch { try { handle.overlay.remove(); } catch {} }
+  }
+
   async function play(packet) {
     if (!packet || !packet.requestId) return { ok: false, reason: "no-packet" };
 
@@ -692,18 +757,24 @@
       window["oni.TreasureRoulette.Net"]?.registerPacket?.(packet);
     } catch {}
 
-    const overlayId = `oni-treasure-roulette-${String(packet.requestId)}`;
-    const styleId = `oni-treasure-roulette-style`; // shared style across requests
+    const overlayId = overlayIdFor(packet.requestId);
 
     // Prevent duplicate play on same client
     const playedKey = `oni.trui.played.${packet.requestId}`;
     if (window[playedKey]) return { ok: true, replay: true };
     window[playedKey] = true;
 
+    // A chosen (Skeletal Key) packet follows the picker, whose ring was kept on
+    // screen for exactly this. Adopt it — rebuilding would blink the whole
+    // screen between the pick and the reveal.
+    const chosen = packet.pickMode === "chosen";
+    const adopted = chosen ? (document.getElementById(overlayId)?._oniRing ?? null) : null;
+
     // HARD CLEANUP: if a previous run failed to remove overlay, kill it now
     try {
       const stale = document.querySelectorAll(".oni-treasure-roulette-overlay");
       stale.forEach((el) => {
+        if (el === adopted?.overlay) return;
         try {
           el.remove();
         } catch {}
@@ -731,55 +802,35 @@
 
     warmAudio([tickSfx, finalSfx].filter(Boolean));
 
-    // Panel entries
-    const entries = rows.map((r) => ({
-      icon: r.img || FALLBACK_IMG,
-      name: r.name || "Unknown"
-    }));
+    // The picker's ring when a chosen packet adopts it, else a fresh one.
+    const ring = adopted ?? openRing({ requestId: packet.requestId, rows, lootTypeIcon });
+    const { overlay, panels, entries } = ring;
 
-    // Ensure style
-    ensureStyleTag(styleId, { panelBg: PANEL_BG, panelText: PANEL_TEXT });
-
-    // Build overlay
-    const { overlay, ring } = buildOverlay(overlayId, lootTypeIcon);
-    const panels = createPanels(ring, entries);
-
-    const doLayout = () => {
-      // Once the reveal has taken over, the winner's left/top are pinned to the
-      // centre — re-running the ring solver here would snap it back mid-animation.
-      if (overlay.classList.contains("oni-revealing")) return;
-      const { radius, panelW, panelH, scatterMul, solverPasses } = applyResponsiveSizing(overlay, panels.length);
-      const positions = createStaggeredPositions(panels.length, radius, scatterMul);
-      solveOverlaps(positions, panelW, panelH, solverPasses);
-      applyPositionsToPanels(panels, positions);
-      requestAnimationFrame(() => fitLootNamesToPanels(panels));
-    };
-
-    doLayout();
-    const onResize = () => doLayout();
-    window.addEventListener("resize", onResize);
-
-    // Click dim does nothing (prevents accidental closing)
-    overlay.addEventListener("mousedown", (ev) => {
-      if (ev.target && ev.target.classList && ev.target.classList.contains("oni-roulette-dim")) {
-        ev.stopPropagation();
-      }
-    });
+    // Stand the picker's keep-alive timer down — this reveal owns the ring now.
+    if (adopted) delete overlay.dataset.awaitReveal;
 
     try {
-      await easeIn(overlay);
+      if (!adopted) await easeIn(overlay);
 
-      await spinRouletteToWinner(
-        panels,
-        winnerIndex,
-        spinTargetMs,
-        tickSfx,
-        tickVol,
-        finalSfx,
-        finalVol,
-        anticipationStartPct,
-        anticipationMaxMult
-      );
+      if (chosen) {
+        // No wheel: the choice was made on screen. Land on it the way a spin
+        // lands — highlight, the final chime, the same hold — then reveal.
+        setSelected(panels, winnerIndex);
+        playSFX(finalSfx, finalVol);
+        await sleep(FINAL_HOLD_MS);
+      } else {
+        await spinRouletteToWinner(
+          panels,
+          winnerIndex,
+          spinTargetMs,
+          tickSfx,
+          tickVol,
+          finalSfx,
+          finalVol,
+          anticipationStartPct,
+          anticipationMaxMult
+        );
+      }
 
       // Announce on screen. This is the reward announcement now — the chat line
       // that used to carry it is bookkeeping only.
@@ -788,7 +839,7 @@
       await sleep(CLOSE_DELAY_MS);
     } finally {
       try {
-        window.removeEventListener("resize", onResize);
+        ring.dispose();
       } catch {}
       try {
         await easeOutAndRemove(overlay);
@@ -802,6 +853,14 @@
     return { ok: true, requestId: String(packet.requestId), winnerIndex };
   }
 
-  window[KEY] = { play };
+  window[KEY] = {
+    play,
+
+    // Skeletal Key picker — opens the same ring a spin draws
+    openRing,
+    closeRing,
+    easeIn: (handle) => (handle?.overlay ? easeIn(handle.overlay) : Promise.resolve()),
+    overlayIdFor
+  };
   console.debug(`[TreasureRoulette][UI] Installed as window["${KEY}"].`);
 })();
