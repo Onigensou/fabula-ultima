@@ -6,9 +6,12 @@
 // blocked until the whole reward sequence has played out:
 //
 //   1. resolve tile type -> RollTable + read the party's auto-route option
-//   2. Core.request({ award.mode: "deferred" })   -> winner locked, spin broadcast
+//   2. Skeletal Key?  (only when the party holds one)
+//        no  -> Core.request({ award.mode: "deferred" })  -> winner locked, spin broadcast
+//        yes -> Core.preparePool() -> spend 1 key -> PICKER screen
+//               -> Core.lockPick() -> Core.playEverywhere() (reveal, no spin)
 //   3. clear the tile through DP's own TileState   (reward is already committed)
-//   4. await Net.waitBarrier(packet)               -> every client finished the spin
+//   4. await Net.waitBarrier(packet)               -> every client finished the reveal
 //   5. RecipientUI  -> who gets it   (skipped when auto-route is ON)
 //   6. AwardDispatcher.award()       -> grants, returns the granted instance uuid
 //   7. EquipUI      -> equip now?    (equippable + a real party member only)
@@ -24,9 +27,11 @@
 //   can't both resolve it.
 //
 // FAILURE POLICY
-// The tile is consumed at step 3, so from that point on the party MUST end up
+// Once a winner is locked the tile is consumed, and once a Skeletal Key is
+// spent a winner WILL be locked — so from either point on the party MUST end up
 // with the reward. Every await has a timeout and a safe default, and the finally
-// block grants to Party Inventory if the flow died before awarding.
+// block locks a random pick (if a key was spent), clears the tile, and grants to
+// Party Inventory if the flow died before awarding.
 // ============================================================================
 
 (() => {
@@ -43,11 +48,13 @@
   // Screens are broadcast so spectators see the decision happen.
   const MSG_SHOW  = "ONI_TRF_SHOW";   // GM     -> all    { screen, requestId, payload, controllerUserId }
   const MSG_PICK  = "ONI_TRF_PICK";   // client -> GM     { screen, requestId, choice, userId }
-  const MSG_CLOSE = "ONI_TRF_CLOSE";  // GM     -> all    { screen, requestId }
+  const MSG_CLOSE = "ONI_TRF_CLOSE";  // GM     -> all    { screen, requestId, keep }
 
   // Screen budgets. On timeout we take the safe default rather than stall the turn.
-  const RECIPIENT_TIMEOUT_MS = 60000;
-  const EQUIP_TIMEOUT_MS     = 45000;
+  const RECIPIENT_TIMEOUT_MS  = 60000;
+  const EQUIP_TIMEOUT_MS      = 45000;
+  const KEY_PROMPT_TIMEOUT_MS = 30000;   // default: spin, key kept
+  const PICKER_TIMEOUT_MS     = 90000;   // default: random pick from the pool (key already spent)
 
   const DEFAULT_POOL_SIZE = 8;
   const DEFAULT_SPIN_MS   = 6000;
@@ -92,6 +99,8 @@
   const warn = (...a) => console.warn(TAG, ...a);
 
   const isPrimaryGM = () => globalThis.FUCompanion?.isPrimaryGM?.() ?? false;
+
+  const newRequestId = () => globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`;
 
   // Tiles with a flow in progress (GM-side re-entry guard).
   const _busy = new Set();
@@ -311,16 +320,26 @@
   // --------------------------------------------------------------------------
   // Screen driver — broadcast, gate input, first-response-wins, timeout default
   // --------------------------------------------------------------------------
+  const SCREEN_UI = Object.freeze({
+    keyPrompt: "KeyPromptUI",
+    picker:    "PickerUI",
+    recipient: "RecipientUI",
+    equip:     "EquipUI",
+  });
+  const ALL_SCREENS = Object.keys(SCREEN_UI);
+
   function localUiFor(screen) {
     const ns = globalThis.ONI?.TreasureRoulette ?? {};
-    return screen === "recipient" ? ns.RecipientUI : ns.EquipUI;
+    return ns[SCREEN_UI[screen]] ?? null;
   }
 
   /**
    * Show a screen on every client, accept exactly one answer, close everywhere.
+   * @param {boolean} [keepOnClose]  tell the screen to stay up when it resolves
+   *   (the picker's ring, which the reveal adopts). A flow teardown still closes it.
    * @returns {Promise<{choice:any, reason:string}>}
    */
-  function askScreen({ screen, requestId, payload, controllerUserId, timeoutMs, fallback }) {
+  function askScreen({ screen, requestId, payload, controllerUserId, timeoutMs, fallback, keepOnClose = false }) {
     const key = `${requestId}:${screen}`;
 
     // Spectators name who they're waiting on, so a table watching a frozen
@@ -340,8 +359,9 @@
         _pending.delete(key);
         try { clearTimeout(timer); } catch {}
 
-        emit(MSG_CLOSE, { screen, requestId });
-        try { localUiFor(screen)?.hide?.(); } catch {}
+        const keep = !!keepOnClose && reason !== "flow-ended";
+        emit(MSG_CLOSE, { screen, requestId, keep });
+        try { localUiFor(screen)?.hide?.({ keep }); } catch {}
 
         log(`screen "${screen}" resolved by ${reason}:`, choice);
         resolve({ choice: choice ?? fallback, reason });
@@ -372,6 +392,75 @@
   }
 
   // --------------------------------------------------------------------------
+  // Skeletal Key
+  // --------------------------------------------------------------------------
+  const skeletalKey = () => window["oni.TreasureRoulette.SkeletalKey"] ?? null;
+
+  /**
+   * Ask the controller whether to spend a Skeletal Key on this roulette. Only
+   * asked when the party holds one. The prompt names the roulette type and the
+   * key count and nothing else — the pool does not exist yet.
+   * @returns {Promise<boolean>} true = use a key
+   */
+  async function askUseSkeletalKey({ db, members, decider, requestId, cfg }) {
+    const SK = skeletalKey();
+    if (!SK?.count) return false;
+
+    const held = SK.count(db, members);
+    if (held <= 0) return false;
+
+    const { choice } = await askScreen({
+      screen: "keyPrompt",
+      requestId,
+      controllerUserId: decider,
+      timeoutMs: KEY_PROMPT_TIMEOUT_MS,
+      fallback: { use: false },
+      payload: {
+        name: SK.NAME,
+        icon: SK.ICON,
+        count: held,
+        rouletteLabel: cfg.label,
+      },
+    });
+    return choice?.use === true;
+  }
+
+  // Tooltip content for every panel in the picker, keyed by tableResultId.
+  // Built here on the GM because a player client may not be allowed to read the
+  // world items the table links to.
+  async function describePool(rows) {
+    const out = {};
+    for (const row of rows ?? []) {
+      const id = row?.tableResultId;
+      if (!id) continue;
+      const asText = { kind: "text", name: row.name, img: row.img };
+      try {
+        const doc = String(row.uuid ?? "").startsWith("Item.") ? await fromUuid(row.uuid) : null;
+        if (!doc) { out[id] = asText; continue; }
+
+        if (isEquippable(doc)) {
+          const cand = await describeGear(doc);
+          if (cand) { out[id] = { kind: "gear", cand }; continue; }
+        }
+
+        const p = doc.system?.props ?? {};
+        out[id] = {
+          kind: "item",
+          name: doc.name,
+          img: doc.img,
+          rarity: p.item_rarity ?? "",
+          itemType: p.item_type ?? "",
+          description: p.description ?? "",
+        };
+      } catch (e) {
+        warn("describePool: row failed, showing its name only:", row, e);
+        out[id] = asText;
+      }
+    }
+    return out;
+  }
+
+  // --------------------------------------------------------------------------
   // Main flow
   // --------------------------------------------------------------------------
   /**
@@ -381,9 +470,11 @@
    * @param {Scene}         opts.scene
    * @param {string}        opts.dpTypeKey        DP tile type ("treasure", "weapon", …)
    * @param {string|null}   [opts.controllerUserId] who may drive the screens
+   * @param {boolean}       [opts.allowSkeletalKey=true] offer the Skeletal Key
+   *   prompt when the party holds one. A scripted/story roulette can turn it off.
    * @returns {Promise<{ok:boolean, reason?:string, requestId?:string}>}
    */
-  async function run({ tileDoc, tokenDoc, scene, dpTypeKey, controllerUserId = null } = {}) {
+  async function run({ tileDoc, tokenDoc, scene, dpTypeKey, controllerUserId = null, allowSkeletalKey = true } = {}) {
     if (!isPrimaryGM()) return { ok: false, reason: "not-primary-gm" };
     if (!tileDoc || !scene) return { ok: false, reason: "missing-tile-or-scene" };
 
@@ -417,14 +508,25 @@
     const decider = resolveControllerUserId(controllerUserId);
     const { db, dbUuid } = await getDb();
     const autoRoute = await readAutoRouteOption(db);
+    const members = await resolvePartyMembers(db);
+
+    // Generated here rather than by Core: the key prompt is a screen, and
+    // screens are keyed by requestId, but it runs before any packet exists.
+    const requestId = newRequestId();
 
     let packet = null;
     let awarded = false;
+    let tileCleared = false;
     let recipientActorUuid = null;
+    let keyUse = null;   // { remaining } once a Skeletal Key has been spent
+
+    const chatNote = () => keyUse
+      ? `chosen with a Skeletal Key (${keyUse.remaining} left)`
+      : "";
 
     try {
-      // ── 1-2. Lock the winner and start the spin everywhere ─────────────────
-      const res = await core.request({
+      const baseReq = {
+        requestId,
         tableUuid,
         rouletteType: cfg.rouletteType,
         pool: { poolSize: DEFAULT_POOL_SIZE },
@@ -440,17 +542,69 @@
           sceneId: scene.id,
           tileType: dpTypeKey,
         },
-      });
+      };
 
-      if (!res?.ok || !res.packet) {
-        warn("Core.request rejected:", res);
-        return { ok: false, reason: "core-rejected" };
+      // ── 2a. Skeletal Key: pick instead of spin ────────────────────────────
+      let pooled = false;
+      if (allowSkeletalKey && core.preparePool && await askUseSkeletalKey({ db, members, decider, requestId, cfg })) {
+        const prep = await core.preparePool(baseReq);
+        pooled = !!prep?.ok;
+
+        // Spend only once the pool exists (a broken table must not eat a key),
+        // and before it is shown (no peeking at the pool, then backing out).
+        const spend = pooled ? await skeletalKey()?.spendOne?.(db, members) : null;
+
+        if (!prep?.ok) {
+          warn("preparePool failed — spinning instead, no key spent:", prep);
+        } else if (!spend?.ok) {
+          warn("Skeletal Key spend failed — spinning instead:", spend);
+        } else {
+          keyUse = { remaining: spend.remaining, fromActorName: spend.fromActorName };
+          for (const hook of ["TR:KEY_USED", "oni.TR:KEY_USED"]) {
+            try { Hooks.callAll(hook, { requestId, ...keyUse, tileType: dpTypeKey }); }
+            catch (e) { warn(`Hooks.callAll(${hook}) failed:`, e); }
+          }
+
+          const { choice } = await askScreen({
+            screen: "picker",
+            requestId,
+            controllerUserId: decider,
+            timeoutMs: PICKER_TIMEOUT_MS,
+            fallback: { tableResultId: null },
+            keepOnClose: true,
+            payload: {
+              requestId,
+              title: cfg.label,
+              displayPool: prep.packet.displayPool,
+              details: await describePool(prep.packet.displayPool),
+              keysRemaining: spend.remaining,
+              keyIcon: skeletalKey()?.ICON ?? null,
+            },
+          });
+
+          const lock = core.lockPick(requestId, choice?.tableResultId ?? null);
+          if (!lock?.ok) throw new Error(`lockPick failed: ${lock?.error}`);
+          packet = lock.packet;
+          core.playEverywhere(packet);
+        }
       }
-      packet = res.packet;
+
+      // ── 2b. Lock the winner and start the spin everywhere ─────────────────
+      if (!packet) {
+        // A prepared-but-unused pool already owns this requestId in Core.
+        const res = await core.request(pooled ? { ...baseReq, requestId: newRequestId() } : baseReq);
+
+        if (!res?.ok || !res.packet) {
+          warn("Core.request rejected:", res);
+          return { ok: false, reason: "core-rejected" };
+        }
+        packet = res.packet;
+      }
 
       // ── 3. Consume the tile. The winner is already locked, so a crash from
       //       here on must not hand out a second, better roll. ───────────────
       await DP_clearTile(scene, tileDoc.id);
+      tileCleared = true;
 
       // ── 4. Wait for every client to finish the spin + reveal ───────────────
       if (net?.waitBarrier) {
@@ -462,8 +616,6 @@
       // ── 5. Who gets it ────────────────────────────────────────────────────
       const kind = String(packet?.reward?.kind ?? "").toLowerCase();
       const isIp = kind === "itempoint";
-
-      const members = await resolvePartyMembers(db);
 
       if (autoRoute && !isIp) {
         recipientActorUuid = dbUuid;
@@ -514,6 +666,7 @@
         recipientActorUuid,
         postChat: true,
         showTransferCard: false,
+        note: chatNote(),
       });
       awarded = !!awardRes?.ok;
 
@@ -542,9 +695,27 @@
       return { ok: false, reason: String(e?.message ?? e) };
 
     } finally {
-      // The tile is already consumed. If we died before granting, the party still
-      // gets the reward — into Party Inventory, which is always a legal target
-      // for everything except IP.
+      // A spent key is a promise of a reward. If the flow died before the pick
+      // was locked, lock a random pick from the same pool now.
+      if (!packet && keyUse) {
+        try {
+          const lock = core.lockPick?.(requestId, null);
+          if (lock?.ok) {
+            packet = lock.packet;
+            warn("flow ended after a Skeletal Key was spent — locked a random pick:", packet?.winner?.name);
+          }
+        } catch (e) {
+          console.error(TAG, "fallback lockPick failed — key spent, reward LOST:", e);
+        }
+      }
+
+      // A locked winner means the tile is spent, whichever path locked it.
+      if (packet && !tileCleared) {
+        try { await DP_clearTile(scene, tileDoc.id); } catch (e) { warn("fallback tile clear failed:", e); }
+      }
+
+      // If we died before granting, the party still gets the reward — into Party
+      // Inventory, which is always a legal target for everything except IP.
       if (packet && !awarded) {
         try {
           const fallbackUuid = recipientActorUuid ?? dbUuid;
@@ -555,6 +726,7 @@
               recipientActorUuid: fallbackUuid,
               postChat: true,
               showTransferCard: false,
+              note: chatNote(),
             });
           }
         } catch (e) {
@@ -563,10 +735,13 @@
       }
 
       // Make sure nothing is left on screen if we bailed mid-screen.
-      for (const screen of ["recipient", "equip"]) {
-        const k = packet ? `${packet.requestId}:${screen}` : null;
-        if (k && _pending.has(k)) {
-          try { _pending.get(k)(null, "flow-ended"); } catch {}
+      const ids = new Set([requestId, packet?.requestId].filter(Boolean));
+      for (const id of ids) {
+        for (const screen of ALL_SCREENS) {
+          const k = `${id}:${screen}`;
+          if (_pending.has(k)) {
+            try { _pending.get(k)(null, "flow-ended"); } catch {}
+          }
         }
       }
 
@@ -721,8 +896,8 @@
 
         // ── Everyone: dismiss ──────────────────────────────────────────────
         if (msg.type === MSG_CLOSE) {
-          const { screen } = msg.payload ?? {};
-          try { localUiFor(screen)?.hide?.(); } catch {}
+          const { screen, keep } = msg.payload ?? {};
+          try { localUiFor(screen)?.hide?.({ keep: !!keep }); } catch {}
           return;
         }
 
@@ -762,7 +937,7 @@
     run,
     DP_TYPE_CONFIG,
     SLOTS_BY_ITEM_TYPE,
-    _debug: { getLootTableUuid, buildEquipPayload, describeGear, _pending, _busy },
+    _debug: { getLootTableUuid, buildEquipPayload, describeGear, describePool, _pending, _busy },
   };
 
   window[KEY] = api;

@@ -27,10 +27,11 @@
   const MSG_DONE    = "DP_TREASURE_DONE";
 
   // Hard ceiling on how long a player client will block waiting for the GM's
-  // flow. The flow's own budgets (60s recipient + 45s equip + spin) sit under
-  // this; if it is ever hit, something is wrong GM-side and freeing the player's
+  // flow. The flow's own budgets sit under this — worst case with a Skeletal Key
+  // is 30s key prompt + 90s picker + 60s recipient + 45s equip + reveal, about
+  // 230s. If it is ever hit, something is wrong GM-side and freeing the player's
   // turn is better than freezing the party.
-  const PLAYER_WAIT_TIMEOUT_MS = 180000;
+  const PLAYER_WAIT_TIMEOUT_MS = 300000;
 
   if (!DP?.TileEventRegistry) {
     console.warn(TAG, "TileEventRegistry not ready.");
