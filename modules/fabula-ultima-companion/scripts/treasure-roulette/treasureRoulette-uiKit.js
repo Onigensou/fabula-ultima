@@ -139,6 +139,10 @@
    * @returns {Promise<string>} html ("" when there's nothing to show)
    */
   async function describeHTML(descriptionHtml) {
+    // Item descriptions carry Foundry content links (@UUID[JournalEntry.x]{Poisoned}).
+    // Nothing on these screens enriches them, so every card showed the raw
+    // syntax. Reduce each link to its label before parsing.
+    descriptionHtml = String(descriptionHtml ?? "").replace(/@\w+\[[^\]]*\]\{([^}]*)\}/g, "$1");
     if (!descriptionHtml) return "";
     const mod = await cardMod();
     if (!mod?.parseEffectDescription) {
@@ -739,10 +743,7 @@
     const glow = isItem ? rarityGlow(detail.rarity) : "none";
     const typeLabel = ITEM_TYPE_LABEL[String(detail.itemType ?? "").toLowerCase()] ?? "";
     const sub = isItem ? [typeLabel, detail.rarity].filter(Boolean).join(" · ") : "Reward";
-    // Item descriptions carry Foundry content links (@UUID[Actor.x]{Decoy Doll}).
-    // Nothing enriches them on this path, so show just the label.
-    const rawDesc = String(detail.description ?? "").replace(/@\w+\[[^\]]*\]\{([^}]*)\}/g, "$1");
-    const desc = isItem ? await describeHTML(rawDesc) : "";
+    const desc = isItem ? await describeHTML(detail.description) : "";
 
     return `
       <div class="tr-tip-card">
