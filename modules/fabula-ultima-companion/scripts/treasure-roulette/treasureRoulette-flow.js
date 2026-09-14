@@ -49,6 +49,7 @@
   const MSG_SHOW  = "ONI_TRF_SHOW";   // GM     -> all    { screen, requestId, payload, controllerUserId }
   const MSG_PICK  = "ONI_TRF_PICK";   // client -> GM     { screen, requestId, choice, userId }
   const MSG_CLOSE = "ONI_TRF_CLOSE";  // GM     -> all    { screen, requestId, keep }
+  const MSG_END   = "ONI_TRF_END";    // GM     -> all    { requestId }  sequence over: drop stage + dim
 
   // Screen budgets. On timeout we take the safe default rather than stall the turn.
   const RECIPIENT_TIMEOUT_MS  = 60000;
@@ -520,9 +521,11 @@
     let recipientActorUuid = null;
     let keyUse = null;   // { remaining } once a Skeletal Key has been spent
 
-    const chatNote = () => keyUse
-      ? `chosen with a Skeletal Key (${keyUse.remaining} left)`
-      : "";
+    // A timed-out picker still spent the key; say so rather than claim a choice.
+    const chatNote = () => !keyUse ? ""
+      : packet?.chosen === false
+        ? `Skeletal Key used, picked at random (${keyUse.remaining} left)`
+        : `chosen with a Skeletal Key (${keyUse.remaining} left)`;
 
     try {
       const baseReq = {
@@ -751,6 +754,12 @@
       try { globalThis.ONI?.TreasureRoulette?.UIKit?.stage?.clear?.(); }
       catch (e) { warn("stage clear failed:", e); }
 
+      // Every spectator built the same stage and dim from its own reveal, and
+      // nothing else ever tears theirs down — measured: a player client kept the
+      // parked reward and the 0.72 dim over the scene after the flow ended. Tell
+      // every client the sequence is over.
+      emit(MSG_END, { requestId: packet?.requestId ?? requestId });
+
       _busy.delete(tileDoc.id);
 
       if (packet) {
@@ -895,6 +904,18 @@
         }
 
         // ── Everyone: dismiss ──────────────────────────────────────────────
+        if (msg.type === MSG_END) {
+          if (isPrimaryGM()) return;   // run()'s own finally already cleared this client
+          const id = String(msg.payload?.requestId ?? "");
+          const ns = ((globalThis.ONI ??= {}).TreasureRoulette ??= {});
+          // Remembered so a reveal still running here (throttled tab) can clean
+          // up after itself when it finally ends — see UI.play().
+          ns.endedRequests ??= new Set();
+          if (id) ns.endedRequests.add(id);
+          try { ns.UIKit?.stage?.clear?.(); } catch {}
+          return;
+        }
+
         if (msg.type === MSG_CLOSE) {
           const { screen, keep } = msg.payload ?? {};
           try { localUiFor(screen)?.hide?.({ keep: !!keep }); } catch {}

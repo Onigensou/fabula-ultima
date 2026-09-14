@@ -841,6 +841,14 @@
       try {
         ring.dispose();
       } catch {}
+      // A client whose reveal ran late (a throttled background tab) parks the
+      // reward AFTER TR.Flow already announced the end of the sequence. Drop it
+      // here, or the parked panel and the dim stay on that screen for good.
+      if (globalThis.ONI?.TreasureRoulette?.endedRequests?.has?.(String(packet.requestId))) {
+        try {
+          globalThis.ONI.TreasureRoulette.UIKit?.stage?.clear?.({ immediate: true });
+        } catch {}
+      }
       try {
         await easeOutAndRemove(overlay);
       } catch {
