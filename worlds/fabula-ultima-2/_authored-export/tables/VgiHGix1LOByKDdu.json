@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "4bqgn7jZFnmardZp",
-  "formula": "1d1",
+  "formula": "1d2",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dreae.png",
   "name": "Valley of the Dragon - Armor",
   "ownership": {
@@ -20,5 +20,37 @@
     "default": 0
   },
   "replacement": true,
+  "results": [
+    {
+      "_id": "inn1JeSS3c6GYxTp",
+      "documentCollection": "Item",
+      "documentId": "razS1f4g7zqZPpB7",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/verst.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Plot Armor",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "wUBFsssvt1Td2ReO",
+      "documentCollection": "Item",
+      "documentId": "Y7JL7P9hbWipwb90",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/equipment/chest/breastplate-scale-grey.webp",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Dragonic Scalemail",
+      "type": "document",
+      "weight": 1
+    }
+  ],
   "sort": 0
 }

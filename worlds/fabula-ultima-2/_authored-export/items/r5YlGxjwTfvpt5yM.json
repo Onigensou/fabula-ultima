@@ -1,0 +1,66 @@
+{
+  "_id": "r5YlGxjwTfvpt5yM",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1789364446674,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/commodities/materials/feather-blue-grey.webp",
+  "name": "Razor Plume (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "AWttAMETOrXXUmeF",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>@UUID[JournalEntry.2hNU23YLpCcZCCmf]{Pierce}</p></li><li><p>@UUID[JournalEntry.Cz6U0ps98sYN8jMH]{Conquer 3}: inflicts @UUID[JournalEntry.GePNxftPupElcCWp]{Bleed} on the target.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Bleed",
+          "effect_kind": "apply_ae",
+          "effect_label": "rplume_bleed",
+          "target_ref": "trigger_subject"
+        }
+      },
+      "id": "r5YlGxjwTfvpt5yM",
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Razor Plume (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "HIT_MARGIN >= 3 && DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "rplume_bleed",
+          "reaction_passive_mode": "on",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_deals_damage"
+        }
+      },
+      "skill_description": "<ul><li><p>@UUID[JournalEntry.2hNU23YLpCcZCCmf]{Pierce}</p></li><li><p>@UUID[JournalEntry.Cz6U0ps98sYN8jMH]{Conquer 3}: inflicts @UUID[JournalEntry.GePNxftPupElcCWp]{Bleed} on the target.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.r5YlGxjwTfvpt5yM"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "r5YlGxjwTfvpt5yM"
+  },
+  "type": "equippableItem"
+}

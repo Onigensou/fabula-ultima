@@ -1,0 +1,49 @@
+{
+  "_id": "FhKxFtFRa1b1YOdV",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1789364444664,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/verst.png",
+  "name": "Plot Armor (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "razS1f4g7zqZPpB7",
+    "props": {
+      "cost": "",
+      "description": "<p><em>Standard issue for main characters. Stops absolutely nothing — right up until the scene where it matters, and then the script simply refuses to let you go.</em></p><ul><li><p>When you would be reduced to 0 HP, you may spend 1 Fabula Point to hold on at 1 HP instead.</p></li></ul>",
+      "effect_table": {},
+      "id": "FhKxFtFRa1b1YOdV",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/verst.png",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Plot Armor (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {},
+      "skill_description": "<p><em>Standard issue for main characters. Stops absolutely nothing — right up until the scene where it matters, and then the script simply refuses to let you go.</em></p><ul><li><p>When you would be reduced to 0 HP, you may spend 1 Fabula Point to hold on at 1 HP instead.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.FhKxFtFRa1b1YOdV"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "FhKxFtFRa1b1YOdV"
+  },
+  "type": "equippableItem"
+}

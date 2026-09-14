@@ -1,0 +1,80 @@
+{
+  "_id": "GuSIfaG2yJNH3tmG",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1789364445704,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/equipment/chest/breastplate-scale-grey.webp",
+  "name": "Dragonic Scalemail (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "Y7JL7P9hbWipwb90",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>You take 10% less damage from Dragon-type creatures.</p></li><li><p>Your Fire damage is increased by 10%.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "damage_amount": "0.9",
+          "damage_operation": "multiply",
+          "damage_stage": "incoming",
+          "effect_kind": "adjust_damage",
+          "effect_label": "dscale_dr"
+        },
+        "1": {
+          "damage_amount": "1.1",
+          "damage_operation": "multiply",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "dscale_fire"
+        }
+      },
+      "id": "GuSIfaG2yJNH3tmG",
+      "img": "icons/equipment/chest/breastplate-scale-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Dragonic Scalemail (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ATTACKER_SUBTYPE_IS_DRAGON == 1",
+          "reaction_effect_ref": "dscale_dr",
+          "reaction_passive_mode": "on",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_targeted_by_action"
+        },
+        "1": {
+          "condition_formula": "",
+          "reaction_damage_type": "fire",
+          "reaction_effect_ref": "dscale_fire",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_description": "<ul><li><p>You take 10% less damage from Dragon-type creatures.</p></li><li><p>Your Fire damage is increased by 10%.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.GuSIfaG2yJNH3tmG"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "GuSIfaG2yJNH3tmG"
+  },
+  "type": "equippableItem"
+}

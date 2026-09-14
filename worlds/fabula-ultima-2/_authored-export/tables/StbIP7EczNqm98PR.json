@@ -16,7 +16,7 @@
     }
   },
   "folder": "4bqgn7jZFnmardZp",
-  "formula": "1d1",
+  "formula": "1d2",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
   "name": "Valley of the Dragon - Weapon",
   "ownership": {
@@ -24,5 +24,37 @@
     "default": 0
   },
   "replacement": true,
+  "results": [
+    {
+      "_id": "67YROVnmaChdetN2",
+      "documentCollection": "Item",
+      "documentId": "AWttAMETOrXXUmeF",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Razor Plume",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "uALZ2WjNXslPgJws",
+      "documentCollection": "Item",
+      "documentId": "UQmfh1jf8CSx6uHU",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/weapons/misc/whip-red-yellow.webp",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Explosion Whip",
+      "type": "document",
+      "weight": 1
+    }
+  ],
   "sort": 0
 }

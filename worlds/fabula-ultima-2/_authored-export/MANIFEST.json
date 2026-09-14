@@ -4931,6 +4931,18 @@
         "effects": 0
       },
       {
+        "id": "Y7JL7P9hbWipwb90",
+        "name": "Dragonic Scalemail",
+        "type": "equippableItem",
+        "effects": 2
+      },
+      {
+        "id": "GuSIfaG2yJNH3tmG",
+        "name": "Dragonic Scalemail (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "YpRxmj2S5mNfkal2",
         "name": "Dragonskull Helm",
         "type": "equippableItem",
@@ -9461,6 +9473,18 @@
         "effects": 2
       },
       {
+        "id": "razS1f4g7zqZPpB7",
+        "name": "Plot Armor",
+        "type": "equippableItem",
+        "effects": 3
+      },
+      {
+        "id": "FhKxFtFRa1b1YOdV",
+        "name": "Plot Armor (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "h796jftqMnc17n8d",
         "name": "Plundering Assault",
         "type": "equippableItem",
@@ -9967,6 +9991,18 @@
       {
         "id": "blT62xRLqnnnIdHA",
         "name": "Ration",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "AWttAMETOrXXUmeF",
+        "name": "Razor Plume",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "r5YlGxjwTfvpt5yM",
+        "name": "Razor Plume (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -24807,7 +24843,7 @@
       {
         "id": "VgiHGix1LOByKDdu",
         "name": "Valley of the Dragon - Armor",
-        "results": 0
+        "results": 2
       },
       {
         "id": "11corNhirrKGdkGE",
@@ -24857,7 +24893,7 @@
       {
         "id": "StbIP7EczNqm98PR",
         "name": "Valley of the Dragon - Weapon",
-        "results": 0
+        "results": 2
       },
       {
         "id": "3tGY9xvFTeQhFIzU",
