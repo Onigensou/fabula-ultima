@@ -4181,6 +4181,18 @@
         "effects": 0
       },
       {
+        "id": "DwQBvo01cFf1IcN3",
+        "name": "Chrono",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "rYRlYXfeH2Fxc6L5",
+        "name": "Chrono (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "lyo1RDT2c5jFCm6C",
         "name": "Clairvoyance",
         "type": "equippableItem",
@@ -4694,7 +4706,7 @@
         "id": "XVOWOq9oUmEECGrU",
         "name": "Debuff",
         "type": "activeEffectContainer",
-        "effects": 56
+        "effects": 57
       },
       {
         "id": "ZnzHJ5RiISPz0Bll",
@@ -12121,6 +12133,12 @@
       {
         "id": "qiCHr68oxuGBzoPP",
         "name": "Thunderstorm",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "0a1wfB3Zez2ETSCw",
+        "name": "Time Dilation",
         "type": "equippableItem",
         "effects": 0
       },
@@ -24893,7 +24911,7 @@
       {
         "id": "StbIP7EczNqm98PR",
         "name": "Valley of the Dragon - Weapon",
-        "results": 2
+        "results": 3
       },
       {
         "id": "3tGY9xvFTeQhFIzU",

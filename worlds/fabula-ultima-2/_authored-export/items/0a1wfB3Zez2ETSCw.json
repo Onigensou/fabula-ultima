@@ -1,0 +1,158 @@
+{
+  "_id": "0a1wfB3Zez2ETSCw",
+  "_stats": {
+    "compendiumSource": "Item.2Ncb8FEV4lynlsHH",
+    "coreVersion": "12.343",
+    "createdTime": 1789396638511,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/magic/time/clock-spinning-gold-pink.webp",
+  "name": "Time Dilation",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": "DwQBvo01cFf1IcN3",
+    "props": {
+      "active_effect_config_table": {
+        "0": {
+          "$deleted": false,
+          "active_effect_application": "add",
+          "active_effect_apply_mode": "percentage",
+          "active_effect_dice_1": "",
+          "active_effect_dice_2": "",
+          "active_effect_dl": "0",
+          "active_effect_id": "",
+          "active_effect_percent": "100",
+          "active_effect_target": "enemy",
+          "active_effect_trigger": "on_hit"
+        }
+      },
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "Entropist",
+      "cost": "10 MP",
+      "custom_logic_resolution": "",
+      "damage_bonus": "",
+      "defense_target_type": "",
+      "description": "<p>Bend the flow of time around a creature. Choose one:</p><ul><li><p>The target gains <strong>Swift</strong>.</p></li><li><p>The target suffers @UUID[JournalEntry.HHmYmj7xffQMqtzT]{Slow} and gains 1 @UUID[JournalEntry.uB7wFPvH1kdUUDnH]{Chronostasis}.</p></li></ul>",
+      "details_roller": "Show",
+      "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "tdil_menu",
+          "menu_option_refs": "tdil_swift, tdil_slow",
+          "menu_pick_count": "1",
+          "menu_subtitle": "Bend the flow of time around the target",
+          "menu_title": "Time Dilation"
+        },
+        "1": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Swift",
+          "effect_kind": "apply_ae",
+          "effect_label": "tdil_swift",
+          "menu_description": "The target gains Swift.",
+          "menu_label": "Swift",
+          "target_ref": "action_targets"
+        },
+        "2": {
+          "chain_steps": "tdil_slow_ae, tdil_build, tdil_stop, tdil_clear",
+          "effect_kind": "chain",
+          "effect_label": "tdil_slow",
+          "menu_description": "The target suffers Slow and gains 1 Chronostasis.",
+          "menu_label": "Slow"
+        },
+        "3": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Slow",
+          "effect_kind": "apply_ae",
+          "effect_label": "tdil_slow_ae",
+          "target_ref": "action_targets"
+        },
+        "4": {
+          "ae_duplicate_mode": "add_charges",
+          "ae_initial_charges": "1",
+          "ae_template_ref": "Chronostasis",
+          "effect_kind": "apply_ae",
+          "effect_label": "tdil_build",
+          "target_ref": "action_targets"
+        },
+        "5": {
+          "effect_kind": "modify_turns",
+          "effect_label": "tdil_stop",
+          "target_ref": "tdil_at3",
+          "turns_delta": "-1",
+          "turns_floor": "0"
+        },
+        "6": {
+          "ae_template_ref": "Chronostasis",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "tdil_clear",
+          "include_persistent": true,
+          "target_ref": "tdil_at3"
+        },
+        "7": {
+          "allow_empty": true,
+          "auto_target": "skip",
+          "candidate_source": "action_targets",
+          "effect_kind": "targeting",
+          "effect_label": "tdil_at3",
+          "mode": "all",
+          "target_filter": "AE_CHARGES_CHRONOSTASIS >= 3"
+        }
+      },
+      "gadget_alchemy_tier": "",
+      "gadget_infusion_tier": "",
+      "gadget_magitech_tier": "",
+      "heroic_requirement": "",
+      "id": "0a1wfB3Zez2ETSCw",
+      "ignore_hr": false,
+      "img": "icons/magic/time/clock-spinning-gold-pink.webp",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Time Dilation",
+      "on_activate_effect_ref": "tdil_menu",
+      "optional_params": {},
+      "pre_activate_effect_ref": "",
+      "reaction_config_table": {},
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_tags": "",
+      "skill_target": "One creature",
+      "skill_type": "Spell",
+      "target_eligibility": "",
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Item.0a1wfB3Zez2ETSCw"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "0a1wfB3Zez2ETSCw"
+  },
+  "type": "equippableItem"
+}

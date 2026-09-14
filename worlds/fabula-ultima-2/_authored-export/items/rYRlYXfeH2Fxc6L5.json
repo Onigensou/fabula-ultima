@@ -1,0 +1,89 @@
+{
+  "_id": "rYRlYXfeH2Fxc6L5",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1789396637929,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/magic/time/hourglass-tilted-glowing-gold.webp",
+  "name": "Chrono (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "DwQBvo01cFf1IcN3",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>When your attack with this weapon hits a creature, it gains 1 @UUID[JournalEntry.uB7wFPvH1kdUUDnH]{Chronostasis}.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "chrono_build, chrono_stop, chrono_clear",
+          "effect_kind": "chain",
+          "effect_label": "chrono_hit"
+        },
+        "1": {
+          "ae_duplicate_mode": "add_charges",
+          "ae_initial_charges": "1",
+          "ae_template_ref": "Chronostasis",
+          "effect_kind": "apply_ae",
+          "effect_label": "chrono_build",
+          "target_ref": "trigger_subject"
+        },
+        "2": {
+          "condition_formula": "TARGET_AE_CHARGES_CHRONOSTASIS >= 3",
+          "effect_kind": "modify_turns",
+          "effect_label": "chrono_stop",
+          "target_ref": "trigger_subject",
+          "turns_delta": "-1",
+          "turns_floor": "0"
+        },
+        "3": {
+          "ae_template_ref": "Chronostasis",
+          "condition_formula": "TARGET_AE_CHARGES_CHRONOSTASIS >= 3",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "chrono_clear",
+          "include_persistent": true,
+          "target_ref": "trigger_subject"
+        }
+      },
+      "id": "rYRlYXfeH2Fxc6L5",
+      "img": "icons/magic/time/hourglass-tilted-glowing-gold.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Chrono (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "chrono_hit",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_deals_damage"
+        }
+      },
+      "skill_description": "<ul><li><p>When your attack with this weapon hits a creature, it gains 1 @UUID[JournalEntry.uB7wFPvH1kdUUDnH]{Chronostasis}.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.rYRlYXfeH2Fxc6L5"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "rYRlYXfeH2Fxc6L5"
+  },
+  "type": "equippableItem"
+}

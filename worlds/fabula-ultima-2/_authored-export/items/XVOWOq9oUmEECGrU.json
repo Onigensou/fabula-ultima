@@ -3240,6 +3240,75 @@
       "type": "base"
     },
     {
+      "_id": "qbFoNzYGZg2mbim7",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1789396637245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>At <strong>3</strong> Chronostasis, this creature loses all of them and performs one fewer action on its next turn.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "qbFoNzYGZg2mbim7",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.qbFoNzYGZg2mbim7"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "chronostasis",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "chronostasis",
+          "charges": 1,
+          "chargesMax": 3,
+          "crossScene": false,
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/time/hourglass-tilted-glowing-gold.webp",
+      "name": "Chronostasis",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "debuff",
+          "chronostasis"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
       "_id": "QbgrRpba2h4ZC3uF",
       "_stats": {
         "compendiumSource": null,
