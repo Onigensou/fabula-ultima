@@ -178,5 +178,38 @@ t("the level term follows the wielder's level (L20 -> +4)", () => {
   }
 });
 
+// ── Chrono: stack_deny through a real battle ────────────────────────────────
+function chronoDoc(passiveProps = {}) {
+  return {
+    name: "Chrono",
+    system: { props: {
+      item_type: "weapon", category: "Arcane", damage_bonus: "2", check_bonus: "0",
+      type_damage: "Dark", rolled_atr1: "INS", rolled_atr2: "WLP", weapon_range: "Melee",
+    } },
+    items: [{ name: "Chrono (Passive)", props: { skill_type: "Passive", ...passiveProps } }],
+  };
+}
+function chronoRun(passiveProps, rounds = 9) {
+  const who = pc();
+  applyEquip(who, chronoDoc(passiveProps));
+  const target = dummy("A");
+  const r = runBattle({ party: [who], enemies: [target], rng: new Rng("chrono-test"), expectedRounds: rounds });
+  const hits = r.log.filter((e) => e.actor === "Tester" && !e.reaction && !e.announce && !e.miss && e.damage > 0).length;
+  const denied = r.combatants.find((c) => c.name === "A").turnsDenied;
+  return { hits, denied, log: r.log };
+}
+t("Chrono: every 3rd damaging hit costs the target one action", () => {
+  const { hits, denied, log } = chronoRun({});
+  const procs = Math.floor(hits / 3);
+  assert.ok(procs >= 2, `only ${hits} hits`);
+  // The last proc may land after the target's final turn and stay owed.
+  assert.ok(denied === procs || denied === procs - 1, `${hits} hits → ${denied} denied`);
+  assert.strictEqual(log.filter((e) => e.denied).length, denied);
+});
+t("Chrono's threshold dial moves the cadence (threshold 1 → a denial per hit)", () => {
+  const { hits, denied } = chronoRun({ mindscape_stack_threshold: "1" });
+  assert.ok(denied >= hits - 1 && denied <= hits, `${hits} hits → ${denied} denied`);
+});
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

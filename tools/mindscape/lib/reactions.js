@@ -87,6 +87,10 @@ function evenRoundBasicAttack(ctx) {
 //                  `count` (Multi N). ON_DECLARE_ATTACK only; a maximum, not a
 //                  sum. `damage_add` may also carry `levelDiv`, adding
 //                  floor(level / levelDiv) — a gear bonus that scales.
+// `stack_deny`   — increment a named counter on the VICTIM; at `threshold`,
+//                  reset it and the victim loses its next action (a turn
+//                  debt). Live: apply_ae add_charges + modify_turns -1, which
+//                  lands this round if the victim still has a turn, else next.
 //
 // ── WEAPON READ ─────────────────────────────────────────────────────────────
 // A least-recently-used window over weapon families. Each family carries a
@@ -326,6 +330,16 @@ const REACTION_REGISTRY = Object.freeze({
       note: "the wearer's Fire damage × 1.1",
     },
   ],
+  // Legendary Arcane weapon (2026-09-14): a basic attack that deals damage gives the
+  // target 1 Chronostasis; at 3 it loses them all and one action. Live: two
+  // creature_deals_damage rows gated ACTION_IS_ATTACK over a persistent_counter AE.
+  // The granted spell Time Dilation (Swift, or Slow + 1 Chronostasis) is NOT modelled.
+  "Chrono (Passive)": {
+    trigger: TRIGGERS.ON_DEAL_DAMAGE,
+    gate: (ctx) => !!ctx?.isBasicAttack && (ctx?.damage ?? 0) > 0,
+    effect: { kind: "stack_deny", counter: "chronostasis", threshold: 3 },
+    note: "basic-attack damage stacks Chronostasis on the victim; 3 → it loses its next action (dial: mindscape_stack_threshold)",
+  },
 });
 
 // ── Weapon read: the pure state transition ──────────────────────────────────
@@ -433,6 +447,10 @@ function applyTuning(effect, props) {
   if (out.kind === "survive_at_one") {
     const cost = n(props.mindscape_fp_cost);
     if (Number.isFinite(cost) && cost >= 0) out.fpCost = cost;
+  }
+  if (out.kind === "stack_deny") {
+    const threshold = n(props.mindscape_stack_threshold);
+    if (Number.isFinite(threshold) && threshold >= 1) out.threshold = threshold;
   }
   if (out.kind === "damage_add") {
     const amount = n(props.mindscape_damage_add);

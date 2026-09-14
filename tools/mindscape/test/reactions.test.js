@@ -69,7 +69,7 @@ t("every registry entry has a known trigger and an effect kind", () => {
   const triggers = new Set(Object.values(RX.TRIGGERS));
   const kinds = new Set(["free_attack", "stack_burst", "burst", "grant_mp",
                          "weapon_read", "damage_mult", "damage_add", "target_count",
-                         "damage_taken_mult", "survive_at_one"]);
+                         "damage_taken_mult", "survive_at_one", "stack_deny"]);
   // An entry is one row or an ARRAY of rows; every row must stand on its own.
   for (const [name, entry] of Object.entries(RX.REACTION_REGISTRY)) {
     const rows = RX.registryRows(entry);
@@ -111,6 +111,17 @@ t("Plot Armor saves only a LETHAL hit, and only with a Fabula Point to spend", (
   assert.strictEqual(plotArmor.gate({ damage: 50, victim: { hp: 40, fp: 0 } }), false, "no FP");
   const declared = RX.declaredReactions([{ name: "Plot Armor (Passive)", props: { mindscape_fp_cost: "2" } }]);
   assert.strictEqual(declared[0].effect.fpCost, 2);
+});
+// ── Chrono (2026-09-14) ─────────────────────────────────────────────────────
+const chrono = RX.REACTION_REGISTRY["Chrono (Passive)"];
+t("Chrono stacks only on a basic attack that dealt damage", () => {
+  assert.strictEqual(chrono.trigger, RX.TRIGGERS.ON_DEAL_DAMAGE);
+  assert.strictEqual(chrono.gate({ isBasicAttack: true, damage: 12 }), true);
+  assert.strictEqual(chrono.gate({ isBasicAttack: false, damage: 12 }), false, "skill or reaction damage");
+  assert.strictEqual(chrono.gate({ isBasicAttack: true, damage: 0 }), false, "absorbed / zero");
+  assert.strictEqual(chrono.effect.threshold, 3);
+  const declared = RX.declaredReactions([{ name: "Chrono (Passive)", props: { mindscape_stack_threshold: "2" } }]);
+  assert.strictEqual(declared[0].effect.threshold, 2);
 });
 t("a counter payload is excluded from turn-action selection", () => {
   assert.ok(RX.REACTION_ONLY_ACTIONS.has("Thunder Strike (Riposte)"));

@@ -52,7 +52,11 @@ function makeCombatant(actor, side) {
     // Undeclared stays PASSIVE-only: an ordinary Attack is not a missing
     // reaction, and counting it as one would bury the real gaps in noise.
     undeclaredReactions: RX.undeclaredReactions(ex.passives),
-    counters: {},          // stack_burst accumulators, keyed by counter name
+    counters: {},          // stack_burst / stack_deny accumulators, keyed by counter name
+    // Actions owed by a stack_deny (live: modify_turns pendingTurnDebt). Paid by
+    // skipping this combatant's next base turn, this round or the next.
+    turnDebt: 0,
+    turnsDenied: 0,
     // Stance cycle (stances.js). `stance` is the form currently held; null means
     // the actor must arm before it may strike. `stanceCycle` is derived from the
     // actions themselves, so a spec cannot forget to opt in.
@@ -266,6 +270,19 @@ function runReactionEffect(state, reactor, reaction, ctx) {
       return;
     }
 
+    case "stack_deny": {
+      // The counter lives on the VICTIM (live: an AE on the target), so every
+      // attacker's hits on it share one stack — unlike stack_burst's own charge.
+      const victim = ctx.victim;
+      if (!victim?.alive) return;
+      const n = (victim.counters[e.counter] ?? 0) + 1;
+      if (n < e.threshold) { victim.counters[e.counter] = n; return; }
+      victim.counters[e.counter] = 0;
+      victim.turnDebt += 1;
+      state.log.push({ round: state.round, actor: reactor.name, action: reaction.name, target: victim.name, reaction: true, turnDebt: victim.turnDebt });
+      return;
+    }
+
     case "weapon_read": {
       const fam = String(ctx.weaponFamily ?? "").toLowerCase();
       if (!fam) return;
@@ -348,7 +365,7 @@ function applyFlatDamage(state, source, target, amount, element, label, cause = 
 // One funnel for "an element moved this creature's HP" so the storm strike, a
 // burst and a normal hit all feed the same passives. `cause` distinguishes
 // creature-inflicted ("damage") from hazard/tick, which the Rod rule needs.
-function onHpMoved(state, source, target, out, element, cause) {
+function onHpMoved(state, source, target, out, element, cause, action = null) {
   if (state.event?.onDamage && out.direction !== "recover") {
     state.event.onDamage(state, target, cause);
   }
@@ -356,8 +373,11 @@ function onHpMoved(state, source, target, out, element, cause) {
     element, damage: out.damage, direction: out.direction, cause, attacker: source,
   });
   if (source && source !== target && out.direction !== "recover") {
+    // `action` is null for flat reaction/hazard damage, so an on-hit rider scoped to
+    // basic attacks never fires off a burst.
     fireReactions(state, source, RX.TRIGGERS.ON_DEAL_DAMAGE, {
       victim: target, element, damage: out.damage,
+      round: state.round, sourceAction: action?.name ?? null, isBasicAttack: !!action?.basicAttack,
     });
   }
 }
@@ -600,7 +620,7 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
     // the weapon.
     attackedCtx.damage = out.damage;
     fireReactions(state, target, RX.TRIGGERS.ON_ATTACKED, attackedCtx);
-    onHpMoved(state, actor, victim, out, action.element, "damage");
+    onHpMoved(state, actor, victim, out, action.element, "damage", action);
   }
 }
 
@@ -820,6 +840,12 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
       if (!c.alive) continue;
       for (let t = 0; t < c.baseTurns; t++) {
         if (!c.alive) break;
+        if (c.turnDebt > 0) {
+          c.turnDebt--;
+          c.turnsDenied++;
+          state.log.push({ round: state.round, actor: c.name, action: "(turn lost)", denied: true });
+          continue;
+        }
         takeTurn(state, c);
       }
       // Acceleration is a RECURRING grant ("at the end of each of their turns,
@@ -890,7 +916,7 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
       // changed how often the wielder swings (Acceleration, fight length).
       baseActionsTaken: c.baseActionsTaken, grantedActionsTaken: c.grantedActionsTaken,
       damageTaken: c.damageTaken, damageTakenBy: { ...c.damageTakenBy }, hitsTaken: c.hitsTaken,
-      downedOnRound: c.downedOnRound, fpSpent: c.fpSpent,
+      downedOnRound: c.downedOnRound, fpSpent: c.fpSpent, turnsDenied: c.turnsDenied,
     })),
     // Per-lane weapon-efficiency pressure. Only populated when something in the
     // fight actually reads weapon families, so it costs nothing otherwise.
