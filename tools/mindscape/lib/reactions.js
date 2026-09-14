@@ -334,8 +334,8 @@ const REACTION_REGISTRY = Object.freeze({
   // Chronostasis; at 3 it loses them all and one action. Live: one creature_deals_damage
   // row (reaction_requires_weapon_used, same shape as Razor Plume) chaining apply_ae
   // add_charges → modify_turns -1 / remove_ae, both gated TARGET_AE_CHARGES_CHRONOSTASIS >= 3.
-  // Live also counts skills that swing the weapon; an archetype's only weapon action is
-  // its basic attack, so gating on isBasicAttack reads the same here.
+  // Live this is basic attacks only: a Skill fires one action-level creature_deals_damage
+  // with no weaponUuid, so reaction_requires_weapon_used never passes for it.
   // The granted spell Time Dilation (Swift, or Slow + 1 Chronostasis) is NOT modelled.
   "Chrono (Passive)": {
     trigger: TRIGGERS.ON_DEAL_DAMAGE,

@@ -761,6 +761,57 @@ Tuned with `check-item` on the Striker (300 runs per arm, four presets). The Unc
 - **Bleed only halves healing received** (3 charges). Against monsters that do not heal it is
   worth about 0, and the sim does not model it.
 
+### H. Chrono (2026-09-14)
+
+*Legendary Arcane, two-handed, INS+WLP, **+2**, Dark, melee, 3500z, no drawback (user ruling).
+A hit with the weapon gives the target 1 Chronostasis; at 3 it loses them all and one action.
+Grants Time Dilation (10 MP): Swift, or Slow + 1 Chronostasis.*
+
+**Designer intent.** A utility Legendary. The damage is weak on purpose; the value is action
+denial, the strongest lever in this game, plus a spell. It is uncapped on purpose: casters rarely
+swing, and Acceleration (extra actions) is the synergy it is meant to reward.
+
+**Word band.** "Very Low" is not in the authoring table. It was read as −4 (twice Low), which puts
+the Staff chassis (+6) at +2, the rulebook's Arcane low end.
+
+**Engine route.**
+- One `creature_deals_damage` row on the passive: `reaction_requires_weapon_used`, force mode.
+- It chains `apply_ae` Chronostasis (`add_charges` 1), then `modify_turns` −1, then `remove_ae`.
+  The last two are gated on `TARGET_AE_CHARGES_CHRONOSTASIS >= 3`.
+- Chronostasis is a `persistent_counter` status in the Debuff library, `chargesMax` 3.
+- It is basic attacks only, without an `ACTION_IS_ATTACK` gate (which reads 0 here: the
+  per-target Attack payload carries no `actionKind`). A Skill fires one action-level
+  `creature_deals_damage` with no `weaponUuid`, so `reaction_requires_weapon_used` never passes
+  for it. Razor Plume behaves the same way.
+- Time Dilation checks the threshold through a targeting row, `tdil_at3`: action targets with
+  `target_filter: AE_CHARGES_CHRONOSTASIS >= 3` and `allow_empty`. A spell payload carries no
+  subject, so the `TARGET_AE_CHARGES_*` gate the passive uses reads 0 inside a spell.
+
+Measured with `check-item` on the Striker (500 runs per arm, four presets) through the new sim
+effect `stack_deny`. The Legendary budget is 22.5%.
+
+| Stacks to trigger | **3 (shipped)** | 2 | 1 |
+|---|---|---|---|
+| House roster mean | **0.8%** | 3.9% | 21.4% |
+| L50 end (floor 11.25%) | **−0.6%** | 4.5% | 26.1% |
+| L20 end (ceiling 22.5%) | **−5.4%** | −3.8% | 7.4% |
+
+- **The −4 damage costs more than the denial buys at 3 stacks.** Our spawn groups are mostly
+  threes, and three hits rarely land on one target before it dies. Defense reads +0.1 to +1.0%;
+  Fafnir Castle's 5.5-round fights are the high end.
+- **Denial only pays at a high trigger rate.** At 1 stack (every hit) it reaches the budget,
+  almost all of it as defense (Valley 28%, Fafnir 26%).
+- **On the Caster it reads about 0%.** The model's caster never swings its weapon.
+- **What the model cannot see:** Time Dilation; Acceleration and every class skill (archetypes
+  carry none); boss fights (the house set excludes them); and a single-activation elite losing a
+  whole turn. Read 0.8% as a floor for a weapon-only wielder, not as the item's value to a caster
+  with Acceleration.
+
+**Live-verified** on temp clones: stacks 1 → 2 → 3, clear and one action removed; with no action
+left this round the loss carries as turn debt; the wielder never gains a stack. Time Dilation
+applies Swift, or Slow + 1 Chronostasis; a spell stack that reaches 3 costs the action at once,
+and the next Chrono hit starts a fresh stack.
+
 ---
 
 ## Part 10 — Measured reference ladder (2026-09-13)
