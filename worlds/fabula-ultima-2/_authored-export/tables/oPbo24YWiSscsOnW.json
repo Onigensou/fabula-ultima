@@ -16,7 +16,7 @@
     }
   },
   "folder": "9LaJVdEJbCUtGA5b",
-  "formula": "1d11",
+  "formula": "1d12",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
   "name": "Ancient Temple - Consumable",
   "ownership": {
@@ -157,6 +157,21 @@
         2
       ],
       "text": "Phoenix Feather",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "sT09ePc2hf1qwElS",
+      "documentCollection": "Item",
+      "documentId": "ivWUbFevDoyWAgAl",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Key.png",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Skeletal Key",
       "type": "document",
       "weight": 1
     },

@@ -16,7 +16,7 @@
     }
   },
   "folder": "wekTc2cyzuBiU4Up",
-  "formula": "1d24",
+  "formula": "1d25",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/treas.png",
   "name": "Overworld - Treasure",
   "ownership": {
@@ -247,6 +247,21 @@
         24
       ],
       "text": "Pocket Sand",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "seSQSUFdDEenVhkL",
+      "documentCollection": "Item",
+      "documentId": "ivWUbFevDoyWAgAl",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Key.png",
+      "range": [
+        25,
+        25
+      ],
+      "text": "Skeletal Key",
       "type": "document",
       "weight": 1
     },
