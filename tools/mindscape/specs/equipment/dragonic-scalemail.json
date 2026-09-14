@@ -1,0 +1,19 @@
+{
+  "_comment": "PAPER EQUIPMENT — Dragonic Scalemail (requested 2026-09-14). Rare martial armor, 3000z+. DEF high (13 — one above the top basic martial plate), MDEF standard (INS die +0). Passives: damage from Dragon-subtype creatures x (1 - X%), the wearer's Fire damage +10%. Registry rows: lib/reactions.js 'Dragonic Scalemail (Passive)'; sweep X with mindscape_damage_taken_factor.",
+  "name": "Dragonic Scalemail",
+  "system": {
+    "props": {
+      "item_type": "armor",
+      "item_rarity": "Rare",
+      "isMartial": true,
+      "item_baseDef": "13",
+      "item_baseMdef": "0",
+      "item_def_bonus": "0",
+      "item_mdef_bonus": "0",
+      "item_cost": "3200"
+    }
+  },
+  "items": [
+    { "name": "Dragonic Scalemail (Passive)", "props": { "skill_type": "Passive", "mindscape_damage_taken_factor": "0.85" } }
+  ]
+}

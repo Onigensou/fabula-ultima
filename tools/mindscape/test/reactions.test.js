@@ -68,7 +68,8 @@ t("chain reaction ignores non-Bolt", () => {
 t("every registry entry has a known trigger and an effect kind", () => {
   const triggers = new Set(Object.values(RX.TRIGGERS));
   const kinds = new Set(["free_attack", "stack_burst", "burst", "grant_mp",
-                         "weapon_read", "damage_mult", "damage_add", "target_count"]);
+                         "weapon_read", "damage_mult", "damage_add", "target_count",
+                         "damage_taken_mult", "survive_at_one"]);
   // An entry is one row or an ARRAY of rows; every row must stand on its own.
   for (const [name, entry] of Object.entries(RX.REACTION_REGISTRY)) {
     const rows = RX.registryRows(entry);
@@ -79,6 +80,37 @@ t("every registry entry has a known trigger and an effect kind", () => {
       assert.strictEqual(typeof r.gate, "function", `${name}: no gate`);
     }
   }
+});
+// ── Armor passives (2026-09-14) ─────────────────────────────────────────────
+const scalemailRows = RX.registryRows(RX.REACTION_REGISTRY["Dragonic Scalemail (Passive)"]);
+const plotArmor = RX.REACTION_REGISTRY["Plot Armor (Passive)"];
+const dragon = { actor: { subtypes: ["DRAGON"] } };
+const beast = { actor: { subtypes: [] } };
+t("Scalemail's reduction fires only on a DRAGON-subtype attacker", () => {
+  const dr = scalemailRows.find((r) => r.effect.kind === "damage_taken_mult");
+  assert.strictEqual(dr.trigger, RX.TRIGGERS.ON_TAKE_HIT);
+  assert.strictEqual(dr.gate({ attacker: dragon }), true);
+  assert.strictEqual(dr.gate({ attacker: beast }), false);
+  assert.strictEqual(dr.gate({}), false, "no attacker (hazard) is not a dragon");
+});
+t("Scalemail's Fire bonus fires only on Fire damage", () => {
+  const fire = scalemailRows.find((r) => r.effect.kind === "damage_mult");
+  assert.strictEqual(fire.gate({ element: "fire" }), true);
+  assert.strictEqual(fire.gate({ element: "Fire" }), true);
+  assert.strictEqual(fire.gate({ element: "physical" }), false);
+  assert.strictEqual(fire.effect.factor, 1.1);
+});
+t("the reduction dial is kind-scoped: it does not touch the Fire multiplier", () => {
+  const declared = RX.declaredReactions([{ name: "Dragonic Scalemail (Passive)", props: { mindscape_damage_taken_factor: "0.9" } }]);
+  assert.strictEqual(declared.find((r) => r.effect.kind === "damage_taken_mult").effect.factor, 0.9);
+  assert.strictEqual(declared.find((r) => r.effect.kind === "damage_mult").effect.factor, 1.1);
+});
+t("Plot Armor saves only a LETHAL hit, and only with a Fabula Point to spend", () => {
+  assert.strictEqual(plotArmor.gate({ damage: 50, victim: { hp: 40, fp: 1 } }), true);
+  assert.strictEqual(plotArmor.gate({ damage: 30, victim: { hp: 40, fp: 3 } }), false, "not lethal");
+  assert.strictEqual(plotArmor.gate({ damage: 50, victim: { hp: 40, fp: 0 } }), false, "no FP");
+  const declared = RX.declaredReactions([{ name: "Plot Armor (Passive)", props: { mindscape_fp_cost: "2" } }]);
+  assert.strictEqual(declared[0].effect.fpCost, 2);
 });
 t("a counter payload is excluded from turn-action selection", () => {
   assert.ok(RX.REACTION_ONLY_ACTIONS.has("Thunder Strike (Riposte)"));

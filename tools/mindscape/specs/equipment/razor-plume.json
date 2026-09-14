@@ -1,0 +1,23 @@
+{
+  "_comment": "PAPER EQUIPMENT — Razor Plume (requested 2026-09-14). Uncommon Thrown, one-handed, DEX+INS, moderate damage (Shuriken chassis +4), ranged. Pierce (action_keywords). Conquer 3: inflict Bleed. The Conquer passive has NO registry row on purpose: Bleed (heal received -50%) is not modelled, so check-item lists it as unmodelled and it is priced on paper.",
+  "name": "Razor Plume",
+  "system": {
+    "props": {
+      "item_type": "weapon",
+      "item_rarity": "Uncommon",
+      "category": "Thrown",
+      "hand_slots": "One-handed",
+      "damage_bonus": "4",
+      "check_bonus": "0",
+      "type_damage": "Physical",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "INS",
+      "weapon_range": "Ranged",
+      "action_keywords": "pierce",
+      "skill_target": "One Enemy"
+    }
+  },
+  "items": [
+    { "name": "Razor Plume (Passive)", "props": { "skill_type": "Passive" } }
+  ]
+}

@@ -50,6 +50,13 @@ const TRIGGERS = Object.freeze({
   // weapon swings (engine.takeTurn). Added for paper equipment, 2026-09-13.
   // ctx: { round, sourceAction, isBasicAttack, attacker }
   ON_DECLARE_ATTACK: "on_declare_attack",
+  // The reactor is about to LOSE HP to a landed hit — fired on the DEFENDER after
+  // affinity and Protect, before the HP write. Live, this is the victim-side
+  // adjust_damage at the HP write (Unbreakable / Mercy / Plot Armor's survive-at-1)
+  // and card incoming multipliers on creature_targeted_by_action (Dragonic Scalemail).
+  // Effects: `damage_taken_mult` (all applied first), then `survive_at_one`.
+  // ctx: { attacker, victim, element, damage }
+  ON_TAKE_HIT: "on_take_hit",
 });
 
 // Round parity for equipment riders. `round > 0` is load-bearing: 0 % 2 === 0
@@ -291,6 +298,34 @@ const REACTION_REGISTRY = Object.freeze({
     effect: { kind: "target_count", count: 2 },
     note: "test rider: basic attacks gain Multi N (dial: mindscape_target_count)",
   },
+  // Armor passive: "When you are reduced to 0 HP, spend 1 Fabula Point to hold on
+  // at 1 HP instead." Live: an equipped AE on the HP-write path (would_reduce_to_zero,
+  // ask) capping damage at CUR_HP - 1, then consume_resource fp 1. The model always
+  // spends when it can — a player at 0 HP in a fight they want to win does.
+  "Plot Armor (Passive)": {
+    trigger: TRIGGERS.ON_TAKE_HIT,
+    gate: (ctx) => (ctx?.damage ?? 0) >= (ctx?.victim?.hp ?? Infinity) && (ctx?.victim?.fp ?? 0) >= 1,
+    effect: { kind: "survive_at_one", fpCost: 1 },
+    note: "lethal hit → spend 1 FP, stay at 1 HP (dial: mindscape_fp_cost)",
+  },
+  // Armor passive pair: damage from Dragon-subtype attackers × (1 - X%), and the
+  // wearer's Fire damage × 1.1. Live: creature_targeted_by_action incoming multiply
+  // gated ATTACKER_SUBTYPE_IS_DRAGON; creature_will_deal_damage outgoing multiply
+  // with reaction_damage_type fire.
+  "Dragonic Scalemail (Passive)": [
+    {
+      trigger: TRIGGERS.ON_TAKE_HIT,
+      gate: (ctx) => (ctx?.attacker?.actor?.subtypes ?? []).includes("DRAGON"),
+      effect: { kind: "damage_taken_mult", factor: 0.85 },
+      note: "damage from DRAGON-subtype attackers × factor (dial: mindscape_damage_taken_factor)",
+    },
+    {
+      trigger: TRIGGERS.ON_DEAL_DAMAGE,
+      gate: (ctx) => String(ctx?.element ?? "").toLowerCase() === "fire",
+      effect: { kind: "damage_mult", factor: 1.1 },
+      note: "the wearer's Fire damage × 1.1",
+    },
+  ],
 });
 
 // ── Weapon read: the pure state transition ──────────────────────────────────
@@ -390,6 +425,14 @@ function applyTuning(effect, props) {
   if (out.kind === "target_count") {
     const count = n(props.mindscape_target_count);
     if (Number.isFinite(count) && count >= 1) out.count = count;
+  }
+  if (out.kind === "damage_taken_mult") {
+    const f = n(props.mindscape_damage_taken_factor);
+    if (Number.isFinite(f) && f >= 0) out.factor = f;
+  }
+  if (out.kind === "survive_at_one") {
+    const cost = n(props.mindscape_fp_cost);
+    if (Number.isFinite(cost) && cost >= 0) out.fpCost = cost;
   }
   if (out.kind === "damage_add") {
     const amount = n(props.mindscape_damage_add);

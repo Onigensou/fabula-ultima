@@ -170,6 +170,11 @@ function toCombatModel(doc) {
     isNpc: npc,
     rank: String(props.npc_rank ?? "").trim() || null,
     species: String(props.species ?? "").trim() || null,
+    // Sub-species (`subtype_list`, e.g. "DRAGON"). The FU species field is coarse —
+    // Drakoza is BEAST, Mist Dragon ELEMENTAL, both DRAGON by subtype — so a rule about
+    // "Dragon-type creatures" must read this list (live: SUBTYPE_IS_ / ATTACKER_SUBTYPE_IS_).
+    subtypes: String(props.subtype_list ?? "").split(/[,;|]/)
+      .map((x) => x.trim().toUpperCase()).filter(Boolean),
     level: num(props.level ?? props.current_level, 0),
 
     attributes: {
@@ -426,6 +431,9 @@ function attachWeaponDetails(model) {
   // Melee vs ranged decides WHICH contextual accuracy modifier applies —
   // Zarg's +4 check_mod_ranged only reaches his bow through this field.
   w.range = /ranged/i.test(String(item?.props?.weapon_range ?? "")) ? "ranged" : "melee";
+  // Inherent weapon keywords (comma list, e.g. "pierce") — live reads the same prop
+  // (snapshot resolveAttackerWeapon). Without it a Pierce weapon misses for nothing.
+  w.keywords = String(item?.props?.action_keywords ?? "").trim() || null;
 }
 
 // Named actors only. Throws on a miss rather than returning a short list — a

@@ -197,7 +197,7 @@ function pickGear(catalogue, kind, name) {
 }
 
 // ── Build ───────────────────────────────────────────────────────────────────
-function buildCharacter(member, { level, power = "table", k = DEFAULT_SKILL_LAYER_K, catalogue, index = 0 }) {
+function buildCharacter(member, { level, power = "table", k = DEFAULT_SKILL_LAYER_K, catalogue, index = 0, fabulaPoints = 3 }) {
   if (!POWER_MODES.has(power)) throw new Error(`Mindscape: --power must be raw or table (got "${power}")`);
   const role = typeof member.role === "string" ? ROLES[member.role] : member.role;
   if (!role) throw new Error(`Mindscape: unknown archetype role "${member.role}" (roles: ${Object.keys(ROLES).join(", ")})`);
@@ -263,6 +263,11 @@ function buildCharacter(member, { level, power = "table", k = DEFAULT_SKILL_LAYE
     // p.163: 6 before class bonuses. IP is not spent by any modelled action, so the
     // class IP benefits are recorded in class_list but not added here.
     max_ip: 6, current_ip: 6,
+    // p.33: a character starts with 3 Fabula Points. Nothing in the model spends them
+    // except gear that says so (Plot Armor); without them such gear measures as 0.
+    // FP is a per-SESSION pool also spent on invokes, so a single fight rarely has all
+    // three to burn — `fabulaPoints` lets a check price that scarcity.
+    fabula_point: String(fabulaPoints),
   });
 
   const model = toCombatModel({ _id: tag, name, items: [], system: { props } });
@@ -279,11 +284,11 @@ function buildCharacter(member, { level, power = "table", k = DEFAULT_SKILL_LAYE
   return model;
 }
 
-function buildArchetypeParty(preset, { level, power = "table", k = DEFAULT_SKILL_LAYER_K, catalogue } = {}) {
+function buildArchetypeParty(preset, { level, power = "table", k = DEFAULT_SKILL_LAYER_K, catalogue, fabulaPoints = 3 } = {}) {
   const roster = Array.isArray(preset) ? preset : PRESETS[preset];
   if (!roster) throw new Error(`Mindscape: unknown archetype preset "${preset}" (presets: ${Object.keys(PRESETS).join(", ")})`);
   if (!catalogue) throw new Error("Mindscape: archetype parties need the world's basic-gear catalogue");
-  const party = roster.map((member, index) => buildCharacter(member, { level, power, k, catalogue, index }));
+  const party = roster.map((member, index) => buildCharacter(member, { level, power, k, catalogue, index, fabulaPoints }));
   const names = party.map((p) => p.name);
   if (new Set(names).size !== names.length) throw new Error(`Mindscape: archetype preset has duplicate names (${names.join(", ")}) — give one a suffix`);
   return party;

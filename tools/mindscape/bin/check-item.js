@@ -55,6 +55,10 @@ async function main() {
   const encounterSet = arg("--encounter-set", "specs/encounters/house-set.json");
   const baseLevels = list(arg("--base-levels", "20,50")).map(Number);
   const out = arg("--out", null);
+  // Fabula Points each archetype STARTS the fight with (default 3, the rulebook start).
+  // FP is a per-session pool, so gear that spends it (Plot Armor) is also worth
+  // checking at --fp 1: the usual share of that pool a single fight gets.
+  const fabulaPoints = Number(arg("--fp", 3));
 
   const scopes = [
     ...(encounterSet === "none" ? [] : (await RS.loadEncounterSet(encounterSet)).map((s) => ({ ...s, kind: "house" }))),
@@ -64,12 +68,12 @@ async function main() {
   const catalogue = basicCatalogue(worldItems, await loadWorldFolders());
 
   const t0 = Date.now();
-  const { rows, coverage } = IC.measureItem({ item: spec ?? item, slot, wearer, scopes, presets, runs, seed, power, catalogue, worldItems });
+  const { rows, coverage } = IC.measureItem({ item: spec ?? item, slot, wearer, scopes, presets, runs, seed, power, catalogue, worldItems, fabulaPoints });
   const sum = IC.summarize(rows, budget);
 
   const name = spec?.name ?? item;
   console.log(`\nItem check — ${name}${rarity ? ` (${rarity}, budget ${budget}%)` : ""} · slot ${slot} · wearer ${wearer}`);
-  console.log(`${power} power (k ${DEFAULT_SKILL_LAYER_K}), presets ${presets.join("/")}, ${runs} runs per arm, seed "${seed}"`);
+  console.log(`${power} power (k ${DEFAULT_SKILL_LAYER_K}), presets ${presets.join("/")}, ${runs} runs per arm, seed "${seed}", ${fabulaPoints} FP each`);
   console.log(`Value % = offense (extra damage per wearer action / BA) + defense (party damage prevented per round / HP-per-BA).\n`);
 
   console.log(`### What the model sees of this item`);
@@ -114,7 +118,7 @@ async function main() {
   if (out) {
     fs.writeFileSync(path.resolve(out), `${JSON.stringify({
       id: "check-item", capturedAt: new Date().toISOString().slice(0, 10), item: name, source: item, slot, wearer, rarity, budget,
-      runs, seed, power, k: DEFAULT_SKILL_LAYER_K, presets, encounterSet, baseLevels, coverage, summary: sum, rows,
+      runs, seed, power, k: DEFAULT_SKILL_LAYER_K, fabulaPoints, presets, encounterSet, baseLevels, coverage, summary: sum, rows,
     }, null, 2)}\n`);
     console.log(`wrote ${path.resolve(out)}`);
   }

@@ -80,13 +80,13 @@ function sourceFor(item, wearer, worldItems) {
 }
 
 // scopes: [{ id, group, kind: "house"|"base", level, enemies, conflictEvent }]
-function measureItem({ item, slot, wearer, scopes, presets, runs, seed, power = "table", catalogue, worldItems, onArm = null }) {
+function measureItem({ item, slot, wearer, scopes, presets, runs, seed, power = "table", catalogue, worldItems, onArm = null, fabulaPoints = 3 }) {
   const rows = [];
   let coverage = null;
   for (const scope of scopes) {
     const arm = { runs, seed, conflictEvent: scope.conflictEvent ?? null };
     for (const preset of presets) {
-      const build = () => buildArchetypeParty(preset, { level: scope.level, power, catalogue });
+      const build = () => buildArchetypeParty(preset, { level: scope.level, power, catalogue, fabulaPoints });
       const where = { scope: scope.id, group: scope.group, kind: scope.kind, level: scope.level, preset };
       // A role wearer needs no fight to be found; "most-hit" wearers are read off a plain arm.
       const plainArm = ROLE_WEARERS.has(wearer) ? null : RS.runArm(build(), scope.enemies, arm);

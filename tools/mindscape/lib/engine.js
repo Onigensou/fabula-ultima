@@ -31,6 +31,9 @@ function makeCombatant(actor, side) {
     mp: actor.mp.max ?? actor.mp.cur,
     ip: actor.ip.max ?? actor.ip.cur,
     zp: actor.zp ?? 0,
+    // Fabula Points, spent only by gear that says so (survive_at_one).
+    fp: Number(actor.fabulaPoints) || 0,
+    fpSpent: 0,
     baseTurns: actor.turnsPerRound ?? 1,
     grantedTurns: 0,
     accelerated: false,
@@ -397,6 +400,32 @@ function riderCtx(state, actor, action, victim) {
   };
 }
 
+// Victim-side pre-write reactions. Multipliers first (live: card incoming
+// adjust_damage multiply, rounded up), then survive-at-1 caps whatever is left
+// (live: the HP-write cap at CUR_HP - 1 binds only on a lethal hit). Action hits
+// only — flat hazard/burst damage (applyFlatDamage) does not pass through here.
+function applyTakeHitReactions(state, attacker, victim, out, element) {
+  if (!victim?.reactions?.length) return out;
+  const ctx = { attacker, victim, element, damage: out.damage };
+  let dmg = out.damage;
+  for (const r of RX.collect(victim, RX.TRIGGERS.ON_TAKE_HIT, ctx)) {
+    if (r.effect?.kind !== "damage_taken_mult") continue;
+    const f = Number(r.effect.factor);
+    dmg = Math.max(0, Math.ceil(dmg * (Number.isFinite(f) ? f : 1)));
+  }
+  for (const r of RX.collect(victim, RX.TRIGGERS.ON_TAKE_HIT, { ...ctx, damage: dmg })) {
+    if (r.effect?.kind !== "survive_at_one") continue;
+    const cost = Number(r.effect.fpCost) || 0;
+    if (dmg < victim.hp || victim.fp < cost) continue;
+    victim.fp -= cost;
+    victim.fpSpent += cost;
+    dmg = Math.max(0, victim.hp - 1);
+    state.log.push({ round: state.round, actor: victim.name, action: r.name, reaction: true, survivedAtOne: true });
+    break;
+  }
+  return dmg === out.damage ? out : { ...out, damage: dmg };
+}
+
 function damageAddFor(state, actor, action, victim) {
   if (!actor?.reactions?.length) return 0;
   const ctx = riderCtx(state, actor, action, victim);
@@ -448,10 +477,14 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
       element: action.element, attacker: actor, victim: target, damage: 0,
     };
 
+    // Pierce: a missed attack still deals HALF damage (live: action-profile's
+    // pierceMiss, "miss-for-half ONLY" since 2026-08-02 — no affinity bypass).
+    // A fumble is still a clean miss.
+    const pierceMiss = !check.hit && !check.fumble && R.normalizeKeywords(action.keywords).includes("pierce");
     if (!check.hit) {
-      state.log.push({ round: state.round, actor: actor.name, action: action.name, target: target.name, miss: true });
+      state.log.push({ round: state.round, actor: actor.name, action: action.name, target: target.name, miss: true, pierce: pierceMiss });
       fireReactions(state, target, RX.TRIGGERS.ON_ATTACKED, attackedCtx);
-      continue;
+      if (!pierceMiss) continue;
     }
 
     // A critical doubles nothing by itself in this system; it grants an
@@ -468,6 +501,7 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
       damageBonus: action.damageBonus + extra + damageAddFor(state, actor, action, target),
     });
     base = Math.ceil(base * damageMultiplierFor(state, actor, action, target));
+    if (pierceMiss) base = Math.floor(base / 2);
 
     // Record the efficiency this swing actually landed at, per family. Sampled
     // here — after any read the attack itself triggered, which is the number
@@ -521,6 +555,12 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
           dmgSpec,
         );
       }
+    }
+
+    // ON_TAKE_HIT — the defender's own pre-write adjustments (damage-taken
+    // multipliers, survive-at-1), after Protect has settled who the victim is.
+    if (out.direction !== "recover" && out.damage > 0) {
+      out = applyTakeHitReactions(state, actor, victim, out, action.element);
     }
 
     // ON_TARGETED is COLLECTED here — before the HP write — because the live
@@ -630,7 +670,7 @@ function weaponAction(actor) {
     defenseTarget: "def",
     target: { side: "enemy", count: 1 },
     cost: { resource: null, amount: 0 },
-    keywords: null,
+    keywords: w.keywords ?? null,
     weaponFamily: actor.actor.weapon?.family ?? null,
     // The sheet loader never sets this, so world weapons still read 0; a paper
     // weapon from --equip carries its own check_bonus.
@@ -850,7 +890,7 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
       // changed how often the wielder swings (Acceleration, fight length).
       baseActionsTaken: c.baseActionsTaken, grantedActionsTaken: c.grantedActionsTaken,
       damageTaken: c.damageTaken, damageTakenBy: { ...c.damageTakenBy }, hitsTaken: c.hitsTaken,
-      downedOnRound: c.downedOnRound,
+      downedOnRound: c.downedOnRound, fpSpent: c.fpSpent,
     })),
     // Per-lane weapon-efficiency pressure. Only populated when something in the
     // fight actually reads weapon families, so it costs nothing otherwise.

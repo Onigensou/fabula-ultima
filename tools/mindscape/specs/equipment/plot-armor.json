@@ -1,0 +1,19 @@
+{
+  "_comment": "PAPER EQUIPMENT — Plot Armor (requested 2026-09-14). Rare armor, 3000z+. DEF low (+0), MDEF average (+1). Passive: when reduced to 0 HP, spend 1 Fabula Point to hold on at 1 HP instead. Registry row: lib/reactions.js 'Plot Armor (Passive)' (ON_TAKE_HIT survive_at_one).",
+  "name": "Plot Armor",
+  "system": {
+    "props": {
+      "item_type": "armor",
+      "item_rarity": "Rare",
+      "isMartial": false,
+      "item_baseDef": "0",
+      "item_baseMdef": "0",
+      "item_def_bonus": "0",
+      "item_mdef_bonus": "1",
+      "item_cost": "3333"
+    }
+  },
+  "items": [
+    { "name": "Plot Armor (Passive)", "props": { "skill_type": "Passive", "mindscape_fp_cost": "1" } }
+  ]
+}
