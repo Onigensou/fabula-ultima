@@ -341,6 +341,80 @@
         background: rgba(120,85,40,0.55); border-radius: 4px;
       }
       .tr-desc-scroll::-webkit-scrollbar-thumb:hover { background: rgba(120,85,40,0.8); }
+
+      /* ── Skeletal Key picker: hover tooltip ───────────────────────────
+         Above the roulette overlay (9999999) and never under the pointer, so
+         moving from panel to panel does not make it flicker. */
+      #${TIP_ID} {
+        position: fixed; z-index: 10000001; pointer-events: none;
+        opacity: 0; transform: translateY(4px);
+        transition: opacity 140ms ease, transform 140ms ease;
+      }
+      #${TIP_ID}.tr-tip-in { opacity: 1; transform: translateY(0); }
+      /* The stat card is a fixed 420x520. Scaling does not shrink its layout
+         box, so the wrapper is sized to the scaled result for positioning. */
+      #${TIP_ID} .tr-tip-gear { width: 315px; height: 390px; }
+      #${TIP_ID} .tr-tip-gear .tr-eq-card { transform: scale(.75); transform-origin: top left; }
+      .tr-tip-card {
+        width: 320px; padding: 14px 16px 12px;
+        border-radius: 12px;
+        background: linear-gradient(178deg, #f3e5c4 0%, #e7d7b7 55%, #dcc9a4 100%);
+        border: 2px solid #8B6914;
+        box-shadow: 0 0 0 1px #c9973a, 0 14px 32px rgba(0,0,0,.55),
+                    inset 0 1px 0 rgba(255,255,255,.5);
+        color: #3b2314;
+        font-family: "Signika", "Palatino Linotype", Palatino, Georgia, serif;
+        box-sizing: border-box;
+      }
+      .tr-tip-card * { box-sizing: border-box; }
+      .tr-tip-head { display: flex; align-items: center; gap: 10px; }
+      .tr-tip-name { font-size: 22px; font-weight: 800; line-height: 1.1; }
+      .tr-tip-sub {
+        margin-top: 3px; margin-bottom: 8px; padding-bottom: 6px;
+        font-size: 13px; letter-spacing: .5px; opacity: .85;
+        border-bottom: 2px solid rgba(60,35,20,.35);
+      }
+      .tr-tip-desc { max-height: 240px; overflow: hidden; }
+
+      /* ── In-game confirmation ──────────────────────────────────────── */
+      #${CONFIRM_ID} {
+        position: fixed; inset: 0; z-index: 10000002;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(10,7,4,.45);
+        opacity: 0; transition: opacity 200ms cubic-bezier(.2,.9,.2,1);
+        font-family: "Signika", "Palatino Linotype", Palatino, Georgia, serif;
+      }
+      #${CONFIRM_ID}.tr-cf-in { opacity: 1; }
+      #${CONFIRM_ID} * { user-select: none; box-sizing: border-box; }
+      #${CONFIRM_ID} .tr-cf-frame {
+        width: 400px; max-width: 90vw; padding: 18px 22px 16px;
+        border-radius: 12px; text-align: center; color: #3b2314;
+        background: linear-gradient(178deg, #f3e5c4 0%, #e7d7b7 55%, #dcc9a4 100%);
+        border: 2px solid #8B6914;
+        box-shadow: 0 0 0 1px #c9973a, 0 18px 40px rgba(0,0,0,.55),
+                    inset 0 1px 0 rgba(255,255,255,.5);
+        transform: scale(.94);
+        transition: transform 200ms cubic-bezier(.2,.9,.2,1);
+      }
+      #${CONFIRM_ID}.tr-cf-in .tr-cf-frame { transform: scale(1); }
+      #${CONFIRM_ID} .tr-cf-title {
+        font-size: 26px; font-weight: 800; line-height: 1.15;
+        margin-bottom: 12px; padding-bottom: 8px;
+        border-bottom: 2px solid rgba(60,35,20,.35);
+      }
+      #${CONFIRM_ID} .tr-cf-body { margin-bottom: 16px; }
+      #${CONFIRM_ID} .tr-cf-btns { display: flex; gap: 10px; }
+      #${CONFIRM_ID} .tr-cf-btn {
+        flex: 1; padding: 9px 6px; border-radius: 7px; cursor: pointer;
+        font-size: 20px; font-weight: 800; color: #3b2314;
+        background: rgba(120,85,40,.06);
+        transition: background 120ms ease, transform 80ms ease;
+      }
+      #${CONFIRM_ID} .tr-cf-btn:hover { background: rgba(120,85,40,.18); }
+      #${CONFIRM_ID} .tr-cf-btn:active { transform: translateY(1px); }
+      #${CONFIRM_ID} .tr-cf-btn.tr-cf-default { box-shadow: inset 0 0 0 2px rgba(120,85,40,.5); }
+      #${CONFIRM_ID} .tr-cf-wait { font-size: 13px; font-style: italic; opacity: .7; }
+      #${CONFIRM_ID}.tr-cf-spectator { background: rgba(10,7,4,.3); }
     `;
     document.head.appendChild(s);
   }
@@ -628,6 +702,175 @@
     }
   }
 
+  // ── Item type labels ──────────────────────────────────────────────────────
+  // Mirrors the CSB item template's Type select, so a tooltip names a type the
+  // way the item sheet does.
+  const ITEM_TYPE_LABEL = Object.freeze({
+    weapon: "Weapon", armor: "Armor", shield: "Shield", accessory: "Accessory",
+    consumable: "Consumable", key: "Key Item", material: "Material",
+    recipe: "Recipe", misc: "Misc.",
+  });
+
+  // ── Loot tooltip ──────────────────────────────────────────────────────────
+  // What a roulette panel IS, shown on hover in the Skeletal Key picker. Gear
+  // reuses the stat card screens 2 and 3 draw, so an item reads the same before
+  // and after it is picked; anything else gets a compact card on the same
+  // parchment.
+  //
+  // detail shapes — built GM-side by TR.Flow, because a player client may not be
+  // allowed to read the world items themselves:
+  //   { kind: "gear", cand }                                     equipment
+  //   { kind: "item", name, img, rarity, itemType, description } other items
+  //   { kind: "text", name, img }                                Zenit / IP rows
+  const TIP_ID = "oni-tr-tooltip";
+  const TIP_GAP_PX = 14;
+  const TIP_MARGIN_PX = 12;
+  let _tipSeq = 0;
+
+  async function lootTooltipHTML(detail) {
+    if (!detail) return "";
+    if (detail.kind === "gear" && detail.cand) {
+      return `<div class="tr-tip-gear">${await renderItemCard(detail.cand, { side: "solo" })}</div>`;
+    }
+
+    const name = detail.name ?? "Reward";
+    const isItem = detail.kind === "item";
+    const color = isItem ? rarityColor(detail.rarity) : "#3b2314";
+    const glow = isItem ? rarityGlow(detail.rarity) : "none";
+    const typeLabel = ITEM_TYPE_LABEL[String(detail.itemType ?? "").toLowerCase()] ?? "";
+    const sub = isItem ? [typeLabel, detail.rarity].filter(Boolean).join(" · ") : "Reward";
+    const desc = isItem ? await describeHTML(detail.description) : "";
+
+    return `
+      <div class="tr-tip-card">
+        <div class="tr-tip-head">
+          ${imgHTML(detail.img, { size: 34, alt: name })}
+          <div class="tr-tip-name" style="color:${color};text-shadow:${glow};">${esc(name)}</div>
+        </div>
+        <div class="tr-tip-sub">${esc(sub) || "&nbsp;"}</div>
+        ${desc ? `<div class="tr-tip-desc">${desc}</div>` : ""}
+      </div>`;
+  }
+
+  /** Show the tooltip beside a panel. Later hovers win over slower renders. */
+  async function showTooltip(anchorEl, detail) {
+    const seq = ++_tipSeq;
+    const html = await lootTooltipHTML(detail);
+    if (seq !== _tipSeq || !html || !anchorEl?.isConnected) return;
+
+    ensureKitStyles();
+    let tip = document.getElementById(TIP_ID);
+    if (!tip) {
+      tip = document.createElement("div");
+      tip.id = TIP_ID;
+      document.body.appendChild(tip);
+    }
+    tip.innerHTML = html;
+    tip.classList.remove("tr-tip-in");
+
+    // Right of the panel when it fits, otherwise left; vertically centred on it
+    // and kept inside the viewport either way.
+    const r = anchorEl.getBoundingClientRect();
+    const w = tip.offsetWidth;
+    const h = tip.offsetHeight;
+    let left = r.right + TIP_GAP_PX;
+    if (left + w > window.innerWidth - TIP_MARGIN_PX) left = r.left - TIP_GAP_PX - w;
+    left = Math.max(TIP_MARGIN_PX, left);
+    let top = r.top + r.height / 2 - h / 2;
+    top = Math.max(TIP_MARGIN_PX, Math.min(top, window.innerHeight - h - TIP_MARGIN_PX));
+
+    tip.style.left = `${left}px`;
+    tip.style.top = `${top}px`;
+    requestAnimationFrame(() => tip.classList.add("tr-tip-in"));
+  }
+
+  function hideTooltip() {
+    _tipSeq++;
+    document.getElementById(TIP_ID)?.remove();
+  }
+
+  // ── In-game confirmation ──────────────────────────────────────────────────
+  // A parchment Yes/No that belongs to these screens, not Foundry's grey Dialog
+  // frame. The Skeletal Key prompt uses it broadcast (so it has a spectator
+  // form); the picker's "take this one?" check uses it locally.
+  const CONFIRM_ID = "oni-tr-confirm";
+  let _confirm = null;
+
+  /**
+   * @param {object}  opts
+   * @param {boolean} [opts.defaultYes]  Enter answers Yes (and Yes is outlined).
+   *   Off by default: a prompt that SPENDS something must not be one stray
+   *   Enter away from doing it. Escape always answers No.
+   * @returns {{ result: Promise<boolean|null>, close: (value?: boolean|null) => void }}
+   *   result is true (Yes), false (No) or null (closed from outside).
+   */
+  function confirm({
+    title = "", bodyHTML = "", yes = "Yes", no = "No",
+    interactive = true, waitingText = "", defaultYes = false,
+    yesSound = "CONFIRM", noSound = "EQUIP_NO",
+  } = {}) {
+    ensureKitStyles();
+    _confirm?.close(null);
+
+    const el = document.createElement("div");
+    el.id = CONFIRM_ID;
+    if (!interactive) el.classList.add("tr-cf-spectator");
+    el.innerHTML = `
+      <div class="tr-cf-frame">
+        <div class="tr-cf-title">${esc(title)}</div>
+        <div class="tr-cf-body">${bodyHTML}</div>
+        ${interactive
+          ? `<div class="tr-cf-btns">
+               <div class="tr-cf-btn tr-cf-no${defaultYes ? "" : " tr-cf-default"}">${esc(no)}</div>
+               <div class="tr-cf-btn tr-cf-yes${defaultYes ? " tr-cf-default" : ""}">${esc(yes)}</div>
+             </div>`
+          : `<div class="tr-cf-wait">${esc(waitingText || "Waiting…")}</div>`}
+      </div>`;
+    document.body.appendChild(el);
+    requestAnimationFrame(() => el.classList.add("tr-cf-in"));
+
+    let settle;
+    const result = new Promise((r) => { settle = r; });
+    let done = false;
+
+    const close = (value = null) => {
+      if (done) return;
+      done = true;
+      window.removeEventListener("keydown", onKey, true);
+      if (_confirm?.el === el) _confirm = null;
+      el.classList.remove("tr-cf-in");
+      el.style.pointerEvents = "none";
+      setTimeout(() => el.remove(), 220);
+      settle(value);
+    };
+
+    const answer = (value) => {
+      if (done) return;
+      play(value ? yesSound : noSound);
+      close(value);
+    };
+
+    function onKey(ev) {
+      if (ev.key !== "Enter" && ev.key !== "Escape") return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      answer(ev.key === "Enter" ? defaultYes : false);
+    }
+
+    if (interactive) {
+      el.querySelector(".tr-cf-yes").addEventListener("click", () => answer(true));
+      el.querySelector(".tr-cf-no").addEventListener("click", () => answer(false));
+      el.querySelectorAll(".tr-cf-btn").forEach((b) =>
+        b.addEventListener("mouseenter", () => play("HOVER")));
+      window.addEventListener("keydown", onKey, true);
+    }
+
+    _confirm = { el, close };
+    return { result, close };
+  }
+
+  const isConfirmOpen = () => !!_confirm;
+
   // ── Install ───────────────────────────────────────────────────────────────
   const API = {
     // colour
@@ -647,6 +890,10 @@
     },
     // sound
     Sound: { play, preloadAll, SOUNDS, VOLUME },
+    // Skeletal Key picker: hover card + in-game Yes/No
+    ITEM_TYPE_LABEL,
+    tooltip: { show: showTooltip, hide: hideTooltip, html: lootTooltipHTML },
+    confirm, isConfirmOpen,
     esc,
   };
 
