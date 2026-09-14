@@ -734,19 +734,32 @@ one is left.
 
 ### G. Razor Plume (2026-09-14)
 
-*Uncommon Thrown, one-handed, DEX+INS, +4 (the Shuriken chassis), ranged, 1200z. Pierce;
-Conquer 3: inflicts Bleed.*
+*Uncommon Thrown, one-handed, DEX+INS, **+6**, ranged, 1200z. Pierce; Conquer 3: inflicts
+Bleed.*
 
-Measured on the Striker. The Uncommon budget is 10%.
+**Designer intent.** Pierce means a hit lands standard damage and a miss still lands some, just
+low. At the chassis +4 the hit itself is already low, so half of it on a miss is close to
+nothing. The damage was raised to the high edge of "moderate" (the Shuriken chassis is +4;
+"High" would be +8).
 
-- **5.4% across the roster**, 2.7% at the L20 end and 2.9% at the L50 end. That is under
-  budget, but it misses the ½-budget floor late.
-- **Almost all of it is Pierce** (half damage on a miss). It pays most against high-DEF groups,
-  8–9% in the Wyrmwood and Temple, and little where the party already hits, 3% in the Valley and
-  Fafnir Castle.
+Tuned with `check-item` on the Striker (300 runs per arm, four presets). The Uncommon budget is
+10%.
+
+| Damage | +4 | +5 | **+6** | +7 | +8 |
+|---|---|---|---|---|---|
+| House roster mean | 5.4% | 7.2% | **9.0%** | 10.8% | 12.8% |
+| L50 end (floor 5%) | 2.9% | 4.3% | **5.8%** | 7.2% | 8.7% |
+| L20 end (ceiling 10%) | 2.7% | 6.8% | **10.7%** | 15.3% | 19.4% |
+
+- **+6 is the only value that clears the L50 floor while staying under budget.** The L20 end
+  reads a hair over, and that figure comes from the rulebook fallback: there are no house groups
+  that low.
+- **Raising the damage raised Pierce's share.** A no-Pierce control at +6 reads 3.0%, so Pierce
+  now carries about 6 of the 9 points, up from 5.4 at +4: half of a bigger hit is a bigger half.
+  Pierce pays most against high-DEF groups (Wyrmwood and Temple 12–14% total) and least where the
+  party already hits (Valley and Fafnir about 6%).
 - **Bleed only halves healing received** (3 charges). Against monsters that do not heal it is
   worth about 0, and the sim does not model it.
-- **Room to grow.** If it should matter at L50, a scaling rider has headroom.
 
 ---
 
