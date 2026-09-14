@@ -665,6 +665,117 @@ function buildRewardDescriptor(req, winnerRow) {
   }
 
   // --------------------------------------------------------------------------
+  // Picker mode (Skeletal Key) — pool first, winner later
+  // --------------------------------------------------------------------------
+  // The normal path rolls the winner and builds the pool around it in one go.
+  // A Skeletal Key lets the controller CHOOSE from the pool instead, so the two
+  // halves are split: preparePool() samples the same panels the spin would show
+  // WITHOUT rolling anything, and lockPick() fixes the winner once the choice is
+  // in. Both run on the authority (TR.Flow on the primary GM) — the only client
+  // holding the rows' raw table text that Zenit/IP rewards are parsed from.
+  //
+  // Neither broadcasts. The picker screen belongs to TR.Flow, and the locked
+  // packet goes out through playEverywhere() so its reveal runs like any other.
+  async function preparePool(req) {
+    const request = applyDefaults(req);
+    const errors = validateRequest(request);
+    if (errors.length) return { ok: false, errors };
+
+    if (_requests.has(request.requestId)) {
+      return { ok: false, error: `duplicate requestId ${request.requestId}` };
+    }
+
+    let allRows = [];
+    try {
+      const table = await resolveTable(request.tableUuid);
+      if (!table) throw new Error(`RollTable not found: ${request.tableUuid}`);
+      allRows = await buildAllTableRows(table);
+      if (!allRows.length) throw new Error(`RollTable has no results: ${request.tableUuid}`);
+    } catch (err) {
+      console.error("[TreasureRoulette][Core] preparePool failed:", err);
+      return { ok: false, error: String(err?.message ?? err) };
+    }
+
+    // Same sampling the spin uses, minus the winner guarantee — there is no
+    // winner yet.
+    const poolSize = clamp(safeInt(request.pool?.poolSize, 8), 1, 99);
+    const poolRows = poolSize >= allRows.length
+      ? allRows.slice()
+      : sampleUniquePool(allRows, poolSize, request.pool?.pickMode);
+    if (request.pool?.shufflePool) shuffleInPlace(poolRows);
+
+    const packet = {
+      requestId: request.requestId,
+      createdAt: request.createdAt,
+      tableUuid: request.tableUuid,
+      rouletteType: request.rouletteType,
+      roller: request.roller,
+      recipient: request.recipient,
+      consumeResults: false,
+      awardMode: request.award?.mode ?? "grant",
+      pickMode: "chosen",
+      serverTime: Date.now(),
+      // No spin. Net sizes its grace window off this; 0 gives its floor.
+      spinMs: 0,
+      displayPool: poolRows.map(r => ({
+        name: r.name,
+        img: r.img,
+        uuid: r.uuid,
+        tableResultId: r.tableResultId
+      })),
+      winner: null,
+      reward: null,
+      audience: await computeAudience(request)
+    };
+
+    _requests.set(request.requestId, {
+      state: "POOL",
+      request,
+      packet,
+      poolRows,
+      createdAt: Date.now()
+    });
+
+    return { ok: true, requestId: request.requestId, packet };
+  }
+
+  /**
+   * Lock the winner of a prepared pool.
+   * @param {string} requestId
+   * @param {string|null} tableResultId  the chosen row; null (or a row that is
+   *   not in the pool) takes a weighted random pick from the pool instead —
+   *   the timeout / crash path, where the key is already spent.
+   * @returns {{ok:boolean, packet?:object, chosen?:boolean, error?:string}}
+   */
+  function lockPick(requestId, tableResultId = null) {
+    const rec = _requests.get(requestId);
+    if (!rec) return { ok: false, error: `unknown requestId ${requestId}` };
+    if (rec.state === "LOCKED") return { ok: true, packet: rec.packet, chosen: !!rec.packet?.chosen, replay: true };
+    if (rec.state !== "POOL") return { ok: false, error: `request ${requestId} is ${rec.state}` };
+
+    const rows = rec.poolRows;
+    let index = tableResultId ? rows.findIndex(r => r.tableResultId === tableResultId) : -1;
+    const chosen = index >= 0;
+    if (!chosen) index = pickWeightedIndex(rows);
+    const row = rows[index];
+
+    rec.packet.winner = {
+      name: row.name,
+      img: row.img,
+      uuid: row.uuid,
+      tableResultId: row.tableResultId,
+      indexInPool: index
+    };
+    rec.packet.reward = buildRewardDescriptor(rec.request, row);
+    rec.packet.chosen = chosen;
+    rec.packet.serverTime = Date.now();
+    rec.state = "LOCKED";
+
+    console.log("[TreasureRoulette][Core] Locked picked winner:", { requestId, chosen, winner: row.name });
+    return { ok: true, packet: rec.packet, chosen };
+  }
+
+  // --------------------------------------------------------------------------
   // Socket helpers
   // --------------------------------------------------------------------------
   function emitSocket(type, payload) {
@@ -677,6 +788,35 @@ function buildRewardDescriptor(req, winnerRow) {
       type,
       payload
     });
+  }
+
+  // Broadcast a LOCKED packet (the UI listener plays it on OTHER clients) and
+  // play it here too — the authority client does not receive its own emit.
+  //
+  // The local play must ACK too. Remote clients ack from the UI listener when the
+  // socket message arrives; the authority never gets that message, so without an
+  // explicit ack here NOBODY acks for this client and Net.waitBarrier can only
+  // resolve on its hard timeout. Measured: a 3s spin stalled the barrier for
+  // 20.2s ("hardTimeout", zero acks) — every reward would hang after the reveal.
+  function playEverywhere(packet) {
+    emitSocket(MSG_TR_PLAY_UI, packet);
+
+    try {
+      const uiApi = window["oni.TreasureRoulette.UI"];
+      if (uiApi && typeof uiApi.play === "function") {
+        Promise.resolve(uiApi.play(packet))
+          .catch((e) => console.warn("[TreasureRoulette][Core] local UI play failed:", e))
+          .finally(() => {
+            try {
+              window["oni.TreasureRoulette.Net"]?.sendUiFinished?.(packet);
+            } catch (e) {
+              console.warn("[TreasureRoulette][Core] local UI ack failed:", e);
+            }
+          });
+      }
+    } catch (e) {
+      // ignore
+    }
   }
 
   // --------------------------------------------------------------------------
@@ -771,32 +911,8 @@ function buildRewardDescriptor(req, winnerRow) {
       createdAt: Date.now()
     });
 
-    // Broadcast to audience (UI listener will run it on OTHER clients)
-emitSocket(MSG_TR_PLAY_UI, packet);
-
-// Play locally (authority client does NOT receive its own socket emit).
-//
-// The local play must ACK too. Remote clients ack from the UI listener when the
-// socket message arrives; the authority never gets that message, so without an
-// explicit ack here NOBODY acks for this client and Net.waitBarrier can only
-// resolve on its hard timeout. Measured: a 3s spin stalled the barrier for
-// 20.2s ("hardTimeout", zero acks) — every reward would hang after the reveal.
-try {
-  const uiApi = window["oni.TreasureRoulette.UI"];
-  if (uiApi && typeof uiApi.play === "function") {
-    Promise.resolve(uiApi.play(packet))
-      .catch((e) => console.warn("[TreasureRoulette][Core] local UI play failed:", e))
-      .finally(() => {
-        try {
-          window["oni.TreasureRoulette.Net"]?.sendUiFinished?.(packet);
-        } catch (e) {
-          console.warn("[TreasureRoulette][Core] local UI ack failed:", e);
-        }
-      });
-  }
-} catch (e) {
-  // ignore
-}
+    // Broadcast to the audience and play locally (with the local ack).
+    playEverywhere(packet);
 
 // Queue AwardDispatcher locally too (authority client might not receive its own socket).
 // NOT in deferred mode: there the recipient is still unknown, and AwardDispatcher's
@@ -898,6 +1014,11 @@ console.log("[TreasureRoulette][Core] Locked + broadcast packet:", packet);
   window[KEY] = {
     // Main entry
     request,
+
+    // Skeletal Key picker: pool first, winner later, then the normal reveal
+    preparePool,
+    lockPick,
+    playEverywhere,
 
     // Expose constants so UI/Award scripts can reuse exactly
     SOCKET_CHANNEL,
