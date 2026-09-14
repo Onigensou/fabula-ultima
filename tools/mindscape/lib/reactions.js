@@ -330,9 +330,12 @@ const REACTION_REGISTRY = Object.freeze({
       note: "the wearer's Fire damage × 1.1",
     },
   ],
-  // Legendary Arcane weapon (2026-09-14): a basic attack that deals damage gives the
-  // target 1 Chronostasis; at 3 it loses them all and one action. Live: two
-  // creature_deals_damage rows gated ACTION_IS_ATTACK over a persistent_counter AE.
+  // Legendary Arcane weapon (2026-09-14): a hit with the weapon gives the target 1
+  // Chronostasis; at 3 it loses them all and one action. Live: one creature_deals_damage
+  // row (reaction_requires_weapon_used, same shape as Razor Plume) chaining apply_ae
+  // add_charges → modify_turns -1 / remove_ae, both gated TARGET_AE_CHARGES_CHRONOSTASIS >= 3.
+  // Live also counts skills that swing the weapon; an archetype's only weapon action is
+  // its basic attack, so gating on isBasicAttack reads the same here.
   // The granted spell Time Dilation (Swift, or Slow + 1 Chronostasis) is NOT modelled.
   "Chrono (Passive)": {
     trigger: TRIGGERS.ON_DEAL_DAMAGE,
