@@ -205,6 +205,21 @@ async function buildHarnessActionBase(ar) {
     harnessSkillTags = String(actingSkill?.system?.props?.skill_tags ?? "");
     harnessSkillDuration = String(actingSkill?.system?.props?.duration ?? "");
   } catch (_) { /* noop — both are optional gates */ }
+  // Which Defense the Check resolves against: live actionBase.defenseResolved
+  // (state-handlers CONFIRM). It was MISSING here, so every ATTACK_VS_DEF /
+  // ATTACK_VS_MDEF gate on a creature_will_deal_damage rider read 0 under test and
+  // refused a row that fires in play (Tincture of Strength / Spirit). Gated on
+  // canMiss, same as live and the targeted-by-action probe: defenseTargetType is
+  // the empty string for an ordinary weapon Attack. Computed BEFORE the literal
+  // because skill-regression parity reads the literal from source.
+  let harnessDefenseResolved = null;
+  try {
+    const { resolvesVsMagicDefense } = await import("./snapshot.js");
+    harnessDefenseResolved = ar.canMiss
+      ? (resolvesVsMagicDefense({ defenseTargetType: ar.defenseTargetType,
+          isSpell: String(ar.skillType ?? "").toLowerCase() === "spell" }) ? "mdef" : "def")
+      : null;
+  } catch (_) { harnessDefenseResolved = null; }
   const harnessActionBase = {
     actionKind: ar.kind ?? null,
     actionSkillType: String(ar.skillType ?? "").toLowerCase(),
@@ -230,8 +245,8 @@ async function buildHarnessActionBase(ar) {
     // combat the simulate publishes (`args.round`, default 1); without it a
     // round-gated rider ("on an even round") read ROUND as 0 under test.
     round: Number(globalThis.__fudActiveDCombat?.round ?? 0) || 0,
+    defenseResolved: harnessDefenseResolved,
   };
-
 
   return harnessActionBase;
 }
@@ -312,6 +327,15 @@ async function buildPerformsActionPayload(ar) {
     performSkillTags = String(actingSkill?.system?.props?.skill_tags ?? "");
     performSkillDuration = String(actingSkill?.system?.props?.duration ?? "");
   } catch (_) { /* noop — both are optional gates */ }
+  // Live `performPayload` spreads `actionBase`, which carries defenseResolved.
+  let performDefenseResolved = null;
+  try {
+    const { resolvesVsMagicDefense } = await import("./snapshot.js");
+    performDefenseResolved = ar.canMiss
+      ? (resolvesVsMagicDefense({ defenseTargetType: ar.defenseTargetType,
+          isSpell: String(ar.skillType ?? "").toLowerCase() === "spell" }) ? "mdef" : "def")
+      : null;
+  } catch (_) { performDefenseResolved = null; }
   const payloadForTrigger = {
     sourceActorUuid: ar.attackerActorRef,
     subjectActorUuid: ar.attackerActorRef,
@@ -335,6 +359,7 @@ async function buildPerformsActionPayload(ar) {
     checkTotal: Number(ar.roll?.total ?? 0) || 0,
     // Live `performPayload` spreads `actionBase`, which carries the BD round.
     round: Number(globalThis.__fudActiveDCombat?.round ?? 0) || 0,
+    defenseResolved: performDefenseResolved,
     // From the live `actionBase` spread. Both were MISSING from the first draft
     // of this builder and `parity` caught them the moment it was taught about
     // this scan — which is the argument for teaching it, not for trusting a

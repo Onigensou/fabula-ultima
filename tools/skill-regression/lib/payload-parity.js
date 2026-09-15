@@ -45,10 +45,12 @@ const HARNESS_FILE = path.join(BD, "_test-harness-director.js");
 
 // Keys that are MEANINGLESS in a harness run rather than missing, each with the
 // reason. Anything not listed here must be present in both.
-const HARNESS_EXEMPT = {
-  // Derived from live combat/roll state the isolated harness does not model.
-  defenseResolved: "derived from ar.canMiss + defenseTargetType at CONFIRM; the harness sets its own per-scan",
-};
+// defenseResolved USED to be exempt ("the harness sets its own per-scan") — only
+// the targeted-by-action probe did; the creature_will_deal_damage scan never
+// did, so every ATTACK_VS_DEF / ATTACK_VS_MDEF damage rider read 0 under test
+// (Tincture of Strength / Spirit, 2026-09-15). buildHarnessActionBase now
+// derives it, so it is checked like every other action-level field.
+const HARNESS_EXEMPT = {};
 
 // Local names either file gives a trigger payload literal. Matched by NAME and
 // then narrowed by the trigger string, so the two files may name theirs
