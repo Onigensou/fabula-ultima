@@ -22,6 +22,7 @@ const { loadWorldItems } = require("../lib/world-items");
 const { applyBaselineGear, loadWorldFolders, basicCatalogue } = require("../lib/baseline-gear");
 const { buildArchetypeParty, DEFAULT_SKILL_LAYER_K } = require("../lib/archetype-party");
 const { buildNeutralEncounter } = require("../lib/neutral-encounter");
+const TN = require("../lib/tinctures");
 
 function parseArgs(argv) {
   const out = { runs: 1000, seed: "mindscape", force: false, verbose: false, expectedRounds: 7 };
@@ -49,6 +50,9 @@ function parseArgs(argv) {
     else if (a === "--encounter-level") out.encounterLevel = Number(next());
     else if (a === "--hp-scale") out.hpScale = Number(next());
     else if (a === "--damage-scale") out.damageScale = Number(next());
+    else if (a === "--tinctures") out.tinctures = next();
+    else if (a === "--tincture-user") out.tinctureUser = next();
+    else if (a === "--tincture-stock") out.tinctureStock = Number(next());
     else if (a === "--help" || a === "-h") out.help = true;
   }
   return out;
@@ -127,6 +131,11 @@ Mindscape — offline Monte Carlo balance runs (game must be CLOSED)
                  NEVER auto-read from the scene — pass it explicitly, or the
                  hazard is silently absent. The whole Valley of the Dragon
                  roster is built around one.
+  --tinctures    "strength=25,spirit=25,endurance=25" — the Tincture Cycle paper
+                 consumables (ruleset Part 6l). One Inventory action, one creature,
+                 three of its turns; refresh, never stack.
+  --tincture-user  the party member who carries them (default Blanche)
+  --tincture-stock  how many of EACH per fight (default 3)
 `);
     process.exit(args.help ? 0 : 1);
   }
@@ -311,6 +320,26 @@ Mindscape — offline Monte Carlo balance runs (game must be CLOSED)
   const conflictEvent = args.conflictEvent ? resolveEvent(args.conflictEvent) : null;
   console.log(`\nConflict event: ${conflictEvent ? conflictEvent.label : "none"}`);
 
+  // Paper consumables (lib/tinctures.js). Announced like any other paper design.
+  let tinctures = null;
+  if (args.tinctures) {
+    let pct;
+    try { pct = TN.parseTinctureArg(args.tinctures); }
+    catch (e) { console.error(`\n${e.message}`); process.exit(2); }
+    tinctures = {
+      pct,
+      user: args.tinctureUser ?? TN.DEFAULT_USER,
+      stock: Number.isFinite(args.tinctureStock) ? args.tinctureStock : TN.DEFAULT_STOCK,
+    };
+    const want = String(tinctures.user).trim().toLowerCase();
+    if (!party.some((p) => String(p.name).trim().toLowerCase() === want)) {
+      console.error(`\n--tincture-user "${tinctures.user}" is not in the party`);
+      process.exit(2);
+    }
+    console.log(`⚠ PAPER CONSUMABLES — ${Object.entries(pct).map(([k, v]) => `${k} ${v}%`).join(", ")}`
+      + `  ·  carried by ${tinctures.user}  ·  ${tinctures.stock} of each per fight`);
+  }
+
   if (cov.refuse && !args.force) {
     console.error(`
 REFUSING TO REPORT — ${cov.summary}, over the ${pct(cov.threshold)} bar.
@@ -336,11 +365,25 @@ if you accept a partial model. Use --verbose to see every gap.`);
   // Per-PC output. Party-level BaselineDPR cannot show what ONE item did: an
   // equipment A/B changes one character, and the other three's variance buries it.
   const pByName = new Map();
+  // Tincture accounting: uses per kind, damage added, damage prevented, and the won
+  // fights on their own (rounds over ALL fights read a wipe as a fast fight).
+  const tUsed = {};
+  let tAdded = 0, tPrevented = 0;
+  const wonRounds = [], wonHp = [];
 
   for (let i = 0; i < args.runs; i++) {
     const rng = new Rng(`${args.seed}:${i}`);
-    const r = runBattle({ party, enemies, rng, expectedRounds: args.expectedRounds, conflictEvent });
+    const r = runBattle({ party, enemies, rng, expectedRounds: args.expectedRounds, conflictEvent, tinctures });
     outcomes[r.outcome] = (outcomes[r.outcome] ?? 0) + 1;
+    if (r.tinctures) {
+      for (const [k, v] of Object.entries(r.tinctures.used)) tUsed[k] = (tUsed[k] ?? 0) + v;
+      for (const c of r.combatants) {
+        if (c.side !== "party") continue;
+        tAdded += c.tinctureBonusDealt ?? 0;
+        tPrevented += c.tincturePrevented ?? 0;
+      }
+    }
+    if (r.outcome === "victory") { wonRounds.push(r.rounds); wonHp.push(r.partyHpRemaining); }
     rounds.push(r.rounds);
     if (r.partyHpRemaining != null) hps.push(r.partyHpRemaining);
     dprs.push(r.baselineDpr);
@@ -522,6 +565,16 @@ if you accept a partial model. Use --verbose to see every gap.`);
       console.log(`    opened in these runs. Check whether the party is CARRYING other`);
       console.log(`    weapon categories before reading that as a property of the design.`);
     }
+  }
+
+  if (tinctures) {
+    const mean = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null);
+    console.log(`\ntinctures  (per fight, carried by ${tinctures.user})`);
+    console.log(`  used          ${Object.entries(tUsed).map(([k, v]) => `${k} ${(v / args.runs).toFixed(2)}`).join("  ·  ")}`);
+    console.log(`  added damage  ${(tAdded / args.runs).toFixed(1)}   (what reached an HP bar; overkill excluded)`);
+    console.log(`  prevented     ${(tPrevented / args.runs).toFixed(1)}`);
+    console.log(`won fights    mean rounds ${wonRounds.length ? mean(wonRounds).toFixed(2) : "—"}`
+      + `  ·  party HP at victory ${pct(mean(wonHp))}  ·  ${wonRounds.length} of ${args.runs}`);
   }
 
   console.log(`\nmeasured constants  (feed docs/monster-balance-design.md)`);

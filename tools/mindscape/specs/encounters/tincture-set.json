@@ -1,0 +1,13 @@
+{
+  "note": "Tincture Cycle sim set (2026-09-15). Normal groups are the house-set Wyrmwood and Valley spawn groups. Boss proxies are the real Geist / Fafnir with in-memory patches (sets) so the modelled party can survive long enough to measure a tincture; they describe a boss-SHAPED fight, not the boss on the sheet.",
+  "groups": [
+    { "id": "wyrm-1", "label": "The Wyrmwood", "enemies": ["Centuaros", "Inferex"] },
+    { "id": "wyrm-2", "label": "The Wyrmwood", "enemies": ["Fire Slime", "Inferex", "Fire Slime"] },
+    { "id": "wyrm-3", "label": "The Wyrmwood", "enemies": ["Pyrefly", "Salamander", "Dryad"] },
+    { "id": "wyrm-4", "label": "The Wyrmwood", "enemies": ["Hellhound", "Salamander", "Marigold"] },
+    { "id": "valley-1", "label": "Valley of the Dragon", "enemies": ["Skizzik", "Kirin", "Skizzik"], "conflictEvent": "lightning-storm" },
+    { "id": "valley-2", "label": "Valley of the Dragon", "enemies": ["Ampere", "Mana Ray", "Kirin"], "conflictEvent": "lightning-storm" },
+    { "id": "valley-3", "label": "Valley of the Dragon", "enemies": ["Drakoza", "Skizzik"], "conflictEvent": "lightning-storm" },
+    { "id": "valley-4", "label": "Valley of the Dragon", "enemies": ["Mist Dragon", "Obsidrax"], "conflictEvent": "lightning-storm" }
+  ]
+}

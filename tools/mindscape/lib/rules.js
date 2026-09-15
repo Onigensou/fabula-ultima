@@ -147,6 +147,7 @@ function resolveAffinity(target, element) {
 //   1. reduction   flat + %          (skipped by Crush)
 //   2. weapon EF   ceil(v * pct/100) (BEFORE affinity — this is the easy one
 //                                     to get wrong)
+//   2b. outgoing   floor(v * postEfficiencyMult) (reaction adjust_damage slot)
 //   3. +element    v += bump
 //   4. affinity    VU/RS/IM/AB
 //   5. class       strike/magic
@@ -160,6 +161,8 @@ function incomingDamage(target, {
   ignoreAffinity = false,
   ignoreDR = false,
   keywords = null,
+  // Outgoing multiplier folded after weapon efficiency (step 2b). 1 = none.
+  postEfficiencyMult = 1,
 } = {}) {
   const breakdown = [];
   let v = Math.max(0, Math.ceil(Number(base) || 0));
@@ -185,6 +188,16 @@ function incomingDamage(target, {
       v = Math.ceil(v * (pct / 100));
       if (v !== b) breakdown.push({ source: `Weapon efficiency ${pct}%`, amount: v - b });
     }
+  }
+
+  // 2b) Outgoing multiplier — AFTER efficiency, BEFORE the element bump and
+  //     affinity. The live slot of an accepted reaction's adjust_damage op
+  //     (action-profile.js: DR -> crit -> efficiency -> reaction ops -> affinity),
+  //     which floors. Tinctures of Strength / Spirit ride here (lib/tinctures.js).
+  if (postEfficiencyMult > 0 && postEfficiencyMult !== 1) {
+    const b = v;
+    v = Math.max(0, Math.floor(v * postEfficiencyMult));
+    if (v !== b) breakdown.push({ source: `Outgoing x${postEfficiencyMult}`, amount: v - b });
   }
 
   // 3) Additive per-element bump — BEFORE affinity, so VU doubles the bonus too.
@@ -251,11 +264,25 @@ function projectDamage(target, { dieA, dieB, damageBonus = 0, ...opts }) {
   return incomingDamage(target, { ...opts, base });
 }
 
+// Exact probability that a check succeeds, by enumerating the faces under the same
+// rules as accuracyCheck: a critical (equal faces >= 6) always hits, a fumble
+// (double 1) never does.
+function hitChance(dieA, dieB, bonus, dl) {
+  let hits = 0;
+  for (let a = 1; a <= dieA; a++) {
+    for (let b = 1; b <= dieB; b++) {
+      if (a === 1 && b === 1) continue;
+      if ((a === b && a >= 6) || a + b + bonus >= dl) hits++;
+    }
+  }
+  return hits / (dieA * dieB);
+}
+
 module.exports = {
   DIE_LADDER, STATUS_STEPS, FORCED_VU_BY_STATUS,
   stepDie, effectiveAttributes,
   accuracyCheck,
   outgoingDamage, incomingDamage, projectDamage,
-  expectedHighRoll, applyAffinityToDamage, resolveAffinity,
+  expectedHighRoll, hitChance, applyAffinityToDamage, resolveAffinity,
   crushAffinity, bypassAffinity, normalizeKeywords,
 };

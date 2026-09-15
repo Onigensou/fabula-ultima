@@ -17,6 +17,7 @@ const { extractActions } = require("./skills");
 const U = require("./utility");
 const RX = require("./reactions");
 const ST = require("./stances");
+const T = require("./tinctures");
 
 const ATTR_KEYS = { DEX: "dex", INS: "ins", MIG: "mig", WLP: "wlp" };
 
@@ -66,6 +67,14 @@ function makeCombatant(actor, side) {
     // window is per-monster state, not per-attacker.
     weaponReads: {},
     shield: 0,
+    // Tincture buffs held (lib/tinctures.js): kind -> { pct, turnsLeft }.
+    buffs: {},
+    // HP lost this round and last — the carrier's Endurance trigger reads the latter.
+    takenThisRound: 0,
+    takenLastRound: 0,
+    tinctureBonusDealt: 0,   // extra damage a Strength/Spirit buff put on an HP bar
+    tincturePrevented: 0,    // damage an Endurance buff kept off this creature
+    tincturesUsed: 0,        // tinctures this creature handed out
     alive: true,
     // Per-run accounting, split per spec D3.
     baseActionsTaken: 0,
@@ -207,11 +216,14 @@ function extraDamageFor(actor, action) {
   return bonus;
 }
 
-// Flat incoming reduction: the universal band plus the per-element one.
-function reductionFor(target, element) {
+// Flat incoming reduction: the universal band plus the per-element one. A held
+// Tincture of Endurance SUMS into the percentage, as damage_receiving_percentage_all
+// does live; `withTincture: false` gives the figure it would have been without.
+function reductionFor(target, element, { withTincture = true } = {}) {
   const d = target.actor.damageReduction;
-  if (!d) return { flat: 0, percent: 0 };
-  return { flat: (d.flat ?? 0) + (d.byElement?.[element] ?? 0), percent: d.percent ?? 0 };
+  const tincture = withTincture ? T.reductionPct(target) : 0;
+  if (!d) return { flat: 0, percent: tincture };
+  return { flat: (d.flat ?? 0) + (d.byElement?.[element] ?? 0), percent: (d.percent ?? 0) + tincture };
 }
 
 // ── Reactions ───────────────────────────────────────────────────────────────
@@ -348,8 +360,16 @@ function applyFlatDamage(state, source, target, amount, element, label, cause = 
   if (out.direction === "recover") {
     target.hp = Math.min(target.maxHp, target.hp + out.damage);
   } else {
+    if (T.reductionPct(target)) {
+      const bare = R.incomingDamage(
+        { ...target.actor, damageReduction: reductionFor(target, element, { withTincture: false }) },
+        { base: amount, element },
+      ).damage;
+      target.tincturePrevented += Math.max(0, bare - out.damage);
+    }
     target.hp -= out.damage;
     target.damageTaken += out.damage;
+    target.takenThisRound += out.damage;
     target.damageTakenBy.other += out.damage;
     if (source.side !== target.side) source.damageDealt += out.damage;
     if (target.hp <= 0) { target.hp = 0; target.alive = false; target.downedOnRound = state.round; }
@@ -534,16 +554,28 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
       lane.effSum += Number(target.actor.efficiency[fam] ?? 100) || 100;
     }
 
+    // Tincture of Strength / Spirit (lib/tinctures.js): after efficiency, before
+    // affinity, and on a HIT only — live folds reaction ops on a hit, so a Pierce
+    // half-damage miss is not boosted.
+    const tinctureMult = check.hit ? T.outgoingMult(actor, action) : 1;
     const dmgSpec = {
       base,
       element: action.element,
       weaponFamily: action.weaponFamily,
       keywords: action.keywords,
+      postEfficiencyMult: tinctureMult,
     };
     let out = R.incomingDamage(
       { ...target.actor, damageReduction: reductionFor(target, action.element) },
       dmgSpec,
     );
+    // The same hit unboosted, so the report can say what the tincture added.
+    const unboosted = tinctureMult !== 1
+      ? R.incomingDamage(
+        { ...target.actor, damageReduction: reductionFor(target, action.element) },
+        { ...dmgSpec, postEfficiencyMult: 1 },
+      ).damage
+      : null;
 
     // PROTECT: a defensive redirect resolved here rather than on a turn -- the
     // protector steps in front and takes the hit instead.
@@ -595,8 +627,21 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
       target.hp = Math.min(target.maxHp, target.hp + out.damage);
     } else {
       // `victim` is the target unless a protector stepped in front.
+      const hpBefore = victim.hp;
       victim.hp -= out.damage;
       victim.damageTaken += out.damage;
+      victim.takenThisRound += out.damage;
+      if (unboosted != null && victim === target) {
+        // Only what reached the HP bar counts: overkill on a dying target is waste.
+        actor.tinctureBonusDealt += Math.max(0, Math.min(out.damage, hpBefore) - Math.min(unboosted, hpBefore));
+      }
+      if (T.reductionPct(victim)) {
+        const bare = R.incomingDamage(
+          { ...victim.actor, damageReduction: reductionFor(victim, action.element, { withTincture: false }) },
+          dmgSpec,
+        ).damage;
+        victim.tincturePrevented += Math.max(0, bare - out.damage);
+      }
       victim.damageTakenBy[action.defenseTarget === "mdef" ? "mdef" : "def"] += out.damage;
       if (out.damage > 0) victim.hitsTaken++;
       actor.damageDealt += out.damage;
@@ -729,6 +774,49 @@ function declareRiders(state, actor, action) {
   return out;
 }
 
+// ── Tinctures ───────────────────────────────────────────────────────────────
+// Expected damage per round `c` would deal with actions rolled against `lane`
+// ("def" | "mdef"), against the party's called target. Hit chance is in the number
+// (a boost on an ally who cannot land that lane is worth nothing), and so are the
+// turns they take a round. A selection heuristic for the carrier only; the report
+// measures what the tincture actually added.
+function projectLane(state, c, lane) {
+  const foes = livingFoes(state, c.side);
+  if (!foes.length) return 0;
+  const focus = state.focus && state.focus.alive
+    ? state.focus
+    : foes.slice().sort((x, y) => x.hp - y.hp)[0];
+  const a = attrs(c);
+  const candidates = c.actions.filter((act) =>
+    act.defenseTarget === lane && !act.stanceGrants && !RX.REACTION_ONLY_ACTIONS.has(act.name)
+    && act.target?.side !== "ally" && act.target?.side !== "self" && canAfford(c, act, 1));
+  const w = weaponAction(c);
+  if (w && lane === "def") candidates.push(w);
+
+  let best = 0;
+  for (const act of candidates) {
+    const dieA = a[act.attrA] ?? 8, dieB = a[act.attrB] ?? 8;
+    const dl = lane === "mdef" ? focus.actor.mdef : focus.actor.def;
+    const p = R.hitChance(dieA, dieB, checkBonusFor(c, act), dl);
+    const proj = R.projectDamage(focus.actor, {
+      dieA, dieB, damageBonus: act.damageBonus,
+      element: act.element, weaponFamily: act.weaponFamily, keywords: act.keywords,
+    });
+    if (proj.direction === "recover") continue;
+    const count = act.target?.count === Infinity ? foes.length : Math.min(act.target?.count ?? 1, foes.length);
+    best = Math.max(best, p * proj.damage * count);
+  }
+  return best * ((c.baseTurns ?? 1) + (c.accelerated ? 1 : 0));
+}
+
+function tryTincture(state, actor) {
+  if (!state.tinctures) return null;
+  const pick = T.chooseTincture(state, actor, { projectLane: (c, lane) => projectLane(state, c, lane) });
+  if (!pick) return null;
+  T.drink(state, actor, pick);
+  return pick;
+}
+
 function takeTurn(state, actor, { granted = false } = {}) {
   if (!actor.alive) return;
 
@@ -765,6 +853,14 @@ function takeTurn(state, actor, { granted = false } = {}) {
     const acc = U.tryAccelerate(state, actor);
     if (acc) {
       state.log.push({ round: state.round, actor: actor.name, action: "Acceleration", target: acc.target });
+      actor.baseActionsTaken++;
+      return;
+    }
+    // A tincture is an Inventory action: it spends the carrier's whole turn.
+    const tin = tryTincture(state, actor);
+    if (tin) {
+      const label = tin.kind.charAt(0).toUpperCase() + tin.kind.slice(1);
+      state.log.push({ round: state.round, actor: actor.name, action: `Tincture of ${label}`, target: tin.target.name, tincture: tin.kind });
       actor.baseActionsTaken++;
       return;
     }
@@ -815,7 +911,9 @@ function takeTurn(state, actor, { granted = false } = {}) {
 }
 
 // ── The run ─────────────────────────────────────────────────────────────────
-function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, conflictEvent = null }) {
+// `tinctures`: { pct: { strength, spirit, endurance }, user, stock } — null (the
+// default) leaves every fight exactly as it was.
+function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, conflictEvent = null, tinctures = null }) {
   const combatants = [
     ...party.map((a) => makeCombatant(a, "party")),
     ...enemies.map((a) => makeCombatant(a, "enemy")),
@@ -826,6 +924,7 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
     event: conflictEvent, rod: null, reactionDepth: 0,
   };
   if (state.event?.init) state.event.init(state);
+  state.tinctures = tinctures ? T.makeTinctureState(tinctures) : null;
 
   const order = combatants.slice().sort((a, b) => initiative(b) - initiative(a));
 
@@ -834,7 +933,11 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
   for (const c of combatants) if (U.tryHighSpeed(c)) c.grantedTurns++;
 
   for (state.round = 1; state.round <= maxRounds; state.round++) {
-    for (const c of combatants) c.protectedThisRound = 0;
+    for (const c of combatants) {
+      c.protectedThisRound = 0;
+      c.takenLastRound = c.takenThisRound;
+      c.takenThisRound = 0;
+    }
     if (state.event?.onRoundStart) state.event.onRoundStart(state);
     for (const c of order) {
       if (!c.alive) continue;
@@ -844,9 +947,13 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
           c.turnDebt--;
           c.turnsDenied++;
           state.log.push({ round: state.round, actor: c.name, action: "(turn lost)", denied: true });
+          T.tickTurnEnd(c);
           continue;
         }
         takeTurn(state, c);
+        // Tinctures count down at the end of the bearer's own BASE turn (live
+        // target_turn_end). Granted free attacks below are not turns.
+        T.tickTurnEnd(c);
       }
       // Acceleration is a RECURRING grant ("at the end of each of their turns,
       // perform a free attack"), so it is added every round rather than once.
@@ -917,7 +1024,12 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
       baseActionsTaken: c.baseActionsTaken, grantedActionsTaken: c.grantedActionsTaken,
       damageTaken: c.damageTaken, damageTakenBy: { ...c.damageTakenBy }, hitsTaken: c.hitsTaken,
       downedOnRound: c.downedOnRound, fpSpent: c.fpSpent, turnsDenied: c.turnsDenied,
+      tinctureBonusDealt: c.tinctureBonusDealt, tincturePrevented: c.tincturePrevented,
+      tincturesUsed: c.tincturesUsed,
     })),
+    tinctures: state.tinctures
+      ? { pct: { ...state.tinctures.pct }, used: { ...state.tinctures.used } }
+      : null,
     // Per-lane weapon-efficiency pressure. Only populated when something in the
     // fight actually reads weapon families, so it costs nothing otherwise.
     //
