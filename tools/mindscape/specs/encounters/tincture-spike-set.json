@@ -1,0 +1,24 @@
+{
+  "note": "Tincture Cycle x stacked multipliers x HIGH BASE damage (2026-09-15). Fafnir Castle soldier groups (Imp 110, Death Gazer 150, Dire Orc 240, Dragon Guard 250 HP) — the HP band where a boosted hit can cross a one-shot line. Zarg's bow base (21 on the sheet) is raised in memory by +10 / +20 to stand in for a bigger carry weapon, and the enemies' physical affinity / bow efficiency are forced to x1 (NE, 100%), x2 (VU) or x4 (VU + 200%).",
+  "groups": [
+    { "id": "f2-b0-x1",  "label": "Fafnir Castle 2 · Zarg base 21 · x1",  "enemies": ["Dire Orc", "Death Gazer", "Dire Orc"], "sets": ["actor:affinity_1=NA", "actor:bow_ef=100"] },
+    { "id": "f2-b0-x2",  "label": "Fafnir Castle 2 · Zarg base 21 · x2",  "enemies": ["Dire Orc", "Death Gazer", "Dire Orc"], "sets": ["actor:affinity_1=VU", "actor:bow_ef=100"] },
+    { "id": "f2-b0-x4",  "label": "Fafnir Castle 2 · Zarg base 21 · x4",  "enemies": ["Dire Orc", "Death Gazer", "Dire Orc"], "sets": ["actor:affinity_1=VU", "actor:bow_ef=200"] },
+    { "id": "f2-b10-x1", "label": "Fafnir Castle 2 · Zarg base 31 · x1",  "enemies": ["Dire Orc", "Death Gazer", "Dire Orc"], "sets": ["actor:affinity_1=NA", "actor:bow_ef=100"], "partySets": ["Zarg:weapon_base=+10"] },
+    { "id": "f2-b10-x2", "label": "Fafnir Castle 2 · Zarg base 31 · x2",  "enemies": ["Dire Orc", "Death Gazer", "Dire Orc"], "sets": ["actor:affinity_1=VU", "actor:bow_ef=100"], "partySets": ["Zarg:weapon_base=+10"] },
+    { "id": "f2-b10-x4", "label": "Fafnir Castle 2 · Zarg base 31 · x4",  "enemies": ["Dire Orc", "Death Gazer", "Dire Orc"], "sets": ["actor:affinity_1=VU", "actor:bow_ef=200"], "partySets": ["Zarg:weapon_base=+10"] },
+    { "id": "f2-b20-x1", "label": "Fafnir Castle 2 · Zarg base 41 · x1",  "enemies": ["Dire Orc", "Death Gazer", "Dire Orc"], "sets": ["actor:affinity_1=NA", "actor:bow_ef=100"], "partySets": ["Zarg:weapon_base=+20"] },
+    { "id": "f2-b20-x2", "label": "Fafnir Castle 2 · Zarg base 41 · x2",  "enemies": ["Dire Orc", "Death Gazer", "Dire Orc"], "sets": ["actor:affinity_1=VU", "actor:bow_ef=100"], "partySets": ["Zarg:weapon_base=+20"] },
+    { "id": "f2-b20-x4", "label": "Fafnir Castle 2 · Zarg base 41 · x4",  "enemies": ["Dire Orc", "Death Gazer", "Dire Orc"], "sets": ["actor:affinity_1=VU", "actor:bow_ef=200"], "partySets": ["Zarg:weapon_base=+20"] },
+
+    { "id": "f1-b0-x1",  "label": "Fafnir Castle 1 · Zarg base 21 · x1",  "enemies": ["Imp", "Dragon Guard", "Imp"], "sets": ["actor:affinity_1=NA", "actor:bow_ef=100"] },
+    { "id": "f1-b0-x2",  "label": "Fafnir Castle 1 · Zarg base 21 · x2",  "enemies": ["Imp", "Dragon Guard", "Imp"], "sets": ["actor:affinity_1=VU", "actor:bow_ef=100"] },
+    { "id": "f1-b0-x4",  "label": "Fafnir Castle 1 · Zarg base 21 · x4",  "enemies": ["Imp", "Dragon Guard", "Imp"], "sets": ["actor:affinity_1=VU", "actor:bow_ef=200"] },
+    { "id": "f1-b10-x1", "label": "Fafnir Castle 1 · Zarg base 31 · x1",  "enemies": ["Imp", "Dragon Guard", "Imp"], "sets": ["actor:affinity_1=NA", "actor:bow_ef=100"], "partySets": ["Zarg:weapon_base=+10"] },
+    { "id": "f1-b10-x2", "label": "Fafnir Castle 1 · Zarg base 31 · x2",  "enemies": ["Imp", "Dragon Guard", "Imp"], "sets": ["actor:affinity_1=VU", "actor:bow_ef=100"], "partySets": ["Zarg:weapon_base=+10"] },
+    { "id": "f1-b10-x4", "label": "Fafnir Castle 1 · Zarg base 31 · x4",  "enemies": ["Imp", "Dragon Guard", "Imp"], "sets": ["actor:affinity_1=VU", "actor:bow_ef=200"], "partySets": ["Zarg:weapon_base=+10"] },
+    { "id": "f1-b20-x1", "label": "Fafnir Castle 1 · Zarg base 41 · x1",  "enemies": ["Imp", "Dragon Guard", "Imp"], "sets": ["actor:affinity_1=NA", "actor:bow_ef=100"], "partySets": ["Zarg:weapon_base=+20"] },
+    { "id": "f1-b20-x2", "label": "Fafnir Castle 1 · Zarg base 41 · x2",  "enemies": ["Imp", "Dragon Guard", "Imp"], "sets": ["actor:affinity_1=VU", "actor:bow_ef=100"], "partySets": ["Zarg:weapon_base=+20"] },
+    { "id": "f1-b20-x4", "label": "Fafnir Castle 1 · Zarg base 41 · x4",  "enemies": ["Imp", "Dragon Guard", "Imp"], "sets": ["actor:affinity_1=VU", "actor:bow_ef=200"], "partySets": ["Zarg:weapon_base=+20"] }
+  ]
+}

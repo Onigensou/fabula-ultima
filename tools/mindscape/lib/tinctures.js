@@ -59,7 +59,10 @@ function parseTinctureArg(spec) {
 
 // Per-fight state. null when no tincture is switched on, so the engine's common
 // path is untouched and the calibration seed reproduces exactly.
-function makeTinctureState({ pct = {}, user = DEFAULT_USER, stock = DEFAULT_STOCK, lanePrior = null } = {}) {
+// `carrierFirst`: the WORST-CASE opener. The carrier acts before everyone in the round
+// order, so a round-1 tincture lands before the carry's first volley — what a party with
+// Quicken, or simply better initiative, would do on purpose.
+function makeTinctureState({ pct = {}, user = DEFAULT_USER, stock = DEFAULT_STOCK, lanePrior = null, carrierFirst = false } = {}) {
   const kinds = Object.keys(KINDS).filter((k) => Number(pct[k]) > 0);
   if (!kinds.length) return null;
   return {
@@ -68,6 +71,7 @@ function makeTinctureState({ pct = {}, user = DEFAULT_USER, stock = DEFAULT_STOC
     stock: Object.fromEntries(kinds.map((k) => [k, stock])),
     used: Object.fromEntries(kinds.map((k) => [k, 0])),
     lanePrior,
+    carrierFirst: !!carrierFirst,
   };
 }
 

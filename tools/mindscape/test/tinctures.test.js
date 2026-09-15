@@ -175,6 +175,22 @@ t("the carrier hands Strength over on rounds 1, 4 and 7, and the damage it added
   assert.strictEqual(sOn.damageDealt - sOff.damageDealt, sOn.tinctureBonusDealt);
   assert.strictEqual(off.tinctures, null);
 });
+t("carrierFirst: a slower carrier still hands over Strength before the striker's first swing", () => {
+  const party = () => [
+    pc("Blanche", { max_hp: "166", current_hp: "166", dex_base: "6", ins_base: "6" }),
+    pc("Striker", { max_hp: "110", current_hp: "110", dex_base: "12", ins_base: "12" }, [slash]),
+  ];
+  const fight = (carrierFirst) => runBattle({
+    party: party(), enemies: [npc("Dummy", { max_hp: "9000", current_hp: "9000" })],
+    rng: new Rng("first"), expectedRounds: 1,
+    tinctures: { pct: { strength: 25 }, user: "Blanche", stock: 3, carrierFirst },
+  });
+  const order = (r) => [r.log.findIndex((e) => e.tincture), r.log.findIndex((e) => e.actor === "Striker")];
+  const [drinkOn, swingOn] = order(fight(true));
+  assert.ok(drinkOn >= 0 && drinkOn < swingOn, "carrier first: the drink precedes the swing");
+  const [drinkOff, swingOff] = order(fight(false));
+  assert.ok(swingOff >= 0 && swingOff < drinkOff, "by initiative the faster striker swings first");
+});
 t("Endurance on a focused carrier cuts the damage she takes, counted as prevented", () => {
   const party = () => [pc("Blanche", { max_hp: "300", current_hp: "300", defense: "1" })];
   const brute = () => npc("Brute", { max_hp: "9000", current_hp: "9000", activation: "2" }, [crush]);

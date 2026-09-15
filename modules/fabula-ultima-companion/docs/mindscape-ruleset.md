@@ -721,6 +721,23 @@ A paper design from the tincture proposal review. Nothing exists in the world ye
 - **Boss proxies** (`specs/encounters/tincture-set.json`). The real Geist and Fafnir wipe
   the modelled party, so their HP and damage are patched in memory until the baseline
   lands near a 6-round win. They measure a boss-SHAPED fight, not the boss on the sheet.
+- **Stacked multipliers and spikes** (added the same day).
+  - `--set` of `affinity_N` or `<family>_ef` now re-derives the engine's affinity and
+    efficiency tables, in the CLI and the matrix. Before, it patched the raw prop only and
+    changed nothing — the same trap `max_hp` had.
+  - Party hits log `hpBefore`, `victimMaxHp`, `killed` and, when boosted, `unboosted`. The
+    matrix reports hit p50 / p90 / max, kills, one-shots, kills the tincture bought,
+    one-shots the tincture bought, and the overkill share.
+  - A group's `partySets` (`"Zarg:weapon_base=+20"`) raises a carry's weapon base in memory,
+    on a freshly loaded party so the patch cannot leak into the next group.
+  - **`carrierFirst`** (arms `first25` / `first30`, run only when named in `--arms`) moves
+    the carrier to the front of the round order. It is the worst-case opener: a round-1
+    tincture on the carry's first volley against full-HP targets, which Quicken or better
+    initiative gives a real party on purpose. Without it the carry usually acts first and
+    the boost never touches the opening volley.
+  - Sets: `specs/encounters/tincture-multiplier-set.json` (x1 / x2 VU / x2 EF / x4 toward
+    Zarg, plus arcane EF) and `tincture-spike-set.json` (Fafnir Castle soldiers, Zarg's
+    base +0 / +10 / +20). Results: `expectations/tincture-{multiplier,spike}.json`.
 - **Not modelled.** Tincture of Precision (accuracy), Potion Rain spreading, Dispel,
   the Create (IP) route, and a player's judgement about a fight that is nearly over — the
   carrier drinks whenever the rule fires.

@@ -28,6 +28,11 @@ const ARMS = [
   { id: "end30", pct: { endurance: 30 } },
   { id: "all25", pct: { strength: 25, spirit: 25, endurance: 25 } },
   { id: "all30", pct: { strength: 30, spirit: 30, endurance: 30 } },
+  // Worst-case opener: the carrier acts first, so the round-1 tincture lands on the
+  // carry's opening volley against full-HP targets. Not in the default run order below
+  // unless asked for with --arms.
+  { id: "first25", pct: { strength: 25, spirit: 25 }, carrierFirst: true },
+  { id: "first30", pct: { strength: 30, spirit: 30 }, carrierFirst: true },
 ];
 
 function parseArgs(argv) {
@@ -85,6 +90,27 @@ function applySets(enemies, sets) {
   }
 }
 
+// In-memory party patches, for measuring a HIGHER-BASE carry than the sheet holds:
+// "Zarg:weapon_base=+10" (relative) or "Zarg:weapon_base=40" (absolute). Only
+// weapon_base is supported — anything else is refused rather than silently ignored.
+function applyPartySets(party, sets) {
+  for (const spec of sets ?? []) {
+    const colon = spec.indexOf(":");
+    const eq = spec.indexOf("=");
+    if (colon < 1 || eq < colon + 2) throw new Error(`bad party set "${spec}" (want "PC:weapon_base=+N")`);
+    const who = spec.slice(0, colon).trim().toLowerCase();
+    const prop = spec.slice(colon + 1, eq).trim();
+    const raw = spec.slice(eq + 1).trim();
+    if (prop !== "weapon_base") throw new Error(`party set supports weapon_base only: ${spec}`);
+    const pc = party.find((p) => String(p.name).trim().toLowerCase() === who);
+    if (!pc?.weapon) throw new Error(`party set matched no armed PC: ${spec}`);
+    const n = Number(raw);
+    if (!Number.isFinite(n)) throw new Error(`party set value is not a number: ${spec}`);
+    pc.weapon.baseDamage = raw.startsWith("+") || raw.startsWith("-") ? pc.weapon.baseDamage + n : n;
+  }
+  return party;
+}
+
 const mean = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null);
 
 function summarise(results, carrier) {
@@ -103,7 +129,7 @@ function summarise(results, carrier) {
   // Spikes: every party hit that took HP. A stacked multiplier is felt as a HIT SIZE and a
   // KILL that should not have happened, not as an average, so these are read per hit.
   const hits = [];
-  let dealt = 0, overkill = 0, kills = 0, oneShots = 0, enabledKills = 0;
+  let dealt = 0, overkill = 0, kills = 0, oneShots = 0, enabledKills = 0, enabledOneShots = 0;
   for (const r of results) {
     for (const e of r.log) {
       if (e.side !== "party" || e.direction !== "loss" || !(e.damage > 0) || e.hpBefore == null) continue;
@@ -112,9 +138,14 @@ function summarise(results, carrier) {
       overkill += Math.max(0, e.damage - e.hpBefore);
       if (!e.killed) continue;
       kills++;
-      if (e.hpBefore >= e.victimMaxHp) oneShots++;
-      // The unboosted hit would have left it standing: the tincture bought this kill.
-      if (e.unboosted != null && e.unboosted < e.hpBefore) enabledKills++;
+      const fromFull = e.hpBefore >= e.victimMaxHp;
+      if (fromFull) oneShots++;
+      // The unboosted hit would have left it standing: the tincture bought this kill —
+      // and when the victim was at full HP, it moved a one-shot line.
+      if (e.unboosted != null && e.unboosted < e.hpBefore) {
+        enabledKills++;
+        if (fromFull) enabledOneShots++;
+      }
     }
   }
   hits.sort((a, b) => a - b);
@@ -122,6 +153,7 @@ function summarise(results, carrier) {
   const spikes = {
     hitP50: q(0.5), hitP90: q(0.9), hitMax: hits.length ? hits[hits.length - 1] : null,
     killsPerFight: kills / n, oneShotsPerFight: oneShots / n, enabledKillsPerFight: enabledKills / n,
+    enabledOneShotsPerFight: enabledOneShots / n,
     overkillShare: dealt ? overkill / dealt : 0,
   };
 
@@ -163,13 +195,14 @@ function printGroup(g, arms) {
       + `  ${used}`.padEnd(20)
       + num(s.addedDamage).padStart(6) + num(s.prevented).padStart(11) + num(s.carrierDamage).padStart(13));
   }
-  console.log("  spikes     party hit p50 / p90 / max    kills  one-shots  tincture kills  overkill");
+  console.log("  spikes     party hit p50 / p90 / max    kills  one-shots  tincture kills  tincture 1-shots  overkill");
   for (const [id, s] of Object.entries(arms)) {
     const k = s.spikes;
     console.log("  " + id.padEnd(9)
       + `  ${k.hitP50 ?? "—"} / ${k.hitP90 ?? "—"} / ${k.hitMax ?? "—"}`.padEnd(29)
       + num(k.killsPerFight, 2).padStart(6) + num(k.oneShotsPerFight, 2).padStart(11)
-      + num(k.enabledKillsPerFight, 2).padStart(16) + pct(k.overkillShare).padStart(10));
+      + num(k.enabledKillsPerFight, 2).padStart(16) + num(k.enabledOneShotsPerFight, 2).padStart(18)
+      + pct(k.overkillShare).padStart(10));
   }
 }
 
@@ -181,15 +214,16 @@ async function main() {
   }
   const set = JSON.parse(fs.readFileSync(path.resolve(args.setFile), "utf8"));
   const groups = set.groups.filter((g) => !args.only || args.only.includes(g.id));
-  const arms = ARMS.filter((a) => !args.arms || args.arms.includes(a.id));
+  // Worst-case opener arms run only when named in --arms.
+  const arms = ARMS.filter((a) => (args.arms ? args.arms.includes(a.id) : !a.carrierFirst));
   const carrier = String(args.user).trim().toLowerCase();
 
-  const party = await loadParty({});
-  if (!party.some((p) => String(p.name).trim().toLowerCase() === carrier)) {
+  const baseParty = await loadParty({});
+  if (!baseParty.some((p) => String(p.name).trim().toLowerCase() === carrier)) {
     console.error(`carrier "${args.user}" is not in the party`);
     process.exit(2);
   }
-  console.log(`Tincture matrix — ${party.map((p) => p.name).join(", ")}  ·  carried by ${args.user}  ·  ${args.stock} of each`);
+  console.log(`Tincture matrix — ${baseParty.map((p) => p.name).join(", ")}  ·  carried by ${args.user}  ·  ${args.stock} of each`);
   console.log(`${args.runs} paired runs per arm  ·  seed "${args.seed}"  ·  ⚠ PAPER CONSUMABLES, partial model (--force equivalent)`);
 
   const report = {
@@ -200,6 +234,8 @@ async function main() {
   for (const g of groups) {
     const enemies = await loadNamed(g.enemies);
     applySets(enemies, g.sets);
+    // A party patch gets a freshly loaded party, so it can never leak into the next group.
+    const party = g.partySets ? applyPartySets(await loadParty({}), g.partySets) : baseParty;
     const conflictEvent = g.conflictEvent ? resolveEvent(g.conflictEvent) : null;
     const expectedRounds = g.expectedRounds ?? 7;
     const run = (tinctures) => {
@@ -218,7 +254,7 @@ async function main() {
     const out = {};
     for (const arm of arms) {
       const results = arm.id === "baseline" ? baseResults
-        : run({ pct: arm.pct, user: args.user, stock: args.stock, lanePrior });
+        : run({ pct: arm.pct, user: args.user, stock: args.stock, lanePrior, carrierFirst: !!arm.carrierFirst });
       out[arm.id] = summarise(results, carrier);
     }
     printGroup(g, out);

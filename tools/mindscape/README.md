@@ -124,6 +124,15 @@ The boss groups in `tincture-set.json` are PROXIES: the real Geist and Fafnir wi
 modelled party, so their HP and damage are patched in memory until the baseline lands
 near a 6-round win. They measure a boss-shaped fight, not the boss on the sheet.
 
+For stacked multipliers, `tincture-multiplier-set.json` forces x1 / x2 / x4 toward Zarg and
+`tincture-spike-set.json` also raises his weapon base (`partySets`). Add the worst-case opener,
+where the carrier acts first, by naming its arms:
+
+```bash
+node bin/tincture-matrix.js --set specs/encounters/tincture-spike-set.json --runs 1000 \
+  --arms baseline,dmg25,dmg30,first25,first30 --out expectations/tincture-spike.json
+```
+
 ## Blank-slate parties and neutral encounters
 
 The Current Game party is one roster at one level. To balance for any party, build one by

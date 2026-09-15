@@ -937,6 +937,12 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
   state.tinctures = tinctures ? T.makeTinctureState(tinctures) : null;
 
   const order = combatants.slice().sort((a, b) => initiative(b) - initiative(a));
+  // Worst-case tincture opener (tinctures.makeTinctureState carrierFirst): the carrier
+  // moves to the front, so a round-1 tincture lands before the carry's first volley.
+  if (state.tinctures?.carrierFirst) {
+    const i = order.findIndex((c) => c.side === "party" && String(c.name).trim().toLowerCase() === state.tinctures.user);
+    if (i > 0) order.unshift(order.splice(i, 1)[0]);
+  }
 
   let outcome = "inconclusive";
   // High Speed: a one-off free attack before the first round.
