@@ -149,6 +149,21 @@
   color: #a8f0e0;
 }
 
+/* ── Skeletal Key button (bone-violet parchment) ────────────────────────── */
+.oni-dp-btn-key {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(220,200,255,0.20) 0%, transparent 70%),
+    linear-gradient(
+      175deg,
+      #4a3566 0%,
+      #5a4080 25%,
+      #4a3468 50%,
+      #3a2854 75%,
+      #2a1c40 100%
+    );
+  color: #ece0ff;
+}
+
 /* ── Go Back button (dark parchment) ────────────────────────────────────── */
 .oni-dp-btn-revert {
   background:
@@ -270,12 +285,17 @@
      *   When false, the "Go Back" button is hidden entirely. Use for tiles where
      *   reverting is not meaningful (e.g. after a force move).
      *
-     * Returns Promise<true|"use"|false>:
+     * @param {{count:number}|null} [options.keyButton=null]
+     *   When set, a "Use Key ×N" button is added for a loot tile the party can
+     *   open with a Skeletal Key. The caller decides when it applies.
+     *
+     * Returns Promise<true|"use"|"key"|false>:
      *   true  = Confirm pressed  (land without triggering tile event)
      *   "use" = Use pressed      (land AND trigger tile event)
+     *   "key" = Use Key pressed  (land AND open the loot with a Skeletal Key)
      *   false = Go Back pressed  (revert movement)
      */
-    ask(token, { showUseButton = false, showRevertButton = true } = {}) {
+    ask(token, { showUseButton = false, showRevertButton = true, keyButton = null } = {}) {
       this.forceClose();
       this.isOpen = true;
 
@@ -315,6 +335,12 @@
         if (showUseButton) {
           addGap();
           panel.appendChild(makeBtn("⛺  Use", "oni-dp-btn-use", "use"));
+        }
+
+        if (keyButton) {
+          addGap();
+          const n = Math.max(0, Math.floor(Number(keyButton.count) || 0));
+          panel.appendChild(makeBtn(`🗝  Use Key ×${n}`, "oni-dp-btn-key", "key"));
         }
 
         if (showRevertButton) {
