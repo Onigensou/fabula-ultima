@@ -1,0 +1,35 @@
+{
+  "note": "Tincture Cycle x stacked multipliers (2026-09-15). Each fight is run with the enemies' PHYSICAL affinity and BOW efficiency forced toward Zarg (+5 bow, physical, base 21 + HR): x1 = neutral (NE, 100%), x2vu = Vulnerable, x2ef = 200% bow efficiency, x4 = both. The arcane rows force 200% arcane efficiency (Keren's and Hina's spells) instead. Patches are in memory; boss proxies keep their tuned HP/damage (tincture-set.json).",
+  "groups": [
+    { "id": "wyrm1-x1",   "label": "Wyrmwood 1 · x1 neutral",          "enemies": ["Centuaros", "Inferex"], "sets": ["actor:affinity_1=NA", "actor:bow_ef=100"] },
+    { "id": "wyrm1-x2vu", "label": "Wyrmwood 1 · x2 physical VU",      "enemies": ["Centuaros", "Inferex"], "sets": ["actor:affinity_1=VU", "actor:bow_ef=100"] },
+    { "id": "wyrm1-x2ef", "label": "Wyrmwood 1 · x2 bow EF 200%",      "enemies": ["Centuaros", "Inferex"], "sets": ["actor:affinity_1=NA", "actor:bow_ef=200"] },
+    { "id": "wyrm1-x4",   "label": "Wyrmwood 1 · x4 VU + bow EF 200%", "enemies": ["Centuaros", "Inferex"], "sets": ["actor:affinity_1=VU", "actor:bow_ef=200"] },
+    { "id": "wyrm1-arc2", "label": "Wyrmwood 1 · x2 arcane EF 200% (casters)", "enemies": ["Centuaros", "Inferex"], "sets": ["actor:affinity_1=NA", "actor:bow_ef=100", "actor:arcane_ef=200"] },
+
+    { "id": "valley4-x1",   "label": "Valley 4 · x1 neutral",          "enemies": ["Mist Dragon", "Obsidrax"], "conflictEvent": "lightning-storm", "sets": ["actor:affinity_1=NA", "actor:bow_ef=100"] },
+    { "id": "valley4-x2vu", "label": "Valley 4 · x2 physical VU",      "enemies": ["Mist Dragon", "Obsidrax"], "conflictEvent": "lightning-storm", "sets": ["actor:affinity_1=VU", "actor:bow_ef=100"] },
+    { "id": "valley4-x2ef", "label": "Valley 4 · x2 bow EF 200%",      "enemies": ["Mist Dragon", "Obsidrax"], "conflictEvent": "lightning-storm", "sets": ["actor:affinity_1=NA", "actor:bow_ef=200"] },
+    { "id": "valley4-x4",   "label": "Valley 4 · x4 VU + bow EF 200%", "enemies": ["Mist Dragon", "Obsidrax"], "conflictEvent": "lightning-storm", "sets": ["actor:affinity_1=VU", "actor:bow_ef=200"] },
+
+    { "id": "geist-x1",   "label": "Geist proxy · x1 neutral",          "boss": true, "enemies": ["⭐️ Geist"], "expectedRounds": 10,
+      "sets": ["actor:max_hp=550", "actor:current_hp=550", "Souleater:damage_bonus=5", "Dark Bane:damage_bonus=7", "Torcleaver:damage_bonus=5", "actor:affinity_1=NA", "actor:bow_ef=100"] },
+    { "id": "geist-x2vu", "label": "Geist proxy · x2 physical VU",      "boss": true, "enemies": ["⭐️ Geist"], "expectedRounds": 10,
+      "sets": ["actor:max_hp=550", "actor:current_hp=550", "Souleater:damage_bonus=5", "Dark Bane:damage_bonus=7", "Torcleaver:damage_bonus=5", "actor:affinity_1=VU", "actor:bow_ef=100"] },
+    { "id": "geist-x2ef", "label": "Geist proxy · x2 bow EF 200%",      "boss": true, "enemies": ["⭐️ Geist"], "expectedRounds": 10,
+      "sets": ["actor:max_hp=550", "actor:current_hp=550", "Souleater:damage_bonus=5", "Dark Bane:damage_bonus=7", "Torcleaver:damage_bonus=5", "actor:affinity_1=NA", "actor:bow_ef=200"] },
+    { "id": "geist-x4",   "label": "Geist proxy · x4 VU + bow EF 200%", "boss": true, "enemies": ["⭐️ Geist"], "expectedRounds": 10,
+      "sets": ["actor:max_hp=550", "actor:current_hp=550", "Souleater:damage_bonus=5", "Dark Bane:damage_bonus=7", "Torcleaver:damage_bonus=5", "actor:affinity_1=VU", "actor:bow_ef=200"] },
+    { "id": "geist-arc2", "label": "Geist proxy · x2 arcane EF 200% (casters)", "boss": true, "enemies": ["⭐️ Geist"], "expectedRounds": 10,
+      "sets": ["actor:max_hp=550", "actor:current_hp=550", "Souleater:damage_bonus=5", "Dark Bane:damage_bonus=7", "Torcleaver:damage_bonus=5", "actor:affinity_1=NA", "actor:bow_ef=100", "actor:arcane_ef=200"] },
+
+    { "id": "fafnir-x1",   "label": "Fafnir proxy (DEF 13/13) · x1 neutral",          "boss": true, "enemies": ["⭐️ Fafnir"], "expectedRounds": 10,
+      "sets": ["actor:max_hp=350", "actor:current_hp=350", "Rend:damage_bonus=8", "Condemn:damage_bonus=15", "actor:defense=13", "actor:magic_defense=13", "actor:affinity_1=NA", "actor:bow_ef=100"] },
+    { "id": "fafnir-x2vu", "label": "Fafnir proxy (DEF 13/13) · x2 physical VU",      "boss": true, "enemies": ["⭐️ Fafnir"], "expectedRounds": 10,
+      "sets": ["actor:max_hp=350", "actor:current_hp=350", "Rend:damage_bonus=8", "Condemn:damage_bonus=15", "actor:defense=13", "actor:magic_defense=13", "actor:affinity_1=VU", "actor:bow_ef=100"] },
+    { "id": "fafnir-x2ef", "label": "Fafnir proxy (DEF 13/13) · x2 bow EF 200%",      "boss": true, "enemies": ["⭐️ Fafnir"], "expectedRounds": 10,
+      "sets": ["actor:max_hp=350", "actor:current_hp=350", "Rend:damage_bonus=8", "Condemn:damage_bonus=15", "actor:defense=13", "actor:magic_defense=13", "actor:affinity_1=NA", "actor:bow_ef=200"] },
+    { "id": "fafnir-x4",   "label": "Fafnir proxy (DEF 13/13) · x4 VU + bow EF 200%", "boss": true, "enemies": ["⭐️ Fafnir"], "expectedRounds": 10,
+      "sets": ["actor:max_hp=350", "actor:current_hp=350", "Rend:damage_bonus=8", "Condemn:damage_bonus=15", "actor:defense=13", "actor:magic_defense=13", "actor:affinity_1=VU", "actor:bow_ef=200"] }
+  ]
+}

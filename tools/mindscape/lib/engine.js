@@ -626,11 +626,12 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
       element: action.element, attacker: actor, victim,
     };
 
+    let hpBefore = null;
     if (out.direction === "recover") {
       target.hp = Math.min(target.maxHp, target.hp + out.damage);
     } else {
       // `victim` is the target unless a protector stepped in front.
-      const hpBefore = victim.hp;
+      hpBefore = victim.hp;
       victim.hp -= out.damage;
       victim.damageTaken += out.damage;
       victim.takenThisRound += out.damage;
@@ -660,6 +661,11 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
     state.log.push({
       round: state.round, actor: actor.name, action: action.name, target: target.name,
       damage: out.damage, affinity: out.affinity, crit: check.crit, direction: out.direction,
+      // Spike accounting (bin/tincture-matrix.js): how big the hit was against what it
+      // hit, whether it killed, and what it would have dealt without a tincture.
+      side: actor.side, hpBefore, victimMaxHp: victim.maxHp,
+      killed: out.direction !== "recover" && !victim.alive,
+      ...(unboosted != null ? { unboosted } : {}),
     });
 
     fireReactions(state, victim, RX.TRIGGERS.ON_TARGETED, targetedCtx);

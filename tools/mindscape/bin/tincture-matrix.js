@@ -14,7 +14,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { loadParty, loadNamed } = require("../lib/load-actors");
+const { loadParty, loadNamed, readAffinities, readEfficiency } = require("../lib/load-actors");
 const { runBattle } = require("../lib/engine");
 const { resolveEvent } = require("../lib/conflict-events");
 const { Rng } = require("../lib/rng");
@@ -69,6 +69,9 @@ function applySets(enemies, sets) {
           else if (prop === "defense") e.def = n;
           else if (prop === "magic_defense") e.mdef = n;
         }
+        // The engine reads the derived tables, not the raw props — re-derive them.
+        if (/^affinity_\d$/.test(prop)) e.affinities = readAffinities(e._rawProps);
+        if (/_ef$/.test(prop)) e.efficiency = readEfficiency(e._rawProps);
         hits++;
         continue;
       }
@@ -96,7 +99,34 @@ function summarise(results, carrier) {
     for (const [k, v] of Object.entries(r.tinctures?.used ?? {})) used[k] = (used[k] ?? 0) + v / n;
   }
   const carrierRow = (r) => r.combatants.find((c) => c.side === "party" && c.name.trim().toLowerCase() === carrier);
+
+  // Spikes: every party hit that took HP. A stacked multiplier is felt as a HIT SIZE and a
+  // KILL that should not have happened, not as an average, so these are read per hit.
+  const hits = [];
+  let dealt = 0, overkill = 0, kills = 0, oneShots = 0, enabledKills = 0;
+  for (const r of results) {
+    for (const e of r.log) {
+      if (e.side !== "party" || e.direction !== "loss" || !(e.damage > 0) || e.hpBefore == null) continue;
+      hits.push(e.damage);
+      dealt += e.damage;
+      overkill += Math.max(0, e.damage - e.hpBefore);
+      if (!e.killed) continue;
+      kills++;
+      if (e.hpBefore >= e.victimMaxHp) oneShots++;
+      // The unboosted hit would have left it standing: the tincture bought this kill.
+      if (e.unboosted != null && e.unboosted < e.hpBefore) enabledKills++;
+    }
+  }
+  hits.sort((a, b) => a - b);
+  const q = (p) => (hits.length ? hits[Math.floor(p * (hits.length - 1))] : null);
+  const spikes = {
+    hitP50: q(0.5), hitP90: q(0.9), hitMax: hits.length ? hits[hits.length - 1] : null,
+    killsPerFight: kills / n, oneShotsPerFight: oneShots / n, enabledKillsPerFight: enabledKills / n,
+    overkillShare: dealt ? overkill / dealt : 0,
+  };
+
   return {
+    spikes,
     runs: n,
     win: wins.length / n,
     defeat: share("defeat") + share("mutual-destruction"),
@@ -132,6 +162,14 @@ function printGroup(g, arms) {
       + num(s.downsPerFight, 2).padStart(5)
       + `  ${used}`.padEnd(20)
       + num(s.addedDamage).padStart(6) + num(s.prevented).padStart(11) + num(s.carrierDamage).padStart(13));
+  }
+  console.log("  spikes     party hit p50 / p90 / max    kills  one-shots  tincture kills  overkill");
+  for (const [id, s] of Object.entries(arms)) {
+    const k = s.spikes;
+    console.log("  " + id.padEnd(9)
+      + `  ${k.hitP50 ?? "—"} / ${k.hitP90 ?? "—"} / ${k.hitMax ?? "—"}`.padEnd(29)
+      + num(k.killsPerFight, 2).padStart(6) + num(k.oneShotsPerFight, 2).padStart(11)
+      + num(k.enabledKillsPerFight, 2).padStart(16) + pct(k.overkillShare).padStart(10));
   }
 }
 

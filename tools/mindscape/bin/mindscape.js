@@ -9,7 +9,7 @@
 //
 // The game must be CLOSED — Foundry holds an exclusive lock on the world DB.
 
-const { loadParty, loadNamed, validate, resolveCurrentGame } = require("../lib/load-actors");
+const { loadParty, loadNamed, validate, resolveCurrentGame, readAffinities, readEfficiency } = require("../lib/load-actors");
 const { loadEnemyFiles } = require("../lib/enemy-file");
 const { buildCoverage, extractActions } = require("../lib/skills");
 const ST = require("../lib/stances");
@@ -245,6 +245,9 @@ Mindscape — offline Monte Carlo balance runs (game must be CLOSED)
           else if (prop === 'defense') e.def = n;
           else if (prop === 'magic_defense') e.mdef = n;
         }
+        // Same trap for the derived affinity / weapon-efficiency tables.
+        if (/^affinity_\d$/.test(prop)) e.affinities = readAffinities(e._rawProps);
+        if (/_ef$/.test(prop)) e.efficiency = readEfficiency(e._rawProps);
         hits++; continue;
       }
       for (const it of e.items ?? []) {

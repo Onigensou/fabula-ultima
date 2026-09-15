@@ -586,4 +586,7 @@ module.exports = {
   loadAll, loadNamed, loadParty, listParties, resolveCurrentGame,
   validate, toCombatModel, isNpc,
   attachWeaponDetails, virtualAttackAvailable,
+  // Re-derive after an in-memory --set of affinity_N / <family>_ef: the engine reads
+  // these tables, never the raw props.
+  readAffinities, readEfficiency,
 };
