@@ -1,0 +1,30 @@
+{
+  "note": "Tincture Cycle calibration at CURRENT monster HP with weakness exploitation as expected play (2026-09-15). Monster HP is never rescaled. x1 = neutral; x2 = physical VU + arcane EF 200% (Zarg, Blanche, Hina, Keren all x2) — the expected-play point; x4 = also bow EF 200% and ice VU (stress case). Normal fights keep their sheet damage. The bosses keep their SHEET HP (Geist 1044, Fafnir 1824 with DEF 16 / MDEF 17); only their attack damage is scaled down, because the modelled party cannot survive their real kits (Geist and Fafnir wipe it 100% / 87%). The question each row answers: how many rounds does a tincture save ON TOP OF the same exploitation.",
+  "groups": [
+    { "id": "wyrm1-x1", "label": "Wyrmwood 1 · x1", "enemies": ["Centuaros", "Inferex"], "sets": ["actor:affinity_1=NA", "actor:affinity_7=NA", "actor:bow_ef=100", "actor:arcane_ef=100"] },
+    { "id": "wyrm1-x2", "label": "Wyrmwood 1 · x2", "enemies": ["Centuaros", "Inferex"], "sets": ["actor:affinity_1=VU", "actor:affinity_7=NA", "actor:bow_ef=100", "actor:arcane_ef=200"] },
+    { "id": "wyrm1-x4", "label": "Wyrmwood 1 · x4", "enemies": ["Centuaros", "Inferex"], "sets": ["actor:affinity_1=VU", "actor:affinity_7=VU", "actor:bow_ef=200", "actor:arcane_ef=200"] },
+
+    { "id": "valley4-x1", "label": "Valley 4 · x1", "enemies": ["Mist Dragon", "Obsidrax"], "conflictEvent": "lightning-storm", "sets": ["actor:affinity_1=NA", "actor:affinity_7=NA", "actor:bow_ef=100", "actor:arcane_ef=100"] },
+    { "id": "valley4-x2", "label": "Valley 4 · x2", "enemies": ["Mist Dragon", "Obsidrax"], "conflictEvent": "lightning-storm", "sets": ["actor:affinity_1=VU", "actor:affinity_7=NA", "actor:bow_ef=100", "actor:arcane_ef=200"] },
+    { "id": "valley4-x4", "label": "Valley 4 · x4", "enemies": ["Mist Dragon", "Obsidrax"], "conflictEvent": "lightning-storm", "sets": ["actor:affinity_1=VU", "actor:affinity_7=VU", "actor:bow_ef=200", "actor:arcane_ef=200"] },
+
+    { "id": "castle2-x1", "label": "Fafnir Castle 2 · x1", "enemies": ["Dire Orc", "Death Gazer", "Dire Orc"], "sets": ["actor:affinity_1=NA", "actor:affinity_7=NA", "actor:bow_ef=100", "actor:arcane_ef=100"] },
+    { "id": "castle2-x2", "label": "Fafnir Castle 2 · x2", "enemies": ["Dire Orc", "Death Gazer", "Dire Orc"], "sets": ["actor:affinity_1=VU", "actor:affinity_7=NA", "actor:bow_ef=100", "actor:arcane_ef=200"] },
+    { "id": "castle2-x4", "label": "Fafnir Castle 2 · x4", "enemies": ["Dire Orc", "Death Gazer", "Dire Orc"], "sets": ["actor:affinity_1=VU", "actor:affinity_7=VU", "actor:bow_ef=200", "actor:arcane_ef=200"] },
+
+    { "id": "geist-x1", "label": "Geist · sheet HP 1044 · x1", "boss": true, "enemies": ["⭐️ Geist"], "expectedRounds": 15,
+      "sets": ["Souleater:damage_bonus=5", "Dark Bane:damage_bonus=7", "Torcleaver:damage_bonus=5", "actor:affinity_1=NA", "actor:affinity_7=NA", "actor:bow_ef=100", "actor:arcane_ef=100"] },
+    { "id": "geist-x2", "label": "Geist · sheet HP 1044 · x2", "boss": true, "enemies": ["⭐️ Geist"], "expectedRounds": 15,
+      "sets": ["Souleater:damage_bonus=5", "Dark Bane:damage_bonus=7", "Torcleaver:damage_bonus=5", "actor:affinity_1=VU", "actor:affinity_7=NA", "actor:bow_ef=100", "actor:arcane_ef=200"] },
+    { "id": "geist-x4", "label": "Geist · sheet HP 1044 · x4", "boss": true, "enemies": ["⭐️ Geist"], "expectedRounds": 15,
+      "sets": ["Souleater:damage_bonus=5", "Dark Bane:damage_bonus=7", "Torcleaver:damage_bonus=5", "actor:affinity_1=VU", "actor:affinity_7=VU", "actor:bow_ef=200", "actor:arcane_ef=200"] },
+
+    { "id": "fafnir-x1", "label": "Fafnir · sheet HP 1824, DEF 16/17 · x1", "boss": true, "enemies": ["⭐️ Fafnir"], "expectedRounds": 15,
+      "sets": ["Rend:damage_bonus=8", "Condemn:damage_bonus=15", "actor:affinity_1=NA", "actor:affinity_7=NA", "actor:bow_ef=100", "actor:arcane_ef=100"] },
+    { "id": "fafnir-x2", "label": "Fafnir · sheet HP 1824, DEF 16/17 · x2", "boss": true, "enemies": ["⭐️ Fafnir"], "expectedRounds": 15,
+      "sets": ["Rend:damage_bonus=8", "Condemn:damage_bonus=15", "actor:affinity_1=VU", "actor:affinity_7=NA", "actor:bow_ef=100", "actor:arcane_ef=200"] },
+    { "id": "fafnir-x4", "label": "Fafnir · sheet HP 1824, DEF 16/17 · x4", "boss": true, "enemies": ["⭐️ Fafnir"], "expectedRounds": 15,
+      "sets": ["Rend:damage_bonus=8", "Condemn:damage_bonus=15", "actor:affinity_1=VU", "actor:affinity_7=VU", "actor:bow_ef=200", "actor:arcane_ef=200"] }
+  ]
+}

@@ -1,0 +1,1455 @@
+{
+  "generated": "2026-09-15T08:49:29.682Z",
+  "seed": "tincture-currenthp-high-2026-09-15",
+  "runs": 600,
+  "carrier": "Blanche",
+  "stock": 3,
+  "arms": [
+    {
+      "id": "baseline",
+      "pct": {}
+    },
+    {
+      "id": "d3-30",
+      "pct": {
+        "strength": 30,
+        "spirit": 30
+      }
+    },
+    {
+      "id": "d3-40",
+      "pct": {
+        "strength": 40,
+        "spirit": 40
+      }
+    },
+    {
+      "id": "d3-50",
+      "pct": {
+        "strength": 50,
+        "spirit": 50
+      }
+    },
+    {
+      "id": "d3-60",
+      "pct": {
+        "strength": 60,
+        "spirit": 60
+      }
+    },
+    {
+      "id": "d3-70",
+      "pct": {
+        "strength": 70,
+        "spirit": 70
+      }
+    },
+    {
+      "id": "d3-80",
+      "pct": {
+        "strength": 80,
+        "spirit": 80
+      }
+    },
+    {
+      "id": "d5-30",
+      "pct": {
+        "strength": 30,
+        "spirit": 30
+      }
+    },
+    {
+      "id": "d5-40",
+      "pct": {
+        "strength": 40,
+        "spirit": 40
+      }
+    },
+    {
+      "id": "d5-50",
+      "pct": {
+        "strength": 50,
+        "spirit": 50
+      }
+    },
+    {
+      "id": "d5-60",
+      "pct": {
+        "strength": 60,
+        "spirit": 60
+      }
+    },
+    {
+      "id": "d5-70",
+      "pct": {
+        "strength": 70,
+        "spirit": 70
+      }
+    },
+    {
+      "id": "d5-80",
+      "pct": {
+        "strength": 80,
+        "spirit": 80
+      }
+    }
+  ],
+  "groups": [
+    {
+      "id": "geist-x2",
+      "label": "Geist · sheet HP 1044 · x2",
+      "boss": true,
+      "enemies": [
+        "⭐️ Geist"
+      ],
+      "expectedRounds": 15,
+      "sets": [
+        "Souleater:damage_bonus=5",
+        "Dark Bane:damage_bonus=7",
+        "Torcleaver:damage_bonus=5",
+        "actor:affinity_1=VU",
+        "actor:affinity_7=NA",
+        "actor:bow_ef=100",
+        "actor:arcane_ef=200"
+      ],
+      "lanePrior": {
+        "hina": {
+          "def": 0.028507936507936506,
+          "mdef": 18.980688764938765
+        },
+        "keren": {
+          "def": 0,
+          "mdef": 47.89423507973513
+        },
+        "blanche": {
+          "def": 17.824699263699262,
+          "mdef": 0
+        },
+        "zarg": {
+          "def": 97.59698622673622,
+          "mdef": 0
+        }
+      },
+      "arms": {
+        "baseline": {
+          "spikes": {
+            "hitP50": 58,
+            "hitP90": 70,
+            "hitMax": 74,
+            "killsPerFight": 0.9816666666666667,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.025548923337653275
+          },
+          "runs": 600,
+          "win": 0.9816666666666667,
+          "defeat": 0.0016666666666666668,
+          "overtime": 0.016666666666666666,
+          "wonRounds": 5.969439728353141,
+          "wonHp": 0.5364592908200227,
+          "downsPerFight": 0.285,
+          "downRate": {
+            "Hina": 0.09999999999999988,
+            "Keren": 0.09499999999999989,
+            "Zarg": 0.08833333333333324,
+            "Blanche": 0.0016666666666666668
+          },
+          "used": {},
+          "addedDamage": 0,
+          "prevented": 0,
+          "carrierDamage": 106.93,
+          "partyDamage": 1069.9733333333334
+        },
+        "d3-30": {
+          "spikes": {
+            "hitP50": 70,
+            "hitP90": 88,
+            "hitMax": 96,
+            "killsPerFight": 0.99,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.21833333333333332,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.033249322041227304
+          },
+          "runs": 600,
+          "win": 0.99,
+          "defeat": 0.0016666666666666668,
+          "overtime": 0.008333333333333333,
+          "wonRounds": 5.616161616161616,
+          "wonHp": 0.5495542830999309,
+          "downsPerFight": 0.22666666666666666,
+          "downRate": {
+            "Hina": 0.07833333333333325,
+            "Keren": 0.06999999999999994,
+            "Zarg": 0.07666666666666659,
+            "Blanche": 0.0016666666666666668
+          },
+          "used": {
+            "strength": 1.996666666666686,
+            "spirit": 1.4316666666666775
+          },
+          "addedDamage": 142.91833333333332,
+          "prevented": 0,
+          "carrierDamage": 26.343333333333334,
+          "partyDamage": 1079.22
+        },
+        "d3-40": {
+          "spikes": {
+            "hitP50": 74,
+            "hitP90": 95,
+            "hitMax": 103,
+            "killsPerFight": 0.9916666666666667,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.29833333333333334,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.03515515385872565
+          },
+          "runs": 600,
+          "win": 0.9916666666666667,
+          "defeat": 0,
+          "overtime": 0.008333333333333333,
+          "wonRounds": 5.396638655462185,
+          "wonHp": 0.5620260843190779,
+          "downsPerFight": 0.195,
+          "downRate": {
+            "Hina": 0.05999999999999995,
+            "Zarg": 0.06833333333333327,
+            "Keren": 0.06666666666666661
+          },
+          "used": {
+            "strength": 1.9783333333333522,
+            "spirit": 2.301666666666672
+          },
+          "addedDamage": 192.98666666666668,
+          "prevented": 0,
+          "carrierDamage": 4.596666666666667,
+          "partyDamage": 1080.97
+        },
+        "d3-50": {
+          "spikes": {
+            "hitP50": 80,
+            "hitP90": 102,
+            "hitMax": 111,
+            "killsPerFight": 0.995,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.3,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.0426422274292916
+          },
+          "runs": 600,
+          "win": 0.995,
+          "defeat": 0,
+          "overtime": 0.005,
+          "wonRounds": 5.201005025125628,
+          "wonHp": 0.5819792522413907,
+          "downsPerFight": 0.16,
+          "downRate": {
+            "Hina": 0.05166666666666663,
+            "Zarg": 0.05666666666666662,
+            "Keren": 0.05166666666666663
+          },
+          "used": {
+            "strength": 1.9450000000000183,
+            "spirit": 2.173333333333344
+          },
+          "addedDamage": 229.40333333333334,
+          "prevented": 0,
+          "carrierDamage": 3.3733333333333335,
+          "partyDamage": 1089.6866666666667
+        },
+        "d3-60": {
+          "spikes": {
+            "hitP50": 86,
+            "hitP90": 108,
+            "hitMax": 118,
+            "killsPerFight": 0.995,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.32166666666666666,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.041987267774615124
+          },
+          "runs": 600,
+          "win": 0.995,
+          "defeat": 0,
+          "overtime": 0.005,
+          "wonRounds": 4.989949748743719,
+          "wonHp": 0.5973035737783037,
+          "downsPerFight": 0.12333333333333334,
+          "downRate": {
+            "Hina": 0.043333333333333314,
+            "Zarg": 0.04166666666666665,
+            "Keren": 0.03833333333333332
+          },
+          "used": {
+            "strength": 1.8316666666666834,
+            "spirit": 2.1050000000000155
+          },
+          "addedDamage": 258.205,
+          "prevented": 0,
+          "carrierDamage": 2.466666666666667,
+          "partyDamage": 1089.1
+        },
+        "d3-70": {
+          "spikes": {
+            "hitP50": 90,
+            "hitP90": 115,
+            "hitMax": 125,
+            "killsPerFight": 0.995,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.35333333333333333,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.044861888903974384
+          },
+          "runs": 600,
+          "win": 0.995,
+          "defeat": 0,
+          "overtime": 0.005,
+          "wonRounds": 4.8375209380234505,
+          "wonHp": 0.6072080145952692,
+          "downsPerFight": 0.09666666666666666,
+          "downRate": {
+            "Hina": 0.034999999999999996,
+            "Zarg": 0.034999999999999996,
+            "Keren": 0.02666666666666667
+          },
+          "used": {
+            "strength": 1.735000000000015,
+            "spirit": 2.0666666666666837
+          },
+          "addedDamage": 286.7583333333333,
+          "prevented": 0,
+          "carrierDamage": 1.9466666666666668,
+          "partyDamage": 1092.5383333333334
+        },
+        "d3-80": {
+          "spikes": {
+            "hitP50": 96,
+            "hitP90": 122,
+            "hitMax": 133,
+            "killsPerFight": 0.995,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.345,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.0478589229157512
+          },
+          "runs": 600,
+          "win": 0.995,
+          "defeat": 0,
+          "overtime": 0.005,
+          "wonRounds": 4.678391959798995,
+          "wonHp": 0.609949962124849,
+          "downsPerFight": 0.07333333333333333,
+          "downRate": {
+            "Hina": 0.02666666666666667,
+            "Zarg": 0.025,
+            "Keren": 0.021666666666666667
+          },
+          "used": {
+            "strength": 1.6183333333333467,
+            "spirit": 2.0433333333333508
+          },
+          "addedDamage": 312.0466666666667,
+          "prevented": 0,
+          "carrierDamage": 1.4933333333333334,
+          "partyDamage": 1096.1383333333333
+        },
+        "d5-30": {
+          "spikes": {
+            "hitP50": 72,
+            "hitP90": 88,
+            "hitMax": 96,
+            "killsPerFight": 0.9916666666666667,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.22166666666666668,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.031867126665211756
+          },
+          "runs": 600,
+          "win": 0.9916666666666667,
+          "defeat": 0,
+          "overtime": 0.008333333333333333,
+          "wonRounds": 5.457142857142857,
+          "wonHp": 0.5760209816410645,
+          "downsPerFight": 0.21666666666666667,
+          "downRate": {
+            "Zarg": 0.08333333333333325,
+            "Hina": 0.07833333333333325,
+            "Keren": 0.05499999999999996
+          },
+          "used": {
+            "strength": 1.008333333333343,
+            "spirit": 2.008333333333352
+          },
+          "addedDamage": 159.47,
+          "prevented": 0,
+          "carrierDamage": 35.63333333333333,
+          "partyDamage": 1076.815
+        },
+        "d5-40": {
+          "spikes": {
+            "hitP50": 74,
+            "hitP90": 95,
+            "hitMax": 103,
+            "killsPerFight": 0.9916666666666667,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.24,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.038165322084757855
+          },
+          "runs": 600,
+          "win": 0.9916666666666667,
+          "defeat": 0,
+          "overtime": 0.008333333333333333,
+          "wonRounds": 5.196638655462185,
+          "wonHp": 0.594190797338044,
+          "downsPerFight": 0.175,
+          "downRate": {
+            "Zarg": 0.06999999999999994,
+            "Hina": 0.06499999999999995,
+            "Keren": 0.03999999999999999
+          },
+          "used": {
+            "strength": 1.0050000000000094,
+            "spirit": 2.0066666666666855
+          },
+          "addedDamage": 202.66166666666666,
+          "prevented": 0,
+          "carrierDamage": 30.566666666666666,
+          "partyDamage": 1084.1866666666667
+        },
+        "d5-50": {
+          "spikes": {
+            "hitP50": 80,
+            "hitP90": 102,
+            "hitMax": 111,
+            "killsPerFight": 0.9916666666666667,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.30833333333333335,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.03807098407292366
+          },
+          "runs": 600,
+          "win": 0.9916666666666667,
+          "defeat": 0,
+          "overtime": 0.008333333333333333,
+          "wonRounds": 4.934453781512605,
+          "wonHp": 0.6197113240200542,
+          "downsPerFight": 0.13,
+          "downRate": {
+            "Hina": 0.05166666666666663,
+            "Keren": 0.03333333333333333,
+            "Zarg": 0.04499999999999998
+          },
+          "used": {
+            "strength": 1.001666666666676,
+            "spirit": 2.0016666666666856
+          },
+          "addedDamage": 240.6,
+          "prevented": 0,
+          "carrierDamage": 25.126666666666665,
+          "partyDamage": 1084.4216666666666
+        },
+        "d5-60": {
+          "spikes": {
+            "hitP50": 86,
+            "hitP90": 108,
+            "hitMax": 118,
+            "killsPerFight": 0.9916666666666667,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.32,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.042836131691521145
+          },
+          "runs": 600,
+          "win": 0.9916666666666667,
+          "defeat": 0,
+          "overtime": 0.008333333333333333,
+          "wonRounds": 4.768067226890756,
+          "wonHp": 0.6278863137611737,
+          "downsPerFight": 0.09333333333333334,
+          "downRate": {
+            "Hina": 0.03166666666666667,
+            "Keren": 0.030000000000000002,
+            "Zarg": 0.03166666666666667
+          },
+          "used": {
+            "strength": 1.0000000000000095,
+            "spirit": 2.0016666666666856
+          },
+          "addedDamage": 271.255,
+          "prevented": 0,
+          "carrierDamage": 21.01,
+          "partyDamage": 1090.1233333333332
+        },
+        "d5-70": {
+          "spikes": {
+            "hitP50": 90,
+            "hitP90": 115,
+            "hitMax": 125,
+            "killsPerFight": 0.9933333333333333,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.345,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.04588657258568307
+          },
+          "runs": 600,
+          "win": 0.9933333333333333,
+          "defeat": 0,
+          "overtime": 0.006666666666666667,
+          "wonRounds": 4.587248322147651,
+          "wonHp": 0.6326322689123526,
+          "downsPerFight": 0.07166666666666667,
+          "downRate": {
+            "Hina": 0.023333333333333334,
+            "Keren": 0.023333333333333334,
+            "Zarg": 0.025
+          },
+          "used": {
+            "strength": 1.0000000000000095,
+            "spirit": 2.000000000000019
+          },
+          "addedDamage": 300.5283333333333,
+          "prevented": 0,
+          "carrierDamage": 17.296666666666667,
+          "partyDamage": 1093.8566666666666
+        },
+        "d5-80": {
+          "spikes": {
+            "hitP50": 96,
+            "hitP90": 118,
+            "hitMax": 133,
+            "killsPerFight": 0.995,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.405,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.04799181617400054
+          },
+          "runs": 600,
+          "win": 0.995,
+          "defeat": 0,
+          "overtime": 0.005,
+          "wonRounds": 4.455611390284757,
+          "wonHp": 0.6254058686923651,
+          "downsPerFight": 0.065,
+          "downRate": {
+            "Hina": 0.023333333333333334,
+            "Keren": 0.021666666666666667,
+            "Zarg": 0.02
+          },
+          "used": {
+            "strength": 1.0000000000000095,
+            "spirit": 2.000000000000019
+          },
+          "addedDamage": 326.3833333333333,
+          "prevented": 0,
+          "carrierDamage": 13.51,
+          "partyDamage": 1096.4716666666666
+        }
+      }
+    },
+    {
+      "id": "geist-x4",
+      "label": "Geist · sheet HP 1044 · x4",
+      "boss": true,
+      "enemies": [
+        "⭐️ Geist"
+      ],
+      "expectedRounds": 15,
+      "sets": [
+        "Souleater:damage_bonus=5",
+        "Dark Bane:damage_bonus=7",
+        "Torcleaver:damage_bonus=5",
+        "actor:affinity_1=VU",
+        "actor:affinity_7=VU",
+        "actor:bow_ef=200",
+        "actor:arcane_ef=200"
+      ],
+      "lanePrior": {
+        "hina": {
+          "def": 0,
+          "mdef": 33.045523809523786
+        },
+        "keren": {
+          "def": 0,
+          "mdef": 48.17364285714288
+        },
+        "blanche": {
+          "def": 16.06820634920634,
+          "mdef": 0
+        },
+        "zarg": {
+          "def": 197.1830158730159,
+          "mdef": 0
+        }
+      },
+      "arms": {
+        "baseline": {
+          "spikes": {
+            "hitP50": 108,
+            "hitP90": 132,
+            "hitMax": 148,
+            "killsPerFight": 1,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.043810105327430925
+          },
+          "runs": 600,
+          "win": 1,
+          "defeat": 0,
+          "overtime": 0,
+          "wonRounds": 3.783333333333333,
+          "wonHp": 0.5999752300070772,
+          "downsPerFight": 0.008333333333333333,
+          "downRate": {
+            "Zarg": 0.0033333333333333335,
+            "Hina": 0.005
+          },
+          "used": {},
+          "addedDamage": 0,
+          "prevented": 0,
+          "carrierDamage": 59.21,
+          "partyDamage": 1091.8333333333333
+        },
+        "d3-30": {
+          "spikes": {
+            "hitP50": 130,
+            "hitP90": 160,
+            "hitMax": 170,
+            "killsPerFight": 1,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.24333333333333335,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.06107790175493294
+          },
+          "runs": 600,
+          "win": 1,
+          "defeat": 0,
+          "overtime": 0,
+          "wonRounds": 3.4316666666666666,
+          "wonHp": 0.5309094125973105,
+          "downsPerFight": 0.021666666666666667,
+          "downRate": {
+            "Keren": 0.011666666666666667,
+            "Hina": 0.008333333333333333,
+            "Zarg": 0.0016666666666666668
+          },
+          "used": {
+            "strength": 1.016666666666676,
+            "spirit": 1.4133333333333442
+          },
+          "addedDamage": 126.965,
+          "prevented": 0,
+          "carrierDamage": 0.06,
+          "partyDamage": 1111.9133333333334
+        },
+        "d3-40": {
+          "spikes": {
+            "hitP50": 132,
+            "hitP90": 172,
+            "hitMax": 184,
+            "killsPerFight": 1,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.33666666666666667,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.06090194790884272
+          },
+          "runs": 600,
+          "win": 1,
+          "defeat": 0,
+          "overtime": 0,
+          "wonRounds": 3.296666666666667,
+          "wonHp": 0.5158917197452227,
+          "downsPerFight": 0.016666666666666666,
+          "downRate": {
+            "Keren": 0.01,
+            "Hina": 0.006666666666666667
+          },
+          "used": {
+            "strength": 1.006666666666676,
+            "spirit": 1.2883333333333427
+          },
+          "addedDamage": 157.13666666666666,
+          "prevented": 0,
+          "carrierDamage": 0,
+          "partyDamage": 1111.705
+        },
+        "d3-50": {
+          "spikes": {
+            "hitP50": 132,
+            "hitP90": 186,
+            "hitMax": 198,
+            "killsPerFight": 1,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.33166666666666667,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.07036108101690387
+          },
+          "runs": 600,
+          "win": 1,
+          "defeat": 0,
+          "overtime": 0,
+          "wonRounds": 3.2066666666666666,
+          "wonHp": 0.5059660297239913,
+          "downsPerFight": 0.016666666666666666,
+          "downRate": {
+            "Keren": 0.01,
+            "Hina": 0.006666666666666667
+          },
+          "used": {
+            "strength": 1.0050000000000092,
+            "spirit": 1.2000000000000088
+          },
+          "addedDamage": 184.06,
+          "prevented": 0,
+          "carrierDamage": 0,
+          "partyDamage": 1123.0166666666667
+        },
+        "d3-60": {
+          "spikes": {
+            "hitP50": 132,
+            "hitP90": 198,
+            "hitMax": 210,
+            "killsPerFight": 1,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.31833333333333336,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.08070403043186658
+          },
+          "runs": 600,
+          "win": 1,
+          "defeat": 0,
+          "overtime": 0,
+          "wonRounds": 3.1466666666666665,
+          "wonHp": 0.499405520169851,
+          "downsPerFight": 0.016666666666666666,
+          "downRate": {
+            "Keren": 0.01,
+            "Hina": 0.006666666666666667
+          },
+          "used": {
+            "strength": 1.0033333333333427,
+            "spirit": 1.1416666666666764
+          },
+          "addedDamage": 206.58166666666668,
+          "prevented": 0,
+          "carrierDamage": 0,
+          "partyDamage": 1135.6516666666666
+        },
+        "d3-70": {
+          "spikes": {
+            "hitP50": 128,
+            "hitP90": 210,
+            "hitMax": 224,
+            "killsPerFight": 1,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.375,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.0871226584200693
+          },
+          "runs": 600,
+          "win": 1,
+          "defeat": 0,
+          "overtime": 0,
+          "wonRounds": 3.0966666666666667,
+          "wonHp": 0.49508492569002094,
+          "downsPerFight": 0.016666666666666666,
+          "downRate": {
+            "Keren": 0.01,
+            "Hina": 0.006666666666666667
+          },
+          "used": {
+            "strength": 1.0000000000000095,
+            "spirit": 1.0950000000000095
+          },
+          "addedDamage": 228.425,
+          "prevented": 0,
+          "carrierDamage": 0,
+          "partyDamage": 1143.6366666666668
+        },
+        "d3-80": {
+          "spikes": {
+            "hitP50": 129,
+            "hitP90": 216,
+            "hitMax": 236,
+            "killsPerFight": 1,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.41333333333333333,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.08999517685821706
+          },
+          "runs": 600,
+          "win": 1,
+          "defeat": 0,
+          "overtime": 0,
+          "wonRounds": 3.0633333333333335,
+          "wonHp": 0.4915251238499642,
+          "downsPerFight": 0.016666666666666666,
+          "downRate": {
+            "Keren": 0.01,
+            "Hina": 0.006666666666666667
+          },
+          "used": {
+            "strength": 1.0000000000000095,
+            "spirit": 1.0616666666666759
+          },
+          "addedDamage": 247.59666666666666,
+          "prevented": 0,
+          "carrierDamage": 0,
+          "partyDamage": 1147.2466666666667
+        },
+        "d5-30": {
+          "spikes": {
+            "hitP50": 130,
+            "hitP90": 160,
+            "hitMax": 170,
+            "killsPerFight": 1,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.24666666666666667,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.06269639383510399
+          },
+          "runs": 600,
+          "win": 1,
+          "defeat": 0,
+          "overtime": 0,
+          "wonRounds": 3.425,
+          "wonHp": 0.5307607926397733,
+          "downsPerFight": 0.021666666666666667,
+          "downRate": {
+            "Keren": 0.011666666666666667,
+            "Hina": 0.008333333333333333,
+            "Zarg": 0.0016666666666666668
+          },
+          "used": {
+            "strength": 1.0000000000000095,
+            "spirit": 1.4133333333333442
+          },
+          "addedDamage": 127.23,
+          "prevented": 0,
+          "carrierDamage": 0.3333333333333333,
+          "partyDamage": 1113.8333333333333
+        },
+        "d5-40": {
+          "spikes": {
+            "hitP50": 132,
+            "hitP90": 172,
+            "hitMax": 184,
+            "killsPerFight": 1,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.34,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.06152382521929989
+          },
+          "runs": 600,
+          "win": 1,
+          "defeat": 0,
+          "overtime": 0,
+          "wonRounds": 3.2916666666666665,
+          "wonHp": 0.5164968152866241,
+          "downsPerFight": 0.016666666666666666,
+          "downRate": {
+            "Keren": 0.01,
+            "Hina": 0.006666666666666667
+          },
+          "used": {
+            "strength": 1.0000000000000095,
+            "spirit": 1.2883333333333427
+          },
+          "addedDamage": 157.43333333333334,
+          "prevented": 0,
+          "carrierDamage": 0.20333333333333334,
+          "partyDamage": 1112.4416666666666
+        },
+        "d5-50": {
+          "spikes": {
+            "hitP50": 132,
+            "hitP90": 186,
+            "hitMax": 198,
+            "killsPerFight": 1,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.33666666666666667,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.07066175292421087
+          },
+          "runs": 600,
+          "win": 1,
+          "defeat": 0,
+          "overtime": 0,
+          "wonRounds": 3.2016666666666667,
+          "wonHp": 0.5058032554847839,
+          "downsPerFight": 0.016666666666666666,
+          "downRate": {
+            "Keren": 0.01,
+            "Hina": 0.006666666666666667
+          },
+          "used": {
+            "strength": 1.0000000000000095,
+            "spirit": 1.2000000000000088
+          },
+          "addedDamage": 184.23833333333334,
+          "prevented": 0,
+          "carrierDamage": 0,
+          "partyDamage": 1123.38
+        },
+        "d5-60": {
+          "spikes": {
+            "hitP50": 132,
+            "hitP90": 198,
+            "hitMax": 210,
+            "killsPerFight": 1,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.32166666666666666,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.08091984312252495
+          },
+          "runs": 600,
+          "win": 1,
+          "defeat": 0,
+          "overtime": 0,
+          "wonRounds": 3.1433333333333335,
+          "wonHp": 0.49944798301486165,
+          "downsPerFight": 0.016666666666666666,
+          "downRate": {
+            "Keren": 0.01,
+            "Hina": 0.006666666666666667
+          },
+          "used": {
+            "strength": 1.0000000000000095,
+            "spirit": 1.1416666666666764
+          },
+          "addedDamage": 206.64,
+          "prevented": 0,
+          "carrierDamage": 0,
+          "partyDamage": 1135.9183333333333
+        },
+        "d5-70": {
+          "spikes": {
+            "hitP50": 128,
+            "hitP90": 210,
+            "hitMax": 224,
+            "killsPerFight": 1,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.375,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.08764652420125375
+          },
+          "runs": 600,
+          "win": 1,
+          "defeat": 0,
+          "overtime": 0,
+          "wonRounds": 3.0966666666666667,
+          "wonHp": 0.49508492569002094,
+          "downsPerFight": 0.016666666666666666,
+          "downRate": {
+            "Keren": 0.01,
+            "Hina": 0.006666666666666667
+          },
+          "used": {
+            "strength": 1.0000000000000095,
+            "spirit": 1.0950000000000095
+          },
+          "addedDamage": 228.425,
+          "prevented": 0,
+          "carrierDamage": 0,
+          "partyDamage": 1144.2933333333333
+        },
+        "d5-80": {
+          "spikes": {
+            "hitP50": 129,
+            "hitP90": 216,
+            "hitMax": 236,
+            "killsPerFight": 1,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.41333333333333333,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.09038104089219332
+          },
+          "runs": 600,
+          "win": 1,
+          "defeat": 0,
+          "overtime": 0,
+          "wonRounds": 3.0633333333333335,
+          "wonHp": 0.4915251238499642,
+          "downsPerFight": 0.016666666666666666,
+          "downRate": {
+            "Keren": 0.01,
+            "Hina": 0.006666666666666667
+          },
+          "used": {
+            "strength": 1.0000000000000095,
+            "spirit": 1.0616666666666759
+          },
+          "addedDamage": 247.59666666666666,
+          "prevented": 0,
+          "carrierDamage": 0,
+          "partyDamage": 1147.7333333333333
+        }
+      }
+    },
+    {
+      "id": "fafnir-x4",
+      "label": "Fafnir · sheet HP 1824, DEF 16/17 · x4",
+      "boss": true,
+      "enemies": [
+        "⭐️ Fafnir"
+      ],
+      "expectedRounds": 15,
+      "sets": [
+        "Rend:damage_bonus=8",
+        "Condemn:damage_bonus=15",
+        "actor:affinity_1=VU",
+        "actor:affinity_7=VU",
+        "actor:bow_ef=200",
+        "actor:arcane_ef=200"
+      ],
+      "lanePrior": {
+        "hina": {
+          "def": 0.018615384615384614,
+          "mdef": 12.703727365227374
+        },
+        "keren": {
+          "def": 0,
+          "mdef": 7.663178062678063
+        },
+        "blanche": {
+          "def": 11.079452991452998,
+          "mdef": 0
+        },
+        "zarg": {
+          "def": 66.74616141266142,
+          "mdef": 0
+        }
+      },
+      "arms": {
+        "baseline": {
+          "spikes": {
+            "hitP50": 112,
+            "hitP90": 132,
+            "hitMax": 148,
+            "killsPerFight": 0.25166666666666665,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.010130995060093318
+          },
+          "runs": 600,
+          "win": 0.25166666666666665,
+          "defeat": 0.01,
+          "overtime": 0.7383333333333333,
+          "wonRounds": 11.6158940397351,
+          "wonHp": 0.5124084307026054,
+          "downsPerFight": 2.515,
+          "downRate": {
+            "Hina": 0.9066666666666741,
+            "Keren": 0.87333333333334,
+            "Zarg": 0.7250000000000032,
+            "Blanche": 0.01
+          },
+          "used": {},
+          "addedDamage": 0,
+          "prevented": 0,
+          "carrierDamage": 156.69,
+          "partyDamage": 1313.79
+        },
+        "d3-30": {
+          "spikes": {
+            "hitP50": 128,
+            "hitP90": 166,
+            "hitMax": 192,
+            "killsPerFight": 0.3283333333333333,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.045,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.014316214127601609
+          },
+          "runs": 600,
+          "win": 0.3283333333333333,
+          "defeat": 0.016666666666666666,
+          "overtime": 0.655,
+          "wonRounds": 10.416243654822335,
+          "wonHp": 0.5048875381249528,
+          "downsPerFight": 2.44,
+          "downRate": {
+            "Hina": 0.8800000000000068,
+            "Keren": 0.8650000000000064,
+            "Zarg": 0.6783333333333355,
+            "Blanche": 0.016666666666666666
+          },
+          "used": {
+            "strength": 2.3616666666666584,
+            "spirit": 1.3633333333333442
+          },
+          "addedDamage": 177.565,
+          "prevented": 0,
+          "carrierDamage": 98.19333333333333,
+          "partyDamage": 1399.695
+        },
+        "d3-40": {
+          "spikes": {
+            "hitP50": 128,
+            "hitP90": 178,
+            "hitMax": 206,
+            "killsPerFight": 0.36,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.07,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.014969522499737766
+          },
+          "runs": 600,
+          "win": 0.36,
+          "defeat": 0.016666666666666666,
+          "overtime": 0.6233333333333333,
+          "wonRounds": 9.787037037037036,
+          "wonHp": 0.4986730360934181,
+          "downsPerFight": 2.401666666666667,
+          "downRate": {
+            "Hina": 0.8716666666666733,
+            "Keren": 0.861666666666673,
+            "Zarg": 0.6516666666666682,
+            "Blanche": 0.016666666666666666
+          },
+          "used": {
+            "strength": 2.339999999999993,
+            "spirit": 1.3516666666666775
+          },
+          "addedDamage": 232.22333333333333,
+          "prevented": 0,
+          "carrierDamage": 95.08666666666667,
+          "partyDamage": 1430.0166666666667
+        },
+        "d3-50": {
+          "spikes": {
+            "hitP50": 128,
+            "hitP90": 192,
+            "hitMax": 222,
+            "killsPerFight": 0.4,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.10666666666666667,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.018553912299887912
+          },
+          "runs": 600,
+          "win": 0.4,
+          "defeat": 0.016666666666666666,
+          "overtime": 0.5833333333333334,
+          "wonRounds": 9.345833333333333,
+          "wonHp": 0.5021673743807498,
+          "downsPerFight": 2.3216666666666668,
+          "downRate": {
+            "Hina": 0.8400000000000059,
+            "Keren": 0.8433333333333393,
+            "Zarg": 0.6216666666666675,
+            "Blanche": 0.016666666666666666
+          },
+          "used": {
+            "strength": 2.3033333333333283,
+            "spirit": 1.5183333333333402
+          },
+          "addedDamage": 295.105,
+          "prevented": 0,
+          "carrierDamage": 89.64333333333333,
+          "partyDamage": 1467.615
+        },
+        "d3-60": {
+          "spikes": {
+            "hitP50": 132,
+            "hitP90": 204,
+            "hitMax": 236,
+            "killsPerFight": 0.42833333333333334,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.12166666666666667,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.021615104138201037
+          },
+          "runs": 600,
+          "win": 0.42833333333333334,
+          "defeat": 0.016666666666666666,
+          "overtime": 0.555,
+          "wonRounds": 8.937743190661479,
+          "wonHp": 0.4940725503316892,
+          "downsPerFight": 2.2866666666666666,
+          "downRate": {
+            "Hina": 0.833333333333339,
+            "Keren": 0.8433333333333393,
+            "Zarg": 0.5933333333333335,
+            "Blanche": 0.016666666666666666
+          },
+          "used": {
+            "strength": 2.274999999999998,
+            "spirit": 1.5183333333333402
+          },
+          "addedDamage": 339.99333333333334,
+          "prevented": 0,
+          "carrierDamage": 85.9,
+          "partyDamage": 1494.2483333333332
+        },
+        "d3-70": {
+          "spikes": {
+            "hitP50": 132,
+            "hitP90": 216,
+            "hitMax": 250,
+            "killsPerFight": 0.43833333333333335,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.13833333333333334,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.02429249185994391
+          },
+          "runs": 600,
+          "win": 0.43833333333333335,
+          "defeat": 0.016666666666666666,
+          "overtime": 0.545,
+          "wonRounds": 8.551330798479087,
+          "wonHp": 0.4962744100812933,
+          "downsPerFight": 2.265,
+          "downRate": {
+            "Hina": 0.8266666666666722,
+            "Keren": 0.8433333333333393,
+            "Zarg": 0.5783333333333331,
+            "Blanche": 0.016666666666666666
+          },
+          "used": {
+            "strength": 2.244999999999999,
+            "spirit": 1.515000000000007
+          },
+          "addedDamage": 386.4683333333333,
+          "prevented": 0,
+          "carrierDamage": 83.28,
+          "partyDamage": 1520.7716666666668
+        },
+        "d3-80": {
+          "spikes": {
+            "hitP50": 132,
+            "hitP90": 230,
+            "hitMax": 266,
+            "killsPerFight": 0.465,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.18,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.025701207004512772
+          },
+          "runs": 600,
+          "win": 0.465,
+          "defeat": 0.016666666666666666,
+          "overtime": 0.5183333333333333,
+          "wonRounds": 8.31899641577061,
+          "wonHp": 0.49065893508055014,
+          "downsPerFight": 2.243333333333333,
+          "downRate": {
+            "Hina": 0.8200000000000054,
+            "Keren": 0.8433333333333393,
+            "Zarg": 0.5633333333333328,
+            "Blanche": 0.016666666666666666
+          },
+          "used": {
+            "strength": 2.1900000000000026,
+            "spirit": 1.5116666666666738
+          },
+          "addedDamage": 428.6816666666667,
+          "prevented": 0,
+          "carrierDamage": 80.58333333333333,
+          "partyDamage": 1543.7666666666667
+        },
+        "d5-30": {
+          "spikes": {
+            "hitP50": 132,
+            "hitP90": 166,
+            "hitMax": 192,
+            "killsPerFight": 0.36333333333333334,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.056666666666666664,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.01692949526110301
+          },
+          "runs": 600,
+          "win": 0.36333333333333334,
+          "defeat": 0.016666666666666666,
+          "overtime": 0.62,
+          "wonRounds": 10.275229357798166,
+          "wonHp": 0.5034379321763179,
+          "downsPerFight": 2.381666666666667,
+          "downRate": {
+            "Hina": 0.8633333333333397,
+            "Keren": 0.8483333333333394,
+            "Zarg": 0.6533333333333349,
+            "Blanche": 0.016666666666666666
+          },
+          "used": {
+            "strength": 1.7216666666666773,
+            "spirit": 1.460000000000008
+          },
+          "addedDamage": 197.515,
+          "prevented": 0,
+          "carrierDamage": 104.54,
+          "partyDamage": 1419.81
+        },
+        "d5-40": {
+          "spikes": {
+            "hitP50": 132,
+            "hitP90": 178,
+            "hitMax": 206,
+            "killsPerFight": 0.385,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.09666666666666666,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.018968783961972917
+          },
+          "runs": 600,
+          "win": 0.385,
+          "defeat": 0.016666666666666666,
+          "overtime": 0.5983333333333334,
+          "wonRounds": 9.627705627705629,
+          "wonHp": 0.4997564360621685,
+          "downsPerFight": 2.348333333333333,
+          "downRate": {
+            "Hina": 0.8583333333333396,
+            "Keren": 0.845000000000006,
+            "Zarg": 0.6283333333333343,
+            "Blanche": 0.016666666666666666
+          },
+          "used": {
+            "strength": 1.6766666666666776,
+            "spirit": 1.4566666666666745
+          },
+          "addedDamage": 256.35,
+          "prevented": 0,
+          "carrierDamage": 101.17333333333333,
+          "partyDamage": 1452.2983333333334
+        },
+        "d5-50": {
+          "spikes": {
+            "hitP50": 132,
+            "hitP90": 192,
+            "hitMax": 222,
+            "killsPerFight": 0.41833333333333333,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.115,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.02085027336151555
+          },
+          "runs": 600,
+          "win": 0.41833333333333333,
+          "defeat": 0.016666666666666666,
+          "overtime": 0.565,
+          "wonRounds": 9.282868525896415,
+          "wonHp": 0.4878405697803267,
+          "downsPerFight": 2.3133333333333335,
+          "downRate": {
+            "Hina": 0.8483333333333394,
+            "Keren": 0.8416666666666726,
+            "Zarg": 0.6066666666666671,
+            "Blanche": 0.016666666666666666
+          },
+          "used": {
+            "strength": 1.6416666666666777,
+            "spirit": 1.438333333333342
+          },
+          "addedDamage": 312.99833333333333,
+          "prevented": 0,
+          "carrierDamage": 97.92,
+          "partyDamage": 1483.9933333333333
+        },
+        "d5-60": {
+          "spikes": {
+            "hitP50": 132,
+            "hitP90": 204,
+            "hitMax": 236,
+            "killsPerFight": 0.44,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.14333333333333334,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.025134388914525237
+          },
+          "runs": 600,
+          "win": 0.44,
+          "defeat": 0.016666666666666666,
+          "overtime": 0.5433333333333333,
+          "wonRounds": 9,
+          "wonHp": 0.48245994981663776,
+          "downsPerFight": 2.2916666666666665,
+          "downRate": {
+            "Hina": 0.8466666666666727,
+            "Keren": 0.8416666666666726,
+            "Zarg": 0.5866666666666667,
+            "Blanche": 0.016666666666666666
+          },
+          "used": {
+            "strength": 1.6150000000000124,
+            "spirit": 1.4200000000000093
+          },
+          "addedDamage": 360.425,
+          "prevented": 0,
+          "carrierDamage": 95.65,
+          "partyDamage": 1513.3316666666667
+        },
+        "d5-70": {
+          "spikes": {
+            "hitP50": 132,
+            "hitP90": 216,
+            "hitMax": 250,
+            "killsPerFight": 0.465,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.15833333333333333,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.025735692754754624
+          },
+          "runs": 600,
+          "win": 0.465,
+          "defeat": 0.016666666666666666,
+          "overtime": 0.5183333333333333,
+          "wonRounds": 8.57347670250896,
+          "wonHp": 0.4814206028506422,
+          "downsPerFight": 2.256666666666667,
+          "downRate": {
+            "Hina": 0.8400000000000059,
+            "Keren": 0.8416666666666726,
+            "Zarg": 0.5583333333333327,
+            "Blanche": 0.016666666666666666
+          },
+          "used": {
+            "strength": 1.5900000000000125,
+            "spirit": 1.4100000000000095
+          },
+          "addedDamage": 407.17333333333335,
+          "prevented": 0,
+          "carrierDamage": 92.59,
+          "partyDamage": 1537.1
+        },
+        "d5-80": {
+          "spikes": {
+            "hitP50": 132,
+            "hitP90": 230,
+            "hitMax": 266,
+            "killsPerFight": 0.48833333333333334,
+            "oneShotsPerFight": 0,
+            "enabledKillsPerFight": 0.205,
+            "enabledOneShotsPerFight": 0,
+            "overkillShare": 0.028738991671217913
+          },
+          "runs": 600,
+          "win": 0.48833333333333334,
+          "defeat": 0.016666666666666666,
+          "overtime": 0.495,
+          "wonRounds": 8.20136518771331,
+          "wonHp": 0.48098954370557173,
+          "downsPerFight": 2.223333333333333,
+          "downRate": {
+            "Hina": 0.8316666666666723,
+            "Keren": 0.8383333333333391,
+            "Zarg": 0.5366666666666655,
+            "Blanche": 0.016666666666666666
+          },
+          "used": {
+            "strength": 1.5550000000000122,
+            "spirit": 1.3833333333333435
+          },
+          "addedDamage": 450.0566666666667,
+          "prevented": 0,
+          "carrierDamage": 89.46,
+          "partyDamage": 1562.4533333333334
+        }
+      }
+    }
+  ]
+}
