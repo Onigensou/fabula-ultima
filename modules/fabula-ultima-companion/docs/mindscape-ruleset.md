@@ -738,6 +738,21 @@ A paper design from the tincture proposal review. Nothing exists in the world ye
   - Sets: `specs/encounters/tincture-multiplier-set.json` (x1 / x2 VU / x2 EF / x4 toward
     Zarg, plus arcane EF) and `tincture-spike-set.json` (Fafnir Castle soldiers, Zarg's
     base +0 / +10 / +20). Results: `expectations/tincture-{multiplier,spike}.json`.
+- **Exploit-calibrated sweeps** (added the same day).
+  - `tincture-exploit-set.json` builds each fight for an exploiting party. For every
+    exploitation level (party x1 / x2 / x4) the enemies' HP is scaled (group `hpScale`)
+    until the tincture-free party wins in the design length: 6.5 model rounds for a boss,
+    3 for a standard fight. Testing x2 / x4 against today's HP only measures fights that
+    end before a tincture can matter.
+  - `--pcts` generates `dmg<p>` / `first<p>` arms plus **`first0`**, the turn-order control.
+    Moving the carrier to the front changes the fight on its own (+16 HP points on the
+    Geist proxy with no tincture), so carrier-first arms are read against `first0`.
+  - `--pcts` with `--durations` generates normal-order `d<turns>-<p>` arms. `duration` is a
+    tincture-state dial (default 3).
+  - Results: `expectations/tincture-{exploit,duration}.json`.
+  - ⚠ `loadNamed` returns the SAME model object for a repeated enemy name. A relative
+    in-memory patch must iterate `new Set(enemies)`, or a doubled enemy is patched twice —
+    it scaled both Dire Orcs twice before the fix.
 - **Not modelled.** Tincture of Precision (accuracy), Potion Rain spreading, Dispel,
   the Create (IP) route, and a player's judgement about a fight that is nearly over — the
   carrier drinks whenever the rule fires.

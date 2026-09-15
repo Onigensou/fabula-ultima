@@ -44,6 +44,17 @@ t("re-applying refreshes the clock and never stacks the percent", () => {
   T.applyBuff(c, "strength", 25);
   assert.deepStrictEqual(c.buffs.strength, { pct: 25, turnsLeft: 3 });
 });
+t("a longer duration lasts that many turns", () => {
+  const c = { buffs: {} };
+  T.applyBuff(c, "strength", 20, 5);
+  for (let i = 0; i < 4; i++) T.tickTurnEnd(c);
+  assert.strictEqual(T.buffPct(c, "strength"), 20);
+  T.tickTurnEnd(c);
+  assert.strictEqual(T.buffPct(c, "strength"), 0);
+  const s = T.makeTinctureState({ pct: { strength: 20 }, duration: 5 });
+  assert.strictEqual(s.duration, 5);
+  assert.strictEqual(T.makeTinctureState({ pct: { strength: 20 } }).duration, 3);
+});
 t("Strength boosts DEF actions only, Spirit MDEF actions only", () => {
   const c = { buffs: {} };
   T.applyBuff(c, "strength", 25);

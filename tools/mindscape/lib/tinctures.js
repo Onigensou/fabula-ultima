@@ -62,7 +62,9 @@ function parseTinctureArg(spec) {
 // `carrierFirst`: the WORST-CASE opener. The carrier acts before everyone in the round
 // order, so a round-1 tincture lands before the carry's first volley — what a party with
 // Quicken, or simply better initiative, would do on purpose.
-function makeTinctureState({ pct = {}, user = DEFAULT_USER, stock = DEFAULT_STOCK, lanePrior = null, carrierFirst = false } = {}) {
+// `duration`: turns a tincture lasts (default 3). A calibration dial — a long boss needs
+// re-applies that a short fight never does, so duration moves boss value on its own.
+function makeTinctureState({ pct = {}, user = DEFAULT_USER, stock = DEFAULT_STOCK, lanePrior = null, carrierFirst = false, duration = DURATION_TURNS } = {}) {
   const kinds = Object.keys(KINDS).filter((k) => Number(pct[k]) > 0);
   // carrierFirst with no tincture is the CONTROL for the worst-case opener: the turn
   // order changes the fight on its own, so it must be measured without a drink.
@@ -74,6 +76,7 @@ function makeTinctureState({ pct = {}, user = DEFAULT_USER, stock = DEFAULT_STOC
     used: Object.fromEntries(kinds.map((k) => [k, 0])),
     lanePrior,
     carrierFirst: !!carrierFirst,
+    duration: Number(duration) > 0 ? Number(duration) : DURATION_TURNS,
   };
 }
 
@@ -116,9 +119,9 @@ function reductionPct(target) {
 }
 
 // Refresh, never stack: a second Strength on the same creature resets the clock.
-function applyBuff(target, kind, pct) {
+function applyBuff(target, kind, pct, turns = DURATION_TURNS) {
   target.buffs = target.buffs ?? {};
-  target.buffs[kind] = { pct, turnsLeft: DURATION_TURNS };
+  target.buffs[kind] = { pct, turnsLeft: turns };
 }
 
 function tickTurnEnd(c) {
@@ -165,7 +168,9 @@ function chooseTincture(state, actor, { projectLane }) {
     if (!(T.stock[kind] > 0)) continue;
     for (const c of allies) {
       if (c === actor || buffPct(c, kind)) continue;
-      const gain = laneOut(c, KINDS[kind].lane) * (T.pct[kind] / 100) * DURATION_TURNS;
+      // Turns it can pay for, capped at a boss's length so a whole-fight tincture is not
+      // credited with rounds that never happen.
+      const gain = laneOut(c, KINDS[kind].lane) * (T.pct[kind] / 100) * Math.min(T.duration ?? DURATION_TURNS, 6);
       if (gain <= 0 || gain < forgone) continue;
       if (!best || gain > best.gain) best = { kind, target: c, gain };
     }
@@ -177,7 +182,7 @@ function drink(state, actor, pick) {
   const T = state.tinctures;
   T.stock[pick.kind] -= 1;
   T.used[pick.kind] += 1;
-  applyBuff(pick.target, pick.kind, T.pct[pick.kind]);
+  applyBuff(pick.target, pick.kind, T.pct[pick.kind], T.duration ?? DURATION_TURNS);
   actor.tincturesUsed = (actor.tincturesUsed ?? 0) + 1;
 }
 

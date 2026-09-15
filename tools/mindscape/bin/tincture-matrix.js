@@ -49,6 +49,7 @@ function parseArgs(argv) {
     else if (a === "--user") out.user = next();
     else if (a === "--stock") out.stock = Number(next());
     else if (a === "--pcts") out.pcts = next().split(",").map((s) => Number(s.trim())).filter((n) => n > 0);
+    else if (a === "--durations") out.durations = next().split(",").map((s) => Number(s.trim())).filter((n) => n > 0);
   }
   return out;
 }
@@ -217,12 +218,16 @@ async function main() {
   const groups = set.groups.filter((g) => !args.only || args.only.includes(g.id));
   // --pcts sweeps the damage tincture instead of the fixed arms: baseline, then dmg<p>
   // (normal order) and first<p> (worst-case opener) for each percentage.
-  const armPool = args.pcts?.length
-    ? [ARMS[0], { id: "first0", pct: {}, carrierFirst: true }, ...args.pcts.flatMap((p) => [
-      { id: `dmg${p}`, pct: { strength: p, spirit: p } },
-      { id: `first${p}`, pct: { strength: p, spirit: p }, carrierFirst: true },
-    ])]
-    : ARMS;
+  // --pcts with --durations: normal-order arms d<turns>-<p> for every pair instead.
+  const armPool = args.pcts?.length && args.durations?.length
+    ? [ARMS[0], ...args.durations.flatMap((d) => args.pcts.map((p) => (
+      { id: `d${d}-${p}`, pct: { strength: p, spirit: p }, duration: d })))]
+    : args.pcts?.length
+      ? [ARMS[0], { id: "first0", pct: {}, carrierFirst: true }, ...args.pcts.flatMap((p) => [
+        { id: `dmg${p}`, pct: { strength: p, spirit: p } },
+        { id: `first${p}`, pct: { strength: p, spirit: p }, carrierFirst: true },
+      ])]
+      : ARMS;
   // Without --pcts, the worst-case opener arms run only when named in --arms.
   const arms = armPool.filter((a) => (args.arms ? args.arms.includes(a.id) : (args.pcts?.length || !a.carrierFirst)));
   const carrier = String(args.user).trim().toLowerCase();
@@ -276,7 +281,7 @@ async function main() {
     const out = {};
     for (const arm of arms) {
       const results = arm.id === "baseline" ? baseResults
-        : run({ pct: arm.pct, user: args.user, stock: args.stock, lanePrior, carrierFirst: !!arm.carrierFirst });
+        : run({ pct: arm.pct, user: args.user, stock: args.stock, lanePrior, carrierFirst: !!arm.carrierFirst, duration: arm.duration });
       out[arm.id] = summarise(results, carrier);
     }
     printGroup(g, out);
