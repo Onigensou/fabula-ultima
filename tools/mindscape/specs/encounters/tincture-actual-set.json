@@ -1,0 +1,528 @@
+{
+  "note": "Tincture 25/30% on the ACTUAL house spawn groups (2026-09-15): sheet HP, damage, affinity and efficiency. 'sheet' = the fight as authored; 'x2' / 'x4' = the party exploiting (in-memory: physical VU + arcane EF 200%; x4 adds bow EF 200% and ice VU) — the players bringing the right element or weapon. Nothing is written to the world.",
+  "groups": [
+    {
+      "id": "wyrm-1-sheet",
+      "label": "The Wyrmwood wyrm-1 · sheet",
+      "enemies": [
+        "Centuaros",
+        "Inferex"
+      ],
+      "sets": []
+    },
+    {
+      "id": "wyrm-1-x2",
+      "label": "The Wyrmwood wyrm-1 · x2",
+      "enemies": [
+        "Centuaros",
+        "Inferex"
+      ],
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=NA",
+        "actor:bow_ef=100",
+        "actor:arcane_ef=200"
+      ]
+    },
+    {
+      "id": "wyrm-1-x4",
+      "label": "The Wyrmwood wyrm-1 · x4",
+      "enemies": [
+        "Centuaros",
+        "Inferex"
+      ],
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=VU",
+        "actor:bow_ef=200",
+        "actor:arcane_ef=200"
+      ]
+    },
+    {
+      "id": "wyrm-2-sheet",
+      "label": "The Wyrmwood wyrm-2 · sheet",
+      "enemies": [
+        "Fire Slime",
+        "Inferex",
+        "Fire Slime"
+      ],
+      "sets": []
+    },
+    {
+      "id": "wyrm-2-x2",
+      "label": "The Wyrmwood wyrm-2 · x2",
+      "enemies": [
+        "Fire Slime",
+        "Inferex",
+        "Fire Slime"
+      ],
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=NA",
+        "actor:bow_ef=100",
+        "actor:arcane_ef=200"
+      ]
+    },
+    {
+      "id": "wyrm-2-x4",
+      "label": "The Wyrmwood wyrm-2 · x4",
+      "enemies": [
+        "Fire Slime",
+        "Inferex",
+        "Fire Slime"
+      ],
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=VU",
+        "actor:bow_ef=200",
+        "actor:arcane_ef=200"
+      ]
+    },
+    {
+      "id": "wyrm-3-sheet",
+      "label": "The Wyrmwood wyrm-3 · sheet",
+      "enemies": [
+        "Pyrefly",
+        "Salamander",
+        "Dryad"
+      ],
+      "sets": []
+    },
+    {
+      "id": "wyrm-3-x2",
+      "label": "The Wyrmwood wyrm-3 · x2",
+      "enemies": [
+        "Pyrefly",
+        "Salamander",
+        "Dryad"
+      ],
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=NA",
+        "actor:bow_ef=100",
+        "actor:arcane_ef=200"
+      ]
+    },
+    {
+      "id": "wyrm-3-x4",
+      "label": "The Wyrmwood wyrm-3 · x4",
+      "enemies": [
+        "Pyrefly",
+        "Salamander",
+        "Dryad"
+      ],
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=VU",
+        "actor:bow_ef=200",
+        "actor:arcane_ef=200"
+      ]
+    },
+    {
+      "id": "wyrm-4-sheet",
+      "label": "The Wyrmwood wyrm-4 · sheet",
+      "enemies": [
+        "Hellhound",
+        "Salamander",
+        "Marigold"
+      ],
+      "sets": []
+    },
+    {
+      "id": "wyrm-4-x2",
+      "label": "The Wyrmwood wyrm-4 · x2",
+      "enemies": [
+        "Hellhound",
+        "Salamander",
+        "Marigold"
+      ],
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=NA",
+        "actor:bow_ef=100",
+        "actor:arcane_ef=200"
+      ]
+    },
+    {
+      "id": "wyrm-4-x4",
+      "label": "The Wyrmwood wyrm-4 · x4",
+      "enemies": [
+        "Hellhound",
+        "Salamander",
+        "Marigold"
+      ],
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=VU",
+        "actor:bow_ef=200",
+        "actor:arcane_ef=200"
+      ]
+    },
+    {
+      "id": "temple-1-sheet",
+      "label": "Ancient Temple temple-1 · sheet",
+      "enemies": [
+        "O'zealot",
+        "O'lmek",
+        "O'zealot"
+      ],
+      "sets": []
+    },
+    {
+      "id": "temple-1-x2",
+      "label": "Ancient Temple temple-1 · x2",
+      "enemies": [
+        "O'zealot",
+        "O'lmek",
+        "O'zealot"
+      ],
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=NA",
+        "actor:bow_ef=100",
+        "actor:arcane_ef=200"
+      ]
+    },
+    {
+      "id": "temple-1-x4",
+      "label": "Ancient Temple temple-1 · x4",
+      "enemies": [
+        "O'zealot",
+        "O'lmek",
+        "O'zealot"
+      ],
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=VU",
+        "actor:bow_ef=200",
+        "actor:arcane_ef=200"
+      ]
+    },
+    {
+      "id": "temple-2-sheet",
+      "label": "Ancient Temple temple-2 · sheet",
+      "enemies": [
+        "Salamander",
+        "Dryad",
+        "Inferex"
+      ],
+      "sets": []
+    },
+    {
+      "id": "temple-2-x2",
+      "label": "Ancient Temple temple-2 · x2",
+      "enemies": [
+        "Salamander",
+        "Dryad",
+        "Inferex"
+      ],
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=NA",
+        "actor:bow_ef=100",
+        "actor:arcane_ef=200"
+      ]
+    },
+    {
+      "id": "temple-2-x4",
+      "label": "Ancient Temple temple-2 · x4",
+      "enemies": [
+        "Salamander",
+        "Dryad",
+        "Inferex"
+      ],
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=VU",
+        "actor:bow_ef=200",
+        "actor:arcane_ef=200"
+      ]
+    },
+    {
+      "id": "valley-1-sheet",
+      "label": "Valley of the Dragon valley-1 · sheet",
+      "enemies": [
+        "Skizzik",
+        "Kirin",
+        "Skizzik"
+      ],
+      "conflictEvent": "lightning-storm",
+      "sets": []
+    },
+    {
+      "id": "valley-1-x2",
+      "label": "Valley of the Dragon valley-1 · x2",
+      "enemies": [
+        "Skizzik",
+        "Kirin",
+        "Skizzik"
+      ],
+      "conflictEvent": "lightning-storm",
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=NA",
+        "actor:bow_ef=100",
+        "actor:arcane_ef=200"
+      ]
+    },
+    {
+      "id": "valley-1-x4",
+      "label": "Valley of the Dragon valley-1 · x4",
+      "enemies": [
+        "Skizzik",
+        "Kirin",
+        "Skizzik"
+      ],
+      "conflictEvent": "lightning-storm",
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=VU",
+        "actor:bow_ef=200",
+        "actor:arcane_ef=200"
+      ]
+    },
+    {
+      "id": "valley-2-sheet",
+      "label": "Valley of the Dragon valley-2 · sheet",
+      "enemies": [
+        "Ampere",
+        "Mana Ray",
+        "Kirin"
+      ],
+      "conflictEvent": "lightning-storm",
+      "sets": []
+    },
+    {
+      "id": "valley-2-x2",
+      "label": "Valley of the Dragon valley-2 · x2",
+      "enemies": [
+        "Ampere",
+        "Mana Ray",
+        "Kirin"
+      ],
+      "conflictEvent": "lightning-storm",
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=NA",
+        "actor:bow_ef=100",
+        "actor:arcane_ef=200"
+      ]
+    },
+    {
+      "id": "valley-2-x4",
+      "label": "Valley of the Dragon valley-2 · x4",
+      "enemies": [
+        "Ampere",
+        "Mana Ray",
+        "Kirin"
+      ],
+      "conflictEvent": "lightning-storm",
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=VU",
+        "actor:bow_ef=200",
+        "actor:arcane_ef=200"
+      ]
+    },
+    {
+      "id": "valley-3-sheet",
+      "label": "Valley of the Dragon valley-3 · sheet",
+      "enemies": [
+        "Drakoza",
+        "Skizzik"
+      ],
+      "conflictEvent": "lightning-storm",
+      "sets": []
+    },
+    {
+      "id": "valley-3-x2",
+      "label": "Valley of the Dragon valley-3 · x2",
+      "enemies": [
+        "Drakoza",
+        "Skizzik"
+      ],
+      "conflictEvent": "lightning-storm",
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=NA",
+        "actor:bow_ef=100",
+        "actor:arcane_ef=200"
+      ]
+    },
+    {
+      "id": "valley-3-x4",
+      "label": "Valley of the Dragon valley-3 · x4",
+      "enemies": [
+        "Drakoza",
+        "Skizzik"
+      ],
+      "conflictEvent": "lightning-storm",
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=VU",
+        "actor:bow_ef=200",
+        "actor:arcane_ef=200"
+      ]
+    },
+    {
+      "id": "valley-4-sheet",
+      "label": "Valley of the Dragon valley-4 · sheet",
+      "enemies": [
+        "Mist Dragon",
+        "Obsidrax"
+      ],
+      "conflictEvent": "lightning-storm",
+      "sets": []
+    },
+    {
+      "id": "valley-4-x2",
+      "label": "Valley of the Dragon valley-4 · x2",
+      "enemies": [
+        "Mist Dragon",
+        "Obsidrax"
+      ],
+      "conflictEvent": "lightning-storm",
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=NA",
+        "actor:bow_ef=100",
+        "actor:arcane_ef=200"
+      ]
+    },
+    {
+      "id": "valley-4-x4",
+      "label": "Valley of the Dragon valley-4 · x4",
+      "enemies": [
+        "Mist Dragon",
+        "Obsidrax"
+      ],
+      "conflictEvent": "lightning-storm",
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=VU",
+        "actor:bow_ef=200",
+        "actor:arcane_ef=200"
+      ]
+    },
+    {
+      "id": "fafnir-1-sheet",
+      "label": "Fafnir Castle fafnir-1 · sheet",
+      "enemies": [
+        "Imp",
+        "Dragon Guard",
+        "Imp"
+      ],
+      "sets": []
+    },
+    {
+      "id": "fafnir-1-x2",
+      "label": "Fafnir Castle fafnir-1 · x2",
+      "enemies": [
+        "Imp",
+        "Dragon Guard",
+        "Imp"
+      ],
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=NA",
+        "actor:bow_ef=100",
+        "actor:arcane_ef=200"
+      ]
+    },
+    {
+      "id": "fafnir-1-x4",
+      "label": "Fafnir Castle fafnir-1 · x4",
+      "enemies": [
+        "Imp",
+        "Dragon Guard",
+        "Imp"
+      ],
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=VU",
+        "actor:bow_ef=200",
+        "actor:arcane_ef=200"
+      ]
+    },
+    {
+      "id": "fafnir-2-sheet",
+      "label": "Fafnir Castle fafnir-2 · sheet",
+      "enemies": [
+        "Dire Orc",
+        "Death Gazer",
+        "Dire Orc"
+      ],
+      "sets": []
+    },
+    {
+      "id": "fafnir-2-x2",
+      "label": "Fafnir Castle fafnir-2 · x2",
+      "enemies": [
+        "Dire Orc",
+        "Death Gazer",
+        "Dire Orc"
+      ],
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=NA",
+        "actor:bow_ef=100",
+        "actor:arcane_ef=200"
+      ]
+    },
+    {
+      "id": "fafnir-2-x4",
+      "label": "Fafnir Castle fafnir-2 · x4",
+      "enemies": [
+        "Dire Orc",
+        "Death Gazer",
+        "Dire Orc"
+      ],
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=VU",
+        "actor:bow_ef=200",
+        "actor:arcane_ef=200"
+      ]
+    },
+    {
+      "id": "fafnir-3-sheet",
+      "label": "Fafnir Castle fafnir-3 · sheet",
+      "enemies": [
+        "Succubus",
+        "Iron Colossus",
+        "Succubus"
+      ],
+      "sets": []
+    },
+    {
+      "id": "fafnir-3-x2",
+      "label": "Fafnir Castle fafnir-3 · x2",
+      "enemies": [
+        "Succubus",
+        "Iron Colossus",
+        "Succubus"
+      ],
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=NA",
+        "actor:bow_ef=100",
+        "actor:arcane_ef=200"
+      ]
+    },
+    {
+      "id": "fafnir-3-x4",
+      "label": "Fafnir Castle fafnir-3 · x4",
+      "enemies": [
+        "Succubus",
+        "Iron Colossus",
+        "Succubus"
+      ],
+      "sets": [
+        "actor:affinity_1=VU",
+        "actor:affinity_7=VU",
+        "actor:bow_ef=200",
+        "actor:arcane_ef=200"
+      ]
+    }
+  ]
+}
