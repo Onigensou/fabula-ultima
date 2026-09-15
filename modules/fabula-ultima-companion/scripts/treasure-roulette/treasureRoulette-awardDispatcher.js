@@ -163,16 +163,23 @@ Hooks.once("ready", () => {
    *
    * @param {string} rewardHtml    already-escaped inline HTML for the reward itself
    * @param {string} recipientName display name of the receiving actor / "Party Inventory"
+   * @param {string} [note]        plain text appended in a muted tone
+   *                               (e.g. "chosen with a Skeletal Key · 2 left")
    */
-  async function postAwardCard({ rewardHtml, recipientName }) {
+  async function postAwardCard({ rewardHtml, recipientName, note = "" }) {
     try {
       ensureSilentAwardChatHookInstalled();
+
+      const noteHtml = note
+        ? `<span style="opacity:0.6;font-style:italic;">· ${esc(note)}</span>`
+        : "";
 
       const content = `
         <span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;">
           <b>Obtained</b> ${rewardHtml}
           <span style="opacity:0.55;">&rsaquo;</span>
           <b>${esc(recipientName || "—")}</b>
+          ${noteHtml}
         </span>
       `.trim();
 
@@ -223,9 +230,10 @@ Hooks.once("ready", () => {
    * @param {boolean} [opts.showTransferCard=false]
    *        The v2 flow shows its own on-screen reveal, so the ItemTransfer card is
    *        redundant noise; legacy callers pass true.
+   * @param {string}  [opts.note]              muted suffix on the chat line
    * @returns {Promise<{ok:boolean, kind:string, receiverItemUuid:string|null, reason?:string}>}
    */
-  async function award({ packet, recipientActorUuid, postChat = true, showTransferCard = false } = {}) {
+  async function award({ packet, recipientActorUuid, postChat = true, showTransferCard = false, note = "" } = {}) {
     const fail = (reason, kind = "") => {
       console.error("[TreasureRoulette][AwardDispatcher] award failed:", reason, { packet, recipientActorUuid });
       return { ok: false, kind, receiverItemUuid: null, reason };
@@ -295,7 +303,8 @@ Hooks.once("ready", () => {
         const qtyHtml = quantity > 1 ? ` <em>&times;${quantity}</em>` : "";
         await postAwardCard({
           rewardHtml: `${buildItemIconHtml(display.img ?? "icons/svg/chest.svg", display.name ?? "Item")} <b>${esc(display.name ?? "Item")}</b>${qtyHtml}`,
-          recipientName
+          recipientName,
+          note
         });
       }
 
@@ -325,7 +334,8 @@ Hooks.once("ready", () => {
         const img = packet?.winner?.img ?? "icons/svg/coins.svg";
         await postAwardCard({
           rewardHtml: `${buildItemIconHtml(img, "Zenit")} <b>${esc(amount)}</b> Zenit`,
-          recipientName
+          recipientName,
+          note
         });
       }
 
@@ -360,7 +370,8 @@ Hooks.once("ready", () => {
       if (postChat) {
         await postAwardCard({
           rewardHtml: `${buildItemIconHtml(img, "Inventory Points")} <b>+${esc(deltaApplied)}</b> IP`,
-          recipientName
+          recipientName,
+          note
         });
       }
 

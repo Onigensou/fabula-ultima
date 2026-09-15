@@ -564,8 +564,11 @@
     const reg = DP.TileEventRegistry;
     if (!reg?.dispatch) { console.warn(TAG, "TileEventRegistry.dispatch not found."); return; }
     const _orig = reg.dispatch.bind(reg);
-    reg.dispatch = async function (typeKey, tileDoc, tokenDoc, scene) {
-      const result = await _orig(typeKey, tileDoc, tokenDoc, scene);
+    // Forward the dispatch context (the confirm panel's choices, e.g. the
+    // Skeletal Key decision). Dropping it here silently turned every "Use Key"
+    // press back into the loot flow's fallback prompt.
+    reg.dispatch = async function (typeKey, tileDoc, tokenDoc, scene, context = {}) {
+      const result = await _orig(typeKey, tileDoc, tokenDoc, scene, context);
       const cfg    = readConfig(tileDoc);
       if (cfg.enabled) {
         await run(cfg, tileDoc, tokenDoc, scene)

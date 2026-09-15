@@ -11027,6 +11027,12 @@
         "effects": 0
       },
       {
+        "id": "ivWUbFevDoyWAgAl",
+        "name": "Skeletal Key",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "hPNGofTLZQVvhtbf",
         "name": "Skull Orb",
         "type": "equippableItem",
@@ -24506,7 +24512,7 @@
       {
         "id": "oPbo24YWiSscsOnW",
         "name": "Ancient Temple - Consumable",
-        "results": 11
+        "results": 12
       },
       {
         "id": "wcdUb4RPnvw1uTTO",
@@ -24536,7 +24542,7 @@
       {
         "id": "UXc5dhppK09OZ2Nd",
         "name": "Ancient Temple - Treasure",
-        "results": 8
+        "results": 9
       },
       {
         "id": "rZuUdYf5K9CoKQzN",
@@ -24566,7 +24572,7 @@
       {
         "id": "5XUe06fGWEn90St1",
         "name": "Bandits Hideout - Consumable",
-        "results": 13
+        "results": 14
       },
       {
         "id": "vSKKGryKcP7EMMxp",
@@ -24596,7 +24602,7 @@
       {
         "id": "xcvyadSZsEqYvjJA",
         "name": "Bandits Hideout - Treasure",
-        "results": 17
+        "results": 18
       },
       {
         "id": "lts7pA0Id97apfQf",
@@ -24771,7 +24777,7 @@
       {
         "id": "BzyG1dOrjCiVZmWM",
         "name": "Overworld - Treasure",
-        "results": 24
+        "results": 25
       },
       {
         "id": "QFE01KhiyPXx37NE",
@@ -24806,7 +24812,7 @@
       {
         "id": "r1RCffEXmNdKe9lu",
         "name": "The Wyrmwood - Consumable",
-        "results": 11
+        "results": 12
       },
       {
         "id": "dVTBvuqiiIbsydxt",
@@ -24836,7 +24842,7 @@
       {
         "id": "hS4XNu1vLtWbPSne",
         "name": "The Wyrmwood - Treasure",
-        "results": 8
+        "results": 9
       },
       {
         "id": "8zdktLBCbkf2u8RM",
@@ -24936,7 +24942,7 @@
       {
         "id": "fxXT0ZlnFlDYwfgv",
         "name": "Vastwind Field - Consumable",
-        "results": 13
+        "results": 14
       },
       {
         "id": "AHmXAyuOHWb1ag6g",
@@ -24966,7 +24972,7 @@
       {
         "id": "dRN7ElUZH86RVl4e",
         "name": "Vastwind Field - Treasure",
-        "results": 10
+        "results": 11
       },
       {
         "id": "zmFWPkL08OPmxnry",

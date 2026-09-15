@@ -2,7 +2,7 @@
   "_id": "fxXT0ZlnFlDYwfgv",
   "_stats": {
     "compendiumSource": null,
-    "coreVersion": "12.331",
+    "coreVersion": "12.343",
     "createdTime": 1769663495364,
     "duplicateSource": "RollTable.oDiuDJRoayGJwr1L",
     "systemId": "custom-system-builder",
@@ -16,7 +16,7 @@
     }
   },
   "folder": "dfZOIscssH4Tgqd3",
-  "formula": "1d13",
+  "formula": "1d14",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
   "name": "Vastwind Field - Consumable",
   "ownership": {
@@ -25,6 +25,21 @@
   },
   "replacement": true,
   "results": [
+    {
+      "_id": "0bJr4R4K1PWmIDcB",
+      "documentCollection": "Item",
+      "documentId": "ivWUbFevDoyWAgAl",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Key.png",
+      "range": [
+        14,
+        14
+      ],
+      "text": "Skeletal Key",
+      "type": "document",
+      "weight": 1
+    },
     {
       "_id": "0yt8SPA5rk3RIcxI",
       "documentCollection": "Item",

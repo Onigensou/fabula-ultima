@@ -45,8 +45,13 @@
     /**
      * Dispatch the event for a given tile type.
      * Returns { ok, cleared } where cleared=true means the tile should become blank.
+     *
+     * @param {object} [context]  what the player chose on the confirm panel that
+     *   the handler may need, e.g. { skeletalKey: "use" | "decline" } for loot
+     *   tiles. Handlers that don't care ignore the 4th argument; callers that
+     *   had no confirm panel (transforms, auto-confirm) pass nothing.
      */
-    async dispatch(typeKey, tileDoc, tokenDoc, scene) {
+    async dispatch(typeKey, tileDoc, tokenDoc, scene, context = {}) {
       const cfg = this.get(typeKey);
       if (!cfg) {
         console.warn(`[DungeonPathing][TileEventRegistry] Unknown tile type: "${typeKey}". No handler found.`);
@@ -54,7 +59,7 @@
       }
 
       try {
-        await cfg.handler(tileDoc, tokenDoc, scene);
+        await cfg.handler(tileDoc, tokenDoc, scene, context ?? {});
         return { ok: true, cleared: cfg.clearAfterTrigger };
       } catch (e) {
         console.error(`[DungeonPathing][TileEventRegistry] Handler error for "${typeKey}":`, e);

@@ -16,7 +16,7 @@
     }
   },
   "folder": "DAg9RfuNcR9huljS",
-  "formula": "1d8",
+  "formula": "1d9",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/treas.png",
   "name": "The Wyrmwood - Treasure",
   "ownership": {
@@ -82,6 +82,21 @@
         3
       ],
       "text": "Frozen Envy",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "IV6s6NjGkGo2pSxt",
+      "documentCollection": "Item",
+      "documentId": "ivWUbFevDoyWAgAl",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Key.png",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Skeletal Key",
       "type": "document",
       "weight": 1
     },

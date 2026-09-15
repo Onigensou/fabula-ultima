@@ -27,10 +27,11 @@
   const MSG_DONE    = "DP_TREASURE_DONE";
 
   // Hard ceiling on how long a player client will block waiting for the GM's
-  // flow. The flow's own budgets (60s recipient + 45s equip + spin) sit under
-  // this; if it is ever hit, something is wrong GM-side and freeing the player's
+  // flow. The flow's own budgets sit under this — worst case with a Skeletal Key
+  // is 30s key prompt + 90s picker + 60s recipient + 45s equip + reveal, about
+  // 230s. If it is ever hit, something is wrong GM-side and freeing the player's
   // turn is better than freezing the party.
-  const PLAYER_WAIT_TIMEOUT_MS = 180000;
+  const PLAYER_WAIT_TIMEOUT_MS = 300000;
 
   if (!DP?.TileEventRegistry) {
     console.warn(TAG, "TileEventRegistry not ready.");
@@ -62,7 +63,7 @@
         // tile rolls and awards twice.
         if (DP.isPrimaryGM && !DP.isPrimaryGM()) return;
 
-        const { sceneId, tileId, tokenId, dpTypeKey, controllerUserId } = msg.payload ?? {};
+        const { sceneId, tileId, tokenId, dpTypeKey, controllerUserId, keyDecision } = msg.payload ?? {};
         const scene    = game.scenes.get(sceneId);
         const tileDoc  = scene?.tiles.get(tileId);
         const tokenDoc = scene?.tokens.get(tokenId);
@@ -81,7 +82,7 @@
         }
 
         try {
-          await flow.run({ tileDoc, tokenDoc, scene, dpTypeKey, controllerUserId });
+          await flow.run({ tileDoc, tokenDoc, scene, dpTypeKey, controllerUserId, keyDecision: keyDecision ?? null });
         } catch (e) {
           console.error(TAG, "TR.Flow.run (socket) failed:", e);
         } finally {
@@ -108,8 +109,14 @@
 
   // ── Loot handler factory ────────────────────────────────────────────────────
   function makeLootHandler(dpTypeKey) {
-    return async function lootHandler(tileDoc, tokenDoc, scene) {
+    return async function lootHandler(tileDoc, tokenDoc, scene, context = {}) {
       const flow = getFlow();
+
+      // The Skeletal Key choice made on the DP confirm panel, if there was one.
+      // Absent (auto-confirm, transform) -> null, and TR.Flow asks with its prompt.
+      const keyDecision = context?.skeletalKey === "use" || context?.skeletalKey === "decline"
+        ? context.skeletalKey
+        : null;
 
       if (!flow?.run) {
         console.warn(TAG, "TR.Flow not found. Showing fallback.");
@@ -128,7 +135,7 @@
       // driving the party (which is the normal case, and is also how the dirt
       // tile's "strike gold" transform reaches this handler GM-side).
       if (game.user?.isGM && (!DP.isPrimaryGM || DP.isPrimaryGM())) {
-        await flow.run({ tileDoc, tokenDoc, scene, dpTypeKey, controllerUserId: null });
+        await flow.run({ tileDoc, tokenDoc, scene, dpTypeKey, controllerUserId: null, keyDecision });
         return;
       }
 
@@ -158,7 +165,11 @@
           tileId:  tileDoc.id,
           tokenId: tokenDoc?.id ?? null,
           dpTypeKey,
-          controllerUserId,
+          // The player who landed drives the screens. This used to reference an
+          // undeclared `controllerUserId`, so a player-driven landing threw a
+          // ReferenceError here and the loot flow never started.
+          controllerUserId: game.user?.id ?? null,
+          keyDecision,
         },
       });
 

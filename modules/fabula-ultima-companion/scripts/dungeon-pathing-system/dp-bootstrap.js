@@ -310,6 +310,59 @@
   // ---------------------------------------------------------------------------
   const _MAX_ARRIVAL_DEPTH = 10;
 
+  // ---------------------------------------------------------------------------
+  // Skeletal Key offer — the confirm panel's "Use Key" button
+  //
+  // Offered only when the destination is a loot tile (one TR.Flow knows) and the
+  // party holds at least one key. The destination is always a neighbour, and fog
+  // lifts on neighbours, so the button never gives away an unrevealed tile.
+  //
+  // The panel result maps to the loot handler's context:
+  //   "key"                       -> { skeletalKey: "use" }      picker, no prompt
+  //   Confirm with the button up  -> { skeletalKey: "decline" }  spin, no prompt
+  //   no button (no key / no loot)-> {}                          handler decides
+  // Loot that arrives WITHOUT a confirm panel (auto-confirm, transforms) gets no
+  // context and falls back to TR.Flow's own prompt.
+  //
+  // @returns {Promise<{count:number}|null>}
+  // ---------------------------------------------------------------------------
+  async function skeletalKeyOffer(scene, tileDoc, node) {
+    try {
+      const flow = window["oni.TreasureRoulette.Flow"];
+      const SK   = window["oni.TreasureRoulette.SkeletalKey"];
+      if (!flow?.DP_TYPE_CONFIG || !SK?.count) return null;
+
+      // A conveyor override resolves as FORCE_MOVE whatever the stored type is.
+      const fmDir = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.forceMoveDirection`) ?? "";
+      if (fmDir && DP.Direction?.DIRS?.[fmDir]) return null;
+
+      const type = (tileDoc && DP.TileState.getCurrentType(scene, tileDoc.id)) ?? node?.tileType ?? null;
+      if (!type || !flow.DP_TYPE_CONFIG[type]) return null;
+
+      const res = await globalThis.FUCompanion?.api?.getCurrentGameDb?.();
+      const db = res?.db ?? null;
+      const props = db?.system?.props ?? {};
+      const members = [1, 2, 3, 4]
+        .map((i) => String(props[`member_id_${i}`] ?? "").trim().replace(/^Actor\./, ""))
+        .filter(Boolean)
+        .map((id) => game.actors.get(id))
+        .filter(Boolean);
+
+      const count = SK.count(db, members);
+      return count > 0 ? { count } : null;
+    } catch (e) {
+      console.warn(TAG, "skeletalKeyOffer failed — no key button:", e);
+      return null;
+    }
+  }
+
+  // Confirm-panel result -> loot handler context. See skeletalKeyOffer().
+  function skeletalKeyContext(confirmed, keyOffer) {
+    if (confirmed === "key") return { skeletalKey: "use" };
+    if (keyOffer) return { skeletalKey: "decline" };
+    return {};
+  }
+
   async function processArrivalAt(node, token, scene, fromNode) {
     state._arrivalDepth++;
     if (state._arrivalDepth > _MAX_ARRIVAL_DEPTH) {
@@ -351,10 +404,12 @@
 
       // — Confirmation (or skip if flagged) —
       let confirmed;
+      let keyOffer = null;
       if (skipConfirm) {
         confirmed = true;
       } else {
-        confirmed = await DP.ConfirmDialog.ask(freshToken, { showUseButton: isUsable, showRevertButton: !disableGoBack && !blockGoBack });
+        keyOffer = await skeletalKeyOffer(scene, tileDoc, node);
+        confirmed = await DP.ConfirmDialog.ask(freshToken, { showUseButton: isUsable, showRevertButton: !disableGoBack && !blockGoBack, keyButton: keyOffer });
       }
 
       if (confirmed === false) return;
@@ -378,10 +433,12 @@
       }
 
       // — Dispatch tile event —
-      const shouldDispatchEvent = confirmed === "use" || !isUsable;
+      const shouldDispatchEvent = confirmed === "use" || confirmed === "key" || !isUsable;
       if (shouldDispatchEvent) {
         DP.Events.tileEvent(freshToken.document, node, tileDoc, tileType);
-        const { ok, cleared } = await DP.TileEventRegistry.dispatch(tileType, tileDoc, freshToken.document, scene);
+        const { ok, cleared } = await DP.TileEventRegistry.dispatch(
+          tileType, tileDoc, freshToken.document, scene, skeletalKeyContext(confirmed, keyOffer)
+        );
 
         const persistFlag = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.persistAfterTrigger`);
         const shouldClear = (persistFlag === true || persistFlag === "true") ? false : cleared;
@@ -562,12 +619,14 @@
       // — In-canvas confirmation buttons (or skip if flagged) —
       const tConfirm = performance.now();
       let confirmed;
+      let keyOffer = null;
       if (skipConfirm) {
         confirmed = true;
         perf(`turn | confirm dialog SKIPPED (skipConfirm flag): ${(performance.now()-tConfirm).toFixed(1)}ms`);
       } else {
-        confirmed = await DP.ConfirmDialog.ask(freshToken, { showUseButton: isUsable, showRevertButton: !disableGoBack && !blockGoBack });
-        perf(`turn | confirm dialog (player wait): ${(performance.now()-tConfirm).toFixed(1)}ms → ${confirmed === "use" ? "USED" : confirmed ? "CONFIRMED" : "REVERTED"}`);
+        keyOffer = await skeletalKeyOffer(scene, tileDoc, clicked);
+        confirmed = await DP.ConfirmDialog.ask(freshToken, { showUseButton: isUsable, showRevertButton: !disableGoBack && !blockGoBack, keyButton: keyOffer });
+        perf(`turn | confirm dialog (player wait): ${(performance.now()-tConfirm).toFixed(1)}ms → ${confirmed === "key" ? "KEY" : confirmed === "use" ? "USED" : confirmed ? "CONFIRMED" : "REVERTED"}`);
       }
 
       if (confirmed === false) {
@@ -604,13 +663,15 @@
       // Dispatch tile event only when:
       //   - player pressed "Use" on a usable tile, OR
       //   - tile is not usable (standard confirm fires the event as before).
-      const shouldDispatchEvent = confirmed === "use" || !isUsable;
+      const shouldDispatchEvent = confirmed === "use" || confirmed === "key" || !isUsable;
 
       if (shouldDispatchEvent) {
         DP.Events.tileEvent(freshToken.document, clicked, tileDoc, tileType);
 
         const tEvent = performance.now();
-        const { ok, cleared } = await DP.TileEventRegistry.dispatch(tileType, tileDoc, freshToken.document, scene);
+        const { ok, cleared } = await DP.TileEventRegistry.dispatch(
+          tileType, tileDoc, freshToken.document, scene, skeletalKeyContext(confirmed, keyOffer)
+        );
         const dtEvent = performance.now() - tEvent;
         perf(`turn | tileEvent dispatch (${tileType}): ${dtEvent.toFixed(1)}ms`);
         walkDbg(`tileEvent dispatch (${tileType}): ${dtEvent.toFixed(1)}ms${dtEvent > 500 ? " ⚠ slow handler — check for deferred updates or heavy async work" : ""}`);
