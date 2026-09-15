@@ -48,6 +48,7 @@ function parseArgs(argv) {
     else if (a === "--arms") out.arms = next().split(",").map((s) => s.trim()).filter(Boolean);
     else if (a === "--user") out.user = next();
     else if (a === "--stock") out.stock = Number(next());
+    else if (a === "--pcts") out.pcts = next().split(",").map((s) => Number(s.trim())).filter((n) => n > 0);
   }
   return out;
 }
@@ -214,8 +215,16 @@ async function main() {
   }
   const set = JSON.parse(fs.readFileSync(path.resolve(args.setFile), "utf8"));
   const groups = set.groups.filter((g) => !args.only || args.only.includes(g.id));
-  // Worst-case opener arms run only when named in --arms.
-  const arms = ARMS.filter((a) => (args.arms ? args.arms.includes(a.id) : !a.carrierFirst));
+  // --pcts sweeps the damage tincture instead of the fixed arms: baseline, then dmg<p>
+  // (normal order) and first<p> (worst-case opener) for each percentage.
+  const armPool = args.pcts?.length
+    ? [ARMS[0], { id: "first0", pct: {}, carrierFirst: true }, ...args.pcts.flatMap((p) => [
+      { id: `dmg${p}`, pct: { strength: p, spirit: p } },
+      { id: `first${p}`, pct: { strength: p, spirit: p }, carrierFirst: true },
+    ])]
+    : ARMS;
+  // Without --pcts, the worst-case opener arms run only when named in --arms.
+  const arms = armPool.filter((a) => (args.arms ? args.arms.includes(a.id) : (args.pcts?.length || !a.carrierFirst)));
   const carrier = String(args.user).trim().toLowerCase();
 
   const baseParty = await loadParty({});
@@ -234,6 +243,19 @@ async function main() {
   for (const g of groups) {
     const enemies = await loadNamed(g.enemies);
     applySets(enemies, g.sets);
+    // hpScale: every enemy's HP times the factor, AFTER sets. Re-sizes a mixed group to a
+    // design length (an encounter built for an exploiting party) without flattening the
+    // HP ratios between its members, which a flat actor:max_hp set would.
+    if (g.hpScale) {
+      // A Set, because loadNamed returns the SAME model object for a repeated name
+      // ("Dire Orc, Death Gazer, Dire Orc"): a relative patch applied per array slot
+      // scaled that enemy twice. Absolute sets are idempotent, so only this needs it.
+      for (const e of new Set(enemies)) {
+        const hp = Math.max(1, Math.round((e.hp.max ?? e.hp.cur) * g.hpScale));
+        e.hp.max = hp;
+        e.hp.cur = hp;
+      }
+    }
     // A party patch gets a freshly loaded party, so it can never leak into the next group.
     const party = g.partySets ? applyPartySets(await loadParty({}), g.partySets) : baseParty;
     const conflictEvent = g.conflictEvent ? resolveEvent(g.conflictEvent) : null;

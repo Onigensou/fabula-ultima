@@ -64,7 +64,9 @@ function parseTinctureArg(spec) {
 // Quicken, or simply better initiative, would do on purpose.
 function makeTinctureState({ pct = {}, user = DEFAULT_USER, stock = DEFAULT_STOCK, lanePrior = null, carrierFirst = false } = {}) {
   const kinds = Object.keys(KINDS).filter((k) => Number(pct[k]) > 0);
-  if (!kinds.length) return null;
+  // carrierFirst with no tincture is the CONTROL for the worst-case opener: the turn
+  // order changes the fight on its own, so it must be measured without a drink.
+  if (!kinds.length && !carrierFirst) return null;
   return {
     pct: Object.fromEntries(kinds.map((k) => [k, Number(pct[k])])),
     user: String(user).trim().toLowerCase(),
