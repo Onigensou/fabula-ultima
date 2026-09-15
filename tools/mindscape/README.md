@@ -57,6 +57,8 @@ than a source edit. See `specs/rakshasa.json`.
 | `--expected` | round budget before "unresolved" (default 7) |
 | `--force` | report even when coverage is below the bar |
 | `--verbose, -v` | print every coverage warning |
+| `--tinctures` | `"strength=25,spirit=25,endurance=25"` — paper Tincture Cycle consumables (ruleset Part 6l) |
+| `--tincture-user` / `--tincture-stock` | who carries them (default Blanche) / how many of each per fight (default 3) |
 
 ## Measuring paper equipment
 
@@ -102,6 +104,25 @@ done
 > ⚠ A rider on BASIC attacks is only measurable on a PC whose modelled kit is
 > weapon-only (Zarg today): party policy swings the weapon only when no skill is
 > affordable. See ruleset Part 6d.
+
+## Measuring consumables — the Tincture Cycle
+
+`--tinctures` gives one party member (the carrier, default Blanche) a stock of paper
+buff consumables: Strength (+% damage on DEF actions), Spirit (+% on MDEF actions) and
+Endurance (% damage reduction). Each lasts three of the bearer's turns and refreshes
+rather than stacks. `bin/tincture-matrix.js` runs every group in an encounter file
+against paired arms — no tinctures, damage 25/30, Endurance 25/30, both — on the same
+seeds, so the difference between arms is the tincture. Ruleset Part 6l.
+
+```bash
+node bin/mindscape.js -e "Inferex,Centuaros" --force --tinctures "strength=25,spirit=25"
+node bin/tincture-matrix.js --set specs/encounters/tincture-set.json --runs 1000 \
+  --out expectations/tincture-matrix.json
+```
+
+The boss groups in `tincture-set.json` are PROXIES: the real Geist and Fafnir wipe the
+modelled party, so their HP and damage are patched in memory until the baseline lands
+near a 6-round win. They measure a boss-shaped fight, not the boss on the sheet.
 
 ## Blank-slate parties and neutral encounters
 
@@ -206,6 +227,9 @@ lib/rules.js           checks + the damage pipeline (spec Parts 1-2), pure
 lib/reactions.js       reaction registry + gates (spec Part 6b), pure
 lib/conflict-events.js layered scene rules — Lightning Storm (spec Part 6c)
 lib/equip-file.js      --equip: paper main-hand weapons, in memory (spec Part 6d)
+lib/tinctures.js       --tinctures: paper buff consumables and the carrier policy (spec Part 6l)
+bin/tincture-matrix.js paired tincture arms over an encounter file (spec Part 6l)
+test/tinctures.test.js duration, pipeline slot, carrier policy, exact added/prevented damage
 lib/loadout.js         rebuilds a PC's gear-dependent sheet numbers from scratch (spec Part 6e)
 bin/verify-loadouts.js round-trip gate: every PC's real kit must reproduce (read-only)
 lib/archetype-party.js blank-slate parties by the character-creation rules (spec Part 6g)

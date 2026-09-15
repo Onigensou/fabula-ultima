@@ -678,6 +678,47 @@ What Plot Armor, Dragonic Scalemail and Razor Plume needed to be measured.
   Fire ×1.1 row is untouched).
 - Calibration unchanged; all suites pass.
 
+## Part 6l — Tincture Cycle consumables (added 2026-09-15)
+
+A paper design from the tincture proposal review. Nothing exists in the world yet;
+`--tinctures` announces itself as PAPER CONSUMABLES. Code: `lib/tinctures.js`.
+
+- **Strength / Spirit** multiply the damage of actions rolled against DEF / MDEF.
+  - They fold at `incomingDamage` step **2b** (`postEfficiencyMult`): after weapon
+    efficiency, before the element bump and affinity, floored.
+  - That is the live slot of an accepted `adjust_damage` op (action-profile.js
+    `buildPerTarget`: DR → crit → efficiency → reaction ops → affinity). VU and a 200%
+    efficiency therefore scale the boosted figure.
+  - **Hit only.** Live folds reaction ops on a hit, so a Pierce half-damage miss is not
+    boosted.
+- **Endurance** adds its percentage to `reductionFor`, summing with any other percentage
+  reduction, as `damage_receiving_percentage_all` does live. It applies before efficiency
+  and affinity, and to flat hazard and burst damage too (the live effect ruleset, step 1).
+- **Duration.** Three of the bearer's BASE turns, ticked at the end of each one, a denied
+  turn included (live `target_turn_end`, 3 charges). Granted free attacks do not tick.
+  Re-applying refreshes the clock and never stacks the percentage.
+- **Carrier policy** (`chooseTincture`). One named PC (default Blanche) carries a stock of
+  N of each per fight (default 3; the bought route, so no IP). The check runs after Heal
+  and Acceleration, and a tincture spends the whole turn.
+  1. Endurance first, on the ally who lost the most HP in the previous round, if that was
+     at least 20% of their max HP.
+  2. Otherwise the damage tincture with the best projected gain, on an ally not already
+     carrying it and never on the carrier. Projection = expected damage per round in that
+     lane against the called target, with the exact hit chance (`R.hitChance`), times
+     turns per round.
+- **Accounting.** `tinctureBonusDealt` is boosted minus unboosted damage, capped at the HP
+  the hit actually removed. `tincturePrevented` is the damage without Endurance minus the
+  damage with it. `result.tinctures.used` counts uses per kind.
+- **`bin/tincture-matrix.js`** runs paired arms — baseline, damage 25/30, Endurance 25/30,
+  both 25/30 — over an encounter file. Run *i* of a group shares its seed across arms.
+- **Boss proxies** (`specs/encounters/tincture-set.json`). The real Geist and Fafnir wipe
+  the modelled party, so their HP and damage are patched in memory until the baseline
+  lands near a 6-round win. They measure a boss-SHAPED fight, not the boss on the sheet.
+- **Not modelled.** Tincture of Precision (accuracy), Potion Rain spreading, Dispel,
+  the Create (IP) route, and a player's judgement about a fight that is nearly over — the
+  carrier drinks whenever the rule fires.
+- Calibration unchanged (3 rounds / 60% / DPR 149.9 / EnemyDPR 66.7); all suites pass.
+
 ## Part 7 — NOT MODELLED
 
 **This section is load-bearing.** The previous log-only attempt failed by *silently

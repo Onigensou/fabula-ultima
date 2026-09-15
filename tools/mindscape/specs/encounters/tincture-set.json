@@ -8,6 +8,15 @@
     { "id": "valley-1", "label": "Valley of the Dragon", "enemies": ["Skizzik", "Kirin", "Skizzik"], "conflictEvent": "lightning-storm" },
     { "id": "valley-2", "label": "Valley of the Dragon", "enemies": ["Ampere", "Mana Ray", "Kirin"], "conflictEvent": "lightning-storm" },
     { "id": "valley-3", "label": "Valley of the Dragon", "enemies": ["Drakoza", "Skizzik"], "conflictEvent": "lightning-storm" },
-    { "id": "valley-4", "label": "Valley of the Dragon", "enemies": ["Mist Dragon", "Obsidrax"], "conflictEvent": "lightning-storm" }
+    { "id": "valley-4", "label": "Valley of the Dragon", "enemies": ["Mist Dragon", "Obsidrax"], "conflictEvent": "lightning-storm" },
+    { "id": "geist-proxy", "label": "Boss proxy — Geist (1044 HP, attacks 30/45/30 on the sheet)", "boss": true, "enemies": ["⭐️ Geist"], "expectedRounds": 10,
+      "sets": ["actor:max_hp=550", "actor:current_hp=550", "Souleater:damage_bonus=5", "Dark Bane:damage_bonus=7", "Torcleaver:damage_bonus=5"],
+      "tuning": "swept 2026-09-15, seed proxy-sweep: 95% win, 6.2 won rounds at 53% party HP. The real Geist wipes this model 100% in 3 rounds." },
+    { "id": "fafnir-proxy", "label": "Boss proxy — Fafnir, real DEF 16 / MDEF 17 (1824 HP, Rend 50 / Condemn 100 on the sheet)", "boss": true, "enemies": ["⭐️ Fafnir"], "expectedRounds": 12,
+      "sets": ["actor:max_hp=350", "actor:current_hp=350", "Rend:damage_bonus=8", "Condemn:damage_bonus=15"],
+      "tuning": "swept 2026-09-15 at a 10-round budget: 46% win, 54% unresolved, 7.3 won rounds. All 4 activations go at the weakest PC and each hit is under Protect's 30% threshold, so Hina and Keren drop in most runs whatever the damage." },
+    { "id": "fafnir-proxy-soft", "label": "Boss proxy — Fafnir at house DEF 13 / MDEF 13", "boss": true, "enemies": ["⭐️ Fafnir"], "expectedRounds": 10,
+      "sets": ["actor:max_hp=350", "actor:current_hp=350", "Rend:damage_bonus=8", "Condemn:damage_bonus=15", "actor:defense=13", "actor:magic_defense=13"],
+      "tuning": "swept 2026-09-15: 82% win, 6.0 won rounds at 44% party HP." }
   ]
 }
