@@ -3860,7 +3860,7 @@
         "id": "0rfKFWTyPt7TfUvl",
         "name": "Buff",
         "type": "activeEffectContainer",
-        "effects": 6
+        "effects": 10
       },
       {
         "id": "g1Sq9oZngBkRUW0f",
@@ -12149,6 +12149,102 @@
         "effects": 0
       },
       {
+        "id": "AWXRyAmZxX3h6dcT",
+        "name": "Tincture of Endurance",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "ByO9gHjRPZwjpzSo",
+        "name": "Tincture of Endurance",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "JtwSOvg8Y3U8oJI4",
+        "name": "Tincture of Endurance",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "kZW6xtrjROhUEitr",
+        "name": "Tincture of Endurance Recipe",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "4r0tsszbZN41MU20",
+        "name": "Tincture of Precision",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "bt7ctZRxyolouvQ4",
+        "name": "Tincture of Precision",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "tF74AQStp193Bpj5",
+        "name": "Tincture of Precision",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "27JuEMiXWsyOzWlL",
+        "name": "Tincture of Precision Recipe",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "2YYYYUAxJ2DPo6Lc",
+        "name": "Tincture of Spirit",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "H3Mt7EnOtmJCM65B",
+        "name": "Tincture of Spirit",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "s0TposmRjXCi3x9j",
+        "name": "Tincture of Spirit",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "kK1hlbxb5jO0TZ2q",
+        "name": "Tincture of Spirit Recipe",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "AUCB5IXRys9uxu5F",
+        "name": "Tincture of Strength",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "MHab80mlnvCtP33G",
+        "name": "Tincture of Strength",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "tiMj9UwDNco4HJbA",
+        "name": "Tincture of Strength",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "TxmGjYrFP0airwky",
+        "name": "Tincture of Strength Recipe",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "W5nXmJFH3rBBTxr4",
         "name": "Titanic Shield",
         "type": "equippableItem",
@@ -15658,6 +15754,38 @@
           {
             "id": "dRI0Hi3D8YEQvOeV",
             "name": "Mega-Remedy Recipe"
+          },
+          {
+            "id": "22gZ13vEZoTMaEvu",
+            "name": "Tincture of Endurance"
+          },
+          {
+            "id": "vEVQeCKEj2FCH5Ie",
+            "name": "Tincture of Endurance"
+          },
+          {
+            "id": "Lurae7PVFbNhJRFc",
+            "name": "Tincture of Precision"
+          },
+          {
+            "id": "Z83WXeswFs2WRIhs",
+            "name": "Tincture of Precision"
+          },
+          {
+            "id": "9raahO0nbhFGcrhH",
+            "name": "Tincture of Spirit"
+          },
+          {
+            "id": "XKHbgiQItir8HWd1",
+            "name": "Tincture of Spirit"
+          },
+          {
+            "id": "A7ggbVri8xxqf2h5",
+            "name": "Tincture of Strength"
+          },
+          {
+            "id": "KAGaiwiEF4DdLR5R",
+            "name": "Tincture of Strength"
           }
         ],
         "effects": 0
@@ -21473,6 +21601,38 @@
           {
             "id": "Y3vq1Sjtx12MqEvd",
             "name": "Poison Apple"
+          },
+          {
+            "id": "MHCBuTQgrk7Uw5yJ",
+            "name": "Tincture of Endurance"
+          },
+          {
+            "id": "NmYfjwCHbYYsPmuy",
+            "name": "Tincture of Endurance"
+          },
+          {
+            "id": "04UxO6XWGSGhw0fH",
+            "name": "Tincture of Precision"
+          },
+          {
+            "id": "Kgpr0RKXDFLiT1nt",
+            "name": "Tincture of Precision"
+          },
+          {
+            "id": "4Q1BmQc60XoLqawd",
+            "name": "Tincture of Spirit"
+          },
+          {
+            "id": "iEVXy0FtANQvn5wD",
+            "name": "Tincture of Spirit"
+          },
+          {
+            "id": "gYLiyhvzBkspFzpw",
+            "name": "Tincture of Strength"
+          },
+          {
+            "id": "wyHYZTWCMLvo72W1",
+            "name": "Tincture of Strength"
           }
         ],
         "effects": 0
@@ -22255,6 +22415,38 @@
           {
             "id": "53nOMeHhE6KY85tZ",
             "name": "Spicy Cocktail"
+          },
+          {
+            "id": "AfUINns1a5KQHMea",
+            "name": "Tincture of Endurance"
+          },
+          {
+            "id": "FqDjWkSRDAiwdRqt",
+            "name": "Tincture of Endurance"
+          },
+          {
+            "id": "NTDT321EMk8r4f0q",
+            "name": "Tincture of Precision"
+          },
+          {
+            "id": "tyvKnguZ0YOKFOEv",
+            "name": "Tincture of Precision"
+          },
+          {
+            "id": "m9l6bECurV0SkZmE",
+            "name": "Tincture of Spirit"
+          },
+          {
+            "id": "xAzMXXpVRre7ywXp",
+            "name": "Tincture of Spirit"
+          },
+          {
+            "id": "8OfSqMAeAyjUXwtR",
+            "name": "Tincture of Strength"
+          },
+          {
+            "id": "hJ9OvZ0PS64ihhCF",
+            "name": "Tincture of Strength"
           }
         ],
         "effects": 0
@@ -24512,7 +24704,7 @@
       {
         "id": "oPbo24YWiSscsOnW",
         "name": "Ancient Temple - Consumable",
-        "results": 12
+        "results": 16
       },
       {
         "id": "wcdUb4RPnvw1uTTO",
@@ -24572,7 +24764,7 @@
       {
         "id": "5XUe06fGWEn90St1",
         "name": "Bandits Hideout - Consumable",
-        "results": 14
+        "results": 18
       },
       {
         "id": "vSKKGryKcP7EMMxp",
@@ -24667,7 +24859,7 @@
       {
         "id": "U3Q8XFLBcOdqdy8o",
         "name": "Fafnir Castle - Consumable",
-        "results": 0
+        "results": 4
       },
       {
         "id": "hpCzLw5RI4wQNtF7",
@@ -24747,7 +24939,7 @@
       {
         "id": "sNlSMqnyPBMyASFc",
         "name": "Overworld - Consumable",
-        "results": 0
+        "results": 4
       },
       {
         "id": "kKNShiXNnENSFQYB",
@@ -24812,7 +25004,7 @@
       {
         "id": "r1RCffEXmNdKe9lu",
         "name": "The Wyrmwood - Consumable",
-        "results": 12
+        "results": 16
       },
       {
         "id": "dVTBvuqiiIbsydxt",
@@ -24877,7 +25069,7 @@
       {
         "id": "S4PHPxGHldBoJVxj",
         "name": "Valley of the Dragon - Consumable",
-        "results": 0
+        "results": 4
       },
       {
         "id": "Oijx8ksubxq9pc1R",
@@ -24942,7 +25134,7 @@
       {
         "id": "fxXT0ZlnFlDYwfgv",
         "name": "Vastwind Field - Consumable",
-        "results": 14
+        "results": 18
       },
       {
         "id": "AHmXAyuOHWb1ag6g",

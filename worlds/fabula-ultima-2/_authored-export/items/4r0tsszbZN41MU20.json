@@ -1,0 +1,81 @@
+{
+  "_id": "4r0tsszbZN41MU20",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1789479884102,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Dexterity_from_Final_Fantasy_XIV_icon%20(1).webp",
+  "name": "Tincture of Precision",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 100000,
+  "system": {
+    "container": "27JuEMiXWsyOzWlL",
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "",
+      "cost": "-",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>Target creature gains <strong>+3</strong> to Accuracy Checks for three turns.</p>",
+      "duration": "Three turns",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_initial_charges": "3",
+          "ae_initial_charges_max": "3",
+          "ae_lifetime_mode": "target_turn_end",
+          "ae_template_ref": "Tincture of Precision",
+          "effect_kind": "apply_ae",
+          "effect_label": "tincture_apply",
+          "target_ref": "action_targets"
+        }
+      },
+      "heroic_requirement": "",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Dexterity_from_Final_Fantasy_XIV_icon%20(1).webp",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Tincture of Precision",
+      "on_activate_effect_ref": "tincture_apply",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Any",
+      "skill_tags": "tincture",
+      "skill_target": "One Creature",
+      "skill_type": "Item",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "4r0tsszbZN41MU20"
+  },
+  "type": "equippableItem"
+}

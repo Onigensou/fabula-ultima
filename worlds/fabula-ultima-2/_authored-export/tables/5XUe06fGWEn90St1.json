@@ -16,7 +16,7 @@
     }
   },
   "folder": "IxpkbdLoQodYFW6Y",
-  "formula": "1d14",
+  "formula": "1d18",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
   "name": "Bandits Hideout - Consumable",
   "ownership": {
@@ -86,6 +86,21 @@
       "weight": 1
     },
     {
+      "_id": "BHIz8lBC0JkRYspY",
+      "documentCollection": "Item",
+      "documentId": "tF74AQStp193Bpj5",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Dexterity_from_Final_Fantasy_XIV_icon%20(1).webp",
+      "range": [
+        18,
+        18
+      ],
+      "text": "Tincture of Precision",
+      "type": "document",
+      "weight": 1
+    },
+    {
       "_id": "fqPS9YZ2E2i1WaMV",
       "documentCollection": "Item",
       "documentId": "S71vgGdSVCmEGWN0",
@@ -127,6 +142,21 @@
         5
       ],
       "text": "Mega-Remedy",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "PgMk28BX2UDpimIq",
+      "documentCollection": "Item",
+      "documentId": "2YYYYUAxJ2DPo6Lc",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Intelligence_from_Final_Fantasy_XIV_icon.webp",
+      "range": [
+        16,
+        16
+      ],
+      "text": "Tincture of Spirit",
       "type": "document",
       "weight": 1
     },
@@ -191,6 +221,21 @@
       "weight": 1
     },
     {
+      "_id": "VgMqXZLgo0qRsaQB",
+      "documentCollection": "Item",
+      "documentId": "AUCB5IXRys9uxu5F",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Strength_from_Final_Fantasy_XIV_icon.webp",
+      "range": [
+        15,
+        15
+      ],
+      "text": "Tincture of Strength",
+      "type": "document",
+      "weight": 1
+    },
+    {
       "_id": "vORZp2XLW0wGx5Xd",
       "documentCollection": "Item",
       "documentId": "QXgHt7VEXEaVdPz1",
@@ -217,6 +262,21 @@
         8
       ],
       "text": "Blue Bovine",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "xYgTAqCQIyg88BWX",
+      "documentCollection": "Item",
+      "documentId": "JtwSOvg8Y3U8oJI4",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Vitality_from_Final_Fantasy_XIV_icon.webp",
+      "range": [
+        17,
+        17
+      ],
+      "text": "Tincture of Endurance",
       "type": "document",
       "weight": 1
     },

@@ -16,7 +16,7 @@
     }
   },
   "folder": "DAg9RfuNcR9huljS",
-  "formula": "1d12",
+  "formula": "1d16",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
   "name": "The Wyrmwood - Consumable",
   "ownership": {
@@ -25,6 +25,21 @@
   },
   "replacement": true,
   "results": [
+    {
+      "_id": "0ywD8GZkWrdMW0Hy",
+      "documentCollection": "Item",
+      "documentId": "AUCB5IXRys9uxu5F",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Strength_from_Final_Fantasy_XIV_icon.webp",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Tincture of Strength",
+      "type": "document",
+      "weight": 1
+    },
     {
       "_id": "BMsUUdQMu2UICj5X",
       "documentCollection": "Item",
@@ -86,6 +101,21 @@
       "weight": 1
     },
     {
+      "_id": "FMcO2pwA5QUXRkBE",
+      "documentCollection": "Item",
+      "documentId": "tF74AQStp193Bpj5",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Dexterity_from_Final_Fantasy_XIV_icon%20(1).webp",
+      "range": [
+        16,
+        16
+      ],
+      "text": "Tincture of Precision",
+      "type": "document",
+      "weight": 1
+    },
+    {
       "_id": "LAiq8RaTmZAuuGYB",
       "documentCollection": "Item",
       "documentId": "mw4wizzYTBtqsW8s",
@@ -142,6 +172,36 @@
         5
       ],
       "text": "Mega-Remedy",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "r4ZzBpxIJfWY7F50",
+      "documentCollection": "Item",
+      "documentId": "JtwSOvg8Y3U8oJI4",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Vitality_from_Final_Fantasy_XIV_icon.webp",
+      "range": [
+        15,
+        15
+      ],
+      "text": "Tincture of Endurance",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "rWddZqGtrCUayzZ1",
+      "documentCollection": "Item",
+      "documentId": "2YYYYUAxJ2DPo6Lc",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Intelligence_from_Final_Fantasy_XIV_icon.webp",
+      "range": [
+        14,
+        14
+      ],
+      "text": "Tincture of Spirit",
       "type": "document",
       "weight": 1
     },

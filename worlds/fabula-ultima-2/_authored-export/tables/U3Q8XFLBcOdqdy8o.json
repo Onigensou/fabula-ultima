@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "P6epyIfueydL8Bu4",
-  "formula": "1d1",
+  "formula": "1d4",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
   "name": "Fafnir Castle - Consumable",
   "ownership": {
@@ -20,5 +20,67 @@
     "default": 0
   },
   "replacement": true,
+  "results": [
+    {
+      "_id": "76Rmvnt4hRuQzmAA",
+      "documentCollection": "Item",
+      "documentId": "AUCB5IXRys9uxu5F",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Strength_from_Final_Fantasy_XIV_icon.webp",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Tincture of Strength",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "HHcjYxHCeyZ3r8hD",
+      "documentCollection": "Item",
+      "documentId": "JtwSOvg8Y3U8oJI4",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Vitality_from_Final_Fantasy_XIV_icon.webp",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Tincture of Endurance",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "OXwRIu14EYmRki7H",
+      "documentCollection": "Item",
+      "documentId": "tF74AQStp193Bpj5",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Dexterity_from_Final_Fantasy_XIV_icon%20(1).webp",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Tincture of Precision",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "z9dsLBU3UsgR7s46",
+      "documentCollection": "Item",
+      "documentId": "2YYYYUAxJ2DPo6Lc",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Intelligence_from_Final_Fantasy_XIV_icon.webp",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Tincture of Spirit",
+      "type": "document",
+      "weight": 1
+    }
+  ],
   "sort": 0
 }

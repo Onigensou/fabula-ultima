@@ -156,6 +156,176 @@
       "type": "base"
     },
     {
+      "_id": "7lWGX4pTrzXusGv9",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1789479638239,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Deals 25% more damage with actions that target Magic Defense.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "7lWGX4pTrzXusGv9",
+          "originalParentId": "0rfKFWTyPt7TfUvl",
+          "originalUuid": "Item.0rfKFWTyPt7TfUvl.ActiveEffect.7lWGX4pTrzXusGv9"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "tincture-of-spirit",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "damage_amount": "1.25",
+                "damage_operation": "multiply",
+                "damage_stage": "outgoing",
+                "effect_kind": "adjust_damage",
+                "effect_label": "tincture_spirit_boost"
+              }
+            },
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "ATTACK_VS_MDEF == 1",
+                "reaction_effect_ref": "tincture_spirit_boost",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_will_deal_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Intelligence_from_Final_Fantasy_XIV_icon.webp",
+      "name": "Tincture of Spirit",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "buff",
+          "dispellable",
+          "tincture"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "DSaFbNpRhkvWvgOW",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1789479548612,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Deals 25% more damage with actions that target Defense.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "DSaFbNpRhkvWvgOW",
+          "originalParentId": "0rfKFWTyPt7TfUvl",
+          "originalUuid": "Item.0rfKFWTyPt7TfUvl.ActiveEffect.DSaFbNpRhkvWvgOW"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "tincture-of-strength",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "damage_amount": "1.25",
+                "damage_operation": "multiply",
+                "damage_stage": "outgoing",
+                "effect_kind": "adjust_damage",
+                "effect_label": "tincture_strength_boost"
+              }
+            },
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "ATTACK_VS_DEF == 1",
+                "reaction_effect_ref": "tincture_strength_boost",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_will_deal_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Strength_from_Final_Fantasy_XIV_icon.webp",
+      "name": "Tincture of Strength",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "buff",
+          "dispellable",
+          "tincture"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
       "_id": "foMQpdHKjia9gJ03",
       "_stats": {
         "compendiumSource": null,
@@ -219,6 +389,76 @@
       "system": {
         "tags": [
           "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "KuB2HkvdcN0uYbS5",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1789479638243,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "damage_receiving_percentage_all",
+          "mode": 2,
+          "priority": 1,
+          "value": "25"
+        }
+      ],
+      "description": "<p>Takes 25% less damage.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "KuB2HkvdcN0uYbS5",
+          "originalParentId": "0rfKFWTyPt7TfUvl",
+          "originalUuid": "Item.0rfKFWTyPt7TfUvl.ActiveEffect.KuB2HkvdcN0uYbS5"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "tincture-of-endurance",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Vitality_from_Final_Fantasy_XIV_icon.webp",
+      "name": "Tincture of Endurance",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "buff",
+          "dispellable",
+          "tincture"
         ]
       },
       "tint": "#ffffff",
@@ -435,6 +675,76 @@
       "system": {
         "tags": [
           "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "ymIypwEzarY8XgBs",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1789479638246,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "check_mod_accuracy",
+          "mode": 2,
+          "priority": 1,
+          "value": "3"
+        }
+      ],
+      "description": "<p>Gains +3 to Accuracy Checks.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "ymIypwEzarY8XgBs",
+          "originalParentId": "0rfKFWTyPt7TfUvl",
+          "originalUuid": "Item.0rfKFWTyPt7TfUvl.ActiveEffect.ymIypwEzarY8XgBs"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "tincture-of-precision",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Dexterity_from_Final_Fantasy_XIV_icon%20(1).webp",
+      "name": "Tincture of Precision",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "buff",
+          "dispellable",
+          "tincture"
         ]
       },
       "tint": "#ffffff",

@@ -16,7 +16,7 @@
     }
   },
   "folder": "9LaJVdEJbCUtGA5b",
-  "formula": "1d12",
+  "formula": "1d16",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
   "name": "Ancient Temple - Consumable",
   "ownership": {
@@ -116,6 +116,21 @@
       "weight": 1
     },
     {
+      "_id": "nwtKRmkh3uAJDKA9",
+      "documentCollection": "Item",
+      "documentId": "JtwSOvg8Y3U8oJI4",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Vitality_from_Final_Fantasy_XIV_icon.webp",
+      "range": [
+        15,
+        15
+      ],
+      "text": "Tincture of Endurance",
+      "type": "document",
+      "weight": 1
+    },
+    {
       "_id": "Oqq5HIWSs5pOSqep",
       "documentCollection": "Item",
       "documentId": "6ThyGpmcPzrBBGji",
@@ -127,6 +142,21 @@
         11
       ],
       "text": "Spicy Cocktail",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "oWhbMVXLRaQRAtZi",
+      "documentCollection": "Item",
+      "documentId": "2YYYYUAxJ2DPo6Lc",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Intelligence_from_Final_Fantasy_XIV_icon.webp",
+      "range": [
+        14,
+        14
+      ],
+      "text": "Tincture of Spirit",
       "type": "document",
       "weight": 1
     },
@@ -187,6 +217,36 @@
         9
       ],
       "text": "Dead Branch",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "v9sYAG6CE6l7qMEk",
+      "documentCollection": "Item",
+      "documentId": "tF74AQStp193Bpj5",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Dexterity_from_Final_Fantasy_XIV_icon%20(1).webp",
+      "range": [
+        16,
+        16
+      ],
+      "text": "Tincture of Precision",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "X2X4FSCJuIzx1eKw",
+      "documentCollection": "Item",
+      "documentId": "AUCB5IXRys9uxu5F",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Strength_from_Final_Fantasy_XIV_icon.webp",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Tincture of Strength",
       "type": "document",
       "weight": 1
     },
