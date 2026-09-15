@@ -28,7 +28,7 @@ import { promptNumberDialog } from "./number-picker.js";
 import { resolveTargetRef } from "./skill-targeting.js";
 import { RESOURCE_REGISTRY } from "./resources.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor, isPersistentCounter } from "./skill-charges.js";
-import { readPropNum, resolveAffinity, skillDeclaresVersatile } from "./snapshot.js";
+import { readPropNum, resolveAffinity, skillDeclaresVersatile, resolvesVsMagicDefense } from "./snapshot.js";
 import { isActorDefeated } from "./defeat-reactor.js";
 import { computeIncomingDamage } from "./damage-ruleset.js";
 import { appendBattleLog, buildDamageRow } from "./director-battle-log.js";
@@ -2561,6 +2561,16 @@ export async function refreshReactionSubjects({ acceptedCardReactions, ar, attac
   if (!hitRows.length) return;
   const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid).filter(Boolean);
   const hitTokenUuids = hitRows.map((r) => r.tokenUuid).filter(Boolean);
+  // Same derivation as CONFIRM's actionBase. Without it ATTACK_VS_DEF /
+  // ATTACK_VS_MDEF read 0 here, so a Defense-gated damage rider (Tincture of
+  // Strength / Spirit) matched at CONFIRM and then silently lost every subject
+  // the moment a mid-card mutation (add_target, redirect) re-ran this matcher.
+  const defenseResolved = ar.canMiss
+    ? (resolvesVsMagicDefense({
+        defenseTargetType: ar.defenseTargetType,
+        isSpell: String(ar.skillType ?? "").toLowerCase() === "spell",
+      }) ? "mdef" : "def")
+    : null;
 
   for (const cand of acceptedCardReactions) {
     if (!cand || !Array.isArray(cand.appliesToTargetUuids)) continue; // not a per-target aggregated cand
@@ -2604,6 +2614,7 @@ export async function refreshReactionSubjects({ acceptedCardReactions, ar, attac
         skillUuid: ar.skillUuid ?? null,
         weaponUuid: ar.weapon?.uuid ?? null,
         sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
+        defenseResolved,
       };
       let cands;
       try {
