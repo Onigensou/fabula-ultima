@@ -164,19 +164,29 @@ async function main() {
     applySets(enemies, g.sets);
     const conflictEvent = g.conflictEvent ? resolveEvent(g.conflictEvent) : null;
     const expectedRounds = g.expectedRounds ?? 7;
-    const out = {};
-    for (const arm of arms) {
-      const tinctures = Object.keys(arm.pct).length ? { pct: arm.pct, user: args.user, stock: args.stock } : null;
+    const run = (tinctures) => {
       const results = [];
       for (let i = 0; i < args.runs; i++) {
         results.push(runBattle({
           party, enemies, rng: new Rng(`${args.seed}:${g.id}:${i}`), expectedRounds, conflictEvent, tinctures,
         }));
       }
+      return results;
+    };
+    // The baseline runs double as the carrier's prior: who actually deals the party's
+    // DEF and MDEF damage in THIS fight (tinctures.measureLanePrior).
+    const baseResults = run(null);
+    const lanePrior = TN.measureLanePrior(baseResults);
+    const out = {};
+    for (const arm of arms) {
+      const results = arm.id === "baseline" ? baseResults
+        : run({ pct: arm.pct, user: args.user, stock: args.stock, lanePrior });
       out[arm.id] = summarise(results, carrier);
     }
     printGroup(g, out);
-    report.groups.push({ ...g, arms: out });
+    console.log(`  carrier prior (dmg/round by lane): ${Object.entries(lanePrior)
+      .map(([n, v]) => `${n} def ${v.def.toFixed(0)} mdef ${v.mdef.toFixed(0)}`).join("  ·  ")}`);
+    report.groups.push({ ...g, lanePrior, arms: out });
   }
   console.log(`\n${groups.length} groups × ${arms.length} arms in ${((Date.now() - t0) / 1000).toFixed(1)}s`);
   if (args.out) {

@@ -702,10 +702,17 @@ A paper design from the tincture proposal review. Nothing exists in the world ye
   and Acceleration, and a tincture spends the whole turn.
   1. Endurance first, on the ally who lost the most HP in the previous round, if that was
      at least 20% of their max HP.
-  2. Otherwise the damage tincture with the best projected gain, on an ally not already
-     carrying it and never on the carrier. Projection = expected damage per round in that
-     lane against the called target, with the exact hit chance (`R.hitChance`), times
-     turns per round.
+  2. Otherwise the damage tincture with the largest gain over its three turns, on an ally
+     not already carrying it and never on the carrier — and only when that gain beats the
+     damage the carrier gives up by not attacking.
+  - An ally's output in a lane is a **measured prior**: each PC's damage per round, split by
+    the defence it was rolled against, from tincture-free runs of the same fight
+    (`measureLanePrior`; the matrix reuses its baseline arm, the CLI runs a 300-run
+    pre-pass). This is the carrier knowing who the carry is.
+  - Why not a projection: the first matrix projected what an ally COULD deal (hit chance x
+    expected damage x turns). It cannot see that Hina spends her turns on Acceleration and
+    Protect, so Spirit went to her on round 1 in 82% of Wyrmwood fights and Strength reached
+    Zarg a round late. The projection survives only as the fallback when no prior is given.
 - **Accounting.** `tinctureBonusDealt` is boosted minus unboosted damage, capped at the HP
   the hit actually removed. `tincturePrevented` is the damage without Endurance minus the
   damage with it. `result.tinctures.used` counts uses per kind.

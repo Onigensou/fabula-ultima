@@ -59,7 +59,7 @@ function parseTinctureArg(spec) {
 
 // Per-fight state. null when no tincture is switched on, so the engine's common
 // path is untouched and the calibration seed reproduces exactly.
-function makeTinctureState({ pct = {}, user = DEFAULT_USER, stock = DEFAULT_STOCK } = {}) {
+function makeTinctureState({ pct = {}, user = DEFAULT_USER, stock = DEFAULT_STOCK, lanePrior = null } = {}) {
   const kinds = Object.keys(KINDS).filter((k) => Number(pct[k]) > 0);
   if (!kinds.length) return null;
   return {
@@ -67,7 +67,30 @@ function makeTinctureState({ pct = {}, user = DEFAULT_USER, stock = DEFAULT_STOC
     user: String(user).trim().toLowerCase(),
     stock: Object.fromEntries(kinds.map((k) => [k, stock])),
     used: Object.fromEntries(kinds.map((k) => [k, 0])),
+    lanePrior,
   };
+}
+
+const nameKey = (c) => String(c?.name ?? "").trim().toLowerCase();
+
+// What each PC ACTUALLY dealt per round, by the defence the damage was rolled against,
+// measured from tincture-free runs of the same fight: { name: { def, mdef } }. This is
+// the carrier knowing who the party's carry is. A projection of what an ally COULD deal
+// cannot know that Hina spends her turns on Acceleration and Protect, and handed her
+// Spirit on round 1 in 82% of Wyrmwood fights.
+function measureLanePrior(results) {
+  const acc = {};
+  for (const r of results) {
+    if (!r.rounds) continue;
+    for (const c of r.combatants) {
+      if (c.side !== "party") continue;
+      const a = (acc[nameKey(c)] = acc[nameKey(c)] ?? { def: 0, mdef: 0, n: 0 });
+      a.def += (c.damageByLane?.def ?? 0) / r.rounds;
+      a.mdef += (c.damageByLane?.mdef ?? 0) / r.rounds;
+      a.n++;
+    }
+  }
+  return Object.fromEntries(Object.entries(acc).map(([k, a]) => [k, { def: a.def / a.n, mdef: a.mdef / a.n }]));
 }
 
 function buffPct(c, kind) {
@@ -100,18 +123,20 @@ function tickTurnEnd(c) {
   }
 }
 
-// Party policy for the carrier. Pure: the engine supplies `projectLane(ally, lane)`,
-// that ally's expected damage per round from actions rolled against that defence.
+// Party policy for the carrier. Pure. An ally's output in a lane is read from the
+// measured `lanePrior` when the state carries one, else from the engine's
+// `projectLane(ally, lane)` (expected damage per round against the called target).
 //
 //   1. Endurance first, on whoever lost the most HP last round past the trigger —
 //      KO prevention outranks damage (project_fight_balance_playbook).
-//   2. Otherwise the damage tincture with the largest projected gain, on an ally
-//      that is not already carrying it. Never on the carrier: a damage tincture on
-//      yourself spends the turn it would have boosted.
+//   2. Otherwise the damage tincture with the largest gain over its three turns, on
+//      an ally not already carrying it, and only when that gain beats the damage the
+//      carrier gives up by not attacking this turn. Never on the carrier: a damage
+//      tincture on yourself spends the turn it would have boosted.
 function chooseTincture(state, actor, { projectLane }) {
   const T = state.tinctures;
   if (!T || actor.side !== "party") return null;
-  if (String(actor.name).trim().toLowerCase() !== T.user) return null;
+  if (nameKey(actor) !== T.user) return null;
   const allies = state.combatants.filter((c) => c.side === actor.side && c.alive);
 
   if (T.stock.endurance > 0) {
@@ -121,13 +146,22 @@ function chooseTincture(state, actor, { projectLane }) {
     if (hurt) return { kind: "endurance", target: hurt };
   }
 
+  const prior = T.lanePrior;
+  const laneOut = (c, lane) => (prior
+    ? Number(prior[nameKey(c)]?.[lane] ?? 0)
+    : Number(projectLane(c, lane)) || 0);
+  const forgone = prior
+    ? laneOut(actor, "def") + laneOut(actor, "mdef")
+    : Math.max(laneOut(actor, "def"), laneOut(actor, "mdef"));
+
   let best = null;
   for (const kind of ["strength", "spirit"]) {
     if (!(T.stock[kind] > 0)) continue;
     for (const c of allies) {
       if (c === actor || buffPct(c, kind)) continue;
-      const gain = (Number(projectLane(c, KINDS[kind].lane)) || 0) * T.pct[kind];
-      if (gain > 0 && (!best || gain > best.gain)) best = { kind, target: c, gain };
+      const gain = laneOut(c, KINDS[kind].lane) * (T.pct[kind] / 100) * DURATION_TURNS;
+      if (gain <= 0 || gain < forgone) continue;
+      if (!best || gain > best.gain) best = { kind, target: c, gain };
     }
   }
   return best;
@@ -143,6 +177,6 @@ function drink(state, actor, pick) {
 
 module.exports = {
   KINDS, DURATION_TURNS, DEFAULT_STOCK, DEFAULT_USER, ENDURANCE_TRIGGER,
-  parseTinctureArg, makeTinctureState, buffPct, outgoingMult, reductionPct,
+  parseTinctureArg, makeTinctureState, measureLanePrior, buffPct, outgoingMult, reductionPct,
   applyBuff, tickTurnEnd, chooseTincture, drink,
 };

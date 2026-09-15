@@ -351,6 +351,18 @@ if you accept a partial model. Use --verbose to see every gap.`);
   }
   if (cov.refuse) console.log(`\n⚠ FORCED past the coverage bar — these numbers describe a partial model.`);
 
+  // The carrier's prior on who the party's carries are: a tincture-free pre-pass of this
+  // same fight on its own seeds (tinctures.measureLanePrior). ruleset Part 6l.
+  if (tinctures) {
+    const pre = [];
+    for (let i = 0; i < Math.min(300, args.runs); i++) {
+      pre.push(runBattle({ party, enemies, rng: new Rng(`${args.seed}:prior:${i}`), expectedRounds: args.expectedRounds, conflictEvent }));
+    }
+    tinctures.lanePrior = TN.measureLanePrior(pre);
+    console.log(`  carrier prior (damage / round by lane): ${Object.entries(tinctures.lanePrior)
+      .map(([n, v]) => `${n} def ${v.def.toFixed(0)} mdef ${v.mdef.toFixed(0)}`).join("  ·  ")}`);
+  }
+
   // ── Run ───────────────────────────────────────────────────────────────────
   const t0 = Date.now();
   const rounds = [], hps = [], dprs = [], rds = [];

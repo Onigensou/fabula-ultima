@@ -75,6 +75,9 @@ function makeCombatant(actor, side) {
     tinctureBonusDealt: 0,   // extra damage a Strength/Spirit buff put on an HP bar
     tincturePrevented: 0,    // damage an Endurance buff kept off this creature
     tincturesUsed: 0,        // tinctures this creature handed out
+    // Damage dealt split by the defence it was rolled against — the tincture carrier's
+    // prior on who the party's DEF and MDEF carries are (tinctures.measureLanePrior).
+    damageByLane: { def: 0, mdef: 0 },
     alive: true,
     // Per-run accounting, split per spec D3.
     baseActionsTaken: 0,
@@ -645,6 +648,7 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
       victim.damageTakenBy[action.defenseTarget === "mdef" ? "mdef" : "def"] += out.damage;
       if (out.damage > 0) victim.hitsTaken++;
       actor.damageDealt += out.damage;
+      actor.damageByLane[action.defenseTarget === "mdef" ? "mdef" : "def"] += out.damage;
       if (victim.hp <= 0) {
         victim.hp = 0;
         victim.alive = false;
@@ -1025,7 +1029,7 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
       damageTaken: c.damageTaken, damageTakenBy: { ...c.damageTakenBy }, hitsTaken: c.hitsTaken,
       downedOnRound: c.downedOnRound, fpSpent: c.fpSpent, turnsDenied: c.turnsDenied,
       tinctureBonusDealt: c.tinctureBonusDealt, tincturePrevented: c.tincturePrevented,
-      tincturesUsed: c.tincturesUsed,
+      tincturesUsed: c.tincturesUsed, damageByLane: { ...c.damageByLane },
     })),
     tinctures: state.tinctures
       ? { pct: { ...state.tinctures.pct }, used: { ...state.tinctures.used } }

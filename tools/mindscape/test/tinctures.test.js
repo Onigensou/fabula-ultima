@@ -75,15 +75,18 @@ t("hitChance matches the check's crit and fumble rules", () => {
 });
 
 // ── Carrier policy ──────────────────────────────────────────────────────────
-function policyState() {
+function policyState({ blancheDef = 6, lanePrior = null } = {}) {
   const mk = (name, maxHp, takenLastRound = 0) => ({ name, side: "party", alive: true, maxHp, takenLastRound, buffs: {} });
-  const blanche = mk("Blanche", 166), zarg = mk("Zarg", 111, 40), hina = mk("Hina", 98);
+  const blanche = mk("Blanche", 166), zarg = mk("Zarg", 111, 40), hina = mk("Hina", 98), keren = mk("Keren", 96);
   const state = {
-    tinctures: T.makeTinctureState({ pct: { strength: 25, spirit: 25, endurance: 25 }, user: "Blanche" }),
-    combatants: [blanche, zarg, hina],
+    tinctures: T.makeTinctureState({ pct: { strength: 25, spirit: 25, endurance: 25 }, user: "Blanche", lanePrior }),
+    combatants: [blanche, zarg, hina, keren],
   };
-  const lanes = { Blanche: { def: 99, mdef: 0 }, Zarg: { def: 50, mdef: 0 }, Hina: { def: 0, mdef: 30 } };
-  return { state, blanche, zarg, hina, projectLane: (c, lane) => lanes[c.name][lane] };
+  const lanes = {
+    Blanche: { def: blancheDef, mdef: 0 }, Zarg: { def: 70, mdef: 0 },
+    Hina: { def: 0, mdef: 4 }, Keren: { def: 0, mdef: 25 },
+  };
+  return { state, blanche, zarg, hina, keren, projectLane: (c, lane) => lanes[c.name][lane] };
 }
 t("Endurance first, on the ally who lost the most HP past the trigger", () => {
   const { state, blanche, zarg, projectLane } = policyState();
@@ -91,16 +94,36 @@ t("Endurance first, on the ally who lost the most HP past the trigger", () => {
   assert.strictEqual(pick.kind, "endurance");
   assert.strictEqual(pick.target, zarg);
 });
-t("a damage tincture goes to the best projected ally, never the carrier, never twice", () => {
-  const { state, blanche, zarg, hina, projectLane } = policyState();
+t("a damage tincture goes to the ally with the most output in that lane, never twice", () => {
+  const { state, blanche, zarg, keren, projectLane } = policyState();
   T.applyBuff(zarg, "endurance", 25);
   let pick = T.chooseTincture(state, blanche, { projectLane });
   assert.strictEqual(pick.kind, "strength");
-  assert.strictEqual(pick.target, zarg, "Blanche projects more on DEF but may not boost herself");
+  assert.strictEqual(pick.target, zarg);
   T.applyBuff(zarg, "strength", 25);
   pick = T.chooseTincture(state, blanche, { projectLane });
   assert.strictEqual(pick.kind, "spirit");
-  assert.strictEqual(pick.target, hina);
+  assert.strictEqual(pick.target, keren, "Keren out-deals Hina on MDEF");
+});
+t("no damage tincture when its gain over three turns is below the carrier's own turn", () => {
+  // Spirit on Keren is worth 25 x 25% x 3 = 18.75; a carrier dealing 30 a turn attacks instead.
+  const { state, blanche, zarg, projectLane } = policyState({ blancheDef: 30 });
+  T.applyBuff(zarg, "endurance", 25);
+  T.applyBuff(zarg, "strength", 25);
+  assert.strictEqual(T.chooseTincture(state, blanche, { projectLane }), null);
+});
+t("a measured prior overrides the projection", () => {
+  // The projection says Hina is the MDEF carry; the fight's own baseline says she is not.
+  const lanePrior = { blanche: { def: 6, mdef: 0 }, zarg: { def: 0, mdef: 0 }, hina: { def: 0, mdef: 4 }, keren: { def: 0, mdef: 25 } };
+  const { state, blanche, zarg, keren } = policyState({ lanePrior });
+  T.applyBuff(zarg, "endurance", 25);
+  const pick = T.chooseTincture(state, blanche, { projectLane: (c, lane) => (c.name === "Hina" && lane === "mdef" ? 999 : 0) });
+  assert.strictEqual(pick.kind, "spirit");
+  assert.strictEqual(pick.target, keren);
+});
+t("measureLanePrior averages each PC's per-round damage by lane", () => {
+  const run = (rounds, def, mdef) => ({ rounds, combatants: [{ side: "party", name: "Zarg", damageByLane: { def, mdef } }] });
+  assert.deepStrictEqual(T.measureLanePrior([run(2, 100, 0), run(4, 100, 40)]), { zarg: { def: 37.5, mdef: 5 } });
 });
 t("only the carrier drinks", () => {
   const { state, zarg, projectLane } = policyState();
