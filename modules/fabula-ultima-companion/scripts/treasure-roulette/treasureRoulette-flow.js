@@ -473,9 +473,12 @@
    * @param {string|null}   [opts.controllerUserId] who may drive the screens
    * @param {boolean}       [opts.allowSkeletalKey=true] offer the Skeletal Key
    *   prompt when the party holds one. A scripted/story roulette can turn it off.
+   * @param {"use"|"decline"|null} [opts.keyDecision=null] the key choice already
+   *   made elsewhere — the Dungeon Pathing confirm panel offers it on the loot
+   *   tile itself. "use" / "decline" skip the prompt; null asks with the prompt.
    * @returns {Promise<{ok:boolean, reason?:string, requestId?:string}>}
    */
-  async function run({ tileDoc, tokenDoc, scene, dpTypeKey, controllerUserId = null, allowSkeletalKey = true } = {}) {
+  async function run({ tileDoc, tokenDoc, scene, dpTypeKey, controllerUserId = null, allowSkeletalKey = true, keyDecision = null } = {}) {
     if (!isPrimaryGM()) return { ok: false, reason: "not-primary-gm" };
     if (!tileDoc || !scene) return { ok: false, reason: "missing-tile-or-scene" };
 
@@ -549,7 +552,24 @@
 
       // ── 2a. Skeletal Key: pick instead of spin ────────────────────────────
       let pooled = false;
-      if (allowSkeletalKey && core.preparePool && await askUseSkeletalKey({ db, members, decider, requestId, cfg })) {
+
+      // The choice was either made on the Dungeon Pathing confirm panel
+      // (keyDecision), or it is asked here with the prompt.
+      let wantsKey = false;
+      if (allowSkeletalKey && core.preparePool) {
+        if (keyDecision === "use") {
+          wantsKey = (skeletalKey()?.count?.(db, members) ?? 0) > 0;
+          if (!wantsKey) {
+            // The key moved or was spent between the panel and now.
+            warn('keyDecision "use" but no Skeletal Key is left — spinning instead.');
+            ui.notifications?.warn?.("No Skeletal Key left — spinning the roulette instead.");
+          }
+        } else if (keyDecision !== "decline") {
+          wantsKey = await askUseSkeletalKey({ db, members, decider, requestId, cfg });
+        }
+      }
+
+      if (wantsKey) {
         const prep = await core.preparePool(baseReq);
         pooled = !!prep?.ok;
 
@@ -564,7 +584,12 @@
         } else {
           keyUse = { remaining: spend.remaining, fromActorName: spend.fromActorName };
           for (const hook of ["TR:KEY_USED", "oni.TR:KEY_USED"]) {
-            try { Hooks.callAll(hook, { requestId, ...keyUse, tileType: dpTypeKey }); }
+            try {
+              Hooks.callAll(hook, {
+                requestId, ...keyUse, tileType: dpTypeKey,
+                source: keyDecision === "use" ? "dungeon-confirm" : "prompt",
+              });
+            }
             catch (e) { warn(`Hooks.callAll(${hook}) failed:`, e); }
           }
 
