@@ -49,6 +49,10 @@ function parseArgs(argv) {
     else if (a === "--user") out.user = next();
     else if (a === "--stock") out.stock = Number(next());
     else if (a === "--pcts") out.pcts = next().split(",").map((s) => Number(s.trim())).filter((n) => n > 0);
+    // --flats sweeps a FLAT per-hit bonus instead of a percentage: arms flat<N> and,
+    // as with --pcts, the worst-case opener firstflat<N> against the first0 control.
+    else if (a === "--flats") out.flats = next().split(",").map((s) => Number(s.trim())).filter((n) => n > 0);
+    else if (a === "--flat-mode") out.flatMode = next();
     else if (a === "--durations") out.durations = next().split(",").map((s) => Number(s.trim())).filter((n) => n > 0);
   }
   return out;
@@ -219,7 +223,14 @@ async function main() {
   // --pcts sweeps the damage tincture instead of the fixed arms: baseline, then dmg<p>
   // (normal order) and first<p> (worst-case opener) for each percentage.
   // --pcts with --durations: normal-order arms d<turns>-<p> for every pair instead.
-  const armPool = args.pcts?.length && args.durations?.length
+  // --flats: the same paired shape as --pcts, so a flat arm is read against the same
+  // baseline and the same first0 opener control as a percentage arm.
+  const armPool = args.flats?.length
+    ? [ARMS[0], { id: "first0", pct: {}, carrierFirst: true }, ...args.flats.flatMap((f) => [
+      { id: `flat${f}`, pct: {}, flat: { strength: f, spirit: f } },
+      { id: `firstflat${f}`, pct: {}, flat: { strength: f, spirit: f }, carrierFirst: true },
+    ])]
+    : args.pcts?.length && args.durations?.length
     ? [ARMS[0], ...args.durations.flatMap((d) => args.pcts.map((p) => (
       { id: `d${d}-${p}`, pct: { strength: p, spirit: p }, duration: d })))]
     : args.pcts?.length
@@ -229,7 +240,7 @@ async function main() {
       ])]
       : ARMS;
   // Without --pcts, the worst-case opener arms run only when named in --arms.
-  const arms = armPool.filter((a) => (args.arms ? args.arms.includes(a.id) : (args.pcts?.length || !a.carrierFirst)));
+  const arms = armPool.filter((a) => (args.arms ? args.arms.includes(a.id) : (args.pcts?.length || args.flats?.length || !a.carrierFirst)));
   const carrier = String(args.user).trim().toLowerCase();
 
   const baseParty = await loadParty({});
@@ -242,7 +253,8 @@ async function main() {
 
   const report = {
     generated: new Date().toISOString(), seed: args.seed, runs: args.runs,
-    carrier: args.user, stock: args.stock, arms: arms.map((a) => ({ id: a.id, pct: a.pct })), groups: [],
+    carrier: args.user, stock: args.stock, flatMode: args.flatMode,
+    arms: arms.map((a) => ({ id: a.id, pct: a.pct, flat: a.flat })), groups: [],
   };
   const t0 = Date.now();
   for (const g of groups) {
@@ -281,7 +293,11 @@ async function main() {
     const out = {};
     for (const arm of arms) {
       const results = arm.id === "baseline" ? baseResults
-        : run({ pct: arm.pct, user: args.user, stock: args.stock, lanePrior, carrierFirst: !!arm.carrierFirst, duration: arm.duration });
+        : run({
+          pct: arm.pct, flat: arm.flat, flatMode: args.flatMode,
+          user: args.user, stock: args.stock, lanePrior,
+          carrierFirst: !!arm.carrierFirst, duration: arm.duration,
+        });
       out[arm.id] = summarise(results, carrier);
     }
     printGroup(g, out);

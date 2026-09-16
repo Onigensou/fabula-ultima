@@ -64,13 +64,22 @@ function parseTinctureArg(spec) {
 // Quicken, or simply better initiative, would do on purpose.
 // `duration`: turns a tincture lasts (default 3). A calibration dial — a long boss needs
 // re-applies that a short fight never does, so duration moves boss value on its own.
-function makeTinctureState({ pct = {}, user = DEFAULT_USER, stock = DEFAULT_STOCK, lanePrior = null, carrierFirst = false, duration = DURATION_TURNS } = {}) {
-  const kinds = Object.keys(KINDS).filter((k) => Number(pct[k]) > 0);
+// `flat`: a FLAT bonus per boosted hit instead of a percentage ({ strength: 10 }).
+// `flatMode` says which slot it lands in, and the two are not interchangeable:
+//   "slot"  the adjust_damage reaction slot the percentage uses — AFTER weapon
+//           efficiency, so a 200% EF never scales it; only affinity does.
+//   "base"  folded into base damage like a weapon's damage_bonus, so efficiency
+//           AND affinity both scale it. No reaction op can reach this slot, so it
+//           is a hypothetical placement for comparison, not a buildable design.
+function makeTinctureState({ pct = {}, flat = {}, flatMode = "slot", user = DEFAULT_USER, stock = DEFAULT_STOCK, lanePrior = null, carrierFirst = false, duration = DURATION_TURNS } = {}) {
+  const kinds = Object.keys(KINDS).filter((k) => Number(pct[k]) > 0 || Number(flat[k]) > 0);
   // carrierFirst with no tincture is the CONTROL for the worst-case opener: the turn
   // order changes the fight on its own, so it must be measured without a drink.
   if (!kinds.length && !carrierFirst) return null;
   return {
-    pct: Object.fromEntries(kinds.map((k) => [k, Number(pct[k])])),
+    pct: Object.fromEntries(kinds.map((k) => [k, Number(pct[k]) || 0])),
+    flat: Object.fromEntries(kinds.map((k) => [k, Number(flat[k]) || 0])),
+    flatMode: flatMode === "base" ? "base" : "slot",
     user: String(user).trim().toLowerCase(),
     stock: Object.fromEntries(kinds.map((k) => [k, stock])),
     used: Object.fromEntries(kinds.map((k) => [k, 0])),
@@ -93,25 +102,47 @@ function measureLanePrior(results) {
     if (!r.rounds) continue;
     for (const c of r.combatants) {
       if (c.side !== "party") continue;
-      const a = (acc[nameKey(c)] = acc[nameKey(c)] ?? { def: 0, mdef: 0, n: 0 });
+      const a = (acc[nameKey(c)] = acc[nameKey(c)] ?? { def: 0, mdef: 0, defHits: 0, mdefHits: 0, n: 0 });
       a.def += (c.damageByLane?.def ?? 0) / r.rounds;
       a.mdef += (c.damageByLane?.mdef ?? 0) / r.rounds;
+      // Landed hits per round, by lane. A FLAT bonus pays per hit, not per point of
+      // damage, so a two-hit lane is worth twice as much to it as the damage alone says.
+      a.defHits += (c.hitsByLane?.def ?? 0) / r.rounds;
+      a.mdefHits += (c.hitsByLane?.mdef ?? 0) / r.rounds;
       a.n++;
     }
   }
-  return Object.fromEntries(Object.entries(acc).map(([k, a]) => [k, { def: a.def / a.n, mdef: a.mdef / a.n }]));
+  return Object.fromEntries(Object.entries(acc).map(([k, a]) => [k, {
+    def: a.def / a.n, mdef: a.mdef / a.n, defHits: a.defHits / a.n, mdefHits: a.mdefHits / a.n,
+  }]));
 }
 
 function buffPct(c, kind) {
   const b = c?.buffs?.[kind];
-  return b && b.turnsLeft > 0 ? b.pct : 0;
+  return b && b.turnsLeft > 0 ? (b.pct ?? 0) : 0;
 }
+
+function buffFlat(c, kind) {
+  const b = c?.buffs?.[kind];
+  return b && b.turnsLeft > 0 ? (b.flat ?? 0) : 0;
+}
+
+const laneKind = (action) => (action?.defenseTarget === "mdef" ? "spirit" : "strength");
 
 // The outgoing multiplier for one action: Strength on DEF actions, Spirit on MDEF.
 function outgoingMult(actor, action) {
-  const kind = action?.defenseTarget === "mdef" ? "spirit" : "strength";
-  const p = buffPct(actor, kind);
+  const p = buffPct(actor, laneKind(action));
   return p ? 1 + p / 100 : 1;
+}
+
+// The flat bonus for one action, split by the slot it lands in (see makeTinctureState).
+function outgoingAdd(actor, action) {
+  const b = actor?.buffs?.[laneKind(action)];
+  const amount = buffFlat(actor, laneKind(action));
+  if (!amount) return { postEfficiencyAdd: 0, baseAdd: 0 };
+  return b?.flatMode === "base"
+    ? { postEfficiencyAdd: 0, baseAdd: amount }
+    : { postEfficiencyAdd: amount, baseAdd: 0 };
 }
 
 function reductionPct(target) {
@@ -119,9 +150,17 @@ function reductionPct(target) {
 }
 
 // Refresh, never stack: a second Strength on the same creature resets the clock.
-function applyBuff(target, kind, pct, turns = DURATION_TURNS) {
+// `amount` is a percentage (a number, the original call shape) or
+// { pct, flat, flatMode } for a flat-bonus arm.
+function applyBuff(target, kind, amount, turns = DURATION_TURNS) {
   target.buffs = target.buffs ?? {};
-  target.buffs[kind] = { pct, turnsLeft: turns };
+  const a = typeof amount === "object" && amount !== null ? amount : { pct: Number(amount) || 0 };
+  target.buffs[kind] = {
+    pct: Number(a.pct) || 0,
+    flat: Number(a.flat) || 0,
+    flatMode: a.flatMode === "base" ? "base" : "slot",
+    turnsLeft: turns,
+  };
 }
 
 function tickTurnEnd(c) {
@@ -159,6 +198,11 @@ function chooseTincture(state, actor, { projectLane }) {
   const laneOut = (c, lane) => (prior
     ? Number(prior[nameKey(c)]?.[lane] ?? 0)
     : Number(projectLane(c, lane)) || 0);
+  // Hits per round in a lane. Without a measured prior there is nothing to count, so a
+  // flat arm falls back to "one hit per round" rather than silently scoring zero.
+  const laneHits = (c, lane) => (prior
+    ? Number(prior[nameKey(c)]?.[`${lane}Hits`] ?? 0)
+    : (laneOut(c, lane) > 0 ? 1 : 0));
   const forgone = prior
     ? laneOut(actor, "def") + laneOut(actor, "mdef")
     : Math.max(laneOut(actor, "def"), laneOut(actor, "mdef"));
@@ -169,8 +213,13 @@ function chooseTincture(state, actor, { projectLane }) {
     for (const c of allies) {
       if (c === actor || buffPct(c, kind)) continue;
       // Turns it can pay for, capped at a boss's length so a whole-fight tincture is not
-      // credited with rounds that never happen.
-      const gain = laneOut(c, KINDS[kind].lane) * (T.pct[kind] / 100) * Math.min(T.duration ?? DURATION_TURNS, 6);
+      // credited with rounds that never happen. A percentage gain scales with the lane's
+      // DAMAGE; a flat gain scales with its HIT COUNT, so each reads its own prior.
+      const turns = Math.min(T.duration ?? DURATION_TURNS, 6);
+      const lane = KINDS[kind].lane;
+      const pctGain = laneOut(c, lane) * ((T.pct[kind] ?? 0) / 100) * turns;
+      const flatGain = (T.flat?.[kind] ?? 0) * laneHits(c, lane) * turns;
+      const gain = pctGain + flatGain;
       if (gain <= 0 || gain < forgone) continue;
       if (!best || gain > best.gain) best = { kind, target: c, gain };
     }
@@ -182,12 +231,17 @@ function drink(state, actor, pick) {
   const T = state.tinctures;
   T.stock[pick.kind] -= 1;
   T.used[pick.kind] += 1;
-  applyBuff(pick.target, pick.kind, T.pct[pick.kind], T.duration ?? DURATION_TURNS);
+  applyBuff(
+    pick.target,
+    pick.kind,
+    { pct: T.pct[pick.kind] ?? 0, flat: T.flat?.[pick.kind] ?? 0, flatMode: T.flatMode },
+    T.duration ?? DURATION_TURNS,
+  );
   actor.tincturesUsed = (actor.tincturesUsed ?? 0) + 1;
 }
 
 module.exports = {
   KINDS, DURATION_TURNS, DEFAULT_STOCK, DEFAULT_USER, ENDURANCE_TRIGGER,
-  parseTinctureArg, makeTinctureState, measureLanePrior, buffPct, outgoingMult, reductionPct,
+  parseTinctureArg, makeTinctureState, measureLanePrior, buffPct, buffFlat, outgoingMult, outgoingAdd, reductionPct,
   applyBuff, tickTurnEnd, chooseTincture, drink,
 };
