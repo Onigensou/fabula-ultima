@@ -59,6 +59,11 @@ const IDS = {
   AE_SPENT:    "3THoUX00A2aDDmrZ",   // Lance Spent (once-per-fight marker)
   AE_ARMOR:    "CH9mdR17V9Tcr5tM",   // Armor Stripped (Imp marker)
   AE_WEAPON:   "hFqpS4SODoIDeZgA",   // Weapon Stripped (Imp marker)
+  // ── Hilde-Fafnir benchmark (2026-09-20) — _hilde-benchmark*.js ─────────
+  HF_CLAW:     "GuKKQ7mxRYuOd5k5",   // Claw (Cripple filler)
+  HF_ZP:       "Rv0MHciFimYAkthU",   // Zero Power: Reinslaughter
+  HF_ZT:       "Z3B0oqcD6iDsuv0r",   // Zero Trigger: Contempt
+  AE_CULLING:  "SDPlk2tJKyfumppK",   // Culling (Reinslaughter self-marker)
 };
 
 // New Actor folder: The Legend of Dragonslayer / Monster / Fafnir Castle.
@@ -108,6 +113,10 @@ const L = {
   disarmed: link("JournalEntry.MM2SvLRyVhazkNq3", "Disarmed"),
   confused: link("JournalEntry.e9wABGGGFg7b9OMD", "Confused"),
   slow:     link("JournalEntry.HHmYmj7xffQMqtzT", "Slow"),
+  bolt:     link("Item.5XAuMMbDPlLzhJLw", "Bolt"),
+  crisis:   link("JournalEntry.GJevbCPM8cffm1QM", "Crisis"),
+  execute:  link("JournalEntry.KHCaZjNmClkp7yfM", "Execute"),
+  cripple:  link("JournalEntry.qXBYN6c9FMZzmS2n", "Cripple"),
 };
 const bullets = (...items) => `<ul>${items.map((t) => `<li><p>${t}</p></li>`).join("")}</ul>`;
 const trig = (cond) => `${L.trigger}&nbsp;${cond}`;
@@ -129,6 +138,8 @@ const ICON = {
   atkdown:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/ATK%20DOWN.png",
   // Disarmed's own icon, reused by Prank (which inflicts it).
   dismantle: SK + "FFXIVIcons%20Battle(PvE)/12_MCH/dismantle.png",
+  zeropower: SK + "FFXIVIcons%20MainCommand%20(Others)/02_General/limit_break.png",
+  zerotrig:  SK + "Elsword/Els/MagicResistanceMasteryR.png",
 };
 
 // ── art ────────────────────────────────────────────────────────────────────
