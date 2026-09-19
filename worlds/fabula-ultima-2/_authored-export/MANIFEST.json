@@ -4706,7 +4706,7 @@
         "id": "XVOWOq9oUmEECGrU",
         "name": "Debuff",
         "type": "activeEffectContainer",
-        "effects": 57
+        "effects": 58
       },
       {
         "id": "ZnzHJ5RiISPz0Bll",
@@ -13469,6 +13469,10 @@
         "type": "character",
         "items": [
           {
+            "id": "GuKKQ7mxRYuOd5k5",
+            "name": "Claw"
+          },
+          {
             "id": "fA6feEtGFrfjrMAP",
             "name": "Dragoon Lance"
           },
@@ -13479,6 +13483,14 @@
           {
             "id": "7wOhRfCoYWhuVkLn",
             "name": "Wyrmbreath"
+          },
+          {
+            "id": "Rv0MHciFimYAkthU",
+            "name": "Zero Power: Reinslaughter"
+          },
+          {
+            "id": "Z3B0oqcD6iDsuv0r",
+            "name": "Zero Trigger: Contempt"
           }
         ],
         "effects": 0
