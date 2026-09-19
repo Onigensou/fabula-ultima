@@ -2377,6 +2377,11 @@ export async function computeSenderDamageBonuses({
     const subjectTokenUuids = Array.isArray(cand.appliesToTokenUuids)
       && cand.appliesToTokenUuids.length === subjectUuids.length
       ? cand.appliesToTokenUuids : null;
+    // Parallel list of the creatures each subject's slot(s) were ORIGINALLY aimed
+    // at (redirect-aware, from refreshReactionSubjects). Feeds ORIGINAL_TARGET_*.
+    const subjectOriginalUuids = Array.isArray(cand.appliesToOriginalActorUuids)
+      && cand.appliesToOriginalActorUuids.length === subjectUuids.length
+      ? cand.appliesToOriginalActorUuids : null;
 
     // Effect-table label map — static across subjects, built once.
     const byLabel = new Map();
@@ -2405,7 +2410,11 @@ export async function computeSenderDamageBonuses({
           const { buildSkillResolver, evaluateFormula } = formulas;
           const resolver = buildSkillResolver({
             actor: casterActor,
-            payload: { ...(cand.payloadAtFire ?? {}), subjectActorUuid: uuid },
+            payload: {
+              ...(cand.payloadAtFire ?? {}),
+              subjectActorUuid: uuid,
+              ...(subjectOriginalUuids ? { originalSubjectActorUuids: subjectOriginalUuids[si] } : {}),
+            },
             skill: carrierSkill,
             round: dCombat?.round ?? 0,
           });
@@ -2561,6 +2570,19 @@ export async function refreshReactionSubjects({ acceptedCardReactions, ar, attac
   if (!hitRows.length) return;
   const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid).filter(Boolean);
   const hitTokenUuids = hitRows.map((r) => r.tokenUuid).filter(Boolean);
+  // Token → every creature ORIGINALLY targeted in a slot that token now holds
+  // (redirectedFrom, else the slot's own actor). A Prophetic Defender covering N
+  // allies holds N slots on one token, and subjects are deduped by token below,
+  // so this keeps who each slot was aimed at. Read ONLY by the opt-in
+  // ORIGINAL_TARGET_* formula identifiers (Hilde-Fafnir's Reinslaughter) —
+  // nothing else consumes it, so redirect behavior elsewhere is unchanged.
+  const originalsByToken = new Map();
+  for (const r of hitRows) {
+    const tk = r.tokenUuid ?? r.actorUuid;
+    const orig = r.redirectedFrom?.actorUuid ?? r.actorUuid;
+    if (!originalsByToken.has(tk)) originalsByToken.set(tk, []);
+    if (orig && !originalsByToken.get(tk).includes(orig)) originalsByToken.get(tk).push(orig);
+  }
   // Same derivation as CONFIRM's actionBase. Without it ATTACK_VS_DEF /
   // ATTACK_VS_MDEF read 0 here, so a Defense-gated damage rider (Tincture of
   // Strength / Spirit) matched at CONFIRM and then silently lost every subject
@@ -2593,6 +2615,7 @@ export async function refreshReactionSubjects({ acceptedCardReactions, ar, attac
     // appliesToTokenUuids disambiguates downstream).
     const matchedActors = [];
     const matchedTokens = [];
+    const matchedOriginals = [];
     const seenTok = new Set();
     for (const r of hitRows) {
       const payload = {
@@ -2631,10 +2654,12 @@ export async function refreshReactionSubjects({ acceptedCardReactions, ar, attac
         seenTok.add(tk);
         matchedActors.push(r.actorUuid);
         matchedTokens.push(r.tokenUuid ?? null);
+        matchedOriginals.push(originalsByToken.get(tk) ?? [r.actorUuid]);
       }
     }
     cand.appliesToTargetUuids = matchedActors;
     cand.appliesToTokenUuids = matchedTokens;
+    cand.appliesToOriginalActorUuids = matchedOriginals;
   }
 }
 
