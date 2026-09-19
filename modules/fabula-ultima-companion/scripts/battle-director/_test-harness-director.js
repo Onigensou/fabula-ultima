@@ -749,9 +749,16 @@ async function probeTargetedReactions({
   // deliberately does not cover open_action_menu.
   picks = null,
   preApply = null, seed = null, override = null,
+  // Performer-side candidates (e.g. a probeCardReactions `includeRaw` candidate)
+  // accepted in the baseline AND alongside every defender candidate, so a
+  // redirect is measured against the damage the card would really carry — a
+  // per-victim rider (Reinslaughter's missing-HP curve) folds with the
+  // redirect instead of being absent from both sides of the diff.
+  extraAccepted = null,
   depsToken = null,
 } = {}) {
   const _wg = _guardWrites("probeTargetedReactions");
+  const extra = Array.isArray(extraAccepted) ? extraAccepted : [];
   if (!game.user?.isGM) return { ok: false, reason: "gm_only" };
   if (!attackerTokenUuid || !targetTokenUuids?.length) {
     return { ok: false, reason: "missing_args",
@@ -908,7 +915,7 @@ async function probeTargetedReactions({
         hint: "No reactor owns a carrier for this trigger under this payload. Note this probe does NOT cover skill-granted target-owned rows (findTargetOwnedCandidates)." };
     }
 
-    const baseline = await probeOneAcceptedSet({ ar, accepted: [], attackerActor, round, deps });
+    const baseline = await probeOneAcceptedSet({ ar, accepted: [...extra], attackerActor, round, deps });
     const results = [];
     for (const { cand, reactor, subject, payload } of byKey.values()) {
       // Stamped exactly as live's third-party loop does (state-handlers ~5287):
@@ -923,7 +930,7 @@ async function probeTargetedReactions({
         phaseTrigger: trigger, payloadAtFire: payload,
         ...(Array.isArray(picks) && picks.length ? { chosenMenuPicks: [...picks] } : {}) };
 
-      const after = await probeOneAcceptedSet({ ar, accepted: [stamped], attackerActor, round, deps });
+      const after = await probeOneAcceptedSet({ ar, accepted: [...extra, stamped], attackerActor, round, deps });
       const mutDiff = probeDiff(baseline, after);
 
       const { captures, restore } = await installWriteCaptures();
@@ -2946,6 +2953,9 @@ async function runDirectorAttackSimulate(args = {}) {
       targetTokenUuids: args.targetTokenUuids,
       mode: args.mode ?? "main",
       force: args.force,
+      // Forwarded so a monster attack picks the named Attack item; without it
+      // every simulate silently fell back to the actor's FIRST Attack item.
+      ...(args.npcAttackItemUuid ? { npcAttackItemUuid: args.npcAttackItemUuid } : {}),
     };
     let totalPasses = null;
     let passIndex = 0;
