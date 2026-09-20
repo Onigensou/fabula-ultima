@@ -219,9 +219,9 @@
           "check_bonus": "8",
           "class": "NPC",
           "cost": "-",
-          "damage_bonus": "52",
+          "damage_bonus": "40",
           "defense_target_type": "def",
-          "description": "<p>Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>&nbsp;damage to one creature. Damage increases with the target's maximum Hit Points.</p>",
+          "description": "<p>Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>&nbsp;damage to one creature. Damage increases with the target's maximum Hit Points.</p><p><strong>50%</strong> chance to inflict <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Burn</strong></a>.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
@@ -232,6 +232,15 @@
               "damage_stage": "outgoing",
               "effect_kind": "adjust_damage",
               "effect_label": "sc_maxhp"
+            },
+            "1": {
+              "$deleted": false,
+              "ae_chance_percent": "50",
+              "ae_duplicate_mode": "skip",
+              "ae_template_ref": "Burn",
+              "effect_kind": "apply_ae",
+              "effect_label": "sc_burn",
+              "target_ref": "hit_action_targets"
             }
           },
           "heroic_requirement": "",
@@ -257,6 +266,14 @@
               "reaction_source": "self",
               "reaction_source_skill": "Scorched Claw",
               "reaction_trigger": "creature_will_deal_damage"
+            },
+            "1": {
+              "$deleted": false,
+              "reaction_effect_ref": "sc_burn",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_source_skill": "Scorched Claw",
+              "reaction_trigger": "creature_deals_damage"
             }
           },
           "rolled_atr1": "MIG",
@@ -860,7 +877,7 @@
       "attack_list": {
         "GuKKQ7mxRYuOd5k5": {
           "active_target": "One Creature",
-          "attack_description": "<p>Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>&nbsp;damage to one creature. Damage increases with the target's maximum Hit Points.</p>",
+          "attack_description": "<p>Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>&nbsp;damage to one creature. Damage increases with the target's maximum Hit Points.</p><p><strong>50%</strong> chance to inflict <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Burn</strong></a>.</p>",
           "attribute_die1": "MIG",
           "attribute_die2": "DEX",
           "id": "${item.id}",
