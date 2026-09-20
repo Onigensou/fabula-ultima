@@ -49,6 +49,15 @@ function combatant(id, side) {
   return c;
 }
 
+// nextTurn() only MARKS a wrap (pendingRoundWrap); ROUND_START applies it via
+// beginPendingRound() once the round-end phase has played out. The FSM is not
+// here, so each call below steps the way ROUND_START would.
+function step(dc) {
+  const r = dc.nextTurn();
+  if (r.wrappedRound && !r.ended) dc.beginPendingRound();
+  return r;
+}
+
 function makeCombat() {
   const dc = new DirectorCombat({ scene: { id: "scene1", name: "Test" } });
   dc.combatants = [combatant("hero", "party"), combatant("mook", "enemy")];
@@ -68,7 +77,7 @@ console.log("\n── a played-out round is never barren ──");
 let dc = makeCombat();
 for (let i = 0; i < 6; i++) {
   dc.currentCombatantId = dc.eligibleOnSide(dc.currentSide)[0]?.id ?? null;
-  dc.nextTurn();
+  step(dc);
 }
 eq("rounds advance normally while combatants act", dc.round > 1, true);
 eq("  and the combat is still live", dc.ended, false);
@@ -84,7 +93,7 @@ const roundsSeen = [];
 for (let i = 0; i < 40 && !dc.ended; i++) {
   dc.currentCombatantId = null;              // nobody acts, ever
   for (const c of dc.combatants) c.turnsRemaining = 0;   // both sides exhausted
-  const r = dc.nextTurn();
+  const r = step(dc);
   roundsSeen.push(r.round);
 }
 eq("the combat ends rather than looping", dc.ended, true);
@@ -101,7 +110,7 @@ console.log("\n── one quiet round is not enough to end it ──");
 dc = makeCombat();
 dc.currentCombatantId = null;
 for (const c of dc.combatants) c.turnsRemaining = 0;
-dc.nextTurn();
+step(dc);
 eq("a single barren round does not end the combat", dc.ended, false);
 eq("  but it is remembered", dc._barrenRounds, 1);
 
@@ -112,10 +121,10 @@ eq("  but it is remembered", dc._barrenRounds, 1);
 // combat must still be alive.
 for (const c of dc.combatants) { c.turnsRemaining = 1; }
 dc.currentCombatantId = dc.eligibleOnSide(dc.currentSide)[0]?.id ?? null;
-dc.nextTurn();                                    // a real turn happens
+step(dc);                                    // a real turn happens
 dc.currentCombatantId = null;
 for (const c of dc.combatants) c.turnsRemaining = 0;
-dc.nextTurn();                                    // wrap, having seen a turn
+step(dc);                                    // wrap, having seen a turn
 eq("a productive round clears the streak at the wrap", dc._barrenRounds, 0);
 eq("  so the combat survives a quiet round either side of a real one", dc.ended, false);
 

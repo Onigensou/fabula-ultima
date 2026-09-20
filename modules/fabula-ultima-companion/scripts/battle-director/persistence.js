@@ -310,6 +310,10 @@ export async function saveDirectorState(director, opts = {}) {
       id: dc.id,
       sceneId: dc.sceneId,
       round: dc.round,
+      // Round wrap marked by the last TURN_END but not yet applied (the
+      // round-end phase is in progress). Resume routes it to ROUND_START, which
+      // applies it — never to a picker with every counter at 0.
+      pendingRoundWrap: !!dc.pendingRoundWrap,
       started: dc.started,
       ended: dc.ended,
       firstSide: dc.firstSide,
@@ -710,6 +714,7 @@ export async function reconstructDirectorCombat(state, scene) {
   // Preserve the saved id so currentCombatantId references survive.
   dc.id = state.dCombat.id;
   dc.round = state.dCombat.round;
+  dc.pendingRoundWrap = !!state.dCombat.pendingRoundWrap;
   dc.started = !!state.dCombat.started;
   dc.ended = !!state.dCombat.ended;
   dc.firstSide = state.dCombat.firstSide;

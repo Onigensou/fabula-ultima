@@ -1896,10 +1896,18 @@ const RoundStart = {
   async onEnter(director) {
     director.ctx.endOfRound = false;
     director.ctx.endOfCombat = false;
+    // Deferred wrap: the last TURN_END of the previous round only MARKED the
+    // wrap (so the round-end phase — round_end reactions, Late Actor free
+    // actions — played out inside that round). Apply it now: round++, refill
+    // turns, currentSide = firstSide. Runs BEFORE resolveRoundInitiative so
+    // the initiative result still wins currentSide.
+    if (director.dCombat?.beginPendingRound?.()) {
+      log(`ROUND_START — applied the deferred wrap into round ${director.dCombat.round}`);
+    }
     // First-round bump. dCombat.start() leaves round=0 (the pre-combat
     // / conflict_start phase). The first ROUND_START transitions us
-    // into Round 1; subsequent ROUND_STARTs (after a wrap) see round
-    // already incremented by nextTurn() and leave it alone.
+    // into Round 1; subsequent ROUND_STARTs arrive with the wrap just
+    // applied above and leave it alone.
     if (director.dCombat && (director.dCombat.round ?? 0) === 0) {
       director.dCombat.round = 1;
     }
@@ -6721,6 +6729,7 @@ const Resolve = {
     const ar = director.ctx.actionResult;
     if (!ar) {
       warn("RESOLVE with no actionResult");
+      dropAnimationTail(director);
       director.enqueue({ type: INTENTS.INTERNAL_DONE });
       return;
     }
@@ -7030,9 +7039,39 @@ const Resolve = {
       };
     }
 
+    // Damage is applied and checkpointed; now let the cinematic FINISH before
+    // anything else starts (reaction menus, TURN_END, the next round's banner).
+    await awaitAnimationTail(director, "RESOLVE");
+
     director.enqueue({ type: INTENTS.INTERNAL_DONE });
   },
 };
+
+// The ANIMATION gate resolves at the DAMAGE moment — under "timing_offset"
+// that is the impact frame, and the script's return-home motion keeps playing
+// after it (Kalina's dives: drop-stop at 1650 ms, ~1 s of jump-back + slide
+// after). Before this wait the FSM ran RESOLVE → … → TURN_END → ROUND_END →
+// ROUND_START off that gate, so when a guest closed the round the next round's
+// banner came up while she was still in the air. playDirectorAnimation leaves
+// the true-end watch (oni:animationEnd, caster-scoped, 35 s failsafe) on
+// ctx.animationEnd; RESOLVE awaits it AFTER its writes so damage still lands at
+// impact. Already settled under "default" timing (the gate IS the end), on
+// Skip Animation, and when the script never ran — those cost nothing here.
+async function awaitAnimationTail(director, where) {
+  const watch = director.ctx.animationEnd;
+  director.ctx.animationEnd = null;
+  if (!watch?.promise || watch.settled?.()) return;
+  const t0 = Date.now();
+  try { await watch.promise; } catch (_e) {}
+  log(`${where}: cinematic tail — waited ${Date.now() - t0} ms past the damage gate for oni:animationEnd`);
+}
+
+// Drop a pending tail wait without waiting (abort paths). Settling releases the
+// hook listener + failsafe timer; a later RESOLVE finds nothing to await.
+function dropAnimationTail(director) {
+  try { director.ctx.animationEnd?.settle?.(); } catch (_e) {}
+  director.ctx.animationEnd = null;
+}
 
 // ─── OPPORTUNITY_WINDOW ────────────────────────────────────────────────
 // Entered when ar.roll.opportunities was true in the preceding RESOLVE
@@ -7249,7 +7288,10 @@ const TurnEnd = {
       // Label describes the state the GM lands at on rewind: the
       // next-turn picker (or auto-pick → DECLARE if only one eligible).
       // Use the POST-nextTurn round/side so the label reflects what the
-      // GM will actually see, not the round that just ended.
+      // GM will actually see, not the round that just ended. On a wrap the
+      // round bump is deferred (dCombat.pendingRoundWrap) and a rewind to
+      // this save resumes at ROUND_START, which applies it — so label the
+      // NEXT round's start, not a picker.
       const teNewRound = director.dCombat.round ?? 0;
       const teNewSide = director.dCombat.currentSide === "enemy" ? "Enemies" : "Party";
       const teDescParts = [`${teJustActedName}'s turn ended`];
@@ -7258,7 +7300,9 @@ const TurnEnd = {
       saveDirectorState(director, {
         label: director.ctx.endOfCombat
           ? `Combat Ended`
-          : `Round ${teNewRound} · ${teNewSide} Pick Next Turn`,
+          : director.ctx.endOfRound
+            ? `Round ${teRoundEnded + 1} · Round Start`
+            : `Round ${teNewRound} · ${teNewSide} Pick Next Turn`,
         description: teDescParts.join(" · "),
       }).catch((e) => warn("TURN_END: saveDirectorState failed", e));
 
@@ -7720,6 +7764,7 @@ const Aborted = {
       ui.notifications?.warn(`Director: action aborted (${reason})`);
     }
     director.ctx.abortReason = null;
+    dropAnimationTail(director);
     director.enqueue({ type: INTENTS.INTERNAL_DONE });
   },
 };
@@ -7800,6 +7845,8 @@ const Animation = {
       try { director.ctx.animationController.abort?.(); } catch {}
       director.ctx.animationController = null;
     }
+    // An aborted action never reaches RESOLVE — release the tail watch here.
+    dropAnimationTail(director);
   },
 };
 

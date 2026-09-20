@@ -278,7 +278,7 @@ async function executeAnimationScript({
   // other-viewers check is not optional.
   if (canFastForwardAnimation()) {
     log("[BD Anim] window hidden + no other viewers — skipping playback, advancing straight through the gate");
-    return;
+    return { ran: false };
   }
 
   // Resolve token placeables for the `targets` argument. Scripts typically
@@ -374,6 +374,56 @@ async function executeAnimationScript({
   }
 
   await gatePromise;
+  return { ran: true };
+}
+
+// ── True-end watch ──────────────────────────────────────────────────────
+//
+// The damage gate is NOT the end of a cinematic. Under "timing_offset" it
+// resolves at the impact frame, and a script's return-home motion (Kalina's
+// dives: ~1 s of jump-back + slide after a 1650 ms drop-stop) keeps playing
+// after it. `oni:animationEnd` is the TRUE end — every offset-mode script in
+// the corpus emits it at its last line (censused 2026-09-20; the one script
+// that never emits is the Training Dummy's dev probe).
+//
+// Both runners arm this BEFORE the script runs so the emit is never missed,
+// let the gate resolve so damage lands at impact, then hand the watch to their
+// caller to await AFTER the damage is applied: the round_end reaction path via
+// ctx.pendingAnimations (firePreAcceptedCandidate), the FSM turn path via
+// director.ctx.animationEnd (RESOLVE). Under "default" timing the gate IS the
+// end, so the watch has already settled by the time anyone awaits it.
+//
+// `oni:animationEnd` is a GLOBAL hook — a concurrent cinematic (undying /
+// blackest night, another actor's animation) could fire one during the wait.
+// The watch is scoped to THIS caster: a conforming outer script emits
+// `sourceTokenId = caster token id`. A payload without that field (a
+// non-conforming script) is accepted so nothing hangs; the failsafe (matching
+// the 35 s ANIMATION timeout) is the final backstop.
+//
+// No hidden-window collapse: this promise gates the turn / round advance, so
+// cutting it short on a tab-away would advance mid-cinematic. The script's own
+// timers keep running while hidden (clamped), so the emit still arrives.
+function armAnimationEndWatch(casterTokenUuid, { timeoutMs = 35000 } = {}) {
+  const casterId = String(casterTokenUuid ?? "").split(".Token.").pop() || null;
+  let resolve;
+  const promise = new Promise((res) => { resolve = res; });
+  let settled = false;
+  let failsafe = null;
+  const settle = () => {
+    if (settled) return;
+    settled = true;
+    Hooks.off("oni:animationEnd", onEnd);
+    if (failsafe) clearTimeout(failsafe);
+    resolve();
+  };
+  const onEnd = (evtPayload) => {
+    const src = evtPayload?.sourceTokenId ?? null;
+    if (casterId && src && src !== casterId) return; // a different animation's end — ignore
+    settle();
+  };
+  Hooks.on("oni:animationEnd", onEnd);
+  failsafe = setTimeout(settle, timeoutMs);
+  return { promise, settle, settled: () => settled };
 }
 
 // ── Main runner ─────────────────────────────────────────────────────────
@@ -413,25 +463,41 @@ function outcomesFromDirector(director) {
 export async function playDirectorAnimation({ spec, director, casterTokenUuid, targetTokenUuids }) {
   const { script, timingMode, timingOffset } = spec;
 
+  // True-end watch, armed before the script runs (see armAnimationEndWatch).
+  // Skip Animation is the GM saying "get on with it": it collapses the gate
+  // AND settles this, so RESOLVE never waits on a cinematic the GM skipped.
+  const endWatch = armAnimationEndWatch(casterTokenUuid, { timeoutMs: 35000 });
+
   // Abort mechanism: calling abortResolve() collapses the gate Promise.race.
   let abortResolve;
   const abortPromise = new Promise((res) => { abortResolve = res; });
+  const abort = () => { endWatch.settle(); abortResolve(); };
 
-  director.ctx.animationController = { playing: true, abort: abortResolve };
+  director.ctx.animationController = { playing: true, abort };
 
+  let ran = false;
   try {
-    await executeAnimationScript({
+    const r = await executeAnimationScript({
       script, timingMode, timingOffset,
       casterTokenUuid, targetTokenUuids,
       outcomes: outcomesFromDirector(director),
       abortPromise, timeoutMs: 35000,
     });
+    ran = !!r?.ran;
     log("[BD Anim] gate resolved — advancing to RESOLVE");
   } catch (e) {
     warn("[BD Anim] playDirectorAnimation threw", e);
   } finally {
     director.ctx.animationController = null;
   }
+
+  // Hand the tail to the FSM. RESOLVE applies damage at the gate moment (as
+  // before), then awaits ctx.animationEnd so the reaction window / TURN_END /
+  // the next round's banner never start while the return-home motion is still
+  // on screen. Nothing to wait for when the script never ran (fast-forward)
+  // or has already ended (default timing, skip, failsafe).
+  if (ran && !endWatch.settled()) director.ctx.animationEnd = endWatch;
+  else endWatch.settle();
 
   // Always advance — even on error or abort, RESOLVE must run to apply damage.
   director.enqueue({ type: INTENTS.INTERNAL_DONE });
@@ -452,47 +518,14 @@ export async function playSkillAnimation({ skillUuid, casterTokenUuid, targetTok
   const spec = await resolveAnimationSpec({ skillUuid });
   if (!spec.hasScript) return { played: false, reason: "no-script" };
 
-  // `endPromise` resolves when the script emits `oni:animationEnd` — the TRUE end
-  // of the full cinematic (after the return-home motion), NOT the damage gate.
-  // executeAnimationScript below returns at the GATE (drop-stop) so a chained
-  // deal_damage lands at impact; but the reaction/round_end caller wants to wait
-  // for the WHOLE animation before advancing. It stashes endPromise on ctx and
-  // awaits it after the chain (see applyPlayAnimationEffect / firePreAcceptedCandidate).
-  // Registered BEFORE the script runs so the emit is never missed. Failsafe matches
-  // the 35s animation timeout so a script that never emits can't hang the round.
-  //
-  // `oni:animationEnd` is a GLOBAL hook — a concurrent cinematic (undying/blackest
-  // night, another actor's animation) could fire one during our wait. Scope the
-  // resolve to THIS caster: our outer script emits `sourceTokenId = caster token id`.
-  // If the payload lacks that field (a non-conforming script), accept it so we never
-  // hang; the failsafe is the final backstop.
-  const casterId = String(casterTokenUuid ?? "").split(".Token.").pop() || null;
-  let endResolve;
-  const endPromise = new Promise((res) => { endResolve = res; });
-  let settled = false;
-  const onEnd = (evtPayload) => {
-    const src = evtPayload?.sourceTokenId ?? null;
-    if (casterId && src && src !== casterId) return; // a different animation's end — ignore
-    if (settled) return;
-    settled = true;
-    Hooks.off("oni:animationEnd", onEnd);
-    endResolve();
-  };
-  Hooks.on("oni:animationEnd", onEnd);
-  const endFailsafe = setTimeout(() => onEnd(), 35000);
-  // The damage gate is not the only thing that stalls in a hidden window: this
-  // end-promise is pushed onto ctx.pendingAnimations and awaited by the reaction
-  // dispatcher before the round advances (see applyPlayAnimationEffect). Without
-  // the same hidden race it would hold the round for the full 35 s failsafe even
-  // though executeAnimationScript below returned instantly. onEnd is idempotent
-  // and tolerates a bare call (no payload → passes the caster filter).
-  // No hidden-window collapse here either — same reasoning as the damage gate
-  // above. This promise gates round advance, so cutting it short on a tab-away
-  // would advance the round mid-cinematic. The script's own timers keep running
-  // while hidden (clamped), so the emit still arrives.
-  endPromise.finally(() => clearTimeout(endFailsafe));
+  // True-end watch (see armAnimationEndWatch). executeAnimationScript below
+  // returns at the GATE (drop-stop) so a chained deal_damage lands at impact;
+  // the reaction/round_end caller wants the WHOLE animation before advancing,
+  // so it stashes endPromise on ctx and awaits it after the chain (see
+  // applyPlayAnimationEffect / firePreAcceptedCandidate).
+  const endWatch = armAnimationEndWatch(casterTokenUuid, { timeoutMs: 35000 });
 
-  await executeAnimationScript({
+  const r = await executeAnimationScript({
     script: spec.script,
     timingMode: spec.timingMode,
     timingOffset: spec.timingOffset,
@@ -501,7 +534,11 @@ export async function playSkillAnimation({ skillUuid, casterTokenUuid, targetTok
     abortPromise: null,
     timeoutMs: 35000,
   });
-  return { played: true, endPromise };
+  // Fast-forwarded (hidden window, nobody else watching): the script never ran,
+  // so no emit is coming — settle now instead of holding round_end on the
+  // 35 s failsafe.
+  if (!r?.ran) endWatch.settle();
+  return { played: true, endPromise: endWatch.promise };
 }
 
 // ── Anim Studio preview entry ────────────────────────────────────────────

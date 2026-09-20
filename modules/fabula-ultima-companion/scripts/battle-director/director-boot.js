@@ -729,6 +729,12 @@ async function resumeFromSavedState({ scene, state, animateBanner = true }) {
     const top = peekTop(director.ctx);
     resumeAt = top?.resumeAt ?? STATES.TURN_START;
     log(`resume: routing into ${resumeAt} per top frame "${top?.reason}"`);
+  } else if (dCombat.pendingRoundWrap) {
+    // Saved inside the round-end phase with the wrap still deferred: every
+    // counter is 0, so a picker would have nobody to offer. ROUND_START
+    // applies the wrap (round++, refill, firstSide) and carries on.
+    resumeAt = STATES.ROUND_START;
+    log(`resume: round ${dCombat.round} has a deferred wrap — routing into ROUND_START`);
   } else {
     resumeAt = STATES.TURN_START;
   }

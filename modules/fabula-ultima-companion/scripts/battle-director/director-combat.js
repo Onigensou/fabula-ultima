@@ -221,6 +221,11 @@ export class DirectorCombat {
     // Turn manipulation: a combatant id that should act IMMEDIATELY after the
     // current turn (one-shot, consumed in nextTurn). Set via forceNextTurn().
     this.forcedNextCombatantId = null;
+    // Set by nextTurn() when both sides are exhausted; consumed by
+    // beginPendingRound() from ROUND_START. Between the two the round-end phase
+    // runs (ROUND_END -> round_end reactions -> Late Actor free actions) still
+    // INSIDE the round that just finished — see nextTurn's wrap branch.
+    this.pendingRoundWrap = false;
 
     // Solo-player test mode (dev Test Battle tool): when set, every combatant
     // whose actorUuid differs gets 0 turns per round, so only the main player
@@ -552,6 +557,7 @@ export class DirectorCombat {
     // run must not carry over and end round 1 of the next battle.
     this._turnsTakenThisRound = 0;
     this._barrenRounds = 0;
+    this.pendingRoundWrap = false;
     // Initialize round-1 turn counts from the live activation stat (re-read so
     // any pre-battle change / solo-mode is honored; combatants appended after
     // construction also get a correct count).
@@ -605,18 +611,55 @@ export class DirectorCombat {
   // would-be turnsPerRound so the tracker reads right if they're revived).
   _resetRoundCounters() {
     for (const c of this.combatants) {
-      c.turnsPerRound = this._effectiveActivation(c);
-      c.turnsRemaining = c.isDefeatedLive() ? 0 : c.turnsPerRound;
-      // Consume a one-time turn debt left by the modify_turns effect_kind (Stop):
-      // a reduction that couldn't land last round because the target was already
-      // out of turns. It lands on their genuine NEXT turn, then clears. Negative
-      // value; floored at 0 actions.
-      const debt = Number(c.flags?.pendingTurnDebt ?? 0);
-      if (debt < 0 && c.turnsRemaining > 0) {
-        c.turnsRemaining = Math.max(0, c.turnsRemaining + debt);
-        c.flags.pendingTurnDebt = 0;
-      }
+      const { perRound, remaining, debtConsumed } = this._nextRoundTurns(c);
+      c.turnsPerRound = perRound;
+      c.turnsRemaining = remaining;
+      if (debtConsumed) c.flags.pendingTurnDebt = 0;
     }
+  }
+
+  // What a combatant's counters WOULD be at the next round reset — pure read, no
+  // mutation, so nextTurn() can decide "is anyone left to act next round" without
+  // performing the reset (the reset itself is deferred to ROUND_START).
+  //
+  // The modify_turns effect_kind (Stop) leaves a one-time turn debt when a
+  // reduction couldn't land because the target was already out of turns. It
+  // lands on their genuine NEXT turn, then clears. Negative value; floored at 0.
+  _nextRoundTurns(c) {
+    const perRound = this._effectiveActivation(c);
+    let remaining = c.isDefeatedLive() ? 0 : perRound;
+    let debtConsumed = false;
+    const debt = Number(c.flags?.pendingTurnDebt ?? 0);
+    if (debt < 0 && remaining > 0) {
+      remaining = Math.max(0, remaining + debt);
+      debtConsumed = true;
+    }
+    return { perRound, remaining, debtConsumed };
+  }
+
+  // Apply a wrap that nextTurn() deferred: bump the round, refill every
+  // combatant's turns, hand the first turn to firstSide. Called from
+  // ROUND_START.onEnter, AFTER the round-end phase has fully played out, so the
+  // tracker refills and the round number advances only when the new round
+  // actually begins. Returns true when a wrap was pending and got applied.
+  //
+  // ROUND_START's initiative resolution runs after this and may override
+  // currentSide — that is the intended precedence (initiative beats firstSide).
+  beginPendingRound() {
+    if (!this.pendingRoundWrap) return false;
+    this.pendingRoundWrap = false;
+    this.round++;
+    this.turn = 0;
+    this._resetRoundCounters();
+    this.currentSide = this.firstSide;
+    // If firstSide has nothing eligible post-wrap (e.g. wholly defeated),
+    // switch to the other side for this round.
+    if (this.eligibleOnSide(this.currentSide).length === 0) {
+      this.currentSide = this._otherSide(this.currentSide);
+    }
+    log(`Round advanced to ${this.round} (firstSide=${this.firstSide}, currentSide=${this.currentSide})`);
+    this._notifyTurnActions();
+    return true;
   }
 
   // Advance past the just-acted combatant. Caller (TURN_END) calls this once
@@ -715,28 +758,33 @@ export class DirectorCombat {
       }
       this._turnsTakenThisRound = 0;
 
-      this.round++;
-      this.turn = 0;
-      wrappedRound = true;
-      this._resetRoundCounters();
-      this.currentSide = this.firstSide;
-      sameEligible = this.eligibleOnSide(this.currentSide);
-      otherEligible = this.eligibleOnSide(this._otherSide(this.currentSide));
-      log(`Round advanced to ${this.round} (firstSide=${this.firstSide})`);
-      if (sameEligible.length === 0 && otherEligible.length === 0) {
-        // No one un-defeated has any turns — combat is effectively over.
-        // The director will detect side-wipe elsewhere; here we just signal.
+      // No one un-defeated would have any turns next round — combat is
+      // effectively over. The director detects side-wipe elsewhere; here we
+      // just signal. Decided on a dry read of the next-round counters so the
+      // reset itself can stay deferred.
+      if (!this.combatants.some((c) => this._nextRoundTurns(c).remaining > 0)) {
         warn("nextTurn: round wrapped but no eligible combatants remain — ending");
         this.end();
         this._notifyTurnActions();
         return { round: this.round, currentSide: this.currentSide, wrappedRound: true, ended: true, eligibleIds: [] };
       }
-      // If firstSide has nothing eligible post-wrap (e.g. wholly defeated),
-      // switch to the other side for this round.
-      if (sameEligible.length === 0) {
-        this.currentSide = this._otherSide(this.currentSide);
-        sameEligible = otherEligible;
-      }
+
+      // DEFER the wrap. The round is over, but the round-END phase has not run
+      // yet: ROUND_END -> round_end reactions -> any Late Actor free action
+      // (Kalina) all happen after this return. Bumping `round`, refilling every
+      // combatant's turns and flipping currentSide here — as this used to —
+      // pushed "Round N+1, everyone's turns are back" out to every tracker
+      // while the round-end actor was still acting in round N, and stamped her
+      // action, its AEs and the round_end payload with the WRONG round.
+      // ROUND_START.onEnter calls beginPendingRound() once the new round really
+      // begins. Persisted (persistence.js) so a reload inside the round-end
+      // phase still applies it (director-boot routes a pending wrap to
+      // ROUND_START rather than a picker nobody is eligible for).
+      this.pendingRoundWrap = true;
+      wrappedRound = true;
+      log(`nextTurn: round ${this.round} complete — wrap deferred to ROUND_START`);
+      this._notifyTurnActions();
+      return { round: this.round, currentSide: this.currentSide, wrappedRound: true, ended: false, eligibleIds: [] };
     }
 
     const eligibleIds = this.eligibleOnSide(this.currentSide).map((c) => c.id);
