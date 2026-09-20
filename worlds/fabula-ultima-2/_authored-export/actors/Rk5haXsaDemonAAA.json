@@ -284,7 +284,7 @@
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
-              "$deleted": false,
+              "$deleted": true,
               "damage_amount": "2",
               "damage_operation": "multiply",
               "damage_stage": "outgoing",
@@ -327,7 +327,7 @@
           "optional_params": {},
           "reaction_config_table": {
             "0": {
-              "$deleted": false,
+              "$deleted": true,
               "condition_formula": "TARGET_AE_COUNT_CRISIS == 0",
               "reaction_effect_ref": "cr_double",
               "reaction_passive_mode": "force",
@@ -489,7 +489,7 @@
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
-              "$deleted": false,
+              "$deleted": true,
               "damage_amount": "2",
               "damage_operation": "multiply",
               "damage_stage": "outgoing",
@@ -523,7 +523,7 @@
           "optional_params": {},
           "reaction_config_table": {
             "0": {
-              "$deleted": false,
+              "$deleted": true,
               "condition_formula": "TARGET_AE_COUNT_CRISIS > 0",
               "reaction_effect_ref": "ex_double",
               "reaction_passive_mode": "force",
@@ -592,7 +592,7 @@
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
-              "$deleted": false,
+              "$deleted": true,
               "damage_amount": "2",
               "damage_operation": "multiply",
               "damage_stage": "outgoing",
@@ -626,7 +626,7 @@
           "optional_params": {},
           "reaction_config_table": {
             "0": {
-              "$deleted": false,
+              "$deleted": true,
               "condition_formula": "TARGET_AE_COUNT_CRISIS > 0",
               "reaction_effect_ref": "ev_double",
               "reaction_passive_mode": "force",
@@ -1281,7 +1281,7 @@
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
-              "$deleted": false,
+              "$deleted": true,
               "damage_amount": "2",
               "damage_operation": "multiply",
               "damage_stage": "outgoing",
@@ -1324,7 +1324,7 @@
           "optional_params": {},
           "reaction_config_table": {
             "0": {
-              "$deleted": false,
+              "$deleted": true,
               "condition_formula": "TARGET_AE_COUNT_CRISIS == 0",
               "reaction_effect_ref": "ro_double",
               "reaction_passive_mode": "force",

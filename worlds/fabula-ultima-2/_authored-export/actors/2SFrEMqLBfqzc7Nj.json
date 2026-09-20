@@ -108,14 +108,14 @@
       },
       "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
-      "name": "Dragoon Lance",
+      "name": "Impalement",
       "ownership": {
         "default": 0
       },
       "sort": 100000,
       "system": {
         "props": {
-          "action_keywords": "",
+          "action_keywords": "execute",
           "active_effect_config_table": {},
           "ae_chance_percent": "",
           "ae_template_ref": "",
@@ -132,7 +132,7 @@
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
-              "$deleted": false,
+              "$deleted": true,
               "damage_amount": "2",
               "damage_operation": "multiply",
               "damage_stage": "outgoing",
@@ -152,12 +152,12 @@
           "isZeroPower": false,
           "level": "1",
           "max_level": "1",
-          "name": "Dragoon Lance",
+          "name": "Impalement",
           "on_activate_effect_ref": "",
           "optional_params": {},
           "reaction_config_table": {
             "0": {
-              "$deleted": false,
+              "$deleted": true,
               "condition_formula": "TARGET_AE_COUNT_CRISIS > 0",
               "reaction_effect_ref": "dl_execute",
               "reaction_passive_mode": "force",
@@ -202,7 +202,7 @@
       },
       "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
-      "name": "Claw",
+      "name": "Scorched Claw",
       "ownership": {
         "default": 0
       },
@@ -219,19 +219,19 @@
           "check_bonus": "8",
           "class": "NPC",
           "cost": "-",
-          "damage_bonus": "70",
+          "damage_bonus": "52",
           "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.qXBYN6c9FMZzmS2n\" data-id=\"qXBYN6c9FMZzmS2n\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Cripple</strong></a></p></li></ul><p>Deal <strong>devastating</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature.</p>",
+          "description": "<p>Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>&nbsp;damage to one creature. Damage increases with the target's maximum Hit Points.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "$deleted": false,
-              "damage_amount": "2",
-              "damage_operation": "multiply",
+              "damage_amount": "floor(TARGET_MAX_HP * 0.25)",
+              "damage_operation": "add",
               "damage_stage": "outgoing",
               "effect_kind": "adjust_damage",
-              "effect_label": "claw_cripple"
+              "effect_label": "sc_maxhp"
             }
           },
           "heroic_requirement": "",
@@ -246,17 +246,16 @@
           "isZeroPower": false,
           "level": "1",
           "max_level": "1",
-          "name": "Claw",
+          "name": "Scorched Claw",
           "on_activate_effect_ref": "",
           "optional_params": {},
           "reaction_config_table": {
             "0": {
               "$deleted": false,
-              "condition_formula": "TARGET_AE_COUNT_CRISIS == 0",
-              "reaction_effect_ref": "claw_cripple",
+              "reaction_effect_ref": "sc_maxhp",
               "reaction_passive_mode": "force",
               "reaction_source": "self",
-              "reaction_source_skill": "Claw",
+              "reaction_source_skill": "Scorched Claw",
               "reaction_trigger": "creature_will_deal_damage"
             }
           },
@@ -268,7 +267,7 @@
           "skill_range": "Melee",
           "skill_target": "One Creature",
           "skill_type": "Attack",
-          "type_damage": "Physical",
+          "type_damage": "Fire",
           "use_optional_params": false,
           "uuid": "Actor.2SFrEMqLBfqzc7Nj.Item.GuKKQ7mxRYuOd5k5"
         },
@@ -811,7 +810,7 @@
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
           "action_pattern_name": "Wyrmbreath",
-          "action_pattern_priority": "6",
+          "action_pattern_priority": "5",
           "action_pattern_string": "",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "20",
@@ -824,8 +823,8 @@
           "action_pattern_focus_status": "Crisis",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Dragoon Lance",
-          "action_pattern_priority": "3",
+          "action_pattern_name": "Impalement",
+          "action_pattern_priority": "4",
           "action_pattern_string": "Crisis",
           "action_pattern_target_focus": "status_focus",
           "action_pattern_value_1": "",
@@ -833,15 +832,15 @@
         },
         "4": {
           "$deleted": false,
-          "action_pattern_condition": "enemy_lacks_status",
+          "action_pattern_condition": "always",
           "action_pattern_cooldown": "0",
-          "action_pattern_focus_status": "Crisis",
+          "action_pattern_focus_status": "",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Claw",
+          "action_pattern_name": "Scorched Claw",
           "action_pattern_priority": "3",
-          "action_pattern_string": "Crisis",
-          "action_pattern_target_focus": "status_avoid",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "",
           "action_pattern_value_2": ""
         }
@@ -861,11 +860,11 @@
       "attack_list": {
         "GuKKQ7mxRYuOd5k5": {
           "active_target": "One Creature",
-          "attack_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.qXBYN6c9FMZzmS2n\" data-id=\"qXBYN6c9FMZzmS2n\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Cripple</strong></a></p></li></ul><p>Deal <strong>devastating</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature.</p>",
+          "attack_description": "<p>Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>&nbsp;damage to one creature. Damage increases with the target's maximum Hit Points.</p>",
           "attribute_die1": "MIG",
           "attribute_die2": "DEX",
           "id": "${item.id}",
-          "name": "Claw",
+          "name": "Scorched Claw",
           "roll": "",
           "uuid": "Actor.2SFrEMqLBfqzc7Nj.Item.GuKKQ7mxRYuOd5k5"
         },
@@ -875,7 +874,7 @@
           "attribute_die1": "MIG",
           "attribute_die2": "DEX",
           "id": "${item.id}",
-          "name": "Dragoon Lance",
+          "name": "Impalement",
           "roll": "",
           "uuid": "Actor.2SFrEMqLBfqzc7Nj.Item.fA6feEtGFrfjrMAP"
         }

@@ -56,7 +56,7 @@
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
-              "$deleted": false,
+              "$deleted": true,
               "consume_self": false,
               "damage_amount": "2",
               "damage_operation": "multiply",
@@ -84,7 +84,7 @@
           "optional_params": {},
           "reaction_config_table": {
             "0": {
-              "$deleted": false,
+              "$deleted": true,
               "condition_formula": "TARGET_AE_COUNT_CRISIS > 0",
               "reaction_action_kind": "",
               "reaction_cause_filter": "",
