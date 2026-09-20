@@ -227,7 +227,8 @@
               "effect_label": "summon_drakes",
               "summon_act_this_round": false,
               "summon_actor": "Actor.2vmogpXhRJZzAvXt,Actor.mQlh6GTyw2449hXC",
-              "summon_count": "1"
+              "summon_count": "1",
+              "summon_max": "2"
             }
           },
           "heroic_requirement": "",
@@ -910,11 +911,25 @@
           "cost": "6 Zero Power",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<p>Offer the enemy a vile edict, <strong>Enemy Choose:</strong></p><ul><li>One target enemy takes <strong>300</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>&nbsp;damage (Enemy Choice)</li><li>All enemies take <strong>120</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(155, 89, 182) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span> damage</li></ul>",
+          "description": "Offer the enemy a vile edict. The enemy chooses: one target enemy takes 300 Fire damage (their choice who), or all enemies take 120 Bolt damage. This damage ignores immunities and absorption.",
           "duration": "-",
           "effect_table": {
             "0": {
               "chain_steps": "cu_cost,cu_choice",
+              "consume_self": false,
+              "effect_kind": "chain",
+              "effect_label": "cu_unleash"
+            },
+            "1": {
+              "consume_amount": "6",
+              "consume_resource": "zero_power",
+              "consume_self": false,
+              "effect_kind": "consume_resource",
+              "effect_label": "cu_cost",
+              "target_ref": "self"
+            },
+            "2": {
+              "consume_self": false,
               "effect_kind": "open_action_menu",
               "effect_label": "cu_choice",
               "menu_option_refs": "cu_optA,cu_optB",
@@ -922,60 +937,57 @@
               "menu_subtitle": "The enemy chooses their fate",
               "menu_title": "Cruel Ultimatum"
             },
-            "1": {
-              "chain_steps": "cu_pick_one,cu_300",
-              "consume_amount": "6",
-              "consume_resource": "zero_power",
-              "effect_kind": "chain",
-              "effect_label": "cu_optA",
-              "menu_label": "One of us takes 300 Fire (we choose who)",
-              "target_ref": "self"
-            },
-            "2": {
-              "candidate_source": "combat",
-              "category": "enemy",
-              "count": "1",
-              "effect_kind": "targeting",
-              "effect_label": "cu_pick_one",
-              "menu_option_refs": "cu_optA,cu_optB",
-              "menu_responder": "enemy",
-              "menu_subtitle": "The enemy chooses their fate",
-              "menu_title": "Cruel Ultimatum",
-              "mode": "exact"
-            },
             "3": {
               "chain_steps": "cu_pick_one,cu_300",
-              "damage_amount": "300",
-              "damage_cause": "damage",
-              "damage_element": "fire",
-              "effect_kind": "deal_damage",
-              "effect_label": "cu_300",
-              "menu_label": "One of us takes 300 Fire (we choose who)",
-              "target_ref": "cu_pick_one"
+              "consume_self": false,
+              "effect_kind": "chain",
+              "effect_label": "cu_optA",
+              "menu_label": "One of us takes 300 Fire (we choose who)"
             },
             "4": {
               "candidate_source": "combat",
               "category": "enemy",
+              "consume_self": false,
               "count": "1",
-              "damage_amount": "120",
-              "damage_cause": "damage",
-              "damage_element": "bolt",
-              "effect_kind": "deal_damage",
-              "effect_label": "cu_optB",
-              "menu_label": "All of us take 120 Bolt",
-              "mode": "exact",
-              "target_ref": "cu_all"
+              "effect_kind": "targeting",
+              "effect_label": "cu_pick_one",
+              "menu_responder": "enemy",
+              "mode": "exact"
             },
             "5": {
-              "candidate_source": "combat",
-              "category": "enemy",
+              "consume_self": false,
               "damage_amount": "300",
               "damage_cause": "damage",
               "damage_element": "fire",
+              "damage_keywords": "ignore_absorption",
+              "effect_kind": "deal_damage",
+              "effect_label": "cu_300",
+              "target_ref": "cu_pick_one"
+            },
+            "6": {
+              "chain_steps": "cu_all,cu_120",
+              "consume_self": false,
+              "effect_kind": "chain",
+              "effect_label": "cu_optB",
+              "menu_label": "All of us take 120 Bolt"
+            },
+            "7": {
+              "candidate_source": "combat",
+              "category": "enemy",
+              "consume_self": false,
               "effect_kind": "targeting",
               "effect_label": "cu_all",
-              "mode": "all",
-              "target_ref": "cu_pick_one"
+              "mode": "all"
+            },
+            "8": {
+              "consume_self": false,
+              "damage_amount": "120",
+              "damage_cause": "damage",
+              "damage_element": "bolt",
+              "damage_keywords": "ignore_absorption",
+              "effect_kind": "deal_damage",
+              "effect_label": "cu_120",
+              "target_ref": "cu_all"
             }
           },
           "heroic_requirement": "",
@@ -989,7 +1001,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Zero Power: Cruel Ultimatum",
-          "on_activate_effect_ref": "cu_choice",
+          "on_activate_effect_ref": "cu_unleash",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "-",
@@ -1209,6 +1221,123 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "mJuSEmMc3A0HrqNO"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "StormGatherPsv01",
+      "_stats": {
+        "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213946.309.png",
+      "name": "Storm Gathering",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "When her magic runs dry, Fafnir breaks off and gathers the storm — summoning her drakes and recovering her power until it is hers again.",
+          "duration": "-",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "skip",
+              "ae_template_ref": "Storm Gathering",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "sg_enter",
+              "target_ref": "self"
+            },
+            "1": {
+              "ae_template_ref": "Storm Gathering",
+              "consume_self": false,
+              "effect_kind": "remove_ae",
+              "effect_label": "sg_exit",
+              "include_persistent": true,
+              "target_ref": "self"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213946.309.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Storm Gathering",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "CUR_MP < 100",
+              "reaction_action_kind": "",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "sg_enter",
+              "reaction_passive_mode": "force",
+              "reaction_resource_filter": "mp",
+              "reaction_responder": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_trigger": "creature_lose_resource",
+              "requires_skill": ""
+            },
+            "1": {
+              "condition_formula": "CUR_MP >= 300",
+              "reaction_action_kind": "",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "sg_exit",
+              "reaction_passive_mode": "force",
+              "reaction_resource_filter": "mp",
+              "reaction_responder": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_trigger": "creature_gain_resource",
+              "requires_skill": ""
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.P1uCkpNnxLRBNqZr.Item.StormGatherPsv01"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "OC8vNuHXdOf5tJMq"
       },
       "type": "equippableItem"
     },
@@ -1533,7 +1662,143 @@
   "system": {
     "activeConditionalModifierGroups": [],
     "props": {
-      "action_pattern_table": {},
+      "action_pattern_table": {
+        "0": {
+          "$deleted": false,
+          "action_pattern_condition": "zero_power",
+          "action_pattern_cooldown": "0",
+          "action_pattern_focus_status": "",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Zero Power: Cruel Ultimatum",
+          "action_pattern_priority": "20",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "100",
+          "action_pattern_value_2": "100",
+          "action_pattern_weight": ""
+        },
+        "1": {
+          "$deleted": false,
+          "action_pattern_condition": "self_has_status",
+          "action_pattern_cooldown": "4",
+          "action_pattern_focus_status": "",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Summon Elemental Drake",
+          "action_pattern_priority": "10",
+          "action_pattern_string": "Storm Gathering",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "",
+          "action_pattern_value_2": "",
+          "action_pattern_weight": ""
+        },
+        "2": {
+          "$deleted": false,
+          "action_pattern_condition": "self_has_status",
+          "action_pattern_cooldown": "0",
+          "action_pattern_focus_status": "",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Storm Calm",
+          "action_pattern_priority": "9",
+          "action_pattern_string": "Storm Gathering",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "",
+          "action_pattern_value_2": "",
+          "action_pattern_weight": ""
+        },
+        "3": {
+          "$deleted": false,
+          "action_pattern_condition": "round",
+          "action_pattern_cooldown": "1",
+          "action_pattern_focus_status": "",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Ruinous Breath",
+          "action_pattern_priority": "7",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "1",
+          "action_pattern_value_2": "2",
+          "action_pattern_weight": ""
+        },
+        "4": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "0",
+          "action_pattern_focus_status": "",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Condemn",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "",
+          "action_pattern_value_2": "",
+          "action_pattern_weight": ""
+        },
+        "5": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "0",
+          "action_pattern_focus_status": "",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Rend",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "",
+          "action_pattern_value_2": "",
+          "action_pattern_weight": ""
+        },
+        "6": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "3",
+          "action_pattern_focus_status": "",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Torment",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "",
+          "action_pattern_value_2": "",
+          "action_pattern_weight": ""
+        },
+        "7": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "2",
+          "action_pattern_focus_status": "",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Searing Brand",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "",
+          "action_pattern_value_2": "",
+          "action_pattern_weight": ""
+        },
+        "8": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "2",
+          "action_pattern_focus_status": "",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Draconic Domination",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "",
+          "action_pattern_value_2": "",
+          "action_pattern_weight": ""
+        }
+      },
       "activation": "4",
       "affinity_1": "NA",
       "affinity_2": "RS",
@@ -1858,6 +2123,12 @@
           "passive_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.UqXGUQM31kWc7BTc\" data-id=\"UqXGUQM31kWc7BTc\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Unleash</span></strong></a></span></span></p></li></ul><p>All enemy roll a <strong>DL 15 【MIG】+【WLP】</strong>Check, on a failure, they suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Frightened</span></strong></a><strong><span style=\"text-decoration: underline;\">, </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Paralyzed</span></strong></a></span></span> and<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Q8FTFPsXVpNj2zxT\" data-id=\"Q8FTFPsXVpNj2zxT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Silence</span></strong></a></span></span>&nbsp;</p>",
           "roll": "",
           "uuid": "Actor.P1uCkpNnxLRBNqZr.Item.PTmYIP52JtFcOHua"
+        },
+        "StormGatherPsv01": {
+          "id": "${item.id}",
+          "name": "Storm Gathering",
+          "passive_description": "When her magic runs dry, Fafnir breaks off and gathers the storm — summoning her drakes and recovering her power until it is hers again.",
+          "uuid": "Actor.P1uCkpNnxLRBNqZr.Item.StormGatherPsv01"
         },
         "ejrKWNUQJPXB6cS6": {
           "id": "${item.id}",
