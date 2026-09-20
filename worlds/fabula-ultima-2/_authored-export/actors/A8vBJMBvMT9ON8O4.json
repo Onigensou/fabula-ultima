@@ -3,7 +3,7 @@
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1789857202299,
+    "createdTime": 1789901649313,
     "duplicateSource": "Actor.ik2o2KAR2WZoDgrB",
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
@@ -32,7 +32,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1789898307515,
+        "createdTime": null,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -163,7 +163,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1789898307515,
+        "createdTime": null,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -615,7 +615,7 @@
       "_stats": {
         "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
         "coreVersion": "12.343",
-        "createdTime": 1789898307515,
+        "createdTime": null,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"

@@ -1,67 +1,16 @@
 {
-  "_id": "CxDeNV9EiWY4MxMA",
+  "_id": "DylyntU7ruxptDIM",
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1789836364042,
+    "createdTime": 1789901501615,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
   "effects": [
     {
-      "_id": "7ncLuqGizC737KDi",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": null,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "flags.fabula-ultima-companion.wellspring_bolt",
-          "mode": 5,
-          "priority": 20,
-          "value": "1"
-        }
-      ],
-      "description": "<p>The <strong>Lightning</strong> wellspring is present. Invokers may draw bolt invocations from it.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": null,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isPredefined": true
-        },
-        "fabula-ultima-companion": {
-          "wellspring": "bolt"
-        }
-      },
-      "img": "icons/magic/lightning/bolt-strike-blue.webp",
-      "name": "Lightning Wellspring",
-      "origin": null,
-      "sort": 0,
-      "statuses": [],
-      "system": {
-        "tags": [
-          "wellspring"
-        ]
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "B9cNXIMQfpPHWYsd",
+      "_id": "4vwgbBeISbly9dpF",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
@@ -90,9 +39,6 @@
         "turns": null
       },
       "flags": {
-        "custom-system-builder": {
-          "isPredefined": true
-        },
         "fabula-ultima-companion": {
           "wellspring": "earth"
         }
@@ -112,7 +58,7 @@
       "type": "base"
     },
     {
-      "_id": "c2E1aR7fG3hGnMdW",
+      "_id": "6fh5XinxntiJ5lyi",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
@@ -123,13 +69,13 @@
       },
       "changes": [
         {
-          "key": "flags.fabula-ultima-companion.wellspring_light",
+          "key": "flags.fabula-ultima-companion.wellspring_dark",
           "mode": 5,
           "priority": 20,
           "value": "1"
         }
       ],
-      "description": "<p>The <strong>Sun</strong> wellspring is present. Invokers may draw light invocations from it.</p>",
+      "description": "<p>The <strong>Moon</strong> wellspring is present. Invokers may draw dark invocations from it.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -141,15 +87,12 @@
         "turns": null
       },
       "flags": {
-        "custom-system-builder": {
-          "isPredefined": true
-        },
         "fabula-ultima-companion": {
-          "wellspring": "light"
+          "wellspring": "dark"
         }
       },
-      "img": "icons/magic/light/explosion-star-glow-orange.webp",
-      "name": "Sun Wellspring",
+      "img": "icons/magic/unholy/orb-glowing-purple.webp",
+      "name": "Moon Wellspring",
       "origin": null,
       "sort": 0,
       "statuses": [],
@@ -163,77 +106,7 @@
       "type": "base"
     },
     {
-      "_id": "e8Thu9VstDP8uxzE",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": null,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "flags.fabula-ultima-companion.field_thin_air",
-          "mode": 5,
-          "priority": 20,
-          "value": "1"
-        }
-      ],
-      "description": "<p>The air is thin. At the <strong>start of each creature's turn</strong>, it loses <strong>5 Mind Points</strong>.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": null,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isPredefined": true
-        },
-        "fabula-ultima-companion": {
-          "reactionConfig": {
-            "effect_table": {
-              "0": {
-                "effect_kind": "grant",
-                "effect_label": "thin_air_drain",
-                "grant_amount": "-5",
-                "grant_resource": "mp",
-                "target_ref": "trigger_subject"
-              }
-            },
-            "reaction_config_table": {
-              "0": {
-                "reaction_effect_ref": "thin_air_drain",
-                "reaction_passive_mode": "force",
-                "reaction_source": "all",
-                "reaction_trigger": "turn_start"
-              }
-            }
-          }
-        }
-      },
-      "img": "icons/magic/air/fog-gas-smoke-swirling-gray.webp",
-      "name": "Thin Air",
-      "origin": null,
-      "sort": 0,
-      "statuses": [],
-      "system": {
-        "tags": [
-          "field",
-          "hazard"
-        ]
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "hFs0jAvn8SPCqiz6",
+      "_id": "ilJKdnLO8FRPvBT2",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
@@ -262,9 +135,6 @@
         "turns": null
       },
       "flags": {
-        "custom-system-builder": {
-          "isPredefined": true
-        },
         "fabula-ultima-companion": {
           "reactionConfig": {
             "effect_table": {
@@ -305,7 +175,7 @@
       "type": "base"
     },
     {
-      "_id": "Kt5O3nzfK303tRJ6",
+      "_id": "jEd6xPFX50BMPtQM",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
@@ -316,13 +186,13 @@
       },
       "changes": [
         {
-          "key": "flags.fabula-ultima-companion.wellspring_air",
+          "key": "flags.fabula-ultima-companion.wellspring_light",
           "mode": 5,
           "priority": 20,
           "value": "1"
         }
       ],
-      "description": "<p>The <strong>Air</strong> wellspring is present. Invokers may draw air invocations from it.</p>",
+      "description": "<p>The <strong>Sun</strong> wellspring is present. Invokers may draw light invocations from it.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -334,15 +204,12 @@
         "turns": null
       },
       "flags": {
-        "custom-system-builder": {
-          "isPredefined": true
-        },
         "fabula-ultima-companion": {
-          "wellspring": "air"
+          "wellspring": "light"
         }
       },
-      "img": "icons/magic/air/wind-stream-blue-gray.webp",
-      "name": "Air Wellspring",
+      "img": "icons/magic/light/explosion-star-glow-orange.webp",
+      "name": "Sun Wellspring",
       "origin": null,
       "sort": 0,
       "statuses": [],
@@ -356,7 +223,55 @@
       "type": "base"
     },
     {
-      "_id": "MrxpXe5okEO9vDxz",
+      "_id": "kapehaEN9Lj8avfc",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.wellspring_bolt",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>The <strong>Lightning</strong> wellspring is present. Invokers may draw bolt invocations from it.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "fabula-ultima-companion": {
+          "wellspring": "bolt"
+        }
+      },
+      "img": "icons/magic/lightning/bolt-strike-blue.webp",
+      "name": "Lightning Wellspring",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "wellspring"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "l3A8SW3r4I9u0CeR",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
@@ -385,9 +300,6 @@
         "turns": null
       },
       "flags": {
-        "custom-system-builder": {
-          "isPredefined": true
-        },
         "fabula-ultima-companion": {
           "wellspring": "ice"
         }
@@ -407,7 +319,122 @@
       "type": "base"
     },
     {
-      "_id": "NCRdYSDa8RbFy3qD",
+      "_id": "pEBs5rQAYxPcLaNB",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.wellspring_air",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>The <strong>Air</strong> wellspring is present. Invokers may draw air invocations from it.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "fabula-ultima-companion": {
+          "wellspring": "air"
+        }
+      },
+      "img": "icons/magic/air/wind-stream-blue-gray.webp",
+      "name": "Air Wellspring",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "wellspring"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "wpQpHtA5CCH3RXpg",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.field_thin_air",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>The air is thin. At the <strong>start of each creature's turn</strong>, it loses <strong>5 Mind Points</strong>.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "fabula-ultima-companion": {
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "effect_kind": "grant",
+                "effect_label": "thin_air_drain",
+                "grant_amount": "-5",
+                "grant_resource": "mp",
+                "target_ref": "trigger_subject"
+              }
+            },
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "thin_air_drain",
+                "reaction_passive_mode": "force",
+                "reaction_source": "all",
+                "reaction_trigger": "turn_start"
+              }
+            }
+          }
+        }
+      },
+      "img": "icons/magic/air/fog-gas-smoke-swirling-gray.webp",
+      "name": "Thin Air",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "field",
+          "hazard"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "yMwjVKpgbLdzruDi",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
@@ -436,66 +463,12 @@
         "turns": null
       },
       "flags": {
-        "custom-system-builder": {
-          "isPredefined": true
-        },
         "fabula-ultima-companion": {
           "wellspring": "fire"
         }
       },
       "img": "icons/magic/fire/flame-burning-campfire-orange.webp",
       "name": "Fire Wellspring",
-      "origin": null,
-      "sort": 0,
-      "statuses": [],
-      "system": {
-        "tags": [
-          "wellspring"
-        ]
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "w0AJgchCQsAbzDZw",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": null,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "flags.fabula-ultima-companion.wellspring_dark",
-          "mode": 5,
-          "priority": 20,
-          "value": "1"
-        }
-      ],
-      "description": "<p>The <strong>Moon</strong> wellspring is present. Invokers may draw dark invocations from it.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": null,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isPredefined": true
-        },
-        "fabula-ultima-companion": {
-          "wellspring": "dark"
-        }
-      },
-      "img": "icons/magic/unholy/orb-glowing-purple.webp",
-      "name": "Moon Wellspring",
       "origin": null,
       "sort": 0,
       "statuses": [],
