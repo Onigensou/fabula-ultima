@@ -59,6 +59,12 @@ const IDS = {
   AE_SPENT:    "3THoUX00A2aDDmrZ",   // Lance Spent (once-per-fight marker)
   AE_ARMOR:    "CH9mdR17V9Tcr5tM",   // Armor Stripped (Imp marker)
   AE_WEAPON:   "hFqpS4SODoIDeZgA",   // Weapon Stripped (Imp marker)
+  // ── Hilde-Fafnir benchmark (2026-09-20) — _hilde-benchmark*.js ─────────
+  HF_CLAW:     "GuKKQ7mxRYuOd5k5",   // Claw (Cripple filler)
+  HF_ZP:       "Rv0MHciFimYAkthU",   // Zero Power: Reinslaughter
+  HF_ZT:       "Z3B0oqcD6iDsuv0r",   // Zero Trigger: Contempt
+  AE_CULLING:  "SDPlk2tJKyfumppK",   // Culling (Reinslaughter self-marker)
+  HF_DISEN:    "ZK8J5gtn7GTwCzSZ",   // Disenchant (scene-effect strip)
 };
 
 // New Actor folder: The Legend of Dragonslayer / Monster / Fafnir Castle.
@@ -108,6 +114,11 @@ const L = {
   disarmed: link("JournalEntry.MM2SvLRyVhazkNq3", "Disarmed"),
   confused: link("JournalEntry.e9wABGGGFg7b9OMD", "Confused"),
   slow:     link("JournalEntry.HHmYmj7xffQMqtzT", "Slow"),
+  bolt:     link("Item.5XAuMMbDPlLzhJLw", "Bolt"),
+  burn:     link("JournalEntry.MSRXG4jUMPFpM9sN", "Burn"),
+  crisis:   link("JournalEntry.GJevbCPM8cffm1QM", "Crisis"),
+  execute:  link("JournalEntry.KHCaZjNmClkp7yfM", "Execute"),
+  cripple:  link("JournalEntry.qXBYN6c9FMZzmS2n", "Cripple"),
 };
 const bullets = (...items) => `<ul>${items.map((t) => `<li><p>${t}</p></li>`).join("")}</ul>`;
 const trig = (cond) => `${L.trigger}&nbsp;${cond}`;
@@ -120,6 +131,7 @@ const ICON = {
   passive:  SK + "Tree%20of%20Savior/Archer/icon_arch_burrow.png",
   reaction: SK + "Epic%207/show%20-%202025-07-20T213702.523.png",
   ospell:   SK + "Epic%207/show%20-%202025-07-20T213409.361.png",
+  spell:    SK + "Epic%207/show%20-%202025-07-20T213946.309.png",   // Generic NPC Spell (non-offensive)
   charm:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Heart.png",
   domin:    SK + "Epic%207/show%20-%202025-07-20T215904.664.png",
   // The two Strip markers. DEF/ATK DOWN say what the loss actually costs you,
@@ -129,6 +141,8 @@ const ICON = {
   atkdown:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/ATK%20DOWN.png",
   // Disarmed's own icon, reused by Prank (which inflicts it).
   dismantle: SK + "FFXIVIcons%20Battle(PvE)/12_MCH/dismantle.png",
+  zeropower: SK + "FFXIVIcons%20MainCommand%20(Others)/02_General/limit_break.png",
+  zerotrig:  SK + "Elsword/Els/MagicResistanceMasteryR.png",
 };
 
 // ── art ────────────────────────────────────────────────────────────────────

@@ -247,6 +247,10 @@ function parsePrefixedFocus(focusCtx, prefix) {
 
 function parseStatusFocus(focusCtx) { return parsePrefixedFocus(focusCtx, "status_focus"); }
 function parseStatusAvoid(focusCtx) { return parsePrefixedFocus(focusCtx, "status_avoid"); }
+/* `affinity_buff_focus:<elements>` — the targeting twin of the
+   `enemy_has_affinity_buff` condition, so a single-target strip spell lands on
+   the creature that actually warded itself rather than a random victim. */
+function parseAffinityBuffFocus(focusCtx) { return parsePrefixedFocus(focusCtx, "affinity_buff_focus"); }
 
 function affinityMultiplier(candidate, damageType) {
   if (!damageType) return 1;
@@ -536,6 +540,18 @@ export async function buildAndPickActionReaderTargets(context, options = {}) {
     // rule, and the same fail-open: if EVERYONE already has it the pool is left
     // untouched, so the action still resolves — gate the ROW on
     // enemy_lacks_status when it should not fire at all.
+    // `affinity_buff_focus:<elements>` — narrow to the creatures carrying a
+    // dispellable RS/IM/AB buff on those elements. Same narrowing-not-
+    // reweighting rule as status_focus, and the same fail-open: if nobody
+    // qualifies the pool is untouched, so the action still resolves. Gate the
+    // ROW on `enemy_has_affinity_buff` when it must not fire at all — which is
+    // exactly how a strip spell should be authored.
+    const affinityBuffElements = parseAffinityBuffFocus(focusCtx);
+    if (affinityBuffElements) {
+      const warded = legalCandidates.filter(c => AR.actorHasAffinityBuff(c.actor, affinityBuffElements));
+      if (warded.length) legalCandidates = warded;
+    }
+
     const statusAvoidName = parseStatusAvoid(focusCtx);
     if (statusAvoidName) {
       const free = legalCandidates.filter(c => AR.getEffectStackCount(c.actor, statusAvoidName) < 1);

@@ -42,7 +42,7 @@ t("re-applying refreshes the clock and never stacks the percent", () => {
   T.applyBuff(c, "strength", 25);
   T.tickTurnEnd(c); T.tickTurnEnd(c);
   T.applyBuff(c, "strength", 25);
-  assert.deepStrictEqual(c.buffs.strength, { pct: 25, turnsLeft: 3 });
+  assert.deepStrictEqual(c.buffs.strength, { pct: 25, flat: 0, flatMode: "slot", turnsLeft: 3 });
 });
 t("a longer duration lasts that many turns", () => {
   const c = { buffs: {} };
@@ -74,6 +74,24 @@ t("the boost lands AFTER efficiency and BEFORE affinity, floored (20 -> EF 30 ->
   assert.strictEqual(R.incomingDamage(tgt("VU"), { ...spec, postEfficiencyMult: 1.25 }).damage, 74);
   // Before efficiency would have read 20 x1.25 = 25 -> EF 38 -> VU 76: the order is observable.
   assert.strictEqual(R.incomingDamage(tgt("RS"), { ...spec, postEfficiencyMult: 1.25 }).damage, 19);
+});
+t("a FLAT bonus in the reaction slot is not scaled by efficiency, only by affinity", () => {
+  const spec = { base: 20, element: "physical", weaponFamily: "sword" };
+  // 20 -> EF 30 -> +10 = 40 -> VU 80. The efficiency already happened, so the +10 is
+  // worth exactly 10 before affinity doubles it — a 200% EF never touches it.
+  assert.strictEqual(R.incomingDamage(tgt("VU"), { ...spec, postEfficiencyAdd: 10 }).damage, 80);
+  // The SAME +10 folded into base damage instead: 30 -> EF 45 -> VU 90. Both multipliers
+  // see it, which is the placement a weapon damage_bonus occupies and no reaction reaches.
+  assert.strictEqual(R.incomingDamage(tgt("VU"), { ...spec, baseAdd: 10 }).damage, 90);
+});
+t("outgoingAdd routes the flat bonus to the slot its mode names", () => {
+  const c = { buffs: {} };
+  T.applyBuff(c, "strength", { flat: 10, flatMode: "slot" });
+  assert.deepStrictEqual(T.outgoingAdd(c, { defenseTarget: "def" }), { postEfficiencyAdd: 10, baseAdd: 0 });
+  // Lane-gated exactly like the percentage: Strength never rides an MDEF action.
+  assert.deepStrictEqual(T.outgoingAdd(c, { defenseTarget: "mdef" }), { postEfficiencyAdd: 0, baseAdd: 0 });
+  T.applyBuff(c, "strength", { flat: 10, flatMode: "base" });
+  assert.deepStrictEqual(T.outgoingAdd(c, { defenseTarget: "def" }), { postEfficiencyAdd: 0, baseAdd: 10 });
 });
 t("Endurance sums into percentage damage reduction", () => {
   const target = { affinities: {}, statuses: {}, damageReduction: { flat: 0, percent: 25 } };
@@ -133,8 +151,11 @@ t("a measured prior overrides the projection", () => {
   assert.strictEqual(pick.target, keren);
 });
 t("measureLanePrior averages each PC's per-round damage by lane", () => {
-  const run = (rounds, def, mdef) => ({ rounds, combatants: [{ side: "party", name: "Zarg", damageByLane: { def, mdef } }] });
-  assert.deepStrictEqual(T.measureLanePrior([run(2, 100, 0), run(4, 100, 40)]), { zarg: { def: 37.5, mdef: 5 } });
+  const run = (rounds, def, mdef, defHits = 0, mdefHits = 0) => ({
+    rounds, combatants: [{ side: "party", name: "Zarg", damageByLane: { def, mdef }, hitsByLane: { def: defHits, mdef: mdefHits } }],
+  });
+  assert.deepStrictEqual(T.measureLanePrior([run(2, 100, 0, 4), run(4, 100, 40, 4)]),
+    { zarg: { def: 37.5, mdef: 5, defHits: 1.5, mdefHits: 0 } });
 });
 t("only the carrier drinks", () => {
   const { state, zarg, projectLane } = policyState();

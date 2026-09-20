@@ -108,7 +108,101 @@
       },
       "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
-      "name": "Dragoon Lance",
+      "name": "Impalement",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "action_keywords": "execute",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "8",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "70",
+          "defense_target_type": "mdef",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.KHCaZjNmClkp7yfM\" data-id=\"KHCaZjNmClkp7yfM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Execute</strong></a></p></li></ul><p>Deal <strong>devastating</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": true,
+              "damage_amount": "2",
+              "damage_operation": "multiply",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "dl_execute"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Impalement",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": true,
+              "condition_formula": "TARGET_AE_COUNT_CRISIS > 0",
+              "reaction_effect_ref": "dl_execute",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_source_skill": "Dragoon Lance",
+              "reaction_trigger": "creature_will_deal_damage"
+            }
+          },
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "DEX",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Attack",
+          "type_damage": "Physical",
+          "use_optional_params": false,
+          "uuid": "Actor.2SFrEMqLBfqzc7Nj.Item.fA6feEtGFrfjrMAP"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "A87i0WJvlVD1w3E7"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "GuKKQ7mxRYuOd5k5",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+      "name": "Scorched Claw",
       "ownership": {
         "default": 0
       },
@@ -125,12 +219,30 @@
           "check_bonus": "8",
           "class": "NPC",
           "cost": "-",
-          "damage_bonus": "52",
+          "damage_bonus": "40",
           "defense_target_type": "def",
-          "description": "<p>Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature.</p>",
+          "description": "<p>Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>&nbsp;damage to one creature. Damage increases with the target's maximum Hit Points.</p><p><strong>50%</strong> chance to inflict <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Burn</strong></a>.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "damage_amount": "floor(TARGET_MAX_HP * 0.25)",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "sc_maxhp"
+            },
+            "1": {
+              "$deleted": false,
+              "ae_chance_percent": "50",
+              "ae_duplicate_mode": "skip",
+              "ae_template_ref": "Burn",
+              "effect_kind": "apply_ae",
+              "effect_label": "sc_burn",
+              "target_ref": "hit_action_targets"
+            }
+          },
           "heroic_requirement": "",
           "id": "${item.id}",
           "ignore_hr": false,
@@ -139,14 +251,31 @@
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
-          "isReaction": false,
+          "isReaction": true,
           "isZeroPower": false,
           "level": "1",
           "max_level": "1",
-          "name": "Dragoon Lance",
+          "name": "Scorched Claw",
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "reaction_effect_ref": "sc_maxhp",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_source_skill": "Scorched Claw",
+              "reaction_trigger": "creature_will_deal_damage"
+            },
+            "1": {
+              "$deleted": false,
+              "reaction_effect_ref": "sc_burn",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_source_skill": "Scorched Claw",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
           "rolled_atr1": "MIG",
           "rolled_atr2": "DEX",
           "skill_animation_default": "",
@@ -155,9 +284,9 @@
           "skill_range": "Melee",
           "skill_target": "One Creature",
           "skill_type": "Attack",
-          "type_damage": "Physical",
+          "type_damage": "Fire",
           "use_optional_params": false,
-          "uuid": "Actor.2SFrEMqLBfqzc7Nj.Item.fA6feEtGFrfjrMAP"
+          "uuid": "Actor.2SFrEMqLBfqzc7Nj.Item.GuKKQ7mxRYuOd5k5"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2125250754,
@@ -199,16 +328,16 @@
           "animation_script": "",
           "check_bonus": "0",
           "class": "NPC",
-          "cost": "50 MP",
+          "cost": "150 MP",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<p>Hilde-Fafnir levels the Lance at the party. <strong>Every enemy is reduced to 1 Hit Point.</strong></p><p>Usable once per conflict.</p>",
+          "description": "<p>Hilde-Fafnir levels the Lance and the throne room agrees with it. <strong>Every enemy is reduced to 1 Hit Point.</strong></p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "$deleted": false,
-              "chain_steps": "lr_ruin,lr_spend",
+              "chain_steps": "lr_ruin",
               "effect_kind": "chain",
               "effect_label": "lr_lance"
             },
@@ -224,7 +353,7 @@
               "target_ref": "action_targets"
             },
             "2": {
-              "$deleted": false,
+              "$deleted": true,
               "ae_duplicate_mode": "replace",
               "ae_template_ref": "Lance Spent",
               "effect_kind": "apply_ae",
@@ -259,6 +388,294 @@
           "type_damage": "",
           "use_optional_params": false,
           "uuid": "Actor.2SFrEMqLBfqzc7Nj.Item.IoQn3JsHHcqGNM4U"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Rv0MHciFimYAkthU",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20MainCommand%20(Others)/02_General/limit_break.png",
+      "name": "Zero Power: Reinslaughter",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "6 Zero Power",
+          "damage_bonus": "60",
+          "defense_target_type": "mdef",
+          "description": "<p>Deal <strong>devastating</strong> <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to all enemies. Damage increases the lower the target's HP.</p><p>A creature that takes the hit in another's place takes it as that creature would have.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "damage_amount": "floor(400 * (1 - ORIGINAL_TARGET_CURRENT_HP / ORIGINAL_TARGET_MAX_HP))",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "rs_curve"
+            },
+            "1": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Culling",
+              "effect_kind": "apply_ae",
+              "effect_label": "rs_mark",
+              "target_ref": "self"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20MainCommand%20(Others)/02_General/limit_break.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Zero Power: Reinslaughter",
+          "on_activate_effect_ref": "rs_mark",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "reaction_effect_ref": "rs_curve",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_source_skill": "Zero Power: Reinslaughter",
+              "reaction_trigger": "creature_will_deal_damage"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "All Enemies",
+          "skill_type": "Active",
+          "type_damage": "Bolt",
+          "use_optional_params": false,
+          "uuid": "Actor.2SFrEMqLBfqzc7Nj.Item.Rv0MHciFimYAkthU"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Z3B0oqcD6iDsuv0r",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/MagicResistanceMasteryR.png",
+      "name": "Zero Trigger: Contempt",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>Whenever an enemy enters <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Crisis</strong></a> or is reduced to 0 HP, Hilde-Fafnir <strong>gains 1 Zero Power</strong>. Reinslaughter does not feed it.</p>",
+          "details_roller": "Show",
+          "duration": "-",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "ct_gain",
+              "grant_amount": "1",
+              "grant_resource": "zero_power",
+              "target_ref": "self"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/MagicResistanceMasteryR.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Zero Trigger: Contempt",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "TARGET_CURRENT_HP > 0 && AE_COUNT_CULLING == 0",
+              "reaction_effect_ref": "ct_gain",
+              "reaction_passive_mode": "force",
+              "reaction_source": "enemy",
+              "reaction_status_filter": "Crisis",
+              "reaction_trigger": "creature_status_applied"
+            },
+            "1": {
+              "$deleted": false,
+              "condition_formula": "AE_COUNT_CULLING == 0",
+              "reaction_effect_ref": "ct_gain",
+              "reaction_passive_mode": "force",
+              "reaction_source": "enemy",
+              "reaction_trigger": "creature_defeated"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "-",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.2SFrEMqLBfqzc7Nj.Item.Z3B0oqcD6iDsuv0r"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "vdEX0eAROfOYjHED"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ZK8J5gtn7GTwCzSZ",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213946.309.png",
+      "name": "Disenchant",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>Remove all effects with a duration of <strong>Scene</strong> from one creature.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "disen_strip",
+              "filter_tag": "dispellable",
+              "target_ref": "action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213946.309.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Disenchant",
+          "on_activate_effect_ref": "disen_strip",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Spell",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.2SFrEMqLBfqzc7Nj.Item.ZK8J5gtn7GTwCzSZ"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2125250754,
@@ -460,42 +877,87 @@
       "action_pattern_table": {
         "0": {
           "$deleted": false,
-          "action_pattern_condition": "self_lacks_status",
+          "action_pattern_condition": "zero_power",
           "action_pattern_cooldown": "0",
+          "action_pattern_focus_status": "",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Zero Power: Reinslaughter",
+          "action_pattern_priority": "20",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "100",
+          "action_pattern_value_2": "100"
+        },
+        "1": {
+          "$deleted": false,
+          "action_pattern_condition": "round",
+          "action_pattern_cooldown": "0",
+          "action_pattern_focus_status": "",
           "action_pattern_hp_ceiling": "60",
           "action_pattern_hp_reserve": "0",
           "action_pattern_name": "Lance of Ruin",
           "action_pattern_priority": "12",
-          "action_pattern_string": "Lance Spent",
+          "action_pattern_string": "",
           "action_pattern_target_focus": "auto",
-          "action_pattern_value_1": "",
-          "action_pattern_value_2": ""
+          "action_pattern_value_1": "2",
+          "action_pattern_value_2": "3"
         },
-        "1": {
+        "2": {
           "$deleted": false,
           "action_pattern_condition": "mp",
           "action_pattern_cooldown": "1",
+          "action_pattern_focus_status": "",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
           "action_pattern_name": "Wyrmbreath",
-          "action_pattern_priority": "6",
+          "action_pattern_priority": "5",
           "action_pattern_string": "",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "20",
           "action_pattern_value_2": "100"
         },
-        "2": {
+        "3": {
+          "$deleted": false,
+          "action_pattern_condition": "enemy_has_status",
+          "action_pattern_cooldown": "0",
+          "action_pattern_focus_status": "Crisis",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Impalement",
+          "action_pattern_priority": "4",
+          "action_pattern_string": "Crisis",
+          "action_pattern_target_focus": "status_focus",
+          "action_pattern_value_1": "",
+          "action_pattern_value_2": ""
+        },
+        "4": {
           "$deleted": false,
           "action_pattern_condition": "always",
           "action_pattern_cooldown": "0",
+          "action_pattern_focus_status": "",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Dragoon Lance",
+          "action_pattern_name": "Scorched Claw",
           "action_pattern_priority": "3",
           "action_pattern_string": "",
-          "action_pattern_target_focus": "lowest_hp",
-          "action_pattern_value_1": "0",
-          "action_pattern_value_2": "100"
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "",
+          "action_pattern_value_2": ""
+        },
+        "5": {
+          "$deleted": false,
+          "action_pattern_condition": "enemy_has_affinity_buff",
+          "action_pattern_cooldown": "1",
+          "action_pattern_focus_status": "fire,bolt",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Disenchant",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "fire,bolt",
+          "action_pattern_target_focus": "affinity_buff_focus",
+          "action_pattern_value_1": "",
+          "action_pattern_value_2": ""
         }
       },
       "activation": "1",
@@ -511,13 +973,23 @@
       "animation_table": {},
       "arcane_ef": "100",
       "attack_list": {
-        "fA6feEtGFrfjrMAP": {
+        "GuKKQ7mxRYuOd5k5": {
           "active_target": "One Creature",
-          "attack_description": "<p>Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature.</p>",
+          "attack_description": "<p>Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>&nbsp;damage to one creature. Damage increases with the target's maximum Hit Points.</p><p><strong>50%</strong> chance to inflict <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Burn</strong></a>.</p>",
           "attribute_die1": "MIG",
           "attribute_die2": "DEX",
           "id": "${item.id}",
-          "name": "Dragoon Lance",
+          "name": "Scorched Claw",
+          "roll": "",
+          "uuid": "Actor.2SFrEMqLBfqzc7Nj.Item.GuKKQ7mxRYuOd5k5"
+        },
+        "fA6feEtGFrfjrMAP": {
+          "active_target": "One Creature",
+          "attack_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.KHCaZjNmClkp7yfM\" data-id=\"KHCaZjNmClkp7yfM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Execute</strong></a></p></li></ul><p>Deal <strong>devastating</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature.</p>",
+          "attribute_die1": "MIG",
+          "attribute_die2": "DEX",
+          "id": "${item.id}",
+          "name": "Impalement",
           "roll": "",
           "uuid": "Actor.2SFrEMqLBfqzc7Nj.Item.fA6feEtGFrfjrMAP"
         }
@@ -684,6 +1156,16 @@
           "spell_description": "<p>Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;damage to all enemies.</p>",
           "spell_target": "All Enemies",
           "uuid": "Actor.2SFrEMqLBfqzc7Nj.Item.7wOhRfCoYWhuVkLn"
+        },
+        "ZK8J5gtn7GTwCzSZ": {
+          "cost": "10 MP",
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Disenchant",
+          "roll": "",
+          "spell_description": "<p>Remove all effects with a duration of <strong>Scene</strong> from one creature.</p>",
+          "spell_target": "One Creature",
+          "uuid": "Actor.2SFrEMqLBfqzc7Nj.Item.ZK8J5gtn7GTwCzSZ"
         }
       },
       "npc_rank": "champion",
@@ -705,17 +1187,35 @@
       "showMacro": false,
       "skill_active_list": {
         "IoQn3JsHHcqGNM4U": {
-          "active_cost": "50 MP",
-          "active_description": "<p>Hilde-Fafnir levels the Lance at the party. <strong>Every enemy is reduced to 1 Hit Point.</strong></p><p>Usable once per conflict.</p>",
+          "active_cost": "150 MP",
+          "active_description": "<p>Hilde-Fafnir levels the Lance and the throne room agrees with it. <strong>Every enemy is reduced to 1 Hit Point.</strong></p>",
           "active_duration": "Instantaneous",
           "active_target": "All Enemies",
           "id": "${item.id}",
           "name": "Lance of Ruin",
           "roll": "",
           "uuid": "Actor.2SFrEMqLBfqzc7Nj.Item.IoQn3JsHHcqGNM4U"
+        },
+        "Rv0MHciFimYAkthU": {
+          "active_cost": "6 Zero Power",
+          "active_description": "<p>Deal <strong>devastating</strong> <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to all enemies. Damage increases the lower the target's HP.</p><p>A creature that takes the hit in another's place takes it as that creature would have.</p>",
+          "active_duration": "Instantaneous",
+          "active_target": "All Enemies",
+          "id": "${item.id}",
+          "name": "Zero Power: Reinslaughter",
+          "roll": "",
+          "uuid": "Actor.2SFrEMqLBfqzc7Nj.Item.Rv0MHciFimYAkthU"
         }
       },
-      "skill_passive_list": {},
+      "skill_passive_list": {
+        "Z3B0oqcD6iDsuv0r": {
+          "id": "${item.id}",
+          "name": "Zero Trigger: Contempt",
+          "passive_description": "<p>Whenever an enemy enters <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Crisis</strong></a> or is reduced to 0 HP, Hilde-Fafnir <strong>gains 1 Zero Power</strong>. Reinslaughter does not feed it.</p>",
+          "roll": "",
+          "uuid": "Actor.2SFrEMqLBfqzc7Nj.Item.Z3B0oqcD6iDsuv0r"
+        }
+      },
       "spear_ef": "150",
       "species": "MONSTER",
       "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Princess%20Hilde/Hilde_Standard.png",

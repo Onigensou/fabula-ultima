@@ -163,9 +163,17 @@ function incomingDamage(target, {
   keywords = null,
   // Outgoing multiplier folded after weapon efficiency (step 2b). 1 = none.
   postEfficiencyMult = 1,
+  // Flat outgoing bonus in the SAME reaction slot as the multiplier (step 2b), i.e.
+  // what an adjust_damage "add" op does today: efficiency has already been applied,
+  // so EF never scales it — only affinity, which comes after, does.
+  postEfficiencyAdd = 0,
+  // Flat bonus folded into the BASE damage instead (step 0), the slot a weapon's
+  // damage_bonus occupies. Every later multiplier — DR, efficiency, affinity — sees
+  // it, so this is the placement that scales with x2/x4. No reaction op reaches it.
+  baseAdd = 0,
 } = {}) {
   const breakdown = [];
-  let v = Math.max(0, Math.ceil(Number(base) || 0));
+  let v = Math.max(0, Math.ceil((Number(base) || 0) + (Number(baseAdd) || 0)));
 
   const kw = normalizeKeywords(keywords);
   const crush = kw.includes("crush");
@@ -198,6 +206,11 @@ function incomingDamage(target, {
     const b = v;
     v = Math.max(0, Math.floor(v * postEfficiencyMult));
     if (v !== b) breakdown.push({ source: `Outgoing x${postEfficiencyMult}`, amount: v - b });
+  }
+  if (postEfficiencyAdd) {
+    const b = v;
+    v = Math.max(0, v + (Number(postEfficiencyAdd) || 0));
+    if (v !== b) breakdown.push({ source: `Outgoing +${postEfficiencyAdd}`, amount: v - b });
   }
 
   // 3) Additive per-element bump — BEFORE affinity, so VU doubles the bonus too.

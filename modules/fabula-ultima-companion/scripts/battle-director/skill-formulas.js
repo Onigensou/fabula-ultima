@@ -1054,6 +1054,31 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const subject = _resolveActorByUuidSync(subjectUuid);
         return subject ? (Number(subject?.system?.props?.max_hp ?? 0) || 0) : 0;
       }
+      // HP of the creature the hit was ORIGINALLY aimed at — redirect-aware twins
+      // of TARGET_CURRENT_HP / TARGET_MAX_HP. When Protect / Prophetic Defender
+      // moves a slot onto a defender, TARGET_* reads the defender; these read the
+      // ally that was covered, so a "scales with the victim's missing HP" rider
+      // hits the defender as hard as it would have hit the ally. A defender
+      // covering several allies reads the one with the LOWEST HP% (the harshest
+      // slot). No redirect → identical to TARGET_*. Opt-in: only formulas naming
+      // these identifiers change (first user: Hilde-Fafnir's Reinslaughter).
+      case "ORIGINAL_TARGET_CURRENT_HP":
+      case "ORIGINAL_TARGET_MAX_HP": {
+        const list = Array.isArray(payload?.originalSubjectActorUuids) && payload.originalSubjectActorUuids.length
+          ? payload.originalSubjectActorUuids
+          : [String(payload?.subjectActorUuid ?? "").trim()].filter(Boolean);
+        let pick = null, pickRatio = Infinity;
+        for (const u of list) {
+          const a = _resolveActorByUuidSync(u);
+          if (!a) continue;
+          const cur = Number(a?.system?.props?.current_hp ?? 0) || 0;
+          const max = Number(a?.system?.props?.max_hp ?? 0) || 0;
+          const ratio = max > 0 ? cur / max : 1;
+          if (ratio < pickRatio) { pick = { cur, max }; pickRatio = ratio; }
+        }
+        if (!pick) return 0;
+        return name === "ORIGINAL_TARGET_CURRENT_HP" ? pick.cur : pick.max;
+      }
       // Current MP of the trigger's subject (the target). The MP twin of
       // TARGET_CURRENT_HP — same subjectActorUuid resolve, reading current_mp.
       // Needed to CAP an MP-burn at what the victim actually has, so a rider

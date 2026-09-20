@@ -78,6 +78,9 @@ function makeCombatant(actor, side) {
     // Damage dealt split by the defence it was rolled against — the tincture carrier's
     // prior on who the party's DEF and MDEF carries are (tinctures.measureLanePrior).
     damageByLane: { def: 0, mdef: 0 },
+    // Landed hits by lane — a flat tincture pays per hit, so its carrier prior counts
+    // these rather than damage (tinctures.measureLanePrior).
+    hitsByLane: { def: 0, mdef: 0 },
     alive: true,
     // Per-run accounting, split per spec D3.
     baseActionsTaken: 0,
@@ -561,22 +564,26 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
     // affinity, and on a HIT only — live folds reaction ops on a hit, so a Pierce
     // half-damage miss is not boosted.
     const tinctureMult = check.hit ? T.outgoingMult(actor, action) : 1;
+    const tinctureAdd = check.hit ? T.outgoingAdd(actor, action) : { postEfficiencyAdd: 0, baseAdd: 0 };
     const dmgSpec = {
       base,
       element: action.element,
       weaponFamily: action.weaponFamily,
       keywords: action.keywords,
       postEfficiencyMult: tinctureMult,
+      postEfficiencyAdd: tinctureAdd.postEfficiencyAdd,
+      baseAdd: tinctureAdd.baseAdd,
     };
     let out = R.incomingDamage(
       { ...target.actor, damageReduction: reductionFor(target, action.element) },
       dmgSpec,
     );
     // The same hit unboosted, so the report can say what the tincture added.
-    const unboosted = tinctureMult !== 1
+    const boosted = tinctureMult !== 1 || tinctureAdd.postEfficiencyAdd > 0 || tinctureAdd.baseAdd > 0;
+    const unboosted = boosted
       ? R.incomingDamage(
         { ...target.actor, damageReduction: reductionFor(target, action.element) },
-        { ...dmgSpec, postEfficiencyMult: 1 },
+        { ...dmgSpec, postEfficiencyMult: 1, postEfficiencyAdd: 0, baseAdd: 0 },
       ).damage
       : null;
 
@@ -650,6 +657,7 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
       if (out.damage > 0) victim.hitsTaken++;
       actor.damageDealt += out.damage;
       actor.damageByLane[action.defenseTarget === "mdef" ? "mdef" : "def"] += out.damage;
+      if (out.damage > 0) actor.hitsByLane[action.defenseTarget === "mdef" ? "mdef" : "def"]++;
       if (victim.hp <= 0) {
         victim.hp = 0;
         victim.alive = false;
@@ -1041,10 +1049,15 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
       damageTaken: c.damageTaken, damageTakenBy: { ...c.damageTakenBy }, hitsTaken: c.hitsTaken,
       downedOnRound: c.downedOnRound, fpSpent: c.fpSpent, turnsDenied: c.turnsDenied,
       tinctureBonusDealt: c.tinctureBonusDealt, tincturePrevented: c.tincturePrevented,
-      tincturesUsed: c.tincturesUsed, damageByLane: { ...c.damageByLane },
+      tincturesUsed: c.tincturesUsed, damageByLane: { ...c.damageByLane }, hitsByLane: { ...c.hitsByLane },
     })),
     tinctures: state.tinctures
-      ? { pct: { ...state.tinctures.pct }, used: { ...state.tinctures.used } }
+      ? {
+        pct: { ...state.tinctures.pct },
+        flat: { ...(state.tinctures.flat ?? {}) },
+        flatMode: state.tinctures.flatMode,
+        used: { ...state.tinctures.used },
+      }
       : null,
     // Per-lane weapon-efficiency pressure. Only populated when something in the
     // fight actually reads weapon families, so it costs nothing otherwise.

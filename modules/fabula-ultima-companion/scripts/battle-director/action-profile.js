@@ -141,6 +141,55 @@ function collectActionKeywords({ view, weapon, kind, primary = null }) {
   return [...set];
 }
 
+// ── Execute / Cripple — keyword-driven, judged per target ───────────────────
+// The rule lives in the KEYWORD, not in the action's name. Any action whose
+// keyword set carries `execute` deals double damage to a target already in
+// Crisis; `cripple` doubles against a target that is NOT in Crisis. Both read
+// from the same `action_keywords` union every other inherent keyword uses
+// (item prop, weapon prop, reaction-granted), so authoring one is just typing
+// the keyword — no per-skill reaction row, and no name coupling.
+//
+// Before this, the ×2 was authored per item as a `creature_will_deal_damage`
+// rider scoped by `reaction_source_skill` — i.e. "this fires because the skill
+// is CALLED Dragoon Lance", which broke silently on rename and left the keyword
+// itself inert (tooltip only). Rows that predate this were migrated out in
+// `_migrate-execute-cripple-keyword.js`; a row left behind would stack with
+// this and deal ×4.
+//
+// Judged on the TARGET SNAPSHOT, taken before this hit lands, so an attack that
+// pushes a creature INTO Crisis does not retroactively earn Execute — matching
+// the riders this replaces. Emitted as ordinary damage ops so they fold, and
+// are itemized on the card, exactly like a reaction's.
+// Crisis is read from the target entry's condition list when it has one — but
+// the ATTACK path's entries arrive without it (only the Skill path's snapshots
+// carry `conditions`), so fall back to the live actor's own effects. Measured:
+// an NPC attack saw `conditions: []` against a target the snapshot reported as
+// Crisis, which silently made every Execute inert on exactly the actions most
+// likely to carry one. Sync resolve — this runs inside the per-target loop and
+// on the pre-roll preview path, where there is no live actor fetched yet.
+function targetIsInCrisis(target) {
+  const named = (n) => String(n ?? "").trim().toLowerCase() === "crisis";
+  for (const c of target?.conditions ?? []) if (named(c)) return true;
+  if (Array.isArray(target?.conditions) && target.conditions.length) return false;
+  try {
+    const resolve = foundry?.utils?.fromUuidSync ?? globalThis.fromUuidSync;
+    const doc = resolve?.(target?.actorUuid ?? target?.tokenUuid ?? "");
+    const actor = doc?.actor ?? doc ?? null;
+    for (const eff of actor?.effects ?? []) {
+      if (!eff?.disabled && named(eff?.name ?? eff?.label)) return true;
+    }
+  } catch (_e) { /* unresolvable target — treat as not in Crisis */ }
+  return false;
+}
+
+export function crisisKeywordOps(keywords, inCrisis) {
+  const list = Array.isArray(keywords) ? keywords : [];
+  const ops = [];
+  if (list.includes("execute") && inCrisis) ops.push({ op: "multiply", amount: 2, source: "Execute" });
+  if (list.includes("cripple") && !inCrisis) ops.push({ op: "multiply", amount: 2, source: "Cripple" });
+  return ops;
+}
+
 function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = null, chainVars = null }) {
   const kind = view?.kind ?? ar?.kind ?? "Skill";
   const props = liveAttacker?.system?.props ?? null;
@@ -470,6 +519,11 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
   });
   const pickDef = (e) => vsMDef ? (e.magicDefense ?? 0) : (e.defense ?? 0);
 
+  // Inherent action keywords for THIS action (item prop + weapon prop + the
+  // primary's own set) — action-level, so resolved once; Execute / Cripple then
+  // apply per target inside the loop.
+  const actionKeywordSet = collectActionKeywords({ view, weapon, kind, primary });
+
   const rolled = check.required && check.total != null;
   const effectiveHr = check.grantHrAsZero || String(ctx?.attackMode ?? "").startsWith("two-weapon")
     ? 0
@@ -521,7 +575,12 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
     // actorUuid (back-compat / single-token actors). The tokenUuid key
     // disambiguates two LINKED tokens that share one world actor — both would
     // collide on actorUuid. computeSenderDamageBonuses emits both keys.
-    const targetOps = opsMap?.get?.(e.tokenUuid) ?? opsMap?.get?.(e.actorUuid) ?? [];
+    const reactionOps = opsMap?.get?.(e.tokenUuid) ?? opsMap?.get?.(e.actorUuid) ?? [];
+    // Inherent Execute / Cripple fold in as ordinary ops, AFTER the reaction
+    // ops — so the ×2 multiplies the post-bonus figure, which is where the
+    // per-skill riders this replaces sat.
+    const keywordOps = crisisKeywordOps(actionKeywordSet, targetIsInCrisis(e));
+    const targetOps = keywordOps.length ? [...reactionOps, ...keywordOps] : reactionOps;
 
     // Affinity helper (MP damage / status-only → NE). Forced-VU is ATTACK-only
     // in COMPUTE today; gate to kind==="Attack". Guard's "RS to all" is NO LONGER

@@ -389,6 +389,42 @@ function evaluateEnemyLacksStatus(context, row) {
   };
 }
 
+/* Passes if any enemy carries a DISPELLABLE effect granting RS / IM / AB on one
+   of the elements named in the row string ("fire,bolt"). The gate for a strip
+   spell: "somebody warded themselves against what I hit with, and I can take it
+   off them". Innate sheet affinity and undispellable sources (equipment, class
+   marks) deliberately do NOT count — see AR.actorHasAffinityBuff. */
+function evaluateEnemyHasAffinityBuff(context, row) {
+  const elements = AR.toString(row?.stringRaw, "").trim();
+  const label = "Enemy Has Affinity Buff";
+
+  if (!elements) {
+    return { passed: false, conditionKey: "enemy_has_affinity_buff", conditionLabel: label,
+      reason: "No element list entered in the row string field (e.g. \"fire,bolt\").", details: {} };
+  }
+
+  const tokenDoc = getPerformerTokenDoc(context);
+  const performerDisposition = AR.getTokenDisposition(tokenDoc);
+  let holder = null;
+  for (const tok of AR.participantTokens(context)) {
+    const actor = AR.getTokenActor(tok);
+    if (!actor) continue;
+    if (AR.relationToPerformer(AR.getTokenDisposition(AR.getTokenDocument(tok)), performerDisposition) !== "enemy") continue;
+    if (AR.actorHasAffinityBuff(actor, elements)) { holder = AR.getActorName(actor); break; }
+  }
+
+  const passed = Boolean(holder);
+  return {
+    passed,
+    conditionKey: "enemy_has_affinity_buff",
+    conditionLabel: label,
+    reason: passed
+      ? `Enemy "${holder}" carries a dispellable ${elements} buff.`
+      : `No enemy carries a dispellable ${elements} buff.`,
+    details: { elements, holder }
+  };
+}
+
 /* Passes if any enemy (opposing-side token) carries the named status. */
 function evaluateEnemyHasStatus(context, row) {
   const statusName = AR.toString(row?.stringRaw, "").trim();
@@ -719,6 +755,9 @@ function evaluateOneCondition(context, row, options = {}) {
 
     case "ally_count":
       return evaluateCountCondition(context, row, "ally", "Ally Count");
+
+    case "enemy_has_affinity_buff":
+      return evaluateEnemyHasAffinityBuff(context, row);
 
     case "enemy_has_status":
       return evaluateEnemyHasStatus(context, row);

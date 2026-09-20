@@ -3442,6 +3442,61 @@
       "type": "base"
     },
     {
+      "_id": "SDPlk2tJKyfumppK",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781654522107,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Hilde-Fafnir is unleashing Reinslaughter. What falls to it does not feed Contempt.</p>",
+      "disabled": false,
+      "duration": {},
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "SDPlk2tJKyfumppK",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.SDPlk2tJKyfumppK"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-culling",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": false
+        },
+        "fabula-ultima-companion": {
+          "crossScene": false
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20MainCommand%20(Others)/02_General/limit_break.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20MainCommand%20(Others)/02_General/limit_break.png",
+      "name": "Culling",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
       "_id": "Sdw3TFToNRqc4fBC",
       "_stats": {
         "compendiumSource": null,
