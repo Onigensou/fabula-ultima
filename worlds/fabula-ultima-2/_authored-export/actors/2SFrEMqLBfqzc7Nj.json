@@ -599,6 +599,90 @@
         "uniqueId": "vdEX0eAROfOYjHED"
       },
       "type": "equippableItem"
+    },
+    {
+      "_id": "ZK8J5gtn7GTwCzSZ",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213946.309.png",
+      "name": "Disenchant",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>Remove all effects with a duration of <strong>Scene</strong> from one creature.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "disen_strip",
+              "filter_tag": "dispellable",
+              "target_ref": "action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213946.309.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Disenchant",
+          "on_activate_effect_ref": "disen_strip",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Spell",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.2SFrEMqLBfqzc7Nj.Item.ZK8J5gtn7GTwCzSZ"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
     }
   ],
   "name": "⭐️ Hilde-Fafnir",
@@ -860,6 +944,20 @@
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "",
           "action_pattern_value_2": ""
+        },
+        "5": {
+          "$deleted": false,
+          "action_pattern_condition": "enemy_has_affinity_buff",
+          "action_pattern_cooldown": "1",
+          "action_pattern_focus_status": "fire,bolt",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Disenchant",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "fire,bolt",
+          "action_pattern_target_focus": "affinity_buff_focus",
+          "action_pattern_value_1": "",
+          "action_pattern_value_2": ""
         }
       },
       "activation": "1",
@@ -1058,6 +1156,16 @@
           "spell_description": "<p>Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;damage to all enemies.</p>",
           "spell_target": "All Enemies",
           "uuid": "Actor.2SFrEMqLBfqzc7Nj.Item.7wOhRfCoYWhuVkLn"
+        },
+        "ZK8J5gtn7GTwCzSZ": {
+          "cost": "10 MP",
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Disenchant",
+          "roll": "",
+          "spell_description": "<p>Remove all effects with a duration of <strong>Scene</strong> from one creature.</p>",
+          "spell_target": "One Creature",
+          "uuid": "Actor.2SFrEMqLBfqzc7Nj.Item.ZK8J5gtn7GTwCzSZ"
         }
       },
       "npc_rank": "champion",
