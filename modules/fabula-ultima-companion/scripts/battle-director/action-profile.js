@@ -160,11 +160,25 @@ function collectActionKeywords({ view, weapon, kind, primary = null }) {
 // pushes a creature INTO Crisis does not retroactively earn Execute — matching
 // the riders this replaces. Emitted as ordinary damage ops so they fold, and
 // are itemized on the card, exactly like a reaction's.
+// Crisis is read from the target entry's condition list when it has one — but
+// the ATTACK path's entries arrive without it (only the Skill path's snapshots
+// carry `conditions`), so fall back to the live actor's own effects. Measured:
+// an NPC attack saw `conditions: []` against a target the snapshot reported as
+// Crisis, which silently made every Execute inert on exactly the actions most
+// likely to carry one. Sync resolve — this runs inside the per-target loop and
+// on the pre-roll preview path, where there is no live actor fetched yet.
 function targetIsInCrisis(target) {
-  const conditions = target?.conditions ?? [];
-  for (const c of conditions) {
-    if (String(c ?? "").trim().toLowerCase() === "crisis") return true;
-  }
+  const named = (n) => String(n ?? "").trim().toLowerCase() === "crisis";
+  for (const c of target?.conditions ?? []) if (named(c)) return true;
+  if (Array.isArray(target?.conditions) && target.conditions.length) return false;
+  try {
+    const resolve = foundry?.utils?.fromUuidSync ?? globalThis.fromUuidSync;
+    const doc = resolve?.(target?.actorUuid ?? target?.tokenUuid ?? "");
+    const actor = doc?.actor ?? doc ?? null;
+    for (const eff of actor?.effects ?? []) {
+      if (!eff?.disabled && named(eff?.name ?? eff?.label)) return true;
+    }
+  } catch (_e) { /* unresolvable target — treat as not in Crisis */ }
   return false;
 }
 
