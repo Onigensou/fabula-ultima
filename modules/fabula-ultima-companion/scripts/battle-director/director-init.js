@@ -33,7 +33,13 @@ import { playBattleStartBanner } from "./director-round-banner.js";
 import { showBattleLoader, hideBattleLoader } from "./director-battle-loader.js";
 import { buildDirectorHud, dbPartyActorIds, isHudPartyMember } from "./director-player-hud.js";
 import { extractAnimationUrlsFromActors } from "./director-animation.js";
-import { playDescentLocal, buildDescentPayload } from "./boss-entrance-fx.js";
+import {
+  playDescentLocal,
+  buildDescentPayload,
+  entranceStyleFromFlags,
+  splitByEntranceStyle,
+  DEFAULT_ENTRANCE_STYLE,
+} from "./boss-entrance-fx.js";
 import { pWait, shouldRender } from "./presentation-clock.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { resolveGuestRoster, ensureGuestPassive } from "../guest-roster/guest-roster-core.js";
@@ -754,15 +760,12 @@ function pickEnemyRoarUrl(enemyTokenIds, preferIds = null) {
 //
 // Anything without the flag — i.e. every enemy in the world today — resolves to
 // "fade" and runs exactly the code it ran before this table existed.
-const ENTRANCE_STYLE_FLAG = "entranceStyle";
-
+// The read itself is pure and lives in boss-entrance-fx (covered bare in
+// boss-entrance-fx.test.mjs); this only resolves the token to its actor.
 function entranceStyleFor(tokenId) {
   try {
-    const actor = canvas?.tokens?.get?.(tokenId)?.actor;
-    const v = actor?.flags?.[ENTRANCE_MODULE_ID]?.[ENTRANCE_STYLE_FLAG];
-    const key = String(v ?? "").trim();
-    return key || "fade";
-  } catch { return "fade"; }
+    return entranceStyleFromFlags(canvas?.tokens?.get?.(tokenId)?.actor?.flags);
+  } catch { return DEFAULT_ENTRANCE_STYLE; }
 }
 
 // Return the unique set of roar URLs for a batch of spawned enemy TokenDocuments
@@ -969,13 +972,7 @@ async function playEntranceLocal({ partyTokenIds = [], enemyTokenIds = [] } = {}
 
     // Split the enemies by entrance style. Everything without an opt-in flag
     // lands in `fading` and takes the original path untouched.
-    const fading = [];
-    const descending = [];
-    for (const id of enemyTokenIds) {
-      const style = entranceStyleFor(id);
-      if (style === "fade") fading.push(id);
-      else descending.push({ id, style });
-    }
+    const { fading, descending } = splitByEntranceStyle(enemyTokenIds, entranceStyleFor);
 
     // Play one species-based roar (random pick from the enemy group) as enemies
     // begin fading in — mirrors the legacy Entrance Animation Listener logic.

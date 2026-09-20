@@ -97,6 +97,51 @@ export const DESCENT_STYLES = {
   },
 };
 
+/* ── Entrance style selection ────────────────────────────────────────────
+ *
+ * Pure, and exported for that reason — these two decide whether an existing
+ * fight's entrance changes at all, so they are covered bare in
+ * boss-entrance-fx.test.mjs rather than only exercised live.
+ */
+
+export const ENTRANCE_MODULE_ID    = "fabula-ultima-companion";
+export const ENTRANCE_STYLE_FLAG   = "entranceStyle";
+export const DEFAULT_ENTRANCE_STYLE = "fade";
+
+/**
+ * Read an actor's entrance style out of its flags.
+ *
+ * Returns "fade" for anything that is not an explicitly recognised descent
+ * style — unset, blank, wrong type, or a typo'd/retired style name. That last
+ * case matters: routing an unrecognised style into the renderer would land on
+ * its `flame` fallback and drop a fiery explosion on some monster that never
+ * asked for one, which is a far worse failure than simply fading in.
+ */
+export function entranceStyleFromFlags(flags, ns = ENTRANCE_MODULE_ID) {
+  try {
+    const key = String(flags?.[ns]?.[ENTRANCE_STYLE_FLAG] ?? "").trim();
+    if (!key || key === DEFAULT_ENTRANCE_STYLE) return DEFAULT_ENTRANCE_STYLE;
+    return DESCENT_STYLES[key] ? key : DEFAULT_ENTRANCE_STYLE;
+  } catch { return DEFAULT_ENTRANCE_STYLE; }
+}
+
+/**
+ * Partition enemy token ids into the plain faders and the bespoke descents,
+ * preserving roster order in both. `styleOf` may throw or return junk; that
+ * token just fades.
+ */
+export function splitByEntranceStyle(ids, styleOf) {
+  const fading = [];
+  const descending = [];
+  for (const id of ids ?? []) {
+    let style = DEFAULT_ENTRANCE_STYLE;
+    try { style = styleOf?.(id) || DEFAULT_ENTRANCE_STYLE; } catch { style = DEFAULT_ENTRANCE_STYLE; }
+    if (style === DEFAULT_ENTRANCE_STYLE) fading.push(id);
+    else descending.push({ id, style });
+  }
+  return { fading, descending };
+}
+
 /* ── Easing ──────────────────────────────────────────────────────────────── */
 
 // Evaluate a CSS cubic-bezier(x1,y1,x2,y2) at time t. Newton-Raphson on x with
