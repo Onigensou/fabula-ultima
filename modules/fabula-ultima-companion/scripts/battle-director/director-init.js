@@ -33,6 +33,7 @@ import { playBattleStartBanner } from "./director-round-banner.js";
 import { showBattleLoader, hideBattleLoader } from "./director-battle-loader.js";
 import { buildDirectorHud, dbPartyActorIds, isHudPartyMember } from "./director-player-hud.js";
 import { extractAnimationUrlsFromActors } from "./director-animation.js";
+import { playDescentLocal, buildDescentPayload } from "./boss-entrance-fx.js";
 import { pWait, shouldRender } from "./presentation-clock.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { resolveGuestRoster, ensureGuestPassive } from "../guest-roster/guest-roster-core.js";
@@ -721,8 +722,15 @@ const ROAR_VOLUME = 0.2;
 
 // Pick a random roar URL from the set of spawned enemy token IDs, based on each
 // enemy's actor species field. Mirrors the legacy Entrance Animation Listener.
-function pickEnemyRoarUrl(enemyTokenIds) {
-  const toks = (enemyTokenIds ?? []).map((id) => canvas?.tokens?.get?.(id)).filter(Boolean);
+//
+// `preferIds` narrows the draw when some enemy is the reason the entrance is
+// happening — a boss making a bespoke entrance should be the one you hear, not
+// whichever mook the shuffle landed on. Falls back to the whole group when the
+// preferred set yields nothing.
+function pickEnemyRoarUrl(enemyTokenIds, preferIds = null) {
+  const pick = (ids) => (ids ?? []).map((id) => canvas?.tokens?.get?.(id)).filter(Boolean);
+  const preferred = preferIds?.length ? pick(preferIds) : [];
+  const toks = preferred.length ? preferred : pick(enemyTokenIds);
   if (!toks.length) return ROAR_BASE_URL + ROAR_FALLBACK_FILE;
   const files = toks.map((tok) => {
     const s = String(tok.actor?.system?.props?.species ?? "").trim().toUpperCase();
@@ -730,6 +738,31 @@ function pickEnemyRoarUrl(enemyTokenIds) {
   });
   const file = files[Math.floor(Math.random() * files.length)] ?? ROAR_FALLBACK_FILE;
   return ROAR_BASE_URL + file;
+}
+
+// ─── Enemy entrance styles ───────────────────────────────────────────────
+//
+// Enemies fade in. A boss may instead opt into a bespoke entrance by carrying
+// an `entranceStyle` module flag naming a style in boss-entrance-fx.js:
+//
+//   actor.flags["fabula-ultima-companion"].entranceStyle = "shadowstorm"
+//
+// A flag rather than a `system.props` field on purpose: CSB prunes every prop
+// its template does not declare, so a props-homed opt-in would need a template
+// change (which world-export cannot carry) and would silently vanish on the
+// next sheet re-stamp. Flags survive both.
+//
+// Anything without the flag — i.e. every enemy in the world today — resolves to
+// "fade" and runs exactly the code it ran before this table existed.
+const ENTRANCE_STYLE_FLAG = "entranceStyle";
+
+function entranceStyleFor(tokenId) {
+  try {
+    const actor = canvas?.tokens?.get?.(tokenId)?.actor;
+    const v = actor?.flags?.[ENTRANCE_MODULE_ID]?.[ENTRANCE_STYLE_FLAG];
+    const key = String(v ?? "").trim();
+    return key || "fade";
+  } catch { return "fade"; }
 }
 
 // Return the unique set of roar URLs for a batch of spawned enemy TokenDocuments
@@ -910,16 +943,52 @@ async function playEntranceLocal({ partyTokenIds = [], enemyTokenIds = [] } = {}
     }
   }
 
+  // Bespoke boss entrance (boss-entrance-fx.js). Resolves at impact; the real
+  // token is then revealed locally underneath the fading faller, the same
+  // handoff dashInParty uses. Falls back to the plain fade on any failure —
+  // this gates the battle from starting, so it must never be able to hang.
+  async function descendIn(id, styleKey) {
+    const placeable = getP(id);
+    if (!placeable) return;
+    try {
+      await playDescentLocal(buildDescentPayload(placeable, styleKey, canvas?.scene ?? null));
+      if (!placeable.destroyed) {
+        try { placeable.alpha = 1; } catch {}
+        try { if (placeable.mesh) placeable.mesh.alpha = 1; } catch {}
+      }
+    } catch (e) {
+      warn(`entrance: "${styleKey}" descent failed for ${id} — falling back to fade`, e);
+      await fadeIn(id, 0);
+    }
+  }
+
   try {
     // Party dashes in first, then enemies fade in (kept light + sequential so
     // we're not moving + fading + looping every WEBM token on the same frames).
     await dashInParty();
+
+    // Split the enemies by entrance style. Everything without an opt-in flag
+    // lands in `fading` and takes the original path untouched.
+    const fading = [];
+    const descending = [];
+    for (const id of enemyTokenIds) {
+      const style = entranceStyleFor(id);
+      if (style === "fade") fading.push(id);
+      else descending.push({ id, style });
+    }
+
     // Play one species-based roar (random pick from the enemy group) as enemies
     // begin fading in — mirrors the legacy Entrance Animation Listener logic.
+    // Biased to a descending boss when there is one, so the roar belongs to the
+    // monster the shot is actually about.
     if (enemyTokenIds.length > 0) {
-      playSfx(pickEnemyRoarUrl(enemyTokenIds), ROAR_VOLUME);
+      playSfx(pickEnemyRoarUrl(enemyTokenIds, descending.map((d) => d.id)), ROAR_VOLUME);
     }
-    await Promise.all(enemyTokenIds.map((id, i) => fadeIn(id, i * PER_TOKEN_STAGGER_MS)));
+
+    await Promise.all([
+      ...fading.map((id, i) => fadeIn(id, i * PER_TOKEN_STAGGER_MS)),
+      ...descending.map(({ id, style }) => descendIn(id, style)),
+    ]);
   } catch (e) {
     warn("playEntranceLocal threw", e);
   }
