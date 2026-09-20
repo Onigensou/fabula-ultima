@@ -193,6 +193,12 @@ cannot simply turn her off, WITHOUT letting her spend the fight stripping buffs:
   `currentRound - lastUsedRound < cooldown`). It is a pressure and action-economy
   loss by design; spamming it would leave her with no pressure at all.
 
+The condition is **general, not a fire/bolt special case**: it takes any of the nine
+elements, accepts the usual synonyms (lightning/wind/holy/cold/shadow/phys) and an
+`any` wildcard for "warded against anything", skips **disabled** effects, and warns once
+on an unrecognised element name so a typo cannot make a row silently un-fireable.
+Hilde-Fafnir's row simply asks for `fire,bolt`.
+
 Engine support added in `5020384f` (condition + focus + the detector), with the two
 new values also added to the CSB NPC template's dropdowns — **verified that a
 `reloadTemplate()` re-stamp leaves the row intact**, which is the Dryad regression

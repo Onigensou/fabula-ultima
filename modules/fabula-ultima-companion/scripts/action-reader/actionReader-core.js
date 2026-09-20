@@ -130,6 +130,10 @@ export const AFFINITY_SLOT_BY_ELEMENT = Object.freeze(
   Object.fromEntries(AFFINITY_ELEMENTS.map((el, i) => [el, `affinity_${i + 1}`]))
 );
 
+/* Unrecognised element names are warned about ONCE each — the check runs per
+   candidate per pick, so an un-deduped warning would flood the console. */
+const _warnedAffinityElements = new Set();
+
 /* Common spellings/synonyms normalized onto the canonical element keys above. */
 export const DAMAGE_TYPE_ALIASES = Object.freeze({
   physical: "physical",
@@ -449,20 +453,43 @@ export const ActionReaderCore = {
    *     "RS")` and `${isEquipped ? 'RS' : 'NA'}$`. A strict equality test reads
    *     every real Elemental Shroud as "no buff".
    *
-   * `elements` is a comma list of element names ("fire,bolt"); unknown names are
-   * ignored. Returns false for a blank list rather than matching everything.
+   * `elements` is a comma list naming ANY of the nine elements — this is not a
+   * fire/bolt special case, Hilde-Fafnir's row just happens to ask for those two.
+   * Synonyms are honoured (lightning/wind/holy/cold/shadow/phys), and `any` (or
+   * `all`) matches a buff on any element. A blank list matches nothing rather
+   * than everything. An unrecognised name is dropped WITH a console warning: a
+   * typo would otherwise make the row silently un-fireable forever, which is the
+   * hardest kind of authoring bug to see.
    */
   actorHasAffinityBuff(actor, elements) {
-    const wanted = String(elements ?? "")
-      .split(/[,\n]+/).map(s => s.trim().toLowerCase()).filter(Boolean)
-      .map(e => AFFINITY_SLOT_BY_ELEMENT[e]).filter(Boolean);
-    if (!wanted.length) return false;
+    const tokens = String(elements ?? "")
+      .split(/[,\n]+/).map(s => s.trim().toLowerCase()).filter(Boolean);
+    if (!tokens.length) return false;
+
+    const wildcard = tokens.some(t => t === "any" || t === "all");
+    const wanted = [];
+    for (const raw of tokens) {
+      if (raw === "any" || raw === "all") continue;
+      const element = DAMAGE_TYPE_ALIASES[raw] ?? raw;
+      const slot = AFFINITY_SLOT_BY_ELEMENT[element];
+      if (slot) { wanted.push(slot); continue; }
+      if (!_warnedAffinityElements.has(raw)) {
+        _warnedAffinityElements.add(raw);
+        console.warn(`[ActionReader] actorHasAffinityBuff: "${raw}" is not an element `
+          + `(expected one of ${AFFINITY_ELEMENTS.join(", ")}, a synonym, or "any") — ignored.`);
+      }
+    }
+    if (!wildcard && !wanted.length) return false;
 
     for (const effect of this.getActorEffects(actor)) {
+      // A suppressed effect grants nothing, so it is not a reason to cast.
+      if (effect?.disabled === true) continue;
       const tags = effect?.system?.tags;
       if (!Array.isArray(tags) || !tags.some(t => String(t).trim().toLowerCase() === "dispellable")) continue;
       for (const change of effect?.changes ?? []) {
-        if (!wanted.includes(String(change?.key ?? "").trim())) continue;
+        const key = String(change?.key ?? "").trim();
+        const matches = wildcard ? /^affinity_[1-9]$/.test(key) : wanted.includes(key);
+        if (!matches) continue;
         if (/\b(RS|IM|AB)\b/.test(String(change?.value ?? ""))) return true;
       }
     }
