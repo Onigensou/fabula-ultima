@@ -64,6 +64,7 @@ const IDS = {
   HF_ZP:       "Rv0MHciFimYAkthU",   // Zero Power: Reinslaughter
   HF_ZT:       "Z3B0oqcD6iDsuv0r",   // Zero Trigger: Contempt
   AE_CULLING:  "SDPlk2tJKyfumppK",   // Culling (Reinslaughter self-marker)
+  HF_DISEN:    "ZK8J5gtn7GTwCzSZ",   // Disenchant (scene-effect strip)
 };
 
 // New Actor folder: The Legend of Dragonslayer / Monster / Fafnir Castle.
@@ -130,6 +131,7 @@ const ICON = {
   passive:  SK + "Tree%20of%20Savior/Archer/icon_arch_burrow.png",
   reaction: SK + "Epic%207/show%20-%202025-07-20T213702.523.png",
   ospell:   SK + "Epic%207/show%20-%202025-07-20T213409.361.png",
+  spell:    SK + "Epic%207/show%20-%202025-07-20T213946.309.png",   // Generic NPC Spell (non-offensive)
   charm:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Heart.png",
   domin:    SK + "Epic%207/show%20-%202025-07-20T215904.664.png",
   // The two Strip markers. DEF/ATK DOWN say what the loss actually costs you,

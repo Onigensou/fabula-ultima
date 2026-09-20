@@ -48,6 +48,7 @@ actor carries `activation: "1"` and the director reads exactly that.
 | **Wyrmbreath** | Spell, heavy Dark, all enemies, 40 MP (unchanged) | `mp` 20–100, **prio 5**, cooldown 1 |
 | **Impalement** (was Dragoon Lance) | Attack, **devastating (+70)** Physical, **vs MDEF**, **Execute** (inherent keyword) | `enemy_has_status: Crisis`, focus `status_focus: Crisis`, **prio 4** |
 | **Scorched Claw** (was Claw) | Attack, **+40 Fire**, **vs DEF**, **+25% of the target's max HP**, **50% Burn** | `always`, focus `auto` (spread), prio 3 |
+| **Disenchant** (new) | Spell, 10 MP, one creature — strips ALL dispellable effects | `enemy_has_affinity_buff: fire,bolt`, focus `affinity_buff_focus`, **prio 5, cooldown 1 (once per round)** |
 | **Zero Trigger: Contempt** (new) | Passive — §5 | — |
 
 **Filler rework (2026-09-20).** Cripple is gone: Scorched Claw is the single
@@ -155,6 +156,9 @@ thousands of lightning arrows that rain down across the battlefield.
 | Lance of Ruin | both targets → 1 HP; no Lance Spent stamp |
 | AI picks | R2 & R5 below 60% → Lance · R3 / 70% HP / 100 MP → no Lance · ZP 6 → Reinslaughter |
 | AI fillers | nobody in Crisis: **only** Scorched Claw, spread 6/6 · one in Crisis (24 runs): Impalement **58%** aimed at them, Claw 42% |
+| Disenchant gate | 16 picks with nobody warded: **never chosen** · 16 with one PC warded: **7 Disenchant, always onto that PC** |
+| Disenchant strip | one cast removed BOTH dispellable effects, left the untagged food buff alone |
+| CSB re-stamp | `reloadTemplate()` leaves the new condition/focus values intact |
 | Linters | `runReactionLint` / `runTemplateEngineEnums`: nothing on her content |
 | skill-regression | 487/487 match golden — engine change moved no other skill |
 
@@ -164,6 +168,35 @@ in `02c51038` (attack simulate ignored `npcAttackItemUuid`; targeted probe could
 a performer rider with a redirect).
 
 ---
+
+## 7b. Disenchant — her answer to elemental warding (2026-09-20)
+
+> Remove all effects with a duration of **Scene** from one creature.
+
+Mechanically the Entropist's **Dispel** with the picker removed: the same
+`remove_tagged_ae` / `filter_tag: "dispellable"` row, with **`count: "all"`** —
+the handler treats that as "remove every match, no prompt".
+
+**The AI gate is the design.** It exists so a party that buffs Fire/Bolt resistance
+cannot simply turn her off, WITHOUT letting her spend the fight stripping buffs:
+- `enemy_has_affinity_buff: fire,bolt` — passes only when an enemy carries a
+  **dispellable** effect granting RS/IM/AB on those elements. Innate resistance and
+  undispellable sources (equipment, class marks) deliberately do not count, or she
+  would cast every round into something she cannot remove. The real trigger in this
+  world is **Elemental Shroud**.
+- `affinity_buff_focus: fire,bolt` — the single target is the creature that actually
+  warded itself.
+- **priority 5** ties Wyrmbreath: on a warded round the window is Disenchant 3 /
+  Wyrmbreath 3 / Impalement 2 / Scorched Claw 1, so she strips often, not always.
+  Priority 6 would have been near-automatic and pushed the Claw out of the window.
+- **cooldown 1 = once per round** (the picker blocks while
+  `currentRound - lastUsedRound < cooldown`). It is a pressure and action-economy
+  loss by design; spamming it would leave her with no pressure at all.
+
+Engine support added in `5020384f` (condition + focus + the detector), with the two
+new values also added to the CSB NPC template's dropdowns — **verified that a
+`reloadTemplate()` re-stamp leaves the row intact**, which is the Dryad regression
+this kit would otherwise have hit.
 
 ## 8b. Execute / Cripple are engine keywords now (2026-09-20)
 
@@ -225,4 +258,7 @@ roughly half her turns, out-threatens both fillers combined.
 - Filler damage: Impalement ×2 = ~162 kills essentially any Crisis PC (intended). Scorched
   Claw 80–100 raw is ~77% of Hina's bar and ~60% of Blanche's before affinity.
 - Lance of Ruin cost (150) and schedule (2 / 3).
+- Disenchant's cooldown-once-per-round is verified by code reading, not live: the
+  picker's cooldown bookkeeping needs a real combatant flag, which the offline AI rig
+  has no way to provide.
 - Absorb interaction for Reinslaughter.
