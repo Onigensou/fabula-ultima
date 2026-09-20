@@ -47,13 +47,23 @@ actor carries `activation: "1"` and the director reads exactly that.
 | **Lance of Ruin** | Active, all enemies → 1 HP (`crush`), **150 MP** | `round` **2 / 3** (rounds 2, 5, 8 …), `hp_ceiling 60`, **prio 12** |
 | **Wyrmbreath** | Spell, heavy Dark, all enemies, 40 MP (unchanged) | `mp` 20–100, **prio 5**, cooldown 1 |
 | **Impalement** (was Dragoon Lance) | Attack, **devastating (+70)** Physical, **vs MDEF**, **Execute** (inherent keyword) | `enemy_has_status: Crisis`, focus `status_focus: Crisis`, **prio 4** |
-| **Scorched Claw** (was Claw) | Attack, **heavy (+52) Fire**, **vs DEF**, **+25% of the target's max HP** | `always`, focus `auto` (spread), prio 3 |
+| **Scorched Claw** (was Claw) | Attack, **+40 Fire**, **vs DEF**, **+25% of the target's max HP**, **50% Burn** | `always`, focus `auto` (spread), prio 3 |
 | **Zero Trigger: Contempt** (new) | Passive — §5 | — |
 
 **Filler rework (2026-09-20).** Cripple is gone: Scorched Claw is the single
 always-on filler, and its bonus scales with the target's **maximum** HP, so it stays
 relevant at any level and bites the big HP pools hardest (+17 vs 69 max, +24 vs 98,
-+41 vs 166). Impalement sits ONE priority above it, so when a Crisis target exists the
++41 vs 166) and carries a **50% chance to inflict Burn** on hit (`skip` if the target is
+already Burning — no refresh). Its base was cut **52 → 40** to pay for that: measured at
+the neutral design point the hit drops 84.6 → 73.4 while Burn adds 16.8 expected, landing
+at 90.2 (**+7%** on the old 84.6). Strict parity would have been 34; the premium is what
+Burn's delay, cleansability and inertness-vs-absorb buy back.
+
+Burn is the shared template: 3 charges, ticking `ceil(10% max HP)` as **Fire** at the
+VICTIM's turn start. A tick that pushes someone into Crisis feeds **Contempt** — and it
+lands on the victim's turn, outside the Culling window that mutes her own Zero Power.
+
+Impalement sits ONE priority above it, so when a Crisis target exists the
 picker splits ~**60/40** in its favour (weights 3 vs 2) rather than always taking it.
 Wyrmbreath dropped 6 → 5 because the picker only keeps rows within **2** priority of
 the best available one: at 6 it pushed the Claw (3) out of the window entirely.
@@ -134,7 +144,9 @@ thousands of lightning arrows that rain down across the battlefield.
 | Check | Result |
 |---|---|
 | Impalement Execute (keyword-driven) | 81 vs full HP, **162** vs Crisis — and 81 vs a healthy target in the SAME volley |
-| Scorched Claw max-HP scaling | +17 / +24 / +41 against 69 / 98 / 166 max HP (raw 80 / 87 / 100) |
+| Scorched Claw max-HP scaling | +17 / +24 / +41 against 69 / 98 / 166 max HP |
+| Scorched Claw after the rebase | raw **68** vs a 69-max target = roll 11 + base 40 + 17 |
+| Scorched Claw Burn rate | **32 / 70 applications ≈ 46%** across two runs (rolled per creature hit) |
 | Migrated Execute elsewhere | Kirin Horn Rush **146** vs Crisis / 73 vs healthy, with 0 riders left on the item |
 | Reinslaughter curve | 60 vs full HP, **454** vs 1 HP; applies Culling to self |
 | Redirect (engine path) | Hina covering a 1-HP ally: +394 on her slots; Protect by a full-HP ally: +394; no redirect: +0 on the full-HP target |
@@ -170,6 +182,27 @@ inherent-keyword union as pierce/crush.
   keyword and carries extra clauses of its own.
 - ⚠ The card badge still comes from the **description link**, not from `action_keywords`.
   Author both, exactly as Rakshasa/Kirin do.
+
+## 8c. Where the kit sits on the house metric (2026-09-20)
+
+Expected damage per action, her 2d12+8 enumerated exactly, against the live party
+(471 HP pool). **Pressure** band from `monster-balance-design.md` is 0.40–0.60.
+
+| Action | Expected | Share of the party pool |
+|---|---|---|
+| **Wyrmbreath** | 172.5 across all four | **36.6%** per cast |
+| **Impalement** w/ Execute | 148 on one PC | 31.7% |
+| Impalement, healthy target | 74.6 | 15.8% |
+| **Scorched Claw** (base 40 + Burn) | 40.1 | 8.5% |
+| **Lance of Ruin** | party → 1 HP | ~55% of what is left |
+
+- 4-round fight, **ordinary turns only: Pressure 0.70** — already above band before the Lance.
+- With the Lance: **1.3** (4 rounds) → **2.1** (6 rounds).
+
+Two readings, both deliberate: the Lance is a scripted reset rather than damage, and the
+band was written for ordinary encounters, not a final boss told to go hard. **The outlier
+worth revisiting is Wyrmbreath**, not the fillers — 36.6% of the party pool per cast, on
+roughly half her turns, out-threatens both fillers combined.
 
 ## 9. Tuning — deferred to fight simulation
 

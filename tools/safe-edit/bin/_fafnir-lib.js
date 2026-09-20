@@ -114,6 +114,7 @@ const L = {
   confused: link("JournalEntry.e9wABGGGFg7b9OMD", "Confused"),
   slow:     link("JournalEntry.HHmYmj7xffQMqtzT", "Slow"),
   bolt:     link("Item.5XAuMMbDPlLzhJLw", "Bolt"),
+  burn:     link("JournalEntry.MSRXG4jUMPFpM9sN", "Burn"),
   crisis:   link("JournalEntry.GJevbCPM8cffm1QM", "Crisis"),
   execute:  link("JournalEntry.KHCaZjNmClkp7yfM", "Execute"),
   cripple:  link("JournalEntry.qXBYN6c9FMZzmS2n", "Cripple"),
