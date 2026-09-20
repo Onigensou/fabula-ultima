@@ -9,8 +9,8 @@
 //  2. Storm Gathering passive — the phase latch (two reaction rows, MP
 //     thresholds with hysteresis).
 //  3. summon_max on Summon Elemental Drake — no re-summon while the adds live.
-//  4. Cruel Ultimatum — both branches cost 6 Zero Power, option B's target list
-//     actually resolves, and both branches ignore absorption.
+//  4. Cruel Ultimatum — one 6 Zero Power debit on both branches (the double
+//     charge on option A is gone) and both branches ignore absorption.
 //  5. The stale CSB dropdown options on her sheet body, which do not yet list
 //     `self_has_status` — without them a sheet re-stamp would silently reset the
 //     phase rows to the fallback (the Dryad regression).
@@ -208,12 +208,26 @@ run(async ({ changes }) => {
   changes.push([ak(ITEMS.SUMMON), summon, "summon_max 2 — no re-summon while the drakes live"]);
 
   // ── 4. Cruel Ultimatum ─────────────────────────────────────────────────
-  // As built: the 6 ZP consume_resource sat INSIDE option A, and option B was a
-  // bare deal_damage whose target_ref named a `cu_all` targeting row that
-  // nothing chained to. So picking B plausibly cost her nothing and landed on
-  // nobody. Rebuilt to the shape the config proposal specified —
-  // cu_unleash -> chain(cu_cost, cu_choice) — so the cost is paid ONCE, up
-  // front, whichever branch the party takes.
+  // ⚠ CORRECTED 2026-09-20 after `runReactionLint` flagged COST_DOUBLE_CHARGE.
+  //
+  // The original read of this skill was wrong in both halves, and it is worth
+  // recording why so the mistake is not repeated:
+  //   * "option B costs nothing" — FALSE. `system.props.cost = "6 Zero Power"`
+  //     is the LEGACY cost path: the action-card pipeline parses it and debits
+  //     at CONFIRM, before the menu branches. B was always charged.
+  //   * "option B's target list never resolves" — FALSE. `target_ref` does NOT
+  //     require the row to be chained: resolveTargetRef -> findTargetingRow
+  //     looks a `targeting` row up by its effect_label anywhere in effect_table.
+  //
+  // The ACTUAL bug was the opposite: option A carried its own consume_resource
+  // row ON TOP of the cost field, so picking A debited 12 Zero Power, not 6.
+  // The first version of this script "fixed" it by hoisting that row into the
+  // main chain — which spread the double-charge to BOTH branches.
+  //
+  // Correct shape per skill-authoring-canon.md branch 1 ("Cost rule — one
+  // source of truth, never two"): keep the LEGACY path. `cost` stays, there is
+  // NO consume_resource row anywhere reachable from on_activate_effect_ref, and
+  // both branches are charged exactly 6 once, at CONFIRM.
   //
   // Both damage rows carry `ignore_absorption`: the clamp collapses RS/IM/AB to
   // NE (VU untouched, shields untouched), so a Zero Power can no longer be
@@ -225,29 +239,27 @@ run(async ({ changes }) => {
   const ult = await getByKey("actors", ak(ITEMS.ULTIMATUM));
   if (!ult) throw new Error("missing Zero Power: Cruel Ultimatum");
   ult.system.props.effect_table = {
-    0: { effect_label: "cu_unleash", effect_kind: "chain", chain_steps: "cu_cost,cu_choice", consume_self: false },
-    1: { effect_label: "cu_cost", effect_kind: "consume_resource", consume_resource: "zero_power", consume_amount: "6", target_ref: "self", consume_self: false },
-    2: { effect_label: "cu_choice", effect_kind: "open_action_menu", menu_responder: "enemy",
+    0: { effect_label: "cu_choice", effect_kind: "open_action_menu", menu_responder: "enemy",
          menu_title: "Cruel Ultimatum", menu_subtitle: "The enemy chooses their fate",
          menu_option_refs: "cu_optA,cu_optB", consume_self: false },
-    3: { effect_label: "cu_optA", effect_kind: "chain", chain_steps: "cu_pick_one,cu_300",
+    1: { effect_label: "cu_optA", effect_kind: "chain", chain_steps: "cu_pick_one,cu_300",
          menu_label: "One of us takes 300 Fire (we choose who)", consume_self: false },
-    4: { effect_label: "cu_pick_one", effect_kind: "targeting", menu_responder: "enemy",
+    2: { effect_label: "cu_pick_one", effect_kind: "targeting", menu_responder: "enemy",
          candidate_source: "combat", category: "enemy", mode: "exact", count: "1", consume_self: false },
-    5: { effect_label: "cu_300", effect_kind: "deal_damage", damage_element: "fire", damage_amount: "300",
+    3: { effect_label: "cu_300", effect_kind: "deal_damage", damage_element: "fire", damage_amount: "300",
          target_ref: "cu_pick_one", damage_cause: "damage", damage_keywords: "ignore_absorption", consume_self: false },
-    6: { effect_label: "cu_optB", effect_kind: "chain", chain_steps: "cu_all,cu_120",
+    4: { effect_label: "cu_optB", effect_kind: "chain", chain_steps: "cu_all,cu_120",
          menu_label: "All of us take 120 Bolt", consume_self: false },
-    7: { effect_label: "cu_all", effect_kind: "targeting", candidate_source: "combat", category: "enemy",
+    5: { effect_label: "cu_all", effect_kind: "targeting", candidate_source: "combat", category: "enemy",
          mode: "all", consume_self: false },
-    8: { effect_label: "cu_120", effect_kind: "deal_damage", damage_element: "bolt", damage_amount: "120",
+    6: { effect_label: "cu_120", effect_kind: "deal_damage", damage_element: "bolt", damage_amount: "120",
          target_ref: "cu_all", damage_cause: "damage", damage_keywords: "ignore_absorption", consume_self: false },
   };
-  ult.system.props.on_activate_effect_ref = "cu_unleash";
+  ult.system.props.on_activate_effect_ref = "cu_choice";
   ult.system.props.description = "Offer the enemy a vile edict. The enemy chooses: one target enemy takes "
     + "300 Fire damage (their choice who), or all enemies take 120 Bolt damage. "
     + "This damage ignores immunities and absorption.";
-  changes.push([ak(ITEMS.ULTIMATUM), ult, "both branches cost 6 ZP; option B targets resolve; ignore_absorption on both"]);
+  changes.push([ak(ITEMS.ULTIMATUM), ult, "single 6 ZP debit via the legacy cost field (no consume_resource row); ignore_absorption on both damage rows"]);
 
   // ── the actor doc itself, last (items list + passive list + pattern table) ──
   if (!actor.items.includes(SG)) actor.items = [...actor.items, SG];

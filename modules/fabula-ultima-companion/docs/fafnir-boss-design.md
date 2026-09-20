@@ -1,6 +1,6 @@
 # ⭐️ Fafnir — Boss Design Notes
 
-**Status:** Two-phase AI + Cruel Ultimatum fix **IMPLEMENTED 2026-09-20**. **Not live-tested.**
+**Status:** Two-phase AI + Cruel Ultimatum fix **IMPLEMENTED and LIVE-TESTED 2026-09-20.**
 **Actor:** `P1uCkpNnxLRBNqZr` — L50, `npc_rank: champion`, folder `Monster / Current Dungeon`.
 **Build scripts:** `tools/safe-edit/bin/_fafnir-ai-aes.js` (the AE — run FIRST), then
 `tools/safe-edit/bin/_fafnir-ai.js`.
@@ -129,7 +129,30 @@ top passing priority (weights 3 / 2 / 1) and drops the rest:
 - Affordability is filtered **before** the window, so "if she can pay for it" needs no
   condition of its own.
 
-### Measured behaviour (offline replica of the picker, 500 ten-round fights)
+### Measured behaviour — LIVE (Training Ground, real combat, 2026-09-20)
+
+Eight rounds, four activations each, memory persisted across rounds:
+
+```
+R1 breath=1 :: Rend, Ruinous Breath, Rend, Searing Brand
+R2 breath=0 :: Condemn, Torment, Rend, Condemn
+R3 breath=1 :: Rend, Rend, Ruinous Breath, Condemn
+R4 breath=0 :: Searing Brand, Rend, Draconic Domination, Rend
+R5 breath=1 :: Ruinous Breath, Torment, Condemn, Rend
+R6 breath=0 :: Condemn, Rend, Draconic Domination, Searing Brand
+R7 breath=1 :: Rend, Ruinous Breath, Rend, Condemn
+R8 breath=0 :: Draconic Domination, Torment, Searing Brand, Condemn
+```
+
+**Rounds 1/3/5/7, exactly once each, never twice, never on an even round.**
+Recovery phase, 12 consecutive picks with Storm Gathering up: **Summon Elemental Drake
+once (cd 4), then Storm Calm every remaining turn** — nothing else reachable.
+
+⚠ This only works because of the engine fix below. **Ruinous Breath’s cooldown was
+inert before it** (measured 6/20 picks with the memory seeded vs 7/20 with none), so she
+could and did fire it twice in one round.
+
+### Offline prediction (replica of the picker, 500 ten-round fights)
 
 | | |
 |---|---|
@@ -148,6 +171,35 @@ the AI spreads her turns across the whole kit instead of always reaching for the
 number, she trades raw damage for status pressure.
 
 ---
+
+
+## 4b. Engine fix this depended on — `action_pattern_cooldown` was dead
+
+Found while live-testing this kit, 2026-09-20. **Every authored cooldown in the world was
+inert** — 29 rows across 14 actors, none of which had ever fired.
+
+`applyAntiRepeat` read the cooldown off `getCandidateProps(candidate)` — the **item's**
+`system.props` — but `action_pattern_cooldown` is a **pattern-row** column. The lookup
+always returned `undefined`, so `toInteger(..., 0)` gave cooldown 0 and the hard-block
+branch never ran. `readActionReaderPatternTable` did not normalise the column either.
+
+Fix: normalise `cooldown` on the row (beside `priority` / `hpReserve` / `hpCeiling`) and
+read `candidate.row.cooldown` in the anti-repeat pass.
+
+**Blast radius — 24 of the 29 rows now enforce**, across Asura, Living Shadow, O'lmek,
+O'zealot, Rakshasa, Fafnir, Geist, Hilde-Fafnir and Wandering Flame. The other 5 are
+priority-EXCLUSIVE rows, where the pre-existing "all blocked, ignore cooldown this turn"
+fallback still un-blocks them; that older trap is unchanged and still real.
+
+Every change is in the same direction — **a repeated move becomes a paced one** — so
+pressure goes DOWN, never up. Two consequences worth chasing:
+
+- **Asura is the balance model's calibration anchor**, and it was live-tested with both of
+  its cooldowns inert. Quad-Elemental Slash (cd 3) and Overflow (cd 2) are now rate-limited,
+  so that datapoint is slightly optimistic about Asura's output.
+- **Hilde-Fafnir's §8c figures** were measured with Wyrmbreath's cd 1 inert (her doc records
+  an 11/20 and 15/20 Wyrmbreath share). Her real Wyrmbreath rate — and therefore her
+  Pressure — is now lower than published.
 
 ## 5. Summon Elemental Drake — capped
 
@@ -171,13 +223,25 @@ rediscovered as a bug.
 > (their choice who), or all enemies take 120 Bolt damage.
 > **This damage ignores immunities and absorption.**
 
-**Two things were wrong.** The 6 Zero Power `consume_resource` row sat **inside option A**,
-and option B was a bare `deal_damage` whose `target_ref` named a `cu_all` targeting row
-that nothing chained to. Picking B plausibly cost her nothing and landed on nobody.
+**The first diagnosis of this skill was wrong in both halves**, and the record matters
+because the "fix" made things worse before `runReactionLint` caught it:
 
-Rebuilt to the shape the original config proposal specified — `cu_unleash → chain(cu_cost,
-cu_choice)` — so **the cost is paid once, up front, whichever branch the party takes**, and
-option B is a proper `chain(cu_all, cu_120)`.
+- *"Option B costs nothing"* — **false.** `system.props.cost = "6 Zero Power"` is the
+  LEGACY cost path: the action-card pipeline parses that string and debits at CONFIRM,
+  before the menu branches. B was always charged.
+- *"Option B's target list never resolves"* — **false.** `target_ref` does not require the
+  row to be chained. `resolveTargetRef` falls through to `findTargetingRow`, which looks a
+  `targeting` row up by its `effect_label` anywhere in `effect_table`.
+
+**The actual bug was the opposite.** Option A carried its own `consume_resource` row ON TOP
+of the cost field, so picking A debited **12** Zero Power, not 6. The first rebuild hoisted
+that row into the main chain, which spread the double-charge to BOTH branches — flagged by
+the linter as `COST_DOUBLE_CHARGE`.
+
+Correct shape, per `skill-authoring-canon.md` branch 1 ("Cost rule — one source of truth,
+never two"): keep the **legacy path**. `cost` stays, there is **no `consume_resource` row
+anywhere reachable from `on_activate_effect_ref`**, and both branches are charged exactly
+6 once, at CONFIRM. `on_activate_effect_ref` points straight at `cu_choice`.
 
 **Both damage rows now carry `damage_keywords: "ignore_absorption"`.** A Zero Power should
 not be a free pass. The clamp collapses **RS, IM and AB to NE**; **VU is untouched** (a
@@ -222,17 +286,38 @@ export report. It lives in the LevelDB and travels with the whole-world push.
 
 ---
 
-## 8. Not yet done
+## 8. Verification — 2026-09-20 (live client)
 
-- **No live test.** Nothing here has been run in a real battle. The phase latch in
-  particular is a code-reading + offline-simulation result: the two reaction rows firing on
-  the real resource ledger, the AE surviving a round wrap, and the exclusive window holding
-  at 4 activations all need a live conflict.
-- **Live content linters not run** — `FUCompanion.api.lint` / `runReactionLint` need the
-  game open.
-- **Open from the checkup, unchanged:** Condemn at HR+100 (one-shots healthy PCs), the
-  2 IM affinities, dagger EF 50, Cruel Ultimatum option B's number, and Zero Trigger:
+| Check | Result |
+|---|---|
+| Ruinous Breath cadence, 8 rounds x 4 activations | **R1/3/5/7 exactly once each; R2/4/6/8 zero** |
+| Cooldown blocks a second cast in the same round | 0/24 picks after a seeded use (was 6/24 before the engine fix) |
+| Cooldown releases two rounds later | round 5 after a round-3 use: available again |
+| Recovery window is exclusive | 12 consecutive picks: Summon once, then Storm Calm only |
+| `summon_max` | Summon fires once, then blocked while the pair is alive |
+| Storm Gathering AE | `persistent_counter`, viewable, never turn-ticked |
+| `runReactionLint` on Fafnir | 0 issues from this work (4 pre-existing, listed below) |
+| `runTemplateEngineEnums` on Fafnir | 0 issues |
+| Cruel Ultimatum double-charge | `COST_DOUBLE_CHARGE` cleared (world total 315 -> 314) |
+| Co-dev content after the replay | King Gorger / Field / _Field Template / Field Effects all intact |
+
+**Pre-existing lint on Fafnir, NOT from this work and NOT fixed:**
+`OFFENSIVE_SPELL_NO_CHECK` on Ruinous Breath (by design — it is a locked auto-hit move),
+`REACTION_FLAG_MISSING` on Searing Brand, and `TARGET_REF_MISSING` on Condemn and Torment
+(both `redirect_target` rows want a `target_ref`).
+
+## 9. Not yet done
+
+- **No full battle.** The picker, the cooldown, the recovery window and the AE were all
+  exercised against a real combat on Training Ground, but no turn was actually RESOLVED —
+  the phase latch firing off the live resource ledger (`creature_lose_resource` /
+  `creature_gain_resource` at `CUR_MP` 100 / 300) is still verified by construction, not by
+  watching her spend MP in anger.
+- **`skill-regression` not re-run** — it needs the game open and the co-dev's commit moved
+  `goldens/skills.json`.
+- **Open from the checkup, unchanged:** Condemn at HR+100 (one-shots healthy PCs), the two
+  IM affinities, dagger EF 50, Cruel Ultimatum option B's number, and Zero Trigger:
   Suffering granting on *any* turn start (up to 8 ZP/round at 4 activations).
 - **Deployment question:** Fafnir sits on `Eisendrache Burning - Enemies` at `1d4` range
-  [4,4] — a 25% random roll in an early-game area, alongside three L13–15 soldiers. The
+  [4,4] — a 25% random roll in an early-game area, alongside three L13-15 soldiers. The
   tease and the L50 boss are the same actor, so these numbers serve both.
