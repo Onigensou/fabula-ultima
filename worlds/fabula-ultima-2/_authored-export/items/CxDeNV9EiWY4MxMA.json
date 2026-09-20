@@ -1,0 +1,538 @@
+{
+  "_id": "CxDeNV9EiWY4MxMA",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1789836364042,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "7ncLuqGizC737KDi",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.wellspring_bolt",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>The <strong>Lightning</strong> wellspring is present. Invokers may draw bolt invocations from it.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isPredefined": true
+        },
+        "fabula-ultima-companion": {
+          "wellspring": "bolt"
+        }
+      },
+      "img": "icons/magic/lightning/bolt-strike-blue.webp",
+      "name": "Lightning Wellspring",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "wellspring"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "B9cNXIMQfpPHWYsd",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.wellspring_earth",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>The <strong>Earth</strong> wellspring is present. Invokers may draw earth invocations from it.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isPredefined": true
+        },
+        "fabula-ultima-companion": {
+          "wellspring": "earth"
+        }
+      },
+      "img": "icons/magic/earth/projectile-boulder-dust.webp",
+      "name": "Earth Wellspring",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "wellspring"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "c2E1aR7fG3hGnMdW",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.wellspring_light",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>The <strong>Sun</strong> wellspring is present. Invokers may draw light invocations from it.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isPredefined": true
+        },
+        "fabula-ultima-companion": {
+          "wellspring": "light"
+        }
+      },
+      "img": "icons/magic/light/explosion-star-glow-orange.webp",
+      "name": "Sun Wellspring",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "wellspring"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "e8Thu9VstDP8uxzE",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.field_thin_air",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>The air is thin. At the <strong>start of each creature's turn</strong>, it loses <strong>5 Mind Points</strong>.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isPredefined": true
+        },
+        "fabula-ultima-companion": {
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "effect_kind": "grant",
+                "effect_label": "thin_air_drain",
+                "grant_amount": "-5",
+                "grant_resource": "mp",
+                "target_ref": "trigger_subject"
+              }
+            },
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "thin_air_drain",
+                "reaction_passive_mode": "force",
+                "reaction_source": "all",
+                "reaction_trigger": "turn_start"
+              }
+            }
+          }
+        }
+      },
+      "img": "icons/magic/air/fog-gas-smoke-swirling-gray.webp",
+      "name": "Thin Air",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "field",
+          "hazard"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "hFs0jAvn8SPCqiz6",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.field_scorching",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>The ground burns. At the <strong>end of each round</strong>, every creature in the conflict takes <strong>5 fire damage</strong>.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isPredefined": true
+        },
+        "fabula-ultima-companion": {
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "attacker_name": "Scorching Ground",
+                "damage_amount": "5",
+                "damage_element": "fire",
+                "damage_verbosity": "full",
+                "effect_kind": "deal_damage",
+                "effect_label": "scorch_all",
+                "target_ref": "all_combatants"
+              }
+            },
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "scorch_all",
+                "reaction_passive_mode": "force",
+                "reaction_source": "all",
+                "reaction_trigger": "round_end"
+              }
+            }
+          }
+        }
+      },
+      "img": "icons/magic/fire/barrier-wall-flame-ring-blue.webp",
+      "name": "Scorching Ground",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "field",
+          "hazard"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "Kt5O3nzfK303tRJ6",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.wellspring_air",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>The <strong>Air</strong> wellspring is present. Invokers may draw air invocations from it.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isPredefined": true
+        },
+        "fabula-ultima-companion": {
+          "wellspring": "air"
+        }
+      },
+      "img": "icons/magic/air/wind-stream-blue-gray.webp",
+      "name": "Air Wellspring",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "wellspring"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "MrxpXe5okEO9vDxz",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.wellspring_ice",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>The <strong>Water</strong> wellspring is present. Invokers may draw ice invocations from it.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isPredefined": true
+        },
+        "fabula-ultima-companion": {
+          "wellspring": "ice"
+        }
+      },
+      "img": "icons/magic/water/orb-water-bubbles-blue.webp",
+      "name": "Water Wellspring",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "wellspring"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "NCRdYSDa8RbFy3qD",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.wellspring_fire",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>The <strong>Fire</strong> wellspring is present. Invokers may draw fire invocations from it.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isPredefined": true
+        },
+        "fabula-ultima-companion": {
+          "wellspring": "fire"
+        }
+      },
+      "img": "icons/magic/fire/flame-burning-campfire-orange.webp",
+      "name": "Fire Wellspring",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "wellspring"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "w0AJgchCQsAbzDZw",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.wellspring_dark",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>The <strong>Moon</strong> wellspring is present. Invokers may draw dark invocations from it.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isPredefined": true
+        },
+        "fabula-ultima-companion": {
+          "wellspring": "dark"
+        }
+      },
+      "img": "icons/magic/unholy/orb-glowing-purple.webp",
+      "name": "Moon Wellspring",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "wellspring"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "dfreds-convenient-effects": {
+      "folderColor": "",
+      "isBackup": false,
+      "isConvenient": true,
+      "isViewable": true
+    },
+    "fabula-ultima-companion": {
+      "fieldLibrary": true
+    }
+  },
+  "folder": null,
+  "img": "icons/svg/aura.svg",
+  "name": "Field Effects",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "templateSystemUniqueVersion": null
+  },
+  "type": "activeEffectContainer"
+}

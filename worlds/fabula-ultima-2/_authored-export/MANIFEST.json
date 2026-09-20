@@ -5621,6 +5621,12 @@
         "effects": 0
       },
       {
+        "id": "CxDeNV9EiWY4MxMA",
+        "name": "Field Effects",
+        "type": "activeEffectContainer",
+        "effects": 9
+      },
+      {
         "id": "0sFCVCoM6FRrQP2f",
         "name": "Fire",
         "type": "equippableItem",
@@ -13273,6 +13279,13 @@
         "effects": 0
       },
       {
+        "id": "PiXUSZMnbbIbpzUe",
+        "name": "_Field Template",
+        "type": "_template",
+        "items": [],
+        "effects": 0
+      },
+      {
         "id": "lRBKHboc7pbAPwyN",
         "name": "???",
         "type": "character",
@@ -17198,6 +17211,13 @@
         "effects": 0
       },
       {
+        "id": "jQoxLjDdRq6RsNl2",
+        "name": "Field",
+        "type": "character",
+        "items": [],
+        "effects": 5
+      },
+      {
         "id": "Q2SuQSgrAC2dZR2Y",
         "name": "Fire Slime",
         "type": "character",
@@ -20238,6 +20258,26 @@
           }
         ],
         "effects": 1
+      },
+      {
+        "id": "A8vBJMBvMT9ON8O4",
+        "name": "King Gorger",
+        "type": "character",
+        "items": [
+          {
+            "id": "y1tW2wC0N3fPHPy8",
+            "name": "Element Gorge"
+          },
+          {
+            "id": "qOTsQhU2UyRBAuLu",
+            "name": "Elemental Overflow"
+          },
+          {
+            "id": "eYFMzrOX2InBxKzD",
+            "name": "Faithful Companion"
+          }
+        ],
+        "effects": 0
       },
       {
         "id": "wqfGUTRInZUS2MNY",

@@ -1238,9 +1238,17 @@ async function applyAdjustDamageMutation(ctx, cand, row) {
   }
 
   // Locate the reactor's own per-target slot (targets / perTargets are parallel).
-  const idx = ctx.targets.findIndex((t) => t?.actorUuid === reactorUuid);
+  let idx = ctx.targets.findIndex((t) => t?.actorUuid === reactorUuid);
+  // A BYSTANDER reactor (the Field actor's "all fire damage +5" aura, or a
+  // guardian's "an ally you can see takes less damage") is not a target at all —
+  // its row is about the SUBJECT the scan stamped on the candidate. Fall back to
+  // that slot. Audited 2026-09-19: no authored non-self row reached this branch,
+  // so nothing dormant starts firing.
+  if (idx < 0 && cand?.subjectActorUuid) {
+    idx = ctx.targets.findIndex((t) => t?.actorUuid === cand.subjectActorUuid);
+  }
   if (idx < 0) {
-    log(`adjust_damage: reactor ${reactorUuid} not among the action's targets — no-op`);
+    log(`adjust_damage: neither reactor ${reactorUuid} nor subject ${cand?.subjectActorUuid ?? "—"} among the action's targets — no-op`);
     return "failed";
   }
   const pt = ctx.perTargets[idx];

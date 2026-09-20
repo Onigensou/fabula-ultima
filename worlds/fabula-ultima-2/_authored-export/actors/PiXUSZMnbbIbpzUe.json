@@ -1,0 +1,125 @@
+{
+  "_id": "PiXUSZMnbbIbpzUe",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1789836362174,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "fieldTemplate": true,
+      "fieldTemplateVersion": 4
+    }
+  },
+  "folder": null,
+  "img": "icons/svg/aura.svg",
+  "name": "_Field Template",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": null
+    },
+    "bar2": {
+      "attribute": null
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {}
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "_Field Template",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "icons/svg/aura.svg",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "statusEffects": {},
+    "templateSystemUniqueVersion": 2855191239
+  },
+  "type": "_template"
+}

@@ -7969,6 +7969,12 @@ export async function postActionCard({ director, kind, payload }) {
         const attackerActorUuid = payload?.attackerActor?.uuid ?? payload?.attackerActorUuid ?? null;
         const combatants = Array.isArray(director?.dCombat?.combatants) ? director.dCombat.combatants : [];
         const reactorActors = [];
+        // Field actor first — same reactor set as the CONFIRM scan in
+        // state-handlers, so a redirected/added target sees the field's rows too.
+        {
+          const fe = globalThis.FUCompanion?.api?.field?.reactorEntry?.() ?? null;
+          if (fe?.actor && fe.actor.uuid !== attackerActorUuid) reactorActors.push(fe.actor);
+        }
         for (const c of combatants) {
           if (c?.defeated) continue;
           const actor = c?.actorDoc ?? null;

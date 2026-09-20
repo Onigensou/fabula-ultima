@@ -1,0 +1,541 @@
+{
+  "_id": "jQoxLjDdRq6RsNl2",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1789836363224,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "cGnEqqNQmbzn6xMI",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1789836855009,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.wellspring_fire",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>The <strong>Fire</strong> wellspring is present. Invokers may draw fire invocations from it.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "cGnEqqNQmbzn6xMI",
+          "originalParentId": "jQoxLjDdRq6RsNl2",
+          "originalUuid": "Actor.jQoxLjDdRq6RsNl2.ActiveEffect.cGnEqqNQmbzn6xMI"
+        },
+        "fabula-ultima-companion": {
+          "directorPermanent": true,
+          "fieldOrigin": "scene",
+          "fieldSceneId": "jvvy4FvYYmCJtLoz",
+          "wellspring": "fire"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/fire/flame-burning-campfire-orange.webp",
+      "name": "Fire Wellspring",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "wellspring"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "ltycIyeoWUfca6kt",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1789836672785,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.wellspring_air",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>The <strong>Air</strong> wellspring is present. Invokers may draw air invocations from it.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "ltycIyeoWUfca6kt",
+          "originalParentId": "jQoxLjDdRq6RsNl2",
+          "originalUuid": "Actor.jQoxLjDdRq6RsNl2.ActiveEffect.ltycIyeoWUfca6kt"
+        },
+        "fabula-ultima-companion": {
+          "directorPermanent": true,
+          "fieldOrigin": "scene",
+          "fieldSceneId": "jvvy4FvYYmCJtLoz",
+          "wellspring": "air"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/air/wind-stream-blue-gray.webp",
+      "name": "Air Wellspring",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "wellspring"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "MF4e8L79Z1KueMQP",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1789836364877,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.wellspring_bolt",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>The <strong>Lightning</strong> wellspring is present. Invokers may draw bolt invocations from it.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "MF4e8L79Z1KueMQP",
+          "originalParentId": "jQoxLjDdRq6RsNl2",
+          "originalUuid": "Actor.jQoxLjDdRq6RsNl2.ActiveEffect.MF4e8L79Z1KueMQP"
+        },
+        "fabula-ultima-companion": {
+          "directorPermanent": true,
+          "fieldOrigin": "scene",
+          "fieldSceneId": "jvvy4FvYYmCJtLoz",
+          "wellspring": "bolt"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/lightning/bolt-strike-blue.webp",
+      "name": "Lightning Wellspring",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "wellspring"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "PYfHOQsCj14SScaX",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1789836364877,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.wellspring_earth",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>The <strong>Earth</strong> wellspring is present. Invokers may draw earth invocations from it.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "PYfHOQsCj14SScaX",
+          "originalParentId": "jQoxLjDdRq6RsNl2",
+          "originalUuid": "Actor.jQoxLjDdRq6RsNl2.ActiveEffect.PYfHOQsCj14SScaX"
+        },
+        "fabula-ultima-companion": {
+          "directorPermanent": true,
+          "fieldOrigin": "scene",
+          "fieldSceneId": "jvvy4FvYYmCJtLoz",
+          "wellspring": "earth"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/earth/projectile-boulder-dust.webp",
+      "name": "Earth Wellspring",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "wellspring"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "U2kaE4ZjuFadKtjH",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1789836364877,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.wellspring_ice",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>The <strong>Water</strong> wellspring is present. Invokers may draw ice invocations from it.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "U2kaE4ZjuFadKtjH",
+          "originalParentId": "jQoxLjDdRq6RsNl2",
+          "originalUuid": "Actor.jQoxLjDdRq6RsNl2.ActiveEffect.U2kaE4ZjuFadKtjH"
+        },
+        "fabula-ultima-companion": {
+          "directorPermanent": true,
+          "fieldOrigin": "scene",
+          "fieldSceneId": "jvvy4FvYYmCJtLoz",
+          "wellspring": "ice"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/water/orb-water-bubbles-blue.webp",
+      "name": "Water Wellspring",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "wellspring"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "isField": true
+    }
+  },
+  "folder": null,
+  "img": "icons/environment/wilderness/terrain-river-road-gray.webp",
+  "name": "Field",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Field",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "icons/svg/aura.svg",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "name": "Field"
+    },
+    "statusEffects": {},
+    "template": "PiXUSZMnbbIbpzUe",
+    "templateSystemUniqueVersion": 2855191239
+  },
+  "type": "character"
+}

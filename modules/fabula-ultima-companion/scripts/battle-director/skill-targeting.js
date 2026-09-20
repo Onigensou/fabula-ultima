@@ -113,6 +113,20 @@ const RESERVED_REFS = {
   // phantasms too — with both a Numen and a Minion out, [0] is a coin flip and the
   // Minion's grant lands on the Numen. mode "all" -> every own minion, no prompt.
   own_minions:           { candidate_source: "own_minions", mode: "all" },
+  // THE Field actor — the hidden holder of scene-wide effects (scripts/field-system).
+  // Yields an ACTOR CARRIER (`actorOnly`, like own_persistent_summons): the Field
+  // has no token, ever. `apply_ae` / `remove_tagged_ae` on it is how a skill
+  // creates or ends a field effect ("Rain Dance" applies Rain to `field`).
+  // mode "all" → the (0 or 1) Field, no prompt; empty when no Field exists yet.
+  field:                 { candidate_source: "field", mode: "all", auto_target: "skip" },
+  // Whole-battlefield pools, resolved silently. `all_combatants` is every live
+  // combatant regardless of side; `all_party` / `all_hostiles` split by ABSOLUTE
+  // token disposition (friendly = party, hostile = enemies), NOT relative to the
+  // reactor — which is what a side-less reactor (the Field, a conflict event)
+  // needs: "ally"/"enemy" are meaningless from a reactor that has no token.
+  all_combatants:        { candidate_source: "combat", mode: "all", auto_target: "skip", exclude_defeated: true },
+  all_party:             { candidate_source: "combat", category: "party",   mode: "all", auto_target: "skip", exclude_defeated: true },
+  all_hostiles:          { candidate_source: "combat", category: "hostile", mode: "all", auto_target: "skip", exclude_defeated: true },
 };
 
 // The reserved target_ref vocabulary, published for the reaction-config lint.
@@ -426,6 +440,19 @@ async function resolveTargetingRow(row, ctx) {
     pool = pool.filter((t) => t.uuid !== ctx.reactorToken.uuid);
   }
 
+  // 3a. exclude_defeated — drop creatures at 0 HP. The combat pool keeps
+  // defeated combatants (they still hold a slot for revive / on-death rows), so
+  // a whole-battlefield row that fires every round (the Field's Scorching
+  // Ground) would keep hitting KO'd PCs. Opt-in per row; the reserved
+  // all_combatants / all_party / all_hostiles refs set it. Reads the defeat
+  // domain's one definition (HP <= 0) rather than a local copy.
+  if (row.exclude_defeated) {
+    try {
+      const { isActorDefeated } = await import("./defeat-reactor.js");
+      pool = pool.filter((t) => !isActorDefeated(t?.actor ?? null));
+    } catch (e) { warn("targeting: exclude_defeated filter threw — pool left unfiltered", e); }
+  }
+
   // 3b. exclude_action_targets — drop tokens already in the action's target
   // list. Used by add_target augments (Barrage) that must pick an ADDITIONAL
   // target, never one already being attacked.
@@ -677,6 +704,7 @@ async function buildCandidatePool(source, ctx) {
     case "own_summons":         return collectOwnSummons(ctx);
     case "own_persistent_summons": return collectOwnPersistentSummons(ctx);
     case "own_minions":         return collectOwnMinions(ctx);
+    case "field":               return collectField(ctx);
     case "own_numen":           return collectOwnNumen(ctx);
     case "last_summoned":       return collectLastSummoned(ctx);
     case "action_targets":      return collectActionTargets(ctx);
@@ -774,6 +802,16 @@ function collectOwnPersistentSummons(ctx, kind = null) {
     out.push({ actor: a, uuid: a.uuid, name: a.name, actorOnly: true });
   }
   return out;
+}
+
+// "field" — the one Field actor (scripts/field-system), as an actor carrier.
+// Never a token: the Field is not on any scene. Empty pool when the world has no
+// Field yet (module never booted as GM), which aborts the row cleanly rather than
+// applying a scene-wide effect to nothing in particular.
+function collectField(_ctx) {
+  const NS = "fabula-ultima-companion";
+  const a = (globalThis.game?.actors?.contents ?? []).find((x) => !!x?.flags?.[NS]?.isField);
+  return a ? [{ actor: a, uuid: a.uuid, name: a.name, actorOnly: true }] : [];
 }
 
 // "own_minions" — the reactor's own reanimated minions, as LIVE TOKENS.
@@ -1050,15 +1088,21 @@ async function uuidsToTokens(uuids) {
 //   "enemy"    — opposite disposition + neutral
 //   "creature" — any (incl. neutral)
 //   ""         — no filter (same as "creature" — already done above)
+//   "party"    — ABSOLUTE: token disposition FRIENDLY (the PCs' side)
+//   "hostile"  — ABSOLUTE: token disposition HOSTILE (the enemies' side)
 
 function matchesCategory(token, category, ctx) {
+  const cat = category.toLowerCase();
+  if (cat === "creature" || cat === "") return true;
+  // ABSOLUTE sides — by the candidate's own token disposition, independent of who
+  // is asking. The only categories a reactor WITHOUT a token (the Field) can use;
+  // checked before the reactor guard below for exactly that reason.
+  if (cat === "party")   return Number(token.disposition ?? 0) === 1;
+  if (cat === "hostile") return Number(token.disposition ?? 0) === -1;
   const reactor = ctx.reactorToken;
   if (!reactor) return true;
   const reactorDisp = Number(reactor.disposition ?? 0);
   const targetDisp = Number(token.disposition ?? 0);
-
-  const cat = category.toLowerCase();
-  if (cat === "creature" || cat === "") return true;
 
   // Allegiance overrides on the acting creature reclassify a candidate's side
   // (e.g. Charm/Domination: allies count as enemies). Applied to the NATURAL

@@ -20,7 +20,11 @@
 // Stable identity for a reaction candidate across re-derives. A candidate is the
 // same offer iff it's the same row, on the same carrier, for the same reactor.
 export function candidateKey(c) {
-  return `${c?.rowKey ?? "?"}:${c?.carrierUuid ?? "?"}:${c?.reactorActorUuid ?? "?"}`;
+  // The Field actor's rows are about the SUBJECT, one candidate per target —
+  // its identity must include the subject or a second target's copy reads as
+  // "already seen" (mirrors the CONFIRM scan's dedup in state-handlers).
+  const subj = c?.reactorIsField ? `:${c?.subjectActorUuid ?? "?"}` : "";
+  return `${c?.rowKey ?? "?"}:${c?.carrierUuid ?? "?"}:${c?.reactorActorUuid ?? "?"}${subj}`;
 }
 
 // Diff two candidate lists by identity. { added, removed } relative to prev→next.
@@ -197,6 +201,7 @@ export async function deriveTargetedCandidates({ newSubjects, reactorActors, car
           reactorActorName: reactor.name,
           reactorActorImg:  reactor.img ?? c.carrierImg,
           reactorIsPlayer:  !!reactor.hasPlayerOwner,
+          reactorIsField:   !!reactor.flags?.["fabula-ultima-companion"]?.isField,
           subjectActorUuid: subject.actorUuid,
           subjectTokenUuid: subject.tokenUuid ?? null,
           payloadAtFire:    payload,

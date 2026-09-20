@@ -86,7 +86,7 @@ import { initDevToolsMenu, registerDevTool } from "./dev-tools-menu.js";
 import { registerAutopilotSetting, registerAutopilotDevTool } from "./enemy-autopilot.js";
 import { registerSummonAutopilotSetting, registerSummonAutopilotDevTool } from "./summon-autopilot.js";
 import { initDirectorSurfaces, getActiveSurfaces, hasSurface, countSurfaces, clearAllSurfaces } from "./director-surfaces.js";
-import { sweepTransientAEsAtSceneEnd, firePassiveTriggers, installRiderAeLinkage } from "./skill-effects.js";
+import { sweepTransientAEsAtSceneEnd, sweepRetainedSummonsAtSceneEnd, firePassiveTriggers, installRiderAeLinkage } from "./skill-effects.js";
 import { LEGACY_BRIDGED_TRIGGERS } from "./director-triggers.js";
 import { PassiveManager } from "./passive-manager.js";
 import { initPassiveCardUi, passiveCardQueue } from "./passive-card-ui/director-passive-card-ui.js";
@@ -373,6 +373,13 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
     try {
       await sweepTransientAEsAtSceneEnd();
     } catch (e) { warn("stop: sweepTransientAEsAtSceneEnd threw", e); }
+    // A retained persistent summon that fell this battle (Faithful Companion:
+    // "they flee and rejoin you … with HP equal to their Crisis score") stands
+    // back up now, so its sheet reads Crisis between fights instead of 0.
+    try {
+      const n = await sweepRetainedSummonsAtSceneEnd();
+      if (n) log(`stop: restored ${n} retained summon(s) to Crisis HP`);
+    } catch (e) { warn("stop: sweepRetainedSummonsAtSceneEnd threw", e); }
   }
 
   try { await _instance.stop({ reason }); } catch (e) { warn("stop threw", e); }

@@ -108,6 +108,9 @@ export function classifyActionIntent(skill) {
 // Returns true iff a grant row exists with grant_resource in {hp, mp}
 // and grant_amount > 0 (literal). Formula amounts can't be statically
 // classified — author should set `action_intent: "aid"` for those.
+// Target refs that resolve to the CASTER'S side of the action, never to the
+// creatures the action is aimed at.
+const SELF_ONLY_REFS = new Set(["self", "own_summons", "own_persistent_summons", "own_minions", "own_numen", "last_summoned", "field"]);
 function hasAidGrant(skill) {
   const table = skill?.system?.props?.effect_table
             ?? skill?.system?.props?.reaction_effect_table  // legacy alias
@@ -119,6 +122,12 @@ function hasAidGrant(skill) {
     const row = table[key];
     if (!row || row.$deleted) continue;
     if (row.effect_kind !== "grant") continue;
+    // A grant the action's TARGETS never receive says nothing about how the
+    // action treats them. "On hit, the caster gains 20 MP" (Element Gorge,
+    // Soul Steal's IP) is a rider on a hostile check, not aid — classifying
+    // it as aid routes the compose picker to the ALLY list and hides the bite
+    // from every `reaction_action_intent: "harmful"` defender reaction.
+    if (SELF_ONLY_REFS.has(String(row.target_ref ?? "").trim().toLowerCase())) continue;
     const resource = String(row.grant_resource ?? "").toLowerCase();
     if (resource !== "hp" && resource !== "mp") continue;
     // Treat literal positive numbers as aid. Formula amounts are too

@@ -26,6 +26,17 @@
  *                                            (so Bodyguard's RS-grant can't downgrade
  *                                            an Immune/Absorb ally). Use with mode 5
  *                                            (OVERRIDE) on affinity_1..affinity_9.
+ *   aeAffinityStep(n)                      — single-arg. STEPS the affinity_N key being
+ *                                            patched n rungs along the ladder
+ *                                            VU < NA < RS < IM < AB, from whatever the
+ *                                            bearer currently has (base + earlier AEs),
+ *                                            clamped at both ends. "-1" = "reduce the
+ *                                            target's resistance to that element by one
+ *                                            level" (RS→NA, NA→VU, IM→RS); "+1" is the
+ *                                            symmetric buff. Use with mode 5 (OVERRIDE).
+ *                                            Unlike aeAffinityFloor it is relative, so it
+ *                                            never needs to know the bearer's affinity
+ *                                            at authoring time.
  *
  * Equipment type tokens (for aeEquippedWhen / aeNotEquippedWhen):
  *   shield         → item.props.item_type === "shield"
@@ -50,9 +61,9 @@
   const MODULE_ID = "fabula-ultima-companion";
   const TAG = "[ONI][AE-Gate]";
   const TRACE_TAG = "[ONI][AE-Gate][TRACE]";
-  const VERSION = "6.3.0-affinity-false-fallback-na-2026-05-05";
+  const VERSION = "6.4.0-affinity-step-2026-09-20";
 
-  const HELPERS = ["aeWhen", "aeUuidWhen", "aeStatusWhen", "aeEquippedWhen", "aeNotEquippedWhen", "aeSlotEquippedWhen", "aeAffinityFloor"];
+  const HELPERS = ["aeWhen", "aeUuidWhen", "aeStatusWhen", "aeEquippedWhen", "aeNotEquippedWhen", "aeSlotEquippedWhen", "aeAffinityFloor", "aeAffinityStep"];
 
   const PATCH_FLAGS = {
     actorPatched: "__oniAeConditionalGateActorPatched",
@@ -253,7 +264,7 @@
 
   function hasGateSyntax(value) {
     return typeof value === "string"
-      && /\b(?:aeWhen|aeUuidWhen|aeStatusWhen|aeEquippedWhen|aeNotEquippedWhen|aeSlotEquippedWhen|aeAffinityFloor)\s*\(/i.test(value);
+      && /\b(?:aeWhen|aeUuidWhen|aeStatusWhen|aeEquippedWhen|aeNotEquippedWhen|aeSlotEquippedWhen|aeAffinityFloor|aeAffinityStep)\s*\(/i.test(value);
   }
 
   // Does the actor have any equipped item matching the requested type
@@ -837,14 +848,15 @@ function hasEffectStatus(actor, statusId, currentEffect = null) {
 
     // Single-arg helpers: (value). The "value" doubles as the query slot —
     // the affinity floor takes only the floor value to apply when the gate
-    // is active (i.e. current affinity isn't IM/AB).
+    // is active (i.e. current affinity isn't IM/AB); the affinity step takes
+    // the signed rung count, quotes optional (aeAffinityStep(-1) parses too).
     const match1 = text.match(
-      /^\s*(?:\$\{\s*)?(aeAffinityFloor)\s*\(\s*(['"])(.*?)\2\s*\)\s*(?:\}\$)?\s*$/i
+      /^\s*(?:\$\{\s*)?(aeAffinityFloor|aeAffinityStep)\s*\(\s*(?:(['"])(.*?)\2|([-+]?\d+))\s*\)\s*(?:\}\$)?\s*$/i
     );
 
     if (match1) {
       const helper = String(match1[1] ?? "").trim();
-      const trueValue = String(match1[3] ?? "").trim();
+      const trueValue = String(match1[3] ?? match1[4] ?? "").trim();
       if (!helper || !trueValue) {
         return { ok: false, reason: "missing_helper_or_query", rawValue };
       }
@@ -911,6 +923,25 @@ if (helperNorm === "aewhen") {
   const preserve = currentVal === "IM" || currentVal === "AB";
   active = true;
   computedValue = preserve ? currentVal : parsed.trueValue;
+} else if (helperNorm === "aeaffinitystep") {
+  // RELATIVE affinity change: move the affinity_N key being patched n rungs
+  // along VU < NA < RS < IM < AB from what the bearer has RIGHT NOW (base
+  // props plus any AE applied earlier in this derivation pass — Foundry
+  // rebuilds prepared data from _source every pass, so this never compounds
+  // across passes; two step AEs on the same key compound by design, which is
+  // "reduced by one level, twice"). Clamped at both ends; a blank/unknown
+  // value counts as NA. `active=true` so the apply path writes computedValue.
+  const k = String(change?.key ?? "").trim().replace(/^system\.props\./, "");
+  const props = actor?.system?.props ?? {};
+  const ladder = ["VU", "NA", "RS", "IM", "AB"];
+  const currentVal = String(props[k] ?? "NA").trim().toUpperCase();
+  const idx = ladder.indexOf(currentVal);
+  const from = idx >= 0 ? idx : 1;
+  const n = Number.parseInt(parsed.trueValue, 10);
+  const step = Number.isFinite(n) ? n : 0;
+  const to = Math.max(0, Math.min(ladder.length - 1, from + step));
+  active = true;
+  computedValue = ladder[to];
 }
 
   const result = {

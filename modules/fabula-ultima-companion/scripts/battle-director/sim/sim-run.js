@@ -322,6 +322,40 @@ async function cloneGuests(startFp) {
   return out;
 }
 
+// ── Persistent-summon cloning ───────────────────────────────────────────────
+// A standing summon (Birth of the Cruel's Minion, a Faithful Companion) is a
+// world Actor whose `summonOwnerActorUuid` names the REAL party member, and
+// reAddPersistentSummons fields it only when that owner is in the battle. The
+// sim fields CLONES, so the owner pointer never matched and no sim could ever
+// watch a persistent summon act, scale, or rejoin — the same blind spot guests
+// had. Clone each member's summons the same way, with the owner pointer
+// re-stamped to the member's clone; they are NOT members (reAdd is the path
+// under test) and ride the one cleanup list.
+async function clonePersistentSummons(partyClones) {
+  const folder = await ensureScratchFolder();
+  const out = [];
+  const NS = "fabula-ultima-companion";
+  for (const owner of partyClones) {
+    const srcId = owner?.flags?.[NS]?.simSourceActorId;
+    if (!srcId) continue;
+    const srcUuid = `Actor.${srcId}`;
+    for (const a of game.actors.contents) {
+      const f = a.flags?.[NS] ?? {};
+      if (!f.isPersistentSummon || String(f.summonOwnerActorUuid ?? "") !== srcUuid) continue;
+      const data = a.toObject();
+      delete data._id;
+      data.name = `${a.name} [SIM]`;
+      data.folder = folder.id;
+      data.ownership = { default: 0 };
+      data.flags ??= {};
+      data.flags[NS] = { ...(data.flags[NS] ?? {}), summonOwnerActorUuid: owner.uuid, simSourceActorId: a.id };
+      const doc = await Actor.create(data);
+      if (doc) { out.push(doc); log(`[SIM] cloned persistent summon ${a.name} → ${doc.name} (owner ${owner.name})`); }
+    }
+  }
+  return out;
+}
+
 async function deleteClones(clones) {
   const ids = clones.map((c) => c?.id).filter(Boolean);
   if (!ids.length) return;
@@ -509,6 +543,16 @@ export async function run({
     const members = clones.map((c, i) => ({
       actorUuid: c.uuid, actorId: c.id, name: c.name, slot: i + 1, img: c.img,
     }));
+
+    // Standing summons of the cloned members — fielded by reAddPersistentSummons
+    // at conflict_start, never listed as members. Same cleanup list.
+    {
+      const summonClones = await clonePersistentSummons(clones);
+      if (summonClones.length) {
+        clones = clones.concat(summonClones);
+        SimMode.note("start", `persistent summons: ${summonClones.map((c) => c.name).join(", ")}`);
+      }
+    }
 
     // Guests take slots after the real party (GUEST_SLOT_BASE) so spawn order and
     // the HUD read the same in a sim as in play.

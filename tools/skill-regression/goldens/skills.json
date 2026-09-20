@@ -6828,21 +6828,12 @@
     },
     "⭐️ Fafnir / Storm Calm": {
       "caster": "⭐️ Fafnir",
-      "element": "mp",
+      "element": "",
       "hasDamage": false,
-      "hasHealing": true,
+      "hasHealing": false,
       "offensive": true,
       "ok": true,
-      "perTarget": [
-        {
-          "affinity": "NE",
-          "damage": 0,
-          "grant": 50,
-          "grantRes": "mp",
-          "hit": true,
-          "resource": null
-        }
-      ],
+      "perTarget": [],
       "roll": null,
       "skill": "Storm Calm",
       "skillType": "Spell",
@@ -6928,21 +6919,12 @@
     },
     "⭐️ Geist / Shadow Wall": {
       "caster": "⭐️ Geist",
-      "element": "shield",
+      "element": "",
       "hasDamage": false,
-      "hasHealing": true,
+      "hasHealing": false,
       "offensive": true,
       "ok": true,
-      "perTarget": [
-        {
-          "affinity": "NE",
-          "damage": 0,
-          "grant": 261,
-          "grantRes": "shield",
-          "hit": true,
-          "resource": null
-        }
-      ],
+      "perTarget": [],
       "roll": null,
       "skill": "Shadow Wall",
       "skillType": "Spell",

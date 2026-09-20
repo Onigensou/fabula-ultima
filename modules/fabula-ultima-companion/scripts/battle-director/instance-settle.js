@@ -150,7 +150,10 @@ export async function settleInstance(director, { reason = "", maxIters = 8, reco
       // other triggers stay subject-scoped.
       try {
         if (LEDGER_FAMILY.has(cfg?.trigger)) {
-          const reactors = await collectReactors(director);
+          // includeField: the Field (scene-wide effects) observes ledger events
+          // too — "when any creature loses HP, the Corruption grows". Tokenless,
+          // so dispatchReactionMenu runs only its forced rows.
+          const reactors = await collectReactors(director, { includeField: true });
           for (const { actor, token } of reactors) {
             const r = await dispatchReactionMenu({ director, reactor: actor, token, trigger: cfg.trigger, payload: cfg.payload, skipEvaluated });
             for (const f of (r?.fired ?? [])) {

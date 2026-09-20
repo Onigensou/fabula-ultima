@@ -1,0 +1,1462 @@
+{
+  "_id": "A8vBJMBvMT9ON8O4",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1789857202299,
+    "duplicateSource": "Actor.ik2o2KAR2WZoDgrB",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "fabula-ultima-companion": {
+      "idleAnimation": {
+        "bounce": false,
+        "float": false
+      },
+      "isPersistentSummon": true,
+      "persistentSummonKind": "companion",
+      "persistentSummonRetainOnDefeat": true,
+      "summonOwnerActorUuid": "Actor.uJFaNQCSvwwsr2AW",
+      "summonTurnsPerRound": 0
+    }
+  },
+  "folder": "NmTMvWbnUbnXBMpx",
+  "img": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+  "items": [
+    {
+      "_id": "eYFMzrOX2InBxKzD",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1789898307515,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "zUUGYHta7RPdsCwd",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "max_hp",
+              "mode": 5,
+              "priority": 20,
+              "value": "max(1, SUMMONER_SKILL_LEVEL_FAITHFUL_COMPANION) * MIG_BASE_DIE + floor(SUMMONER_LEVEL / 2)"
+            },
+            {
+              "key": "check_mod_accuracy",
+              "mode": 2,
+              "priority": 20,
+              "value": "max(1, SUMMONER_SKILL_LEVEL_FAITHFUL_COMPANION)"
+            }
+          ],
+          "description": "<p>Companion stats per Faithful Companion: max HP = SL × MIG die + half of Blanche's level; +SL to Accuracy Checks and Magic Checks.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "directorPermanent": true
+            }
+          },
+          "img": "icons/svg/pawprint.svg",
+          "name": "Faithful Companion",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+      "name": "Faithful Companion",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "cost": "",
+          "description": "<p>Blanche's companion (Wayfarer — Faithful Companion). Acts automatically at the start of Blanche's turn, before she acts. Stats follow the Faithful Companion rule: max HP = SL × MIG die + half Blanche's level, +SL to Accuracy and Magic Checks (applied when the battle starts). At 0 HP it flees and rejoins the next battle at its Crisis score.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "action_ref": "Skill",
+              "effect_kind": "free_action",
+              "effect_label": "kg_act"
+            },
+            "1": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "scene",
+              "ae_template_ref": "Faithful Companion",
+              "effect_kind": "apply_ae",
+              "effect_label": "kg_bond",
+              "target_ref": "self"
+            }
+          },
+          "id": "eYFMzrOX2InBxKzD",
+          "img": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+          "isCheck": false,
+          "isReaction": true,
+          "name": "Faithful Companion",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "SUBJECT_IS_MY_SUMMONER == 1",
+              "reaction_effect_ref": "kg_act",
+              "reaction_passive_mode": "force",
+              "reaction_source": "ally",
+              "reaction_trigger": "turn_start"
+            },
+            "1": {
+              "$deleted": false,
+              "condition_formula": "",
+              "reaction_effect_ref": "kg_bond",
+              "reaction_passive_mode": "force",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start"
+            }
+          },
+          "skill_target": "",
+          "skill_type": "Passive",
+          "uuid": "Actor.A8vBJMBvMT9ON8O4.Item.eYFMzrOX2InBxKzD"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "qOTsQhU2UyRBAuLu",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1789898307515,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "70TqlVsjxW2eTFX7",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "flags.fabula-ultima-companion.wellspring_ice",
+              "mode": 5,
+              "priority": 20,
+              "value": "1"
+            }
+          ],
+          "description": "<p>King Gorger belches a <strong>Ice Wellspring</strong> onto the battlefield. Every creature's <strong>Ice</strong> damage is increased by 10 until the start of King Gorger's next turn.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-overflow",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "damage_amount": "10",
+                    "damage_operation": "add",
+                    "damage_stage": "outgoing",
+                    "effect_kind": "adjust_damage",
+                    "effect_label": "eo_ice_bonus"
+                  }
+                },
+                "reaction_config_table": {
+                  "0": {
+                    "condition_formula": "TRIGGER_DAMAGE_IS_ICE == 1",
+                    "reaction_effect_ref": "eo_ice_bonus",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "all",
+                    "reaction_trigger": "creature_targeted_by_action"
+                  }
+                }
+              },
+              "wellspring": "ice"
+            }
+          },
+          "img": "icons/svg/explosion.svg",
+          "name": "Elemental Overflow (Ice)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-overflow-ice"
+          ],
+          "system": {
+            "tags": [
+              "wellspring",
+              "elemental-overflow"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "COMHtPppBHA4VkuT",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "flags.fabula-ultima-companion.wellspring_earth",
+              "mode": 5,
+              "priority": 20,
+              "value": "1"
+            }
+          ],
+          "description": "<p>King Gorger belches a <strong>Earth Wellspring</strong> onto the battlefield. Every creature's <strong>Earth</strong> damage is increased by 10 until the start of King Gorger's next turn.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-overflow",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "damage_amount": "10",
+                    "damage_operation": "add",
+                    "damage_stage": "outgoing",
+                    "effect_kind": "adjust_damage",
+                    "effect_label": "eo_earth_bonus"
+                  }
+                },
+                "reaction_config_table": {
+                  "0": {
+                    "condition_formula": "TRIGGER_DAMAGE_IS_EARTH == 1",
+                    "reaction_effect_ref": "eo_earth_bonus",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "all",
+                    "reaction_trigger": "creature_targeted_by_action"
+                  }
+                }
+              },
+              "wellspring": "earth"
+            }
+          },
+          "img": "icons/svg/explosion.svg",
+          "name": "Elemental Overflow (Earth)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-overflow-earth"
+          ],
+          "system": {
+            "tags": [
+              "wellspring",
+              "elemental-overflow"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "DEKLENi9PFm2mrhv",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "flags.fabula-ultima-companion.wellspring_bolt",
+              "mode": 5,
+              "priority": 20,
+              "value": "1"
+            }
+          ],
+          "description": "<p>King Gorger belches a <strong>Bolt Wellspring</strong> onto the battlefield. Every creature's <strong>Bolt</strong> damage is increased by 10 until the start of King Gorger's next turn.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-overflow",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "damage_amount": "10",
+                    "damage_operation": "add",
+                    "damage_stage": "outgoing",
+                    "effect_kind": "adjust_damage",
+                    "effect_label": "eo_bolt_bonus"
+                  }
+                },
+                "reaction_config_table": {
+                  "0": {
+                    "condition_formula": "TRIGGER_DAMAGE_IS_BOLT == 1",
+                    "reaction_effect_ref": "eo_bolt_bonus",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "all",
+                    "reaction_trigger": "creature_targeted_by_action"
+                  }
+                }
+              },
+              "wellspring": "bolt"
+            }
+          },
+          "img": "icons/svg/explosion.svg",
+          "name": "Elemental Overflow (Bolt)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-overflow-bolt"
+          ],
+          "system": {
+            "tags": [
+              "wellspring",
+              "elemental-overflow"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "gRDAg0JBKUfpjW9u",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "flags.fabula-ultima-companion.wellspring_fire",
+              "mode": 5,
+              "priority": 20,
+              "value": "1"
+            }
+          ],
+          "description": "<p>King Gorger belches a <strong>Fire Wellspring</strong> onto the battlefield. Every creature's <strong>Fire</strong> damage is increased by 10 until the start of King Gorger's next turn.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-overflow",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "damage_amount": "10",
+                    "damage_operation": "add",
+                    "damage_stage": "outgoing",
+                    "effect_kind": "adjust_damage",
+                    "effect_label": "eo_fire_bonus"
+                  }
+                },
+                "reaction_config_table": {
+                  "0": {
+                    "condition_formula": "TRIGGER_DAMAGE_IS_FIRE == 1",
+                    "reaction_effect_ref": "eo_fire_bonus",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "all",
+                    "reaction_trigger": "creature_targeted_by_action"
+                  }
+                }
+              },
+              "wellspring": "fire"
+            }
+          },
+          "img": "icons/svg/explosion.svg",
+          "name": "Elemental Overflow (Fire)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-overflow-fire"
+          ],
+          "system": {
+            "tags": [
+              "wellspring",
+              "elemental-overflow"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "PWEOCPpIdExNoE08",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "flags.fabula-ultima-companion.wellspring_air",
+              "mode": 5,
+              "priority": 20,
+              "value": "1"
+            }
+          ],
+          "description": "<p>King Gorger belches a <strong>Air Wellspring</strong> onto the battlefield. Every creature's <strong>Air</strong> damage is increased by 10 until the start of King Gorger's next turn.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-overflow",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "damage_amount": "10",
+                    "damage_operation": "add",
+                    "damage_stage": "outgoing",
+                    "effect_kind": "adjust_damage",
+                    "effect_label": "eo_air_bonus"
+                  }
+                },
+                "reaction_config_table": {
+                  "0": {
+                    "condition_formula": "TRIGGER_DAMAGE_IS_AIR == 1",
+                    "reaction_effect_ref": "eo_air_bonus",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "all",
+                    "reaction_trigger": "creature_targeted_by_action"
+                  }
+                }
+              },
+              "wellspring": "air"
+            }
+          },
+          "img": "icons/svg/explosion.svg",
+          "name": "Elemental Overflow (Air)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-overflow-air"
+          ],
+          "system": {
+            "tags": [
+              "wellspring",
+              "elemental-overflow"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+      "name": "Elemental Overflow",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "cost": "",
+          "description": "<p>Whenever King Gorger has <strong>50 or more Mind Points</strong> — checked at the start of its turn and again the moment it gains MP (so a bite that pushes it past 50 activates this in the same round) — it spends 50 MP and grants one random <strong>Wellspring</strong> (Fire, Ice, Earth, Bolt or Air) to the battlefield: every creature's damage of that element is increased by 10 until the start of King Gorger's next turn. Only one Wellspring from King Gorger exists at a time.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_steps": "eo_spend,eo_surge",
+              "effect_kind": "chain",
+              "effect_label": "eo_chain"
+            },
+            "1": {
+              "$deleted": false,
+              "consume_amount": "50",
+              "consume_resource": "mp",
+              "effect_kind": "consume_resource",
+              "effect_label": "eo_spend",
+              "on_empty": "abort",
+              "target_ref": "self"
+            },
+            "2": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace_family",
+              "ae_duration_rounds": "1",
+              "ae_family": "elemental-overflow",
+              "ae_name_pool": "Elemental Overflow (Fire)|Elemental Overflow (Ice)|Elemental Overflow (Earth)|Elemental Overflow (Bolt)|Elemental Overflow (Air)",
+              "ae_template_ref": "",
+              "effect_kind": "apply_ae",
+              "effect_label": "eo_surge",
+              "target_ref": "field"
+            }
+          },
+          "id": "qOTsQhU2UyRBAuLu",
+          "img": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+          "isCheck": false,
+          "isReaction": true,
+          "name": "Elemental Overflow",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "SUBJECT_IS_MY_SUMMONER == 1 && CUR_MP >= 50",
+              "reaction_effect_ref": "eo_chain",
+              "reaction_passive_mode": "force",
+              "reaction_source": "ally",
+              "reaction_trigger": "turn_start"
+            },
+            "1": {
+              "$deleted": false,
+              "condition_formula": "CUR_MP >= 50 && FIELD_HAS_ELEMENTAL_OVERFLOW == 0",
+              "reaction_effect_ref": "eo_chain",
+              "reaction_max_per_round": "1",
+              "reaction_passive_mode": "force",
+              "reaction_resource_filter": "mp",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_gain_resource"
+            }
+          },
+          "skill_target": "",
+          "skill_type": "Passive",
+          "uuid": "Actor.A8vBJMBvMT9ON8O4.Item.qOTsQhU2UyRBAuLu"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "y1tW2wC0N3fPHPy8",
+      "_stats": {
+        "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
+        "coreVersion": "12.343",
+        "createdTime": 1789898307515,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "FeVf9smQ6Qhjlku1",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_2",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityStep(\"-1\")"
+            }
+          ],
+          "description": "<p>Gorged: this creature's resistance to <strong>Air</strong> is reduced by one level until the start of King Gorger's next turn.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "elementGorge": "air",
+              "tags": [
+                "debuff"
+              ]
+            }
+          },
+          "img": "icons/svg/downgrade.svg",
+          "name": "Element Gorge (Air)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-element-gorge-air"
+          ],
+          "system": {
+            "tags": [
+              "debuff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "qNxWz970P2SpYhAO",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_5",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityStep(\"-1\")"
+            }
+          ],
+          "description": "<p>Gorged: this creature's resistance to <strong>Earth</strong> is reduced by one level until the start of King Gorger's next turn.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "elementGorge": "earth",
+              "tags": [
+                "debuff"
+              ]
+            }
+          },
+          "img": "icons/svg/downgrade.svg",
+          "name": "Element Gorge (Earth)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-element-gorge-earth"
+          ],
+          "system": {
+            "tags": [
+              "debuff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "v9yQZqb0cHKlwJfl",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_7",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityStep(\"-1\")"
+            }
+          ],
+          "description": "<p>Gorged: this creature's resistance to <strong>Ice</strong> is reduced by one level until the start of King Gorger's next turn.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "elementGorge": "ice",
+              "tags": [
+                "debuff"
+              ]
+            }
+          },
+          "img": "icons/svg/downgrade.svg",
+          "name": "Element Gorge (Ice)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-element-gorge-ice"
+          ],
+          "system": {
+            "tags": [
+              "debuff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "WWnOaVGDimPg2Oxd",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_6",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityStep(\"-1\")"
+            }
+          ],
+          "description": "<p>Gorged: this creature's resistance to <strong>Fire</strong> is reduced by one level until the start of King Gorger's next turn.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "elementGorge": "fire",
+              "tags": [
+                "debuff"
+              ]
+            }
+          },
+          "img": "icons/svg/downgrade.svg",
+          "name": "Element Gorge (Fire)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-element-gorge-fire"
+          ],
+          "system": {
+            "tags": [
+              "debuff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "X46XpVZ0xRroA3Kz",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_3",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityStep(\"-1\")"
+            }
+          ],
+          "description": "<p>Gorged: this creature's resistance to <strong>Bolt</strong> is reduced by one level until the start of King Gorger's next turn.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "elementGorge": "bolt",
+              "tags": [
+                "debuff"
+              ]
+            }
+          },
+          "img": "icons/svg/downgrade.svg",
+          "name": "Element Gorge (Bolt)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-element-gorge-bolt"
+          ],
+          "system": {
+            "tags": [
+              "debuff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+      "name": "Element Gorge",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "5",
+          "class": "NPC",
+          "cost": "",
+          "damage_bonus": "",
+          "defense_target_type": "mdef",
+          "description": "<p><strong>【INS + WLP + 5】</strong> vs Magic Defense, one melee target. <strong>On hit:</strong> the target's resistance to one random element (Fire, Ice, Earth, Bolt or Air) is reduced by one level until the start of King Gorger's next turn (a repeat bite picks an element the target isn't already gorged on), and King Gorger gains <strong>20 Mind Points</strong>. No damage.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_steps": "eg_shift,eg_feed",
+              "effect_kind": "chain",
+              "effect_label": "eg_chain"
+            },
+            "1": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_name_pool": "Element Gorge (Fire)|Element Gorge (Ice)|Element Gorge (Earth)|Element Gorge (Bolt)|Element Gorge (Air)",
+              "ae_pool_skip_existing": true,
+              "ae_template_ref": "",
+              "effect_kind": "apply_ae",
+              "effect_label": "eg_shift",
+              "target_ref": "hit_action_targets"
+            },
+            "2": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "eg_feed",
+              "grant_amount": "20",
+              "grant_resource": "mp",
+              "target_ref": "self"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "y1tW2wC0N3fPHPy8",
+          "ignore_hr": false,
+          "img": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Element Gorge",
+          "on_activate_effect_ref": "eg_chain",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Enemy",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.A8vBJMBvMT9ON8O4.Item.y1tW2wC0N3fPHPy8"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "King Gorger",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 50,
+    "disposition": 1,
+    "flags": {
+      "Border-Control": {
+        "borderCustomBaseOpacity": 0.5,
+        "borderCustomColorExt": "#000000",
+        "borderCustomColorInt": "#000000",
+        "borderCustomFrameOpacity": 0.5,
+        "noBorder": false
+      },
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "max": null,
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 30
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "max": null,
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 60
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "max": 3,
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 0
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "🍖",
+            "max": 3,
+            "maxcolor": "#2dca2b",
+            "mincolor": "#53e45d",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 0
+          }
+        }
+      },
+      "hex-size-support": {
+        "alternateOrientation": false,
+        "hideBorder": true,
+        "hideFill": false,
+        "pivotx": null,
+        "pivoty": null
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "wall-height": {
+        "tokenHeight": 0
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "King Gorger",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "action_pattern_table": {
+        "0": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Element Gorge",
+          "action_pattern_priority": "5",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        }
+      },
+      "activation": "0",
+      "affinity_1": "NA",
+      "affinity_2": "NA",
+      "affinity_3": "NA",
+      "affinity_4": "NA",
+      "affinity_5": "NA",
+      "affinity_6": "NA",
+      "affinity_7": "NA",
+      "affinity_8": "NA",
+      "affinity_9": "NA",
+      "animation_table": {},
+      "arcane_ef": "100",
+      "attack_list": {},
+      "attribute": "",
+      "battle_facing_direction": "left",
+      "bonus_hp": 0,
+      "bonus_mp": 0,
+      "bow_ef": "100",
+      "brawling_ef": "100",
+      "check_mod_all": 0,
+      "check_mod_magic": 0,
+      "check_mod_melee": 0,
+      "check_mod_ranged": 0,
+      "condition_anomaly": "NA",
+      "condition_bane": "NA",
+      "condition_berserk": "NA",
+      "condition_bleed": "NA",
+      "condition_blind": "NA",
+      "condition_burn": "NA",
+      "condition_charm": "NA",
+      "condition_confused": "NA",
+      "condition_curse": "NA",
+      "condition_dazed": "NA",
+      "condition_delayed": "NA",
+      "condition_despair": "NA",
+      "condition_disarmed": "NA",
+      "condition_doom": "NA",
+      "condition_enraged": "NA",
+      "condition_envenomed": "NA",
+      "condition_fatigue": "NA",
+      "condition_frightened": "NA",
+      "condition_grappled": "NA",
+      "condition_hypothermia": "NA",
+      "condition_isolate": "NA",
+      "condition_obscure": "NA",
+      "condition_oil": "NA",
+      "condition_panic": "NA",
+      "condition_paralyzed": "NA",
+      "condition_petrify": "NA",
+      "condition_poisoned": "NA",
+      "condition_shaken": "NA",
+      "condition_silence": "NA",
+      "condition_slow": "NA",
+      "condition_stagger": "NA",
+      "condition_suppress": "NA",
+      "condition_turbulence": "NA",
+      "condition_weak": "NA",
+      "condition_wet": "NA",
+      "condition_wither": "NA",
+      "condition_zombie": "NA",
+      "critical_damage_bonus": 0,
+      "critical_damage_multiplier": 1,
+      "critical_dice_range": 0,
+      "current_hp": "28",
+      "current_ip": "0",
+      "current_mp": "0",
+      "cut_in_critical": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+      "cut_in_fumble": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+      "cut_in_offset_y": "",
+      "cut_in_zero_power": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+      "dagger_ef": "100",
+      "damage_receiving_mod_air": 0,
+      "damage_receiving_mod_all": 0,
+      "damage_receiving_mod_bolt": 0,
+      "damage_receiving_mod_dark": 0,
+      "damage_receiving_mod_earth": 0,
+      "damage_receiving_mod_fire": 0,
+      "damage_receiving_mod_ice": 0,
+      "damage_receiving_mod_light": 0,
+      "damage_receiving_mod_melee": 0,
+      "damage_receiving_mod_physical": 0,
+      "damage_receiving_mod_poison": 0,
+      "damage_receiving_mod_range": 0,
+      "def_mod": "+0",
+      "default_facing_direction": "right",
+      "defense": 8,
+      "dex_base": "8",
+      "dex_current": 8,
+      "enmity": 100,
+      "event_timeline_table": {},
+      "extra_damage_mod_air": 0,
+      "extra_damage_mod_all": 0,
+      "extra_damage_mod_arcane": 0,
+      "extra_damage_mod_bolt": 0,
+      "extra_damage_mod_bow": 0,
+      "extra_damage_mod_brawling": 0,
+      "extra_damage_mod_dagger": 0,
+      "extra_damage_mod_dark": 0,
+      "extra_damage_mod_earth": 0,
+      "extra_damage_mod_fire": 0,
+      "extra_damage_mod_firearm": 0,
+      "extra_damage_mod_flail": 0,
+      "extra_damage_mod_heavy": 0,
+      "extra_damage_mod_ice": 0,
+      "extra_damage_mod_light": 0,
+      "extra_damage_mod_melee": 0,
+      "extra_damage_mod_physical": 0,
+      "extra_damage_mod_poison": 0,
+      "extra_damage_mod_ranged": 0,
+      "extra_damage_mod_spear": 0,
+      "extra_damage_mod_spell": 0,
+      "extra_damage_mod_sword": 0,
+      "extra_damage_mod_thrown": 0,
+      "firearm_ef": "100",
+      "flail_ef": "100",
+      "gorger": true,
+      "heavy_ef": "100",
+      "icon_offset_x": "",
+      "icon_offset_y": "",
+      "icon_scale": "",
+      "id": "A8vBJMBvMT9ON8O4",
+      "img": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+      "init": "0",
+      "ins_base": "8",
+      "ins_current": 8,
+      "isAlmighty": false,
+      "isAwake": false,
+      "isBlacksmith": false,
+      "isBoss": false,
+      "isClarity": false,
+      "isCustomEvent": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnlighten": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isMasterful": false,
+      "isPhantasm": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isShop": false,
+      "isSlow": false,
+      "isStolen": false,
+      "isStrong": false,
+      "isSummon": false,
+      "isSwift": false,
+      "isUnyielding": false,
+      "isVillain": false,
+      "isWeak": false,
+      "level": "5",
+      "lifesteal_percentage": 0,
+      "lifesteal_value": 0,
+      "magic_defense": 8,
+      "manadrain_percentage": 0,
+      "manadrain_value": 0,
+      "max_hp": "28",
+      "max_ip": "0",
+      "max_mp": "100",
+      "max_zero": "0",
+      "mdef_mod": "+0",
+      "mig_base": "8",
+      "mig_current": 8,
+      "mimic": false,
+      "minimum_critical_dice": 6,
+      "name": "King Gorger",
+      "normal_spell_list": {},
+      "npc_rank": "soldier",
+      "override_all_damage_type": "None",
+      "override_attack_damage_type": "None",
+      "override_damage_type": "None",
+      "override_spell_damage_type": "None",
+      "rare": false,
+      "resource_maxValue_1": "0",
+      "resource_maxValue_2": "0",
+      "resource_maxValue_3": "0",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "shield_type": "PHYSICAL",
+      "shield_value": "0",
+      "showMacro": false,
+      "skill_active_list": {},
+      "skill_passive_list": {},
+      "spear_ef": "100",
+      "species": "BEAST",
+      "sprite_battle": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+      "sprite_standard": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+      "steal_percentage_table": {},
+      "stealable_loot": {},
+      "study_text": "<p>Blanche's companion — a Gorger grown fat and proud enough to wear a crown. Design pending (Faithful Companion, Wayfarer).</p>",
+      "subtype": "Sub-Type",
+      "subtype_list": "GORGER",
+      "sword_ef": "100",
+      "tactic_notes": "",
+      "thrown_ef": "100",
+      "token_option_persist": false,
+      "traits": "Gorger, Beast, Companion, Loyal, Bottomless Appetite",
+      "ultima_point": "0",
+      "unique": false,
+      "uuid": "Actor.A8vBJMBvMT9ON8O4",
+      "wlp_base": "8",
+      "wlp_current": 8,
+      "zenit_reward_max": "0",
+      "zenit_reward_min": "0",
+      "zero_power_value": "0"
+    },
+    "statusEffects": {},
+    "template": "yegF6R8aaymhrvCg",
+    "templateSystemUniqueVersion": 2114752673
+  },
+  "type": "character"
+}

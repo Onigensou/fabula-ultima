@@ -773,7 +773,11 @@ async function probeTargetedReactions({
   try {
     const computed = attack
       ? await runDirectorAttackCompute({ attackerTokenUuid, targetTokenUuids, mode: attackMode, npcAttackItemUuid, force, depsToken })
-      : await runDirectorSkillCompute({ skillUuid, casterTokenUuid: attackerTokenUuid, targetTokenUuids, force, depsToken });
+      // `picks` reach the ATTACKER's own open_action_menu too: without them a menu
+      // skill (Invocation) auto-picks its first available option, so a probe
+      // "with Pyro Blast" silently computed Aero Blast and every element gate on
+      // the defender side read the wrong element (2026-09-19, Field aura probe).
+      : await runDirectorSkillCompute({ skillUuid, casterTokenUuid: attackerTokenUuid, targetTokenUuids, force, picks, depsToken });
     if (!computed?.ok) return { ok: false, reason: "compute_failed", computed };
     const ar = computed.actionResult;
     const attackerActor = ar?.attackerActorRef ? await fromUuid(ar.attackerActorRef).catch(() => null) : null;
@@ -834,6 +838,9 @@ async function probeTargetedReactions({
       if (reactorNames && !reactorNames.includes(a.name)) return;
       reactorActors.set(a.uuid, a);
     };
+    // The Field actor, exactly as the live CONFIRM scan includes it — a harness
+    // that omitted it would report a field row as unreachable in play.
+    addReactor(globalThis.FUCompanion?.api?.field?.getActor?.() ?? null, false);
     if (combatants.length) {
       for (const c of combatants) addReactor(c?.actorDoc ?? null, !!c?.defeated);
     } else {
@@ -891,8 +898,14 @@ async function probeTargetedReactions({
             casterActor: reactor, trigger, payload, includeUnavailable: true,
           });
         } catch (e) { scanLog.push({ reactor: reactor.name, threw: String(e?.message ?? e) }); continue; }
+        // Mirror the CONFIRM scan's dedup EXACTLY: one candidate per reactor for a
+        // creature (Protect covers ONE ally per action), per SUBJECT only for the
+        // Field actor (its rows are about the subject). A per-subject key for
+        // everyone made the probe report a creature's row on every target when
+        // live fires it once (post-test review, 2026-09-20).
+        const reactorIsField = !!reactor.flags?.["fabula-ultima-companion"]?.isField;
         for (const c of scanned ?? []) {
-          const key = `${c?.rowKey}::${c?.carrierUuid}::${reactor.uuid}::${subject.actorUuid}`;
+          const key = `${c?.rowKey}::${c?.carrierUuid}::${reactor.uuid}` + (reactorIsField ? `::${subject.actorUuid}` : "");
           if (byKey.has(key)) continue;
           byKey.set(key, { cand: c, reactor, subject, payload });
           scanLog.push({ reactor: reactor.name, subject: subject.name, carrierName: c?.carrierName ?? null,
@@ -919,6 +932,7 @@ async function probeTargetedReactions({
       // trigger took the unclassified branch. Under test the defender-side rule
       // was therefore never the rule being exercised.
       const stamped = { ...cand, reactorActorUuid: reactor.uuid, reactorActorName: reactor.name,
+        reactorIsField: !!reactor.flags?.["fabula-ultima-companion"]?.isField,
         subjectActorUuid: subject.actorUuid, subjectTokenUuid: subject.tokenUuid ?? null,
         phaseTrigger: trigger, payloadAtFire: payload,
         ...(Array.isArray(picks) && picks.length ? { chosenMenuPicks: [...picks] } : {}) };

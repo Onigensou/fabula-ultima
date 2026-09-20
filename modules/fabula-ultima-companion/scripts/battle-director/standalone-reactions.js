@@ -211,10 +211,23 @@ async function getReactionMenu() {
 // Walk the director's combatants and return [{ actor, token }] entries
 // for every live reactor on the active battle. Skips combatants whose
 // actor doc went stale or token isn't on canvas (they can't host a menu).
-export async function collectReactors(director) {
+//
+// `includeField` — also prepend the Field actor (scripts/field-system: the
+// hidden holder of scene-wide effects) as `{ actor, token: null, isField }`.
+// OPT-IN, not default: several callers hand these entries to code that
+// dereferences `token` (defeat-reactor, the conflict-event ctx), so a
+// tokenless entry there would throw. Only the two dispatchers below opt in,
+// and dispatchReactionMenu knows to run a tokenless Field in forced mode.
+// First, so a field beat (weather flips at round_start) lands before the
+// creatures' own rows read the field.
+export async function collectReactors(director, { includeField = false } = {}) {
   const out = [];
   const dc = director?.dCombat;
   if (!dc) return out;
+  if (includeField) {
+    const fe = globalThis.FUCompanion?.api?.field?.reactorEntry?.() ?? null;
+    if (fe) out.push(fe);
+  }
   const list = Array.isArray(dc.combatants) ? dc.combatants : Object.values(dc.combatants ?? {});
   for (const dcc of list) {
     // Skip DOWN combatants: the `defeated` flag AND the live H<=0 signal. A KO'd
@@ -270,7 +283,9 @@ function labelForTrigger(trigger) {
 // filter, so the matcher's "self" check fails-open via subjectMatchesSource
 // returning false (correct: a row authored with `reaction_source: "self"`
 // on conflict_start has no semantic meaning).
-function buildStandalonePayload(director, trigger, extras) {
+// Exported so a harness probe can hand a reactor the LIVE payload shape instead
+// of its own defaults (the omission-fails-permissive trap).
+export function buildStandalonePayload(director, trigger, extras) {
   const subjectTriggers = trigger === "turn_start" || trigger === "turn_end";
   const subjectActorUuid = subjectTriggers ? (extras?.actingActorUuid ?? null) : null;
   const subjectTokenUuid = subjectTriggers ? (extras?.actingTokenUuid ?? null) : null;
@@ -282,6 +297,17 @@ function buildStandalonePayload(director, trigger, extras) {
     currentTokenUuid: director?.dCombat?.current?.tokenUuid ?? null,
     sourceActorUuid: subjectActorUuid,
     sourceTokenUuid: subjectTokenUuid,
+    // The SAME creature under its subject-side name, so `target_ref:
+    // "trigger_subject"` (which reads subjectTokenUuid) resolves on turn_start /
+    // turn_end. Without it a bystander row about the acting creature — the
+    // Field's "at the start of each creature's turn it loses 5 MP" — scanned as
+    // available, auto-fired and applied to NOBODY ("no-targets"), while the
+    // harness probe passed because its default payload stamps the key live
+    // never sent (post-test review, 2026-09-20). Corpus-audited: no authored
+    // turn_start/turn_end row reads a subject-side identifier, so nothing
+    // dormant changes behaviour. Null on the subject-less lifecycle triggers.
+    subjectActorUuid,
+    subjectTokenUuid,
     // Current combatant's remaining activations this round — the per-activation
     // discriminator the fired-set scope uses so multi-activation bosses re-fire
     // turn_start/turn_end reactions each activation (see scopeKeyFor).
@@ -355,7 +381,18 @@ export async function dispatchReactionMenu({
   // See dispatchForcedTriggerForActors below.
   if (!reactor || !trigger) return { cancelled: false, fired: [] };
   if (phase !== "forced" && (!director || !token)) {
-    return { cancelled: false, fired: [] };
+    // The Field actor (scripts/field-system) never has a token. Its rows are
+    // force/on by contract — there is nothing to hang an ask-menu on — so a
+    // combined-phase dispatch (the ledger drain in instance-settle passes no
+    // phase) runs its FORCED pass instead of silently doing nothing. An explicit
+    // "ask" pass still skips it. Scoped to the Field on purpose: a creature
+    // without a canvas token keeps the old no-op, since widening that would
+    // start firing rows the card/menu path could never have surfaced.
+    const isField = !!reactor?.flags?.[STANDALONE_FLAG_NS]?.isField;
+    if (!(isField && director && phase !== "ask")) {
+      return { cancelled: false, fired: [] };
+    }
+    phase = "forced";
   }
   const { findPassiveCandidates, firePreAcceptedCandidate, isActionCreatingReaction, isActionCreatingReactionForAE } = await getSkillEffectsExtras();
   const fired = [];
@@ -1067,7 +1104,10 @@ export async function dispatchReactionMenu({
 // acting combatant.
 export async function dispatchStandaloneTrigger({ director, trigger, restrictTo = null, payload: extraPayload = null, phase = null } = {}) {
   if (!director || !trigger) return 0;
-  let reactors = await collectReactors(director);
+  // includeField: scene-wide effects react to lifecycle beats too (a hazard's
+  // round_end tick, a weather that flips at round_start). Skipped on the ask
+  // pass by dispatchReactionMenu (the Field has no menu surface).
+  let reactors = await collectReactors(director, { includeField: phase !== "ask" });
   if (restrictTo) {
     const wantedUuid = String(restrictTo?.uuid ?? "");
     reactors = reactors.filter((r) => r.actor?.uuid === wantedUuid);

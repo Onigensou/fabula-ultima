@@ -854,6 +854,11 @@ function subjectMatchesSource(wantSource, subjectActorUuid, reactorActor) {
   const reactorDisp = dispositionOf(reactorActor);
   const subjTok = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === subjectActorUuid)?.document ?? null;
   const subjDisp = Number(subjTok?.disposition ?? 0);
+  // ABSOLUTE sides (the subject's own disposition, whoever is reacting) — what a
+  // reactor with no side needs: the Field actor (scripts/field-system) reads as
+  // neutral, so "ally"/"enemy" from it would match nobody / only neutrals.
+  if (wantSource === "party")   return subjDisp === 1;
+  if (wantSource === "hostile") return subjDisp === -1;
   if (wantSource === "ally") return subjectActorUuid !== reactorActor?.uuid && (subjDisp === reactorDisp || subjDisp === 0);
   if (wantSource === "enemy") return reactorDisp !== 0 && subjDisp === -reactorDisp;
   if (wantSource === "neutral") return subjDisp === 0;
@@ -5413,6 +5418,30 @@ async function grantApply(row, ctx, { resource, targetRef, amount }) {
     const result = await writeResourceDelta(actor, def, recipAmount);
     if (result.ok) {
       applied.push({ actorUuid: actor.uuid, resource, delta: result.applied, newValue: result.newValue });
+      // Itemize onto the director's post-commit resource ledger, the way
+      // deal_damage / consume_resource / the attack path already do. The ledger
+      // family documents `cause: grant`, but no effect-row grant ever emitted it,
+      // so a "when I gain MP" reaction (Elemental Overflow's mid-turn trigger)
+      // could be probed with a hand-built payload and still never fire in play.
+      // Uses the ACTUAL applied delta (clamped at max), so a grant that moves
+      // nothing emits nothing. No-op out of combat (getActiveDirector() → null).
+      if (result.applied) {
+        const _director = ctx?.director
+          ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.();
+        if (_director) {
+          try {
+            fireResourceChangeTrigger({
+              director: _director, actor,
+              tokenUuid: token.uuid ?? token.document?.uuid ?? null,
+              resource, direction: result.applied > 0 ? "recover" : "loss", amount: Math.abs(result.applied),
+              cause: "grant",
+              source: { actorUuid: ctx.reactorActor?.uuid ?? null, tokenUuid: ctx.reactorToken?.uuid ?? null },
+              originLabel: ctx.sourceLabel ?? ctx.skill?.name ?? row.effect_label ?? "Grant",
+              originUuid: ctx.sourceUuid ?? ctx.skill?.uuid ?? null,
+            });
+          } catch (e) { warn("skill-effects.grant: ledger emit threw", e); }
+        }
+      }
       // Recover VFX on a positive grant (heal / restore). A negative grant
       // (drain authored as a grant) is a loss; per the loss-VFX scoping
       // decision that path stays silent, so we only float gains here.
@@ -6697,7 +6726,7 @@ async function applyApplyAeEffect(row, ctx) {
         // They are function calls, so `looksLikeNumericFormula` says yes and the
         // bake would fold the whole directive to "0" — the same corruption, one
         // level up. Leave them verbatim for the gate to interpret.
-        if (/\b(?:aeWhen|aeUuidWhen|aeStatusWhen|aeEquippedWhen|aeNotEquippedWhen|aeSlotEquippedWhen|aeAffinityFloor)\s*\(/i.test(ch.value)) continue;
+        if (/\b(?:aeWhen|aeUuidWhen|aeStatusWhen|aeEquippedWhen|aeNotEquippedWhen|aeSlotEquippedWhen|aeAffinityFloor|aeAffinityStep)\s*\(/i.test(ch.value)) continue;
         if (!isFormulaString(ch.value)) continue;
         // Only bake values that actually LOOK like a numeric formula. A bare
         // word string-literal change ("melee", "Light", "ranged" — used by
@@ -6879,6 +6908,11 @@ async function applyApplyAeEffect(row, ctx) {
       data.changes = data.changes.filter((c) => {
         const m = /^(?:system\.props\.)?(affinity_\d+)$/.exec(String(c?.key ?? ""));
         if (!m) return true; // non-affinity change — keep
+        // A RELATIVE step (aeAffinityStep — "reduce their resistance by one
+        // level") is meant to reach an Immune/Absorbing target: IM→RS is the
+        // whole point. Only absolute overrides (Guard's "RS to all") must
+        // yield to a native IM/AB.
+        if (/aeAffinityStep\s*\(/i.test(String(c?.value ?? ""))) return true;
         const native = String(nativeProps[m[1]] ?? "").trim().toUpperCase();
         if (native === "IM" || native === "AB") {
           log(`apply_ae: ${actor.name} natively ${native} on ${m[1]} — dropping "${data.name}" affinity override (preserve IM/AB)`);
@@ -10565,6 +10599,41 @@ async function applySummonEffect(row, ctx) {
   return { ok: true, kind: "summon", applied };
 }
 
+// ── Retained summons that fell: "they flee and rejoin you … with HP equal to
+// their Crisis score" (Faithful Companion). A summon stamped
+// `persistentSummonRetainOnDefeat` keeps its world Actor through a 0-HP defeat
+// (the defeat reactor removes only the token); this puts it back on its feet.
+// Called from the battle-end sweep (so the sheet reads Crisis, not 0, between
+// fights) and again from reAddPersistentSummons as a safety net for an actor
+// that reached 0 outside a director battle. No-op above 0 HP.
+export async function restoreRetainedSummonAtCrisis(actor) {
+  if (actor?.flags?.[FLAG_NS]?.persistentSummonRetainOnDefeat !== true) return false;
+  const hp = Number(actor.system?.props?.current_hp ?? 0) || 0;
+  if (hp > 0) return false;
+  const { crisisThreshold } = await import("./crisis-reactor.js");
+  const crisis = Math.max(1, Number(crisisThreshold(actor)) || 1);
+  await actor.update({ "system.props.current_hp": String(crisis) });
+  // The KO marker is normally lifted by the defeat reactor on the next HP
+  // ledger event; a direct restore never raises one, so lift it here.
+  const ko = Array.from(actor.effects ?? []).filter((e) => e?.flags?.[FLAG_NS]?.bdDefeated === true).map((e) => e.id);
+  if (ko.length) await actor.deleteEmbeddedDocuments("ActiveEffect", ko);
+  log(`retained summon ${actor.name} fled at 0 HP → restored to Crisis (${crisis} HP)`);
+  return true;
+}
+
+// Battle-end pass over every retained persistent summon (world actors only —
+// a linked companion's HP lives there). Returns how many were restored.
+export async function sweepRetainedSummonsAtSceneEnd() {
+  let restored = 0;
+  for (const a of (game.actors?.contents ?? [])) {
+    const f = a.flags?.[FLAG_NS] ?? {};
+    if (!f.isPersistentSummon || f.persistentSummonRetainOnDefeat !== true) continue;
+    try { if (await restoreRetainedSummonAtCrisis(a)) restored++; }
+    catch (e) { warn(`sweepRetainedSummonsAtSceneEnd: ${a.name} threw`, e); }
+  }
+  return restored;
+}
+
 // ── reAddPersistentSummons — battle-start re-instatement of standing allies ──
 // A persist:true clone summon (Birth of the Cruel's reanimated minion; also a
 // captured monster / permanent doppelganger) survives between battles as a world
@@ -10589,6 +10658,10 @@ export async function reAddPersistentSummons(director) {
     if (c.side === "party" && c.actorDoc?.uuid) partyOwners.add(c.actorDoc.uuid);
     const cf = c.tokenDoc?.flags?.[FLAG_NS] ?? {};
     if (cf.cloneActorUuid) presentCloneUuids.add(cf.cloneActorUuid);
+    // A LINKED persistent summon already in the roster by any other route (a
+    // hand-placed companion token, a roster pick) carries no cloneActorUuid on
+    // its token — dedup on the actor itself too, or it would be spawned twice.
+    if (c.actorDoc?.flags?.[FLAG_NS]?.isPersistentSummon && c.actorDoc?.uuid) presentCloneUuids.add(c.actorDoc.uuid);
   }
   if (!partyOwners.size) return { ok: true, added: 0 };
 
@@ -10605,6 +10678,16 @@ export async function reAddPersistentSummons(director) {
   let added = 0;
   for (const { actor, owner } of toAdd) {
     try {
+      // A summon that is meant to SURVIVE its own defeat (Faithful Companion:
+      // "if your companion falls to 0 HP, they flee and rejoin you at the start
+      // of the next scene, with HP equal to their Crisis score") is stamped
+      // `persistentSummonRetainOnDefeat` on the ACTOR. Its 0-HP defeat then
+      // only removes the token (see the deleteCloneOnDeath stamp below). The
+      // battle-end sweep normally restores it to Crisis right away; this is the
+      // safety net for one that reached 0 outside a director battle — it must
+      // be above 0 BEFORE the spawn, or the defeat sweep drops it on landing.
+      const retain = actor.flags?.[FLAG_NS]?.persistentSummonRetainOnDefeat === true;
+      if (retain) await restoreRetainedSummonAtCrisis(actor);
       const res = await bd.addCombatant({ actorUuid: actor.uuid, side: "party" });
       if (!res?.ok || !res.tokenUuid) { warn(`reAddPersistentSummons: addCombatant failed for ${actor.name}: ${res?.error}`); continue; }
       const td = await fromUuid(res.tokenUuid).catch(() => null);
@@ -10632,7 +10715,10 @@ export async function reAddPersistentSummons(director) {
           [`flags.${FLAG_NS}.isSummon`]: true,
           [`flags.${FLAG_NS}.summonedBy`]: owner,
           [`flags.${FLAG_NS}.cloneActorUuid`]: actor.uuid,
-          [`flags.${FLAG_NS}.deleteCloneOnDeath`]: true,
+          // A retained summon keeps its world Actor through a 0-HP defeat (the
+          // defeat reactor then removes only the token); everything else is
+          // reclaimed on death exactly as before.
+          [`flags.${FLAG_NS}.deleteCloneOnDeath`]: !retain,
           ...(actor.flags?.[FLAG_NS]?.persistentSummonKind
             ? { [`flags.${FLAG_NS}.persistentSummonKind`]: actor.flags[FLAG_NS].persistentSummonKind } : {}),
           ...(pin !== undefined && pin !== null && pin !== ""

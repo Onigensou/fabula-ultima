@@ -769,6 +769,7 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
 // effect to each roster row, creating rows (auto-hit) for targets that have none
 // yet (pure heal). Heal shares the roster's hit determination instead of producing
 // a separate row set. Mutates `rows`; returns { healingObj }.
+const SELF_SIDE_GRANT_REFS = new Set(["self", "own_summons", "own_persistent_summons", "own_minions", "own_numen", "last_summoned", "field"]);
 async function attachHealEffects({ rows, view, ar, targets, resolver, liveAttacker = null, check, kind, primary, chainVars = null }) {
   const rolled = !!(check?.required && check?.total != null);
   const isPreRoll = !!(check?.required && check?.total == null);
@@ -782,6 +783,17 @@ async function attachHealEffects({ rows, view, ar, targets, resolver, liveAttack
     if (!grantRow) grantRow = row;
   }
   if (!grantRow) return { healingObj: null };
+  // A grant aimed at the CASTER'S side (`self`, own summons, the Field) never
+  // lands on creatures other than the caster, so it may only be previewed on
+  // the caster's OWN row (a Self-targeted Storm Calm / Shadow Wall). On an
+  // enemy-targeted action it has no row at all: previewing it there printed
+  // "RESTORED 20 MP" / "FULL · NO EFFECT" on the ENEMY's row and replaced its
+  // SUCCESS/FAILED cell — for a self-rider that RESOLVE correctly writes to
+  // the caster (Element Gorge: "on hit, gain 20 MP").
+  if (SELF_SIDE_GRANT_REFS.has(String(grantRow.target_ref ?? "").trim().toLowerCase())) {
+    targets = (targets ?? []).filter((e) => e.actorUuid === ar?.attackerActorRef);
+    if (!targets.length) return { healingObj: null };
+  }
 
   // Precondition guard (#7): the primary grant amount must be a pure function of
   // pre-card inputs. A VAR_<NAME> captured MID-CHAIN (a prompt in the RESOLVE

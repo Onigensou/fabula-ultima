@@ -42,7 +42,7 @@
  *     TARGETING_MODE_INVALID
  *     TARGETING_CATEGORY_INVALID
  *     CONSUME_CHARGE_KEY_MISSING
- *     APPLY_AE_NO_TEMPLATE    apply_ae without ae_template_ref
+ *     APPLY_AE_NO_TEMPLATE    apply_ae without ae_template_ref (or an ae_name_pool / ae_pool_tag)
  *     TARGET_REF_MISSING      kind requires target_ref but it's blank
  *     TARGET_REF_UNRESOLVED   target_ref doesn't match any effect_label
  *     TARGET_REF_NOT_TARGETING target_ref points at non-targeting row
@@ -163,11 +163,13 @@
 
   // -------- Allowed enums (mirror the matcher / handlers) ----------------
   const OWNERSHIP_VALUES        = new Set(["", "own_summon"]);
-  const SOURCE_VALUES           = new Set(["", "all", "self", "ally", "enemy", "neutral"]);
+  // "party" / "hostile" are ABSOLUTE sides (subject disposition), for side-less
+  // reactors — the Field actor (scripts/field-system). Mirrors subjectMatchesSource.
+  const SOURCE_VALUES           = new Set(["", "all", "self", "ally", "enemy", "neutral", "party", "hostile"]);
   const DAMAGE_SOURCE_VALUES    = SOURCE_VALUES;
   const ACTION_INTENT_VALUES    = new Set(["", "harmful", "aid", "neutral"]);
   const CANDIDATE_SOURCE_VALUES = new Set([
-    "self", "combat", "trigger_subject", "trigger_actor", "action_targets"
+    "self", "combat", "trigger_subject", "trigger_actor", "action_targets", "field"
   ]);
   // "random" picks `count` tokens from the pool with no prompt — implemented in
   // skill-targeting.js (chain-level random targeting, the twin of skill_target
@@ -175,7 +177,7 @@
   // (Roo's Approach, picking whom to stalk) linted as an error against a row
   // the runtime resolves correctly.
   const TARGETING_MODE_VALUES   = new Set(["exact", "up_to", "all", "random"]);
-  const TARGETING_CATEGORY_VALUES = new Set(["", "creature", "ally", "enemy"]);
+  const TARGETING_CATEGORY_VALUES = new Set(["", "creature", "ally", "enemy", "party", "hostile"]);
   // Mirror of the engine's dispatch switch (skill-effects.js applyEffectRow) +
   // Prefer the engine's live kind registry (api.effectKinds, published by
   // skill-effects.js = keys(EFFECT_KIND_DISPATCH)) so this never drifts; the
@@ -500,7 +502,10 @@
       }
 
       if (kind === "apply_ae") {
-        if (!String(row?.ae_template_ref ?? "").trim()) {
+        // Random-pool mode (`ae_name_pool` / `ae_pool_tag`) is a valid substitute
+        // for a single ae_template_ref — the handler draws one name per target.
+        const hasPool = !!String(row?.ae_name_pool ?? "").trim() || !!String(row?.ae_pool_tag ?? "").trim();
+        if (!String(row?.ae_template_ref ?? "").trim() && !hasPool) {
           issues.push(mkIssue({
             severity: "warning",
             code: "APPLY_AE_NO_TEMPLATE",

@@ -416,20 +416,31 @@ export function displayElement(el) {
 //   - skill     (Item | null)   — the firing skill, for SL.
 //   - round     (number | null) — current dCombat.round; falls back to 0.
 
-// Read the Invoker wellspring availability for an element from the scene's Fabula
-// Configuration flags: `flags.fabula-ultima-companion.oniFabula.general.wellspring_<elem>`
-// (per-element boolean, set by the Scene Config UI). Prefers the active combat's scene,
-// then the active/viewed scene. UNSET → available (returns 1) so the skill works out-of-box
-// before a GM restricts the scene; only an explicit `false` (GM unchecked it) gates it.
-function wellspringAvailable(elem) {
+// Is `elem`'s wellspring available to `actor`? Answered by the Field system
+// (scripts/field-system): the FIELD actor's AE-applied flag
+// `flags.fabula-ultima-companion.wellspring_<elem>` (seeded from the scene's
+// config, or put there by a skill / the GM) ∪ the ASKING creature's own flag of
+// the same name (Inner Wellspring, Wheel of Moon and Sun — per-character
+// grants are plain self-AEs). Legacy fallback when the world has no Field
+// actor yet: the raw scene chip, UNSET → available.
+function wellspringAvailable(elem, actor = null) {
   try {
+    const api = globalThis.FUCompanion?.api?.field;
+    if (api?.wellspringAvailableFor) return api.wellspringAvailableFor(elem, actor) ? 1 : 0;
+    const key = `wellspring_${elem}`;
+    if (actor?.flags?.["fabula-ultima-companion"]?.[key]) return 1;
     const scene = globalThis.game?.combat?.scene
       ?? globalThis.game?.scenes?.active
       ?? globalThis.canvas?.scene
       ?? null;
     const g = scene?.flags?.["fabula-ultima-companion"]?.oniFabula?.general;
-    return g?.[`wellspring_${elem}`] === false ? 0 : 1;
+    return g?.[key] === false ? 0 : 1;
   } catch { return 1; }
+}
+
+// The Field actor itself (null when the world has none yet).
+function fieldActor() {
+  try { return globalThis.FUCompanion?.api?.field?.getActor?.() ?? null; } catch { return null; }
 }
 
 // 1 if any creature on the scene matches `needle` by SPECIES or NPC RANK, else 0.
@@ -522,16 +533,28 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // case-insensitively. Backs Ring of Onions ("+2 max HP/MP per distinct
       // class"). 0 if the actor carries no class_list.
       case "CLASS_COUNT": return countDistinctClasses(actor);
-      // Invoker wellsprings — is the given element's wellspring present on the scene?
-      // 1 = available (gate passes), 0 = not. Reads the combat/active scene flag
-      // `flags.fabula-ultima-companion.oniFabula.wellsprings`; UNSET → all available
-      // (so the skill works out-of-box before a GM restricts the scene). Used by the
-      // Invocation menu's per-option condition_formula alongside the SL tier gate.
-      case "WELLSPRING_AIR_AVAILABLE":   return wellspringAvailable("air");
-      case "WELLSPRING_EARTH_AVAILABLE": return wellspringAvailable("earth");
-      case "WELLSPRING_FIRE_AVAILABLE":  return wellspringAvailable("fire");
-      case "WELLSPRING_BOLT_AVAILABLE":  return wellspringAvailable("bolt");
-      case "WELLSPRING_ICE_AVAILABLE":   return wellspringAvailable("ice");
+      // Invoker wellsprings — is the given element's wellspring available to THIS
+      // actor? 1 = available (gate passes), 0 = not. Field actor's flag ∪ the
+      // actor's own flag (see wellspringAvailable). Used by the Invocation menu's
+      // per-option condition_formula alongside the SL tier gate. The five RAW
+      // scene wellsprings plus Moon (dark) / Sun (light) for Wheel of Moon and Sun.
+      case "WELLSPRING_AIR_AVAILABLE":   return wellspringAvailable("air", actor);
+      case "WELLSPRING_EARTH_AVAILABLE": return wellspringAvailable("earth", actor);
+      case "WELLSPRING_FIRE_AVAILABLE":  return wellspringAvailable("fire", actor);
+      case "WELLSPRING_BOLT_AVAILABLE":  return wellspringAvailable("bolt", actor);
+      case "WELLSPRING_ICE_AVAILABLE":   return wellspringAvailable("ice", actor);
+      case "WELLSPRING_DARK_AVAILABLE":  return wellspringAvailable("dark", actor);
+      case "WELLSPRING_LIGHT_AVAILABLE": return wellspringAvailable("light", actor);
+      // How many wellsprings THIS actor can draw from right now (field ∪ self).
+      case "WELLSPRING_COUNT": {
+        const elems = ["air", "earth", "fire", "bolt", "ice", "dark", "light"];
+        return elems.reduce((n, e) => n + (wellspringAvailable(e, actor) ? 1 : 0), 0);
+      }
+      // Number of ENABLED effects on the Field actor (0 when there is no Field).
+      case "FIELD_EFFECT_COUNT": {
+        const f = fieldActor();
+        return f ? Array.from(f.effects ?? []).filter((e) => e && e.disabled !== true).length : 0;
+      }
       // Reactor resources
       // MP this actor has spent on SPELL actions so far THIS turn (Bimagus).
       // Combat-scoped, per-actor state the resolver can't derive from `actor`
@@ -1452,6 +1475,24 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const me = String(actor?.uuid ?? "").trim();
         return (by && me && by === me) ? 1 : 0;
       }
+      // The inverse question, asked FROM the summon: 1 when the trigger SUBJECT
+      // (turn_start / turn_end: the acting creature) is the creature that owns
+      // THIS actor as its summon. Lets a companion / minion carry its own
+      // "on my owner's turn" rows instead of the owner's skill having to know
+      // about it. Ownership is read off the actor first (`summonOwnerActorUuid`,
+      // the persistent-summon stamp) and then the live token (`summonedBy`).
+      case "SUBJECT_IS_MY_SUMMONER": {
+        const owner = summonerUuidOf(actor);
+        const subj = String(payload?.subjectActorUuid ?? payload?.actingActorUuid ?? payload?.sourceActorUuid ?? "").trim();
+        return (owner && subj && owner === subj) ? 1 : 0;
+      }
+      // The summoner's total level (0 when this actor has no summoner). Twin of
+      // CHAR_LEVEL read off the OWNER, so a summon can scale itself from its
+      // owner — Faithful Companion's "+ half your level" max HP.
+      case "SUMMONER_LEVEL": {
+        const owner = _resolveActorByUuidSync(summonerUuidOf(actor));
+        return owner ? (Number(owner?.system?.props?.level ?? owner?.system?.level ?? 0) || 0) : 0;
+      }
       // Allegiance of the trigger SUBJECT relative to the reactor — the
       // per-victim gate the vocabulary was missing. `reaction_source` scopes the
       // event SOURCE and `reaction_action_target` asks about the whole target
@@ -1502,6 +1543,21 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         //   HAS_SKILL_SEE_YOU_LATER → "See You Later"
         // Used by Pillage to gate Soul Steal's multi-target option,
         // and by any other cross-skill requirement check.
+        // Dynamic SUMMONER_SKILL_LEVEL_<NAME> — the effective SL (base + runtime
+        // boost, same read as bare SL) of the skill named <NAME> on this actor's
+        // SUMMONER; 0 when there is no summoner or the summoner lacks the skill.
+        // Grammar mirrors HAS_SKILL_<NAME> (spaces → underscores, case-blind).
+        // Powers a companion scaling itself from its owner's skill:
+        //   SUMMONER_SKILL_LEVEL_FAITHFUL_COMPANION * MIG_BASE_DIE + floor(SUMMONER_LEVEL / 2)
+        if (name.startsWith("SUMMONER_SKILL_LEVEL_")) {
+          const needle = name.slice("SUMMONER_SKILL_LEVEL_".length).replace(/_/g, " ").toLowerCase().trim();
+          const owner = _resolveActorByUuidSync(summonerUuidOf(actor));
+          if (!owner || !needle) return 0;
+          const item = Array.from(owner.items ?? []).find((i) => String(i?.name ?? "").trim().toLowerCase() === needle);
+          if (!item) return 0;
+          const base = Number(item?.system?.level ?? item?.system?.props?.skill_level ?? item?.system?.props?.level ?? 1) || 1;
+          return Math.max(1, base + skillLevelBonus(owner, item));
+        }
         if (name.startsWith("HAS_SKILL_")) {
           const needle = name
             .slice("HAS_SKILL_".length)
@@ -1884,6 +1940,32 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             .toLowerCase()
             .trim();
           return rank && rank === needle ? 1 : 0;
+        }
+        // Field system (scripts/field-system) — scene-wide effects held by the
+        // hidden Field actor. Three dynamic families:
+        //   FIELD_HAS_<NAME>   — 1 if the Field carries an ENABLED effect whose
+        //                        name, tag or status id matches <NAME>
+        //                        (underscores ↔ spaces, case-insensitive):
+        //                        FIELD_HAS_SCORCHING_GROUND, FIELD_HAS_HAZARD.
+        //   FIELD_FLAG_<KEY>   — the numeric value of the Field's AE-applied flag
+        //                        `flags.<NS>.<key>` (lower-cased), 0 when absent:
+        //                        FIELD_FLAG_VISIBILITY, FIELD_FLAG_FIELD_SCORCHING.
+        //   WELLSPRING_<X>_AVAILABLE — any element, same rule as the literal arms.
+        // A missing Field → 0, so a `== 1` gate fails closed.
+        if (name.startsWith("FIELD_HAS_")) {
+          try { return globalThis.FUCompanion?.api?.field?.has?.(name.slice("FIELD_HAS_".length)) ? 1 : 0; }
+          catch { return 0; }
+        }
+        if (name.startsWith("FIELD_FLAG_")) {
+          const key = name.slice("FIELD_FLAG_".length).toLowerCase();
+          const v = fieldActor()?.flags?.["fabula-ultima-companion"]?.[key];
+          if (v === true) return 1;
+          const n = Number(v);
+          return Number.isFinite(n) ? n : (v ? 1 : 0);
+        }
+        if (name.startsWith("WELLSPRING_") && name.endsWith("_AVAILABLE")) {
+          const elem = name.slice("WELLSPRING_".length, name.length - "_AVAILABLE".length).toLowerCase();
+          return elem ? wellspringAvailable(elem, actor) : 0;
         }
         // Dynamic CREATURE_<X>_PRESENT — 1 if ANY creature on the scene matches <X>
         // by SPECIES or NPC RANK, else 0. Scene-scoped (combat combatants, else active-
@@ -2786,6 +2868,25 @@ function myFocusInCrisis(actor, payload) {
 // Count live summons (incl. phantasms) THIS actor put on the field — canvas
 // tokens whose `summonedBy` flag == the actor's uuid and that still carry
 // isSummon/isPhantasm. Powers OWN_SUMMON_COUNT.
+// The actor uuid of whoever summoned `actor`, or "" when it is nobody's summon.
+// Persistent summons carry it on the ACTOR (`summonOwnerActorUuid`, stamped at
+// creation and read between battles); a transient summon only has the live
+// token's `summonedBy`, so fall back to the actor's active tokens. Feeds the
+// SUBJECT_IS_MY_SUMMONER / SUMMONER_* identifier family.
+function summonerUuidOf(actor) {
+  const NS = "fabula-ultima-companion";
+  const stamped = String(actor?.flags?.[NS]?.summonOwnerActorUuid ?? "").trim();
+  if (stamped) return stamped;
+  try {
+    for (const t of (actor?.getActiveTokens?.(true, true) ?? [])) {
+      const td = t?.document ?? t;
+      const by = String(td?.flags?.[NS]?.summonedBy ?? "").trim();
+      if (by) return by;
+    }
+  } catch (_e) { /* no canvas / no tokens */ }
+  return "";
+}
+
 function ownSummonCount(actor, { numenOnly = false, phantasmOnly = false } = {}) {
   const meUuid = String(actor?.uuid ?? "").trim();
   if (!meUuid) return 0;

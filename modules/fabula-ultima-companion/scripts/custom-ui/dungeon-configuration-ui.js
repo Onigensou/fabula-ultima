@@ -74,9 +74,25 @@
   const DEPTH_CURVE_KEY      = "depthCurve";       // number: ramp power (>1 shrinks faster near the top)
   const DEPTH_SORT_KEY       = "depthSort";        // boolean: y-sort tokens (nearer draws in front)
   // Invoker wellsprings present on this scene. Per-element boolean under general
-  // (`wellspring_<elem>`); UNSET/true → available, false → absent. Read by the
-  // WELLSPRING_<ELEM>_AVAILABLE formula identifier (Invocation menu gating).
-  const WELLSPRING_ELEMS = ["air", "earth", "fire", "bolt", "ice"];
+  // (`wellspring_<elem>`). The five RAW ones: UNSET/true → available, false →
+  // absent. Moon (dark) / Sun (light) are heroic-only: UNSET/false → absent.
+  // Seeded onto the hidden Field actor (scripts/field-system) as "<X> Wellspring"
+  // AEs whenever this scene is active; WELLSPRING_<ELEM>_AVAILABLE reads the
+  // Field. Keep in step with field-core.WELLSPRINGS.
+  const WELLSPRING_CHIPS = [
+    { el: "air",   label: "Air",       color: "#5fd3c6", icon: "fa-wind",      defaultOn: true },
+    { el: "earth", label: "Earth",     color: "#c19a6b", icon: "fa-mountain",  defaultOn: true },
+    { el: "fire",  label: "Fire",      color: "#e8603c", icon: "fa-fire",      defaultOn: true },
+    { el: "bolt",  label: "Lightning", color: "#e8c93c", icon: "fa-bolt",      defaultOn: true },
+    { el: "ice",   label: "Water",     color: "#6fb7e8", icon: "fa-snowflake", defaultOn: true },
+    { el: "dark",  label: "Moon",      color: "#8f7bd8", icon: "fa-moon",      defaultOn: false },
+    { el: "light", label: "Sun",       color: "#f2d16b", icon: "fa-sun",       defaultOn: false },
+  ];
+  const WELLSPRING_ELEMS = WELLSPRING_CHIPS.map((c) => c.el);
+  // Field effects the scene seeds onto the Field actor — a comma/newline list
+  // of AE template names (the "Field Effects" library, or any status-library
+  // AE). Mirrors SCENE_FIELD_EFFECTS_KEY in scripts/field-system/field-core.js.
+  const FIELD_EFFECTS_KEY = "fieldEffects";
 
   // Main (parent) tab in Scene Config
   const FABULA_TAB_ID     = "oni-fabula-config";
@@ -822,20 +838,25 @@
           </div>
 
           <h3 style="margin:12px 0 6px;"><i class="fas fa-water"></i> Invoker Wellsprings</h3>
-          <p class="notes" style="margin:0 0 8px;">Which elemental wellsprings are present on this scene. An Invoker can only draw the invocations of wellsprings available here. All are available by default — deselect the ones that are absent (RAW: usually two per scene).</p>
+          <p class="notes" style="margin:0 0 8px;">Which elemental wellsprings are present on this scene. An Invoker can only draw the invocations of wellsprings available here. The five natural ones are available by default — deselect the ones that are absent (RAW: usually two per scene). Moon and Sun are heroic-only and absent unless selected.</p>
           <div class="oni-wellspring-row">
-            ${[
-              { el: "air",   color: "#5fd3c6", icon: "fa-wind" },
-              { el: "earth", color: "#c19a6b", icon: "fa-mountain" },
-              { el: "fire",  color: "#e8603c", icon: "fa-fire" },
-              { el: "bolt",  color: "#e8c93c", icon: "fa-bolt" },
-              { el: "ice",   color: "#6fb7e8", icon: "fa-snowflake" },
-            ].map(({ el, color, icon }) => `
-              <label class="oni-wellspring-chip" style="--ec:${color};">
+            ${WELLSPRING_CHIPS.map(({ el, label, color, icon }) => `
+              <label class="oni-wellspring-chip" style="--ec:${color};" title="${el} damage">
                 <input type="checkbox" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.wellspring_${el}" data-dtype="Boolean" />
-                <i class="fas ${icon}"></i>${el.charAt(0).toUpperCase() + el.slice(1)}
+                <i class="fas ${icon}"></i>${label}
               </label>`).join("")}
           </div>
+
+          <h3 style="margin:12px 0 6px;"><i class="fas fa-cloud-sun"></i> Field Effects</h3>
+          <p class="notes" style="margin:0 0 8px;">Scene-wide effects held by the battle itself (weather, terrain, hazards, arena auras). While this scene is active — and at the start of any conflict fought here — they are seeded onto the hidden <b>Field</b> actor, where gate formulas (<code>FIELD_HAS_…</code>) and reaction rows read them. Pick from the <b>Field Effects</b> library, or type other status-library effect names.</p>
+          <div class="oni-wellspring-row oni-field-effect-chips"><span class="notes">Library unavailable — is the module loaded?</span></div>
+          <div class="form-group" style="margin-top:6px;">
+            <label>Other effects</label>
+            <div class="form-fields">
+              <input type="text" class="oni-field-effect-extra" placeholder="Effect names, comma-separated" />
+            </div>
+          </div>
+          <input type="hidden" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${FIELD_EFFECTS_KEY}" data-dtype="String" />
 
           <div class="oni-dp-reset-section" style="display:none; margin-top:12px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.15);">
             <h3 style="margin:0 0 6px;">Dungeon Management</h3>
@@ -1143,14 +1164,53 @@
         visitedCb.checked = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${SCENE_VISITED_KEY}`, false), false);
       }
 
-      // Invoker wellsprings prefill — default CHECKED (available) unless explicitly false.
-      for (const el of WELLSPRING_ELEMS) {
+      // Invoker wellsprings prefill — UNSET falls to the element's default
+      // (natural five: available; Moon/Sun: absent); an explicit value wins.
+      for (const { el, defaultOn } of WELLSPRING_CHIPS) {
         const cb = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.wellspring_${el}"]`);
         if (cb) {
           const raw = safeGet(fabulaData, `${GENERAL_KEY}.wellspring_${el}`, null);
-          cb.checked = (raw === null) ? true : normalizeBoolean(raw, true);
+          cb.checked = (raw === null || raw === "") ? defaultOn : normalizeBoolean(raw, defaultOn);
         }
       }
+
+      // Field effects prefill — library chips + free-text extras, both folded
+      // into ONE hidden string field the form submits (comma-separated names).
+      try {
+        const hidden = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${FIELD_EFFECTS_KEY}"]`);
+        const chipRow = generalPanel?.querySelector(".oni-field-effect-chips");
+        const extra = generalPanel?.querySelector(".oni-field-effect-extra");
+        if (hidden && chipRow && extra) {
+          const fieldApi = globalThis.FUCompanion?.api?.field;
+          const stored = (fieldApi?.parseFieldEffectList
+            ? fieldApi.parseFieldEffectList(safeGet(fabulaData, `${GENERAL_KEY}.${FIELD_EFFECTS_KEY}`, ""))
+            : String(safeGet(fabulaData, `${GENERAL_KEY}.${FIELD_EFFECTS_KEY}`, "") ?? "").split(/[\n,;]+/).map((s) => s.trim()).filter(Boolean));
+          const norm = (s) => String(s ?? "").trim().toLowerCase();
+          let lib = [];
+          try { lib = (fieldApi?.library?.() ?? []).filter((e) => !(e.tags ?? []).includes("wellspring")); }
+          catch (e) { warn("field library read failed", e); }
+          const libNames = new Set(lib.map((e) => norm(e.name)));
+          const storedSet = new Set(stored.map(norm));
+          if (lib.length) {
+            chipRow.innerHTML = lib.map((e) => `
+              <label class="oni-wellspring-chip" style="--ec:#9ccc65;" title="${escapeHtml(String(e.description ?? "").replace(/<[^>]+>/g, "").trim())}">
+                <input type="checkbox" data-field-effect="${escapeHtml(e.name)}" ${storedSet.has(norm(e.name)) ? "checked" : ""} />
+                <i class="fas fa-cloud"></i>${escapeHtml(e.name)}
+              </label>`).join("");
+          } else {
+            chipRow.innerHTML = `<span class="notes">The Field Effects library is empty or not yet created (it is created on the GM's first boot).</span>`;
+          }
+          extra.value = stored.filter((n) => !libNames.has(norm(n))).join(", ");
+          const sync = () => {
+            const picked = Array.from(chipRow.querySelectorAll("input[data-field-effect]:checked")).map((i) => i.dataset.fieldEffect);
+            const extras = extra.value.split(/[\n,;]+/).map((s) => s.trim()).filter(Boolean);
+            hidden.value = [...picked, ...extras].join(", ");
+          };
+          chipRow.addEventListener("change", sync);
+          extra.addEventListener("input", sync);
+          sync();
+        }
+      } catch (e) { warn("field-effects prefill failed", e); }
 
       // Spawnpoint status display
       updateSpawnpointStatus(generalPanel, scene);

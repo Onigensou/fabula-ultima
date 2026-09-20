@@ -2317,6 +2317,30 @@ const TurnStart = {
       }
     } catch (e) { warn("TURN_START: AE tick threw", e); }
 
+    // A summon that holds NO turn of its own (turnsPerRound 0 — a Faithful
+    // Companion, a reanimated Minion) acts only inside its owner's turn, via a
+    // free_action grant. It never reaches this handler as the current
+    // combatant, so nothing it applied would ever tick: "until the start of
+    // my next turn" on such a creature meant "for the rest of the scene". Its
+    // turn IS its owner's turn (RAW: "on your turn you can use an action to
+    // have the companion perform an action"), so tick its applied AEs here,
+    // at the OWNER's turn start — before the turn_start reaction window in
+    // which it acts again, exactly like the owner's own tick above.
+    try {
+      const ownerUuid = snap?.actorUuid;
+      if (ownerUuid && director.dCombat) {
+        for (const c of director.dCombat.combatants ?? []) {
+          if (Number(c?.turnsPerRound) !== 0) continue;
+          const f = c?.tokenDoc?.flags?.["fabula-ultima-companion"] ?? {};
+          if (String(f.summonedBy ?? "") !== String(ownerUuid)) continue;
+          const summonUuid = c?.actorDoc?.uuid ?? c?.tokenDoc?.actor?.uuid ?? null;
+          if (!summonUuid || summonUuid === ownerUuid) continue;
+          const r = await SE().tickDirectorAEsForApplier(summonUuid);
+          if (r?.ticked) log(`TURN_START: ticked ${r.ticked} AE(s) applied by 0-turn summon ${c.name} on its owner's turn`);
+        }
+      }
+    } catch (e) { warn("TURN_START: 0-turn summon AE tick threw", e); }
+
     // Bearer-turn-START tick: AEs the CURRENT combatant BEARS whose lifetimeMode
     // is "target_turn_start" decrement now — BEFORE the turn_start reaction
     // window (handed off to STANDALONE_REACTION_WINDOW below) — so a mark that
@@ -5524,6 +5548,14 @@ const Confirm = {
           : [];
         const attackerActorUuid = attackerActor.uuid;
         const reactorActors = new Map();
+        // The Field actor first (scripts/field-system): a scene-wide effect
+        // that mutates incoming actions ("all fire damage +5") is a
+        // creature_targeted_by_action row on the Field. Tokenless; its rows are
+        // force-mode, which this scan surfaces as "Active" pills.
+        {
+          const fe = globalThis.FUCompanion?.api?.field?.reactorEntry?.() ?? null;
+          if (fe?.actor && fe.actor.uuid !== attackerActorUuid) reactorActors.set(fe.actor.uuid, fe.actor);
+        }
         for (const c of combatants) {
           if (c?.defeated) continue;
           const actor = c?.actorDoc ?? null;
@@ -5647,8 +5679,16 @@ const Confirm = {
               warn(`CONFIRM: creature_targeted_by_action findPassiveCandidates threw for ${reactor.name}`, e);
               continue;
             }
+            // The Field actor (scripts/field-system) is a bystander whose rows are
+            // ABOUT THE SUBJECT ("+5 to every fire hit"), so it gets one candidate
+            // PER TARGET. The per-reactor dedup below is right for a creature's
+            // once-per-action reaction (Protect covers one ally); keyed that way
+            // the Field's aura landed on the first-listed target only (post-test
+            // review, 2026-09-20). reaction-derive.candidateKey mirrors this.
+            const reactorIsField = !!reactor.flags?.["fabula-ultima-companion"]?.isField;
             for (const cand of cands ?? []) {
-              const dedup = `${cand.rowKey}::${cand.carrierUuid}::${reactor.uuid}`;
+              const dedup = `${cand.rowKey}::${cand.carrierUuid}::${reactor.uuid}`
+                + (reactorIsField ? `::${subjectActorUuid}` : "");
               if (seenKeys.has(dedup)) continue;
               seenKeys.add(dedup);
               log(`CONFIRM: third-party reaction matched — reactor=${reactor.name} skill=${cand.carrierName} (subject=${target?.name ?? subjectActorUuid})`);
@@ -5658,6 +5698,7 @@ const Confirm = {
                 reactorActorName: reactor.name,
                 reactorActorImg:  reactor.img ?? cand.carrierImg,
                 reactorIsPlayer:  !!reactor.hasPlayerOwner,
+                reactorIsField,
                 subjectActorUuid,
                 subjectTokenUuid,
                 payloadAtFire: payloadForTrigger,
@@ -7404,6 +7445,19 @@ const StandaloneReactionWindow = {
                 await sweepFoodConflictStart(director);
               } catch (e) { warn(`STANDALONE_REACTION_WINDOW: food conflict-start sweep threw`, e); }
             }
+          }
+          // Field (scripts/field-system) — reconcile the Field actor to the
+          // battle scene's declared wellsprings + field effects at conflict_start,
+          // BEFORE the conflict event (which may seed Field AEs of its own) and
+          // the forced dispatch (whose rows read the field). Idempotent; a
+          // scene already seeded on activation is a no-op here.
+          if (trigger === "conflict_start") {
+            try {
+              const fieldApi = globalThis.FUCompanion?.api?.field;
+              if (fieldApi?.seedFromScene) {
+                await fieldApi.seedFromScene(fieldApi.currentScene(director), { reason: "conflict_start" });
+              }
+            } catch (e) { warn("STANDALONE_REACTION_WINDOW: field seed threw", e); }
           }
           // Conflict event (scene-selected additional rule) — seeds at
           // conflict_start, re-seeds / upkeeps at round_start. Runs AFTER the
