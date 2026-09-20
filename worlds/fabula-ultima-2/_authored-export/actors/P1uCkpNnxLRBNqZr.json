@@ -915,20 +915,6 @@
           "duration": "-",
           "effect_table": {
             "0": {
-              "chain_steps": "cu_cost,cu_choice",
-              "consume_self": false,
-              "effect_kind": "chain",
-              "effect_label": "cu_unleash"
-            },
-            "1": {
-              "consume_amount": "6",
-              "consume_resource": "zero_power",
-              "consume_self": false,
-              "effect_kind": "consume_resource",
-              "effect_label": "cu_cost",
-              "target_ref": "self"
-            },
-            "2": {
               "consume_self": false,
               "effect_kind": "open_action_menu",
               "effect_label": "cu_choice",
@@ -937,14 +923,14 @@
               "menu_subtitle": "The enemy chooses their fate",
               "menu_title": "Cruel Ultimatum"
             },
-            "3": {
+            "1": {
               "chain_steps": "cu_pick_one,cu_300",
               "consume_self": false,
               "effect_kind": "chain",
               "effect_label": "cu_optA",
               "menu_label": "One of us takes 300 Fire (we choose who)"
             },
-            "4": {
+            "2": {
               "candidate_source": "combat",
               "category": "enemy",
               "consume_self": false,
@@ -954,7 +940,7 @@
               "menu_responder": "enemy",
               "mode": "exact"
             },
-            "5": {
+            "3": {
               "consume_self": false,
               "damage_amount": "300",
               "damage_cause": "damage",
@@ -964,14 +950,14 @@
               "effect_label": "cu_300",
               "target_ref": "cu_pick_one"
             },
-            "6": {
+            "4": {
               "chain_steps": "cu_all,cu_120",
               "consume_self": false,
               "effect_kind": "chain",
               "effect_label": "cu_optB",
               "menu_label": "All of us take 120 Bolt"
             },
-            "7": {
+            "5": {
               "candidate_source": "combat",
               "category": "enemy",
               "consume_self": false,
@@ -979,7 +965,7 @@
               "effect_label": "cu_all",
               "mode": "all"
             },
-            "8": {
+            "6": {
               "consume_self": false,
               "damage_amount": "120",
               "damage_cause": "damage",
@@ -1001,7 +987,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Zero Power: Cruel Ultimatum",
-          "on_activate_effect_ref": "cu_unleash",
+          "on_activate_effect_ref": "cu_choice",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "-",

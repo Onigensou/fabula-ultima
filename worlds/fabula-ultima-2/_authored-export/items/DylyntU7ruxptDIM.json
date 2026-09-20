@@ -39,6 +39,9 @@
         "turns": null
       },
       "flags": {
+        "custom-system-builder": {
+          "isPredefined": true
+        },
         "fabula-ultima-companion": {
           "wellspring": "earth"
         }
@@ -87,6 +90,9 @@
         "turns": null
       },
       "flags": {
+        "custom-system-builder": {
+          "isPredefined": true
+        },
         "fabula-ultima-companion": {
           "wellspring": "dark"
         }
@@ -135,6 +141,9 @@
         "turns": null
       },
       "flags": {
+        "custom-system-builder": {
+          "isPredefined": true
+        },
         "fabula-ultima-companion": {
           "reactionConfig": {
             "effect_table": {
@@ -204,6 +213,9 @@
         "turns": null
       },
       "flags": {
+        "custom-system-builder": {
+          "isPredefined": true
+        },
         "fabula-ultima-companion": {
           "wellspring": "light"
         }
@@ -252,6 +264,9 @@
         "turns": null
       },
       "flags": {
+        "custom-system-builder": {
+          "isPredefined": true
+        },
         "fabula-ultima-companion": {
           "wellspring": "bolt"
         }
@@ -300,6 +315,9 @@
         "turns": null
       },
       "flags": {
+        "custom-system-builder": {
+          "isPredefined": true
+        },
         "fabula-ultima-companion": {
           "wellspring": "ice"
         }
@@ -348,6 +366,9 @@
         "turns": null
       },
       "flags": {
+        "custom-system-builder": {
+          "isPredefined": true
+        },
         "fabula-ultima-companion": {
           "wellspring": "air"
         }
@@ -396,6 +417,9 @@
         "turns": null
       },
       "flags": {
+        "custom-system-builder": {
+          "isPredefined": true
+        },
         "fabula-ultima-companion": {
           "reactionConfig": {
             "effect_table": {
@@ -463,6 +487,9 @@
         "turns": null
       },
       "flags": {
+        "custom-system-builder": {
+          "isPredefined": true
+        },
         "fabula-ultima-companion": {
           "wellspring": "fire"
         }
