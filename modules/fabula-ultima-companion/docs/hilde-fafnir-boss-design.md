@@ -176,10 +176,18 @@ inherent-keyword union as pierce/crush.
 - **Pace at 1 turn/round.** Wyrmbreath (now prio 5, cooldown 1) still takes roughly half
   her non-Lance turns while she has ≥20% MP (measured 11/20 and 15/20), so the fillers
   fill the rest — and Wyrmbreath's 40 MP still eats into the Lance budget.
-- **⚠ Scorched Claw is FIRE and this party answers Fire hard: Hina ABSORBS it (the Claw
-  heals her) and Blanche RESISTS it (100 → 50).** With spread targeting her only
-  always-on filler is a heal roughly a quarter of the time. Options: change the element,
-  switch the row to `by_affinity` focus, or accept it as earned counterplay. Open.
+- **Scorched Claw stays Fire — settled 2026-09-20.** The party is fire-hardened across the
+  board (Hina **AB**, Blanche / Zarg / Keren **RS**), so the Claw is halved on everyone it
+  hits. That is allowed counterplay, not a dead fight: Impalement is Physical (party all
+  NE), Lance of Ruin ignores affinity entirely, and Reinslaughter is Bolt (Keren **VU**).
+  The numbers were deliberately NOT inflated to punch through their gear — per the
+  multi-party rule, the kit is sized against NEUTRAL, and a party that invested in Fire
+  resistance should feel it.
+- **Targeting needs no new focus mode.** `auto` already weights by affinity (AB ×0.02,
+  IM ×0.05, RS ×0.5, plus a mild wounded bias), which IS "avoid absorb/immune, otherwise
+  spread". Verified over 40 AI picks: Hina (AB) chosen **0** times, the three RS members
+  split 18 / 14 / 8. It fails open — a sole absorbing target is still hit rather than the
+  boss skipping its turn.
 - Reinslaughter curve (base 60, +400 ceiling).
 - Filler damage: Impalement ×2 = ~162 kills essentially any Crisis PC (intended). Scorched
   Claw 80–100 raw is ~77% of Hina's bar and ~60% of Blanche's before affinity.
