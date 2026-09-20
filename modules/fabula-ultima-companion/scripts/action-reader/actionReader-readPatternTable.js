@@ -76,6 +76,8 @@ const CONDITION_ALIASES = Object.freeze({
   ally_count: "ally_count",
   "ally count": "ally_count",
 
+  enemy_has_affinity_buff: "enemy_has_affinity_buff",
+  "enemy has affinity buff": "enemy_has_affinity_buff",
   enemy_has_status: "enemy_has_status",
   "enemy has status": "enemy_has_status",
 
@@ -143,6 +145,7 @@ function getConditionLabel(conditionKey) {
     case "enemy_count": return "Enemy Count";
     case "target_count": return "Targets Available";
     case "ally_count": return "Ally Count";
+    case "enemy_has_affinity_buff": return "Enemy Has Affinity Buff";
     case "enemy_has_status": return "Enemy Has Status";
     case "enemy_lacks_status": return "Enemy Lacks Status";
     case "ally_has_status": return "Ally Has Status";

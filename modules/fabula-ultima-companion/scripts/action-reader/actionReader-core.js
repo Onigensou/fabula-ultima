@@ -120,6 +120,16 @@ export const AFFINITY_ELEMENTS = Object.freeze([
   "physical", "air", "bolt", "dark", "earth", "fire", "ice", "light", "poison"
 ]);
 
+/*
+ * element -> the `system.props` key an affinity lives under. The slot order IS
+ * AFFINITY_ELEMENTS (physical = affinity_1 … poison = affinity_9); it mirrors
+ * snapshot.js AFFINITY_KEY, which is the battle-director's copy of the same
+ * mapping. Derived rather than retyped so the two cannot drift.
+ */
+export const AFFINITY_SLOT_BY_ELEMENT = Object.freeze(
+  Object.fromEntries(AFFINITY_ELEMENTS.map((el, i) => [el, `affinity_${i + 1}`]))
+);
+
 /* Common spellings/synonyms normalized onto the canonical element keys above. */
 export const DAMAGE_TYPE_ALIASES = Object.freeze({
   physical: "physical",
@@ -416,6 +426,47 @@ export const ActionReaderCore = {
       def: this.toNumber(props?.[this.keys.defenseValue], 0),
       mdef: this.toNumber(props?.[this.keys.magicDefenseValue], 0)
     };
+  },
+
+  /*
+   * Does this actor carry a DISPELLABLE effect granting RS / IM / AB on any of
+   * the named elements? Powers the `enemy_has_affinity_buff` condition and the
+   * `affinity_buff_focus` targeting mode — i.e. "they warded themselves against
+   * what I hit with, and I can strip it".
+   *
+   * Three deliberate narrowings, each one a wrong answer avoided:
+   *   - INNATE sheet affinity does NOT count. It lives in `system.props`, not in
+   *     an effect's changes. A party that is naturally Fire-resistant would
+   *     otherwise trip this every round and the caster would never do anything
+   *     else.
+   *   - Only `dispellable`-tagged effects count — the same tag Dispel /
+   *     Disenchant actually remove (`filter_tag: "dispellable"`). Equipment
+   *     (Ring of Magma) and class marks (Asura's Ascension) carry no such tag,
+   *     so they are invisible here: a spell that could not strip them must not
+   *     be chosen because of them.
+   *   - The change VALUE is matched loosely. Authored values are rarely literal
+   *     "RS": the live corpus holds `aeAffinityFloor("RS")`, `aeWhen("Crisis",
+   *     "RS")` and `${isEquipped ? 'RS' : 'NA'}$`. A strict equality test reads
+   *     every real Elemental Shroud as "no buff".
+   *
+   * `elements` is a comma list of element names ("fire,bolt"); unknown names are
+   * ignored. Returns false for a blank list rather than matching everything.
+   */
+  actorHasAffinityBuff(actor, elements) {
+    const wanted = String(elements ?? "")
+      .split(/[,\n]+/).map(s => s.trim().toLowerCase()).filter(Boolean)
+      .map(e => AFFINITY_SLOT_BY_ELEMENT[e]).filter(Boolean);
+    if (!wanted.length) return false;
+
+    for (const effect of this.getActorEffects(actor)) {
+      const tags = effect?.system?.tags;
+      if (!Array.isArray(tags) || !tags.some(t => String(t).trim().toLowerCase() === "dispellable")) continue;
+      for (const change of effect?.changes ?? []) {
+        if (!wanted.includes(String(change?.key ?? "").trim())) continue;
+        if (/\b(RS|IM|AB)\b/.test(String(change?.value ?? ""))) return true;
+      }
+    }
+    return false;
   },
 
   /*
