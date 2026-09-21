@@ -86,14 +86,18 @@ export const DESCENT_STYLES = {
     // (~2.8s), which is long on purpose. This is the opening shot of a boss
     // fight, not a hit reaction.
     beats: [
-      // Each beat drops hard, the wing catches her, then she hangs a moment.
-      { to: 0.34, dropMs: 380, ease: [0.45, 0, 0.9, 0.45], reboundFrac: 0.045, reboundMs: 220, holdMs: 240 },
-      { to: 0.62, dropMs: 360, ease: [0.45, 0, 0.9, 0.45], reboundFrac: 0.038, reboundMs: 200, holdMs: 220 },
-      { to: 0.86, dropMs: 320, ease: [0.45, 0, 0.9, 0.45], reboundFrac: 0.030, reboundMs: 180, holdMs: 240 },
+      // Each beat drops hard, the wing catches her, then she HANGS. The hold is
+      // where the drama lives — it is the moment the table gets to look at her
+      // suspended in the air — so it is the longest part of every cycle, and
+      // long enough for the idle float below to read as a hover rather than a
+      // twitch.
+      { to: 0.34, dropMs: 520, ease: [0.45, 0, 0.9, 0.45], reboundFrac: 0.045, reboundMs: 300, holdMs: 400 },
+      { to: 0.62, dropMs: 490, ease: [0.45, 0, 0.9, 0.45], reboundFrac: 0.038, reboundMs: 280, holdMs: 380 },
+      { to: 0.86, dropMs: 450, ease: [0.45, 0, 0.9, 0.45], reboundFrac: 0.030, reboundMs: 260, holdMs: 400 },
       // FLARE — wings out, descent almost stops, then she settles onto it.
       // Decelerating (not accelerating) easing is what sells the landing as
       // controlled rather than a crash.
-      { to: 1.0, dropMs: 460, ease: [0.25, 0.6, 0.3, 1], reboundFrac: 0, reboundMs: 0, holdMs: 0 },
+      { to: 1.0, dropMs: 640, ease: [0.25, 0.6, 0.3, 1], reboundFrac: 0, reboundMs: 0, holdMs: 0 },
     ],
     // Subtle hover ride on top of the descent — the wing cycle. Fades out over
     // the flare so she does not bob through the floor on touchdown.
@@ -126,7 +130,11 @@ export const DESCENT_STYLES = {
     roar: {
       sfxUrl: ROAR_SFX,
       sfxVolume: 0.95,
-      delayMs: 140,        // a beat to read the reveal before she bellows
+      // The pause after touchdown. She has landed and the burst has already
+      // stripped the silhouette (revealClass is applied before this wait), so
+      // this is a held beat of her standing there revealed, dust settling,
+      // before she rears back. Silence here is what makes the bellow land.
+      delayMs: 850,
       ms: 1150,
       recoilScale: 0.962,  // draws back first
       scalePeak: 1.10,
