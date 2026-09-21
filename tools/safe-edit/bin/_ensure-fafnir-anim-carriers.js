@@ -101,7 +101,41 @@ const newId = () => Array.from({ length: 16 }, () => CHARS[Math.floor(Math.rando
 
       console.log(`CREATE "${c.name}" -> ${id}`);
       changed++;
-      if (WRITE) await db.put(`!actors.items!${FAFNIR}.${id}`, doc);
+      if (WRITE) {
+        await db.put(`!actors.items!${FAFNIR}.${id}`, doc);
+        // ⚠ The embedded doc is NOT enough. The ACTOR's `items` field is an
+        // ID ARRAY and it is what Foundry actually loads from; a doc written
+        // to the !actors.items! keyspace without its id appended is an ORPHAN
+        // the game never sees.
+        //
+        // This bit for real: the first version of this script wrote only the
+        // doc, and `world-export` — which walks the embedded keyspace directly,
+        // not the id array — happily reported all nine animations present. The
+        // export was a FALSE GREEN. In the live game the two carriers did not
+        // exist, so Cruel Ultimatum's play_animation rows pointed at nothing
+        // and silently played no shot.
+        const fresh = await db.get(actorKey);
+        fresh.items = Array.isArray(fresh.items) ? fresh.items : [];
+        if (!fresh.items.includes(id)) {
+          fresh.items.push(id);
+          await db.put(actorKey, fresh);
+        }
+      }
+    }
+
+    // Belt and braces: every carrier must be reachable from the id array, not
+    // merely present in the keyspace.
+    if (WRITE && changed) {
+      const check = await db.get(actorKey);
+      const ids = new Set(check.items ?? []);
+      for await (const [key, val] of db.iterator()) {
+        if (!String(key).startsWith(`!actors.items!${FAFNIR}.`)) continue;
+        if (!CARRIERS.some((c) => c.name === val?.name)) continue;
+        if (!ids.has(val._id)) {
+          console.error(`ORPHAN "${val.name}" (${val._id}) is not in the actor's items array!`);
+          process.exitCode = 1;
+        }
+      }
     }
 
     if (!WRITE) console.log(`\nDRY RUN — ${changed} carrier(s) pending. Re-run with --write (game CLOSED).`);
