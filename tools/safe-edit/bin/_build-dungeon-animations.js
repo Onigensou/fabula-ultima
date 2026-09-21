@@ -30,6 +30,7 @@ const ANIM_LIB = path.resolve(__dirname, "..", "..", "anim-studio");
 const T = require(path.join(ANIM_LIB, "lib", "dungeon-templates.js"));
 const G = require(path.join(ANIM_LIB, "lib", "dungeon-signatures.js"));
 const RK = require(path.join(ANIM_LIB, "lib", "rakshasa-signatures.js"));
+const FF = require(path.join(ANIM_LIB, "lib", "fafnir-signatures.js"));
 const { encode, validate } = require(path.join(ANIM_LIB, "lib", "encode.js"));
 
 /* ── Palette ─────────────────────────────────────────────────────────────── */
@@ -94,6 +95,9 @@ const SFX = {
   monster2: SND + "Monster2.ogg",
   spook:    SND + "Spook.mp3",
   pollen:   SND + "Pollen.ogg",
+  // Named explicitly by the author for Torment; an explicit asset choice
+  // beats a manifest lookup.
+  devilLaugh: SND + "Soundboard/Devil1.ogg",
 };
 
 /* ── Blazing Sweep reuse ─────────────────────────────────────────────────── */
@@ -690,6 +694,81 @@ const REGISTRY = {
           slashCount: 2, slashGapMs: 120, slashFadeMs: 320,
           sfx: "Attack2", sfxVol: 0.5,
           sfxImpact: "Attack3", sfxImpactVol: 0.6,
+        },
+      }),
+
+      "Summon Elemental Drake": () => FF.summonDrakes({
+        key: "fafnir-summon-drakes", name: "Summon Elemental Drake",
+        cfg: { fireColor: C.fire, boltColor: C.bolt, sfx: "Pollen", sfxVol: 0.5 },
+      }),
+
+      "Storm Calm": () => FF.stormCalm({
+        key: "fafnir-storm-calm", name: "Storm Calm",
+        cfg: { color: C.mana, sfx: "Cure1", sfxVol: 0.5 },
+      }),
+
+      "Condemn": () => FF.condemn({
+        key: "fafnir-condemn", name: "Condemn",
+        cfg: { color: C.dark,
+               sfxCast: "Cursor2", sfxCastVol: 0.45,
+               sfxImpact: "Explosion2", sfxImpactVol: 0.8 },
+      }),
+
+      "Torment": () => FF.torment({
+        key: "fafnir-torment", name: "Torment",
+        // The laugh is an explicit asset choice, not a manifest name — an
+        // explicit URL beats a palette/manifest default.
+        cfg: { faceColor: C.dark,
+               sfxLaugh: SFX.devilLaugh, sfxLaughVol: 0.7 },
+      }),
+
+      "Searing Brand": () => FF.searingBrand({
+        key: "fafnir-searing-brand", name: "Searing Brand",
+        // Red to match the placeholder chevron the persistent badge draws, so
+        // the mark that lands and the mark that stays are the same sign.
+        cfg: { color: 0xff3b30,
+               sfxCast: "Fire1", sfxCastVol: 0.45,
+               sfxImpact: "Fire2", sfxImpactVol: 0.65 },
+      }),
+
+      "Draconic Domination": () => FF.draconicDomination({
+        key: "fafnir-draconic-domination", name: "Draconic Domination",
+        cfg: { irisColor: C.bolt, veinColor: C.dark,
+               sfx: "Spook", sfxVol: 0.65 },
+      }),
+
+      // ── Zero Power: Cruel Ultimatum ──────────────────────────────────────
+      //
+      // The Zero Power itself carries NO animation. The players choose between
+      // two outcomes mid-resolution, and the shot has to match the branch they
+      // picked — so each branch's cinematic lives on its own carrier item and
+      // is fired by a `play_animation` row INSIDE that branch's chain, after
+      // the menu has resolved. A script on the parent would have to play before
+      // the choice, when it cannot yet know which element to breathe.
+      //
+      // Both branches are the same shot with different numbers, deliberately:
+      // the party is picking between two faces of one weapon.
+      "Cruel Ultimatum: Fire": () => FF.cruelUltimatum({
+        key: "fafnir-cruel-ultimatum-fire", name: "Cruel Ultimatum: Fire",
+        cfg: {
+          spread: "one",
+          color: C.fire, coreColor: 0xfff0d0,
+          flashColor: "#ffd9a0",
+          sfxRise: "WindWalk", sfxRiseVol: 0.5,
+          sfxBreath: "Fire2", sfxBreathVol: 0.8,
+        },
+      }),
+      "Cruel Ultimatum: Bolt": () => FF.cruelUltimatum({
+        key: "fafnir-cruel-ultimatum-bolt", name: "Cruel Ultimatum: Bolt",
+        cfg: {
+          spread: "all",
+          color: C.bolt, coreColor: 0xf0e2ff,
+          flashColor: "#cfa8ff",
+          // Everyone is hit at once, so the columns are thinner and the shake
+          // is shorter — the same total weight spread across the party.
+          beamThickness: 0.30, shakeMs: 760,
+          sfxRise: "WindWalk", sfxRiseVol: 0.5,
+          sfxBreath: "Thunder1", sfxBreathVol: 0.8,
         },
       }),
     },
