@@ -7800,8 +7800,9 @@ const Animation = {
     const ar = director.ctx.actionResult;
     const spec = await resolveAnimationSpec(ar);
 
-    if (!spec.hasScript) {
-      // No animation defined for this action — skip straight through.
+    if (!spec.hasScript || spec.playAt === "resolve") {
+      // No animation defined for this action — or one that plays from a chain
+      // step at RESOLVE (timing option "resolve") — skip straight through.
       director.enqueue({ type: INTENTS.INTERNAL_DONE });
       return;
     }

@@ -64,6 +64,7 @@ import { initNpcHpBar, emitNpcHpBar, emitNpcHpBarUnchecked, renderNpcHpBarLocal 
 import { initDominationFx } from "./domination.js";
 import { initDominationCrest } from "./domination-crest.js";
 import { initAspectAura } from "./aspect-aura.js";
+import { initTokenTint } from "./token-tint.js";
 import { initCameraAuthority } from "./camera-authority.js";
 import { initLightningRodCursor } from "../conflict-event/lightning-rod-cursor.js";
 import { initLightningStormFx } from "../conflict-event/lightning-storm-strike-fx.js";
@@ -1648,6 +1649,10 @@ Hooks.once("ready", () => {
   // Elemental Aspect Aura — same AE-replication pattern as the crest above.
   try { initAspectAura(); }
   catch (e) { warn("initAspectAura on ready threw", e); }
+
+  // AE-driven token body tint (flags.<ns>.tokenTint) — same pattern again.
+  try { initTokenTint(); }
+  catch (e) { warn("initTokenTint on ready threw", e); }
 
   // Camera Authority — our own bounding box + sidebar-aware framing. Installs
   // a single _constrainView wrapper; no-ops on scenes LockView still owns.

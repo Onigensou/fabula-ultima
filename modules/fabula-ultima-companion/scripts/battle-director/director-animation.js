@@ -53,8 +53,20 @@ const _scriptCache = new Map();
 //
 // Returns { hasScript: bool, script: string, timingMode: string, timingOffset: number }.
 
+// Values of the item's `animation_damage_timing_options` select. Exported so the
+// boot dropdown sync can label them on the template. "resolve" is a PLAY-POINT,
+// not a gate mode: the FSM's pre-resolve ANIMATION state skips such a script,
+// and only a chain step (play_animation, action_ref = the skill) plays it — for
+// a cinematic that needs something RESOLVE decides first (Element Gorge's
+// random element is drawn by its apply_ae, and the drain is coloured by it).
+export const ANIMATION_TIMING_OPTIONS = [
+  { key: "default", value: "Default" },
+  { key: "offset",  value: "Use Offset" },
+  { key: "resolve", value: "Play at resolve (chain play_animation only)" },
+];
+
 export async function resolveAnimationSpec(ar) {
-  const EMPTY = { hasScript: false, script: "", timingMode: "default", timingOffset: 0 };
+  const EMPTY = { hasScript: false, script: "", timingMode: "default", timingOffset: 0, playAt: "animation" };
   if (!ar) return EMPTY;
 
   // 1. Pre-stamped fields (COMPUTE handler already read the item).
@@ -129,13 +141,16 @@ function _buildSpec(rawScript, rawMode, rawOffset) {
   // Reject empty strings and the legacy placeholder sentinel (same check as
   // ActionAnimationHandler's isPlaceholderScript).
   if (!script || /insert your sequencer animation here/i.test(script)) {
-    return { hasScript: false, script: "", timingMode: "default", timingOffset: 0 };
+    return { hasScript: false, script: "", timingMode: "default", timingOffset: 0, playAt: "animation" };
   }
   return {
     hasScript: true,
     script,
     timingMode:   _parseTimingMode(rawMode),
     timingOffset: _parseTimingOffset(rawOffset),
+    // "animation" = the FSM's ANIMATION state (default); "resolve" = only a
+    // chain play_animation step plays it (see ANIMATION_TIMING_OPTIONS).
+    playAt: String(rawMode ?? "").trim().toLowerCase() === "resolve" ? "resolve" : "animation",
   };
 }
 

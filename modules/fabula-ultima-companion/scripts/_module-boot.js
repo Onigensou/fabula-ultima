@@ -206,6 +206,10 @@ Hooks.once("ready", async () => {
       }
     } catch (e) { console.warn(`${FU_BOOT_TAG} Dropdown sync: effect_kind registry import failed:`, e?.message ?? e); }
     try {
+      const da = await import(`${window.location.origin}/modules/${MODULE_ID}/scripts/battle-director/director-animation.js?t=${Date.now()}`);
+      if (Array.isArray(da.ANIMATION_TIMING_OPTIONS)) registries.animation_damage_timing_options = da.ANIMATION_TIMING_OPTIONS.map((o) => ({ ...o }));
+    } catch (e) { console.warn(`${FU_BOOT_TAG} Dropdown sync: animation timing registry import failed:`, e?.message ?? e); }
+    try {
       const RT = window["oni.ReactionTriggers"];
       if (RT?.listTriggers) registries.reaction_trigger = RT.listTriggers().map((t) => ({ key: t.key, value: t.label ?? t.key }));
     } catch { /* triggers not ready this boot — data scan still covers used ones */ }

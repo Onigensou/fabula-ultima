@@ -1701,6 +1701,14 @@ const CAP_REASONS = Object.freeze({
   target:       "Already used against this target",
   target_round: "Already used against this target this round",
 });
+// Inherent action keywords declared on a skill's own `action_keywords` prop
+// (comma/newline list, case-insensitive) — the same parse action-profile.js
+// uses for execute / cripple / fickle. Engine-behaviour keywords read here:
+//   silent — the skill announces itself with its own effect; no passive card.
+function hasInherentKeyword(item, keyword) {
+  const raw = item?.system?.props?.action_keywords ?? "";
+  return String(raw).split(/[,\n]+/).map((k) => k.trim().toLowerCase()).includes(String(keyword).toLowerCase());
+}
 function readReactionMaxPerRound(row) {
   const raw = row?.reaction_max_per_round;
   if (raw === undefined || raw === null || raw === "") return 0;
@@ -2179,7 +2187,15 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
   // effect (dropped the await). The spec still enqueues synchronously here,
   // so the FIFO queue preserves the one-at-a-time stagger — each actor's
   // badge still animates in turn, just off the critical path.
-  if (isAutoFireReactionMode(candidate.mode) && ctx.reactorToken) {
+  //
+  // The `silent` action keyword (`action_keywords` on the carrier skill — the
+  // same inherent-keyword prop execute / fickle / blitz live on) opts the skill
+  // OUT of the card: a skill whose chain plays its own cinematic (play_animation)
+  // or drives an AE token tint already has a tell, and the badge would sit on
+  // top of it (King Gorger's Elemental Overflow: the wave IS the announcement).
+  // For an AE-carried reaction the keyword is read off the ORIGIN skill.
+  const hideCard = hasInherentKeyword(skillForCtx ?? carrier, "silent");
+  if (isAutoFireReactionMode(candidate.mode) && ctx.reactorToken && !hideCard) {
     try {
       const { enqueuePassiveCard } = await import("./passive-card-ui/director-passive-card-ui.js");
       enqueuePassiveCard({
@@ -6937,7 +6953,7 @@ async function applyApplyAeEffect(row, ctx) {
         // level") is meant to reach an Immune/Absorbing target: IM→RS is the
         // whole point. Only absolute overrides (Guard's "RS to all") must
         // yield to a native IM/AB.
-        if (/aeAffinityStep\s*\(/i.test(String(c?.value ?? ""))) return true;
+        if (/\baeAffinityStep\s*\(/i.test(String(c?.value ?? ""))) return true;
         const native = String(nativeProps[m[1]] ?? "").trim().toUpperCase();
         if (native === "IM" || native === "AB") {
           log(`apply_ae: ${actor.name} natively ${native} on ${m[1]} — dropping "${data.name}" affinity override (preserve IM/AB)`);
