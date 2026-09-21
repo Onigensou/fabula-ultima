@@ -45,6 +45,13 @@ const ROAR_SFX = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/So
 // Wingbeat downdraft, fired once per beat of a wing-beat descent.
 const WING_SFX = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Wind1.ogg";
 
+// Herald lightning — strikes that announce a boss before it arrives.
+const THUNDER_SFX = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Thunder5.ogg";
+const LIGHTNING_WEBM = "modules/JB2A_DnD5e/Library/Generic/Lightning/LightningStrike01_02_Regular_Blue_800x800.webm";
+// The asset's native frame. `scale` in a herald config multiplies this, the
+// same way it would in Sequencer, so 2.5 means a 2000px strike.
+const LIGHTNING_NATIVE_PX = 800;
+
 /* ── Styles ──────────────────────────────────────────────────────────────
  *
  * Every timing is in ms and every size is either a px scale factor on the
@@ -167,6 +174,18 @@ export const DESCENT_STYLES = {
       dimColor: 0x05000f,   // a violet-black rather than a flat grey
       dimFadeMs: 1100,
       holdAfterDimMs: 500,  // let the dark sit before anything moves
+      // Her heralds: lightning striking around the party over the dimmed
+      // battlefield, each with its own position, mirroring and thunder.
+      heralds: {
+        url: LIGHTNING_WEBM,
+        count: 4,
+        scale: 2.5,           // x the asset's 800px frame, as in Sequencer
+        gapMs: [380, 820],    // storm cadence, not a metronome
+        yFrom: 0.42, yTo: 0.78,
+        sfxUrl: THUNDER_SFX,
+        sfxVolume: 0.8,
+        tailMs: 450,          // let the last one breathe before the camera moves
+      },
       panUpMs: 1800,        // slow tilt to the empty sky
       holdAtTopMs: 550,     // the beat right before she drops into frame
       dimLiftMs: 700,       // lights come back with the impact burst
@@ -256,6 +275,73 @@ function cubicBezier(x1, y1, x2, y2) {
     }
     return calc(u, y1, y2);
   };
+}
+
+/* ── Herald lightning ────────────────────────────────────────────────────
+ *
+ * Strikes that announce the boss before she arrives. Screen-space DOM video,
+ * like everything else in this module, so they sit above the dimmed scene and
+ * do not need the camera to hold still.
+ *
+ * Each strike picks its own position, mirroring and timing, so a run never
+ * repeats. They fire in sequence rather than all at once — the gap between
+ * them is what makes it read as a storm rolling in rather than one flash.
+ */
+function playHeraldStrike(h) {
+  const px = LIGHTNING_NATIVE_PX * (h.scale ?? 2.5);
+  const vid = document.createElement("video");
+  vid.className = "fud-be-herald";
+  vid.muted = true;           // the thunder is a separate cue, not the webm's
+  vid.autoplay = true;
+  vid.playsInline = true;
+  vid.preload = "auto";
+  vid.src = h.url ?? LIGHTNING_WEBM;
+
+  const W = window.innerWidth || 1920;
+  const H = window.innerHeight || 1080;
+  // Spread across the full width, kept off the extreme edges so a strike is
+  // never half out of frame. Vertically biased low, because the asset is a
+  // bolt coming DOWN and its business end should be near the ground.
+  const x = W * (0.12 + Math.random() * 0.76);
+  const y = H * ((h.yFrom ?? 0.42) + Math.random() * ((h.yTo ?? 0.78) - (h.yFrom ?? 0.42)));
+  const flip = Math.random() < 0.5 ? " scaleX(-1)" : "";
+
+  vid.style.left   = `${x}px`;
+  vid.style.top    = `${y}px`;
+  vid.style.width  = `${px}px`;
+  vid.style.height = `${px}px`;
+  vid.style.transform = `translate(-50%,-50%)${flip}`;
+  document.body.appendChild(vid);
+  try { vid.play?.()?.catch?.(() => {}); } catch {}
+
+  if (h.sfxUrl) {
+    try {
+      const a = new Audio(h.sfxUrl);
+      a.volume = h.sfxVolume ?? 0.8;
+      // Slight pitch scatter so repeated strikes are not obviously one sample.
+      a.playbackRate = 0.94 + Math.random() * 0.14;
+      a.play?.()?.catch?.(() => {});
+    } catch { /* a missing sound must never stop the entrance */ }
+  }
+
+  const drop = () => { try { vid.remove(); } catch {} };
+  vid.addEventListener("ended", drop, { once: true });
+  vid.addEventListener("error", drop, { once: true });
+  // Hard backstop — a webm that never fires `ended` must not leave an element
+  // pinned over the scene for the rest of the session.
+  setTimeout(drop, h.maxLifeMs ?? 3000);
+}
+
+async function playHeralds(h) {
+  if (!h || !(h.count > 0)) return;
+  for (let i = 0; i < h.count; i++) {
+    playHeraldStrike(h);
+    if (i < h.count - 1) {
+      const [lo, hi] = h.gapMs ?? [380, 820];
+      await wait(lo + Math.random() * Math.max(0, hi - lo));
+    }
+  }
+  if (h.tailMs) await wait(h.tailMs);
 }
 
 /* ── Scene dim ───────────────────────────────────────────────────────────
@@ -502,6 +588,16 @@ function ensureStyle() {
     rgba(190,130,255,0.96) 24%,
     rgba(120,50,230,0.86) 48%,
     rgba(40,10,90,0) 74%);
+}
+
+/* Herald lightning — screen-space strikes before the boss arrives. Screen
+   blend so the black frame of the webm drops out and only the bolt shows.
+   Below the faller (99990) so she passes in front of her own storm. */
+.fud-be-herald {
+  position: fixed; z-index: 99986; pointer-events: none;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: screen;
+  border: 0 !important; outline: 0 !important; box-shadow: none !important;
 }
 
 /* Aura burst — ghost copies of the boss's sprite blowing outward on the roar.
@@ -777,6 +873,10 @@ async function runDescent({ sceneId, tokenId, src, flipX = false, style = "flame
           await dim.fadeTo(P.dimTo, P.dimFadeMs ?? 900);
         }
         if (P.holdAfterDimMs) await wait(P.holdAfterDimMs);
+        // Her heralds. They strike over the dimmed battlefield, BEFORE the
+        // camera looks up — the party sees the storm arrive around them, and
+        // only then follows it skyward.
+        if (P.heralds) await playHeralds(P.heralds);
         // Tilt up SLOWLY rather than cutting — the old panSnap put the camera
         // on the sky in a single frame, which read as a glitch right before the
         // shot proper.
