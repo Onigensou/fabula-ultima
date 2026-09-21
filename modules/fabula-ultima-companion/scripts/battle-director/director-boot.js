@@ -65,6 +65,7 @@ import { initDominationFx } from "./domination.js";
 import { initDominationCrest } from "./domination-crest.js";
 import { initAspectAura } from "./aspect-aura.js";
 import { initTokenTint } from "./token-tint.js";
+import { initBrandMark } from "./brand-mark.js";
 import { initCameraAuthority } from "./camera-authority.js";
 import { initLightningRodCursor } from "../conflict-event/lightning-rod-cursor.js";
 import { initLightningStormFx } from "../conflict-event/lightning-storm-strike-fx.js";
@@ -1653,6 +1654,11 @@ Hooks.once("ready", () => {
   // AE-driven token body tint (flags.<ns>.tokenTint) — same pattern again.
   try { initTokenTint(); }
   catch (e) { warn("initTokenTint on ready threw", e); }
+
+  // Brand Mark badges — same AE-replication pattern again. Keyed off the mark
+  // AE itself, so a mark that is passed to an ally takes its badge along.
+  try { initBrandMark(); }
+  catch (e) { warn("initBrandMark on ready threw", e); }
 
   // Camera Authority — our own bounding box + sidebar-aware framing. Installs
   // a single _constrainView wrapper; no-ops on scenes LockView still owns.
