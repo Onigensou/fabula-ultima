@@ -20,6 +20,7 @@
       "isPersistentSummon": true,
       "persistentSummonKind": "companion",
       "persistentSummonRetainOnDefeat": true,
+      "spriteShadow": true,
       "summonOwnerActorUuid": "Actor.uJFaNQCSvwwsr2AW",
       "summonTurnsPerRound": 0
     }
