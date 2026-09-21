@@ -134,6 +134,7 @@ eq("flame FX basis is uncapped", flame.fxBasisMaxFrac, null);
 ok("flame still a single plummet, not wing-beats", !flame.beats);
 ok("flame has no roar",                            !flame.roar);
 ok("flame has no idle float",                      !flame.floatAmpFrac);
+ok("flame has no wingbeat sfx",                    !flame.wingSfx);
 
 // Every style must be renderable: the fields runDescent reads unconditionally.
 // A style describes its descent EITHER as a single eased plummet (fallMs+ease)
@@ -170,6 +171,29 @@ for (const [name, cfg] of Object.entries(DESCENT_STYLES)) {
     // black shape and the reveal never reads.
     ok(`${name}: reveal drops silhouette`, !cfg.roar.revealClass.includes("--shadow"));
     ok(`${name}: roar blurs`,        Number.isFinite(cfg.roar.blurPx) && cfg.roar.blurPx > 0);
+    if (cfg.roar.aura) {
+      ok(`${name}: aura count > 0`,  Number.isInteger(cfg.roar.aura.count) && cfg.roar.aura.count > 0);
+      // A ghost that does not grow past 1 never leaves her outline, so the
+      // burst would just look like the sprite flickering.
+      ok(`${name}: aura expands`,    cfg.roar.aura.scaleTo > 1);
+      ok(`${name}: aura is partly transparent`,
+         cfg.roar.aura.opacity > 0 && cfg.roar.aura.opacity < 1);
+    }
+    if (cfg.roar.edgeBlur) {
+      ok(`${name}: edge blur px > 0`, Number.isFinite(cfg.roar.edgeBlur.px) && cfg.roar.edgeBlur.px > 0);
+      ok(`${name}: edge blur fades in before it holds`,
+         (cfg.roar.edgeBlur.inFrac ?? 0) < (cfg.roar.edgeBlur.holdFrac ?? 1));
+    }
+  }
+  if (cfg.wingSfx) {
+    ok(`${name}: wing sfx has a url`, typeof cfg.wingSfx.url === "string" && cfg.wingSfx.url.startsWith("http"));
+    // Wingbeats are only meaningful on a beat-driven descent.
+    ok(`${name}: wing sfx needs beats`, Array.isArray(cfg.beats) && cfg.beats.length > 0);
+  }
+  if (cfg.camera) {
+    // A zero/absent return glide means the camera CUTS back to battle framing,
+    // which is the jump-cut this was changed to avoid.
+    ok(`${name}: camera glides back`, (cfg.camera.returnMs ?? 0) > 0);
   }
   ok(`${name}: has faller class`,  typeof cfg.fallerClass === "string" && cfg.fallerClass.includes("fud-be-faller"));
   ok(`${name}: has burst class`,   typeof cfg.burstClass === "string" && cfg.burstClass.includes("fud-be-burst"));

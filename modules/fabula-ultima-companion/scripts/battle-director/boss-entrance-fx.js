@@ -40,6 +40,9 @@ const IMPACT_SFX = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/
 // Landing roar, for styles that bellow once they are down.
 const ROAR_SFX = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Monster5.ogg";
 
+// Wingbeat downdraft, fired once per beat of a wing-beat descent.
+const WING_SFX = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Wind1.ogg";
+
 /* ── Styles ──────────────────────────────────────────────────────────────
  *
  * Every timing is in ms and every size is either a px scale factor on the
@@ -97,6 +100,9 @@ export const DESCENT_STYLES = {
     floatAmpFrac: 0.016,
     floatHz: 1.15,
     swayDeg: 1.8,
+    // One downdraft per wing-beat, on the frame the wing catches her. Each is
+    // pitched slightly higher than the last so three in a row do not loop.
+    wingSfx: { url: WING_SFX, volume: 0.5, rate: 0.92, rateStep: 0.06 },
     rotateFromDeg: -3,
     rotateToDeg: 2,
     fallerClass: "fud-be-faller fud-be-faller--shadow",
@@ -128,13 +134,19 @@ export const DESCENT_STYLES = {
       revealClass: "fud-be-faller fud-be-faller--revealed",
       revealFilter: "drop-shadow(0 0 26px rgba(150,80,255,0.75))",
       shakeClass: "fud-be-shake fud-be-shake--roar",
-      shakeMs: 820,
+      shakeMs: 1000,
+      // Ghost copies of her own sprite blowing outward. Each throws further
+      // than the last so the burst has depth instead of reading as one pulse.
+      aura: { count: 3, staggerMs: 85, scaleTo: 1.75, scaleStep: 0.35, ms: 760, opacity: 0.5 },
+      // The rim of the frame goes soft while she stays sharp.
+      edgeBlur: { px: 16, ms: 1000, inFrac: 0.16, holdFrac: 0.46 },
     },
     // The camera starts above her, looking at empty sky, and rides her down.
     // `riseFrac` is how far above the impact point the shot starts, as a
     // fraction of viewport height; the clamp means a spawn point near the top
     // of the artwork simply gets less rise rather than a broken shot.
-    camera: { riseFrac: 0.85, zoom: 1.35, settleMs: 700 },
+    // `returnMs` is the GLIDE back to battle framing — see restoreCamera.
+    camera: { riseFrac: 0.85, zoom: 1.35, settleMs: 700, returnMs: 1100 },
   },
 };
 
@@ -236,20 +248,28 @@ function cubicBezier(x1, y1, x2, y2) {
  */
 function buildDescentTimeline(beats) {
   const segs = [];
+  // When each wing actually CATCHES her — the instant the drop stops and the
+  // rebound starts. This is the frame a wingbeat sound has to land on; anywhere
+  // else and the audio reads as unrelated to the motion.
+  const beatTimes = [];
   let from = 0;
+  let clock = 0;
   for (const b of beats) {
     segs.push({ from, to: b.to, ms: b.dropMs, ease: cubicBezier(...(b.ease ?? [0.4, 0, 0.9, 0.5])) });
+    clock += b.dropMs;
     let cur = b.to;
     if (b.reboundFrac > 0 && b.reboundMs > 0) {
       // The wing-beat catches her: a short, decelerating rise.
       const up = Math.max(0, b.to - b.reboundFrac);
       segs.push({ from: b.to, to: up, ms: b.reboundMs, ease: cubicBezier(0.2, 0.7, 0.35, 1) });
+      beatTimes.push(clock);
+      clock += b.reboundMs;
       cur = up;
     }
-    if (b.holdMs > 0) segs.push({ from: cur, to: cur, ms: b.holdMs, ease: (t) => t });
+    if (b.holdMs > 0) { segs.push({ from: cur, to: cur, ms: b.holdMs, ease: (t) => t }); clock += b.holdMs; }
     from = cur;
   }
-  return { segs, totalMs: segs.reduce((a, s) => a + s.ms, 0) };
+  return { segs, beatTimes, totalMs: segs.reduce((a, s) => a + s.ms, 0) };
 }
 
 // Fraction of the total drop at `elapsed` ms. Clamped at both ends so an
@@ -297,23 +317,28 @@ function ensureStyle() {
   78% { transform: translate(6px, 5px); }
   88% { transform: translate(-3px,-3px); }
 }
-/* The roar shake is faster and tighter than the landing's — a bellow rattles
-   the frame rather than heaving it. */
+/* The roar shake is faster and TIGHTER than the landing's — a bellow rattles
+   the frame rather than heaving it — but it hits harder at the front, where
+   the sound does, and decays over a longer tail. */
 @keyframes fud-be-shake-roar {
   0%,100% { transform: translate(0,0); }
-  6%  { transform: translate(-11px, 5px); }
-  14% { transform: translate(10px,-7px); }
-  22% { transform: translate(-9px,-4px); }
-  30% { transform: translate(9px, 6px); }
-  40% { transform: translate(-8px, 4px); }
-  50% { transform: translate(7px,-5px); }
-  62% { transform: translate(-5px, 3px); }
-  74% { transform: translate(4px, 3px); }
-  86% { transform: translate(-2px,-2px); }
+  4%  { transform: translate(-22px, 11px); }
+  9%  { transform: translate(20px,-15px); }
+  15% { transform: translate(-19px,-9px); }
+  21% { transform: translate(17px, 13px); }
+  28% { transform: translate(-15px, 8px); }
+  35% { transform: translate(13px,-11px); }
+  43% { transform: translate(-11px, 7px); }
+  51% { transform: translate(9px, 6px); }
+  60% { transform: translate(-7px,-5px); }
+  69% { transform: translate(5px, 4px); }
+  78% { transform: translate(-4px, 3px); }
+  87% { transform: translate(3px,-2px); }
+  94% { transform: translate(-2px, 1px); }
 }
 .fud-be-shake { animation: fud-be-shake 0.6s cubic-bezier(.36,.07,.19,.97) both; }
 .fud-be-shake--heavy { animation: fud-be-shake-heavy 0.85s cubic-bezier(.36,.07,.19,.97) both; }
-.fud-be-shake--roar { animation: fud-be-shake-roar 0.8s cubic-bezier(.36,.07,.19,.97) both; }
+.fud-be-shake--roar { animation: fud-be-shake-roar 1s cubic-bezier(.36,.07,.19,.97) both; }
 
 .fud-be-faller {
   position: fixed; z-index: 99990; pointer-events: none;
@@ -356,6 +381,28 @@ function ensureStyle() {
     rgba(190,130,255,0.96) 24%,
     rgba(120,50,230,0.86) 48%,
     rgba(40,10,90,0) 74%);
+}
+
+/* Aura burst — ghost copies of the boss's sprite blowing outward on the roar.
+   Screen-blended and brightened so they read as light coming off her, not as a
+   second creature standing behind her. */
+.fud-be-aura {
+  position: fixed; z-index: 99987; pointer-events: none;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: screen;
+  filter: brightness(1.7) saturate(1.35) drop-shadow(0 0 30px rgba(170,110,255,0.9));
+  border: 0 !important; outline: 0 !important; box-shadow: none !important;
+}
+
+/* Edge blur — softens the rim of the frame, centre stays sharp. Sits BELOW the
+   faller and the burst so it blurs the scene behind her, never her. */
+.fud-be-edgeblur {
+  position: fixed; inset: 0; z-index: 99985; pointer-events: none;
+  backdrop-filter: blur(var(--eb, 14px));
+  -webkit-backdrop-filter: blur(var(--eb, 14px));
+  -webkit-mask-image: radial-gradient(ellipse at center, transparent 34%, black 76%);
+  mask-image: radial-gradient(ellipse at center, transparent 34%, black 76%);
+  opacity: 0;
 }
 
 /* Electrical shards — thin rotated slivers thrown out of the impact. */
@@ -578,7 +625,17 @@ async function runDescent({ sceneId, tokenId, src, flipX = false, style = "flame
       CameraApi.panSnap({ x: c.x, y: c.y - rise, scale: ground?.scale }, { scene });
       CameraApi.panTo({ x: c.x, y: c.y, scale: ground?.scale }, { duration: fallMs, scene });
       restoreCamera = async () => {
-        try { await CameraApi.settleRestFraming(scene, { attempts: 1 }); } catch {}
+        try {
+          // Glide back to battle framing rather than cutting to it.
+          // settleRestFraming alone uses canvas.pan(), which is INSTANT — after
+          // a shot that has been riding the camera for four seconds, that reads
+          // as a jump-cut at the exact moment the player is looking for calm.
+          // Animate to the same view first, then let settle assert it held (a
+          // no-op snap onto the value the pan already reached).
+          const rest = CameraApi.restViewFor(scene);
+          if (rest) await CameraApi.panTo(rest, { duration: cfg.camera.returnMs ?? 1100, scene });
+          await CameraApi.settleRestFraming(scene, { attempts: 1 });
+        } catch {}
       };
     } catch (e) {
       warn("[boss-entrance] camera ride failed — falling without it", e);
@@ -586,6 +643,22 @@ async function runDescent({ sceneId, tokenId, src, flipX = false, style = "flame
       releaseCamera = null;
       restoreCamera = null;
     }
+  }
+
+  // One wingbeat downdraft per beat, fired on the frame the wing catches her.
+  // Slight pitch variation so three beats in a row do not read as a loop.
+  const wingTimers = [];
+  if (cfg.wingSfx && timeline?.beatTimes?.length) {
+    timeline.beatTimes.forEach((at, i) => {
+      wingTimers.push(setTimeout(() => {
+        try {
+          const a = new Audio(cfg.wingSfx.url);
+          a.volume = cfg.wingSfx.volume ?? 0.55;
+          a.playbackRate = (cfg.wingSfx.rate ?? 1) + i * (cfg.wingSfx.rateStep ?? 0.06);
+          a.play?.()?.catch?.(() => {});
+        } catch { /* a missing sound must never stop the entrance */ }
+      }, at));
+    });
   }
 
   // rAF fall with per-frame re-projection (see the header note).
@@ -617,6 +690,9 @@ async function runDescent({ sceneId, tokenId, src, flipX = false, style = "flame
     };
     requestAnimationFrame(step);
   });
+
+  // Any wingbeat still queued would now play after she is already down.
+  for (const t of wingTimers) { try { clearTimeout(t); } catch {} }
 
   const target = impactPoint();
   setPose(target.x, target.y, cfg.rotateToDeg); // settle exactly, no residual bob
@@ -686,12 +762,19 @@ async function playRoar(faller, cfg, flipStr) {
     try { foundry.audio?.AudioHelper?.play?.({ src: r.sfxUrl, volume: r.sfxVolume ?? 0.9, autoplay: true, loop: false }, false); }
     catch {}
   }
-  // Shake lands with the bellow, not with the recoil that precedes it.
-  if (r.shakeClass) {
-    setTimeout(() => {
+
+  // Everything below lands with the BELLOW, not with the recoil that precedes
+  // it — they all wait out the same beat so the hit is a single moment.
+  const bellowAt = Math.round((r.ms ?? 1150) * 0.16);
+  setTimeout(() => {
+    if (r.shakeClass) {
       try { shakeBoard({ shakeClass: r.shakeClass, shakeMs: r.shakeMs ?? 900 }); } catch {}
-    }, Math.round(r.ms * 0.16));
-  }
+    }
+    // Aura burst — ghost copies of her own sprite blow outward and fade.
+    try { spawnAuraBurst(faller, r, flipStr); } catch (e) { warn("[boss-entrance] aura burst threw", e); }
+    // Edge blur — the frame goes soft at the rim, keeping her sharp.
+    try { spawnEdgeBlur(r); } catch (e) { warn("[boss-entrance] edge blur threw", e); }
+  }, bellowAt);
 
   const pose = (s, blur) => ({
     transform: `translate(-50%,-50%)${flipStr} scale(${s})`,
@@ -717,6 +800,68 @@ async function playRoar(faller, cfg, flipStr) {
     anim?.addEventListener?.("finish", fin);
     setTimeout(fin, (r.ms ?? 1150) + 120); // safety net if WAAPI finish never fires
   });
+}
+
+// Ghost copies of the boss's own sprite blowing outward from her and fading —
+// the shockwave of the bellow, in her own shape. Cloned from the faller so it
+// inherits her exact size, position and facing for free, and screen-blended so
+// it reads as light coming off her rather than as a second creature.
+function spawnAuraBurst(faller, r, flipStr) {
+  const a = r.aura;
+  if (!a) return;
+  const isVid = faller.tagName?.toLowerCase() === "video";
+  const src = faller.currentSrc || faller.src;
+  if (!src) return;
+
+  for (let i = 0; i < (a.count ?? 1); i++) {
+    const clone = document.createElement(isVid ? "video" : "img");
+    clone.className = "fud-be-aura";
+    if (isVid) { clone.muted = true; clone.autoplay = true; clone.loop = true; clone.playsInline = true; }
+    clone.src = src;
+    clone.style.left   = faller.style.left;
+    clone.style.top    = faller.style.top;
+    clone.style.width  = faller.style.width;
+    clone.style.height = "auto";
+    document.body.appendChild(clone);
+    try { clone.play?.()?.catch?.(() => {}); } catch {}
+
+    const delay = i * (a.staggerMs ?? 90);
+    // Each successive ghost throws slightly further, so the burst has depth
+    // rather than reading as one copy pulsing.
+    const to = (a.scaleTo ?? 1.9) + i * (a.scaleStep ?? 0.35);
+    const anim = clone.animate(
+      [
+        { transform: `translate(-50%,-50%)${flipStr} scale(1)`, opacity: a.opacity ?? 0.55 },
+        { transform: `translate(-50%,-50%)${flipStr} scale(${to})`, opacity: 0 },
+      ],
+      { duration: a.ms ?? 720, delay, easing: "cubic-bezier(.16,.8,.3,1)", fill: "forwards" },
+    );
+    anim?.addEventListener?.("finish", () => { try { clone.remove(); } catch {} });
+    setTimeout(() => { try { clone.remove(); } catch {} }, (a.ms ?? 720) + delay + 400);
+  }
+}
+
+// Softens the RIM of the frame while the centre stays sharp — the shot tunnels
+// in on her for the length of the roar. backdrop-filter blurs what is behind
+// the sheet, and the radial mask keeps the middle untouched.
+function spawnEdgeBlur(r) {
+  const e = r.edgeBlur;
+  if (!e) return;
+  const el = document.createElement("div");
+  el.className = "fud-be-edgeblur";
+  el.style.setProperty("--eb", `${e.px ?? 14}px`);
+  document.body.appendChild(el);
+  const anim = el.animate(
+    [
+      { opacity: 0 },
+      { opacity: 1, offset: e.inFrac ?? 0.18 },
+      { opacity: 1, offset: e.holdFrac ?? 0.5 },
+      { opacity: 0 },
+    ],
+    { duration: e.ms ?? 900, easing: "ease-out", fill: "forwards" },
+  );
+  anim?.addEventListener?.("finish", () => { try { el.remove(); } catch {} });
+  setTimeout(() => { try { el.remove(); } catch {} }, (e.ms ?? 900) + 400);
 }
 
 function spawnBurst(cfg, target, basisPx) {
