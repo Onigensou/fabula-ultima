@@ -349,13 +349,14 @@ function stormCalm(opts = {}) {
 /* ── Condemn ─────────────────────────────────────────────────────────────── */
 //
 // A sentence carried out. The arena empties to leave only the accuser and the
-// accused, the victim is hauled off the ground, pinned by needles thrown from
-// every edge of the frame, and the cross that named them detonates — dropping
-// them.
+// accused, the victim is hauled off the ground and pinned by needles thrown
+// from every edge of the frame, and then the whole thing goes off at once,
+// dropping them.
 //
-// The cross is DRAWN rather than sourced so its proportions tune to the shot
-// and it tints cleanly; the explosion is an authored asset, because a drawn one
-// never looks like enough.
+// There is NO cross. An earlier pass hung one over the victim and scaled it in
+// before the needles; the impalement already carries the image on its own, and
+// the cross was a second symbol competing with it for the same beat. Removing
+// it also gives the needles the time the cross was spending.
 
 function condemn(opts = {}) {
   const cfg = Object.assign({
@@ -363,23 +364,20 @@ function condemn(opts = {}) {
     dimTo: 0.62, dimMs: 800,
     // Everyone who is not the accuser or the accused fades out of the frame.
     bystanderFadeMs: 700, bystanderTo: 0.0,
-    // The victim is hauled off the ground and struggles.
+    // The victim is hauled off the ground and struggles — until the first
+    // needle, after which they are pinned and held.
     liftFrac: 0.42, liftMs: 700, struggleAmp: 9, struggleSettleMs: 260,
-    // Cross opens larger than the frame and closes onto them. No spin: the
-    // rotation read as a flourish on something meant to land like a verdict.
-    crossH: 300, crossW: 190, armFrac: 0.30, thickness: 44,
-    crossStartFrac: 1.8, crossInMs: 900,
-    color: 0x9d4dff, coreColor: 0xf0e2ff,
-    // Idle shimmer while it hangs — energy, not a static drawing.
-    shimmerHz: 2.2, shimmerAlpha: 0.14, shimmerScale: 0.022,
+    struggleHoldMs: 620,
     // Needles thrown in from the edges. They STAY in until the detonation.
     spearCount: 7, spearFlightMs: 260, spearGapMs: 150,
     spearLenFrac: 0.30, spearWidth: 20, spearJolt: 13,
     spearHitParticles: 16, spearHitRadius: 120,
-    pinnedHoldMs: 520,
-    // Detonation.
+    color: 0x9d4dff, coreColor: 0xf0e2ff,
+    pinnedHoldMs: 620,
+    // Detonation — the needles go off together.
     boomWebm: null, boomSize: 1.5,   // fraction of viewport height
     detonateMs: 620,
+    burstParticles: 40, burstRadius: 320,
     // Dropped: they fall hard and hit the ground.
     dropMs: 300, dropShakeMs: 520, dropShakeAmp: 16,
     flashColor: "#b98cff", flashAlpha: 0.55, flashInMs: 140, flashOutMs: 760,
@@ -387,7 +385,7 @@ function condemn(opts = {}) {
     sfxCast: null, sfxCastVol: 0.5,
     sfxStab: null, sfxStabVol: 0.6,
     sfxBoom: null, sfxBoomVol: 0.85,
-    totalTimeoutMs: 34000,
+    totalTimeoutMs: 32000,
   }, opts.cfg || {});
 
   const body = [
@@ -440,19 +438,19 @@ function condemn(opts = {}) {
     "",
     "// Needles that have landed live in this rig, positioned RELATIVE to the",
     "// victim. Moving the rig with them is what lets them stay stuck in as the",
-    "// body thrashes, instead of hanging in the air where they hit.",
+    "// body moves, instead of hanging in the air where they hit.",
     "const rig = new PIXI.Container();",
     "rig.position.set(lifted.x, lifted.y);",
     "host.addChild(rig);",
     "",
-    "// One shared struggle driver: the victim and the rig read the same offset,",
-    "// so anything pinned to them tracks exactly.",
+    "// One shared offset driver: the victim and the rig read the same values, so",
+    "// anything pinned to them tracks exactly.",
     "let joltX = 0, joltY = 0;",
     "let struggling = true;",
-    "// Amplitude of the thrash, dialled to 0 once the needles start: a body",
-    "// that is already pinned should be HELD, and the only motion left is the",
-    "// kick each hit delivers. Leaving the tremor running underneath made the",
-    "// impacts unreadable, because everything was moving all the time.",
+    "// Amplitude of the thrash, dialled to 0 once the needles start: a body that",
+    "// is already pinned should be HELD, and the only motion left is the kick",
+    "// each hit delivers. Leaving the tremor running underneath made the impacts",
+    "// unreadable, because everything was moving all the time.",
     "let ampNow = cfg.struggleAmp;",
     "const struggle = function () {",
     "  if (!struggling) return;",
@@ -461,53 +459,21 @@ function condemn(opts = {}) {
     "  const oy = (Math.random() * 2 - 1) * amp * 0.6 + joltY;",
     "  if (vic && !vic.destroyed) {",
     "    vic.position.set(lifted.x + ox, lifted.y + oy);",
-    "    vic.rotation = (Math.random() * 2 - 1) * 0.03;",
+    "    vic.rotation = (Math.random() * 2 - 1) * 0.03 * (ampNow / (cfg.struggleAmp || 1));",
     "  }",
     "  if (rig && !rig.destroyed) rig.position.set(lifted.x + ox, lifted.y + oy);",
     "};",
     "PIXI.Ticker.shared.add(struggle);",
     "",
-    "// The cross opens larger than the frame and closes onto them.",
-    "function bar(w, h, color, alpha) {",
-    "  const g = new PIXI.Graphics();",
-    "  g.beginFill(color, alpha).drawRoundedRect(-w / 2, -h / 2, w, h, Math.min(w, h) * 0.4).endFill();",
-    "  g.blendMode = PIXI.BLEND_MODES.ADD;",
-    "  return g;",
-    "}",
-    "const cross = new PIXI.Container();",
-    "cross.position.set(lifted.x, lifted.y);",
-    "host.addChild(cross);",
-    "const H = S.wLen(cfg.crossH), W = S.wLen(cfg.crossW), TH = S.wLen(cfg.thickness);",
-    "const vert = bar(TH, H, cfg.color, 0.95);",
-    "const horz = bar(W, TH, cfg.color, 0.95);",
-    "horz.position.set(0, -H * (0.5 - cfg.armFrac));",
-    "const vertCore = bar(TH * 0.38, H * 0.96, cfg.coreColor, 1);",
-    "const horzCore = bar(W * 0.96, TH * 0.38, cfg.coreColor, 1);",
-    "horzCore.position.set(0, -H * (0.5 - cfg.armFrac));",
-    "cross.addChild(vert, horz, vertCore, horzCore);",
+    "// Let the struggling read on its own before anything hits them.",
+    "await wait(cfg.struggleHoldMs);",
     "",
-    "const bigScale = S.hPx(cfg.crossStartFrac) / Math.max(1, H);",
-    "cross.scale.set(bigScale);",
-    "cross.alpha = 0;",
-    "await oni.tween({ from: 0, to: 1, duration: cfg.crossInMs, ease: E.inOutQuad, onUpdate: function (v) {",
-    "  cross.scale.set(bigScale + (1 - bigScale) * v);",
-    "  cross.alpha = Math.min(1, v * 2.2);",
-    "} });",
-    "",
-    "// Idle shimmer: the cross breathes light while it hangs, so it reads as",
-    "// held energy rather than a drawn shape sitting still.",
-    "let shimmerOn = true;",
-    "const t0Shimmer = performance.now();",
-    "const shimmer = function () {",
-    "  if (!shimmerOn || !cross || cross.destroyed) return;",
-    "  const s = Math.sin((performance.now() - t0Shimmer) / 1000 * cfg.shimmerHz * Math.PI * 2);",
-    "  cross.alpha = 1 - cfg.shimmerAlpha * 0.5 + s * cfg.shimmerAlpha * 0.5;",
-    "  const k = 1 + s * cfg.shimmerScale;",
-    "  cross.scale.set(k);",
-    "  if (vertCore && !vertCore.destroyed) vertCore.alpha = 0.75 + (s * 0.5 + 0.5) * 0.25;",
-    "  if (horzCore && !horzCore.destroyed) horzCore.alpha = 0.75 + (s * 0.5 + 0.5) * 0.25;",
-    "};",
-    "PIXI.Ticker.shared.add(shimmer);",
+    "// Hold still from here. The struggle was for the helplessness BEFORE the",
+    "// sentence; from the first needle they are pinned.",
+    "const settleFrom = ampNow;",
+    "await oni.tween({ from: 1, to: 0, duration: cfg.struggleSettleMs, ease: E.outQuad,",
+    "  onUpdate: function (v) { ampNow = settleFrom * v; } });",
+    "ampNow = 0;",
     "",
     "// Needles thrown from the EDGES of the frame. Screen anchors, so they come",
     "// from off-frame whatever the camera is doing.",
@@ -531,14 +497,6 @@ function condemn(opts = {}) {
     "  g.blendMode = PIXI.BLEND_MODES.ADD;",
     "  return g;",
     "}",
-    "",
-    "// Hold still from here. The struggle was for the helplessness BEFORE the",
-    "// sentence; from the first needle they are pinned, and each jolt below is",
-    "// the only thing that should move them.",
-    "const settleFrom = ampNow;",
-    "await oni.tween({ from: 1, to: 0, duration: cfg.struggleSettleMs, ease: E.outQuad,",
-    "  onUpdate: function (v) { ampNow = settleFrom * v; } });",
-    "ampNow = 0;",
     "",
     "const pinned = [];",
     "for (let i = 0; i < cfg.spearCount; i++) {",
@@ -580,25 +538,28 @@ function condemn(opts = {}) {
     "await wait(cfg.pinnedHoldMs);",
     "joltX = 0; joltY = 0;",
     "",
-    "// ── Detonation ──",
-    "shimmerOn = false;",
-    "try { PIXI.Ticker.shared.remove(shimmer); } catch (e) {}",
+    "// ── Detonation: every needle goes off at once ──",
     "playSfx('sfxBoom', 'sfxBoomVol');",
     "if (cfg.boomWebm) fxWebm(cfg.boomWebm, rig.position.x, rig.position.y, { size: S.hPx(cfg.boomSize), parent: host, z: 96000 });",
+    "oni.particles({ x: rig.position.x, y: rig.position.y, count: cfg.burstParticles,",
+    "  color: cfg.color, size: 15, radius: S.wLen(cfg.burstRadius), life: 950,",
+    "  blend: PIXI.BLEND_MODES.ADD, parent: host });",
     "oni.screenshake({ duration: cfg.shakeMs, intensity: 11 });",
     "",
-    "const blowing = oni.tween({ from: 1, to: 0, duration: cfg.detonateMs, ease: E.outQuad, onUpdate: function (v) {",
-    "  cross.alpha = v;",
-    "  cross.scale.set(1 + (1 - v) * 1.5);",
-    "  for (const s of pinned) { if (s && !s.destroyed) s.alpha = v; }",
+    "// The needles blow outward as they go, rather than simply vanishing.",
+    "const blowing = oni.tween({ from: 0, to: 1, duration: cfg.detonateMs, ease: E.outQuad, onUpdate: function (v) {",
+    "  for (const s of pinned) {",
+    "    if (!s || s.destroyed) continue;",
+    "    s.alpha = 1 - v;",
+    "    s.scale.set(1 + v * 0.6);",
+    "  }",
     "} });",
     "const flashing = oni.domFlash({ color: cfg.flashColor, alpha: cfg.flashAlpha,",
     "  fadeIn: cfg.flashInMs, hold: 90, fadeOut: cfg.flashOutMs, onPeak: function () { done(); } });",
     "await Promise.all([blowing, flashing]);",
-    "try { cross.destroy({ children: true }); } catch (e) {}",
     "for (const s of pinned) { try { s.destroy(); } catch (e) {} }",
     "",
-    "// DROPPED. The struggle stops holding them up and they fall hard.",
+    "// DROPPED. Nothing is holding them up any more and they fall hard.",
     "struggling = false;",
     "try { PIXI.Ticker.shared.remove(struggle); } catch (e) {}",
     "const fallFrom = { x: vic ? vic.position.x : lifted.x, y: vic ? vic.position.y : lifted.y };",
