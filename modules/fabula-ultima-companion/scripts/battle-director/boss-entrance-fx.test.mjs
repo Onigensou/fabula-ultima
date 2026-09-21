@@ -129,11 +129,48 @@ eq("flame has no shards",      flame.shards, null);
 // boss-sized sprite otherwise throws a screen-wide flash) would visibly shrink
 // an approved animation.
 eq("flame FX basis is uncapped", flame.fxBasisMaxFrac, null);
+// The Wandering Flame plummets and does not bellow. Both would be visible
+// changes to a shipped animation.
+ok("flame still a single plummet, not wing-beats", !flame.beats);
+ok("flame has no roar",                            !flame.roar);
+ok("flame has no idle float",                      !flame.floatAmpFrac);
 
 // Every style must be renderable: the fields runDescent reads unconditionally.
+// A style describes its descent EITHER as a single eased plummet (fallMs+ease)
+// OR as wing-beats; exactly one, or the renderer silently ignores half the
+// config.
 for (const [name, cfg] of Object.entries(DESCENT_STYLES)) {
-  ok(`${name}: fallMs > 0`,        Number.isFinite(cfg.fallMs) && cfg.fallMs > 0);
-  ok(`${name}: ease is 4 numbers`, Array.isArray(cfg.ease) && cfg.ease.length === 4 && cfg.ease.every(Number.isFinite));
+  const hasPlummet = Number.isFinite(cfg.fallMs) && cfg.fallMs > 0;
+  const hasBeats = Array.isArray(cfg.beats) && cfg.beats.length > 0;
+  ok(`${name}: describes a descent`, hasPlummet || hasBeats);
+  ok(`${name}: not both shapes`,     !(hasPlummet && hasBeats));
+  if (hasPlummet) {
+    ok(`${name}: ease is 4 numbers`, Array.isArray(cfg.ease) && cfg.ease.length === 4 && cfg.ease.every(Number.isFinite));
+  }
+  if (hasBeats) {
+    let prev = 0;
+    cfg.beats.forEach((b, i) => {
+      ok(`${name}: beat ${i} moves downward`, Number.isFinite(b.to) && b.to > prev);
+      ok(`${name}: beat ${i} dropMs > 0`,     Number.isFinite(b.dropMs) && b.dropMs > 0);
+      ok(`${name}: beat ${i} ease valid`,     !b.ease || (Array.isArray(b.ease) && b.ease.length === 4));
+      // A rebound larger than the drop would send her back above where the beat
+      // started, which reads as flying up, not as a wing catching her.
+      ok(`${name}: beat ${i} rebound < drop`, (b.reboundFrac ?? 0) < (b.to - prev) + 1e-9);
+      prev = b.to - (b.reboundFrac ?? 0);
+    });
+    // The last beat must actually reach the ground or she lands in mid-air.
+    eq(`${name}: final beat lands`, cfg.beats[cfg.beats.length - 1].to, 1.0);
+    ok(`${name}: final beat does not rebound`, !(cfg.beats[cfg.beats.length - 1].reboundFrac > 0));
+  }
+  if (cfg.roar) {
+    ok(`${name}: roar ms > 0`,       Number.isFinite(cfg.roar.ms) && cfg.roar.ms > 0);
+    ok(`${name}: roar has sfx`,      typeof cfg.roar.sfxUrl === "string" && cfg.roar.sfxUrl.startsWith("http"));
+    ok(`${name}: roar reveals`,      typeof cfg.roar.revealClass === "string" && cfg.roar.revealClass.includes("fud-be-faller"));
+    // The reveal class must NOT keep the silhouette, or the roar plays on a
+    // black shape and the reveal never reads.
+    ok(`${name}: reveal drops silhouette`, !cfg.roar.revealClass.includes("--shadow"));
+    ok(`${name}: roar blurs`,        Number.isFinite(cfg.roar.blurPx) && cfg.roar.blurPx > 0);
+  }
   ok(`${name}: has faller class`,  typeof cfg.fallerClass === "string" && cfg.fallerClass.includes("fud-be-faller"));
   ok(`${name}: has burst class`,   typeof cfg.burstClass === "string" && cfg.burstClass.includes("fud-be-burst"));
   ok(`${name}: has shake class`,   typeof cfg.shakeClass === "string" && cfg.shakeClass.includes("fud-be-shake"));

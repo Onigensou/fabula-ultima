@@ -37,6 +37,9 @@ const STYLE_ID = "fud-boss-entrance-style";
 // Impact SFX — played on every client at the moment the boss hits the ground.
 const IMPACT_SFX = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_DOWNC.wav";
 
+// Landing roar, for styles that bellow once they are down.
+const ROAR_SFX = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Monster5.ogg";
+
 /* ── Styles ──────────────────────────────────────────────────────────────
  *
  * Every timing is in ms and every size is either a px scale factor on the
@@ -74,12 +77,26 @@ export const DESCENT_STYLES = {
   // monster: she falls out of the sky as a shadow, the camera riding her down,
   // and bursts into purple lightning on landing to reveal the sprite.
   shadowstorm: {
-    // Slow and smooth beats snappy here — this is the opening shot of a boss
-    // fight, not a hit reaction. Long enough for the camera move to read.
-    fallMs: 1500,
-    // Gentler acceleration than the flame plummet; she is descending with
-    // intent, not falling.
-    ease: [0.42, 0, 0.85, 0.5],
+    // A WING-BEAT descent, not a fall. Three drop-and-arrest cycles then a
+    // flare onto the ground — see buildDescentTimeline. `fallMs`/`ease` are
+    // unused when `beats` is present; the duration is the sum of the segments
+    // (~2.8s), which is long on purpose. This is the opening shot of a boss
+    // fight, not a hit reaction.
+    beats: [
+      // Each beat drops hard, the wing catches her, then she hangs a moment.
+      { to: 0.34, dropMs: 380, ease: [0.45, 0, 0.9, 0.45], reboundFrac: 0.045, reboundMs: 220, holdMs: 240 },
+      { to: 0.62, dropMs: 360, ease: [0.45, 0, 0.9, 0.45], reboundFrac: 0.038, reboundMs: 200, holdMs: 220 },
+      { to: 0.86, dropMs: 320, ease: [0.45, 0, 0.9, 0.45], reboundFrac: 0.030, reboundMs: 180, holdMs: 240 },
+      // FLARE — wings out, descent almost stops, then she settles onto it.
+      // Decelerating (not accelerating) easing is what sells the landing as
+      // controlled rather than a crash.
+      { to: 1.0, dropMs: 460, ease: [0.25, 0.6, 0.3, 1], reboundFrac: 0, reboundMs: 0, holdMs: 0 },
+    ],
+    // Subtle hover ride on top of the descent — the wing cycle. Fades out over
+    // the flare so she does not bob through the floor on touchdown.
+    floatAmpFrac: 0.016,
+    floatHz: 1.15,
+    swayDeg: 1.8,
     rotateFromDeg: -3,
     rotateToDeg: 2,
     fallerClass: "fud-be-faller fud-be-faller--shadow",
@@ -99,6 +116,20 @@ export const DESCENT_STYLES = {
     // Flame's much smaller token, overwhelming on a boss this size. Capping the
     // basis keeps the impact proportional to the SCREEN on any sprite.
     fxBasisMaxFrac: 0.28,
+    // Landing roar. Plays on the revealed sprite, after the impact burst.
+    roar: {
+      sfxUrl: ROAR_SFX,
+      sfxVolume: 0.95,
+      delayMs: 140,        // a beat to read the reveal before she bellows
+      ms: 1150,
+      recoilScale: 0.962,  // draws back first
+      scalePeak: 1.10,
+      blurPx: 8,           // motion blur through the fastest part of the bellow
+      revealClass: "fud-be-faller fud-be-faller--revealed",
+      revealFilter: "drop-shadow(0 0 26px rgba(150,80,255,0.75))",
+      shakeClass: "fud-be-shake fud-be-shake--roar",
+      shakeMs: 820,
+    },
     // The camera starts above her, looking at empty sky, and rides her down.
     // `riseFrac` is how far above the impact point the shot starts, as a
     // fraction of viewport height; the clamp means a spawn point near the top
@@ -191,6 +222,52 @@ function cubicBezier(x1, y1, x2, y2) {
   };
 }
 
+/* ── Wing-beat descent timeline ──────────────────────────────────────────
+ *
+ * A big flying creature does not fall — it descends in stages. Each wing-beat
+ * arrests the drop, giving a brief upward rebound and a hover before gravity
+ * takes over again, and the last beat is a FLARE: the animal pitches back,
+ * spreads its wings and the descent almost stops just before touchdown.
+ *
+ * So each beat expands into up to three segments — drop, rebound, hold — and
+ * the next beat's drop starts from wherever the rebound left off. Positions are
+ * fractions of the total distance from the top of the screen to the landing
+ * spot, so the shape is resolution-independent.
+ */
+function buildDescentTimeline(beats) {
+  const segs = [];
+  let from = 0;
+  for (const b of beats) {
+    segs.push({ from, to: b.to, ms: b.dropMs, ease: cubicBezier(...(b.ease ?? [0.4, 0, 0.9, 0.5])) });
+    let cur = b.to;
+    if (b.reboundFrac > 0 && b.reboundMs > 0) {
+      // The wing-beat catches her: a short, decelerating rise.
+      const up = Math.max(0, b.to - b.reboundFrac);
+      segs.push({ from: b.to, to: up, ms: b.reboundMs, ease: cubicBezier(0.2, 0.7, 0.35, 1) });
+      cur = up;
+    }
+    if (b.holdMs > 0) segs.push({ from: cur, to: cur, ms: b.holdMs, ease: (t) => t });
+    from = cur;
+  }
+  return { segs, totalMs: segs.reduce((a, s) => a + s.ms, 0) };
+}
+
+// Fraction of the total drop at `elapsed` ms. Clamped at both ends so an
+// overrun frame lands exactly on the ground rather than past it.
+function sampleDescent(tl, elapsed) {
+  if (elapsed <= 0) return tl.segs[0]?.from ?? 0;
+  if (elapsed >= tl.totalMs) return tl.segs[tl.segs.length - 1]?.to ?? 1;
+  let acc = 0;
+  for (const s of tl.segs) {
+    if (elapsed < acc + s.ms) {
+      const local = s.ms ? (elapsed - acc) / s.ms : 1;
+      return s.from + (s.to - s.from) * s.ease(local);
+    }
+    acc += s.ms;
+  }
+  return 1;
+}
+
 /* ── Stylesheet ──────────────────────────────────────────────────────────── */
 
 function ensureStyle() {
@@ -220,8 +297,23 @@ function ensureStyle() {
   78% { transform: translate(6px, 5px); }
   88% { transform: translate(-3px,-3px); }
 }
+/* The roar shake is faster and tighter than the landing's — a bellow rattles
+   the frame rather than heaving it. */
+@keyframes fud-be-shake-roar {
+  0%,100% { transform: translate(0,0); }
+  6%  { transform: translate(-11px, 5px); }
+  14% { transform: translate(10px,-7px); }
+  22% { transform: translate(-9px,-4px); }
+  30% { transform: translate(9px, 6px); }
+  40% { transform: translate(-8px, 4px); }
+  50% { transform: translate(7px,-5px); }
+  62% { transform: translate(-5px, 3px); }
+  74% { transform: translate(4px, 3px); }
+  86% { transform: translate(-2px,-2px); }
+}
 .fud-be-shake { animation: fud-be-shake 0.6s cubic-bezier(.36,.07,.19,.97) both; }
 .fud-be-shake--heavy { animation: fud-be-shake-heavy 0.85s cubic-bezier(.36,.07,.19,.97) both; }
+.fud-be-shake--roar { animation: fud-be-shake-roar 0.8s cubic-bezier(.36,.07,.19,.97) both; }
 
 .fud-be-faller {
   position: fixed; z-index: 99990; pointer-events: none;
@@ -236,6 +328,13 @@ function ensureStyle() {
 .fud-be-faller--shadow {
   filter: brightness(0) drop-shadow(0 0 26px rgba(150,80,255,0.85))
           drop-shadow(0 0 60px rgba(90,30,180,0.55));
+}
+/* Post-reveal: her real colours, keeping only the violet rim. The roar
+   animates the filter property directly, so this is the resting value it
+   returns to. NOTE: no backticks in this stylesheet — it is a template
+   literal, and one would close it early. */
+.fud-be-faller--revealed {
+  filter: drop-shadow(0 0 26px rgba(150,80,255,0.75));
 }
 
 .fud-be-burst {
@@ -452,6 +551,15 @@ async function runDescent({ sceneId, tokenId, src, flipX = false, style = "flame
   setPose(start0.x, startY, cfg.rotateFromDeg);
   faller.style.opacity = "1";
 
+  // Resolve the descent shape BEFORE the camera, which needs its duration. A
+  // style either describes a single eased plummet (`fallMs` + `ease`, what
+  // `flame` does) or a wing-beat descent (`beats`), whose length is the sum of
+  // its segments.
+  const timeline = cfg.beats ? buildDescentTimeline(cfg.beats) : null;
+  const fallMs = timeline ? timeline.totalMs : cfg.fallMs;
+  const ease = timeline ? null : cubicBezier(...cfg.ease);
+  const floatAmpPx = (cfg.floatAmpFrac ?? 0) * (window.innerHeight || 1080);
+
   // Camera ride. Starts on empty sky above the landing spot and travels down
   // with her. Clamped by the camera API, so a spawn near the top edge of the
   // artwork degrades to a shorter ride rather than a broken shot.
@@ -468,7 +576,7 @@ async function runDescent({ sceneId, tokenId, src, flipX = false, style = "flame
       releaseCamera = () => { try { resumeCamera(); } catch {} };
       // Snap to the sky, then ride down over the length of the fall.
       CameraApi.panSnap({ x: c.x, y: c.y - rise, scale: ground?.scale }, { scene });
-      CameraApi.panTo({ x: c.x, y: c.y, scale: ground?.scale }, { duration: cfg.fallMs, scene });
+      CameraApi.panTo({ x: c.x, y: c.y, scale: ground?.scale }, { duration: fallMs, scene });
       restoreCamera = async () => {
         try { await CameraApi.settleRestFraming(scene, { attempts: 1 }); } catch {}
       };
@@ -481,17 +589,28 @@ async function runDescent({ sceneId, tokenId, src, flipX = false, style = "flame
   }
 
   // rAF fall with per-frame re-projection (see the header note).
-  const ease = cubicBezier(...cfg.ease);
   await new Promise((res) => {
     const t0 = performance.now();
     const step = (now) => {
-      const t = Math.min(1, (now - t0) / cfg.fallMs);
-      const e = ease(t);
+      const elapsed = now - t0;
+      const t = Math.min(1, elapsed / fallMs);
+      const e = timeline ? sampleDescent(timeline, elapsed) : ease(t);
       const p = impactPoint();
+
+      // The idle float rides on top of the descent and fades out over the last
+      // stretch, so she settles onto the ground rather than bobbing through it.
+      const floatFade = Math.max(0, 1 - Math.max(0, t - 0.82) / 0.18);
+      const bob = floatAmpPx
+        ? Math.sin((elapsed / 1000) * (cfg.floatHz ?? 1) * Math.PI * 2) * floatAmpPx * floatFade
+        : 0;
+      const sway = cfg.swayDeg
+        ? Math.sin((elapsed / 1000) * (cfg.floatHz ?? 1) * Math.PI * 2 + 0.9) * cfg.swayDeg * floatFade
+        : 0;
+
       setPose(
         p.x,
-        startY + (p.y - startY) * e,
-        cfg.rotateFromDeg + (cfg.rotateToDeg - cfg.rotateFromDeg) * e,
+        startY + (p.y - startY) * e + bob,
+        cfg.rotateFromDeg + (cfg.rotateToDeg - cfg.rotateFromDeg) * e + sway,
       );
       if (t < 1) requestAnimationFrame(step);
       else res();
@@ -500,6 +619,7 @@ async function runDescent({ sceneId, tokenId, src, flipX = false, style = "flame
   });
 
   const target = impactPoint();
+  setPose(target.x, target.y, cfg.rotateToDeg); // settle exactly, no residual bob
 
   // ── Impact ──
   // The impact FX size off `fxBasis`, not the raw footprint: a boss sprite can
@@ -519,6 +639,15 @@ async function runDescent({ sceneId, tokenId, src, flipX = false, style = "flame
     catch {}
   }
 
+  // ── Roar ──
+  // Runs on the FALLER, not the real token, because the faller is a DOM element
+  // we can blur and scale freely. The real token stays hidden underneath until
+  // this finishes, so there is never a doubled silhouette at the edges.
+  if (cfg.roar) {
+    try { await playRoar(faller, cfg, flipStr); }
+    catch (e) { warn("[boss-entrance] roar threw", e); }
+  }
+
   // Fade the faller out — the real animated token takes over underneath.
   try {
     const f = faller.animate([{ opacity: 1 }, { opacity: 0 }], { duration: cfg.fadeOutMs, fill: "forwards" });
@@ -526,7 +655,8 @@ async function runDescent({ sceneId, tokenId, src, flipX = false, style = "flame
     setTimeout(() => { try { faller.remove(); } catch {} }, cfg.fadeOutMs + 230);
   } catch { try { faller.remove(); } catch {} }
 
-  // Hand the caller the landing before the cosmetic tail finishes.
+  // Hand the caller the landing (and, for a style with a roar, the roar) before
+  // the fade-out tail finishes.
   done();
 
   // Release the camera after the shot has settled. Detached from `done` on
@@ -536,6 +666,57 @@ async function runDescent({ sceneId, tokenId, src, flipX = false, style = "flame
       try { await restoreCamera?.(); } finally { releaseCamera(); }
     }, cfg.camera?.settleMs ?? 0);
   }
+}
+
+// The roar: she is revealed out of the silhouette, rears back, then bellows —
+// a hard scale-up with a motion blur through the peak, its own screenshake, and
+// the roar SFX. Resolves when the pose has settled.
+async function playRoar(faller, cfg, flipStr) {
+  const r = cfg.roar;
+
+  // Drop the silhouette so the roar happens on her actual colours — this is the
+  // "burst reveals Fafnir" beat the shadow has been building to.
+  if (r.revealClass) faller.className = r.revealClass;
+  const base = r.revealFilter ?? "";
+
+  if (r.delayMs) await new Promise((res) => setTimeout(res, r.delayMs));
+  if (!document.body.contains(faller)) return;
+
+  if (r.sfxUrl) {
+    try { foundry.audio?.AudioHelper?.play?.({ src: r.sfxUrl, volume: r.sfxVolume ?? 0.9, autoplay: true, loop: false }, false); }
+    catch {}
+  }
+  // Shake lands with the bellow, not with the recoil that precedes it.
+  if (r.shakeClass) {
+    setTimeout(() => {
+      try { shakeBoard({ shakeClass: r.shakeClass, shakeMs: r.shakeMs ?? 900 }); } catch {}
+    }, Math.round(r.ms * 0.16));
+  }
+
+  const pose = (s, blur) => ({
+    transform: `translate(-50%,-50%)${flipStr} scale(${s})`,
+    filter: blur ? `${base} blur(${blur}px)`.trim() : (base || "none"),
+  });
+
+  const anim = faller.animate(
+    [
+      { ...pose(1, 0), offset: 0 },
+      // Recoil — she draws back before the bellow.
+      { ...pose(r.recoilScale ?? 0.965, 0), offset: 0.16 },
+      // The bellow itself: snap out, blurred through the fastest part.
+      { ...pose(r.scalePeak ?? 1.09, r.blurPx ?? 7), offset: 0.34 },
+      { ...pose(1.035, Math.max(1, (r.blurPx ?? 7) * 0.28)), offset: 0.62 },
+      { ...pose(1, 0), offset: 1 },
+    ],
+    { duration: r.ms ?? 1150, easing: "cubic-bezier(.2,.75,.3,1)", fill: "forwards" },
+  );
+
+  await new Promise((res) => {
+    let settled = false;
+    const fin = () => { if (!settled) { settled = true; res(); } };
+    anim?.addEventListener?.("finish", fin);
+    setTimeout(fin, (r.ms ?? 1150) + 120); // safety net if WAAPI finish never fires
+  });
 }
 
 function spawnBurst(cfg, target, basisPx) {
