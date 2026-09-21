@@ -70,6 +70,8 @@ const FX = {
   handPush: "modules/boss-loot-assets-free/artwork/05-spell/homebrew/arcane/arm/Hand_1_Push_1_BLUE_1200x1200.webm",
   healBlue: JB + "Generic/Healing/HealingAbility_01_Blue_200x200.webm",
   explosionPurple: "modules/boss-loot-assets-free/artwork/05-spell/homebrew/impact/Explosion_2_Radial_PURPLE_1200x1200.webm",
+  shockwaveFire:   "modules/boss-loot-assets-free/artwork/05-spell/homebrew/fire/Shockwave_1_Fire_1_ORANGE_1200x1200.webm",
+  dustPuff:        "modules/boss-loot-assets-free/artwork/05-spell/homebrew/air/Dust_1_Explosion_Smoke_Puff_CENTER_COLOR_1_1200x1200.webm",
 };
 
 const SND = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
@@ -744,6 +746,10 @@ const REGISTRY = {
         // Red to match the placeholder chevron the persistent badge draws, so
         // the mark that lands and the mark that stays are the same sign.
         cfg: { color: 0xff3b30,
+               // Both land on the VICTIM, sized off their sprite: the brand is
+               // burned onto them, so the burst belongs where they are, not at
+               // the mark's overhead seat.
+               shockWebm: FX.shockwaveFire, dustWebm: FX.dustPuff,
                sfxCast: "Fire1", sfxCastVol: 0.45,
                sfxImpact: "Fire2", sfxImpactVol: 0.65 },
       }),
