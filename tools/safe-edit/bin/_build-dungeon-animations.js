@@ -68,6 +68,8 @@ const FX = {
   heartPink:       JB + "Generic/Marker/MarkerHeart_02_Regular_Pink_400x400.webm",
   smokePuff:       JB + "Generic/Smoke/SmokePuffRing01_03_Regular_White_400x400.webm",
   handPush: "modules/boss-loot-assets-free/artwork/05-spell/homebrew/arcane/arm/Hand_1_Push_1_BLUE_1200x1200.webm",
+  healBlue: JB + "Generic/Healing/HealingAbility_01_Blue_200x200.webm",
+  explosionPurple: "modules/boss-loot-assets-free/artwork/05-spell/homebrew/impact/Explosion_2_Radial_PURPLE_1200x1200.webm",
 };
 
 const SND = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
@@ -98,6 +100,12 @@ const SFX = {
   // Named explicitly by the author for Torment; an explicit asset choice
   // beats a manifest lookup.
   devilLaugh: SND + "Soundboard/Devil1.ogg",
+  waterDrop:  SND + "Water_Drop.mp3",
+  heal3:      SND + "Heal3.ogg",
+  slashB:     SND + "Hit_SlashingB.wav",
+  hitPiercing: SND + "Hit_Piercing.wav",
+  darkness4:  SND + "Soundboard/Darkness4.ogg",
+  monster1:   SND + "Soundboard/Monster1.ogg",
 };
 
 /* ── Blazing Sweep reuse ─────────────────────────────────────────────────── */
@@ -150,6 +158,8 @@ const ART = {
   skizzik:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
   obsidrax: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Obsidrax_Standard.png",
   manaRay:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Mana%20Ray_Standard.png",
+  flameDrake:     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/FlameDrake_Srandard.png",
+  lightningDrake: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/LightningDrake_Standard.png",
 };
 
 /* ── Verbatim reuse ──────────────────────────────────────────────────────── */
@@ -681,37 +691,44 @@ const REGISTRY = {
   "P1uCkpNnxLRBNqZr": {
     actorName: "⭐️ Fafnir",
     items: {
-      // Lunge forward, claw the target, slide home. Plain melee shape — the
-      // workhorse template, with her claw rather than a generic streak.
-      "Rend": () => T.melee({
+      // She does NOT cross the board: her sprite is large enough that the
+      // generic melee lunge reads as the whole dragon teleporting, and on
+      // arrival she covers the victim completely. She leans in instead.
+      "Rend": () => FF.heavyClaw({
         key: "fafnir-rend", name: "Rend",
         cfg: {
           color: C.physical, slashColor: 0xd9c7ff,
-          impactWebm: FX.clawRed2, impactWebmSize: 420,
-          lungeMs: 460, holdMs: 110, returnMs: 560,
-          standoff: 0.58, shakeMs: 480, shakeAmp: 10,
+          clawWebm: FX.clawRed2, clawSize: 460,
+          nudgeFrac: 0.22, windupMs: 260, nudgeMs: 200, holdMs: 220, returnMs: 520,
+          shakeMs: 480, shakeAmp: 10,
           particles: 22, particleRadius: 140, particleSize: 12,
-          slashCount: 2, slashGapMs: 120, slashFadeMs: 320,
-          sfx: "Attack2", sfxVol: 0.5,
-          sfxImpact: "Attack3", sfxImpactVol: 0.6,
+          slashCount: 2, slashGapMs: 110, slashFadeMs: 320,
+          sfx: SFX.slashB, sfxVol: 0.65,
         },
       }),
 
       "Summon Elemental Drake": () => FF.summonDrakes({
         key: "fafnir-summon-drakes", name: "Summon Elemental Drake",
-        cfg: { fireColor: C.fire, boltColor: C.bolt, sfx: "Pollen", sfxVol: 0.5 },
+        // The drakes' own sprites, flown in. Ids come from the skill's summon
+        // row (Actor.2vmogpXhRJZzAvXt / Actor.mQlh6GTyw2449hXC).
+        assets: { fireDrake: ART.flameDrake, boltDrake: ART.lightningDrake },
+        cfg: { sfx: SFX.monster1, sfxVol: 0.6 },
       }),
 
       "Storm Calm": () => FF.stormCalm({
         key: "fafnir-storm-calm", name: "Storm Calm",
-        cfg: { color: C.mana, sfx: "Cure1", sfxVol: 0.5 },
+        cfg: { healWebm: FX.healBlue, healSize: 520, healMs: 1600,
+               sfxDuring: SFX.waterDrop, sfxDuringVol: 0.55,
+               sfxAfter:  SFX.heal3,     sfxAfterVol: 0.6 },
       }),
 
       "Condemn": () => FF.condemn({
         key: "fafnir-condemn", name: "Condemn",
         cfg: { color: C.dark,
+               boomWebm: FX.explosionPurple,
                sfxCast: "Cursor2", sfxCastVol: 0.45,
-               sfxImpact: "Explosion2", sfxImpactVol: 0.8 },
+               sfxStab: SFX.hitPiercing, sfxStabVol: 0.6,
+               sfxBoom: SFX.darkness4,   sfxBoomVol: 0.85 },
       }),
 
       "Torment": () => FF.torment({
