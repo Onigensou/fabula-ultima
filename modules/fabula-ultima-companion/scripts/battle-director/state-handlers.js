@@ -87,6 +87,7 @@ import { collectObjectives, validateObjectivePick, findObjectiveItem } from "./o
 import { canPay as canPayUltima, payPoint as payUltimaPoint } from "./invoke/invoke-core.js";
 import { emitCrestsHidden } from "./domination-crest.js";
 import { emitAurasHidden } from "./aspect-aura.js";
+import { emitMarksHidden } from "./brand-mark.js";
 
 // findPassiveCandidates + firePreAcceptedCandidate are dynamically
 // imported (with one-shot cache-bust on first call) so this module
@@ -7814,6 +7815,7 @@ const Animation = {
     // every way out of this state incl. Skip Animation and battle-end aborts).
     try { emitCrestsHidden(true); } catch (e) { warn("ANIMATION: emitCrestsHidden(true) threw", e); }
     try { emitAurasHidden(true); } catch (e) { warn("ANIMATION: emitAurasHidden(true) threw", e); }
+    try { emitMarksHidden(true); } catch (e) { warn("ANIMATION: emitMarksHidden(true) threw", e); }
 
     // playDirectorAnimation is intentionally not awaited here — it drives
     // itself asynchronously and enqueues INTERNAL_DONE when the gate resolves.
@@ -7830,6 +7832,7 @@ const Animation = {
     // the !spec.hasScript fast path skips the hide entirely).
     try { emitCrestsHidden(false); } catch {}
     try { emitAurasHidden(false); } catch {}
+    try { emitMarksHidden(false); } catch {}
     // Abort the gate if the FSM leaves ANIMATION for any reason before the
     // animation finishes (e.g. STOP_COMBAT during a cinematic).
     if (director.ctx.animationController?.playing) {
@@ -7841,6 +7844,7 @@ const Animation = {
   onAbort(director) {
     try { emitCrestsHidden(false); } catch {}
     try { emitAurasHidden(false); } catch {}
+    try { emitMarksHidden(false); } catch {}
     if (director.ctx.animationController?.playing) {
       try { director.ctx.animationController.abort?.(); } catch {}
       director.ctx.animationController = null;

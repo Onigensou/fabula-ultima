@@ -64,6 +64,7 @@ import { initNpcHpBar, emitNpcHpBar, emitNpcHpBarUnchecked, renderNpcHpBarLocal 
 import { initDominationFx } from "./domination.js";
 import { initDominationCrest } from "./domination-crest.js";
 import { initAspectAura } from "./aspect-aura.js";
+import { initBrandMark } from "./brand-mark.js";
 import { initCameraAuthority } from "./camera-authority.js";
 import { initLightningRodCursor } from "../conflict-event/lightning-rod-cursor.js";
 import { initLightningStormFx } from "../conflict-event/lightning-storm-strike-fx.js";
@@ -1648,6 +1649,11 @@ Hooks.once("ready", () => {
   // Elemental Aspect Aura — same AE-replication pattern as the crest above.
   try { initAspectAura(); }
   catch (e) { warn("initAspectAura on ready threw", e); }
+
+  // Brand Mark badges — same AE-replication pattern again. Keyed off the mark
+  // AE itself, so a mark that is passed to an ally takes its badge along.
+  try { initBrandMark(); }
+  catch (e) { warn("initBrandMark on ready threw", e); }
 
   // Camera Authority — our own bounding box + sidebar-aware framing. Installs
   // a single _constrainView wrapper; no-ops on scenes LockView still owns.
