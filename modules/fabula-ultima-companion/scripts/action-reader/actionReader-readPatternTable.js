@@ -188,6 +188,14 @@ function normalizePatternRow(rawRow = {}) {
   const hpCeilingRaw = data?.[AR.keys.actionPatternHpCeilingKey] ?? "";
   const hpCeiling = AR.toInteger(hpCeilingRaw, 0);
 
+  // Cooldown, in ROUNDS. Normalised here like every other numeric column
+  // because it was previously read straight off the ITEM's system.props by
+  // applyAntiRepeat — a key that only ever exists on the pattern ROW, so the
+  // lookup returned undefined and every authored cooldown was inert. See the
+  // anti-repeat block in actionReader-matchAndPickAction.js.
+  const cooldownRaw = data?.[AR.keys.actionPatternCooldownKey] ?? "";
+  const cooldown = AR.toInteger(cooldownRaw, 0);
+
   let isUsable = true;
   let skipReason = "";
 
@@ -231,6 +239,9 @@ function normalizePatternRow(rawRow = {}) {
 
     hpCeilingRaw,
     hpCeiling,
+
+    cooldownRaw,
+    cooldown,
 
     raw: AR.duplicateSafe(data)
   };

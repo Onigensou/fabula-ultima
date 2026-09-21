@@ -11,13 +11,6 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"
-    },
-    "fabula-ultima-companion": {
-      "idleAnimation": {
-        "bounce": false,
-        "float": false
-      },
-      "spriteShadow": true
     }
   },
   "folder": "334KROpobXWVeG1Z",
@@ -461,21 +454,9 @@
           }
         }
       },
-      "fabula-ultima-companion": {
-        "dominanceCrestOffset": {
-          "x": 0,
-          "y": 0
-        }
-      },
       "hex-size-support": {
         "hideBorder": true,
         "hideFill": true
-      },
-      "token-z": {
-        "zIndex": 0
-      },
-      "wall-height": {
-        "tokenHeight": 0
       }
     },
     "height": 1,
@@ -517,7 +498,7 @@
         "background": null,
         "ring": null
       },
-      "effects": 0,
+      "effects": 1,
       "enabled": false,
       "subject": {
         "scale": 1,

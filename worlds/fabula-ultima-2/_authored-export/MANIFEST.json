@@ -4706,7 +4706,7 @@
         "id": "XVOWOq9oUmEECGrU",
         "name": "Debuff",
         "type": "activeEffectContainer",
-        "effects": 58
+        "effects": 59
       },
       {
         "id": "ZnzHJ5RiISPz0Bll",
@@ -13344,6 +13344,10 @@
           {
             "id": "5BLT8rXoDwUHz000",
             "name": "Storm Calm"
+          },
+          {
+            "id": "StormGatherPsv01",
+            "name": "Storm Gathering"
           },
           {
             "id": "C286kW050ikBQ85g",

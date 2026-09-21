@@ -397,7 +397,16 @@ function applyAntiRepeat(retained, context) {
 
   const adjusted = retained.map(candidate => {
     const nameNorm = candidate.actionNameNormalized;
-    const cooldown = AR.toInteger(getCandidateProps(candidate)?.[AR.keys.actionPatternCooldownKey], 0);
+    // The cooldown is a PATTERN-ROW column, not an item prop. This used to read
+    // `getCandidateProps(candidate)` — the ITEM's system.props — where
+    // `action_pattern_cooldown` never exists, so it resolved to 0 and the
+    // hard-block below was dead for every monster in the world (29 authored rows
+    // across 14 actors, none of them ever firing). Read it off the row, with the
+    // raw column as a fallback for a candidate built before normalisation.
+    const cooldown = AR.toInteger(
+      candidate?.row?.cooldown ?? candidate?.row?.raw?.[AR.keys.actionPatternCooldownKey],
+      0,
+    );
     const lastUsedRound = AR.toInteger(memory.usedRounds?.[nameNorm], NaN);
 
     let weight = candidate.selectionWeight;
