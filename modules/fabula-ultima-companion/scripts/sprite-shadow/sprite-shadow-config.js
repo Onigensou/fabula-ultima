@@ -100,7 +100,7 @@ function injectSpriteShadowConfig(app, html) {
           <div class="form-fields">
             <input type="checkbox" data-fud-sprite-shadow ${getActorSpriteShadow(actor) ? "checked" : ""}>
           </div>
-          <p class="hint">Renders a soft ellipse under the sprite. Turn OFF for art that already has a shadow painted in (party, older bestiary); ON for the Fafnir Castle sprites, which ship without one.</p>
+          <p class="hint">Renders a soft ground shadow under the sprite. Turn OFF for art that already has a shadow painted in.</p>
         </div>
         <p class="notes">${scope}</p>
       </fieldset>
