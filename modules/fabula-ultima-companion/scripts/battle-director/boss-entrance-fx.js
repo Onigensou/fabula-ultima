@@ -587,18 +587,32 @@ async function runDescent({ sceneId, tokenId, src, flipX = false, style = "flame
   if (!document.body.contains(faller)) { done(); return; }
 
   // Size to match the rendered token sprite, now that native dims are known.
+  // `size` is in WORLD units and is fixed; the on-screen size is that times the
+  // CURRENT zoom, which is re-read every frame for the same reason the position
+  // is: a style that rides the camera changes the zoom mid-descent, and a size
+  // captured up front then no longer matches what the real token will render
+  // at. Measured on Fafnir before this was live: faller 795px against a token
+  // rendering at 1073px, a 26% pop at the handoff, because the descent was
+  // sized at the pre-ride zoom of 0.963 while the scene sat at 1.300.
   const natW = isVid ? faller.videoWidth  : faller.naturalWidth;
   const natH = isVid ? faller.videoHeight : faller.naturalHeight;
   const size = spriteWorldSize(token, natW, natH);
-  const footprintPx = Math.max(48, size.w * zoom);
-  const startY = -footprintPx - 40; // start above the top edge
+  const liveZoom = () => canvas?.stage?.scale?.x ?? zoom;
+  const footprintOf = (z) => Math.max(48, size.w * z);
+  const footprintPx = footprintOf(zoom); // start-of-run value, for startY only
+  const startY = -footprintPx - 40;      // start above the top edge
 
-  faller.style.width  = `${footprintPx}px`;
-  faller.style.height = "auto"; // native aspect == the contained sprite's aspect
-  faller.style.top    = `${startY}px`;
+  faller.style.top = `${startY}px`;
 
   const flipStr = flipX ? " scaleX(-1)" : "";
   const setPose = (x, y, deg) => {
+    // Height is set explicitly rather than left to `auto`. For a contain-fit
+    // token (the default, and what every current style uses) this is exactly
+    // what the natural aspect produces; it only differs on a token with
+    // non-uniform texture scaling or fit:"fill", where auto would be wrong.
+    const z = liveZoom();
+    faller.style.width  = `${footprintOf(z)}px`;
+    faller.style.height = `${Math.max(48, size.h * z)}px`;
     faller.style.left = `${x}px`;
     faller.style.top  = `${y}px`;
     faller.style.transform = `translate(-50%,-50%)${flipStr} rotate(${deg}deg)`;
@@ -710,9 +724,13 @@ async function runDescent({ sceneId, tokenId, src, flipX = false, style = "flame
   // be several times a mook's, and a burst scaled straight off it covers the
   // screen. With no cap configured this IS the footprint, so a style that never
   // sets one renders exactly as before.
+  // Live footprint, not the start-of-run one — at impact the camera may have
+  // ridden to a different zoom, and the burst has to match the sprite it is
+  // bursting off.
+  const impactFootprint = footprintOf(liveZoom());
   const fxBasis = cfg.fxBasisMaxFrac
-    ? Math.min(footprintPx, (window.innerHeight || 1080) * cfg.fxBasisMaxFrac)
-    : footprintPx;
+    ? Math.min(impactFootprint, (window.innerHeight || 1080) * cfg.fxBasisMaxFrac)
+    : impactFootprint;
 
   try { spawnBurst(cfg, target, fxBasis); } catch (e) { warn("[boss-entrance] burst threw", e); }
   try { spawnShards(cfg, target, fxBasis); } catch (e) { warn("[boss-entrance] shards threw", e); }
