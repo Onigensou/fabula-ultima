@@ -666,6 +666,34 @@ const REGISTRY = {
       }),
     },
   },
+
+  // ── ⭐ Fafnir (Valley of the Dragon) ─────────────────────────────────────
+  //
+  // No longer deferred — her ENTRANCE ships as the `shadowstorm` style in
+  // battle-director/boss-entrance-fx.js, and these are her action shots.
+  //
+  // Her entrance is NOT here and must not be added here: it is not an
+  // animation_script on a skill, it runs from the director's entrance phase.
+  "P1uCkpNnxLRBNqZr": {
+    actorName: "⭐️ Fafnir",
+    items: {
+      // Lunge forward, claw the target, slide home. Plain melee shape — the
+      // workhorse template, with her claw rather than a generic streak.
+      "Rend": () => T.melee({
+        key: "fafnir-rend", name: "Rend",
+        cfg: {
+          color: C.physical, slashColor: 0xd9c7ff,
+          impactWebm: FX.clawRed2, impactWebmSize: 420,
+          lungeMs: 460, holdMs: 110, returnMs: 560,
+          standoff: 0.58, shakeMs: 480, shakeAmp: 10,
+          particles: 22, particleRadius: 140, particleSize: 12,
+          slashCount: 2, slashGapMs: 120, slashFadeMs: 320,
+          sfx: "Attack2", sfxVol: 0.5,
+          sfxImpact: "Attack3", sfxImpactVol: 0.6,
+        },
+      }),
+    },
+  },
 };
 
 /* ── Runner ──────────────────────────────────────────────────────────────── */
