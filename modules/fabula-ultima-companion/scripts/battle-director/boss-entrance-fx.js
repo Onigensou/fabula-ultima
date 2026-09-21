@@ -64,6 +64,10 @@ export const DESCENT_STYLES = {
     fadeOutMs: 220,
     shards: null,
     camera: null,
+    // null = size the impact FX straight off the sprite footprint, which is
+    // what the shipped Wandering Flame entrance does. Do not add a cap here:
+    // it would change an approved animation.
+    fxBasisMaxFrac: null,
   },
 
   // ⭐ Fafnir — Dreadwyrm Descent. She does not fade in like an ordinary
@@ -88,7 +92,13 @@ export const DESCENT_STYLES = {
     sfxVolume: 0.9,
     fadeOutMs: 320,
     // Purple electrical shards thrown outward on landing.
-    shards: { count: 18, spreadScale: 2.6, ms: 760, lenScale: 0.42 },
+    shards: { count: 18, spreadScale: 1.9, ms: 760, lenScale: 0.42 },
+    // Cap the impact FX against the VIEWPORT, not the sprite. Fafnir's sprite
+    // renders ~825px wide, so scaling the burst off the footprint alone gave a
+    // ~2500px flash that washed the whole UI violet — fine on the Wandering
+    // Flame's much smaller token, overwhelming on a boss this size. Capping the
+    // basis keeps the impact proportional to the SCREEN on any sprite.
+    fxBasisMaxFrac: 0.28,
     // The camera starts above her, looking at empty sky, and rides her down.
     // `riseFrac` is how far above the impact point the shot starts, as a
     // fraction of viewport height; the clamp means a spawn point near the top
@@ -492,8 +502,16 @@ async function runDescent({ sceneId, tokenId, src, flipX = false, style = "flame
   const target = impactPoint();
 
   // ── Impact ──
-  try { spawnBurst(cfg, target, footprintPx); } catch (e) { warn("[boss-entrance] burst threw", e); }
-  try { spawnShards(cfg, target, footprintPx); } catch (e) { warn("[boss-entrance] shards threw", e); }
+  // The impact FX size off `fxBasis`, not the raw footprint: a boss sprite can
+  // be several times a mook's, and a burst scaled straight off it covers the
+  // screen. With no cap configured this IS the footprint, so a style that never
+  // sets one renders exactly as before.
+  const fxBasis = cfg.fxBasisMaxFrac
+    ? Math.min(footprintPx, (window.innerHeight || 1080) * cfg.fxBasisMaxFrac)
+    : footprintPx;
+
+  try { spawnBurst(cfg, target, fxBasis); } catch (e) { warn("[boss-entrance] burst threw", e); }
+  try { spawnShards(cfg, target, fxBasis); } catch (e) { warn("[boss-entrance] shards threw", e); }
   try { shakeBoard(cfg); } catch (e) { warn("[boss-entrance] shake threw", e); }
 
   if (cfg.sfxUrl) {
@@ -520,10 +538,10 @@ async function runDescent({ sceneId, tokenId, src, flipX = false, style = "flame
   }
 }
 
-function spawnBurst(cfg, target, footprintPx) {
+function spawnBurst(cfg, target, basisPx) {
   const burst = document.createElement("div");
   burst.className = cfg.burstClass;
-  const burstPx = footprintPx * cfg.burstScale;
+  const burstPx = basisPx * cfg.burstScale;
   burst.style.left   = `${target.x}px`;
   burst.style.top    = `${target.y}px`;
   burst.style.width  = `${burstPx}px`;
@@ -543,20 +561,20 @@ function spawnBurst(cfg, target, footprintPx) {
 
 // Electrical slivers thrown out of the landing, evenly spread with a jitter so
 // the ring never reads as a mechanical starburst.
-function spawnShards(cfg, target, footprintPx) {
+function spawnShards(cfg, target, basisPx) {
   const s = cfg.shards;
   if (!s) return;
-  const len = footprintPx * s.lenScale;
+  const len = basisPx * s.lenScale;
   for (let i = 0; i < s.count; i++) {
     const baseAng = (360 / s.count) * i;
     const ang = baseAng + (Math.random() * 18 - 9);
-    const reach = footprintPx * s.spreadScale * (0.55 + Math.random() * 0.45);
+    const reach = basisPx * s.spreadScale * (0.55 + Math.random() * 0.45);
     const el = document.createElement("div");
     el.className = "fud-be-shard";
     el.style.left   = `${target.x}px`;
     el.style.top    = `${target.y}px`;
     el.style.width  = `${len * (0.6 + Math.random() * 0.8)}px`;
-    el.style.height = `${Math.max(2, footprintPx * 0.018)}px`;
+    el.style.height = `${Math.max(2, basisPx * 0.018)}px`;
     document.body.appendChild(el);
     const a = el.animate(
       [

@@ -124,6 +124,11 @@ eq("flame sfxVolume",   flame.sfxVolume, 0.8);
 eq("flame fadeOutMs",   flame.fadeOutMs, 220);
 eq("flame has no camera ride", flame.camera, null);
 eq("flame has no shards",      flame.shards, null);
+// Load-bearing: the impact FX must keep sizing straight off the sprite
+// footprint for this style. Capping the basis (as shadowstorm does, because a
+// boss-sized sprite otherwise throws a screen-wide flash) would visibly shrink
+// an approved animation.
+eq("flame FX basis is uncapped", flame.fxBasisMaxFrac, null);
 
 // Every style must be renderable: the fields runDescent reads unconditionally.
 for (const [name, cfg] of Object.entries(DESCENT_STYLES)) {

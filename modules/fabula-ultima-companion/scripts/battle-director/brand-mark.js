@@ -308,7 +308,14 @@ function syncActorMark(actor) {
   if (!actor) return;
   const styleKey = readMark(actor);
   let tokens = [];
-  try { tokens = actor.getActiveTokens?.(true) ?? []; } catch {}
+  // getActiveTokens() with NO argument. The first parameter is `linked`, which
+  // filters to tokens with actorLink set — not "all tokens", which is what this
+  // wants. Passing true works by accident when the effect lands on a token's
+  // SYNTHETIC actor (how the director applies them, and why this reads as fine
+  // in play) but returns NOTHING for the world actor of an unlinked NPC, which
+  // is most monsters. Probed live: world actor of an unlinked token →
+  // getActiveTokens(true) = 0, getActiveTokens() = 1.
+  try { tokens = actor.getActiveTokens?.() ?? []; } catch {}
   for (const token of tokens) {
     if (!styleKey) { dropMark(token.id); continue; }
     const rec = _marks.get(token.id) ?? buildMark(token, styleKey);
