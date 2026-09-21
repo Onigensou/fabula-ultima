@@ -719,9 +719,11 @@ const REGISTRY = {
 
       "Storm Calm": () => FF.stormCalm({
         key: "fafnir-storm-calm", name: "Storm Calm",
-        cfg: { healWebm: FX.healBlue, healSize: 520, healMs: 1600,
-               sfxDuring: SFX.waterDrop, sfxDuringVol: 0.55,
-               sfxAfter:  SFX.heal3,     sfxAfterVol: 0.6 },
+        cfg: { healWebm: FX.healBlue, healMs: 1600,
+               // Ordered, not overlapped: the drop is the CUE, then the effect
+               // and its chime arrive together as the result.
+               sfxCue:  SFX.waterDrop, sfxCueVol: 0.55,
+               sfxHeal: SFX.heal3,     sfxHealVol: 0.6 },
       }),
 
       "Condemn": () => FF.condemn({

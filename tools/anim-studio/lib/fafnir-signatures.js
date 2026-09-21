@@ -302,11 +302,12 @@ function stormCalm(opts = {}) {
     // effect swallowed her. A single fraction cannot run away like that.
     healWebm: null, healWidthFrac: 0.62, healMs: 1600,
     holdMs: 500,
-    // Two cues, deliberately at different beats: the water drop lands WITH the
-    // effect, the heal chime lands AFTER it, so the cast and its result are not
-    // one undifferentiated noise.
-    sfxDuring: null, sfxDuringVol: 0.55,
-    sfxAfter: null, sfxAfterVol: 0.6,
+    // Ordered, not overlapped: the water drop is the CUE, then the effect and
+    // its chime arrive together as the result. `dropLeadMs` is the gap that
+    // lets the drop finish being a separate sound before the heal lands on it.
+    sfxCue: null, sfxCueVol: 0.55,
+    dropLeadMs: 620,
+    sfxHeal: null, sfxHealVol: 0.6,
     totalTimeoutMs: 18000,
   }, opts.cfg || {});
 
@@ -319,19 +320,20 @@ function stormCalm(opts = {}) {
     "await oni.camera.focus({ point: home, zoom: cfg.camZoom, duration: cfg.camInMs });",
     "await wait(cfg.beatMs);",
     "",
-    "playSfx('sfxDuring', 'sfxDuringVol');",
+    "// The drop is the cue and lands alone.",
+    "playSfx('sfxCue', 'sfxCueVol');",
+    "await wait(cfg.dropLeadMs);",
     "",
-    "// The healing asset plays ON her, sized off her sprite rather than a fixed",
-    "// px so it reads the same on any token scale.",
+    "// Then the effect and its chime arrive TOGETHER — the chime is the sound of",
+    "// the heal, so firing it on a different beat reads as two unrelated events.",
     "const spriteW = (caster.mesh && caster.mesh.width ? caster.mesh.width : (caster.w || 100));",
+    "playSfx('sfxHeal', 'sfxHealVol');",
     "const fx = await fxWebm(cfg.healWebm, home.x, home.y, {",
     "  size: spriteW * cfg.healWidthFrac, parent: host, z: 95000 });",
     "",
-    "await wait(cfg.healMs);",
-    "",
     "// The recovery lands with the effect, not after it.",
     "done();",
-    "playSfx('sfxAfter', 'sfxAfterVol');",
+    "await wait(cfg.healMs);",
     "",
     "try { if (fx && fx.sprite) fx.sprite.destroy(); } catch (e) {}",
     "await wait(cfg.holdMs);",
@@ -362,7 +364,7 @@ function condemn(opts = {}) {
     // Everyone who is not the accuser or the accused fades out of the frame.
     bystanderFadeMs: 700, bystanderTo: 0.0,
     // The victim is hauled off the ground and struggles.
-    liftFrac: 0.42, liftMs: 700, struggleAmp: 9,
+    liftFrac: 0.42, liftMs: 700, struggleAmp: 9, struggleSettleMs: 260,
     // Cross opens larger than the frame and closes onto them. No spin: the
     // rotation read as a flourish on something meant to land like a verdict.
     crossH: 300, crossW: 190, armFrac: 0.30, thickness: 44,
@@ -447,9 +449,14 @@ function condemn(opts = {}) {
     "// so anything pinned to them tracks exactly.",
     "let joltX = 0, joltY = 0;",
     "let struggling = true;",
+    "// Amplitude of the thrash, dialled to 0 once the needles start: a body",
+    "// that is already pinned should be HELD, and the only motion left is the",
+    "// kick each hit delivers. Leaving the tremor running underneath made the",
+    "// impacts unreadable, because everything was moving all the time.",
+    "let ampNow = cfg.struggleAmp;",
     "const struggle = function () {",
     "  if (!struggling) return;",
-    "  const amp = S.wLen(cfg.struggleAmp);",
+    "  const amp = S.wLen(ampNow);",
     "  const ox = (Math.random() * 2 - 1) * amp + joltX;",
     "  const oy = (Math.random() * 2 - 1) * amp * 0.6 + joltY;",
     "  if (vic && !vic.destroyed) {",
@@ -524,6 +531,14 @@ function condemn(opts = {}) {
     "  g.blendMode = PIXI.BLEND_MODES.ADD;",
     "  return g;",
     "}",
+    "",
+    "// Hold still from here. The struggle was for the helplessness BEFORE the",
+    "// sentence; from the first needle they are pinned, and each jolt below is",
+    "// the only thing that should move them.",
+    "const settleFrom = ampNow;",
+    "await oni.tween({ from: 1, to: 0, duration: cfg.struggleSettleMs, ease: E.outQuad,",
+    "  onUpdate: function (v) { ampNow = settleFrom * v; } });",
+    "ampNow = 0;",
     "",
     "const pinned = [];",
     "for (let i = 0; i < cfg.spearCount; i++) {",
