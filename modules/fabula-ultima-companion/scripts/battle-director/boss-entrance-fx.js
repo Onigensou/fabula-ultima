@@ -134,7 +134,7 @@ export const DESCENT_STYLES = {
       // stripped the silhouette (revealClass is applied before this wait), so
       // this is a held beat of her standing there revealed, dust settling,
       // before she rears back. Silence here is what makes the bellow land.
-      delayMs: 850,
+      delayMs: 1400,
       ms: 1150,
       recoilScale: 0.962,  // draws back first
       scalePeak: 1.10,
