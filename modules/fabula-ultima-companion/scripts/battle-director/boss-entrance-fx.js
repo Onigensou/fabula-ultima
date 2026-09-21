@@ -133,7 +133,7 @@ export const DESCENT_STYLES = {
       // Under the wingbeats and well under the roar — the storm is atmosphere
       // here, not the event. Five of these fire during the descent, so they
       // add up faster than a one-shot cue does.
-      sfxVolume: 0.5,
+      sfxVolume: 0.35,
     },
     rotateFromDeg: -3,
     rotateToDeg: 2,
