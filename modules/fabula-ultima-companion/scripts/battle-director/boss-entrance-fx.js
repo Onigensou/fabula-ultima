@@ -34,6 +34,8 @@ import { suspendCamera, resumeCamera } from "./camera-authority.js";
 
 const STYLE_ID = "fud-boss-entrance-style";
 
+const wait = (ms) => new Promise((res) => setTimeout(res, ms));
+
 // Impact SFX — played on every client at the moment the boss hits the ground.
 const IMPACT_SFX = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_DOWNC.wav";
 
@@ -155,6 +157,20 @@ export const DESCENT_STYLES = {
     // of the artwork simply gets less rise rather than a broken shot.
     // `returnMs` is the GLIDE back to battle framing — see restoreCamera.
     camera: { riseFrac: 0.85, zoom: 1.35, settleMs: 700, returnMs: 1100 },
+    // What happens BEFORE she appears. The order is the whole point: the party
+    // lands on an empty battlefield, nothing happens for a beat, the light goes
+    // out of the scene, and only then does the camera tilt up to the sky — so
+    // the audience is looking at the empty place she is about to come from.
+    prelude: {
+      stillnessMs: 1300,    // nothing at all. The shot has to feel safe first.
+      dimTo: 0.5,           // scene dim, below the tokens (see makeSceneDim)
+      dimColor: 0x05000f,   // a violet-black rather than a flat grey
+      dimFadeMs: 1100,
+      holdAfterDimMs: 500,  // let the dark sit before anything moves
+      panUpMs: 1800,        // slow tilt to the empty sky
+      holdAtTopMs: 550,     // the beat right before she drops into frame
+      dimLiftMs: 700,       // lights come back with the impact burst
+    },
   },
 };
 
@@ -240,6 +256,103 @@ function cubicBezier(x1, y1, x2, y2) {
     }
     return calc(u, y1, y2);
   };
+}
+
+/* ── Scene dim ───────────────────────────────────────────────────────────
+ *
+ * Darkens the SCENE so what follows pops. It is NOT a DOM overlay: a
+ * position:fixed sheet sits above the whole PIXI canvas, which makes it a
+ * curtain (a transition device) rather than a dim, and it would bury the very
+ * things the shot is about along with the rest of the interface.
+ *
+ * A dim belongs above the background and tiles but BELOW the tokens, which
+ * means inside `canvas.primary`. That group re-sorts on its own schedule, so
+ * rather than fight its comparator the child index is re-asserted every frame
+ * to sit just under the lowest Token child. The sheet is world space, so it is
+ * redrawn from the LIVE transform each frame — a camera move would otherwise
+ * slide it off — and overdrawn by half a screen on every side so a mid-pan
+ * fade never exposes an undimmed edge.
+ */
+// Every live dim, so a descent that throws after dimming cannot strand the
+// scene dark forever. A failed cinematic is a nuisance; an unlit battlefield
+// with no way back short of a reload is a broken session.
+const _activeDims = new Set();
+
+export function clearSceneDims() {
+  for (const d of [..._activeDims]) { try { d.destroy(); } catch {} }
+  _activeDims.clear();
+}
+
+function makeSceneDim({ color = 0x000000 } = {}) {
+  const primary = canvas?.primary ?? null;
+  const g = new PIXI.Graphics();
+  g.alpha = 0;
+  (primary ?? canvas.stage).addChild(g);
+
+  const redraw = () => {
+    if (g.destroyed) return;
+    const wt = canvas.stage.worldTransform;
+    const W = canvas.app?.renderer?.screen?.width ?? window.innerWidth;
+    const H = canvas.app?.renderer?.screen?.height ?? window.innerHeight;
+    const z = canvas.stage?.scale?.x || 1;
+    const tl = wt.applyInverse(new PIXI.Point(0, 0));
+    const ww = W / z;
+    const wh = H / z;
+    g.clear();
+    g.beginFill(color, 1)
+      .drawRect(tl.x - ww * 0.5, tl.y - wh * 0.5, ww * 2, wh * 2)
+      .endFill();
+  };
+
+  const reindex = () => {
+    if (!primary || g.destroyed) return;
+    const kids = primary.children;
+    let firstToken = -1;
+    for (let i = 0; i < kids.length; i++) {
+      const n = kids[i]?.name;
+      if (typeof n === "string" && n.startsWith("Token.")) { firstToken = i; break; }
+    }
+    const want = firstToken < 0 ? kids.length - 1 : Math.max(0, firstToken - 1);
+    const cur = kids.indexOf(g);
+    if (cur >= 0 && cur !== want) {
+      try { primary.setChildIndex(g, Math.min(want, kids.length - 1)); } catch {}
+    }
+  };
+
+  const tick = () => { redraw(); reindex(); };
+  tick();
+  PIXI.Ticker.shared.add(tick);
+
+  let gone = false;
+  const handle = { graphic: g, destroy: null, fadeTo: null };
+  const destroy = () => {
+    if (gone) return;
+    gone = true;
+    _activeDims.delete(handle);
+    try { PIXI.Ticker.shared.remove(tick); } catch {}
+    try { g.destroy(); } catch {}
+  };
+
+  const fadeTo = (to, ms) => new Promise((res) => {
+    const from = g.alpha;
+    const t0 = performance.now();
+    const step = (now) => {
+      if (g.destroyed) { res(); return; }
+      const t = ms ? Math.min(1, (now - t0) / ms) : 1;
+      // easeInOutQuad — spreads the movement evenly, so it reads as a drift
+      // rather than the whoosh a cubic gives at any duration.
+      const e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      g.alpha = from + (to - from) * e;
+      if (t < 1) requestAnimationFrame(step);
+      else res();
+    };
+    requestAnimationFrame(step);
+  });
+
+  handle.destroy = destroy;
+  handle.fadeTo = fadeTo;
+  _activeDims.add(handle);
+  return handle;
 }
 
 /* ── Wing-beat descent timeline ──────────────────────────────────────────
@@ -546,7 +659,13 @@ export function playDescentLocal(opts = {}) {
   return new Promise((resolve) => {
     let resolved = false;
     const done = () => { if (!resolved) { resolved = true; resolve(); } };
-    runDescent(opts, done).catch((e) => { warn("[boss-entrance] runDescent threw", e); done(); });
+    runDescent(opts, done).catch((e) => {
+      warn("[boss-entrance] runDescent threw", e);
+      // A throw after the prelude would otherwise leave the scene dimmed with
+      // nothing left running to lift it.
+      try { clearSceneDims(); } catch {}
+      done();
+    });
   });
 }
 
@@ -634,17 +753,41 @@ async function runDescent({ sceneId, tokenId, src, flipX = false, style = "flame
   // artwork degrades to a shorter ride rather than a broken shot.
   let releaseCamera = null;
   let restoreCamera = null;
+  let dim = null;
   if (cfg.camera && hasToken) {
     try {
       const scene = canvas.scene ?? null;
       const c = tokenCenter(token);
       const vh = window.innerHeight || 1080;
-      const rise = (cfg.camera.riseFrac * vh) / (zoom || 1);
+      const rise = (cfg.camera.riseFrac * vh) / (liveZoom() || 1);
       const ground = CameraApi.resolveIntent({ point: { x: c.x, y: c.y }, zoom: cfg.camera.zoom }, scene);
+      const sky = { x: c.x, y: c.y - rise, scale: ground?.scale };
       suspendCamera();
       releaseCamera = () => { try { resumeCamera(); } catch {} };
-      // Snap to the sky, then ride down over the length of the fall.
-      CameraApi.panSnap({ x: c.x, y: c.y - rise, scale: ground?.scale }, { scene });
+
+      // ── Prelude ──
+      // Nothing, then a dimming, then a slow tilt up to the empty sky she is
+      // about to come out of. The stillness is the point: the shot has to feel
+      // like nothing is going to happen before it does.
+      const P = cfg.prelude;
+      if (P) {
+        if (P.stillnessMs) await wait(P.stillnessMs);
+        if (P.dimTo > 0) {
+          dim = makeSceneDim({ color: P.dimColor });
+          await dim.fadeTo(P.dimTo, P.dimFadeMs ?? 900);
+        }
+        if (P.holdAfterDimMs) await wait(P.holdAfterDimMs);
+        // Tilt up SLOWLY rather than cutting — the old panSnap put the camera
+        // on the sky in a single frame, which read as a glitch right before the
+        // shot proper.
+        if (P.panUpMs) await CameraApi.panTo(sky, { duration: P.panUpMs, scene });
+        else CameraApi.panSnap(sky, { scene });
+        if (P.holdAtTopMs) await wait(P.holdAtTopMs);
+      } else {
+        CameraApi.panSnap(sky, { scene });
+      }
+
+      // Ride down over the length of the descent.
       CameraApi.panTo({ x: c.x, y: c.y, scale: ground?.scale }, { duration: fallMs, scene });
       restoreCamera = async () => {
         try {
@@ -662,8 +805,10 @@ async function runDescent({ sceneId, tokenId, src, flipX = false, style = "flame
     } catch (e) {
       warn("[boss-entrance] camera ride failed — falling without it", e);
       try { releaseCamera?.(); } catch {}
+      try { dim?.destroy(); } catch {}
       releaseCamera = null;
       restoreCamera = null;
+      dim = null;
     }
   }
 
@@ -731,6 +876,15 @@ async function runDescent({ sceneId, tokenId, src, flipX = false, style = "flame
   const fxBasis = cfg.fxBasisMaxFrac
     ? Math.min(impactFootprint, (window.innerHeight || 1080) * cfg.fxBasisMaxFrac)
     : impactFootprint;
+
+  // The lights come back up WITH the burst — the same beat that strips her
+  // silhouette lifts the dim off the scene, so the reveal is one event and not
+  // two. Fire-and-forget: the entrance must not wait on a cosmetic fade.
+  if (dim) {
+    const lift = cfg.prelude?.dimLiftMs ?? 600;
+    dim.fadeTo(0, lift).then(() => dim.destroy()).catch(() => { try { dim.destroy(); } catch {} });
+    setTimeout(() => { try { dim.destroy(); } catch {} }, lift + 400);
+  }
 
   try { spawnBurst(cfg, target, fxBasis); } catch (e) { warn("[boss-entrance] burst threw", e); }
   try { spawnShards(cfg, target, fxBasis); } catch (e) { warn("[boss-entrance] shards threw", e); }

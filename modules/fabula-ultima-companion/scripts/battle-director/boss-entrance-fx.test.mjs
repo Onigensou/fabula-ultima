@@ -135,6 +135,7 @@ ok("flame still a single plummet, not wing-beats", !flame.beats);
 ok("flame has no roar",                            !flame.roar);
 ok("flame has no idle float",                      !flame.floatAmpFrac);
 ok("flame has no wingbeat sfx",                    !flame.wingSfx);
+ok("flame has no prelude",                         !flame.prelude);
 
 // Every style must be renderable: the fields runDescent reads unconditionally.
 // A style describes its descent EITHER as a single eased plummet (fallMs+ease)
@@ -189,6 +190,19 @@ for (const [name, cfg] of Object.entries(DESCENT_STYLES)) {
     ok(`${name}: wing sfx has a url`, typeof cfg.wingSfx.url === "string" && cfg.wingSfx.url.startsWith("http"));
     // Wingbeats are only meaningful on a beat-driven descent.
     ok(`${name}: wing sfx needs beats`, Array.isArray(cfg.beats) && cfg.beats.length > 0);
+  }
+  if (cfg.prelude) {
+    const P = cfg.prelude;
+    // A prelude that tilts the camera needs a camera to tilt.
+    ok(`${name}: prelude pan needs a camera`, !P.panUpMs || !!cfg.camera);
+    // A dim that never lifts would leave the scene dark for the whole fight.
+    ok(`${name}: dim lifts`, !(P.dimTo > 0) || (P.dimLiftMs ?? 0) > 0);
+    ok(`${name}: dim is partial`, !(P.dimTo > 0) || P.dimTo < 1);
+    // The stillness is load-bearing: it is what makes the shot feel safe
+    // before it isn't. A zero here quietly removes the whole effect.
+    ok(`${name}: has a stillness beat`, (P.stillnessMs ?? 0) > 0);
+    // Tilting up before the dark has landed throws away the reveal.
+    ok(`${name}: pans up slowly, never cuts`, !cfg.camera || (P.panUpMs ?? 0) > 0);
   }
   if (cfg.camera) {
     // A zero/absent return glide means the camera CUTS back to battle framing,
