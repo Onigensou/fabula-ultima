@@ -136,6 +136,7 @@ ok("flame has no roar",                            !flame.roar);
 ok("flame has no idle float",                      !flame.floatAmpFrac);
 ok("flame has no wingbeat sfx",                    !flame.wingSfx);
 ok("flame has no prelude",                         !flame.prelude);
+ok("flame has no heralds",                         !flame.heralds);
 
 // Every style must be renderable: the fields runDescent reads unconditionally.
 // A style describes its descent EITHER as a single eased plummet (fallMs+ease)
@@ -203,17 +204,31 @@ for (const [name, cfg] of Object.entries(DESCENT_STYLES)) {
     ok(`${name}: has a stillness beat`, (P.stillnessMs ?? 0) > 0);
     // Tilting up before the dark has landed throws away the reveal.
     ok(`${name}: pans up slowly, never cuts`, !cfg.camera || (P.panUpMs ?? 0) > 0);
-    if (P.heralds) {
-      const h = P.heralds;
-      ok(`${name}: heralds have a url`, typeof h.url === "string" && h.url.length > 0);
-      ok(`${name}: herald count > 0`,   Number.isInteger(h.count) && h.count > 0);
-      ok(`${name}: herald scale > 0`,   Number.isFinite(h.scale) && h.scale > 0);
-      // A single gap value, or lo >= hi, makes the storm a metronome.
-      ok(`${name}: herald gap is a range`,
-         Array.isArray(h.gapMs) && h.gapMs.length === 2 && h.gapMs[0] < h.gapMs[1]);
-      // Vertical placement band must be a real band inside the viewport.
-      ok(`${name}: herald y band valid`,
-         h.yFrom >= 0 && h.yTo <= 1 && h.yFrom < h.yTo);
+    // Heralds moved out of the prelude and onto the style root — they play
+    // WITH the descent now. A stale prelude.heralds would silently do nothing.
+    ok(`${name}: no stale prelude heralds`, !P.heralds);
+  }
+  if (cfg.heralds) {
+    const h = cfg.heralds;
+    ok(`${name}: heralds have a url`, typeof h.url === "string" && h.url.length > 0);
+    ok(`${name}: herald count > 0`,   Number.isInteger(h.count) && h.count > 0);
+    ok(`${name}: herald scale > 0`,   Number.isFinite(h.scale) && h.scale > 0);
+    // A single gap value, or lo >= hi, makes the storm a metronome.
+    ok(`${name}: herald gap is a range`,
+       Array.isArray(h.gapMs) && h.gapMs.length === 2 && h.gapMs[0] < h.gapMs[1]);
+    // Vertical placement band must be a real band inside the viewport.
+    ok(`${name}: herald y band valid`,
+       h.yFrom >= 0 && h.yTo <= 1 && h.yFrom < h.yTo);
+    // The whole point of moving them is that they overlay the DESCENT, and the
+    // gaps are RANDOM — so the bound that matters is the SLOWEST possible run.
+    // If that overruns the fall, the cancel at touchdown eats the last strike
+    // on an unlucky roll, and the entrance quietly differs run to run with
+    // nothing in the logs to explain it. Checking only the fastest run would
+    // have passed the 700-1150ms config that did exactly that.
+    if (Array.isArray(cfg.beats)) {
+      const fallMs = cfg.beats.reduce((a, b) => a + b.dropMs + (b.reboundMs || 0) + (b.holdMs || 0), 0);
+      const slowest = (h.count - 1) * h.gapMs[1];
+      ok(`${name}: even the slowest herald run fits the descent`, slowest < fallMs);
     }
   }
   if (cfg.camera) {

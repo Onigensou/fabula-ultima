@@ -116,6 +116,22 @@ export const DESCENT_STYLES = {
     // One downdraft per wing-beat, on the frame the wing catches her. Each is
     // pitched slightly higher than the last so three in a row do not loop.
     wingSfx: { url: WING_SFX, volume: 0.5, rate: 0.92, rateStep: 0.06 },
+    // Her heralds, striking around the party WHILE she descends rather than
+    // before it, so the storm and the arrival are one event. The gap range is
+    // sized against the descent (4120ms) so that even the SLOWEST random run
+    // finishes before touchdown: five strikes at 620-980ms apart span 2.5-3.9s.
+    // Letting the upper bound overrun would silently drop the last strike on an
+    // unlucky roll, giving four some runs and five others with nothing in the
+    // logs to explain it.
+    heralds: {
+      url: LIGHTNING_WEBM,
+      count: 5,
+      scale: 2.5,          // x the asset's 800px frame, as in Sequencer
+      gapMs: [620, 980],   // storm cadence, not a metronome
+      yFrom: 0.42, yTo: 0.78,
+      sfxUrl: THUNDER_SFX,
+      sfxVolume: 0.8,
+    },
     rotateFromDeg: -3,
     rotateToDeg: 2,
     fallerClass: "fud-be-faller fud-be-faller--shadow",
@@ -174,18 +190,6 @@ export const DESCENT_STYLES = {
       dimColor: 0x05000f,   // a violet-black rather than a flat grey
       dimFadeMs: 1100,
       holdAfterDimMs: 500,  // let the dark sit before anything moves
-      // Her heralds: lightning striking around the party over the dimmed
-      // battlefield, each with its own position, mirroring and thunder.
-      heralds: {
-        url: LIGHTNING_WEBM,
-        count: 4,
-        scale: 2.5,           // x the asset's 800px frame, as in Sequencer
-        gapMs: [380, 820],    // storm cadence, not a metronome
-        yFrom: 0.42, yTo: 0.78,
-        sfxUrl: THUNDER_SFX,
-        sfxVolume: 0.8,
-        tailMs: 450,          // let the last one breathe before the camera moves
-      },
       panUpMs: 1800,        // slow tilt to the empty sky
       holdAtTopMs: 550,     // the beat right before she drops into frame
       dimLiftMs: 700,       // lights come back with the impact burst
@@ -332,9 +336,13 @@ function playHeraldStrike(h) {
   setTimeout(drop, h.maxLifeMs ?? 3000);
 }
 
-async function playHeralds(h) {
+// Fire `count` strikes with a randomised gap. `isCancelled` is polled between
+// strikes so a descent that ends early (or throws) does not keep flashing
+// lightning over a scene the shot has already left.
+async function playHeralds(h, isCancelled = () => false) {
   if (!h || !(h.count > 0)) return;
   for (let i = 0; i < h.count; i++) {
+    if (isCancelled()) return;
     playHeraldStrike(h);
     if (i < h.count - 1) {
       const [lo, hi] = h.gapMs ?? [380, 820];
@@ -873,10 +881,6 @@ async function runDescent({ sceneId, tokenId, src, flipX = false, style = "flame
           await dim.fadeTo(P.dimTo, P.dimFadeMs ?? 900);
         }
         if (P.holdAfterDimMs) await wait(P.holdAfterDimMs);
-        // Her heralds. They strike over the dimmed battlefield, BEFORE the
-        // camera looks up — the party sees the storm arrive around them, and
-        // only then follows it skyward.
-        if (P.heralds) await playHeralds(P.heralds);
         // Tilt up SLOWLY rather than cutting — the old panSnap put the camera
         // on the sky in a single frame, which read as a glitch right before the
         // shot proper.
@@ -928,6 +932,15 @@ async function runDescent({ sceneId, tokenId, src, flipX = false, style = "flame
     });
   }
 
+  // Her heralds, striking WHILE she comes down rather than before it — the
+  // storm and the descent are one event. Deliberately not awaited: the gaps are
+  // sized to spread across the descent, and the fall must not wait on them.
+  let heraldsDone = false;
+  if (cfg.heralds) {
+    playHeralds(cfg.heralds, () => heraldsDone)
+      .catch((e) => warn("[boss-entrance] heralds threw", e));
+  }
+
   // rAF fall with per-frame re-projection (see the header note).
   await new Promise((res) => {
     const t0 = performance.now();
@@ -958,8 +971,10 @@ async function runDescent({ sceneId, tokenId, src, flipX = false, style = "flame
     requestAnimationFrame(step);
   });
 
-  // Any wingbeat still queued would now play after she is already down.
+  // Any wingbeat still queued would now play after she is already down, and a
+  // herald landing after touchdown belongs to a shot that is already over.
   for (const t of wingTimers) { try { clearTimeout(t); } catch {} }
+  heraldsDone = true;
 
   const target = impactPoint();
   setPose(target.x, target.y, cfg.rotateToDeg); // settle exactly, no residual bob
