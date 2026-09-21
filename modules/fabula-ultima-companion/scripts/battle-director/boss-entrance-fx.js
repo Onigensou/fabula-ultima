@@ -130,7 +130,10 @@ export const DESCENT_STYLES = {
       gapMs: [620, 980],   // storm cadence, not a metronome
       yFrom: 0.42, yTo: 0.78,
       sfxUrl: THUNDER_SFX,
-      sfxVolume: 0.8,
+      // Under the wingbeats and well under the roar — the storm is atmosphere
+      // here, not the event. Five of these fire during the descent, so they
+      // add up faster than a one-shot cue does.
+      sfxVolume: 0.5,
     },
     rotateFromDeg: -3,
     rotateToDeg: 2,
