@@ -113,7 +113,29 @@ export function buildOni(ctx, env) {
     spr.scale.x = Math.abs(spr.scale.x) * (Math.sign(mesh.scale?.x || 1) || 1);
     (parent ?? canvas.stage).addChild(spr);
     track(() => { try { spr.destroy(); } catch {} });
+    // Ground shadow for the clone (sprite-shadow-renderer.js). Purely additive:
+    // no-op unless the actor's `spriteShadow` flag is on; the shadow follows the
+    // clone every frame with ground = clone.y + clone.lift (default 0, i.e. it
+    // rides with the clone like a painted shadow would). A jumping script sets
+    // `clone.lift` — or uses oni.jump() — and draws the body at groundY - lift.
+    spr.lift = 0;
+    try { globalThis.FUCompanion?.api?.spriteShadow?.attachClone?.(spr, token, { track }); } catch {}
     return spr;
+  }
+
+  // Arc a clone into the air and back (optionally travelling to `to`), driving
+  // `clone.lift` so its ground shadow stays on the floor and shrinks with height.
+  async function jump(clone, { height = 60, duration = 500, ease = EASE.inOutQuad, to = null, onUpdate = null } = {}) {
+    if (!clone) return;
+    const x0 = clone.x, y0 = clone.y, x1 = to?.x ?? x0, y1 = to?.y ?? y0;
+    await tween({ from: 0, to: 1, duration, ease, onUpdate: (v) => {
+      const lift = Math.sin(v * Math.PI) * height;
+      clone.lift = lift;
+      clone.position.set(x0 + (x1 - x0) * v, y0 + (y1 - y0) * v - lift);
+      onUpdate?.(v, lift);
+    } });
+    clone.lift = 0;
+    clone.position.set(x1, y1);
   }
 
   // Hide a token robustly (renderable=false re-asserted each tick; a cull pass
@@ -763,7 +785,7 @@ export function buildOni(ctx, env) {
     // space + layers
     screen, screenLive, layer,
     // tokens
-    cloneToken, hideToken,
+    cloneToken, hideToken, jump,
     // textures / media
     gradientTexture, radialTexture, webmSprite, webm,
     // full-screen fx (PIXI helpers are WORLD space; dom* are camera-proof)
