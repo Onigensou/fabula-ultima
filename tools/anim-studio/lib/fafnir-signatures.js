@@ -280,7 +280,7 @@ function heavyClaw(opts = {}) {
     "try { if (clone) clone.destroy(); } catch (e) {}",
   ].join("\n");
 
-  return shell({ key: opts.key, name: opts.name, cfg, inner: inner(body), timeout: cfg.totalTimeoutMs });
+  return shell({ key: opts.key, name: opts.name, cfg, assets: opts.assets || {}, inner: inner(body), timeout: cfg.totalTimeoutMs });
 }
 
 /* ── Storm Calm ──────────────────────────────────────────────────────────── */
@@ -343,7 +343,7 @@ function stormCalm(opts = {}) {
     "]);",
   ].join("\n");
 
-  return shell({ key: opts.key, name: opts.name, cfg, inner: inner(body), timeout: cfg.totalTimeoutMs });
+  return shell({ key: opts.key, name: opts.name, cfg, assets: opts.assets || {}, inner: inner(body), timeout: cfg.totalTimeoutMs });
 }
 
 /* ── Condemn ─────────────────────────────────────────────────────────────── */
@@ -592,7 +592,7 @@ function condemn(opts = {}) {
     "restoreBystanders();",
   ].join("\n");
 
-  return shell({ key: opts.key, name: opts.name, cfg, inner: inner(body), timeout: cfg.totalTimeoutMs });
+  return shell({ key: opts.key, name: opts.name, cfg, assets: opts.assets || {}, inner: inner(body), timeout: cfg.totalTimeoutMs });
 }
 
 /* ── Torment ─────────────────────────────────────────────────────────────── */
@@ -693,7 +693,7 @@ function torment(opts = {}) {
     "]);",
   ].join("\n");
 
-  return shell({ key: opts.key, name: opts.name, cfg, inner: inner(body), timeout: cfg.totalTimeoutMs });
+  return shell({ key: opts.key, name: opts.name, cfg, assets: opts.assets || {}, inner: inner(body), timeout: cfg.totalTimeoutMs });
 }
 
 /* ── Searing Brand ───────────────────────────────────────────────────────── */
@@ -732,8 +732,10 @@ function searingBrand(opts = {}) {
     "await oni.camera.focus({ point: t, zoom: cfg.camZoom, duration: cfg.camInMs });",
     "playSfx('sfxCast', 'sfxCastVol');",
     "",
-    "// A downward chevron, matching the placeholder the persistent badge draws,",
-    "// so the thing that lands and the thing that stays are the same sign.",
+    "// The authored sigil, matching what the persistent badge shows, so the",
+    "// mark that LANDS and the mark that STAYS are the same sign. If the art",
+    "// fails to load the drawn chevron takes over — the same fallback the badge",
+    "// uses — because losing the asset must not cost the whole shot.",
     "const mark = new PIXI.Container();",
     "const R = S.wLen(cfg.markSize) * 0.5;",
     "function chev(color, w, alpha) {",
@@ -745,7 +747,23 @@ function searingBrand(opts = {}) {
     "  g.blendMode = PIXI.BLEND_MODES.ADD;",
     "  return g;",
     "}",
-    "mark.addChild(chev(cfg.color, S.wLen(26), 0.95), chev(cfg.coreColor, S.wLen(10), 1));",
+    "// Sized by HEIGHT and given its own aspect, so a non-square sigil is not",
+    "// squashed into the square the chevron happened to occupy.",
+    "let markH = S.wLen(cfg.markSize);",
+    "let sigil = null;",
+    "if (A.markIcon) {",
+    "  try {",
+    "    const tex = await loadTexture(A.markIcon);",
+    "    if (tex && tex.width && tex.height) {",
+    "      sigil = new PIXI.Sprite(tex);",
+    "      sigil.anchor.set(0.5);",
+    "      sigil.height = markH;",
+    "      sigil.width = markH * (tex.width / tex.height);",
+    "      mark.addChild(sigil);",
+    "    }",
+    "  } catch (e) { sigil = null; }",
+    "}",
+    "if (!sigil) mark.addChild(chev(cfg.color, S.wLen(26), 0.95), chev(cfg.coreColor, S.wLen(10), 1));",
     "",
     "// It hangs OVER the victim, not on them — the badge that persists after",
     "// this sits overhead too, so the two agree.",
@@ -754,7 +772,9 @@ function searingBrand(opts = {}) {
     "",
     "// Opens larger than the frame and closes onto them. The scale is derived",
     "// from the viewport so it fills the screen at any zoom.",
-    "const bigScale = S.hPx(cfg.startScreenFrac) / Math.max(1, S.wLen(cfg.markSize));",
+    "// Opening size is derived from the mark's real height, so the sigil and",
+    "// the fallback chevron both start at the same fraction of the viewport.",
+    "const bigScale = S.hPx(cfg.startScreenFrac) / Math.max(1, markH);",
     "mark.position.set(seat.x, seat.y);",
     "mark.scale.set(bigScale);",
     "mark.alpha = 0;",
@@ -804,7 +824,7 @@ function searingBrand(opts = {}) {
     "await oni.camera.restore({ duration: cfg.camOutMs });",
   ].join("\n");
 
-  return shell({ key: opts.key, name: opts.name, cfg, inner: inner(body), timeout: cfg.totalTimeoutMs });
+  return shell({ key: opts.key, name: opts.name, cfg, assets: opts.assets || {}, inner: inner(body), timeout: cfg.totalTimeoutMs });
 }
 
 /* ── Draconic Domination ─────────────────────────────────────────────────── */
@@ -931,7 +951,7 @@ function draconicDomination(opts = {}) {
     "await dim.fadeOut({ duration: cfg.closeMs });",
   ].join("\n");
 
-  return shell({ key: opts.key, name: opts.name, cfg, inner: inner(body), timeout: cfg.totalTimeoutMs });
+  return shell({ key: opts.key, name: opts.name, cfg, assets: opts.assets || {}, inner: inner(body), timeout: cfg.totalTimeoutMs });
 }
 
 /* ── Zero Power · Cruel Ultimatum ────────────────────────────────────────── */
@@ -1037,7 +1057,7 @@ function cruelUltimatum(opts = {}) {
     "]);",
   ].join("\n");
 
-  return shell({ key: opts.key, name: opts.name, cfg, inner: inner(body), timeout: cfg.totalTimeoutMs });
+  return shell({ key: opts.key, name: opts.name, cfg, assets: opts.assets || {}, inner: inner(body), timeout: cfg.totalTimeoutMs });
 }
 
 module.exports = {

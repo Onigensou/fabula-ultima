@@ -124,9 +124,13 @@ for (const [key, spec] of Object.entries(MARK_STYLES)) {
   }
 }
 
-// Searing Brand ships as a placeholder until its art is drawn. When the asset
-// lands this flips to a URL and this assertion is the reminder to delete it.
-eq("searing_brand still on the placeholder chevron", MARK_STYLES.searing_brand.icon, null);
+// The placeholder reminder that used to live here has done its job: the
+// authored sigil landed, so this now pins the opposite — that the art is
+// wired and nothing has quietly reverted the style to the chevron.
+ok("searing_brand uses the authored sigil, not the chevron",
+   typeof MARK_STYLES.searing_brand.icon === "string"
+   && /^https?:\/\//.test(MARK_STYLES.searing_brand.icon)
+   && /vfx_SearingBrand\.png$/i.test(MARK_STYLES.searing_brand.icon));
 
 console.log(`${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

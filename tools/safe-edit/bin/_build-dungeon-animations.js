@@ -162,6 +162,9 @@ const ART = {
   manaRay:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Mana%20Ray_Standard.png",
   flameDrake:     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/FlameDrake_Srandard.png",
   lightningDrake: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/LightningDrake_Standard.png",
+  // Authored by the user for Searing Brand; the persistent badge in
+  // brand-mark.js shows the SAME file, so the two must not drift.
+  searingBrandSigil: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/VFX/vfx_SearingBrand.png",
 };
 
 /* ── Verbatim reuse ──────────────────────────────────────────────────────── */
@@ -745,6 +748,7 @@ const REGISTRY = {
 
       "Searing Brand": () => FF.searingBrand({
         key: "fafnir-searing-brand", name: "Searing Brand",
+        assets: { markIcon: ART.searingBrandSigil },
         // Red to match the placeholder chevron the persistent badge draws, so
         // the mark that lands and the mark that stays are the same sign.
         cfg: { color: 0xff3b30,

@@ -55,11 +55,12 @@ const MARK_FLAG = "markIcon";
  */
 export const MARK_STYLES = {
   searing_brand: {
-    // PLACEHOLDER — red chevron until the Searing Brand asset is drawn. Swap
-    // `icon` to the URL and the chevron drops out automatically.
-    icon: null,
+    // The authored sigil. `color` / `glow` still matter: the glow tints the
+    // drop-shadow under the art, and `color` is what the built-in chevron
+    // falls back to if this URL ever stops resolving.
+    icon: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/VFX/vfx_SearingBrand.png",
     color: "#ff3b30",
-    glow: "rgba(255,59,48,0.55)",
+    glow: "rgba(255,120,40,0.60)",
     label: "Searing Brand",
     matchName: /^\s*searing\s+brand\s*$/i,
   },
@@ -115,6 +116,12 @@ function ensureStyles() {
    becomes noise. */
 .fud-brand-mark .mark-art {
   width: 100%; height: 100%;
+  /* The badge box is square but an authored sigil need not be. object-fit
+     contain fits the art inside it at its own aspect instead of stretching
+     it; no effect on the drawn-chevron fallback, which is built square.
+     NOTE: no backticks in this stylesheet — it is a template literal and one
+     would close it early. */
+  object-fit: contain;
   filter: drop-shadow(0 0 8px var(--mark-glow)) drop-shadow(0 0 18px var(--mark-glow));
   animation: fud-mark-breathe 2.6s ease-in-out infinite;
 }
