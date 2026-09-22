@@ -44,6 +44,10 @@ const ADJUST_CHARGES_VIS = `equalText(sameRow("effect_kind",''), "adjust_charges
 const TRIGGER_STATUS_VIS = `equalText(sameRow("effect_kind",''), "trigger_status")`;
 // free_action — perform ONE free turn-action (skill name / "self" / type).
 const FREE_ACTION_VIS = `equalText(sameRow("effect_kind",''), "free_action")`;
+// action_ref is shared by free_action (what to perform) and play_animation (whose
+// animation_script to play). Widened 2026-09-21 — a WIDER gate can never hide
+// authored data, so reconcileVis is safe on the existing column.
+const ACTION_REF_VIS = `or(equalText(sameRow("effect_kind",''), "free_action"), equalText(sameRow("effect_kind",''), "play_animation"))`;
 // remove_ae is the canonical AE-deletion kind; remove_tagged_ae is its alias.
 const REMOVE_AE_VIS = `or(equalText(sameRow("effect_kind",''), "remove_ae"), equalText(sameRow("effect_kind",''), "remove_tagged_ae"))`;
 // prompt_number — interactive amount picker (Blazing Tether's Burn-stack move).
@@ -476,7 +480,7 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // an action TYPE / comma-list ("Attack" / "Attack,Hinder" → compose filtered,
   // like the legacy free_mode). target_ref (a general column) optionally LOCKS the
   // targets (Counterattack → the attacker); blank → picked at TARGET by role.
-  textCol("action_ref", "Free Action Ref", { tooltip: 'free_action: what to perform — "self" (re-cast the carrier skill), a skill/item NAME on the actor, or an action TYPE / comma-list ("Attack" / "Attack,Hinder"). A single specific action skips the menu and auto-performs.', vis: FREE_ACTION_VIS }),
+  textCol("action_ref", "Free Action Ref", { tooltip: 'free_action: what to perform — "self" (re-cast the carrier skill), a skill/item NAME on the actor, or an action TYPE / comma-list ("Attack" / "Attack,Hinder"). A single specific action skips the menu and auto-performs. play_animation: the skill whose animation_script to play — a NAME on the reactor or an Item UUID.', vis: ACTION_REF_VIS, reconcileVis: true }),
   checkboxCol("chain", "Chain Strike", { tooltip: "free_action: mark this as a CHAIN strike (not a Free Attack) — it bypasses preventFreeAttack, so a 'no Free Attacks' debuff can't stop a Chain N attack. Used by Centimare Scythe (Chain 2).", vis: FREE_ACTION_VIS }),
   // Bonus/cost fields shared with the open_action_menu free_mode grant (register
   // them so the column self-heals where missing; free_action reuses the same

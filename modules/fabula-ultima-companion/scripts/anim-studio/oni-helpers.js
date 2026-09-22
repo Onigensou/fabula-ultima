@@ -109,6 +109,11 @@ export function buildOni(ctx, env) {
     spr.height = mesh.height;
     spr.position.set(token.center.x, token.center.y);
     spr.angle = mesh.angle ?? 0;
+    // Carry the body colour: an AE-driven tint (token-tint.js) lives on the
+    // rendered mesh — multiply mode as mesh.tint, recolor mode as a filter —
+    // and the real token is hidden behind this clone.
+    try { spr.tint = mesh.tint ?? 0xFFFFFF; } catch {}
+    try { if (mesh.filters?.length) spr.filters = [...mesh.filters]; } catch {}
     // Flip = sign of the rendered mesh scale (Mirror-H + facing), NOT doc.texture.
     spr.scale.x = Math.abs(spr.scale.x) * (Math.sign(mesh.scale?.x || 1) || 1);
     (parent ?? canvas.stage).addChild(spr);
@@ -277,7 +282,12 @@ export function buildOni(ctx, env) {
   // shot that triggered them — a wind bed still blowing after the dragon has
   // finished breathing reads as a bug, not atmosphere. Fading beats picking a
   // different sound: the attack of the sample is usually the part you wanted.
-  function sfx(nameOrUrl, { volume = 1, rate = 1, delay = 0, fadeAfter = 0, fadeMs = 400 } = {}) {
+  // `offset` (seconds) starts the sample partway in — for a cue with a slow
+  // intro that must sound NOW (Beginspell reaches half loudness only at 0.74 s;
+  // under a 0.9 s charge you would hear its fade-in and nothing else). Setting
+  // currentTime before the media loads is the spec'd "default playback start
+  // position", so no metadata wait is needed.
+  function sfx(nameOrUrl, { volume = 1, rate = 1, delay = 0, fadeAfter = 0, fadeMs = 400, offset = 0 } = {}) {
     const url = sfxUrl(nameOrUrl);
     if (!url) { console.warn("[oni] sfx not found:", nameOrUrl); return null; }
     const play = () => {
@@ -285,6 +295,7 @@ export function buildOni(ctx, env) {
         const a = new Audio(url);
         a.volume = Math.max(0, Math.min(1, volume));
         a.playbackRate = rate;
+        if (offset > 0) { try { a.currentTime = offset; } catch {} }
         a.play().catch(() => {});
         if (fadeAfter > 0) {
           const t0 = setTimeout(() => {

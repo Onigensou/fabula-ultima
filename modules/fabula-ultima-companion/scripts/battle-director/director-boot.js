@@ -64,6 +64,7 @@ import { initNpcHpBar, emitNpcHpBar, emitNpcHpBarUnchecked, renderNpcHpBarLocal 
 import { initDominationFx } from "./domination.js";
 import { initDominationCrest } from "./domination-crest.js";
 import { initAspectAura } from "./aspect-aura.js";
+import { initTokenTint } from "./token-tint.js";
 import { initBrandMark } from "./brand-mark.js";
 import { initCameraAuthority } from "./camera-authority.js";
 import { initLightningRodCursor } from "../conflict-event/lightning-rod-cursor.js";
@@ -1649,6 +1650,10 @@ Hooks.once("ready", () => {
   // Elemental Aspect Aura — same AE-replication pattern as the crest above.
   try { initAspectAura(); }
   catch (e) { warn("initAspectAura on ready threw", e); }
+
+  // AE-driven token body tint (flags.<ns>.tokenTint) — same pattern again.
+  try { initTokenTint(); }
+  catch (e) { warn("initTokenTint on ready threw", e); }
 
   // Brand Mark badges — same AE-replication pattern again. Keyed off the mark
   // AE itself, so a mark that is passed to an ally takes its badge along.
