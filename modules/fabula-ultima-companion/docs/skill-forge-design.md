@@ -39,6 +39,33 @@ one, which is why every stage below is ordered behind making failure loud.
 
 ---
 
+## Status — all six stages have code + tests (2026-09-22)
+
+| stage | module | suite | live-verified |
+|---|---|---|---|
+| 0 validator | `lint/skill-validator.js` + `-bridge.js` | 94 + 24 | ✗ |
+| 1 graph editor | `skill-forge/graph-model.js` | 22 | ✗ |
+| 2 patterns | `skill-forge/patterns.js` | 105 | ✗ |
+| 3 conditions | `skill-forge/condition-builder.js` | 33 | ✗ |
+| 4 test button | `skill-forge/test-runner.js` | 38 | ✗ |
+| 5 publish | `skill-forge/publish.js` | 25 | ✗ |
+| UI | `skill-forge/skill-forge-app.js` | — | ✗ |
+
+341 assertions, all green. **Nothing has been exercised in a running Foundry.**
+Both new esmodules are proven to *import* with the globals stubbed, so the
+module will load — but no panel has been clicked, no skill created, no test
+run. That is the outstanding work, and it is the kind of gap that hid for a
+whole session last time: Stage 0 was declared complete while `module.json`
+referenced the validator zero times.
+
+Headline results worth keeping:
+- **Graph round-trip**: 930 docs · 3323 rows · 1860 tables byte-identical. It
+  failed first time on KEY ORDER, which is harmless to CSB but churns the
+  export that world pushes are reviewed through.
+- **Condition builder**: 571 of 778 authored gates representable (73%), 207
+  declined to raw text, **0 altered**.
+- **Patterns**: all 15 expand with zero validator findings.
+
 ## Stages
 
 | stage | what | days | game |
