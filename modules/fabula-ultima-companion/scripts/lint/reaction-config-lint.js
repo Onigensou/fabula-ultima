@@ -1803,5 +1803,29 @@
   globalThis.FUCompanion.api.lint.runTemplateEngineEnums = runTemplateEngineEnums;
   globalThis.FUCompanion.api.lint.runSpecVsLiveDrift = runSpecVsLiveDrift;
 
+  // ── Per-document entry ────────────────────────────────────────────────────
+  // `runReactionLint` sweeps the WORLD; an authoring UI needs to ask the same
+  // questions about ONE document it is holding, without walking 2374 others.
+  // `lintItem` already does exactly that — it was simply closure-private.
+  //
+  // Exposing it (rather than refactoring the IIFE into a module) keeps the
+  // 47 rule codes and their tuning untouched; the module-side twin,
+  // scripts/lint/skill-validator.js, adds the checks this sweep has no
+  // coverage for and is pure/Node-testable. Callers that want everything
+  // concatenate the two — both emit the same finding shape.
+  //
+  //   FUCompanion.api.lint.lintOneItem(item)  ->  [{severity, code, ...}]
+  globalThis.FUCompanion.api.lint.lintOneItem = (item, ownerLabel = "master") => {
+    try {
+      return lintItem(item, listTriggerKeys(), ownerLabel);
+    } catch (e) {
+      return [{
+        severity: "error", code: "LINT_THREW",
+        owner: ownerLabel, itemUuid: item?.uuid ?? null, itemName: item?.name ?? "(unnamed)",
+        message: `Lint threw: ${e?.message ?? e}`,
+      }];
+    }
+  };
+
   console.debug(`${TAG} Installed. Call FUCompanion.api.lint.runReactionLint() or runTemplateEngineEnums() to scan.`);
 })();

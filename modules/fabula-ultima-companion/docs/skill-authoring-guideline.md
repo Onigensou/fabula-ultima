@@ -392,18 +392,34 @@ inventing something. 590 configured skills, 416 reaction rows, 1808 effect rows.
   (`runDirectorSkillCompute` / `runDirectorSkillSimulate`). Don't launch a combat
   for what the harness can model. **But know the harness's three blind spots — each
   one reports a WORKING skill as dead, which is the expensive direction of wrong:**
-  - **Pre-resolve reactions must be explicitly accepted, and the arg name DIFFERS
-    per entry point.** `runDirectorAttackSimulate` takes **`acceptReactions`**;
-    `runDirectorSkillSimulate` takes **`prePassives`**. Same concept, two names —
-    passing the wrong one is silently ignored (no warning, no error), and the
-    `creature_will_deal_damage` row simply never dispatches, so damage comes back
-    identical whether the gate is true, false, or literally `1`. This cost a whole
-    debugging pass on the Dragonslayer Pendant. Value: `true` = accept every
-    candidate, or `["<carrierName>"]` to accept only some.
-  - **Read the result from `res.passes[0].actionResult`,** not `res.actionResult`
-    — the simulate returns per-pass results (two-weapon produces two) and there is
-    no top-level `actionResult`. Reading the wrong field yields `undefined`, which
-    looks exactly like "the reaction didn't fire".
+  - **Pre-resolve reactions must be explicitly accepted.** The arg is
+    **`acceptReactions`** for BOTH entry points — verified 2026-09-22 against
+    `_test-harness-director.js`: `runDirectorSkillSimulate` (:2375) reads
+    `args.acceptReactions` at :2436, `runDirectorAttackSimulate` (:2901) reads
+    it at :3005. Value: `true` = accept every candidate, or `["<carrierName>"]`
+    to accept only some. Without it the `creature_will_deal_damage` row never
+    dispatches and damage comes back identical whether the gate is true, false,
+    or literally `1` — the whole Dragonslayer Pendant debugging pass.
+
+    ⚠ **This bullet used to say `runDirectorSkillSimulate` takes `prePassives`.
+    It does not, and never does now** — `prePassives` appears nowhere in module
+    source, only in this doc and `rakshasa-design-proposal.md`. Anyone who
+    followed the old advice passed an argument that is silently ignored, i.e.
+    the doc warning about the trap WAS the trap. If you find a harness arg named
+    in a doc but absent from the harness, trust the source.
+  - **The result shape differs PER ENTRY POINT — and this bullet had it
+    backwards.** Verified 2026-09-22 against the source:
+    - `runDirectorSkillSimulate` returns a **top-level `res.actionResult`**
+      (`_test-harness-director.js:2518`) and has **no `passes`**.
+    - `runDirectorAttackSimulate` returns **`res.passes[]`** (:3122, two-weapon
+      produces two) and has **no top-level `actionResult`**.
+
+    Reading the wrong field yields `undefined`, "which looks exactly like the
+    reaction didn't fire" — and until this correction the doc told skill authors
+    to read `res.passes[0].actionResult` from the one function that does not
+    have it. **Two of the three blind spots listed here were doc errors that
+    produced the exact false negative they warned about.** When a harness
+    contract matters, read the `return` statement, not this list.
   - **COMPUTE is thin for effect rows.** `deal_damage` / `grant` land in RESOLVE,
     so a COMPUTE-only run shows `damage: 0` for a skill that works. Use simulate
     for anything whose payload is an `effect_table` row.
