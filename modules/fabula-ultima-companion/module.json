@@ -464,7 +464,8 @@
     "scripts/stealth-system/sm-bgm.js",
     "scripts/stealth-system/sm-gm-button.js",
     "scripts/stealth-system/sm-boot.js",
-    "scripts/lint/skill-validator-bridge.js"
+    "scripts/lint/skill-validator-bridge.js",
+    "scripts/skill-forge/skill-forge-app.js"
   ],
   "styles": [
     "styles/style.css",
