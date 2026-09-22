@@ -269,6 +269,15 @@ export const RULES = {
       "template reload — the documented 112-key loss.",
     fix: "Declare the field on the template, or migrate the value onto a declared one.",
   },
+  PROP_UNDECLARED_UNREAD: {
+    severity: "warning",
+    title: "Top-level prop is undeclared, and nothing reads it",
+    why:
+      "reloadTemplate will delete it, but no engine source reads this key — so " +
+      "the deletion costs nothing that runs. Almost always an abandoned field " +
+      "left behind by a migration.",
+    fix: "Delete it deliberately, or declare it if it is meant to come back into use.",
+  },
   REQUIRED_FIELD_MISSING: {
     severity: "error",
     title: "Effect row is missing a field its handler refuses to run without",
@@ -485,7 +494,17 @@ const BOOKKEEPING_PROPS = new Set([
   "deleted", "$deleted", "name", "img", "id", "uuid", "uniqueId",
 ]);
 
-function rulePropsDeclared(doc, findings, declaredProps) {
+/**
+ * @param {Set|null} engineReadProps  prop names some engine file actually reads.
+ *
+ * Splitting on this is the difference between a list someone will work through
+ * and a list they will skim. Both classes are "reloadTemplate deletes this", but
+ * only one of them loses something the game runs — and the 120-finding corpus
+ * list mixes a prop the domination handler reads with fields abandoned by old
+ * migrations. When the set is absent every finding stays PROP_UNDECLARED, the
+ * conservative reading; nothing is silently downgraded on missing input.
+ */
+function rulePropsDeclared(doc, findings, declaredProps, engineReadProps) {
   const props = doc?.system?.props ?? {};
   for (const key of Object.keys(props)) {
     if (BOOKKEEPING_PROPS.has(key)) continue;
@@ -495,10 +514,15 @@ function rulePropsDeclared(doc, findings, declaredProps) {
     // Filtering blanks is also what makes this number comparable with
     // tools/csb-template's visibility-audit, which counts authored cells.
     if (isBlank(props[key])) continue;
-    push(findings, "PROP_UNDECLARED", `system.props.${key}`,
-      `"${key}" is authored but the template declares no field for it — ` +
-      `reloadTemplate will delete it.`,
-      { field: key });
+    const read = !engineReadProps || engineReadProps.has(key);
+    push(findings, read ? "PROP_UNDECLARED" : "PROP_UNDECLARED_UNREAD",
+      `system.props.${key}`,
+      read
+        ? `"${key}" is read by engine code but the template declares no field ` +
+          `for it — reloadTemplate will delete it.`
+        : `"${key}" is authored but neither declared nor read by any engine ` +
+          `file — reloadTemplate will delete it, and nothing will notice.`,
+      { field: key, engineRead: read });
   }
 }
 
@@ -629,7 +653,7 @@ export function validateSkillDoc(doc, ctx = {}) {
   else skipped.push("ROW_COLUMN_UNDECLARED (no column set supplied)");
 
   if (ctx.declaredProps instanceof Set && ctx.declaredProps.size) {
-    rulePropsDeclared(doc, findings, ctx.declaredProps);
+    rulePropsDeclared(doc, findings, ctx.declaredProps, ctx.engineReadProps ?? null);
   } else {
     skipped.push("PROP_UNDECLARED (no declared-prop set supplied)");
   }

@@ -185,6 +185,22 @@ eq("flags an undeclared top-level prop",
 eq("does not flag declared props", codes(doc({ props: { cost: "10 MP" } })), []);
 eq("is an error (reloadTemplate deletes it)",
   only(doc({ props: { details_roller: "x" } }), "PROP_UNDECLARED")[0].severity, "error");
+// Severity splits on whether the ENGINE READS the key. Both classes are
+// "reloadTemplate deletes this"; only one loses something that runs.
+{
+  const ctxRead = { ...CTX, engineReadProps: new Set(["details_roller"]) };
+  eq("an engine-READ undeclared prop is an error",
+    codes(doc({ props: { details_roller: "x" } }), ctxRead), ["PROP_UNDECLARED"]);
+  eq("an UNREAD undeclared prop is only a warning",
+    codes(doc({ props: { abandoned_field: "x" } }), ctxRead), ["PROP_UNDECLARED_UNREAD"]);
+  eq("the unread message says nothing will notice",
+    /nothing will notice/.test(
+      only(doc({ props: { abandoned_field: "x" } }), "PROP_UNDECLARED_UNREAD", ctxRead)[0].message), true);
+  // No readership set supplied => everything stays an error. Nothing is
+  // downgraded on missing input; that would be the permissive direction.
+  eq("without the readership set, nothing is downgraded",
+    codes(doc({ props: { abandoned_field: "x" } })), ["PROP_UNDECLARED"]);
+}
 eq("does NOT flag an undeclared prop that is blank (deleting \"\" loses nothing)",
   codes(doc({ props: { details_roller: "" } })), []);
 eq("ignores CSB bookkeeping keys that every instance carries",

@@ -68,6 +68,24 @@ is the class that would have forced one. What it does find:
 
 ---
 
+## Applied to the world — 2026-09-22
+
+`SKILL_TARGET_BLANK` backfill, 15 skills / 28 documents (masters + actor copies
+together, or MASTER_COPY_FIELD_DRIFT trades one finding for another). Committed
+as `976f79a8`. Targets were read off each skill's RAW text and checked against
+the parser that consumes them. Verified safe-edit dry-run → apply → re-export →
+28/28, export diff exactly 28 lines all `skill_target`, `world-export report`
+0 added / 0 removed / 17 modified.
+
+Findings: **49 → 21**, skills **23 → 8**. The 8 remaining carry `"-"`, which the
+user asked to leave — 4 are `Generic … Template` docs whose value is inherited
+by newly authored skills, so they need a human call.
+
+⚠ Verification trap met on the way: `getDoc("Actor.X.Item.Y")` returns the
+ACTOR, and the raw actor record does not expose embedded items as a plain
+`items` array, so a hand-rolled read-back reported 15 false failures on writes
+that were fine. Use `world-export` as the oracle for embedded documents.
+
 ## Stage 0 — decisions
 
 ### D1. Extend the existing lint; do not write a second one
@@ -351,6 +369,29 @@ All four shipped together, each touching both tools so they cannot drift:
 Remaining known gap in both: `radioButton`'s `propertyKey` is its `_group`, not
 its `key`, so the walkers record the wrong key in both directions. No corpus
 hits; needs a read of the CSB component before either spelling is trusted.
+
+### D11. `PROP_UNDECLARED` splits on engine readership
+Both classes are "reloadTemplate deletes this", but only one loses something
+that runs, and a 120-finding list that mixes them is a list people skim.
+`ctx.engineReadProps` splits them: read → `PROP_UNDECLARED` (error), unread →
+`PROP_UNDECLARED_UNREAD` (warning). Absent set ⇒ everything stays an error;
+nothing is downgraded on missing input.
+
+Getting the scan right took three passes, and the middle one is the cautionary
+tale. Requiring the literal `props.<key>` marked `recipe_resource`,
+`recipe_amount`, `recipe_target` and `picker` as DEAD — the engine reads them
+through a local alias (`const p = …props; p.recipe_resource`,
+skill-recipes.js:84). **A false "nothing uses this" is the one error that
+destroys working content.** Matching `.key` on any receiver then marked all 30
+as read, which is equally useless. The kept form matches the receivers this
+codebase actually uses (`props`, `p`, `sp`, `pr`) plus the bracket form.
+
+**Result: 20 of 20 undeclared prop keys are engine-read.** `PROP_UNDECLARED_UNREAD`
+fires on nothing here — verified by spot-check (`menu_hidden` 6 source mentions,
+`skill_description` 3, `undying_zp_cost` 2, `has_roulette` 1). That is a finding
+in itself: every one of the 120 remaining prop findings is a real loss risk, not
+a mix of live and abandoned fields. It strengthens step 1 of the taxonomy
+proposal, since `action_command` is one of them.
 
 ## Harness contract corrections — DONE 2026-09-22
 
