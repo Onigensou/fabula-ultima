@@ -20303,9 +20303,13 @@
           {
             "id": "eYFMzrOX2InBxKzD",
             "name": "Faithful Companion"
+          },
+          {
+            "id": "5VtEaXjywcgfR9Yx",
+            "name": "Flying"
           }
         ],
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "wqfGUTRInZUS2MNY",
