@@ -211,6 +211,26 @@ inventing something. 590 configured skills, 416 reaction rows, 1808 effect rows.
   `ae_initial_charges: "VAR_MIG_DIE"` → the roll shows top-right, read later as
   `AE_CHARGES_SHADOW_STRIKE`.)*
 
+- **E7 — A targeting block that applies only SOMETIMES declares its exception as a
+  second change row, never as engine code.** The target-side block vocabulary is
+  `cannot_be_targeted_by: "melee|ranged|any"` (comma-list; the AE's NAME becomes the
+  picker's `🚫 <reason>` label). Its conditional form adds
+  `cannot_be_targeted_by_unless: "<formula>"`, evaluated against the **ATTACKER** at
+  gate time — so "cannot be reached by melee **unless** the attacker is airborne too"
+  is one authored row, not a new branch in `applyAttackRangeGate`.
+  - Identifiers: the full skill-formula vocabulary resolved against the attacker,
+    plus the injected `ATTACKER_IS_FLYING`, `CAN_REACH_FLYING`, `ATTACK_IS_MELEE`,
+    `ATTACK_IS_RANGED`. The `formulas` audit parses this key, so a typo is caught
+    offline — run it after authoring one.
+  - ⚠ **It fails CLOSED**, unlike every other gate formula. An unparseable formula
+    or an unknown identifier folds to 0, which RESTORES the block: the creature
+    stays untargetable and your exception silently never grants. That is deliberate
+    (a broken exception must not hand out reach), and it is why the audit matters
+    here more than elsewhere — a working row and a dead row look identical in play.
+  - The melee-vs-Flying rule uses this shape but is **synthesised by the engine**,
+    not authored: it is universal, so a Flying AE needs no boilerplate and cannot
+    forget it. Author the rows only for a NEW conditional-reach rule.
+
 ## F. Equipment / gear
 
 - **F1 — Gear (weapon / armor / shield / accessory) NEVER carries

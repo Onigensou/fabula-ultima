@@ -4190,7 +4190,7 @@ const Target = {
         const eligibleRaw = director.dCombat
           ? snapshotEligibleTargetsFromDCombat(director.dCombat, attacker, { category: "enemy" })
           : snapshotEligibleTargets(director.combat, attacker, { category: "enemy" });
-        const gate = applyAttackRangeGate(eligibleRaw, currentWeapon);
+        const gate = applyAttackRangeGate(eligibleRaw, currentWeapon, attackActorDoc);
         if (isMeleeAttack && eligibleRaw.length > 0 && gate.length === 0) {
           ui.notifications?.warn("All eligible enemies are Covered — switch to a ranged weapon or pick a different action.");
           director.ctx.pendingPasses = [];

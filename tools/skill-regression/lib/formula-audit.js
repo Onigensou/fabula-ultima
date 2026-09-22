@@ -39,6 +39,13 @@ const EXPORT_DIR = path.join(ROOT, "worlds", "fabula-ultima-2", "_authored-expor
 const TOP_LEVEL_FORMULA_PROPS = ["availability_formula", "target_eligibility"];
 // Row-level formula cells inside the dynamic tables.
 const ROW_FORMULA_PROPS = ["condition_formula", "target_filter", "focus_max_formula"];
+// Formulas that live in an ACTIVE EFFECT change row rather than in system.props.
+// `cannot_be_targeted_by_unless` is the exception clause on a target-side block
+// ("cannot be melee'd UNLESS the attacker is airborne too"). It is evaluated with
+// a fallback of 0, so an unknown identifier RESTORES the block — i.e. it fails
+// closed and silently refuses reach the author meant to grant, which is exactly
+// the indistinguishable-from-working failure this audit exists to surface.
+const AE_CHANGE_FORMULA_KEYS = ["cannot_be_targeted_by_unless"];
 
 // Identifiers the resolver serves through a PREFIX rather than a literal case.
 // Anything starting with one of these is resolvable by construction.
@@ -137,9 +144,19 @@ function* walkExport() {
 function collectFormulas() {
   const found = [];
   for (const { doc, owner } of walkExport()) {
+    const where = `${owner ? owner + " / " : ""}${doc.name}`;
+    // AE-change formulas first — they hang off `effects`, not `system.props`, so
+    // they must be collected before the `props` early-out below (an AE-only doc
+    // has no props to speak of).
+    for (const eff of (doc?.effects || [])) {
+      for (const ch of (eff?.changes || [])) {
+        if (!AE_CHANGE_FORMULA_KEYS.includes(ch?.key)) continue;
+        const v = String(ch.value ?? "").trim();
+        if (v) found.push({ where, field: `effect[${eff.name}].${ch.key}`, formula: v });
+      }
+    }
     const p = doc?.system?.props;
     if (!p) continue;
-    const where = `${owner ? owner + " / " : ""}${doc.name}`;
     for (const key of TOP_LEVEL_FORMULA_PROPS) {
       const v = p[key];
       if (v && String(v).trim()) found.push({ where, field: key, formula: String(v).trim() });

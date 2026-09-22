@@ -776,12 +776,23 @@ export function snapshotCombatant(combat) {
 // attacker's weapon range matches any block's `ranges` set.
 export function getTargetSideBlocks(actor) {
   const out = [];
-  const effects = actor?.effects?.contents ?? actor?.effects ?? [];
-  for (const ae of effects) {
-    if (ae?.disabled) continue;
+  for (const ae of enumerateLiveEffects(actor)) {
     const changes = ae?.changes ?? [];
     const ranges = new Set();
+    let bypass = "";
     for (const ch of changes) {
+      // `cannot_be_targeted_by_unless` — the block's EXCEPTION clause, evaluated
+      // against the ATTACKER at gate time (see applyAttackRangeGate). It is the
+      // one thing the block vocabulary could not previously express, and its
+      // absence is why the melee-vs-Flying rule had to be a bespoke engine branch
+      // instead of a block row: "cannot be melee'd" was sayable, "…unless the
+      // attacker is airborne too" was not. With it, the next conditional-reach
+      // rule (burrowed, submerged, ethereal, high ground) is pure authoring.
+      if (ch?.key === "cannot_be_targeted_by_unless") {
+        const f = String(ch.value ?? "").trim();
+        if (f) bypass = bypass ? `(${bypass}) || (${f})` : f;
+        continue;
+      }
       if (ch?.key !== "cannot_be_targeted_by") continue;
       const raw = String(ch.value ?? "").trim().toLowerCase();
       if (!raw) continue;
@@ -794,8 +805,23 @@ export function getTargetSideBlocks(actor) {
       out.push({
         aeName: String(ae.name ?? "").trim() || "Blocked",
         ranges,
+        bypass,
       });
     }
+  }
+  // The melee-vs-Flying rule, synthesised rather than authored. It is a UNIVERSAL
+  // rule — every Flying creature has it — so it stays engine-guaranteed: pushing it
+  // out to 29 authored carriers would mean one missed row = a flyer that can be
+  // melee'd, and every future Flying grant would have to remember the boilerplate.
+  // But it now travels the SAME path as an authored block (one loop, one reason
+  // string, one bypass evaluation) instead of a parallel `if`. That also keeps the
+  // bypass vocabulary exercised by a shipping rule — an unused seam is a fiction.
+  if (targetIsFlying(actor)) {
+    out.push({
+      aeName: "Flying",
+      ranges: new Set(["melee"]),
+      bypass: "ATTACKER_IS_FLYING || CAN_REACH_FLYING",
+    });
   }
   return out;
 }
@@ -818,9 +844,7 @@ export function getTargetSideBlocks(actor) {
 // acting creature, mirroring how getMustTargetReasons early-outs for the attacker.
 export function getTargetSideForcedInclude(actor) {
   const out = [];
-  const effects = actor?.effects?.contents ?? actor?.effects ?? [];
-  for (const ae of effects) {
-    if (ae?.disabled) continue;
+  for (const ae of enumerateLiveEffects(actor)) {
     // Source-equipped safety-net: an aura stamped with a source gear item
     // (flags[NS].sourceItemId) is only live while that item is equipped. Guards
     // against a stale aura left behind when the gear was unequipped OUT of combat,
@@ -846,6 +870,36 @@ export function getTargetSideForcedInclude(actor) {
     }
   }
   return out;
+}
+
+// ── Live-effect enumeration — ONE reader for every AE-change gate ────────────
+// `actor.effects` holds only actor-STAMPED AEs; an item-owned `transfer:true`
+// template lands in `actor.appliedEffects` instead (already filtered for
+// disabled/suppressed). Ten readers in this file walk an actor's effects looking
+// for one change key, and they had drifted into two camps: seven read
+// appliedEffects, three (getTargetSideBlocks / getTargetSideForcedInclude /
+// getCannotTargetReasons) read `actor.effects` only — so a block authored on a
+// gear item's transfer AE was INVISIBLE to exactly the three target-side gates.
+// Nothing was broken in the corpus (all 15 authored block rows sit on stamped
+// AEs), but the equipment policy REQUIRES gear behavior to live on a carried
+// `transfer:true` AE, so the first policy-compliant "shield that can't be
+// targeted at range" would have been a silent no-op.
+//
+// Widening alone would have been wrong: appliedEffects includes an UNEQUIPPED
+// item's transfer AE (CSB has no equip-driven isSuppressed), which is why the
+// flying exception always paired its read with a dormancy check. This pairs the
+// two permanently, so the widening can't arm a mis-gate.
+function enumerateLiveEffects(actor) {
+  let effs = [];
+  try {
+    if (actor?.appliedEffects) effs = Array.from(actor.appliedEffects);
+    else if (actor?.effects?.contents) effs = actor.effects.contents;
+    else if (actor?.effects) effs = Array.from(actor.effects);
+  } catch (e) {
+    warn("enumerateLiveEffects: effect enumeration threw", e);
+    return [];
+  }
+  return effs.filter((ae) => ae && !ae.disabled && !gearCarrierDormant(ae));
 }
 
 // ── Flying targeting rule (RAW Core: a Flying creature can't be reached by melee) ──
@@ -883,21 +937,33 @@ export function targetIsFlying(actor) {
   }
   const id = flyingStatusId();
   if (id && actor.statuses?.has?.(id)) return true;
-  return !!actor.effects?.some?.((e) => !e.disabled && (
+  // Fallback scan over the SAME `effs` list (appliedEffects), not `actor.effects`
+  // — an item-owned `transfer:true` AE named "Flying" (Sylph / Valor / Pakopon
+  // grant it that way) never lands in `actor.effects`, so the old actor-stamped
+  // read saw those carriers as grounded the moment the status-id lookup came up
+  // empty. Every authored Flying AE currently also carries the status id, so this
+  // widens nothing on current content — it removes the silent single point of
+  // failure.
+  return effs.some((e) => !e?.disabled && (
     (id && e.statuses?.has?.(id)) ||
     String(e.name ?? "").trim().toLowerCase() === "flying"
   ));
 }
 
 // True if the AE change's owning item is GEAR that isn't currently equipped —
-// in which case the exception it carries is dormant. A `can_target_flying_with`
-// change read straight off the raw AE change can't self-gate via a
-// `${isEquipped ? ...}$` value (this key isn't a CSB label prop, so that formula
+// in which case the rule it carries is dormant. A raw AE change (e.g.
+// `can_target_flying_with`, `cannot_be_targeted_by`) can't self-gate via a
+// `${isEquipped ? ...}$` value (these keys aren't CSB label props, so that formula
 // is never evaluated), so equip-gating for GEAR carriers lives here instead.
 // Fail-open for non-gear carriers (a skill item like Psychokinesis has no
 // item_type) so always-on passives are unaffected. Mirrors containerReactionInPlay.
+//
+// Shared by every reader that enumerates appliedEffects (see enumerateLiveEffects)
+// — it was originally private to the melee-vs-Flying exception, but the moment a
+// target-side reader started seeing item-owned transfer AEs it needed the same
+// equip gate, and a second copy of this rule is a second place to get it wrong.
 const _FLYING_EXCEPTION_GEAR_TYPES = new Set(["accessory", "armor", "weapon", "shield"]);
-function meleeFlyingCarrierDormant(ae) {
+function gearCarrierDormant(ae) {
   const item = ae?.parent?.documentName === "Item" ? ae.parent : null;
   const itemType = String(item?.system?.props?.item_type ?? "").toLowerCase();
   if (!_FLYING_EXCEPTION_GEAR_TYPES.has(itemType)) return false; // non-gear → always live
@@ -912,13 +978,13 @@ function meleeFlyingCarrierDormant(ae) {
 // are both AE-change-driven and compose with AE suppression. The value is a
 // comma-list of weapon categories (empty = any melee weapon). Reads
 // `appliedEffects` so an always-on (transfer:true) passive AE is seen; a GEAR
-// carrier is additionally equip-gated (meleeFlyingCarrierDormant).
+// carrier is additionally equip-gated (gearCarrierDormant).
 export function attackerCanMeleeFlying(actor, weaponType) {
   const cat = String(weaponType ?? "").trim().toLowerCase();
   const effs = actor?.appliedEffects ?? actor?.effects?.contents ?? actor?.effects ?? [];
   for (const ae of effs) {
     if (ae?.disabled) continue;
-    if (meleeFlyingCarrierDormant(ae)) continue;
+    if (gearCarrierDormant(ae)) continue;
     for (const ch of (ae.changes ?? [])) {
       if (ch?.key !== "can_target_flying_with") continue;
       const cats = String(ch.value ?? "").split(/[\s,]+/).map((s) => s.trim().toLowerCase()).filter(Boolean);
@@ -1021,7 +1087,7 @@ export function resolveVersatileWeapons(actor) {
 // SCOPING — by CARRIER UUID, not weapon category. Trick Dagger and Jur are both
 // Daggers and can be wielded together, so a category-scoped grant would silently
 // invert the OTHER dagger's attacks too. `ae.parent` is the carrier Item for a
-// transfer AE (see meleeFlyingCarrierDormant), so a GEAR carrier inverts only the
+// transfer AE (see gearCarrierDormant), so a GEAR carrier inverts only the
 // attacks actually made with ITSELF — which also makes the equip check redundant
 // (an unequipped weapon is never the used weapon). A NON-GEAR carrier (a class
 // skill granting Trick) has no weapon to match, so it applies to every attack.
@@ -1307,9 +1373,7 @@ export function getCannotTargetReasons(actor) {
   // those pass a DIFFERENT actor, so a dominating attacker only bypasses its
   // OWN restrictions, never a defender's protections.
   if (hasIgnoreActionGating(actor)) return out;
-  const effects = actor?.effects?.contents ?? actor?.effects ?? [];
-  for (const ae of effects) {
-    if (ae?.disabled) continue;
+  for (const ae of enumerateLiveEffects(actor)) {
     const changes = ae?.changes ?? [];
     for (const ch of changes) {
       if (ch?.key !== "cannot_target_uuids") continue;
@@ -1571,9 +1635,11 @@ export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { 
       // `.excluded` with the AE name as the reason. Stays empty for
       // most targets; ranges are normalized lowercase ("melee", "ranged",
       // "any").
+      // Informational only — the melee-vs-Flying RULE travels as a synthesised
+      // entry in `targetingBlocks` (see getTargetSideBlocks), not from this flag.
       isFlying: targetIsFlying(actor),
       targetingBlocks: Object.freeze(getTargetSideBlocks(actor).map((b) =>
-        Object.freeze({ aeName: b.aeName, ranges: Object.freeze([...b.ranges]) })
+        Object.freeze({ aeName: b.aeName, ranges: Object.freeze([...b.ranges]), bypass: b.bypass ?? "" })
       )),
       // "Must include X" taunt (must_be_targeted_by) — distinct from targetingBlocks
       // ("cannot target"): read by collectForcedIncludeTargets to PIN this candidate
@@ -1623,7 +1689,7 @@ export function snapshotTargetForToken(tokenLike) {
     conditions: Object.freeze(readActiveConditions(actor)),
     isFlying: targetIsFlying(actor),
     targetingBlocks: Object.freeze(getTargetSideBlocks(actor).map((b) =>
-      Object.freeze({ aeName: b.aeName, ranges: Object.freeze([...b.ranges]) })
+      Object.freeze({ aeName: b.aeName, ranges: Object.freeze([...b.ranges]), bypass: b.bypass ?? "" })
     )),
     forcedInclude: Object.freeze(getTargetSideForcedInclude(actor).map((b) =>
       Object.freeze({ aeName: b.aeName, ranges: Object.freeze([...b.ranges]) })
@@ -1640,28 +1706,84 @@ export function snapshotTargetForToken(tokenLike) {
 // snapshot time from `cannot_be_targeted_by` change rows). For each
 // target, if ANY block's `ranges` set contains the attacker's weapon
 // range OR `"any"`, the target moves into `.excluded` with the
-// block's AE name as the reason.
+// block's AE name as the reason — UNLESS that block declares a
+// `cannot_be_targeted_by_unless` formula that holds for this attacker.
 //
 // Cover (RAW Core p.70) is the canonical example — the Covered AE
 // declares `cannot_be_targeted_by: "melee"`. Future targeting blocks
 // (Out-of-Sight, Sanctuary, Concealment, etc.) author the same change
 // row with their own scope and overlay the same way without engine
-// changes.
+// changes. A block that applies only CONDITIONALLY adds a second row,
+// `cannot_be_targeted_by_unless: "<formula>"`, evaluated against the
+// ATTACKER — so "cannot be melee'd unless the attacker is airborne too"
+// (Flying) or "…unless the attacker is adjacent" (a future burrow rule)
+// are authoring, not engine work. Identifiers available to that formula:
+// the full skill-formula vocabulary against the attacker, plus
+// ATTACKER_IS_FLYING / CAN_REACH_FLYING / ATTACK_IS_MELEE / ATTACK_IS_RANGED.
 //
 // IMPORTANT: this function exists because `Array.prototype.filter()`
 // returns a fresh array WITHOUT custom properties. Inlining a filter
 // at the call site silently drops `.excluded` and the canvas overlay.
 // All Attack call sites (PC composeAttack, NPC composeAttackNpc,
 // TARGET re-snapshot) MUST route their range gating through this
-// helper so the excluded-overlay contract holds uniformly.
-export function applyAttackRangeGate(eligible, weapon) {
+// helper so the excluded-overlay contract holds uniformly — and MUST
+// pass the attacking actor as the third argument, or a Flying attacker
+// silently loses its RAW reach against Flying targets.
+export function applyAttackRangeGate(eligible, weapon, attacker = null) {
   if (!Array.isArray(eligible)) return eligible;
   const range = String(weapon?.range ?? "").trim().toLowerCase();
   if (!range) {
     // No weapon — nothing to gate on. Return as-is.
     return eligible;
   }
-  const canMeleeFlying = !!weapon?.canMeleeFlying;
+  // Who is swinging. Accepts an Actor, a TokenDocument or a placeable Token.
+  // Optional: a caller that can't supply it gets a block with no evaluable bypass,
+  // which FAILS CLOSED (the block stands) — the safe direction for an exclusion.
+  const attackerActor = attacker?.actor ?? attacker ?? null;
+  // Attack-context identifiers a block's `cannot_be_targeted_by_unless` formula can
+  // read. Injected through buildSkillResolver({ vars }), which consults them BEFORE
+  // its own switch — the same seam skill-targeting's per-candidate target_filter
+  // uses for IS_ALLY / IS_ENEMY. The formula audit harvests `vars: { … }` literals
+  // out of this directory, so these three are vocabulary the moment they exist here.
+  //
+  // CAN_REACH_FLYING folds all three melee-vs-Flying grants into one identifier:
+  // the weapon snapshot's resolved exception (resolveAttackerWeapon), and the live
+  // `can_target_flying_with` read — the latter is what the NPC path needs, since it
+  // gates on a bare `{ range }` object that never carried `canMeleeFlying` at all.
+  // Named `vars` deliberately: the formula audit learns caller-injected
+  // identifiers by harvesting `vars = { … }` literals out of this directory, so
+  // the name is what puts ATTACKER_IS_FLYING & co. into the audited vocabulary.
+  const vars = {
+    ATTACKER_IS_FLYING: (attackerActor && targetIsFlying(attackerActor)) ? 1 : 0,
+    CAN_REACH_FLYING: (!!weapon?.canMeleeFlying
+      || (!!attackerActor && attackerCanMeleeFlying(attackerActor, weapon?.weaponType))) ? 1 : 0,
+    ATTACK_IS_MELEE: range === "melee" ? 1 : 0,
+    ATTACK_IS_RANGED: /ranged|distance/.test(range) ? 1 : 0,
+  };
+  // Built lazily: most pools contain no block at all, and buildSkillResolver walks
+  // the actor. Shared across every candidate — the vars are attacker/weapon scoped,
+  // not per-target.
+  let bypassResolver;
+  const blockBypassed = (b) => {
+    const formula = String(b?.bypass ?? "").trim();
+    if (!formula) return false;
+    try {
+      // `actor` may be null (a caller that could not supply the attacker). The
+      // injected vars still resolve — CAN_REACH_FLYING is partly weapon-derived,
+      // so a weapon-declared exception keeps working with no attacker in hand,
+      // which is the contract that predates the attacker argument. Identifiers
+      // that genuinely need the actor fold to 0, i.e. fail closed.
+      bypassResolver ??= buildSkillResolver({ actor: attackerActor, vars });
+      // Fallback 0 = "no bypass". An unparseable formula or a typo'd identifier
+      // folds to 0 here, which RESTORES the block rather than lifting it — the
+      // opposite of the usual gate default, and deliberately so: a broken exception
+      // must never hand out reach it was not authored to grant.
+      return !!evaluateFormula(formula, bypassResolver, 0);
+    } catch (err) {
+      warn("applyAttackRangeGate: bypass formula threw — block stands", formula, err);
+      return false;
+    }
+  };
   const out = [];
   const newlyExcluded = [];
   for (const e of eligible) {
@@ -1669,16 +1791,13 @@ export function applyAttackRangeGate(eligible, weapon) {
     const matchingReasons = [];
     for (const b of blocks) {
       const blockRanges = Array.isArray(b.ranges) ? b.ranges : [];
-      if (blockRanges.includes("any") || blockRanges.includes(range)) {
-        matchingReasons.push(b.aeName);
-      }
-    }
-    // Flying rule (RAW): a melee attack can't reach a Flying creature, unless the
-    // attacker's kit grants an exception for this weapon (weapon.canMeleeFlying —
-    // Psychokinesis: arcane/sword). Deliberately separate from the block loop above
-    // so it can't be confused with Cover / generic cannot_be_targeted_by blocks.
-    if (range === "melee" && e.isFlying && !canMeleeFlying) {
-      matchingReasons.push("Flying");
+      if (!(blockRanges.includes("any") || blockRanges.includes(range))) continue;
+      // The range matches; the block applies unless its exception clause says
+      // otherwise. Cover and the Guest block carry no clause and so always apply;
+      // the synthesised Flying block carries one, which is how "a flyer can melee
+      // a flyer" is now expressed without a second code path.
+      if (blockBypassed(b)) continue;
+      matchingReasons.push(b.aeName);
     }
     if (matchingReasons.length) {
       newlyExcluded.push(Object.freeze({
@@ -1900,9 +2019,11 @@ export function snapshotEligibleTargets(combat, attackerSnapshot, { category = "
       magicDefense: readPropNum(actor, ["magic_defense", "current_mdef", "mdef"]),
       affinities: readAffinities(actor),
       conditions: Object.freeze(readActiveConditions(actor)),
+      // Informational only — the melee-vs-Flying RULE travels as a synthesised
+      // entry in `targetingBlocks` (see getTargetSideBlocks), not from this flag.
       isFlying: targetIsFlying(actor),
       targetingBlocks: Object.freeze(getTargetSideBlocks(actor).map((b) =>
-        Object.freeze({ aeName: b.aeName, ranges: Object.freeze([...b.ranges]) })
+        Object.freeze({ aeName: b.aeName, ranges: Object.freeze([...b.ranges]), bypass: b.bypass ?? "" })
       )),
       // "Must include X" taunt (must_be_targeted_by) — distinct from targetingBlocks
       // ("cannot target"): read by collectForcedIncludeTargets to PIN this candidate
