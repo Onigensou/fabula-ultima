@@ -71,7 +71,25 @@ const newId = () => Array.from({ length: 16 }, () => CHARS[Math.floor(Math.rando
     if (!base) { console.error(`MISS  base item "${BASE_ITEM}" not found; aborting.`); process.exitCode = 1; return; }
 
     for (const c of CARRIERS) {
-      if (byName.has(c.name)) { console.log(`SKIP  "${c.name}" already exists`); continue; }
+      const existing = byName.get(c.name);
+      if (existing) {
+        // Present in the keyspace is not the same as loaded. A world built by
+        // the pre-fix version of this script (e.g. one taken wholesale from a
+        // co-dev) has the carrier doc but not its id in the actor's array.
+        const id = existing.val._id;
+        const fresh = await db.get(actorKey);
+        if (Array.isArray(fresh.items) && fresh.items.includes(id)) {
+          console.log(`SKIP  "${c.name}" already exists`); continue;
+        }
+        console.log(`REPAIR "${c.name}" (${id}) exists but is orphaned; appending to the actor's items`);
+        changed++;
+        if (WRITE) {
+          fresh.items = Array.isArray(fresh.items) ? fresh.items : [];
+          fresh.items.push(id);
+          await db.put(actorKey, fresh);
+        }
+        continue;
+      }
 
       const id = newId();
       const doc = JSON.parse(JSON.stringify(base.val));
@@ -125,7 +143,7 @@ const newId = () => Array.from({ length: 16 }, () => CHARS[Math.floor(Math.rando
 
     // Belt and braces: every carrier must be reachable from the id array, not
     // merely present in the keyspace.
-    if (WRITE && changed) {
+    if (WRITE) {
       const check = await db.get(actorKey);
       const ids = new Set(check.items ?? []);
       for await (const [key, val] of db.iterator()) {
@@ -138,8 +156,8 @@ const newId = () => Array.from({ length: 16 }, () => CHARS[Math.floor(Math.rando
       }
     }
 
-    if (!WRITE) console.log(`\nDRY RUN — ${changed} carrier(s) pending. Re-run with --write (game CLOSED).`);
-    else console.log(`\nWROTE ${changed} carrier(s). Now run _build-dungeon-animations.js to fill their scripts.`);
+    if (!WRITE) console.log(`\nDRY RUN — ${changed} carrier(s) pending (create or repair). Re-run with --write (game CLOSED).`);
+    else console.log(`\nWROTE ${changed} carrier(s) (create or repair). Now run _build-dungeon-animations.js to fill their scripts.`);
   } finally {
     await db.close();
   }
