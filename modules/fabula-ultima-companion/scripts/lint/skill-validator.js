@@ -206,10 +206,16 @@ export function parseProblems(formula) {
  *   • `{ vocab: Set, prefixes: string[] }` — the offline scrape (formula-audit)
  *   • `(name) => boolean`                  — e.g. a live-resolver probe
  *
- * The live probe works because `buildSkillResolver`'s switch has NO `default:`
- * arm: a name it does not serve returns `undefined`, while every real arm
- * returns a number or a string. That is why this module never needs the engine
- * to export its 167-arm vocabulary as a constant.
+ * The live probe works because the resolver answers every identifier it serves
+ * even with no actor, and signals an unserved one distinctly. Measured
+ * 2026-09-22 against all 167 scraped names: every one returns a value, none
+ * returns the unserved sentinel. That is why this module never needs the engine
+ * to export its vocabulary as a constant.
+ *
+ * ⚠ The sentinel is `null`, NOT `undefined` — the resolver has an explicit
+ * unknown branch that warns and returns null. An earlier draft of this comment
+ * said `undefined`, and a probe written to that spec would have reported EVERY
+ * identifier as unknown. Test `!= null`; see skill-validator-bridge.js.
  */
 export function makeIdentifierChecker(vocabulary) {
   if (!vocabulary) return null;

@@ -421,7 +421,8 @@
     "scripts/clock-system/clock-ui-bar.js",
     "scripts/clock-system/clock-manager-app.js",
     "scripts/clock-system/clock-automation.js",
-    "scripts/conflict-event/conflict-event-api.js","scripts/field-system/field-api.js",
+    "scripts/conflict-event/conflict-event-api.js",
+    "scripts/field-system/field-api.js",
     "scripts/battle-director/director-camera.js",
     "scripts/battle-director/camera-authority.js",
     "scripts/battle-director/director-boot.js",
@@ -462,7 +463,8 @@
     "scripts/stealth-system/sm-handlers.js",
     "scripts/stealth-system/sm-bgm.js",
     "scripts/stealth-system/sm-gm-button.js",
-    "scripts/stealth-system/sm-boot.js"
+    "scripts/stealth-system/sm-boot.js",
+    "scripts/lint/skill-validator-bridge.js"
   ],
   "styles": [
     "styles/style.css",
