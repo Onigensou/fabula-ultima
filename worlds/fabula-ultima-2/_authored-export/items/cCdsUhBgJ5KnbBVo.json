@@ -48,7 +48,7 @@
       "skill_animation_mode": "default",
       "skill_information": "",
       "skill_range": "",
-      "skill_target": "",
+      "skill_target": "Special",
       "skill_type": "Spell",
       "type_damage": "",
       "use_optional_params": false

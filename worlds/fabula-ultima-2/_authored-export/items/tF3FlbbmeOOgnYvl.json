@@ -41,7 +41,7 @@
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",
-      "skill_target": "",
+      "skill_target": "All Enemy",
       "skill_type": "Active",
       "type_damage": "",
       "use_optional_params": false

@@ -65,7 +65,7 @@
           "skill_animation_mode": "default",
           "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p>Level</p></td><td><p>Extra Damage</p></td><td><p>While Hidden</p></td></tr><tr><td><p>1</p></td><td><p><strong>+2</strong></p></td><td><p><strong>+4</strong></p></td></tr><tr><td><p>2</p></td><td><p><strong>+4</strong></p></td><td><p><strong>+8</strong></p></td></tr><tr><td><p>3</p></td><td><p><strong>+6</strong></p></td><td><p><strong>+12</strong></p></td></tr><tr><td><p>4</p></td><td><p><strong>+8</strong></p></td><td><p><strong>+16</strong></p></td></tr><tr><td><p>5</p></td><td><p><strong>+10</strong></p></td><td><p><strong>+20</strong></p></td></tr></tbody></table>",
           "skill_range": "",
-          "skill_target": "",
+          "skill_target": "One Enemy",
           "skill_type": "Active",
           "type_damage": "physical",
           "use_optional_params": false

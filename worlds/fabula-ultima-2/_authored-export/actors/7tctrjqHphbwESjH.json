@@ -3132,7 +3132,7 @@
           "optional_params": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
-          "skill_target": "",
+          "skill_target": "Self",
           "skill_type": "Active",
           "type_damage": "",
           "use_optional_params": true
@@ -4814,7 +4814,7 @@
           "optional_params": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
-          "skill_target": "",
+          "skill_target": "Self",
           "skill_type": "Active",
           "type_damage": "",
           "use_optional_params": false

@@ -59,7 +59,7 @@
           "optional_params": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
-          "skill_target": "",
+          "skill_target": "All Enemy",
           "skill_type": "Active",
           "type_damage": "",
           "use_optional_params": false
@@ -224,7 +224,7 @@
           "optional_params": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
-          "skill_target": "",
+          "skill_target": "One Enemy",
           "skill_type": "Active",
           "type_damage": "",
           "use_optional_params": false
@@ -444,7 +444,7 @@
           "optional_params": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
-          "skill_target": "",
+          "skill_target": "All Enemy",
           "skill_type": "Active",
           "type_damage": "",
           "use_optional_params": false
@@ -498,7 +498,7 @@
           "optional_params": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
-          "skill_target": "",
+          "skill_target": "Self",
           "skill_type": "Active",
           "type_damage": "",
           "use_optional_params": false
@@ -553,7 +553,7 @@
           "optional_params": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
-          "skill_target": "",
+          "skill_target": "One Enemy",
           "skill_type": "Active",
           "type_damage": "",
           "use_optional_params": false
@@ -608,7 +608,7 @@
           "optional_params": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
-          "skill_target": "",
+          "skill_target": "One Ally",
           "skill_type": "Active",
           "type_damage": "",
           "use_optional_params": false
@@ -663,7 +663,7 @@
           "optional_params": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
-          "skill_target": "",
+          "skill_target": "One Enemy",
           "skill_type": "Active",
           "type_damage": "",
           "use_optional_params": false
@@ -937,7 +937,7 @@
           "optional_params": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
-          "skill_target": "",
+          "skill_target": "One Enemy",
           "skill_type": "Active",
           "type_damage": "",
           "use_optional_params": false
@@ -992,7 +992,7 @@
           "optional_params": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
-          "skill_target": "",
+          "skill_target": "One Enemy",
           "skill_type": "Active",
           "type_damage": "",
           "use_optional_params": false
@@ -1047,7 +1047,7 @@
           "optional_params": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
-          "skill_target": "",
+          "skill_target": "One Enemy",
           "skill_type": "Active",
           "type_damage": "",
           "use_optional_params": false
@@ -1157,7 +1157,7 @@
           "optional_params": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
-          "skill_target": "",
+          "skill_target": "One Enemy",
           "skill_type": "Active",
           "type_damage": "",
           "use_optional_params": false

@@ -787,7 +787,7 @@
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "",
-          "skill_target": "",
+          "skill_target": "Special",
           "skill_type": "Active",
           "type_damage": "",
           "use_optional_params": false
