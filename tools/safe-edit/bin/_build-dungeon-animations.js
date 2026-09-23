@@ -74,9 +74,26 @@ const FX = {
   dustPuff:        "modules/boss-loot-assets-free/artwork/05-spell/homebrew/air/Dust_1_Explosion_Smoke_Puff_CENTER_COLOR_1_1200x1200.webm",
   curseRed:        JB + "Generic/Conditions/Curse01/ConditionCurse01_002_Red_600x600.webm",
   fearIcon:        JB + "Generic/UI/IconFear_01_Dark_Purple_200x200.webm",
+  lightningStrike: JB + "Generic/Lightning/LightningStrike01_02_Regular_Blue_800x800.webm",
 };
 
 const SND = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
+
+const CAMP = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/";
+
+/* ── Cruel Ultimatum ─────────────────────────────────────────────────────── */
+//
+// The Zero Power takeover art. The sky plates are 1672x941 (16:9) and cover
+// a wider viewport, so they upscale ~1.15x and crop top and bottom -- fine
+// for a cloud field, and the signature cover-fits deliberately rather than
+// letterboxing. The cut-ins are 1448x1086 and are meant to overflow the
+// bottom of the frame.
+const CU = {
+  skyBolt:   CAMP + "Map/Game%20Map/Fafnir_Map001.png",
+  skyFire:   CAMP + "Map/Game%20Map/Fafnir_Map002.png",
+  cutinBolt: CAMP + "VFX/Fafnir_Cutin_lightning.webp",
+  cutinFire: CAMP + "VFX/Fafnir_Cutin_Fire.webp",
+};
 
 /* ── Weapon icons for Form Shift announcements ───────────────────────────── */
 //
@@ -100,6 +117,7 @@ const SFX = {
   dashA:    SND + "DashA.wav",
   monster2: SND + "Monster2.ogg",
   spook:    SND + "Spook.mp3",
+  thunder5: SND + "Soundboard/Thunder5.ogg",
   pollen:   SND + "Pollen.ogg",
   // Named explicitly by the author for Torment; an explicit asset choice
   // beats a manifest lookup.
@@ -792,25 +810,44 @@ const REGISTRY = {
       // the party is picking between two faces of one weapon.
       "Cruel Ultimatum: Fire": () => FF.cruelUltimatum({
         key: "fafnir-cruel-ultimatum-fire", name: "Cruel Ultimatum: Fire",
+        assets: {
+          skyImg: CU.skyFire, cutinImg: CU.cutinFire,
+          boltWebm: FX.lightningStrike, boomWebm: FX.shockwaveFire,
+        },
         cfg: {
           spread: "one",
           color: C.fire, coreColor: 0xfff0d0,
           flashColor: "#ffd9a0",
           sfxRise: "WindWalk", sfxRiseVol: 0.5,
-          sfxBreath: "Fire2", sfxBreathVol: 0.8,
+          sfxSky: SFX.monster1, sfxSkyVol: 0.7,
+          sfxThunder: SFX.thunder5, sfxThunderVol: 0.3,
+          sfxCutin: SFX.spook, sfxCutinVol: 0.6,
+          sfxCharge: "Fire1", sfxChargeVol: 0.55,
+          sfxBreath: "Fire2", sfxBreathVol: 0.85,
+          sfxImpact: SFX.darkness4, sfxImpactVol: 0.9,
         },
       }),
       "Cruel Ultimatum: Bolt": () => FF.cruelUltimatum({
         key: "fafnir-cruel-ultimatum-bolt", name: "Cruel Ultimatum: Bolt",
+        assets: {
+          skyImg: CU.skyBolt, cutinImg: CU.cutinBolt,
+          boltWebm: FX.lightningStrike, boomWebm: FX.explosionPurple,
+        },
         cfg: {
           spread: "all",
           color: C.bolt, coreColor: 0xf0e2ff,
           flashColor: "#cfa8ff",
-          // Everyone is hit at once, so the columns are thinner and the shake
-          // is shorter — the same total weight spread across the party.
-          beamThickness: 0.30, shakeMs: 760,
+          // Everyone is hit at once, so each lane is thinner and the shake is
+          // shorter — the same total weight spread across the party. The old
+          // beamThickness went with the breath-columns version of this shot.
+          strikeWidth: 0.075, shakeMs: 760,
           sfxRise: "WindWalk", sfxRiseVol: 0.5,
-          sfxBreath: "Thunder1", sfxBreathVol: 0.8,
+          sfxSky: SFX.monster1, sfxSkyVol: 0.7,
+          sfxThunder: SFX.thunder5, sfxThunderVol: 0.3,
+          sfxCutin: SFX.spook, sfxCutinVol: 0.6,
+          sfxCharge: "Cursor2", sfxChargeVol: 0.55,
+          sfxBreath: "Thunder1", sfxBreathVol: 0.85,
+          sfxImpact: SFX.darkness4, sfxImpactVol: 0.9,
         },
       }),
     },
