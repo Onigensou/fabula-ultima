@@ -750,7 +750,8 @@ const REGISTRY = {
         // The laugh is an explicit asset choice, not a manifest name — an
         // explicit URL beats a palette/manifest default.
         assets: { fearIcon: FX.fearIcon },
-        cfg: { sfxLaugh: SFX.devilLaugh, sfxLaughVol: 0.7 },
+        cfg: { sfxLaugh: SFX.devilLaugh, sfxLaughVol: 0.7,
+               sfxImpact: SFX.spook, sfxImpactVol: 0.7 },
       }),
 
       "Searing Brand": () => FF.searingBrand({

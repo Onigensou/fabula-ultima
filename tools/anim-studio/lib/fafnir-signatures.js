@@ -619,8 +619,12 @@ function torment(opts = {}) {
     rockDepth: 0.06,        // radians of sway across the leer
     scaleInMs: 1000, leerMs: 900,
     descendMs: 760,
-    shakeMs: 700, shakeAmp: 9,
+    // shakeTarget decays the amplitude linearly to zero over shakeMs, so amp
+    // is the PEAK and the duration sets the character: long reads as a rumble,
+    // short as a hit. This wants to be a hit.
+    shakeMs: 600, shakeAmp: 26,
     sfxLaugh: null, sfxLaughVol: 0.7,
+    sfxImpact: null, sfxImpactVol: 0.7,
     totalTimeoutMs: 22000,
   }, opts.cfg || {});
 
@@ -676,6 +680,7 @@ function torment(opts = {}) {
     "",
     "// The debuffs land as it goes in.",
     "done();",
+    "playSfx('sfxImpact', 'sfxImpactVol');",
     "await shakeTarget(prime, cfg.shakeMs, S.wLen(cfg.shakeAmp));",
     "",
     "// Nothing to restore: the camera never moved.",
