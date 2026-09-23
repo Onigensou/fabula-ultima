@@ -8,6 +8,77 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "3qCTaJZ1fGqBW6jy",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790079370926,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>This creature cannot be targeted by Melee attacks</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "3qCTaJZ1fGqBW6jy",
+          "originalParentId": "A8vBJMBvMT9ON8O4",
+          "originalUuid": "Actor.A8vBJMBvMT9ON8O4.ActiveEffect.3qCTaJZ1fGqBW6jy"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-flying",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "derivedStatus": {
+            "byRules": [
+              "king-gorger-flight"
+            ],
+            "forStatus": "Flying"
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/summon_garuda_II.png",
+      "name": "Flying",
+      "origin": "Item.XVOWOq9oUmEECGrU.ActiveEffect.wWX3DvOWaeMB6Uji",
+      "sort": 0,
+      "statuses": [
+        "CVxHWmDb0gQsob1q"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.5.0"
@@ -28,6 +99,97 @@
   "folder": "NmTMvWbnUbnXBMpx",
   "img": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
   "items": [
+    {
+      "_id": "5VtEaXjywcgfR9Yx",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790077948857,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "E78NytXinWrJ4SkX",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>King Gorger is airborne while it is not in <strong>Crisis</strong>. The <strong>Flying</strong> status is granted and withdrawn automatically by the derived-status reactor (rule <code>king-gorger-flight</code>).</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "deriveStatus": {
+                "grant": "Flying",
+                "requireEquipped": false,
+                "ruleKey": "king-gorger-flight",
+                "when": "AE_COUNT_CRISIS == 0"
+              }
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/summon_garuda_II.png",
+          "name": "Flight",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+      "name": "Flying",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "cost": "",
+          "description": "<p>King Gorger hovers above the battlefield: it has the <strong>Flying</strong> status at all times. Should it fall into <strong>Crisis</strong>, its wings fail and it is <strong>Grounded</strong> until it recovers.</p>",
+          "duration": "",
+          "effect_table": {},
+          "id": "5VtEaXjywcgfR9Yx",
+          "img": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+          "isCheck": false,
+          "isReaction": false,
+          "name": "Flying",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {},
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "uuid": "Actor.A8vBJMBvMT9ON8O4.Item.5VtEaXjywcgfR9Yx"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
     {
       "_id": "eYFMzrOX2InBxKzD",
       "_stats": {

@@ -537,7 +537,10 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
       return { cancelled: true, reason: "attack-range-blocked" };
     }
   }
-  const filtered = applyAttackRangeGate(enemies, currentWeapon);
+  // 3rd arg = the attacker: a Flying attacker keeps its melee reach against
+  // Flying targets (RAW), and a live `can_target_flying_with` grant is honoured
+  // even when the weapon snapshot predates it.
+  const filtered = applyAttackRangeGate(enemies, currentWeapon, token?.actor ?? null);
   if (!filtered.length) {
     const isMelee = String(currentWeapon?.range ?? "").trim().toLowerCase() === "melee";
     ui.notifications?.warn(isMelee
@@ -724,7 +727,10 @@ async function composeAttackNpc({ director, snap, eligible, cancelSentinel }) {
     }
   }
   const enemies = eligible?.enemies ?? [];
-  const filtered = applyAttackRangeGate(enemies, { range });
+  // Attacker passed so this bare `{ range }` shape still honours the Flying
+  // exceptions the PC path reads off the weapon snapshot (attacker airborne, or
+  // a `can_target_flying_with` grant) — it carries no `canMeleeFlying` of its own.
+  const filtered = applyAttackRangeGate(enemies, { range }, actor);
   if (!filtered.length) {
     const isMelee = range.trim().toLowerCase() === "melee";
     ui.notifications?.warn(isMelee

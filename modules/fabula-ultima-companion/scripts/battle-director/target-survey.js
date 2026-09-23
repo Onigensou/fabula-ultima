@@ -536,7 +536,7 @@ export function surveyActionTargets({
   eligible = applyTargetEligibility(eligible, { action, performerActor: actor, dCombat, round: theRound });
   if (weapon) {
     // RAW Core p.70 — Covered creatures can't be melee-targeted; Vanish likewise.
-    eligible = applyAttackRangeGate(eligible, weapon);
+    eligible = applyAttackRangeGate(eligible, weapon, actor);
   }
   if (postFilter) {
     // Fail CLOSED. A narrowing rule that throws must not resolve to "everyone is

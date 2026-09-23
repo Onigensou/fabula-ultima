@@ -4190,7 +4190,7 @@ const Target = {
         const eligibleRaw = director.dCombat
           ? snapshotEligibleTargetsFromDCombat(director.dCombat, attacker, { category: "enemy" })
           : snapshotEligibleTargets(director.combat, attacker, { category: "enemy" });
-        const gate = applyAttackRangeGate(eligibleRaw, currentWeapon);
+        const gate = applyAttackRangeGate(eligibleRaw, currentWeapon, attackActorDoc);
         if (isMeleeAttack && eligibleRaw.length > 0 && gate.length === 0) {
           ui.notifications?.warn("All eligible enemies are Covered — switch to a ranged weapon or pick a different action.");
           director.ctx.pendingPasses = [];
@@ -7481,6 +7481,16 @@ const StandaloneReactionWindow = {
               try {
                 const { reAddPersistentSummons } = await import("./skill-effects.js");
                 await reAddPersistentSummons(director);
+                // The derived-status sweep above walks dCombat.combatants, and a
+                // persistent summon is not one yet when it runs — so King Gorger
+                // (Flying while not in Crisis) would enter with whatever derived
+                // state he was left in and only self-correct at the first
+                // turn_start sweep. Reconcile the ones that just joined.
+                const { evaluateDerivedStatuses } = await import("./derived-status-reactor.js");
+                for (const c of director.dCombat?.combatants ?? []) {
+                  const a = c?.actor ?? null;
+                  if (a?.flags?.["fabula-ultima-companion"]?.isPersistentSummon) await evaluateDerivedStatuses(a);
+                }
               } catch (e) { warn(`STANDALONE_REACTION_WINDOW: reAddPersistentSummons threw`, e); }
               // Cooking dishes that grant a Shield pool per battle (Golem Stew).
               // Raise-only, so a re-entry can't stack it. conflict_start only —

@@ -116,7 +116,70 @@ export async function evaluateDerivedStatuses(actor) {
   finally { if (_chain.get(actor.id) === next) _chain.delete(actor.id); }
 }
 
+// CASCADE FIXPOINT — a rule whose condition reads a status that ANOTHER rule
+// derives (core-crisis's "Crisis" vs King Gorger's "grant Flying while
+// AE_COUNT_CRISIS == 0"; Jetpack's "Flying -> Swift" when that Flying is itself
+// derived) cannot settle in one pass: every rule is evaluated against the
+// snapshot taken at the TOP of the pass, and the writes land after it. The
+// safety-net hook cannot rescue it either — onAeChange deliberately ignores our
+// own derived writes (loop guard), so the dependent rule stayed exactly one
+// event behind: in Crisis he was still Flying, and healing out of Crisis
+// grounded him. Measured 2026-09-22.
+//
+// So re-run until nothing changes. Each pass re-reads actor.effects and rebuilds
+// the resolver, so pass N+1 sees pass N's writes. Bounded: two rules that each
+// undo the other would otherwise spin forever — the cap turns that authoring
+// error into one warning instead of a hang.
+const MAX_RECONCILE_PASSES = 6;
+
+// Net the per-pass events into what actually HAPPENED across the whole reconcile.
+// A cascade routinely applies a status in pass 1 and removes it in pass 2 (pass 1
+// still sees "no Crisis", so it grants Flying; pass 2 sees the Crisis it just
+// applied and withdraws it). Reporting that pair would emit
+// creature_status_applied + creature_loses_status for a status nobody ever kept —
+// and those two triggers are LEDGER_FAMILY, i.e. fanned out OBSERVER-AWARE to
+// every combatant, so a single unfiltered listener anywhere in the world would
+// react to a status that never existed. Only the net transition is real.
+// Per status the passes alternate (you cannot apply what is already there), so
+// the state it STARTED in is readable from the first event and the state it
+// ENDED in from the last: a first "removed" means it was present before this
+// reconcile began, a last "applied" means it is present now. Emit only when
+// those differ — a status applied in pass 1 and withdrawn in pass 2 began absent
+// and ended absent, so nothing happened and nothing should be announced.
+function netEvents(events) {
+  const first = new Map(), last = new Map();
+  for (const [status, dir] of events) {
+    if (!first.has(status)) first.set(status, dir);
+    last.set(status, dir);
+  }
+  const out = [];
+  for (const [status, lastDir] of last) {
+    const startedPresent = first.get(status) === "removed";
+    const endedPresent = lastDir === "applied";
+    if (startedPresent !== endedPresent) out.push([status, lastDir]);
+  }
+  return out;
+}
+
 async function _reconcile(actor) {
+  if (!actor?.createEmbeddedDocuments) return { changed: false, events: [] };
+  let changed = false;
+  const events = [];
+  for (let pass = 1; pass <= MAX_RECONCILE_PASSES; pass++) {
+    const r = await _reconcileOnce(actor);
+    if (r.events?.length) events.push(...r.events);
+    if (!r.changed) return { changed, events: netEvents(events) };
+    changed = true;
+  }
+  // Exhausted the budget while still changing: the state is NOT settled (a deeper
+  // legitimate chain would have converged well inside it), so two rules are
+  // almost certainly undoing each other.
+  warn(`derived-status: ${actor.name} still changing after ${MAX_RECONCILE_PASSES} passes — ` +
+       "state may be unsettled; two rules are probably undoing each other (check their condition formulas)");
+  return { changed, events: netEvents(events) };
+}
+
+async function _reconcileOnce(actor) {
   if (!actor?.createEmbeddedDocuments) return { changed: false, events: [] };
   const rules = collectRules(actor);
   const own = actor.effects?.contents ?? [];

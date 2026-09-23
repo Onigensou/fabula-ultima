@@ -2252,7 +2252,7 @@
         },
         "mZnxgj2JnNYO2Hat": {
           "active_cost": "6 Zero Power",
-          "active_description": "Offer the enemy a vile edict. The enemy chooses: one target enemy takes 300 Fire damage (their choice who), or all enemies take 120 Bolt damage. This damage ignores immunities and absorption.",
+          "active_description": "<p>Offer the enemy a vile edict, <strong>Enemy Choose:</strong></p><ul><li>One target enemy takes <strong>300</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>&nbsp;damage (Enemy Choice)</li><li>All enemies take <strong>120</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(155, 89, 182) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span> damage</li></ul>",
           "active_duration": "-",
           "active_target": "All Enemy",
           "id": "${item.id}",
@@ -2262,13 +2262,6 @@
         }
       },
       "skill_passive_list": {
-        "GwyhXZvp2Vo8mxyM": {
-          "id": "${item.id}",
-          "name": "Cruel Ultimatum: Fire",
-          "passive_description": "<p>Animation carrier for the Fire branch of Zero Power: Cruel Ultimatum. Not an action — it holds the cinematic that the Fire option plays via a play_animation row.</p>",
-          "roll": "",
-          "uuid": "Actor.P1uCkpNnxLRBNqZr.Item.GwyhXZvp2Vo8mxyM"
-        },
         "PTmYIP52JtFcOHua": {
           "id": "${item.id}",
           "name": "Dreadwyrm Descent",
@@ -2280,7 +2273,6 @@
           "id": "${item.id}",
           "name": "Storm Gathering",
           "passive_description": "When her magic runs dry, Fafnir breaks off and gathers the storm — summoning her drakes and recovering her power until it is hers again.",
-          "roll": "",
           "uuid": "Actor.P1uCkpNnxLRBNqZr.Item.StormGatherPsv01"
         },
         "ejrKWNUQJPXB6cS6": {
@@ -2289,13 +2281,6 @@
           "passive_description": "<p>At the start of any turn, if there's an enemy in <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a><strong><span style=\"text-decoration: underline;\">,</span></strong></span> Fafnir <strong>gain 1 Zero Power</strong></p>",
           "roll": "",
           "uuid": "Actor.P1uCkpNnxLRBNqZr.Item.ejrKWNUQJPXB6cS6"
-        },
-        "xaRWtRPqVbQpLnYj": {
-          "id": "${item.id}",
-          "name": "Cruel Ultimatum: Bolt",
-          "passive_description": "<p>Animation carrier for the Bolt branch of Zero Power: Cruel Ultimatum. Not an action — it holds the cinematic that the Bolt option plays via a play_animation row.</p>",
-          "roll": "",
-          "uuid": "Actor.P1uCkpNnxLRBNqZr.Item.xaRWtRPqVbQpLnYj"
         }
       },
       "spear_ef": "200",
