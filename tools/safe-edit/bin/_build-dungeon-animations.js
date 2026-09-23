@@ -76,6 +76,8 @@ const FX = {
   fearIcon:        JB + "Generic/UI/IconFear_01_Dark_Purple_200x200.webm",
   lightningStrike: JB + "Generic/Lightning/LightningStrike01_02_Regular_Blue_800x800.webm",
   fireballLoop:    JB + "3rd_Level/Fireball/FireballLoop_01_Orange_800x800.webm",
+  explosionBlue:   JB + "Generic/Explosion/Explosion_02_Blue_400x400.webm",
+  fireballBoom:    "modules/boss-loot-assets-free/artwork/05-spell/level3/fireaball/Fireball_1_CARTOON_EXPLOSION_ORANGE_1200x1200.webm",
 };
 
 const SND = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
@@ -121,6 +123,7 @@ const SFX = {
   thunder5: SND + "Soundboard/Thunder5.ogg",
   monster4: SND + "Soundboard/Monster4.ogg",
   highJump: SND + "Soundboard/SE_BTL_HighJump.ogg",
+  seDownC:  SND + "Soundboard/SE_DOWNC.wav",
   laser2:   SND + "Laser2.ogg",
   chargingA: SND + "ChargingA.wav",
   amaltheaBoom: SND + "Amalthea_Explosion.ogg",
@@ -818,31 +821,35 @@ const REGISTRY = {
         key: "fafnir-cruel-ultimatum-fire", name: "Cruel Ultimatum: Fire",
         assets: {
           skyImg: CU.skyFire, cutinImg: CU.cutinFire,
-          boltWebm: FX.lightningStrike, boomWebm: FX.shockwaveFire,
+          boomWebm: FX.fireballBoom,
           ballWebm: FX.fireballLoop,
+          smokeWebm: FX.dustPuff,
         },
         cfg: {
           spread: "one",
           color: C.fire, coreColor: 0xfff0d0,
           flashColor: "#ffd9a0",
           // Fire does not breathe a beam: it throws one enormous fireball
-          // that swells as it comes at the camera.
-          breathMode: "ball", impactStyle: "lanes", silhouette: false,
+          // that swells as it comes at the camera, and the blow that lands
+          // is that SAME fireball falling in from off-frame -- not a beam
+          // wearing fire colours. The blow-out is shared with Bolt.
+          breathMode: "ball", impactStyle: "ball", silhouette: true,
           sfxJump: SFX.highJump, sfxJumpVol: 0.7,
           sfxSky: SFX.monster1, sfxSkyVol: 0.7,
-          sfxThunder: SFX.thunder5, sfxThunderVol: 0.3,
           sfxCutin: SFX.monster4, sfxCutinVol: 0.7,
           sfxCharge: SFX.chargingA, sfxChargeVol: 0.7,
           sfxBreath: "Fire2", sfxBreathVol: 0.85,
           sfxImpact: SFX.amaltheaBoom, sfxImpactVol: 0.95,
-          sfxWing: SFX.windWalk, sfxWingVol: 0.45,
+          sfxDescend: SFX.highJump, sfxDescendVol: 0.7,
+          sfxLand: SFX.seDownC, sfxLandVol: 0.9,
         },
       }),
       "Cruel Ultimatum: Bolt": () => FF.cruelUltimatum({
         key: "fafnir-cruel-ultimatum-bolt", name: "Cruel Ultimatum: Bolt",
         assets: {
           skyImg: CU.skyBolt, cutinImg: CU.cutinBolt,
-          boltWebm: FX.lightningStrike, boomWebm: FX.explosionPurple,
+          boomWebm: FX.explosionBlue,
+          smokeWebm: FX.dustPuff,
         },
         cfg: {
           spread: "all",
@@ -854,15 +861,20 @@ const REGISTRY = {
           // the room. The blow-out (white frame, black cut-out creatures) is
           // this branch only.
           breathMode: "beam", impactStyle: "fullscreen", silhouette: true,
+          // The full-frame bolt is the payoff of the whole Zero Power, and it
+          // was on screen for barely a third of a second before the white took
+          // it. Fire does not need this: its blow is a fireball that arrives
+          // and bursts, which reads in its own travel time.
+          hitHoldMs: 1500,
           shakeMs: 760,
           sfxJump: SFX.highJump, sfxJumpVol: 0.7,
           sfxSky: SFX.monster1, sfxSkyVol: 0.7,
-          sfxThunder: SFX.thunder5, sfxThunderVol: 0.3,
           sfxCutin: SFX.monster4, sfxCutinVol: 0.7,
           sfxCharge: SFX.laser2, sfxChargeVol: 0.7,
           sfxBreath: "Thunder1", sfxBreathVol: 0.85,
           sfxImpact: SFX.amaltheaBoom, sfxImpactVol: 0.95,
-          sfxWing: SFX.windWalk, sfxWingVol: 0.45,
+          sfxDescend: SFX.highJump, sfxDescendVol: 0.7,
+          sfxLand: SFX.seDownC, sfxLandVol: 0.9,
         },
       }),
     },
