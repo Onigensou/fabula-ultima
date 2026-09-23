@@ -836,6 +836,7 @@
             <p class="notes">Custom name shown in the Travel dialog. Leave blank to use the scene name.</p>
           </div>
 
+          <div class="oni-area-panel-group">
           <h3 style="margin:12px 0 6px;"><i class="fas fa-map-signs"></i> Area Name Panel</h3>
           <p class="notes" style="margin:0 0 8px;">
             A plaque that slides in from the top-left when this scene is <b>activated</b>,
@@ -866,6 +867,7 @@
               <input type="checkbox" class="oni-area-always" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${AREA_PANEL_ALWAYS_KEY}" data-dtype="Boolean" />
             </div>
             <p class="notes">Off by default. Normally an area announces itself <b>once</b>: moving between maps that share an area name stays silent until the party has been somewhere else. Tick this to announce on every activation regardless.</p>
+          </div>
           </div>
 
           <div class="form-group">
@@ -1434,10 +1436,24 @@
         drawDepthGuides();
       }
 
+      // Conflict and Gacha scenes never announce an area — they are a fight and
+      // a pull screen, not a place the party walks into — so the whole block is
+      // hidden there. Hidden, NOT removed, for the same round-trip reason as
+      // above; the runtime gate (area-panel-core.js) refuses those modes too, so
+      // a scene switched to Conflict after the fact goes quiet on its own.
+      const areaPanelGroup = generalPanel?.querySelector(".oni-area-panel-group");
+      function syncAreaPanelVisibility() {
+        if (!areaPanelGroup) return;
+        const mode = modeSel?.value ?? "";
+        areaPanelGroup.style.display = (mode === "conflict" || mode === "gacha") ? "none" : "";
+      }
+
       syncResetVisibility();
       syncConflictEventVisibility();
+      syncAreaPanelVisibility();
       modeSel?.addEventListener("change", syncResetVisibility);
       modeSel?.addEventListener("change", syncConflictEventVisibility);
+      modeSel?.addEventListener("change", syncAreaPanelVisibility);
       modeSel?.addEventListener("change", syncDepthVisibility);
       depthEnabledEl?.addEventListener("change", syncDepthVisibility);
       // NOTE: the first syncDepthVisibility() call is deliberately deferred to

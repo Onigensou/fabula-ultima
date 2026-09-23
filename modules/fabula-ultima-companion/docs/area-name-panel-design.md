@@ -15,7 +15,12 @@ Shipped on `feat/area-name-panel`, module `1.0.425`.
 
 ## Authoring
 
-Scene Config → **Fabula Configuration → General → Area Name Panel**:
+Scene Config → **Fabula Configuration → General → Area Name Panel**. The whole
+block is **hidden on Conflict and Gacha scenes** — a fight and a pull screen are
+not places the party walks into. Hidden, not removed, so a stored value still
+round-trips through a save made in another mode; the runtime gate refuses those
+modes as well, so a scene switched to Conflict after a name was typed goes quiet
+on its own.
 
 - **Area Name** — what the plaque prints. Blank means no panel, whatever the
   switches say. Names need not be unique; that is the point of the suppression
@@ -38,7 +43,7 @@ areaPanelEnabled, areaPanelAlwaysShow}`. The keys are declared in both
 |---|---|
 | `no-name` | blank or whitespace-only area name — also every legacy scene |
 | `disabled` | Show Area Panel unticked |
-| `suppressed-scene-mode` | `sceneMode === "title"`; the title overlay owns the screen |
+| `suppressed-scene-mode` | `title` (its overlay owns the screen), `conflict`, `gacha` |
 | `repeat` | same area as the last one announced, and Always Show is off |
 | `ok` / `always-show` | it plays |
 
@@ -80,24 +85,35 @@ permanently — the area was already recorded, so it never came back.
 
 ## Look
 
-Warm wood and parchment, on the camp system's theme tokens
+One rounded rectangle, **welded to the left edge of the screen**: `left` is
+`-OVERSHOOT_PX`, so the left corners are always off-frame and only the right ones
+are ever seen. The left padding adds the overshoot back so the text is not
+crowded against the edge. Warm cream parchment body, `--camp-wood-3` frame, brown
+letterspaced text — the camp system's theme tokens
 (`scripts/camp-system/camp-styles.js`) with literal fallbacks, since that file
-injects them and load order is not guaranteed. Dark `--camp-wood-3` frame, gold
-spine carrying the glyph, parchment body, ink text.
+injects them and load order is not guaranteed.
 
-The glyph lives on the **spine only**. `cleanName()` is what the plaque prints;
-`formatLabel()` adds the glyph and exists for text surfaces (a log line, a chat
-card). Printing both is the bug the first live screenshot caught.
+The glyph is part of the printed line (`◈ Area`), which is what `formatLabel()`
+returns; `cleanName()` is the bare name. An early build drew the glyph on a gold
+spine **and** prepended it, and the first live screenshot read `◈ ◈ Eisendrache
+Kingdom` — hence the split, pinned in the test.
 
 `z-index: 62` — above Foundry chrome (`#interface` is 30) and the Main Controller
-badge (61), below the curtain. The panel anchors below `#ui-top` and right of
-`#ui-left` at show time, and pushes below any module HUD already in that corner.
+badge (61), below the curtain. It is `pointer-events: none`, which matters
+because an edge-attached plaque crosses the GM's left tool column for its few
+seconds on screen; clicks pass straight through. Vertically it anchors below
+`#ui-top` and below any module HUD already in that corner.
 
 ## Tuning
 
 Every number is in `TUNING` in the core file, so a re-tune is a constant change.
-Current feel: 900ms in (ease-out quad), 4000ms hold, 800ms out (ease-in quad),
-56px of travel. Measured live at 5.6s on screen, end to end.
+Current feel: 1100ms in (ease-out quad), 4000ms hold, 950ms out (ease-in quad),
+travelling its own full width (`translateX(-100%)`) so a long name leaves from
+as far out as a short one. Measured live at 6.0s on screen, end to end.
+
+Scale lives in `FONT_PX` / `PAD_Y_PX` / `PAD_X_PX` / `RADIUS_PX`. At 30px type the
+plaque is about 69px tall — under the mockup's roughly one-tenth of screen
+height, which is the first thing to nudge if it wants more presence.
 
 ## Debug API
 
@@ -119,6 +135,10 @@ unnamed scene silent with the memory intact; Show Area Panel unticked silent;
 activating the scene already on screen; rapid double activation (one plaque, last
 name); F5 on an active scene silent; Scene Config rows render, prefill and save;
 a backgrounded player holding the panel and playing it on return.
+
+Re-verified after the edge-attached restyle: the plaque sliding in from off-frame
+to rest at `left: -28px`, the 6.0s cycle, and the config block hiding on Conflict
+and Gacha and coming back for Exploration / Dungeon / Camp.
 
 Not exercised live: the `title` scene-mode suppression (offline only — activating
 the title scene starts the title screen's own flow).

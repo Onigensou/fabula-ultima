@@ -23,10 +23,14 @@ export const AREA_ALWAYS_KEY  = "areaPanelAlwaysShow"; // boolean: bypass repeat
 // later without hunting through the CSS.
 export const GLYPH = "\u25C8"; // ◈
 
-// Scene modes that own the whole screen when they come up. A plaque sliding in
-// over the title screen's overlay reads as a glitch, not as an establishing
-// shot, so those modes never get one.
-export const SUPPRESSED_SCENE_MODES = new Set(["title"]);
+// Scene modes that never announce an area.
+//
+// `title` owns the whole screen when it comes up — a plaque sliding in over the
+// title overlay reads as a glitch, not as an establishing shot. `conflict` and
+// `gacha` are a fight and a pull screen, not a place the party walks into; the
+// Scene Config block is hidden for those two as well, and this set is what keeps
+// a scene switched to Conflict AFTER a name was typed from announcing anyway.
+export const SUPPRESSED_SCENE_MODES = new Set(["title", "conflict", "gacha"]);
 
 // ── Tuning ────────────────────────────────────────────────────────────────
 // Everything that decides how the panel FEELS lives here, so a re-tune after a
@@ -34,12 +38,24 @@ export const SUPPRESSED_SCENE_MODES = new Set(["title"]);
 // cubic: a cubic packs its travel into a fast middle and reads as a whoosh at
 // any duration.
 export const TUNING = {
-  SLIDE_PX: 56,             // how far left of rest the panel starts/ends
-  IN_MS:    900,            // slide + fade in
+  // The plaque is ATTACHED to the left edge of the screen: its left end runs
+  // off-frame by OVERSHOOT_PX, so only its right corners are ever seen and it
+  // reads as sliding out of the screen edge rather than floating near it.
+  OVERSHOOT_PX: 28,
+  // It now travels its own full width instead of a 56px nudge, so the durations
+  // are longer to keep the same unhurried drift.
+  IN_MS:    1100,           // slide + fade in
   HOLD_MS:  4000,           // idle dwell, per spec
-  OUT_MS:   800,            // slide + fade out, back the way it came
+  OUT_MS:    950,           // slide + fade out, back the way it came
   EASE_IN:  "cubic-bezier(.22,.61,.36,1)",   // ease-out quad — entrance
   EASE_OUT: "cubic-bezier(.55,.06,.68,.19)", // ease-in quad  — exit
+
+  // Plaque scale. The mockup draws it about a tenth of the screen tall; these
+  // land a little under that, which is the number to nudge after a live look.
+  FONT_PX:   30,
+  PAD_Y_PX:  15,
+  PAD_X_PX:  32,            // right-hand padding; the left adds OVERSHOOT_PX
+  RADIUS_PX: 12,
 
   // Sequencing against the screen-transition curtain (z 99999). Playing on the
   // raw `updateScene` would animate the panel behind solid black.
@@ -89,10 +105,11 @@ export function readAreaConfig(scene) {
 }
 
 /**
- * Collapse whitespace and clamp \u2014 what the plaque actually prints.
+ * Collapse whitespace and clamp \u2014 the bare area name, no glyph.
  *
- * The glyph is NOT in here: the panel draws it on its own gold spine, and
- * putting it in the text too prints it twice (caught on the first live shot).
+ * Kept separate from formatLabel so the glyph is added in exactly one place.
+ * An early build drew it on a gold spine AND prepended it here, and the first
+ * live screenshot read "\u25c8 \u25c8 Eisendrache Kingdom".
  */
 export function cleanName(name) {
   const clean = String(name ?? "").replace(/\s+/g, " ").trim();
@@ -101,10 +118,8 @@ export function cleanName(name) {
     : clean;
 }
 
-/**
- * The full "\u25c8 Area" string, for surfaces that have no spine to draw the glyph
- * on \u2014 a log line, a chat card, a tooltip. The panel itself uses cleanName.
- */
+/** The full "\u25c8 Area" line \u2014 what the plaque prints, and what any text surface
+ *  (a log line, a chat card, a tooltip) should use. */
 export function formatLabel(name) {
   const clean = cleanName(name);
   return clean ? `${GLYPH} ${clean}` : "";
@@ -139,7 +154,7 @@ export function shouldShowForScene(scene, { lastAreaName = null } = {}) {
     show: true,
     reason: cfg.alwaysShow && isRepeat ? "always-show" : "ok",
     name: cfg.name,
-    display: cleanName(cfg.name), // what the plaque prints
-    label: formatLabel(cfg.name), // glyph included, for text surfaces
+    display: cleanName(cfg.name), // the bare name
+    label: formatLabel(cfg.name), // glyph included — what the plaque prints
   };
 }

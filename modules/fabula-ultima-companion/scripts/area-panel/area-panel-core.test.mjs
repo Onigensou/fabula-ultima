@@ -53,7 +53,15 @@ eq("checkbox off", verdict({ areaName: "Ravenwood Hollow", areaPanelEnabled: fal
 eq("checkbox on", verdict({ areaName: "Ravenwood Hollow", areaPanelEnabled: true }).show, true);
 eq("checkbox null => default on", verdict({ areaName: "Ravenwood Hollow", areaPanelEnabled: null }).show, true);
 eq("title scene suppressed", verdict({ areaName: "Ravenwood Hollow", sceneMode: "title" }).reason, "suppressed-scene-mode");
+// Conflict and Gacha hide the whole config block, so a name can only be there
+// from before the mode changed — the runtime must refuse it anyway.
+eq("conflict scene suppressed", verdict({ areaName: "Ravenwood Hollow", sceneMode: "conflict" }).reason, "suppressed-scene-mode");
+eq("gacha scene suppressed", verdict({ areaName: "Ravenwood Hollow", sceneMode: "gacha" }).reason, "suppressed-scene-mode");
+eq("conflict beats Always Show",
+   verdict({ areaName: "Ravenwood Hollow", sceneMode: "conflict", areaPanelAlwaysShow: true }).show, false);
 eq("dungeon scene not suppressed", verdict({ areaName: "Ravenwood Hollow", sceneMode: "dungeon" }).show, true);
+eq("exploration scene not suppressed", verdict({ areaName: "Ravenwood Hollow", sceneMode: "exploration" }).show, true);
+eq("camp scene not suppressed", verdict({ areaName: "Ravenwood Hollow", sceneMode: "camp" }).show, true);
 
 // ── gate: repeat suppression ──────────────────────────────────────────────
 
@@ -98,9 +106,9 @@ eq("empty last area", verdict({ areaName: "Fafnir Castle" }, "").show, true);
 
 // ── label formatting ──────────────────────────────────────────────────────
 //
-// The plaque prints cleanName and draws the glyph on its own gold spine. The
-// first live screenshot had the glyph in BOTH, reading "◈ ◈ Eisendrache
-// Kingdom", so the split is pinned here.
+// formatLabel is the printed line; cleanName is the bare name. An early build
+// drew the glyph on a spine element AND prepended it here, and the first live
+// screenshot read "◈ ◈ Eisendrache Kingdom" — so the split is pinned.
 
 eq("printed name carries NO glyph", cleanName("Ravenwood Hollow"), "Ravenwood Hollow");
 ok("printed name never starts with the glyph", !cleanName(`${GLYPH} x`).startsWith(`${GLYPH} ${GLYPH}`));
@@ -136,6 +144,8 @@ ok("hold is the spec's 4s", TUNING.HOLD_MS === 4000);
 ok("watchdog outlasts a canvas draw plus the 700ms reveal",
    TUNING.WATCHDOG_MS > TUNING.SETTLE_MS + 900);
 ok("a held panel outlives a long look away", TUNING.DEFER_MAX_MS >= 60000);
+ok("the plaque hangs off the screen edge", TUNING.OVERSHOOT_PX > 0);
+ok("left padding clears the overshoot", TUNING.PAD_X_PX > TUNING.OVERSHOOT_PX / 2);
 ok("panel sits below the transition curtain", TUNING.Z_INDEX < 99999);
 ok("panel sits above Foundry chrome", TUNING.Z_INDEX > 30);
 

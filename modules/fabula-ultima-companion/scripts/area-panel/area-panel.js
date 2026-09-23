@@ -30,8 +30,8 @@
 // ============================================================================
 
 import {
-  MODULE_ID, TUNING, GLYPH,
-  readAreaConfig, shouldShowForScene, cleanName,
+  MODULE_ID, TUNING,
+  readAreaConfig, shouldShowForScene, formatLabel,
 } from "./area-panel-core.js";
 
 const ROOT_ID  = "fu-area-panel";
@@ -75,10 +75,14 @@ function ensureStyle() {
   const style = document.createElement("style");
   style.id = STYLE_ID;
   style.textContent = `
+    /* Anchored to the LEFT EDGE of the screen, not floated near it: the plaque
+       hangs off-frame by OVERSHOOT_PX so only its right corners are ever seen
+       and it reads as sliding out of the screen edge. Vertically it still
+       clears Foundry's own chrome. */
     #${ROOT_ID} {
       position: fixed;
       top: var(--fu-ap-top, 14px);
-      left: var(--fu-ap-left, 14px);
+      left: ${-TUNING.OVERSHOOT_PX}px;
       z-index: ${TUNING.Z_INDEX};
       pointer-events: none;
       visibility: hidden;
@@ -88,53 +92,32 @@ function ensureStyle() {
 
     #${ROOT_ID} .fu-ap-plaque {
       display: inline-flex;
-      align-items: stretch;
-      max-width: min(46vw, 520px);
-      /* Dark wood frame, not the lighter --camp-wood-2: against a bright map
-         the mid brown plus the gold hairline read as one gold pill, which is
-         what the first live crop showed. */
+      align-items: center;
+      max-width: min(62vw, 760px);
+      padding: ${TUNING.PAD_Y_PX}px ${TUNING.PAD_X_PX}px ${TUNING.PAD_Y_PX}px ${TUNING.PAD_X_PX + TUNING.OVERSHOOT_PX}px;
       border: 3px solid var(--camp-wood-3, #6f4526);
-      border-radius: 10px;
+      border-radius: ${TUNING.RADIUS_PX}px;
       background: linear-gradient(180deg,
         var(--camp-parchment-1, #f6ebd3) 0%,
-        var(--camp-parchment-3, #e7d3b1) 100%);
+        var(--camp-parchment-2, #efdfc3) 100%);
       box-shadow:
-        0 0 0 1px rgba(0,0,0,.45),
-        0 7px 20px rgba(0,0,0,.42),
-        inset 0 0 0 1px var(--camp-gold-2, #caa44d);
+        0 0 0 1px rgba(0,0,0,.4),
+        0 8px 22px rgba(0,0,0,.42),
+        inset 0 1px 0 rgba(255,255,255,.65);
       overflow: hidden;
-    }
-
-    /* Gold spine carrying the glyph — the same raised-chip idiom the camp and
-       battle-director panels use to head a label. */
-    #${ROOT_ID} .fu-ap-spine {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 36px;
-      padding: 0 7px;
-      background: linear-gradient(180deg,
-        var(--camp-gold-2, #caa44d) 0%,
-        var(--camp-gold-3, #9a7a2b) 100%);
-      border-right: 2px solid var(--camp-wood-3, #6f4526);
-      color: var(--camp-ink, #3b2a19);
-      font-size: 19px;
-      line-height: 1;
-      text-shadow: 0 1px 0 rgba(255,255,255,.35);
     }
 
     #${ROOT_ID} .fu-ap-label {
-      padding: 10px 18px 10px 14px;
-      color: var(--camp-ink, #3b2a19);
+      color: var(--camp-wood-3, #6f4526);
       font-family: "Signika", "Noto Sans", serif;
-      font-size: 20px;
+      font-size: ${TUNING.FONT_PX}px;
       font-weight: 700;
-      letter-spacing: .04em;
-      line-height: 1.15;
+      letter-spacing: .06em;
+      line-height: 1.1;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      text-shadow: 0 1px 0 rgba(255,255,255,.5);
+      text-shadow: 0 1px 0 rgba(255,255,255,.55);
     }
   `;
   document.head.appendChild(style);
@@ -153,27 +136,26 @@ function ensureRoot() {
   const plaque = document.createElement("div");
   plaque.className = "fu-ap-plaque";
 
-  const spine = document.createElement("span");
-  spine.className = "fu-ap-spine";
-  spine.textContent = GLYPH;
-
+  // One body, no spine: the glyph is part of the printed line ("◈ Area"), which
+  // is what the mockup draws and what the spec asked for in the first place.
   const label = document.createElement("span");
   label.className = "fu-ap-label";
 
-  plaque.append(spine, label);
+  plaque.append(label);
   root.appendChild(plaque);
   document.body.appendChild(root);
   return root;
 }
 
 /**
- * Park the panel clear of Foundry's chrome.
+ * Set how far down the plaque hangs.
  *
- * #ui-top holds the scene nav (GM only, and collapsible) and #ui-left the
- * controls column; both are absent or empty for some clients, hence the
- * visibility test. Module HUDs in the same corner (the Main Controller badge,
- * notably) are found by id convention the way gacha-ui does it, since the list
- * of them changes as systems are added.
+ * Horizontally there is nothing to decide any more — it is welded to the left
+ * edge of the screen. Vertically it still has to clear Foundry's own chrome:
+ * #ui-top carries the scene nav (GM only, and collapsible) and module HUDs park
+ * in this corner too, the Main Controller badge above all. Those are found by id
+ * convention the way gacha-ui does it, since the list changes as systems are
+ * added.
  */
 function anchor(root) {
   const pad = TUNING.EDGE_PAD_PX;
@@ -186,13 +168,8 @@ function anchor(root) {
     return getComputedStyle(n).visibility === "hidden" ? null : r;
   };
 
-  const top  = rect("#ui-top");
-  const left = rect("#ui-left") ?? rect("#controls");
+  let topEdge = Math.max(pad, (rect("#ui-top")?.bottom ?? 0) + pad);
 
-  let topEdge = Math.max(pad, (top?.bottom ?? 0) + pad);
-  const leftEdge = Math.max(pad, (left?.right ?? 0) + pad);
-
-  // Push below any module HUD already sitting in this corner.
   const cornerH = window.innerHeight * 0.4;
   const cornerW = window.innerWidth * 0.5;
   for (const n of document.querySelectorAll('[id^="oni-"], [id^="fu-"]')) {
@@ -204,7 +181,6 @@ function anchor(root) {
   }
 
   root.style.setProperty("--fu-ap-top", `${Math.round(topEdge)}px`);
-  root.style.setProperty("--fu-ap-left", `${Math.round(leftEdge)}px`);
 }
 
 // ── animation ─────────────────────────────────────────────────────────────
@@ -216,7 +192,9 @@ function cancelAnim() {
   if (anim.current) { try { anim.current.cancel(); } catch (_e) { /* already done */ } anim.current = null; }
 }
 
-const HIDDEN_FRAME = { opacity: 0, transform: `translateX(-${TUNING.SLIDE_PX}px)` };
+// It starts and ends entirely off the left edge — -100% of its OWN width, so a
+// long area name leaves from just as far out as a short one.
+const HIDDEN_FRAME = { opacity: 0, transform: "translateX(-100%)" };
 const SHOWN_FRAME  = { opacity: 1, transform: "translateX(0)" };
 
 /** Play the full in/hold/out cycle. Restarts cleanly if one is already up. */
@@ -301,7 +279,7 @@ function arm(scene) {
   setLastArea(verdict.name);
 
   disarm();
-  pending = { token: ++armSeq, sceneId: scene.id, label: verdict.display };
+  pending = { token: ++armSeq, sceneId: scene.id, label: verdict.label };
   timers.push(setTimeout(() => maybePlay("settle"), TUNING.SETTLE_MS));
   timers.push(setTimeout(() => maybePlay("watchdog"), TUNING.WATCHDOG_MS));
   log("armed", verdict.label, scene?.name);
@@ -374,11 +352,11 @@ Hooks.once("ready", () => {
   globalThis.FUCompanion.api ??= {};
   globalThis.FUCompanion.api.areaPanel = {
     /** Play a panel right now with an arbitrary label — the tuning loop. */
-    preview(name = "Area Name") { return play(cleanName(name)); },
+    preview(name = "Area Name") { return play(formatLabel(name)); },
     /** Play the panel a given scene would produce, ignoring repeat suppression. */
     previewScene(scene = canvas?.scene) {
       const cfg = readAreaConfig(scene);
-      return cfg.name ? play(cleanName(cfg.name)) : false;
+      return cfg.name ? play(formatLabel(cfg.name)) : false;
     },
     hide: () => hide(true),
     readConfig: (scene = canvas?.scene) => readAreaConfig(scene),
