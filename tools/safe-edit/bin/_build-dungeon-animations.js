@@ -72,6 +72,7 @@ const FX = {
   explosionPurple: "modules/boss-loot-assets-free/artwork/05-spell/homebrew/impact/Explosion_2_Radial_PURPLE_1200x1200.webm",
   shockwaveFire:   "modules/boss-loot-assets-free/artwork/05-spell/homebrew/fire/Shockwave_1_Fire_1_ORANGE_1200x1200.webm",
   dustPuff:        "modules/boss-loot-assets-free/artwork/05-spell/homebrew/air/Dust_1_Explosion_Smoke_Puff_CENTER_COLOR_1_1200x1200.webm",
+  curseRed:        JB + "Generic/Conditions/Curse01/ConditionCurse01_002_Red_600x600.webm",
 };
 
 const SND = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
@@ -740,10 +741,14 @@ const REGISTRY = {
 
       "Torment": () => FF.torment({
         key: "fafnir-torment", name: "Torment",
+        // The drawn leering mask is gone; Torment now opens the draconic eyes
+        // Draconic Domination used to, then sinks them into the victim. The
+        // old faceColor went with the mask — leaving it would read as live
+        // config for something nothing draws any more.
+        //
         // The laugh is an explicit asset choice, not a manifest name — an
         // explicit URL beats a palette/manifest default.
-        cfg: { faceColor: C.dark,
-               sfxLaugh: SFX.devilLaugh, sfxLaughVol: 0.7 },
+        cfg: { sfxLaugh: SFX.devilLaugh, sfxLaughVol: 0.7 },
       }),
 
       "Searing Brand": () => FF.searingBrand({
@@ -762,9 +767,11 @@ const REGISTRY = {
 
       "Draconic Domination": () => FF.draconicDomination({
         key: "fafnir-draconic-domination", name: "Draconic Domination",
-        // RED, per the mockup — not the bolt-purple the first pass used. The
-        // old irisColor/veinColor keys are gone with the single-eye version
-        // they belonged to; leaving them would read as live config.
+        // The drawn eyes moved to Torment; this one now opens a FULL-SCREEN
+        // curse plate instead. Not token-anchored on purpose: the shot has
+        // already emptied the frame down to the victim and parked the camera
+        // on them, so the plate is the frame.
+        assets: { curseFx: FX.curseRed },
         cfg: { sfx: "Spook", sfxVol: 0.6,
                sfxOpen: SFX.paralyze3, sfxOpenVol: 0.7 },
       }),
