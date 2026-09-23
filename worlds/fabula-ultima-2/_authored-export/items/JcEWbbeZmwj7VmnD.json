@@ -90,6 +90,7 @@
   "sort": 0,
   "system": {
     "props": {
+      "action_command": "spell",
       "class": "Spiritist",
       "cost": "5 x T MP",
       "damage_bonus": "0",

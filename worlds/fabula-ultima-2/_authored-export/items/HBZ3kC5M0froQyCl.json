@@ -24,6 +24,7 @@
   "system": {
     "container": "B1s2K9VLjc4XF4GB",
     "props": {
+      "action_command": "item",
       "cost": "-",
       "description": "<ul><li><p><em>Target creature gains <strong>10 Shield</strong>; if the target already has a Shield, increase that shield value by 10 instead.</em></p></li></ul>",
       "effect_table": {

@@ -23,6 +23,7 @@
   "sort": 0,
   "system": {
     "props": {
+      "action_command": "spell",
       "action_keywords": "pierce",
       "cost": "",
       "damage_bonus": "12 + (CHAR_LEVEL >= 20) * 4 + (CHAR_LEVEL >= 40) * 2",

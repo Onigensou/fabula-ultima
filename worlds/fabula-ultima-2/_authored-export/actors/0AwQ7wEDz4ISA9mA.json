@@ -663,6 +663,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "attack",
           "action_keywords": "overflow",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
@@ -937,6 +938,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "attack",
           "action_keywords": "",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
@@ -2219,6 +2221,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "attack",
           "action_keywords": "",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",

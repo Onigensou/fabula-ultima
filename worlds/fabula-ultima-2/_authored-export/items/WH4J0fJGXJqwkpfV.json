@@ -25,6 +25,7 @@
   "system": {
     "container": "vz3tqJwPprB8hpR1",
     "props": {
+      "action_command": "item",
       "cost": "-",
       "description": "<ul><li><p><em>Target ally gains <strong>Swift</strong> (increase their <strong>【DEX】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
       "effect_table": {

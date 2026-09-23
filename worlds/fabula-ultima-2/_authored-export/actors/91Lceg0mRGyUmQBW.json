@@ -266,6 +266,7 @@
       "system": {
         "container": "ogg4AJzdeK4JlpkQ",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -276,7 +277,7 @@
           "damage_bonus": "100",
           "defense_target_type": "def",
           "description": "<ul><li><p>Target creature <strong>recovers 100 HP</strong></p></li></ul>",
-          "duration": "Instnataneous",
+          "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "$deleted": false,
@@ -1083,6 +1084,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -1377,6 +1379,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "check_bonus": "0",
           "class": "Elementalist",

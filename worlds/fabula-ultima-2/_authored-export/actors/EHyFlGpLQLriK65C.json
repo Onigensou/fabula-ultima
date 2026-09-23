@@ -240,6 +240,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "check_bonus": "0",
           "class": "Elementalist",
@@ -732,6 +733,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "action_keywords": "ignore_resistance",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
@@ -1113,6 +1115,7 @@
       "system": {
         "container": "bzCRdAWbFufjwsgq",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -1493,6 +1496,7 @@
       "system": {
         "container": "bzCRdAWbFufjwsgq",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -1620,6 +1624,7 @@
       "system": {
         "container": "bzCRdAWbFufjwsgq",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -1812,6 +1817,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "check_bonus": "0",
           "class": "Elementalist",
@@ -1874,6 +1880,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "check_bonus": "0",
           "class": "Elementalist",
@@ -2282,6 +2289,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -2405,6 +2413,7 @@
       "system": {
         "container": "bzCRdAWbFufjwsgq",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -2470,6 +2479,7 @@
       "system": {
         "container": "bzCRdAWbFufjwsgq",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -2535,6 +2545,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "1700",
           "animation_damage_timing_options": "offset",
@@ -2600,6 +2611,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "check_bonus": "0",
           "class": "Elementalist",

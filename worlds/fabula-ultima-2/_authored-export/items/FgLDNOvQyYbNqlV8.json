@@ -24,6 +24,7 @@
   "system": {
     "container": "BuOjiNzcT4CY6iue",
     "props": {
+      "action_command": "item",
       "cost": "-",
       "description": "<p><em>Apple Juice:</em> target ally recovers 30 HP.</p>",
       "effect_table": {

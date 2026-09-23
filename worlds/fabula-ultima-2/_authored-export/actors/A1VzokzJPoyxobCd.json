@@ -41,6 +41,7 @@
       "sort": 100000,
       "system": {
         "props": {
+          "action_command": "attack",
           "active_effect_config_table": {
             "0": {
               "$deleted": false,
@@ -240,6 +241,7 @@
       "sort": 100000,
       "system": {
         "props": {
+          "action_command": "attack",
           "action_keywords": "blitz",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",

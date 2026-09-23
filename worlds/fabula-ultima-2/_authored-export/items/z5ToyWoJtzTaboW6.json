@@ -24,6 +24,7 @@
   "system": {
     "container": "POaW4RjRIguvQpqU",
     "props": {
+      "action_command": "item",
       "description": "<ul><li><p><em>Target creature recovers <strong>50 Hit Points</strong> and <strong>50 Mind Points</strong>.</em></p></li></ul>",
       "effect_table": {
         "0": {

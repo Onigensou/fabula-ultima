@@ -41,6 +41,7 @@
       "sort": 6000000,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "check_bonus": "0",
           "class": "Elementalist",
@@ -184,6 +185,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "action_keywords": "",
           "active_effect_config_table": {},
           "check_bonus": "0",
@@ -422,6 +424,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "action_keywords": "ignore_resistance",
           "active_effect_config_table": {},
           "check_bonus": "0",
@@ -486,6 +489,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "check_bonus": "0",
           "class": "Elementalist",
@@ -547,6 +551,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -625,6 +630,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "action_keywords": "ignore_resistance",
           "active_effect_config_table": {},
           "check_bonus": "0",
@@ -812,6 +818,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "action_keywords": "ignore_resistance",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
@@ -1413,6 +1420,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -1535,6 +1543,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "action_keywords": "ignore_resistance",
           "active_effect_config_table": {},
           "check_bonus": "0",
@@ -1721,6 +1730,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "action_keywords": "",
           "active_effect_config_table": {},
           "check_bonus": "0",
@@ -2004,6 +2014,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "check_bonus": "0",
           "class": "Elementalist",
@@ -2094,6 +2105,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "action_keywords": "",
           "active_effect_config_table": {},
           "check_bonus": "0",
@@ -2444,6 +2456,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "action_keywords": "",
           "active_effect_config_table": {},
           "check_bonus": "0",
@@ -2518,6 +2531,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "check_bonus": "0",
           "class": "Elementalist",
@@ -2921,6 +2935,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",

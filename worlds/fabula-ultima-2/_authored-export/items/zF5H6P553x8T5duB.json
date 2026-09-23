@@ -24,6 +24,7 @@
   "system": {
     "container": "pJGT7NB0fQhri3Ji",
     "props": {
+      "action_command": "item",
       "description": "<ul><li><p><em>Give <strong>5 Shield</strong> to target ally; if the target already has a Shield, increase that shield value by 5 instead.</em></p></li></ul>",
       "effect_table": {
         "0": {

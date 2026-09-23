@@ -625,6 +625,7 @@
       "system": {
         "container": "AHy1tE6vcMJBxBlN",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -1018,6 +1019,7 @@
       "system": {
         "container": "FW4tpwVEpjirTiJM",
         "props": {
+          "action_command": "item",
           "cost": "-",
           "description": "<p><em>Phoenix Feather:</em> revive an ally to their Crisis score.</p>",
           "effect_table": {
@@ -1465,6 +1467,7 @@
       "system": {
         "container": "CNKnuIJzsIVPR0GD",
         "props": {
+          "action_command": "item",
           "description": "<ul><li><p><em>Target ally gains <strong>Strong</strong> (increase their <strong>【MIG】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
           "effect_table": {
             "0": {
@@ -1649,6 +1652,7 @@
       "system": {
         "container": "goV9gV4SZ232oKZ4",
         "props": {
+          "action_command": "item",
           "description": "<ul><li><p><em>Give <strong>5 Shield</strong> to target ally; if the target already has a Shield, increase that shield value by 5 instead.</em></p></li></ul>",
           "effect_table": {
             "0": {
@@ -4291,6 +4295,7 @@
       "system": {
         "container": "ZbLoXQrkbqZIJkzr",
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -5566,6 +5571,7 @@
       "system": {
         "container": "vS9KOLFe1mIhiJBi",
         "props": {
+          "action_command": "item",
           "cost": "-",
           "description": "<ul><li><p><em>Target ally gains <strong>Swift</strong> (increase their <strong>【DEX】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
           "effect_table": {
@@ -6355,6 +6361,7 @@
       "system": {
         "container": "32IdnR3tifOIbDCD",
         "props": {
+          "action_command": "item",
           "cost": "-",
           "description": "<p><em>Apple Juice:</em> target ally recovers 30 HP.</p>",
           "effect_table": {
@@ -6410,6 +6417,7 @@
       "system": {
         "container": "Sm2b1LrlxwFYFnIx",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -8089,6 +8097,7 @@
       "system": {
         "container": "AcMJCQfYI0ZH76h6",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -8485,6 +8494,7 @@
       "system": {
         "container": "rsQehCmVCCnx0J3G",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -9057,6 +9067,7 @@
       "system": {
         "container": "ERZjg9YBPVLk6nsc",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -9068,7 +9079,7 @@
           "defense_target_type": "def",
           "description": "<ul><li><p>Target creature <strong>recovers 50 HP</strong></p></li></ul>",
           "details_roller": "Show",
-          "duration": "Instnataneous",
+          "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "effect_kind": "grant",
@@ -9244,6 +9255,7 @@
       "system": {
         "container": "dY7K6TBgeCBn6v96",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -9712,6 +9724,7 @@
       "system": {
         "container": "ex3ZNA9wLrwNjDwI",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -10192,6 +10205,7 @@
       "system": {
         "container": "j01X9BSbZttkvBn2",
         "props": {
+          "action_command": "item",
           "cost": "-",
           "description": "<p><em>Golem Soulstone:</em> target ally gains 10 Shield (keep the bigger).</p>",
           "effect_table": {

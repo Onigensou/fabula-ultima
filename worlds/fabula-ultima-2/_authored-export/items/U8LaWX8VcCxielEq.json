@@ -25,6 +25,7 @@
   "system": {
     "container": "RBNbFK6bfPTqojzH",
     "props": {
+      "action_command": "item",
       "active_effect_config_table": {},
       "animation_damage_timing_offset": "0",
       "animation_damage_timing_options": "default",
@@ -35,7 +36,7 @@
       "damage_bonus": "100",
       "defense_target_type": "def",
       "description": "<ul><li><p><em>Target creature recovers <strong>100 Hit Points</strong>.</em></p></li></ul>",
-      "duration": "Instnataneous",
+      "duration": "Instantaneous",
       "effect_table": {
         "0": {
           "effect_kind": "grant",

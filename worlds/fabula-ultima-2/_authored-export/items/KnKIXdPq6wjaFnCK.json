@@ -24,6 +24,7 @@
   "system": {
     "container": "S71vgGdSVCmEGWN0",
     "props": {
+      "action_command": "item",
       "cost": "-",
       "description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
       "effect_table": {

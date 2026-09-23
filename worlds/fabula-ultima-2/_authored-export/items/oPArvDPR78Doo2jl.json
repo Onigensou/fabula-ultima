@@ -24,6 +24,7 @@
   "system": {
     "container": "uc8XODkLHZ6KX4JR",
     "props": {
+      "action_command": "item",
       "description": "<ul><li><p><em>Inflicts <strong>Charmed</strong> on the target until the end of this turn and deals <strong>5 fire damage</strong>. Only usable on Humanoid creatures.</em></p></li></ul>",
       "effect_table": {
         "0": {

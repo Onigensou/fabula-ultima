@@ -24,6 +24,7 @@
   "system": {
     "container": "5iEQw0ZjgLYLcdcA",
     "props": {
+      "action_command": "item",
       "description": "<ul><li><p><em>All allies recover <strong>50 Hit Points</strong>.</em></p></li></ul>",
       "effect_table": {
         "0": {

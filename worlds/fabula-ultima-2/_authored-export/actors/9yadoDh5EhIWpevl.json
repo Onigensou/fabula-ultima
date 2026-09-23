@@ -46,6 +46,7 @@
       "sort": 100000,
       "system": {
         "props": {
+          "action_command": "attack",
           "action_keywords": "",
           "active_effect_config_table": {},
           "ae_chance_percent": "",
@@ -572,6 +573,7 @@
       "sort": 100000,
       "system": {
         "props": {
+          "action_command": "spell",
           "action_keywords": "",
           "active_effect_config_table": {},
           "ae_chance_percent": "",

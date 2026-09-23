@@ -68,6 +68,7 @@
       "system": {
         "container": "Kgpr0RKXDFLiT1nt",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -150,6 +151,7 @@
       "system": {
         "container": "QzvztoJvbcrRCTIG",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -598,6 +600,7 @@
       "system": {
         "container": "wyHYZTWCMLvo72W1",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -767,6 +770,7 @@
       "system": {
         "container": "4Q1BmQc60XoLqawd",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -966,6 +970,7 @@
       "system": {
         "container": "UBEgeObQWBwY8ulC",
         "props": {
+          "action_command": "item",
           "cost": "-",
           "description": "<p><em>Apple Juice:</em> target ally recovers 30 HP.</p>",
           "effect_table": {
@@ -1136,6 +1141,7 @@
       "system": {
         "container": "MHCBuTQgrk7Uw5yJ",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -1426,6 +1432,7 @@
       "system": {
         "container": "87isKaee27uz2osu",
         "props": {
+          "action_command": "item",
           "cost": "-",
           "description": "<p><em>Apple Juice:</em> target ally recovers 30 HP.</p>",
           "effect_table": {

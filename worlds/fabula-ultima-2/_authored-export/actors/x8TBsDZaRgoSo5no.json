@@ -265,6 +265,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "attack",
           "action_intent": "harmful",
           "action_keywords": "",
           "active_effect_config_table": {},
@@ -355,6 +356,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "attack",
           "action_intent": "harmful",
           "action_keywords": "",
           "active_effect_config_table": {},

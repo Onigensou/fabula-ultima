@@ -794,6 +794,7 @@
       "system": {
         "container": null,
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "2000",
           "animation_damage_timing_options": "offset",
@@ -917,6 +918,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -6617,6 +6619,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -8211,6 +8214,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {
             "0": {
               "$deleted": false,
@@ -9289,6 +9293,7 @@
       "system": {
         "container": "JOEi8X46SkQ5tRNG",
         "props": {
+          "action_command": "spell",
           "cost": "15 MP",
           "description": "<p>Cast 【✨ Charm】: 15 MP, One Creature. 50% chance to inflict Charmed for 1 Round.</p>",
           "duration": "Instantaneous",
@@ -9952,6 +9957,7 @@
       "system": {
         "container": "ll9wkUrPJay3Ah0l",
         "props": {
+          "action_command": "item",
           "cost": "-",
           "description": "<p><em>Phoenix Feather:</em> revive an ally to their Crisis score.</p>",
           "effect_table": {
@@ -10004,6 +10010,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -10440,6 +10447,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",

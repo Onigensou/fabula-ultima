@@ -42,6 +42,7 @@
       "system": {
         "container": "N5CzWUhZZS76QNAK",
         "props": {
+          "action_command": "item",
           "description": "<ul><li><p><em>Give <strong>5 Shield</strong> to target ally; if the target already has a Shield, increase that shield value by 5 instead.</em></p></li></ul>",
           "effect_table": {
             "0": {
@@ -381,6 +382,7 @@
       "sort": 100000,
       "system": {
         "props": {
+          "action_command": "attack",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -450,6 +452,7 @@
       "system": {
         "container": "XOYJVXksaXNzWmGp",
         "props": {
+          "action_command": "item",
           "cost": "-",
           "description": "<p><em>Golem Soulstone:</em> target ally gains 10 Shield (keep the bigger).</p>",
           "effect_table": {

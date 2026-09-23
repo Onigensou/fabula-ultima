@@ -761,6 +761,7 @@
       "system": {
         "container": "ONBDXV8q0YuqAUmD",
         "props": {
+          "action_command": "item",
           "cost": "-",
           "description": "<p><em>Spicy Cocktail:</em> deal 20 Fire damage to all enemies; 50% chance to inflict Burn.</p>",
           "effect_table": {
@@ -831,6 +832,7 @@
       "sort": 100000,
       "system": {
         "props": {
+          "action_command": "attack",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -927,6 +929,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",

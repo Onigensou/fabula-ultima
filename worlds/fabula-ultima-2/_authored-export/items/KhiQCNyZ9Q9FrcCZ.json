@@ -84,6 +84,7 @@
   "system": {
     "container": "HmA1EX3UupBePME4",
     "props": {
+      "action_command": "item",
       "description": "<ul><li><p><em>Cures <strong>Hypothermia</strong>, and you gain <strong>Resistance to Hypothermia</strong> for the rest of the scene (Hypothermia only lasts 1 round against you).</em></p></li></ul>",
       "effect_table": {
         "0": {

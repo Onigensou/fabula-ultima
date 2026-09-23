@@ -984,6 +984,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -1383,6 +1384,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "action_keywords": "ignore_resistance",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
@@ -1953,6 +1955,7 @@
       "system": {
         "container": "LnD53Z0tYhywBniu",
         "props": {
+          "action_command": "item",
           "cost": "-",
           "description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
           "effect_table": {
@@ -2003,6 +2006,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",

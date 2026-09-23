@@ -739,6 +739,7 @@
       "system": {
         "container": "exVAwWwaIvNcyuwc",
         "props": {
+          "action_command": "item",
           "cost": "-",
           "description": "<p><em>Phoenix Feather:</em> revive an ally to their Crisis score.</p>",
           "effect_table": {
@@ -790,6 +791,7 @@
       "system": {
         "container": "wKogg4SVIY63cqLh",
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -1361,6 +1363,7 @@
       "system": {
         "container": "GlBKvz5lDwGextqo",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -2437,6 +2440,7 @@
       "system": {
         "container": "LVwLI7slKbPofiP4",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -2447,7 +2451,7 @@
           "damage_bonus": "100",
           "defense_target_type": "def",
           "description": "<ul><li><p>Target creature <strong>recovers 100 HP</strong></p></li></ul>",
-          "duration": "Instnataneous",
+          "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "$deleted": false,
@@ -4497,6 +4501,7 @@
       "system": {
         "container": "2bpkyQeHry5IsNgL",
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {
             "0": {
               "$deleted": false,

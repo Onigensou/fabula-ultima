@@ -82,6 +82,7 @@
   "sort": 0,
   "system": {
     "props": {
+      "action_command": "spell",
       "active_effect_config_table": {
         "0": {
           "$deleted": false,

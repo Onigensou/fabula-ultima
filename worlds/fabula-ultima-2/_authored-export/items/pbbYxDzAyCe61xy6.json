@@ -24,6 +24,7 @@
   "system": {
     "container": null,
     "props": {
+      "action_command": "spell",
       "action_keywords": "ignore_resistance",
       "active_effect_config_table": {},
       "check_bonus": "0",

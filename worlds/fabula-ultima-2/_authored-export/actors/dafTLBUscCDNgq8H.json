@@ -716,6 +716,7 @@
       "system": {
         "container": "6XI1fEBsEfNZdl2y",
         "props": {
+          "action_command": "item",
           "cost": "-",
           "description": "<p><em>Apple Juice:</em> target ally recovers 30 HP.</p>",
           "effect_table": {
@@ -1091,6 +1092,7 @@
       "system": {
         "container": "zEo3OgMcD2P3ug1o",
         "props": {
+          "action_command": "spell",
           "cost": "0",
           "damage_bonus": "15",
           "description": "<p>A single Starfall comet. Deals <strong>【HR+15】 Light damage</strong> to one random enemy.</p>",
@@ -2346,6 +2348,7 @@
       "system": {
         "container": "uDik6IiSPpoJiNwF",
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -3091,6 +3094,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "check_bonus": "0",
           "class": "Entropist",
@@ -3419,6 +3423,7 @@
       "system": {
         "container": "GjHWixk5ZMiE4jk8",
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -4441,6 +4446,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {
             "0": {
               "$deleted": false,
@@ -6290,6 +6296,7 @@
       "system": {
         "container": "irzhS1BV9TsO7xlb",
         "props": {
+          "action_command": "item",
           "cost": "-",
           "description": "<p><em>Grape Juice:</em> target ally recovers 20 MP.</p>",
           "effect_table": {
@@ -7493,6 +7500,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -7996,6 +8004,7 @@
       "system": {
         "container": "zEo3OgMcD2P3ug1o",
         "props": {
+          "action_command": "spell",
           "cost": "30 MP",
           "description": "<p><strong>Roulette Enemy.</strong> Summon 3 comets to fall on random enemies (repeats allowed). Each deals <strong>【HR+15】 Light damage</strong>.</p>",
           "duration": "Instantaneous",
@@ -8687,6 +8696,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -8885,6 +8895,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {
             "0": {
               "$deleted": false,
@@ -9867,6 +9878,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "check_bonus": "0",
           "class": "Hexer",
@@ -9955,6 +9967,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "action_keywords": "ignore_resistance",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
@@ -10036,6 +10049,7 @@
       "system": {
         "container": "LdxJgEghJUNP6bYL",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -10046,7 +10060,7 @@
           "damage_bonus": "100",
           "defense_target_type": "def",
           "description": "<ul><li><p>Target creature <strong>recovers 100 HP</strong></p></li></ul>",
-          "duration": "Instnataneous",
+          "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "$deleted": false,
@@ -10718,6 +10732,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "check_bonus": "0",
           "class": "Spiritist",
@@ -12658,6 +12673,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -14419,6 +14435,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -14498,6 +14515,7 @@
       "system": {
         "container": "20QAZWYIlUg4Uj6B",
         "props": {
+          "action_command": "item",
           "cost": "-",
           "description": "<p><em>Love Potion:</em> target enemy is Charmed.</p>",
           "effect_table": {
@@ -14836,6 +14854,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -14931,6 +14950,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {
             "0": {
               "$deleted": false,

@@ -235,6 +235,7 @@
   "sort": 0,
   "system": {
     "props": {
+      "action_command": "spell",
       "availability_formula": "OWN_NUMEN_COUNT == 0",
       "availability_reason": "Numen already active",
       "class": "Illusionist",

@@ -23,6 +23,7 @@
   "sort": 0,
   "system": {
     "props": {
+      "action_command": "spell",
       "cost": "20 MP",
       "damage_bonus": "25",
       "defense_target_type": "mdef",

@@ -24,6 +24,7 @@
   "system": {
     "container": "DwQBvo01cFf1IcN3",
     "props": {
+      "action_command": "spell",
       "active_effect_config_table": {
         "0": {
           "$deleted": false,

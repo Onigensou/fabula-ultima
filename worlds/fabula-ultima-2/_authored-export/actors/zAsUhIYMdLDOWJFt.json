@@ -268,6 +268,7 @@
       "sort": 100000,
       "system": {
         "props": {
+          "action_command": "attack",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -364,6 +365,7 @@
       "sort": 700000,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -437,6 +439,7 @@
       "sort": 100000,
       "system": {
         "props": {
+          "action_command": "attack",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -729,6 +732,7 @@
       "sort": 700000,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -825,6 +829,7 @@
       "sort": 700000,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -898,6 +903,7 @@
       "sort": 100000,
       "system": {
         "props": {
+          "action_command": "attack",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",

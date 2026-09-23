@@ -24,6 +24,7 @@
   "system": {
     "container": "6ThyGpmcPzrBBGji",
     "props": {
+      "action_command": "item",
       "cost": "-",
       "description": "<p><em>Spicy Cocktail:</em> deal 20 Fire damage to all enemies; 50% chance to inflict Burn.</p>",
       "effect_table": {

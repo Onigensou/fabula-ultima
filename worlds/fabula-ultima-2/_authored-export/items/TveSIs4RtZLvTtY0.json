@@ -24,6 +24,7 @@
   "system": {
     "container": "22zoFt3zhXjelhsX",
     "props": {
+      "action_command": "item",
       "cost": "-",
       "description": "<p><em>Love Potion:</em> target enemy is Charmed.</p>",
       "effect_table": {

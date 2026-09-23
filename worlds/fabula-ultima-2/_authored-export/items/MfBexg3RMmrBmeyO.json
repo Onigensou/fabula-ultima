@@ -23,6 +23,7 @@
   "sort": 0,
   "system": {
     "props": {
+      "action_command": "spell",
       "duration": "Instantaneous",
       "effect_table": {
         "0": {

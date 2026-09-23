@@ -24,6 +24,7 @@
   "system": {
     "container": "nQQITYZ7zc3TBGI4",
     "props": {
+      "action_command": "item",
       "description": "<ul><li><p><em>Inflicts a <strong>random status effect</strong> on yourself (drawn from every status in the game).</em></p></li></ul>",
       "effect_table": {
         "0": {

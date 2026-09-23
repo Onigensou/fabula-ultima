@@ -24,6 +24,7 @@
   "sort": 0,
   "system": {
     "props": {
+      "action_command": "spell",
       "action_keywords": "pierce, ignore_resistance",
       "active_effect_config_table": {},
       "animation_damage_timing_offset": "0",

@@ -23,6 +23,7 @@
   "sort": 0,
   "system": {
     "props": {
+      "action_command": "attack",
       "active_effect_config_table": {},
       "check_bonus": "0",
       "class": "",

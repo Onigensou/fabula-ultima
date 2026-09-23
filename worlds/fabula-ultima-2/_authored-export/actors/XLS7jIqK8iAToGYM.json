@@ -806,6 +806,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "class": "Spiritist",
           "cost": "5 x T MP",
           "damage_bonus": "0",
@@ -1471,6 +1472,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -2019,6 +2021,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "check_bonus": "0",
           "class": "Spiritist",
@@ -2483,6 +2486,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -2785,6 +2789,7 @@
       "system": {
         "container": null,
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "check_bonus": "0",
           "class": "Elementalist",
@@ -2847,6 +2852,7 @@
       "system": {
         "container": null,
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "check_bonus": "0",
           "class": "Elementalist",
@@ -3196,6 +3202,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "class": "Spiritist",
           "cost": "20 MP",
           "damage_bonus": "0",
@@ -3284,6 +3291,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_command": "spell",
           "class": "Spiritist",
           "cost": "5 x T MP",
           "damage_bonus": "0",

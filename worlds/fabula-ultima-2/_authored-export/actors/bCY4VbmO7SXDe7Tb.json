@@ -279,6 +279,7 @@
       "system": {
         "container": "oTZBj8V64oJGD4nL",
         "props": {
+          "action_command": "item",
           "cost": "-",
           "description": "<p><em>Love Potion:</em> target enemy is Charmed.</p>",
           "effect_table": {
@@ -332,6 +333,7 @@
       "system": {
         "container": "47uHeXSs8KbF99pB",
         "props": {
+          "action_command": "item",
           "cost": "-",
           "description": "<p><em>Spicy Cocktail:</em> deal 20 Fire damage to all enemies; 50% chance to inflict Burn.</p>",
           "effect_table": {
@@ -403,6 +405,7 @@
       "system": {
         "container": "hJ9OvZ0PS64ihhCF",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -691,6 +694,7 @@
       "system": {
         "container": "AfUINns1a5KQHMea",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -1439,6 +1443,7 @@
       "system": {
         "container": "Ppa4Yer0XHh7a5fj",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -1608,6 +1613,7 @@
       "system": {
         "container": "uRmOhZlUAH5YsoTM",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -1674,6 +1680,7 @@
       "system": {
         "container": "NTDT321EMk8r4f0q",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -1877,6 +1884,7 @@
       "system": {
         "container": "m9l6bECurV0SkZmE",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",

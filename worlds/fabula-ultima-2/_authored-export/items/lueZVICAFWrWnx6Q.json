@@ -24,6 +24,7 @@
   "system": {
     "container": "0BK9PoXbrolOBbKI",
     "props": {
+      "action_command": "item",
       "cost": "-",
       "description": "<p><em>Grape Wine:</em> target ally recovers 60 MP, then is Dazed.</p>",
       "effect_table": {

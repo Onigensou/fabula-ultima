@@ -24,6 +24,7 @@
   "system": {
     "container": "UPrdSUli5l4FksHL",
     "props": {
+      "action_command": "item",
       "cost": "-",
       "description": "<p><em>Grape Juice:</em> target ally recovers 20 MP.</p>",
       "effect_table": {

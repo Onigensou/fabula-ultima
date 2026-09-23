@@ -107,6 +107,7 @@
       "system": {
         "container": null,
         "props": {
+          "action_command": "spell",
           "check_bonus": "0",
           "class": "Hexer",
           "cost": "15 MP",
@@ -360,6 +361,7 @@
       "system": {
         "container": null,
         "props": {
+          "action_command": "spell",
           "active_effect_config_table": {},
           "check_bonus": "0",
           "class": "Hexer",
@@ -857,6 +859,7 @@
       "system": {
         "container": null,
         "props": {
+          "action_command": "spell",
           "check_bonus": "0",
           "class": "Hexer",
           "cost": "15 MP",
@@ -1373,6 +1376,7 @@
       "system": {
         "container": null,
         "props": {
+          "action_command": "spell",
           "check_bonus": "0",
           "class": "Hexer",
           "cost": "10 MP",

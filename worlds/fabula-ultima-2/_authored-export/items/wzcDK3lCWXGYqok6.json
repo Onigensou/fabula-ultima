@@ -24,6 +24,7 @@
   "system": {
     "container": "QXgHt7VEXEaVdPz1",
     "props": {
+      "action_command": "item",
       "cost": "-",
       "description": "<p><em>Phoenix Feather:</em> revive an ally to their Crisis score.</p>",
       "effect_table": {

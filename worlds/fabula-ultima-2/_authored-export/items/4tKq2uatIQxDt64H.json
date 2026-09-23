@@ -23,6 +23,7 @@
   "sort": 468750,
   "system": {
     "props": {
+      "action_command": "spell",
       "active_effect_config_table": {},
       "animation_damage_timing_offset": "5000",
       "animation_damage_timing_options": "offset",

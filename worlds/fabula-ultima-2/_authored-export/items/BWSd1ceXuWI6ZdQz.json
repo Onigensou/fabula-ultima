@@ -109,6 +109,7 @@
   "system": {
     "container": "BrvcVy625CHzhxzn",
     "props": {
+      "action_command": "item",
       "active_effect_config_table": {
         "0": {
           "$deleted": false,

@@ -24,6 +24,7 @@
   "system": {
     "container": "prSMefjNTAYuT2Md",
     "props": {
+      "action_command": "item",
       "description": "<ul><li><p><em>Target ally gains <strong>Strong</strong> (increase their <strong>【MIG】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
       "effect_table": {
         "0": {

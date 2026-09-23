@@ -179,6 +179,7 @@
       "system": {
         "container": "XKHbgiQItir8HWd1",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -377,6 +378,7 @@
       "system": {
         "container": "FwUkhIhraQGl8gkR",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -387,7 +389,7 @@
           "damage_bonus": "100",
           "defense_target_type": "def",
           "description": "<ul><li><p>Target creature <strong>recovers 100 HP</strong></p></li></ul>",
-          "duration": "Instnataneous",
+          "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "$deleted": false,
@@ -863,6 +865,7 @@
       "system": {
         "container": "A7ggbVri8xxqf2h5",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -1061,6 +1064,7 @@
       "system": {
         "container": "dppHYHBTaodIyVds",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -1247,6 +1251,7 @@
       "system": {
         "container": "22gZ13vEZoTMaEvu",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -1445,6 +1450,7 @@
       "system": {
         "container": "Lurae7PVFbNhJRFc",
         "props": {
+          "action_command": "item",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",

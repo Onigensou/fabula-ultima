@@ -723,6 +723,7 @@
       "system": {
         "container": "leAYO9ruiIajUdhU",
         "props": {
+          "action_command": "item",
           "cost": "-",
           "description": "<p>Target creature gains <strong>10 Shield</strong>; if the target already has a Shield, increase that shield value by <strong>10</strong> instead.</p>",
           "effect_table": {
@@ -2700,6 +2701,7 @@
       "system": {
         "container": "A3VqPJRBDW8c1NnH",
         "props": {
+          "action_command": "item",
           "cost": "-",
           "description": "<p><em>Love Potion:</em> target enemy is Charmed.</p>",
           "effect_table": {
@@ -8941,6 +8943,7 @@
       "system": {
         "container": "8wPV7YHkxgJ6Sl5J",
         "props": {
+          "action_command": "item",
           "cost": "-",
           "description": "<p><em>Phoenix Feather:</em> revive an ally to their Crisis score.</p>",
           "effect_table": {
@@ -9798,6 +9801,7 @@
       "system": {
         "container": "N7V1XkfZqFo7gCtM",
         "props": {
+          "action_command": "item",
           "cost": "-",
           "description": "<ul><li><p><em>Target ally gains <strong>Swift</strong> (increase their <strong>【DEX】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
           "effect_table": {

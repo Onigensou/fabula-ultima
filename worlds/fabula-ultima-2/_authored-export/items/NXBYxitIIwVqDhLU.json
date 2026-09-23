@@ -24,6 +24,7 @@
   "system": {
     "container": "nt0aSfqujhxInx6y",
     "props": {
+      "action_command": "spell",
       "cost": "15 MP",
       "duration": "Instantaneous",
       "effect_table": {
