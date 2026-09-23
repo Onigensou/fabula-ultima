@@ -124,6 +124,7 @@ const SFX = {
   monster4: SND + "Soundboard/Monster4.ogg",
   highJump: SND + "Soundboard/SE_BTL_HighJump.ogg",
   seDownC:  SND + "Soundboard/SE_DOWNC.wav",
+  overdrive: SND + "Overdrive.wav",
   laser2:   SND + "Laser2.ogg",
   chargingA: SND + "ChargingA.wav",
   amaltheaBoom: SND + "Amalthea_Explosion.ogg",
@@ -834,6 +835,7 @@ const REGISTRY = {
           // is that SAME fireball falling in from off-frame -- not a beam
           // wearing fire colours. The blow-out is shared with Bolt.
           breathMode: "ball", impactStyle: "ball", silhouette: true,
+          sfxZeroCutin: SFX.overdrive, sfxZeroCutinVol: 0.9,
           sfxJump: SFX.highJump, sfxJumpVol: 0.7,
           sfxSky: SFX.monster1, sfxSkyVol: 0.7,
           sfxCutin: SFX.monster4, sfxCutinVol: 0.7,
@@ -867,6 +869,7 @@ const REGISTRY = {
           // and bursts, which reads in its own travel time.
           hitHoldMs: 1500,
           shakeMs: 760,
+          sfxZeroCutin: SFX.overdrive, sfxZeroCutinVol: 0.9,
           sfxJump: SFX.highJump, sfxJumpVol: 0.7,
           sfxSky: SFX.monster1, sfxSkyVol: 0.7,
           sfxCutin: SFX.monster4, sfxCutinVol: 0.7,
