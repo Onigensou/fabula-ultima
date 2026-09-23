@@ -44,23 +44,27 @@ export const TUNING = {
   // NEGATIVE, so its left end runs off-frame and only the right corners are
   // ever seen. The left padding adds that overhang back, so the text is not
   // crowded against the edge.
-  POS_X_PX:  -28,
-  POS_Y_PX:    0,           // extra offset BELOW the auto anchor (under Foundry's chrome)
-  FONT_PX:     30,          // area-name size
-  GLYPH_SCALE: 1,           // diamond size, as a multiple of the area-name size
-  GLYPH_GAP_PX: 12,         // space between the diamond and the name
-  PANEL_SCALE: 1,           // whole-plaque multiplier, from its left edge
-  MIN_W_PX:     0,          // 0 = fit the text
+  // Tuned live and signed off 2026-09-23. A wide, softly-rounded plaque: the
+  // 450px floor keeps a short area name from reading as a chip, the 1.2× diamond
+  // and its 28px gap give the line a heading, and the whole thing is drawn at
+  // 27px then scaled to 0.8 so the outline stays heavy against the parchment.
+  POS_X_PX:   -22,
+  POS_Y_PX:    26,          // extra offset BELOW the auto anchor (under Foundry's chrome)
+  FONT_PX:     27,          // area-name size
+  GLYPH_SCALE: 1.2,         // diamond size, as a multiple of the area-name size
+  GLYPH_GAP_PX: 28,         // space between the diamond and the name
+  PANEL_SCALE: 0.8,         // whole-plaque multiplier, from its left edge
+  MIN_W_PX:   450,          // 0 = fit the text
   MIN_H_PX:     0,          // 0 = let the padding decide
-  PAD_X_PX:    32,          // right-hand padding; the left adds the overhang
-  PAD_Y_PX:    15,
-  OUTLINE_PX:   3,          // frame thickness
-  RADIUS_PX:   12,
+  PAD_X_PX:    48,          // right-hand padding; the left adds the overhang
+  PAD_Y_PX:    12,
+  OUTLINE_PX:   5,          // frame thickness
+  RADIUS_PX:   33,
 
   // ── Motion ───────────────────────────────────────────────────────────────
   // It travels its own full width (translateX(-100%)), not a small nudge, so
   // the durations are long enough to keep that an unhurried drift.
-  IN_MS:    1100,           // slide + fade in
+  IN_MS:    1150,           // slide + fade in
   HOLD_MS:  4000,           // idle dwell, per spec
   OUT_MS:    950,           // slide + fade out, back the way it came
   EASE_IN:  "cubic-bezier(.22,.61,.36,1)",   // ease-out quad — entrance

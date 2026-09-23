@@ -145,9 +145,16 @@ variable, so a drag repaints in place instead of re-running the slide. **Play**
 drops the hold and runs the whole in/dwell/out cycle, which is the only way to
 judge the timings.
 
-At 30px type the plaque is about 69px tall — under the mockup's roughly
-one-tenth of screen height, which is the first thing to try if it wants more
-presence.
+### The shipped look
+
+Tuned live and signed off 2026-09-23: 27px type drawn at `PANEL_SCALE` 0.8, a
+1.2× diamond with a 28px gap, a 450px minimum width so a short area name still
+reads as a plaque rather than a chip, a heavy 5px frame with 33px corners, and
+`POS` −22 / +26. It measures about 363 × 53 on screen at 1920 × 1027.
+
+Those numbers live in `TUNING`; the world carries **no** overrides, so the
+tuner opens on the shipped look and anything saved there is a deliberate
+departure from it.
 
 ## Debug API
 
