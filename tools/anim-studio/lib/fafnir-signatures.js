@@ -856,12 +856,12 @@ function draconicDomination(opts = {}) {
     eyeHalfW: 0.165,        // fraction of viewport WIDTH
     eyeHalfH: 0.115,        // fraction of viewport HEIGHT, at full stretch
     eyeTilt: 0.34,          // radians; mirrored between the two
-    eyeColor: 0xe02030, eyeCoreColor: 0xff6a5a, glowColor: 0xff3324,
+    // One flat red, no inner highlight: an additive core over red blew out to
+    // near-white and swallowed the eye. The reference is a solid shape.
+    eyeColor: 0xe02030, glowColor: 0xff3324,
 
     // Squash -> stretch.
     squashFrom: 0.16, openMs: 900,
-    // The glare line that joins them once they are open.
-    beamMs: 420, beamThickness: 0.012, beamAlpha: 0.85,
 
     // Idle: the stare holds while the eyes breathe and the lines keep tearing.
     idleMs: 3000, glowHz: 1.6, glowDepth: 0.22,
@@ -992,8 +992,7 @@ function draconicDomination(opts = {}) {
     "  glow.blendMode = PIXI.BLEND_MODES.ADD;",
     "  glow.width = HW * 2.6; glow.height = HH * 3.4;",
     "  const outer = new PIXI.Graphics(); lens(outer, HW, HH, cfg.eyeColor, 0.95);",
-    "  const core  = new PIXI.Graphics(); lens(core, HW * 0.62, HH * 0.52, cfg.eyeCoreColor, 0.95);",
-    "  c.addChild(glow, outer, core);",
+    "  c.addChild(glow, outer);",
     "  c.scale.set(1, cfg.squashFrom);",
     "  c.alpha = 0;",
     "  host.addChild(c);",
@@ -1009,22 +1008,6 @@ function draconicDomination(opts = {}) {
     "  for (const e of [eyeL, eyeR]) { e.c.scale.set(1, sy); e.c.alpha = Math.min(1, v * 2.2); }",
     "} });",
     "",
-    "// The glare line joining them, once both are open.",
-    "const beam = new PIXI.Graphics();",
-    "host.addChild(beam);",
-    "const beamHalf = S.hPx(cfg.beamThickness) * 0.5;",
-    "const drawBeam = function (alpha) {",
-    "  beam.clear();",
-    "  if (alpha <= 0.001) return;",
-    "  const l = S.S2W(-0.05, cfg.eyeY);",
-    "  const r = S.S2W(1.05, cfg.eyeY);",
-    "  beam.beginFill(cfg.eyeCoreColor, alpha);",
-    "  beam.drawRect(l.x, l.y - beamHalf, r.x - l.x, beamHalf * 2);",
-    "  beam.endFill();",
-    "  beam.blendMode = PIXI.BLEND_MODES.ADD;",
-    "};",
-    "await oni.tween({ from: 0, to: 1, duration: cfg.beamMs, ease: E.outQuad,",
-    "  onUpdate: function (v) { drawBeam(cfg.beamAlpha * v); } });",
     "",
     "// The stare has landed — this is the moment the save is made against.",
     "done();",
@@ -1039,18 +1022,16 @@ function draconicDomination(opts = {}) {
     "    e.glow.height = HH * 3.4 * k;",
     "    e.glow.alpha = 0.75 + s * 0.25;",
     "  }",
-    "  drawBeam(cfg.beamAlpha * (0.72 + s * 0.28));",
     "} });",
     "",
     "// ── Cleanup, then return ──",
     "await oni.tween({ from: 1, to: 0, duration: cfg.closeMs, ease: E.inOutQuad, onUpdate: function (v) {",
     "  // Shut the same way they opened, by collapsing vertically.",
     "  for (const e of [eyeL, eyeR]) { e.c.scale.set(1, cfg.squashFrom + (1 - cfg.squashFrom) * v); e.c.alpha = v; }",
-    "  drawBeam(cfg.beamAlpha * v);",
     "  lineGain = v;",
     "} });",
     "try { PIXI.Ticker.shared.remove(churn); } catch (e) {}",
-    "try { lines.destroy(); beam.destroy(); } catch (e) {}",
+    "try { lines.destroy(); } catch (e) {}",
     "try { eyeL.c.destroy({ children: true }); eyeR.c.destroy({ children: true }); } catch (e) {}",
     "",
     "// Sprites back first, then the camera, then the lights — the order the",
