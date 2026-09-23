@@ -1062,9 +1062,12 @@ function cruelUltimatum(opts = {}) {
     /* P06 dim the curtain */
     curtainDimTo: 0.34, curtainDimMs: 450,
     /* P07 cut-in. Fractions of the VIEWPORT; cutinH > 1 overflows the frame */
-    cutinH: 1.30, cutinX: 0.40, cutinY: 0.66, cutinFromFrac: 0.62, cutinInMs: 850,
-    /* P08 charge. mouthX/Y are fractions of the CUT-IN art, not the screen */
-    mouthX: 0.32, mouthY: 0.34, chargeMs: 1100, chargeSize: 0.34,
+    cutinH: 1.05, cutinX: 0.40, cutinY: 0.62, cutinFromFrac: 0.70, cutinInMs: 850,
+    /* P08 charge. mouthX/Y are fractions of the CUT-IN art, not the screen.
+       Measured off a live frame, not guessed: the glow at the centre of the
+       illustration is PAINTED IN, and aiming at it instead of at her actual
+       jaw put the beam origin down-left of her head. */
+    mouthX: 0.58, mouthY: 0.285, chargeMs: 1100, chargeSize: 0.28,
     /* P09 the beam */
     beamOutMs: 500,
     beamAngle: 0.56,                    // radians, down-and-right out of her jaw
