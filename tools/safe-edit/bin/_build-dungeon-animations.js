@@ -762,8 +762,11 @@ const REGISTRY = {
 
       "Draconic Domination": () => FF.draconicDomination({
         key: "fafnir-draconic-domination", name: "Draconic Domination",
-        cfg: { irisColor: C.bolt, veinColor: C.dark,
-               sfx: "Spook", sfxVol: 0.65 },
+        // RED, per the mockup — not the bolt-purple the first pass used. The
+        // old irisColor/veinColor keys are gone with the single-eye version
+        // they belonged to; leaving them would read as live config.
+        cfg: { sfx: "Spook", sfxVol: 0.6,
+               sfxOpen: SFX.paralyze3, sfxOpenVol: 0.7 },
       }),
 
       // ── Zero Power: Cruel Ultimatum ──────────────────────────────────────
