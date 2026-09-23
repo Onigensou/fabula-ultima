@@ -868,6 +868,13 @@
             </div>
             <p class="notes">Off by default. Normally an area announces itself <b>once</b>: moving between maps that share an area name stays silent until the party has been somewhere else. Tick this to announce on every activation regardless.</p>
           </div>
+
+          <div class="oni-fabula-actions">
+            <button type="button" class="oni-area-tune">
+              <i class="fas fa-sliders-h"></i> Tune Appearance
+            </button>
+          </div>
+          <p class="notes">Opens the live tuner: size, position, outline and timing, applied as you drag. Those values are shared by every scene, not stored here.</p>
           </div>
 
           <div class="form-group">
@@ -1220,6 +1227,18 @@
       if (areaAlwaysCb) {
         areaAlwaysCb.checked = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${AREA_PANEL_ALWAYS_KEY}`, false), false);
       }
+
+      // Live tuner. Its values are global (a world setting), not scene flags,
+      // so it neither reads from nor writes to this form.
+      const areaTuneBtn = generalPanel?.querySelector("button.oni-area-tune");
+      areaTuneBtn?.addEventListener("click", () => {
+        const tuner = globalThis.FUCompanion?.api?.areaPanel?.tuner;
+        if (typeof tuner !== "function") {
+          ui.notifications?.warn?.("Area panel tuner unavailable — reload the module.");
+          return;
+        }
+        tuner();
+      });
 
       // Scene Visited prefill
       const visitedCb = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${SCENE_VISITED_KEY}"]`);

@@ -14,8 +14,9 @@
 // ============================================================================
 
 import {
-  MODULE_ID, GLYPH, TUNING,
+  MODULE_ID, GLYPH, TUNING, TUNABLE,
   readAreaConfig, shouldShowForScene, formatLabel, cleanName,
+  sanitizeOverrides, mergeTuning, diffFromDefaults, exportSnippet,
 } from "./area-panel-core.js";
 
 let pass = 0, fail = 0;
@@ -144,8 +145,52 @@ ok("hold is the spec's 4s", TUNING.HOLD_MS === 4000);
 ok("watchdog outlasts a canvas draw plus the 700ms reveal",
    TUNING.WATCHDOG_MS > TUNING.SETTLE_MS + 900);
 ok("a held panel outlives a long look away", TUNING.DEFER_MAX_MS >= 60000);
-ok("the plaque hangs off the screen edge", TUNING.OVERSHOOT_PX > 0);
-ok("left padding clears the overshoot", TUNING.PAD_X_PX > TUNING.OVERSHOOT_PX / 2);
+ok("the plaque hangs off the screen edge", TUNING.POS_X_PX < 0);
+ok("padding clears the overhang", TUNING.PAD_X_PX + -TUNING.POS_X_PX > -TUNING.POS_X_PX);
+
+// ── tuning overrides (what the tuner window saves) ────────────────────────
+//
+// These arrive from a world setting — i.e. from whatever a tuner last wrote,
+// possibly an older one, possibly hand-edited. Nothing from there may reach the
+// CSS unchecked: one NaN in a size variable blanks the plaque with no error.
+
+{
+  const keys = TUNABLE.map((f) => f.key);
+  eq("every tunable field names a real TUNING key",
+     keys.filter((k) => !(k in TUNING)), []);
+  eq("no duplicate tunable keys", keys.length, new Set(keys).size);
+  ok("every tunable field has a usable range", TUNABLE.every((f) => f.max > f.min && f.step > 0));
+  ok("every default sits inside its own range",
+     TUNABLE.every((f) => TUNING[f.key] >= f.min && TUNING[f.key] <= f.max));
+}
+
+eq("unknown keys are dropped", sanitizeOverrides({ NOT_A_KEY: 3, FONT_PX: 40 }), { FONT_PX: 40 });
+eq("junk is dropped", sanitizeOverrides({ FONT_PX: "wide" }), {});
+eq("NaN is dropped", sanitizeOverrides({ FONT_PX: NaN }), {});
+eq("null overrides are survivable", sanitizeOverrides(null), {});
+eq("a string number is accepted", sanitizeOverrides({ FONT_PX: "40" }), { FONT_PX: 40 });
+eq("over-max is clamped, not rejected", sanitizeOverrides({ FONT_PX: 9000 }).FONT_PX, 96);
+eq("under-min is clamped", sanitizeOverrides({ PANEL_SCALE: -4 }).PANEL_SCALE, 0.25);
+eq("a negative X offset is legal — it is the whole point",
+   sanitizeOverrides({ POS_X_PX: -120 }).POS_X_PX, -120);
+
+eq("merge keeps the untouched defaults", mergeTuning({ FONT_PX: 40 }).HOLD_MS, TUNING.HOLD_MS);
+eq("merge applies the override", mergeTuning({ FONT_PX: 40 }).FONT_PX, 40);
+eq("merge of nothing is the defaults", mergeTuning({}).FONT_PX, TUNING.FONT_PX);
+eq("merge never lets junk through", mergeTuning({ FONT_PX: "wide" }).FONT_PX, TUNING.FONT_PX);
+
+eq("a value equal to the default is not a change",
+   diffFromDefaults({ FONT_PX: TUNING.FONT_PX }), {});
+eq("a real change is reported", diffFromDefaults({ FONT_PX: 40 }), { FONT_PX: 40 });
+
+{
+  const snippet = exportSnippet({ FONT_PX: 40 });
+  ok("the snippet carries every tunable key", TUNABLE.every((f) => snippet.includes(f.key)));
+  ok("the snippet shows the tuned value", snippet.includes("FONT_PX"));
+  ok("the snippet marks what changed", /FONT_PX\s*:\s*40,\s*\/\/ changed/.test(snippet));
+  ok("an untouched key is not marked",
+     !new RegExp(`HOLD_MS\\s*:\\s*${TUNING.HOLD_MS},\\s*// changed`).test(snippet));
+}
 ok("panel sits below the transition curtain", TUNING.Z_INDEX < 99999);
 ok("panel sits above Foundry chrome", TUNING.Z_INDEX > 30);
 

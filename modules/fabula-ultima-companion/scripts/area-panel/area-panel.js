@@ -30,9 +30,36 @@
 // ============================================================================
 
 import {
-  MODULE_ID, TUNING,
-  readAreaConfig, shouldShowForScene, formatLabel,
+  MODULE_ID, TUNING, GLYPH,
+  readAreaConfig, shouldShowForScene, cleanName,
+  mergeTuning, sanitizeOverrides,
 } from "./area-panel-core.js";
+
+// ── live tuning ───────────────────────────────────────────────────────────
+// The shipped TUNING with the world's saved overrides on top. Everything that
+// can be expressed as a CSS variable is, so the tuner is an instant repaint
+// rather than a stylesheet rebuild; the timings are read at play time.
+export const TUNING_SETTING = "areaPanelTuning";
+
+let live = { ...TUNING };
+
+/** Re-read the saved overrides and repaint. Safe before settings exist. */
+export function refreshTuning() {
+  let stored = null;
+  try { stored = game?.settings?.get?.(MODULE_ID, TUNING_SETTING) ?? null; } catch (_e) { /* not registered yet */ }
+  live = mergeTuning(stored);
+  applyVars();
+  return live;
+}
+
+/** Paint a set of overrides WITHOUT saving them — what the tuner drags on. */
+export function applyTuningPreview(overrides) {
+  live = mergeTuning(overrides);
+  applyVars();
+  return live;
+}
+
+export function liveTuning() { return { ...live }; }
 
 const ROOT_ID  = "fu-area-panel";
 const STYLE_ID = "fu-area-panel-style";
@@ -75,14 +102,17 @@ function ensureStyle() {
   const style = document.createElement("style");
   style.id = STYLE_ID;
   style.textContent = `
-    /* Anchored to the LEFT EDGE of the screen, not floated near it: the plaque
-       hangs off-frame by OVERSHOOT_PX so only its right corners are ever seen
-       and it reads as sliding out of the screen edge. Vertically it still
-       clears Foundry's own chrome. */
+    /* Anchored to the LEFT EDGE of the screen, not floated near it: --fu-ap-x
+       is negative, so the plaque hangs off-frame and only its right corners are
+       ever seen. Vertically it clears Foundry's own chrome (--fu-ap-auto-top,
+       measured at show time) plus whatever offset the tuner adds.
+
+       Every var here is written by applyVars() from the live tuning, so a drag
+       in the tuner is a repaint and never a stylesheet rebuild. */
     #${ROOT_ID} {
       position: fixed;
-      top: var(--fu-ap-top, 14px);
-      left: ${-TUNING.OVERSHOOT_PX}px;
+      top: calc(var(--fu-ap-auto-top, 14px) + var(--fu-ap-y, 0px));
+      left: var(--fu-ap-x, -28px);
       z-index: ${TUNING.Z_INDEX};
       pointer-events: none;
       visibility: hidden;
@@ -93,10 +123,14 @@ function ensureStyle() {
     #${ROOT_ID} .fu-ap-plaque {
       display: inline-flex;
       align-items: center;
+      box-sizing: border-box;
       max-width: min(62vw, 760px);
-      padding: ${TUNING.PAD_Y_PX}px ${TUNING.PAD_X_PX}px ${TUNING.PAD_Y_PX}px ${TUNING.PAD_X_PX + TUNING.OVERSHOOT_PX}px;
-      border: 3px solid var(--camp-wood-3, #6f4526);
-      border-radius: ${TUNING.RADIUS_PX}px;
+      min-width: var(--fu-ap-min-w, 0px);
+      min-height: var(--fu-ap-min-h, 0px);
+      padding: var(--fu-ap-pad-y, 15px) var(--fu-ap-pad-x, 32px)
+               var(--fu-ap-pad-y, 15px) var(--fu-ap-pad-left, 60px);
+      border: var(--fu-ap-outline, 3px) solid var(--camp-wood-3, #6f4526);
+      border-radius: var(--fu-ap-radius, 12px);
       background: linear-gradient(180deg,
         var(--camp-parchment-1, #f6ebd3) 0%,
         var(--camp-parchment-2, #efdfc3) 100%);
@@ -105,19 +139,38 @@ function ensureStyle() {
         0 8px 22px rgba(0,0,0,.42),
         inset 0 1px 0 rgba(255,255,255,.65);
       overflow: hidden;
+      transform: scale(var(--fu-ap-scale, 1));
+      transform-origin: left center;
     }
 
     #${ROOT_ID} .fu-ap-label {
+      display: inline-flex;
+      align-items: baseline;
+      gap: var(--fu-ap-glyph-gap, 12px);
+      min-width: 0;
       color: var(--camp-wood-3, #6f4526);
       font-family: "Signika", "Noto Sans", serif;
-      font-size: ${TUNING.FONT_PX}px;
       font-weight: 700;
       letter-spacing: .06em;
       line-height: 1.1;
+      text-shadow: 0 1px 0 rgba(255,255,255,.55);
+    }
+
+    /* The diamond is its own element purely so it can be scaled against the
+       name. It is printed ONCE, here — never also inside the name (an early
+       build did both and read "◈ ◈ Eisendrache Kingdom"). */
+    #${ROOT_ID} .fu-ap-glyph {
+      flex: 0 0 auto;
+      font-size: calc(var(--fu-ap-font, 30px) * var(--fu-ap-glyph-scale, 1));
+      line-height: 1;
+    }
+    #${ROOT_ID} .fu-ap-glyph[data-hidden="1"] { display: none; }
+
+    #${ROOT_ID} .fu-ap-text {
+      font-size: var(--fu-ap-font, 30px);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      text-shadow: 0 1px 0 rgba(255,255,255,.55);
     }
   `;
   document.head.appendChild(style);
@@ -136,15 +189,58 @@ function ensureRoot() {
   const plaque = document.createElement("div");
   plaque.className = "fu-ap-plaque";
 
-  // One body, no spine: the glyph is part of the printed line ("◈ Area"), which
-  // is what the mockup draws and what the spec asked for in the first place.
+  // One body, no spine. The glyph and the name are separate elements only so
+  // the tuner can scale one against the other; the printed line is still the
+  // single "◈ Area" the mockup draws.
   const label = document.createElement("span");
   label.className = "fu-ap-label";
 
+  const glyph = document.createElement("span");
+  glyph.className = "fu-ap-glyph";
+  glyph.textContent = GLYPH;
+
+  const text = document.createElement("span");
+  text.className = "fu-ap-text";
+
+  label.append(glyph, text);
   plaque.append(label);
   root.appendChild(plaque);
   document.body.appendChild(root);
+  applyVars(root);
   return root;
+}
+
+/**
+ * Push the live tuning into the element's CSS variables.
+ *
+ * The left padding carries the overhang: with the plaque hanging off the edge
+ * by -POS_X_PX, plain PAD_X would leave the text crowded against the screen
+ * edge (or, at a positive X offset, lopsided). Only a NEGATIVE x adds anything.
+ */
+function applyVars(node) {
+  const root = node ?? document.getElementById(ROOT_ID);
+  if (!root) return;
+  const overhang = Math.max(0, -live.POS_X_PX);
+  const set = (name, value) => root.style.setProperty(name, value);
+
+  set("--fu-ap-x", `${live.POS_X_PX}px`);
+  set("--fu-ap-y", `${live.POS_Y_PX}px`);
+  set("--fu-ap-font", `${live.FONT_PX}px`);
+  set("--fu-ap-glyph-scale", String(live.GLYPH_SCALE));
+  set("--fu-ap-glyph-gap", `${live.GLYPH_GAP_PX}px`);
+  set("--fu-ap-scale", String(live.PANEL_SCALE));
+  set("--fu-ap-min-w", `${live.MIN_W_PX}px`);
+  set("--fu-ap-min-h", `${live.MIN_H_PX}px`);
+  set("--fu-ap-pad-x", `${live.PAD_X_PX}px`);
+  set("--fu-ap-pad-y", `${live.PAD_Y_PX}px`);
+  set("--fu-ap-pad-left", `${live.PAD_X_PX + overhang}px`);
+  set("--fu-ap-outline", `${live.OUTLINE_PX}px`);
+  set("--fu-ap-radius", `${live.RADIUS_PX}px`);
+
+  // A zero scale would leave an invisible element that still measures, so the
+  // diamond is removed from the flow outright — including its gap.
+  const glyph = root.querySelector(".fu-ap-glyph");
+  if (glyph) glyph.dataset.hidden = live.GLYPH_SCALE <= 0 ? "1" : "0";
 }
 
 /**
@@ -158,7 +254,7 @@ function ensureRoot() {
  * added.
  */
 function anchor(root) {
-  const pad = TUNING.EDGE_PAD_PX;
+  const pad = live.EDGE_PAD_PX;
 
   const rect = (sel) => {
     const n = document.querySelector(sel);
@@ -180,7 +276,7 @@ function anchor(root) {
     if (r.bottom + pad > topEdge && r.bottom < cornerH) topEdge = r.bottom + pad;
   }
 
-  root.style.setProperty("--fu-ap-top", `${Math.round(topEdge)}px`);
+  root.style.setProperty("--fu-ap-auto-top", `${Math.round(topEdge)}px`);
 }
 
 // ── animation ─────────────────────────────────────────────────────────────
@@ -197,30 +293,37 @@ function cancelAnim() {
 const HIDDEN_FRAME = { opacity: 0, transform: "translateX(-100%)" };
 const SHOWN_FRAME  = { opacity: 1, transform: "translateX(0)" };
 
-/** Play the full in/hold/out cycle. Restarts cleanly if one is already up. */
-function play(label) {
-  if (!label) return false;
+/**
+ * Play the full in/hold/out cycle. Restarts cleanly if one is already up.
+ *
+ * `name` is the bare area name — the diamond is the plaque's own element.
+ * `stay` keeps it on screen instead of setting the dwell timer, which is how
+ * the tuner holds it still while you drag sliders at it.
+ */
+function play(name, { stay = false } = {}) {
+  if (!name) return false;
 
   const root = ensureRoot();
   cancelAnim();
 
-  root.querySelector(".fu-ap-label").textContent = label; // never innerHTML
+  root.querySelector(".fu-ap-text").textContent = name; // never innerHTML
+  applyVars(root);
   anchor(root);
   root.style.visibility = "visible";
 
   const a = root.animate([HIDDEN_FRAME, SHOWN_FRAME], {
-    duration: TUNING.IN_MS,
-    easing: TUNING.EASE_IN,
+    duration: live.IN_MS,
+    easing: live.EASE_IN,
     fill: "forwards",
   });
   anim.current = a;
 
   a.finished.then(() => {
-    if (anim.current !== a) return; // superseded by a newer activation
-    anim.holdTimer = setTimeout(() => hide(true), TUNING.HOLD_MS);
+    if (anim.current !== a || stay) return; // superseded, or held by the tuner
+    anim.holdTimer = setTimeout(() => hide(true), live.HOLD_MS);
   }).catch(() => { /* cancelled — a newer panel took over */ });
 
-  log("play", label);
+  log("play", name, stay ? "(held)" : "");
   return true;
 }
 
@@ -237,8 +340,8 @@ function hide(animated = true) {
   }
 
   const a = root.animate([SHOWN_FRAME, HIDDEN_FRAME], {
-    duration: TUNING.OUT_MS,
-    easing: TUNING.EASE_OUT,
+    duration: live.OUT_MS,
+    easing: live.EASE_OUT,
     fill: "forwards",
   });
   anim.current = a;
@@ -279,10 +382,10 @@ function arm(scene) {
   setLastArea(verdict.name);
 
   disarm();
-  pending = { token: ++armSeq, sceneId: scene.id, label: verdict.label };
+  pending = { token: ++armSeq, sceneId: scene.id, label: verdict.display };
   timers.push(setTimeout(() => maybePlay("settle"), TUNING.SETTLE_MS));
   timers.push(setTimeout(() => maybePlay("watchdog"), TUNING.WATCHDOG_MS));
-  log("armed", verdict.label, scene?.name);
+  log("armed", verdict.display, scene?.name);
 }
 
 function maybePlay(source) {
@@ -346,17 +449,35 @@ Hooks.on("oni:screenRevealed", () => {
   try { maybePlay("reveal"); } catch (e) { console.warn(TAG, "reveal play failed", e); }
 });
 
+// The tuned values live in a WORLD setting, so a tuning session reaches every
+// client at once and survives a reload. `config: false` keeps it out of the
+// settings menu — the tuner window owns it. The shipped defaults stay in
+// TUNING; this only ever holds the deltas.
+Hooks.once("init", () => {
+  try {
+    game.settings.register(MODULE_ID, TUNING_SETTING, {
+      name: "Area Name Panel — tuning overrides",
+      scope: "world",
+      config: false,
+      type: Object,
+      default: {},
+      onChange: () => { try { refreshTuning(); } catch (e) { console.warn(TAG, "tuning refresh failed", e); } },
+    });
+  } catch (e) { console.warn(TAG, "tuning setting registration failed", e); }
+});
+
 Hooks.once("ready", () => {
   ensureStyle();
+  refreshTuning();
   globalThis.FUCompanion ??= {};
   globalThis.FUCompanion.api ??= {};
   globalThis.FUCompanion.api.areaPanel = {
     /** Play a panel right now with an arbitrary label — the tuning loop. */
-    preview(name = "Area Name") { return play(formatLabel(name)); },
+    preview(name = "Area Name", opts = {}) { return play(cleanName(name), opts); },
     /** Play the panel a given scene would produce, ignoring repeat suppression. */
     previewScene(scene = canvas?.scene) {
       const cfg = readAreaConfig(scene);
-      return cfg.name ? play(formatLabel(cfg.name)) : false;
+      return cfg.name ? play(cleanName(cfg.name)) : false;
     },
     hide: () => hide(true),
     readConfig: (scene = canvas?.scene) => readAreaConfig(scene),
@@ -372,6 +493,30 @@ Hooks.once("ready", () => {
     }),
     TUNING,
     MODULE_ID,
+
+    // ── tuning ────────────────────────────────────────────────────────────
+    tuning: () => liveTuning(),
+    /** Paint overrides without saving — what every slider drag calls. */
+    applyPreview: (overrides) => applyTuningPreview(overrides),
+    /** Re-read the saved setting and repaint (also runs on every client via onChange). */
+    refresh: () => refreshTuning(),
+    /** Persist. GM only: it writes a world setting. */
+    async save(overrides) {
+      if (!game.user?.isGM) { ui.notifications?.warn?.("Only a GM can save panel tuning."); return false; }
+      await game.settings.set(MODULE_ID, TUNING_SETTING, sanitizeOverrides(overrides));
+      return true;
+    },
+    async reset() {
+      if (!game.user?.isGM) { ui.notifications?.warn?.("Only a GM can reset panel tuning."); return false; }
+      await game.settings.set(MODULE_ID, TUNING_SETTING, {});
+      return true;
+    },
+    saved: () => {
+      try { return foundry.utils.duplicate(game.settings.get(MODULE_ID, TUNING_SETTING) ?? {}); }
+      catch (_e) { return {}; }
+    },
+    /** Open the tuning window (GM only). Defined by area-panel-tuner.js. */
+    tuner: (...args) => globalThis.FUCompanion?.api?.areaPanelTuner?.open?.(...args),
   };
   log("ready");
 });
