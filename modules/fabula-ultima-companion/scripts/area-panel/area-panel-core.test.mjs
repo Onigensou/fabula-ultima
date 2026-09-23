@@ -179,9 +179,17 @@ eq("merge applies the override", mergeTuning({ FONT_PX: 40 }).FONT_PX, 40);
 eq("merge of nothing is the defaults", mergeTuning({}).FONT_PX, TUNING.FONT_PX);
 eq("merge never lets junk through", mergeTuning({ FONT_PX: "wide" }).FONT_PX, TUNING.FONT_PX);
 
+// The tuner SAVES this diff, not the whole draft. Storing a value that merely
+// equals today's default would pin the world to it, so a later change to that
+// default in code would silently never reach the world — for a knob nobody
+// meant to override. Dragging a slider away and back must leave nothing behind.
 eq("a value equal to the default is not a change",
    diffFromDefaults({ FONT_PX: TUNING.FONT_PX }), {});
+eq("dragged away and back stores nothing",
+   diffFromDefaults({ FONT_PX: TUNING.FONT_PX, GLYPH_SCALE: TUNING.GLYPH_SCALE }), {});
 eq("a real change is reported", diffFromDefaults({ FONT_PX: 40 }), { FONT_PX: 40 });
+eq("a real change survives alongside untouched knobs",
+   diffFromDefaults({ FONT_PX: 40, HOLD_MS: TUNING.HOLD_MS }), { FONT_PX: 40 });
 
 {
   const snippet = exportSnippet({ FONT_PX: 40 });

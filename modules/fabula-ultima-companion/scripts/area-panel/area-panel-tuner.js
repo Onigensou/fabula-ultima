@@ -77,6 +77,10 @@ function ensureStyle() {
       letter-spacing: .04em;
       border-radius: 9px 9px 0 0;
     }
+    /* Foundry's base sheet sets button { width: 100% }, which stretches every
+       control in here onto its own row. Everything below opts out explicitly. */
+    #${ROOT_ID} button { width: auto; }
+
     #${ROOT_ID} .fu-at-head .fu-at-title { flex: 1 1 auto; }
     #${ROOT_ID} .fu-at-head button {
       flex: 0 0 auto;
@@ -106,7 +110,10 @@ function ensureStyle() {
     }
 
     #${ROOT_ID} button.fu-at-btn {
-      padding: 4px 10px;
+      flex: 0 0 auto;
+      width: auto;
+      height: 26px;
+      padding: 0 10px;
       border: 1.5px solid var(--camp-wood-3, #6f4526);
       border-radius: 7px;
       background: linear-gradient(180deg, var(--camp-gold-1, #f4d488), var(--camp-gold-2, #caa44d));

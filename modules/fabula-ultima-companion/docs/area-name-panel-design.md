@@ -10,6 +10,7 @@ Shipped on `feat/area-name-panel`, module `1.0.425`.
 |---|---|
 | `scripts/area-panel/area-panel-core.js` | Pure gate + every tuning constant. No DOM, no Foundry globals. |
 | `scripts/area-panel/area-panel.js` | CSS, DOM, WAAPI animation, hook wiring, debug API. |
+| `scripts/area-panel/area-panel-tuner.js` | The live tuning window (GM only). |
 | `scripts/area-panel/area-panel-core.test.mjs` | `node scripts/area-panel/area-panel-core.test.mjs` — 49 assertions. |
 | `scripts/custom-ui/dungeon-configuration-ui.js` | The three Scene Config rows. |
 
@@ -106,14 +107,47 @@ seconds on screen; clicks pass straight through. Vertically it anchors below
 
 ## Tuning
 
-Every number is in `TUNING` in the core file, so a re-tune is a constant change.
-Current feel: 1100ms in (ease-out quad), 4000ms hold, 950ms out (ease-in quad),
-travelling its own full width (`translateX(-100%)`) so a long name leaves from
-as far out as a short one. Measured live at 6.0s on screen, end to end.
+Every number is in `TUNING` in the core file. Current feel: 1100ms in (ease-out
+quad), 4000ms hold, 950ms out (ease-in quad), travelling its own full width
+(`translateX(-100%)`) so a long name leaves from as far out as a short one.
+Measured live at 6.0s on screen, end to end.
 
-Scale lives in `FONT_PX` / `PAD_Y_PX` / `PAD_X_PX` / `RADIUS_PX`. At 30px type the
-plaque is about 69px tall — under the mockup's roughly one-tenth of screen
-height, which is the first thing to nudge if it wants more presence.
+### The tuner
+
+`scripts/area-panel/area-panel-tuner.js` — a draggable GM-only window that tunes
+the plaque by eye against a real scene. Open it from **Scene Config → Area Name
+Panel → Tune Appearance**, or `FUCompanion.api.areaPanel.tuner()`.
+
+Knobs, in the order they appear: area-name size, diamond scale and gap, panel
+scale, min width/height, padding X/Y, X/Y offset, outline thickness, corner
+radius, and the three durations. `TUNABLE` in the core is the single source of
+truth for the window AND for the exported snippet, so adding a knob is one entry
+there plus one CSS variable.
+
+Three states, deliberately distinct:
+
+| | where it lives | who sees it |
+|---|---|---|
+| shipped defaults | `TUNING` in the code | everyone, absent an override |
+| saved overrides | world setting `areaPanelTuning` | every client, across reloads |
+| the draft | the open tuner window | only while it is open |
+
+**Save** writes only the keys that differ from the shipped defaults — storing a
+value that merely equals today's default would pin the world to it, so a later
+change in code would silently never arrive. **Revert** goes back to what is
+saved, **Defaults** to what is shipped (without saving), and **Copy constants**
+gives the `TUNING` block to paste back into `area-panel-core.js` when a look is
+settled and should stop living in world data. Closing the window discards the
+draft.
+
+**Hold** pins the plaque on screen while you drag; every look knob is a CSS
+variable, so a drag repaints in place instead of re-running the slide. **Play**
+drops the hold and runs the whole in/dwell/out cycle, which is the only way to
+judge the timings.
+
+At 30px type the plaque is about 69px tall — under the mockup's roughly
+one-tenth of screen height, which is the first thing to try if it wants more
+presence.
 
 ## Debug API
 
@@ -139,6 +173,17 @@ a backgrounded player holding the panel and playing it on return.
 Re-verified after the edge-attached restyle: the plaque sliding in from off-frame
 to rest at `left: -28px`, the 6.0s cycle, and the config block hiding on Conflict
 and Gacha and coming back for Exploration / Dungeon / Camp.
+
+Re-verified after the tuner landed: every knob moving the live plaque (size,
+diamond scale including 0, padding, offsets, outline, radius, panel scale, min
+height), a drag repainting WITHOUT restarting the slide, Save / Revert /
+Defaults / Copy constants / close-discards-draft, the Scene Config button
+opening it, and a real scene activation still playing `◈ Eisendrache Kingdom`
+with the diamond printed exactly once.
+
+⚠ Adding a file to `module.json` needs a full Foundry **restart** — the manifest
+is parsed when the server starts, so a page reload alone kept reporting the old
+module version and never loaded the tuner.
 
 Not exercised live: the `title` scene-mode suppression (offline only — activating
 the title scene starts the title screen's own flow).

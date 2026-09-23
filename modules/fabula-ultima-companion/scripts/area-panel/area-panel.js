@@ -32,7 +32,7 @@
 import {
   MODULE_ID, TUNING, GLYPH,
   readAreaConfig, shouldShowForScene, cleanName,
-  mergeTuning, sanitizeOverrides,
+  mergeTuning, diffFromDefaults,
 } from "./area-panel-core.js";
 
 // ── live tuning ───────────────────────────────────────────────────────────
@@ -500,10 +500,17 @@ Hooks.once("ready", () => {
     applyPreview: (overrides) => applyTuningPreview(overrides),
     /** Re-read the saved setting and repaint (also runs on every client via onChange). */
     refresh: () => refreshTuning(),
-    /** Persist. GM only: it writes a world setting. */
+    /**
+     * Persist. GM only: it writes a world setting.
+     *
+     * Only the keys that actually DIFFER from the shipped defaults are stored.
+     * Saving a value that merely equals today's default would pin the world to
+     * it — a later change to that default in code would then silently not
+     * reach this world, for a knob nobody meant to override.
+     */
     async save(overrides) {
       if (!game.user?.isGM) { ui.notifications?.warn?.("Only a GM can save panel tuning."); return false; }
-      await game.settings.set(MODULE_ID, TUNING_SETTING, sanitizeOverrides(overrides));
+      await game.settings.set(MODULE_ID, TUNING_SETTING, diffFromDefaults(overrides));
       return true;
     },
     async reset() {
