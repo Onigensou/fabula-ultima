@@ -21,12 +21,17 @@
 // scene they are already looking at gets no redraw at all, so a settle timer
 // covers that case, and a watchdog guarantees an arm can never be orphaned.
 //
+// HIDDEN TABS — a player alt-tabbed away has document.hidden true, paints
+// nothing and throttles its timers. Such a client HOLDS the panel and plays it
+// when it comes back (see playOrDefer), rather than burning the beat on a
+// screen nobody is watching.
+//
 // Gate + tuning constants: ./area-panel-core.js
 // ============================================================================
 
 import {
   MODULE_ID, TUNING, GLYPH,
-  readAreaConfig, shouldShowForScene, formatLabel,
+  readAreaConfig, shouldShowForScene, cleanName,
 } from "./area-panel-core.js";
 
 const ROOT_ID  = "fu-area-panel";
@@ -85,13 +90,17 @@ function ensureStyle() {
       display: inline-flex;
       align-items: stretch;
       max-width: min(46vw, 520px);
-      border: 2.5px solid var(--camp-wood-2, #8d5f38);
+      /* Dark wood frame, not the lighter --camp-wood-2: against a bright map
+         the mid brown plus the gold hairline read as one gold pill, which is
+         what the first live crop showed. */
+      border: 3px solid var(--camp-wood-3, #6f4526);
       border-radius: 10px;
       background: linear-gradient(180deg,
         var(--camp-parchment-1, #f6ebd3) 0%,
         var(--camp-parchment-3, #e7d3b1) 100%);
       box-shadow:
-        0 6px 18px rgba(0,0,0,.35),
+        0 0 0 1px rgba(0,0,0,.45),
+        0 7px 20px rgba(0,0,0,.42),
         inset 0 0 0 1px var(--camp-gold-2, #caa44d);
       overflow: hidden;
     }
@@ -102,16 +111,16 @@ function ensureStyle() {
       display: flex;
       align-items: center;
       justify-content: center;
-      min-width: 34px;
-      padding: 0 6px;
+      min-width: 36px;
+      padding: 0 7px;
       background: linear-gradient(180deg,
-        var(--camp-gold-1, #f4d488) 0%,
+        var(--camp-gold-2, #caa44d) 0%,
         var(--camp-gold-3, #9a7a2b) 100%);
       border-right: 2px solid var(--camp-wood-3, #6f4526);
       color: var(--camp-ink, #3b2a19);
-      font-size: 16px;
+      font-size: 19px;
       line-height: 1;
-      text-shadow: 0 1px 0 rgba(255,255,255,.45);
+      text-shadow: 0 1px 0 rgba(255,255,255,.35);
     }
 
     #${ROOT_ID} .fu-ap-label {
@@ -287,19 +296,12 @@ function arm(scene) {
     return;
   }
 
-  // Remember it even when we end up not drawing (hidden tab), so coming back
-  // does not announce an area the party has already been told about.
+  // Remember it up front, so a second map of the same area stays silent even
+  // if this client never got to draw the first one.
   setLastArea(verdict.name);
 
-  // A backgrounded tab throttles rAF: the animation resolves late or instantly
-  // and the beat is lost either way. Skip rather than replay it stale.
-  if (document.hidden) {
-    log("tab hidden — skipping", verdict.name);
-    return;
-  }
-
   disarm();
-  pending = { token: ++armSeq, sceneId: scene.id, label: verdict.label };
+  pending = { token: ++armSeq, sceneId: scene.id, label: verdict.display };
   timers.push(setTimeout(() => maybePlay("settle"), TUNING.SETTLE_MS));
   timers.push(setTimeout(() => maybePlay("watchdog"), TUNING.WATCHDOG_MS));
   log("armed", verdict.label, scene?.name);
@@ -318,12 +320,39 @@ function maybePlay(source) {
   // A redraw is in flight — the curtain is down. Wait for the reveal.
   if (source === "settle" && sawTearDown) return;
 
-  const { label } = pending;
+  const { label, sceneId } = pending;
   disarm();
 
-  if (source === "reveal") setTimeout(() => play(label), TUNING.DELAY_AFTER_REVEAL_MS);
-  else play(label);
+  if (source === "reveal") setTimeout(() => playOrDefer(sceneId, label), TUNING.DELAY_AFTER_REVEAL_MS);
+  else playOrDefer(sceneId, label);
 }
+
+// ── deferral for a backgrounded client ────────────────────────────────────
+// A hidden tab throttles its timers and paints nothing, so playing into one
+// spends the beat on a screen nobody is looking at — and because the area is
+// already remembered, it would never be announced again. Hold it instead and
+// play when they come back. Caught live: a player client whose window was
+// behind the GM's silently swallowed the panel.
+let deferred = null; // { sceneId, label, at }
+
+function playOrDefer(sceneId, label) {
+  if (!document.hidden) return play(label);
+  deferred = { sceneId, label, at: Date.now() };
+  log("tab hidden — holding", label);
+  return false;
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden || !deferred) return;
+  const held = deferred;
+  deferred = null;
+
+  // Stale, or the party has moved on to a scene this panel does not describe.
+  if (Date.now() - held.at > TUNING.DEFER_MAX_MS) { log("held panel expired", held.label); return; }
+  if (canvas?.scene?.id !== held.sceneId) { log("held panel no longer current", held.label); return; }
+
+  setTimeout(() => play(held.label), TUNING.DEFER_SETTLE_MS);
+});
 
 Hooks.on("updateScene", (scene, changes) => {
   if (changes?.active !== true) return; // activation only, never a scene switch
@@ -345,18 +374,24 @@ Hooks.once("ready", () => {
   globalThis.FUCompanion.api ??= {};
   globalThis.FUCompanion.api.areaPanel = {
     /** Play a panel right now with an arbitrary label — the tuning loop. */
-    preview(name = "Area Name") { return play(formatLabel(name)); },
+    preview(name = "Area Name") { return play(cleanName(name)); },
     /** Play the panel a given scene would produce, ignoring repeat suppression. */
     previewScene(scene = canvas?.scene) {
       const cfg = readAreaConfig(scene);
-      return cfg.name ? play(formatLabel(cfg.name)) : false;
+      return cfg.name ? play(cleanName(cfg.name)) : false;
     },
     hide: () => hide(true),
     readConfig: (scene = canvas?.scene) => readAreaConfig(scene),
     check: (scene = canvas?.scene) => shouldShowForScene(scene, { lastAreaName: getLastArea() }),
     lastArea: () => getLastArea(),
     resetLastArea: () => { setLastArea(null); return true; },
-    state: () => ({ pending: pending ? { ...pending } : null, sawTearDown, lastArea: getLastArea() }),
+    state: () => ({
+      pending: pending ? { ...pending } : null,
+      deferred: deferred ? { ...deferred } : null,
+      sawTearDown,
+      hidden: document.hidden,
+      lastArea: getLastArea(),
+    }),
     TUNING,
     MODULE_ID,
   };

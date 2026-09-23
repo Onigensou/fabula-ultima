@@ -47,6 +47,13 @@ export const TUNING = {
   SETTLE_MS:             600, // no redraw by now => we were already here, play
   WATCHDOG_MS:          6000, // last resort; must clear canvasReady + a 700ms reveal
 
+  // A player alt-tabbed to Discord has document.hidden === true, and a hidden
+  // tab throttles timers and never paints — the beat would be spent on a blank
+  // screen. The panel is held instead and plays when they come back, as long as
+  // they come back within this window and the party is still in that area.
+  DEFER_MAX_MS: 180000,
+  DEFER_SETTLE_MS: 500,     // beat after the tab becomes visible again
+
   MAX_LABEL_CHARS: 64,      // hard clamp; the CSS also ellipsises
   EDGE_PAD_PX:     14,      // gap from Foundry chrome when anchoring
   Z_INDEX:         62,      // above #interface (30) and the controller badge (61),
@@ -81,13 +88,26 @@ export function readAreaConfig(scene) {
   };
 }
 
-/** Collapse whitespace and clamp, then head it with the glyph. */
-export function formatLabel(name) {
+/**
+ * Collapse whitespace and clamp \u2014 what the plaque actually prints.
+ *
+ * The glyph is NOT in here: the panel draws it on its own gold spine, and
+ * putting it in the text too prints it twice (caught on the first live shot).
+ */
+export function cleanName(name) {
   const clean = String(name ?? "").replace(/\s+/g, " ").trim();
-  const clipped = clean.length > TUNING.MAX_LABEL_CHARS
+  return clean.length > TUNING.MAX_LABEL_CHARS
     ? `${clean.slice(0, TUNING.MAX_LABEL_CHARS - 1).trimEnd()}\u2026`
     : clean;
-  return clipped ? `${GLYPH} ${clipped}` : "";
+}
+
+/**
+ * The full "\u25c8 Area" string, for surfaces that have no spine to draw the glyph
+ * on \u2014 a log line, a chat card, a tooltip. The panel itself uses cleanName.
+ */
+export function formatLabel(name) {
+  const clean = cleanName(name);
+  return clean ? `${GLYPH} ${clean}` : "";
 }
 
 /**
@@ -101,7 +121,7 @@ export function formatLabel(name) {
  * tests; nothing branches on it at runtime.
  */
 export function shouldShowForScene(scene, { lastAreaName = null } = {}) {
-  const deny = (reason, name = "") => ({ show: false, reason, name, label: "" });
+  const deny = (reason, name = "") => ({ show: false, reason, name, display: "", label: "" });
 
   if (!scene) return deny("no-scene");
 
@@ -115,5 +135,11 @@ export function shouldShowForScene(scene, { lastAreaName = null } = {}) {
     && lastAreaName.trim() === cfg.name;
   if (isRepeat && !cfg.alwaysShow) return deny("repeat", cfg.name);
 
-  return { show: true, reason: cfg.alwaysShow && isRepeat ? "always-show" : "ok", name: cfg.name, label: formatLabel(cfg.name) };
+  return {
+    show: true,
+    reason: cfg.alwaysShow && isRepeat ? "always-show" : "ok",
+    name: cfg.name,
+    display: cleanName(cfg.name), // what the plaque prints
+    label: formatLabel(cfg.name), // glyph included, for text surfaces
+  };
 }

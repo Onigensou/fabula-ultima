@@ -15,7 +15,7 @@
 
 import {
   MODULE_ID, GLYPH, TUNING,
-  readAreaConfig, shouldShowForScene, formatLabel,
+  readAreaConfig, shouldShowForScene, formatLabel, cleanName,
 } from "./area-panel-core.js";
 
 let pass = 0, fail = 0;
@@ -97,30 +97,45 @@ eq("empty last area", verdict({ areaName: "Fafnir Castle" }, "").show, true);
 }
 
 // ── label formatting ──────────────────────────────────────────────────────
+//
+// The plaque prints cleanName and draws the glyph on its own gold spine. The
+// first live screenshot had the glyph in BOTH, reading "◈ ◈ Eisendrache
+// Kingdom", so the split is pinned here.
 
-eq("label is glyph + name", formatLabel("Ravenwood Hollow"), `${GLYPH} Ravenwood Hollow`);
-eq("label trims", formatLabel("  Ravenwood Hollow  "), `${GLYPH} Ravenwood Hollow`);
-eq("label collapses inner whitespace", formatLabel("Ravenwood\n  Hollow"), `${GLYPH} Ravenwood Hollow`);
+eq("printed name carries NO glyph", cleanName("Ravenwood Hollow"), "Ravenwood Hollow");
+ok("printed name never starts with the glyph", !cleanName(`${GLYPH} x`).startsWith(`${GLYPH} ${GLYPH}`));
+eq("printed name trims", cleanName("  Ravenwood Hollow  "), "Ravenwood Hollow");
+eq("printed name collapses inner whitespace", cleanName("Ravenwood\n  Hollow"), "Ravenwood Hollow");
+eq("blank prints nothing", cleanName("   "), "");
+eq("null prints nothing", cleanName(null), "");
+
+eq("text label is glyph + name", formatLabel("Ravenwood Hollow"), `${GLYPH} Ravenwood Hollow`);
 eq("blank label is empty, not a lone glyph", formatLabel("   "), "");
 eq("null label is empty", formatLabel(null), "");
 
 {
   const long = "A".repeat(TUNING.MAX_LABEL_CHARS + 40);
-  const out = formatLabel(long);
-  ok("over-long label is clamped", out.length <= TUNING.MAX_LABEL_CHARS + 2 + 1);
-  ok("over-long label ends in an ellipsis", out.endsWith("…"));
-  eq("at-limit label is untouched",
-     formatLabel("B".repeat(TUNING.MAX_LABEL_CHARS)), `${GLYPH} ${"B".repeat(TUNING.MAX_LABEL_CHARS)}`);
+  const out = cleanName(long);
+  ok("over-long name is clamped", out.length <= TUNING.MAX_LABEL_CHARS);
+  ok("over-long name ends in an ellipsis", out.endsWith("…"));
+  eq("at-limit name is untouched",
+     cleanName("B".repeat(TUNING.MAX_LABEL_CHARS)), "B".repeat(TUNING.MAX_LABEL_CHARS));
 }
 
-eq("verdict carries the formatted label",
-   verdict({ areaName: " Ravenwood  Hollow " }).label, `${GLYPH} Ravenwood Hollow`);
+{
+  const v = verdict({ areaName: " Ravenwood  Hollow " });
+  eq("verdict.display is what the plaque prints", v.display, "Ravenwood Hollow");
+  eq("verdict.label is the text form", v.label, `${GLYPH} Ravenwood Hollow`);
+  eq("verdict.name is the authored value", v.name, "Ravenwood  Hollow");
+}
+eq("a declined verdict has no display", verdict({ areaName: "X", areaPanelEnabled: false }).display, "");
 
 // ── tuning sanity — these are the numbers the feel depends on ─────────────
 
 ok("hold is the spec's 4s", TUNING.HOLD_MS === 4000);
 ok("watchdog outlasts a canvas draw plus the 700ms reveal",
    TUNING.WATCHDOG_MS > TUNING.SETTLE_MS + 900);
+ok("a held panel outlives a long look away", TUNING.DEFER_MAX_MS >= 60000);
 ok("panel sits below the transition curtain", TUNING.Z_INDEX < 99999);
 ok("panel sits above Foundry chrome", TUNING.Z_INDEX > 30);
 
