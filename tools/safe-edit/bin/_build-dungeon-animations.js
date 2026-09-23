@@ -68,9 +68,35 @@ const FX = {
   heartPink:       JB + "Generic/Marker/MarkerHeart_02_Regular_Pink_400x400.webm",
   smokePuff:       JB + "Generic/Smoke/SmokePuffRing01_03_Regular_White_400x400.webm",
   handPush: "modules/boss-loot-assets-free/artwork/05-spell/homebrew/arcane/arm/Hand_1_Push_1_BLUE_1200x1200.webm",
+  healBlue: JB + "Generic/Healing/HealingAbility_01_Blue_200x200.webm",
+  explosionPurple: "modules/boss-loot-assets-free/artwork/05-spell/homebrew/impact/Explosion_2_Radial_PURPLE_1200x1200.webm",
+  shockwaveFire:   "modules/boss-loot-assets-free/artwork/05-spell/homebrew/fire/Shockwave_1_Fire_1_ORANGE_1200x1200.webm",
+  dustPuff:        "modules/boss-loot-assets-free/artwork/05-spell/homebrew/air/Dust_1_Explosion_Smoke_Puff_CENTER_COLOR_1_1200x1200.webm",
+  curseRed:        JB + "Generic/Conditions/Curse01/ConditionCurse01_002_Red_600x600.webm",
+  fearIcon:        JB + "Generic/UI/IconFear_01_Dark_Purple_200x200.webm",
+  lightningStrike: JB + "Generic/Lightning/LightningStrike01_02_Regular_Blue_800x800.webm",
+  fireballLoop:    JB + "3rd_Level/Fireball/FireballLoop_01_Orange_800x800.webm",
+  explosionBlue:   JB + "Generic/Explosion/Explosion_02_Blue_400x400.webm",
+  fireballBoom:    "modules/boss-loot-assets-free/artwork/05-spell/level3/fireaball/Fireball_1_CARTOON_EXPLOSION_ORANGE_1200x1200.webm",
 };
 
 const SND = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
+
+const CAMP = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/";
+
+/* ── Cruel Ultimatum ─────────────────────────────────────────────────────── */
+//
+// The Zero Power takeover art. The sky plates are 1672x941 (16:9) and cover
+// a wider viewport, so they upscale ~1.15x and crop top and bottom -- fine
+// for a cloud field, and the signature cover-fits deliberately rather than
+// letterboxing. The cut-ins are 1448x1086 and are meant to overflow the
+// bottom of the frame.
+const CU = {
+  skyBolt:   CAMP + "Map/Game%20Map/Fafnir_Map001.png",
+  skyFire:   CAMP + "Map/Game%20Map/Fafnir_Map002.png",
+  cutinBolt: CAMP + "VFX/Fafnir_Cutin_lightning.webp",
+  cutinFire: CAMP + "VFX/Fafnir_Cutin_Fire.webp",
+};
 
 /* ── Weapon icons for Form Shift announcements ───────────────────────────── */
 //
@@ -94,10 +120,24 @@ const SFX = {
   dashA:    SND + "DashA.wav",
   monster2: SND + "Monster2.ogg",
   spook:    SND + "Spook.mp3",
+  thunder5: SND + "Soundboard/Thunder5.ogg",
+  monster4: SND + "Soundboard/Monster4.ogg",
+  highJump: SND + "Soundboard/SE_BTL_HighJump.ogg",
+  seDownC:  SND + "Soundboard/SE_DOWNC.wav",
+  overdrive: SND + "Overdrive.wav",
+  laser2:   SND + "Laser2.ogg",
+  chargingA: SND + "ChargingA.wav",
+  amaltheaBoom: SND + "Amalthea_Explosion.ogg",
   pollen:   SND + "Pollen.ogg",
   // Named explicitly by the author for Torment; an explicit asset choice
   // beats a manifest lookup.
   devilLaugh: SND + "Soundboard/Devil1.ogg",
+  waterDrop:  SND + "Water_Drop.mp3",
+  heal3:      SND + "Heal3.ogg",
+  slashB:     SND + "Hit_SlashingB.wav",
+  hitPiercing: SND + "Hit_Piercing.wav",
+  darkness4:  SND + "Soundboard/Darkness4.ogg",
+  monster1:   SND + "Soundboard/Monster1.ogg",
 };
 
 /* ── Blazing Sweep reuse ─────────────────────────────────────────────────── */
@@ -150,6 +190,11 @@ const ART = {
   skizzik:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
   obsidrax: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Obsidrax_Standard.png",
   manaRay:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Mana%20Ray_Standard.png",
+  flameDrake:     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/FlameDrake_Srandard.png",
+  lightningDrake: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/LightningDrake_Standard.png",
+  // Authored by the user for Searing Brand; the persistent badge in
+  // brand-mark.js shows the SAME file, so the two must not drift.
+  searingBrandSigil: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/VFX/vfx_SearingBrand.png",
 };
 
 /* ── Verbatim reuse ──────────────────────────────────────────────────────── */
@@ -681,60 +726,85 @@ const REGISTRY = {
   "P1uCkpNnxLRBNqZr": {
     actorName: "⭐️ Fafnir",
     items: {
-      // Lunge forward, claw the target, slide home. Plain melee shape — the
-      // workhorse template, with her claw rather than a generic streak.
-      "Rend": () => T.melee({
+      // She does NOT cross the board: her sprite is large enough that the
+      // generic melee lunge reads as the whole dragon teleporting, and on
+      // arrival she covers the victim completely. She leans in instead.
+      "Rend": () => FF.heavyClaw({
         key: "fafnir-rend", name: "Rend",
         cfg: {
           color: C.physical, slashColor: 0xd9c7ff,
-          impactWebm: FX.clawRed2, impactWebmSize: 420,
-          lungeMs: 460, holdMs: 110, returnMs: 560,
-          standoff: 0.58, shakeMs: 480, shakeAmp: 10,
+          clawWebm: FX.clawRed2, clawSize: 460,
+          nudgeFrac: 0.22, windupMs: 260, nudgeMs: 200, holdMs: 220, returnMs: 520,
+          shakeMs: 480, shakeAmp: 10,
           particles: 22, particleRadius: 140, particleSize: 12,
-          slashCount: 2, slashGapMs: 120, slashFadeMs: 320,
-          sfx: "Attack2", sfxVol: 0.5,
-          sfxImpact: "Attack3", sfxImpactVol: 0.6,
+          slashCount: 2, slashGapMs: 110, slashFadeMs: 320,
+          sfx: SFX.slashB, sfxVol: 0.65,
         },
       }),
 
       "Summon Elemental Drake": () => FF.summonDrakes({
         key: "fafnir-summon-drakes", name: "Summon Elemental Drake",
-        cfg: { fireColor: C.fire, boltColor: C.bolt, sfx: "Pollen", sfxVol: 0.5 },
+        // The drakes' own sprites, flown in. Ids come from the skill's summon
+        // row (Actor.2vmogpXhRJZzAvXt / Actor.mQlh6GTyw2449hXC).
+        assets: { fireDrake: ART.flameDrake, boltDrake: ART.lightningDrake },
+        cfg: { sfx: SFX.monster1, sfxVol: 0.6 },
       }),
 
       "Storm Calm": () => FF.stormCalm({
         key: "fafnir-storm-calm", name: "Storm Calm",
-        cfg: { color: C.mana, sfx: "Cure1", sfxVol: 0.5 },
+        cfg: { healWebm: FX.healBlue, healMs: 1600,
+               // Ordered, not overlapped: the drop is the CUE, then the effect
+               // and its chime arrive together as the result.
+               sfxCue:  SFX.waterDrop, sfxCueVol: 0.55,
+               sfxHeal: SFX.heal3,     sfxHealVol: 0.6 },
       }),
 
       "Condemn": () => FF.condemn({
         key: "fafnir-condemn", name: "Condemn",
         cfg: { color: C.dark,
+               boomWebm: FX.explosionPurple,
                sfxCast: "Cursor2", sfxCastVol: 0.45,
-               sfxImpact: "Explosion2", sfxImpactVol: 0.8 },
+               sfxStab: SFX.hitPiercing, sfxStabVol: 0.6,
+               sfxBoom: SFX.darkness4,   sfxBoomVol: 0.85 },
       }),
 
       "Torment": () => FF.torment({
         key: "fafnir-torment", name: "Torment",
+        // A fear icon hung over the victim, which then sinks into them. The
+        // drawn leering mask and the borrowed draconic eye pair both went
+        // this way; their cfg keys went with them rather than lingering as
+        // config for something nothing draws.
+        //
         // The laugh is an explicit asset choice, not a manifest name — an
         // explicit URL beats a palette/manifest default.
-        cfg: { faceColor: C.dark,
-               sfxLaugh: SFX.devilLaugh, sfxLaughVol: 0.7 },
+        assets: { fearIcon: FX.fearIcon },
+        cfg: { sfxLaugh: SFX.devilLaugh, sfxLaughVol: 0.7,
+               sfxImpact: SFX.spook, sfxImpactVol: 0.7 },
       }),
 
       "Searing Brand": () => FF.searingBrand({
         key: "fafnir-searing-brand", name: "Searing Brand",
+        assets: { markIcon: ART.searingBrandSigil },
         // Red to match the placeholder chevron the persistent badge draws, so
         // the mark that lands and the mark that stays are the same sign.
         cfg: { color: 0xff3b30,
+               // Both land on the VICTIM, sized off their sprite: the brand is
+               // burned onto them, so the burst belongs where they are, not at
+               // the mark's overhead seat.
+               shockWebm: FX.shockwaveFire, dustWebm: FX.dustPuff,
                sfxCast: "Fire1", sfxCastVol: 0.45,
                sfxImpact: "Fire2", sfxImpactVol: 0.65 },
       }),
 
       "Draconic Domination": () => FF.draconicDomination({
         key: "fafnir-draconic-domination", name: "Draconic Domination",
-        cfg: { irisColor: C.bolt, veinColor: C.dark,
-               sfx: "Spook", sfxVol: 0.65 },
+        // The drawn eyes moved to Torment; this one now opens a FULL-SCREEN
+        // curse plate instead. Not token-anchored on purpose: the shot has
+        // already emptied the frame down to the victim and parked the camera
+        // on them, so the plate is the frame.
+        assets: { curseFx: FX.curseRed },
+        cfg: { sfx: "Spook", sfxVol: 0.6,
+               sfxOpen: SFX.paralyze3, sfxOpenVol: 0.7 },
       }),
 
       // ── Zero Power: Cruel Ultimatum ──────────────────────────────────────
@@ -750,25 +820,64 @@ const REGISTRY = {
       // the party is picking between two faces of one weapon.
       "Cruel Ultimatum: Fire": () => FF.cruelUltimatum({
         key: "fafnir-cruel-ultimatum-fire", name: "Cruel Ultimatum: Fire",
+        assets: {
+          skyImg: CU.skyFire, cutinImg: CU.cutinFire,
+          boomWebm: FX.fireballBoom,
+          ballWebm: FX.fireballLoop,
+          smokeWebm: FX.dustPuff,
+        },
         cfg: {
           spread: "one",
           color: C.fire, coreColor: 0xfff0d0,
           flashColor: "#ffd9a0",
-          sfxRise: "WindWalk", sfxRiseVol: 0.5,
-          sfxBreath: "Fire2", sfxBreathVol: 0.8,
+          // Fire does not breathe a beam: it throws one enormous fireball
+          // that swells as it comes at the camera, and the blow that lands
+          // is that SAME fireball falling in from off-frame -- not a beam
+          // wearing fire colours. The blow-out is shared with Bolt.
+          breathMode: "ball", impactStyle: "ball", silhouette: true,
+          sfxZeroCutin: SFX.overdrive, sfxZeroCutinVol: 0.9,
+          sfxJump: SFX.highJump, sfxJumpVol: 0.7,
+          sfxSky: SFX.monster1, sfxSkyVol: 0.7,
+          sfxCutin: SFX.monster4, sfxCutinVol: 0.7,
+          sfxCharge: SFX.chargingA, sfxChargeVol: 0.7,
+          sfxBreath: "Fire2", sfxBreathVol: 0.85,
+          sfxImpact: SFX.amaltheaBoom, sfxImpactVol: 0.95,
+          sfxDescend: SFX.highJump, sfxDescendVol: 0.7,
+          sfxLand: SFX.seDownC, sfxLandVol: 0.9,
         },
       }),
       "Cruel Ultimatum: Bolt": () => FF.cruelUltimatum({
         key: "fafnir-cruel-ultimatum-bolt", name: "Cruel Ultimatum: Bolt",
+        assets: {
+          skyImg: CU.skyBolt, cutinImg: CU.cutinBolt,
+          boomWebm: FX.explosionBlue,
+          smokeWebm: FX.dustPuff,
+        },
         cfg: {
           spread: "all",
           color: C.bolt, coreColor: 0xf0e2ff,
           flashColor: "#cfa8ff",
-          // Everyone is hit at once, so the columns are thinner and the shake
-          // is shorter — the same total weight spread across the party.
-          beamThickness: 0.30, shakeMs: 760,
-          sfxRise: "WindWalk", sfxRiseVol: 0.5,
-          sfxBreath: "Thunder1", sfxBreathVol: 0.8,
+          // It catches everyone, so the hit is ONE bolt across the whole
+          // frame rather than a lane per enemy: per-enemy lanes read as
+          // several small hits instead of one blow that happens to catch
+          // the room. The blow-out (white frame, black cut-out creatures) is
+          // this branch only.
+          breathMode: "beam", impactStyle: "fullscreen", silhouette: true,
+          // The full-frame bolt is the payoff of the whole Zero Power, and it
+          // was on screen for barely a third of a second before the white took
+          // it. Fire does not need this: its blow is a fireball that arrives
+          // and bursts, which reads in its own travel time.
+          hitHoldMs: 1500,
+          shakeMs: 760,
+          sfxZeroCutin: SFX.overdrive, sfxZeroCutinVol: 0.9,
+          sfxJump: SFX.highJump, sfxJumpVol: 0.7,
+          sfxSky: SFX.monster1, sfxSkyVol: 0.7,
+          sfxCutin: SFX.monster4, sfxCutinVol: 0.7,
+          sfxCharge: SFX.laser2, sfxChargeVol: 0.7,
+          sfxBreath: "Thunder1", sfxBreathVol: 0.85,
+          sfxImpact: SFX.amaltheaBoom, sfxImpactVol: 0.95,
+          sfxDescend: SFX.highJump, sfxDescendVol: 0.7,
+          sfxLand: SFX.seDownC, sfxLandVol: 0.9,
         },
       }),
     },

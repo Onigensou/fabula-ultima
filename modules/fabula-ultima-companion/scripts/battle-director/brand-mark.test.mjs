@@ -13,6 +13,7 @@
 // nothing else in the system complains.
 // ============================================================================
 
+import { readFileSync } from "node:fs";
 import { MARK_STYLES, markStyleOfEffect, readMark } from "./brand-mark.js";
 
 let pass = 0, fail = 0;
@@ -124,9 +125,39 @@ for (const [key, spec] of Object.entries(MARK_STYLES)) {
   }
 }
 
-// Searing Brand ships as a placeholder until its art is drawn. When the asset
-// lands this flips to a URL and this assertion is the reminder to delete it.
-eq("searing_brand still on the placeholder chevron", MARK_STYLES.searing_brand.icon, null);
+// The placeholder reminder that used to live here has done its job: the
+// authored sigil landed, so this now pins the opposite — that the art is
+// wired and nothing has quietly reverted the style to the chevron.
+ok("searing_brand uses the authored sigil, not the chevron",
+   typeof MARK_STYLES.searing_brand.icon === "string"
+   && /^https?:\/\//.test(MARK_STYLES.searing_brand.icon)
+   && /vfx_SearingBrand\.png$/i.test(MARK_STYLES.searing_brand.icon));
+
+/* ── Badge sizing, approved live ─────────────────────────────────────────── */
+//
+// The on-screen size was signed off against the real sigil (65x83 on a Dire
+// Orc at rest framing). Pinning the constants the way the flame entrance's are
+// pinned: a re-tune of something already approved should have to be deliberate,
+// not something that drifts in while tuning a different shot.
+//
+// Read out of the source rather than exported, because they are a tuning
+// detail of the tick and not API — exporting them just to test them would make
+// them look like a knob other code may turn.
+{
+  const src = readFileSync(new URL("./brand-mark.js", import.meta.url), "utf8");
+  const m = /Math\.min\((\d+), Math\.max\((\d+), Math\.max\(b\.width, b\.height\) \* ([\d.]+)\)\)/.exec(src);
+  ok("badge sizing formula still present", !!m);
+  if (m) {
+    eq("badge size ceiling", Number(m[1]), 130);
+    eq("badge size floor",   Number(m[2]), 46);
+    eq("badge scale of sprite", Number(m[3]), 0.42);
+  }
+  // The box must follow the art's aspect, not be square — a square box
+  // letterboxes a tall sigil and silently shrinks it.
+  ok("badge width follows the art aspect", /size \* \(rec\.aspect \|\| 1\)/.test(src));
+  // Foundry's global img border draws a rectangle around transparent art.
+  ok("img border is zeroed", /border: 0 !important/.test(src));
+}
 
 console.log(`${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

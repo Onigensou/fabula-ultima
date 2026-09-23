@@ -55,11 +55,12 @@ const MARK_FLAG = "markIcon";
  */
 export const MARK_STYLES = {
   searing_brand: {
-    // PLACEHOLDER — red chevron until the Searing Brand asset is drawn. Swap
-    // `icon` to the URL and the chevron drops out automatically.
-    icon: null,
+    // The authored sigil. `color` / `glow` still matter: the glow tints the
+    // drop-shadow under the art, and `color` is what the built-in chevron
+    // falls back to if this URL ever stops resolving.
+    icon: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/VFX/vfx_SearingBrand.png",
     color: "#ff3b30",
-    glow: "rgba(255,59,48,0.55)",
+    glow: "rgba(255,120,40,0.60)",
     label: "Searing Brand",
     matchName: /^\s*searing\s+brand\s*$/i,
   },
@@ -115,6 +116,18 @@ function ensureStyles() {
    becomes noise. */
 .fud-brand-mark .mark-art {
   width: 100%; height: 100%;
+  /* The box is sized to the art's own aspect (see markTick), so contain is a
+     belt-and-braces guard rather than the thing doing the work.
+     NOTE: no backticks in this stylesheet — it is a template literal and one
+     would close it early. */
+  object-fit: contain;
+  /* Foundry styles every img with a 1px solid black border, which draws a hard
+     rectangle around a transparent sigil and makes the badge look like a
+     sticker. Both must be zeroed explicitly and with !important, because the
+     global rule is more specific than it looks. */
+  border: 0 !important;
+  outline: 0 !important;
+  background: none !important;
   filter: drop-shadow(0 0 8px var(--mark-glow)) drop-shadow(0 0 18px var(--mark-glow));
   animation: fud-mark-breathe 2.6s ease-in-out infinite;
 }
@@ -231,10 +244,19 @@ function paintMark(rec, styleKey) {
   // Rebuild the art node so a style change (or a re-application) replays the
   // arrival beat rather than silently swapping the graphic.
   try { rec.art?.remove(); } catch {}
+  // Square until the art says otherwise; the chevron fallback stays square.
+  rec.aspect = 1;
   const art = document.createElement(spec.icon ? "img" : "div");
   art.className = "mark-art";
   if (spec.icon) {
     art.src = spec.icon;
+    // The badge box is sized from this, so it has to be read off the decoded
+    // image rather than assumed — the art is authored art and can be any shape.
+    art.addEventListener("load", () => {
+      if (art.naturalWidth > 0 && art.naturalHeight > 0) {
+        rec.aspect = art.naturalWidth / art.naturalHeight;
+      }
+    }, { once: true });
     // A missing asset must not leave an empty badge — fall back to the chevron.
     art.addEventListener("error", () => {
       try {
@@ -289,8 +311,19 @@ function markTick() {
     const b = spriteClientBounds(token);
     // Badge size tracks the sprite so a 2.7x boss and a 1.0x mook both read,
     // clamped so a very large or very small token stays sane.
-    const size = Math.min(96, Math.max(30, Math.max(b.width, b.height) * 0.28));
-    rec.el.style.width  = `${size}px`;
+    // HEIGHT is the controlled dimension and width follows the art's own
+    // aspect. A square box would letterbox a tall sigil down to whatever fits
+    // its width, which shrinks the art for no reason and leaves dead space
+    // either side. `rec.aspect` is measured from the loaded image; the drawn
+    // chevron is square and so leaves it at 1.
+    // Tuned for an AUTHORED sigil rather than the old flat chevron: the
+    // placeholder read fine at a glance, but detailed art needs the pixels or
+    // it is just a smudge. Scaled off the bearer's sprite so it stays in
+    // proportion on a mook and a boss, with a floor so a small token still
+    // shows a legible mark.
+    const size = Math.min(130, Math.max(46, Math.max(b.width, b.height) * 0.42));
+    const w = size * (rec.aspect || 1);
+    rec.el.style.width  = `${w}px`;
     rec.el.style.height = `${size}px`;
     // Overhead: centred on the sprite, floating just above its top edge.
     rec.el.style.left = `${b.left + b.width / 2}px`;
