@@ -54,6 +54,13 @@
   const SPAWN_POINT_KEY         = "spawnPoint";           // { x, y } — manual spawn for scene travel
   const NAV_NAME_KEY            = "navigationName";       // string: display name in Travel dialog
   const DISABLE_TRANSITION_KEY  = "disableTransition";    // boolean: skip screen-fade when entering this scene
+  // Area Name Panel — the plaque that slides in from the top-left when this
+  // scene is ACTIVATED. Blank name = no panel, whatever the checkboxes say.
+  // These keys MUST match scripts/area-panel/area-panel-core.js — keep the
+  // two in step.
+  const AREA_NAME_KEY           = "areaName";             // string: label on the panel
+  const AREA_PANEL_ENABLED_KEY  = "areaPanelEnabled";     // boolean: per-scene gate (UNSET => on)
+  const AREA_PANEL_ALWAYS_KEY   = "areaPanelAlwaysShow";  // boolean: bypass repeat suppression
   // Conflict Event — the additional rule layered onto conflicts fought on this
   // scene. Only meaningful when sceneMode === "conflict"; one event per scene,
   // default "none". Choices come from the runtime registry via
@@ -829,6 +836,38 @@
             <p class="notes">Custom name shown in the Travel dialog. Leave blank to use the scene name.</p>
           </div>
 
+          <h3 style="margin:12px 0 6px;"><i class="fas fa-map-signs"></i> Area Name Panel</h3>
+          <p class="notes" style="margin:0 0 8px;">
+            A plaque that slides in from the top-left when this scene is <b>activated</b>,
+            reading <b>&#9672; Area Name</b>, and withdraws after a few seconds.
+            Area names need not be unique &mdash; several maps can share one.
+          </p>
+
+          <div class="form-group">
+            <label>Area Name</label>
+            <div class="form-fields">
+              <input type="text" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${AREA_NAME_KEY}"
+                     placeholder="e.g. Fafnir Castle — blank for no panel" />
+            </div>
+            <p class="notes">Leave blank and no panel is shown, whatever the switches below say.</p>
+          </div>
+
+          <div class="form-group">
+            <label>Show Area Panel</label>
+            <div class="form-fields">
+              <input type="checkbox" class="oni-area-enabled" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${AREA_PANEL_ENABLED_KEY}" data-dtype="Boolean" />
+            </div>
+            <p class="notes">On by default. Untick to silence this scene while keeping its area name.</p>
+          </div>
+
+          <div class="form-group">
+            <label>Always Show</label>
+            <div class="form-fields">
+              <input type="checkbox" class="oni-area-always" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${AREA_PANEL_ALWAYS_KEY}" data-dtype="Boolean" />
+            </div>
+            <p class="notes">Off by default. Normally an area announces itself <b>once</b>: moving between maps that share an area name stays silent until the party has been somewhere else. Tick this to announce on every activation regardless.</p>
+          </div>
+
           <div class="form-group">
             <label>Visited</label>
             <div class="form-fields">
@@ -1156,6 +1195,28 @@
       const navNameInput = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${NAV_NAME_KEY}"]`);
       if (navNameInput) {
         navNameInput.value = safeGet(fabulaData, `${GENERAL_KEY}.${NAV_NAME_KEY}`, "");
+      }
+
+      // Area Name Panel prefill.
+      //
+      // "Show Area Panel" defaults to TRUE when the flag has never been set, so
+      // typing a name is enough to light the panel up. Safe for every legacy
+      // scene: they carry no area name, and the name is the harder gate.
+      // "Always Show" defaults to FALSE — repeat suppression is the norm.
+      const areaNameInput = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${AREA_NAME_KEY}"]`);
+      if (areaNameInput) {
+        areaNameInput.value = safeGet(fabulaData, `${GENERAL_KEY}.${AREA_NAME_KEY}`, "");
+      }
+
+      const areaEnabledCb = generalPanel?.querySelector("input.oni-area-enabled");
+      if (areaEnabledCb) {
+        const raw = safeGet(fabulaData, `${GENERAL_KEY}.${AREA_PANEL_ENABLED_KEY}`, null);
+        areaEnabledCb.checked = (raw === null) ? true : normalizeBoolean(raw, true);
+      }
+
+      const areaAlwaysCb = generalPanel?.querySelector("input.oni-area-always");
+      if (areaAlwaysCb) {
+        areaAlwaysCb.checked = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${AREA_PANEL_ALWAYS_KEY}`, false), false);
       }
 
       // Scene Visited prefill
