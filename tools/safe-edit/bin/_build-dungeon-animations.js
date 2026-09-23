@@ -73,6 +73,7 @@ const FX = {
   shockwaveFire:   "modules/boss-loot-assets-free/artwork/05-spell/homebrew/fire/Shockwave_1_Fire_1_ORANGE_1200x1200.webm",
   dustPuff:        "modules/boss-loot-assets-free/artwork/05-spell/homebrew/air/Dust_1_Explosion_Smoke_Puff_CENTER_COLOR_1_1200x1200.webm",
   curseRed:        JB + "Generic/Conditions/Curse01/ConditionCurse01_002_Red_600x600.webm",
+  fearIcon:        JB + "Generic/UI/IconFear_01_Dark_Purple_200x200.webm",
 };
 
 const SND = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
@@ -741,13 +742,14 @@ const REGISTRY = {
 
       "Torment": () => FF.torment({
         key: "fafnir-torment", name: "Torment",
-        // The drawn leering mask is gone; Torment now opens the draconic eyes
-        // Draconic Domination used to, then sinks them into the victim. The
-        // old faceColor went with the mask — leaving it would read as live
-        // config for something nothing draws any more.
+        // A fear icon hung over the victim, which then sinks into them. The
+        // drawn leering mask and the borrowed draconic eye pair both went
+        // this way; their cfg keys went with them rather than lingering as
+        // config for something nothing draws.
         //
         // The laugh is an explicit asset choice, not a manifest name — an
         // explicit URL beats a palette/manifest default.
+        assets: { fearIcon: FX.fearIcon },
         cfg: { sfxLaugh: SFX.devilLaugh, sfxLaughVol: 0.7 },
       }),
 
