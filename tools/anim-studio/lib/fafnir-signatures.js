@@ -1084,7 +1084,7 @@ function cruelUltimatum(opts = {}) {
     beamWidthNear: 0.035, beamWidthFar: 0.26,
     // Lightning detail. A plain wedge read as a flat bar; the arcs are what
     // make it a bolt. Re-rolled on a timer, not per frame.
-    arcCount: 18, arcChurnMs: 55, arcWidth: 0.012,
+    arcCount: 18, arcChurnMs: 55, arcWidth: 0.007,
     arcOverhang: 1.9, arcOverhangChance: 0.45,
     arcTaper: 1.4,                      // >1 keeps them fat then snaps to a point
     arcAlphaMin: 0.5, arcAlphaMax: 0.9,
@@ -1092,7 +1092,7 @@ function cruelUltimatum(opts = {}) {
     edgeSteps: 16, shimmerHz: 7.5, shimmerDepth: 0.06,
     // How far she is already pulling back by the end of the fire, and by the
     // end of the hold, on the way to 1 in the dolly.
-    retreatOnFire: 0.18, retreatOnHold: 0.45,
+    retreatOnFire: 0.24, retreatOnHold: 0.52,
     // Fireball branch
     ballSize: 0.55, ballGrowTo: 3.2, ballTravel: 0.55,
     // ...and the one that falls on them at the end, from off-frame top-left.
@@ -1100,14 +1100,18 @@ function cruelUltimatum(opts = {}) {
     ballImpactSize: 0.5, ballImpactGrow: 2.4, ballFallMs: 900,
 
     /* P10 the fake dolly */
-    // 1400, down from 1900: she reads as recoiling away, not drifting.
-    dollyMs: 1400, dollyCutinScale: 0.62, dollyBeamScale: 1.9,
-    dollyDriftX: 0.06, dollyDriftY: 0.10,
+    // 1100, down from 1900 over two passes, and she now covers MORE ground
+    // in that shorter time: a smaller end-scale and a longer drift, so the
+    // speed comes from distance as well as from duration.
+    dollyMs: 1100, dollyCutinScale: 0.50, dollyBeamScale: 1.9,
+    dollyDriftX: 0.09, dollyDriftY: 0.15,
 
     /* P11-P12 whiteout, and the snap it hides */
     // whiteDelayMs + whiteInMs must stay UNDER dollyMs, or the white lands
-    // after she has already stopped and the mid-move cut is lost.
-    whiteDelayMs: 350, whiteInMs: 700, whiteHoldMs: 1700, camSnapMs: 16,
+    // after she has already stopped and the mid-move cut is lost. At
+    // dollyMs 1100 the budget is 850, leaving 250ms of travel under full
+    // white. Speeding the dolly up again means pulling these in again.
+    whiteDelayMs: 250, whiteInMs: 600, whiteHoldMs: 1700, camSnapMs: 16,
 
     /* P13-P14 back to the board */
     sceneInMs: 1000, beatMs: 500,
@@ -1127,7 +1131,9 @@ function cruelUltimatum(opts = {}) {
     shakeUnleash: 16, shakeUnleashMs: 700,
     shakeImpact: 24, shakeImpactMs: 1200,
     shakeLand: 18, shakeLandMs: 650,
-    smokeSize: 0.30,
+    // 3x the first pass. This is a fraction of viewport HEIGHT, so 0.90 is a
+    // puff nearly as tall as the frame.
+    smokeSize: 0.90,
     outMs: 900,
 
     /* She returns LAST, flying down from the top edge. */
@@ -1395,7 +1401,7 @@ function cruelUltimatum(opts = {}) {
     "    // a printed pattern rather than as live electricity.",
     "    arcs.push({ pts, over: Math.random() < cfg.arcOverhangChance,",
     "      alpha: cfg.arcAlphaMin + Math.random() * (cfg.arcAlphaMax - cfg.arcAlphaMin),",
-    "      w: 0.6 + Math.random() * 0.8 });",
+    "      w: 0.5 + Math.random() * 0.35 });",
     "  }",
     "}",
     "",
