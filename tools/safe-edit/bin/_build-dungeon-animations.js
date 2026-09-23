@@ -75,6 +75,7 @@ const FX = {
   curseRed:        JB + "Generic/Conditions/Curse01/ConditionCurse01_002_Red_600x600.webm",
   fearIcon:        JB + "Generic/UI/IconFear_01_Dark_Purple_200x200.webm",
   lightningStrike: JB + "Generic/Lightning/LightningStrike01_02_Regular_Blue_800x800.webm",
+  fireballLoop:    JB + "3rd_Level/Fireball/FireballLoop_01_Orange_800x800.webm",
 };
 
 const SND = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
@@ -118,6 +119,11 @@ const SFX = {
   monster2: SND + "Monster2.ogg",
   spook:    SND + "Spook.mp3",
   thunder5: SND + "Soundboard/Thunder5.ogg",
+  monster4: SND + "Soundboard/Monster4.ogg",
+  highJump: SND + "Soundboard/SE_BTL_HighJump.ogg",
+  laser2:   SND + "Laser2.ogg",
+  chargingA: SND + "ChargingA.wav",
+  amaltheaBoom: SND + "Amalthea_Explosion.ogg",
   pollen:   SND + "Pollen.ogg",
   // Named explicitly by the author for Torment; an explicit asset choice
   // beats a manifest lookup.
@@ -813,18 +819,23 @@ const REGISTRY = {
         assets: {
           skyImg: CU.skyFire, cutinImg: CU.cutinFire,
           boltWebm: FX.lightningStrike, boomWebm: FX.shockwaveFire,
+          ballWebm: FX.fireballLoop,
         },
         cfg: {
           spread: "one",
           color: C.fire, coreColor: 0xfff0d0,
           flashColor: "#ffd9a0",
-          sfxRise: "WindWalk", sfxRiseVol: 0.5,
+          // Fire does not breathe a beam: it throws one enormous fireball
+          // that swells as it comes at the camera.
+          breathMode: "ball", impactStyle: "lanes", silhouette: false,
+          sfxJump: SFX.highJump, sfxJumpVol: 0.7,
           sfxSky: SFX.monster1, sfxSkyVol: 0.7,
           sfxThunder: SFX.thunder5, sfxThunderVol: 0.3,
-          sfxCutin: SFX.spook, sfxCutinVol: 0.6,
-          sfxCharge: "Fire1", sfxChargeVol: 0.55,
+          sfxCutin: SFX.monster4, sfxCutinVol: 0.7,
+          sfxCharge: SFX.chargingA, sfxChargeVol: 0.7,
           sfxBreath: "Fire2", sfxBreathVol: 0.85,
-          sfxImpact: SFX.darkness4, sfxImpactVol: 0.9,
+          sfxImpact: SFX.amaltheaBoom, sfxImpactVol: 0.95,
+          sfxWing: SFX.windWalk, sfxWingVol: 0.45,
         },
       }),
       "Cruel Ultimatum: Bolt": () => FF.cruelUltimatum({
@@ -837,17 +848,21 @@ const REGISTRY = {
           spread: "all",
           color: C.bolt, coreColor: 0xf0e2ff,
           flashColor: "#cfa8ff",
-          // Everyone is hit at once, so each lane is thinner and the shake is
-          // shorter — the same total weight spread across the party. The old
-          // beamThickness went with the breath-columns version of this shot.
-          strikeWidth: 0.075, shakeMs: 760,
-          sfxRise: "WindWalk", sfxRiseVol: 0.5,
+          // It catches everyone, so the hit is ONE bolt across the whole
+          // frame rather than a lane per enemy: per-enemy lanes read as
+          // several small hits instead of one blow that happens to catch
+          // the room. The blow-out (white frame, black cut-out creatures) is
+          // this branch only.
+          breathMode: "beam", impactStyle: "fullscreen", silhouette: true,
+          shakeMs: 760,
+          sfxJump: SFX.highJump, sfxJumpVol: 0.7,
           sfxSky: SFX.monster1, sfxSkyVol: 0.7,
           sfxThunder: SFX.thunder5, sfxThunderVol: 0.3,
-          sfxCutin: SFX.spook, sfxCutinVol: 0.6,
-          sfxCharge: "Cursor2", sfxChargeVol: 0.55,
+          sfxCutin: SFX.monster4, sfxCutinVol: 0.7,
+          sfxCharge: SFX.laser2, sfxChargeVol: 0.7,
           sfxBreath: "Thunder1", sfxBreathVol: 0.85,
-          sfxImpact: SFX.darkness4, sfxImpactVol: 0.9,
+          sfxImpact: SFX.amaltheaBoom, sfxImpactVol: 0.95,
+          sfxWing: SFX.windWalk, sfxWingVol: 0.45,
         },
       }),
     },

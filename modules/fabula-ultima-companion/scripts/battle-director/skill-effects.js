@@ -4250,6 +4250,32 @@ async function applyPlayAnimationEffect(row, ctx) {
     targetTokenUuids = (tr?.tokens ?? []).map((t) => t?.uuid ?? t?.document?.uuid).filter(Boolean);
   } catch (e) { /* a caster-only animation is still fine */ }
 
+  // JRPG cinematic etiquette, matching the ANIMATION state's. state-handlers
+  // hides the Dominance Crests, aspect auras and brand marks in
+  // Animation.onEnter and restores them in onExit/onAbort -- but a chain-fired
+  // play_animation NEVER ENTERS that state, so a Zero Power launched from
+  // inside its own branch (Fafnir's Cruel Ultimatum is the first) played its
+  // whole cinematic with the crest still painted over it.
+  //
+  // Restored when the FULL cinematic ends, not at the damage gate: the gate
+  // is the impact and the shot usually runs on past it.
+  let restoreOverlays = null;
+  try {
+    const mods = await Promise.all([
+      import("./domination-crest.js"),
+      import("./aspect-aura.js"),
+      import("./brand-mark.js"),
+    ]);
+    const [crest, aura, mark] = mods;
+    const set = (hidden) => {
+      try { crest.emitCrestsHidden(hidden); } catch {}
+      try { aura.emitAurasHidden(hidden); } catch {}
+      try { mark.emitMarksHidden(hidden); } catch {}
+    };
+    set(true);
+    restoreOverlays = () => set(false);
+  } catch (e) { warn("skill-effects.play_animation: overlay hide unavailable", e); }
+
   try {
     const anim = await import("./director-animation.js");
     const res = await anim.playSkillAnimation({ skillUuid, casterTokenUuid, targetTokenUuids });
@@ -4261,9 +4287,17 @@ async function applyPlayAnimationEffect(row, ctx) {
       if (!Array.isArray(ctx.pendingAnimations)) ctx.pendingAnimations = [];
       ctx.pendingAnimations.push(res.endPromise);
     }
+    if (restoreOverlays) {
+      // Hang the restore off the end-promise so the overlays come back when
+      // the cinematic actually finishes. finally() so a rejected or aborted
+      // animation cannot leave the crest hidden for the rest of the fight.
+      if (res?.endPromise) Promise.resolve(res.endPromise).finally(restoreOverlays);
+      else restoreOverlays();
+    }
     return { ok: true, kind: "play_animation", played: !!res?.played };
   } catch (e) {
     warn("skill-effects.play_animation: threw", e);
+    try { if (restoreOverlays) restoreOverlays(); } catch {}
     return { ok: true, kind: "play_animation", played: false, reason: "threw" };
   }
 }
