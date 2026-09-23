@@ -426,3 +426,69 @@ Hooks.once("ready", async () => {
     console.error(`${FU_BOOT_TAG} Template column sync failed:`, e);
   }
 });
+
+// (3c) Template PROP sync — the top-level counterpart to (3b).
+//
+// An undeclared `system.props` key is DELETED by reloadTemplate (CSB
+// templateSystem.js:672-677 — the documented 112-key loss). visibility-audit
+// reports 20 such keys across 118 authored cells on the skill template, and
+// skill-forge-design.md D11 established that every one of them is engine-read:
+// live behaviour, one template reload from deletion.
+//
+// The whole decision is in template-props-registry.js; this step only reads the
+// template, runs the pure sync, and writes back when it changed. Steady state
+// does ZERO writes.
+//
+// 🚨 It writes to `system.body`, which is the template's SHEET. A raw body
+// write registers on the master and every instance, after a reload — see
+// `reference_csb_raw_body_write_registers_on_reload`.
+Hooks.once("ready", async () => {
+  if (!game.user?.isGM) return;
+  if (globalThis.__FU_DISABLE_DROPDOWN_SYNC__) return;
+  const MODULE_ID = "fabula-ultima-companion";
+  try {
+    // Behind the column sync: both rewrite `system.body` on the same documents,
+    // and two concurrent readers of it would each write back a body missing the
+    // other's change.
+    await FU_DROPDOWN_SYNC_DONE;
+    const reg = await import(`${window.location.origin}/modules/${MODULE_ID}/scripts/battle-director/template-props-registry.js?t=${Date.now()}`);
+    const ids = reg.MANAGED_PROP_TEMPLATES ?? [];
+    if (!ids.length) return;
+
+    const added = [];
+    const adopted = [];
+    const skipped = [];
+    for (const id of ids) {
+      const tpl = game.items.get(id);
+      // NAMED, not silently skipped. A template id that resolves to nothing is
+      // the difference between "all props are declared" and "we never looked",
+      // and this world already contains 53 documents naming a skill template
+      // that does not exist.
+      if (!tpl) { skipped.push(`${id} (no such template)`); continue; }
+      if (tpl.system?.template) { skipped.push(`${id} (not a true template)`); continue; }
+
+      const sys = foundry.utils.deepClone(tpl.toObject(false).system ?? {});
+      const res = reg.ensureManagedProps(sys.body);
+      if (res.adopted?.length) adopted.push(...res.adopted.map((k) => `${tpl.name}:${k}`));
+      if (res.reason) { skipped.push(`${tpl.name} (${res.reason})`); continue; }
+      if (!res.changed) continue;
+      await tpl.update({ system: sys });
+      added.push(...res.added.map((k) => `${tpl.name}:${k}`));
+    }
+
+    if (skipped.length) {
+      console.warn(`${FU_BOOT_TAG} Prop sync: ${skipped.length} template(s) NOT synced — ${skipped.join(", ")}`);
+    }
+    if (adopted.length) {
+      console.info(`${FU_BOOT_TAG} Prop sync: ${adopted.length} key(s) already declared elsewhere on the template, left alone: ${adopted.join(", ")}`);
+    }
+    if (added.length) {
+      console.info(`${FU_BOOT_TAG} Prop sync: declared ${added.length} previously data-only prop(s): ${added.join(", ")}`);
+      ui.notifications?.info(`Template props: +${added.length} field(s) declared — see console`);
+    } else {
+      console.info(`${FU_BOOT_TAG} Prop sync: every managed prop is already declared.`);
+    }
+  } catch (e) {
+    console.error(`${FU_BOOT_TAG} Template prop sync failed:`, e);
+  }
+});

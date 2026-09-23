@@ -469,6 +469,30 @@ function creaturePresentOnScene(needle) {
   } catch { return 0; }
 }
 
+/**
+ * How long an action's effect lasts, as an ordinal rank, read from the skill's
+ * FREE-FORM `duration` string.
+ *
+ *   0 = Instantaneous / none / "-"
+ *   1 = lasts into a later turn ("Until the start of your next turn", …)
+ *   2 = Scene-or-longer (scene / rest / session)
+ *
+ * Compared with `>=` at call sites so longer scopes can be added later.
+ *
+ * 🩸 Extracted so the authoring UI can show an author what the ENGINE will make
+ * of what they typed, without keeping a second copy of these substrings. The
+ * matching is by substring on a field the sheet does not constrain, so a
+ * misspelling does not fail — it silently lands in a DIFFERENT rank. Measured
+ * 2026-09-23: 10 documents spell it "Instnataneous", which does not contain
+ * "instant" and is therefore ranked 1 (lasts into a later turn) rather than 0.
+ */
+export function actionDurationRank(durationText) {
+  const d = String(durationText ?? "").toLowerCase().trim();
+  if (!d || d === "-" || d.includes("instant")) return 0;
+  if (d.includes("scene") || d.includes("rest") || d.includes("session")) return 2;
+  return 1;
+}
+
 export function buildSkillResolver({ actor = null, payload = null, skill = null, round = 0, vars = null } = {}) {
   return (name, args = null) => {
     // Harness override hook — when `runDirectorSkillSimulate` was called
@@ -1240,12 +1264,7 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // scopes can be added later without touching call sites. Dances are only ever
       // Instantaneous (0) or Until-start-of-next-turn (1); Follow my lead shares a
       // dance's lasting benefit only when ACTION_DURATION >= 1 (RAW: non-instant only).
-      case "ACTION_DURATION": {
-        const d = String(payload?.skillDuration ?? "").toLowerCase().trim();
-        if (!d || d === "-" || d.includes("instant")) return 0;
-        if (d.includes("scene") || d.includes("rest") || d.includes("session")) return 2;
-        return 1;
-      }
+      case "ACTION_DURATION": return actionDurationRank(payload?.skillDuration);
       // 1 if the action ROLLS ACCURACY — an attack OR a check (the canonical
       // `ar.canMiss` capability, stamped as payload.actionCanMiss on the
       // creature_performs_action payload). Powers Adversity's "bonus on actions that

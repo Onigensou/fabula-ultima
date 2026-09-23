@@ -46,9 +46,35 @@ const fs = require("fs");
 const path = require("path");
 const { load, DEFAULT_WORLD } = require("../lib/source.js");
 
-const TABLE_TYPES = new Set(["dynamicTable", "compactDynamicTable", "itemContainer"]);
+// WHICH COMPONENT TYPES CONTRIBUTE A DECLARED PROP KEY.
+//
+// A type missing here reads as UNDECLARED, i.e. a false [B] finding. Two were
+// missing until 2026-09-22, and between them they were 427 of the 547 errors
+// that scripts/lint/skill-validator.js reported after copying this list:
+//
+//   • `label` — CSB RECOMPUTES a label's props[key] from derivedData on load
+//     (Label.js: "If Label has a key, it was computed with the derivedData of
+//     the entity"). `details_roller` is a label on 424 cells: not authored, not
+//     lost, and reporting it as about to be deleted is wrong twice over.
+//     save-extractors.js already treats it this way via MASTER_SIG_IGNORE.
+//   • `activeEffectContainer` — extends ExtensibleTable, whose
+//     getAllProperties() returns {[propertyKey]: undefined}, so TemplateSystem's
+//     prune loop SEES the key and keeps it. `skill_effect` is one.
+//     `conditionalModifierList` shares that base; `picture` extends
+//     InputComponent with propertyKey === key. Both declared, both added.
+//
+// ✅ CLOSED 2026-09-23: `radioButton`'s `propertyKey` getter returns its
+// `_group`, not its `key` (RadioButton.js:45, writing to
+// `system.props.<group>` at :79/:85). `propKeyOf` in `inventory()` now uses it.
+// The skill template holds no radio buttons, so the numbers do not move — the
+// fix is for the next template that does.
+const TABLE_TYPES = new Set([
+  "dynamicTable", "compactDynamicTable", "itemContainer",
+  "activeEffectContainer", "conditionalModifierList",
+]);
 const PROP_TYPES = new Set([
   "textField", "numberField", "checkbox", "select", "radioButton", "textArea", "richTextArea",
+  "label", "picture",
   ...TABLE_TYPES,
 ]);
 // CSB row bookkeeping + sheet-internal props that are never authored fields.
@@ -70,15 +96,24 @@ function parseArgs(argv) {
 function inventory(doc) {
   const fields = new Map();               // key -> node
   const columns = new Map();              // tableKey -> Map(colKey -> node)
+  // The prop a component actually writes. For everything here that is its
+  // `key` — EXCEPT `radioButton`, whose `propertyKey` getter returns its
+  // `_group` (`systems/custom-system-builder/module/sheets/components/
+  // RadioButton.js:45`), and which writes to `system.props.<group>` (:79, :85).
+  // The header used to carry this as a KNOWN REMAINING GAP awaiting "a read of
+  // the CSB component"; that read is done, and this is its answer.
+  const propKeyOf = (node) => (node.type === "radioButton" ? (node.group ?? node.key) : node.key);
+
   function walk(node, tableKey) {
     if (!node || typeof node !== "object") return;
     const nextTable = TABLE_TYPES.has(node.type) ? node.key : tableKey;
-    if (node.type && node.key) {
+    const propKey = propKeyOf(node);
+    if (node.type && propKey) {
       if (tableKey) {
         if (!columns.has(tableKey)) columns.set(tableKey, new Map());
-        columns.get(tableKey).set(node.key, node);
+        columns.get(tableKey).set(propKey, node);
       } else if (PROP_TYPES.has(node.type)) {
-        fields.set(node.key, node);
+        fields.set(propKey, node);
       }
     }
     for (const c of node.contents || []) {
@@ -295,35 +330,12 @@ function registryGateAudit(docs, inv, gates) {
     .map(([key, v]) => ({ key, cells: v.cells, docs: v.docs.size, examples: [...v.docs].slice(0, 3) }))
     .sort((a, b) => b.cells - a.cells);
 
-  if (args.json) {
-    console.log(JSON.stringify({
-      template: doc.name, corpus: corpus.length,
-      brokenGates: gates, dataOnlyTopLevel: ser(topLevel), dataOnlyRowKeys: ser(rowLevel),
-      overNarrowGates: narrow || [], broaderGates: widen,
-    }, null, 2));
-    process.exit(gates.length || (narrow || []).some((g) => g.reconcileVis) ? 1 : 0);
-  }
-
-  console.log(`visibility-audit — ${doc.name} · ${corpus.length} instantiating doc(s)\n`);
-
-  console.log(`[A] BROKEN GATES — visibilityFormula references a field that is not there: ${gates.length}`);
-  for (const g of gates) {
-    console.log(`      ${g.scope}.${g.column} reads sameRow("${g.referenced}") — no such column; hidden on every row`);
-  }
-  if (!gates.length) console.log("      none — every gate references a real sibling field.");
-
-  const show = (title, rows) => {
-    const cells = rows.reduce((a, r) => a + r.cells, 0);
-    console.log(`\n[B] DATA-ONLY ${title}: ${rows.length} key(s), ${cells} authored cell(s)`);
-    if (!args.quiet) {
-      for (const r of rows) {
-        console.log(`      ${String(r.cells).padStart(4)}  ${r.key.padEnd(34)} ${r.docs} doc(s)  e.g. ${r.examples.join(", ")}`);
-      }
-    }
-  };
-  show("ROW KEYS (uneditable from any sheet; NOT prunable — see header)", ser(rowLevel));
-  show("TOP-LEVEL PROPS (uneditable AND pruned on reloadTemplate — real data loss)", ser(topLevel));
-
+  // 🩸 MOVED UP. This block used to sit ~70 lines BELOW, after the text
+  // report began — but `--json` (just under here) reads `widen`, so that
+  // path died on a temporal-dead-zone ReferenceError before printing a
+  // single byte. `--json` is the machine-readable half of the tool the
+  // Skill Forge design doc names as its column/prop oracle, and it had
+  // never once run. The text path worked, which is why nobody noticed.
   // [D] The opposite direction from [C]: a registry gate BROADER than the live
   // column's. Pure upside — it restores cells and hides none — but invisible to
   // [C], which only reports narrowing. That asymmetry mattered: `condition_formula`
@@ -368,6 +380,36 @@ function registryGateAudit(docs, inv, gates) {
       }
     }
   }
+
+  if (args.json) {
+    console.log(JSON.stringify({
+      template: doc.name, corpus: corpus.length,
+      brokenGates: gates, dataOnlyTopLevel: ser(topLevel), dataOnlyRowKeys: ser(rowLevel),
+      overNarrowGates: narrow || [], broaderGates: widen,
+    }, null, 2));
+    process.exit(gates.length || (narrow || []).some((g) => g.reconcileVis) ? 1 : 0);
+  }
+
+  console.log(`visibility-audit — ${doc.name} · ${corpus.length} instantiating doc(s)\n`);
+
+  console.log(`[A] BROKEN GATES — visibilityFormula references a field that is not there: ${gates.length}`);
+  for (const g of gates) {
+    console.log(`      ${g.scope}.${g.column} reads sameRow("${g.referenced}") — no such column; hidden on every row`);
+  }
+  if (!gates.length) console.log("      none — every gate references a real sibling field.");
+
+  const show = (title, rows) => {
+    const cells = rows.reduce((a, r) => a + r.cells, 0);
+    console.log(`\n[B] DATA-ONLY ${title}: ${rows.length} key(s), ${cells} authored cell(s)`);
+    if (!args.quiet) {
+      for (const r of rows) {
+        console.log(`      ${String(r.cells).padStart(4)}  ${r.key.padEnd(34)} ${r.docs} doc(s)  e.g. ${r.examples.join(", ")}`);
+      }
+    }
+  };
+  show("ROW KEYS (uneditable from any sheet; NOT prunable — see header)", ser(rowLevel));
+  show("TOP-LEVEL PROPS (uneditable AND pruned on reloadTemplate — real data loss)", ser(topLevel));
+
 
   // Only a gate that is BOTH effective and takes a currently-visible cell away
   // is a regression. The rest are "still not fixed", not "broken by this".

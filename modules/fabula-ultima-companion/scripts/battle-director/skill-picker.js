@@ -17,6 +17,9 @@ import { analyzeChainCost, estimatePerformReactionCost, isMergedArcanumChild } f
 import { pickFromList, ListPicker } from "./list-picker.js";
 import { classifyActionIntent } from "./skill-intent.js";
 import { getMaxActionTargets, skillTargetIsMulti, skillTargetIsUpTo, skillDeclaresVersatile } from "./snapshot.js";
+// One pure predicate, so the flag name cannot drift between the tool that sets
+// it and the engine that honours it.
+import { isDraft } from "../skill-forge/publish.js";
 
 // Cost badge labels for the config-derived (effect-chain) cost map.
 const COST_RES_LABEL = { hp: "HP", mp: "MP", ip: "IP", fp: "FP", zenit: "Zenit", zero_power: "ZP", enmity: "Enmity" };
@@ -292,6 +295,15 @@ function candidateFromSkill(skill, actor, { source, sourceItem, freeOfCost = fal
   // actor-owned and equipped-grant menus while free_action can still invoke it
   // by name (which resolves against actor.items regardless of this flag).
   if (skill.flags?.["fabula-ultima-companion"]?.helperSkill) return null;
+  // A Skill Forge DRAFT is half-authored by definition, and the Forge tells its
+  // author in as many words that a draft "is not offered in play until you
+  // publish it". Nothing enforced that: the flag was read only by the Forge's
+  // own Publish tab, so a draft dropped on a creature was picked, resolved and
+  // spent resources exactly like finished content — the tool made a safety
+  // promise the engine did not keep. Enforced here because this is the single
+  // funnel BOTH candidate sources pass through (actor-owned and equipped-grant),
+  // so a draft cannot reach the menu by either route.
+  if (isDraft(skill)) return null;
   const p = skill.system?.props ?? {};
   const rawCost = String(p.cost ?? "");
   const parsedCost = parseSkillCost(rawCost);

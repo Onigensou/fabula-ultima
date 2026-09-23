@@ -177,7 +177,10 @@ export function selfTest() {
   const ctx = {
     vocabulary: makeLiveVocabulary(),
     requiredFieldsByKind: REQUIRED_FIELDS_BY_KIND,
-    declaredProps: new Set(["skill_type", "skill_target", "duration", "effect_table"]),
+    // Every prop the CASES below carry must be declared here, or PROP_UNDECLARED
+    // fires on them and the self-test reports a healthy build as broken.
+    declaredProps: new Set(["skill_type", "skill_target", "duration", "effect_table",
+      "action_command"]),
     rowColumns: { effect_table: new Set(["effect_kind", "effect_label"]), reaction_config_table: new Set() },
   };
   const cases = [
@@ -187,6 +190,7 @@ export function selfTest() {
     ["ROW_COLUMN_UNDECLARED", { system: { props: { effect_table: { 0: { effect_kind: "grant", effect_label: "g", bogus_col: "v" } } } } }],
     ["SKILL_TARGET_BLANK",    { system: { props: { skill_type: "Active", skill_target: "" } } }],
     ["SPELL_DURATION_BLANK",  { system: { props: { skill_type: "Spell", duration: "" } } }],
+    ["ACTION_COMMAND_MISSING", { system: { props: { skill_type: "Active", skill_target: "Self", action_command: "" } } }],
   ];
   const results = cases.map(([code, doc]) => {
     const got = validateSkillDoc({ name: `selftest:${code}`, ...doc }, ctx).findings.map((f) => f.code);
@@ -195,7 +199,11 @@ export function selfTest() {
   // A clean document must produce NOTHING, or every result above is meaningless.
   const clean = validateSkillDoc({
     name: "selftest:clean",
-    system: { props: { skill_type: "Active", skill_target: "One Enemy", duration: "Instantaneous" } },
+    // Every field a rule reads must be ANSWERED here, or "a clean document
+    // produces nothing" stops being true the moment a rule is added — and the
+    // self-test then reports the new rule as a broken build.
+    system: { props: { skill_type: "Active", skill_target: "One Enemy", duration: "Instantaneous",
+      action_command: "skill" } },
   }, ctx).findings;
   const ok = results.every((r) => r.fired) && clean.length === 0;
   const out = { ok, results, cleanFindings: clean.map((f) => f.code), rules: Object.keys(RULES).length };

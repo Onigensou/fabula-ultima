@@ -751,10 +751,65 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
     { key: "accessory1", value: "Accessory 1" },
     { key: "accessory2", value: "Accessory 2" },
   ], { tooltip: "hide_item: take whatever the named EQUIPMENT SLOT currently holds. This is the mode that makes stripping another creature's gear authorable — the other two need to already know the item. A slot that is empty is a no-op, not an error: the target was already stripped, or fights bare-handed.", vis: HIDE_ITEM_VIS, defaultValue: "" }),
+
+  // ── fields the ENGINE REQUIRES that this registry never declared ────────
+  //
+  // 🩸 Found 2026-09-23 by the step palette's invariant test: "every key a new
+  // row carries is a declared column". `REQUIRED_FIELDS_BY_KIND` below names
+  // these as fields the engine refuses to run the kind without — and this list,
+  // which is supposed to be the single source of truth and is what the boot
+  // sync ships, did not carry them. They exist on the live template, so nothing
+  // is broken today; a template rebuilt from the registry alone would have
+  // shipped without the columns its own required-field map demands.
+  //
+  // ✅ ARMED 2026-09-23, as its own deliberate act. `ae_template_ref`'s LIVE
+  // gate was `apply_ae` alone while the engine requires it for remove_ae /
+  // remove_tagged_ae / transfer_ae too — so on those three kinds a MANDATORY
+  // field was hidden on every row. The gate below is the accurate, WIDER one.
+  //
+  // `reconcileVis` means "this gate has been checked against live data", and it
+  // was: visibility-audit's [D] section reported it SAFE-ARM — restores cells,
+  // hides none. A WIDER gate cannot hide authored data by construction; it is
+  // narrowing that destroys, which is why the flag is opt-in per entry and not
+  // a blanket setting.
+  //
+  // ⚠ IT IS STILL NOT THE WHOLE STORY, and that is deliberate. 9 cells carry
+  // this field on kinds the gate does NOT name — open_action_menu:3,
+  // create_bond:4, redirect_target:2. They are ALREADY hidden under the live
+  // `apply_ae` gate, so arming this neither reveals nor hides them: the audit
+  // reports restore 31 / hide 0. Widening to those three kinds as well would
+  // mean asserting that their handlers read the field, which has not been
+  // checked — and inventing schema is the failure this registry exists to
+  // stop. They stay in [C] as a standing question, which is where a question
+  // belongs.
+  textCol("ae_template_ref", "AE Template Ref", {
+    tooltip: "The Active Effect template this row applies, removes or transfers. Required by apply_ae, and by remove_ae / remove_tagged_ae / transfer_ae unless filter_tag is set instead.",
+    vis: `or(equalText(sameRow("effect_kind",''), "apply_ae"), or(equalText(sameRow("effect_kind",''), "remove_ae"), or(equalText(sameRow("effect_kind",''), "remove_tagged_ae"), equalText(sameRow("effect_kind",''), "transfer_ae"))))`,
+    reconcileVis: true,
+  }),
+  textCol("chain_steps", "Runs", {
+    tooltip: "chain: comma-separated effect_label refs, run in order.",
+    vis: `equalText(sameRow("effect_kind",''), "chain")`,
+  }),
+  textCol("charge_key", "Charge Key", {
+    tooltip: "consume_charge: which named charge pool to spend from.",
+    vis: `equalText(sameRow("effect_kind",''), "consume_charge")`,
+  }),
+  textCol("set_resource", "Set: Resource", {
+    tooltip: "set_resource: which resource to set. Read as set_resource ?? grant_resource.",
+    vis: `equalText(sameRow("effect_kind",''), "set_resource")`,
+  }),
 ];
 
 // ── reaction_config_table declarative fields ─────────────────────────────────
 export const REACTION_CONFIG_REQUIRED_COLUMNS = [
+  // Present on the live template but MISSING from this list until 2026-09-23 —
+  // so the registry, which is meant to be the source of truth, did not
+  // guarantee a column the engine reads and the Skill Forge now writes. A
+  // template rebuilt from the registry alone would have shipped without it.
+  // No-op on this world: the column already exists, so the sync adds nothing.
+  textCol("condition_formula", "Condition",
+    { tooltip: "Gate for this trigger row. Blank = always. Identifiers resolve through the skill resolver; an unknown one folds to 0 and blocks the row forever." }),
   selectCol("reaction_passive_mode", "Firing Mode", [
     { key: "ask",   value: "Ask — player decides (clickable pill)" },
     { key: "on",    value: "On — auto-fires, visible" },

@@ -90,17 +90,31 @@ console.log("\n— corpus round-trip (the contract) —");
   const fs = await import("node:fs");
   const path = await import("node:path");
   const { collectFormulas } = await import("../lint/skill-validator.js");
-  const base = path.resolve(process.cwd(), "..", "..", "worlds", "fabula-ultima-2", "_authored-export");
+  const { fileURLToPath } = await import("node:url");
+  // 🩸 Resolved from THIS FILE, not `process.cwd()`. The cwd form found the
+  // export only when the runner was started from
+  // `modules/fabula-ultima-companion/`; run from the repo root it collected
+  // ZERO formulas, and the invariant below then passed on an empty list — so
+  // "0 ALTERED" was a measurement of nothing. Same defect, same day, as the
+  // graph-model corpus test.
+  const here = path.dirname(fileURLToPath(import.meta.url));
+  const base = path.resolve(here, "..", "..", "..", "..", "worlds", "fabula-ultima-2", "_authored-export");
 
   const formulas = [];
+  // Recurses: an actor's skills can themselves carry items, and the old
+  // one-level spread missed them.
+  const visit = (d) => {
+    for (const c of collectFormulas(d)) formulas.push(c.formula);
+    for (const child of (d?.items ?? [])) visit(child);
+  };
   if (fs.existsSync(base)) {
     for (const dir of ["items", "actors"]) {
       const full = path.join(base, dir);
       if (!fs.existsSync(full)) continue;
       for (const f of fs.readdirSync(full)) {
+        if (!f.endsWith(".json")) continue;
         let j; try { j = JSON.parse(fs.readFileSync(path.join(full, f), "utf8")); } catch { continue; }
-        const list = dir === "items" ? [j] : [j, ...(j.items || [])];
-        for (const d of list) for (const c of collectFormulas(d)) formulas.push(c.formula);
+        visit(j);
       }
     }
   }
@@ -116,14 +130,20 @@ console.log("\n— corpus round-trip (the contract) —");
   }
 
   eq("the corpus was found", formulas.length > 500, true);
-  // THE invariant. Anything here is a formula the builder would silently rewrite.
-  eq("NO formula is parsed but altered", altered.slice(0, 5), []);
-  console.log(`        ${formulas.length} formulas: ${represented} representable, ` +
-    `${declined} declined (raw text), ${altered.length} ALTERED`);
-  const pct = Math.round((represented / Math.max(1, formulas.length)) * 100);
-  console.log(`        builder covers ${pct}% of authored gates; the rest keep their text`);
-  // Coverage is informational, not a pass condition — declining is always safe.
-  eq("coverage is meaningful (over half)", pct > 50, true);
+  if (formulas.length > 500) {
+    // THE invariant. Anything here is a formula the builder would silently rewrite.
+    eq("NO formula is parsed but altered", altered.slice(0, 5), []);
+    console.log(`        ${formulas.length} formulas: ${represented} representable, ` +
+      `${declined} declined (raw text), ${altered.length} ALTERED`);
+    const pct = Math.round((represented / Math.max(1, formulas.length)) * 100);
+    console.log(`        builder covers ${pct}% of authored gates; the rest keep their text`);
+    // Coverage is informational, not a pass condition — declining is always safe.
+    eq("coverage is meaningful (over half)", pct > 50, true);
+  } else {
+    // An empty corpus is the ABSENCE of the check, never a pass.
+    fail += 1;
+    console.log(`  NOT CHECKED  no formula survived collection — nothing was round-tripped`);
+  }
 }
 
 console.log(`\n${pass} passed, ${fail} failed`);

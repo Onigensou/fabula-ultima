@@ -29,7 +29,7 @@ const { collectStructure } = require("../lib/collect-structure");
 const { diffStructure } = require("../lib/structure-fingerprint");
 const { runCensus } = require("../lib/census");
 const { runFormulaAudit, selfTest: formulaSelfTest } = require("../lib/formula-audit");
-const { checkPayloadParity } = require("../lib/payload-parity");
+const { checkPayloadParity, auditTriggerCoverage } = require("../lib/payload-parity");
 const DATA_KEY = dataWitness().key;
 
 const ROOT = path.resolve(__dirname, "..");
@@ -337,8 +337,36 @@ async function main() {
         console.log(`  note: harness-only key(s) (live never sends these): ${t.extra.join(", ")}`);
       }
     }
+    // COVERAGE, before any verdict. The old green line ("the harness supplies
+    // every action-level field the live dispatch does") reads as total while
+    // TRIGGERS hardcodes two shapes out of fifteen. A checker that reports PASS
+    // for the part it looked at, in language that sounds like it looked at
+    // everything, is the same silent-permissive failure parity exists to catch.
+    const cov = auditTriggerCoverage();
+    const c = cov.counts ?? {};
+    console.log(`\ncoverage — ${c.checked ?? 0} shape(s) field-compared, ` +
+      `${c["caller-supplied"] ?? 0} caller-supplied (parity is BLIND), ` +
+      `${c["unchecked-harness-built"] ?? 0} harness-built but unchecked, ` +
+      `${c["live-only"] ?? 0} not harness-reachable.`);
+    if (!cov.ok) {
+      console.log(`\n✗ ${cov.error}`);
+      return 1;
+    }
+    if ((c["caller-supplied"] ?? 0) > 0) {
+      console.log("  caller-supplied: " +
+        cov.rows.filter((x) => x.cls === "caller-supplied").map((x) => x.trigger).join(", "));
+      if (cov.genericCallerDispatch) {
+        console.log("  ↳ runDirectorPassiveTriggerTest forwards `trigger: args.trigger` with");
+        console.log("    `payload: args.payload ?? {}`, so these are dispatchable from a test with a");
+        console.log("    HAND-WRITTEN payload. An omitted payload is {} — every identifier a gate");
+        console.log("    reads folds to 0, which for a `== 0` gate is the permissive answer, so such");
+        console.log("    a test passes by construction. Parity cannot see it: there is no harness");
+        console.log("    literal to diff. Assert the field your gate reads, per guideline I4b.");
+      }
+    }
     if (r.ok) {
-      console.log("✓ the harness supplies every action-level field the live dispatch does.");
+      console.log("\n✓ for the shapes it compares, the harness supplies every action-level field");
+      console.log("  the live dispatch does. This is NOT a statement about the shapes above.");
       return 0;
     }
     console.log(`\n⚠ HARNESS IS MISSING ${r.missing.length} LIVE FIELD(S): ${r.missing.join(", ")}`);

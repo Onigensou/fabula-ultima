@@ -106,5 +106,36 @@ console.log("\n— publish —");
     wrote["flags.fabula-ultima-companion.skillForgeDraft"], true);
 }
 
+// ── the draft flag has to mean something to the ENGINE, not just the panel ──
+// It was read only by the Forge's own Publish tab, so a draft dropped on a
+// creature was offered and resolved exactly like finished content while the
+// panel promised it "is not offered in play until you publish it". The engine
+// now skips drafts in `candidateFromSkill`; these pin the predicate that gate
+// depends on, including the shape a LIVE Foundry document presents.
+console.log("\n— draft predicate (engine-facing) —");
+{
+  const NS = "fabula-ultima-companion";
+  eq("a freshly forged skill is a draft",
+    pub.isDraft({ flags: { [NS]: { skillForgeDraft: true } } }), true);
+  eq("a published skill is not",
+    pub.isDraft({ flags: { [NS]: { skillForgeDraft: null } } }), false);
+  eq("content that never touched the Forge is not a draft",
+    pub.isDraft({ flags: {} }), false);
+  eq("nor is a doc with no flags at all", pub.isDraft({}), false);
+  eq("nor is a missing doc", pub.isDraft(null), false);
+  // 🚨 Strict true only. A truthy-but-not-true value must NOT hide a skill —
+  // over-blocking here silently removes working content from every menu, which
+  // is worse than the bug this gate fixes.
+  eq("a truthy non-true flag does not hide the skill",
+    pub.isDraft({ flags: { [NS]: { skillForgeDraft: "yes" } } }), false);
+  eq("another module's flag of the same name is ignored",
+    pub.isDraft({ flags: { other: { skillForgeDraft: true } } }), false);
+  // draftPatch round-trips through the predicate
+  const on = pub.draftPatch(true), off = pub.draftPatch(false);
+  eq("draftPatch(true) sets the key the predicate reads",
+    on[`flags.${NS}.skillForgeDraft`], true);
+  eq("draftPatch(false) nulls it", off[`flags.${NS}.skillForgeDraft`], null);
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

@@ -211,4 +211,116 @@ function checkPayloadParity() {
   };
 }
 
-module.exports = { checkPayloadParity, HARNESS_EXEMPT, TRIGGERS };
+// ───────────────────────────────────────────────────────────────────────────
+// COVERAGE CENSUS — "which trigger shapes is parity actually checking?"
+//
+// TRIGGERS above is a HARDCODED list of two, and this module's own comment
+// warns that a shape absent from it "would leave that shape exactly as
+// unchecked as the first one was". That warning was invisible in the output: a
+// green `parity` run said "the harness supplies every action-level field the
+// live dispatch does" while comparing 2 of the ~13 shapes live dispatches.
+//
+// A checker that reports PASS for the part it looked at, in language that
+// sounds like it looked at everything, is the same silent-permissive failure
+// parity exists to catch — one level up. So enumerate the shapes and classify
+// every one. Pure source parsing, no game.
+//
+// The four classes, in descending danger:
+//
+//   unchecked-harness-built  the harness BUILDS a payload literal for this
+//                            trigger and TRIGGERS omits it. Fields can be
+//                            missing and nothing says so → fails PERMISSIVE.
+//                            This is the defect class; it exits non-zero.
+//   caller-supplied          reachable only through runDirectorPassiveTriggerTest,
+//                            whose payload comes from the TEST AUTHOR's literal
+//                            (`args.payload`). There is no harness literal to
+//                            diff, so parity is structurally blind here and the
+//                            author's hand-written keys are the contract.
+//   checked                  in TRIGGERS; compared field by field.
+//   live-only                live dispatches it, the harness never does. The
+//                            harness simply cannot exercise that trigger, which
+//                            fails VISIBLY (nothing fires) rather than
+//                            permissively — worth knowing, not alarming.
+// ───────────────────────────────────────────────────────────────────────────
+
+/** Every `trigger: "..."` string a file names, deduped. */
+function triggersNamedIn(src) {
+  const out = new Set();
+  for (const m of src.matchAll(/trigger:\s*"([a-z_][a-z0-9_]*)"/g)) out.add(m[1]);
+  return out;
+}
+
+/**
+ * Triggers whose payload the HARNESS assembles from its own literal — i.e. the
+ * ones parity could diff. A trigger the harness only names (passing a payload
+ * it was handed) is not one of these.
+ */
+function harnessBuiltTriggers(harnessSrc) {
+  const out = new Set();
+  for (const t of triggersNamedIn(harnessSrc)) {
+    if (assembledPayloadKeys(harnessSrc, t)) out.add(t);
+  }
+  return out;
+}
+
+/**
+ * Does the harness expose a GENERIC dispatch that forwards a caller-supplied
+ * trigger AND payload? `runDirectorPassiveTriggerTest` does:
+ *
+ *     firePassiveTriggers({ trigger: args.trigger, payload: args.payload ?? {} })
+ *
+ * That one line makes EVERY trigger reachable from a test with a payload the
+ * author hand-writes — and `?? {}` means an omitted payload is an EMPTY object,
+ * in which every identifier a gate reads folds to 0. For a `== 0` gate that is
+ * the permissive answer, so such a test passes by construction.
+ *
+ * It also means "the harness never names this trigger" does NOT mean "the
+ * harness cannot dispatch it". Reporting those as merely `live-only` would
+ * understate the exposure, which is the same mistake one level up as reporting
+ * 2-of-15 shapes as a clean parity pass.
+ */
+function hasGenericCallerDispatch(harnessSrc) {
+  return /payload:\s*args\.payload/.test(harnessSrc)
+    && /trigger:\s*args\.trigger/.test(harnessSrc);
+}
+
+function auditTriggerCoverage() {
+  let liveSrc, harnessSrc;
+  try {
+    liveSrc = stripComments(fs.readFileSync(LIVE_FILE, "utf8"));
+    harnessSrc = stripComments(fs.readFileSync(HARNESS_FILE, "utf8"));
+  } catch (e) {
+    return { ok: false, error: `could not read source: ${e.message}`, rows: [] };
+  }
+
+  const live = triggersNamedIn(liveSrc);
+  const harnessNamed = triggersNamedIn(harnessSrc);
+  const harnessBuilt = harnessBuiltTriggers(harnessSrc);
+  const checked = new Set(TRIGGERS);
+  const generic = hasGenericCallerDispatch(harnessSrc);
+
+  const rows = [];
+  for (const t of [...new Set([...live, ...harnessNamed])].sort()) {
+    let cls;
+    if (checked.has(t)) cls = "checked";
+    else if (harnessBuilt.has(t)) cls = "unchecked-harness-built";
+    else if (harnessNamed.has(t) || generic) cls = "caller-supplied";
+    else cls = "live-only";
+    rows.push({ trigger: t, cls, inLive: live.has(t), inHarness: harnessNamed.has(t) });
+  }
+
+  const dangerous = rows.filter((r) => r.cls === "unchecked-harness-built");
+  return {
+    genericCallerDispatch: generic,
+    ok: dangerous.length === 0,
+    error: dangerous.length
+      ? `${dangerous.length} trigger shape(s) the harness BUILDS a payload for are not in TRIGGERS — ` +
+        `add them to lib/payload-parity.js: ${dangerous.map((r) => r.trigger).join(", ")}`
+      : null,
+    rows,
+    counts: rows.reduce((a, r) => { a[r.cls] = (a[r.cls] ?? 0) + 1; return a; }, {}),
+  };
+}
+
+module.exports = { checkPayloadParity, auditTriggerCoverage, HARNESS_EXEMPT, TRIGGERS };
+

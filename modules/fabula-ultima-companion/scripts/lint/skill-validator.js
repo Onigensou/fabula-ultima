@@ -325,6 +325,26 @@ export const RULES = {
     // wrong suggestion here actively breaks the skill it claims to fix.
     fix: 'Set skill_target to what it actually hits — "Self", "One Enemy", "One Ally".',
   },
+  ACTION_COMMAND_MISSING: {
+    // WARNING, not error. An unset `action_command` does not make the skill
+    // behave differently from how it reads — the engine still runs it, through
+    // the heuristics it grew to compensate. It is incomplete data, and the
+    // severity split in this file means exactly that: errors are "the engine
+    // will do something other than what this says".
+    severity: "warning",
+    title: "Performable skill does not say which command it is",
+    why:
+      "`skill_type` carries two axes at once — the player's COMMAND (Attack / " +
+      "Skill / Spell / Item) and the CATEGORY (Active / Passive) — with Spell " +
+      "sitting on both, which is why the set looks inconsistent. The engine " +
+      "grew three heuristics in skill-picker to reconstruct what one field " +
+      "should state. `action_command` is that field; until a document sets it, " +
+      "every reader is guessing. See docs/action-command-taxonomy-proposal.md.",
+    fix: 'Set action_command to the turn menu\'s own vocabulary — ' +
+      '"attack" / "skill" / "spell" / "item" / "guard", or a Common action ' +
+      '("study", "hinder", "escape", "objective"). It is additive: skill_type ' +
+      'keeps its meaning as the Active/Passive axis.',
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -630,6 +650,40 @@ function ruleSkillTarget(doc, findings) {
     { dash });
 }
 
+/**
+ * A performable skill should say which COMMAND performs it.
+ *
+ * Scoped to documents that are performable AT ALL, because that is the only
+ * population the question means anything for. A Passive is not commanded, and
+ * flagging 953 of them would bury the finding that matters — the same reason
+ * `SKILL_TARGET_BLANK` is scoped rather than universal.
+ *
+ * This is step 5 of the migration path in the taxonomy proposal, and it exists
+ * to make step 3 (choosing a command for the 722 `Active` documents)
+ * SELF-CHECKING rather than a hand-audit.
+ */
+function ruleActionCommand(doc, findings) {
+  const props = doc?.system?.props ?? {};
+  // The field must be DECLARED before its absence can be a finding. Until the
+  // template carries it, "not set" and "cannot be set" are the same
+  // observation, and reporting the first would be reporting the second.
+  if (!("action_command" in props) && !("skill_type" in props)) return;
+  if (!isBlank(props.action_command)) return;
+
+  const type = String(props.skill_type ?? "").trim();
+  // Performable = not a Passive. `Other` is the dumping ground and is included
+  // deliberately: the proposal's step 4 is to triage it, and a rule that skips
+  // it cannot help with that.
+  if (type === "Passive" || !type) return;
+
+  // A reaction-only document is fired by a trigger, not chosen from a menu.
+  if (props.isReaction === true) return;
+
+  push(findings, "ACTION_COMMAND_MISSING", "system.props.action_command",
+    `${type} skill does not say which command performs it.`,
+    { skillType: type });
+}
+
 // ---------------------------------------------------------------------------
 // Entry point
 // ---------------------------------------------------------------------------
@@ -670,6 +724,7 @@ export function validateSkillDoc(doc, ctx = {}) {
   // Rules that need no context at all.
   ruleSpellDuration(doc, findings);
   ruleSkillTarget(doc, findings);
+  ruleActionCommand(doc, findings);
 
   const name = doc?.name ?? "(unnamed)";
   for (const f of findings) {

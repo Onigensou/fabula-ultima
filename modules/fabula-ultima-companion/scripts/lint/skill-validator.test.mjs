@@ -42,6 +42,11 @@ const PROPS = new Set([
   "name", "description", "skill_type", "skill_target", "duration", "cost",
   "level", "max_level", "isReaction", "availability_formula",
   "effect_table", "reaction_config_table",
+  // Declared because the live template now declares it (the managed-props boot
+  // sync). A ctx that lagged the template would make every fixture carrying the
+  // field trip PROP_UNDECLARED, which is the rule saying "this key is not
+  // declared" about a key that is.
+  "action_command",
 ]);
 const REQUIRED = {
   grant: { all: ["grant_resource"], either: [] },
@@ -59,7 +64,17 @@ const CTX = {
 
 // ── Fixture builder ─────────────────────────────────────────────────────────
 function doc({ name = "Test Skill", props = {}, effects = [] } = {}) {
-  return { name, system: { props }, effects };
+  // \ud83e\udea4 `action_command` is defaulted here so that adding ACTION_COMMAND_MISSING
+  // did not have to weaken thirty exact-set assertions. A test for the duration
+  // rule asserts the finding list is EXACTLY ["SPELL_DURATION_BLANK"], which is
+  // a strong and worth-keeping claim; making each one filter to its own code
+  // instead would have quietly stopped them noticing a rule that fires when it
+  // should not. A fixture that is complete in the ways the test does not care
+  // about keeps the assertion sharp.
+  //
+  // Tests FOR that rule pass `action_command: ""` explicitly to override this.
+  const withCommand = "action_command" in props ? props : { action_command: "skill", ...props };
+  return { name, system: { props: withCommand }, effects };
 }
 /** Rows keyed like CSB's dynamic tables ("0", "1", ...). */
 function rows(...list) {
@@ -415,6 +430,45 @@ console.log("\n— self-test —");
     "FORMULA_IDENT_UNKNOWN", "PROP_UNDECLARED",
     "REQUIRED_FIELD_MISSING", "ROW_COLUMN_UNDECLARED", "SKILL_TARGET_BLANK",
   ]);
+}
+
+// ── ACTION_COMMAND_MISSING ─────────────────────────────────────────
+console.log("\n— ACTION_COMMAND_MISSING —");
+{
+  const bare = (props) => codes(doc({ props: { skill_target: "Self", ...props } }));
+
+  eq('flags an Active skill with no command',
+    bare({ skill_type: "Active", action_command: "" }), ["ACTION_COMMAND_MISSING"]);
+  eq('flags an Attack, Item and Spell the same way',
+    [bare({ skill_type: "Attack", action_command: "" }),
+     bare({ skill_type: "Item", action_command: "" }),
+     bare({ skill_type: "Spell", action_command: "", duration: "Instantaneous" })],
+    [["ACTION_COMMAND_MISSING"], ["ACTION_COMMAND_MISSING"], ["ACTION_COMMAND_MISSING"]]);
+  eq('flags "Other" too — the dumping ground is what step 4 has to triage',
+    bare({ skill_type: "Other", action_command: "" }), ["ACTION_COMMAND_MISSING"]);
+
+  eq("a command that IS set passes",
+    bare({ skill_type: "Active", action_command: "skill" }), []);
+  // A PASSIVE is not commanded. 953 documents in this world are passive, and a
+  // rule that flagged them would bury the 722 that matter.
+  eq("a Passive is never flagged",
+    bare({ skill_type: "Passive", action_command: "" }), []);
+  // A reaction fires from a trigger, not from a menu blade.
+  eq("a reaction is never flagged",
+    bare({ skill_type: "Active", action_command: "", isReaction: true }), []);
+  eq("a document with no skill_type at all is not flagged",
+    codes(doc({ props: { action_command: "", skill_target: "Self" } })), []);
+
+  // Severity: this is incomplete DATA, not behaviour that contradicts its text.
+  eq("it is a warning, not an error",
+    only(doc({ props: { skill_type: "Active", skill_target: "Self", action_command: "" } }),
+      "ACTION_COMMAND_MISSING")[0]?.severity, "warning");
+  // The fix text is rendered verbatim to a non-programmer, so it must not
+  // recommend a spelling the turn menu does not use.
+  eq("the fix names the menu's own vocabulary",
+    /"attack" \/ "skill" \/ "spell" \/ "item"/.test(
+      only(doc({ props: { skill_type: "Active", skill_target: "Self", action_command: "" } }),
+        "ACTION_COMMAND_MISSING")[0]?.fix ?? ""), true);
 }
 
 console.log(`\n${pass} passed, ${fail} failed`);

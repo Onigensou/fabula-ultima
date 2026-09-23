@@ -116,13 +116,13 @@ console.log("\n— validateLive —");
 {
   const item = {
     name: "Fake Item",
-    system: { template: "TPL1", props: { skill_type: "Active", skill_target: "" } },
+    system: { template: "TPL1", props: { skill_type: "Active", skill_target: "", action_command: "skill" } },
     toObject() { return { name: this.name, system: this.system }; },
   };
   const r = bridge.validateLive(item);
   eq("unwraps a document via toObject()", r.findings.some((f) => f.code === "SKILL_TARGET_BLANK"), true);
   eq("a plain object works too",
-    bridge.validateLive({ name: "P", system: { template: "TPL1", props: { skill_type: "Active", skill_target: "" } } })
+    bridge.validateLive({ name: "P", system: { template: "TPL1", props: { skill_type: "Active", skill_target: "", action_command: "skill" } } })
       .findings.some((f) => f.code === "SKILL_TARGET_BLANK"), true);
 }
 

@@ -104,11 +104,23 @@ const CATALOGUE_BY_NAME = new Map(CATALOGUE.map(([name, label, kind]) => [name, 
 
 // Prefix families are open-ended by design (HAS_STATUS_<X>, AE_COUNT_<X>, …),
 // so they get a label PATTERN rather than an entry each.
+//
+// 🩸 `TARGET_HAS_STATUS_` WAS LISTED HERE AND THE RESOLVER DOES NOT SERVE IT.
+// Its real TARGET_* families are TARGET_AE_CHARGES_ / TARGET_AE_COUNT_ /
+// TARGET_HAS_MY_ / TARGET_SPECIES_IS_ / TARGET_SUBTYPE_IS_. An identifier the
+// resolver does not know folds to 0, so the gate blocks FOREVER while still
+// printing the authored reason — indistinguishable from working. The self form
+// `HAS_STATUS_` IS served; the target form is spelled
+// `TARGET_AE_COUNT_<STATUS> >= 1`, which is why that entry carries the
+// explanatory label below.
+//
+// It was latent only because nothing called `compile()`. Wiring the Conditions
+// tab to write is exactly what would have armed it, so it goes first.
 const PREFIX_LABELS = [
   ["HAS_STATUS_",           (x) => `I have the status ${titleCase(x)}`,         "boolean"],
-  ["TARGET_HAS_STATUS_",    (x) => `The target has the status ${titleCase(x)}`, "boolean"],
   ["AE_COUNT_",             (x) => `How many ${titleCase(x)} effects I have`,   "number"],
   ["AE_CHARGES_",           (x) => `Charges on my ${titleCase(x)}`,             "number"],
+  // The supported way to ask "does the target have status X": compare >= 1.
   ["TARGET_AE_COUNT_",      (x) => `How many ${titleCase(x)} effects the target has`, "number"],
   ["TARGET_AE_CHARGES_",    (x) => `Charges on the target's ${titleCase(x)}`,   "number"],
   ["WELLSPRING_",           (x) => `The ${titleCase(x.replace(/_AVAILABLE$/, ""))} wellspring is available`, "boolean"],

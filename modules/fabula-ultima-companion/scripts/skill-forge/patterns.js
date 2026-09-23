@@ -105,6 +105,13 @@ export const PATTERNS = [
     ],
     expand: (v) => ({
       skill_type: "Active",
+      // The COMMAND axis. `skill_type` answers Active-vs-Passive; this answers
+      // which turn-menu blade offers it. Every pattern here builds a plain
+      // Skill — none casts from the Spell list, swings a weapon or spends an
+      // item — so "skill" is the honest answer rather than a placeholder.
+      // Without it the validator's ACTION_COMMAND_MISSING fires on the Forge's
+      // own output, which is the tool shipping the defect it reports.
+      action_command: "skill",
       skill_target: "One Enemy",
       cost: v.cost ?? "",
       on_activate_effect_ref: "root",
@@ -128,6 +135,13 @@ export const PATTERNS = [
     ],
     expand: (v) => ({
       skill_type: "Active",
+      // The COMMAND axis. `skill_type` answers Active-vs-Passive; this answers
+      // which turn-menu blade offers it. Every pattern here builds a plain
+      // Skill — none casts from the Spell list, swings a weapon or spends an
+      // item — so "skill" is the honest answer rather than a placeholder.
+      // Without it the validator's ACTION_COMMAND_MISSING fires on the Forge's
+      // own output, which is the tool shipping the defect it reports.
+      action_command: "skill",
       skill_target: "All Enemy",
       cost: v.cost ?? "",
       on_activate_effect_ref: "root",
@@ -151,6 +165,13 @@ export const PATTERNS = [
     ],
     expand: (v) => ({
       skill_type: "Active",
+      // The COMMAND axis. `skill_type` answers Active-vs-Passive; this answers
+      // which turn-menu blade offers it. Every pattern here builds a plain
+      // Skill — none casts from the Spell list, swings a weapon or spends an
+      // item — so "skill" is the honest answer rather than a placeholder.
+      // Without it the validator's ACTION_COMMAND_MISSING fires on the Forge's
+      // own output, which is the tool shipping the defect it reports.
+      action_command: "skill",
       skill_target: "One Ally",
       cost: v.cost ?? "",
       on_activate_effect_ref: "root",
@@ -174,6 +195,13 @@ export const PATTERNS = [
     ],
     expand: (v) => ({
       skill_type: "Active",
+      // The COMMAND axis. `skill_type` answers Active-vs-Passive; this answers
+      // which turn-menu blade offers it. Every pattern here builds a plain
+      // Skill — none casts from the Spell list, swings a weapon or spends an
+      // item — so "skill" is the honest answer rather than a placeholder.
+      // Without it the validator's ACTION_COMMAND_MISSING fires on the Forge's
+      // own output, which is the tool shipping the defect it reports.
+      action_command: "skill",
       skill_target: "Self",
       cost: v.cost ?? "",
       on_activate_effect_ref: "root",
@@ -196,6 +224,13 @@ export const PATTERNS = [
     ],
     expand: (v) => ({
       skill_type: "Active",
+      // The COMMAND axis. `skill_type` answers Active-vs-Passive; this answers
+      // which turn-menu blade offers it. Every pattern here builds a plain
+      // Skill — none casts from the Spell list, swings a weapon or spends an
+      // item — so "skill" is the honest answer rather than a placeholder.
+      // Without it the validator's ACTION_COMMAND_MISSING fires on the Forge's
+      // own output, which is the tool shipping the defect it reports.
+      action_command: "skill",
       skill_target: "One Enemy",
       cost: v.cost ?? "",
       on_activate_effect_ref: "root",
@@ -219,6 +254,13 @@ export const PATTERNS = [
     ],
     expand: (v) => ({
       skill_type: "Active",
+      // The COMMAND axis. `skill_type` answers Active-vs-Passive; this answers
+      // which turn-menu blade offers it. Every pattern here builds a plain
+      // Skill — none casts from the Spell list, swings a weapon or spends an
+      // item — so "skill" is the honest answer rather than a placeholder.
+      // Without it the validator's ACTION_COMMAND_MISSING fires on the Forge's
+      // own output, which is the tool shipping the defect it reports.
+      action_command: "skill",
       skill_target: "Self",
       cost: v.cost ?? "",
       on_activate_effect_ref: "root",
@@ -242,6 +284,13 @@ export const PATTERNS = [
     ],
     expand: (v) => ({
       skill_type: "Active",
+      // The COMMAND axis. `skill_type` answers Active-vs-Passive; this answers
+      // which turn-menu blade offers it. Every pattern here builds a plain
+      // Skill — none casts from the Spell list, swings a weapon or spends an
+      // item — so "skill" is the honest answer rather than a placeholder.
+      // Without it the validator's ACTION_COMMAND_MISSING fires on the Forge's
+      // own output, which is the tool shipping the defect it reports.
+      action_command: "skill",
       skill_target: "One Ally",
       cost: v.cost ?? "",
       on_activate_effect_ref: "root",
@@ -264,6 +313,13 @@ export const PATTERNS = [
     ],
     expand: (v) => ({
       skill_type: "Active",
+      // The COMMAND axis. `skill_type` answers Active-vs-Passive; this answers
+      // which turn-menu blade offers it. Every pattern here builds a plain
+      // Skill — none casts from the Spell list, swings a weapon or spends an
+      // item — so "skill" is the honest answer rather than a placeholder.
+      // Without it the validator's ACTION_COMMAND_MISSING fires on the Forge's
+      // own output, which is the tool shipping the defect it reports.
+      action_command: "skill",
       skill_target: "One Ally",
       cost: v.cost ?? "",
       on_activate_effect_ref: "root",
@@ -287,6 +343,13 @@ export const PATTERNS = [
     ],
     expand: (v) => ({
       skill_type: "Active",
+      // The COMMAND axis. `skill_type` answers Active-vs-Passive; this answers
+      // which turn-menu blade offers it. Every pattern here builds a plain
+      // Skill — none casts from the Spell list, swings a weapon or spends an
+      // item — so "skill" is the honest answer rather than a placeholder.
+      // Without it the validator's ACTION_COMMAND_MISSING fires on the Forge's
+      // own output, which is the tool shipping the defect it reports.
+      action_command: "skill",
       skill_target: "Self",
       on_activate_effect_ref: "root",
       effect_table: table([
@@ -312,6 +375,13 @@ export const PATTERNS = [
     ],
     expand: (v) => ({
       skill_type: "Active",
+      // The COMMAND axis. `skill_type` answers Active-vs-Passive; this answers
+      // which turn-menu blade offers it. Every pattern here builds a plain
+      // Skill — none casts from the Spell list, swings a weapon or spends an
+      // item — so "skill" is the honest answer rather than a placeholder.
+      // Without it the validator's ACTION_COMMAND_MISSING fires on the Forge's
+      // own output, which is the tool shipping the defect it reports.
+      action_command: "skill",
       skill_target: "One Enemy",
       on_activate_effect_ref: "root",
       effect_table: table([
@@ -337,6 +407,13 @@ export const PATTERNS = [
     ],
     expand: (v) => ({
       skill_type: "Active",
+      // The COMMAND axis. `skill_type` answers Active-vs-Passive; this answers
+      // which turn-menu blade offers it. Every pattern here builds a plain
+      // Skill — none casts from the Spell list, swings a weapon or spends an
+      // item — so "skill" is the honest answer rather than a placeholder.
+      // Without it the validator's ACTION_COMMAND_MISSING fires on the Forge's
+      // own output, which is the tool shipping the defect it reports.
+      action_command: "skill",
       skill_target: "Self",
       cost: v.cost ?? "",
       on_activate_effect_ref: "root",
@@ -463,6 +540,71 @@ export function patternsByCommand() {
     out.get(p.command).push(p);
   }
   return out;
+}
+
+/**
+ * WHEN a pattern happens — the question an author can answer about their own
+ * idea before they know any of our vocabulary.
+ *
+ * Grouping by `command` put 14 of 15 patterns in one bucket and 1 in the other,
+ * which is not a grouping; it also sat on a field the project has not settled
+ * (see the action-command taxonomy proposal). This axis is DERIVED from what
+ * each pattern actually expands to, so it cannot drift away from the content:
+ * a reaction row means it fires on a trigger, and no effect table at all means
+ * there is nothing to fire.
+ */
+export function patternWhen(p) {
+  const out = p?.expand?.({}) ?? {};
+  const triggers = Object.values(out.reaction_config_table ?? {})
+    .map((r) => String(r?.reaction_trigger ?? "").trim()).filter(Boolean);
+  if (triggers.length) return "automatic";
+  const rows = Object.values(out.effect_table ?? {}).filter(Boolean);
+  if (!rows.length) return "always";
+  return "turn";
+}
+
+export const WHEN_LABELS = Object.freeze({
+  turn:      "On my turn, when I use it",
+  automatic: "By itself, when something happens",
+  always:    "All the time, just for knowing it",
+});
+
+export function patternsByWhen() {
+  const out = new Map([["turn", []], ["automatic", []], ["always", []]]);
+  for (const p of PATTERNS) out.get(patternWhen(p)).push(p);
+  for (const [k, v] of out) if (!v.length) out.delete(k);
+  return out;
+}
+
+/**
+ * Extra words a person might search for, in THEIR vocabulary.
+ *
+ * The labels and blurbs are written for reading, not for matching — several
+ * name other skills in this world ("the Cleanse shape", "the High Speed
+ * shape"), which nobody types. These are the words someone describing their
+ * own idea would reach for.
+ */
+export const PATTERN_KEYWORDS = Object.freeze({
+  damage_one_enemy:         ["hurt", "attack", "hit", "strike", "burn", "single", "target"],
+  damage_all_enemies:       ["hurt", "attack", "everyone", "group", "area", "sweep", "blast"],
+  heal_ally:                ["heal", "restore", "mend", "cure", "recover", "hp", "mp", "support"],
+  restore_self:             ["heal", "restore", "recover", "myself", "self", "hp", "mp", "ip"],
+  status_to_enemy:          ["status", "poison", "debuff", "ailment", "weaken", "inflict", "curse"],
+  buff_self:                ["buff", "boost", "strengthen", "myself", "self", "temporary"],
+  buff_ally:                ["buff", "boost", "strengthen", "ally", "friend", "support"],
+  cleanse_ally:             ["cleanse", "cure", "remove", "clear", "dispel", "status", "ally"],
+  pay_then_free_action:     ["again", "extra", "action", "spend", "cost", "fast", "quick"],
+  choice_of_two:            ["choice", "choose", "option", "menu", "either", "pick"],
+  summon_creature:          ["summon", "call", "pet", "companion", "ally", "creature", "minion"],
+  react_when_hit:           ["react", "reaction", "defend", "reduce", "guard", "protect", "when hit"],
+  react_when_i_deal_damage: ["react", "reaction", "rider", "bonus", "extra damage", "when i hit"],
+  at_conflict_start:        ["start", "begin", "battle", "opening", "first", "conflict"],
+  passive_bonus:            ["passive", "always", "permanent", "bonus", "static", "known"],
+});
+
+/** Everything a search box should match a pattern on. */
+export function patternSearchText(p) {
+  return [p.label, p.blurb, ...(PATTERN_KEYWORDS[p.id] ?? [])].join(" ").toLowerCase();
 }
 
 /** Defaults for a pattern's fields — what the UI opens with. */

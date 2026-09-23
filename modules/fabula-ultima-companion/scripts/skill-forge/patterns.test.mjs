@@ -12,7 +12,8 @@
 // preventing it, and it does so at scale across everyone who picks it.
 // ============================================================================
 
-const { PATTERNS, PATTERNS_BY_ID, expand, defaultsFor, patternsByCommand } =
+const { PATTERNS, PATTERNS_BY_ID, expand, defaultsFor, patternsByCommand,
+        patternWhen, patternsByWhen, WHEN_LABELS, patternSearchText, PATTERN_KEYWORDS } =
   await import("./patterns.js");
 const { validateSkillDoc, liveRows } = await import("../lint/skill-validator.js");
 
@@ -168,6 +169,45 @@ eq("expand reports missing required fields",
 eq("an optional field may be blank",
   expand("damage_one_enemy", { cost: "" }).missing, []);
 eq("patternsByCommand groups them", patternsByCommand().get("skill").length > 5, true);
+
+// ── finding a pattern, once there are more than you can eyeball ─────────────
+// Grouping by `command` put 14 of 15 in one bucket, which is not a grouping.
+// `patternWhen` is DERIVED from what each pattern expands to, so it cannot
+// drift away from the content the way a hand-assigned field would.
+console.log("\n— grouping + search —");
+{
+  const by = patternsByWhen();
+  const sizes = [...by.values()].map((v) => v.length);
+  const total = sizes.reduce((a, b) => a + b, 0);
+  eq("every pattern lands in exactly one group", total, PATTERNS.length);
+  eq("every group has a human label",
+    [...by.keys()].every((k) => typeof WHEN_LABELS[k] === "string" && WHEN_LABELS[k].length > 8), true);
+  // The defect this replaced: one bucket holding almost everything.
+  eq("no single group holds more than 80% of the patterns",
+    Math.max(...sizes) / total <= 0.8, true);
+  eq("at least three groups are populated", by.size >= 3, true);
+
+  // the derivation itself
+  eq("a reaction pattern is grouped as automatic", patternWhen(PATTERNS_BY_ID.get("react_when_hit")), "automatic");
+  eq("a conflict-start pattern is automatic", patternWhen(PATTERNS_BY_ID.get("at_conflict_start")), "automatic");
+  eq("a plain damage pattern is a turn action", patternWhen(PATTERNS_BY_ID.get("damage_one_enemy")), "turn");
+  eq("a pattern with no effect table is always-on", patternWhen(PATTERNS_BY_ID.get("passive_bonus")), "always");
+
+  // search: the words a person types, not the words we wrote
+  eq("every pattern has search keywords",
+    PATTERNS.every((p) => (PATTERN_KEYWORDS[p.id] ?? []).length >= 4), true);
+  const find = (q) => PATTERNS.filter((p) => patternSearchText(p).includes(q.toLowerCase())).map((p) => p.id);
+  eq("\"burn\" finds the single-target damage pattern", find("burn").includes("damage_one_enemy"), true);
+  eq("\"heal\" finds both restore patterns",
+    find("heal").includes("heal_ally") && find("heal").includes("restore_self"), true);
+  eq("\"summon\" finds the summon pattern", find("summon"), ["summon_creature"]);
+  eq("\"react\" finds the reaction patterns", find("react").length >= 2, true);
+  eq("a word nobody would type matches nothing", find("zzzznope").length, 0);
+  // blurbs name other skills in this world ("the Cleanse shape"); a person
+  // searching for what they want types the verb instead.
+  eq("\"cleanse\" finds the cleanse pattern by keyword", find("cleanse").includes("cleanse_ally"), true);
+}
+
 eq("there are at least 15 patterns", PATTERNS.length >= 15, true);
 
 console.log(`\n${pass} passed, ${fail} failed`);

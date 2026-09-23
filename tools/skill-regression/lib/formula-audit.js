@@ -54,7 +54,7 @@ const DYNAMIC_PREFIXES = [
   "TARGET_AE_CHARGES_", "TARGET_AE_COUNT_", "SPECIES_IS_", "TARGET_SPECIES_IS_",
   "ATTACKER_SPECIES_IS_", "ATTACKER_RANK_IS_", "RANK_IS_", "TARGET_RANK_IS_",
   "SUBTYPE_IS_", "TARGET_SUBTYPE_IS_", "TRIGGER_DAMAGE_IS_", "ANY_TARGET_HAS_",
-  "HAS_STATUS_", "TARGET_HAS_STATUS_", "BOND_COUNT_", "SAVE_TIER_",
+  "HAS_STATUS_", "BOND_COUNT_", "SAVE_TIER_",   // TARGET_HAS_STATUS_ removed: the resolver never served it
 ];
 
 // Bare words that are language, not identifiers.
@@ -101,7 +101,12 @@ function readVocabulary() {
 function identifiersIn(formula) {
   const stripped = String(formula).replace(/'[^']*'/g, "''").replace(/"[^"]*"/g, '""');
   const out = [];
-  for (const m of stripped.matchAll(/\b([A-Z][A-Z0-9_]{2,})\b/g)) out.push(m[1]);
+  // Threshold is 2 chars, NOT 3: `SL` and `HR` are real identifiers, and at the
+  // old floor a two-character typo of either was never checked. Measured before
+  // changing: 0 new findings across the corpus. PAIRED with identifiersIn() in
+  // scripts/lint/skill-validator.js — change both, or the two tools give
+  // different answers about the same formula.
+  for (const m of stripped.matchAll(/\b([A-Z][A-Z0-9_]{1,})\b/g)) out.push(m[1]);
   return out;
 }
 
@@ -118,7 +123,14 @@ function parseProblems(formula) {
   if ((f.match(/'/g) || []).length % 2) problems.push("unbalanced single quote");
   if ((f.match(/"/g) || []).length % 2) problems.push("unbalanced double quote");
   // Prose smell: lowercase words with no operator anywhere.
-  const stripped = f.replace(/'[^']*'/g, "").replace(/"[^"]*"/g, "");
+  // A lowercase word immediately followed by `(` is a CALL, not prose —
+  // whatever its name. Detecting that structurally beats maintaining a list of
+  // known function names, which is how this audit and skill-validator.js came
+  // to disagree (the validator knew `chance`/`randint`/`pow`; this did not).
+  // With call syntax stripped, `max(chance(50), randint(1,3))` reads as zero
+  // prose words while `chance roulette` still reads as two.
+  const stripped = f.replace(/'[^']*'/g, "").replace(/"[^"]*"/g, "")
+    .replace(/\b[a-zA-Z_][a-zA-Z0-9_]*\s*\(/g, "(");
   const hasOperator = /[<>=!+\-*/]|&&|\|\||\b(and|or|not|switchCase|equalText)\b/.test(stripped);
   const lowerWords = (stripped.match(/\b[a-z]{2,}\b/g) || [])
     .filter((w) => !LANGUAGE_WORDS.has(w));
@@ -166,6 +178,11 @@ function collectFormulas() {
       if (!t || typeof t !== "object") continue;
       for (const [rk, row] of Object.entries(t)) {
         if (!row || typeof row !== "object") continue;
+        // $deleted rows are TOMBSTONES — the engine never evaluates them, so a
+        // typo on one is not a defect. Skipping them reconciles this audit with
+        // scripts/lint/skill-validator.js (723 here vs 714 there; the gap was
+        // exactly these 9 rows).
+        if (row.$deleted === true) continue;
         for (const key of ROW_FORMULA_PROPS) {
           const v = row[key];
           if (v && String(v).trim()) {
