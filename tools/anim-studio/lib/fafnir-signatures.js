@@ -602,8 +602,11 @@ function condemn(opts = {}) {
 
 function torment(opts = {}) {
   const cfg = Object.assign({
-    camZoom: 1.8, camInMs: 1600, camOutMs: 1200,
-    dimTo: 0.62, dimMs: 900,
+    // NO camera move. Torment is a standard action; a push-in and a pull-out
+    // made it play like Draconic Domination, which is a Zero Power, and the
+    // two should not feel the same size. The dim alone sets it apart from a
+    // basic attack, which is all the weight this one needs.
+    dimTo: 0.62, dimMs: 900, undimMs: 1200,
     beatMs: 380,
 
     // A single fear icon seated ABOVE the victim, which is the shape the
@@ -627,7 +630,6 @@ function torment(opts = {}) {
     "const t = ctr(prime);",
     "",
     "const dim = await oni.sceneDim({ to: cfg.dimTo, fadeIn: cfg.dimMs });",
-    "await oni.camera.focus({ point: t, zoom: cfg.camZoom, duration: cfg.camInMs });",
     "await wait(cfg.beatMs);",
     "",
     "// A fear icon hung above the victim. Seated off the SPRITE height rather",
@@ -676,10 +678,8 @@ function torment(opts = {}) {
     "done();",
     "await shakeTarget(prime, cfg.shakeMs, S.wLen(cfg.shakeAmp));",
     "",
-    "await Promise.all([",
-    "  dim.fadeOut({ duration: cfg.camOutMs }),",
-    "  oni.camera.restore({ duration: cfg.camOutMs }),",
-    "]);",
+    "// Nothing to restore: the camera never moved.",
+    "await dim.fadeOut({ duration: cfg.undimMs });",
   ].join("\n");
 
   return shell({ key: opts.key, name: opts.name, cfg, assets: opts.assets || {}, inner: inner(body), timeout: cfg.totalTimeoutMs });
@@ -838,15 +838,18 @@ function draconicDomination(opts = {}) {
     // is about the creature being looked at, not about who is looking.
     bystanderFadeMs: 700, bystanderTo: 0.0,
 
-    // The curse plate is FULL SCREEN, not pinned to the token. fxSize is a
-    // fraction of viewport HEIGHT, so it fills the frame on any window rather
-    // than scaling off a sprite whose size has nothing to do with the shot.
+    // The curse plate is sized off the SCREEN, not the token: fxSize is a
+    // fraction of viewport HEIGHT, so it holds its framing on any window
+    // rather than scaling off a sprite whose size has nothing to do with the
+    // shot.
     //
-    // Measured, not guessed: the JB2A art occupies only ~30% of its own
-    // 600x600 frame and the rest is transparent padding, so a frame sized to
-    // 1.0 screen-heights renders a third-height effect. This is the frame
-    // multiple that puts the VISIBLE art across the viewport.
-    fxSize: 2.4,
+    // 1.15 is a chosen framing, not a fit. The JB2A art occupies only ~30% of
+    // its own 600x600 frame and the rest is transparent padding, so this lands
+    // the visible sigil at roughly a third of frame height with the victim
+    // inside the pupil. Sizing the frame so the art ran edge to edge needed
+    // ~3.0 and was tried and rejected: it cropped the sigil's crown and lower
+    // point off the frame, and a ~5x upscale of a 600px source went soft.
+    fxSize: 1.15,
     fxFrom: 0.72,           // scale it grows in FROM, so it arrives rather than cuts
     openMs: 900,
 
