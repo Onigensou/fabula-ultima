@@ -25,6 +25,7 @@ import { toGraph, fromGraphWithEdges, graphProblems, assignDepths, REF_FIELDS } 
 import * as CB from "./condition-builder.js";
 import { runTest } from "./test-runner.js";
 import { canPublish, explainDecision, isDraft, draftPatch, publish } from "./publish.js";
+import { registerDevTool } from "../battle-director/dev-tools-menu.js";
 
 const NS = "fabula-ultima-companion";
 const TAG = "[SkillForge]";
@@ -441,14 +442,17 @@ Hooks.once("ready", () => {
     App: SkillForgeApp,
   };
 
-  // Self-register on the dev-tools launcher when it exists, so the Forge gets a
-  // slot without this file knowing anything about the launcher's layout.
-  try {
-    const reg = globalThis.FUCompanion?.api?.devTools?.registerDevTool;
-    if (typeof reg === "function") {
-      reg({ id: "skill-forge", icon: "🛠", label: "Skill Forge", onClick: () => SkillForgeApp.open() });
-    }
-  } catch (e) { console.debug(`${TAG} dev-tool registration skipped`, e); }
+  // Register on the dev-tools launcher the way every other tool does — a direct
+  // import of the ES export. An earlier version guessed at
+  // `FUCompanion.api.devTools.registerDevTool`, which does not exist; wrapped in
+  // a try/catch it would have failed SILENTLY and the Forge would simply never
+  // have appeared in the launcher, with nothing in the console to say why.
+  // The import is static (see the top of this file), so a rename breaks the
+  // module load loudly instead.
+  registerDevTool({
+    id: "skill-forge", icon: "🛠", label: "Skill Forge",
+    onClick: () => SkillForgeApp.open(),
+  });
 
   console.debug(`${TAG} ready — FUCompanion.api.skillForge.open()`);
 });
