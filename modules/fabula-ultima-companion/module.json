@@ -2,7 +2,7 @@
   "id": "fabula-ultima-companion",
   "title": "FabulaUltimaCompanion",
   "description": "Adds custom hooks and cool functionality.",
-  "version": "1.0.424",
+  "version": "1.0.426",
   "compatibility": {
     "minimum": "12",
     "verified": "12"
@@ -465,7 +465,10 @@
     "scripts/stealth-system/sm-gm-button.js",
     "scripts/stealth-system/sm-boot.js",
     "scripts/lint/skill-validator-bridge.js",
-    "scripts/skill-forge/skill-forge-app.js"
+    "scripts/skill-forge/skill-forge-app.js",
+    "scripts/area-panel/area-panel-core.js",
+    "scripts/area-panel/area-panel.js",
+    "scripts/area-panel/area-panel-tuner.js"
   ],
   "styles": [
     "styles/style.css",

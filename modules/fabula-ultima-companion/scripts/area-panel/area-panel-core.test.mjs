@@ -1,0 +1,206 @@
+// ============================================================================
+// Area Name Panel — gate harness.
+//
+//     node scripts/area-panel/area-panel-core.test.mjs
+//
+// Bare Node, no Foundry. Covers the pure half only: which scenes get a panel,
+// what it says, and how repeat suppression behaves across a run of
+// activations. The plaque itself is DOM + WAAPI and belongs in a live review.
+//
+// The load-bearing cases are the DEFAULTS: a legacy scene with no flags at all
+// must stay silent, and a scene with only a name typed in must light up. Those
+// two decide whether 90-odd existing scenes suddenly start announcing
+// themselves at the table.
+// ============================================================================
+
+import {
+  MODULE_ID, GLYPH, TUNING, TUNABLE,
+  readAreaConfig, shouldShowForScene, formatLabel, cleanName,
+  sanitizeOverrides, mergeTuning, diffFromDefaults, exportSnippet,
+} from "./area-panel-core.js";
+
+let pass = 0, fail = 0;
+const eq = (label, got, want) => {
+  const g = JSON.stringify(got), w = JSON.stringify(want);
+  if (g === w) { pass++; return; }
+  fail++;
+  console.error(`FAIL  ${label}\n        got  ${g}\n        want ${w}`);
+};
+const ok = (label, cond) => eq(label, !!cond, true);
+
+/** Build a scene-shaped fixture carrying the general flag block. */
+const scene = (general = {}, id = "scene1") => ({
+  id,
+  name: `Scene ${id}`,
+  flags: { [MODULE_ID]: { oniFabula: { general } } },
+});
+
+const verdict = (general, lastAreaName = null) =>
+  shouldShowForScene(scene(general), { lastAreaName });
+
+// ── gate: the defaults ────────────────────────────────────────────────────
+
+eq("no scene at all", shouldShowForScene(null).reason, "no-scene");
+eq("legacy scene, no module flags", shouldShowForScene({ id: "x", flags: {} }).show, false);
+eq("legacy scene reason", shouldShowForScene({ id: "x", flags: {} }).reason, "no-name");
+eq("name only, checkbox never touched => ON", verdict({ areaName: "Ravenwood Hollow" }).show, true);
+eq("blank name", verdict({ areaName: "" }).show, false);
+eq("whitespace-only name", verdict({ areaName: "   " }).reason, "no-name");
+eq("non-string name is ignored", verdict({ areaName: 42 }).reason, "no-name");
+
+// ── gate: the explicit switches ───────────────────────────────────────────
+
+eq("checkbox off", verdict({ areaName: "Ravenwood Hollow", areaPanelEnabled: false }).reason, "disabled");
+eq("checkbox on", verdict({ areaName: "Ravenwood Hollow", areaPanelEnabled: true }).show, true);
+eq("checkbox null => default on", verdict({ areaName: "Ravenwood Hollow", areaPanelEnabled: null }).show, true);
+eq("title scene suppressed", verdict({ areaName: "Ravenwood Hollow", sceneMode: "title" }).reason, "suppressed-scene-mode");
+// Conflict and Gacha hide the whole config block, so a name can only be there
+// from before the mode changed — the runtime must refuse it anyway.
+eq("conflict scene suppressed", verdict({ areaName: "Ravenwood Hollow", sceneMode: "conflict" }).reason, "suppressed-scene-mode");
+eq("gacha scene suppressed", verdict({ areaName: "Ravenwood Hollow", sceneMode: "gacha" }).reason, "suppressed-scene-mode");
+eq("conflict beats Always Show",
+   verdict({ areaName: "Ravenwood Hollow", sceneMode: "conflict", areaPanelAlwaysShow: true }).show, false);
+eq("dungeon scene not suppressed", verdict({ areaName: "Ravenwood Hollow", sceneMode: "dungeon" }).show, true);
+eq("exploration scene not suppressed", verdict({ areaName: "Ravenwood Hollow", sceneMode: "exploration" }).show, true);
+eq("camp scene not suppressed", verdict({ areaName: "Ravenwood Hollow", sceneMode: "camp" }).show, true);
+
+// ── gate: repeat suppression ──────────────────────────────────────────────
+
+eq("second map of the same castle", verdict({ areaName: "Fafnir Castle" }, "Fafnir Castle").reason, "repeat");
+eq("different area after it", verdict({ areaName: "Ravenwood Hollow" }, "Fafnir Castle").show, true);
+eq("repeat is whitespace-insensitive", verdict({ areaName: "Fafnir Castle" }, "  Fafnir Castle  ").reason, "repeat");
+eq("repeat is case-SENSITIVE (names are authored, not parsed)",
+   verdict({ areaName: "fafnir castle" }, "Fafnir Castle").show, true);
+eq("always-show beats suppression",
+   verdict({ areaName: "Fafnir Castle", areaPanelAlwaysShow: true }, "Fafnir Castle").show, true);
+eq("always-show reports itself", verdict({ areaName: "Fafnir Castle", areaPanelAlwaysShow: true }, "Fafnir Castle").reason, "always-show");
+eq("always-show still obeys the checkbox",
+   verdict({ areaName: "Fafnir Castle", areaPanelAlwaysShow: true, areaPanelEnabled: false }, "Fafnir Castle").reason, "disabled");
+eq("always-show default is OFF", readAreaConfig(scene({ areaName: "X" })).alwaysShow, false);
+eq("no last area yet", verdict({ areaName: "Fafnir Castle" }, null).show, true);
+eq("empty last area", verdict({ areaName: "Fafnir Castle" }, "").show, true);
+
+// ── a run of activations, the way a session walks them ────────────────────
+// Castle map 1 → castle map 2 → an unnamed battle arena → castle map 3.
+// The arena must NOT clear the memory: it is part of the castle, and coming
+// back out of a fight should not re-announce where the party already is.
+
+{
+  const walk = [
+    { general: { areaName: "Fafnir Castle" },   want: true,  why: "first entry announces" },
+    { general: { areaName: "Fafnir Castle" },   want: false, why: "second map is silent" },
+    { general: {},                              want: false, why: "unnamed arena is silent" },
+    { general: { areaName: "Fafnir Castle" },   want: false, why: "back from the arena, still silent" },
+    { general: { areaName: "Sky Terrace" },     want: true,  why: "a new area announces" },
+    { general: { areaName: "Fafnir Castle" },   want: true,  why: "returning from elsewhere announces again" },
+  ];
+
+  let last = null;
+  walk.forEach((step, i) => {
+    const v = shouldShowForScene(scene(step.general, `walk${i}`), { lastAreaName: last });
+    eq(`walk[${i}] ${step.why}`, v.show, step.want);
+    // Mirrors area-panel.js: the memory is written for any scene that CLEARS
+    // the gate, and is left untouched by scenes that do not.
+    if (v.name) last = v.name;
+  });
+}
+
+// ── label formatting ──────────────────────────────────────────────────────
+//
+// formatLabel is the printed line; cleanName is the bare name. An early build
+// drew the glyph on a spine element AND prepended it here, and the first live
+// screenshot read "◈ ◈ Eisendrache Kingdom" — so the split is pinned.
+
+eq("printed name carries NO glyph", cleanName("Ravenwood Hollow"), "Ravenwood Hollow");
+ok("printed name never starts with the glyph", !cleanName(`${GLYPH} x`).startsWith(`${GLYPH} ${GLYPH}`));
+eq("printed name trims", cleanName("  Ravenwood Hollow  "), "Ravenwood Hollow");
+eq("printed name collapses inner whitespace", cleanName("Ravenwood\n  Hollow"), "Ravenwood Hollow");
+eq("blank prints nothing", cleanName("   "), "");
+eq("null prints nothing", cleanName(null), "");
+
+eq("text label is glyph + name", formatLabel("Ravenwood Hollow"), `${GLYPH} Ravenwood Hollow`);
+eq("blank label is empty, not a lone glyph", formatLabel("   "), "");
+eq("null label is empty", formatLabel(null), "");
+
+{
+  const long = "A".repeat(TUNING.MAX_LABEL_CHARS + 40);
+  const out = cleanName(long);
+  ok("over-long name is clamped", out.length <= TUNING.MAX_LABEL_CHARS);
+  ok("over-long name ends in an ellipsis", out.endsWith("…"));
+  eq("at-limit name is untouched",
+     cleanName("B".repeat(TUNING.MAX_LABEL_CHARS)), "B".repeat(TUNING.MAX_LABEL_CHARS));
+}
+
+{
+  const v = verdict({ areaName: " Ravenwood  Hollow " });
+  eq("verdict.display is what the plaque prints", v.display, "Ravenwood Hollow");
+  eq("verdict.label is the text form", v.label, `${GLYPH} Ravenwood Hollow`);
+  eq("verdict.name is the authored value", v.name, "Ravenwood  Hollow");
+}
+eq("a declined verdict has no display", verdict({ areaName: "X", areaPanelEnabled: false }).display, "");
+
+// ── tuning sanity — these are the numbers the feel depends on ─────────────
+
+ok("hold is the spec's 4s", TUNING.HOLD_MS === 4000);
+ok("watchdog outlasts a canvas draw plus the 700ms reveal",
+   TUNING.WATCHDOG_MS > TUNING.SETTLE_MS + 900);
+ok("a held panel outlives a long look away", TUNING.DEFER_MAX_MS >= 60000);
+ok("the plaque hangs off the screen edge", TUNING.POS_X_PX < 0);
+ok("padding clears the overhang", TUNING.PAD_X_PX + -TUNING.POS_X_PX > -TUNING.POS_X_PX);
+
+// ── tuning overrides (what the tuner window saves) ────────────────────────
+//
+// These arrive from a world setting — i.e. from whatever a tuner last wrote,
+// possibly an older one, possibly hand-edited. Nothing from there may reach the
+// CSS unchecked: one NaN in a size variable blanks the plaque with no error.
+
+{
+  const keys = TUNABLE.map((f) => f.key);
+  eq("every tunable field names a real TUNING key",
+     keys.filter((k) => !(k in TUNING)), []);
+  eq("no duplicate tunable keys", keys.length, new Set(keys).size);
+  ok("every tunable field has a usable range", TUNABLE.every((f) => f.max > f.min && f.step > 0));
+  ok("every default sits inside its own range",
+     TUNABLE.every((f) => TUNING[f.key] >= f.min && TUNING[f.key] <= f.max));
+}
+
+eq("unknown keys are dropped", sanitizeOverrides({ NOT_A_KEY: 3, FONT_PX: 40 }), { FONT_PX: 40 });
+eq("junk is dropped", sanitizeOverrides({ FONT_PX: "wide" }), {});
+eq("NaN is dropped", sanitizeOverrides({ FONT_PX: NaN }), {});
+eq("null overrides are survivable", sanitizeOverrides(null), {});
+eq("a string number is accepted", sanitizeOverrides({ FONT_PX: "40" }), { FONT_PX: 40 });
+eq("over-max is clamped, not rejected", sanitizeOverrides({ FONT_PX: 9000 }).FONT_PX, 96);
+eq("under-min is clamped", sanitizeOverrides({ PANEL_SCALE: -4 }).PANEL_SCALE, 0.25);
+eq("a negative X offset is legal — it is the whole point",
+   sanitizeOverrides({ POS_X_PX: -120 }).POS_X_PX, -120);
+
+eq("merge keeps the untouched defaults", mergeTuning({ FONT_PX: 40 }).HOLD_MS, TUNING.HOLD_MS);
+eq("merge applies the override", mergeTuning({ FONT_PX: 40 }).FONT_PX, 40);
+eq("merge of nothing is the defaults", mergeTuning({}).FONT_PX, TUNING.FONT_PX);
+eq("merge never lets junk through", mergeTuning({ FONT_PX: "wide" }).FONT_PX, TUNING.FONT_PX);
+
+// The tuner SAVES this diff, not the whole draft. Storing a value that merely
+// equals today's default would pin the world to it, so a later change to that
+// default in code would silently never reach the world — for a knob nobody
+// meant to override. Dragging a slider away and back must leave nothing behind.
+eq("a value equal to the default is not a change",
+   diffFromDefaults({ FONT_PX: TUNING.FONT_PX }), {});
+eq("dragged away and back stores nothing",
+   diffFromDefaults({ FONT_PX: TUNING.FONT_PX, GLYPH_SCALE: TUNING.GLYPH_SCALE }), {});
+eq("a real change is reported", diffFromDefaults({ FONT_PX: 40 }), { FONT_PX: 40 });
+eq("a real change survives alongside untouched knobs",
+   diffFromDefaults({ FONT_PX: 40, HOLD_MS: TUNING.HOLD_MS }), { FONT_PX: 40 });
+
+{
+  const snippet = exportSnippet({ FONT_PX: 40 });
+  ok("the snippet carries every tunable key", TUNABLE.every((f) => snippet.includes(f.key)));
+  ok("the snippet shows the tuned value", snippet.includes("FONT_PX"));
+  ok("the snippet marks what changed", /FONT_PX\s*:\s*40,\s*\/\/ changed/.test(snippet));
+  ok("an untouched key is not marked",
+     !new RegExp(`HOLD_MS\\s*:\\s*${TUNING.HOLD_MS},\\s*// changed`).test(snippet));
+}
+ok("panel sits below the transition curtain", TUNING.Z_INDEX < 99999);
+ok("panel sits above Foundry chrome", TUNING.Z_INDEX > 30);
+
+console.log(`\n${fail ? "FAILED" : "OK"} — ${pass} passed, ${fail} failed`);
+process.exit(fail ? 1 : 0);
