@@ -30,7 +30,7 @@
       "class": "Hexer",
       "cost": "5 x T MP",
       "damage_bonus": "0",
-      "defense_target_type": "def",
+      "defense_target_type": "mdef",
       "description": "<p>You conjure an oppressive atmosphere that amplifies strain on the target’s mind. The next time a target hit by this spell would spend Mind Points, that creature must spend an <strong>additional 10 Mind Points</strong> or lose their intended effect.</p>\n",
       "duration": "Instantaneous",
       "heroic_requirement": "",

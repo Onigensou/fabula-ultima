@@ -31,7 +31,7 @@
       "class": "Spiritist",
       "cost": "5 x T MP",
       "damage_bonus": "0",
-      "defense_target_type": "def",
+      "defense_target_type": "mdef",
       "description": "<p>You smother the soul energy coursing through the bodies of your foes, hindering their movements. <strong>Choose:</strong> Slow or Weak. Inflict the chosen status effect on each target hit by this spell <em>(INS+WLP vs MDEF)</em>.</p>",
       "duration": "Instantaneous",
       "effect_table": {

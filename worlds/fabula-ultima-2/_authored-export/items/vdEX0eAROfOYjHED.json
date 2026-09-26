@@ -55,7 +55,7 @@
       "class": "NPC",
       "cost": "-",
       "damage_bonus": "",
-      "defense_target_type": "def",
+      "defense_target_type": "mdef",
       "duration": "-",
       "heroic_requirement": "",
       "ignore_hr": false,

@@ -30,7 +30,7 @@
       "class": "Hexer",
       "cost": "20 MP",
       "damage_bonus": "0",
-      "defense_target_type": "def",
+      "defense_target_type": "mdef",
       "description": "<p>You cover the target’s eyes with pitch-black shadows, blocking their sight. Until the spell ends, the target suffers a <strong>−2 penalty to Accuracy Checks</strong>.</p>\n<p>This spell has no effect on creatures that do not rely on sight. An effect that can remove a status effect can end this effect instead.</p>\n",
       "duration": "Scene",
       "heroic_requirement": "",

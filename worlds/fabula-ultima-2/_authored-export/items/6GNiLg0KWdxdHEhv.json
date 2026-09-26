@@ -29,7 +29,7 @@
       "class": "Spiritist",
       "cost": "5 x T MP",
       "damage_bonus": "0",
-      "defense_target_type": "def",
+      "defense_target_type": "mdef",
       "description": "<p>You alter the senses of your enemies, causing them to experience bizarre or frightening hallucinations. <strong>Choose:</strong> Dazed or Shaken. Inflict the chosen status effect on each target hit by this spell <em>(INS+WLP vs MDEF)</em>.</p>",
       "duration": "Instantaneous",
       "effect_table": {

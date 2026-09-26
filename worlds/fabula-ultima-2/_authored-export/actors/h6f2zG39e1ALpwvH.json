@@ -1079,7 +1079,7 @@
           "class": "Spiritist",
           "cost": "5 x T MP",
           "damage_bonus": "0",
-          "defense_target_type": "def",
+          "defense_target_type": "mdef",
           "description": "<p>You smother the soul energy coursing through the bodies of your foes, hindering their movements. <strong>Choose:</strong> Slow or Weak. Inflict the chosen status effect on each target hit by this spell <em>(INS+WLP vs MDEF)</em>.</p>",
           "duration": "Instantaneous",
           "effect_table": {
@@ -1456,7 +1456,7 @@
           "class": "Spiritist",
           "cost": "10 x T MP",
           "damage_bonus": "15",
-          "defense_target_type": "def",
+          "defense_target_type": "mdef",
           "description": "You focus your inner energy into a barrage of blinding soul rays. Each target hit by this spell suffers <strong>HR + 15 Light</strong> damage.<br><strong>Opportunity:</strong> Each target hit suffers <strong>Dazed</strong>.",
           "details_roller": "Show",
           "duration": "Instantaneous",
@@ -2445,7 +2445,7 @@
           "class": "Spiritist",
           "cost": "10 MP",
           "damage_bonus": "0",
-          "defense_target_type": "def",
+          "defense_target_type": "mdef",
           "description": "<p>You cause a creature to lose any semblance of temper and act brazenly. The target hit by this spell <em>(INS+WLP vs MDEF)</em> suffers <strong>Enraged</strong> and cannot perform the <strong>Guard</strong> or <strong>Spell</strong> actions during their next turn.</p>",
           "duration": "Instantaneous",
           "effect_table": {
@@ -2522,7 +2522,7 @@
           "class": "Spiritist",
           "cost": "5 x T MP",
           "damage_bonus": "0",
-          "defense_target_type": "def",
+          "defense_target_type": "mdef",
           "description": "<p>You alter the senses of your enemies, causing them to experience bizarre or frightening hallucinations. <strong>Choose:</strong> Dazed or Shaken. Inflict the chosen status effect on each target hit by this spell <em>(INS+WLP vs MDEF)</em>.</p>",
           "duration": "Instantaneous",
           "effect_table": {

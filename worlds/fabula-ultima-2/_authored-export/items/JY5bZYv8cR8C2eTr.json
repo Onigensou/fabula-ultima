@@ -80,7 +80,7 @@
       "class": "Entropist",
       "cost": "5 MP",
       "damage_bonus": "0",
-      "defense_target_type": "def",
+      "defense_target_type": "mdef",
       "description": "<p><strong>Flip a coin:</strong></p><ul><li><p><strong>Headー</strong> The target recovers from all status effects,</p></li><li><p><strong>Tailー</strong> Inflicts a <strong>Random </strong>status effect on the target.</p></li></ul>",
       "details_roller": "Show",
       "duration": "Instantaneous",

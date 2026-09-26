@@ -80,7 +80,7 @@
       "class": "Entropist",
       "cost": "50 MP",
       "damage_bonus": "30",
-      "defense_target_type": "def",
+      "defense_target_type": "mdef",
       "description": "<p>You fire a bolt of unpredictable chaotic energy at target creature, <strong>Flip a coin</strong>:</p><ul><li><p><strong>Headー</strong> Deals 30 dark damage to the target, this damage type cannot be changed</p></li><li><p><strong>Tailー</strong> Deals 30 dark damage to you, this damage type cannot be changed</p></li></ul><p>You may repeat this process up to 5 time</p>",
       "duration": "Instantaneous",
       "heroic_requirement": "",

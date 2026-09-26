@@ -33,7 +33,7 @@
       "class": "Hexer",
       "cost": "20 MP",
       "damage_bonus": "0",
-      "defense_target_type": "def",
+      "defense_target_type": "mdef",
       "description": "<p>You conjure troubling visions in the target’s mind, wearing down their focus. Until the spell ends, the target suffers a <strong>−2 penalty to Magic Checks</strong>.</p>\n<p>An effect that can remove a status effect can end this effect instead.</p>\n",
       "duration": "Scene",
       "heroic_requirement": "",
