@@ -27,6 +27,7 @@
       "cost": "",
       "damage_bonus": "0",
       "description": "Each time you acquire this Skill, learn one Spiritist spell (see Facet). Offensive Spiritist Spells use <strong>INS + WLP</strong> for the Magic Check.",
+      "implementation_note": "Catalogue skill: each rank learns one Spiritist spell, and each spell carries its own rows. The INS + WLP Magic Check lives on every offensive Spiritist spell (rolled_atr1/2: Lux, Torpor, Enrage, Hallucination).",
       "isCheck": false,
       "name": "Spiritual Magic",
       "rolled_atr1": "-",

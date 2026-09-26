@@ -476,7 +476,9 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
       // A locked target forbids multi-pass: pass 2 re-enters TARGET and
       // re-prompts over every eligible enemy, which would let the second swing
       // leave the forced target. RAW: "that enemy as its ONLY target".
-      allowTwoWeapon: !!snap.canTwoWeaponFight && !grantLockedUuid,
+      // Core p.69: "You cannot use two-weapon fighting when performing a free
+      // attack." Chain strikes are not free attacks and keep their passes.
+      allowTwoWeapon: !!snap.canTwoWeaponFight && !grantLockedUuid && !(grant?.freeAttack && !grant?.chain),
       twoWeaponSolo: !!snap.twoWeaponSolo,
       virtualAttacks,
       // Range-class lockouts (Snared / Obscure). Passed in so the picker can

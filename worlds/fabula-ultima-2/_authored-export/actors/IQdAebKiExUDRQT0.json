@@ -130,6 +130,7 @@
           "description": "<p>You can always communicate verbally with <strong>undead</strong> creatures. <strong>Once per scene</strong>, you may ask an <strong>undead</strong> a single question; they are compelled to answer truthfully.</p>\n",
           "duration": "",
           "heroic_requirement": "",
+          "implementation_note": "GM-adjudicated, no automation: you can always speak with undead, and once per scene one undead must answer a single question truthfully.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,

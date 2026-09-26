@@ -1537,6 +1537,10 @@ async function resolveAction(director, ar, opts = {}) {
         targets:              coveredTokenUuids,
         targetTokenUuids:     coveredTokenUuids,
       },
+      // Rows already offered as a Guard card pill (Hawkeye / Bodyguard / Withstand)
+      // fired at the pill; without this the queue re-finds them — a second menu
+      // for `ask`, a second fire for `force`. Same guard as step 7 (Spell).
+      skipEvaluated: Array.isArray(ar.evaluatedCardReactions) ? ar.evaluatedCardReactions : [],
     });
   }
 
@@ -7730,6 +7734,8 @@ const FreeActionWindow = {
       preset:           req.preset ?? null,
       // chain strike → bypasses preventFreeAttack (freeActions.get/set honor it).
       chain:            req.chain === true,
+      // free_action-kind grant → a RAW free attack (no two-weapon; composeAttack).
+      freeAttack:       req.freeAttack === true,
     });
 
     // PUSH the free-action frame BEFORE mutating turnSnapshot+actionResult.

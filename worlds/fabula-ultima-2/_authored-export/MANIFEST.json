@@ -3776,7 +3776,7 @@
         "id": "8u1xJ1G1CrJNf6Cp",
         "name": "Breach",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "aw8gObqyBismsZzi",
@@ -13034,7 +13034,7 @@
         "id": "u4kRCa84YEtIo2Xu",
         "name": "Withstand",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "mWTI4FiXtTPwObXQ",

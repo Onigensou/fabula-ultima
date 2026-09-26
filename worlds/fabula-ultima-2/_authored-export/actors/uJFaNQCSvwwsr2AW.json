@@ -5295,6 +5295,7 @@
           "duration": "",
           "heroic_requirement": "",
           "ignore_hr": false,
+          "implementation_note": "GM-adjudicated, no automation: when you rest in an inn or tavern, ask the GM up to SL questions about the surroundings and the people who live there; the GM answers truthfully.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,

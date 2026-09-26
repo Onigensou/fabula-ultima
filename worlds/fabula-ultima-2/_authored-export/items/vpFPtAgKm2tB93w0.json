@@ -31,6 +31,7 @@
       "description": "<p>When you <strong>rest</strong> inside an inn or tavern, you may ask the Game Master up to <strong>【SL】</strong> questions about your surroundings and the people who live here; the Game Master will answer truthfully and you describe how you gathered the information</p>",
       "duration": "",
       "heroic_requirement": "",
+      "implementation_note": "GM-adjudicated, no automation: when you rest in an inn or tavern, ask the GM up to SL questions about the surroundings and the people who live there; the GM answers truthfully.",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,

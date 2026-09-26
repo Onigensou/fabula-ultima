@@ -7751,6 +7751,7 @@
           "gadget_magitech_tier": "",
           "heroic_requirement": "",
           "ignore_hr": false,
+          "implementation_note": "GM-adjudicated, no automation: you can always speak with undead, and once per scene one undead must answer a single question truthfully.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,

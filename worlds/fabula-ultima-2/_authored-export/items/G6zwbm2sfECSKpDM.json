@@ -40,6 +40,7 @@
       "id": "G6zwbm2sfECSKpDM",
       "ignore_hr": false,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/stalwart_soul.png",
+      "implementation_note": "GM-adjudicated, no automation: you can always speak with undead, and once per scene one undead must answer a single question truthfully.",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,

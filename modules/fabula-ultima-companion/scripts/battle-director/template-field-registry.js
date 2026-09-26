@@ -377,6 +377,10 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // "FINAL_DAMAGE >= 100"); on every other kind it's a dispatch-time gate. That
   // late evaluation is exactly why `pierce` cannot be granted this way.
   textCol("condition_formula", "Row Condition", { tooltip: "Generic gate: blank = always. Falsy → skip this row (chain continues); on a menu-option row, falsy also HIDES the option. e.g. GADGET_INFUSION_TIER >= 2, HIT_COUNT > 0. (apply_action_keyword: evaluated post-bonus, may use FINAL_DAMAGE.)", vis: "", reconcileVis: true }),
+  // Menu-option presentation of a failed Row Condition (buildMenuOptions). Were
+  // authored on 31 option rows while undeclared — one sheet save from deletion.
+  textCol("disable_ui_type", "Disabled Option Look", { tooltip: "Menu-option rows only: blank = a failed Row Condition HIDES the option; \"dim\" / \"disabled\" = show it greyed and unclickable with the reason below.", vis: "" }),
+  textCol("disabled_reason", "Disabled Reason", { tooltip: "Menu-option rows only: the badge shown on a dimmed option, e.g. \"Not enough MP\".", vis: "" }),
   // Turns the gate above from a RIDER into a REQUIREMENT. Skipping is right for
   // "apply Swift only if no Slow"; it is wrong for "you may only use this with
   // martial armor equipped", and there was no way to say the latter — an
@@ -747,6 +751,7 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
     { key: "weapon",     value: "Weapon — main hand, else off hand" },
     { key: "main",       value: "Main Hand" },
     { key: "off",        value: "Off Hand" },
+    { key: "shield",     value: "Shield — off hand, else main hand (shields only)" },
     { key: "accessory",  value: "Accessory — slot 1, else slot 2" },
     { key: "accessory1", value: "Accessory 1" },
     { key: "accessory2", value: "Accessory 2" },

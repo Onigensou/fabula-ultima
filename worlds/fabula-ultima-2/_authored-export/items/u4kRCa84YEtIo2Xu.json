@@ -8,6 +8,142 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "UFoDe4Q4SFC8KGBL",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790389917117,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "wlp_current",
+          "mode": 2,
+          "priority": 1,
+          "value": "2"
+        }
+      ],
+      "description": "<p>Willpower is treated as one die size higher (up to d12) until the end of your next turn.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "UFoDe4Q4SFC8KGBL",
+          "originalParentId": "u4kRCa84YEtIo2Xu",
+          "originalUuid": "Item.u4kRCa84YEtIo2Xu.ActiveEffect.UFoDe4Q4SFC8KGBL"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "charges": 2,
+          "chargesMax": 2,
+          "lifetimeMode": "target_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/ElswordSkill7.png",
+      "name": "Withstand (Willpower)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-withstand-willpower"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "VIb0ExjLT9D0JktG",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790389917117,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "mig_current",
+          "mode": 2,
+          "priority": 1,
+          "value": "2"
+        }
+      ],
+      "description": "<p>Might is treated as one die size higher (up to d12) until the end of your next turn.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "VIb0ExjLT9D0JktG",
+          "originalParentId": "u4kRCa84YEtIo2Xu",
+          "originalUuid": "Item.u4kRCa84YEtIo2Xu.ActiveEffect.VIb0ExjLT9D0JktG"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "charges": 2,
+          "chargesMax": 2,
+          "lifetimeMode": "target_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/ElswordSkill7.png",
+      "name": "Withstand (Might)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-withstand-might"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -35,24 +171,118 @@
       "defense_target_type": "def",
       "description": "<p>When you perform the <strong>Guard</strong> action, if you choose <strong>not</strong> to provide cover to another creature, you recover Hit Points equal to <strong>【SL, multiplied by the highest strength among your Bonds】</strong> and choose <strong>Might</strong> or <strong>Willpower</strong>: you treat the chosen Attribute as being one die size higher <em>(up to a maximum of <strong>d12</strong>)</em> until the end of your next turn.</p>",
       "duration": "",
+      "effect_table": {
+        "0": {
+          "chain_steps": "ws_heal, ws_pick",
+          "consume_self": false,
+          "effect_kind": "chain",
+          "effect_label": "ws_root",
+          "from_resource": "",
+          "menu_label": "",
+          "to_resource": ""
+        },
+        "1": {
+          "consume_self": false,
+          "effect_kind": "grant",
+          "effect_label": "ws_heal",
+          "from_resource": "",
+          "grant_amount": "SL * BOND_STRENGTH_MAX",
+          "grant_operation": "",
+          "grant_resource": "hp",
+          "grant_round": "",
+          "menu_label": "",
+          "target_ref": "self",
+          "to_resource": ""
+        },
+        "2": {
+          "allowed_types": "",
+          "check_bonus_formula": "",
+          "consume_self": false,
+          "damage_bonus_formula": "",
+          "effect_kind": "open_action_menu",
+          "effect_label": "ws_pick",
+          "free_hr_as_zero": false,
+          "free_mode": false,
+          "free_of_cost": false,
+          "from_resource": "",
+          "max_mp_cost": "",
+          "menu_label": "",
+          "menu_option_colors": "",
+          "menu_option_descriptions": "",
+          "menu_option_icons": "",
+          "menu_option_labels": "",
+          "menu_option_refs": "ws_mig, ws_wlp",
+          "menu_pick_count": "",
+          "menu_subtitle": "You guarded without providing cover — choose an Attribute (one die size higher until the end of your next turn).",
+          "menu_title": "Withstand",
+          "target_ref": "",
+          "to_resource": ""
+        },
+        "3": {
+          "ae_duplicate_mode": "replace",
+          "ae_family": "",
+          "ae_initial_charges": "",
+          "ae_initial_charges_max": "",
+          "ae_template_ref": "Withstand (Might)",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "ws_mig",
+          "from_resource": "",
+          "menu_description": "Treat Might as one die size higher (max d12) until the end of your next turn.",
+          "menu_label": "Might",
+          "target_ref": "self",
+          "to_resource": ""
+        },
+        "4": {
+          "ae_duplicate_mode": "replace",
+          "ae_family": "",
+          "ae_initial_charges": "",
+          "ae_initial_charges_max": "",
+          "ae_template_ref": "Withstand (Willpower)",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "ws_wlp",
+          "from_resource": "",
+          "menu_description": "Treat Willpower as one die size higher (max d12) until the end of your next turn.",
+          "menu_label": "Willpower",
+          "target_ref": "self",
+          "to_resource": ""
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
       "isOffensiveSpell": false,
-      "isReaction": false,
+      "isReaction": true,
       "level": "1",
       "max_level": "5",
       "name": "Withstand",
       "optional_params": {},
-      "reaction_config_table": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "DID_COVER_ALLY == 0",
+          "reaction_action_kind": "",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "ws_root",
+          "reaction_origin_filter": "",
+          "reaction_passive_mode": "ask",
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_trigger": "creature_guards",
+          "requires_skill": ""
+        }
+      },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_default": "",
       "skill_animation_mode": "default",
       "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p>Level</p></td><td data-colwidth=\"148\"><p>HP recovered</p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p><strong>【1 x the highest stength among your Bonds】</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p><strong>【2 x the highest stength among your Bonds】</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p><strong>【3 x the highest stength among your Bonds】</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>4</p></td><td data-colwidth=\"148\"><p><strong>【4 x the highest stength among your Bonds】</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>5</p></td><td data-colwidth=\"148\"><p><strong>【5 x the highest stength among your Bonds】</strong></p></td></tr></tbody></table>",
       "skill_range": "",
-      "skill_target": "",
+      "skill_target": "-",
       "skill_type": "Passive",
       "type_damage": "",
       "use_optional_params": false

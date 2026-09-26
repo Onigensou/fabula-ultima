@@ -7510,17 +7510,25 @@ const HIDE_ITEM_SLOT_ALIASES = {
   weapon: ["main", "off"],
   accessory1: ["accessory1"], accessory2: ["accessory2"],
   accessory: ["accessory1", "accessory2"],
+  // Breach's "destroy one shield": the hands, off first, but ONLY an item typed
+  // shield — a main-hand sword must never be taken for want of a shield.
+  shield: ["off", "main"],
 };
+const HIDE_ITEM_SLOT_TYPE = { shield: "shield" };
 
 function resolveHideItemBySlot(actor, slotRaw, slots) {
-  const keys = HIDE_ITEM_SLOT_ALIASES[String(slotRaw ?? "").trim().toLowerCase()];
+  const alias = String(slotRaw ?? "").trim().toLowerCase();
+  const keys = HIDE_ITEM_SLOT_ALIASES[alias];
   if (!keys) return null;
+  const wantType = HIDE_ITEM_SLOT_TYPE[alias] ?? null;
   for (const key of keys) {
     const slot = slots.find((s) => s.key === key);
     const id = slot?.currentItemId ?? null;
     if (id) {
       const item = actor.items?.get?.(id) ?? null;
-      if (item) return item;
+      if (!item) continue;
+      if (wantType && String(item.system?.props?.item_type ?? "").trim().toLowerCase() !== wantType) continue;
+      return item;
     }
   }
   return null;
@@ -9303,6 +9311,10 @@ async function applyFreeActionEffect(row, ctx) {
     // BYPASSES preventFreeAttack (a "no Free Attacks" debuff must not stop a
     // Chain N attack). freeActions.get/set honor this flag. Default false.
     chain: row.chain === true || String(row.chain ?? "").trim().toLowerCase() === "true",
+    // A free_action grant IS a "free attack" (Core p.69: no two-weapon fighting
+    // on one). open_action_menu free_mode grants are extra ACTIONS (High Speed)
+    // and do not set this, so they keep two-weapon.
+    freeAttack: true,
   });
   log(`free_action: enqueued "${sourceLabel}" for ${performer.name} — ${preset ? `preset ${preset.command} (${presetItem?.name})` : `compose [${enabledLabels.join(", ") || "any"}]`} (+${checkBonus} check / +${damageBonus} dmg)`);
   return { ok: true, kind: "free_action", queued: true, freeMode: true, applied: [{ actor: performer.uuid, sourceLabel, enabledLabels, checkBonus, damageBonus, preset: preset ? preset.command : null }] };

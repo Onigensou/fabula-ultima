@@ -830,6 +830,11 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "BOND_COUNT_MISTRUST":   return countBondsByEmotion(actor, "mistrust");
       case "BOND_COUNT_AFFECTION":  return countBondsByEmotion(actor, "affection");
       case "BOND_COUNT_HATRED":     return countBondsByEmotion(actor, "hatred");
+      // Strongest Bond the reactor holds toward ANYONE (Withstand: "SL multiplied by
+      // the highest strength among your Bonds"). Strength = emotion count; prop slots
+      // always carry 3 entries with blanks, hence filter(Boolean).
+      case "BOND_STRENGTH_MAX":
+        return getBondSlots(actor).reduce((m, s) => Math.max(m, s.emotions.filter(Boolean).length), 0);
       // Strongest Bond the reactor holds toward ANY creature in the trigger's
       // target/hit list (vs BOND_STRENGTH which only reads the single payload
       // subject by name). Resolves each target uuid → actor → name, matched
@@ -1677,6 +1682,25 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         // this reads them WITHOUT a doc lookup so it stays a sync formula. General
         // tag-gated-reaction primitive — Maid Cap's craft discount gates on
         // SKILL_HAS_TAG_POTION / SKILL_HAS_TAG_MAGISPHERE. Name grammar: underscores → spaces.
+        // Dynamic ANY_TARGET_HAS_EQUIPPED_<ITEM_TYPE> — 1 if ANY creature in the
+        // trigger's hit list (else target list) carries an EQUIPPED embedded item of
+        // that item_type (ARMOR / SHIELD / WEAPON / ACCESSORY). Gates hide_item menu
+        // options (Breach) so a pick that would take nothing is dimmed, not a silent
+        // no-op: most monsters wear armor/shields as sheet PROPS with no item behind
+        // them, and hide_item can only take an item.
+        if (name.startsWith("ANY_TARGET_HAS_EQUIPPED_")) {
+          const want = name.slice("ANY_TARGET_HAS_EQUIPPED_".length).toLowerCase();
+          const list = payload?.hitTargets ?? payload?.hitTargetTokenUuids
+            ?? payload?.targetActorUuids ?? payload?.targets ?? payload?.targetTokenUuids ?? [];
+          if (!Array.isArray(list)) return 0;
+          for (const ref of list) {
+            const a = _resolveActorByUuidSync(String(ref));
+            const hit = a?.items?.some?.((i) => i.system?.props?.isEquipped === true
+              && String(i.system?.props?.item_type ?? "").trim().toLowerCase() === want);
+            if (hit) return 1;
+          }
+          return 0;
+        }
         if (name.startsWith("SKILL_HAS_TAG_")) {
           const needle = name.slice("SKILL_HAS_TAG_".length).replace(/_/g, " ").toLowerCase().trim();
           const tags = String(payload?.skillTags ?? "")

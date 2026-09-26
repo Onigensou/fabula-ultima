@@ -114,6 +114,11 @@ const checkProp = (key, label, tooltip = "") => {
 export const MANAGED_PROPS = Object.freeze([
   areaProp("skill_description", "Skill Description",
     "Long-form rules text (HTML). 42 cells across 22 documents."),
+  // carrier-scan's carrier 10: the pointer for a skill whose rules are GM
+  // adjudication (a question answered truthfully, a language spoken) or live in
+  // another doc. Undeclared, the note would be pruned on the next reload.
+  areaProp("implementation_note", "Implementation Note",
+    "Why this skill has no rows: GM-adjudicated, or implemented elsewhere (name it)."),
   areaProp("animation_preload_urls", "Animation Preload URLs",
     "Newline/comma list of asset paths warmed before the animation plays."),
   textProp("check_mode", "Check Mode",
