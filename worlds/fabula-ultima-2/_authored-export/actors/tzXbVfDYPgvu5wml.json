@@ -7168,11 +7168,11 @@
       },
       "effects": [
         {
-          "_id": "RaiGU66GPunSQO7j",
+          "_id": "ta33yeJu6ferIBHS",
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": null,
+            "createdTime": 1790434647270,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -7199,9 +7199,9 @@
           "flags": {
             "custom-system-builder": {
               "isFromTemplate": false,
-              "originalId": "RaiGU66GPunSQO7j",
-              "originalParentId": "2Ncb8FEV4lynlsHH",
-              "originalUuid": "Item.2Ncb8FEV4lynlsHH.ActiveEffect.RaiGU66GPunSQO7j"
+              "originalId": "ta33yeJu6ferIBHS",
+              "originalParentId": "z1GsqcJC8bh4TOAs",
+              "originalUuid": "Actor.tzXbVfDYPgvu5wml.Item.z1GsqcJC8bh4TOAs.ActiveEffect.ta33yeJu6ferIBHS"
             },
             "statuscounter": {
               "config": {
@@ -7266,6 +7266,20 @@
           "defense_target_type": "mdef",
           "description": "<p>You trap a foe inside a circle of altered time and space. The target will perform one fewer action on their next turn <em>(to a minimum of 0 actions).</em></p>",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "consume_self": false,
+              "effect_kind": "modify_turns",
+              "effect_label": "stop_slow",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "hit_action_targets",
+              "to_resource": "",
+              "turns_delta": "-1",
+              "turns_floor": "0"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": true,
@@ -7277,6 +7291,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Stop",
+          "on_activate_effect_ref": "stop_slow",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "INS",

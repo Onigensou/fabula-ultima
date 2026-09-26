@@ -76,6 +76,65 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "M9oLA5S1dVtKhBoU",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1790434685517,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "activation",
+              "mode": 3,
+              "priority": 1,
+              "value": "1"
+            }
+          ],
+          "description": "<p>Performing 1 fewer action next turn</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "M9oLA5S1dVtKhBoU",
+              "originalParentId": "VGRIyH9PLQVuiubW",
+              "originalUuid": "Actor.H1wynPa2lwTcLIZX.Item.VGRIyH9PLQVuiubW.ActiveEffect.M9oLA5S1dVtKhBoU"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/DWTrans5.png",
+          "name": "Stop",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "core": {
           "sourceId": "Item.UwVBdtPn1b7q8Kpd"
@@ -97,13 +156,33 @@
         "props": {
           "check_bonus": "0",
           "class": "ENTROPIST",
-          "cost": "10",
+          "cost": "10 MP",
           "damage_bonus": "0",
+          "defense_target_type": "mdef",
           "description": "<p>You trap a foe inside a circle of altered time and space. The target will perform one fewer action on their next turn (to a minimum of 0 actions).</p>",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "consume_self": false,
+              "effect_kind": "modify_turns",
+              "effect_label": "stop_slow",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "hit_action_targets",
+              "to_resource": "",
+              "turns_delta": "-1",
+              "turns_floor": "0"
+            }
+          },
+          "isReaction": false,
           "name": "Stop",
+          "on_activate_effect_ref": "stop_slow",
+          "reaction_config_table": {},
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
+          "skill_range": "Range",
+          "skill_target": "One creature",
           "target": "One creature",
           "type_damage": ""
         },

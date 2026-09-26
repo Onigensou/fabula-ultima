@@ -380,9 +380,12 @@ function applyTargetEligibility(pool, { action, performerActor, dCombat, round }
   return pool.filter((e) => {
     const cand = eligibleActor(e, dCombat);
     if (!cand) return false;
+    // The candidate is also the payload SUBJECT, so TARGET_* identifiers
+    // (TARGET_IS_FLYING — Terra "cannot target creatures in mid-air") read it.
+    // Before 2026-09-26 they folded to 0 here; no authored formula used them.
     const resolver = buildSkillResolver({
       actor: cand,
-      payload: { sourceActorUuid: performerActor?.uuid ?? null },
+      payload: { sourceActorUuid: performerActor?.uuid ?? null, subjectActorUuid: cand.uuid },
       skill: action,
       round,
     });

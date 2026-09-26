@@ -34,7 +34,17 @@
       "defense_target_type": "mdef",
       "description": "You focus your inner energy into a barrage of blinding soul rays. Each target hit by this spell suffers <strong>HR + 15 Light</strong> damage.<br><strong>Opportunity:</strong> Each target hit suffers <strong>Dazed</strong>.",
       "duration": "Instantaneous",
-      "effect_table": {},
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Dazed",
+          "condition_formula": "CRIT == 1",
+          "effect_kind": "apply_ae",
+          "effect_label": "lux_opportunity",
+          "target_ref": "hit_action_targets"
+        }
+      },
       "heroic_requirement": "",
       "ignore_hr": false,
       "isCheck": true,
@@ -46,7 +56,7 @@
       "level": "1",
       "max_level": "1",
       "name": "Lux",
-      "on_activate_effect_ref": "",
+      "on_activate_effect_ref": "lux_opportunity",
       "optional_params": {},
       "reaction_config_table": {},
       "rolled_atr1": "INS",

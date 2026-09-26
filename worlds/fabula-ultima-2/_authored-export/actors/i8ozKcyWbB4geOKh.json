@@ -1762,6 +1762,7 @@
           "name": "Terra",
           "on_activate_effect_ref": "terra_opportunity",
           "optional_params": {},
+          "reaction_config_table": null,
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
           "skill_animation_default": "",
@@ -1770,7 +1771,7 @@
           "skill_range": "Range",
           "skill_target": "Up to three creatures",
           "skill_type": "Spell",
-          "target_eligibility": "",
+          "target_eligibility": "TARGET_IS_FLYING == 0",
           "type_damage": "Earth",
           "use_optional_params": false
         },
@@ -1920,16 +1921,23 @@
       },
       "effects": [
         {
-          "_id": "38X9PMenyW2De8Xb",
+          "_id": "h9XCcQY8uNTzd7pG",
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1786384815978,
+            "createdTime": 1790434643004,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
           },
-          "changes": [],
+          "changes": [
+            {
+              "key": "can_target_flying_with",
+              "mode": 0,
+              "priority": 20,
+              "value": ""
+            }
+          ],
           "description": "<p>Your next attack this turn may force a <strong>Flying</strong> target to land.</p>",
           "disabled": false,
           "duration": {
@@ -1944,9 +1952,9 @@
           "flags": {
             "custom-system-builder": {
               "isFromTemplate": false,
-              "originalId": "38X9PMenyW2De8Xb",
+              "originalId": "h9XCcQY8uNTzd7pG",
               "originalParentId": "W2qejU2195OjXcKr",
-              "originalUuid": "Actor.i8ozKcyWbB4geOKh.Item.W2qejU2195OjXcKr.ActiveEffect.38X9PMenyW2De8Xb"
+              "originalUuid": "Actor.i8ozKcyWbB4geOKh.Item.W2qejU2195OjXcKr.ActiveEffect.h9XCcQY8uNTzd7pG"
             },
             "fabula-ultima-companion": {
               "category": "buff",
@@ -1958,6 +1966,25 @@
                     "effect_kind": "apply_ae",
                     "effect_label": "sst_ground",
                     "target_ref": "trigger_subject"
+                  },
+                  "1": {
+                    "$deleted": false,
+                    "consume_self": false,
+                    "damage_amount": "5",
+                    "damage_operation": "add",
+                    "damage_stage": "outgoing",
+                    "effect_kind": "adjust_damage",
+                    "effect_label": "sst_spear"
+                  },
+                  "2": {
+                    "$deleted": false,
+                    "ae_template_ref": "Soaring Strike (Airborne)",
+                    "consume_self": false,
+                    "count": "all",
+                    "effect_kind": "remove_ae",
+                    "effect_label": "sst_land",
+                    "include_persistent": true,
+                    "target_ref": "self"
                   }
                 },
                 "name": "Soaring Strike",
@@ -1969,6 +1996,23 @@
                     "reaction_passive_mode": "ask",
                     "reaction_source": "self",
                     "reaction_trigger": "creature_deals_damage"
+                  },
+                  "1": {
+                    "$deleted": false,
+                    "condition_formula": "ATTACK_IS_MELEE == 1 && (USED_WEAPON_CATEGORY_IS_SPEAR + USED_WEAPON_CATEGORY_IS_BRAWLING) >= 1",
+                    "reaction_action_kind": "Attack",
+                    "reaction_effect_ref": "sst_spear",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_will_deal_damage"
+                  },
+                  "2": {
+                    "$deleted": false,
+                    "condition_formula": "",
+                    "reaction_effect_ref": "sst_land",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_completes_attack"
                   }
                 }
               }
@@ -2016,6 +2060,8 @@
         "props": {
           "action_command": "spell",
           "active_effect_config_table": {},
+          "availability_formula": "HAS_MELEE_WEAPON == 1",
+          "availability_reason": "Requires an equipped melee weapon",
           "check_bonus": "0",
           "class": "Elementalist",
           "cost": "10 MP",
@@ -2047,6 +2093,7 @@
               "effect_kind": "free_action",
               "effect_label": "sst_free",
               "free_of_cost": false,
+              "free_weapon_range": "melee",
               "menu_description": "Free attack with an equipped melee weapon. On hitting a Flying target you may force it to land.",
               "menu_label": "Soaring Strike — free MELEE attack"
             }
@@ -2062,6 +2109,7 @@
           "name": "Soaring Strike",
           "on_activate_effect_ref": "sst_root",
           "optional_params": {},
+          "reaction_config_table": null,
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -2137,6 +2185,7 @@
           "name": "Fulgur",
           "on_activate_effect_ref": "fulgur_opportunity",
           "optional_params": {},
+          "reaction_config_table": {},
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
           "skill_animation_default": "",

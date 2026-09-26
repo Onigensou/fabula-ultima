@@ -175,13 +175,30 @@
         "props": {
           "check_bonus": "2",
           "class": "Entropist",
-          "cost": "10 x T",
+          "cost": "10 x T MP",
           "damage_bonus": "15",
+          "defense_target_type": "mdef",
           "description": "<p>A storm of dark energy turns matter into ash. Each target hit by this spell suffers <strong>【HR + 15】 dark</strong> damage.<br><strong>Opportunity</strong>: Each target hit by this spell suffers <strong>weak</strong>.</p>",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace_per_caster",
+              "ae_template_ref": "Weak",
+              "condition_formula": "CRIT == 1",
+              "effect_kind": "apply_ae",
+              "effect_label": "umbra_opportunity",
+              "target_ref": "hit_action_targets"
+            }
+          },
+          "isReaction": false,
           "name": "Umbra",
+          "on_activate_effect_ref": "umbra_opportunity",
+          "reaction_config_table": {},
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
+          "skill_range": "Range",
+          "skill_target": "Up to three creatures",
           "target": "Up to three creatures",
           "type_damage": "Dark"
         },
