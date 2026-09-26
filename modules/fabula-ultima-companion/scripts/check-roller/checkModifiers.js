@@ -103,7 +103,7 @@
       if (val !== 0) parts.push({ label: `Check Bonus (${attr.toUpperCase()})`, value: val });
     }
 
-    for (const p of anyOfParts(actor, rolled)) parts.push(p);
+    for (const p of anyOfParts(actor, rolled, context)) parts.push(p);
 
     return parts;
   }
@@ -114,19 +114,28 @@
   // check_mod_ins keys, a DEX+INS check collects both and pays +4, which the
   // item does not say. One key can only be counted once, so the cap is
   // structural rather than a special case in the reader.
-  function anyOfParts(actor, rolled) {
+  //
+  // `check_mod_<ctx>_anyof_<a>…` is the same bonus, paid only when the caller's
+  // check context is <ctx>. Frenetic Footwork ("+SL×2 to Opposed Checks that
+  // rely on acrobatics, coordination or speed") is `check_mod_opposed_anyof_dex`:
+  // contest_check and the manual roller's "Opposed" type pass context "opposed".
+  function anyOfParts(actor, rolled, context = null) {
     if (!rolled?.size) return [];
     const flags = actor?.flags?.[MODULE_ID];
     if (!flags || typeof flags !== "object") return [];
+    const ctx = context ? String(context).toLowerCase() : null;
     const out = [];
     for (const key of Object.keys(flags)) {
-      const m = /^check_mod_anyof_([a-z_]+)$/.exec(key);
+      const m = /^check_mod_(?:([a-z]+)_)?anyof_([a-z_]+)$/.exec(key);
       if (!m) continue;
-      const listed = m[1].split("_").filter((a) => ATTRS.has(a));
+      if (m[1] && m[1] !== ctx) continue;
+      const listed = m[2].split("_").filter((a) => ATTRS.has(a));
       if (!listed.length || !listed.some((a) => rolled.has(a))) continue;
       const val = safeNum(flags[key]);
       if (val !== 0) {
-        out.push({ label: `Check Bonus (${listed.map((a) => a.toUpperCase()).join("/")})`, value: val });
+        const dice = listed.map((a) => a.toUpperCase()).join("/");
+        const scope = m[1] ? `${m[1].charAt(0).toUpperCase()}${m[1].slice(1)}, ` : "";
+        out.push({ label: `Check Bonus (${scope}${dice})`, value: val });
       }
     }
     return out;

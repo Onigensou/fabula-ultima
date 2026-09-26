@@ -2640,7 +2640,7 @@
           },
           "changes": [
             {
-              "key": "override_damage_type",
+              "key": "override_attack_damage_type",
               "mode": 5,
               "priority": 20,
               "value": "Fire"
@@ -2708,7 +2708,7 @@
           },
           "changes": [
             {
-              "key": "override_damage_type",
+              "key": "override_attack_damage_type",
               "mode": 5,
               "priority": 20,
               "value": "Bolt"
@@ -2776,7 +2776,7 @@
           },
           "changes": [
             {
-              "key": "override_damage_type",
+              "key": "override_attack_damage_type",
               "mode": 5,
               "priority": 20,
               "value": "Air"
@@ -2844,7 +2844,7 @@
           },
           "changes": [
             {
-              "key": "override_damage_type",
+              "key": "override_attack_damage_type",
               "mode": 5,
               "priority": 20,
               "value": "Ice"
@@ -2912,7 +2912,7 @@
           },
           "changes": [
             {
-              "key": "override_damage_type",
+              "key": "override_attack_damage_type",
               "mode": 5,
               "priority": 20,
               "value": "Earth"

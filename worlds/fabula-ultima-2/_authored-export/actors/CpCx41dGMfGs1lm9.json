@@ -604,7 +604,7 @@
           },
           "changes": [
             {
-              "key": "override_damage_type",
+              "key": "override_attack_damage_type",
               "mode": 5,
               "priority": 20,
               "value": "Dark"
@@ -671,7 +671,7 @@
           },
           "changes": [
             {
-              "key": "override_damage_type",
+              "key": "override_attack_damage_type",
               "mode": 5,
               "priority": 20,
               "value": "Light"

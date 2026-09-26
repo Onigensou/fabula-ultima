@@ -78,7 +78,7 @@
         }
       },
       "img": "icons/svg/target.svg",
-      "name": "Provoked",
+      "name": "Provoked (Thread the Horns)",
       "origin": null,
       "sort": 0,
       "statuses": [
@@ -132,7 +132,7 @@
         },
         "2": {
           "ae_duplicate_mode": "replace",
-          "ae_template_ref": "Provoked",
+          "ae_template_ref": "Provoked (Thread the Horns)",
           "effect_kind": "apply_ae",
           "effect_label": "tth_prov",
           "target_ref": "trigger_subject"

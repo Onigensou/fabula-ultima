@@ -4016,7 +4016,7 @@
         "id": "Ro1ZgoiWtBFyMQS7",
         "name": "Capote",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "6HRY5TyV1hF2Edgh",
@@ -4664,7 +4664,7 @@
         "id": "SgBVZqVpIFdetJDi",
         "name": "Dark Weapon",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "0nnDHyX2zs80s8qz",
@@ -5846,7 +5846,7 @@
         "id": "UjcG79YyUH3V0jLX",
         "name": "Frenetic Footwork",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "ZO5HDPKVdDkenkVR",
@@ -9302,7 +9302,7 @@
         "id": "9XLkWjJOYoAdBqHm",
         "name": "Peacock Dance",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "2flmzfFbo1y8MCq5",
@@ -9794,13 +9794,13 @@
         "id": "2B9RJckS8vLJqPXC",
         "name": "Provoke",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "Zw14b4NHt6geS7nE",
         "name": "Provoke",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "agMXdQEoVMWvoPwB",

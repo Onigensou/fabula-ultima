@@ -843,28 +843,8 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // damaged) so "after you deal damage, if Bonded to one of them" gates
       // resolve correctly on multi-target spells whose action-level payload
       // carries no subject name. Used by Agony (Darkblade).
-      case "BOND_WITH_ANY_TARGET": {
-        if (!actor) return 0;
-        const list = payload?.hitTargets ?? payload?.hitTargetTokenUuids
-          ?? payload?.targetActorUuids ?? payload?.targets
-          ?? payload?.targetTokenUuids
-          ?? (payload?.subjectActorUuid ? [payload.subjectActorUuid] : []);
-        const slots = getBondSlots(actor);
-        if (!slots.length || !Array.isArray(list)) return 0;
-        let best = 0;
-        for (const ref of list) {
-          const a = _resolveActorByUuidSync(String(ref));
-          if (!a) continue;
-          const names = [a.name, a.token?.name, a.prototypeToken?.name]
-            .filter(Boolean).map((n) => String(n).toLowerCase());
-          for (const slot of slots) {
-            if (names.includes(String(slot.name).toLowerCase())) {
-              best = Math.max(best, slot.emotions.filter(Boolean).length);
-            }
-          }
-        }
-        return best;
-      }
+      case "BOND_WITH_ANY_TARGET":
+        return bondWithAnyTarget(actor, payload);
       // 1 if the ACTING creature (payload source/subject — e.g. the Heart of
       // Darkness caster) already holds a Bond toward THIS candidate (`actor`),
       // matched by name across BOTH authored prop bonds and AE-carried bonds
@@ -1485,6 +1465,26 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         if (subj && actor && subj.uuid === actor.uuid) return 1;
         return 0;
       }
+      // IS_SOURCE — 1 when THIS actor (in `target_eligibility`, the CANDIDATE) is
+      // the payload SOURCE, i.e. the performer. `IS_SOURCE == 0` is RAW "choose
+      // ANOTHER creature" (Peacock Dance, Provoke). The eligibility callers
+      // (compose-action, target-survey) put the performer in sourceActorUuid, not
+      // subjectActorUuid, so SUBJECT_IS_SELF cannot stand in. 0 with no source.
+      case "IS_SOURCE": {
+        const src = String(payload?.sourceActorUuid ?? "").trim();
+        if (!src || !actor) return 0;
+        if (actor.uuid === src) return 1;
+        const s = _resolveActorByUuidSync(src);
+        return (s && s.uuid === actor.uuid) ? 1 : 0;
+      }
+      // ACTION_IS_PROVOKABLE — 1 when a must_include_applier pin applies to the
+      // triggering action (an attack, or an offensive spell whatever its
+      // skill_type), from actionBase.actionPinKind — the SAME classifier the
+      // targeting pin uses, so a one-shot pin's consume fires exactly when the
+      // pin did. ACTION_IS_ATTACK / ACTION_IS_OFFENSIVE_SPELL miss Active-typed
+      // offensive spells and Attack-typed skills cast from the Skill menu.
+      case "ACTION_IS_PROVOKABLE":
+        return String(payload?.actionPinKind ?? "") ? 1 : 0;
       // CAUSE_IS_SELF — 1 when THIS reactor is the CAUSE/applier of the trigger
       // (the creature who applied the status on creature_status_applied, the
       // attacker on a resource-ledger event, …), else 0. The cause-side twin of
@@ -1768,6 +1768,18 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             if (a && actorHasNamedStatus(a, needle)) return 1;
           }
           return 0;
+        }
+        // Emotion-scoped Bond gates (Seeing Red). BOND_WITH_ANY_TARGET_<EMO> =
+        // BOND_WITH_ANY_TARGET limited to Bonds carrying <EMO>; BOND_PRESENT_<EMO>
+        // = 1 if a creature I hold such a Bond toward is on the scene. An unknown
+        // emotion falls through to the unknown-identifier warning below.
+        if (name.startsWith("BOND_WITH_ANY_TARGET_")) {
+          const emo = name.slice("BOND_WITH_ANY_TARGET_".length).toLowerCase();
+          if (BOND_EMOTIONS.has(emo)) return bondWithAnyTarget(actor, payload, emo);
+        }
+        if (name.startsWith("BOND_PRESENT_")) {
+          const emo = name.slice("BOND_PRESENT_".length).toLowerCase();
+          if (BOND_EMOTIONS.has(emo)) return bondPresentOnScene(actor, emo);
         }
         // Dynamic HAS_STATUS_<NAME> — 1 if the RESOLVER's own actor carries the
         // named status, else 0. Twin of ANY_TARGET_HAS_<STATUS>, but reads
@@ -2703,6 +2715,61 @@ function collectDebuffStatusKeys(actor) {
   return out;
 }
 
+// The six Bond emotions (Core p.~46). Backs the <EMO> suffix of
+// BOND_WITH_ANY_TARGET_<EMO> / BOND_PRESENT_<EMO>; an unknown suffix falls
+// through to the unknown-identifier warning instead of silently reading 0.
+const BOND_EMOTIONS = new Set(["admiration", "inferiority", "loyalty", "mistrust", "affection", "hatred"]);
+
+// Strongest Bond the reactor holds toward ANY creature in the trigger's
+// target/hit list, optionally only Bonds carrying `emotion`. Returns the best
+// emotion-count found, else 0. Prefers the HIT list; with no target keys in the
+// payload (e.g. creature_defeated) it falls back to the payload subject.
+function bondWithAnyTarget(actor, payload, emotion = null) {
+  if (!actor) return 0;
+  const list = payload?.hitTargets ?? payload?.hitTargetTokenUuids
+    ?? payload?.targetActorUuids ?? payload?.targets
+    ?? payload?.targetTokenUuids
+    ?? (payload?.subjectActorUuid ? [payload.subjectActorUuid] : []);
+  const slots = getBondSlots(actor);
+  if (!slots.length || !Array.isArray(list)) return 0;
+  let best = 0;
+  for (const ref of list) {
+    const a = _resolveActorByUuidSync(String(ref));
+    if (!a) continue;
+    const names = [a.name, a.token?.name, a.prototypeToken?.name]
+      .filter(Boolean).map((n) => String(n).toLowerCase());
+    for (const slot of slots) {
+      if (emotion && !slot.emotions.includes(emotion)) continue;
+      if (names.includes(String(slot.name).toLowerCase())) {
+        best = Math.max(best, slot.emotions.filter(Boolean).length);
+      }
+    }
+  }
+  return best;
+}
+
+// 1 if a creature the actor holds a Bond of `emotion` toward is on the viewed
+// scene: not the actor itself, not hidden (a concealed rival must not light the
+// player's prompt), not inert/untargetable, and above 0 HP. Canvas only — the
+// BD makes no Foundry Combat, and reactors are collected from the canvas too.
+function bondPresentOnScene(actor, emotion) {
+  if (!actor) return 0;
+  const want = new Set(getBondSlots(actor)
+    .filter((s) => s.emotions.includes(emotion))
+    .map((s) => s.name.toLowerCase()));
+  if (!want.size) return 0;
+  for (const t of (globalThis.canvas?.tokens?.placeables ?? [])) {
+    const a = t?.actor;
+    if (!a || a === actor || t.document?.hidden) continue;
+    if (_isUntargetable(a)) continue;
+    const hp = Number(a.system?.props?.current_hp);
+    if (Number.isFinite(hp) && hp <= 0) continue;
+    const names = [a.name, t.document?.name, a.prototypeToken?.name].filter(Boolean);
+    if (names.some((n) => want.has(String(n).toLowerCase()))) return 1;
+  }
+  return 0;
+}
+
 // Enemy actors relative to `actor` (opposite disposition sign). Prefers the
 // Foundry combat roster, but FALLS BACK to canvas tokens — the Battle Director
 // runs on its own `dCombat` and often leaves `game.combat` null, so a combat-
@@ -3305,6 +3372,8 @@ export function resolveAccuracyParts({ actor = null, props = null, kind = null, 
     if (total !== 0) parts.push(...attributeModParts({ actor, key, total, label: `Check (${a.toUpperCase()})` }));
   }
   // `check_mod_anyof_<a>_<b>…` — pays ONCE when the attack rolls any listed die.
+  // The context-scoped `check_mod_<ctx>_anyof_…` (checkModifiers.js) is left out
+  // on purpose: an Accuracy Check is not an Opposed Check.
   // Twin of the same branch in checkModifiers.js; keep the two in step.
   const modFlags = actor?.flags?.["fabula-ultima-companion"];
   if (rolled.size && modFlags && typeof modFlags === "object") {

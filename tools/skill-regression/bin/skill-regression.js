@@ -81,13 +81,25 @@ function optsFrom(a) {
   if (a["include-types"]) o.includeTypes = String(a["include-types"]).split(",").map((s) => s.trim()).filter(Boolean);
   if (a.forceSimulate) o.forceSimulate = true;
   if (a["no-deps-reuse"]) o.noDepsReuse = true;
+  // Per-skill guard (collect.js, default 12000). Simulate re-imports the ~660 KB
+  // skill-effects.js several times per skill (engine `?cb=` imports), which costs
+  // ~2.3 s each headless — as that file grew, 49 healthy skills crossed 12 s and
+  // recorded as "timeout" (measured 2026-09-27: Hina / Iceberg completes ok in
+  // 17.8 s with no dialog open). Raise it for simulate; pages shrink to match.
+  if (a["per-skill-ms"]) o.perSkillMs = Number(a["per-skill-ms"]);
+  if (a["page-size"]) o.pageSizeOverride = Number(a["page-size"]);
   // Auto-load the committed skip list (interactive skills that only ever
   // time out at COMPUTE) so capture + check stay fast AND identical. --no-skip
   // disables it (e.g. to re-measure which skills still time out).
   if (!a["no-skip"]) {
     const skipFile = path.join(ROOT, "skip.json");
     if (fs.existsSync(skipFile)) {
-      try { o.skip = JSON.parse(fs.readFileSync(skipFile, "utf8")).skip || []; } catch { /* ignore malformed */ }
+      try {
+        const sj = JSON.parse(fs.readFileSync(skipFile, "utf8"));
+        o.skip = sj.skip || [];
+        // RESOLVE-only human gates: skipped in simulate, still fingerprinted in compute.
+        if ((a.mode || "compute") === "simulate") o.skip = [...o.skip, ...(sj.skipSimulate || [])];
+      } catch { /* ignore malformed */ }
     }
   }
   return o;
@@ -97,7 +109,12 @@ function optsFrom(a) {
 // walk offset → nextOffset until the collector says hasMore:false, merging the
 // per-skill fingerprint maps. A single page (pageSize skills) is sized to finish
 // comfortably inside the server timeout.
-async function collect(opts, { pageSize = 30, onProgress } = {}) {
+async function collect(opts, { pageSize, onProgress } = {}) {
+  // A page is one evalGM under the bridge's 285 s cap. At the default 12 s guard
+  // 30 skills fit; a longer guard needs a smaller page, or one slow page can
+  // blow the bridge cap and lose the whole page.
+  pageSize ??= opts.pageSizeOverride
+    || ((opts.perSkillMs ?? 12000) > 12000 ? Math.max(5, Math.floor(240000 / opts.perSkillMs)) : 30);
   if (!bridgeAlive()) {
     throw new Error("test-bridge is not alive (game closed, or heartbeat stale). Open the Foundry world first.");
   }
@@ -654,6 +671,10 @@ Options:
   --include-types <csv>     skill_types to collect (default Active,Spell).
                             Pass the SAME value to bench AND capture/check.
   --json                    machine-readable check output
+  --per-skill-ms <ms>       per-skill timeout guard (default 12000). Use 30000 for
+                            simulate: RESOLVE re-imports skill-effects.js per call
+  --page-size <N>           skills per bridge page (default 30; auto-shrinks when
+                            --per-skill-ms is raised so a page fits the 285 s cap)
 
 Game must be OPEN. See README.md.`);
   return 0;

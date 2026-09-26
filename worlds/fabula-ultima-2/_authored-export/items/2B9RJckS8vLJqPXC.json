@@ -8,6 +8,72 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "ZJaIwvA7ErDNZ32b",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790445175281,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "must_include_applier",
+          "mode": 5,
+          "priority": 20,
+          "value": "Attack,Spell"
+        }
+      ],
+      "description": "<p><em>Provoke:</em> must include the provoker among the targets of its attacks and offensive spells, if possible. Ends when this creature is no longer <strong>Enraged</strong>, or when it is provoked by someone else.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "ZJaIwvA7ErDNZ32b",
+          "originalParentId": "2B9RJckS8vLJqPXC",
+          "originalUuid": "Item.2B9RJckS8vLJqPXC.ActiveEffect.ZJaIwvA7ErDNZ32b"
+        },
+        "fabula-ultima-companion": {
+          "riderOf": "Enraged"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/TankRollAction/provoke.png",
+      "name": "Provoked",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "ZK0aTX8IH1NqwmTw"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -24,7 +90,8 @@
   "system": {
     "container": "53Usenn5H4oDCDzD",
     "props": {
-      "active_effect_config_table": {},
+      "action_intent": "harmful",
+      "active_effect_config_table": null,
       "animation_damage_timing_offset": "0",
       "animation_damage_timing_options": "default",
       "animation_script": "",
@@ -35,6 +102,87 @@
       "defense_target_type": "def",
       "description": "<p>You may use an <strong>action</strong> and spend 5 Mind Points to perform an Opposed <strong>【MIG + WLP】</strong> Check against a creature you can see — describe how you taunt them! If you succeed, the target suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></span> and<span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.c4sYPClmvld4TEK8\" data-id=\"c4sYPClmvld4TEK8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Provoked</span></strong></a><strong><span style=\"text-decoration: underline;\">.</span></strong></span> This compulsion ends if you fall unconscious or leave the scene, if the creature is no longer <strong>enraged</strong>, or if they are successfully provoked by someone else.</p><p>You gain a bonus equal to <strong>【SL】</strong> to your <strong>【MIG + WLP】</strong> Checks for this Skill.</p>",
       "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "chain_steps": "prv_contest,prv_enrage,prv_raged,prv_clear,prv_mark",
+          "consume_self": false,
+          "effect_kind": "chain",
+          "effect_label": "prv_go",
+          "from_resource": "",
+          "menu_label": "",
+          "to_resource": ""
+        },
+        "1": {
+          "$deleted": false,
+          "consume_self": false,
+          "contest_attr1": "mig",
+          "contest_attr2": "wlp",
+          "contest_bonus": "SL",
+          "contest_max_rerolls": "5",
+          "effect_kind": "contest_check",
+          "effect_label": "prv_contest",
+          "from_resource": "",
+          "menu_label": "",
+          "save_attr1": "mig",
+          "save_attr2": "wlp",
+          "save_mode": "interactive",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "2": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Enraged",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "prv_enrage",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "contest_lost_targets",
+          "to_resource": ""
+        },
+        "3": {
+          "$deleted": false,
+          "auto_target": "skip",
+          "candidate_source": "contest_lost_targets",
+          "consume_self": false,
+          "effect_kind": "targeting",
+          "effect_label": "prv_raged",
+          "from_resource": "",
+          "menu_label": "",
+          "mode": "all",
+          "target_filter": "AE_COUNT_ENRAGED > 0",
+          "to_resource": ""
+        },
+        "4": {
+          "$deleted": false,
+          "ae_template_ref": "Provoked",
+          "consume_self": false,
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "prv_clear",
+          "filter_tag": "",
+          "from_resource": "",
+          "include_persistent": false,
+          "menu_label": "",
+          "target_ref": "prv_raged",
+          "to_resource": ""
+        },
+        "5": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "scene",
+          "ae_template_ref": "Provoked",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "prv_mark",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "prv_raged",
+          "to_resource": ""
+        }
+      },
       "heroic_requirement": "",
       "ignore_hr": false,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2700.gif",
@@ -47,16 +195,19 @@
       "level": "1",
       "max_level": "5",
       "name": "Provoke",
+      "on_activate_effect_ref": "prv_go",
       "optional_params": {},
+      "pre_activate_effect_ref": "",
       "reaction_config_table": {},
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_default": "",
       "skill_animation_mode": "default",
-      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p>Level</p></td><td data-colwidth=\"148\"><p>HP Recover</p></td><td data-colwidth=\"148\"><p>MP Recover</p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>5</p></td><td data-colwidth=\"148\"><p>5</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>10</p></td><td data-colwidth=\"148\"><p>10</p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p>15</p></td><td data-colwidth=\"148\"><p>15</p></td></tr><tr><td data-colwidth=\"79\"><p>4</p></td><td data-colwidth=\"148\"><p>20</p></td><td data-colwidth=\"148\"><p>20</p></td></tr></tbody></table>",
+      "skill_information": "",
       "skill_range": "",
-      "skill_target": "One Creature",
+      "skill_target": "One creature",
       "skill_type": "Active",
+      "target_eligibility": "IS_SOURCE == 0",
       "type_damage": "",
       "use_optional_params": false
     },

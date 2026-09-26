@@ -821,6 +821,72 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "YTmuoZP1Y4VeHu2d",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1790444639695,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "flags.fabula-ultima-companion.check_mod_opposed_anyof_dex",
+              "mode": 2,
+              "priority": null,
+              "value": "SL * 2"
+            }
+          ],
+          "description": "<p>Until the start of your next turn, +【SL × 2】 to Opposed Checks that roll DEX (acrobatics, coordination or speed).</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "YTmuoZP1Y4VeHu2d",
+              "originalParentId": "8Y4sspJ9ZAgqBftr",
+              "originalUuid": "Actor.FhdBo2hgm9Psq2SY.Item.8Y4sspJ9ZAgqBftr.ActiveEffect.YTmuoZP1Y4VeHu2d"
+            },
+            "fabula-ultima-companion": {
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/standard_step.png",
+          "name": "Frenetic Footwork",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-frenetic-footwork"
+          ],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -843,15 +909,60 @@
           "damage_bonus": "0",
           "description": "<p>After you perform a <strong>dance</strong> with a duration of “Until the start of your next turn,” you gain a bonus equal to <strong>【SL × 2】</strong> to all Opposed Checks that rely on acrobatics, coordination or speed until the start of your next turn.</p>\n",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_family": "",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Frenetic Footwork",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "ff_apply",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "self",
+              "to_resource": ""
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "2",
           "name": "Frenetic Footwork",
           "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "SKILL_HAS_TAG_DANCE == 1 && ACTION_DURATION == 1",
+              "reaction_action_intent": "",
+              "reaction_action_kind": "",
+              "reaction_action_target": "",
+              "reaction_cause_filter": "",
+              "reaction_damage_source": "",
+              "reaction_debuff_count_min": "",
+              "reaction_debuff_count_target": "",
+              "reaction_effect_ref": "ff_apply",
+              "reaction_max_per_round": "",
+              "reaction_origin_filter": "",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "force",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_performs_action",
+              "requires_skill": ""
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Bonus to Opposed Checks</strong></p></td></tr><tr><td><p>1</p></td><td><p>+2</p></td></tr><tr><td><p>2</p></td><td><p>+4</p></td></tr></tbody></table>",
@@ -1985,6 +2096,93 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "fuoBgW0KuoL5ks6e",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1790445209562,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "must_include_applier",
+              "mode": 5,
+              "priority": 20,
+              "value": "Attack,Spell"
+            }
+          ],
+          "description": "<p><em>Peacock Dance:</em> this creature's NEXT attack or offensive spell must include the dancer among its targets, if possible. Then this effect ends.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "fuoBgW0KuoL5ks6e",
+              "originalParentId": "i2g3AditRISolXm9",
+              "originalUuid": "Actor.FhdBo2hgm9Psq2SY.Item.i2g3AditRISolXm9.ActiveEffect.fuoBgW0KuoL5ks6e"
+            },
+            "fabula-ultima-companion": {
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "candidate_source": "self",
+                    "count": 1,
+                    "effect_kind": "targeting",
+                    "effect_label": "peacock_spent",
+                    "mode": "exact",
+                    "skip_when_passive": true
+                  }
+                },
+                "reaction_config_table": {
+                  "0": {
+                    "condition_formula": "ACTION_IS_PROVOKABLE == 1",
+                    "consume_self": true,
+                    "reaction_effect_ref": "peacock_spent",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_performs_action"
+                  }
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
+          "name": "Provoked (Peacock Dance)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "ZK0aTX8IH1NqwmTw"
+          ],
+          "system": {
+            "tags": [
+              "debuff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -2001,12 +2199,31 @@
       "system": {
         "container": null,
         "props": {
+          "action_intent": "harmful",
           "check_bonus": "0",
           "class": "Dancer",
-          "cost": "10 MP",
+          "cost": "",
           "damage_bonus": "0",
           "description": "<p>Choose another creature that is able to see you. The next time that creature performs an <strong>【⚔️Attack】</strong> or casts an <strong>【⚡Offensive Spell】</strong> during this scene, that attack or spell must include you among its targets if possible.</p>",
-          "duration": "Scene",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace_per_caster",
+              "ae_duration_rounds": "scene",
+              "ae_family": "",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Provoked (Peacock Dance)",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "peacock_apply",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": true,
@@ -2015,12 +2232,17 @@
           "level": "1",
           "max_level": "1",
           "name": "Peacock Dance",
+          "on_activate_effect_ref": "peacock_apply",
           "optional_params": {},
+          "pre_activate_effect_ref": "",
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "Any",
+          "skill_tags": "dance, managed",
           "skill_target": "One creature",
           "skill_type": "Active",
+          "target_eligibility": "IS_SOURCE == 0",
           "type_damage": "",
           "use_optional_params": false
         },

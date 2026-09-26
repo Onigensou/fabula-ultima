@@ -1458,7 +1458,11 @@ function getBaseValueForChange(actor, change) {
           if (leaf === "damage_taken_mult") continue;
           if (leaf.startsWith("damage_dealt_mult_")) continue;
           if (leaf.startsWith("damage_taken_increased_")) continue;
-          if (leaf.startsWith("check_mod_")) continue;
+          // Only the four seeded above. Every other check_mod_* ADD flag
+          // (check_mod_anyof_dex_ins, check_mod_opposed_anyof_dex, …) needs
+          // this 0 base, or it compounds per prepareData() exactly like the
+          // check_mod_dex 6 -> 9 -> 12 that 911f48b1 measured.
+          if (/^check_mod_(dex|ins|mig|wlp)$/.test(leaf)) continue;
           foundry.utils.setProperty(actor, key, 0);
         }
       }

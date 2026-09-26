@@ -8,6 +8,79 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "OKPEiJFaCxexUFgQ",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790453944184,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "must_include_applier",
+          "mode": 5,
+          "priority": 20,
+          "value": "Attack,Spell"
+        }
+      ],
+      "description": "<p>Must include the <strong>provoker</strong> among the targets of its attacks and offensive spells, if possible.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "OKPEiJFaCxexUFgQ",
+          "originalParentId": "Ro1ZgoiWtBFyMQS7",
+          "originalUuid": "Item.Ro1ZgoiWtBFyMQS7.ActiveEffect.OKPEiJFaCxexUFgQ"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-provoked",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {},
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/TankRollAction/provoke.png",
+      "name": "Provoked (Capote)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "ZK0aTX8IH1NqwmTw"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -48,7 +121,7 @@
         },
         "2": {
           "ae_duplicate_mode": "replace",
-          "ae_template_ref": "Provoked",
+          "ae_template_ref": "Provoked (Capote)",
           "effect_kind": "apply_ae",
           "effect_label": "cap_provoked",
           "target_ref": "action_targets"

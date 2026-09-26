@@ -8,6 +8,72 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "m8nfkAPMvtW5e6oi",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790444638720,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.check_mod_opposed_anyof_dex",
+          "mode": 2,
+          "priority": null,
+          "value": "SL * 2"
+        }
+      ],
+      "description": "<p>Until the start of your next turn, +【SL × 2】 to Opposed Checks that roll DEX (acrobatics, coordination or speed).</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 1,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "m8nfkAPMvtW5e6oi",
+          "originalParentId": "UjcG79YyUH3V0jLX",
+          "originalUuid": "Item.UjcG79YyUH3V0jLX.ActiveEffect.m8nfkAPMvtW5e6oi"
+        },
+        "fabula-ultima-companion": {
+          "tags": [
+            "buff"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/standard_step.png",
+      "name": "Frenetic Footwork",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-frenetic-footwork"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -33,7 +99,23 @@
       "description": "<p>After you perform a <strong>dance</strong> with a duration of “Until the start of your next turn,” you gain a bonus equal to <strong>【SL × 2】</strong> to all Opposed Checks that rely on acrobatics, coordination or speed until the start of your next turn.</p>\n",
       "details_roller": "Show",
       "duration": "",
-      "effect_table": {},
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace",
+          "ae_family": "",
+          "ae_initial_charges": "",
+          "ae_initial_charges_max": "",
+          "ae_template_ref": "Frenetic Footwork",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "ff_apply",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "self",
+          "to_resource": ""
+        }
+      },
       "heroic_requirement": "",
       "id": "UjcG79YyUH3V0jLX",
       "ignore_hr": false,
@@ -42,14 +124,40 @@
       "isFacet": false,
       "isHeroic": false,
       "isOffensiveSpell": false,
-      "isReaction": false,
+      "isReaction": true,
       "isZeroPower": false,
       "level": "1",
       "max_level": "2",
       "name": "Frenetic Footwork",
       "on_activate_effect_ref": "",
       "optional_params": {},
-      "reaction_config_table": {},
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "SKILL_HAS_TAG_DANCE == 1 && ACTION_DURATION == 1",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_source": "",
+          "reaction_debuff_count_min": "",
+          "reaction_debuff_count_target": "",
+          "reaction_effect_ref": "ff_apply",
+          "reaction_max_per_round": "",
+          "reaction_origin_filter": "",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_performs_action",
+          "requires_skill": ""
+        }
+      },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",

@@ -181,8 +181,12 @@
 
     // Inject actor check modifiers (check_mod_all + context-specific + the
     // rolled attribute pair, which `check.attrs` already carries as [A, B])
+    // A manual roll typed "Opposed" is an Opposed Check: opposed-scoped
+    // bonuses (check_mod_opposed_*) apply, same as contest_check.
+    const _ctx = p?.check?.context
+      ?? (String(p?.check?.type ?? "").toLowerCase() === "opposed" ? "opposed" : null);
     const _actorMods = globalThis.ONI?.CheckModifiers?.resolve?.(
-      actor, p?.check?.context ?? null, { attributes: p?.check?.attrs ?? null },
+      actor, _ctx, { attributes: p?.check?.attrs ?? null },
     ) ?? [];
     if (_actorMods.length) {
       p.check = p.check ?? {};

@@ -9571,6 +9571,8 @@ async function rollContestPerformer(actor, { attrA, attrB, mods, label }) {
     const res = await CR.request([actor.uuid], {
       attrA, attrB, dl: 0, label, mode: "silent",
       allowInvokes: false, postChat: true, hiddenDl: true, modifiers: mods,
+      // An Opposed Check, so opposed-scoped bonuses apply (check_mod_opposed_*).
+      context: { checkContext: "opposed" },
     });
     const total = Number(res?.[0]?.total);
     return Number.isFinite(total) ? total : null;
@@ -9666,6 +9668,7 @@ async function applyContestCheckEffect(row, ctx) {
       results = await CR.request(pending, {
         attrA: tAttrA, attrB: tAttrB, dl: performerTotal + 1, label,
         mode, allowInvokes: true, postChat: true,
+        context: { checkContext: "opposed" },
       });
     } catch (e) { warn("contest_check: target roll threw", e); }
 

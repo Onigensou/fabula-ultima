@@ -18,5 +18,10 @@
     "Symptom Shift",
     "Yeti Dance",
     "Zero Power: Meteor Shower"
+  ],
+  "_comment_skipSimulate": "Skills whose RESOLVE waits on a human in the simulate harness (it runs no SimMode, so nothing answers the gate): Provoke's target roll is an interactive contest_check panel (always times out); Soul Steal's roll_loot_table opens a loot panel only on some rolls, so it FLIPS between ok and timeout run to run (2026-09-27: Rogue ok, Keren/Zarg timeout). Applied in --mode simulate ONLY — compute still fingerprints them. Their real-battle behaviour is covered by the sim scenarios (tools/fvtt-playwright/scripts/scenario-*.mjs), where SimMode answers the gates.",
+  "skipSimulate": [
+    "Provoke",
+    "Soul Steal"
   ]
 }

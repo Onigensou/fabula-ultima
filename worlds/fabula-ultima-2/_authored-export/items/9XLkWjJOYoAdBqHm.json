@@ -8,6 +8,93 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "tX9JmOTvT22EkFcY",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790445208841,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "must_include_applier",
+          "mode": 5,
+          "priority": 20,
+          "value": "Attack,Spell"
+        }
+      ],
+      "description": "<p><em>Peacock Dance:</em> this creature's NEXT attack or offensive spell must include the dancer among its targets, if possible. Then this effect ends.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "tX9JmOTvT22EkFcY",
+          "originalParentId": "9XLkWjJOYoAdBqHm",
+          "originalUuid": "Item.9XLkWjJOYoAdBqHm.ActiveEffect.tX9JmOTvT22EkFcY"
+        },
+        "fabula-ultima-companion": {
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "candidate_source": "self",
+                "count": 1,
+                "effect_kind": "targeting",
+                "effect_label": "peacock_spent",
+                "mode": "exact",
+                "skip_when_passive": true
+              }
+            },
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "ACTION_IS_PROVOKABLE == 1",
+                "consume_self": true,
+                "reaction_effect_ref": "peacock_spent",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_performs_action"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
+      "name": "Provoked (Peacock Dance)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "ZK0aTX8IH1NqwmTw"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -24,16 +111,34 @@
   "system": {
     "container": null,
     "props": {
+      "action_intent": "harmful",
       "active_effect_config_table": {},
       "check_bonus": "0",
       "class": "Dancer",
-      "cost": "10 MP",
+      "cost": "",
       "damage_bonus": "0",
       "defense_target_type": "def",
       "description": "<p>Choose another creature that is able to see you. The next time that creature performs an <strong>【⚔️Attack】</strong> or casts an <strong>【⚡Offensive Spell】</strong> during this scene, that attack or spell must include you among its targets if possible.</p>",
       "details_roller": "Show",
-      "duration": "Scene",
-      "effect_table": {},
+      "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_duration_rounds": "scene",
+          "ae_family": "",
+          "ae_initial_charges": "",
+          "ae_initial_charges_max": "",
+          "ae_template_ref": "Provoked (Peacock Dance)",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "peacock_apply",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        }
+      },
       "heroic_requirement": "",
       "id": "9XLkWjJOYoAdBqHm",
       "ignore_hr": false,
@@ -47,16 +152,19 @@
       "level": "1",
       "max_level": "1",
       "name": "Peacock Dance",
-      "on_activate_effect_ref": "",
+      "on_activate_effect_ref": "peacock_apply",
       "optional_params": {},
+      "pre_activate_effect_ref": "",
       "reaction_config_table": {},
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",
       "skill_information": "",
       "skill_range": "Any",
+      "skill_tags": "dance, managed",
       "skill_target": "One creature",
       "skill_type": "Active",
+      "target_eligibility": "IS_SOURCE == 0",
       "type_damage": "",
       "use_optional_params": false,
       "uuid": "Item.9XLkWjJOYoAdBqHm"

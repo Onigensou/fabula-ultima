@@ -4989,10 +4989,16 @@ const Confirm = {
     // costs, roll dice — must stay in the individual scans.
     let actingSkillTags = "";
     let actingSkillDuration = "";
+    // The kind this action presents to a must_include_applier pin ("attack" /
+    // "spell"), or "" when no pin applies to it (heals, buffs). Same classifier
+    // the targeting pin uses, so ACTION_IS_PROVOKABLE (Peacock Dance's one-shot
+    // consume) fires exactly when the pin did.
+    let actingPinKind = "";
     try {
       const actingSkill = ar.skillUuid ? await fromUuid(ar.skillUuid).catch(() => null) : null;
       actingSkillTags = String(actingSkill?.system?.props?.skill_tags ?? "");
       actingSkillDuration = String(actingSkill?.system?.props?.duration ?? "");
+      actingPinKind = ar.kind === "Attack" ? "attack" : (pinActionKindForSkill(actingSkill) ?? "");
     } catch (_) { /* noop — tags/duration are optional gates */ }
     const actionBase = Object.freeze({
       actionKind: ar.kind ?? null,
@@ -5019,6 +5025,7 @@ const Confirm = {
       sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
       skillTags: actingSkillTags,
       skillDuration: actingSkillDuration,
+      actionPinKind: actingPinKind,
       isCrit: !!ar.roll?.isCrit,
       isFumble: !!ar.roll?.isFumble,
       checkTotal: Number(ar.roll?.total ?? 0) || 0,
@@ -5302,6 +5309,29 @@ const Confirm = {
     // when the reaction's effect contains add_target; everything else (Creeped's
     // negate / Energized) resolves as an ordinary pre-resolve pill.
     const firePerformsAction = attackerActor && (ar.passIndex ?? 1) <= 1;
+    // Observer hook: the declared action with its FINAL targets (after the picker,
+    // the Provoked pin's convergence pass, autopilot/pre-composed bundles). Read-only
+    // and additive, like `fu-director-trigger` — but that hook is not fired on this
+    // performer scan, and firing it here would feed clock-automation a new trigger.
+    // First consumer: the sim-scenario test runner (who did a Provoked creature hit?).
+    if ((ar.passIndex ?? 1) <= 1) {
+      try {
+        Hooks.callAll("fu-director-action", Object.freeze({
+          actorUuid: ar.attackerActorRef ?? null,
+          actorName: attackerActor?.name ?? ar.attacker?.name ?? null,
+          actionKind: ar.kind ?? null,
+          actionName: actionBase.actionName ?? null,
+          skillUuid: ar.skillUuid ?? null,
+          pinKind: actionBase.actionPinKind ?? "",
+          // The element the action's damage resolved to at COMPUTE (after weapon
+          // imbues / retypes such as Dark Weapon). Attack results carry damage but
+          // not `hasDamage`, so read the element directly; null when there is none.
+          element: ar.damage?.element ?? null,
+          targetTokenUuids: (ar.targets ?? []).map((t) => t.tokenUuid),
+          targetNames: (ar.targets ?? []).map((t) => t.name ?? null),
+        }));
+      } catch (e) { warn("fu-director-action hook threw", e); }
+    }
     if (firePerformsAction) {
       try {
         const { findPassiveCandidates } = await getSkillEffectsExtras();

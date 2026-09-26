@@ -185,7 +185,13 @@ function fingerprint(skill, actor, offensive, targets, r) {
       aeApplied: (w.aeApplied || []).map((a) => `${a.name}[${(a.changes || []).join(",")}]`).sort(),
       aeRemoved: (w.aeRemoved || []).map((a) => a.name).sort(),
     })).sort((a, b) => (a.actor || "").localeCompare(b.actor || ""));
-    fp.cardHtml = Array.isArray(r.cardHtmlNormalized) ? r.cardHtmlNormalized : null;
+    // Token uuids embed the bench's scene + token ids, which are new on every
+    // `bench` rebuild — left raw, 18 cards drifted with no behaviour change
+    // (2026-09-27). Goldens are keyed by name precisely so the bench is
+    // disposable; the card must be too.
+    fp.cardHtml = Array.isArray(r.cardHtmlNormalized)
+      ? r.cardHtmlNormalized.map((h) => String(h).replace(/Scene\.[A-Za-z0-9]{16}\.Token\.[A-Za-z0-9]{16}/g, "Scene.*.Token.*"))
+      : null;
     if (r.resolveError) fp.resolveError = r.resolveError.message || String(r.resolveError);
   }
   return fp;

@@ -1164,6 +1164,76 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "FR2DKAJZEr47Ynzc",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1790443176911,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "override_attack_damage_type",
+              "mode": 5,
+              "priority": 20,
+              "value": "Dark"
+            }
+          ],
+          "description": "<p><em>Dark Weapon:</em> this creature's weapon attacks deal dark damage until the end of the scene.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "FR2DKAJZEr47Ynzc",
+              "originalParentId": "lqBTInvALFSY4oI1",
+              "originalUuid": "Actor.JWpen4YPnH8azp22.Item.lqBTInvALFSY4oI1.ActiveEffect.FR2DKAJZEr47Ynzc"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-weapon",
+              "lifetimeMode": "on_activation",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/flood_of_shadow.png",
+          "name": "Dark Weapon",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-dark-weapon"
+          ],
+          "system": {
+            "tags": [
+              "dispellable"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -1180,6 +1250,7 @@
       "system": {
         "container": null,
         "props": {
+          "action_command": "spell",
           "check_bonus": "0",
           "class": "Entropist",
           "cost": "10 MP",
@@ -1187,7 +1258,56 @@
           "defense_target_type": "def",
           "description": "<p>You imbue a weapon with dark energy. Until this spell ends, all damage dealt by the weapon becomes of the <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span> type. If you have that weapon equipped while you cast this spell, you may perform a <strong>free attack</strong> with it as part of the same action. </p><p>This spell can only be cast on a weapon equipped by a willing creature</p>",
           "duration": "Scene",
-          "effect_table": null,
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_steps": "dw_ae, dw_free",
+              "consume_self": false,
+              "effect_kind": "chain",
+              "effect_label": "dw_root",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
+            },
+            "1": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace_family",
+              "ae_duration_rounds": "scene",
+              "ae_family": "elemental-weapon",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Dark Weapon",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "dw_ae",
+              "from_resource": "",
+              "menu_description": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            },
+            "2": {
+              "$deleted": false,
+              "action_ref": "Attack",
+              "check_bonus_formula": "",
+              "condition_formula": "ACTION_TARGETS_SELF == 1",
+              "consume_self": false,
+              "damage_bonus_formula": "",
+              "effect_kind": "free_action",
+              "effect_label": "dw_free",
+              "element_override": "dark",
+              "free_hr_as_zero": false,
+              "free_of_cost": false,
+              "free_weapon_range": "",
+              "from_resource": "",
+              "max_mp_cost": "",
+              "menu_description": "Free attack with the weapon you just imbued. Its damage is dark.",
+              "menu_label": "Dark Weapon: free attack",
+              "on_hit_effect_refs": "",
+              "target_ref": "",
+              "to_resource": ""
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": true,
@@ -1197,13 +1317,16 @@
           "level": "1",
           "max_level": "1",
           "name": "Dark Weapon",
+          "on_activate_effect_ref": "dw_root",
           "optional_params": {},
-          "reaction_config_table": null,
+          "pre_activate_effect_ref": "",
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "Range",
           "skill_target": "One equipped weapon",
           "skill_type": "Spell",
+          "target_eligibility": "EQUIPPED_WEAPON_COUNT >= 1",
           "type_damage": "",
           "use_optional_params": false
         },

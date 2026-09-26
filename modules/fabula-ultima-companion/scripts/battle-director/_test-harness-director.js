@@ -200,10 +200,14 @@ async function buildHarnessActionBase(ar) {
   // live block).
   let harnessSkillTags = "";
   let harnessSkillDuration = "";
+  // Live actionBase.actionPinKind (ACTION_IS_PROVOKABLE). Hoisted out of the try.
+  let harnessPinKind = "";
   try {
     const actingSkill = ar.skillUuid ? await fromUuid(ar.skillUuid).catch(() => null) : null;
     harnessSkillTags = String(actingSkill?.system?.props?.skill_tags ?? "");
     harnessSkillDuration = String(actingSkill?.system?.props?.duration ?? "");
+    const { pinActionKindForSkill } = await import("./snapshot.js");
+    harnessPinKind = ar.kind === "Attack" ? "attack" : (pinActionKindForSkill(actingSkill) ?? "");
   } catch (_) { /* noop — both are optional gates */ }
   // Which Defense the Check resolves against: live actionBase.defenseResolved
   // (state-handlers CONFIRM). It was MISSING here, so every ATTACK_VS_DEF /
@@ -232,6 +236,7 @@ async function buildHarnessActionBase(ar) {
     sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
     skillTags: harnessSkillTags,
     skillDuration: harnessSkillDuration,
+    actionPinKind: harnessPinKind,
     isCrit: !!ar.roll?.isCrit,
     isFumble: !!ar.roll?.isFumble,
     checkTotal: Number(ar.roll?.total ?? 0) || 0,
@@ -322,10 +327,15 @@ async function buildPerformsActionPayload(ar) {
   const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid);
   let performSkillTags = "";
   let performSkillDuration = "";
+  // Mirrors actionBase.actionPinKind (state-handlers): the pin kind this action
+  // presents, "" when no must_include_applier pin applies. Hoisted out of the try.
+  let performPinKind = "";
   try {
     const actingSkill = ar.skillUuid ? await fromUuid(ar.skillUuid).catch(() => null) : null;
     performSkillTags = String(actingSkill?.system?.props?.skill_tags ?? "");
     performSkillDuration = String(actingSkill?.system?.props?.duration ?? "");
+    const { pinActionKindForSkill } = await import("./snapshot.js");
+    performPinKind = ar.kind === "Attack" ? "attack" : (pinActionKindForSkill(actingSkill) ?? "");
   } catch (_) { /* noop — both are optional gates */ }
   // Live `performPayload` spreads `actionBase`, which carries defenseResolved.
   let performDefenseResolved = null;
@@ -352,6 +362,7 @@ async function buildPerformsActionPayload(ar) {
     costIp: Number(ar.costSerialized?.ip ?? 0) || 0,
     skillTags: performSkillTags,
     skillDuration: performSkillDuration,
+    actionPinKind: performPinKind,
     actionIsCheck: !!ar.isCheck,
     actionCanMiss: !!ar.canMiss,
     isCrit: !!ar.roll?.isCrit,

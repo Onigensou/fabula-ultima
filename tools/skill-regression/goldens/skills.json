@@ -72,8 +72,8 @@
       "Zarg"
     ],
     "enemyTarget": "Test Target Enemy",
-    "count": 487,
-    "engineVersion": "1.0.424",
+    "count": 486,
+    "engineVersion": "1.0.426",
     "override": {
       "SL": 5,
       "CHAR_LEVEL": 50,
@@ -1498,12 +1498,12 @@
       "element": "",
       "hasDamage": false,
       "hasHealing": false,
-      "offensive": false,
+      "offensive": true,
       "ok": true,
       "perTarget": [],
       "roll": null,
       "skill": "Dark Weapon",
-      "skillType": "Active",
+      "skillType": "Spell",
       "targets": 1
     },
     "Entropist / Dispel": {
@@ -1685,7 +1685,7 @@
         "hr": 6
       },
       "skill": "Umbra",
-      "skillType": "Active",
+      "skillType": "Spell",
       "targets": 1
     },
     "Esper / Atmokinesis": {
@@ -4350,26 +4350,13 @@
     },
     "Kiki / Vortex": {
       "caster": "Kiki",
-      "element": "air",
-      "hasDamage": true,
+      "element": "",
+      "hasDamage": false,
       "hasHealing": false,
       "offensive": true,
       "ok": true,
-      "perTarget": [
-        {
-          "affinity": "IM",
-          "damage": 0,
-          "grant": null,
-          "grantRes": null,
-          "hit": true,
-          "resource": "hp"
-        }
-      ],
-      "roll": {
-        "crit": false,
-        "fumble": false,
-        "hr": 6
-      },
+      "perTarget": [],
+      "roll": null,
       "skill": "Vortex",
       "skillType": "Spell",
       "targets": 1
@@ -5932,7 +5919,7 @@
       "element": "",
       "hasDamage": false,
       "hasHealing": false,
-      "offensive": false,
+      "offensive": true,
       "ok": true,
       "perTarget": [],
       "roll": null,
@@ -6545,20 +6532,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Weaponmaster / Breach #twJI:i3d0y0": {
-      "caster": "Weaponmaster",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": false,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
-      "skill": "Breach",
-      "skillType": "Active",
-      "targets": 1
-    },
-    "Weaponmaster / Breach #twJI:rQHMta": {
+    "Weaponmaster / Breach": {
       "caster": "Weaponmaster",
       "element": "",
       "hasDamage": false,
