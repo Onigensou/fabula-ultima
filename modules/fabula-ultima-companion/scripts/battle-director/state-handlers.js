@@ -13,7 +13,7 @@ import { isGmOverrideEmpty, summarizeGmOverride, dropGmRemovedReactions } from "
 import { runBattleEndSequence } from "./battle-end/battle-end-orchestrator.js";
 import { STATES } from "./states.js";
 import { INTENTS } from "./intents.js";
-import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, resolvePrimaryAttackWeapon, captureSubjectSnapshot, resolvesVsMagicDefense, attackRangeBlockedBy } from "./snapshot.js";
+import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, pinActionKindForSkill, resolvePrimaryAttackWeapon, captureSubjectSnapshot, resolvesVsMagicDefense, attackRangeBlockedBy } from "./snapshot.js";
 import { TurnUI } from "./turn-ui.js";
 import { TurnPicker } from "./turn-picker.js";
 import { requestTargeting } from "./target-picker.js";
@@ -3079,6 +3079,9 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
     composedTargetUuids               = null,
     attackRange                       = null,
     attackWeapon                      = null,
+    // Provoked pin kind: the Attack command passes "attack"; everything else is
+    // classified from its skill (pinActionKindForSkill).
+    pinKind:            pinKindOpt    = null,
     titleText:          forcedTitle   = null,
     cancelLabel                       = "Cancel",
     secondaryAction                   = null,
@@ -3190,6 +3193,20 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
 
   director.ctx.eligibleTargets = eligibleForPicker;
 
+  // ── "Must include" pins, computed BEFORE the picker ──────────────────────
+  // Taunter pins (must_be_targeted_by) and the Provoked pin (must_include_applier,
+  // attacks + offensive spells only). Handed to the picker so the player SEES the
+  // pinned target locked in (and a random roulette lands on it), instead of the
+  // pick being overwritten after Confirm. A RANDOM action gets no range, which
+  // keeps taunter pins out of random mode exactly as before.
+  const pinKind = pinKindOpt ?? (skill ? pinActionKindForSkill(skill) : null);
+  const mandatoryPins = (!isSelf && pickerMode !== "all" && (pickerMode !== "random" || pinKind))
+    ? collectForcedIncludeTargets(eligibleForPicker,
+        pickerMode === "random" ? ""
+          : (String(attackRange ?? skill?.system?.props?.skill_range ?? "any").trim().toLowerCase() || "any"),
+        attackerActor, pinKind).map((e) => e.tokenUuid)
+    : [];
+
   // ── Route to picker ────────────────────────────────────────────────────
   // Obvious target sets (self / all) no longer auto-resolve silently — they
   // surface a LOCKED Confirm (every eligible token pre-selected, selection can't
@@ -3234,6 +3251,7 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
     result = await requestTargeting({
       director, eligible: eligibleForPicker,
       mode: pickerMode, count, titleText, cancelLabel, secondaryAction, randomizeCount,
+      mandatoryTokenUuids: mandatoryPins,
     });
   }
 
@@ -3251,14 +3269,13 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
   //     this is a no-op;
   //   • autopilot / any pre-composed bundle that bypassed the picker → the taunter
   //     is re-added here.
-  // This is the INCLUSION case (distinct from "can only target"/Provoked, which
-  // restricts the whole pool): we PIN the taunter WITHOUT dropping the other picks,
+  // This is the INCLUSION case (distinct from "can only target" must_target_applier,
+  // which restricts the whole pool): we PIN the taunter WITHOUT dropping the other picks,
   // evicting one non-mandatory slot only when the target count is already full.
-  if (!isSelf && pickerMode !== "random" && pickerMode !== "all") {
-    const range = String(attackRange ?? skill?.system?.props?.skill_range ?? "any")
-      .trim().toLowerCase() || "any";
-    const mandatory = collectForcedIncludeTargets(eligibleForPicker, range, attackerActor)
-      .map((e) => e.tokenUuid);
+  // The picker already honoured `mandatoryPins`; this pass is what enforces them
+  // on a PRE-COMPOSED bundle (autopilot, sim, player compose) that bypassed it.
+  if (mandatoryPins.length) {
+    const mandatory = mandatoryPins;
     for (const m of mandatory) {
       if (targetUuids.includes(m)) continue;
       if (targetUuids.length < count) { targetUuids.push(m); continue; }
@@ -4174,6 +4191,7 @@ const Target = {
       usingPreComposed:   !isMultiPassReEntry,
       composedTargetUuids: director.ctx.pickedTargetUuids,
       attackRange:        currentWeapon?.range ?? null,
+      pinKind:            "attack",
       titleText:          attackTitle,
       cancelLabel:        attackCancelLabel,
     });

@@ -2508,13 +2508,13 @@
       },
       "changes": [
         {
-          "key": "must_target_applier",
+          "key": "must_include_applier",
           "mode": 5,
           "priority": 20,
           "value": "Attack,Spell"
         }
       ],
-      "description": "<p>Must target the <strong>provoker</strong></p>",
+      "description": "<p>Must include the <strong>provoker</strong> among the targets of its attacks and offensive spells, if possible.</p>",
       "disabled": false,
       "duration": {
         "combat": null,

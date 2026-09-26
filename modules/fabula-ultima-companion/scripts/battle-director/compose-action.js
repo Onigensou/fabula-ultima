@@ -49,7 +49,7 @@ import { getNpcAttackItems } from "./actor-shape.js";
 import { buildUltimaMenuSpec } from "./domination.js";
 import { buildObjectiveMenuSpec } from "./objectives.js";
 import { pickFromList } from "./list-picker.js";
-import { applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, snapshotEligibleTargetsFromDCombat,
+import { applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, pinActionKindForSkill, snapshotEligibleTargetsFromDCombat,
          attackRangeBlockedBy } from "./snapshot.js";
 
 // Race-cancellation token. Returns { promise, cancel }. The promise
@@ -556,7 +556,7 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
   // free (distinct from "can only target"/Provoked, which restricts the whole pool).
   let attackerActorDoc = null;
   try { attackerActorDoc = await fromUuid(snap.actorUuid); } catch {}
-  const mandatoryTokenUuids = collectForcedIncludeTargets(filtered, currentWeapon?.range, attackerActorDoc)
+  const mandatoryTokenUuids = collectForcedIncludeTargets(filtered, currentWeapon?.range, attackerActorDoc, "attack")
     .map((e) => e.tokenUuid);
 
   // Multi-pass (two-weapon) deliberately picks only ONE target for the FIRST
@@ -743,7 +743,7 @@ async function composeAttackNpc({ director, snap, eligible, cancelSentinel }) {
 
   // "Must include X" taunt (must_be_targeted_by) — pin any candidate that forces
   // inclusion for this attack's range (Apple o' Archer). Spare slots stay free.
-  const mandatoryTokenUuids = collectForcedIncludeTargets(filtered, range, actor)
+  const mandatoryTokenUuids = collectForcedIncludeTargets(filtered, range, actor, "attack")
     .map((e) => e.tokenUuid);
 
   // Target count. NPC attacks read the same `skill_target` text as skills
@@ -970,7 +970,7 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
   // spell, while an "any"-scoped taunt still does. Defaults to "any" (non-weapon
   // action) so only universal taunts apply here.
   const sourceRange = String(source?.system?.props?.skill_range ?? "").trim().toLowerCase() || "any";
-  const mandatoryTokenUuids = collectForcedIncludeTargets(targetList, sourceRange, actor)
+  const mandatoryTokenUuids = collectForcedIncludeTargets(targetList, sourceRange, actor, pinActionKindForSkill(source))
     .map((e) => e.tokenUuid);
 
   // Single-source target plan (mode + count + ×T affordability cap), shared with

@@ -456,8 +456,11 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       const actualCount = randomizeCount
         ? Math.floor(Math.random() * count) + 1
         : Math.min(count, pool.length);
-      const shuffled = [...pool].sort(() => Math.random() - 0.5);
-      randomPicked = shuffled.slice(0, actualCount);
+      // A mandatory "must include" target (Provoked) takes a slot of the draw, so
+      // the roulette LANDS on it rather than being overwritten after Confirm.
+      const pinned = pool.filter((e) => mustInclude.has(e.tokenUuid));
+      const shuffled = pool.filter((e) => !mustInclude.has(e.tokenUuid)).sort(() => Math.random() - 0.5);
+      randomPicked = [...pinned, ...shuffled].slice(0, Math.max(actualCount, pinned.length));
     }
 
     const banner = document.createElement("div");
@@ -501,8 +504,13 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       // regardless of mode (even lockSelection, which pre-selects everything anyway).
       for (const u of mustInclude) if (!selected.has(u)) return false;
       if (lockSelection) return true; // locked obvious target — confirm always valid
-      if (mode === "exact") return selected.size === count;
-      if (mode === "up_to") return selected.size >= 1 && selected.size <= count;
+      // More pins than slots (Provoked + a taunter, or two provokers, on a
+      // one-target action): the pins can't be deselected, so the target count
+      // stretches to hold them — the same overflow the post-Confirm pass allows —
+      // rather than leaving Cancel as the only way out.
+      const cap = Math.max(count, mustInclude.size);
+      if (mode === "exact") return selected.size === cap;
+      if (mode === "up_to") return selected.size >= 1 && selected.size <= cap;
       return selected.size > 0;
     }
 

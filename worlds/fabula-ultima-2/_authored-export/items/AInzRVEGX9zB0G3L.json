@@ -21,13 +21,13 @@
       },
       "changes": [
         {
-          "key": "must_target_applier",
+          "key": "must_include_applier",
           "mode": 5,
           "priority": null,
           "value": "Attack,Spell"
         }
       ],
-      "description": "<p><em>Thread the Horns:</em> must target the provoker (until its next action).</p>",
+      "description": "<p><em>Thread the Horns:</em> must include the provoker among the targets of its attacks and offensive spells, if possible (until its next action).</p>",
       "disabled": false,
       "duration": {
         "combat": null,

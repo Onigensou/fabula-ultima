@@ -1392,13 +1392,14 @@ export function getCannotTargetReasons(actor) {
   return out;
 }
 
-// ── Must-target constraint (Provoked) ─────────────────────────────────────
+// ── Must-target constraint (exclusive; no shipped user) ─────────────────────────────────────
 // The inverse of `cannot_target_uuids`: an AE change
 // `{ key: "must_target_applier", value: "Attack,Spell" }` on the ACTING
 // creature forces it to target the AE's APPLIER (the "provoker") with the
 // listed action kinds. The provoker UUID is NOT in the change value — it's
 // resolved from the apply-time `directorAppliedBy.reactorActorUuid` stamp, so
-// one template serves every caster. First user: the Matador "Provoked" debuff
+// one template serves every caster. Provoked USED this until 2026-09-26; it now
+// uses the inclusive must_include_applier (RAW: "must include you"). Was: the Matador "Provoked" debuff
 // (Capote). Returns `{ uuids:Set<actorUuid>, kinds:Set<string>, reason }` or
 // `null` when the actor bears no such constraint (or no applier resolves — the
 // constraint then lapses, so a creature whose provoker has left the field can
@@ -1829,10 +1830,11 @@ export function applyAttackRangeGate(eligible, weapon, attacker = null) {
 //   1. "Cannot target X"   → cannot_be_targeted_by / cannot_target_uuids (Cover,
 //      Vanish). REMOVES X from the pool (getTargetSideBlocks + applyAttackRangeGate,
 //      or getCannotTargetReasons). X becomes unpickable.
-//   2. "Can only target X" → must_target_applier (Provoked). RESTRICTS the whole
+//   2. "Can only target X" → must_target_applier (no shipped user). RESTRICTS the whole
 //      pool to X — every NON-X target is excluded (getMustTargetReasons, enforced in
 //      the eligibility loops). Exclusive.
-//   3. "Must include X"    → must_be_targeted_by (THIS). REQUIRES X to be one of the
+//   3. "Must include X"    → must_be_targeted_by (THIS), and its attacker-side twin
+//      must_include_applier (Provoked: include the creature that provoked you). REQUIRES X to be one of the
 //      targets but leaves the other slots free — a multi-target attack still hits
 //      others. It does NOT exclude anyone; it only pins X. Enforced as a picker /
 //      autopilot MANDATORY target, never as a pool exclusion.
@@ -1859,20 +1861,76 @@ function canonRange(r) {
   return s; // "any" or a custom token
 }
 
-export function collectForcedIncludeTargets(eligible, weaponRange, attackerActor = null) {
+// `actionKind` ("attack" | "spell" | null) additionally honours the ATTACKER-side
+// pin `must_include_applier` (Provoked): the acting creature must include the
+// creature that applied the AE, for the listed kinds only. Same inclusion rule
+// as a taunter's pin — spare slots stay free — and "if possible" falls out of
+// operating on the eligible pool: an absent, defeated or unreachable provoker is
+// simply not in it. null = the caller has no attack / offensive-spell kind, so
+// no attacker-side pin applies (a heal or buff is never forced onto the provoker).
+export function collectForcedIncludeTargets(eligible, weaponRange, attackerActor = null, actionKind = null) {
   if (!Array.isArray(eligible) || !eligible.length) return [];
   if (attackerActor && hasIgnoreActionGating(attackerActor)) return [];
   const range = canonRange(weaponRange);
-  if (!range) return [];
+  const kind = String(actionKind ?? "").trim().toLowerCase();
+  const appliers = kind ? getMustIncludeAppliers(attackerActor) : null;
   const out = [];
   for (const e of eligible) {
-    const fi = Array.isArray(e.forcedInclude) ? e.forcedInclude : [];
     let reason = null;
-    for (const b of fi) {
-      const ranges = (Array.isArray(b.ranges) ? b.ranges : []).map(canonRange);
-      if (ranges.includes("any") || ranges.includes(range)) { reason = b.aeName; break; }
+    if (range) {
+      const fi = Array.isArray(e.forcedInclude) ? e.forcedInclude : [];
+      for (const b of fi) {
+        const ranges = (Array.isArray(b.ranges) ? b.ranges : []).map(canonRange);
+        if (ranges.includes("any") || ranges.includes(range)) { reason = b.aeName; break; }
+      }
+    }
+    if (!reason && appliers) {
+      const pin = appliers.get(e.actorUuid);
+      if (pin && pin.kinds.has(kind)) reason = pin.aeName;
     }
     if (reason) out.push({ tokenUuid: e.tokenUuid, actorUuid: e.actorUuid, name: e.name, reason });
+  }
+  return out;
+}
+
+// The kind a SKILL action presents to must_include_applier: "spell" for an
+// offensive spell — the isOffensiveSpell flag decides it whatever skill_type says
+// (18 offensive spells, Fire Bolt / Blind among them, are typed "Active") — or a
+// Spell with a check; "attack" for a skill typed Attack; else null (a heal, a
+// buff, a non-attack skill: never forced onto the provoker). The Attack command
+// passes "attack" explicitly, which is what covers monster basic attacks that
+// are authored as Active-typed skill items.
+export function pinActionKindForSkill(skill) {
+  const p = skill?.system?.props ?? {};
+  const type = String(p.skill_type ?? "").trim().toLowerCase();
+  if (p.isOffensiveSpell === true) return "spell";
+  if (type === "attack") return "attack";
+  if (type === "spell" && p.isCheck === true) return "spell";
+  return null;
+}
+
+// ATTACKER-side "must include my applier" (Provoked, Peacock Dance): AE change
+// `{ key: "must_include_applier", value: "Attack,Spell" }` on the ACTING creature.
+// The applier comes from the apply-time `directorAppliedBy.reactorActorUuid`
+// stamp (as must_target_applier), so one template serves every caster. Kinds are
+// "attack" / "spell" (offensive spells). Returns Map<applierActorUuid,
+// { aeName, kinds:Set }>; empty when none apply or the applier is unstamped.
+// Distinct from must_target_applier, which EXCLUDES every non-applier target.
+export function getMustIncludeAppliers(actor) {
+  const out = new Map();
+  if (!actor) return out;
+  for (const ae of enumerateLiveEffects(actor)) {
+    for (const ch of (ae?.changes ?? [])) {
+      if (ch?.key !== "must_include_applier") continue;
+      const applier = String(ae?.flags?.[FLAG_NS]?.directorAppliedBy?.reactorActorUuid ?? "").trim();
+      if (!applier) continue;
+      const entry = out.get(applier) ?? { aeName: String(ae.name ?? "").trim() || "Must include", kinds: new Set() };
+      for (const k of String(ch.value ?? "").split(/[\s,]+/)) {
+        const t = k.trim().toLowerCase();
+        if (t) entry.kinds.add(t);
+      }
+      out.set(applier, entry);
+    }
   }
   return out;
 }
