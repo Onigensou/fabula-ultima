@@ -38,7 +38,7 @@
       "isOffensiveSpell": false,
       "isReaction": false,
       "level": "0",
-      "max_level": "6",
+      "max_level": "4",
       "name": "Quick Summoning",
       "optional_params": {},
       "rolled_atr1": "-",

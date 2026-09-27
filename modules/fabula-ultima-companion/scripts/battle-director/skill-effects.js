@@ -1259,8 +1259,7 @@ export function analyzeChainCost(effectTable, startLabel, actor, skill = null, p
         let merged = 0;
         try { merged = Number(evaluateFormula("ARCANUM_MERGED", resolver, 0)) || 0; } catch {}
         if (merged > 0) return;
-        const formula = String(row.summon_cost_formula ?? row.summon_cost ?? "40").trim() || "40";
-        const amount = Number(evaluateFormula(formula, resolver, 0)) || 0;
+        const amount = summonCostViaResolver(row, resolver);
         if (amount > 0) debit.mp = (debit.mp ?? 0) + amount;
         return;
       }
@@ -1310,8 +1309,7 @@ export function analyzeChainCost(effectTable, startLabel, actor, skill = null, p
       let merged = 0;
       try { merged = Number(evaluateFormula("ARCANUM_MERGED", resolver, 0)) || 0; } catch {}
       if (merged > 0) return;
-      const formula = String(row.summon_cost_formula ?? row.summon_cost ?? "40").trim() || "40";
-      const amount = Number(evaluateFormula(formula, resolver, 0)) || 0;
+      const amount = summonCostViaResolver(row, resolver);
       if (amount > 0) debit.mp = (debit.mp ?? 0) + amount;
       return;
     }
@@ -4808,9 +4806,8 @@ const EFFECT_KIND_PREVIEW = {
     let merged = 0;
     try { merged = Number(evaluateFormula("ARCANUM_MERGED", resolver, 0)) || 0; } catch {}
     if (merged > 0) return null;
-    const formula = String(row.summon_cost_formula ?? row.summon_cost ?? "40").trim() || "40";
     let amount = 0;
-    try { amount = Number(evaluateFormula(formula, resolver, 0)) || 0; } catch {}
+    try { amount = summonCostViaResolver(row, resolver); } catch {}
     if (amount <= 0) return null;
     return { type: "cost", resource: "mp", amount, valence: "neutral", source: row.effect_label };
   },
@@ -4826,9 +4823,8 @@ const EFFECT_KIND_PREVIEW = {
     let merged = 0;
     try { merged = Number(evaluateFormula("ARCANUM_MERGED", resolver, 0)) || 0; } catch {}
     if (merged > 0) return null;  // Pulse/Dismiss — no summon cost
-    const formula = String(row.summon_cost_formula ?? row.summon_cost ?? "40").trim() || "40";
     let amount = 0;
-    try { amount = Number(evaluateFormula(formula, resolver, 0)) || 0; } catch {}
+    try { amount = summonCostViaResolver(row, resolver); } catch {}
     if (amount <= 0) return null;
     return { type: "cost", resource: "mp", amount, valence: "neutral", source: row.effect_label };
   },
@@ -8836,22 +8832,27 @@ function buildArcanumMenuOptions(row, ctx) {
   const costFormula = String(row.summon_cost_formula ?? row.summon_cost ?? "40");
   const mergeAe = findMergedArcanumAe(caster);
   if (mergeAe) {
+    // While merged there is nothing to summon (RAW: dismiss first). Pulse and
+    // Dismiss are NOT offered here any more: run from this menu they inherit Bind
+    // and Summon's Self-locked targets, so Pulse burned the caster. They reach the
+    // player as the merged Arcanum's own skills (Pulse in the Action Menu, Dismiss
+    // via the merge AE's free-action reaction), each with its own targeting. One
+    // disabled row carries the reason, so every caller that bypasses the picker's
+    // availability greying still gets a refusal it can show.
     const arcanum = arcanumForMergeAe(caster, mergeAe);
-    for (const role of ["pulse", "dismiss"]) {
-      const child = arcanum ? findArcanumChild(caster, arcanum, role) : null;
-      if (!child) continue;
-      options.push({
-        label: child.name,
-        description: role === "dismiss" ? "Release the Arcanum, then resolve its Dismiss effect." : "Channel the Arcanum's Pulse.",
-        icon: child.img ?? arcanum?.img ?? null,
-        disabled: false, badge: null,
-      });
-      optionRows.push({ effect_kind: "summon_arcanum", arcanum_action: role, effect_label: `${baseLabel}:${role}` });
-    }
+    options.push({ label: arcanum?.name ?? "Arcanum", description: "Already merged.", icon: arcanum?.img ?? null, disabled: true, badge: "Dismiss your Arcanum first" });
+    optionRows.push({ effect_kind: "summon_arcanum", arcanum_action: "none", effect_label: `${baseLabel}:merged` });
   } else {
+    // Affordability is decided HERE, at pick time: the debit runs at RESOLVE,
+    // after the card is committed, so an unaffordable pick used to spend the
+    // turn and summon nothing. Same cost the debit will take (summonCost).
+    const cost = summonCost(row, ctx);
+    const mp = Number(caster.system?.props?.[RESOURCE_PROPS.mp?.prop ?? "current_mp"] ?? 0) || 0;
+    const short = mp < cost;
     for (const arc of listBoundArcana(caster)) {
       const dom = String(arc.system?.props?.domain ?? "").trim();
-      options.push({ label: arc.name, description: dom ? `Domain: ${dom}` : null, icon: arc.img ?? null, disabled: false, badge: null });
+      const description = [`${cost} MP`, dom ? `Domain: ${dom}` : null].filter(Boolean).join(" · ");
+      options.push({ label: arc.name, description, icon: arc.img ?? null, disabled: short, badge: short ? "Not enough MP" : null });
       optionRows.push({
         effect_kind: "summon_arcanum",
         summon_target: String(arc.system?.uniqueId ?? arc.id ?? "").trim(),
@@ -8891,6 +8892,27 @@ export function quickSummonMods(actor) {
 }
 
 // ── STEP 3 (summon half): debit the cost + apply a specific Arcanum's merge ──
+// The same summon cost for callers that hold only a resolver (affordability
+// walk, card cost chip): Quick Summoning's reduction read as SL_QUICK_SUMMONING,
+// the identifier twin of quickSummonMods. Without it the picker showed 30 while
+// the debit took 25, and 25–29 MP wrongly blocked the summon.
+function summonCostViaResolver(row, resolver) {
+  const formula = String(row.summon_cost_formula ?? row.summon_cost ?? "40").trim() || "40";
+  const base = Number(evaluateFormula(formula, resolver, 0)) || 0;
+  let sl = 0;
+  try { sl = Number(evaluateFormula("SL_QUICK_SUMMONING", resolver, 0)) || 0; } catch {}
+  return Math.max(0, base - sl * 5);
+}
+
+// The MP a summon costs: summon_cost_formula (default 40; the Emergency Arcanum
+// reduction rides inside it) minus Quick Summoning's SL × 5, floored at 0. ONE
+// computation for the menu's affordability greying and the RESOLVE debit.
+function summonCost(row, ctx) {
+  const costFormula = String(row.summon_cost_formula ?? row.summon_cost ?? "40").trim() || "40";
+  const base = Number(describeConsumeResource({ effect_label: "summon:cost", consume_resource: "mp", consume_amount: costFormula, target_ref: "self" }, ctx).amount ?? 0) || 0;
+  return Math.max(0, base - quickSummonMods(ctx.reactorActor).costReduction);
+}
+
 async function doSummonArcanum(arc, row, ctx) {
   const caster = ctx.reactorActor;
   const costFormula = String(row.summon_cost_formula ?? row.summon_cost ?? "40").trim() || "40";
@@ -8899,7 +8921,7 @@ async function doSummonArcanum(arc, row, ctx) {
   // Quick Summoning option 1 — reduce the summon cost by SL × 5 (floored at 0).
   const qs = quickSummonMods(caster);
   if (qs.costReduction > 0) {
-    const reduced = Math.max(0, Number(derived.amount ?? 0) - qs.costReduction);
+    const reduced = summonCost(row, ctx);
     log(`skill-effects.summon_arcanum: Quick Summoning −${qs.costReduction} MP (${derived.amount}→${reduced})`);
     derived = { ...derived, amount: reduced };
     costRow = { ...costRow, consume_amount: String(reduced) };
@@ -8920,11 +8942,16 @@ async function doSummonArcanum(arc, row, ctx) {
   // Quick Summoning option 2 — immediately Pulse if now merged with this Arcanum.
   let autoPulsed = false;
   if (qs.owns && isArcanumMerged(caster, arc)) {
-    const pulseChild = findArcanumChild(caster, arc, "pulse");
-    if (pulseChild) {
-      log(`skill-effects.summon_arcanum: Quick Summoning auto-Pulse "${arc.name}"`);
-      try { await runArcanumChild(pulseChild, ctx); autoPulsed = true; }
-      catch (e) { warn(`skill-effects.summon_arcanum: auto-Pulse failed: ${e.message}`); }
+    // Granted as a FREE ACTION, never run inline: running the Pulse child here
+    // reused Bind and Summon's Self-locked targets, so every summon burned the
+    // Arcanist. The merged_arcanum: preset stages the child as its own action —
+    // its own "Up to three creatures" targeting, composed by the player.
+    if (findArcanumChild(caster, arc, "pulse")) {
+      log(`skill-effects.summon_arcanum: Quick Summoning grants a free Pulse of "${arc.name}"`);
+      try {
+        const fr = await applyFreeActionEffect({ effect_kind: "free_action", effect_label: "quick_summoning:pulse", action_ref: "merged_arcanum:pulse" }, ctx);
+        autoPulsed = !!fr?.ok;
+      } catch (e) { warn(`skill-effects.summon_arcanum: Quick Summoning free Pulse failed: ${e.message}`); }
     }
     // Record the dismiss-lock consequence for a later enforcement pass.
     const mergeAe = findMergedArcanumAe(caster);
@@ -8978,8 +9005,9 @@ async function applySummonArcanumEffect(row, ctx) {
   // ── Legacy self-picker (back-compat). Bind and Summon now selects via the
   //    open_action_menu dynamic source; this only runs on direct invocation. ──
   const { options, optionRows } = buildArcanumMenuOptions({ ...row, effect_label: row.effect_label ?? "arcanum_control" }, ctx);
-  if (!options.length) {
-    ui.notifications?.warn(`${caster.name} has no Arcana action available.`);
+  if (!options.some((o) => !o.disabled)) {
+    const why = options.find((o) => o.badge)?.badge ?? "no Arcana action available";
+    ui.notifications?.warn(`${caster.name}: ${why}.`);
     return { ok: true, kind: "summon_arcanum", abort: true, reason: "no-options" };
   }
   const menuRow = {
@@ -9048,6 +9076,17 @@ async function applyOpenActionMenuEffect(row, ctx) {
   // Resolve options (refs preferred, inline fallback) via the shared helper —
   // so the apply-click preview (previewReactionMenu) builds the identical list.
   const { options, optionRows } = buildMenuOptions(row, ctx);
+  // A DYNAMIC source with nothing PICKABLE is live state, not an authoring error
+  // (an Arcanist with no bound Arcanum or too little MP, no clock to push): abort.
+  // From pre_activate that drops back to the Action Menu with nothing spent; from
+  // an on_activate-only row (Clock Interaction) it only ends the chain early. The
+  // legacy summon_arcanum path gives the same answer. A static menu with no
+  // options stays a plain failure.
+  if (String(row.menu_dynamic_source ?? "").trim() && !options.some((o) => !o.disabled)) {
+    const why = options.length ? options.find((o) => o.badge)?.badge ?? "nothing available" : "nothing to choose from";
+    ui.notifications?.warn(`${ctx?.reactorActor?.name ?? "This creature"}: ${row.menu_title || "this action"} — ${why}.`);
+    return { ok: true, kind: "open_action_menu", abort: true, reason: "no-options" };
+  }
   if (!options.length) {
     warn(`skill-effects.open_action_menu: row "${row.effect_label}" has no usable options`);
     return { ok: false, kind: "open_action_menu", reason: "no-options" };

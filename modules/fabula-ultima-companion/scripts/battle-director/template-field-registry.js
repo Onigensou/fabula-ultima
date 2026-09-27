@@ -202,6 +202,12 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   textCol("menu_option_descriptions", "Option Descriptions", { tooltip: "Pipe (|)-separated descriptions, paired with Option Refs.", vis: OAM_VIS }),
   textCol("menu_option_icons", "Option Icons", { tooltip: "Optional pipe (|)-separated icon image paths, paired with Option Refs. Blank = no icon (plain row).", vis: OAM_VIS }),
   textCol("menu_option_colors", "Option Colors", { tooltip: "Optional pipe (|)-separated accent colors (CSS), paired with Option Refs. Blank = no accent.", vis: OAM_VIS }),
+  // Dynamic option sources (skill-effects buildDynamicMenuOptions). Engine-read
+  // since the Arcanist summon loop, never declared: Hina's wired Bind and Summon
+  // row lived on these two keys alone, and an undeclared key is pruned by the
+  // next reloadTemplate — the loop went dark with no error.
+  textCol("menu_dynamic_source", "Dynamic Options", { tooltip: "Build the option list at runtime instead of from Option Refs: arcanum (the caster's bound Arcana — Bind and Summon) or clock (live clocks).", vis: OAM_VIS }),
+  textCol("summon_cost_formula", "Summon Cost", { tooltip: "Dynamic source arcanum: MP cost formula to summon (default 40). Free while an Arcanum is merged.", vis: OAM_VIS }),
   checkboxCol("menu_hide_disabled", "Hide Disabled", { tooltip: "Hide every disabled (gate-failed) option instead of showing it greyed. Default off = show greyed (per-option disable_ui_type). Turn on for large gated menus (e.g. Invocation) where 10+ unavailable options would be noise.", vis: OAM_VIS }),
   // free-action grant config (open_action_menu free_mode — High Speed, Hawkeye
   // option b, On the Hunt). free_mode + allowed_types were historically added by
