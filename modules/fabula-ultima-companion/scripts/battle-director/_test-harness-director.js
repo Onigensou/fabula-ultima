@@ -3186,14 +3186,29 @@ async function runDirectorPassiveTriggerTest(args = {}) {
   let result = null;
   let err = null;
   try {
-    const se = await import(
-      `/modules/fabula-ultima-companion/scripts/battle-director/skill-effects.js?harness=${Date.now()}`,
+    // Dispatch the FORCED pass directly. firePassiveTriggers passes no phase,
+    // and dispatchReactionMenu refuses a combined (ask+forced) dispatch without
+    // a director — a SILENT `{fired: []}` for every non-Field actor, so this
+    // probe reported "nothing fired" for rows it never evaluated (found
+    // 2026-09-28 on Ole!). The forced pass is director-safe by contract.
+    // ⚠ Ask-mode rows are NOT covered: they need a director + token menu.
+    const actor = args.casterActor;
+    let token = null;
+    for (const scene of [canvas?.scene, ...(game.scenes?.contents ?? [])].filter(Boolean)) {
+      token = scene.tokens?.contents?.find((t) => t.actor?.uuid === actor.uuid) ?? null;
+      if (token) break;
+    }
+    if (!token) throw new Error(`no token for ${actor.name} on any scene — the reactor needs a token`);
+    const sr = await import(
+      `/modules/fabula-ultima-companion/scripts/battle-director/standalone-reactions.js?harness=${Date.now()}`,
     );
-    result = await se.firePassiveTriggers({
+    result = await sr.dispatchReactionMenu({
       director: null,
-      casterActor: args.casterActor,
+      reactor: actor,
+      token,
       trigger: args.trigger,
       payload: args.payload ?? {},
+      phase: "forced",
     });
   } catch (e) {
     err = { message: String(e?.message ?? e), stack: String(e?.stack ?? "").slice(0, 500) };

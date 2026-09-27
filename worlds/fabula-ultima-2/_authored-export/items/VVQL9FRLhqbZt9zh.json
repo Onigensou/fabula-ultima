@@ -8,6 +8,71 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "Mnev3lUxGKK5v9dj",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790542263074,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_defense",
+          "mode": 2,
+          "priority": 20,
+          "value": "-(SL * 2)"
+        }
+      ],
+      "description": "Your Defense is lowered while you draw the forced attack; a miss earns you Adoration.",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "Mnev3lUxGKK5v9dj",
+          "originalParentId": "VVQL9FRLhqbZt9zh",
+          "originalUuid": "Item.VVQL9FRLhqbZt9zh.ActiveEffect.Mnev3lUxGKK5v9dj"
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "oletaunt",
+          "charges": 1,
+          "chargesMax": 1,
+          "lifetimeMode": "target_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Swordsman/icon_warri_ole.png",
+      "name": "Ole!",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-oletaunt"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -24,6 +89,7 @@
   "system": {
     "container": null,
     "props": {
+      "action_intent": "harmful",
       "active_effect_config_table": {},
       "check_bonus": "0",
       "class": "Matador",
@@ -32,16 +98,75 @@
       "defense_target_type": "def",
       "description": "<p>As an action, Choose target creature who is able to see you, the target must perform a <strong>Free Attack </strong>with you as its <strong>single target</strong>, Reduce your <strong>Defense</strong> score by <strong>【SL x 2】</strong> for this attack, if the attack <strong>miss, </strong>you gain <strong>【SL】Adoration</strong>.</p>",
       "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "chain_steps": "ole_mark,ole_force",
+          "effect_kind": "chain",
+          "effect_label": "ole_root"
+        },
+        "1": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Ole!",
+          "effect_kind": "apply_ae",
+          "effect_label": "ole_mark",
+          "target_ref": "self"
+        },
+        "2": {
+          "action_ref": "Attack",
+          "effect_kind": "free_action",
+          "effect_label": "ole_force",
+          "performer_ref": "action_targets",
+          "target_ref": "self"
+        },
+        "3": {
+          "chain_steps": "ole_gain,ole_clear",
+          "effect_kind": "chain",
+          "effect_label": "ole_miss"
+        },
+        "4": {
+          "charge_ae_name": "Adoration Clock",
+          "charge_amount": "SL + HAS_SKILL_ELEGANCE_SHOWMANSHIP",
+          "charge_max": "5",
+          "charge_operation": "add",
+          "effect_kind": "adjust_charges",
+          "effect_label": "ole_gain",
+          "target_ref": "self"
+        },
+        "5": {
+          "ae_template_ref": "Ole!",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "ole_clear",
+          "target_ref": "self"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
       "isOffensiveSpell": false,
-      "isReaction": false,
+      "isReaction": true,
       "level": "1",
       "max_level": "2",
       "name": "Ole!",
+      "on_activate_effect_ref": "ole_root",
       "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "HAS_STATUS_OLETAUNT == 1 && ACTION_IS_ATTACK == 1 && SUBJECT_IS_SELF == 0",
+          "reaction_effect_ref": "ole_miss",
+          "reaction_passive_mode": "force",
+          "reaction_source": "all",
+          "reaction_trigger": "creature_miss_action"
+        },
+        "1": {
+          "condition_formula": "HAS_STATUS_OLETAUNT == 1",
+          "reaction_effect_ref": "ole_clear",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_hit_by_action"
+        }
+      },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_default": "",
@@ -50,6 +175,7 @@
       "skill_range": "Range",
       "skill_target": "One Creature",
       "skill_type": "Active",
+      "target_eligibility": "IS_SOURCE == 0",
       "type_damage": "",
       "use_optional_params": false
     },

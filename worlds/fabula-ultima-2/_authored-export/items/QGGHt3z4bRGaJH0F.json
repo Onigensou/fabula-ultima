@@ -30,6 +30,28 @@
       "damage_bonus": "0",
       "description": "<p>Perform a closing salute for the crowd, Gain <strong>3 Zero Power</strong></p>",
       "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "chain_steps": "ts_cost,ts_zp",
+          "effect_kind": "chain",
+          "effect_label": "ts_root"
+        },
+        "1": {
+          "charge_key": "adoration",
+          "count": "5",
+          "effect_kind": "consume_charge",
+          "effect_label": "ts_cost",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "2": {
+          "effect_kind": "grant",
+          "effect_label": "ts_zp",
+          "grant_amount": "3",
+          "grant_resource": "zero_power",
+          "target_ref": "self"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": true,
@@ -38,7 +60,9 @@
       "level": "1",
       "max_level": "1",
       "name": "Triumphal Salute",
+      "on_activate_effect_ref": "ts_root",
       "optional_params": {},
+      "reaction_config_table": null,
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",

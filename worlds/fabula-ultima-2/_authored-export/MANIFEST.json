@@ -4370,7 +4370,7 @@
         "id": "H7r8HeuTLPbOfi1T",
         "name": "Corrida Finale",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "nxWsGZs2zz8YOmut",
@@ -9200,7 +9200,7 @@
         "id": "VVQL9FRLhqbZt9zh",
         "name": "Ole!",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "uQtyl33m5hL8JxJ3",

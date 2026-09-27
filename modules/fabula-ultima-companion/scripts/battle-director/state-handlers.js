@@ -3224,7 +3224,14 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
   // target (composedTargetUuids is empty) and is rolled GM-side by the roulette
   // path below. A GM-driven action with no pre-compose still falls through to the
   // locked Confirm, so a directly-run obvious target keeps its acknowledgement.
-  if (pickerMode !== "random" && usingPreComposed
+  // EXCEPTION to the random exclusion: a free-action grant that LOCKS the target
+  // ("with you as its single target": Ole!, Berserker Showdown). Compose already
+  // pinned the pick to the lock; rolling the roulette here would re-open the
+  // whole pool (Inferex's "One Random Creature" Chomp) and break the grant.
+  const _grantLock = freeActions.get(attackerSnap?.actorId)?.lockedTargetTokenUuid ?? null;
+  const _lockedPreComposed = !!_grantLock && Array.isArray(composedTargetUuids)
+    && composedTargetUuids.length === 1 && composedTargetUuids[0] === _grantLock;
+  if ((pickerMode !== "random" || _lockedPreComposed) && usingPreComposed
       && Array.isArray(composedTargetUuids) && composedTargetUuids.length) {
     result = { ok: true, cancelled: false, tokenUuids: [...composedTargetUuids] };
   } else if (isObviousTargetSet && director.ctx?._skipActionTargetConfirm) {

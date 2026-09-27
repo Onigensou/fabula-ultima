@@ -30,6 +30,28 @@
       "damage_bonus": "0",
       "description": "<p>Inspire all allies with festive mood, All ally gain <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.PXO8X5beH1JQHuz9\" data-id=\"PXO8X5beH1JQHuz9\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Swift</span></strong></a></span></span></p>",
       "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "chain_steps": "fes_cost,fes_swift",
+          "effect_kind": "chain",
+          "effect_label": "fes_root"
+        },
+        "1": {
+          "charge_key": "adoration",
+          "count": "5",
+          "effect_kind": "consume_charge",
+          "effect_label": "fes_cost",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Swift",
+          "effect_kind": "apply_ae",
+          "effect_label": "fes_swift",
+          "target_ref": "action_targets"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": true,
@@ -38,7 +60,9 @@
       "level": "1",
       "max_level": "1",
       "name": "Festivities",
+      "on_activate_effect_ref": "fes_root",
       "optional_params": {},
+      "reaction_config_table": null,
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",

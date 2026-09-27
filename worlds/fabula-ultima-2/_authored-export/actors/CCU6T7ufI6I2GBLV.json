@@ -253,6 +253,71 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "PEkb6xL65IHIFIUq",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1790542263745,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "bonus_defense",
+              "mode": 2,
+              "priority": 20,
+              "value": "-(SL * 2)"
+            }
+          ],
+          "description": "Your Defense is lowered while you draw the forced attack; a miss earns you Adoration.",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "PEkb6xL65IHIFIUq",
+              "originalParentId": "4h8IoAHbDTfVeRC7",
+              "originalUuid": "Actor.CCU6T7ufI6I2GBLV.Item.4h8IoAHbDTfVeRC7.ActiveEffect.PEkb6xL65IHIFIUq"
+            },
+            "fabula-ultima-companion": {
+              "chargeKey": "oletaunt",
+              "charges": 1,
+              "chargesMax": 1,
+              "lifetimeMode": "target_turn_end"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Swordsman/icon_warri_ole.png",
+          "name": "Ole!",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-oletaunt"
+          ],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -269,6 +334,7 @@
       "system": {
         "container": null,
         "props": {
+          "action_intent": "harmful",
           "active_effect_config_table": {},
           "check_bonus": "0",
           "class": "Matador",
@@ -277,25 +343,84 @@
           "defense_target_type": "def",
           "description": "<p>As an action, Choose target creature who is able to see you, the target must perform a <strong>Free Attack </strong>with you as its <strong>single target</strong>, Reduce your <strong>Defense</strong> score by <strong>【SL x 2】</strong> for this attack, if the attack <strong>miss, </strong>you gain <strong>【SL】Adoration</strong>.</p>",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "chain_steps": "ole_mark,ole_force",
+              "effect_kind": "chain",
+              "effect_label": "ole_root"
+            },
+            "1": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Ole!",
+              "effect_kind": "apply_ae",
+              "effect_label": "ole_mark",
+              "target_ref": "self"
+            },
+            "2": {
+              "action_ref": "Attack",
+              "effect_kind": "free_action",
+              "effect_label": "ole_force",
+              "performer_ref": "action_targets",
+              "target_ref": "self"
+            },
+            "3": {
+              "chain_steps": "ole_gain,ole_clear",
+              "effect_kind": "chain",
+              "effect_label": "ole_miss"
+            },
+            "4": {
+              "charge_ae_name": "Adoration Clock",
+              "charge_amount": "SL + HAS_SKILL_ELEGANCE_SHOWMANSHIP",
+              "charge_max": "5",
+              "charge_operation": "add",
+              "effect_kind": "adjust_charges",
+              "effect_label": "ole_gain",
+              "target_ref": "self"
+            },
+            "5": {
+              "ae_template_ref": "Ole!",
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "ole_clear",
+              "target_ref": "self"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
-          "isReaction": false,
+          "isReaction": true,
           "isZeroPower": false,
           "level": "1",
           "max_level": "2",
           "name": "Ole!",
+          "on_activate_effect_ref": "ole_root",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "HAS_STATUS_OLETAUNT == 1 && ACTION_IS_ATTACK == 1 && SUBJECT_IS_SELF == 0",
+              "reaction_effect_ref": "ole_miss",
+              "reaction_passive_mode": "force",
+              "reaction_source": "all",
+              "reaction_trigger": "creature_miss_action"
+            },
+            "1": {
+              "condition_formula": "HAS_STATUS_OLETAUNT == 1",
+              "reaction_effect_ref": "ole_clear",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_hit_by_action"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_information": "",
           "skill_range": "Range",
           "skill_target": "One Creature",
           "skill_type": "Active",
+          "target_eligibility": "IS_SOURCE == 0",
           "type_damage": "",
           "use_optional_params": false
         },
@@ -985,12 +1110,59 @@
       "system": {
         "container": null,
         "props": {
+          "action_intent": "harmful",
+          "availability_formula": "HAS_MELEE_WEAPON == 1",
+          "availability_reason": "Requires an equipped melee weapon",
           "check_bonus": "0",
           "class": "Matador",
           "cost": "4 Adoration",
           "damage_bonus": "0",
           "description": "<ul><li><p><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Chain</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;3</span></strong></span></p></li></ul><p>Perform a <strong>Free Attack </strong>on the target with a <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.10LjF01NAYNKpRvn\" data-id=\"10LjF01NAYNKpRvn\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Melee</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>Weapon you have equipped 3 times, these attack do not include <strong>HR </strong>in its damage and must target the same creature</p>",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "chain_steps": "fae_cost,fae_1,fae_2,fae_3",
+              "effect_kind": "chain",
+              "effect_label": "fae_root"
+            },
+            "1": {
+              "charge_key": "adoration",
+              "condition_formula": "HAS_MELEE_WEAPON == 1",
+              "count": "4",
+              "effect_kind": "consume_charge",
+              "effect_label": "fae_cost",
+              "on_condition_fail": "abort",
+              "on_empty": "abort",
+              "target_ref": "self"
+            },
+            "2": {
+              "action_ref": "Attack",
+              "chain": true,
+              "effect_kind": "free_action",
+              "effect_label": "fae_1",
+              "free_hr_as_zero": true,
+              "free_weapon_range": "melee",
+              "target_ref": "action_targets"
+            },
+            "3": {
+              "action_ref": "Attack",
+              "chain": true,
+              "effect_kind": "free_action",
+              "effect_label": "fae_2",
+              "free_hr_as_zero": true,
+              "free_weapon_range": "melee",
+              "target_ref": "action_targets"
+            },
+            "4": {
+              "action_ref": "Attack",
+              "chain": true,
+              "effect_kind": "free_action",
+              "effect_label": "fae_3",
+              "free_hr_as_zero": true,
+              "free_weapon_range": "melee",
+              "target_ref": "action_targets"
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": true,
@@ -999,12 +1171,15 @@
           "level": "1",
           "max_level": "1",
           "name": "Faena",
+          "on_activate_effect_ref": "fae_root",
           "optional_params": {},
+          "reaction_config_table": null,
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "Melee",
           "skill_target": "One Creature",
           "skill_type": "Active",
+          "target_eligibility": "IS_SOURCE == 0",
           "type_damage": "",
           "use_optional_params": false
         },
@@ -1271,6 +1446,104 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "mtAoQvYvg9b2xUgD",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1790542265977,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "disable_action_intent",
+              "mode": 5,
+              "priority": 0,
+              "value": "aid, neutral"
+            },
+            {
+              "key": "allegiance_override",
+              "mode": 5,
+              "priority": 0,
+              "value": "ally:enemy"
+            },
+            {
+              "key": "allegiance_override",
+              "mode": 5,
+              "priority": 0,
+              "value": "enemy:ally"
+            }
+          ],
+          "description": "On its next action this beast treats its allies as enemies and must turn on them.",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 2,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "mtAoQvYvg9b2xUgD",
+              "originalParentId": "HWhjzK0NWl1Kw2ue",
+              "originalUuid": "Actor.CCU6T7ufI6I2GBLV.Item.HWhjzK0NWl1Kw2ue.ActiveEffect.mtAoQvYvg9b2xUgD"
+            },
+            "fabula-ultima-companion": {
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "candidate_source": "self",
+                    "count": 1,
+                    "effect_kind": "targeting",
+                    "effect_label": "corr_spent",
+                    "mode": "exact",
+                    "skip_when_passive": true
+                  }
+                },
+                "reaction_config_table": {
+                  "0": {
+                    "consume_self": true,
+                    "reaction_effect_ref": "corr_spent",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_performs_action"
+                  }
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Swordsman/warri_CorridaFinale.png",
+          "name": "Corrida Finale",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-corrida-finale"
+          ],
+          "system": {
+            "tags": [
+              "debuff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -1287,26 +1560,53 @@
       "system": {
         "container": null,
         "props": {
+          "action_intent": "harmful",
           "check_bonus": "0",
           "class": "Matador",
           "cost": "5 Adoration",
           "damage_bonus": "0",
           "description": "<p>Incite target beast to attack nearby enemies, Choose target <strong>soldier-rank Beast, </strong><strong data-start=\"110\" data-end=\"130\">On its next turn</strong>, the target <strong data-start=\"143\" data-end=\"175\">treats its allies as enemies</strong> and <strong data-start=\"180\" data-end=\"210\">must use a damaging action</strong> that <strong data-start=\"216\" data-end=\"235\">targets an ally</strong>.<br data-start=\"236\" data-end=\"239\">The compulsion ends after that action.</p>",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "chain_steps": "corr_cost,corr_apply",
+              "effect_kind": "chain",
+              "effect_label": "corr_root"
+            },
+            "1": {
+              "charge_key": "adoration",
+              "count": "5",
+              "effect_kind": "consume_charge",
+              "effect_label": "corr_cost",
+              "on_empty": "abort",
+              "target_ref": "self"
+            },
+            "2": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Corrida Finale",
+              "effect_kind": "apply_ae",
+              "effect_label": "corr_apply",
+              "target_ref": "action_targets"
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "1",
           "name": "Corrida Finale",
+          "on_activate_effect_ref": "corr_root",
           "optional_params": {},
+          "reaction_config_table": null,
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "Range",
-          "skill_target": "One Beast",
+          "skill_target": "One Enemy",
           "skill_type": "Active",
+          "target_eligibility": "SPECIES_IS_BEAST == 1 && RANK_IS_SOLDIER == 1",
           "type_damage": "",
           "use_optional_params": false
         },
@@ -1541,6 +1841,28 @@
           "damage_bonus": "0",
           "description": "<p>Perform a closing salute for the crowd, Gain <strong>3 Zero Power</strong></p>",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "chain_steps": "ts_cost,ts_zp",
+              "effect_kind": "chain",
+              "effect_label": "ts_root"
+            },
+            "1": {
+              "charge_key": "adoration",
+              "count": "5",
+              "effect_kind": "consume_charge",
+              "effect_label": "ts_cost",
+              "on_empty": "abort",
+              "target_ref": "self"
+            },
+            "2": {
+              "effect_kind": "grant",
+              "effect_label": "ts_zp",
+              "grant_amount": "3",
+              "grant_resource": "zero_power",
+              "target_ref": "self"
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": true,
@@ -1549,7 +1871,9 @@
           "level": "1",
           "max_level": "1",
           "name": "Triumphal Salute",
+          "on_activate_effect_ref": "ts_root",
           "optional_params": {},
+          "reaction_config_table": null,
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "Any",
@@ -1728,6 +2052,28 @@
           "damage_bonus": "0",
           "description": "<p>Inspire all allies with festive mood, All ally gain <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.PXO8X5beH1JQHuz9\" data-id=\"PXO8X5beH1JQHuz9\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Swift</span></strong></a></span></span></p>",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "chain_steps": "fes_cost,fes_swift",
+              "effect_kind": "chain",
+              "effect_label": "fes_root"
+            },
+            "1": {
+              "charge_key": "adoration",
+              "count": "5",
+              "effect_kind": "consume_charge",
+              "effect_label": "fes_cost",
+              "on_empty": "abort",
+              "target_ref": "self"
+            },
+            "2": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Swift",
+              "effect_kind": "apply_ae",
+              "effect_label": "fes_swift",
+              "target_ref": "action_targets"
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": true,
@@ -1736,7 +2082,9 @@
           "level": "1",
           "max_level": "1",
           "name": "Festivities",
+          "on_activate_effect_ref": "fes_root",
           "optional_params": {},
+          "reaction_config_table": null,
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "Any",

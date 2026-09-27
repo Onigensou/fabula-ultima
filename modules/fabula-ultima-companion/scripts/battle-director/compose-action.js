@@ -434,7 +434,7 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
   // is chosen from `snap.npcAttackItems` (items with skill_type "Attack").
   // The "weapon-mode" picker doesn't apply: NPCs don't dual-wield in BD.
   if (snap.actorKind === "npc") {
-    return composeAttackNpc({ director, snap, eligible, cancelSentinel });
+    return composeAttackNpc({ director, snap, eligible, cancelSentinel, grant });
   }
 
   // A free-action grant may restrict the Attack to a weapon RANGE CLASS
@@ -660,7 +660,7 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
 //                 npcAttackItemUuid, targetUuids }
 // TARGET phase builds a pseudo-weapon from the picked Item so the rest
 // of the Attack pipeline (COMPUTE / CONFIRM / RESOLVE) is unchanged.
-async function composeAttackNpc({ director, snap, eligible, cancelSentinel }) {
+async function composeAttackNpc({ director, snap, eligible, cancelSentinel, grant = null }) {
   const attackItems = snap.npcAttackItems ?? [];
   if (!attackItems.length) {
     ui.notifications?.warn(`${snap.name} has no basic Attack available.`);
@@ -739,6 +739,24 @@ async function composeAttackNpc({ director, snap, eligible, cancelSentinel }) {
       ? "All eligible enemies are Covered — pick a different action."
       : "No eligible enemy targets.");
     return { cancelled: true, reason: "no eligible targets" };
+  }
+
+  // Forced target from the grant ("with you as its single target": Ole!,
+  // Berserker Showdown, Counterattack). The PC path has honoured this since the
+  // Counterattack fix; a GM-driven NPC did not — it got the ordinary picker, and
+  // an "All" attack item hit every enemy. Same rule as the PC path: a present
+  // lock skips the plan and the picker; a lock on a target that is gone forfeits
+  // the grant rather than redirecting it to anyone.
+  const lockedUuid = grant?.lockedTargetTokenUuid ?? null;
+  if (lockedUuid) {
+    if (!filtered.some((e) => e.tokenUuid === lockedUuid)) {
+      ui.notifications?.warn("The target of that free attack is no longer available.");
+      return { cancelled: true, reason: "locked-target-unavailable" };
+    }
+    return {
+      cancelled: false,
+      bundle: { command: "Attack", attackMode: "npc", npcAttackItemUuid: pickedItemUuid, targetUuids: [lockedUuid] },
+    };
   }
 
   // "Must include X" taunt (must_be_targeted_by) — pin any candidate that forces

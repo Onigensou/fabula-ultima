@@ -8,6 +8,104 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "i7jgj3GUurSXsXVW",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790542265276,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "disable_action_intent",
+          "mode": 5,
+          "priority": 0,
+          "value": "aid, neutral"
+        },
+        {
+          "key": "allegiance_override",
+          "mode": 5,
+          "priority": 0,
+          "value": "ally:enemy"
+        },
+        {
+          "key": "allegiance_override",
+          "mode": 5,
+          "priority": 0,
+          "value": "enemy:ally"
+        }
+      ],
+      "description": "On its next action this beast treats its allies as enemies and must turn on them.",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 2,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "i7jgj3GUurSXsXVW",
+          "originalParentId": "H7r8HeuTLPbOfi1T",
+          "originalUuid": "Item.H7r8HeuTLPbOfi1T.ActiveEffect.i7jgj3GUurSXsXVW"
+        },
+        "fabula-ultima-companion": {
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "candidate_source": "self",
+                "count": 1,
+                "effect_kind": "targeting",
+                "effect_label": "corr_spent",
+                "mode": "exact",
+                "skip_when_passive": true
+              }
+            },
+            "reaction_config_table": {
+              "0": {
+                "consume_self": true,
+                "reaction_effect_ref": "corr_spent",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_performs_action"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Swordsman/warri_CorridaFinale.png",
+      "name": "Corrida Finale",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-corrida-finale"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -24,27 +122,54 @@
   "system": {
     "container": null,
     "props": {
+      "action_intent": "harmful",
       "check_bonus": "0",
       "class": "Matador",
       "cost": "5 Adoration",
       "damage_bonus": "0",
       "description": "<p>Incite target beast to attack nearby enemies, Choose target <strong>soldier-rank Beast, </strong><strong data-start=\"110\" data-end=\"130\">On its next turn</strong>, the target <strong data-start=\"143\" data-end=\"175\">treats its allies as enemies</strong> and <strong data-start=\"180\" data-end=\"210\">must use a damaging action</strong> that <strong data-start=\"216\" data-end=\"235\">targets an ally</strong>.<br data-start=\"236\" data-end=\"239\">The compulsion ends after that action.</p>",
       "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "chain_steps": "corr_cost,corr_apply",
+          "effect_kind": "chain",
+          "effect_label": "corr_root"
+        },
+        "1": {
+          "charge_key": "adoration",
+          "count": "5",
+          "effect_kind": "consume_charge",
+          "effect_label": "corr_cost",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Corrida Finale",
+          "effect_kind": "apply_ae",
+          "effect_label": "corr_apply",
+          "target_ref": "action_targets"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": true,
       "isHeroic": false,
       "isOffensiveSpell": false,
+      "isReaction": true,
       "level": "1",
       "max_level": "1",
       "name": "Corrida Finale",
+      "on_activate_effect_ref": "corr_root",
       "optional_params": {},
+      "reaction_config_table": null,
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",
       "skill_range": "Range",
-      "skill_target": "One Beast",
+      "skill_target": "One Enemy",
       "skill_type": "Active",
+      "target_eligibility": "SPECIES_IS_BEAST == 1 && RANK_IS_SOLDIER == 1",
       "type_damage": "",
       "use_optional_params": false
     },
