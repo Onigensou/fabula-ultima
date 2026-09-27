@@ -6557,6 +6557,31 @@ async function applyApplyAeEffect(row, ctx) {
       log(`skill-effects.apply_ae: ${actor.name} caught "${template.name}" — ${pct}% chance, rolled ${rolled.toFixed(1)}`);
     }
 
+    // `familyEvictsOtherCasters` (template flag) — landing this AE removes every
+    // same-family AE a DIFFERENT caster applied, then the row's own duplicate mode
+    // runs as usual. The Provoked family (aeFamily "taunt": Fury Provoke, Thread
+    // the Horns, Capote, Peacock Dance, the hub Provoked): RAW Provoke's compulsion
+    // "ends … if they are successfully provoked by someone else" (USER 2026-09-27:
+    // yes, and in both directions). Deliberately NOT replace_family — that deletes
+    // the caster's OWN taunts too, and one creature's Fury Provoke + Thread the
+    // Horns must coexist. Runs after the immunity / chance gates above, so a taunt
+    // that did not land evicts nothing.
+    {
+      // `||`, not `??`: a declared column arrives as "" (sheet render re-stamps
+      // blanks), and `??` would keep that "" instead of falling back to the template.
+      const evictFam = (String(row.ae_family ?? "").trim() || String(template.flags?.[FLAG_NS]?.aeFamily ?? "").trim());
+      if (evictFam && casterUuid && template.flags?.[FLAG_NS]?.familyEvictsOtherCasters === true) {
+        for (const ex of findFamilyAes(actor, evictFam)) {
+          const exCaster = ex.flags?.[FLAG_NS]?.directorAppliedBy?.reactorActorUuid ?? null;
+          if (!exCaster || exCaster === casterUuid) continue;
+          try {
+            await ex.delete();
+            log(`skill-effects.apply_ae: "${template.name}" evicted "${ex.name}" (family "${evictFam}", another caster) from ${actor.name}`);
+          } catch (e) { warn("apply_ae familyEvictsOtherCasters delete failed", e); }
+        }
+      }
+    }
+
     // `replace_same_status` — Hinder semantics. Distinct statuses coexist
     // (Weak + Slow together is RAW-legal), but re-applying the SAME status
     // replaces the prior instance. Match by the template's canonical Foundry
@@ -6622,7 +6647,7 @@ async function applyApplyAeEffect(row, ctx) {
       // (rather than replaces) the Set-typed `statuses`, leaving the old
       // element's token icon behind. A clean delete+create guarantees the new
       // variant fully supplants the old one.
-      const family = String(row.ae_family ?? template.flags?.[FLAG_NS]?.aeFamily ?? "").trim();
+      const family = (String(row.ae_family ?? "").trim() || String(template.flags?.[FLAG_NS]?.aeFamily ?? "").trim());
       if (family) {
         const fam = findFamilyAes(actor, family, isPerCaster ? casterUuid : null);
         for (const ex of fam) {
@@ -6894,7 +6919,7 @@ async function applyApplyAeEffect(row, ctx) {
     // into data.flags) stands. Stamping here means a row-only ae_family works
     // even on a template that doesn't declare the flag itself.
     {
-      const familyTag = String(row.ae_family ?? data.flags[FLAG_NS].aeFamily ?? "").trim();
+      const familyTag = (String(row.ae_family ?? "").trim() || String(data.flags[FLAG_NS].aeFamily ?? "").trim());
       if (familyTag) data.flags[FLAG_NS].aeFamily = familyTag;
     }
     // Per-AE duration counter (homebrew rule: default 3 turns, tick at

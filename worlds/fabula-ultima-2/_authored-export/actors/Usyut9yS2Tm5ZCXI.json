@@ -207,6 +207,8 @@
               "originalUuid": "Actor.Usyut9yS2Tm5ZCXI.Item.IeiuVVS4VRDfagnL.ActiveEffect.c79jtre2OKB9s6kO"
             },
             "fabula-ultima-companion": {
+              "aeFamily": "taunt",
+              "familyEvictsOtherCasters": true,
               "riderOf": "Enraged"
             },
             "statuscounter": {

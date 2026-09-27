@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-09-26T22:16:13.747Z",
+ "capturedAt": "2026-09-27T01:08:07.896Z",
  "count": 2278,
  "structure": {
   "(world) / Absorb MP": {
@@ -4941,7 +4941,7 @@
      "tags": [
       "debuff"
      ],
-     "family": null,
+     "family": "taunt",
      "lifetime": null,
      "charges": null,
      "changes": [
@@ -7255,7 +7255,7 @@
      "tags": [
       "debuff"
      ],
-     "family": null,
+     "family": "taunt",
      "lifetime": null,
      "charges": null,
      "changes": [
@@ -19113,7 +19113,7 @@
      "tags": [
       "debuff"
      ],
-     "family": null,
+     "family": "taunt",
      "lifetime": null,
      "charges": null,
      "changes": [
@@ -20022,7 +20022,7 @@
      "tags": [
       "debuff"
      ],
-     "family": null,
+     "family": "taunt",
      "lifetime": null,
      "charges": null,
      "changes": [
@@ -20063,7 +20063,7 @@
      "tags": [
       "debuff"
      ],
-     "family": null,
+     "family": "taunt",
      "lifetime": null,
      "charges": null,
      "changes": [
@@ -25344,7 +25344,7 @@
       "ZK0aTX8IH1NqwmTw"
      ],
      "tags": [],
-     "family": null,
+     "family": "taunt",
      "lifetime": null,
      "charges": null,
      "changes": [
@@ -31178,7 +31178,7 @@
      "tags": [
       "debuff"
      ],
-     "family": null,
+     "family": "taunt",
      "lifetime": null,
      "charges": null,
      "changes": [
@@ -31889,7 +31889,7 @@
      "tags": [
       "debuff"
      ],
-     "family": null,
+     "family": "taunt",
      "lifetime": null,
      "charges": null,
      "changes": [
@@ -32048,7 +32048,7 @@
      "tags": [
       "debuff"
      ],
-     "family": null,
+     "family": "taunt",
      "lifetime": null,
      "charges": null,
      "changes": [
@@ -32257,7 +32257,7 @@
      "tags": [
       "debuff"
      ],
-     "family": null,
+     "family": "taunt",
      "lifetime": null,
      "charges": null,
      "changes": [
@@ -35823,7 +35823,7 @@
      "tags": [
       "debuff"
      ],
-     "family": null,
+     "family": "taunt",
      "lifetime": null,
      "charges": null,
      "changes": [
@@ -41459,7 +41459,7 @@
      "tags": [
       "debuff"
      ],
-     "family": null,
+     "family": "taunt",
      "lifetime": null,
      "charges": null,
      "changes": [
@@ -51265,7 +51265,7 @@
      "tags": [
       "debuff"
      ],
-     "family": null,
+     "family": "taunt",
      "lifetime": null,
      "charges": null,
      "changes": [
@@ -51502,7 +51502,7 @@
       "ZK0aTX8IH1NqwmTw"
      ],
      "tags": [],
-     "family": null,
+     "family": "taunt",
      "lifetime": null,
      "charges": null,
      "changes": [

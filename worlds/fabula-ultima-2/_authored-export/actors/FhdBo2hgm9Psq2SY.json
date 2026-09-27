@@ -2134,6 +2134,8 @@
               "originalUuid": "Actor.FhdBo2hgm9Psq2SY.Item.i2g3AditRISolXm9.ActiveEffect.fuoBgW0KuoL5ks6e"
             },
             "fabula-ultima-companion": {
+              "aeFamily": "taunt",
+              "familyEvictsOtherCasters": true,
               "reactionConfig": {
                 "effect_table": {
                   "0": {

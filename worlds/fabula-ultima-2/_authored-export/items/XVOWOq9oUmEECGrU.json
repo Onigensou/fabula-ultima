@@ -2541,7 +2541,10 @@
           "isTemporary": false,
           "isViewable": true
         },
-        "fabula-ultima-companion": {},
+        "fabula-ultima-companion": {
+          "aeFamily": "taunt",
+          "familyEvictsOtherCasters": true
+        },
         "statuscounter": {
           "config": {
             "multiplyEffect": true,

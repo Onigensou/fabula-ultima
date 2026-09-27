@@ -354,6 +354,8 @@
               "originalUuid": "Item.AInzRVEGX9zB0G3L.ActiveEffect.ZwcLnmb51QSWDXLu"
             },
             "fabula-ultima-companion": {
+              "aeFamily": "taunt",
+              "familyEvictsOtherCasters": true,
               "reactionConfig": {
                 "effect_table": {
                   "0": {
@@ -1136,7 +1138,10 @@
               "isTemporary": false,
               "isViewable": true
             },
-            "fabula-ultima-companion": {},
+            "fabula-ultima-companion": {
+              "aeFamily": "taunt",
+              "familyEvictsOtherCasters": true
+            },
             "statuscounter": {
               "config": {
                 "multiplyEffect": true,
