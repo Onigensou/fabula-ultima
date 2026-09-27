@@ -2828,6 +2828,17 @@ function makeHarnessCombat(round = 1, actingActorId = null) {
       // IS_MY_TURN reads `.actorId` off it.
       return actingActorId ? { actorId: actingActorId } : null;
     },
+    // FOURTH identifier on this global: TURNS_REMAINING (Stolen Time, Ouroboros
+    // Dance: "an ally who has yet to take a turn"). Answered through a method,
+    // NOT a `combatants` list: collectCombatTokens, the crisis/defeat reactors and
+    // compose all switch behaviour on `dCombat.combatants`, so publishing one here
+    // would change every simulate. Absent, every candidate read 0 and the pick
+    // failed closed (and a `== 0` gate would pass permissively). Every creature has
+    // 1 turn left unless a test sets `globalThis.__FU_HARNESS_TURNS__ = { <actorId>: n }`.
+    turnsRemainingFor(actorId) {
+      const set = globalThis.__FU_HARNESS_TURNS__ ?? {};
+      return Object.prototype.hasOwnProperty.call(set, actorId) ? Number(set[actorId]) || 0 : 1;
+    },
     addSpellMpSpent(actorId, amount) {
       const n = Number(amount) || 0;
       if (!actorId || n <= 0) return;

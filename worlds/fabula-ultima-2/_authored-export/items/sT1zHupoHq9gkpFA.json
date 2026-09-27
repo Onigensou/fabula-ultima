@@ -8,6 +8,96 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "ZS14QQUYPi2hD5yG",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790546507425,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "The next offensive spell cast on you is turned back on its caster; then Mirror ends.",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "ZS14QQUYPi2hD5yG",
+          "originalParentId": "sT1zHupoHq9gkpFA",
+          "originalUuid": "Item.sT1zHupoHq9gkpFA.ActiveEffect.ZS14QQUYPi2hD5yG"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "chain_steps": "mirror_redirect, mirror_end",
+                "effect_kind": "chain",
+                "effect_label": "mirror_do"
+              },
+              "1": {
+                "destination_ref": "trigger_attacker",
+                "effect_kind": "redirect_target",
+                "effect_label": "mirror_redirect"
+              },
+              "2": {
+                "ae_template_ref": "Mirror",
+                "effect_kind": "remove_ae",
+                "effect_label": "mirror_end",
+                "target_ref": "self"
+              }
+            },
+            "name": "Mirror",
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "ACTION_IS_OFFENSIVE_SPELL == 1",
+                "reaction_effect_ref": "mirror_do",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_targeted_by_action"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/HealerRollAction/swiftcast.png",
+      "name": "Mirror",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-mirror"
+      ],
+      "system": {
+        "tags": [
+          "buff",
+          "dispellable"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -36,15 +126,26 @@
       "defense_target_type": "def",
       "description": "<p>You twist the laws of magic. Until this spell ends, if an <strong>【⚡Offensive Spell】</strong> is cast on the target, the creature who cast that offensive spell will be targeted in their stead <em>(any other targets of the offensive spell will be targeted as normal)</em>. </p><p>Once that happens, this spell ends.</p>",
       "duration": "Scene",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_duration_rounds": "scene",
+          "ae_template_ref": "Mirror",
+          "effect_kind": "apply_ae",
+          "effect_label": "mirror_apply",
+          "target_ref": "action_targets"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": true,
       "isHeroic": false,
       "isOffensiveSpell": false,
-      "isReaction": false,
+      "isReaction": true,
       "level": "1",
       "max_level": "1",
       "name": "Mirror",
+      "on_activate_effect_ref": "mirror_apply",
       "optional_params": {},
       "reaction_config_table": {},
       "rolled_atr1": "-",

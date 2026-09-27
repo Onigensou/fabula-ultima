@@ -6148,14 +6148,25 @@ async function consumeResourceApply(row, ctx, { resource, targetRef, amount }) {
   // once across however many consume rows it has. Only present when a cost
   // reaction fired for THIS action (gated spell + focus), so any MP consume of
   // such a spell is its cost.
+  // A row aimed at the ACTION's targets (action_targets / hit_action_targets …)
+  // is an effect on those creatures, never a cost — even when the target is the
+  // caster (Omega reflected by Mirror, a self-targeted cast). It is evaluated per
+  // target below and takes no cost discount. Costs reach the caster through
+  // `self` or a self-resolving label (is_self, cps_self, dread_self …).
+  const _perTargetRow = /action_targets$/i.test(String(row.target_ref ?? "").trim());
   const _costOv = ctx?.costOverride;
-  if (_costOv && Number(_costOv[resource]) < 0 && amount > 0) {
+  if (!_perTargetRow && _costOv && Number(_costOv[resource]) < 0 && amount > 0) {
     const reduce = Math.min(amount, -Number(_costOv[resource]));
     amount -= reduce;
     _costOv[resource] += reduce;
     if (reduce > 0) log(`skill-effects.consume_resource: adjust_cost −${reduce} ${resource} on "${row.effect_label}" → ${amount}`);
   }
-  if (amount <= 0) {
+  // The caster-side amount only decides for SELF debits. A row that also hits
+  // other creatures is evaluated per target in the loop below (a purely
+  // target-relative formula — "TARGET_LEVEL" — reads 0 here, before any subject
+  // is bound), so it must reach the loop; each target then skips itself on <= 0.
+  const _hitsOthers = _perTargetRow || targetResult.tokens.some((t) => t?.actor && t.actor.uuid !== ctx?.reactorActor?.uuid);
+  if (amount <= 0 && !_hitsOthers) {
     log(`skill-effects.consume_resource: amount evaluated to ${amount} (row "${row.effect_label}"); no debit`);
     return { ok: true, kind: "consume_resource", applied: [], reason: "zero-amount" };
   }
@@ -6174,9 +6185,27 @@ async function consumeResourceApply(row, ctx, { resource, targetRef, amount }) {
   for (const token of targetResult.tokens) {
     const actor = token.actor;
     if (!actor) continue;
+    // A debit on ANOTHER creature is evaluated per target, with that target bound
+    // as the subject — Omega's "20 + half the TARGET's level". describeConsumeResource
+    // evaluates once against the caster with no subject, so TARGET_LEVEL read 0
+    // and every target lost a flat 20. Caster-only identifiers (every shipped
+    // non-self row: SL * 10, DEX_CURRENT_DIE, 5) are unchanged by the binding;
+    // a self debit (a cost) keeps the once-evaluated, discount-adjusted amount.
+    let rowAmount = amount;
+    if (ctx?.reactorActor && (_perTargetRow || actor.uuid !== ctx.reactorActor.uuid)) {
+      try {
+        const perTarget = buildSkillResolver({
+          actor: ctx.reactorActor,
+          payload: { ...(ctx.payload ?? {}), subjectActorUuid: actor.uuid, subjectTokenUuid: token.uuid ?? token.document?.uuid ?? null },
+          skill: ctx.skill, round: ctx.dCombat?.round ?? 0,
+        });
+        rowAmount = Number(evaluateFormula(row.consume_amount ?? row.grant_amount, perTarget, 0)) || 0;
+      } catch (e) { warn(`skill-effects.consume_resource: per-target amount failed on "${row.effect_label}"`, e); }
+    }
+    if (rowAmount <= 0) continue;
     // IP spends honor the payer's own ip_reduction_value (Deep Pockets), never
     // below 1 — same rule as BD item-create. Per-target so each payer's mod applies.
-    const effAmount = resource === "ip" ? ipReducedAmount(amount, actor) : amount;
+    const effAmount = resource === "ip" ? ipReducedAmount(rowAmount, actor) : rowAmount;
     const cur = Number(actor.system?.props?.[def.prop] ?? 0) || 0;
     if (cur < effAmount) {
       log(`skill-effects.consume_resource: ${actor.name} has ${cur} ${resource}, needs ${effAmount}; ${onEmpty}`);
@@ -6226,7 +6255,7 @@ async function consumeResourceApply(row, ctx, { resource, targetRef, amount }) {
       }
     }
   }
-  log(`skill-effects.consume_resource: row "${row.effect_label}" debited ${amount} ${resource} from ${applied.length} actor(s)`);
+  log(`skill-effects.consume_resource: row "${row.effect_label}" debited ${applied.map((a) => Math.abs(Number(a.delta) || 0)).join("/") || 0} ${resource} from ${applied.length} actor(s)`);
   return { ok: true, kind: "consume_resource", applied };
 }
 

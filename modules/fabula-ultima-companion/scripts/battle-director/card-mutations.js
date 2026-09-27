@@ -444,7 +444,16 @@ async function applyRedirectTargetMutation(ctx, cand, row) {
         reactorToken: reactorTok,
         skill: carrier,
         actionTargetUuids: (ctx.ar?.targets ?? []).map((t) => t?.tokenUuid).filter(Boolean),
-        payload: { sourceActorUuid: ctx.ar?.attackerActorRef ?? null },
+        // The attacker's TOKEN too: `trigger_attacker` reads attackerTokenUuid and
+        // `trigger_actor` sourceTokenUuid, so without them a destination of "the
+        // caster" (Mirror: the spell is redirected onto whoever cast it) resolved
+        // no token and the redirect failed. Every earlier destination_ref pointed
+        // at a targeting label, which never read these.
+        payload: {
+          sourceActorUuid: ctx.ar?.attackerActorRef ?? null,
+          sourceTokenUuid: ctx.ar?.attacker?.tokenUuid ?? null,
+          attackerTokenUuid: ctx.ar?.attacker?.tokenUuid ?? null,
+        },
         isPassive: false,   // a real choice — prompt when ambiguous
         remotePrompt: ctx.remotePrompt ?? null,
       });

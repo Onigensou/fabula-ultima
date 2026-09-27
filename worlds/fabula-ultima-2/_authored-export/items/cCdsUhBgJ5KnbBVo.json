@@ -28,11 +28,203 @@
       "active_effect_config_table": {},
       "check_bonus": "0",
       "class": "Entropist",
-      "cost": "",
+      "cost": "10 MP",
       "damage_bonus": "0",
       "defense_target_type": "def",
       "description": "<div class=\"spell-card\"><p class=\"spell-desc\">You summon a vortex of chaotic energy. Roll your current <strong>Willpower</strong> die once for every 10 Mind Points spent while casting this spell, then keep the <strong>single</strong> die you prefer: the number on that die determines the effects of this spell:</p><table class=\"result-table\"><thead><tr><th>Roll</th><th>Effect</th></tr></thead><tbody><tr><td class=\"roll\"><strong>1</strong></td><td>You lose half of your current Hit Points and half of your current Mind Points.</td></tr><tr><td class=\"roll\"><strong>2–3</strong></td><td>Each creature present on the scene, including yourself, suffers <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></td></tr><tr><td class=\"roll\"><strong>4–6</strong></td><td>Each creature present on the scene, including yourself, suffers <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); text-shadow: rgb(255, 0, 0) 0px 0px 8px; padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></td></tr><tr><td class=\"roll\"><strong>7–8</strong></td><td>Choose up to three creatures you can see: each of them recovers 50 Hit Points and also recovers from all status effects.</td></tr><tr class=\"hi\"><td class=\"roll\"><strong>9+</strong></td><td><p>Choose any number of creatures you can see: each of them suffers 30 damage.<br>The damage type is determined randomly by rolling a <strong>d6</strong>:</p><ul class=\"d6-list\"><li><span class=\"n\">1.</span> <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); text-shadow: rgb(168, 255, 187) 0px 0px 4px; padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></li><li><span class=\"n\">2.</span> <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></li><li><span class=\"n\">3.</span> <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></li><li><span class=\"n\">4.</span> <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></li><li><span class=\"n\">5.</span> <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></li><li><span class=\"n\">6.</span> <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></li></ul></td></tr></tbody></table></div>",
       "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "chain_steps": "g_prompt, g_cost, g_r1, g_r2, g_menu",
+          "effect_kind": "chain",
+          "effect_label": "g_root"
+        },
+        "1": {
+          "effect_kind": "prompt_number",
+          "effect_label": "g_prompt",
+          "prompt_label": "Gamble — spend Mind Points (one Willpower die per 10 MP)",
+          "prompt_max": "min(20, CUR_MP)",
+          "prompt_min": "10",
+          "prompt_step": "10",
+          "prompt_var": "gamble_mp"
+        },
+        "2": {
+          "cost_amount": "VAR_GAMBLE_MP - 10",
+          "cost_operation": "add",
+          "cost_resource": "mp",
+          "effect_kind": "adjust_cost",
+          "effect_label": "g_cost"
+        },
+        "3": {
+          "dice_count": "1",
+          "dice_faces": "WLP_CURRENT_DIE",
+          "effect_kind": "roll_dice",
+          "effect_label": "g_r1",
+          "prompt_var": "g1",
+          "roll_interactive": false
+        },
+        "4": {
+          "condition_formula": "VAR_GAMBLE_MP >= 20",
+          "dice_count": "1",
+          "dice_faces": "WLP_CURRENT_DIE",
+          "effect_kind": "roll_dice",
+          "effect_label": "g_r2",
+          "prompt_var": "g2",
+          "roll_interactive": false
+        },
+        "5": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "g_menu",
+          "menu_hide_disabled": true,
+          "menu_option_labels": "1 — lose half HP & MP|2–3 — everyone Poisoned|4–6 — everyone Slow|7–8 — up to three recover 50 HP & all statuses|9+ — any number suffer 30 damage of a random type",
+          "menu_option_refs": "g_b1, g_b23, g_b46, g_b78, g_b9",
+          "menu_pick_count": "1",
+          "menu_subtitle": "Only the results you rolled are offered",
+          "menu_title": "Gamble — keep one die"
+        },
+        "6": {
+          "chain_steps": "g_b1_hp, g_b1_mp",
+          "condition_formula": "VAR_G1 == 1 || VAR_G2 == 1",
+          "effect_kind": "chain",
+          "effect_label": "g_b1"
+        },
+        "7": {
+          "consume_amount": "floor(CUR_HP / 2)",
+          "consume_resource": "hp",
+          "effect_kind": "consume_resource",
+          "effect_label": "g_b1_hp",
+          "on_empty": "drain",
+          "target_ref": "self"
+        },
+        "8": {
+          "consume_amount": "floor(CUR_MP / 2)",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "g_b1_mp",
+          "on_empty": "drain",
+          "target_ref": "self"
+        },
+        "9": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Poisoned",
+          "condition_formula": "(VAR_G1 >= 2 && VAR_G1 <= 3) || (VAR_G2 >= 2 && VAR_G2 <= 3)",
+          "effect_kind": "apply_ae",
+          "effect_label": "g_b23",
+          "target_ref": "all_combatants"
+        },
+        "10": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Slow",
+          "condition_formula": "(VAR_G1 >= 4 && VAR_G1 <= 6) || (VAR_G2 >= 4 && VAR_G2 <= 6)",
+          "effect_kind": "apply_ae",
+          "effect_label": "g_b46",
+          "target_ref": "all_combatants"
+        },
+        "11": {
+          "chain_steps": "g_b78_pick, g_b78_heal, g_b78_clean",
+          "condition_formula": "(VAR_G1 >= 7 && VAR_G1 <= 8) || (VAR_G2 >= 7 && VAR_G2 <= 8)",
+          "effect_kind": "chain",
+          "effect_label": "g_b78"
+        },
+        "12": {
+          "auto_target": "confirm",
+          "candidate_source": "combat",
+          "count": "3",
+          "effect_kind": "targeting",
+          "effect_label": "g_b78_pick",
+          "mode": "up_to"
+        },
+        "13": {
+          "effect_kind": "grant",
+          "effect_label": "g_b78_heal",
+          "grant_amount": "50",
+          "grant_resource": "hp",
+          "target_ref": "g_b78_pick"
+        },
+        "14": {
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "g_b78_clean",
+          "filter_tag": "debuff",
+          "target_ref": "g_b78_pick"
+        },
+        "15": {
+          "chain_steps": "g_b9_pick, g_b9_el, g_b9_air, g_b9_bolt, g_b9_dark, g_b9_earth, g_b9_fire, g_b9_poison",
+          "condition_formula": "VAR_G1 >= 9 || VAR_G2 >= 9",
+          "effect_kind": "chain",
+          "effect_label": "g_b9"
+        },
+        "16": {
+          "auto_target": "confirm",
+          "candidate_source": "combat",
+          "count": "99",
+          "effect_kind": "targeting",
+          "effect_label": "g_b9_pick",
+          "mode": "up_to"
+        },
+        "17": {
+          "dice_count": "1",
+          "dice_faces": "6",
+          "effect_kind": "roll_dice",
+          "effect_label": "g_b9_el",
+          "prompt_var": "gelem",
+          "roll_interactive": false
+        },
+        "18": {
+          "condition_formula": "VAR_GELEM == 1",
+          "damage_amount": "30",
+          "damage_cause": "damage",
+          "damage_element": "air",
+          "effect_kind": "deal_damage",
+          "effect_label": "g_b9_air",
+          "target_ref": "g_b9_pick"
+        },
+        "19": {
+          "condition_formula": "VAR_GELEM == 2",
+          "damage_amount": "30",
+          "damage_cause": "damage",
+          "damage_element": "bolt",
+          "effect_kind": "deal_damage",
+          "effect_label": "g_b9_bolt",
+          "target_ref": "g_b9_pick"
+        },
+        "20": {
+          "condition_formula": "VAR_GELEM == 3",
+          "damage_amount": "30",
+          "damage_cause": "damage",
+          "damage_element": "dark",
+          "effect_kind": "deal_damage",
+          "effect_label": "g_b9_dark",
+          "target_ref": "g_b9_pick"
+        },
+        "21": {
+          "condition_formula": "VAR_GELEM == 4",
+          "damage_amount": "30",
+          "damage_cause": "damage",
+          "damage_element": "earth",
+          "effect_kind": "deal_damage",
+          "effect_label": "g_b9_earth",
+          "target_ref": "g_b9_pick"
+        },
+        "22": {
+          "condition_formula": "VAR_GELEM == 5",
+          "damage_amount": "30",
+          "damage_cause": "damage",
+          "damage_element": "fire",
+          "effect_kind": "deal_damage",
+          "effect_label": "g_b9_fire",
+          "target_ref": "g_b9_pick"
+        },
+        "23": {
+          "condition_formula": "VAR_GELEM == 6",
+          "damage_amount": "30",
+          "damage_cause": "damage",
+          "damage_element": "poison",
+          "effect_kind": "deal_damage",
+          "effect_label": "g_b9_poison",
+          "target_ref": "g_b9_pick"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": true,
@@ -42,14 +234,17 @@
       "level": "1",
       "max_level": "1",
       "name": "Gamble",
+      "on_activate_effect_ref": "g_root",
       "optional_params": {},
+      "pre_activate_effect_ref": "g_prompt",
+      "reaction_config_table": {},
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_default": "",
       "skill_animation_mode": "default",
       "skill_information": "",
       "skill_range": "",
-      "skill_target": "Special",
+      "skill_target": "Self",
       "skill_type": "Spell",
       "type_damage": "",
       "use_optional_params": false

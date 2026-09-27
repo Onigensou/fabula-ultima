@@ -163,15 +163,35 @@
       "system": {
         "container": null,
         "props": {
+          "action_command": "spell",
           "check_bonus": "0",
           "class": "Entropist",
-          "cost": "20",
-          "damage_bonus": "0",
+          "cost": "20 MP",
+          "custom_logic_action": "",
+          "damage_bonus": "",
+          "defense_target_type": "mdef",
           "description": "<p>You invoke doom on your foe, turning strength into frailty. The target loses an amount<br>of Hit Points equal to <strong>【20 + half the target's level】</strong>.</p>",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "consume_amount": "20 + floor(TARGET_LEVEL / 2)",
+              "consume_can_defeat": true,
+              "consume_resource": "hp",
+              "effect_kind": "consume_resource",
+              "effect_label": "omega_loss",
+              "on_empty": "drain",
+              "target_ref": "hit_action_targets"
+            }
+          },
+          "isCheck": true,
+          "isOffensiveSpell": true,
           "name": "Omega",
+          "on_activate_effect_ref": "omega_loss",
+          "reaction_config_table": {},
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
+          "skill_target": "One creature",
+          "skill_type": "Spell",
           "target": "One creature",
           "type_damage": ""
         },

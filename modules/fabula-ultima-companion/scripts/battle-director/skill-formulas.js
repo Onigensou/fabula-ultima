@@ -591,6 +591,21 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // off-turn bonuses — Viper Bone deals +5 "as long as it's not your turn",
       // authored as `IS_MY_TURN == 0`. Returns 0 out of combat / between turns,
       // so an off-turn gate reads as true there; a `== 1` gate fails closed.
+      // Turns this actor still has THIS round (the DirectorCombat counter). RAW
+      // "an ally who has yet to take a turn during this round" (Stolen Time,
+      // Ouroboros Dance) is `TURNS_REMAINING > 0`; take_turn_next itself GRANTS
+      // a turn when none remain, so the filter is the only thing that enforces
+      // it. 0 outside a conflict.
+      case "TURNS_REMAINING": {
+        const dc = globalThis.__fudActiveDCombat ?? null;
+        const mine = String(actor?.id ?? "").trim();
+        if (!dc || !mine) return 0;
+        // The test harness's synthetic combat answers through turnsRemainingFor
+        // (it deliberately publishes no `combatants`); a real DirectorCombat does not.
+        if (typeof dc.turnsRemainingFor === "function") return Math.max(0, Number(dc.turnsRemainingFor(mine)) || 0);
+        const c = (dc.combatants ?? []).find((x) => String(x?.actorId ?? "").trim() === mine);
+        return Math.max(0, Number(c?.turnsRemaining ?? 0) || 0);
+      }
       case "IS_MY_TURN": {
         const cur = globalThis.__fudActiveDCombat?.current ?? null;
         const mine = String(actor?.id ?? "").trim();

@@ -683,6 +683,7 @@
             },
             "3": {
               "auto_confirm_when_obvious": false,
+              "auto_target": "skip",
               "candidate_source": "combat",
               "category": "ally",
               "count": "SL",

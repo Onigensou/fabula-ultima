@@ -593,6 +593,16 @@ async function resolveTargetingRow(row, ctx) {
   // We only land here when the player is actively deciding and
   // `auto_confirm_when_obvious` didn't resolve to one.
   const n = mode === "up_to" ? Math.min(count, pool.length) : Math.min(count, pool.length);
+  // "Up to N" is a CHOICE even when the pool is no larger than N — the player
+  // may take fewer (Gamble: "choose any number of creatures"; Potion Rain).
+  // Treating it as assured locked in the whole pool, allies and caster
+  // included. Only the silent auto-target path still takes everyone.
+  if (mode === "up_to" && pool.length <= n && !autoTarget) {
+    const picked = await promptBdPick({ row, pool, n, mode, ctx });
+    if (picked?.cancelled) return { ok: false, cancelled: true, reason: "cancelled", tokens: [] };
+    if (picked?.ok && picked.tokens?.length) return { ok: true, tokens: picked.tokens };
+    // Picker unavailable (no DOM / harness): fall through to the assured set.
+  }
   if (pool.length <= n) {
     // No genuine choice (candidates ≤ needed) — assured. Auto-target governs
     // whether to take it silently (GM / "skip") or lock-confirm it (player /
