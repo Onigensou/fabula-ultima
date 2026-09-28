@@ -8,6 +8,74 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "ZjXmA1MvygI3whxm",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790611312759,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Brainwave Clock:</em> Your accumulated psychic charge (0–4 sections), filled and spent by Esper gifts.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "ZjXmA1MvygI3whxm",
+          "originalParentId": "xsFQ7dGyfH0X3i2t",
+          "originalUuid": "Item.xsFQ7dGyfH0X3i2t.ActiveEffect.ZjXmA1MvygI3whxm"
+        },
+        "fabula-ultima-companion": {
+          "category": "Other",
+          "chargeKey": "brainwave",
+          "charges": 0,
+          "chargesMax": 4,
+          "hudResourceColor": "#a06bff",
+          "lifetimeMode": "persistent_counter",
+          "reactionConfig": {
+            "effect_table": {},
+            "reaction_config_table": {}
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/DiabolicEsperPassive3.png",
+      "name": "Brainwave Clock",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-brainwave-clock"
+      ],
+      "system": {
+        "tags": [
+          "resource"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -30,15 +98,97 @@
       "damage_bonus": "0",
       "description": "<ul><li><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Trigger</span></strong></a></span> After you cover an ally with the <strong>【🛡️Guard】</strong> action</li></ul><p>That ally recovers an amount of <strong>Mind Points</strong> equal to <strong>[10 + (the number of filled sections in your Brainwave Clock, multiplied by 5)]</strong>. If that ally is your <strong>focus</strong>, they heal from a single status effect of their choice: <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span>, <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span>, or <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span>.</p>",
       "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "chain_steps": "rp_pay,rp_mp,rp_cure,rp_fill",
+          "effect_kind": "chain",
+          "effect_label": "rp_go"
+        },
+        "1": {
+          "consume_amount": "max(5, AE_CHARGES_BRAINWAVE_CLOCK * 5)",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "rp_pay",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "2": {
+          "effect_kind": "grant",
+          "effect_label": "rp_mp",
+          "grant_amount": "10 + AE_CHARGES_BRAINWAVE_CLOCK * 5 + (CHAR_LEVEL >= 20) * 10 + (CHAR_LEVEL >= 40) * 10 + ANY_TARGET_HAS_MY_FOCUS * SL_COGNITIVE_FOCUS * 2",
+          "grant_resource": "mp",
+          "target_ref": "action_targets"
+        },
+        "3": {
+          "condition_formula": "ANY_TARGET_HAS_MY_FOCUS == 1 && ANY_TARGET_HAS_DAZED + ANY_TARGET_HAS_ENRAGED + ANY_TARGET_HAS_SHAKEN >= 1",
+          "effect_kind": "open_action_menu",
+          "effect_label": "rp_cure",
+          "menu_option_labels": "Dazed|Enraged|Shaken",
+          "menu_option_refs": "rp_rm_dazed,rp_rm_enraged,rp_rm_shaken",
+          "menu_pick_count": "1",
+          "menu_responder": "target",
+          "menu_subtitle": "Recover from one status of your choice",
+          "menu_title": "Reassuring Presence"
+        },
+        "4": {
+          "ae_template_ref": "Dazed",
+          "condition_formula": "ANY_TARGET_HAS_MY_FOCUS == 1 && ANY_TARGET_HAS_DAZED == 1",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "rp_rm_dazed",
+          "target_ref": "action_targets"
+        },
+        "5": {
+          "ae_template_ref": "Enraged",
+          "condition_formula": "ANY_TARGET_HAS_MY_FOCUS == 1 && ANY_TARGET_HAS_ENRAGED == 1",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "rp_rm_enraged",
+          "target_ref": "action_targets"
+        },
+        "6": {
+          "ae_template_ref": "Shaken",
+          "condition_formula": "ANY_TARGET_HAS_MY_FOCUS == 1 && ANY_TARGET_HAS_SHAKEN == 1",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "rp_rm_shaken",
+          "target_ref": "action_targets"
+        },
+        "7": {
+          "ae_duplicate_mode": "add_charges",
+          "ae_initial_charges": "1",
+          "ae_initial_charges_max": "4",
+          "ae_template_ref": "Brainwave Clock",
+          "effect_kind": "apply_ae",
+          "effect_label": "rp_fill",
+          "target_ref": "rp_self"
+        },
+        "8": {
+          "candidate_source": "self",
+          "effect_kind": "targeting",
+          "effect_label": "rp_self"
+        }
+      },
       "heroic_requirement": "",
+      "implementation_note": "Automated: after you cover an ally with Guard you may pay max(5, 5 x Brainwave sections) MP; the ally recovers 10 + 5 x sections MP (+10 at level 20, +20 at level 40; + SL x 2 of Cognitive Focus when the ally is your focus), then 1 section fills. If the ally is your focus and is Dazed / Enraged / Shaken, a cure menu goes to the ally's online owner (else yours / the GM).",
       "isCheck": false,
       "isFacet": true,
       "isHeroic": false,
       "isOffensiveSpell": false,
+      "isReaction": true,
       "level": "1",
       "max_level": "1",
       "name": "Reassuring Presence",
       "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "DID_COVER_ALLY == 1",
+          "reaction_effect_ref": "rp_go",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_guards"
+        }
+      },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",

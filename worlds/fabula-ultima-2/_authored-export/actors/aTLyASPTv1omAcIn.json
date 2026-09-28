@@ -454,7 +454,19 @@
           "defense_target_type": "def",
           "description": "<p>When you cast an【⚡Offensive Spell】 targeting <strong>a single creature</strong>, if the spell has a <strong>total Mind Point cost of 【SL × 10】 or lower</strong> and you have one or more <strong>bow, brawling, dagger, flail, spear </strong>or<strong> sword</strong> weapons equipped, you may choose one of those weapons. If you do, your Magic Check for the spell will use the chosen weapon's Accuracy Check formula</p><p>For instance, the Magic Check for an Elementalist spell cast through a 【<strong>bronze sword】</strong> will be <strong>【DEX + MIG】 +1</strong> instead of <strong>【INS + WLP】</strong>.</p>",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "check_bonus_formula": "",
+              "condition_formula": "ACTION_IS_OFFENSIVE_SPELL == 1 && ACTION_TARGET_COUNT == 1 && ACTION_COST_MP <= SL * 10",
+              "effect_kind": "check_die_swap",
+              "effect_label": "spellblade_swap",
+              "swap_mode": "ask",
+              "swap_to_attribute": "WEAPON",
+              "swap_weapon_categories": "bow,brawling,dagger,flail,spear,sword"
+            }
+          },
           "heroic_requirement": "",
+          "implementation_note": "Automated: on a single-target offensive spell whose total MP cost is SL x 10 or less, you may roll the Magic Check with an equipped bow / brawling / dagger / flail / spear / sword weapon's Accuracy formula and bonus (picker before the roll).",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -464,6 +476,7 @@
           "max_level": "4",
           "name": "Spellblade",
           "optional_params": {},
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",

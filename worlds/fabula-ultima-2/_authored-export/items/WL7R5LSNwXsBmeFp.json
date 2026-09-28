@@ -33,6 +33,7 @@
       "description": "<p>You can communicate telepathically with any conscious ally within 1 travel day of you; you are able to hear each other for the sake of <strong>Skills</strong> and effects.</p>\n<p>You gain the ability to perform <strong>Rituals</strong> of the <strong>Ritualism</strong> discipline. Additionally, you may use <strong>Ritualism</strong> to transport creatures in and out of the soul network, and to gain information and track entities inside the soul network.</p>\n",
       "duration": "",
       "heroic_requirement": "",
+      "implementation_note": "GM-adjudicated, no automation: telepathic contact with any conscious ally within 1 travel day (they count as able to hear you for Skills/effects); you may perform Ritualism rituals, including moving creatures in/out of the soul network and tracking entities inside it.",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,

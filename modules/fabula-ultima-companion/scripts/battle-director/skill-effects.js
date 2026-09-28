@@ -6352,6 +6352,13 @@ async function consumeResourceApply(row, ctx, { resource, targetRef, amount }) {
             tokenUuid: token.uuid ?? token.document?.uuid ?? null,
             resource: "hp", direction: "loss", amount: Math.abs(delta),
             cause: String(row.consume_cause ?? "hazard").trim().toLowerCase() || "hazard",
+            // WHO caused the loss — an AE rider's applier, else the creature
+            // running this chain (a "you lose X HP" skill/curse). Mirrors
+            // deal_damage's causeSource so reaction_damage_source / cause_actor
+            // (Psychic Backlash: "an enemy causes you to lose HP") see the enemy.
+            source: ctx.appliedByActorUuid
+              ? { actorUuid: ctx.appliedByActorUuid, tokenUuid: ctx.appliedByTokenUuid ?? null }
+              : (ctx.reactorActor?.uuid ? { actorUuid: ctx.reactorActor.uuid, tokenUuid: ctx.reactorToken?.uuid ?? ctx.reactorToken?.document?.uuid ?? null } : {}),
             originLabel: ctx.sourceLabel ?? ctx.skill?.name ?? row.effect_label ?? "Loss",
             originUuid: ctx.sourceUuid ?? ctx.skill?.uuid ?? null,
           });
@@ -8479,8 +8486,58 @@ function resolveEnemyPlayerUserIds(casterActor, casterToken = null) {
 // null. Caller maps values back to its own option list. `row` supplies
 // menu_responder + effect_label (logging); the same `listArgs` renders identically
 // local or remote (remote-pick relays multiSelect/maxSelect).
+// A non-reactor responder (menu_responder:"target") who declines returns this
+// instead of null, so selectMenuPicks reports an EMPTY pick rather than a cancel.
+// MENU_DECLINED_PICK is the label recorded for it in the apply-click picks, so
+// RESOLVE's replay also chooses nothing instead of re-prompting.
+const MENU_TARGET_DECLINED = Object.freeze({ declined: true });
+export const MENU_DECLINED_PICK = "__declined__";
 async function promptMenuList(listArgs, ctx, row, { allowEnemyResponder = false } = {}) {
   const responder = String(row.menu_responder ?? "").trim().toLowerCase();
+  // menu_responder:"target" — the action's first TARGET's online owner picks
+  // (Reassuring Presence: the covered ally heals a status "of their choice").
+  // No online non-GM owner (NPC target, offline player) → fall through to the
+  // reactor's own routing below, so the GM / reactor owner still gets the menu.
+  if (responder === "target") {
+    try {
+      const first = (Array.isArray(ctx?.actionTargetUuids) ? ctx.actionTargetUuids : [])[0] ?? null;
+      const doc = first ? fromUuidSync(String(first)) : null;
+      const tActor = doc?.actor ?? doc ?? null;
+      // The player whose assigned CHARACTER is the target wins; only then any
+      // other active owner (id order). A party-shared actor (Zarg is owned by
+      // every player) must not hand one player's choice to whoever sorts first.
+      const tUuid = tActor?.uuid ?? null;
+      const owners = (game.users?.contents ?? [])
+        .filter((u) => !u.isGM && u.active && (() => { try { return tActor?.testUserPermission?.(u, "OWNER"); } catch { return false; } })())
+        .sort((a, b) => {
+          const ac = (tUuid && a.character?.uuid === tUuid) ? 0 : 1;
+          const bc = (tUuid && b.character?.uuid === tUuid) ? 0 : 1;
+          return ac - bc || a.id.localeCompare(b.id);
+        });
+      const director = ctx?.director
+        ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.()
+        ?? null;
+      const channel = director?.intentChannel ?? ctx?.remotePrompt?.channel ?? null;
+      if (owners.length && channel) {
+        const { remotePick, REMOTE_PICK_KINDS } = await import("./remote-pick.js");
+        log(`open_action_menu: routing "${row.effect_label}" to the target's owner ${owners[0].name}`);
+        const picked = await remotePick({
+          channel, targetUserId: owners[0].id, combatId: director?.combatId ?? ctx?.remotePrompt?.combatId ?? null,
+          kind: REMOTE_PICK_KINDS.LIST, onTimeoutValue: null, spec: listArgs,
+        });
+        // The target closing / ignoring THEIR choice is "chose nothing" — it must
+        // never cancel the REACTOR's accepted reaction (which would revert the
+        // whole thing: no MP paid, none recovered). Callers map this to an empty,
+        // non-cancelled pick.
+        if (picked == null) {
+          log(`open_action_menu: "${row.effect_label}" target declined / timed out — no option chosen`);
+          return MENU_TARGET_DECLINED;
+        }
+        return picked;
+      }
+      log(`open_action_menu: "${row.effect_label}" target responder has no online owner — reactor routing`);
+    } catch (e) { warn(`open_action_menu: target-responder routing threw for "${row.effect_label}" — reactor routing`, e); }
+  }
   if (allowEnemyResponder && responder === "enemy" && !ctx?.remotePrompt) {
     const director = ctx.director
       ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.()
@@ -8578,6 +8635,7 @@ async function selectMenuPicks(row, ctx, options) {
     // Enemy-responder is excluded above (_enemyResponder guard) — this menu is always
     // the reactor's OWN pick → owner-remote or GM-local via the shared router.
     const picked = await promptMenuList(listArgs, ctx, row, { allowEnemyResponder: false });
+    if (picked === MENU_TARGET_DECLINED) return { chosenIndices: [], cancelled: false, declined: true };
     if (picked == null) return { chosenIndices: [], cancelled: true };
     // multiSelect resolves to an array of chosen `value`s (= local option indices,
     // since menuOptionsToRows sets value=i). Filter to enabled + distinct, cap at N.
@@ -8613,6 +8671,11 @@ async function selectMenuPicks(row, ctx, options) {
       const cursor = ctx._harnessPicksCursor ?? 0;
       ctx._harnessPicksCursor = cursor + 1;
       const next = queue[cursor];
+      // Replay of a target responder who chose nothing at apply-click.
+      if (next === MENU_DECLINED_PICK) {
+        log(`skill-effects.open_action_menu: replaying a declined pick for "${row.effect_label}" — nothing chosen`);
+        return { chosenIndices, cancelled: false, declined: true };
+      }
       if (typeof next === "number" && Number.isFinite(next)) idx = next;
       else if (typeof next === "string") {
         const want = next.trim().toLowerCase();
@@ -8650,6 +8713,7 @@ async function selectMenuPicks(row, ctx, options) {
         options: menuOptionsToRows(remOptions),
         zIndex: 97,  // above the action card (95) during RESOLVE
       }, ctx, row, { allowEnemyResponder: true });
+      if (pickedLocal === MENU_TARGET_DECLINED) return { chosenIndices, cancelled: false, declined: true };
       if (pickedLocal == null) {
         if (pick === 0) return { chosenIndices: [], cancelled: true };
         // Capture mode (pre_activate wizard): a multi-pick menu steps BACK one
@@ -8845,8 +8909,11 @@ export async function previewReactionMenu({ casterActor, candidate, payload, dCo
   for (const menuRow of menuRows) {
     const { options, optionRows } = buildMenuOptions(menuRow, ctx);
     if (!options.length) continue;
-    const { chosenIndices, cancelled } = await selectMenuPicks(menuRow, ctx, options);
+    const { chosenIndices, cancelled, declined } = await selectMenuPicks(menuRow, ctx, options);
     if (cancelled) return { ok: true, cancelled: true, hasMenu: true, picks: [], effects: [], damageNullified };
+    // A target responder chose nothing: record the sentinel so RESOLVE's replay
+    // (menuPicks) also chooses nothing instead of prompting again.
+    if (declined && !chosenIndices.length) { chosenLabels.push(MENU_DECLINED_PICK); continue; }
     for (const idx of chosenIndices) {
       chosenLabels.push(options[idx].label);
       // describeMenuOptionEffect now returns an ARRAY of rider descriptors
@@ -9430,7 +9497,14 @@ async function applyOpenActionMenuEffect(row, ctx) {
 
   // Select the option indices (pickCount-driven; harness / cached / passive /
   // interactive). Shared with the apply-click preview (previewReactionMenu).
-  const { chosenIndices, cancelled } = await selectMenuPicks(row, ctx, options);
+  const { chosenIndices, cancelled, declined } = await selectMenuPicks(row, ctx, options);
+  // A target responder (menu_responder:"target") chose nothing: the menu row
+  // SUCCEEDS with no option applied, so the reactor's chain carries on
+  // (Reassuring Presence still fills its Brainwave section).
+  if (declined && !cancelled && !chosenIndices.length) {
+    log(`skill-effects.open_action_menu: row "${row.effect_label}" — responder chose nothing; chain continues`);
+    return { ok: true, kind: "open_action_menu", applied: [], reason: "declined", selectedIndices: [], selectedLabels: [], nestedResults: [], abort: false };
+  }
   if (cancelled) {
     // Backing out of THIS menu ends its step-back episode too (cap is per menu-open).
     if (ctx) delete ctx[`_menuReprompt:${row.effect_label}`];

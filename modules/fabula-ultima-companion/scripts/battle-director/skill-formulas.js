@@ -1638,6 +1638,19 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "SUBJECT_IS_ALLY":    return subjectDispositionVs(actor, payload) === "ally" ? 1 : 0;
       case "SUBJECT_IS_ENEMY":   return subjectDispositionVs(actor, payload) === "enemy" ? 1 : 0;
       case "SUBJECT_IS_NEUTRAL": return subjectDispositionVs(actor, payload) === "neutral" ? 1 : 0;
+      // 1 when the trigger SUBJECT is an NPC, whatever side it is on — an enemy,
+      // a neutral, or an NPC guest ally. Same PC/NPC discriminator as
+      // isAdvancementSubject (advancement-subject.js): an NPC carries `npc_rank`
+      // or `species`, a PC carries neither. Reads the raw prop, deliberately NOT
+      // speciesOf()'s override flag (see the note there). Clairvoyance: "when an
+      // NPC becomes your focus". Unresolvable subject → 0 (fails closed).
+      case "SUBJECT_IS_NPC": {
+        const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+        const subject = subjectUuid ? _resolveActorByUuidSync(subjectUuid) : null;
+        if (!subject) return 0;
+        const sp = subject.system?.props ?? {};
+        return (String(sp.npc_rank ?? "").trim() || String(sp.species ?? "").trim()) ? 1 : 0;
+      }
       default:
         // Dynamic VAR_<NAME> — a chain-local variable captured earlier in the
         // SAME effect chain. `prompt_number` stores the player's entered amount

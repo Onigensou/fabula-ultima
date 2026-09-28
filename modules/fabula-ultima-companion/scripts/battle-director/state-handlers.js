@@ -3600,6 +3600,11 @@ const Target = {
       // 3) Re-check affordability with the actual target count (×T tokens).
       const parsedCost = parseSkillCost(String(skill.system?.props?.cost ?? ""));
       let costMap = resolveCost(parsedCost, { actor: attackerActor, targetCount: targets.length });
+      // The spell's MP cost as composed for the real target count, captured
+      // BEFORE any substitution / waiver below (Vismagus pays HP instead, a
+      // cost-waiver zeroes it). RAW "total MP cost" gates (Spellblade) read
+      // this, not what was finally debited.
+      const costMpPreSubstitution = Number(costMap.get?.("mp") ?? 0) || 0;
 
       // 3a) Free-action MP cap — RAW-correct ("total MP cost ≤ N") enforcement.
       // The picker dims a spell by its MINIMUM (targetCount=1) cost, but a
@@ -3795,6 +3800,7 @@ const Target = {
         targets,
         costSerialized: serializeCostMap(costMap),
         rawCost: displayCost,
+        costMpPreSubstitution,
         actionIntent: intent,
         // Vismagus alt-cost flag — resolveAction reads this and
         // suppresses self-heal when the spell would heal the caster
@@ -4673,9 +4679,33 @@ const Compute = {
         // allowDieSwap lets a Psychokinesis-style check_die_swap replace one die
         // (e.g. → WLP) pre-roll; the swapped attrs flow into the profile + card.
         const liveActor = await fromUuid(attacker.actorUuid).catch(() => null);
-        const c = await rollCheck({ actor: liveActor, A1: ar.rolledA1 || "INS", A2: ar.rolledA2 || "INS", allowDieSwap: true, director });
+        // The action a check_die_swap condition_formula is judged against
+        // (Spellblade: "an offensive spell with a single target and a TOTAL MP
+        // cost ≤ SL × N"). Every field a gate reads MUST be stamped — a missing
+        // one reads 0 and a `<=` gate then passes permissively. costMp is the
+        // TOTAL: the printed cost (ar.costSerialized, resolved at TARGET for the
+        // real target count) folded with this skill's own pre-composed adjust_cost.
+        const dieSwapPayload = {
+          actionKind: ar.kind ?? null,
+          actionSkillType: String(ar.skillType ?? "").toLowerCase(),
+          actionIsCheck: !!ar.isCheck,
+          targets: Array.isArray(allTargets) ? allTargets : [],
+          // Pre-substitution MP (TARGET's costMpPreSubstitution) so a Vismagus
+          // HP-paid or waived spell is still judged by its real MP price.
+          costMp: Number(computeEffectiveCost(
+            { ...(ar.costSerialized ?? {}), mp: Number(ar.costMpPreSubstitution ?? ar.costSerialized?.mp ?? 0) || 0 },
+            preCostOverride ? mergeCostOverrides(ar.costOverride ?? null, preCostOverride) : (ar.costOverride ?? null))?.mp ?? 0) || 0,
+          round: director.dCombat?.round ?? 0,
+        };
+        const c = await rollCheck({ actor: liveActor, A1: ar.rolledA1 || "INS", A2: ar.rolledA2 || "INS", allowDieSwap: true, director, actionPayload: dieSwapPayload });
         dice = { rA: c.rA, rB: c.rB };
-        if (c.dieSwap) arForProfile = { ...ar, rolledA1: c.A1, rolledA2: c.A2, dieSwap: c.dieSwap };
+        if (c.dieSwap) {
+          arForProfile = { ...ar, rolledA1: c.A1, rolledA2: c.A2, dieSwap: c.dieSwap };
+          // WEAPON pair mode also carries the weapon's accuracy bonus (+ the
+          // skill's own Check Bonus formula) — folded into the profile's bonus.
+          if (c.checkBonusDelta) arForProfile.checkBonus = (Number(ar.checkBonus) || 0) + c.checkBonusDelta;
+        }
+        log(`Skill COMPUTE: die-swap payload kind=${dieSwapPayload.actionKind} type=${dieSwapPayload.actionSkillType} isCheck=${dieSwapPayload.actionIsCheck} targets=${dieSwapPayload.targets.length} costMp=${dieSwapPayload.costMp}${c.checkBonusDelta ? ` weaponBonus=${c.checkBonusDelta}` : ""}`);
       }
       // Damage LIFT for menu-picked invocations: when the chosen option deals flat
       // damage (a deal_damage row), lift its element + scaled amount onto the primary
@@ -7731,6 +7761,17 @@ const StandaloneReactionWindow = {
         // already-decided asks deduped by scope idempotency). Runs every entry.
         const spawned = await dispatchStandaloneTrigger({ director, trigger, payload, phase: "ask" });
         if (spawned) log(`STANDALONE_REACTION_WINDOW: ${trigger} ask pass dispatched ${spawned} menu(s)`);
+        // Settle what the ASK pass itself queued. The forced-pass settle above has
+        // already run, so an event a player's ask pick produced here (Cognitive
+        // Focus applied at turn_start → creature_status_applied → Clairvoyance)
+        // used to wait for the next settle — the acting creature's own RESOLVE,
+        // i.e. AFTER they had acted. Only runs when the ask pass left events.
+        if (Array.isArray(ctx._postResolveTriggers) && ctx._postResolveTriggers.length) {
+          try {
+            const { settleInstance } = await import("./instance-settle.js");
+            await settleInstance(director, { reason: `${trigger}:ask` });
+          } catch (e) { warn(`STANDALONE_REACTION_WINDOW: ${trigger} post-ask settleInstance threw`, e); }
+        }
       } else {
         const spawned = await dispatchStandaloneTrigger({ director, trigger, payload });
         if (spawned) log(`STANDALONE_REACTION_WINDOW: ${trigger} dispatched ${spawned} reactor menu(s)`);

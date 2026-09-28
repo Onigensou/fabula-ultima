@@ -208,6 +208,16 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // next reloadTemplate — the loop went dark with no error.
   textCol("menu_dynamic_source", "Dynamic Options", { tooltip: "Build the option list at runtime instead of from Option Refs: arcanum (the caster's bound Arcana — Bind and Summon) or clock (live clocks).", vis: OAM_VIS }),
   textCol("summon_cost_formula", "Summon Cost", { tooltip: "Dynamic source arcanum: MP cost formula to summon (default 40). Free while an Arcanum is merged.", vis: OAM_VIS }),
+  // Who answers the menu. Engine-read (promptMenuList) since Cruel Ultimatum but
+  // never declared, so the next reloadTemplate would prune it. "target" routes the
+  // pick to the online owner of the action's first target (Reassuring Presence:
+  // the covered ally chooses the status "of their choice"); no online owner ->
+  // the reactor's own routing. Blank = the reactor (owner-remote or GM-local).
+  selectCol("menu_responder", "Menu Responder", [
+    { key: "",       value: "Reactor (default)" },
+    { key: "target", value: "Target: the action target's owner picks" },
+    { key: "enemy",  value: "Enemy: the victim side picks (first answer wins)" },
+  ], { tooltip: "open_action_menu: who picks. Blank = the reacting creature's owner (GM for NPCs). target = the online owner of the first action target (falls back to blank). enemy = players on the opposite side, first answer wins.", vis: OAM_VIS }),
   checkboxCol("menu_hide_disabled", "Hide Disabled", { tooltip: "Hide every disabled (gate-failed) option instead of showing it greyed. Default off = show greyed (per-option disable_ui_type). Turn on for large gated menus (e.g. Invocation) where 10+ unavailable options would be noise.", vis: OAM_VIS }),
   // free-action grant config (open_action_menu free_mode — High Speed, Hawkeye
   // option b, On the Hunt). free_mode + allowed_types were historically added by
@@ -416,7 +426,9 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
     { key: "INS", value: "INS — Insight" },
     { key: "MIG", value: "MIG — Might" },
     { key: "DEX", value: "DEX — Dexterity" },
-  ], { tooltip: "check_die_swap: the Attribute to replace one accuracy-check die with (its die size).", vis: CHECK_DIE_SWAP_VIS, defaultValue: "WLP" }),
+    { key: "WEAPON", value: "WEAPON — both dice from a chosen equipped weapon (Spellblade)" },
+  ], { tooltip: "check_die_swap: the Attribute to replace one accuracy-check die with (its die size). WEAPON = pair mode: replace BOTH dice of a Skill/Spell check with a chosen equipped weapon's accuracy pair, adding its accuracy bonus + Check Bonus; gated by condition_formula against the action.", vis: CHECK_DIE_SWAP_VIS, defaultValue: "WLP" }),
+  textCol("swap_weapon_categories", "Swap Weapon Categories", { tooltip: "check_die_swap WEAPON mode: comma list of weapon categories that qualify (e.g. bow,brawling,dagger,flail,spear,sword). Blank = any equipped weapon.", vis: CHECK_DIE_SWAP_VIS }),
   selectCol("swap_mode", "Swap Mode", [
     { key: "on",  value: "On — auto-swap the best beneficial die" },
     { key: "ask", value: "Ask — pre-roll picker (player chooses)" },
@@ -495,7 +507,7 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // Bonus/cost fields shared with the open_action_menu free_mode grant (register
   // them so the column self-heals where missing; free_action reuses the same
   // free-action queue + COMPUTE-time bonus application).
-  textCol("check_bonus_formula", "Free: Check Bonus", { tooltip: "Free action grant: bonus added to the granted action's Check (formula). e.g. Blazing Sweep repeat: -(AE_CHARGES_BLAZING_SWEEP_LOCK).", vis: FREE_GRANT_VIS, reconcileVis: true }),
+  textCol("check_bonus_formula", "Free: Check Bonus", { tooltip: "Free action grant: bonus added to the granted action's Check (formula). e.g. Blazing Sweep repeat: -(AE_CHARGES_BLAZING_SWEEP_LOCK). check_die_swap WEAPON mode: extra bonus on top of the weapon's own (Spellblade variant: SL * WEAPON_USES_DEX).", vis: `or(${FREE_GRANT_VIS}, ${CHECK_DIE_SWAP_VIS})`, reconcileVis: true }),
   textCol("damage_bonus_formula", "Free: Damage Bonus", { tooltip: "Free action grant: bonus added to the granted action's damage (formula, may be negative). e.g. Blazing Sweep repeat: floor(38 * pow(0.5, AE_CHARGES_BLAZING_SWEEP_LOCK)) - 38.", vis: FREE_GRANT_VIS, reconcileVis: true }),
   textCol("max_mp_cost", "Free: Max MP Cost", { tooltip: "Free action grant: cap on the granted action's MP cost (FORMULA, e.g. Bimagus \"20 + MP_SPENT_THIS_TURN\" / \"AE_CHARGES_BIMAGUS\"; blank = the action's own cost applies).", vis: FREE_GRANT_VIS, reconcileVis: true }),
   checkboxCol("free_of_cost", "Free: No Resource Cost", { tooltip: "Free action grant: the granted action pays NO resource cost (RAW Bimagus \"spells cost no MP\"). The Max MP Cost cap still gates which spell is eligible by its printed cost.", vis: FREE_GRANT_VIS }),

@@ -8,6 +8,74 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "PBarLFbfg0iNI6bQ",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790611315779,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Brainwave Clock:</em> Your accumulated psychic charge (0–4 sections), filled and spent by Esper gifts.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "PBarLFbfg0iNI6bQ",
+          "originalParentId": "lyo1RDT2c5jFCm6C",
+          "originalUuid": "Item.lyo1RDT2c5jFCm6C.ActiveEffect.PBarLFbfg0iNI6bQ"
+        },
+        "fabula-ultima-companion": {
+          "category": "Other",
+          "chargeKey": "brainwave",
+          "charges": 0,
+          "chargesMax": 4,
+          "hudResourceColor": "#a06bff",
+          "lifetimeMode": "persistent_counter",
+          "reactionConfig": {
+            "effect_table": {},
+            "reaction_config_table": {}
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/DiabolicEsperPassive3.png",
+      "name": "Brainwave Clock",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-brainwave-clock"
+      ],
+      "system": {
+        "tags": [
+          "resource"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -30,15 +98,69 @@
       "damage_bonus": "0",
       "description": "<ul><li><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Trigger</span></strong></a></span> When an NPC becomes your focus</li><li><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Trigger</span></strong></a></span> When you create a Bond towards an NPC</li></ul><p>Ask the Game Master a single question about that NPC, which the Game Master must answer truthfully. Then, describe what sensation revealed this information to you. You may use this gift only once on each NPC.</p>",
       "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "cv_offer",
+          "menu_option_descriptions": "Pay max(5, 5 x Brainwave sections) MP and fill 1 Brainwave section",
+          "menu_option_labels": "Ask the question",
+          "menu_option_refs": "cv_go",
+          "menu_pick_count": "1",
+          "menu_subtitle": "Ask the GM one question about this NPC; they must answer truthfully. Then describe the sensation that revealed it.",
+          "menu_title": "Clairvoyance"
+        },
+        "1": {
+          "chain_steps": "cv_pay,cv_fill",
+          "effect_kind": "chain",
+          "effect_label": "cv_go",
+          "menu_label": "Ask the question"
+        },
+        "2": {
+          "consume_amount": "max(5, AE_CHARGES_BRAINWAVE_CLOCK * 5)",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "cv_pay",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "3": {
+          "ae_duplicate_mode": "add_charges",
+          "ae_initial_charges": "1",
+          "ae_initial_charges_max": "4",
+          "ae_template_ref": "Brainwave Clock",
+          "effect_kind": "apply_ae",
+          "effect_label": "cv_fill",
+          "target_ref": "cv_self"
+        },
+        "4": {
+          "candidate_source": "self",
+          "effect_kind": "targeting",
+          "effect_label": "cv_self"
+        }
+      },
       "heroic_requirement": "",
+      "implementation_note": "Automated: when you apply Cognitive Focus to an NPC (enemy, neutral or NPC guest) you are offered the gift once per creature per battle: pay max(5, 5 x Brainwave sections) MP and fill 1 section; the menu tells you to ask the GM one question, which the GM answers truthfully. GM-adjudicated: the Bond-creation trigger and 'only once on each NPC' across scenes.",
       "isCheck": false,
       "isFacet": true,
       "isHeroic": false,
       "isOffensiveSpell": false,
+      "isReaction": true,
       "level": "1",
       "max_level": "1",
       "name": "Clairvoyance",
       "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "CAUSE_IS_SELF == 1 && SUBJECT_IS_NPC == 1",
+          "reaction_effect_ref": "cv_offer",
+          "reaction_max_per_round": "1",
+          "reaction_max_scope": "target",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "all",
+          "reaction_status_filter": "Cognitive Focus",
+          "reaction_trigger": "creature_status_applied"
+        }
+      },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",

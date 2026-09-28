@@ -923,7 +923,7 @@
     {
       "_id": "io6ZgOI4Hz3mvVlj",
       "_stats": {
-        "compendiumSource": "Item.UIdRwayw4g7chfU0",
+        "compendiumSource": "Item.0PZ8RDNciYLZsND8",
         "coreVersion": "12.343",
         "createdTime": 1780815032967,
         "duplicateSource": null,
@@ -937,7 +937,7 @@
       },
       "folder": "ft3358qUh5ZDldYQ",
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/scathe.png",
-      "name": "Spellblade",
+      "name": "Spellblade (Variant)",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
         "NGGEYbVnwhSYYjvP": 3,
@@ -957,7 +957,19 @@
           "defense_target_type": "def",
           "description": "<p>When you cast an【⚡Offensive Spell】 targeting <strong>a single creature</strong>, if the spell has a <strong>total Mind Point cost of 【SL × 20】 or lower</strong> and you have <strong>non-arcane</strong> weapons equipped, you may choose one of those weapons. If you do, your Magic Check for the spell will use the chosen weapon's Accuracy Check formula; ; if that formula includes <strong>Dexterity</strong>, the Magic Check also gains a bonus equal to <strong>【SL】</strong>.</p><p> For instance, casting an Elementalist spell through a bronze sword when you have Skill Level 2 in Spellblade will cause the Magic Check to be 【DEX + MIG】+3 instead of 【INS + WLP】</p>",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "check_bonus_formula": "SL * WEAPON_USES_DEX",
+              "condition_formula": "ACTION_IS_OFFENSIVE_SPELL == 1 && ACTION_TARGET_COUNT == 1 && ACTION_COST_MP <= SL * 20",
+              "effect_kind": "check_die_swap",
+              "effect_label": "spellblade_swap",
+              "swap_mode": "ask",
+              "swap_to_attribute": "WEAPON",
+              "swap_weapon_categories": "bow,brawling,dagger,firearm,flail,heavy,spear,sword,thrown"
+            }
+          },
           "heroic_requirement": "",
+          "implementation_note": "Automated (January 2025 playtest variant): on a single-target offensive spell whose total MP cost is SL x 20 or less, you may roll the Magic Check with an equipped non-arcane weapon's Accuracy formula and bonus, +SL when that formula uses DEX (picker before the roll).",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -982,7 +994,7 @@
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
-        "uniqueId": "UIdRwayw4g7chfU0"
+        "uniqueId": "0PZ8RDNciYLZsND8"
       },
       "type": "equippableItem"
     },

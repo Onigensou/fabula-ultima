@@ -15,9 +15,9 @@
 //   - Crit   = isCriticalHit (minimum_critical_dice / critical_dice_range aware).
 //   - Fumble = both dice <= `fumble_threshold` (default 1 = RAW "two 1s"; a
 //              fumble_threshold buff raises it — kept from the BD's prior rule).
-import { isCriticalHit } from "./skill-formulas.js";
-import { attrDieSize, readPropNum } from "./snapshot.js";
-import { warn } from "./logger.js";
+import { isCriticalHit, buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
+import { attrDieSize, readPropNum, resolveAttackerWeapon } from "./snapshot.js";
+import { log, warn } from "./logger.js";
 import { SimMode } from "./sim/sim-mode.js";
 
 // Pure derivation: given the two die faces (+ the roller's props + bonus), decide
@@ -33,7 +33,7 @@ export function deriveCheck({ rA = 0, rB = 0, props = null, fumbleThreshold = 1,
 // THE check. Rolls the two attribute dice for `actor` (or takes forced dice from
 // the test harness) and derives the outcome. Inputs: the roller + the two stats
 // + an optional flat bonus. Nothing else.
-export async function rollCheck({ actor, A1, A2, checkBonus = 0, dice = null, allowDieSwap = false, director = null } = {}) {
+export async function rollCheck({ actor, A1, A2, checkBonus = 0, dice = null, allowDieSwap = false, director = null, actionPayload = null } = {}) {
   const props = actor?.system?.props ?? null;
   // Psychokinesis-style pre-roll die swap: an owning skill with a check_die_swap
   // config may replace one Attribute die with a larger one (WLP) BEFORE rolling.
@@ -41,10 +41,24 @@ export async function rollCheck({ actor, A1, A2, checkBonus = 0, dice = null, al
   // verbatim so the harness/crit machinery stays deterministic). `director` enables
   // the "ask"-mode interactive picker (else auto).
   let dieSwap = null;
+  // WEAPON pair mode (Spellblade): replace BOTH dice with a chosen equipped
+  // weapon's accuracy pair. Needs `actionPayload` (the Skill/Spell COMPUTE caller
+  // passes it) — its condition_formula is judged against the action, so a call
+  // without one (the Attack path) never offers it. `checkBonusDelta` is returned
+  // for the CALLER to fold into its own check bonus (this function's checkBonus
+  // arg is not the one the Skill COMPUTE profile reads).
+  let weaponSwap = null;
+  if (allowDieSwap && !dice && actionPayload) {
+    weaponSwap = await resolveWeaponPairSwap({ actor, A1, A2, director, actionPayload });
+    if (weaponSwap) {
+      dieSwap = [{ from: `${String(A1).toUpperCase()}+${String(A2).toUpperCase()}`, to: `${weaponSwap.A1}+${weaponSwap.A2}`, slot: "pair", label: weaponSwap.label }];
+      A1 = weaponSwap.A1; A2 = weaponSwap.A2;
+    }
+  }
   if (allowDieSwap && !dice) {
-    const swaps = await resolveCheckDieSwap({ actor, A1, A2, director });
+    const swaps = await resolveCheckDieSwap({ actor, A1, A2, director, actionPayload });
     if (Array.isArray(swaps) && swaps.length) {
-      dieSwap = [];
+      dieSwap = dieSwap ?? [];
       for (const sw of swaps) {
         if (sw.slot === "A1") A1 = sw.to; else if (sw.slot === "A2") A2 = sw.to;
         dieSwap.push({ from: sw.from, to: sw.to, slot: sw.slot, label: sw.label });
@@ -63,7 +77,126 @@ export async function rollCheck({ actor, A1, A2, checkBonus = 0, dice = null, al
   const fumbleThreshold = readPropNum(actor, ["fumble_threshold"], 1);
   // Return the (possibly swapped) attributes so the caller can repaint the card
   // with the die that was actually rolled, plus the swap note for display.
-  return { ...deriveCheck({ rA, rB, props, fumbleThreshold, checkBonus }), dA, dB, A1, A2, dieSwap };
+  return { ...deriveCheck({ rA, rB, props, fumbleThreshold, checkBonus }), dA, dB, A1, A2, dieSwap,
+    weaponSwap, checkBonusDelta: Number(weaponSwap?.checkBonusDelta ?? 0) || 0 };
+}
+
+// Headless = nobody can answer a picker: a sim, or a harness run (which sets
+// __FU_HARNESS_HEADLESS__). Both take the auto path.
+const _noHumanToPick = () => SimMode.active || globalThis.__FU_HARNESS_HEADLESS__ === true;
+
+// Does a check_die_swap config apply to THIS action? Blank condition = always.
+// Resolved with the config's OWN item as the skill, so `SL` is that skill's level.
+// With no payload the condition sees an empty one — fails closed for any gate
+// that reads the action.
+function swapConditionHolds(cfg, actor, actionPayload) {
+  const cond = String(cfg.condition ?? "").trim();
+  if (!cond) return true;
+  try {
+    const resolver = buildSkillResolver({ actor, payload: actionPayload ?? {}, skill: cfg.item ?? null });
+    return !!Number(evaluateFormula(cond, resolver, 0));
+  } catch (e) {
+    warn(`check_die_swap: condition on ${cfg.label} threw — not applied`, e);
+    return false;
+  }
+}
+
+// WEAPON pair mode (Spellblade). Each qualifying config offers every equipped
+// weapon (main + off hand) in its category list; a weapon's option carries its own
+// accuracy pair, its accuracy bonus, and the config's check_bonus_formula (with
+// WEAPON_USES_DEX = 1 when either die of the pair is DEX). ask + a live director
+// with a human → a list picker routed to the owner; otherwise the best expected
+// total is taken, and only when it beats the check as rolled ("may").
+// Returns { A1, A2, checkBonusDelta, label, weapon } or null (kept).
+async function resolveWeaponPairSwap({ actor, A1, A2, director = null, actionPayload = null }) {
+  if (!actor || !actionPayload) return null;
+  const all = findCheckDieSwapConfigs(actor).filter((c) => c.to === "WEAPON" && c.mode !== "off");
+  if (!all.length) return null;
+  const configs = all.filter((c) => {
+    const ok = swapConditionHolds(c, actor, actionPayload);
+    if (!ok) log(`check_die_swap: ${c.label} — condition refused (targets=${actionPayload?.targets?.length ?? 0} costMp=${actionPayload?.costMp} type=${actionPayload?.actionSkillType} isCheck=${actionPayload?.actionIsCheck})`);
+    return ok;
+  });
+  if (!configs.length) return null;
+  const weapons = [];
+  for (const which of ["main", "off"]) {
+    const w = resolveAttackerWeapon(actor, { which });
+    if (!w?.A1 || !w?.A2) continue;
+    if (weapons.some((x) => x.name === w.name && x.A1 === w.A1 && x.A2 === w.A2)) continue;
+    weapons.push(w);
+  }
+  const options = [];
+  for (const cfg of configs) {
+    const allow = String(cfg.categories ?? "").split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
+    for (const w of weapons) {
+      const cat = String(w.weaponType ?? "").trim().toLowerCase();
+      if (allow.length && !allow.includes(cat)) continue;
+      const usesDex = (w.A1 === "DEX" || w.A2 === "DEX") ? 1 : 0;
+      let extra = 0;
+      const f = String(cfg.bonusFormula ?? "").trim();
+      if (f) {
+        try {
+          const resolver = buildSkillResolver({ actor, payload: actionPayload, skill: cfg.item ?? null, vars: { WEAPON_USES_DEX: usesDex } });
+          extra = Number(evaluateFormula(f, resolver, 0)) || 0;
+        } catch (e) { warn(`check_die_swap: check_bonus_formula on ${cfg.label} threw — 0`, e); }
+      }
+      const delta = (Number(w.checkBonus) || 0) + extra;
+      const dA = attrDieSize(actor, w.A1), dB = attrDieSize(actor, w.A2);
+      options.push({ A1: w.A1, A2: w.A2, checkBonusDelta: delta, label: cfg.label, weapon: w.name, category: cat,
+        ev: (dA + 1) / 2 + (dB + 1) / 2 + delta, dA, dB, mode: cfg.mode });
+    }
+  }
+  if (!options.length) {
+    log(`check_die_swap: ${configs.map((c) => c.label).join(" / ")} — no qualifying weapon (equipped: ${weapons.map((w) => `${w.name}[${w.weaponType || "?"}]`).join(", ") || "none"})`);
+    return null;
+  }
+  const A1u = String(A1).toUpperCase(), A2u = String(A2).toUpperCase();
+  const baseEv = (attrDieSize(actor, A1u) + 1) / 2 + (attrDieSize(actor, A2u) + 1) / 2;
+  const sign = (n) => (n >= 0 ? `+${n}` : `${n}`);
+  const askMode = options.some((o) => o.mode === "ask");
+  if (askMode && director && !_noHumanToPick()) {
+    const listArgs = {
+      title: [...new Set(options.map((o) => o.label))].join(" · ") || "Weapon Check",
+      subtitle: "Roll this check with a weapon's Accuracy formula?",
+      options: [
+        { value: -1, primary: `Keep ${A1u} + ${A2u}`, secondary: `d${attrDieSize(actor, A1u)} + d${attrDieSize(actor, A2u)}` },
+        ...options.map((o, i) => ({ value: i, primary: `${o.weapon}: ${o.A1} + ${o.A2} ${sign(o.checkBonusDelta)}`,
+          secondary: `d${o.dA} + d${o.dB} ${sign(o.checkBonusDelta)} (${o.category || "weapon"})` })),
+      ],
+      zIndex: 97,
+    };
+    let picked = null;
+    try {
+      const channel = director?.intentChannel ?? null;
+      const owner = (game.users?.contents ?? [])
+        .filter((u) => !u.isGM && u.active && (() => { try { return actor.testUserPermission?.(u, "OWNER"); } catch { return false; } })())
+        .sort((a, b) => a.id.localeCompare(b.id))[0] ?? null;
+      if (game.user?.isGM && owner && channel) {
+        const { remotePick, REMOTE_PICK_KINDS } = await import("./remote-pick.js");
+        picked = await remotePick({ channel, targetUserId: owner.id, combatId: director?.combatId ?? null,
+          kind: REMOTE_PICK_KINDS.LIST, onTimeoutValue: null, spec: listArgs });
+      } else {
+        const { pickFromList } = await import("./list-picker.js");
+        picked = await pickFromList(listArgs);
+      }
+    } catch (e) {
+      warn("check_die_swap: weapon picker threw — keeping the original roll", e);
+      return null;
+    }
+    const idx = Number(picked);
+    if (picked == null || !Number.isInteger(idx) || idx < 0 || idx >= options.length) return null;
+    const o = options[idx];
+    log(`check_die_swap: ${o.label} → ${o.weapon} (${o.A1}+${o.A2} ${sign(o.checkBonusDelta)}) [picked]`);
+    return { A1: o.A1, A2: o.A2, checkBonusDelta: o.checkBonusDelta, label: o.label, weapon: o.weapon };
+  }
+  const best = options.slice().sort((a, b) => b.ev - a.ev)[0];
+  if (!(best.ev > baseEv)) {
+    log(`check_die_swap: ${best.label} — no weapon beats ${A1u}+${A2u} (best ${best.weapon} ev ${best.ev} vs ${baseEv}); kept`);
+    return null;
+  }
+  log(`check_die_swap: ${best.label} → ${best.weapon} (${best.A1}+${best.A2} ${sign(best.checkBonusDelta)}) [auto]`);
+  if (askMode && SimMode.active) SimMode.note("die-swap", `${actor?.name}: ${best.label} → ${best.weapon} (auto — ask-mode picker skipped)`);
+  return { A1: best.A1, A2: best.A2, checkBonusDelta: best.checkBonusDelta, label: best.label, weapon: best.weapon };
 }
 
 // Resolve a pre-roll Attribute-die swap for `actor`'s accuracy check. Collects
@@ -75,8 +208,12 @@ export async function rollCheck({ actor, A1, A2, checkBonus = 0, dice = null, al
 //   - else (all "on"/"force") → auto-apply the biggest upgrade.
 // Returns { slot:"A1"|"A2", from, to, label } or null (no skill / mode off /
 // no upgrade / picker kept the roll). "off" skills are dropped entirely.
-async function resolveCheckDieSwap({ actor, A1, A2, director = null }) {
-  const configs = findCheckDieSwapConfigs(actor).filter((c) => c.mode !== "off");
+async function resolveCheckDieSwap({ actor, A1, A2, director = null, actionPayload = null }) {
+  // WEAPON (pair mode) configs are resolveWeaponPairSwap's; a single-die config
+  // with a condition_formula applies only when it holds for this action.
+  const configs = findCheckDieSwapConfigs(actor)
+    .filter((c) => c.mode !== "off" && c.to !== "WEAPON")
+    .filter((c) => swapConditionHolds(c, actor, actionPayload));
   if (!configs.length) return null;
   const A1u = String(A1).toUpperCase();
   const A2u = String(A2).toUpperCase();
@@ -178,6 +315,10 @@ function findCheckDieSwapConfigs(actor) {
     mode: String(row.swap_mode ?? "on").trim().toLowerCase(),
     to: String(row.swap_to_attribute ?? "WLP").trim().toUpperCase(),
     label: item.name ?? "",
+    item,
+    condition: String(row.condition_formula ?? ""),
+    categories: String(row.swap_weapon_categories ?? ""),
+    bonusFormula: String(row.check_bonus_formula ?? ""),
   }));
 }
 

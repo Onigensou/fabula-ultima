@@ -8,6 +8,74 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "0pJlqunOdCfWzWtX",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790612919994,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Brainwave Clock:</em> Your accumulated psychic charge (0–4 sections), filled and spent by Esper gifts.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "0pJlqunOdCfWzWtX",
+          "originalParentId": "agMXdQEoVMWvoPwB",
+          "originalUuid": "Item.agMXdQEoVMWvoPwB.ActiveEffect.0pJlqunOdCfWzWtX"
+        },
+        "fabula-ultima-companion": {
+          "category": "Other",
+          "chargeKey": "brainwave",
+          "charges": 0,
+          "chargesMax": 4,
+          "hudResourceColor": "#a06bff",
+          "lifetimeMode": "persistent_counter",
+          "reactionConfig": {
+            "effect_table": {},
+            "reaction_config_table": {}
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/DiabolicEsperPassive3.png",
+      "name": "Brainwave Clock",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-brainwave-clock"
+      ],
+      "system": {
+        "tags": [
+          "resource"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -30,15 +98,95 @@
       "damage_bonus": "0",
       "description": "<ul><li><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Trigger</span></strong></a></span> After an enemy succeeds on an Opposed Check against you or causes you to lose Hit Points</li></ul><p>That enemy loses an amount of <strong>Mind Points</strong> equal to <strong>[5 + (the number of filled sections in your Brainwave Clock, multiplied by 5)]</strong>.</p><p><strong>Then, choose one option:</strong></p><ul><li><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></li><li><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></li></ul>",
       "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "pb_offer",
+          "menu_option_descriptions": "Enemy loses 5 MP (+5 per filled Brainwave section) and becomes Dazed|Enemy loses 5 MP (+5 per filled Brainwave section) and becomes Shaken",
+          "menu_option_labels": "Dazed|Shaken",
+          "menu_option_refs": "pb_go_dazed,pb_go_shaken",
+          "menu_pick_count": "1",
+          "menu_subtitle": "The enemy loses MP, then suffers your choice",
+          "menu_title": "Psychic Backlash"
+        },
+        "1": {
+          "chain_steps": "pb_pay,pb_drain,pb_dazed,pb_fill",
+          "effect_kind": "chain",
+          "effect_label": "pb_go_dazed",
+          "menu_label": "Dazed"
+        },
+        "2": {
+          "chain_steps": "pb_pay,pb_drain,pb_shaken,pb_fill",
+          "effect_kind": "chain",
+          "effect_label": "pb_go_shaken",
+          "menu_label": "Shaken"
+        },
+        "3": {
+          "consume_amount": "max(5, AE_CHARGES_BRAINWAVE_CLOCK * 5)",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "pb_pay",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "4": {
+          "consume_amount": "5 + AE_CHARGES_BRAINWAVE_CLOCK * 5 + (CHAR_LEVEL >= 20) * 10 + (CHAR_LEVEL >= 40) * 10",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "pb_drain",
+          "on_empty": "drain",
+          "target_ref": "cause_actor"
+        },
+        "5": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Dazed",
+          "effect_kind": "apply_ae",
+          "effect_label": "pb_dazed",
+          "target_ref": "cause_actor"
+        },
+        "6": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Shaken",
+          "effect_kind": "apply_ae",
+          "effect_label": "pb_shaken",
+          "target_ref": "cause_actor"
+        },
+        "7": {
+          "ae_duplicate_mode": "add_charges",
+          "ae_initial_charges": "1",
+          "ae_initial_charges_max": "4",
+          "ae_template_ref": "Brainwave Clock",
+          "effect_kind": "apply_ae",
+          "effect_label": "pb_fill",
+          "target_ref": "pb_self"
+        },
+        "8": {
+          "candidate_source": "self",
+          "effect_kind": "targeting",
+          "effect_label": "pb_self"
+        }
+      },
       "heroic_requirement": "",
+      "implementation_note": "Automated: when an enemy makes you lose HP (its attack or skill damage, a damage tick from a status it applied, or an effect it runs that makes you lose HP and is recorded as an HP loss) you may pay max(5, 5 x Brainwave sections) MP: that enemy loses 5 + 5 x sections MP (+10 at level 20, +20 at level 40) and becomes Dazed or Shaken (your choice); 1 section fills. NOT automated: 'an enemy succeeds on an Opposed Check against you' (the engine emits no contest-outcome event; e.g. an Imp's Strip Armor / Strip Weapon). GM applies it by hand. Also not seen: an HP loss the engine does not record as an event (a plain cost-style HP debit), and HP loss whose cause is unattributed.",
       "isCheck": false,
       "isFacet": true,
       "isHeroic": false,
       "isOffensiveSpell": false,
+      "isReaction": true,
       "level": "1",
       "max_level": "1",
       "name": "Psychic Backlash",
       "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "reaction_damage_source": "enemy",
+          "reaction_effect_ref": "pb_offer",
+          "reaction_passive_mode": "ask",
+          "reaction_resource_filter": "hp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_lose_resource"
+        }
+      },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",

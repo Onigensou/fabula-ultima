@@ -1517,6 +1517,10 @@ async function runDirectorSkillCompute({
   // Batch callers pass a stable token to reuse the loaded module graph across a
   // run of calls (see loadDeps). Omitted = per-call cache-bust, as before.
   depsToken = null,
+  // true = price the action like live TARGET (see below). Default off.
+  liveCost = false,
+  // Test-only fields merged over the TARGET-stage actionResult. Default none.
+  arPatch = null,
 } = {}) {
   const _wg = _guardWrites("runDirectorSkillCompute");
   if (!game.user?.isGM) {
@@ -1545,6 +1549,26 @@ async function runDirectorSkillCompute({
   if (!attackerSnap) return { ok: false, reason: "caster_snapshot_failed" };
 
   let ar = buildInitialActionResult(skill, attackerSnap, targetSnaps, deps);
+  // Opt-in: price the action the way live TARGET does (parseSkillCost +
+  // resolveCost for the real target count) instead of the skeleton's empty
+  // costSerialized. Without it every ACTION_COST_* gate read at COMPUTE sees 0 —
+  // the permissive answer for a `<=` cap (Spellblade). Opt-in because flipping
+  // it on for every run would move every golden that reads a cost.
+  if (liveCost) {
+    try {
+      const sc = await import(`./skill-cost.js?harness=${Date.now()}`);
+      const cm = sc.resolveCost(sc.parseSkillCost(String(skill.system?.props?.cost ?? "")), { actor: casterToken.actor, targetCount: targetTokens.length });
+      const costSerialized = {};
+      for (const [k, v] of (cm?.entries?.() ?? [])) costSerialized[k] = v;
+      const costMpPreSubstitution = Number(costSerialized.mp ?? 0) || 0;
+      ar = deps.freezeActionResult ? deps.freezeActionResult({ ...ar, costSerialized, costMpPreSubstitution }) : Object.assign({ ...ar }, { costSerialized, costMpPreSubstitution });
+    } catch (e) { console.warn(`${TAG} liveCost pricing threw`, e); }
+  }
+  // Test-only overlay onto the TARGET-stage actionResult (e.g. a Vismagus-style
+  // substitution: costSerialized {hp:N} with costMpPreSubstitution kept).
+  if (arPatch && typeof arPatch === "object") {
+    ar = deps.freezeActionResult ? deps.freezeActionResult({ ...ar, ...arPatch }) : Object.assign({ ...ar }, arPatch);
+  }
   // Feed open_action_menu / prompt auto-picks to COMPUTE's pre_activate capture
   // pass too (line ~3314 reads ar._harnessPicks). Without this a skill with a
   // pre_activate_effect_ref menu (Nocebo / Elemental Weapon / Elemental Shroud)

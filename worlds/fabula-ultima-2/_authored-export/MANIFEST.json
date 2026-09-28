@@ -4196,7 +4196,7 @@
         "id": "lyo1RDT2c5jFCm6C",
         "name": "Clairvoyance",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "lCSU2g4YsA0m9fWO",
@@ -9806,7 +9806,7 @@
         "id": "agMXdQEoVMWvoPwB",
         "name": "Psychic Backlash",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "3PPbTNuD6rPBkICm",
@@ -10058,7 +10058,7 @@
         "id": "xsFQ7dGyfH0X3i2t",
         "name": "Reassuring Presence",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "9M5pYWFeGrcyUbV2",
@@ -11317,6 +11317,12 @@
       {
         "id": "UIdRwayw4g7chfU0",
         "name": "Spellblade",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "0PZ8RDNciYLZsND8",
+        "name": "Spellblade (Variant)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -20250,7 +20256,7 @@
           },
           {
             "id": "FJDzhsXWAq5WwgLa",
-            "name": "Spellblade"
+            "name": "Spellblade (Variant)"
           },
           {
             "id": "TKafb6oHQEHUgZxD",
@@ -20997,7 +21003,7 @@
           },
           {
             "id": "p89KIM9hRmDvfbDb",
-            "name": "Spellblade"
+            "name": "Spellblade (Variant)"
           }
         ],
         "effects": 0
@@ -21915,7 +21921,7 @@
           },
           {
             "id": "io6ZgOI4Hz3mvVlj",
-            "name": "Spellblade"
+            "name": "Spellblade (Variant)"
           },
           {
             "id": "k7TEKN77tHFg3IWY",
