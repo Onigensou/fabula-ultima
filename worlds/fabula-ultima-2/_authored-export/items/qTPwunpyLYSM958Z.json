@@ -32,6 +32,7 @@
       "description": "<p>When you summon an Arcanum on your turn during a conflict, choose up to two options:</p>\n<ul>\n  <li>reduce its MP cost by <strong>[SL × 5]</strong>;</li>\n  <li>after you summon the Arcanum, if you are merged with it, immediately perform its <em>pulse</em>.</li>\n</ul>\n<p>If you choose at least one option, you cannot willingly dismiss that Arcanum until the start of your next turn; if you choose both options, that Arcanum’s dismiss effect will not be available for this summoning.</p>\n",
       "duration": "-",
       "heroic_requirement": "",
+      "implementation_note": "Code-backed (skill-effects.js quickSummonMods / doSummonArcanum). In a conflict, Bind and Summon lists each Arcanum once per option set: plain, -SL x 5 MP, free Pulse, or both. With at least one option the merge cannot be willingly dismissed until your next turn (the turn-edge dismiss prompt and the Dismiss skill are refused/dimmed); with both, the dismiss is a plain unmerge with no dismiss effect (Revelation in Crisis keeps the effect). Grand Summoning's 'summoned without Quick Summoning' = the plain option.",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,

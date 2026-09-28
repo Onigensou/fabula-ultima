@@ -33,6 +33,7 @@
       "description": "<p>You may perform Rituals of the <strong>Arcanism</strong> discipline, as long as their effects fall within the domains of one or more Arcana you have bound.</p><p>Arcanism Rituals use <strong>【WLP + WLP】</strong> for the Magic Check.</p>",
       "duration": "",
       "heroic_requirement": "",
+      "implementation_note": "Code-backed: the ritual system matches this skill by name (ritual-const.js Arcanism discipline, WLP + WLP Magic Check). 'Within the domains of a bound Arcanum' is GM adjudication.",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,

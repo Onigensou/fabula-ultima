@@ -10,11 +10,11 @@
   },
   "effects": [
     {
-      "_id": "IHWk1UuphJr9jmaZ",
+      "_id": "7qVzYw2N271X0V1f",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1790548750985,
+        "createdTime": 1790560788140,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -35,9 +35,9 @@
         "custom-system-builder": {
           "isFromTemplate": false,
           "isPredefined": true,
-          "originalId": "IHWk1UuphJr9jmaZ",
+          "originalId": "7qVzYw2N271X0V1f",
           "originalParentId": "A8vBJMBvMT9ON8O4",
-          "originalUuid": "Actor.A8vBJMBvMT9ON8O4.ActiveEffect.IHWk1UuphJr9jmaZ"
+          "originalUuid": "Actor.A8vBJMBvMT9ON8O4.ActiveEffect.7qVzYw2N271X0V1f"
         },
         "dfreds-convenient-effects": {
           "ceEffectId": "ce-flying",

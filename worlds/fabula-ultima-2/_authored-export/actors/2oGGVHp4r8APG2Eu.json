@@ -421,6 +421,63 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "J0ohImmhwwbVh9Vh",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1790560598710,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p><em>Arcane Circle:</em> an Arcanum was summoned this turn — dismissing it this round does not grant the free Spell.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "J0ohImmhwwbVh9Vh",
+              "originalParentId": "EmK942uNWazCNZ2n",
+              "originalUuid": "Actor.2oGGVHp4r8APG2Eu.Item.EmK942uNWazCNZ2n.ActiveEffect.J0ohImmhwwbVh9Vh"
+            },
+            "fabula-ultima-companion": {
+              "lifetimeMode": "round_end"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/aura.svg",
+          "name": "Arcane Circle",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-arcane-circle"
+          ],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -445,16 +502,51 @@
           "defense_target_type": "def",
           "description": "<p>After you willingly dismiss an Arcanum on your turn during a <strong>conflict</strong>, if that Arcanum had not been summoned during this same turn and you have an arcane weapon equipped, you may immediately perform the Spell action for free. The spell you cast this way must have a total Mind Point cost of <strong>【SL × 5】</strong>or lower <em>(you must still pay the spell's MP cost).</em></p>",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Arcane Circle",
+              "effect_kind": "apply_ae",
+              "effect_label": "ac_mark",
+              "target_ref": "self"
+            },
+            "1": {
+              "action_ref": "Spell",
+              "effect_kind": "free_action",
+              "effect_label": "ac_cast",
+              "free_of_cost": false,
+              "max_mp_cost": "SL * 5",
+              "menu_description": "Perform a Spell action for free (total MP cost up to SL x 5; you still pay it).",
+              "menu_label": "Arcane Circle: free Spell"
+            }
+          },
           "heroic_requirement": "",
+          "implementation_note": "Automated in a conflict: after you willingly dismiss a merged Arcanum on your turn, including your turn-end window (creature_loses_status, CAUSE_IS_SELF, ON_MY_TURN) with an arcane weapon equipped, you may perform a Spell action for free whose MP cost is at most SL x 5 (you still pay it). 'Not summoned this same turn' = an Arcane Circle marker AE applied when the merge lands and swept at round end.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
-          "isReaction": false,
+          "isReaction": true,
           "level": "4",
           "max_level": "4",
           "name": "Arcane Circle",
           "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "STATUS_HAS_TAG_ARCANUM_MERGE == 1",
+              "reaction_effect_ref": "ac_mark",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_status_applied"
+            },
+            "1": {
+              "condition_formula": "STATUS_HAS_TAG_ARCANUM_MERGE == 1 && CAUSE_IS_SELF == 1 && ON_MY_TURN == 1 && AE_COUNT_ARCANE_CIRCLE == 0 && HAS_ARCANE_WEAPON == 1",
+              "reaction_effect_ref": "ac_cast",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_loses_status"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_information": "",

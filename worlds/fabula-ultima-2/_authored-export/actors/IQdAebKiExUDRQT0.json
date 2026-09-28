@@ -186,15 +186,63 @@
           "damage_bonus": "0",
           "description": "<p>When you cast an 【⚡Offensive Spell】 with a target of <strong>“One creature”</strong>, you may spend <strong>2 Grave Points</strong> to have the spell target <strong>all creatures you can see</strong> that are present on the scene (perform a single <strong>Magic Check</strong> and confront it with the <strong>Magic Defense</strong> of each target). If you do, all damage dealt by the spell becomes \n<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#b666d2 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span>\n and its type <strong>cannot change</strong>.</p>\n",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "chain_steps": "rondo_add,rondo_dark,rondo_gp",
+              "effect_kind": "chain",
+              "effect_label": "rondo_do"
+            },
+            "1": {
+              "effect_kind": "add_target",
+              "effect_label": "rondo_add",
+              "menu_description": "Spend 2 Grave Points: the spell targets every creature you can see; its damage becomes dark.",
+              "menu_label": "Rondo of Nightmare",
+              "target_ref": "rondo_pool"
+            },
+            "2": {
+              "auto_target": "skip",
+              "candidate_source": "combat",
+              "category": "",
+              "effect_kind": "targeting",
+              "effect_label": "rondo_pool",
+              "exclude": "action_targets",
+              "exclude_self": true,
+              "mode": "all"
+            },
+            "3": {
+              "change_element": "dark",
+              "effect_kind": "change_damage_element",
+              "effect_label": "rondo_dark"
+            },
+            "4": {
+              "charge_key": "grave",
+              "count": "2",
+              "effect_kind": "consume_charge",
+              "effect_label": "rondo_gp",
+              "on_empty": "abort",
+              "target_ref": "self"
+            }
+          },
           "heroic_requirement": "",
+          "implementation_note": "Automated: on a single-target offensive spell (printed target 'One ...', ACTION_TARGET_TEXT_IS_ONE) with 2+ Grave Points, an Apply pill spreads the spell to every other creature on the field (allies included, you excluded) sharing the one Magic Check vs each MDEF, turns all its damage dark, and spends 2 Grave Points (refunded if the spread fails). Not automated: 'its type cannot change' (a later element override is not locked out).",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "1",
           "name": "Rondo of Nightmare",
           "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "ACTION_IS_OFFENSIVE_SPELL == 1 && ACTION_TARGET_TEXT_IS_ONE == 1 && ACTION_TARGET_COUNT == 1 && AE_CHARGES_GRAVE_POINTS >= 2",
+              "reaction_effect_ref": "rondo_do",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_performs_action"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "",

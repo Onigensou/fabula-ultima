@@ -19,7 +19,7 @@
 
 import { log, warn } from "./logger.js";
 import { stageOf } from "./director-camera.js";
-import { evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, applyAdjustOp, readAdjustment, applyHealReceiving, applyMpReceiving } from "./skill-formulas.js";
+import { evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, applyAdjustOp, readAdjustment, applyHealReceiving, applyMpReceiving, arcanumQuickSummonLock } from "./skill-formulas.js";
 import { pickFromList } from "./list-picker.js";
 // The amount selector lives in its own leaf module so remote-pick can render it
 // on a player's client without dragging the effect engine along. Re-exported
@@ -4538,7 +4538,23 @@ const EFFECT_KIND_DISPATCH = {
   // recomputePerTargetDamages applies that affinity to (rawDamage + any +N), so
   // element + bonus compose in one affinity pass. Element is read from
   // row.change_element (literal) or VAR_<NAME> via _chainVars.
-  change_damage_element: (row) => ({ ok: true, kind: "change_damage_element", applied: [], reason: "applied-at-damage-recompute" }),
+  //
+  // Inside an add_target window (ctx.payload._preRoll sink present — Rondo of
+  // Nightmare) it instead queues `sink.elementOverride`, mirroring adjust_grant's
+  // sink.grantAdjust: the performer-side splice (onAddTargetApply's rolled-skill
+  // branch) rebuilds EVERY row — original + added targets — with that element
+  // and persists it on the actionResult, so RESOLVE commits the new element.
+  change_damage_element: (row, ctx) => {
+    const sink = ctx?.payload?._preRoll;
+    if (!sink) return { ok: true, kind: "change_damage_element", applied: [], reason: "applied-at-damage-recompute" };
+    const rawEl = String(row.change_element ?? row.damage_element ?? row.element ?? "").trim();
+    let element = rawEl.toLowerCase();
+    if (/^var_/i.test(rawEl)) element = String(ctx?.payload?._chainVars?.[rawEl.slice(4).toLowerCase().trim()] ?? "").trim().toLowerCase();
+    if (!element) return { ok: true, kind: "change_damage_element", applied: [], reason: "no-element" };
+    sink.elementOverride = element;
+    log(`skill-effects.change_damage_element: queued element "${element}" for the add_target window`);
+    return { ok: true, kind: "change_damage_element", applied: [], element };
+  },
   // apply_action_keyword: tag the in-flight per-target hit with an action keyword
   // (pierce, …). Data-only here — the real work is in computeSenderDamageBonuses
   // (collects the keyword per subject) + recomputePerTargetDamages (applies its
@@ -4806,8 +4822,13 @@ const EFFECT_KIND_PREVIEW = {
     let merged = 0;
     try { merged = Number(evaluateFormula("ARCANUM_MERGED", resolver, 0)) || 0; } catch {}
     if (merged > 0) return null;
+    // Once the Arcanum option is picked (computeActionProfile hands the menu row
+    // back with _dynamicPicks), price THAT option: its Quick Summoning set is in
+    // its label. Before the pick: the cheapest summon on offer.
+    const picks = Array.isArray(row._dynamicPicks) ? row._dynamicPicks : null;
+    const quickReduce = picks ? picks.some((l) => parseQuickSummonLabel(l).includes("cost")) : null;
     let amount = 0;
-    try { amount = summonCostViaResolver(row, resolver); } catch {}
+    try { amount = summonCostViaResolver(row, resolver, { quickReduce }); } catch {}
     if (amount <= 0) return null;
     return { type: "cost", resource: "mp", amount, valence: "neutral", source: row.effect_label };
   },
@@ -4823,8 +4844,11 @@ const EFFECT_KIND_PREVIEW = {
     let merged = 0;
     try { merged = Number(evaluateFormula("ARCANUM_MERGED", resolver, 0)) || 0; } catch {}
     if (merged > 0) return null;  // Pulse/Dismiss — no summon cost
+    // An executor row synthesised by the menu carries its chosen option set.
+    const quickReduce = row.quick_summon_opts == null ? null
+      : String(row.quick_summon_opts).split(",").map((x) => x.trim()).includes("cost");
     let amount = 0;
-    try { amount = summonCostViaResolver(row, resolver); } catch {}
+    try { amount = summonCostViaResolver(row, resolver, { quickReduce }); } catch {}
     if (amount <= 0) return null;
     return { type: "cost", resource: "mp", amount, valence: "neutral", source: row.effect_label };
   },
@@ -6248,7 +6272,12 @@ async function consumeResourceApply(row, ctx, { resource, targetRef, amount }) {
       // raising the spell's cost at the damage window), count it toward the
       // payer's per-turn spell-MP tally so MP_SPENT_THIS_TURN includes it.
       // Gated on the originating action being a spell (actionSkillType stamp).
-      if (resource === "mp" && spent > 0
+      // A REACTION's own MP cost is not spell MP (user ruling 2026-09-28): only
+      // the spell's own chain counts. Reaction chains run with isPassive:true
+      // (firePreAcceptedCandidate) — and since the post-resolve payload now
+      // carries actionSkillType, an unscoped read would bill every reaction a
+      // spell triggers (Thermokinesis, Warning Shot, Crossfire…) to Bimagus.
+      if (resource === "mp" && spent > 0 && !ctx?.isPassive
           && String(ctx?.payload?.actionSkillType ?? "").toLowerCase() === "spell"
           && ctx?.dCombat && actor?.id) {
         ctx.dCombat.addSpellMpSpent(actor.id, spent);
@@ -7140,6 +7169,10 @@ async function applyApplyAeEffect(row, ctx) {
             trigger: "creature_status_applied",
             payload: {
               status: statusName,
+              // The status AE's tags (STATUS_HAS_TAG_<X>) — lets a row key off a
+              // FAMILY of statuses whose names differ (every Arcanum's merge AE
+              // carries "arcanum-merge": Arcane Regeneration / Arcane Circle).
+              statusTags: aeTagsOf(sharedTemplate).map((t) => String(t).toLowerCase()),
               direction: "applied",
               sourceActorUuid: a.actorUuid, sourceTokenUuid: subjTok?.uuid ?? null,
               subjectActorUuid: a.actorUuid, subjectTokenUuid: subjTok?.uuid ?? null,
@@ -8912,32 +8945,88 @@ function buildArcanumMenuOptions(row, ctx) {
     // Affordability is decided HERE, at pick time: the debit runs at RESOLVE,
     // after the card is committed, so an unaffordable pick used to spend the
     // turn and summon nothing. Same cost the debit will take (summonCost).
-    const cost = summonCost(row, ctx);
+    //
+    // Quick Summoning (owner, during a conflict turn): each Arcanum is offered
+    // once per option set — none / −SL×5 MP / Pulse / both — so the CHOICE is
+    // captured pre-card with the Arcanum pick (one pick, the existing capture
+    // path) and every option's cost is the cost its debit will take.
     const mp = Number(caster.system?.props?.[RESOURCE_PROPS.mp?.prop ?? "current_mp"] ?? 0) || 0;
-    const short = mp < cost;
+    const qs = quickSummonMods(caster);
+    const qsLive = qs.owns && quickSummonInTurn(ctx);
     for (const arc of listBoundArcana(caster)) {
       const dom = String(arc.system?.props?.domain ?? "").trim();
-      const description = [`${cost} MP`, dom ? `Domain: ${dom}` : null].filter(Boolean).join(" · ");
-      options.push({ label: arc.name, description, icon: arc.img ?? null, disabled: short, badge: short ? "Not enough MP" : null });
-      optionRows.push({
-        effect_kind: "summon_arcanum",
-        summon_target: String(arc.system?.uniqueId ?? arc.id ?? "").trim(),
-        summon_cost_formula: costFormula,
-        effect_label: `${baseLabel}:summon:${arc.id}`,
-      });
+      const hasPulse = !!findArcanumChild(caster, arc, "pulse");
+      const sets = qsLive
+        ? [[], ...(qs.costReduction > 0 ? [["cost"]] : []), ...(hasPulse ? [["pulse"]] : []),
+           ...(qs.costReduction > 0 && hasPulse ? [["cost", "pulse"]] : [])]
+        : [[]];
+      for (const set of sets) {
+        const cost = summonCost(row, ctx, { quickReduce: set.includes("cost") });
+        const short = mp < cost;
+        const consequence = !set.length ? null
+          : (set.length === 2 ? "no willing dismiss until your next turn; no dismiss effect this summoning"
+            : "no willing dismiss until your next turn");
+        const description = [`${cost} MP`, dom ? `Domain: ${dom}` : null, consequence].filter(Boolean).join(" · ");
+        options.push({ label: quickSummonOptionLabel(arc.name, set, qs.costReduction), description, icon: arc.img ?? null, disabled: short, badge: short ? "Not enough MP" : null });
+        optionRows.push({
+          effect_kind: "summon_arcanum",
+          summon_target: String(arc.system?.uniqueId ?? arc.id ?? "").trim(),
+          summon_cost_formula: costFormula,
+          quick_summon_opts: set.join(","),
+          effect_label: `${baseLabel}:summon:${arc.id}${set.length ? `:qs-${set.join("-")}` : ""}`,
+        });
+      }
     }
   }
   return { options, optionRows };
 }
 
+// Quick Summoning option labels. The label IS the pre-card capture key (the pick
+// is recorded by label), so the card's cost chip recovers the chosen option set
+// from it with parseQuickSummonLabel — keep the two in lock-step.
+const QS_LABEL_SEP = " · Quick: ";
+function quickSummonOptionLabel(arcName, set, reduction) {
+  if (!set.length) return arcName;
+  const parts = [];
+  if (set.includes("cost")) parts.push(`−${reduction} MP`);
+  if (set.includes("pulse")) parts.push("Pulse");
+  return `${arcName}${QS_LABEL_SEP}${parts.join(" + ")}`;
+}
+export function parseQuickSummonLabel(label) {
+  const s = String(label ?? "");
+  const i = s.indexOf(QS_LABEL_SEP);
+  if (i < 0) return [];
+  const tail = s.slice(i + QS_LABEL_SEP.length);
+  const out = [];
+  if (/MP/.test(tail)) out.push("cost");
+  if (/Pulse/.test(tail)) out.push("pulse");
+  return out;
+}
+// RAW: "When you summon an Arcanum DURING YOUR TURN". Only a live BD conflict
+// has turns; out of conflict the options are not offered.
+function quickSummonInTurn(ctx) {
+  return !!(ctx?.dCombat ?? ctx?.director?.dCombat ?? globalThis.__fudActiveDCombat);
+}
+
 // ── Quick Summoning (Arcanist passive) ─────────────────────────────────────
-// "When you summon an Arcanum on your turn, choose up to two options: reduce its
-// MP cost by [SL × 5]; after summoning, if merged, immediately Pulse." Both are
-// beneficial, so the current policy applies BOTH when the caster owns the skill.
-// The RAW dismiss consequences (no willing dismiss until next turn; choosing both
-// removes this summon's dismiss) are recorded via `quickSummonNoDismiss` on the
-// merge AE for a later enforcement pass; the player-facing "choose up to two"
-// menu is a follow-up that belongs with the live summon UI.
+// June-22-2026 variant: "When you summon an Arcanum during your turn, choose up
+// to two options: reduce its MP cost by (SL × 5); and/or after you summon the
+// Arcanum, if you are merged with it, perform its pulse. If you choose at least
+// one option, you cannot willingly dismiss that Arcanum until the start of your
+// next turn; if you choose both, that Arcanum's dismiss effect will not be
+// available during this summoning."
+//
+// The CHOICE is the Bind and Summon dynamic menu itself (buildArcanumMenuOptions
+// offers each Arcanum once per option set), so it is captured pre-card with the
+// Arcanum pick. doSummonArcanum applies exactly the chosen options and stamps
+// the consequences on the merge AE (quickSummonOpts / quickSummonRound /
+// quickSummonNoDismissEffect), which arcanumQuickSummonLock (skill-formulas)
+// reads for every willing-dismiss route: the merge AE's turn-edge dismiss free
+// action (refused while locked; a plain unmerge with no effect when the effect
+// is gone) and the skill picker's Dismiss child (dimmed in both cases).
+// Revelation (variant): in Crisis with both options, the dismiss effect stays.
+// Grand Summoning (variant) "only when summoned without Quick Summoning" = a
+// merge AE whose quickSummonOpts is empty (not automated; no Grand Summoning doc).
 //
 // The name is DECLARED in shared/code-backed-content.js — this skill carries no
 // config rows of its own, so that registry is the only place the fact "Quick
@@ -8956,42 +9045,52 @@ export function quickSummonMods(actor) {
   const level = qs ? Math.max(0, Number(qs.system?.props?.level ?? qs.system?.props?.skill_level ?? 0) || 0) : 0;
   return { owns: !!qs, level, costReduction: level * 5 };
 }
+// Revelation (June-22 variant): "When you summon an Arcanum, if you are in Crisis
+// and choose both options of the Quick Summoning Skill, you only suffer the first
+// penalty (the dismiss effect … will be available for this summoning)."
+function ownsRevelation(actor) {
+  return (actor?.items ?? []).some((it) => /^revelation\b/i.test(String(it?.name ?? "").trim())
+    && !!String(it?.system?.props?.skill_type ?? ""));
+}
 
-// ── STEP 3 (summon half): debit the cost + apply a specific Arcanum's merge ──
-// The same summon cost for callers that hold only a resolver (affordability
-// walk, card cost chip): Quick Summoning's reduction read as SL_QUICK_SUMMONING,
-// the identifier twin of quickSummonMods. Without it the picker showed 30 while
-// the debit took 25, and 25–29 MP wrongly blocked the summon.
-function summonCostViaResolver(row, resolver) {
+// ── The ONE summon-cost function ────────────────────────────────────────────
+// summon_cost_formula (default 40; the Emergency Arcanum reduction rides inside
+// it) minus Quick Summoning's SL × 5 when that option applies, floored at 0.
+// Resolver-based so every seam shares it: the affordability walk
+// (analyzeChainCost), both card cost chips (open_action_menu / summon_arcanum
+// previews), the menu's per-option greying and the RESOLVE debit.
+//   quickReduce: true  → subtract (the option was chosen)
+//                false → do not
+//                null   → "cheapest summon on offer": subtract iff the reduction
+//                         option exists (owner, in a conflict) — the pre-pick
+//                         affordability question, so 25–29 MP is not refused.
+export function summonCostViaResolver(row, resolver, { quickReduce = null } = {}) {
   const formula = String(row.summon_cost_formula ?? row.summon_cost ?? "40").trim() || "40";
   const base = Number(evaluateFormula(formula, resolver, 0)) || 0;
   let sl = 0;
   try { sl = Number(evaluateFormula("SL_QUICK_SUMMONING", resolver, 0)) || 0; } catch {}
-  return Math.max(0, base - sl * 5);
+  const reduce = quickReduce == null ? (sl > 0 && quickSummonInTurn(null)) : !!quickReduce;
+  return Math.max(0, base - (reduce ? sl * 5 : 0));
 }
-
-// The MP a summon costs: summon_cost_formula (default 40; the Emergency Arcanum
-// reduction rides inside it) minus Quick Summoning's SL × 5, floored at 0. ONE
-// computation for the menu's affordability greying and the RESOLVE debit.
-function summonCost(row, ctx) {
-  const costFormula = String(row.summon_cost_formula ?? row.summon_cost ?? "40").trim() || "40";
-  const base = Number(describeConsumeResource({ effect_label: "summon:cost", consume_resource: "mp", consume_amount: costFormula, target_ref: "self" }, ctx).amount ?? 0) || 0;
-  return Math.max(0, base - quickSummonMods(ctx.reactorActor).costReduction);
+function summonCost(row, ctx, opts = {}) {
+  const resolver = buildSkillResolver({
+    actor: ctx.reactorActor, payload: ctx.payload ?? null, skill: ctx.skill ?? null, round: ctx.dCombat?.round ?? 0,
+  });
+  return summonCostViaResolver(row, resolver, opts);
 }
 
 async function doSummonArcanum(arc, row, ctx) {
   const caster = ctx.reactorActor;
-  const costFormula = String(row.summon_cost_formula ?? row.summon_cost ?? "40").trim() || "40";
-  let costRow = { effect_label: "summon:cost", consume_resource: "mp", consume_amount: costFormula, target_ref: "self", on_empty: "abort" };
-  let derived = describeConsumeResource(costRow, ctx);
-  // Quick Summoning option 1 — reduce the summon cost by SL × 5 (floored at 0).
   const qs = quickSummonMods(caster);
-  if (qs.costReduction > 0) {
-    const reduced = summonCost(row, ctx);
-    log(`skill-effects.summon_arcanum: Quick Summoning −${qs.costReduction} MP (${derived.amount}→${reduced})`);
-    derived = { ...derived, amount: reduced };
-    costRow = { ...costRow, consume_amount: String(reduced) };
-  }
+  // The chosen Quick Summoning options ride the picked option row. A row without
+  // them (no QS, out of conflict, a stale capture) = no options.
+  const opts = qs.owns && quickSummonInTurn(ctx)
+    ? String(row.quick_summon_opts ?? "").split(",").map((s) => s.trim().toLowerCase()).filter((s) => s === "cost" || s === "pulse")
+    : [];
+  const amount = summonCost(row, ctx, { quickReduce: opts.includes("cost") });
+  const costRow = { effect_label: "summon:cost", consume_resource: "mp", consume_amount: String(amount), target_ref: "self", on_empty: "abort" };
+  const derived = describeConsumeResource(costRow, ctx);
+  if (opts.includes("cost")) log(`skill-effects.summon_arcanum: Quick Summoning −${qs.costReduction} MP (→ ${derived.amount})`);
   const paid = await consumeResourceApply(costRow, ctx, derived);
   if (!paid?.ok) {
     ui.notifications?.warn(`${caster.name} can't afford to summon ${arc.name} (${derived.amount} MP).`);
@@ -9003,28 +9102,49 @@ async function doSummonArcanum(arc, row, ctx) {
     return { ok: false, kind: "summon_arcanum", reason: "no-merge-child" };
   }
   const mres = await runArcanumChild(mergeChild, ctx);
-  log(`skill-effects.summon_arcanum: ${caster.name} summoned "${arc.name}" (−${derived.amount} MP)`);
+  log(`skill-effects.summon_arcanum: ${caster.name} summoned "${arc.name}" (−${derived.amount} MP)${opts.length ? ` [Quick Summoning: ${opts.join(" + ")}]` : ""}`);
 
-  // Quick Summoning option 2 — immediately Pulse if now merged with this Arcanum.
   let autoPulsed = false;
-  if (qs.owns && isArcanumMerged(caster, arc)) {
-    // Granted as a FREE ACTION, never run inline: running the Pulse child here
-    // reused Bind and Summon's Self-locked targets, so every summon burned the
-    // Arcanist. The merged_arcanum: preset stages the child as its own action —
-    // its own "Up to three creatures" targeting, composed by the player.
-    if (findArcanumChild(caster, arc, "pulse")) {
+  let noDismissEffect = false;
+  if (opts.length && isArcanumMerged(caster, arc)) {
+    // Option 2 — Pulse. Granted as a FREE ACTION, never run inline: running the
+    // Pulse child here reused Bind and Summon's Self-locked targets, so every
+    // summon burned the Arcanist. The merged_arcanum: preset stages the child as
+    // its own action — its own targeting, composed by the player.
+    if (opts.includes("pulse") && findArcanumChild(caster, arc, "pulse")) {
       log(`skill-effects.summon_arcanum: Quick Summoning grants a free Pulse of "${arc.name}"`);
       try {
         const fr = await applyFreeActionEffect({ effect_kind: "free_action", effect_label: "quick_summoning:pulse", action_ref: "merged_arcanum:pulse" }, ctx);
         autoPulsed = !!fr?.ok;
       } catch (e) { warn(`skill-effects.summon_arcanum: Quick Summoning free Pulse failed: ${e.message}`); }
     }
-    // Record the dismiss-lock consequence for a later enforcement pass.
+    // Consequences, stamped on the merge AE (read by arcanumQuickSummonLock).
+    let crisis = 0;
+    try { crisis = Number(evaluateFormula("HAS_STATUS_CRISIS", buildSkillResolver({ actor: caster }), 0)) || 0; } catch {}
+    noDismissEffect = opts.length === 2 && !(crisis > 0 && ownsRevelation(caster));
     const mergeAe = findMergedArcanumAe(caster);
-    if (mergeAe) { try { await mergeAe.setFlag(FLAG_NS, "quickSummonNoDismiss", true); } catch {} }
+    const round = Number(ctx.dCombat?.round ?? globalThis.__fudActiveDCombat?.round ?? 0) || 0;
+    if (mergeAe) {
+      try {
+        await mergeAe.update({
+          [`flags.${FLAG_NS}.quickSummonOpts`]: opts,
+          [`flags.${FLAG_NS}.quickSummonRound`]: round,
+          [`flags.${FLAG_NS}.quickSummonNoDismissEffect`]: noDismissEffect,
+        });
+      } catch (e) { warn(`skill-effects.summon_arcanum: Quick Summoning stamp failed: ${e.message}`); }
+    }
   }
   return { ok: true, kind: "summon_arcanum", mode: "summon", arcanum: arc.name, mergeResult: mres,
-    quickSummon: qs.owns ? { costReduction: qs.costReduction, autoPulsed } : null };
+    quickSummon: qs.owns ? { opts, costReduction: opts.includes("cost") ? qs.costReduction : 0, autoPulsed, noDismissEffect } : null };
+}
+
+// A willing dismiss that ONLY unmerges (no dismiss effect): Quick Summoning's
+// "both options" summoning, and RAW's "you are free to ignore a dismiss effect".
+// Goes through remove_ae (filter_tag arcanum-merge) so creature_loses_status is
+// emitted with cause = the Arcanist — Arcane Regeneration (variant) / Arcane
+// Circle see it as the willing dismissal it is.
+export async function unmergeArcanumNoEffect(ctx) {
+  return applyRemoveTaggedAeEffect({ effect_kind: "remove_ae", effect_label: "arcanum:unmerge", filter_tag: "arcanum-merge", target_ref: "self", count: "all" }, ctx);
 }
 
 // ── summon_arcanum — the per-option EXECUTOR ───────────────────────────────
@@ -9052,6 +9172,13 @@ async function applySummonArcanumEffect(row, ctx) {
 
   const arcanumAction = String(row.arcanum_action ?? "").trim().toLowerCase();
   if (arcanumAction === "pulse" || arcanumAction === "dismiss") {
+    // Legacy route (unreachable from play since B&S gates on ARCANUM_MERGED == 0)
+    // — still honour Quick Summoning's dismiss consequences if anything calls it.
+    if (arcanumAction === "dismiss") {
+      const lock = arcanumQuickSummonLock(caster);
+      if (lock.locked) return { ok: true, kind: "summon_arcanum", abort: true, reason: "quick-summoning-locked" };
+      if (lock.noEffect) { const ur = await unmergeArcanumNoEffect(ctx); return { ok: true, kind: "summon_arcanum", mode: "unmerge", childResult: ur }; }
+    }
     const mergeAe = findMergedArcanumAe(caster);
     const arcanum = mergeAe ? arcanumForMergeAe(caster, mergeAe) : null;
     const child = arcanum ? findArcanumChild(caster, arcanum, arcanumAction) : null;
@@ -9339,6 +9466,37 @@ async function applyFreeActionEffect(row, ctx) {
     // so a shared merge-AE reaction can offer "dismiss the merged Arcanum" without naming a
     // specific skill. No merged Arcanum (or no such child) → no preset → warn + no-op.
     const role = ref.slice("merged_arcanum:".length).trim().toLowerCase();
+    // Quick Summoning's dismiss consequences (arcanumQuickSummonLock): a locked
+    // merge refuses the willing dismiss outright; an effect-less summoning
+    // dismisses by a plain unmerge (remove_ae → creature_loses_status) instead
+    // of staging the Dismiss child, whose action IS the dismiss effect.
+    if (role === "dismiss") {
+      const lock = arcanumQuickSummonLock(performer);
+      if (lock.locked) {
+        ui.notifications?.info?.(`${performer.name}: Quick Summoning — this Arcanum can't be dismissed until the start of your next turn.`);
+        log(`skill-effects.free_action: merged_arcanum:dismiss refused — Quick Summoning lock on ${performer.name}`);
+        return { ok: true, kind: "free_action", applied: [], reason: "quick-summoning-locked" };
+      }
+      if (lock.noEffect) {
+        const ur = await unmergeArcanumNoEffect({ ...ctx, resolvedTargets: new Map(), reactorActor: performer, reactorToken: performerToken ?? performer.getActiveTokens?.()?.[0]?.document ?? null });
+        log(`skill-effects.free_action: merged_arcanum:dismiss → plain unmerge (Quick Summoning: no dismiss effect this summoning)`);
+        // This runs inside the turn-edge window's ASK pass, which comes AFTER
+        // that window's settle — so the creature_loses_status the unmerge just
+        // queued would otherwise sit in the ledger until the NEXT creature's
+        // window settles it (wrong turn: ON_MY_TURN 0, Crisis re-read later).
+        // Settle it now, while this is still the Arcanist's window. (The
+        // effect-dismiss route needs no help: the staged Dismiss child is a real
+        // action, and its RESOLVE settles.)
+        try {
+          const dir = ctx.director ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.() ?? null;
+          if (dir?.ctx && (dir.ctx._postResolveTriggers ?? []).length) {
+            const { settleInstance } = await import("./instance-settle.js");
+            await settleInstance(dir, { reason: "arcanum-unmerge" });
+          }
+        } catch (e) { warn("skill-effects.free_action: settle after unmerge threw", e); }
+        return { ok: true, kind: "free_action", applied: ur?.applied ?? [], unmerged: true, reason: "quick-summoning-no-effect" };
+      }
+    }
     const mergeAe = findMergedArcanumAe(performer);
     const mergedArc = mergeAe ? arcanumForMergeAe(performer, mergeAe) : null;
     presetItem = mergedArc ? findArcanumChild(performer, mergedArc, role) : null;
@@ -11358,7 +11516,7 @@ async function applyRemoveTaggedAeEffect(row, ctx) {
       if (slice.length) {
         try {
           await actor.deleteEmbeddedDocuments("ActiveEffect", slice.map((e) => e.id).filter(Boolean));
-          for (const m of slice) removed.push({ actorUuid: actor.uuid, aeName: m.name });
+          for (const m of slice) removed.push(_removedAeSnap(actor, m));
           log(`skill-effects.remove_tagged_ae: replay removed ${slice.map((m) => m.name).join(", ")} from ${actor.name}`);
         } catch (e) { warn(`skill-effects.remove_tagged_ae: replay remove failed on ${actor.name}`, e); }
       }
@@ -11370,7 +11528,7 @@ async function applyRemoveTaggedAeEffect(row, ctx) {
       try {
         const ids = matches.map((e) => e.id).filter(Boolean);
         await actor.deleteEmbeddedDocuments("ActiveEffect", ids);
-        for (const m of matches) removed.push({ actorUuid: actor.uuid, aeName: m.name });
+        for (const m of matches) removed.push(_removedAeSnap(actor, m));
         log(`skill-effects.remove_tagged_ae: removed ${matches.length} ${filterTag} from ${actor.name}`);
       } catch (e) {
         warn(`skill-effects.remove_tagged_ae: bulk remove failed on ${actor.name}`, e);
@@ -11401,7 +11559,7 @@ async function applyRemoveTaggedAeEffect(row, ctx) {
       const picked = remainingMatches[chosenIdx];
       try {
         await picked.delete();
-        removed.push({ actorUuid: actor.uuid, aeName: picked.name });
+        removed.push(_removedAeSnap(actor, picked));
         log(`skill-effects.remove_tagged_ae: removed "${picked.name}" from ${actor.name}`);
       } catch (e) {
         warn(`skill-effects.remove_tagged_ae: delete failed on ${actor.name} / ${picked.name}`, e);
@@ -11410,7 +11568,62 @@ async function applyRemoveTaggedAeEffect(row, ctx) {
     }
   }
 
+  _queueStatusRemovedEvents(removed, ctx);
   return { ok: true, kind: "remove_tagged_ae", applied: removed };
+}
+
+// Snapshot what a status-loss event needs from an AE being removed. Read from
+// the in-memory doc (its data survives deleteEmbeddedDocuments) — `statuses`
+// gates the emit, `tags` feeds STATUS_HAS_TAG_<X>.
+function _removedAeSnap(actor, eff) {
+  return {
+    actorUuid: actor.uuid, aeName: eff?.name,
+    _statuses: Array.from(eff?.statuses ?? []),
+    _tags: aeTagsOf(eff),
+  };
+}
+
+// Emit `creature_loses_status` for every removed STATUS condition (non-empty
+// `statuses`), mirroring apply_ae's creature_status_applied block (same payload
+// shape, same Crisis skip — crisis-reactor emits Crisis itself). Cause = the
+// row's reactor (the creature whose skill removed it): a reactor that wants
+// "when I WILLINGLY dismiss" gates on CAUSE_IS_SELF == 1, because this handler is
+// generic — an enemy's "strip a buff" row removes a merge AE through the same
+// code. Invariant for the Arcanist: EVERY `arcanum_role: dismiss` child must
+// unmerge through a remove_ae/remove_tagged_ae row filter_tag "arcanum-merge";
+// a bare mergeAe.delete() elsewhere emits nothing (Arcane Regeneration (variant)
+// and Arcane Circle listen here).
+function _queueStatusRemovedEvents(removed, ctx) {
+  if (!Array.isArray(removed) || !removed.length) return;
+  const bd = globalThis.FUCompanion?.api?.experimental?.battleDirector;
+  const director = ctx?.director ?? bd?.getActiveDirector?.() ?? null;
+  if (!director?.ctx) return;
+  if (!Array.isArray(director.ctx._postResolveTriggers)) director.ctx._postResolveTriggers = [];
+  const causeActorUuid = ctx?.reactorActor?.uuid ?? null;
+  const causeTokenUuid = ctx?.reactorToken?.uuid ?? null;
+  for (const r of removed) {
+    if (!r?.actorUuid || !r._statuses?.length) continue;
+    const statusName = String(r.aeName ?? "Effect");
+    if (statusName === "Crisis") continue;
+    const subjActor = _resolveActorByUuidSyncSE(r.actorUuid);
+    if (!subjActor) continue;
+    const subjTok = subjActor.getActiveTokens?.()?.[0]?.document ?? null;
+    director.ctx._postResolveTriggers.push({
+      casterActor: subjActor,
+      trigger: "creature_loses_status",
+      payload: {
+        status: statusName, statusTags: r._tags ?? [], direction: "removed",
+        sourceActorUuid: r.actorUuid, sourceTokenUuid: subjTok?.uuid ?? null,
+        subjectActorUuid: r.actorUuid, subjectTokenUuid: subjTok?.uuid ?? null,
+        causeActorUuid, causeTokenUuid,
+        originLabel: statusName,
+        sourceSkillName: ctx?.skill?.name ?? null,
+      },
+    });
+  }
+}
+function _resolveActorByUuidSyncSE(uuid) {
+  try { const d = fromUuidSync(String(uuid)); return d?.actor ?? d ?? null; } catch { return null; }
 }
 
 // ── roll_loot_table ────────────────────────────────────────────────────

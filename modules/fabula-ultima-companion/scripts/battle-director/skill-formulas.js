@@ -606,6 +606,29 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const c = (dc.combatants ?? []).find((x) => String(x?.actorId ?? "").trim() === mine);
         return Math.max(0, Number(c?.turnsRemaining ?? 0) || 0);
       }
+      // ON_MY_TURN — IS_MY_TURN, PLUS the turn_end window of this creature's own
+      // turn. TURN_END advances the BD (dCombat.current → null) BEFORE the
+      // turn_end reaction window runs, so a turn-edge act ("before or after an
+      // action, on your turn" — willingly dismissing an Arcanum) reads
+      // IS_MY_TURN 0 there. Between turns, the window's acting actor is the
+      // director's standalonePayload.actingActorUuid. Kept separate from
+      // IS_MY_TURN so existing `IS_MY_TURN == 0` gates (Viper Bone) don't move.
+      // Arcane Circle gates on it.
+      case "ON_MY_TURN": {
+        const cur = globalThis.__fudActiveDCombat?.current ?? null;
+        const mine = String(actor?.id ?? "").trim();
+        if (!mine) return 0;
+        if (cur) return String(cur.actorId ?? "").trim() === mine ? 1 : 0;
+        try {
+          const dctx = globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.()?.ctx ?? null;
+          if (String(dctx?.standaloneTrigger ?? "") !== "turn_end") return 0;
+          const ending = String(dctx?.standalonePayload?.actingActorUuid ?? "").trim();
+          if (!ending) return 0;
+          if (ending === String(actor?.uuid ?? "")) return 1;
+          const a = _resolveActorByUuidSync(ending);
+          return a && (a.uuid === actor?.uuid || a.id === mine) ? 1 : 0;
+        } catch { return 0; }
+      }
       case "IS_MY_TURN": {
         const cur = globalThis.__fudActiveDCombat?.current ?? null;
         const mine = String(actor?.id ?? "").trim();
@@ -800,6 +823,13 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // merged the action is Pulse/Dismiss, which are free) and any "while
       // merged" gate. General, not per-Arcanum.
       case "ARCANUM_MERGED": return actorHasArcanumMerge(actor) ? 1 : 0;
+      // Quick Summoning dismiss lock on the merged Arcanum (arcanumQuickSummonLock):
+      // 1 while "you cannot willingly dismiss that Arcanum until the start of your
+      // next turn". Gates the merge AE's turn_start/turn_end dismiss offer.
+      case "ARCANUM_DISMISS_LOCKED": return arcanumQuickSummonLock(actor).locked ? 1 : 0;
+      // 1 when this summoning's dismiss EFFECT is unavailable (both Quick
+      // Summoning options, no Revelation-in-Crisis): a willing dismiss only unmerges.
+      case "ARCANUM_DISMISS_EFFECT_LOCKED": return arcanumQuickSummonLock(actor).noEffect ? 1 : 0;
       // Number of live summons (incl. phantasms) THIS actor put on the field —
       // tokens flagged summonedBy == me + isSummon/isPhantasm. Gates Create
       // Phantasm: Strike's "Command an existing Phantasm" menu option
@@ -969,6 +999,16 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "TRIGGER_AMOUNT": return Math.max(0, Number(payload?.amount ?? 0) || 0);
       // Combat state
       case "ROUND": return Math.max(0, Number(round ?? 0) || 0);
+      // 1 when the acting skill's PRINTED target is a single creature ("One
+      // creature", "One Enemy", "Single", "One Random Creature"), else 0. Reads
+      // payload.skillTarget (the skill_target text on the CONFIRM actionBase).
+      // A weapon target ("One Weapon", "One equipped weapon") is NOT a creature.
+      // Rondo of Nightmare: "an offensive spell with a target of One creature".
+      case "ACTION_TARGET_TEXT_IS_ONE": {
+        const t = String(payload?.skillTarget ?? "").trim().toLowerCase();
+        if (!t || /weapon/.test(t)) return 0;
+        return (/^one\b/.test(t) && !/^one or more\b/.test(t)) || t === "single" ? 1 : 0;
+      }
       case "ACTION_TARGET_COUNT": {
         const t = payload?.targets;
         return Array.isArray(t) ? t.length : 0;
@@ -1738,6 +1778,19 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
           const tags = String(payload?.skillTags ?? "")
             .split(/[\s,]+/).map((s) => s.trim().toLowerCase()).filter(Boolean);
           return tags.includes(needle) ? 1 : 0;
+        }
+        // Dynamic STATUS_HAS_TAG_<X> — 1 if the STATUS that fired a status-ledger
+        // trigger (creature_status_applied / creature_loses_status) carries tag <X>
+        // on its AE `system.tags`, else 0. The emitter stamps `payload.statusTags`
+        // (an array). Hyphen / underscore / space are equivalent on BOTH sides, so
+        // STATUS_HAS_TAG_ARCANUM_MERGE matches the tag "arcanum-merge" (every Arcanum's
+        // merge AE carries it — the status NAME differs per Arcanum, the tag does not).
+        if (name.startsWith("STATUS_HAS_TAG_")) {
+          const norm = (s) => String(s ?? "").replace(/[-_]/g, " ").replace(/\s+/g, " ").trim().toLowerCase();
+          const needle = norm(name.slice("STATUS_HAS_TAG_".length));
+          const raw = payload?.statusTags;
+          const list = Array.isArray(raw) ? raw : String(raw ?? "").split(",");
+          return list.some((t) => norm(t) === needle) ? 1 : 0;
         }
         // Dynamic AFFECTED_BY_<TAG> — 1 if a `<tag>`-tagged Active Effect ACTUALLY
         // APPLIED its damage-increase to the hit that fired this trigger, else 0.
@@ -2983,6 +3036,31 @@ function anyAllyInCrisis(actor) {
 // 1 if `actor` currently has an Arcanum merged — any active AE flagged
 // fabula-ultima-companion.arcanumMerge (the Arcanist merge/marker AE). Powers the
 // ARCANUM_MERGED identifier.
+// Quick Summoning's dismiss consequences on the CURRENTLY-merged Arcanum
+// (June-22-2026 variant): "If you choose at least one option, you cannot
+// willingly dismiss that Arcanum until the start of your next turn; if you
+// choose both, that Arcanum's dismiss effect will not be available during this
+// summoning." doSummonArcanum stamps the merge AE with the chosen options
+// (`quickSummonOpts`), the BD round of the summon (`quickSummonRound`) and
+// whether the dismiss EFFECT is gone for this summoning
+// (`quickSummonNoDismissEffect`; Revelation-in-Crisis keeps it). The lock lasts
+// while the live BD round is still the summon round — the Arcanist's next turn
+// starts a later round. No live BD combat → no lock (QS only applies in turns).
+//   { locked, noEffect, opts }
+export function arcanumQuickSummonLock(actor) {
+  for (const e of (actor?.effects?.contents ?? actor?.effects ?? [])) {
+    if (e?.disabled) continue;
+    const f = e?.flags?.["fabula-ultima-companion"];
+    if (!f?.arcanumMerge) continue;
+    const opts = Array.isArray(f.quickSummonOpts) ? f.quickSummonOpts : [];
+    const stamp = Number(f.quickSummonRound ?? NaN);
+    const round = Number(globalThis.__fudActiveDCombat?.round ?? NaN);
+    const locked = opts.length > 0 && Number.isFinite(stamp) && Number.isFinite(round) && round <= stamp;
+    return { locked, noEffect: !!f.quickSummonNoDismissEffect, opts };
+  }
+  return { locked: false, noEffect: false, opts: [] };
+}
+
 function actorHasArcanumMerge(actor) {
   for (const e of (actor?.effects?.contents ?? actor?.effects ?? [])) {
     if (e?.disabled) continue;

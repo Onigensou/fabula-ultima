@@ -51,6 +51,7 @@
           "description": "<p>You can communicate with creatures of the <strong>beast,</strong> <strong>monster</strong> and <strong>plant</strong> Species</p>",
           "duration": "",
           "heroic_requirement": "",
+          "implementation_note": "Narrative: you can communicate with beast, monster and plant creatures. No mechanical hook; adjudicated by the GM.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -111,6 +112,7 @@
           "description": "<p>When you see a creature belonging to the <strong>beast, monster</strong> or <strong>plant</strong> Species cast a spell, you may immediately choose to learn that spell as a Chimerist spell of your own: if you do, record the <strong>Species</strong> of the creature you learned it from.</p><p> When you first acquire this Skill, choose <strong>【INS + WLP】</strong>or<strong>【MIG + WLP】</strong>. From now on, your offensive (⚡) Chimerist spells will use the chosen Attributes for the Magic Check, regardless of the Attributes used by the creature you learned the spell from.</p><p> You may have <strong>up to 【SL + 2】 different Chimerist spells</strong> memorized this way. If you want to memorize a new Chimerist spell but are already at your limit, you must forget one of your old spells and replace it with the new spell.</p>",
           "duration": "",
           "heroic_requirement": "",
+          "implementation_note": "Narrative + authoring convention. Learning a spell is a GM/story event (cap: SL + 2 memorised). Author each learned spell as its own Spell doc on the Chimerist (class Chimerist, skill_type Spell; offensive spells use the chosen INS+WLP or MIG+WLP in rolled_atr1/rolled_atr2) and record the source Species in skill_tags as two tags: 'chimerist' plus the species word ('chimerist beast' / 'chimerist monster' / 'chimerist plant'). Pathogenesis reads those tags.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -328,14 +330,101 @@
           "damage_bonus": "0",
           "description": "<p>When you deal damage to one or more creatures with one of your <strong>Chimerist</strong> spells, each of those creatures that share their <strong>Species</strong> with the creature you originally learned that spell from suffers <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></p>",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "chain_steps": "patho_pool_beast,patho_apply_beast",
+              "effect_kind": "chain",
+              "effect_label": "patho_beast"
+            },
+            "1": {
+              "auto_target": "skip",
+              "candidate_source": "hit_action_targets",
+              "effect_kind": "targeting",
+              "effect_label": "patho_pool_beast",
+              "mode": "all",
+              "target_filter": "SPECIES_IS_BEAST == 1"
+            },
+            "2": {
+              "ae_duplicate_mode": "replace_same_status",
+              "ae_template_ref": "Poisoned",
+              "effect_kind": "apply_ae",
+              "effect_label": "patho_apply_beast",
+              "target_ref": "patho_pool_beast"
+            },
+            "3": {
+              "chain_steps": "patho_pool_monster,patho_apply_monster",
+              "effect_kind": "chain",
+              "effect_label": "patho_monster"
+            },
+            "4": {
+              "auto_target": "skip",
+              "candidate_source": "hit_action_targets",
+              "effect_kind": "targeting",
+              "effect_label": "patho_pool_monster",
+              "mode": "all",
+              "target_filter": "SPECIES_IS_MONSTER == 1"
+            },
+            "5": {
+              "ae_duplicate_mode": "replace_same_status",
+              "ae_template_ref": "Poisoned",
+              "effect_kind": "apply_ae",
+              "effect_label": "patho_apply_monster",
+              "target_ref": "patho_pool_monster"
+            },
+            "6": {
+              "chain_steps": "patho_pool_plant,patho_apply_plant",
+              "effect_kind": "chain",
+              "effect_label": "patho_plant"
+            },
+            "7": {
+              "auto_target": "skip",
+              "candidate_source": "hit_action_targets",
+              "effect_kind": "targeting",
+              "effect_label": "patho_pool_plant",
+              "mode": "all",
+              "target_filter": "SPECIES_IS_PLANT == 1"
+            },
+            "8": {
+              "ae_duplicate_mode": "replace_same_status",
+              "ae_template_ref": "Poisoned",
+              "effect_kind": "apply_ae",
+              "effect_label": "patho_apply_plant",
+              "target_ref": "patho_pool_plant"
+            }
+          },
           "heroic_requirement": "",
+          "implementation_note": "Automated: when one of your Chimerist spells (skill_tags 'chimerist <species>', see Spell Mimic) makes creatures lose HP, each of them of that same Species suffers poisoned.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "1",
           "name": "Pathogenesis",
           "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "ACTION_IS_SPELL == 1 && SKILL_HAS_TAG_CHIMERIST == 1 && SKILL_HAS_TAG_BEAST == 1",
+              "reaction_effect_ref": "patho_beast",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_completes_action"
+            },
+            "1": {
+              "condition_formula": "ACTION_IS_SPELL == 1 && SKILL_HAS_TAG_CHIMERIST == 1 && SKILL_HAS_TAG_MONSTER == 1",
+              "reaction_effect_ref": "patho_monster",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_completes_action"
+            },
+            "2": {
+              "condition_formula": "ACTION_IS_SPELL == 1 && SKILL_HAS_TAG_CHIMERIST == 1 && SKILL_HAS_TAG_PLANT == 1",
+              "reaction_effect_ref": "patho_plant",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_completes_action"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_target": "",

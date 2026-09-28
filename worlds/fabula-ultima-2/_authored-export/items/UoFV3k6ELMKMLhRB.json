@@ -52,12 +52,14 @@
             },
             "reaction_config_table": {
               "0": {
+                "condition_formula": "ARCANUM_DISMISS_LOCKED == 0",
                 "reaction_effect_ref": "dismiss_free",
                 "reaction_passive_mode": "ask",
                 "reaction_source": "self",
                 "reaction_trigger": "turn_start"
               },
               "1": {
+                "condition_formula": "ARCANUM_DISMISS_LOCKED == 0",
                 "reaction_effect_ref": "dismiss_free",
                 "reaction_passive_mode": "ask",
                 "reaction_source": "self",

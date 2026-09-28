@@ -103,6 +103,7 @@ function queueStatusEvent(director, actor, direction, tokenUuid) {
     trigger: direction === "applied" ? "creature_status_applied" : "creature_loses_status",
     payload: {
       status: "Crisis",
+      statusTags: [],   // vocabulary parity with apply_ae / remove_ae (STATUS_HAS_TAG_<X>)
       direction,
       // Subject = the creature whose status changed (matcher reads sourceActorUuid).
       sourceActorUuid: actor.uuid, sourceTokenUuid: tokenUuid ?? null,

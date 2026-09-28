@@ -31,6 +31,7 @@
       "description": "<p>When you see a creature belonging to the <strong>beast, monster</strong> or <strong>plant</strong> Species cast a spell, you may immediately choose to learn that spell as a Chimerist spell of your own: if you do, record the <strong>Species</strong> of the creature you learned it from.</p><p> When you first acquire this Skill, choose <strong>【INS + WLP】</strong>or<strong>【MIG + WLP】</strong>. From now on, your offensive (⚡) Chimerist spells will use the chosen Attributes for the Magic Check, regardless of the Attributes used by the creature you learned the spell from.</p><p> You may have <strong>up to 【SL + 2】 different Chimerist spells</strong> memorized this way. If you want to memorize a new Chimerist spell but are already at your limit, you must forget one of your old spells and replace it with the new spell.</p>",
       "duration": "",
       "heroic_requirement": "",
+      "implementation_note": "Narrative + authoring convention. Learning a spell is a GM/story event (cap: SL + 2 memorised). Author each learned spell as its own Spell doc on the Chimerist (class Chimerist, skill_type Spell; offensive spells use the chosen INS+WLP or MIG+WLP in rolled_atr1/rolled_atr2) and record the source Species in skill_tags as two tags: 'chimerist' plus the species word ('chimerist beast' / 'chimerist monster' / 'chimerist plant'). Pathogenesis reads those tags.",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,

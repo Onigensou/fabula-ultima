@@ -12,7 +12,7 @@
 import { log, warn } from "./logger.js";
 import { parseSkillCost, resolveCost, checkAffordable, formatParsedCost,
          findCostSubstitution, canSubstituteForShortfall } from "./skill-cost.js";
-import { buildSkillResolver, evaluateFormula, normalizeDamageType } from "./skill-formulas.js";
+import { buildSkillResolver, evaluateFormula, normalizeDamageType, arcanumQuickSummonLock } from "./skill-formulas.js";
 import { analyzeChainCost, estimatePerformReactionCost, isMergedArcanumChild } from "./skill-effects.js";
 import { pickFromList, ListPicker } from "./list-picker.js";
 import { classifyActionIntent } from "./skill-intent.js";
@@ -409,6 +409,15 @@ function candidateFromSkill(skill, actor, { source, sourceItem, freeOfCost = fal
   // caster may still perform an "Up to X" action against a single creature.
   // A fixed-multi spec (All / N creatures) can't collapse to a free choice of
   // one, so those remain blocked.
+  // Quick Summoning dismiss consequences on a merged Arcanum's Dismiss child
+  // (casting that child IS the dismiss effect): dimmed while the summon's lock
+  // holds, and dimmed when this summoning has no dismiss effect — the willing
+  // dismiss then goes through the merge AE's turn-edge prompt as a plain unmerge.
+  if (!unavailableReason && String(p.arcanum_role ?? "").trim().toLowerCase() === "dismiss") {
+    const lock = arcanumQuickSummonLock(actor);
+    if (lock.locked) unavailableReason = "Quick Summoning: can't dismiss until your next turn";
+    else if (lock.noEffect) unavailableReason = "Quick Summoning: no dismiss effect this summoning";
+  }
   if (!unavailableReason) {
     const { cap, reason } = getMaxActionTargets(actor);
     if (cap < 2 && skillTargetIsMulti(p.skill_target) && !skillTargetIsUpTo(p.skill_target)) {

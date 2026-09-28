@@ -967,6 +967,13 @@ async function resolveAction(director, ar, opts = {}) {
     // actionKind already carried on the pre-resolve creature_targeted_by_action
     // payload. Item-use reactions read this off creature_completes_item (§8b).
     actionKind: ar.kind ?? null,
+    // The casting item's skill_type + skill_tags — the same two facts CONFIRM's
+    // actionBase carries. Spells are stamped ar.kind:"Skill", so without
+    // actionSkillType ACTION_IS_SPELL read 0 on EVERY post-resolve trigger built
+    // from this payload (Keren's Consume was dead on spells); without skillTags
+    // SKILL_HAS_TAG_<X> read 0 here (Pathogenesis keys off the learned-spell tags).
+    actionSkillType: String(ar.skillType ?? skill?.system?.props?.skill_type ?? "").toLowerCase(),
+    skillTags: String(skill?.system?.props?.skill_tags ?? ""),
     // Capability flag (single-source `ar.canMiss`): 1 when this action rolled a
     // Check that can miss — attacks, OFFENSIVE spells, opposed/Hinder checks —
     // and 0 for Heal/buff/utility. Read by ACTION_ROLLS_ACCURACY so a
@@ -5054,6 +5061,11 @@ const Confirm = {
       sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
       skillTags: actingSkillTags,
       skillDuration: actingSkillDuration,
+      // The acting skill's PRINTED target text ("One creature", "Up to three
+      // creatures") — ACTION_TARGET_TEXT_IS_ONE. Rondo of Nightmare needs the
+      // printed "One creature", which ACTION_TARGET_COUNT == 1 only approximates
+      // (an "Up to three" spell cast at one target would wrongly qualify).
+      skillTarget: String(ar.skillTarget ?? ""),
       actionPinKind: actingPinKind,
       isCrit: !!ar.roll?.isCrit,
       isFumble: !!ar.roll?.isFumble,
@@ -5463,7 +5475,11 @@ const Confirm = {
             // may share its benefit with an added ally. Pairs with the
             // buff-spread branch in onAddTargetApply.
             const isBuffSpread = !ar.roll && !ar.hasDamage && !ar.hasHealing;
-            if (!isAttack && !isHealSpread && !isBuffSpread) continue;
+            // Rolled-skill spread (Rondo of Nightmare): a Skill/Spell with a
+            // Check. Pairs with the rolled-skill branch in onAddTargetApply
+            // (add-target-rolled-spread.js).
+            const isRolledSpread = !!ar.roll && String(ar.kind ?? "").toLowerCase() === "skill";
+            if (!isAttack && !isHealSpread && !isBuffSpread && !isRolledSpread) continue;
             // Two-weapon attacks (Double Arrow's double shot, classic TWF) lose
             // the multi property and CANNOT gain it (RAW Two-Weapon Fighting).
             // Block EVERY add_target reaction on a two-weapon pass — generic, so
@@ -6233,6 +6249,20 @@ const Confirm = {
               return { ok: true, addedRows: addedRowsB };
             }
 
+            // ── Rolled-skill spread (Rondo of Nightmare) ─────────────────────
+            // A Skill/Spell WITH a Check (an offensive spell): no weapon, so the
+            // attack branch below would return not-ok silently. Rebuild every row
+            // (original + added) against the SAME dice through the single recompute
+            // — one Magic Check vs each target's own defense — and apply any
+            // sink.elementOverride (change_damage_element) to all of them.
+            const baseArR = director.ctx.actionResult ?? ar;
+            if (baseArR.roll && String(baseArR.kind ?? "").toLowerCase() === "skill") {
+              const { applyRolledSkillSpread } = await import("./add-target-rolled-spread.js");
+              const { firePreAcceptedCandidate } = await getSkillEffectsExtras();
+              const { recomputeActionProfile } = await import("./action-profile.js");
+              return await applyRolledSkillSpread({ director, cand, attackerActor, remotePrompt, gateAddTargetCost, firePreAcceptedCandidate, recomputeActionProfile });
+            }
+
             const fullAttacker = director.ctx.turnSnapshot;
             const fullWeapon = director.ctx.currentWeapon;
             if (!fullAttacker || !fullWeapon || !ar.roll) return { ok: false };
@@ -6739,6 +6769,15 @@ const Confirm = {
     if (result.confirmed && (ar.passIndex ?? 1) <= 1) {
       playActionNamecard(ar).catch((e) => warn("CONFIRM: playActionNamecard threw", e));
     }
+
+    // A rolled-skill add_target spread (Rondo of Nightmare) pays its charge cost
+    // at Apply-click; refund it if the card was cancelled, drop the record if not.
+    try {
+      if ((director.ctx._addTargetChargeRefunds ?? []).length) {
+        const { settleAddTargetChargeRefunds } = await import("./add-target-rolled-spread.js");
+        await settleAddTargetChargeRefunds(director, { cancelled: !result.confirmed });
+      }
+    } catch (e) { warn("CONFIRM: add_target charge refund threw", e); }
 
     director.dispatch({ type: result.confirmed ? INTENTS.CONFIRM_ACTION : INTENTS.CANCEL_ACTION });
   },

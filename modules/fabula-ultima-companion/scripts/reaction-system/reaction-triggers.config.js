@@ -375,6 +375,18 @@ Hooks.once("ready", () => {
       filters: ["source", "debuff_count"]
     },
     {
+      // Emitted by remove_ae / remove_tagged_ae for every removed STATUS AE
+      // (non-empty `statuses`), plus crisis-reactor / derived-status-reactor.
+      // payload.causeActorUuid = the remover (CAUSE_IS_SELF), payload.statusTags
+      // = the AE's tags (STATUS_HAS_TAG_<X>). Arcanist willing-dismiss hooks.
+      key: "creature_loses_status",
+      label: "When a creature loses a Status Effect",
+      bucket: "resolution_phase",
+      subjectFrom: SUBJECT_TARGET,
+      damageSourceFrom: SUBJECT_DAMAGE_SOURCE,
+      filters: ["source"]
+    },
+    {
       key: "creature_enter_crisis",
       label: "When a creature enters Crisis",
       bucket: "resolution_phase",
@@ -450,7 +462,7 @@ Hooks.once("ready", () => {
     // "which status changed" — status filter. Crisis enter/exit are status
     // changes too (Crisis is an AE), so a "when Crisis lands" row can scope by name.
     status: [
-      "creature_status_applied", "creature_status_triggered",
+      "creature_status_applied", "creature_loses_status", "creature_status_triggered",
       "creature_enter_crisis", "creature_exit_crisis"
     ],
     // "an action happened" — action-kind / source-skill / responder filters.

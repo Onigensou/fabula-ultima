@@ -30,14 +30,34 @@
       "damage_bonus": "0",
       "description": "<p>When you summon an <strong>Arcanum</strong>, you immediately recover <strong>【SL × 5】</strong> Hit Points.</p>",
       "duration": "",
+      "effect_table": {
+        "0": {
+          "effect_kind": "grant",
+          "effect_label": "arcregen_heal",
+          "grant_amount": "SL * 5",
+          "grant_resource": "hp",
+          "target_ref": "self"
+        }
+      },
       "heroic_requirement": "",
+      "implementation_note": "Automated in a conflict: when any Arcanum merge AE lands on you (creature_status_applied, STATUS_HAS_TAG_ARCANUM_MERGE — every merge AE carries the arcanum-merge tag), recover SL x 5 HP. Outside a conflict the status event is not emitted, so the GM applies the heal by hand.",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
+      "isReaction": true,
       "level": "0",
       "max_level": "2",
       "name": "Arcane Regeneration",
       "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "STATUS_HAS_TAG_ARCANUM_MERGE == 1",
+          "reaction_effect_ref": "arcregen_heal",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_status_applied"
+        }
+      },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",

@@ -31,6 +31,7 @@
       "description": "<p>You can communicate with creatures of the <strong>beast,</strong> <strong>monster</strong> and <strong>plant</strong> Species</p>",
       "duration": "",
       "heroic_requirement": "",
+      "implementation_note": "Narrative: you can communicate with beast, monster and plant creatures. No mechanical hook; adjudicated by the GM.",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,

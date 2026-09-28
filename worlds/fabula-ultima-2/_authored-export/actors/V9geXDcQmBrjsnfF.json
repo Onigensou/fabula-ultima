@@ -1509,13 +1509,13 @@
               "key": "flags.fabula-ultima-companion.damage_taken_increased_bolt",
               "mode": 2,
               "priority": 20,
-              "value": "5"
+              "value": "5 + SL_WELLSPRING_EXPANSION * min(1, HAS_WEAPON_CATEGORY_ARCANE + HAS_WEAPON_CATEGORY_BOW + HAS_WEAPON_CATEGORY_BRAWLING + HAS_WEAPON_CATEGORY_FLAIL + HAS_WEAPON_CATEGORY_SWORD + HAS_WEAPON_CATEGORY_THROWN)"
             },
             {
               "key": "flags.fabula-ultima-companion.damage_taken_increased_fire",
               "mode": 2,
               "priority": 20,
-              "value": "5"
+              "value": "5 + SL_WELLSPRING_EXPANSION * min(1, HAS_WEAPON_CATEGORY_ARCANE + HAS_WEAPON_CATEGORY_BOW + HAS_WEAPON_CATEGORY_BRAWLING + HAS_WEAPON_CATEGORY_FLAIL + HAS_WEAPON_CATEGORY_SWORD + HAS_WEAPON_CATEGORY_THROWN)"
             }
           ],
           "description": "",
@@ -1556,8 +1556,14 @@
           "name": "Aero Hex",
           "origin": null,
           "sort": 0,
-          "statuses": [],
-          "system": {},
+          "statuses": [
+            "fud-hex-aero"
+          ],
+          "system": {
+            "tags": [
+              "hex"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -1577,13 +1583,13 @@
               "key": "flags.fabula-ultima-companion.damage_taken_increased_earth",
               "mode": 2,
               "priority": 20,
-              "value": "5"
+              "value": "5 + SL_WELLSPRING_EXPANSION * min(1, HAS_WEAPON_CATEGORY_ARCANE + HAS_WEAPON_CATEGORY_BOW + HAS_WEAPON_CATEGORY_BRAWLING + HAS_WEAPON_CATEGORY_FLAIL + HAS_WEAPON_CATEGORY_SWORD + HAS_WEAPON_CATEGORY_THROWN)"
             },
             {
               "key": "flags.fabula-ultima-companion.damage_taken_increased_ice",
               "mode": 2,
               "priority": 20,
-              "value": "5"
+              "value": "5 + SL_WELLSPRING_EXPANSION * min(1, HAS_WEAPON_CATEGORY_ARCANE + HAS_WEAPON_CATEGORY_BOW + HAS_WEAPON_CATEGORY_BRAWLING + HAS_WEAPON_CATEGORY_FLAIL + HAS_WEAPON_CATEGORY_SWORD + HAS_WEAPON_CATEGORY_THROWN)"
             }
           ],
           "description": "",
@@ -1624,8 +1630,14 @@
           "name": "Pyro Hex",
           "origin": null,
           "sort": 0,
-          "statuses": [],
-          "system": {},
+          "statuses": [
+            "fud-hex-pyro"
+          ],
+          "system": {
+            "tags": [
+              "hex"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -1645,13 +1657,13 @@
               "key": "flags.fabula-ultima-companion.damage_taken_increased_air",
               "mode": 2,
               "priority": 20,
-              "value": "5"
+              "value": "5 + SL_WELLSPRING_EXPANSION * min(1, HAS_WEAPON_CATEGORY_ARCANE + HAS_WEAPON_CATEGORY_BOW + HAS_WEAPON_CATEGORY_BRAWLING + HAS_WEAPON_CATEGORY_FLAIL + HAS_WEAPON_CATEGORY_SWORD + HAS_WEAPON_CATEGORY_THROWN)"
             },
             {
               "key": "flags.fabula-ultima-companion.damage_taken_increased_bolt",
               "mode": 2,
               "priority": 20,
-              "value": "5"
+              "value": "5 + SL_WELLSPRING_EXPANSION * min(1, HAS_WEAPON_CATEGORY_ARCANE + HAS_WEAPON_CATEGORY_BOW + HAS_WEAPON_CATEGORY_BRAWLING + HAS_WEAPON_CATEGORY_FLAIL + HAS_WEAPON_CATEGORY_SWORD + HAS_WEAPON_CATEGORY_THROWN)"
             }
           ],
           "description": "",
@@ -1692,8 +1704,14 @@
           "name": "Hydro Hex",
           "origin": null,
           "sort": 0,
-          "statuses": [],
-          "system": {},
+          "statuses": [
+            "fud-hex-hydro"
+          ],
+          "system": {
+            "tags": [
+              "hex"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -1713,13 +1731,13 @@
               "key": "flags.fabula-ultima-companion.damage_taken_increased_earth",
               "mode": 2,
               "priority": 20,
-              "value": "5"
+              "value": "5 + SL_WELLSPRING_EXPANSION * min(1, HAS_WEAPON_CATEGORY_ARCANE + HAS_WEAPON_CATEGORY_BOW + HAS_WEAPON_CATEGORY_BRAWLING + HAS_WEAPON_CATEGORY_FLAIL + HAS_WEAPON_CATEGORY_SWORD + HAS_WEAPON_CATEGORY_THROWN)"
             },
             {
               "key": "flags.fabula-ultima-companion.damage_taken_increased_fire",
               "mode": 2,
               "priority": 20,
-              "value": "5"
+              "value": "5 + SL_WELLSPRING_EXPANSION * min(1, HAS_WEAPON_CATEGORY_ARCANE + HAS_WEAPON_CATEGORY_BOW + HAS_WEAPON_CATEGORY_BRAWLING + HAS_WEAPON_CATEGORY_FLAIL + HAS_WEAPON_CATEGORY_SWORD + HAS_WEAPON_CATEGORY_THROWN)"
             }
           ],
           "description": "",
@@ -1760,8 +1778,14 @@
           "name": "Electro Hex",
           "origin": null,
           "sort": 0,
-          "statuses": [],
-          "system": {},
+          "statuses": [
+            "fud-hex-electro"
+          ],
+          "system": {
+            "tags": [
+              "hex"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -1781,13 +1805,13 @@
               "key": "flags.fabula-ultima-companion.damage_taken_increased_air",
               "mode": 2,
               "priority": 20,
-              "value": "5"
+              "value": "5 + SL_WELLSPRING_EXPANSION * min(1, HAS_WEAPON_CATEGORY_ARCANE + HAS_WEAPON_CATEGORY_BOW + HAS_WEAPON_CATEGORY_BRAWLING + HAS_WEAPON_CATEGORY_FLAIL + HAS_WEAPON_CATEGORY_SWORD + HAS_WEAPON_CATEGORY_THROWN)"
             },
             {
               "key": "flags.fabula-ultima-companion.damage_taken_increased_ice",
               "mode": 2,
               "priority": 20,
-              "value": "5"
+              "value": "5 + SL_WELLSPRING_EXPANSION * min(1, HAS_WEAPON_CATEGORY_ARCANE + HAS_WEAPON_CATEGORY_BOW + HAS_WEAPON_CATEGORY_BRAWLING + HAS_WEAPON_CATEGORY_FLAIL + HAS_WEAPON_CATEGORY_SWORD + HAS_WEAPON_CATEGORY_THROWN)"
             }
           ],
           "description": "",
@@ -1828,8 +1852,14 @@
           "name": "Geo Hex",
           "origin": null,
           "sort": 0,
-          "statuses": [],
-          "system": {},
+          "statuses": [
+            "fud-hex-geo"
+          ],
+          "system": {
+            "tags": [
+              "hex"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -1889,7 +1919,7 @@
             "1": {
               "condition_formula": "SL >= 1 && WELLSPRING_AIR_AVAILABLE",
               "consume_self": false,
-              "damage_amount": "20 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40)",
+              "damage_amount": "20 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40) + SL_WELLSPRING_EXPANSION * min(1, HAS_WEAPON_CATEGORY_ARCANE + HAS_WEAPON_CATEGORY_BOW + HAS_WEAPON_CATEGORY_BRAWLING + HAS_WEAPON_CATEGORY_FLAIL + HAS_WEAPON_CATEGORY_SWORD + HAS_WEAPON_CATEGORY_THROWN)",
               "damage_cause": "damage",
               "damage_element": "air",
               "damage_ignore_affinity": false,
@@ -1900,7 +1930,7 @@
               "emit_trigger": "",
               "from_resource": "",
               "menu_color": "#5fd3c6",
-              "menu_description": "Deal ${20 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40)} air damage.",
+              "menu_description": "Deal ${20 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40) + SL_WELLSPRING_EXPANSION * min(1, HAS_WEAPON_CATEGORY_ARCANE + HAS_WEAPON_CATEGORY_BOW + HAS_WEAPON_CATEGORY_BRAWLING + HAS_WEAPON_CATEGORY_FLAIL + HAS_WEAPON_CATEGORY_SWORD + HAS_WEAPON_CATEGORY_THROWN)} air damage.",
               "menu_label": "Aero Blast",
               "target_ref": "action_targets",
               "to_resource": ""
@@ -1917,7 +1947,7 @@
               "effect_label": "aero_hex",
               "from_resource": "",
               "menu_color": "#5fd3c6",
-              "menu_description": "Target takes +5 damage from bolt & fire until the start of your next turn.",
+              "menu_description": "Target takes +${5 + SL_WELLSPRING_EXPANSION * min(1, HAS_WEAPON_CATEGORY_ARCANE + HAS_WEAPON_CATEGORY_BOW + HAS_WEAPON_CATEGORY_BRAWLING + HAS_WEAPON_CATEGORY_FLAIL + HAS_WEAPON_CATEGORY_SWORD + HAS_WEAPON_CATEGORY_THROWN)} damage from bolt & fire until the start of your next turn.",
               "menu_label": "Aero Hex",
               "target_ref": "action_targets",
               "to_resource": ""
@@ -1983,7 +2013,7 @@
             "7": {
               "condition_formula": "SL >= 1 && WELLSPRING_EARTH_AVAILABLE",
               "consume_self": false,
-              "damage_amount": "20 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40)",
+              "damage_amount": "20 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40) + SL_WELLSPRING_EXPANSION * min(1, HAS_WEAPON_CATEGORY_ARCANE + HAS_WEAPON_CATEGORY_BOW + HAS_WEAPON_CATEGORY_BRAWLING + HAS_WEAPON_CATEGORY_FLAIL + HAS_WEAPON_CATEGORY_SWORD + HAS_WEAPON_CATEGORY_THROWN)",
               "damage_cause": "damage",
               "damage_element": "earth",
               "damage_ignore_affinity": false,
@@ -1994,7 +2024,7 @@
               "emit_trigger": "",
               "from_resource": "",
               "menu_color": "#c19a6b",
-              "menu_description": "Deal ${20 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40)} earth damage.",
+              "menu_description": "Deal ${20 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40) + SL_WELLSPRING_EXPANSION * min(1, HAS_WEAPON_CATEGORY_ARCANE + HAS_WEAPON_CATEGORY_BOW + HAS_WEAPON_CATEGORY_BRAWLING + HAS_WEAPON_CATEGORY_FLAIL + HAS_WEAPON_CATEGORY_SWORD + HAS_WEAPON_CATEGORY_THROWN)} earth damage.",
               "menu_label": "Geo Blast",
               "target_ref": "action_targets",
               "to_resource": ""
@@ -2011,7 +2041,7 @@
               "effect_label": "geo_hex",
               "from_resource": "",
               "menu_color": "#c19a6b",
-              "menu_description": "Target takes +5 damage from air & ice until the start of your next turn.",
+              "menu_description": "Target takes +${5 + SL_WELLSPRING_EXPANSION * min(1, HAS_WEAPON_CATEGORY_ARCANE + HAS_WEAPON_CATEGORY_BOW + HAS_WEAPON_CATEGORY_BRAWLING + HAS_WEAPON_CATEGORY_FLAIL + HAS_WEAPON_CATEGORY_SWORD + HAS_WEAPON_CATEGORY_THROWN)} damage from air & ice until the start of your next turn.",
               "menu_label": "Geo Hex",
               "target_ref": "action_targets",
               "to_resource": ""
@@ -2077,7 +2107,7 @@
             "13": {
               "condition_formula": "SL >= 1 && WELLSPRING_FIRE_AVAILABLE",
               "consume_self": false,
-              "damage_amount": "20 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40)",
+              "damage_amount": "20 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40) + SL_WELLSPRING_EXPANSION * min(1, HAS_WEAPON_CATEGORY_ARCANE + HAS_WEAPON_CATEGORY_BOW + HAS_WEAPON_CATEGORY_BRAWLING + HAS_WEAPON_CATEGORY_FLAIL + HAS_WEAPON_CATEGORY_SWORD + HAS_WEAPON_CATEGORY_THROWN)",
               "damage_cause": "damage",
               "damage_element": "fire",
               "damage_ignore_affinity": false,
@@ -2088,7 +2118,7 @@
               "emit_trigger": "",
               "from_resource": "",
               "menu_color": "#e8603c",
-              "menu_description": "Deal ${20 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40)} fire damage.",
+              "menu_description": "Deal ${20 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40) + SL_WELLSPRING_EXPANSION * min(1, HAS_WEAPON_CATEGORY_ARCANE + HAS_WEAPON_CATEGORY_BOW + HAS_WEAPON_CATEGORY_BRAWLING + HAS_WEAPON_CATEGORY_FLAIL + HAS_WEAPON_CATEGORY_SWORD + HAS_WEAPON_CATEGORY_THROWN)} fire damage.",
               "menu_label": "Pyro Blast",
               "target_ref": "action_targets",
               "to_resource": ""
@@ -2105,7 +2135,7 @@
               "effect_label": "pyro_hex",
               "from_resource": "",
               "menu_color": "#e8603c",
-              "menu_description": "Target takes +5 damage from earth & ice until the start of your next turn.",
+              "menu_description": "Target takes +${5 + SL_WELLSPRING_EXPANSION * min(1, HAS_WEAPON_CATEGORY_ARCANE + HAS_WEAPON_CATEGORY_BOW + HAS_WEAPON_CATEGORY_BRAWLING + HAS_WEAPON_CATEGORY_FLAIL + HAS_WEAPON_CATEGORY_SWORD + HAS_WEAPON_CATEGORY_THROWN)} damage from earth & ice until the start of your next turn.",
               "menu_label": "Pyro Hex",
               "target_ref": "action_targets",
               "to_resource": ""
@@ -2194,7 +2224,7 @@
             "21": {
               "condition_formula": "SL >= 1 && WELLSPRING_BOLT_AVAILABLE",
               "consume_self": false,
-              "damage_amount": "20 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40)",
+              "damage_amount": "20 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40) + SL_WELLSPRING_EXPANSION * min(1, HAS_WEAPON_CATEGORY_ARCANE + HAS_WEAPON_CATEGORY_BOW + HAS_WEAPON_CATEGORY_BRAWLING + HAS_WEAPON_CATEGORY_FLAIL + HAS_WEAPON_CATEGORY_SWORD + HAS_WEAPON_CATEGORY_THROWN)",
               "damage_cause": "damage",
               "damage_element": "bolt",
               "damage_ignore_affinity": false,
@@ -2205,7 +2235,7 @@
               "emit_trigger": "",
               "from_resource": "",
               "menu_color": "#e8c93c",
-              "menu_description": "Deal ${20 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40)} bolt damage.",
+              "menu_description": "Deal ${20 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40) + SL_WELLSPRING_EXPANSION * min(1, HAS_WEAPON_CATEGORY_ARCANE + HAS_WEAPON_CATEGORY_BOW + HAS_WEAPON_CATEGORY_BRAWLING + HAS_WEAPON_CATEGORY_FLAIL + HAS_WEAPON_CATEGORY_SWORD + HAS_WEAPON_CATEGORY_THROWN)} bolt damage.",
               "menu_label": "Electro Blast",
               "target_ref": "action_targets",
               "to_resource": ""
@@ -2222,7 +2252,7 @@
               "effect_label": "electro_hex",
               "from_resource": "",
               "menu_color": "#e8c93c",
-              "menu_description": "Target takes +5 damage from earth & fire until the start of your next turn.",
+              "menu_description": "Target takes +${5 + SL_WELLSPRING_EXPANSION * min(1, HAS_WEAPON_CATEGORY_ARCANE + HAS_WEAPON_CATEGORY_BOW + HAS_WEAPON_CATEGORY_BRAWLING + HAS_WEAPON_CATEGORY_FLAIL + HAS_WEAPON_CATEGORY_SWORD + HAS_WEAPON_CATEGORY_THROWN)} damage from earth & fire until the start of your next turn.",
               "menu_label": "Electro Hex",
               "target_ref": "action_targets",
               "to_resource": ""
@@ -2311,7 +2341,7 @@
             "29": {
               "condition_formula": "SL >= 1 && WELLSPRING_ICE_AVAILABLE",
               "consume_self": false,
-              "damage_amount": "20 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40)",
+              "damage_amount": "20 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40) + SL_WELLSPRING_EXPANSION * min(1, HAS_WEAPON_CATEGORY_ARCANE + HAS_WEAPON_CATEGORY_BOW + HAS_WEAPON_CATEGORY_BRAWLING + HAS_WEAPON_CATEGORY_FLAIL + HAS_WEAPON_CATEGORY_SWORD + HAS_WEAPON_CATEGORY_THROWN)",
               "damage_cause": "damage",
               "damage_element": "ice",
               "damage_ignore_affinity": false,
@@ -2322,7 +2352,7 @@
               "emit_trigger": "",
               "from_resource": "",
               "menu_color": "#6fb7e8",
-              "menu_description": "Deal ${20 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40)} ice damage.",
+              "menu_description": "Deal ${20 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40) + SL_WELLSPRING_EXPANSION * min(1, HAS_WEAPON_CATEGORY_ARCANE + HAS_WEAPON_CATEGORY_BOW + HAS_WEAPON_CATEGORY_BRAWLING + HAS_WEAPON_CATEGORY_FLAIL + HAS_WEAPON_CATEGORY_SWORD + HAS_WEAPON_CATEGORY_THROWN)} ice damage.",
               "menu_label": "Hydro Blast",
               "target_ref": "action_targets",
               "to_resource": ""
@@ -2339,7 +2369,7 @@
               "effect_label": "hydro_hex",
               "from_resource": "",
               "menu_color": "#6fb7e8",
-              "menu_description": "Target takes +5 damage from air & bolt until the start of your next turn.",
+              "menu_description": "Target takes +${5 + SL_WELLSPRING_EXPANSION * min(1, HAS_WEAPON_CATEGORY_ARCANE + HAS_WEAPON_CATEGORY_BOW + HAS_WEAPON_CATEGORY_BRAWLING + HAS_WEAPON_CATEGORY_FLAIL + HAS_WEAPON_CATEGORY_SWORD + HAS_WEAPON_CATEGORY_THROWN)} damage from air & bolt until the start of your next turn.",
               "menu_label": "Hydro Hex",
               "target_ref": "action_targets",
               "to_resource": ""
@@ -2687,6 +2717,7 @@
           "description": "<p>As long as you have a weapon belonging to the <strong>arcane</strong>, <strong>bow</strong>, <strong>brawling</strong>, <strong>flail</strong>, <strong>sword</strong>, or <strong>thrown</strong> Category equipped, your <strong>“blast” invocations</strong> deal <strong>[SL]</strong> extra damage, and the extra damage granted by your <strong>“hex” invocations</strong> is increased by <strong>[SL]</strong>.</p>\n",
           "duration": "",
           "heroic_requirement": "",
+          "implementation_note": "Implemented by inbound reference in Invocation: the five blast deal_damage rows add SL_WELLSPRING_EXPANSION and the five Hex AE change values add it to the +5, both gated on an equipped arcane / bow / brawling / flail / sword / thrown weapon (HAS_WEAPON_CATEGORY_*). The hex bonus is baked when the hex lands (unequipping later does not shrink a live hex).",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,

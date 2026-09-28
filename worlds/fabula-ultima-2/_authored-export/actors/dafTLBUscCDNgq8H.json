@@ -7357,12 +7357,14 @@
                 },
                 "reaction_config_table": {
                   "0": {
+                    "condition_formula": "ARCANUM_DISMISS_LOCKED == 0",
                     "reaction_effect_ref": "dismiss_free",
                     "reaction_passive_mode": "ask",
                     "reaction_source": "self",
                     "reaction_trigger": "turn_start"
                   },
                   "1": {
+                    "condition_formula": "ARCANUM_DISMISS_LOCKED == 0",
                     "reaction_effect_ref": "dismiss_free",
                     "reaction_passive_mode": "ask",
                     "reaction_source": "self",
@@ -11009,6 +11011,7 @@
           "id": "s0jiGXVmnBX0k0wi",
           "ignore_hr": false,
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/ruin_II.png",
+          "implementation_note": "Code-backed: the ritual system matches this skill by name (ritual-const.js Arcanism discipline, WLP + WLP Magic Check). 'Within the domains of a bound Arcanum' is GM adjudication.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -13490,6 +13493,7 @@
           "id": "Un5BpzDlecnnBd2z",
           "ignore_hr": false,
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/crimson_cyclone.png",
+          "implementation_note": "Code-backed (skill-effects.js quickSummonMods / doSummonArcanum). In a conflict, Bind and Summon lists each Arcanum once per option set: plain, -SL x 5 MP, free Pulse, or both. With at least one option the merge cannot be willingly dismissed until your next turn (the turn-edge dismiss prompt and the Dismiss skill are refused/dimmed); with both, the dismiss is a plain unmerge with no dismiss effect (Revelation in Crisis keeps the effect). Grand Summoning's 'summoned without Quick Summoning' = the plain option.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,

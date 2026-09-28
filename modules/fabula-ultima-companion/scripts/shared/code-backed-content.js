@@ -66,7 +66,7 @@ const ENTRIES = [
   {
     name: "Quick Summoning", kind: "skill", match: "lower",
     module: "scripts/battle-director/skill-effects.js", symbol: "quickSummonMods",
-    note: "Arcanist: summon cost reduced by SL x 5, and auto-Pulse when merged.",
+    note: "Arcanist (variant): Bind and Summon offers each Arcanum per Quick Summoning option set (none / −SL×5 MP / free Pulse / both); the merge AE records the dismiss lock (until your next turn) and the lost dismiss effect (both options, unless Revelation in Crisis).",
   },
   {
     name: "Potion Rain", kind: "skill", match: "lower",

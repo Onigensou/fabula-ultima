@@ -32,16 +32,50 @@
       "defense_target_type": "def",
       "description": "<p>After you willingly <strong>dismiss</strong> an Arcanum you are <strong>merged</strong> with, if you are in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, you may have yourself and every ally present on the scene recover <strong>【SL × 5】</strong> Hit Points.</p>",
       "duration": "",
+      "effect_table": {
+        "0": {
+          "chain_steps": "arcregenv_pool,arcregenv_heal",
+          "effect_kind": "chain",
+          "effect_label": "arcregenv_do"
+        },
+        "1": {
+          "auto_target": "skip",
+          "candidate_source": "combat",
+          "category": "ally",
+          "effect_kind": "targeting",
+          "effect_label": "arcregenv_pool",
+          "exclude_self": false,
+          "mode": "all",
+          "target_filter": "CUR_HP > 0"
+        },
+        "2": {
+          "effect_kind": "grant",
+          "effect_label": "arcregenv_heal",
+          "grant_amount": "SL * 5",
+          "grant_resource": "hp",
+          "target_ref": "arcregenv_pool"
+        }
+      },
       "heroic_requirement": "",
+      "implementation_note": "Automated in a conflict: after you WILLINGLY dismiss a merged Arcanum (your own remove of the arcanum-merge AE: the Dismiss child or a Quick Summoning plain unmerge — creature_loses_status with CAUSE_IS_SELF), if you are in Crisis you may heal yourself and every ally SL x 5 HP. Scene end / KO removals are not willing and do not trigger. KO'd allies (0 HP) do not recover; neutral tokens count as allies.",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
       "isOffensiveSpell": false,
-      "isReaction": false,
+      "isReaction": true,
       "level": "0",
       "max_level": "6",
       "name": "Arcane Regeneration (variant)",
       "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "STATUS_HAS_TAG_ARCANUM_MERGE == 1 && CAUSE_IS_SELF == 1 && HAS_STATUS_CRISIS == 1",
+          "reaction_effect_ref": "arcregenv_do",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_loses_status"
+        }
+      },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_default": "",

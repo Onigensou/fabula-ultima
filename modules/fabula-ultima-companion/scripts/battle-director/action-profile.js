@@ -55,6 +55,14 @@ export function resolveChosenChainRows(effectTable, startLabel, picks) {
     if (!row) return;
     const kind = String(row.effect_kind ?? "").trim().toLowerCase();
     if (kind === "chain") { for (const s of splitRefs(row.chain_steps)) walk(s); return; }
+    if (kind === "open_action_menu" && pickSet.length && String(row.menu_dynamic_source ?? "").trim()) {
+      // A DYNAMIC menu (Bind and Summon's arcanum source) has no authored option
+      // rows to walk — its options are synthesised at runtime. Keep the menu row
+      // itself, handing it the picks, so its preview can price the chosen option
+      // (Quick Summoning's cost option) instead of the card losing the chip.
+      out.push({ ...row, _dynamicPicks: Array.isArray(picks) ? [...picks] : [] });
+      return;
+    }
     if (kind === "open_action_menu" && pickSet.length) {
       const optRefs = splitRefs(row.menu_option_refs);
       const labelToRef = new Map();

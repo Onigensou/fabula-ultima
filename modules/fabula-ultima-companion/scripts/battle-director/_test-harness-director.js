@@ -236,6 +236,7 @@ async function buildHarnessActionBase(ar) {
     sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
     skillTags: harnessSkillTags,
     skillDuration: harnessSkillDuration,
+    skillTarget: String(ar.skillTarget ?? ""),
     actionPinKind: harnessPinKind,
     isCrit: !!ar.roll?.isCrit,
     isFumble: !!ar.roll?.isFumble,
@@ -362,6 +363,8 @@ async function buildPerformsActionPayload(ar) {
     costIp: Number(ar.costSerialized?.ip ?? 0) || 0,
     skillTags: performSkillTags,
     skillDuration: performSkillDuration,
+    // Live actionBase.skillTarget (ACTION_TARGET_TEXT_IS_ONE — Rondo of Nightmare).
+    skillTarget: String(ar.skillTarget ?? ""),
     actionPinKind: performPinKind,
     actionIsCheck: !!ar.isCheck,
     actionCanMiss: !!ar.canMiss,
@@ -2435,6 +2438,12 @@ async function runDirectorSkillSimulate(args = {}) {
   if (Array.isArray(args.picks)) arPatch._harnessPicks = [...args.picks];
   if (args.harnessNumbers && typeof args.harnessNumbers === "object") arPatch._harnessNumbers = { ...args.harnessNumbers };
   if (args.vismagusHpPaid === true) arPatch.vismagusHpPaid = true;
+  // CONFIRM-time mutations the harness can't click (an add_target pill's splice:
+  // Rondo of Nightmare's extra targets + dark element). The caller passes the
+  // spliced fields (targets / perTargetResults / hitTokenUuids / damageType /
+  // damage) exactly as the real onAddTargetApply left them, so RESOLVE commits
+  // what the card would have. JSON-able fields only.
+  if (args.arOverride && typeof args.arOverride === "object") Object.assign(arPatch, args.arOverride);
   // target_sequence skills (Blazing Tether, Transfer Life): the TARGET phase's
   // per-ref picks ({ ref: [tokenUuid] }), re-seeded at RESOLVE exactly as the
   // live TARGET state does (state-handlers resolveAction → targetSequencePicks).
