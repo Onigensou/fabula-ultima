@@ -1053,6 +1053,10 @@ async function probeReactorTrigger({
   // amount, or a cause actor). Explicit keys always win.
   payloadExtra = null,
   preApply = null, seed = null, override = null,
+  // Option-menu picks, cached on each candidate as chosenMenuPicks (the live
+  // Apply-click cache) so a chain with an open_action_menu replays them instead
+  // of prompting — and, inside a chain_repeat, one pick is consumed per pass.
+  picks = null,
   depsToken = null,
 } = {}) {
   const _wg = _guardWrites("probeReactorTrigger");
@@ -1117,7 +1121,9 @@ async function probeReactorTrigger({
       // restore() never runs and every later update() in the page is captured
       // instead of committed, while still reporting success.
       fireRes = await withHarnessTimeout(
-        deps.firePreAcceptedCandidate({ director: null, casterActor: reactor, candidate: cand, payload: finalPayload }),
+        deps.firePreAcceptedCandidate({ director: null, casterActor: reactor,
+          candidate: (Array.isArray(picks) && picks.length) ? { ...cand, chosenMenuPicks: [...picks] } : cand,
+          payload: finalPayload }),
         `reactor trigger ${reactor.name}/${cand.carrierName}`,
       );
     } catch (e) { fireErr = String(e?.message ?? e); }
@@ -1502,6 +1508,9 @@ function summarize(ar) {
 async function runDirectorSkillCompute({
   skillUuid, casterTokenUuid, targetTokenUuids, force = null,
   picks = null, harnessNumbers = null, override = null,
+  // target_sequence per-ref picks ({ ref: [tokenUuid] }) — what the TARGET
+  // state would have recorded; read by COMPUTE's pre_activate capture + RESOLVE.
+  targetSequencePicks = null,
   // Batch callers pass a stable token to reuse the loaded module graph across a
   // run of calls (see loadDeps). Omitted = per-call cache-bust, as before.
   depsToken = null,
@@ -1543,6 +1552,7 @@ async function runDirectorSkillCompute({
   const harnessPatch = {};
   if (Array.isArray(picks)) harnessPatch._harnessPicks = [...picks];
   if (harnessNumbers && typeof harnessNumbers === "object") harnessPatch._harnessNumbers = { ...harnessNumbers };
+  if (targetSequencePicks && typeof targetSequencePicks === "object") harnessPatch.targetSequencePicks = { ...targetSequencePicks };
   if (Object.keys(harnessPatch).length) {
     ar = deps.freezeActionResult
       ? deps.freezeActionResult({ ...ar, ...harnessPatch })
@@ -2425,6 +2435,12 @@ async function runDirectorSkillSimulate(args = {}) {
   if (Array.isArray(args.picks)) arPatch._harnessPicks = [...args.picks];
   if (args.harnessNumbers && typeof args.harnessNumbers === "object") arPatch._harnessNumbers = { ...args.harnessNumbers };
   if (args.vismagusHpPaid === true) arPatch.vismagusHpPaid = true;
+  // target_sequence skills (Blazing Tether, Transfer Life): the TARGET phase's
+  // per-ref picks ({ ref: [tokenUuid] }), re-seeded at RESOLVE exactly as the
+  // live TARGET state does (state-handlers resolveAction → targetSequencePicks).
+  if (args.targetSequencePicks && typeof args.targetSequencePicks === "object") {
+    arPatch.targetSequencePicks = { ...args.targetSequencePicks };
+  }
   let ar = Object.keys(arPatch).length
     ? freezeActionResult({ ...compute.actionResult, ...arPatch })
     : compute.actionResult;

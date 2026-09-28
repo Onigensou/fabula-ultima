@@ -1050,6 +1050,23 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // canonical subject identifier — populated by per-target firing
       // sites like creature_will_deal_damage). Falls back to 0 if no
       // subject is threaded — fail-safe for triggers without a subject.
+      // Number of the six core status effects (Slow/Dazed/Weak/Shaken/Enraged/
+      // Poisoned) that the resolver's `actor` AND the trigger's SUBJECT both
+      // carry. Per-candidate in a target_filter: Fell Resonance's "each other
+      // enemy that has at least one status effect in common with it" is
+      // `SHARES_STATUS_WITH_SUBJECT >= 1`. Spell conditions (Blind, Muddle) are
+      // deliberately NOT status effects here. 0 when no subject is threaded.
+      case "SHARES_STATUS_WITH_SUBJECT": {
+        const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+        if (!subjectUuid || !actor) return 0;
+        const subject = _resolveActorByUuidSync(subjectUuid);
+        if (!subject) return 0;
+        let n = 0;
+        for (const st of ["slow", "dazed", "weak", "shaken", "enraged", "poisoned"]) {
+          if (actorHasNamedStatus(actor, st) && actorHasNamedStatus(subject, st)) n++;
+        }
+        return n;
+      }
       case "TARGET_STATUS_COUNT": {
         const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
         if (!subjectUuid) return 0;
@@ -3389,7 +3406,9 @@ export function resolveAccuracyParts({ actor = null, props = null, kind = null, 
   // `check_mod_anyof_<a>_<b>…` — pays ONCE when the attack rolls any listed die.
   // The context-scoped `check_mod_<ctx>_anyof_…` (checkModifiers.js) is left out
   // on purpose: an Accuracy Check is not an Opposed Check.
-  // Twin of the same branch in checkModifiers.js; keep the two in step.
+  // Twin of the same branch in checkModifiers.js; keep the two in step. The
+  // reserved `check_mod_check_anyof_…` scope ("checks that aren't Accuracy or
+  // Magic Checks", Transfer Life) is excluded here by this same regex.
   const modFlags = actor?.flags?.["fabula-ultima-companion"];
   if (rolled.size && modFlags && typeof modFlags === "object") {
     for (const key of Object.keys(modFlags)) {

@@ -802,6 +802,13 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
     tooltip: "chain: comma-separated effect_label refs, run in order.",
     vis: `equalText(sameRow("effect_kind",''), "chain")`,
   }),
+  // Read at skill-effects runChainEffect (Starfall "3", Encroaching Hex
+  // "VAR_HEX_MP / 5"). Was data-only until 2026-09-28, so a reloadTemplate could
+  // prune it; declared here so the boot sync gives it a column.
+  textCol("chain_repeat", "Repeat", {
+    tooltip: "chain: run the whole chain N times (number or formula; default 1). Targeting picks re-prompt / re-roll on each pass.",
+    vis: `equalText(sameRow("effect_kind",''), "chain")`,
+  }),
   textCol("charge_key", "Charge Key", {
     tooltip: "consume_charge: which named charge pool to spend from.",
     vis: `equalText(sameRow("effect_kind",''), "consume_charge")`,

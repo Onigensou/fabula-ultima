@@ -78,7 +78,7 @@
           "include_persistent": false,
           "menu_description": "The target recovers from Slow.",
           "menu_label": "Recover from Slow",
-          "target_ref": "action_targets",
+          "target_ref": "hit_action_targets",
           "to_resource": ""
         },
         "3": {
@@ -92,7 +92,7 @@
           "include_persistent": false,
           "menu_description": "The target recovers from Dazed.",
           "menu_label": "Recover from Dazed",
-          "target_ref": "action_targets",
+          "target_ref": "hit_action_targets",
           "to_resource": ""
         },
         "4": {
@@ -107,7 +107,7 @@
           "from_resource": "",
           "menu_description": "",
           "menu_label": "",
-          "target_ref": "action_targets",
+          "target_ref": "hit_action_targets",
           "to_resource": ""
         }
       },
@@ -123,7 +123,7 @@
       "on_activate_effect_ref": "blight_root",
       "optional_params": {},
       "pre_activate_effect_ref": "blight_menu",
-      "reaction_config_table": null,
+      "reaction_config_table": {},
       "rolled_atr1": "INS",
       "rolled_atr2": "WLP",
       "skill_animation_default": "",

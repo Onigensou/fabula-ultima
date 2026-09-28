@@ -8,6 +8,77 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "OOtPloE7rBZFkAv6",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790551700524,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "override_attack_damage_type",
+          "mode": 5,
+          "priority": 20,
+          "value": "Poison"
+        }
+      ],
+      "description": "<p><em>Venomous Weapon:</em> this creature's weapon attacks deal poison damage until the end of the scene.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "OOtPloE7rBZFkAv6",
+          "originalParentId": "vnAEcFSRA2xUhF58",
+          "originalUuid": "Item.vnAEcFSRA2xUhF58.ActiveEffect.OOtPloE7rBZFkAv6"
+        },
+        "fabula-ultima-companion": {
+          "aeFamily": "elemental-weapon",
+          "lifetimeMode": "on_activation",
+          "tags": [
+            "buff"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/aura.svg",
+      "name": "Venomous Weapon",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-venomous-weapon"
+      ],
+      "system": {
+        "tags": [
+          "buff",
+          "dispellable"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -33,6 +104,31 @@
       "defense_target_type": "def",
       "description": "<p>You imbue a weapon with poisonous energy. Until this spell ends, all damage dealt by the weapon becomes of the <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> type. If you have that weapon equipped while you cast this spell, you may perform a <strong>free attack</strong> with it as part of the same action.</p>\n<p>This spell can only be cast on a weapon equipped by a willing creature.</p>\n",
       "duration": "Scene",
+      "effect_table": {
+        "0": {
+          "chain_steps": "vw_ae, vw_free",
+          "effect_kind": "chain",
+          "effect_label": "vw_root"
+        },
+        "1": {
+          "ae_duplicate_mode": "replace_family",
+          "ae_duration_rounds": "scene",
+          "ae_family": "elemental-weapon",
+          "ae_template_ref": "Venomous Weapon",
+          "effect_kind": "apply_ae",
+          "effect_label": "vw_ae",
+          "target_ref": "action_targets"
+        },
+        "2": {
+          "action_ref": "Attack",
+          "condition_formula": "ACTION_TARGETS_SELF == 1",
+          "effect_kind": "free_action",
+          "effect_label": "vw_free",
+          "element_override": "poison",
+          "menu_description": "Free attack with the weapon you just imbued. Its damage is poison.",
+          "menu_label": "Venomous Weapon: free attack"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": true,
@@ -42,7 +138,9 @@
       "level": "1",
       "max_level": "1",
       "name": "Venomous Weapon",
+      "on_activate_effect_ref": "vw_root",
       "optional_params": {},
+      "reaction_config_table": {},
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_default": "",
@@ -51,6 +149,7 @@
       "skill_range": "Range",
       "skill_target": "One equipped weapon",
       "skill_type": "Spell",
+      "target_eligibility": "EQUIPPED_WEAPON_COUNT >= 1",
       "type_damage": "",
       "use_optional_params": false
     },

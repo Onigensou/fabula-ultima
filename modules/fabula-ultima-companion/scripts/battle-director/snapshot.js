@@ -1824,6 +1824,55 @@ export function applyAttackRangeGate(eligible, weapon, attacker = null) {
   return out;
 }
 
+// ── Multi-target offensive block (Shadow Mask) ────────────────────────────────
+// `cannot_be_targeted_by: "multi_offensive"` — the bearer "cannot be selected as a
+// target for an attack or offensive spell that has multiple targets". A range
+// TOKEN in the same vocabulary as melee/ranged/any, but it is deliberately NOT
+// "any": hasUnconditionalTargetBlock ignores it, so heals, buffs, effect-row
+// pools and single-target attacks/spells still see the bearer. Only the
+// action-level target pools (the TARGET survey + the player composer) apply it,
+// because only they know what the in-flight action is.
+//
+// "Multiple targets" is judged from the DECLARED target text (skillTargetIsMulti),
+// so an "Up to three" spell counts as multi-target even when one creature is
+// picked. "Offensive" = an attack (weapon / NPC attack item) or a skill whose
+// `isOffensiveSpell` is set.
+export function isMultiOffensiveAction({ isAttack = false, skill = null, skillTargetText = null } = {}) {
+  const off = !!isAttack || skill?.system?.props?.isOffensiveSpell === true
+    || String(skill?.system?.props?.isOffensiveSpell ?? "").toLowerCase() === "true";
+  if (!off) return false;
+  const text = skillTargetText ?? skill?.system?.props?.skill_target ?? "";
+  return skillTargetIsMulti(text);
+}
+
+// Moves every candidate carrying a `multi_offensive` block into `.excluded`
+// (greyed "🚫 <AE name>" in the picker), preserving prior exclusions exactly as
+// applyAttackRangeGate does. No-op unless `opts` describes a multi-target
+// offensive action.
+export function applyMultiOffensiveGate(eligible, opts = {}) {
+  if (!Array.isArray(eligible)) return eligible;
+  if (!isMultiOffensiveAction(opts)) return eligible;
+  const out = [];
+  const newlyExcluded = [];
+  for (const e of eligible) {
+    const blocks = Array.isArray(e?.targetingBlocks) ? e.targetingBlocks : [];
+    const reasons = blocks
+      .filter((b) => (Array.isArray(b?.ranges) ? b.ranges : []).includes("multi_offensive"))
+      .map((b) => b.aeName);
+    if (!reasons.length) { out.push(e); continue; }
+    newlyExcluded.push(Object.freeze({
+      combatantId: e.combatantId, tokenId: e.tokenId, tokenUuid: e.tokenUuid,
+      actorId: e.actorId, actorUuid: e.actorUuid, name: e.name,
+      tokenImg: e.tokenImg, disposition: e.disposition,
+      reasons: Object.freeze([...reasons]),
+    }));
+  }
+  if (!newlyExcluded.length) return eligible;
+  const priorExcluded = Array.isArray(eligible.excluded) ? eligible.excluded : [];
+  out.excluded = Object.freeze([...priorExcluded, ...newlyExcluded]);
+  return out;
+}
+
 // ── Forced-inclusion taunt collector ("must include X as one of your targets") ──
 // THIRD and distinct member of the targeting-constraint family. Keep the three
 // SEPARATE — they are different questions with different enforcement:

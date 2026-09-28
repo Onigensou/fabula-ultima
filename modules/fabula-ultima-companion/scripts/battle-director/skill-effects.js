@@ -7053,6 +7053,12 @@ async function applyApplyAeEffect(row, ctx) {
       // duration, statuses, and flags (directorAppliedBy / reactionConfig /
       // charges are full objects in `data` → overwrite the stale ones). Same
       // result as delete+create, but one CSB re-derive + one sheet repaint.
+      // `update` MERGES flags, so a key deleted from `data` survives on the old
+      // AE. A scene-long refresh over a timed copy (a Magic Mushroom Anomaly,
+      // then the Anomaly spell) would otherwise keep the old counter and expire.
+      if (sceneLong && replaceTarget.flags?.[FLAG_NS]?.charges != null) {
+        data.flags[FLAG_NS]["-=charges"] = null;
+      }
       try {
         await replaceTarget.update(data);
         applied.push({ actorUuid: actor.uuid, aeId: replaceTarget.id, name: data.name, refreshedInPlace: true });
@@ -7139,6 +7145,9 @@ async function applyApplyAeEffect(row, ctx) {
               subjectActorUuid: a.actorUuid, subjectTokenUuid: subjTok?.uuid ?? null,
               causeActorUuid, causeTokenUuid,
               originLabel: statusName,
+              // The skill whose row applied it (PERFORMED_SKILL) — lets a
+              // reactor scope to "when YOUR Hinder lands" (Fell Resonance).
+              sourceSkillName: ctx.skill?.name ?? null,
             },
           });
         }
@@ -7412,8 +7421,42 @@ export function sumEquippedCheckBuffs(actor, command, { payload = null, round = 
   const cmd = String(command ?? "").trim().toLowerCase();
   const out = { total: 0, parts: [] };
   if (!actor?.items || !cmd) return out;
+  // One row scanner, three carriers: an equipped gear's linked passive _skill,
+  // the actor's OWN uncontained passive skill (Fell Resonance "+SL on Hinder
+  // Checks"), and a live AE's reactionConfig.effect_table (Shadow Mask "+2 to
+  // stealth"). `skill` scopes SL/formula resolution; `source` labels the part.
+  const scanRows = (rows, skill, source) => {
+    if (!rows || typeof rows !== "object") return;
+    for (const row of Object.values(rows)) {
+      if (!row || row.effect_kind !== "check_buff") continue;
+      const actions = String(row.check_buff_action ?? "")
+        .toLowerCase().split(/[,;|]+/).map((s) => s.trim()).filter(Boolean);
+      // "any"/"*" = wildcard: a stat/action-agnostic bonus that applies to EVERY
+      // check regardless of which action is queried (e.g. Cat Ears "+1 to any
+      // check"). Otherwise the action token must match by string.
+      const isWildcard = actions.includes("any") || actions.includes("*");
+      if (!isWildcard && !actions.includes(cmd)) continue;
+      const raw = String(row.check_buff_amount ?? row.check_buff_value ?? "0");
+      let amt = 0;
+      try {
+        amt = isFormulaString(raw)
+          ? (Number(evaluateFormula(raw, buildSkillResolver({ actor, payload, skill, round }), 0)) || 0)
+          : (Number(raw) || 0);
+      } catch { amt = Number(raw) || 0; }
+      if (amt) {
+        out.total += amt;
+        out.parts.push({ source, amount: amt });
+      }
+    }
+  };
+  // CSB skills are ALSO `equippableItem`, so skill-vs-gear is decided by the
+  // item template (the _Skill templates), never by item.type.
+  const SKILL_TEMPLATES = new Set(["j0F5Msw5RZ8aIB3j", "FZmpKcQRP7hZQqbV"]);
+  const isSkillDoc = (it) => SKILL_TEMPLATES.has(String(it?.system?.template ?? ""));
+  const gearIds = new Set();
   for (const gear of actor.items) {
     if (gear.type !== "equippableItem") continue;
+    if (!isSkillDoc(gear)) gearIds.add(gear.id);
     if (!gear.system?.props?.isEquipped) continue;
     const gearId = gear.id;
     // Resolve the gear's linked passive _skill(s) directly off actor.items
@@ -7423,30 +7466,24 @@ export function sumEquippedCheckBuffs(actor, command, { payload = null, round = 
       if (sk === gear) continue;
       if (String(sk.system?.container ?? "") !== gearId) continue;
       if (String(sk.system?.props?.skill_type ?? "") !== "Passive") continue;
-      const rows = sk.system?.props?.effect_table;
-      if (!rows || typeof rows !== "object") continue;
-      for (const row of Object.values(rows)) {
-        if (!row || row.effect_kind !== "check_buff") continue;
-        const actions = String(row.check_buff_action ?? "")
-          .toLowerCase().split(/[,;|]+/).map((s) => s.trim()).filter(Boolean);
-        // "any"/"*" = wildcard: a stat/action-agnostic bonus that applies to EVERY
-        // check regardless of which action is queried (e.g. Cat Ears "+1 to any
-        // check"). Otherwise the action token must match by string.
-        const isWildcard = actions.includes("any") || actions.includes("*");
-        if (!isWildcard && !actions.includes(cmd)) continue;
-        const raw = String(row.check_buff_amount ?? row.check_buff_value ?? "0");
-        let amt = 0;
-        try {
-          amt = isFormulaString(raw)
-            ? (Number(evaluateFormula(raw, buildSkillResolver({ actor, payload, skill: sk, round }), 0)) || 0)
-            : (Number(raw) || 0);
-        } catch { amt = Number(raw) || 0; }
-        if (amt) {
-          out.total += amt;
-          out.parts.push({ source: gear.name ?? "Equipment", amount: amt });
-        }
-      }
+      scanRows(sk.system?.props?.effect_table, sk, gear.name ?? "Equipment");
     }
+  }
+  // The actor's own passive skills that are NOT contained by gear (a class
+  // skill). A gear-contained _skill was handled above, equip-gated.
+  for (const sk of actor.items) {
+    if (!isSkillDoc(sk)) continue;
+    if (String(sk.system?.props?.skill_type ?? "") !== "Passive") continue;
+    const cont = String(sk.system?.container ?? "");
+    if (cont && gearIds.has(cont)) continue;
+    scanRows(sk.system?.props?.effect_table, sk, sk.name ?? "Skill");
+  }
+  // Live Active Effects carrying a reactionConfig effect_table (spell buffs).
+  for (const ae of actor.effects ?? []) {
+    if (ae.disabled) continue;
+    const rc = ae.flags?.["fabula-ultima-companion"]?.reactionConfig;
+    if (!rc?.effect_table) continue;
+    scanRows(rc.effect_table, null, ae.name ?? "Effect");
   }
   return out;
 }

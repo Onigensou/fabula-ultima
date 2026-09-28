@@ -8,6 +8,70 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "fYg5wRHz4KJI05ad",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790553762878,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.check_mod_check_anyof_mig",
+          "mode": 2,
+          "priority": 20,
+          "value": "2"
+        }
+      ],
+      "description": "<p><em>Transfer Life:</em> +2 to Checks using MIG that aren't Accuracy or Magic Checks, until the spell ends.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "fYg5wRHz4KJI05ad",
+          "originalParentId": "WiCs6a65AnrGEY8Q",
+          "originalUuid": "Item.WiCs6a65AnrGEY8Q.ActiveEffect.fYg5wRHz4KJI05ad"
+        },
+        "fabula-ultima-companion": {},
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/aura.svg",
+      "name": "Transfer Life",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-transfer-life"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -33,7 +97,67 @@
       "defense_target_type": "def",
       "description": "<p>You briefly connect the threads of life between two creatures, allowing one to transfer a portion of their vitality to the other. Either target may <strong>spend up to 50 Hit Points</strong>. The other creature recovers an equal amount of Hit Points.</p>\n<p><strong>Additionally,</strong> until this spell ends, the creature who recovered Hit Points this way gains a <strong>+2 bonus</strong> to Checks using <strong>MIG</strong> that aren’t Accuracy Checks or Magic Checks.</p>\n",
       "duration": "Scene",
+      "effect_table": {
+        "0": {
+          "auto_target": "confirm",
+          "candidate_source": "combat",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "tl_donor",
+          "mode": "exact",
+          "target_filter": "CUR_HP >= 1"
+        },
+        "1": {
+          "auto_target": "confirm",
+          "candidate_source": "combat",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "tl_recv",
+          "exclude": "tl_donor",
+          "mode": "exact",
+          "target_filter": "CUR_HP >= 1"
+        },
+        "2": {
+          "chain_steps": "tl_give,tl_take,tl_buff",
+          "effect_kind": "chain",
+          "effect_label": "tl_root"
+        },
+        "3": {
+          "effect_kind": "prompt_number",
+          "effect_label": "tl_amt",
+          "prompt_label": "Hit Points to transfer?",
+          "prompt_max": "min(50, CUR_HP)",
+          "prompt_max_ref": "tl_donor",
+          "prompt_min": "0",
+          "prompt_var": "tl_amt"
+        },
+        "4": {
+          "consume_amount": "VAR_TL_AMT",
+          "consume_resource": "hp",
+          "effect_kind": "consume_resource",
+          "effect_label": "tl_give",
+          "on_empty": "abort",
+          "target_ref": "tl_donor"
+        },
+        "5": {
+          "effect_kind": "grant",
+          "effect_label": "tl_take",
+          "grant_amount": "VAR_TL_AMT",
+          "grant_resource": "hp",
+          "target_ref": "tl_recv"
+        },
+        "6": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "scene",
+          "ae_template_ref": "Transfer Life",
+          "condition_formula": "VAR_TL_AMT > 0",
+          "effect_kind": "apply_ae",
+          "effect_label": "tl_buff",
+          "target_ref": "tl_recv"
+        }
+      },
       "heroic_requirement": "",
+      "implementation_note": "Automated: HP transfer (up to 50, any two living creatures) and the recipient's scene-long +2 to MIG checks. The +2 reaches Request Checks, the manual roller and opposed contests; it is NOT added to Battle Director open checks (Hinder, Study), which ignore check modifiers. Accuracy and Magic Checks never get it.",
       "isCheck": false,
       "isFacet": true,
       "isHeroic": false,
@@ -42,7 +166,10 @@
       "level": "1",
       "max_level": "1",
       "name": "Transfer Life",
+      "on_activate_effect_ref": "tl_root",
       "optional_params": {},
+      "pre_activate_effect_ref": "tl_amt",
+      "reaction_config_table": {},
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_default": "",
@@ -51,6 +178,7 @@
       "skill_range": "Range",
       "skill_target": "Two willing creature",
       "skill_type": "Spell",
+      "target_sequence": "tl_donor,tl_recv",
       "type_damage": "",
       "use_optional_params": false
     },

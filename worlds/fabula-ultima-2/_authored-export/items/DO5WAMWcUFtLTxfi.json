@@ -8,6 +8,68 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "1kM2jhlgvZ8g4KPR",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790552491818,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Encroaching Hex:</em> Hex Clock — fills when you pay HP on an arcane attack or offensive spell; spend MP at turn start to deal damage.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "1kM2jhlgvZ8g4KPR",
+          "originalParentId": "DO5WAMWcUFtLTxfi",
+          "originalUuid": "Item.DO5WAMWcUFtLTxfi.ActiveEffect.1kM2jhlgvZ8g4KPR"
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "hex_clock",
+          "charges": 0,
+          "chargesMax": 4,
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/aura.svg",
+      "name": "Hex Clock",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-hex-clock"
+      ],
+      "system": {
+        "tags": [
+          "resource"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -30,15 +92,146 @@
       "damage_bonus": "0",
       "description": "<p>When you first take this <strong>Skill</strong>, you gain a <strong>Hex Clock</strong> with <strong>4 sections</strong>. The Clock starts each scene empty. When you perform an attack with an <strong>arcane weapon</strong> or cast an offensive (⚡) spell, you may spend <strong>10 Hit Points</strong> to fill one section of your Hex Clock.</p><p>At the start of your turn, you may spend up to <strong>[5 × the number of filled sections of your Hex Clock]</strong> Mind Points. For every <strong>5</strong> Mind Points spent this way, deal <strong>[SL × 2]</strong> <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span> or <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span> damage to a creature you can see. You may choose a different creature for each instance of damage.</p>",
       "duration": "",
+      "effect_table": {
+        "0": {
+          "auto_target": "skip",
+          "candidate_source": "self",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "hex_self",
+          "mode": "exact",
+          "skip_when_passive": true
+        },
+        "1": {
+          "ae_duplicate_mode": "replace",
+          "ae_initial_charges": "0",
+          "ae_initial_charges_max": "4",
+          "ae_template_ref": "Hex Clock",
+          "effect_kind": "apply_ae",
+          "effect_label": "hex_seed",
+          "target_ref": "hex_self"
+        },
+        "2": {
+          "chain_steps": "hex_fill_cost,hex_fill_add",
+          "effect_kind": "chain",
+          "effect_label": "hex_fill"
+        },
+        "3": {
+          "cost_amount": "10",
+          "cost_operation": "add",
+          "cost_resource": "hp",
+          "effect_kind": "adjust_cost",
+          "effect_label": "hex_fill_cost"
+        },
+        "4": {
+          "ae_duplicate_mode": "add_charges",
+          "ae_initial_charges": "1",
+          "ae_initial_charges_max": "4",
+          "ae_template_ref": "Hex Clock",
+          "effect_kind": "apply_ae",
+          "effect_label": "hex_fill_add",
+          "target_ref": "hex_self"
+        },
+        "5": {
+          "chain_steps": "hex_mp,hex_mp_pay,hex_loop",
+          "effect_kind": "chain",
+          "effect_label": "hex_burst"
+        },
+        "6": {
+          "effect_kind": "prompt_number",
+          "effect_label": "hex_mp",
+          "prompt_default": "5",
+          "prompt_label": "Spend MP (5 per instance)",
+          "prompt_max": "min(5 * AE_CHARGES_HEX_CLOCK, floor(CUR_MP / 5) * 5)",
+          "prompt_min": "5",
+          "prompt_step": "5",
+          "prompt_var": "hex_mp"
+        },
+        "7": {
+          "consume_amount": "VAR_HEX_MP",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "hex_mp_pay",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "8": {
+          "chain_repeat": "VAR_HEX_MP / 5",
+          "chain_steps": "hex_pick,hex_el_menu",
+          "effect_kind": "chain",
+          "effect_label": "hex_loop"
+        },
+        "9": {
+          "candidate_source": "combat",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "hex_pick",
+          "mode": "exact",
+          "skip_when_passive": false,
+          "target_filter": "CUR_HP >= 1"
+        },
+        "10": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "hex_el_menu",
+          "menu_option_labels": "Dark|Poison",
+          "menu_option_refs": "hex_dmg_dark,hex_dmg_poison",
+          "menu_pick_count": "1",
+          "menu_subtitle": "SL×2 damage to the creature you chose.",
+          "menu_title": "Encroaching Hex: damage type"
+        },
+        "11": {
+          "damage_amount": "SL * 2",
+          "damage_cause": "damage",
+          "damage_element": "dark",
+          "damage_resource": "hp",
+          "effect_kind": "deal_damage",
+          "effect_label": "hex_dmg_dark",
+          "target_ref": "hex_pick"
+        },
+        "12": {
+          "damage_amount": "SL * 2",
+          "damage_cause": "damage",
+          "damage_element": "poison",
+          "damage_resource": "hp",
+          "effect_kind": "deal_damage",
+          "effect_label": "hex_dmg_poison",
+          "target_ref": "hex_pick"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
       "isOffensiveSpell": false,
+      "isReaction": true,
       "level": "1",
       "max_level": "1",
       "name": "Encroaching Hex",
       "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "",
+          "reaction_effect_ref": "hex_seed",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        },
+        "1": {
+          "condition_formula": "((ACTION_IS_ATTACK == 1 && USED_WEAPON_CATEGORY_IS_ARCANE == 1) || ACTION_IS_OFFENSIVE_SPELL == 1) && AE_CHARGES_HEX_CLOCK < 4 && CUR_HP > 10",
+          "reaction_effect_ref": "hex_fill",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_performs_action"
+        },
+        "2": {
+          "condition_formula": "AE_CHARGES_HEX_CLOCK >= 1 && CUR_MP >= 5",
+          "reaction_effect_ref": "hex_burst",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "self",
+          "reaction_trigger": "turn_start"
+        }
+      },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",

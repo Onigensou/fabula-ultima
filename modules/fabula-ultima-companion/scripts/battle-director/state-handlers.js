@@ -4273,7 +4273,7 @@ async function computeHinder(director, { attacker, tokenUuids }) {
   // and the player elected Hinder. damageBonus n/a (no damage stage for Hinder).
   const hinderActorIdForGrant = attacker?.actorId ?? null;
   const hinderGrant = hinderActorIdForGrant ? freeActions.get(hinderActorIdForGrant) : null;
-  const hinderCheckBonus = hinderGrant ? Number(hinderGrant.checkBonus) || 0 : 0;
+  let hinderCheckBonus = hinderGrant ? Number(hinderGrant.checkBonus) || 0 : 0;
   const hinderCheckBonusParts = [];
   if (hinderGrant && hinderCheckBonus !== 0) {
     hinderCheckBonusParts.push({
@@ -4288,6 +4288,16 @@ async function computeHinder(director, { attacker, tokenUuids }) {
 
   // BD-canonical check (roll + prop-aware crit/fumble) + vs-DL comparison.
   const liveActor = await fromUuid(attacker.actorUuid).catch(() => null);
+  // Passive check_buff rows scoped to "hinder" (Fell Resonance "+SL on Checks
+  // made as part of the Hinder action") — same reader Study uses below.
+  try {
+    const hinderBuffs = SE().sumEquippedCheckBuffs?.(liveActor, "hinder") ?? { total: 0, parts: [] };
+    if (hinderBuffs.total) {
+      hinderCheckBonus += hinderBuffs.total;
+      for (const p of hinderBuffs.parts) hinderCheckBonusParts.push(p);
+      log(`Hinder COMPUTE: applied +${hinderBuffs.total} from check_buff (${hinderBuffs.parts.map((p) => p.source).join(", ")})`);
+    }
+  } catch (e) { warn("Hinder COMPUTE: sumEquippedCheckBuffs threw", e); }
   const check = await rollCheck({ actor: liveActor, A1, A2, checkBonus: hinderCheckBonus });
   const { rA, rB, dA, dB, total, hr, isFumble, isCrit } = check;
   const { success } = checkVsThreshold(check, DL);
@@ -4523,6 +4533,18 @@ const Compute = {
             harnessPicks: ar?._harnessPicks ?? null, harnessNumbers: ar?._harnessNumbers ?? null,
             remotePrompt: preRemotePrompt,
           });
+          // target_sequence picks (made at TARGET) seed the capture ctx too, so a
+          // pre-card prompt can read a picked creature (Transfer Life's
+          // prompt_max_ref: tl_donor) without re-prompting — same seed RESOLVE does.
+          if (ar?.targetSequencePicks && typeof ar.targetSequencePicks === "object" && capCtx.resolvedTargets) {
+            for (const [ref, uuids] of Object.entries(ar.targetSequencePicks)) {
+              const tokens = [];
+              for (const u of (Array.isArray(uuids) ? uuids : [])) {
+                try { const td = await fromUuid(u); if (td) tokens.push(td); } catch { /* gone */ }
+              }
+              capCtx.resolvedTargets.set(ref, { ok: tokens.length > 0, tokens });
+            }
+          }
           const pre = await SE().fireActivationEffectPre(skill, capCtx);
           if (pre?.abort) {
             // Two ways to land here, and they are NOT the same event:

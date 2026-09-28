@@ -186,7 +186,7 @@
     const _ctx = p?.check?.context
       ?? (String(p?.check?.type ?? "").toLowerCase() === "opposed" ? "opposed" : null);
     const _actorMods = globalThis.ONI?.CheckModifiers?.resolve?.(
-      actor, _ctx, { attributes: p?.check?.attrs ?? null },
+      actor, _ctx, { attributes: p?.check?.attrs ?? null, checkType: p?.check?.type ?? null },
     ) ?? [];
     if (_actorMods.length) {
       p.check = p.check ?? {};

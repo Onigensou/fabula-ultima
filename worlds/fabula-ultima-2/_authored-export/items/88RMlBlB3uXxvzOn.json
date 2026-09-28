@@ -8,6 +8,83 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "2YpFZIPBJfx8Bcdg",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790553764634,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "cannot_be_targeted_by",
+          "mode": 5,
+          "priority": 20,
+          "value": "multi_offensive"
+        }
+      ],
+      "description": "<p><em>Shadow Mask:</em> cannot be selected as a target of an attack or offensive spell that has multiple targets; +2 to Checks to remain hidden or move undetected.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "2YpFZIPBJfx8Bcdg",
+          "originalParentId": "88RMlBlB3uXxvzOn",
+          "originalUuid": "Item.88RMlBlB3uXxvzOn.ActiveEffect.2YpFZIPBJfx8Bcdg"
+        },
+        "fabula-ultima-companion": {
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "check_buff_action": "stealth",
+                "check_buff_amount": "2",
+                "effect_kind": "check_buff",
+                "effect_label": "sm_stealth"
+              }
+            },
+            "name": "Shadow Mask",
+            "reaction_config_table": {}
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/aura.svg",
+      "name": "Shadow Mask",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-shadow-mask"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -36,11 +113,21 @@
       "description": "<p>Light bends around your ally to keep them hidden from danger. Until this spell ends, the target cannot be selected as a target for an attack or offensive spell that has multiple targets.</p>\n<p><strong>Additionally,</strong> until this spell ends, the target gains a <strong>+2 bonus</strong> to Checks that involve remaining hidden or moving undetected.</p>\n",
       "details_roller": "Show",
       "duration": "Scene",
-      "effect_table": {},
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "scene",
+          "ae_template_ref": "Shadow Mask",
+          "effect_kind": "apply_ae",
+          "effect_label": "sm_apply",
+          "target_ref": "action_targets"
+        }
+      },
       "heroic_requirement": "",
       "id": "88RMlBlB3uXxvzOn",
       "ignore_hr": false,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Raven/RevenantPassive2.png",
+      "implementation_note": "Automated: the bearer is left out of target pickers for multi-target attacks and offensive spells (judged by the declared target text), and gets +2 on Request Checks tagged stealth. Not covered: a target added mid-action (effect-row add_target, the GM card editor add-target list).",
       "isCheck": false,
       "isFacet": true,
       "isHeroic": false,
@@ -50,7 +137,7 @@
       "level": "1",
       "max_level": "1",
       "name": "Shadow Mask",
-      "on_activate_effect_ref": "",
+      "on_activate_effect_ref": "sm_apply",
       "optional_params": {},
       "reaction_config_table": {},
       "rolled_atr1": "-",

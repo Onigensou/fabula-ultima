@@ -1969,7 +1969,10 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedCardReactio
   for (const cand of acceptedCardReactions ?? []) {
     const effectTable = await readEffectTableForCandidate(cand);
     if (!effectTable) continue;
-    const rows = expandEffectChain(effectTable, cand.ref);
+    // Walk the CHOSEN menu option(s) too: a negate_action behind a picked
+    // option negates (Pressure's "Lose the effect"). With no picks this is
+    // exactly expandEffectChain — no menu is descended.
+    const rows = expandEffectChainWithPicks(effectTable, cand.ref, cand.chosenMenuPicks);
     if (rows.some((r) => String(r.effect_kind ?? "").trim().toLowerCase() === "negate_action")) {
       negated = true;
       break;

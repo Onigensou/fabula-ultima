@@ -50,7 +50,7 @@ import { buildUltimaMenuSpec } from "./domination.js";
 import { buildObjectiveMenuSpec } from "./objectives.js";
 import { pickFromList } from "./list-picker.js";
 import { applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, pinActionKindForSkill, snapshotEligibleTargetsFromDCombat,
-         attackRangeBlockedBy } from "./snapshot.js";
+         attackRangeBlockedBy, applyMultiOffensiveGate } from "./snapshot.js";
 
 // Race-cancellation token. Returns { promise, cancel }. The promise
 // resolves with the cancellation reason when cancel() is called.
@@ -542,7 +542,10 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
   // 3rd arg = the attacker: a Flying attacker keeps its melee reach against
   // Flying targets (RAW), and a live `can_target_flying_with` grant is honoured
   // even when the weapon snapshot predates it.
-  const filtered = applyAttackRangeGate(enemies, currentWeapon, token?.actor ?? null);
+  // Shadow Mask: a multi-target attack cannot select a `multi_offensive` bearer.
+  const filtered = applyMultiOffensiveGate(
+    applyAttackRangeGate(enemies, currentWeapon, token?.actor ?? null),
+    { isAttack: true, skillTargetText: String(currentWeapon?.skillTarget ?? "") });
   if (!filtered.length) {
     const isMelee = String(currentWeapon?.range ?? "").trim().toLowerCase() === "melee";
     ui.notifications?.warn(isMelee
@@ -732,7 +735,8 @@ async function composeAttackNpc({ director, snap, eligible, cancelSentinel, gran
   // Attacker passed so this bare `{ range }` shape still honours the Flying
   // exceptions the PC path reads off the weapon snapshot (attacker airborne, or
   // a `can_target_flying_with` grant) — it carries no `canMeleeFlying` of its own.
-  const filtered = applyAttackRangeGate(enemies, { range }, actor);
+  const filtered = applyMultiOffensiveGate(applyAttackRangeGate(enemies, { range }, actor),
+    { isAttack: true, skill: attackItem, skillTargetText: String(attackItem.system?.props?.skill_target ?? "") });
   if (!filtered.length) {
     const isMelee = range.trim().toLowerCase() === "melee";
     ui.notifications?.warn(isMelee
@@ -978,6 +982,9 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
     }
     targetList = kept;
   }
+
+  // Shadow Mask: a multi-target offensive spell cannot select a `multi_offensive` bearer.
+  targetList = applyMultiOffensiveGate(targetList, { skill: source, skillTargetText });
 
   if (!targetList.length) {
     ui.notifications?.warn(`No eligible ${categoryLabel} for ${source.name}.`);

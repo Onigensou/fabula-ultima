@@ -31,6 +31,7 @@
       "description": "<p>Each time you acquire this <strong>Skill</strong>, learn one <strong>Hexer spell</strong> (see the Facet).</p><p><strong>Offensive (⚡) Hexer spells</strong> use <strong>[INS + WLP]</strong> for the Magic Check.</p>",
       "duration": "",
       "heroic_requirement": "",
+      "implementation_note": "Catalogue skill: each rank learns one Hexer spell, and each spell carries its own rows. The INS + WLP Magic Check lives on every offensive Hexer spell (rolled_atr1/2 on Acid Splash, Blind, Deteriorate, Muddle, Plague, Pressure, Seething Blight).",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,

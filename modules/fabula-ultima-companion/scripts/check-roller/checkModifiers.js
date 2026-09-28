@@ -67,7 +67,7 @@
    *        that re-states the context still adds its bonus exactly once.
    * @returns {{label: string, value: number}[]}
    */
-  function resolve(actor, context = null, { attributes = null } = {}) {
+  function resolve(actor, context = null, { attributes = null, checkType = null } = {}) {
     const props = actor?.system?.props ?? {};
     const parts = [];
 
@@ -103,7 +103,7 @@
       if (val !== 0) parts.push({ label: `Check Bonus (${attr.toUpperCase()})`, value: val });
     }
 
-    for (const p of anyOfParts(actor, rolled, context)) parts.push(p);
+    for (const p of anyOfParts(actor, rolled, context, checkType)) parts.push(p);
 
     return parts;
   }
@@ -119,7 +119,14 @@
   // check context is <ctx>. Frenetic Footwork ("+SL×2 to Opposed Checks that
   // rely on acrobatics, coordination or speed") is `check_mod_opposed_anyof_dex`:
   // contest_check and the manual roller's "Opposed" type pass context "opposed".
-  function anyOfParts(actor, rolled, context = null) {
+  //
+  // The reserved scope `check` (`check_mod_check_anyof_<a>`) pays on EVERY
+  // check that rolls a listed die EXCEPT Accuracy and Magic Checks. Transfer
+  // Life ("+2 to Checks using MIG that aren't Accuracy Checks or Magic Checks")
+  // is why it exists. Accuracy/Magic are excluded by the context/checkType
+  // here, and structurally by skill-formulas resolveAccuracyParts (its regex is
+  // `^check_mod_anyof_`, so a scoped key never reaches the BD accuracy sum).
+  function anyOfParts(actor, rolled, context = null, checkType = null) {
     if (!rolled?.size) return [];
     const flags = actor?.flags?.[MODULE_ID];
     if (!flags || typeof flags !== "object") return [];
@@ -128,7 +135,10 @@
     for (const key of Object.keys(flags)) {
       const m = /^check_mod_(?:([a-z]+)_)?anyof_([a-z_]+)$/.exec(key);
       if (!m) continue;
-      if (m[1] && m[1] !== ctx) continue;
+      if (m[1] === "check") {
+        const t = String(checkType ?? "").toLowerCase();
+        if (ctx === "accuracy" || ctx === "magic" || t === "accuracy" || t === "magic") continue;
+      } else if (m[1] && m[1] !== ctx) continue;
       const listed = m[2].split("_").filter((a) => ATTRS.has(a));
       if (!listed.length || !listed.some((a) => rolled.has(a))) continue;
       const val = safeNum(flags[key]);

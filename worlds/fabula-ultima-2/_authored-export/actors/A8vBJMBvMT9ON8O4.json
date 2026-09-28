@@ -832,7 +832,7 @@
             {
               "key": "affinity_2",
               "mode": 5,
-              "priority": 20,
+              "priority": 90,
               "value": "aeAffinityStep(\"-1\")"
             }
           ],
@@ -885,7 +885,7 @@
             {
               "key": "affinity_5",
               "mode": 5,
-              "priority": 20,
+              "priority": 90,
               "value": "aeAffinityStep(\"-1\")"
             }
           ],
@@ -938,7 +938,7 @@
             {
               "key": "affinity_7",
               "mode": 5,
-              "priority": 20,
+              "priority": 90,
               "value": "aeAffinityStep(\"-1\")"
             }
           ],
@@ -991,7 +991,7 @@
             {
               "key": "affinity_6",
               "mode": 5,
-              "priority": 20,
+              "priority": 90,
               "value": "aeAffinityStep(\"-1\")"
             }
           ],
@@ -1044,7 +1044,7 @@
             {
               "key": "affinity_3",
               "mode": 5,
-              "priority": 20,
+              "priority": 90,
               "value": "aeAffinityStep(\"-1\")"
             }
           ],

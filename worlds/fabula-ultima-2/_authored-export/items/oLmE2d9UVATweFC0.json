@@ -8,6 +8,98 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "g0Taz1Rfc8NojETK",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790551698609,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Pressure:</em> the next time this creature would spend Mind Points on an action, it must spend 10 more or lose the action's effect.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "g0Taz1Rfc8NojETK",
+          "originalParentId": "oLmE2d9UVATweFC0",
+          "originalUuid": "Item.oLmE2d9UVATweFC0.ActiveEffect.g0Taz1Rfc8NojETK"
+        },
+        "fabula-ultima-companion": {
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "effect_kind": "open_action_menu",
+                "effect_label": "pressure_menu",
+                "menu_option_labels": "Spend 10 more MP|Lose the effect",
+                "menu_option_refs": "pressure_tax,pressure_lose",
+                "menu_pick_count": "1",
+                "menu_subtitle": "The oppressive atmosphere strains your mind.",
+                "menu_title": "Pressure"
+              },
+              "1": {
+                "condition_formula": "CUR_MP >= ACTION_COST_MP + 10",
+                "cost_amount": "10",
+                "cost_operation": "add",
+                "cost_resource": "mp",
+                "effect_kind": "adjust_cost",
+                "effect_label": "pressure_tax"
+              },
+              "2": {
+                "effect_kind": "negate_action",
+                "effect_label": "pressure_lose"
+              }
+            },
+            "name": "Pressure",
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "ACTION_COST_MP > 0 && ACTION_IS_FREE_CAST == 0",
+                "consume_self": true,
+                "reaction_effect_ref": "pressure_menu",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_performs_action"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/aura.svg",
+      "name": "Pressure",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-pressure"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -33,6 +125,16 @@
       "defense_target_type": "mdef",
       "description": "<p>You conjure an oppressive atmosphere that amplifies strain on the target’s mind. The next time a target hit by this spell would spend Mind Points, that creature must spend an <strong>additional 10 Mind Points</strong> or lose their intended effect.</p>\n",
       "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "scene",
+          "ae_template_ref": "Pressure",
+          "effect_kind": "apply_ae",
+          "effect_label": "pressure_apply",
+          "target_ref": "hit_action_targets"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": true,
       "isFacet": true,
@@ -42,7 +144,9 @@
       "level": "1",
       "max_level": "1",
       "name": "Pressure",
+      "on_activate_effect_ref": "pressure_apply",
       "optional_params": {},
+      "reaction_config_table": {},
       "rolled_atr1": "INS",
       "rolled_atr2": "WLP",
       "skill_animation_default": "",

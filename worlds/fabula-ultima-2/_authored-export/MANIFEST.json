@@ -4808,7 +4808,7 @@
         "id": "gQNqXMnOYBQrQfoB",
         "name": "Deteriorate",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "o6JD10LZF7bXvU6B",
@@ -5318,7 +5318,7 @@
         "id": "DO5WAMWcUFtLTxfi",
         "name": "Encroaching Hex",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "3UYXnhsSCTo0lV68",
@@ -8942,7 +8942,7 @@
         "id": "6pjBWpijmao9yHng",
         "name": "Muddle",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "fnd9BxHv1albIMpM",
@@ -9746,7 +9746,7 @@
         "id": "oLmE2d9UVATweFC0",
         "name": "Pressure",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "wOiDH5AooBXaKX5c",
@@ -10826,7 +10826,7 @@
         "id": "88RMlBlB3uXxvzOn",
         "name": "Shadow Mask",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "YAMrjKy6d6hgGP1F",
@@ -12374,7 +12374,7 @@
         "id": "WiCs6a65AnrGEY8Q",
         "name": "Transfer Life",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "GqR1i9GNAx9qs6d1",
@@ -12698,7 +12698,7 @@
         "id": "vnAEcFSRA2xUhF58",
         "name": "Venomous Weapon",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "jLC0QzPXwRrpkY1e",
