@@ -32,6 +32,19 @@ export const SKILL_FORMULAS_SCHEMA = 11;
 
 import { log, warn } from "./logger.js";
 
+// snapshot.getBlockedActionLabels, registered by snapshot.js at load (it already
+// imports this module, so a static import back would be a cycle). Read by the
+// ACTION_BLOCKED_<LABEL> identifier.
+let _blockedActionReader = null;
+// Also published on globalThis: skill-effects imports this module cache-busted
+// ("./skill-formulas.js?cb=…"), a SEPARATE instance whose module-local slot is
+// never registered — without the global fallback ACTION_BLOCKED_* read 0 there
+// (row-dispatch gates, reaction conditions) and failed permissive.
+export function registerBlockedActionReader(fn) {
+  _blockedActionReader = typeof fn === "function" ? fn : null;
+  try { globalThis.__fuBlockedActionReader = _blockedActionReader; } catch (_e) { /* noop */ }
+}
+
 // ── Tokenizer ───────────────────────────────────────────────────────────
 
 const T_NUMBER = "num";
@@ -1983,6 +1996,51 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         if (name.startsWith("OWN_PERSISTENT_SUMMONS_")) {
           const kind = name.slice("OWN_PERSISTENT_SUMMONS_".length).toLowerCase();
           return kind ? ownPersistentSummonCount(actor, kind) : 0;
+        }
+        // Dynamic ACTION_BLOCKED_<LABEL> — 1 when an AE on the actor blocks that
+        // top-level action (disable_action / enable_action_only / intent gates,
+        // exactly snapshot.getBlockedActionLabels — injected below to avoid an
+        // import cycle). Lets a menu option that COUNTS AS another action dim
+        // itself: Gadgets' Alchemy is also an Inventory action, so its option
+        // reads ACTION_BLOCKED_ITEM == 0. Labels: ATTACK GUARD SKILL SPELL ITEM
+        // EQUIPMENT STUDY HINDER OBJECTIVE.
+        // Dynamic OWN_SKILL_TAG_COUNT_<TAG> — how many of the actor's own items
+        // carry <TAG> as a PLAIN skill_tags token. A scoped "tag@row" token is a
+        // branch identity of a menu-parent (Gadgets' "magisphere@mt_sphere"), not
+        // "this skill is a <TAG>", so it does not count. Lets an option dim when
+        // nothing it would offer exists (Magisphere with no spell tagged "magisphere").
+        if (name.startsWith("OWN_SKILL_TAG_COUNT_")) {
+          const tag = name.slice("OWN_SKILL_TAG_COUNT_".length).toLowerCase();
+          if (!tag || !actor?.items) return 0;
+          let n = 0;
+          for (const it of actor.items) {
+            const toks = String(it?.system?.props?.skill_tags ?? "").split(/[\s,]+/).map((t) => t.trim().toLowerCase());
+            if (toks.includes(tag)) n += 1;
+          }
+          return n;
+        }
+        if (name.startsWith("ACTION_BLOCKED_")) {
+          const lbl = name.slice("ACTION_BLOCKED_".length).toLowerCase();
+          const reader = _blockedActionReader ?? globalThis.__fuBlockedActionReader ?? null;
+          if (!lbl || typeof reader !== "function" || !actor) return 0;
+          try {
+            const m = reader(actor);
+            for (const k of (m?.keys?.() ?? [])) if (String(k).toLowerCase() === lbl) return 1;
+          } catch (e) { warn("ACTION_BLOCKED_ reader threw", e); }
+          return 0;
+        }
+        // Dynamic MY_AE_COUNT_<NAME> — AEs named <NAME> on this actor that were
+        // APPLIED BY "me": payload.filterReactorActorUuid (the filtering actor,
+        // set by target_filter where the resolver actor is the candidate), else
+        // payload.sourceActorUuid. Magitech Override: "release the construct YOU
+        // control" without touching another Tinkerer's.
+        if (name.startsWith("MY_AE_COUNT_")) {
+          const needle = name.slice("MY_AE_COUNT_".length).replace(/_/g, " ").toLowerCase().trim();
+          const me = String(payload?.filterReactorActorUuid ?? payload?.sourceActorUuid ?? "").trim();
+          if (!me || !needle) return 0;
+          const effects = actor?.effects?.contents ?? Array.from(actor?.effects ?? []);
+          return effects.filter((e) => !e.disabled && aeNameForNeedle(e?.name) === needle
+            && String(e.flags?.["fabula-ultima-companion"]?.directorAppliedBy?.reactorActorUuid ?? "") === me).length;
         }
         if (name.startsWith("AE_COUNT_")) {
           const needle = name

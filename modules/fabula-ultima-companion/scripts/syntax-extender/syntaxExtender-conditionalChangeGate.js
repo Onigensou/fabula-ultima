@@ -37,6 +37,12 @@
  *                                            Unlike aeAffinityFloor it is relative, so it
  *                                            never needs to know the bearer's affinity
  *                                            at authoring time.
+ *   aeAffinityCap(value)                   — single-arg. CAPS the affinity_N key being
+ *                                            patched at `value` on the same ladder:
+ *                                            anything above it drops to it, anything at
+ *                                            or below it is kept. aeAffinityCap("NA") =
+ *                                            "resistance reduced to Neutral" (AB/IM/RS→NA,
+ *                                            NA and VU untouched) — the Anomaly status.
  *
  * Equipment type tokens (for aeEquippedWhen / aeNotEquippedWhen):
  *   shield         → item.props.item_type === "shield"
@@ -63,7 +69,7 @@
   const TRACE_TAG = "[ONI][AE-Gate][TRACE]";
   const VERSION = "6.4.0-affinity-step-2026-09-20";
 
-  const HELPERS = ["aeWhen", "aeUuidWhen", "aeStatusWhen", "aeEquippedWhen", "aeNotEquippedWhen", "aeSlotEquippedWhen", "aeAffinityFloor", "aeAffinityStep"];
+  const HELPERS = ["aeWhen", "aeUuidWhen", "aeStatusWhen", "aeEquippedWhen", "aeNotEquippedWhen", "aeSlotEquippedWhen", "aeAffinityFloor", "aeAffinityStep", "aeAffinityCap"];
 
   const PATCH_FLAGS = {
     actorPatched: "__oniAeConditionalGateActorPatched",
@@ -264,7 +270,7 @@
 
   function hasGateSyntax(value) {
     return typeof value === "string"
-      && /\b(?:aeWhen|aeUuidWhen|aeStatusWhen|aeEquippedWhen|aeNotEquippedWhen|aeSlotEquippedWhen|aeAffinityFloor|aeAffinityStep)\s*\(/i.test(value);
+      && /\b(?:aeWhen|aeUuidWhen|aeStatusWhen|aeEquippedWhen|aeNotEquippedWhen|aeSlotEquippedWhen|aeAffinityFloor|aeAffinityStep|aeAffinityCap)\s*\(/i.test(value);
   }
 
   // Does the actor have any equipped item matching the requested type
@@ -851,7 +857,7 @@ function hasEffectStatus(actor, statusId, currentEffect = null) {
     // is active (i.e. current affinity isn't IM/AB); the affinity step takes
     // the signed rung count, quotes optional (aeAffinityStep(-1) parses too).
     const match1 = text.match(
-      /^\s*(?:\$\{\s*)?(aeAffinityFloor|aeAffinityStep)\s*\(\s*(?:(['"])(.*?)\2|([-+]?\d+))\s*\)\s*(?:\}\$)?\s*$/i
+      /^\s*(?:\$\{\s*)?(aeAffinityFloor|aeAffinityStep|aeAffinityCap)\s*\(\s*(?:(['"])(.*?)\2|([-+]?\d+))\s*\)\s*(?:\}\$)?\s*$/i
     );
 
     if (match1) {
@@ -942,6 +948,19 @@ if (helperNorm === "aewhen") {
   const to = Math.max(0, Math.min(ladder.length - 1, from + step));
   active = true;
   computedValue = ladder[to];
+} else if (helperNorm === "aeaffinitycap") {
+  // CEILING on the same ladder: anything above the cap drops to it, anything at
+  // or below it is kept (Anomaly = cap "NA": AB/IM/RS→NA, NA/VU untouched). Reads
+  // the bearer's current value like aeAffinityStep, so it also caps gear/skill
+  // setters that ran earlier in the pass (author it at a high priority).
+  const k = String(change?.key ?? "").trim().replace(/^system\.props\./, "");
+  const props = actor?.system?.props ?? {};
+  const ladder = ["VU", "NA", "RS", "IM", "AB"];
+  const currentVal = String(props[k] ?? "NA").trim().toUpperCase();
+  const cur = ladder.indexOf(currentVal);
+  const cap = ladder.indexOf(String(parsed.trueValue ?? "").trim().toUpperCase());
+  active = true;
+  computedValue = (cap >= 0 && (cur < 0 ? 1 : cur) > cap) ? ladder[cap] : (cur >= 0 ? currentVal : "NA");
 }
 
   const result = {

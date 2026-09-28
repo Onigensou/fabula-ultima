@@ -836,7 +836,7 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
 // effect to each roster row, creating rows (auto-hit) for targets that have none
 // yet (pure heal). Heal shares the roster's hit determination instead of producing
 // a separate row set. Mutates `rows`; returns { healingObj }.
-const SELF_SIDE_GRANT_REFS = new Set(["self", "own_summons", "own_persistent_summons", "own_minions", "own_numen", "last_summoned", "field"]);
+const SELF_SIDE_GRANT_REFS = new Set(["self", "own_summons", "own_phantasms", "own_persistent_summons", "own_minions", "own_numen", "last_summoned", "field"]);
 async function attachHealEffects({ rows, view, ar, targets, resolver, liveAttacker = null, check, kind, primary, chainVars = null }) {
   const rolled = !!(check?.required && check?.total != null);
   const isPreRoll = !!(check?.required && check?.total == null);

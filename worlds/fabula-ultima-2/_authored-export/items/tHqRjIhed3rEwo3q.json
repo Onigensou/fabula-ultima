@@ -24,13 +24,13 @@
           "key": "extra_damage_mod_item",
           "mode": 2,
           "priority": 20,
-          "value": "4"
+          "value": "${level}$"
         },
         {
           "key": "item_restore_mod",
           "mode": 2,
           "priority": 20,
-          "value": "20"
+          "value": "${level * 5}$"
         }
       ],
       "description": "",

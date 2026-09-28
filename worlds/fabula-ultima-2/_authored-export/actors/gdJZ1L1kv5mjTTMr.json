@@ -850,8 +850,8 @@
             },
             "5": {
               "$deleted": false,
-              "candidate_source": "own_summons",
-              "condition_formula": "OWN_SUMMON_COUNT >= 1",
+              "candidate_source": "own_phantasms",
+              "condition_formula": "OWN_PHANTASM_COUNT >= 1",
               "count": 1,
               "disable_ui_type": "dim",
               "disabled_reason": "No Phantasm on the field",
@@ -940,7 +940,7 @@
             "1": {
               "$deleted": false,
               "auto_target": "confirm",
-              "candidate_source": "own_summons",
+              "candidate_source": "own_phantasms",
               "count": 1,
               "effect_kind": "targeting",
               "effect_label": "dp_phantasm",
@@ -6978,7 +6978,7 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Any",
-          "skill_tags": "",
+          "skill_tags": "phantasm",
           "skill_target": "Self",
           "skill_type": "Spell",
           "target_eligibility": "",
@@ -10079,8 +10079,8 @@
             },
             "7": {
               "$deleted": false,
-              "candidate_source": "own_summons",
-              "condition_formula": "OWN_SUMMON_COUNT >= 1",
+              "candidate_source": "own_phantasms",
+              "condition_formula": "OWN_PHANTASM_COUNT >= 1",
               "count": 1,
               "disable_ui_type": "dim",
               "disabled_reason": "No Phantasm on the field",
@@ -10494,7 +10494,7 @@
             },
             "4": {
               "auto_confirm_when_obvious": true,
-              "candidate_source": "own_summons",
+              "candidate_source": "own_phantasms",
               "count": "1",
               "effect_kind": "targeting",
               "effect_label": "is_phantasm",

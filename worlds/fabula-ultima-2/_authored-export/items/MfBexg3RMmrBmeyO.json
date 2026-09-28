@@ -59,7 +59,7 @@
         },
         "4": {
           "auto_confirm_when_obvious": true,
-          "candidate_source": "own_summons",
+          "candidate_source": "own_phantasms",
           "count": "1",
           "effect_kind": "targeting",
           "effect_label": "is_phantasm",

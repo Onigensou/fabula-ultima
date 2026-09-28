@@ -20,6 +20,7 @@
 import { log } from "../logger.js";
 import { findOnActor } from "../skill-charges.js";
 import { findCostSubstitution, canSubstituteForShortfall } from "../skill-cost.js";
+import { buildSkillResolver, evaluateFormula } from "../skill-formulas.js";
 
 const norm = (s) => String(s ?? "").trim().toLowerCase().replace(/\s+/g, "_");
 const num = (v) => { const n = Number(v); return Number.isFinite(n) ? n : null; };
@@ -113,7 +114,12 @@ export function canAffordItem(actor, item) {
   const missing = [{ resource: direct.res, label: direct.res, has: direct.have, need: direct.need }];
   const skillType = item?.system?.props?.skill_type;
   if (!canSubstituteForShortfall(missing, skillType)) return direct;
-  const swap = findCostSubstitution(actor, new Map([[direct.res, direct.need]]));
+  const swapPayload = { skillTags: String(item?.system?.props?.skill_tags ?? ""), skillType: "Spell",
+    skillName: item?.name ?? "", skillUuid: item?.uuid ?? null };
+  const swap = findCostSubstitution(actor, new Map([[direct.res, direct.need]]), {
+    evalCondition: (f, carrier) => evaluateFormula(f,
+      buildSkillResolver({ actor, payload: swapPayload, skill: carrier, round: 0 }), 1),
+  });
   if (!swap) return direct;
   log(`[SIM] canAffordItem: "${item?.name}" unaffordable in ${direct.res} `
     + `(${direct.have}/${direct.need}) but covered by ${swap.sourceName ?? "a cost substitution"} `

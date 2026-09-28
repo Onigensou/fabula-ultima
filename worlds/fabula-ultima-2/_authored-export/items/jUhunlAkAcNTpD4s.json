@@ -30,15 +30,56 @@
       "damage_bonus": "0",
       "description": "<p>When you cast a spell, if you don't have enough MP to pay for its total cost, you may choose to shatter one of your Phantasms instead. Destroying a Phantasm this way will not trigger the <strong>Phantasmal Echo</strong> skill. You cannot use this skill to create a Phantasm.</p>\n",
       "duration": "-",
+      "effect_table": {
+        "0": {
+          "chain_steps": "prec_pick, prec_shatter, prec_waive",
+          "effect_kind": "chain",
+          "effect_label": "prec_do"
+        },
+        "1": {
+          "auto_target": "confirm",
+          "candidate_source": "own_phantasms",
+          "count": 1,
+          "effect_kind": "targeting",
+          "effect_label": "prec_pick",
+          "mode": "exact",
+          "target_prompt": "Shatter which Phantasm to pay for the spell?"
+        },
+        "2": {
+          "effect_kind": "substitute_cost",
+          "effect_label": "prec_waive",
+          "from_resource": "mp",
+          "multiplier": "0",
+          "to_resource": "mp"
+        },
+        "3": {
+          "condition_formula": "OWN_PHANTASM_COUNT >= 1",
+          "effect_kind": "destroy_summon",
+          "effect_label": "prec_shatter",
+          "on_condition_fail": "abort",
+          "suppress_defeat": true,
+          "target_ref": "prec_pick"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
       "isOffensiveSpell": false,
+      "isReaction": true,
       "level": "1",
       "max_level": "1",
       "name": "Phantasmal Recycling",
       "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "OWN_PHANTASM_COUNT >= 1 && SKILL_HAS_TAG_PHANTASM == 0",
+          "reaction_effect_ref": "prec_do",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "self",
+          "reaction_trigger": "caster_short_on_mp"
+        }
+      },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",

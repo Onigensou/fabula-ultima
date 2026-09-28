@@ -8,6 +8,857 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "1g8BK8rsYUxh9G1b",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790607748148,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>A magicannon deals earth damage: [DEX + INS] +1, HR + 10, Ranged firearm. It crumbles when a new one is made.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "1g8BK8rsYUxh9G1b",
+          "originalParentId": "1w2LjUOVhlbLR8nn",
+          "originalUuid": "Item.1w2LjUOVhlbLR8nn.ActiveEffect.1g8BK8rsYUxh9G1b"
+        },
+        "fabula-ultima-companion": {
+          "aeFamily": "magicannon",
+          "exposedVirtualAttack": {
+            "profile": {
+              "A1": "DEX",
+              "A2": "INS",
+              "checkBonus": 1,
+              "damageBonus": 10,
+              "damageType": "Earth",
+              "imageUrl": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13160.gif",
+              "name": "Magicannon",
+              "range": "Ranged",
+              "weaponType": "Firearm"
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13160.gif",
+      "name": "Magicannon (Earth)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-magicannon"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "CVZWi8P7tqqp8zZ0",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790607748148,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>A magicannon deals physical damage: [DEX + INS] +1, HR + 10, Ranged firearm. It crumbles when a new one is made.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "CVZWi8P7tqqp8zZ0",
+          "originalParentId": "1w2LjUOVhlbLR8nn",
+          "originalUuid": "Item.1w2LjUOVhlbLR8nn.ActiveEffect.CVZWi8P7tqqp8zZ0"
+        },
+        "fabula-ultima-companion": {
+          "aeFamily": "magicannon",
+          "exposedVirtualAttack": {
+            "profile": {
+              "A1": "DEX",
+              "A2": "INS",
+              "checkBonus": 1,
+              "damageBonus": 10,
+              "damageType": "Physical",
+              "imageUrl": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13160.gif",
+              "name": "Magicannon",
+              "range": "Ranged",
+              "weaponType": "Firearm"
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13160.gif",
+      "name": "Magicannon (Physical)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-magicannon"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "hDhQHdSvmWN6HLds",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790607748148,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>A magicannon deals air damage: [DEX + INS] +1, HR + 10, Ranged firearm. It crumbles when a new one is made.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "hDhQHdSvmWN6HLds",
+          "originalParentId": "1w2LjUOVhlbLR8nn",
+          "originalUuid": "Item.1w2LjUOVhlbLR8nn.ActiveEffect.hDhQHdSvmWN6HLds"
+        },
+        "fabula-ultima-companion": {
+          "aeFamily": "magicannon",
+          "exposedVirtualAttack": {
+            "profile": {
+              "A1": "DEX",
+              "A2": "INS",
+              "checkBonus": 1,
+              "damageBonus": 10,
+              "damageType": "Air",
+              "imageUrl": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13160.gif",
+              "name": "Magicannon",
+              "range": "Ranged",
+              "weaponType": "Firearm"
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13160.gif",
+      "name": "Magicannon (Air)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-magicannon"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "iqLt1oxvBbjcwd2U",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790607748148,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_2",
+          "mode": 5,
+          "priority": 3,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_6",
+          "mode": 5,
+          "priority": 3,
+          "value": "aeAffinityFloor(\"RS\")"
+        }
+      ],
+      "description": "<p>Resistance to air &amp; fire damage until the end of the scene.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "iqLt1oxvBbjcwd2U",
+          "originalParentId": "1w2LjUOVhlbLR8nn",
+          "originalUuid": "Item.1w2LjUOVhlbLR8nn.ActiveEffect.iqLt1oxvBbjcwd2U"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/consumables/potions/potion-flask-corked-orange.webp",
+      "name": "Alchemical Resistance (Air & Fire)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "K8iP8vtiKSivyYYs",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790607748148,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_3",
+          "mode": 5,
+          "priority": 3,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_7",
+          "mode": 5,
+          "priority": 3,
+          "value": "aeAffinityFloor(\"RS\")"
+        }
+      ],
+      "description": "<p>Resistance to bolt &amp; ice damage until the end of the scene.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "K8iP8vtiKSivyYYs",
+          "originalParentId": "1w2LjUOVhlbLR8nn",
+          "originalUuid": "Item.1w2LjUOVhlbLR8nn.ActiveEffect.K8iP8vtiKSivyYYs"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/consumables/potions/potion-flask-corked-orange.webp",
+      "name": "Alchemical Resistance (Bolt & Ice)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "kEZS7apbtNjiPbc0",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790607748148,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "dex_current",
+          "mode": 2,
+          "priority": 1,
+          "value": "2"
+        },
+        {
+          "key": "mig_current",
+          "mode": 2,
+          "priority": 1,
+          "value": "2"
+        }
+      ],
+      "description": "<p>DEX &amp; MIG dice are one size higher (max d12) until the end of the alchemist's next turn.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "kEZS7apbtNjiPbc0",
+          "originalParentId": "1w2LjUOVhlbLR8nn",
+          "originalUuid": "Item.1w2LjUOVhlbLR8nn.ActiveEffect.kEZS7apbtNjiPbc0"
+        },
+        "fabula-ultima-companion": {
+          "charges": 2,
+          "chargesMax": 2,
+          "lifetimeMode": "applier_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/consumables/potions/potion-bottle-corked-fancy-blue.webp",
+      "name": "Alchemical Tonic (DEX & MIG)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "M4ldpWnv9g5E6g7D",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790607748148,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_4",
+          "mode": 5,
+          "priority": 3,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_5",
+          "mode": 5,
+          "priority": 3,
+          "value": "aeAffinityFloor(\"RS\")"
+        }
+      ],
+      "description": "<p>Resistance to dark &amp; earth damage until the end of the scene.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "M4ldpWnv9g5E6g7D",
+          "originalParentId": "1w2LjUOVhlbLR8nn",
+          "originalUuid": "Item.1w2LjUOVhlbLR8nn.ActiveEffect.M4ldpWnv9g5E6g7D"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/consumables/potions/potion-flask-corked-orange.webp",
+      "name": "Alchemical Resistance (Dark & Earth)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "ol3e7vUK5M46ohdT",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790607748148,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "ins_current",
+          "mode": 2,
+          "priority": 1,
+          "value": "2"
+        },
+        {
+          "key": "wlp_current",
+          "mode": 2,
+          "priority": 1,
+          "value": "2"
+        }
+      ],
+      "description": "<p>INS &amp; WLP dice are one size higher (max d12) until the end of the alchemist's next turn.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "ol3e7vUK5M46ohdT",
+          "originalParentId": "1w2LjUOVhlbLR8nn",
+          "originalUuid": "Item.1w2LjUOVhlbLR8nn.ActiveEffect.ol3e7vUK5M46ohdT"
+        },
+        "fabula-ultima-companion": {
+          "charges": 2,
+          "chargesMax": 2,
+          "lifetimeMode": "applier_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/consumables/potions/potion-bottle-corked-fancy-blue.webp",
+      "name": "Alchemical Tonic (INS & WLP)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "Veb4uxqJjPBAWlHH",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790607748148,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>A magicannon deals ice damage: [DEX + INS] +1, HR + 10, Ranged firearm. It crumbles when a new one is made.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "Veb4uxqJjPBAWlHH",
+          "originalParentId": "1w2LjUOVhlbLR8nn",
+          "originalUuid": "Item.1w2LjUOVhlbLR8nn.ActiveEffect.Veb4uxqJjPBAWlHH"
+        },
+        "fabula-ultima-companion": {
+          "aeFamily": "magicannon",
+          "exposedVirtualAttack": {
+            "profile": {
+              "A1": "DEX",
+              "A2": "INS",
+              "checkBonus": 1,
+              "damageBonus": 10,
+              "damageType": "Ice",
+              "imageUrl": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13160.gif",
+              "name": "Magicannon",
+              "range": "Ranged",
+              "weaponType": "Firearm"
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13160.gif",
+      "name": "Magicannon (Ice)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-magicannon"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "WxqKzxP7j3ih8S9P",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790607748148,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "allegiance_override",
+          "mode": 5,
+          "priority": 0,
+          "value": "ally:enemy"
+        },
+        {
+          "key": "allegiance_override",
+          "mode": 5,
+          "priority": 0,
+          "value": "enemy:ally"
+        }
+      ],
+      "description": "<p>A Tinkerer has overridden this construct: it treats its allies as enemies and the Tinkerer's side as allies until the end of the scene, or until it is harmed by the Tinkerer's side.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "WxqKzxP7j3ih8S9P",
+          "originalParentId": "1w2LjUOVhlbLR8nn",
+          "originalUuid": "Item.1w2LjUOVhlbLR8nn.ActiveEffect.WxqKzxP7j3ih8S9P"
+        },
+        "fabula-ultima-companion": {
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "candidate_source": "self",
+                "count": 1,
+                "effect_kind": "targeting",
+                "effect_label": "mto_freed",
+                "mode": "exact",
+                "skip_when_passive": true
+              }
+            },
+            "name": "Magitech Override",
+            "reaction_config_table": {
+              "0": {
+                "consume_self": true,
+                "reaction_cause_filter": "damage",
+                "reaction_damage_source": "enemy",
+                "reaction_effect_ref": "mto_freed",
+                "reaction_passive_mode": "force",
+                "reaction_resource_filter": "hp",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_lose_resource"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/control/hypnosis-mesmerism-swirl.webp",
+      "name": "Magitech Override",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-magitech-override"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "XaKjAtsPTWWSHIm2",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790607748148,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>A magicannon deals fire damage: [DEX + INS] +1, HR + 10, Ranged firearm. It crumbles when a new one is made.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "XaKjAtsPTWWSHIm2",
+          "originalParentId": "1w2LjUOVhlbLR8nn",
+          "originalUuid": "Item.1w2LjUOVhlbLR8nn.ActiveEffect.XaKjAtsPTWWSHIm2"
+        },
+        "fabula-ultima-companion": {
+          "aeFamily": "magicannon",
+          "exposedVirtualAttack": {
+            "profile": {
+              "A1": "DEX",
+              "A2": "INS",
+              "checkBonus": 1,
+              "damageBonus": 10,
+              "damageType": "Fire",
+              "imageUrl": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13160.gif",
+              "name": "Magicannon",
+              "range": "Ranged",
+              "weaponType": "Firearm"
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13160.gif",
+      "name": "Magicannon (Fire)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-magicannon"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "zmHroaW0UdXRXiG3",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790607748148,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>A magicannon deals bolt damage: [DEX + INS] +1, HR + 10, Ranged firearm. It crumbles when a new one is made.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "zmHroaW0UdXRXiG3",
+          "originalParentId": "1w2LjUOVhlbLR8nn",
+          "originalUuid": "Item.1w2LjUOVhlbLR8nn.ActiveEffect.zmHroaW0UdXRXiG3"
+        },
+        "fabula-ultima-companion": {
+          "aeFamily": "magicannon",
+          "exposedVirtualAttack": {
+            "profile": {
+              "A1": "DEX",
+              "A2": "INS",
+              "checkBonus": 1,
+              "damageBonus": 10,
+              "damageType": "Bolt",
+              "imageUrl": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13160.gif",
+              "name": "Magicannon",
+              "range": "Ranged",
+              "weaponType": "Firearm"
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13160.gif",
+      "name": "Magicannon (Bolt)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-magicannon"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"
@@ -28,7 +879,7 @@
       "animation_damage_timing_options": "default",
       "check_bonus": "0",
       "class": "Tinkerer",
-      "cost": "2 IP",
+      "cost": "-",
       "damage_bonus": "",
       "defense_target_type": "def",
       "description": "<p>You can produce <strong>infusions</strong> and other gadgets on the fly.</p><p><strong>Infusions.</strong> When you successfully <strong>hit one or more targets with an attack</strong>, you may spend <strong>2 Inventory Points</strong> to produce a special infusion and apply its effect to that attack. If the attack had the <em>multi</em> property, the effect applies to <strong>each</strong> target. You cannot apply more than one infusion to the same attack; producing and using an infusion are both part of the attack.</p><ul><li><strong>Cryo / Pyro / Volt:</strong> deal 5 extra damage; the attack's damage becomes <strong>ice / fire / bolt</strong>.</li><li><strong>Cyclone / Exorcism / Seismic / Shadow:</strong> deal 5 extra damage; the attack's damage becomes <strong>air / light / earth / dark</strong>.</li><li><strong>Venom:</strong> deal 5 extra damage; the attack's damage becomes <strong>poison</strong>; each creature hit suffers <strong>poisoned</strong>.</li><li><strong>Vampire:</strong> heal HP equal to <strong>half the damage dealt</strong>. <em>Single-target attacks only.</em></li></ul>",
@@ -177,54 +1028,691 @@
           "target_ref": "hit_action_targets"
         },
         "20": {
-          "allowed_types": "",
-          "check_bonus_formula": "",
-          "damage_bonus_formula": "",
-          "effect_kind": "open_action_menu",
-          "effect_label": "gadget_active_root",
-          "free_hr_as_zero": false,
-          "free_mode": false,
-          "max_mp_cost": "",
-          "menu_option_colors": "",
-          "menu_option_descriptions": "Mix a potion|Build a magitech device",
-          "menu_option_icons": "",
-          "menu_option_labels": "Alchemy|Magitech",
-          "menu_option_refs": "stub_alchemy,stub_magitech",
-          "menu_pick_count": "1",
-          "menu_subtitle": "Choose a gadget branch",
-          "menu_title": "Use a Gadget",
-          "target_ref": ""
-        },
-        "21": {
-          "condition_formula": "GADGET_ALCHEMY_TIER >= 1",
-          "effect_kind": "notify",
-          "effect_label": "stub_alchemy",
-          "menu_label": "Alchemy",
-          "notify_abort": true,
-          "notify_message": "Alchemy gadgets (potion-mixing) are not yet implemented.",
-          "notify_type": "info"
-        },
-        "22": {
-          "condition_formula": "GADGET_MAGITECH_TIER >= 1",
-          "effect_kind": "notify",
-          "effect_label": "stub_magitech",
-          "menu_label": "Magitech",
-          "notify_abort": true,
-          "notify_message": "Magitech gadgets are not yet implemented.",
-          "notify_type": "info"
-        },
-        "23": {
           "chain_steps": "inf_pay,inf_drain",
           "condition_formula": "GADGET_INFUSION_TIER >= 3 && HIT_COUNT == 1",
           "effect_kind": "chain",
           "effect_label": "inf_vampire",
           "menu_label": "Vampire"
         },
-        "24": {
+        "21": {
           "action_keyword": "drain",
           "condition_formula": "",
           "effect_kind": "apply_action_keyword",
           "effect_label": "inf_drain"
+        },
+        "22": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "gadget_active_root",
+          "menu_option_descriptions": "Mix a potion (Inventory action)|Build or use a magitech device",
+          "menu_option_labels": "Alchemy|Magitech",
+          "menu_option_refs": "alc_mix, mt_menu",
+          "menu_pick_count": "1",
+          "menu_subtitle": "Choose a gadget branch",
+          "menu_title": "Use a Gadget"
+        },
+        "23": {
+          "condition_formula": "GADGET_ALCHEMY_TIER >= 1 && ACTION_BLOCKED_ITEM == 0",
+          "disable_ui_type": "dim",
+          "disabled_reason": "Alchemy not unlocked, or the Inventory action is blocked",
+          "effect_kind": "open_action_menu",
+          "effect_label": "alc_mix",
+          "menu_label": "Alchemy",
+          "menu_option_labels": "Basic mix (3 IP · 2d20)|Advanced mix (4 IP · 3d20)|Superior mix (5 IP · 4d20)",
+          "menu_option_refs": "alc_basic, alc_adv, alc_sup",
+          "menu_subtitle": "Counts as an Inventory action",
+          "menu_title": "Alchemy — choose a mix"
+        },
+        "24": {
+          "chain_steps": "alc_pay3, alc_roll2, alc_assign",
+          "condition_formula": "GADGET_ALCHEMY_TIER >= 1 && CUR_IP >= 3",
+          "disable_ui_type": "dim",
+          "disabled_reason": "Need Basic Alchemy and 3 IP",
+          "effect_kind": "chain",
+          "effect_label": "alc_basic",
+          "menu_label": "Basic mix (3 IP · 2d20)"
+        },
+        "25": {
+          "consume_amount": "3",
+          "consume_resource": "ip",
+          "effect_kind": "consume_resource",
+          "effect_label": "alc_pay3",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "26": {
+          "dice_count": "2",
+          "dice_faces": "20",
+          "effect_kind": "roll_dice",
+          "effect_label": "alc_roll2",
+          "prompt_var": "alc",
+          "roll_label": "Alchemy mix"
+        },
+        "27": {
+          "chain_steps": "alc_pay4, alc_roll3, alc_assign",
+          "condition_formula": "GADGET_ALCHEMY_TIER >= 2 && CUR_IP >= 4",
+          "disable_ui_type": "dim",
+          "disabled_reason": "Need Advanced Alchemy and 4 IP",
+          "effect_kind": "chain",
+          "effect_label": "alc_adv",
+          "menu_label": "Advanced mix (4 IP · 3d20)"
+        },
+        "28": {
+          "consume_amount": "4",
+          "consume_resource": "ip",
+          "effect_kind": "consume_resource",
+          "effect_label": "alc_pay4",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "29": {
+          "dice_count": "3",
+          "dice_faces": "20",
+          "effect_kind": "roll_dice",
+          "effect_label": "alc_roll3",
+          "prompt_var": "alc",
+          "roll_label": "Alchemy mix"
+        },
+        "30": {
+          "chain_steps": "alc_pay5, alc_roll4, alc_assign",
+          "condition_formula": "GADGET_ALCHEMY_TIER >= 3 && CUR_IP >= 5",
+          "disable_ui_type": "dim",
+          "disabled_reason": "Need Superior Alchemy and 5 IP",
+          "effect_kind": "chain",
+          "effect_label": "alc_sup",
+          "menu_label": "Superior mix (5 IP · 4d20)"
+        },
+        "31": {
+          "consume_amount": "5",
+          "consume_resource": "ip",
+          "effect_kind": "consume_resource",
+          "effect_label": "alc_pay5",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "32": {
+          "dice_count": "4",
+          "dice_faces": "20",
+          "effect_kind": "roll_dice",
+          "effect_label": "alc_roll4",
+          "prompt_var": "alc",
+          "roll_label": "Alchemy mix"
+        },
+        "33": {
+          "chain_steps": "alc_tdie, alc_tgt, alc_eff",
+          "effect_kind": "chain",
+          "effect_label": "alc_assign"
+        },
+        "34": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "alc_tdie",
+          "menu_hide_disabled": true,
+          "menu_option_descriptions": "Rolled ${VAR_ALC_1}|Rolled ${VAR_ALC_2}|Rolled ${VAR_ALC_3}|Rolled ${VAR_ALC_4}",
+          "menu_option_labels": "Die 1|Die 2|Die 3|Die 4",
+          "menu_option_refs": "alc_t1, alc_t2, alc_t3, alc_t4",
+          "menu_subtitle": "1–6 you or one ally · 7–11 one enemy · 12–16 you + every ally · 17–20 every enemy",
+          "menu_title": "Assign a die to TARGET"
+        },
+        "35": {
+          "condition_formula": "VAR_ALC_1 >= 1",
+          "effect_kind": "prompt_number",
+          "effect_label": "alc_t1",
+          "menu_label": "Die 1",
+          "prompt_max": "VAR_ALC_1",
+          "prompt_min": "VAR_ALC_1",
+          "prompt_var": "alc_t"
+        },
+        "36": {
+          "condition_formula": "VAR_ALC_2 >= 1",
+          "effect_kind": "prompt_number",
+          "effect_label": "alc_t2",
+          "menu_label": "Die 2",
+          "prompt_max": "VAR_ALC_2",
+          "prompt_min": "VAR_ALC_2",
+          "prompt_var": "alc_t"
+        },
+        "37": {
+          "condition_formula": "VAR_ALC_3 >= 1",
+          "effect_kind": "prompt_number",
+          "effect_label": "alc_t3",
+          "menu_label": "Die 3",
+          "prompt_max": "VAR_ALC_3",
+          "prompt_min": "VAR_ALC_3",
+          "prompt_var": "alc_t"
+        },
+        "38": {
+          "condition_formula": "VAR_ALC_4 >= 1",
+          "effect_kind": "prompt_number",
+          "effect_label": "alc_t4",
+          "menu_label": "Die 4",
+          "prompt_max": "VAR_ALC_4",
+          "prompt_min": "VAR_ALC_4",
+          "prompt_var": "alc_t"
+        },
+        "39": {
+          "auto_target": "skip",
+          "candidate_source": "combat",
+          "count": "1 + 98 * (VAR_ALC_T >= 12)",
+          "effect_kind": "targeting",
+          "effect_label": "alc_tgt",
+          "mode": "exact",
+          "target_filter": "(CUR_HP >= 1) * (IS_ALLY * ((VAR_ALC_T <= 6) + (VAR_ALC_T >= 12) * (VAR_ALC_T <= 16)) + IS_ENEMY * ((VAR_ALC_T >= 7) * (VAR_ALC_T <= 11) + (VAR_ALC_T >= 17)))",
+          "target_prompt": "Choose who the potion affects"
+        },
+        "40": {
+          "damage_amount": "20",
+          "damage_cause": "damage",
+          "damage_element": "poison",
+          "effect_kind": "deal_damage",
+          "effect_label": "alc_x_poison",
+          "target_ref": "alc_tgt"
+        },
+        "41": {
+          "effect_kind": "grant",
+          "effect_label": "alc_x_hp30",
+          "grant_amount": "30",
+          "grant_resource": "hp",
+          "target_ref": "alc_tgt"
+        },
+        "42": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Alchemical Tonic (DEX & MIG)",
+          "effect_kind": "apply_ae",
+          "effect_label": "alc_x_dexmig",
+          "target_ref": "alc_tgt"
+        },
+        "43": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Alchemical Tonic (INS & WLP)",
+          "effect_kind": "apply_ae",
+          "effect_label": "alc_x_inswlp",
+          "target_ref": "alc_tgt"
+        },
+        "44": {
+          "damage_amount": "20 + 10 * floor(min(CASTER_LEVEL, 40) / 20)",
+          "damage_cause": "damage",
+          "damage_element": "air",
+          "effect_kind": "deal_damage",
+          "effect_label": "alc_x_air",
+          "target_ref": "alc_tgt"
+        },
+        "45": {
+          "damage_amount": "20 + 10 * floor(min(CASTER_LEVEL, 40) / 20)",
+          "damage_cause": "damage",
+          "damage_element": "bolt",
+          "effect_kind": "deal_damage",
+          "effect_label": "alc_x_bolt",
+          "target_ref": "alc_tgt"
+        },
+        "46": {
+          "damage_amount": "20 + 10 * floor(min(CASTER_LEVEL, 40) / 20)",
+          "damage_cause": "damage",
+          "damage_element": "dark",
+          "effect_kind": "deal_damage",
+          "effect_label": "alc_x_dark",
+          "target_ref": "alc_tgt"
+        },
+        "47": {
+          "damage_amount": "20 + 10 * floor(min(CASTER_LEVEL, 40) / 20)",
+          "damage_cause": "damage",
+          "damage_element": "earth",
+          "effect_kind": "deal_damage",
+          "effect_label": "alc_x_earth",
+          "target_ref": "alc_tgt"
+        },
+        "48": {
+          "damage_amount": "20 + 10 * floor(min(CASTER_LEVEL, 40) / 20)",
+          "damage_cause": "damage",
+          "damage_element": "fire",
+          "effect_kind": "deal_damage",
+          "effect_label": "alc_x_fire",
+          "target_ref": "alc_tgt"
+        },
+        "49": {
+          "damage_amount": "20 + 10 * floor(min(CASTER_LEVEL, 40) / 20)",
+          "damage_cause": "damage",
+          "damage_element": "ice",
+          "effect_kind": "deal_damage",
+          "effect_label": "alc_x_ice",
+          "target_ref": "alc_tgt"
+        },
+        "50": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "scene",
+          "ae_template_ref": "Alchemical Resistance (Air & Fire)",
+          "effect_kind": "apply_ae",
+          "effect_label": "alc_x_rs9",
+          "target_ref": "alc_tgt"
+        },
+        "51": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "scene",
+          "ae_template_ref": "Alchemical Resistance (Bolt & Ice)",
+          "effect_kind": "apply_ae",
+          "effect_label": "alc_x_rs10",
+          "target_ref": "alc_tgt"
+        },
+        "52": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "scene",
+          "ae_template_ref": "Alchemical Resistance (Dark & Earth)",
+          "effect_kind": "apply_ae",
+          "effect_label": "alc_x_rs11",
+          "target_ref": "alc_tgt"
+        },
+        "53": {
+          "ae_template_ref": "Enraged",
+          "effect_kind": "apply_ae",
+          "effect_label": "alc_x_enraged",
+          "target_ref": "alc_tgt"
+        },
+        "54": {
+          "ae_template_ref": "Poisoned",
+          "effect_kind": "apply_ae",
+          "effect_label": "alc_x_poisoned",
+          "target_ref": "alc_tgt"
+        },
+        "55": {
+          "ae_template_ref": "Dazed",
+          "effect_kind": "apply_ae",
+          "effect_label": "alc_x_dazed",
+          "target_ref": "alc_tgt"
+        },
+        "56": {
+          "ae_template_ref": "Shaken",
+          "effect_kind": "apply_ae",
+          "effect_label": "alc_x_shaken",
+          "target_ref": "alc_tgt"
+        },
+        "57": {
+          "ae_template_ref": "Slow",
+          "effect_kind": "apply_ae",
+          "effect_label": "alc_x_slow",
+          "target_ref": "alc_tgt"
+        },
+        "58": {
+          "ae_template_ref": "Weak",
+          "effect_kind": "apply_ae",
+          "effect_label": "alc_x_weak",
+          "target_ref": "alc_tgt"
+        },
+        "59": {
+          "ae_template_ref": "Dazed, Shaken, Slow, Weak, Enraged, Poisoned",
+          "effect_kind": "remove_ae",
+          "effect_label": "alc_x_cure",
+          "target_ref": "alc_tgt"
+        },
+        "60": {
+          "effect_kind": "grant",
+          "effect_label": "alc_x_hp50",
+          "grant_amount": "50",
+          "grant_resource": "hp",
+          "target_ref": "alc_tgt"
+        },
+        "61": {
+          "effect_kind": "grant",
+          "effect_label": "alc_x_mp50",
+          "grant_amount": "50",
+          "grant_resource": "mp",
+          "target_ref": "alc_tgt"
+        },
+        "62": {
+          "effect_kind": "grant",
+          "effect_label": "alc_x_hp100",
+          "grant_amount": "100",
+          "grant_resource": "hp",
+          "target_ref": "alc_tgt"
+        },
+        "63": {
+          "effect_kind": "grant",
+          "effect_label": "alc_x_mp100",
+          "grant_amount": "100",
+          "grant_resource": "mp",
+          "target_ref": "alc_tgt"
+        },
+        "64": {
+          "effect_kind": "grant",
+          "effect_label": "alc_x_mp100b",
+          "grant_amount": "100",
+          "grant_resource": "mp",
+          "target_ref": "alc_tgt"
+        },
+        "65": {
+          "chain_steps": "alc_x_poison",
+          "effect_kind": "chain",
+          "effect_label": "alc_e_any1",
+          "menu_label": "Any — 20 poison damage"
+        },
+        "66": {
+          "chain_steps": "alc_x_hp30",
+          "effect_kind": "chain",
+          "effect_label": "alc_e_any2",
+          "menu_label": "Any — recover 30 HP"
+        },
+        "67": {
+          "chain_steps": "alc_x_dexmig",
+          "condition_formula": "(VAR_ALC_1 == 1) + (VAR_ALC_2 == 1) + (VAR_ALC_3 == 1) + (VAR_ALC_4 == 1) - (VAR_ALC_T == 1) >= 1",
+          "effect_kind": "chain",
+          "effect_label": "alc_e1",
+          "menu_label": "1 — DEX & MIG die up"
+        },
+        "68": {
+          "chain_steps": "alc_x_inswlp",
+          "condition_formula": "(VAR_ALC_1 == 2) + (VAR_ALC_2 == 2) + (VAR_ALC_3 == 2) + (VAR_ALC_4 == 2) - (VAR_ALC_T == 2) >= 1",
+          "effect_kind": "chain",
+          "effect_label": "alc_e2",
+          "menu_label": "2 — INS & WLP die up"
+        },
+        "69": {
+          "chain_steps": "alc_x_air",
+          "condition_formula": "(VAR_ALC_1 == 3) + (VAR_ALC_2 == 3) + (VAR_ALC_3 == 3) + (VAR_ALC_4 == 3) - (VAR_ALC_T == 3) >= 1",
+          "effect_kind": "chain",
+          "effect_label": "alc_e3",
+          "menu_label": "3 — air damage"
+        },
+        "70": {
+          "chain_steps": "alc_x_bolt",
+          "condition_formula": "(VAR_ALC_1 == 4) + (VAR_ALC_2 == 4) + (VAR_ALC_3 == 4) + (VAR_ALC_4 == 4) - (VAR_ALC_T == 4) >= 1",
+          "effect_kind": "chain",
+          "effect_label": "alc_e4",
+          "menu_label": "4 — bolt damage"
+        },
+        "71": {
+          "chain_steps": "alc_x_dark",
+          "condition_formula": "(VAR_ALC_1 == 5) + (VAR_ALC_2 == 5) + (VAR_ALC_3 == 5) + (VAR_ALC_4 == 5) - (VAR_ALC_T == 5) >= 1",
+          "effect_kind": "chain",
+          "effect_label": "alc_e5",
+          "menu_label": "5 — dark damage"
+        },
+        "72": {
+          "chain_steps": "alc_x_earth",
+          "condition_formula": "(VAR_ALC_1 == 6) + (VAR_ALC_2 == 6) + (VAR_ALC_3 == 6) + (VAR_ALC_4 == 6) - (VAR_ALC_T == 6) >= 1",
+          "effect_kind": "chain",
+          "effect_label": "alc_e6",
+          "menu_label": "6 — earth damage"
+        },
+        "73": {
+          "chain_steps": "alc_x_fire",
+          "condition_formula": "(VAR_ALC_1 == 7) + (VAR_ALC_2 == 7) + (VAR_ALC_3 == 7) + (VAR_ALC_4 == 7) - (VAR_ALC_T == 7) >= 1",
+          "effect_kind": "chain",
+          "effect_label": "alc_e7",
+          "menu_label": "7 — fire damage"
+        },
+        "74": {
+          "chain_steps": "alc_x_ice",
+          "condition_formula": "(VAR_ALC_1 == 8) + (VAR_ALC_2 == 8) + (VAR_ALC_3 == 8) + (VAR_ALC_4 == 8) - (VAR_ALC_T == 8) >= 1",
+          "effect_kind": "chain",
+          "effect_label": "alc_e8",
+          "menu_label": "8 — ice damage"
+        },
+        "75": {
+          "chain_steps": "alc_x_rs9",
+          "condition_formula": "(VAR_ALC_1 == 9) + (VAR_ALC_2 == 9) + (VAR_ALC_3 == 9) + (VAR_ALC_4 == 9) - (VAR_ALC_T == 9) >= 1",
+          "effect_kind": "chain",
+          "effect_label": "alc_e9",
+          "menu_label": "9 — resist air & fire"
+        },
+        "76": {
+          "chain_steps": "alc_x_rs10",
+          "condition_formula": "(VAR_ALC_1 == 10) + (VAR_ALC_2 == 10) + (VAR_ALC_3 == 10) + (VAR_ALC_4 == 10) - (VAR_ALC_T == 10) >= 1",
+          "effect_kind": "chain",
+          "effect_label": "alc_e10",
+          "menu_label": "10 — resist bolt & ice"
+        },
+        "77": {
+          "chain_steps": "alc_x_rs11",
+          "condition_formula": "(VAR_ALC_1 == 11) + (VAR_ALC_2 == 11) + (VAR_ALC_3 == 11) + (VAR_ALC_4 == 11) - (VAR_ALC_T == 11) >= 1",
+          "effect_kind": "chain",
+          "effect_label": "alc_e11",
+          "menu_label": "11 — resist dark & earth"
+        },
+        "78": {
+          "chain_steps": "alc_x_enraged",
+          "condition_formula": "(VAR_ALC_1 == 12) + (VAR_ALC_2 == 12) + (VAR_ALC_3 == 12) + (VAR_ALC_4 == 12) - (VAR_ALC_T == 12) >= 1",
+          "effect_kind": "chain",
+          "effect_label": "alc_e12",
+          "menu_label": "12 — enraged"
+        },
+        "79": {
+          "chain_steps": "alc_x_poisoned",
+          "condition_formula": "(VAR_ALC_1 == 13) + (VAR_ALC_2 == 13) + (VAR_ALC_3 == 13) + (VAR_ALC_4 == 13) - (VAR_ALC_T == 13) >= 1",
+          "effect_kind": "chain",
+          "effect_label": "alc_e13",
+          "menu_label": "13 — poisoned"
+        },
+        "80": {
+          "chain_steps": "alc_x_dazed, alc_x_shaken, alc_x_slow, alc_x_weak",
+          "condition_formula": "(VAR_ALC_1 == 14) + (VAR_ALC_2 == 14) + (VAR_ALC_3 == 14) + (VAR_ALC_4 == 14) - (VAR_ALC_T == 14) >= 1",
+          "effect_kind": "chain",
+          "effect_label": "alc_e14",
+          "menu_label": "14 — dazed, shaken, slow, weak"
+        },
+        "81": {
+          "chain_steps": "alc_x_cure",
+          "condition_formula": "(VAR_ALC_1 == 15) + (VAR_ALC_2 == 15) + (VAR_ALC_3 == 15) + (VAR_ALC_4 == 15) - (VAR_ALC_T == 15) >= 1",
+          "effect_kind": "chain",
+          "effect_label": "alc_e15",
+          "menu_label": "15 — recover from all status effects"
+        },
+        "82": {
+          "chain_steps": "alc_x_hp50, alc_x_mp50",
+          "condition_formula": "(VAR_ALC_1 == 16) + (VAR_ALC_2 == 16) + (VAR_ALC_3 == 16) + (VAR_ALC_4 == 16) - (VAR_ALC_T == 16) + (VAR_ALC_1 == 17) + (VAR_ALC_2 == 17) + (VAR_ALC_3 == 17) + (VAR_ALC_4 == 17) - (VAR_ALC_T == 17) >= 1",
+          "effect_kind": "chain",
+          "effect_label": "alc_e16",
+          "menu_label": "16–17 — recover 50 HP & 50 MP"
+        },
+        "83": {
+          "chain_steps": "alc_x_hp100",
+          "condition_formula": "(VAR_ALC_1 == 18) + (VAR_ALC_2 == 18) + (VAR_ALC_3 == 18) + (VAR_ALC_4 == 18) - (VAR_ALC_T == 18) >= 1",
+          "effect_kind": "chain",
+          "effect_label": "alc_e18",
+          "menu_label": "18 — recover 100 HP"
+        },
+        "84": {
+          "chain_steps": "alc_x_mp100",
+          "condition_formula": "(VAR_ALC_1 == 19) + (VAR_ALC_2 == 19) + (VAR_ALC_3 == 19) + (VAR_ALC_4 == 19) - (VAR_ALC_T == 19) >= 1",
+          "effect_kind": "chain",
+          "effect_label": "alc_e19",
+          "menu_label": "19 — recover 100 MP"
+        },
+        "85": {
+          "chain_steps": "alc_x_hp100, alc_x_mp100b",
+          "condition_formula": "(VAR_ALC_1 == 20) + (VAR_ALC_2 == 20) + (VAR_ALC_3 == 20) + (VAR_ALC_4 == 20) - (VAR_ALC_T == 20) >= 1",
+          "effect_kind": "chain",
+          "effect_label": "alc_e20",
+          "menu_label": "20 — recover 100 HP & 100 MP"
+        },
+        "86": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "alc_eff",
+          "menu_hide_disabled": true,
+          "menu_option_labels": "Any — 20 poison damage|Any — recover 30 HP|1 — DEX & MIG die up|2 — INS & WLP die up|3 — air damage|4 — bolt damage|5 — dark damage|6 — earth damage|7 — fire damage|8 — ice damage|9 — resist air & fire|10 — resist bolt & ice|11 — resist dark & earth|12 — enraged|13 — poisoned|14 — dazed, shaken, slow, weak|15 — recover from all status effects|16–17 — recover 50 HP & 50 MP|18 — recover 100 HP|19 — recover 100 MP|20 — recover 100 HP & 100 MP",
+          "menu_option_refs": "alc_e_any1, alc_e_any2, alc_e1, alc_e2, alc_e3, alc_e4, alc_e5, alc_e6, alc_e7, alc_e8, alc_e9, alc_e10, alc_e11, alc_e12, alc_e13, alc_e14, alc_e15, alc_e16, alc_e18, alc_e19, alc_e20",
+          "menu_subtitle": "The two Any effects are always available",
+          "menu_title": "Assign a die to EFFECT"
+        },
+        "87": {
+          "condition_formula": "GADGET_MAGITECH_TIER >= 1",
+          "effect_kind": "open_action_menu",
+          "effect_label": "mt_menu",
+          "menu_hide_disabled": true,
+          "menu_label": "Magitech",
+          "menu_option_labels": "Magitech Override (10 MP)|Magicannon (3 IP)|Magisphere (2 IP)|Release your construct",
+          "menu_option_refs": "mt_override, mt_cannon, mt_sphere, mt_release",
+          "menu_title": "Magitech — choose a device"
+        },
+        "88": {
+          "chain_steps": "mt_ov_pick, mt_ov_pay, mt_ov_roll, mt_ov_won, mt_ov_free, mt_ov_take",
+          "condition_formula": "GADGET_MAGITECH_TIER >= 1 && CUR_MP >= 10",
+          "disable_ui_type": "dim",
+          "disabled_reason": "Need 10 MP",
+          "effect_kind": "chain",
+          "effect_label": "mt_override",
+          "menu_label": "Magitech Override (10 MP)"
+        },
+        "89": {
+          "candidate_source": "combat",
+          "category": "enemy",
+          "count": 1,
+          "effect_kind": "targeting",
+          "effect_label": "mt_ov_pick",
+          "mode": "exact",
+          "target_filter": "(CUR_HP >= 1) * SPECIES_IS_CONSTRUCT * RANK_IS_SOLDIER",
+          "target_prompt": "Choose a soldier-rank construct"
+        },
+        "90": {
+          "consume_amount": "10",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "mt_ov_pay",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "91": {
+          "contest_attr1": "ins",
+          "contest_attr2": "ins",
+          "effect_kind": "contest_check",
+          "effect_label": "mt_ov_roll",
+          "save_attr1": "ins",
+          "save_attr2": "ins",
+          "target_ref": "mt_ov_pick"
+        },
+        "92": {
+          "auto_target": "skip",
+          "candidate_source": "contest_lost_targets",
+          "effect_kind": "targeting",
+          "effect_label": "mt_ov_won",
+          "mode": "all"
+        },
+        "93": {
+          "allow_empty": true,
+          "auto_target": "skip",
+          "candidate_source": "combat",
+          "effect_kind": "targeting",
+          "effect_label": "mt_ov_mine",
+          "mode": "all",
+          "target_filter": "MY_AE_COUNT_MAGITECH_OVERRIDE >= 1"
+        },
+        "94": {
+          "ae_template_ref": "Magitech Override",
+          "effect_kind": "remove_ae",
+          "effect_label": "mt_ov_free",
+          "target_ref": "mt_ov_mine"
+        },
+        "95": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "scene",
+          "ae_template_ref": "Magitech Override",
+          "effect_kind": "apply_ae",
+          "effect_label": "mt_ov_take",
+          "target_ref": "contest_lost_targets"
+        },
+        "96": {
+          "chain_steps": "mt_ov_free",
+          "condition_formula": "GADGET_MAGITECH_TIER >= 1",
+          "effect_kind": "chain",
+          "effect_label": "mt_release",
+          "menu_label": "Release your construct"
+        },
+        "97": {
+          "chain_steps": "mt_cn_pay, mt_cn_el",
+          "condition_formula": "GADGET_MAGITECH_TIER >= 2 && CUR_IP >= 3 && ACTION_BLOCKED_ITEM == 0",
+          "disable_ui_type": "dim",
+          "disabled_reason": "Need Advanced Magitech and 3 IP (Inventory action)",
+          "effect_kind": "chain",
+          "effect_label": "mt_cannon",
+          "menu_label": "Magicannon (3 IP)"
+        },
+        "98": {
+          "consume_amount": "3",
+          "consume_resource": "ip",
+          "effect_kind": "consume_resource",
+          "effect_label": "mt_cn_pay",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "99": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "mt_cn_el",
+          "menu_option_labels": "Air|Bolt|Earth|Fire|Ice|Physical",
+          "menu_option_refs": "mt_cn_air, mt_cn_bolt, mt_cn_earth, mt_cn_fire, mt_cn_ice, mt_cn_physical",
+          "menu_title": "Magicannon — damage type"
+        },
+        "100": {
+          "ae_duplicate_mode": "replace_family",
+          "ae_duration_rounds": "scene",
+          "ae_family": "magicannon",
+          "ae_template_ref": "Magicannon (Air)",
+          "effect_kind": "apply_ae",
+          "effect_label": "mt_cn_air",
+          "target_ref": "self"
+        },
+        "101": {
+          "ae_duplicate_mode": "replace_family",
+          "ae_duration_rounds": "scene",
+          "ae_family": "magicannon",
+          "ae_template_ref": "Magicannon (Bolt)",
+          "effect_kind": "apply_ae",
+          "effect_label": "mt_cn_bolt",
+          "target_ref": "self"
+        },
+        "102": {
+          "ae_duplicate_mode": "replace_family",
+          "ae_duration_rounds": "scene",
+          "ae_family": "magicannon",
+          "ae_template_ref": "Magicannon (Earth)",
+          "effect_kind": "apply_ae",
+          "effect_label": "mt_cn_earth",
+          "target_ref": "self"
+        },
+        "103": {
+          "ae_duplicate_mode": "replace_family",
+          "ae_duration_rounds": "scene",
+          "ae_family": "magicannon",
+          "ae_template_ref": "Magicannon (Fire)",
+          "effect_kind": "apply_ae",
+          "effect_label": "mt_cn_fire",
+          "target_ref": "self"
+        },
+        "104": {
+          "ae_duplicate_mode": "replace_family",
+          "ae_duration_rounds": "scene",
+          "ae_family": "magicannon",
+          "ae_template_ref": "Magicannon (Ice)",
+          "effect_kind": "apply_ae",
+          "effect_label": "mt_cn_ice",
+          "target_ref": "self"
+        },
+        "105": {
+          "ae_duplicate_mode": "replace_family",
+          "ae_duration_rounds": "scene",
+          "ae_family": "magicannon",
+          "ae_template_ref": "Magicannon (Physical)",
+          "effect_kind": "apply_ae",
+          "effect_label": "mt_cn_physical",
+          "target_ref": "self"
+        },
+        "106": {
+          "chain_steps": "mt_sp_pay, mt_sp_cast",
+          "condition_formula": "GADGET_MAGITECH_TIER >= 3 && CUR_IP >= 2 && ACTION_BLOCKED_ITEM == 0 && OWN_SKILL_TAG_COUNT_MAGISPHERE >= 1",
+          "disable_ui_type": "dim",
+          "disabled_reason": "No Magisphere-ready spell (tag a prototype spell 'magisphere'), or need Superior Magitech and 2 IP",
+          "effect_kind": "chain",
+          "effect_label": "mt_sphere",
+          "menu_label": "Magisphere (2 IP)"
+        },
+        "107": {
+          "consume_amount": "2",
+          "consume_resource": "ip",
+          "effect_kind": "consume_resource",
+          "effect_label": "mt_sp_pay",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "108": {
+          "action_ref": "Spell",
+          "allowed_skill_refs": "tag:magisphere",
+          "effect_kind": "free_action",
+          "effect_label": "mt_sp_cast"
         }
       },
       "gadget_alchemy_tier": "",
@@ -234,6 +1722,7 @@
       "id": "1w2LjUOVhlbLR8nn",
       "ignore_hr": false,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/hypercharge.png",
+      "implementation_note": "Alchemy (gadget_alchemy_tier) and Magitech (gadget_magitech_tier) unlock by tier on this skill: 1 basic, 2 advanced, 3 superior. Alchemy, Magicannon and Magisphere also count as the Inventory action (scoped skill_tags): an Item block dims/refuses them, Maid Cap and Secret Formula apply, Emergency Item's free action can open them. Not modelled: Potion Rain on alchemy mixes (the mix targets by die, not by the action's target list); Magitech Override grants re-sided behaviour (allegiance_override), not player control of the construct; Magisphere prototypes are per-character spell copies tagged 'magisphere' with menu_hidden (none authored yet); a magicannon is a virtual attack (Two-handed not enforced) that the scene-end sweep removes.",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
@@ -245,7 +1734,7 @@
       "name": "Gadgets",
       "on_activate_effect_ref": "gadget_active_root",
       "optional_params": {},
-      "pre_activate_effect_ref": "",
+      "pre_activate_effect_ref": "gadget_active_root",
       "reaction_config_table": {
         "0": {
           "condition_formula": "",
@@ -267,7 +1756,8 @@
       "skill_animation_mode": "default",
       "skill_information": "",
       "skill_range": "-",
-      "skill_target": "Special",
+      "skill_tags": "potion@alc_mix, inventory@alc_mix, inventory@mt_cannon, inventory@mt_sphere, magisphere@mt_sphere",
+      "skill_target": "Self",
       "skill_type": "Active",
       "type_damage": "",
       "use_optional_params": false,

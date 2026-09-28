@@ -24,12 +24,45 @@
   "system": {
     "container": null,
     "props": {
+      "availability_formula": "OWN_PHANTASM_COUNT >= 1",
+      "availability_reason": "No Phantasm to shatter",
       "check_bonus": "0",
       "class": "Illusionist",
       "cost": "-",
       "damage_bonus": "0",
       "description": "<p>Shatter one of your Phantasms to recover <strong>[SL × 5 HP]</strong>. Shattering a Phantasm this way will not trigger the <strong>Phantasmal Echo</strong> Skill.</p>\n",
       "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "auto_target": "confirm",
+          "candidate_source": "own_phantasms",
+          "count": 1,
+          "effect_kind": "targeting",
+          "effect_label": "prc_pick",
+          "mode": "exact",
+          "target_prompt": "Choose a Phantasm to shatter"
+        },
+        "1": {
+          "chain_steps": "prc_shatter, prc_heal",
+          "effect_kind": "chain",
+          "effect_label": "prc_do"
+        },
+        "2": {
+          "condition_formula": "OWN_PHANTASM_COUNT >= 1",
+          "effect_kind": "destroy_summon",
+          "effect_label": "prc_shatter",
+          "on_condition_fail": "abort",
+          "suppress_defeat": true,
+          "target_ref": "prc_pick"
+        },
+        "3": {
+          "effect_kind": "grant",
+          "effect_label": "prc_heal",
+          "grant_amount": "SL * 5",
+          "grant_resource": "hp",
+          "target_ref": "self"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": false,
@@ -38,13 +71,16 @@
       "level": "1",
       "max_level": "5",
       "name": "Phantasmal Recovery",
+      "on_activate_effect_ref": "prc_do",
       "optional_params": {},
+      "pre_activate_effect_ref": "prc_pick",
+      "reaction_config_table": {},
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",
       "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>HP Recovered</strong></p></td></tr><tr><td><p>1</p></td><td><p>5</p></td></tr><tr><td><p>2</p></td><td><p>10</p></td></tr><tr><td><p>3</p></td><td><p>15</p></td></tr><tr><td><p>4</p></td><td><p>20</p></td></tr><tr><td><p>5</p></td><td><p>25</p></td></tr></tbody></table>",
       "skill_range": "Any",
-      "skill_target": "One of your Phantasm",
+      "skill_target": "Self",
       "skill_type": "Active",
       "type_damage": "",
       "use_optional_params": false

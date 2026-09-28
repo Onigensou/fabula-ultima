@@ -77,7 +77,7 @@
             },
             "4": {
               "auto_confirm_when_obvious": true,
-              "candidate_source": "own_summons",
+              "candidate_source": "own_phantasms",
               "count": "1",
               "effect_kind": "targeting",
               "effect_label": "is_phantasm",
@@ -571,6 +571,7 @@
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
           "skill_range": "Any",
+          "skill_tags": "phantasm",
           "skill_target": "Self",
           "skill_type": "Spell"
         },
@@ -919,8 +920,8 @@
             },
             "5": {
               "$deleted": false,
-              "candidate_source": "own_summons",
-              "condition_formula": "OWN_SUMMON_COUNT >= 1",
+              "candidate_source": "own_phantasms",
+              "condition_formula": "OWN_PHANTASM_COUNT >= 1",
               "count": 1,
               "disable_ui_type": "dim",
               "disabled_reason": "No Phantasm on the field",
@@ -975,12 +976,45 @@
       "system": {
         "container": null,
         "props": {
+          "availability_formula": "OWN_PHANTASM_COUNT >= 1",
+          "availability_reason": "No Phantasm to shatter",
           "check_bonus": "0",
           "class": "Illusionist",
           "cost": "-",
           "damage_bonus": "0",
           "description": "<p>Shatter one of your Phantasms to recover <strong>[SL × 5 HP]</strong>. Shattering a Phantasm this way will not trigger the <strong>Phantasmal Echo</strong> Skill.</p>\n",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "auto_target": "confirm",
+              "candidate_source": "own_phantasms",
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "prc_pick",
+              "mode": "exact",
+              "target_prompt": "Choose a Phantasm to shatter"
+            },
+            "1": {
+              "chain_steps": "prc_shatter, prc_heal",
+              "effect_kind": "chain",
+              "effect_label": "prc_do"
+            },
+            "2": {
+              "condition_formula": "OWN_PHANTASM_COUNT >= 1",
+              "effect_kind": "destroy_summon",
+              "effect_label": "prc_shatter",
+              "on_condition_fail": "abort",
+              "suppress_defeat": true,
+              "target_ref": "prc_pick"
+            },
+            "3": {
+              "effect_kind": "grant",
+              "effect_label": "prc_heal",
+              "grant_amount": "SL * 5",
+              "grant_resource": "hp",
+              "target_ref": "self"
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": false,
@@ -989,12 +1023,15 @@
           "level": "1",
           "max_level": "5",
           "name": "Phantasmal Recovery",
+          "on_activate_effect_ref": "prc_do",
           "optional_params": {},
+          "pre_activate_effect_ref": "prc_pick",
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>HP Recovered</strong></p></td></tr><tr><td><p>1</p></td><td><p>5</p></td></tr><tr><td><p>2</p></td><td><p>10</p></td></tr><tr><td><p>3</p></td><td><p>15</p></td></tr><tr><td><p>4</p></td><td><p>20</p></td></tr><tr><td><p>5</p></td><td><p>25</p></td></tr></tbody></table>",
           "skill_range": "Any",
-          "skill_target": "One of your Phantasm",
+          "skill_target": "Self",
           "skill_type": "Active",
           "type_damage": "",
           "use_optional_params": false
@@ -1094,15 +1131,56 @@
           "damage_bonus": "0",
           "description": "<p>When you cast a spell, if you don't have enough MP to pay for its total cost, you may choose to shatter one of your Phantasms instead. Destroying a Phantasm this way will not trigger the <strong>Phantasmal Echo</strong> skill. You cannot use this skill to create a Phantasm.</p>\n",
           "duration": "-",
+          "effect_table": {
+            "0": {
+              "chain_steps": "prec_pick, prec_shatter, prec_waive",
+              "effect_kind": "chain",
+              "effect_label": "prec_do"
+            },
+            "1": {
+              "auto_target": "confirm",
+              "candidate_source": "own_phantasms",
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "prec_pick",
+              "mode": "exact",
+              "target_prompt": "Shatter which Phantasm to pay for the spell?"
+            },
+            "2": {
+              "effect_kind": "substitute_cost",
+              "effect_label": "prec_waive",
+              "from_resource": "mp",
+              "multiplier": "0",
+              "to_resource": "mp"
+            },
+            "3": {
+              "condition_formula": "OWN_PHANTASM_COUNT >= 1",
+              "effect_kind": "destroy_summon",
+              "effect_label": "prec_shatter",
+              "on_condition_fail": "abort",
+              "suppress_defeat": true,
+              "target_ref": "prec_pick"
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "1",
           "name": "Phantasmal Recycling",
           "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "OWN_PHANTASM_COUNT >= 1 && SKILL_HAS_TAG_PHANTASM == 0",
+              "reaction_effect_ref": "prec_do",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "self",
+              "reaction_trigger": "caster_short_on_mp"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "",
@@ -1115,62 +1193,6 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "jUhunlAkAcNTpD4s"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "CqAmHzX4w14RdIix",
-      "_stats": {
-        "compendiumSource": "Item.peLYH0zSiab4UQ4E",
-        "coreVersion": "12.343",
-        "createdTime": 1758208786942,
-        "duplicateSource": "Item.zbulFnM318NgBgh5",
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/RadiantSoulHyper.png",
-      "name": "Placebo Energy",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "check_bonus": "0",
-          "class": "Illusionist",
-          "cost": "10 MP",
-          "damage_bonus": "0",
-          "description": "<p>You create an illusion that makes your companions feel healthier and refreshed for a while. For their next <strong>3 turns</strong>, they gain <strong>40 additional HP</strong> — this increases both their maximum and their current HP by 40.</p><p>After 3 turns, they lose this additional HP. If reduced to 0 HP at the end of the spell, the Sacrifice and Surrender rules apply as normal.</p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20</strong> ― This amount increases to <strong>50 HP</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> ― This amount increases to <strong>60 HP</strong>.</p>",
-          "duration": "Instantaneous",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": true,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Placebo Energy",
-          "optional_params": {},
-          "rolled_atr1": "INS",
-          "rolled_atr2": "WLP",
-          "skill_range": "Range",
-          "skill_target": "One Creature",
-          "skill_type": "Active",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2125250754,
-        "unique": false,
-        "uniqueId": "peLYH0zSiab4UQ4E"
       },
       "type": "equippableItem"
     },
@@ -1336,7 +1358,7 @@
             "1": {
               "$deleted": false,
               "auto_target": "confirm",
-              "candidate_source": "own_summons",
+              "candidate_source": "own_phantasms",
               "count": 1,
               "effect_kind": "targeting",
               "effect_label": "dp_phantasm",
@@ -1389,6 +1411,113 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "d6V5MiV0qlQbzvwS",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1790603523365,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>A vexing Phantasm taunts this creature: if its next Attack's Accuracy Check Result is even, the attack misses.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "d6V5MiV0qlQbzvwS",
+              "originalParentId": "IIp1xnmHgtej5pze",
+              "originalUuid": "Actor.CpCx41dGMfGs1lm9.Item.IIp1xnmHgtej5pze.ActiveEffect.d6V5MiV0qlQbzvwS"
+            },
+            "fabula-ultima-companion": {
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "accuracy_amount": "0",
+                    "accuracy_operation": "set",
+                    "effect_kind": "adjust_accuracy",
+                    "effect_label": "mock_miss"
+                  },
+                  "1": {
+                    "candidate_source": "self",
+                    "count": 1,
+                    "effect_kind": "targeting",
+                    "effect_label": "mock_spent",
+                    "mode": "exact",
+                    "skip_when_passive": true
+                  }
+                },
+                "name": "Create Phantasm: Mockery",
+                "reaction_config_table": {
+                  "0": {
+                    "condition_formula": "ACTION_ROLLS_ACCURACY == 1 && ATTACK_IS_CRIT == 0 && ATTACK_CHECK_RESULT % 2 == 0",
+                    "consume_self": true,
+                    "reaction_action_kind": "Attack",
+                    "reaction_effect_ref": "mock_miss",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_performs_action"
+                  },
+                  "1": {
+                    "condition_formula": "ACTION_ROLLS_ACCURACY == 1 && (ATTACK_IS_CRIT == 1 || ATTACK_CHECK_RESULT % 2 == 1)",
+                    "consume_self": true,
+                    "reaction_action_kind": "Attack",
+                    "reaction_effect_ref": "mock_spent",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_performs_action"
+                  },
+                  "2": {
+                    "condition_formula": "ACTION_ROLLS_ACCURACY == 0",
+                    "consume_self": true,
+                    "reaction_action_kind": "Attack",
+                    "reaction_effect_ref": "mock_spent",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_performs_action"
+                  }
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/control/fear-fright-mask-orange.webp",
+          "name": "Create Phantasm: Mockery",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-phantasm-mockery"
+          ],
+          "system": {
+            "tags": [
+              "debuff",
+              "dispellable"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -1412,11 +1541,77 @@
           "animation_script": "",
           "check_bonus": "0",
           "class": "Illusionist",
-          "cost": "10 MP",
+          "cost": "",
           "damage_bonus": "0",
           "defense_target_type": "mdef",
           "description": "<p>You may spend one action to create a vexing Phantasm that taunts and distracts your foe. For the next 【⚔️ Attack】, if the target rolls an even number for its Accuracy Check, the attack misses.</p>\n<p>On any subsequent turn, you can perform an action and another Magic Check to command the Phantasm to taunt again, with no MP requirements.</p>\n",
           "duration": "Scene",
+          "effect_table": {
+            "0": {
+              "chain_steps": "mock_cx",
+              "effect_kind": "chain",
+              "effect_label": "mock_pre"
+            },
+            "1": {
+              "chain_steps": "mock_cx, mock_taunt",
+              "effect_kind": "chain",
+              "effect_label": "mock_on"
+            },
+            "2": {
+              "effect_kind": "open_action_menu",
+              "effect_label": "mock_cx",
+              "menu_option_labels": "Create a new Phantasm|Command an existing Phantasm",
+              "menu_option_refs": "mock_create, mock_existing",
+              "menu_title": "Create Phantasm: Mockery"
+            },
+            "3": {
+              "candidate_source": "self",
+              "effect_kind": "targeting",
+              "effect_label": "mock_self"
+            },
+            "4": {
+              "chain_steps": "mock_cost, mock_summon",
+              "condition_formula": "CUR_MP >= 10 && OWN_PHANTASM_COUNT < 3",
+              "disable_ui_type": "dim",
+              "disabled_reason": "Need 10 MP & under 3 Phantasms",
+              "effect_kind": "chain",
+              "effect_label": "mock_create"
+            },
+            "5": {
+              "consume_amount": "10",
+              "consume_resource": "mp",
+              "effect_kind": "consume_resource",
+              "effect_label": "mock_cost",
+              "on_empty": "abort",
+              "target_ref": "mock_self"
+            },
+            "6": {
+              "effect_kind": "summon",
+              "effect_label": "mock_summon",
+              "summon_actor": "Fox fire",
+              "summon_count": 1,
+              "summon_max": 3,
+              "summon_type": "phantasm"
+            },
+            "7": {
+              "candidate_source": "own_phantasms",
+              "condition_formula": "OWN_PHANTASM_COUNT >= 1",
+              "count": 1,
+              "disable_ui_type": "dim",
+              "disabled_reason": "No Phantasm on the field",
+              "effect_kind": "targeting",
+              "effect_label": "mock_existing",
+              "mode": "exact"
+            },
+            "8": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "scene",
+              "ae_template_ref": "Create Phantasm: Mockery",
+              "effect_kind": "apply_ae",
+              "effect_label": "mock_taunt",
+              "target_ref": "hit_action_targets"
+            }
+          },
           "heroic_requirement": "",
           "isCheck": true,
           "isFacet": true,
@@ -1426,14 +1621,18 @@
           "level": "1",
           "max_level": "1",
           "name": "Create Phantasm: Mockery",
+          "on_activate_effect_ref": "mock_on",
           "optional_params": {},
+          "pre_activate_effect_ref": "mock_pre",
+          "reaction_config_table": {},
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
           "skill_animation_default": "",
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Range",
-          "skill_target": "One Creature",
+          "skill_tags": "phantasm",
+          "skill_target": "One Enemy",
           "skill_type": "Spell",
           "type_damage": "",
           "use_optional_params": false
@@ -1536,12 +1735,46 @@
       "system": {
         "container": null,
         "props": {
+          "action_command": "spell",
+          "availability_formula": "OWN_PHANTASM_COUNT >= 1",
+          "availability_reason": "Needs one Phantasm for each ally healed",
           "check_bonus": "0",
           "class": "Illusionist",
-          "cost": "10 MP",
+          "cost": "10 x T MP",
           "damage_bonus": "0",
+          "defense_target_type": "",
           "description": "<p>You command your Phantasms to heal your allies. Each Phantasm runs towards a companion and shatters itself in a cloud of healing energy. Each target recovers <strong>20 HP</strong>. A single ally cannot be healed by more than one Phantasm per action.</p>\n",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "auto_target": "confirm",
+              "candidate_source": "own_phantasms",
+              "condition_formula": "ACTION_TARGET_COUNT <= OWN_PHANTASM_COUNT",
+              "count": "ACTION_TARGET_COUNT",
+              "effect_kind": "targeting",
+              "effect_label": "vs_pick",
+              "mode": "exact",
+              "on_condition_fail": "abort",
+              "target_prompt": "Choose which Phantasms shatter"
+            },
+            "1": {
+              "chain_steps": "vs_shatter, vs_heal",
+              "effect_kind": "chain",
+              "effect_label": "vs_on"
+            },
+            "2": {
+              "effect_kind": "destroy_summon",
+              "effect_label": "vs_shatter",
+              "target_ref": "vs_pick"
+            },
+            "3": {
+              "effect_kind": "grant",
+              "effect_label": "vs_heal",
+              "grant_amount": "20",
+              "grant_resource": "hp",
+              "target_ref": "action_targets"
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": true,
@@ -1550,12 +1783,15 @@
           "level": "1",
           "max_level": "1",
           "name": "Vital Sacrifice",
+          "on_activate_effect_ref": "vs_on",
           "optional_params": {},
+          "pre_activate_effect_ref": "vs_pick",
+          "reaction_config_table": {},
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
           "skill_range": "Range",
           "skill_target": "Up to three allies",
-          "skill_type": "Active",
+          "skill_type": "Spell",
           "type_damage": "",
           "use_optional_params": false
         },
@@ -1592,12 +1828,47 @@
       "system": {
         "container": null,
         "props": {
+          "action_command": "spell",
+          "availability_formula": "OWN_PHANTASM_COUNT >= 1",
+          "availability_reason": "No Phantasm to shatter",
           "check_bonus": "0",
           "class": "Illusionist",
-          "cost": "10 MP",
+          "cost": "5 x T MP",
           "damage_bonus": "0",
+          "defense_target_type": "mdef",
           "description": "<p>You command all your active Phantasms to shatter with a blinding light. Choose one; you inflict the chosen status effect on each target hit by this spell:</p>\n<ul>\n  <li>\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n      <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\">\n        <strong><span style=\"text-decoration: underline;\">Dazed</span></strong>\n      </a>\n    </span></span>\n  </li>\n  <li>\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n      <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\">\n        <strong><span style=\"text-decoration: underline;\">Shaken</span></strong>\n      </a>\n    </span></span>\n  </li>\n</ul>\n",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "effect_kind": "open_action_menu",
+              "effect_label": "sl_status",
+              "menu_option_labels": "Dazed|Shaken",
+              "menu_option_refs": "sl_dazed, sl_shaken",
+              "menu_title": "Spectral Light — choose a status"
+            },
+            "1": {
+              "ae_template_ref": "Dazed",
+              "effect_kind": "apply_ae",
+              "effect_label": "sl_dazed",
+              "target_ref": "hit_action_targets"
+            },
+            "2": {
+              "ae_template_ref": "Shaken",
+              "effect_kind": "apply_ae",
+              "effect_label": "sl_shaken",
+              "target_ref": "hit_action_targets"
+            },
+            "3": {
+              "chain_steps": "sl_shatter, sl_status",
+              "effect_kind": "chain",
+              "effect_label": "sl_on"
+            },
+            "4": {
+              "effect_kind": "destroy_summon",
+              "effect_label": "sl_shatter",
+              "target_ref": "own_phantasms"
+            }
+          },
           "heroic_requirement": "",
           "isCheck": true,
           "isFacet": true,
@@ -1606,12 +1877,15 @@
           "level": "1",
           "max_level": "1",
           "name": "Spectral Light",
+          "on_activate_effect_ref": "sl_on",
           "optional_params": {},
+          "pre_activate_effect_ref": "sl_status",
+          "reaction_config_table": {},
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
           "skill_range": "Range",
-          "skill_target": "Up to three creature",
-          "skill_type": "Active",
+          "skill_target": "Up to three creatures",
+          "skill_type": "Spell",
           "type_damage": "",
           "use_optional_params": false
         },
@@ -1632,6 +1906,98 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "teL4UAKbRRjsabpm",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1790603521291,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "max_hp",
+              "mode": 2,
+              "priority": 20,
+              "value": "40 + 10 * floor(min(CHAR_LEVEL, 40) / 20)"
+            }
+          ],
+          "description": "<p>+40 max and current HP for 3 turns (50 at Lv 20, 60 at Lv 40). When it ends, the extra HP is lost (Sacrifice and Surrender apply as normal).</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "teL4UAKbRRjsabpm",
+              "originalParentId": "WHzVR6qknwEfJvfU",
+              "originalUuid": "Actor.CpCx41dGMfGs1lm9.Item.WHzVR6qknwEfJvfU.ActiveEffect.teL4UAKbRRjsabpm"
+            },
+            "fabula-ultima-companion": {
+              "charges": 4,
+              "chargesMax": 4,
+              "lifetimeMode": "target_turn_start",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "consume_amount": "40 + 10 * floor(min(CHAR_LEVEL, 40) / 20)",
+                    "consume_can_defeat": true,
+                    "consume_resource": "hp",
+                    "effect_kind": "consume_resource",
+                    "effect_label": "plc_fade",
+                    "on_empty": "drain",
+                    "target_ref": "self"
+                  }
+                },
+                "name": "Placebo Energy",
+                "reaction_config_table": {
+                  "0": {
+                    "condition_formula": "AE_CHARGES_PLACEBO_ENERGY == 1",
+                    "consume_self": true,
+                    "reaction_effect_ref": "plc_fade",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "turn_end"
+                  }
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/life/heart-cross-strong-flame-green.webp",
+          "name": "Placebo Energy",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-placebo-energy"
+          ],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -1648,12 +2014,34 @@
       "system": {
         "container": null,
         "props": {
+          "action_command": "spell",
           "check_bonus": "0",
           "class": "Illusionist",
-          "cost": "10 MP",
+          "cost": "10 x T MP",
           "damage_bonus": "0",
           "description": "<p>You create an illusion that makes your companions feel healthier and refreshed for a while. For their next <strong>3 turns</strong>, they gain <strong>40 additional HP</strong> — this increases both their maximum and their current HP by 40.</p><p>After 3 turns, they lose this additional HP. If reduced to 0 HP at the end of the spell, the Sacrifice and Surrender rules apply as normal.</p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20</strong> ― This amount increases to <strong>50 HP</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> ― This amount increases to <strong>60 HP</strong>.</p>",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "chain_steps": "plc_ae, plc_boost",
+              "effect_kind": "chain",
+              "effect_label": "plc_do"
+            },
+            "1": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Placebo Energy",
+              "effect_kind": "apply_ae",
+              "effect_label": "plc_ae",
+              "target_ref": "action_targets"
+            },
+            "2": {
+              "effect_kind": "set_resource",
+              "effect_label": "plc_boost",
+              "grant_amount": "CUR_HP + 40 + 10 * floor(min(CASTER_LEVEL, 40) / 20)",
+              "grant_resource": "hp",
+              "target_ref": "action_targets"
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": true,
@@ -1662,12 +2050,14 @@
           "level": "1",
           "max_level": "1",
           "name": "Placebo Energy",
+          "on_activate_effect_ref": "plc_do",
           "optional_params": {},
+          "reaction_config_table": {},
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
           "skill_range": "Range",
-          "skill_target": "One Creature",
-          "skill_type": "Active",
+          "skill_target": "Up to three creatures",
+          "skill_type": "Spell",
           "type_damage": "",
           "use_optional_params": false
         },
@@ -1763,8 +2153,8 @@
             },
             "7": {
               "$deleted": false,
-              "candidate_source": "own_summons",
-              "condition_formula": "OWN_SUMMON_COUNT >= 1",
+              "candidate_source": "own_phantasms",
+              "condition_formula": "OWN_PHANTASM_COUNT >= 1",
               "count": 1,
               "disable_ui_type": "dim",
               "disabled_reason": "No Phantasm on the field",
@@ -1846,13 +2236,45 @@
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
           "animation_script": "",
+          "availability_formula": "OWN_PHANTASM_COUNT >= 1",
+          "availability_reason": "Needs one Phantasm for each ally healed",
           "check_bonus": "0",
           "class": "Illusionist",
-          "cost": "10 MP",
+          "cost": "10 x T MP",
           "damage_bonus": "0",
-          "defense_target_type": "def",
+          "defense_target_type": "",
           "description": "<p>You command your Phantasms to replenish your allies’ MP. Each Phantasm runs towards a companion and shatters itself in a spray of mana. Each target recovers <strong>20 MP</strong>. A single ally cannot be replenished by more than one Phantasm per action.</p>\n",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "auto_target": "confirm",
+              "candidate_source": "own_phantasms",
+              "condition_formula": "ACTION_TARGET_COUNT <= OWN_PHANTASM_COUNT",
+              "count": "ACTION_TARGET_COUNT",
+              "effect_kind": "targeting",
+              "effect_label": "es_pick",
+              "mode": "exact",
+              "on_condition_fail": "abort",
+              "target_prompt": "Choose which Phantasms shatter"
+            },
+            "1": {
+              "chain_steps": "es_shatter, es_heal",
+              "effect_kind": "chain",
+              "effect_label": "es_on"
+            },
+            "2": {
+              "effect_kind": "destroy_summon",
+              "effect_label": "es_shatter",
+              "target_ref": "es_pick"
+            },
+            "3": {
+              "effect_kind": "grant",
+              "effect_label": "es_heal",
+              "grant_amount": "20",
+              "grant_resource": "mp",
+              "target_ref": "action_targets"
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": true,
@@ -1862,7 +2284,10 @@
           "level": "1",
           "max_level": "1",
           "name": "Essence Sacrifice",
+          "on_activate_effect_ref": "es_on",
           "optional_params": {},
+          "pre_activate_effect_ref": "es_pick",
+          "reaction_config_table": {},
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
           "skill_animation_default": "",

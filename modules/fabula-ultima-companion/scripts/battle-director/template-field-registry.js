@@ -501,6 +501,9 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   checkboxCol("free_of_cost", "Free: No Resource Cost", { tooltip: "Free action grant: the granted action pays NO resource cost (RAW Bimagus \"spells cost no MP\"). The Max MP Cost cap still gates which spell is eligible by its printed cost.", vis: FREE_GRANT_VIS }),
   textCol("element_override", "Free: Element Override", { tooltip: 'free_action: force the spawned action\'s damage element. "trigger_element" adopts the trigger payload\'s element (Ripples: "all its damage becomes the type dealt by your ally"); any other value is a literal element (fire/ice/bolt/…). Blank = the weapon\'s own element.', vis: FREE_ACTION_VIS }),
   textCol("on_hit_effect_refs", "Free: On-Hit Effect Refs", { tooltip: "free_action: effect_label(s) on THIS skill's effect_table to run AFTER the spawned attack RESOLVES, against its hit targets (hit_action_targets). Gated on a real hit. Comma/newline list. Ripples ends all \"hex\" AEs on the struck enemy via a remove_tagged_ae row.", vis: FREE_ACTION_VIS }),
+  // Shipped on 9+ free_action rows (Counter Pass, Dancer's tag:dance, Emergency
+  // Item's tag:inventory) but never declared — declared so the sheet keeps it.
+  textCol("allowed_skill_refs", "Free: Allowed Skill Refs", { tooltip: 'free_action: restrict the granted Skill/Spell picker to these skills — comma list of NAMES, UUIDs, or "tag:<t>" (every skill whose skill_tags contain <t>; a scoped "t@row" tag qualifies and COMPUTE re-checks the branch). Blank = any skill of the enabled type. Never restricts Attack/Item.', vis: FREE_ACTION_VIS }),
   textCol("performer_ref", "Free: Performer Ref", { tooltip: 'free_action: WHO performs the granted action. Blank = the reactor (the reaction\'s bearer). A target ref (e.g. "action_targets", "trigger_subject", or a targeting-row label) grants the free action to a RESOLVED ally instead — Glowstick: "an ally other than yourself performs a free Magichant/Dance". The compose picker then lists that ally\'s own skills (filtered by Allowed Skill Refs).', vis: FREE_ACTION_VIS }),
   // summon config. The rest of the `summon_*` family is still data-only (tracked
   // at REQUIRED_FIELDS_BY_KIND below); this one gets its column at birth rather
@@ -513,6 +516,13 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // summon can exist at all, and a sheet save that stripped it would silently
   // merge two creatures into one cap with nothing to show for it.
   textCol("summon_kind", "Summon: Kind", { tooltip: 'summon: names the slot this persistent summon occupies, per owner (e.g. "minion", "captured"). Scopes Summon: Max, the OWN_PERSISTENT_SUMMONS_<KIND> identifier and the own_persistent_summons_<kind> / own_summon_tokens_<kind> target refs, so two persistent-summon skills on the same character do not compete for one slot. Blank = the shared unnamed bucket (legacy).', vis: SUMMON_VIS }),
+  // The core summon config — shipped on every Create Phantasm / summon row but
+  // data-only until 2026-09-28 (a sheet save could strip WHAT is summoned).
+  textCol("summon_actor", "Summon: Actor", { tooltip: "summon: the Actor to spawn — its NAME (e.g. \"Fox fire\") or an Actor UUID.", vis: SUMMON_VIS }),
+  textCol("summon_count", "Summon: Count", { tooltip: "summon: how many to spawn (number or formula). Default 1.", vis: SUMMON_VIS }),
+  textCol("summon_max", "Summon: Max", { tooltip: "summon: cap on how many of this caster's summons of this type may exist at once (Create Phantasm: 3). Blank = no cap.", vis: SUMMON_VIS }),
+  textCol("summon_type", "Summon: Type", { tooltip: 'summon: "phantasm" / "numen" stamp the Illusionist token flags (isPhantasm / isNumen) that own_phantasms / own_numen and OWN_PHANTASM_COUNT read. Blank = a plain summon.', vis: SUMMON_VIS }),
+  checkboxCol("suppress_defeat", "Silent Shatter", { tooltip: "destroy_summon: shatter WITHOUT emitting creature_defeated or the HP→0 trip, so no on-shatter reaction fires (Phantasmal Echo, Zero Trigger). Phantasmal Recovery / Recycling, Zero Power: Last Den of Cinders.", vis: `equalText(sameRow("effect_kind",''), "destroy_summon")` }),
   textCol("summon_clone_suffix", "Summon: Clone Suffix", { tooltip: "summon (clone rows): what to append to the source creature's name for the clone. Blank = \"(Reanimated)\", Birth of the Cruel's wording. A captured monster or a doppelganger wants its own.", vis: SUMMON_VIS }),
   // adjust_charges config — charge arithmetic on a target's named charge-AE
   // (Enkindle: double the target's Burn = Burn × 2). Mirrors adjust_damage.

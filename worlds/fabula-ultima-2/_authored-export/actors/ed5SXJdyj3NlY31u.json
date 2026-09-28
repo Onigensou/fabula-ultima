@@ -677,15 +677,33 @@
       "system": {
         "container": null,
         "props": {
+          "action_command": "spell",
           "check_bonus": "0",
           "class": "Entropist",
-          "cost": "20",
+          "cost": "20 MP",
           "damage_bonus": "0",
-          "description": "<p>You alter the very nature of your target. Until this spell ends, if the target would suffer<br>damage of a type they Absorb or are Immune to, they are instead treated as if they<br>were Vulnerable to that damage type. Once that happens, this spell ends.</p>",
-          "duration": "scene",
+          "defense_target_type": "mdef",
+          "description": "<p>You alter the very nature of your target. Until this spell ends, the target suffers <strong>Anomaly</strong>: its affinity to every damage type is reduced to Neutral (it loses any Resistance, Immunity or Absorption; Vulnerabilities remain).</p>",
+          "duration": "Scene",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "scene",
+              "ae_template_ref": "Anomaly",
+              "effect_kind": "apply_ae",
+              "effect_label": "anomaly_apply",
+              "target_ref": "hit_action_targets"
+            }
+          },
+          "isCheck": true,
+          "isOffensiveSpell": true,
           "name": "Disintegration Drone(Anomaly)",
+          "on_activate_effect_ref": "anomaly_apply",
+          "reaction_config_table": {},
           "rolled_atr1": "INS",
           "rolled_atr2": "INS",
+          "skill_target": "One creature",
+          "skill_type": "Spell",
           "target": "One creature",
           "type_damage": ""
         },

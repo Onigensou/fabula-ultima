@@ -100,7 +100,8 @@
           "target_ref": "self"
         },
         "2": {
-          "action_ref": "item",
+          "action_ref": "Item, Skill",
+          "allowed_skill_refs": "tag:inventory",
           "effect_kind": "free_action",
           "effect_label": "em_free"
         },

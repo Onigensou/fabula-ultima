@@ -95,6 +95,11 @@ const RESERVED_REFS = {
   // candidate_source of the same name, so a row can `target_ref: "own_summons"`
   // (Zero Power shatters every summon). mode "all" → every own summon, no prompt.
   own_summons:           { candidate_source: "own_summons", mode: "all" },
+  // Only the reactor's own Illusionist PHANTASMS (token flag isPhantasm) — the
+  // Numen is excluded. RAW Create Phantasm: Numen: "This Phantasm cannot be used
+  // in any of the Illusionist's Skills or Spells." Mirrors OWN_PHANTASM_COUNT
+  // (ownSummonCount phantasmOnly), so a gate and the pick it guards agree.
+  own_phantasms:         { candidate_source: "own_phantasms", mode: "all" },
   // The reactor's own PERSISTENT summons (Birth of the Cruel's reanimated Minion,
   // a captured monster). Unlike own_summons — which reads the combat/canvas token
   // list and is therefore EMPTY outside a conflict — this walks `game.actors` for
@@ -508,8 +513,11 @@ async function resolveTargetingRow(row, ctx) {
         IS_ALLY:  matchesCategory(t, "ally",  ctx) ? 1 : 0,
         IS_ENEMY: matchesCategory(t, "enemy", ctx) ? 1 : 0,
       };
+      // filterReactorActorUuid: who is doing the filtering, for "…that I applied"
+      // identifiers (MY_AE_COUNT_<NAME>) — the resolver's actor is the CANDIDATE.
       const resolver = buildSkillResolver({
-        actor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0, vars,
+        actor, payload: { ...(ctx.payload ?? {}), filterReactorActorUuid: ctx.reactorActor?.uuid ?? null },
+        skill: ctx.skill, round: ctx.dCombat?.round ?? 0, vars,
       });
       return Number(evaluateFormula(filterFormula, resolver, 0)) > 0;
     });
@@ -712,6 +720,7 @@ async function buildCandidatePool(source, ctx) {
     case "self":                return collectSelfTokens(ctx);
     case "self_or_my_focus":    return collectSelfOrMyFocusTokens(ctx);
     case "own_summons":         return collectOwnSummons(ctx);
+    case "own_phantasms":       return collectOwnSummons(ctx, { phantasmOnly: true });
     case "own_persistent_summons": return collectOwnPersistentSummons(ctx);
     case "own_minions":         return collectOwnMinions(ctx);
     case "field":               return collectField(ctx);
@@ -752,7 +761,7 @@ async function collectLastSummoned(ctx) {
   return await uuidsToTokens(ctx.lastSummonedTokenUuids ?? []);
 }
 
-function collectOwnSummons(ctx) {
+function collectOwnSummons(ctx, { phantasmOnly = false } = {}) {
   const meUuid = String(ctx.reactorActor?.uuid ?? ctx.reactorToken?.actor?.uuid ?? "").trim();
   if (!meUuid) return [];
   const NS = "fabula-ultima-companion";
@@ -761,7 +770,7 @@ function collectOwnSummons(ctx) {
     if (!t?.actor) continue;
     const f = t.flags?.[NS] ?? {};
     if (String(f.summonedBy ?? "") !== meUuid) continue;
-    if (!(f.isSummon || f.isPhantasm)) continue;
+    if (phantasmOnly ? !f.isPhantasm : !(f.isSummon || f.isPhantasm)) continue;
     out.push(t);
   }
   return out;

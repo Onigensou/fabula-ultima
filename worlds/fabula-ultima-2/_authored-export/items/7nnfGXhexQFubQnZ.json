@@ -34,6 +34,7 @@
       "duration": "",
       "heroic_requirement": "",
       "ignore_hr": false,
+      "implementation_note": "Downtime Project skill — no Battle Director behaviour. GM applies: up to SL × 100 zenit of material costs paid, +SL progress per day; cumulative across characters with this Skill.",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,

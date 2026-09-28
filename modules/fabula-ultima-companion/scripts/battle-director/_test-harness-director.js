@@ -1743,7 +1743,7 @@ function _looksCaptured(fn) {
 // Harness globals that a leaked run can strand. A stale __FU_HARNESS_HEADLESS__
 // is now load-bearing in PLAY: list-picker.js auto-picks under it, so a leaked
 // flag would turn real player menus into silent first-option picks.
-const _HARNESS_GLOBALS = ["__FU_HARNESS_HEADLESS__", "__FU_HARNESS_ACCEPT_PASSIVES__", "__FU_HARNESS_FORMULA_OVERRIDES__"];
+const _HARNESS_GLOBALS = ["__FU_HARNESS_HEADLESS__", "__FU_HARNESS_ACCEPT_PASSIVES__", "__FU_HARNESS_FORMULA_OVERRIDES__", "__FU_HARNESS_WRITE_CAPTURE__"];
 // `__fudActiveDCombat` is shared with LIVE PLAY — a real DirectorCombat owns the
 // same key — so it can only be cleared on IDENTITY, never on presence. A
 // simulate that dies without its finally (client reload, discarded tab) leaves a
@@ -1856,6 +1856,7 @@ async function installWriteCaptures() {
     aeCreates: [],      // { parentUuid, parentName, name, statusIds, changes, flags }
     aeDeletes: [],      // { aeId, aeName, parentUuid }
     freeActions: [],    // { sourceLabel, reactorActorId, actionType, presetName, request }
+    tokenDeletes: [],   // { tokenUuid, name, via } — engine token deletions routed here (see below)
   };
 
   // ── free-action grants ───────────────────────────────────────────────────
@@ -1925,6 +1926,12 @@ async function installWriteCaptures() {
     warn(`harness: NESTED installWriteCaptures (depth ${_captureDepth}) — this sink will record nothing; the enclosing capture owns the patch`);
   }
   _captureDepth += 1;
+  // Token deletions are not prototype-patched (TokenDocument is left alone —
+  // sheet/canvas code would break). Engine paths that delete a token directly
+  // (destroy_summon's out-of-conflict fallback) check this sink and RECORD the
+  // deletion instead of committing it, keeping "nothing commits" true.
+  const _prevCaptureSink = globalThis.__FU_HARNESS_WRITE_CAPTURE__;
+  if (!_prevCaptureSink) globalThis.__FU_HARNESS_WRITE_CAPTURE__ = captures;
 
   // Build a fake AE doc with .id, .name, .delete, .update. Used as the
   // return value of createEmbeddedDocuments("ActiveEffect", ...).
@@ -2050,6 +2057,10 @@ async function installWriteCaptures() {
     // must not drive the depth negative and un-patch an enclosing capture.
     if (_restored) return;
     _restored = true;
+    if (globalThis.__FU_HARNESS_WRITE_CAPTURE__ === captures) {
+      if (_prevCaptureSink) globalThis.__FU_HARNESS_WRITE_CAPTURE__ = _prevCaptureSink;
+      else delete globalThis.__FU_HARNESS_WRITE_CAPTURE__;
+    }
     restoreFreeActions();
     _captureDepth = Math.max(0, _captureDepth - 1);
     // Only the OUTERMOST restore un-patches, and it always restores the pristine

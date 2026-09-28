@@ -5,7 +5,7 @@
 
 import { warn } from "./logger.js";
 import { getActorKind, getNpcAttackItems } from "./actor-shape.js";
-import { buildSkillResolver, evaluateFormula, isFormulaString } from "./skill-formulas.js";
+import { buildSkillResolver, evaluateFormula, isFormulaString, registerBlockedActionReader } from "./skill-formulas.js";
 import { hasIgnoreActionGating, snapshotUltimaBundle } from "./domination.js";
 
 const FLAG_NS = "fabula-ultima-companion";
@@ -1280,6 +1280,8 @@ export function getBlockedActionLabels(actor) {
   }
   return out;
 }
+
+registerBlockedActionReader(getBlockedActionLabels);
 
 // Walk an actor's active effects and collect every `disable_action_intent`
 // change → Map<intent, reason> (reason = source-AE name, for the menu stamp).

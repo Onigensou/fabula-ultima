@@ -110,7 +110,7 @@ export function classifyActionIntent(skill) {
 // classified — author should set `action_intent: "aid"` for those.
 // Target refs that resolve to the CASTER'S side of the action, never to the
 // creatures the action is aimed at.
-const SELF_ONLY_REFS = new Set(["self", "own_summons", "own_persistent_summons", "own_minions", "own_numen", "last_summoned", "field"]);
+const SELF_ONLY_REFS = new Set(["self", "own_summons", "own_phantasms", "own_persistent_summons", "own_minions", "own_numen", "last_summoned", "field"]);
 function hasAidGrant(skill) {
   const table = skill?.system?.props?.effect_table
             ?? skill?.system?.props?.reaction_effect_table  // legacy alias
@@ -157,4 +157,114 @@ function hasApplyAe(skill) {
     if (row.effect_kind === "apply_ae") return true;
   }
   return false;
+}
+
+// ── Action tags that APPLY to one action (scoped skill_tags) ─────────────────
+// `skill_tags` tokens are plain ("potion") or SCOPED to a pre_activate path
+// ("potion@alc_mix"): a scoped tag applies only when the captured pre-card
+// choices REACHED that effect row — a menu row that was opened, or an option row
+// that was picked (plus the chain steps under it). This lets one menu-parent
+// skill (Tinkerer Gadgets) carry per-branch identity: its Alchemy branch is a
+// potion and an Inventory action, its Magitech Override branch is neither.
+// Readers that do not know about scoping (SKILL_HAS_TAG_* on a raw prop) never
+// match a scoped token, so an unreached tag fails CLOSED.
+//
+// The reserved tag INVENTORY_ACTION_TAG ("inventory") is the "counts as an
+// Inventory action too" knob (user ruling 2026-09-28, Tinkerer Alchemy: "a skill
+// that counts as Inventory action — both skill blocking AND inventory blocking
+// effects block it"). State-handlers stamps `ar.countsAsItem` from it; the
+// Item-action seams (Item-block refusal, creature_uses_item /
+// creature_completes_item, item restore bonus, item damage bonus) read that flag.
+export const INVENTORY_ACTION_TAG = "inventory";
+
+const _splitTags = (raw) => String(raw ?? "").split(/[\s,]+/).map((t) => t.trim().toLowerCase()).filter(Boolean);
+
+// Tag names a skill CAN carry, scope stripped (picker allow-lists: a skill with
+// "inventory@alc_mix" qualifies for a `tag:inventory` free action; which branch
+// is then legal is re-checked at COMPUTE against resolveActionTags).
+export function skillTagNames(skillOrProps) {
+  const p = skillOrProps?.system?.props ?? skillOrProps ?? {};
+  return [...new Set(_splitTags(p.skill_tags).map((t) => t.split("@")[0]).filter(Boolean))];
+}
+
+// Effect labels the captured pre_activate choices reached. `menuPicks` is
+// ar.preActivateMenuPicks ({ <menu effect_label>: [picked option label, …] }).
+export function reachedPreActivateLabels(effectTable, menuPicks) {
+  const reached = new Set();
+  if (!menuPicks || typeof menuPicks !== "object") return reached;
+  const byLabel = new Map();
+  for (const r of Object.values(effectTable ?? {})) {
+    if (!r || r.$deleted) continue;
+    const l = String(r.effect_label ?? "").trim();
+    if (l) byLabel.set(l, r);
+  }
+  const splitRefs = (raw) => String(raw ?? "").split(/[,\n]/).map((s) => s.trim()).filter(Boolean);
+  const walkChain = (lbl, depth = 0) => {
+    if (!lbl || depth > 20) return;
+    reached.add(lbl);
+    const row = byLabel.get(lbl);
+    if (row && String(row.effect_kind ?? "").trim().toLowerCase() === "chain") {
+      for (const s of splitRefs(row.chain_steps)) if (!reached.has(s)) walkChain(s, depth + 1);
+    }
+  };
+  // Option row of `menu` whose label (authored |-list label, menu_label,
+  // effect_label or ref) matches `pick` (lower-cased).
+  const optionFor = (menu, pick) => {
+    const refs = splitRefs(menu?.menu_option_refs);
+    const labels = String(menu?.menu_option_labels ?? "").split("|").map((s) => s.trim().toLowerCase());
+    for (let i = 0; i < refs.length; i++) {
+      const orow = byLabel.get(refs[i]);
+      const cands = [labels[i], orow?.menu_label, orow?.effect_label, refs[i]]
+        .map((s) => String(s ?? "").trim().toLowerCase()).filter(Boolean);
+      if (cands.includes(pick)) return refs[i];
+    }
+    return null;
+  };
+  // A nested menu's picks are recorded under the SYNTHETIC key the dispatcher
+  // gives an option row — "<parent menu label>:<picked option label>" (possibly
+  // several levels deep). Resolve such a key back to the real row.
+  const resolveKey = (key) => {
+    if (byLabel.has(key)) return key;
+    const parts = String(key).split(":");
+    let cur = parts[0];
+    for (let i = 1; i < parts.length && cur; i++) cur = optionFor(byLabel.get(cur), parts[i].trim().toLowerCase());
+    return cur && byLabel.has(cur) ? cur : null;
+  };
+  for (const [menuKey, picks] of Object.entries(menuPicks)) {
+    const menuLabel = resolveKey(menuKey);
+    reached.add(menuKey);
+    if (!menuLabel) continue;
+    reached.add(menuLabel);
+    const menu = byLabel.get(menuLabel);
+    if (!menu) continue;
+    const want = new Set((Array.isArray(picks) ? picks : []).map((p) => String(p).trim().toLowerCase()));
+    const refs = splitRefs(menu.menu_option_refs);
+    const labels = String(menu.menu_option_labels ?? "").split("|").map((s) => s.trim().toLowerCase());
+    refs.forEach((oref, i) => {
+      const orow = byLabel.get(oref);
+      const cands = [orow?.menu_label, orow?.effect_label, oref, labels[i]]
+        .map((s) => String(s ?? "").trim().toLowerCase()).filter(Boolean);
+      if (cands.some((c) => want.has(c))) walkChain(oref);
+    });
+  }
+  return reached;
+}
+
+// The tags that apply to THIS action: every plain tag, plus each scoped tag
+// whose scope row was reached. Lower-cased, de-duplicated.
+export function resolveActionTags(skill, { effectTable = null, menuPicks = null } = {}) {
+  const p = skill?.system?.props ?? {};
+  const tokens = _splitTags(p.skill_tags);
+  if (!tokens.some((t) => t.includes("@"))) return [...new Set(tokens)];
+  const reached = reachedPreActivateLabels(effectTable ?? p.effect_table ?? {}, menuPicks);
+  const reachedLc = new Set([...reached].map((l) => l.toLowerCase()));
+  const out = new Set();
+  for (const t of tokens) {
+    const at = t.indexOf("@");
+    if (at < 0) { out.add(t); continue; }
+    const tag = t.slice(0, at);
+    const scope = t.slice(at + 1);
+    if (tag && reachedLc.has(scope)) out.add(tag);
+  }
+  return [...out];
 }

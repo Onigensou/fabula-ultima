@@ -38,7 +38,7 @@
         "1": {
           "$deleted": false,
           "auto_target": "confirm",
-          "candidate_source": "own_summons",
+          "candidate_source": "own_phantasms",
           "count": 1,
           "effect_kind": "targeting",
           "effect_label": "dp_phantasm",

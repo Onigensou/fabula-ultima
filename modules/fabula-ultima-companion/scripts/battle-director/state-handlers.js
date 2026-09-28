@@ -13,7 +13,7 @@ import { isGmOverrideEmpty, summarizeGmOverride, dropGmRemovedReactions } from "
 import { runBattleEndSequence } from "./battle-end/battle-end-orchestrator.js";
 import { STATES } from "./states.js";
 import { INTENTS } from "./intents.js";
-import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, pinActionKindForSkill, resolvePrimaryAttackWeapon, captureSubjectSnapshot, resolvesVsMagicDefense, attackRangeBlockedBy } from "./snapshot.js";
+import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, pinActionKindForSkill, resolvePrimaryAttackWeapon, captureSubjectSnapshot, resolvesVsMagicDefense, attackRangeBlockedBy, getBlockedActionLabels } from "./snapshot.js";
 import { TurnUI } from "./turn-ui.js";
 import { TurnPicker } from "./turn-picker.js";
 import { requestTargeting } from "./target-picker.js";
@@ -103,7 +103,7 @@ async function getSkillEffectsExtras() {
 }
 import { getRuntimeSkillView, getRuntimeActionView } from "./skill-recipes.js";
 import { computeActionProfile, projectProfileToActionResult, resolveChosenChainRows } from "./action-profile.js";
-import { classifyActionIntent } from "./skill-intent.js";
+import { classifyActionIntent, resolveActionTags, INVENTORY_ACTION_TAG } from "./skill-intent.js";
 import { isAutopilotEnabled, isAiControlledTurn, isAiControlledCombatant, autopilotPickCombatant, autopilotDecideAction } from "./enemy-autopilot.js";
 import { isSummonAutopilotEnabled, isAutomatedSummon, isAutomatedSummonTurn, summonVetoMs, isGuestActor } from "./summon-autopilot.js";
 import { resolveAnimationSpec, playDirectorAnimation } from "./director-animation.js";
@@ -1255,7 +1255,7 @@ async function resolveAction(director, ar, opts = {}) {
   //     "when a creature uses an item" (e.g. an ally's counter to a thrown
   //     item, a self-buff on quaffing). Item-only; payload carries actionKind.
   //     Queued for post-save firing, same as the other completion triggers.
-  if (ar.kind === "Item") {
+  if (ar.kind === "Item" || ar.countsAsItem) {
     queuePostResolveTrigger(director, {
       casterActor,
       trigger: "creature_completes_item",
@@ -3639,6 +3639,7 @@ const Target = {
       // `payload.suppressSelfGrantOf`) when it mutates the map, so
       // RESOLVE's self-heal suppression continues to work for Vismagus.
       let vismagusHpPaid = false;
+      let costWaivedBy = null;
       const onlyMpMissing = !gate.ok && gate.missing.every(
         (m) => String(m.resource ?? m.label ?? "").toLowerCase() === "mp"
       );
@@ -3650,6 +3651,10 @@ const Target = {
           skillUuid:       skill.uuid,
           skillName:       skill.name,
           skillType:       "Spell",
+          // SKILL_HAS_TAG_<X> reads payload.skillTags — without it a gate like
+          // Phantasmal Recycling's "not to create a Phantasm" (SKILL_HAS_TAG_PHANTASM == 0)
+          // reads 0 and passes PERMISSIVELY.
+          skillTags:       String(skill.system?.props?.skill_tags ?? ""),
           costMap,
           mpNeeded:        Number(costMap.get?.("mp") ?? costMap.mp ?? 0) || 0,
           curHp:           Number(attackerActor.system?.props?.current_hp ?? 0) || 0,
@@ -3684,6 +3689,7 @@ const Target = {
           }
           gate = checkAffordable(attackerActor, costMap);
           vismagusHpPaid = !!reactionPayload.vismagusHpPaid;
+          costWaivedBy = reactionPayload.costWaivedBy ?? null;
         } else {
           warn("caster_short_on_mp: caster token not on canvas — gate fails through");
         }
@@ -3703,6 +3709,9 @@ const Target = {
       if (vismagusHpPaid) {
         const hpPaid = Number(costMap.get?.("hp") ?? costMap.hp ?? 0) || 0;
         if (hpPaid > 0) displayCost = `${hpPaid} HP · Vismagus`;
+      }
+      if (costWaivedBy && !(Number(costMap.get?.("mp") ?? costMap.mp ?? 0) > 0)) {
+        displayCost = `0 MP · ${costWaivedBy}`;
       }
       // If the skill's own cost is blank because a `creature_performs_action`
       // self-reaction bills it (base Dance charges its "managed" dances via
@@ -4586,6 +4595,49 @@ const Compute = {
         } catch (e) { warn("Skill COMPUTE: pre_activate capture threw", e); }
       }
 
+      // ── Action categories beyond ar.kind (scoped skill_tags) ──
+      // The tags that APPLY to this action given the captured path (see
+      // skill-intent resolveActionTags). The reserved "inventory" tag makes a
+      // Skill ALSO an Inventory action (Tinkerer Alchemy, user ruling
+      // 2026-09-28): anything that blocks the Item action blocks it too, and the
+      // Item-use seams (creature_uses_item/_completes_item, item restore/damage
+      // bonus) read `countsAsItem`. A free action's `tag:` allow-list is also
+      // re-checked here against the path actually taken — the picker can only
+      // see that SOME branch of the skill qualifies.
+      let actionTags = null;
+      let countsAsItem = false;
+      try {
+        actionTags = resolveActionTags(skill, { effectTable: view?.effect_table, menuPicks: preActivateMenuPicks });
+        countsAsItem = ar.kind !== "Item" && actionTags.includes(INVENTORY_ACTION_TAG);
+        let refusal = null;
+        if (countsAsItem) {
+          const casterForBlock = await fromUuid(attacker.actorUuid).catch(() => null);
+          const itemBlock = casterForBlock ? getBlockedActionLabels(casterForBlock).get("Item") : null;
+          if (itemBlock) refusal = `${skill?.name ?? "That action"} counts as an Inventory action — blocked by ${itemBlock}`;
+        }
+        const grantNow = freeActions.get(ar.attacker?.actorId ?? attacker?.actorId);
+        const allowRefs = Array.isArray(grantNow?.allowedSkillRefs) ? grantNow.allowedSkillRefs : null;
+        // A real Item action IS the Inventory action: allowedSkillRefs only ever
+        // restricts the Skill/Spell pickers (compose-action), so it must not refuse
+        // an item used through a grant like Emergency Item's "Item, Skill".
+        if (!refusal && ar.kind !== "Item" && allowRefs && allowRefs.length) {
+          const lc = allowRefs.map((r) => String(r ?? "").trim().toLowerCase()).filter(Boolean);
+          const wantTags = lc.filter((r) => r.startsWith("tag:")).map((r) => r.slice(4).trim());
+          const byNameOrUuid = lc.includes(String(skill?.name ?? "").trim().toLowerCase())
+            || lc.includes(String(skill?.uuid ?? "").toLowerCase());
+          if (wantTags.length && !byNameOrUuid && !actionTags.some((t) => wantTags.includes(t))) {
+            refusal = `${skill?.name ?? "That action"}: this free action allows only ${wantTags.join(" / ")} — the chosen option does not qualify`;
+          }
+        }
+        if (refusal) {
+          log(`Skill COMPUTE: REFUSED — ${refusal}; nothing spent`);
+          try { ui.notifications?.warn(refusal); } catch (e) { /* headless */ }
+          director.enqueue({ type: INTENTS.TARGET_BACK });
+          return;
+        }
+        if (countsAsItem) log(`Skill COMPUTE: "${skill?.name}" counts as an Inventory action too (tags: ${actionTags.join(", ")})`);
+      } catch (e) { warn("Skill COMPUTE: action-tag resolution threw", e); }
+
       // The capture may have resolved the very values this skill's own
       // `adjust_cost` rows are written against (Bimagus: the spend picked at
       // pre_activate drives `VAR_BIMAGUS - 20`). Fold them in NOW so the card
@@ -4695,6 +4747,8 @@ const Compute = {
         descriptionHtml,
         // Persist the captured pre_activate picks so RESOLVE replays them.
         preActivateVars, preActivateMenuPicks, preActivateTargets, preActivateDone: true,
+        // Tags applying to this action + the "also an Inventory action" flag.
+        actionTags, countsAsItem,
         // Pre-composed own-chain cost (above). Merged, not assigned: an override
         // could already be present, and CONFIRM will merge its reaction channel
         // on top of this one.
@@ -5141,7 +5195,11 @@ const Confirm = {
     // Action-level (once per action). The post-resolve counterpart is
     // creature_completes_item (queued in resolveAction). Payload carries
     // actionKind so reactions can discriminate by action type.
-    if (ar.kind === "Item" && attackerActor) {
+    // `ar.countsAsItem` — a Skill that ALSO counts as an Inventory action
+    // (skill_tags "inventory", Tinkerer Alchemy) is an item use here too; its
+    // tags are the ones its captured path reached (ar.actionTags), so Maid Cap's
+    // SKILL_HAS_TAG_POTION sees "potion" only for the Alchemy branch.
+    if ((ar.kind === "Item" || ar.countsAsItem) && attackerActor) {
       try {
         const { findPassiveCandidates } = await getSkillEffectsExtras();
         // The crafted/used item-skill's tags (e.g. "potion") so a reaction can gate
@@ -5151,7 +5209,8 @@ const Confirm = {
         let usedSkillDuration = "";
         try {
           const usedSkill = ar.skillUuid ? await fromUuid(ar.skillUuid).catch(() => null) : null;
-          usedSkillTags = String(usedSkill?.system?.props?.skill_tags ?? "");
+          usedSkillTags = Array.isArray(ar.actionTags) ? ar.actionTags.join(", ")
+            : String(usedSkill?.system?.props?.skill_tags ?? "");
           usedSkillDuration = String(usedSkill?.system?.props?.duration ?? "");
         } catch (_) { /* noop */ }
         const itemCands = await findPassiveCandidates({
@@ -5165,9 +5224,9 @@ const Confirm = {
             sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
             sourceActorUuid: ar.attackerActorRef,
             actionIntent: ar.actionIntent,
-            actionKind: ar.kind,
+            actionKind: ar.countsAsItem ? "Item" : ar.kind,
             actionName: ar.skillName ?? ar.kind,
-            itemMode: ar.itemSelection?.mode ?? null,
+            itemMode: ar.itemSelection?.mode ?? (ar.countsAsItem ? "create" : null),
             skillUuid: ar.skillUuid ?? null,
             skillTags: usedSkillTags,
             skillDuration: usedSkillDuration,
@@ -7385,6 +7444,10 @@ const TurnEnd = {
       if (endingActorUuid) {
         try { await SE().tickDirectorAEsForBearerTurnEnd(endingActorUuid); }
         catch (e) { warn("TURN_END: tickDirectorAEsForBearerTurnEnd threw", e); }
+        // Applier-turn-END tick — lifetimeMode "applier_turn_end" only ("until
+        // the end of your next turn"); every other applier mode ticks at TURN_START.
+        try { await SE().tickDirectorAEsForApplier(endingActorUuid, { phase: "end" }); }
+        catch (e) { warn("TURN_END: tickDirectorAEsForApplier(end) threw", e); }
       }
 
       try {

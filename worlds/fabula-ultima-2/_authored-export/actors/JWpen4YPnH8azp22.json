@@ -495,7 +495,7 @@
           "cost": "20 MP",
           "damage_bonus": "",
           "defense_target_type": "mdef",
-          "description": "<p>You alter the very nature of your target. Until this spell ends, the target suffers <strong>Anomaly</strong>: its affinity to every damage type is reduced by one level (Absorb becomes Immune, Immune becomes Resistant, Resistant becomes Normal, Normal becomes Vulnerable).</p>",
+          "description": "<p>You alter the very nature of your target. Until this spell ends, the target suffers <strong>Anomaly</strong>: its affinity to every damage type is reduced to Neutral (it loses any Resistance, Immunity or Absorption; Vulnerabilities remain).</p>",
           "duration": "Scene",
           "effect_table": {
             "0": {

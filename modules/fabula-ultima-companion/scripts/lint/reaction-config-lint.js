@@ -169,7 +169,8 @@
   const DAMAGE_SOURCE_VALUES    = SOURCE_VALUES;
   const ACTION_INTENT_VALUES    = new Set(["", "harmful", "aid", "neutral"]);
   const CANDIDATE_SOURCE_VALUES = new Set([
-    "self", "combat", "trigger_subject", "trigger_actor", "action_targets", "field"
+    "self", "combat", "trigger_subject", "trigger_actor", "action_targets", "field",
+    "own_summons", "own_phantasms", "own_numen",
   ]);
   // "random" picks `count` tokens from the pool with no prompt — implemented in
   // skill-targeting.js (chain-level random targeting, the twin of skill_target
@@ -213,7 +214,7 @@
     "self", "self_or_my_focus", "action_targets", "hit_action_targets",
     "ally_action_targets", "enemy_action_targets", "trigger_actor",
     "trigger_attacker", "trigger_subject", "cause_actor", "cover_target",
-    "own_numen", "own_summons", "own_persistent_summons",
+    "own_numen", "own_summons", "own_phantasms", "own_persistent_summons",
     "save_failed_targets", "contest_won_targets", "contest_lost_targets",
     "save_tier_1", "save_tier_2", "save_tier_3", "save_tier_4",
     "save_tier_5", "save_tier_6", "save_tier_7", "save_tier_8",

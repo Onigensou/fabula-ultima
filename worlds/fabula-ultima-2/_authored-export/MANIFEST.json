@@ -4424,7 +4424,7 @@
         "id": "OsIQ6VBzU7XklPUQ",
         "name": "Create Phantasm: Mockery",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "9yYY5TBMMVlHo28q",
@@ -5954,7 +5954,7 @@
         "id": "1w2LjUOVhlbLR8nn",
         "name": "Gadgets",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 12
       },
       {
         "id": "i4oM2NTWVz9lRIZz",
@@ -9470,7 +9470,7 @@
         "id": "peLYH0zSiab4UQ4E",
         "name": "Placebo Energy",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "ZGxzk2GarvueE8PA",
@@ -19435,10 +19435,6 @@
           {
             "id": "ChuSqFPh1zSJtcC2",
             "name": "Phantasmal Recycling"
-          },
-          {
-            "id": "CqAmHzX4w14RdIix",
-            "name": "Placebo Energy"
           },
           {
             "id": "WHzVR6qknwEfJvfU",

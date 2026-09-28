@@ -376,7 +376,16 @@ function candidateFromSkill(skill, actor, { source, sourceItem, freeOfCost = fal
   // once substitutions landed it started offering to burn HP for a spell that
   // was already free. Caught by screenshotting the free-cast menu.
   if (!freeOfCost && !gate.ok && canSubstituteForShortfall(gate.missing, p.skill_type)) {
-    costSwap = findCostSubstitution(actor, costMap);
+    // evalCondition: the substitution config's condition_formula, read as the
+    // live caster_short_on_mp dispatch would (payload.skillTags = THIS spell's
+    // tags), so a gated swap (Phantasmal Recycling: a Phantasm out, and not a
+    // phantasm-creating spell) is not offered where the real gate refuses.
+    const _swapPayload = { skillTags: String(p.skill_tags ?? ""), skillType: "Spell",
+      skillName: skill?.name ?? "", skillUuid: skill?.uuid ?? null };
+    costSwap = findCostSubstitution(actor, costMap, {
+      evalCondition: (f, carrier) => evaluateFormula(f,
+        buildSkillResolver({ actor, payload: _swapPayload, skill: carrier, round: 0 }), 1),
+    });
   }
   // Combined affordability: resource gate AND charge gate. Charge shortfalls
   // append to missingResources so the tooltip lists "Adoration: 1/3" too.
@@ -669,7 +678,9 @@ export async function pickSkill({
       if (wanted.has(String(c.name ?? "").trim().toLowerCase())) return true;
       if (wanted.has(String(c.uuid ?? "").toLowerCase())) return true;
       if (wantedTags.size) {
-        const tags = String(c.skillTags ?? "").split(/[\s,]+/).map((t) => t.trim().toLowerCase()).filter(Boolean);
+        // Scoped tags ("inventory@alc_mix") qualify by name here; COMPUTE then
+        // re-checks the allow-list against the branch actually taken.
+        const tags = String(c.skillTags ?? "").split(/[\s,]+/).map((t) => t.trim().toLowerCase().split("@")[0]).filter(Boolean);
         if (tags.some((t) => wantedTags.has(t))) return true;
       }
       return false;

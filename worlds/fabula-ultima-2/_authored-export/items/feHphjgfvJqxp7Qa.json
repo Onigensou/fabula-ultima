@@ -73,8 +73,8 @@
         },
         "5": {
           "$deleted": false,
-          "candidate_source": "own_summons",
-          "condition_formula": "OWN_SUMMON_COUNT >= 1",
+          "candidate_source": "own_phantasms",
+          "condition_formula": "OWN_PHANTASM_COUNT >= 1",
           "count": 1,
           "disable_ui_type": "dim",
           "disabled_reason": "No Phantasm on the field",

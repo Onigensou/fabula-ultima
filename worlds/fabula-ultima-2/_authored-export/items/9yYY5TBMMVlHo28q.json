@@ -380,6 +380,7 @@
       "rolled_atr1": "INS",
       "rolled_atr2": "WLP",
       "skill_range": "Any",
+      "skill_tags": "phantasm",
       "skill_target": "Self",
       "skill_type": "Spell"
     },

@@ -548,19 +548,45 @@ export function findCostSubstitution(actor, costMap, opts = {}) {
 
     for (const cfg of configs) {
       const ref = String(cfg.reaction_effect_ref ?? "").trim();
-      // Direct ref only. A substitution buried inside a `chain` is not previewed
-      // — it will still FIRE correctly, the picker just won't pre-authorise it.
-      const row = effects.find((e) => String(e.effect_label ?? "").trim() === ref
-                                   && String(e.effect_kind ?? "").trim() === "substitute_cost");
-      if (!row) continue;
+      // Direct ref, or a `chain` root whose steps include a substitute_cost
+      // (Phantasmal Recycling: pick → waive → shatter). The FIRST substitute_cost
+      // step is the one previewed. Deeper nesting is not followed.
+      const byLabel = (lbl) => effects.find((e) => String(e.effect_label ?? "").trim() === lbl);
+      let row = byLabel(ref);
+      if (row && String(row.effect_kind ?? "").trim() === "chain") {
+        const steps = String(row.chain_steps ?? "").split(/[,\s]+/g).map((x) => x.trim()).filter(Boolean);
+        row = steps.map(byLabel).find((e) => e && String(e.effect_kind ?? "").trim() === "substitute_cost") ?? null;
+      }
+      if (!row || String(row.effect_kind ?? "").trim() !== "substitute_cost") continue;
+      // The config's own condition (e.g. "OWN_PHANTASM_COUNT >= 1 &&
+      // SKILL_HAS_TAG_PHANTASM == 0"), evaluated by the CALLER, which owns the
+      // formula engine and knows the candidate skill's tags. No evaluator = no
+      // gate (legacy callers keep their old behaviour).
+      const cond = String(cfg.condition_formula ?? "").trim();
+      if (cond && typeof opts.evalCondition === "function") {
+        let pass = true;
+        try { pass = !!opts.evalCondition(cond, item); } catch (e) { warn("findCostSubstitution: condition threw", e); }
+        if (!pass) continue;
+      }
 
       const fromRes = String(row.from_resource ?? "mp").trim().toLowerCase();
       const toRes   = String(row.to_resource   ?? "hp").trim().toLowerCase();
-      const multiplier   = Number(row.multiplier ?? 2) || 2;
-      const minRemaining = Number(row.min_remaining ?? 1) || 1;
-
       const fromAmount = readMap(fromRes);
       if (fromAmount <= 0) continue;                       // nothing to swap
+
+      // Explicit multiplier 0 = waive (mirrors applySubstituteCostEffect): no
+      // to-resource is charged, so there is no affordability to check.
+      const mRaw = row.multiplier;
+      if (mRaw !== undefined && mRaw !== null && String(mRaw).trim() !== "" && Number(mRaw) === 0) {
+        return {
+          from: fromRes, to: null, fromAmount, toAmount: 0, waived: true,
+          label: `waived (${item.name ?? "substitution"})`,
+          sourceName: item.name ?? null,
+          mode: String(cfg.reaction_passive_mode ?? "ask").trim().toLowerCase(),
+        };
+      }
+      const multiplier   = Number(row.multiplier ?? 2) || 2;
+      const minRemaining = Number(row.min_remaining ?? 1) || 1;
 
       // Same arithmetic + rejection rule as applySubstituteCostEffect.
       const def = RESOURCES[toRes];

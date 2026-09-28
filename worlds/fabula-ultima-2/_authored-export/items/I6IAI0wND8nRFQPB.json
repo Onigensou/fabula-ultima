@@ -24,58 +24,58 @@
           "key": "affinity_1",
           "mode": 5,
           "priority": 90,
-          "value": "aeAffinityStep(\"-1\")"
+          "value": "aeAffinityCap(\"NA\")"
         },
         {
           "key": "affinity_2",
           "mode": 5,
           "priority": 90,
-          "value": "aeAffinityStep(\"-1\")"
+          "value": "aeAffinityCap(\"NA\")"
         },
         {
           "key": "affinity_3",
           "mode": 5,
           "priority": 90,
-          "value": "aeAffinityStep(\"-1\")"
+          "value": "aeAffinityCap(\"NA\")"
         },
         {
           "key": "affinity_4",
           "mode": 5,
           "priority": 90,
-          "value": "aeAffinityStep(\"-1\")"
+          "value": "aeAffinityCap(\"NA\")"
         },
         {
           "key": "affinity_5",
           "mode": 5,
           "priority": 90,
-          "value": "aeAffinityStep(\"-1\")"
+          "value": "aeAffinityCap(\"NA\")"
         },
         {
           "key": "affinity_6",
           "mode": 5,
           "priority": 90,
-          "value": "aeAffinityStep(\"-1\")"
+          "value": "aeAffinityCap(\"NA\")"
         },
         {
           "key": "affinity_7",
           "mode": 5,
           "priority": 90,
-          "value": "aeAffinityStep(\"-1\")"
+          "value": "aeAffinityCap(\"NA\")"
         },
         {
           "key": "affinity_8",
           "mode": 5,
           "priority": 90,
-          "value": "aeAffinityStep(\"-1\")"
+          "value": "aeAffinityCap(\"NA\")"
         },
         {
           "key": "affinity_9",
           "mode": 5,
           "priority": 90,
-          "value": "aeAffinityStep(\"-1\")"
+          "value": "aeAffinityCap(\"NA\")"
         }
       ],
-      "description": "<p><strong>Anomaly:</strong> this creature's affinity to every damage type is reduced by one level (Absorb becomes Immune, Immune becomes Resistant, Resistant becomes Normal, Normal becomes Vulnerable).</p>",
+      "description": "<p><strong>Anomaly:</strong> this creature's affinity to every damage type is reduced to Neutral: Resistance, Immunity and Absorption are lost. Vulnerabilities remain.</p>",
       "disabled": false,
       "duration": {
         "combat": null,

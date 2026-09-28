@@ -2930,8 +2930,14 @@ export async function tickDirectorAEsAtRoundEnd({ extraActors = [] } = {}) {
 // scene-long (the sweep ends them) and are skipped.
 //
 // Returns `{ ticked: <number>, expired: [<aeName>] }` for logging.
-export async function tickDirectorAEsForApplier(applierActorUuid) {
+//
+// `phase`: "start" (default, TURN_START) ticks every applier-keyed AE EXCEPT
+// lifetimeMode "applier_turn_end"; "end" (TURN_END) ticks ONLY those. That mode
+// is RAW "until the end of your next turn" (Tinkerer Alchemy's die-up buffs):
+// charges 2 → the applier's current turn end → 1, their next turn end → gone.
+export async function tickDirectorAEsForApplier(applierActorUuid, { phase = "start" } = {}) {
   if (!applierActorUuid) return { ticked: 0, expired: [] };
+  const atEnd = phase === "end";
   const deleteByActor = new Map();    // actorUuid -> Set<aeId>
   const updateByActor = new Map();    // actorUuid -> [{_id, flags.fabula-ultima-companion.charges}]
   const expiredNames = [];
@@ -2945,6 +2951,7 @@ export async function tickDirectorAEsForApplier(applierActorUuid) {
       // Bearer-keyed AEs belong to the bearer ticks, not this one — skip so
       // they're not double-counted.
       if (mode === "target_turn_end" || mode === "target_turn_start") continue;
+      if ((mode === "applier_turn_end") !== atEnd) continue;
       // Modes that are not turn-ticked at all (charge pools, round-end, DoTs
       // spent on activation, and the once-per-X gates now authored as
       // persistent_counter) keep their charges until consumed or swept.
@@ -3086,7 +3093,10 @@ export async function reapApplierTiedAEs(applierActorUuid) {
       if (stamp.reactorActorUuid !== applierActorUuid) continue;
       if (eff.flags?.[FLAG_NS]?.charges == null) continue;  // no counter → not applier-tied
       if (eff.flags?.[FLAG_NS]?.directorPermanent === true) continue;
-      if (stamp.lifetimeMode) continue;              // only the DEFAULT mode is applier-turn-start
+      // Applier-tied = the DEFAULT mode (applier-turn-start) and applier_turn_end
+      // (Alchemy's "until the end of your next turn" — that turn never comes if
+      // the applier left, so the AE would strand).
+      if (stamp.lifetimeMode && stamp.lifetimeMode !== "applier_turn_end") continue;
       let set = deleteByActor.get(actor.uuid);
       if (!set) { set = new Set(); deleteByActor.set(actor.uuid, set); }
       set.add(eff.id);
@@ -3471,7 +3481,16 @@ async function applyPromptNumberEffect(row, ctx) {
 
   let value = defV;
   const injected = ctx?.harnessNumbers?.[varName];
-  if (injected != null && Number.isFinite(Number(injected))) {
+  // Only when the AUTHORED min and max are the same expression — never when a
+  // resource-capped max (Bimagus "min(50, CUR_MP)") merely evaluated at or below
+  // the min: those must keep their dialog / refusal path.
+  const minRaw = String(row.prompt_min ?? "").trim();
+  if (minRaw && minRaw === maxRaw) {
+    // A one-value range needs no question: store it silently. This is how a row
+    // COPIES a computed value into a var (Alchemy: "Die 2 → target" stores
+    // VAR_ALC_2 into alc_t via prompt_min = prompt_max = "VAR_ALC_2").
+    value = minV;
+  } else if (injected != null && Number.isFinite(Number(injected))) {
     value = snap(injected);
   } else if (noHumanToAsk(ctx)) {
     // Auto-fire / sim / headless — take the default, no UI. A sim reaches this
@@ -3536,6 +3555,26 @@ async function applyRollDiceEffect(row, ctx) {
     log(`skill-effects.roll_dice: ${varName} already captured = ${already}; skipping roll`);
     return { ok: true, kind: "roll_dice", value: Number(already) };
   }
+  // Each face is ALSO stored as <var>_<i> (1-based) so a row can read single dice
+  // (Alchemy assigns one d20 to target and one to effect). Additive: the sum var
+  // is unchanged. Harness: inject faces as harnessNumbers["<var>_1"], "<var>_2" …
+  // (their sum becomes <var>), or the sum alone as harnessNumbers[<var>].
+  const storeFaces = (faces) => {
+    faces.forEach((f, i) => { ctx.payload._chainVars[`${varName}_${i + 1}`] = Math.floor(Number(f) || 0); });
+  };
+  const injectedFaces = [];
+  for (let i = 1; i <= 100; i++) {
+    const f = ctx?.harnessNumbers?.[`${varName}_${i}`];
+    if (f == null || !Number.isFinite(Number(f))) break;
+    injectedFaces.push(Math.floor(Number(f)));
+  }
+  if (injectedFaces.length) {
+    const v = injectedFaces.reduce((a, b) => a + b, 0);
+    ctx.payload._chainVars[varName] = v;
+    storeFaces(injectedFaces);
+    log(`skill-effects.roll_dice: ${varName} = ${v} (harness-injected faces [${injectedFaces.join(", ")}])`);
+    return { ok: true, kind: "roll_dice", value: v, rolls: injectedFaces };
+  }
   const injected = ctx?.harnessNumbers?.[varName];
   if (injected != null && Number.isFinite(Number(injected))) {
     const v = Math.floor(Number(injected));
@@ -3570,6 +3609,7 @@ async function applyRollDiceEffect(row, ctx) {
         });
         const t = Math.floor(Number(r?.total) || 0);
         ctx.payload._chainVars[varName] = t;
+        if (Array.isArray(r?.rolls)) storeFaces(r.rolls);
         log(`skill-effects.roll_dice: ${varName} = ${t} (interactive ${count}d${faces})`);
         return { ok: true, kind: "roll_dice", value: t, rolls: Array.isArray(r?.rolls) ? r.rolls : [] };
       } catch (e) {
@@ -3597,6 +3637,7 @@ async function applyRollDiceEffect(row, ctx) {
     return { ok: false, kind: "roll_dice", reason: "roll-failed" };
   }
   ctx.payload._chainVars[varName] = total;
+  storeFaces(rolls);
   log(`skill-effects.roll_dice: ${varName} = ${total} (${count}d${faces} → [${rolls.join(", ")}])`);
   return { ok: true, kind: "roll_dice", value: total, rolls };
 }
@@ -4142,6 +4183,20 @@ async function applyDestroySummonEffect(row, ctx) {
       try {
         const res = await bd.removeCombatant({ tokenUuid: token.uuid });
         if (res?.ok) applied.push(token.uuid);
+        else if (/no active battle/i.test(String(res?.error ?? ""))) {
+          // Out of a conflict there is no combatant to remove — the summon is just
+          // a token. Delete it (the actor-carrier branch above already does this).
+          // Under a harness write-capture ("nothing commits") the deletion is
+          // RECORDED instead of committed.
+          const sink = globalThis.__FU_HARNESS_WRITE_CAPTURE__;
+          if (sink && Array.isArray(sink.tokenDeletes)) {
+            sink.tokenDeletes.push({ tokenUuid: token.uuid, name: token.name ?? actor?.name ?? null, via: "destroy_summon" });
+            applied.push(token.uuid);
+          } else {
+            try { await (token.document?.delete?.() ?? token.delete?.()); applied.push(token.uuid); }
+            catch (e) { warn("skill-effects.destroy_summon: token delete (no battle) threw", e); }
+          }
+        }
         else warn(`skill-effects.destroy_summon: removeCombatant failed — ${res?.error}`);
       } catch (e) { warn("skill-effects.destroy_summon: removeCombatant threw", e); }
     } else {
@@ -5087,7 +5142,7 @@ export async function applyEffectRow(row, ctx) {
     // `targeting` is capturable too: it PROMPTS the pick pre-card and records the
     // chosen tokens (so a no-eligible-target case aborts back to the Action Menu
     // before the card is built). applyTargetingEffect handles the capture branch.
-    const CAPTURE_KINDS = new Set(["chain", "prompt_element", "prompt_number", "open_action_menu", "remove_tagged_ae", "remove_ae", "targeting"]);
+    const CAPTURE_KINDS = new Set(["chain", "prompt_element", "prompt_number", "open_action_menu", "remove_tagged_ae", "remove_ae", "targeting", "roll_dice"]);
     if (!CAPTURE_KINDS.has(kind)) {
       return { ok: true, kind, applied: [], skipped: true, reason: "capture-mode-noop" };
     }
@@ -5137,8 +5192,26 @@ function clearCapturedForStep(row, ctx) {
     const lbl = row.effect_label;
     if (lbl && ctx?.payload?._capturedMenuPicks) delete ctx.payload._capturedMenuPicks[lbl];
   } else if (kind === "targeting") {
-    const lbl = row.effect_label;
+    const lbl = row._menuOptionOf ?? row.effect_label;
     if (lbl && ctx?.payload?._capturedTargets) delete ctx.payload._capturedTargets[lbl];
+  }
+}
+
+// Clear every captured CHOICE under `row` (its chain steps, nested menus under
+// their synthetic `<menu>:<option>` keys, targeting picks, prompt values) so a
+// re-prompted parent menu starts clean. Rolled dice (roll_dice vars) are KEPT on
+// purpose: stepping back must not become a free re-roll.
+function clearCapturedUnder(row, ctx, depth = 0) {
+  if (!row || depth > 20) return;
+  const kind = String(row.effect_kind ?? "").trim().toLowerCase();
+  if (kind !== "roll_dice") clearCapturedForStep(row, ctx);
+  const lbl = String(row.effect_label ?? "");
+  const picks = ctx?.payload?._capturedMenuPicks;
+  if (picks && lbl) for (const k of Object.keys(picks)) if (k.startsWith(`${lbl}:`)) delete picks[k];
+  if (kind === "chain") {
+    for (const step of parseEffectRefList(row.chain_steps)) clearCapturedUnder(findEffectRow(ctx, step), ctx, depth + 1);
+  } else if (kind === "open_action_menu") {
+    for (const ref of parseEffectRefList(row.menu_option_refs)) clearCapturedUnder(findEffectRow(ctx, ref), ctx, depth + 1);
   }
 }
 
@@ -5245,8 +5318,11 @@ function findEffectRow(ctxOrSkill, label) {
 // Direct effect_kind:"targeting" invocation (rare — usually targeting
 // rows are referenced via target_ref). Just resolves and reports.
 
+const RESOLVE_TIME_TARGET_SOURCES = new Set([
+  "contest_won_targets", "contest_lost_targets", "save_failed_targets", "last_summoned",
+]);
 async function applyTargetingEffect(row, ctx) {
-  const label = row.effect_label;
+  const label = row._menuOptionOf ?? row.effect_label;
   // Pre-card CAPTURE: prompt the pick now and record the chosen token uuids on
   // ctx.payload._capturedTargets[label]. RESOLVE replays them (resolveTargetRef
   // short-circuits on the captured list — no re-prompt). No eligible candidate
@@ -5254,9 +5330,19 @@ async function applyTargetingEffect(row, ctx) {
   // TARGET_BACK (back to the Action Menu, nothing spent). First user: Detonate's
   // "pick a Phantasm to detonate" gate.
   if (ctx?.captureMode) {
+    // Pools that only exist AFTER consequence rows run (a contest / save outcome,
+    // the creature just summoned) are not choices: resolving them pre-card would
+    // read empty and abort the whole action. Leave them to RESOLVE.
+    const src = String(row.candidate_source ?? "").trim().toLowerCase();
+    if (RESOLVE_TIME_TARGET_SOURCES.has(src) || src.startsWith("save_tier_")) {
+      return { ok: true, kind: "targeting", applied: [], skipped: true, reason: "resolve-time-pool" };
+    }
     const result = await resolveTargetRef(label, ctx);
     if (result?.cancelled) return { ok: true, kind: "targeting", abort: true, reason: "cancelled" };
     const toks = result?.tokens ?? [];
+    // allow_empty: an empty set is a legitimate answer, not "no eligible target".
+    // Nothing is recorded, so RESOLVE re-resolves it fresh.
+    if (result?.ok && !toks.length && row.allow_empty) return { ok: true, kind: "targeting", applied: [], captured: 0 };
     if (!result?.ok || !toks.length) {
       // no eligible target — hard abort (back to menu regardless of wizard step)
       return { ok: true, kind: "targeting", abort: true, reason: "no-candidates" };
@@ -5412,7 +5498,9 @@ export function describeGrant(row, ctx = {}) {
     // (this is what ACTION_IS_SPELL keys off too). Powers Healing Up.
     restoreParts = resolveRestoreParts({
       actor: casterActor,
-      kind: ctx.actionResult?.kind ?? ctx.actionKind,
+      // ar.countsAsItem: a Skill that also counts as an Inventory action
+      // (skill_tags "inventory" — Tinkerer Alchemy) takes the item restore bonus.
+      kind: ctx.actionResult?.countsAsItem ? "Item" : (ctx.actionResult?.kind ?? ctx.actionKind),
       skillType: ctx.skill?.system?.props?.skill_type ?? ctx.actionResult?.skillType ?? null,
       resource,
     });
@@ -5614,7 +5702,13 @@ async function setResourceApply(row, ctx, { resource, amountFormula, targetRef }
   for (const token of targetResult.tokens) {
     const actor = token.actor;
     if (!actor) continue;
-    const resolver = buildSkillResolver({ actor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0 });
+    // CASTER_LEVEL — the acting creature's level, as grant/deal_damage expose it.
+    // The formula is evaluated with the TARGET as actor (CUR_HP / MAX_HP read the
+    // victim), so a caster-bracket amount needs this: Placebo Energy raises
+    // current HP by exactly the caster-level amount its fade later removes,
+    // untouched by heal-receiving modifiers (a set, not a heal).
+    const _casterLvl = Number((ctx.reactorActor ?? ctx.liveAttacker)?.system?.props?.level ?? 0) || 0;
+    const resolver = buildSkillResolver({ actor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0, vars: { CASTER_LEVEL: _casterLvl } });
     let value = Math.floor(Number(evaluateFormula(amountFormula, resolver, 0)) || 0);
     const maxVal = def.max ? (Number(actor.system?.props?.[def.max]) || null) : null;
     if (maxVal != null) value = Math.min(value, maxVal);
@@ -5845,8 +5939,10 @@ async function dealDamageApply(row, ctx, d) {
       // was dead: on a direct cast the flag is undefined, so no caster ever
       // resolved and the whole outgoing pass silently no-opped.)
       let _srcActor = ctx.reactorActor ?? ctx.liveAttacker ?? applierActor ?? null;
-      let _isItemUse = false;
-      if (_srcActor) {
+      // A Skill that also counts as an Inventory action (ar.countsAsItem, skill_tags
+      // "inventory" — Tinkerer Alchemy) is an item use for extra_damage_mod_item.
+      let _isItemUse = !ctx.sourceUuid && ctx.actionResult?.countsAsItem === true;
+      if (_srcActor && !_isItemUse) {
         try {
           // The row's carrier. `ctx.sourceUuid` is populated only for AE-carried
           // rows (riders / ticks); a DIRECT cast leaves it null and exposes the
@@ -6880,7 +6976,7 @@ async function applyApplyAeEffect(row, ctx) {
         // They are function calls, so `looksLikeNumericFormula` says yes and the
         // bake would fold the whole directive to "0" — the same corruption, one
         // level up. Leave them verbatim for the gate to interpret.
-        if (/\b(?:aeWhen|aeUuidWhen|aeStatusWhen|aeEquippedWhen|aeNotEquippedWhen|aeSlotEquippedWhen|aeAffinityFloor|aeAffinityStep)\s*\(/i.test(ch.value)) continue;
+        if (/\b(?:aeWhen|aeUuidWhen|aeStatusWhen|aeEquippedWhen|aeNotEquippedWhen|aeSlotEquippedWhen|aeAffinityFloor|aeAffinityStep|aeAffinityCap)\s*\(/i.test(ch.value)) continue;
         if (!isFormulaString(ch.value)) continue;
         // Only bake values that actually LOOK like a numeric formula. A bare
         // word string-literal change ("melee", "Light", "ranged" — used by
@@ -6933,7 +7029,12 @@ async function applyApplyAeEffect(row, ctx) {
     // the skill's SL at apply-time. Same gate as changes[] (skip bare-word
     // string literals; only bake true numeric formulas). Reusable for any
     // SL-scaling applied-buff reaction, not just Hawkeye.
-    const REACTION_FORMULA_FIELDS = ["damage_amount", "grant_amount"];
+    // consume_amount: an AE-borne resource LOSS scaled on the caster (Placebo
+    // Energy's fade "40 + 10 * floor(min(CHAR_LEVEL, 40) / 20)" must be the
+    // CASTER's bracket, the same amount the cast granted). Corpus audit
+    // 2026-09-28: every other AE-borne consume_amount is a literal or MAX_MP
+    // (volatile, skipped below), so nothing else changes.
+    const REACTION_FORMULA_FIELDS = ["damage_amount", "grant_amount", "consume_amount"];
     // FIRE-TIME-volatile identifiers: their value at apply-time differs from
     // fire-time, so baking them freezes the WRONG value. AE_CHARGES_*/AE_COUNT_*
     // count charges/stacks the bearer accrues AFTER this AE lands; CUR_*/MAX_*/
@@ -7013,7 +7114,23 @@ async function applyApplyAeEffect(row, ctx) {
       flagsNS, explicitRounds: explicit, lifetimeMode, affinity: conditionAffinity, sceneLong,
       existingCharges: data.flags[FLAG_NS].charges,
     });
-    if (seededCharges != null) {
+    // applier_turn_end ("until the end of YOUR next turn"): the authored count
+    // assumes it was applied on the applier's own turn (that turn's end is the
+    // first tick). Applied OFF-turn (Emergency Item in Crisis, a reaction) the
+    // applier's next turn end is the only one left, so one fewer charge.
+    if (lifetimeMode === "applier_turn_end") {
+      const cur = ctx.dCombat?.current ?? globalThis.__fudActiveDCombat?.current ?? null;
+      const applierId = String(ctx.reactorActor?.id ?? "");
+      const onOwnTurn = !cur || (applierId && String(cur.actorId ?? "") === applierId);
+      const base = Number(seededCharges ?? data.flags[FLAG_NS].charges);
+      if (!onOwnTurn && Number.isFinite(base) && base > 1) {
+        data.flags[FLAG_NS].charges = base - 1;
+        if (data.flags?.statuscounter?.visible === true) data.flags.statuscounter.value = base - 1;
+      } else if (seededCharges != null) {
+        data.flags[FLAG_NS].charges = seededCharges;
+        if (data.flags?.statuscounter?.visible === true) data.flags.statuscounter.value = seededCharges;
+      }
+    } else if (seededCharges != null) {
       data.flags[FLAG_NS].charges = seededCharges;
       if (data.flags?.statuscounter?.visible === true) data.flags.statuscounter.value = seededCharges;
     } else if (sceneLong) {
@@ -7066,7 +7183,8 @@ async function applyApplyAeEffect(row, ctx) {
         // level") is meant to reach an Immune/Absorbing target: IM→RS is the
         // whole point. Only absolute overrides (Guard's "RS to all") must
         // yield to a native IM/AB.
-        if (/\baeAffinityStep\s*\(/i.test(String(c?.value ?? ""))) return true;
+        // aeAffinityCap (Anomaly: "reduced to Neutral") exists to reach IM/AB too.
+        if (/\baeAffinity(?:Step|Cap)\s*\(/i.test(String(c?.value ?? ""))) return true;
         const native = String(nativeProps[m[1]] ?? "").trim().toUpperCase();
         if (native === "IM" || native === "AB") {
           log(`apply_ae: ${actor.name} natively ${native} on ${m[1]} — dropping "${data.name}" affinity override (preserve IM/AB)`);
@@ -7983,12 +8101,25 @@ async function consumeChargeApply(row, ctx, { chargeKey, count, targetRef }) {
 //                    RAW: "if the spell would heal you, you recover
 //                    no HP"). Renamed from the legacy `vismagusHpPaid`
 //                    AR flag; we set BOTH for back-compat.
+// "0" / 0 set on purpose — blank / null / undefined is NOT a waive (defaults to 2).
+function isExplicitZeroMultiplier(v) {
+  if (v === undefined || v === null) return false;
+  const s = String(v).trim();
+  return s !== "" && Number(s) === 0;
+}
+
 async function applySubstituteCostEffect(row, ctx) {
   const fromRes = String(row.from_resource ?? "mp").trim().toLowerCase();
   const toRes   = String(row.to_resource   ?? "hp").trim().toLowerCase();
+  // An EXPLICIT multiplier of 0 = WAIVE the from-resource (Phantasmal Recycling:
+  // "shatter one of your Phantasms instead" — the price is paid by a later row,
+  // not in another resource). Blank still defaults to 2 (RAW Vismagus). A waive
+  // writes nothing to `toRes`, skips the affordability check (it exists for the
+  // moment the caster has 0 of everything) and suppresses no self-grant.
+  const isWaive = isExplicitZeroMultiplier(row.multiplier);
   const multiplier   = Number(row.multiplier ?? 2) || 2;
   const minRemaining = Number(row.min_remaining ?? 1) || 1;
-  const suppressSelf = row.suppress_self_grant === true || fromRes === "mp"; // RAW Vismagus default
+  const suppressSelf = !isWaive && (row.suppress_self_grant === true || fromRes === "mp"); // RAW Vismagus default
 
   const costMap = ctx.payload?.costMap;
   if (!costMap) {
@@ -8012,6 +8143,14 @@ async function applySubstituteCostEffect(row, ctx) {
   const fromAmount = readMap(fromRes);
   if (fromAmount <= 0) {
     return { ok: false, kind: "substitute_cost", reason: "from-not-required" };
+  }
+
+  if (isWaive) {
+    deleteMap(fromRes);
+    ctx.payload.costWaivedBy = String(ctx.skill?.name ?? row.effect_label ?? "").trim() || "cost waived";
+    log(`substitute_cost: WAIVED ${fromAmount} ${fromRes} (caster=${ctx.reactorActor?.name ?? "?"})`);
+    return { ok: true, kind: "substitute_cost", fromResource: fromRes, toResource: null,
+      fromAmount, toAmount: 0, waived: true, suppressSelfGrantOf: null };
   }
 
   // Affordability check on the TARGET resource: caster must have enough
@@ -9226,6 +9365,10 @@ async function applyOpenActionMenuEffect(row, ctx) {
   // via composeAction restricted to `allowed_types`. Used by High Speed,
   // Acceleration, Painful Lesson, Stolen Time, etc.
   if (row.free_mode === true) {
+    // A free-action grant is a CONSEQUENCE, not a choice — never fire it from the
+    // pre-card capture pass (reachable now that capture descends into options:
+    // Elemental Weapon / Nocebo Weapon chain a free_mode menu under each option).
+    if (ctx?.captureMode) return { ok: true, kind: "open_action_menu", applied: [], skipped: true, reason: "capture-mode-noop" };
     const { freeActionQueue } = await import("./free-action-queue.js");
     const reactor = ctx.reactorActor;
     if (!reactor) {
@@ -9289,6 +9432,8 @@ async function applyOpenActionMenuEffect(row, ctx) {
   // interactive). Shared with the apply-click preview (previewReactionMenu).
   const { chosenIndices, cancelled } = await selectMenuPicks(row, ctx, options);
   if (cancelled) {
+    // Backing out of THIS menu ends its step-back episode too (cap is per menu-open).
+    if (ctx) delete ctx[`_menuReprompt:${row.effect_label}`];
     log(`skill-effects.open_action_menu: row "${row.effect_label}" cancelled by user`);
     return { ok: true, kind: "open_action_menu", applied: [], reason: "cancelled", abort: true };
   }
@@ -9302,6 +9447,42 @@ async function applyOpenActionMenuEffect(row, ctx) {
     const labels = chosenIndices.map((i) => options[i].label);
     ctx.payload._capturedMenuPicks[row.effect_label] = labels;
     log(`skill-effects.open_action_menu: capture mode — recorded "${row.effect_label}" → ${labels.join(", ")} (not dispatched)`);
+    // DESCEND into the chosen option(s), still in capture mode, so every CHOICE
+    // under them (a nested menu, a targeting pick, a prompt, a dice roll) is
+    // decided before the card too — not mid-RESOLVE, where cancelling a later
+    // menu would already have spent the action (Tinkerer Gadgets → Alchemy →
+    // mix → die → effect). Consequence rows are still no-ops (applyEffectRow's
+    // CAPTURE_KINDS filter). The option is run under the SAME synthetic label the
+    // RESOLVE dispatch below uses, so a nested menu's recorded picks replay by
+    // key. Cancelling inside an option steps back: this menu is re-prompted.
+    // Dynamic-source menus synthesise their options (Bind and Summon) and keep
+    // the old record-only behaviour.
+    if (!String(row.menu_dynamic_source ?? "").trim()) {
+      for (const idx of chosenIndices) {
+        const selectedRow = optionRows[idx];
+        if (!selectedRow?.effect_kind) continue;
+        const syntheticRow = { ...selectedRow, effect_label: `${row.effect_label ?? "menu"}:${options[idx].label}`, _menuOptionOf: selectedRow.effect_label };
+        const sub = await applyEffectRow(syntheticRow, ctx);
+        if (sub?.abort && (sub?.reason === "cancelled" || sub?.cancelled)) {
+          delete ctx.payload._capturedMenuPicks[row.effect_label];
+          clearCapturedUnder(syntheticRow, ctx);
+          // Bound the step-back: a non-interactive pick (harness / passive / cached)
+          // re-picks the same option, which cancels again — an unbounded recursion.
+          const reKey = `_menuReprompt:${row.effect_label}`;
+          ctx[reKey] = (ctx[reKey] ?? 0) + 1;
+          if (ctx[reKey] > 8) {
+            warn(`skill-effects.open_action_menu: capture — "${row.effect_label}" re-prompted ${ctx[reKey]}× — giving up`);
+            return { ok: true, kind: "open_action_menu", applied: [], reason: "cancelled", abort: true };
+          }
+          log(`skill-effects.open_action_menu: capture — option "${options[idx].label}" cancelled; re-prompting "${row.effect_label}"`);
+          return applyOpenActionMenuEffect(row, ctx);
+        }
+        if (sub?.abort) return { ...sub, kind: sub.kind ?? "open_action_menu" };
+      }
+    }
+    // The pick completed without a cancel: this menu-open's step-back episode is
+    // over, so the re-prompt cap starts fresh the next time it is opened.
+    delete ctx[`_menuReprompt:${row.effect_label}`];
     return { ok: true, kind: "open_action_menu", captured: true, selectedLabels: labels };
   }
 
@@ -9319,6 +9500,10 @@ async function applyOpenActionMenuEffect(row, ctx) {
     const syntheticRow = {
       ...selectedRow,
       effect_label: `${row.effect_label ?? "menu"}:${options[idx].label}`,
+      // The option's REAL label — a targeting row resolves / captures under it
+      // (the synthetic label matches no row: "Command an existing Phantasm" warned
+      // no-row and picked nothing).
+      _menuOptionOf: selectedRow.effect_label,
     };
     log(`skill-effects.open_action_menu: row "${row.effect_label}" → option "${options[idx].label}" (${syntheticRow.effect_kind})`);
     const sub = await applyEffectRow(syntheticRow, ctx);
@@ -11450,7 +11635,12 @@ async function applyRemoveTaggedAeEffect(row, ctx) {
   const targetResult = await resolveTargetRef(row.target_ref, ctx);
   if (!targetResult.ok) return { ok: false, kind: "remove_tagged_ae", reason: targetResult.reason ?? "no-targets", cancelled: !!targetResult.cancelled };
   const tokens = targetResult.tokens;
-  if (!tokens.length) return { ok: false, kind: "remove_tagged_ae", reason: "no-targets" };
+  // An `allow_empty` targeting row resolves ok with no tokens — its documented
+  // contract is that dependent rows no-op and the chain CONTINUES. (Magitech
+  // Override releases "your previous construct" when there may be none.)
+  if (!tokens.length) return targetResult.ok
+    ? { ok: true, kind: "remove_tagged_ae", applied: [], reason: "no-targets" }
+    : { ok: false, kind: "remove_tagged_ae", reason: "no-targets" };
 
   // Pre-card capture / RESOLVE replay. When this row is wired as a
   // `pre_activate_effect_ref`, the player picks WHICH status to remove BEFORE the

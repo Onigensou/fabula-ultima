@@ -26,13 +26,45 @@
     "props": {
       "action_command": "spell",
       "active_effect_config_table": {},
+      "availability_formula": "OWN_PHANTASM_COUNT >= 1",
+      "availability_reason": "Needs one Phantasm for each ally healed",
       "check_bonus": "0",
       "class": "Illusionist",
-      "cost": "10 MP",
+      "cost": "10 x T MP",
       "damage_bonus": "0",
-      "defense_target_type": "def",
+      "defense_target_type": "",
       "description": "<p>You command your Phantasms to replenish your allies’ MP. Each Phantasm runs towards a companion and shatters itself in a spray of mana. Each target recovers <strong>20 MP</strong>. A single ally cannot be replenished by more than one Phantasm per action.</p>\n",
       "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "auto_target": "confirm",
+          "candidate_source": "own_phantasms",
+          "condition_formula": "ACTION_TARGET_COUNT <= OWN_PHANTASM_COUNT",
+          "count": "ACTION_TARGET_COUNT",
+          "effect_kind": "targeting",
+          "effect_label": "es_pick",
+          "mode": "exact",
+          "on_condition_fail": "abort",
+          "target_prompt": "Choose which Phantasms shatter"
+        },
+        "1": {
+          "chain_steps": "es_shatter, es_heal",
+          "effect_kind": "chain",
+          "effect_label": "es_on"
+        },
+        "2": {
+          "effect_kind": "destroy_summon",
+          "effect_label": "es_shatter",
+          "target_ref": "es_pick"
+        },
+        "3": {
+          "effect_kind": "grant",
+          "effect_label": "es_heal",
+          "grant_amount": "20",
+          "grant_resource": "mp",
+          "target_ref": "action_targets"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": true,
@@ -42,7 +74,10 @@
       "level": "1",
       "max_level": "1",
       "name": "Essence Sacrifice",
+      "on_activate_effect_ref": "es_on",
       "optional_params": {},
+      "pre_activate_effect_ref": "es_pick",
+      "reaction_config_table": {},
       "rolled_atr1": "INS",
       "rolled_atr2": "WLP",
       "skill_animation_default": "",

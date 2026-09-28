@@ -8,6 +8,98 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "yXuJv3PlWjpBrg4h",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790603522251,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "max_hp",
+          "mode": 2,
+          "priority": 20,
+          "value": "40 + 10 * floor(min(CHAR_LEVEL, 40) / 20)"
+        }
+      ],
+      "description": "<p>+40 max and current HP for 3 turns (50 at Lv 20, 60 at Lv 40). When it ends, the extra HP is lost (Sacrifice and Surrender apply as normal).</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "yXuJv3PlWjpBrg4h",
+          "originalParentId": "peLYH0zSiab4UQ4E",
+          "originalUuid": "Item.peLYH0zSiab4UQ4E.ActiveEffect.yXuJv3PlWjpBrg4h"
+        },
+        "fabula-ultima-companion": {
+          "charges": 4,
+          "chargesMax": 4,
+          "lifetimeMode": "target_turn_start",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "consume_amount": "40 + 10 * floor(min(CHAR_LEVEL, 40) / 20)",
+                "consume_can_defeat": true,
+                "consume_resource": "hp",
+                "effect_kind": "consume_resource",
+                "effect_label": "plc_fade",
+                "on_empty": "drain",
+                "target_ref": "self"
+              }
+            },
+            "name": "Placebo Energy",
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "AE_CHARGES_PLACEBO_ENERGY == 1",
+                "consume_self": true,
+                "reaction_effect_ref": "plc_fade",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "turn_end"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/life/heart-cross-strong-flame-green.webp",
+      "name": "Placebo Energy",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-placebo-energy"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -28,11 +120,32 @@
       "active_effect_config_table": {},
       "check_bonus": "0",
       "class": "Illusionist",
-      "cost": "10 MP",
+      "cost": "10 x T MP",
       "damage_bonus": "0",
       "defense_target_type": "def",
       "description": "<p>You create an illusion that makes your companions feel healthier and refreshed for a while. For their next <strong>3 turns</strong>, they gain <strong>40 additional HP</strong> — this increases both their maximum and their current HP by 40.</p><p>After 3 turns, they lose this additional HP. If reduced to 0 HP at the end of the spell, the Sacrifice and Surrender rules apply as normal.</p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20</strong> ― This amount increases to <strong>50 HP</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> ― This amount increases to <strong>60 HP</strong>.</p>",
       "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "chain_steps": "plc_ae, plc_boost",
+          "effect_kind": "chain",
+          "effect_label": "plc_do"
+        },
+        "1": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Placebo Energy",
+          "effect_kind": "apply_ae",
+          "effect_label": "plc_ae",
+          "target_ref": "action_targets"
+        },
+        "2": {
+          "effect_kind": "set_resource",
+          "effect_label": "plc_boost",
+          "grant_amount": "CUR_HP + 40 + 10 * floor(min(CASTER_LEVEL, 40) / 20)",
+          "grant_resource": "hp",
+          "target_ref": "action_targets"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": true,
@@ -42,14 +155,16 @@
       "level": "1",
       "max_level": "1",
       "name": "Placebo Energy",
+      "on_activate_effect_ref": "plc_do",
       "optional_params": {},
+      "reaction_config_table": {},
       "rolled_atr1": "INS",
       "rolled_atr2": "WLP",
       "skill_animation_default": "",
       "skill_animation_mode": "default",
       "skill_information": "",
       "skill_range": "Range",
-      "skill_target": "One Creature",
+      "skill_target": "Up to three creatures",
       "skill_type": "Spell",
       "type_damage": "",
       "use_optional_params": false

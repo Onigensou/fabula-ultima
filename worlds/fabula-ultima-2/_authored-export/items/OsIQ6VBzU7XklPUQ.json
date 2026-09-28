@@ -8,6 +8,113 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "EprqtUnPG5S1JY0j",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790603524337,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>A vexing Phantasm taunts this creature: if its next Attack's Accuracy Check Result is even, the attack misses.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "EprqtUnPG5S1JY0j",
+          "originalParentId": "OsIQ6VBzU7XklPUQ",
+          "originalUuid": "Item.OsIQ6VBzU7XklPUQ.ActiveEffect.EprqtUnPG5S1JY0j"
+        },
+        "fabula-ultima-companion": {
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "accuracy_amount": "0",
+                "accuracy_operation": "set",
+                "effect_kind": "adjust_accuracy",
+                "effect_label": "mock_miss"
+              },
+              "1": {
+                "candidate_source": "self",
+                "count": 1,
+                "effect_kind": "targeting",
+                "effect_label": "mock_spent",
+                "mode": "exact",
+                "skip_when_passive": true
+              }
+            },
+            "name": "Create Phantasm: Mockery",
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "ACTION_ROLLS_ACCURACY == 1 && ATTACK_IS_CRIT == 0 && ATTACK_CHECK_RESULT % 2 == 0",
+                "consume_self": true,
+                "reaction_action_kind": "Attack",
+                "reaction_effect_ref": "mock_miss",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_performs_action"
+              },
+              "1": {
+                "condition_formula": "ACTION_ROLLS_ACCURACY == 1 && (ATTACK_IS_CRIT == 1 || ATTACK_CHECK_RESULT % 2 == 1)",
+                "consume_self": true,
+                "reaction_action_kind": "Attack",
+                "reaction_effect_ref": "mock_spent",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_performs_action"
+              },
+              "2": {
+                "condition_formula": "ACTION_ROLLS_ACCURACY == 0",
+                "consume_self": true,
+                "reaction_action_kind": "Attack",
+                "reaction_effect_ref": "mock_spent",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_performs_action"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/control/fear-fright-mask-orange.webp",
+      "name": "Create Phantasm: Mockery",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-phantasm-mockery"
+      ],
+      "system": {
+        "tags": [
+          "debuff",
+          "dispellable"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -31,11 +138,77 @@
       "animation_script": "",
       "check_bonus": "0",
       "class": "Illusionist",
-      "cost": "10 MP",
+      "cost": "",
       "damage_bonus": "",
       "defense_target_type": "mdef",
       "description": "<p>You may spend one action to create a vexing Phantasm that taunts and distracts your foe. For the next 【⚔️ Attack】, if the target rolls an even number for its Accuracy Check, the attack misses.</p>\n<p>On any subsequent turn, you can perform an action and another Magic Check to command the Phantasm to taunt again, with no MP requirements.</p>\n",
       "duration": "Scene",
+      "effect_table": {
+        "0": {
+          "chain_steps": "mock_cx",
+          "effect_kind": "chain",
+          "effect_label": "mock_pre"
+        },
+        "1": {
+          "chain_steps": "mock_cx, mock_taunt",
+          "effect_kind": "chain",
+          "effect_label": "mock_on"
+        },
+        "2": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "mock_cx",
+          "menu_option_labels": "Create a new Phantasm|Command an existing Phantasm",
+          "menu_option_refs": "mock_create, mock_existing",
+          "menu_title": "Create Phantasm: Mockery"
+        },
+        "3": {
+          "candidate_source": "self",
+          "effect_kind": "targeting",
+          "effect_label": "mock_self"
+        },
+        "4": {
+          "chain_steps": "mock_cost, mock_summon",
+          "condition_formula": "CUR_MP >= 10 && OWN_PHANTASM_COUNT < 3",
+          "disable_ui_type": "dim",
+          "disabled_reason": "Need 10 MP & under 3 Phantasms",
+          "effect_kind": "chain",
+          "effect_label": "mock_create"
+        },
+        "5": {
+          "consume_amount": "10",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "mock_cost",
+          "on_empty": "abort",
+          "target_ref": "mock_self"
+        },
+        "6": {
+          "effect_kind": "summon",
+          "effect_label": "mock_summon",
+          "summon_actor": "Fox fire",
+          "summon_count": 1,
+          "summon_max": 3,
+          "summon_type": "phantasm"
+        },
+        "7": {
+          "candidate_source": "own_phantasms",
+          "condition_formula": "OWN_PHANTASM_COUNT >= 1",
+          "count": 1,
+          "disable_ui_type": "dim",
+          "disabled_reason": "No Phantasm on the field",
+          "effect_kind": "targeting",
+          "effect_label": "mock_existing",
+          "mode": "exact"
+        },
+        "8": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "scene",
+          "ae_template_ref": "Create Phantasm: Mockery",
+          "effect_kind": "apply_ae",
+          "effect_label": "mock_taunt",
+          "target_ref": "hit_action_targets"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": true,
       "isFacet": true,
@@ -45,7 +218,9 @@
       "level": "1",
       "max_level": "1",
       "name": "Create Phantasm: Mockery",
+      "on_activate_effect_ref": "mock_on",
       "optional_params": {},
+      "pre_activate_effect_ref": "mock_pre",
       "reaction_config_table": {},
       "rolled_atr1": "INS",
       "rolled_atr2": "WLP",
@@ -53,7 +228,8 @@
       "skill_animation_mode": "default",
       "skill_information": "",
       "skill_range": "Range",
-      "skill_target": "One Creature",
+      "skill_tags": "phantasm",
+      "skill_target": "One Enemy",
       "skill_type": "Spell",
       "type_damage": "",
       "use_optional_params": false
