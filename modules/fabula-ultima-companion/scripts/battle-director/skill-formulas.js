@@ -1230,6 +1230,25 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const subject = _resolveActorByUuidSync(subjectUuid);
         return String(subject?.system?.props?.npc_rank ?? "").trim().toLowerCase() === "champion" ? 1 : 0;
       }
+      // How many SOLDIERS the trigger's SUBJECT replaces (FU Core: an elite counts
+      // as 2 soldiers, a champion(N) as N). soldier → 1, elite → 2, champion →
+      // max(2, system.props.activation) — `activation` is the "takes N turns" stat
+      // director-combat reads; the floor keeps a 1-turn homebrew champion at least
+      // elite-sized. PCs / companions / blank rank → 0. Matched by PREFIX so the
+      // abbreviated ranks in data ("sol", "cha") count. Same subject resolve as
+      // TARGET_IS_CHAMPION. Powers Giant Killer: "+2 × soldiers replaced" damage.
+      case "TARGET_SOLDIER_EQUIVALENT": {
+        const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+        if (!subjectUuid) return 0;
+        const subject = _resolveActorByUuidSync(subjectUuid);
+        if (!subject) return 0;
+        const rank = String(subject?.system?.props?.npc_rank ?? "").trim().toLowerCase();
+        if (!rank) return 0;
+        if (rank.startsWith("sol")) return 1;
+        if (rank.startsWith("eli")) return 2;
+        if (rank.startsWith("cha")) return Math.max(2, Number(subject?.system?.props?.activation ?? 0) || 0);
+        return 0;
+      }
       // 1 iff the trigger's SUBJECT is currently Flying (and NOT already grounded).
       // Mirrors snapshot.targetIsFlying — kept inline to avoid a skill-formulas <->
       // snapshot import cycle (snapshot already imports this module). A
@@ -2294,6 +2313,24 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             .map((s) => s.replace(/_/g, " ").toLowerCase().trim())
             .filter(Boolean);
           return subtypes.includes(needle) ? 1 : 0;
+        }
+        // Dynamic TARGET_AFFINITY_<ELEM> — the trigger SUBJECT's CURRENT affinity to
+        // <ELEM> as a rung: VU -1 · NA/NE/blank 0 · RS 1 · IM 2 · AB 3. Reads the
+        // prepared (post-AE) system.props.affinity_N. Unknown element / unresolved
+        // subject → 0 (neutral). The element→slot map is inlined (snapshot.js
+        // AFFINITY_KEY) to avoid the skill-formulas <-> snapshot import cycle.
+        // Gates Bane Oils' "loses one of its damage Resistances" options
+        // (TARGET_AFFINITY_FIRE == 1 → the target is Resistant to fire).
+        if (name.startsWith("TARGET_AFFINITY_")) {
+          const SLOT = { physical: 1, air: 2, bolt: 3, dark: 4, earth: 5, fire: 6, ice: 7, light: 8, poison: 9 };
+          const n = SLOT[name.slice("TARGET_AFFINITY_".length).toLowerCase().trim()];
+          if (!n) return 0;
+          const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+          if (!subjectUuid) return 0;
+          const subject = _resolveActorByUuidSync(subjectUuid);
+          if (!subject) return 0;
+          const v = String(subject?.system?.props?.[`affinity_${n}`] ?? "").trim().toUpperCase();
+          return ({ VU: -1, RS: 1, IM: 2, AB: 3 })[v] ?? 0;
         }
         if (name.startsWith("SUBTYPE_IS_") || name.startsWith("TARGET_SUBTYPE_IS_")) {
           const isTarget = name.startsWith("TARGET_");

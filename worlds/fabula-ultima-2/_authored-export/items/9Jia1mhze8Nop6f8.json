@@ -8,6 +8,88 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "ab736h7o900g9xIS",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679436553,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>One of this creature's attacks or spells has been locked down: it deals <strong>SL × 2</strong> less damage with that action until the start of the Slayer's next turn.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "ab736h7o900g9xIS",
+          "originalParentId": "9Jia1mhze8Nop6f8",
+          "originalUuid": "Item.9Jia1mhze8Nop6f8.ActiveEffect.ab736h7o900g9xIS"
+        },
+        "fabula-ultima-companion": {
+          "category": "debuff",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "$deleted": false,
+                "damage_amount": "SL * 2",
+                "damage_operation": "subtract",
+                "damage_stage": "outgoing",
+                "effect_kind": "adjust_damage",
+                "effect_label": "ld_cut"
+              }
+            },
+            "name": "Lockdown",
+            "reaction_config_table": {
+              "0": {
+                "$deleted": false,
+                "condition_formula": "AE_FLAG('Lockdown','rememberedAction') != '' && PERFORMED_SKILL == AE_FLAG('Lockdown','rememberedAction')",
+                "reaction_effect_ref": "ld_cut",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_will_deal_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/control/debuff-chains-shackle-movement-red.webp",
+      "name": "Lockdown",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-lockdown"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -26,23 +108,88 @@
     "props": {
       "check_bonus": "0",
       "class": "Slayer",
-      "cost": "",
+      "cost": "10 MP",
       "damage_bonus": "0",
       "description": "<p>When you hit a creature with an attack you may spend 10 Mind Points and choose one of the target’s <em>basic attacks</em> or <em>spells</em>. Until the start of your next turn, the target deals <strong>[SL × 2]</strong> less damage with the chosen action.</p>\n",
       "duration": "",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "chain_steps": "ld_pick, ld_pay",
+          "effect_kind": "chain",
+          "effect_label": "ld_root",
+          "menu_description": "Spend 10 MP: choose one of the target's basic attacks or spells. Until the start of your next turn it deals SL × 2 less damage with it.",
+          "menu_label": "Lockdown"
+        },
+        "1": {
+          "$deleted": false,
+          "effect_kind": "open_action_menu",
+          "effect_label": "ld_pick",
+          "menu_dynamic_source": "subject_actions",
+          "menu_option_refs": "ld_ae",
+          "menu_subtitle": "Choose one of the target's basic attacks or spells.",
+          "menu_title": "Lockdown"
+        },
+        "2": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "1",
+          "ae_remember_action": true,
+          "ae_template_ref": "Lockdown",
+          "effect_kind": "apply_ae",
+          "effect_label": "ld_ae",
+          "target_ref": "trigger_subject"
+        },
+        "3": {
+          "$deleted": false,
+          "consume_amount": "10",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "ld_pay",
+          "on_empty": "abort",
+          "target_ref": "self"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
       "isOffensiveSpell": false,
+      "isReaction": true,
       "level": "1",
       "max_level": "4",
       "name": "Lockdown",
       "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "ACTION_IS_ATTACK == 1 && CUR_MP >= 10",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_source": "",
+          "reaction_effect_ref": "ld_root",
+          "reaction_max_per_round": "",
+          "reaction_origin_filter": "",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "ask",
+          "reaction_passive_target": "",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_deals_damage",
+          "requires_skill": ""
+        }
+      },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",
-      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Less Damage Dealt</strong></p></td></tr><tr><td><p>1</p></td><td><p>2</p></td></tr><tr><td><p>2</p></td><td><p>4</p></td></tr><tr><td><p>3</p></td><td><p>6</p></td></tr></tbody></table>",
+      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Less Damage Dealt</strong></p></td></tr><tr><td><p>1</p></td><td><p>2</p></td></tr><tr><td><p>2</p></td><td><p>4</p></td></tr><tr><td><p>3</p></td><td><p>6</p></td></tr><tr><td><p>4</p></td><td><p>8</p></td></tr></tbody></table>",
       "skill_range": "",
       "skill_target": "",
       "skill_type": "Passive",

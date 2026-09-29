@@ -3146,7 +3146,7 @@
         "id": "2t9fQihUfuKxSR7Z",
         "name": "Bane Oils",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 25
       },
       {
         "id": "NcxU7zYGEd4HmKy1",
@@ -7850,7 +7850,7 @@
         "id": "9Jia1mhze8Nop6f8",
         "name": "Lockdown",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "bOyrz1SaqA1TQRzo",

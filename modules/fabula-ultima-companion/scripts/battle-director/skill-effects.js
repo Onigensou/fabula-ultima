@@ -7181,8 +7181,10 @@ async function applyApplyAeEffect(row, ctx) {
     // records which dance, so re-dancing the SAME dance is full price while a
     // different dance earns the repeat-discount. General "marker remembers what
     // created it" — reusable for cooldowns-per-skill, combo/echo detection, etc.
+    // `ae_remember_value` (engine-synthesised by the subject_actions dynamic menu,
+    // never authored) overrides the payload's action with the PICKED one (Lockdown).
     if (row?.ae_remember_action) {
-      data.flags[FLAG_NS].rememberedAction = String(ctx.payload?.sourceSkillName ?? "");
+      data.flags[FLAG_NS].rememberedAction = String(row.ae_remember_value ?? ctx.payload?.sourceSkillName ?? "");
     }
     // Affinity-override protection: an AE that OVERRIDES element-affinity props
     // (affinity_1..9 — e.g. Guard's "Resistance to all") must NOT downgrade an
@@ -8314,6 +8316,9 @@ function buildMenuOptions(row, ctx) {
   // Clock Interaction Objective; the list is runtime state, so it cannot be
   // authored as refs.
   if (dynSource === "clock") return buildClockMenuOptions(row, ctx);
+  // `subject_actions` → one option per basic attack / spell of the trigger
+  // SUBJECT (Lockdown: "choose one of the target's basic attacks or spells").
+  if (dynSource === "subject_actions") return buildSubjectActionMenuOptions(row, ctx);
 
   const refs = parseEffectRefList(row.menu_option_refs);
   const splitPipe = (s) =>
@@ -9132,6 +9137,56 @@ function buildClockMenuOptions(row, ctx) {
         effect_label: `${baseLabel}:${clock.id}:${dir}`,
       });
     }
+  }
+  return { options, optionRows };
+}
+
+// `menu_dynamic_source: "subject_actions"` — one option per basic attack or spell
+// of the trigger SUBJECT (payload.subjectActorUuid): every embedded item whose
+// skill_type is Attack or Spell (NPC attacks are skill_type "Attack" items), plus
+// each EQUIPPED weapon (a PC's basic attack is named after its weapon — the BD
+// stamps sourceSkillName = ar.skillName ?? ar.weapon.name). The option row is a
+// shallow clone of the FIRST `menu_option_refs` row with `ae_remember_value` set
+// to the item's NAME, so an `ae_remember_action` apply_ae records the PICKED
+// action instead of the action that triggered the reaction. The action list is
+// runtime data on another creature, so it cannot be authored as refs.
+function buildSubjectActionMenuOptions(row, ctx) {
+  const options = [];
+  const optionRows = [];
+  const baseRef = parseEffectRefList(row.menu_option_refs)[0] ?? "";
+  const baseRow = baseRef ? findEffectRow(ctx, baseRef) : null;
+  if (!baseRow) {
+    warn(`skill-effects.open_action_menu: menu_dynamic_source "subject_actions" needs menu_option_refs naming the row to run per pick (got "${row.menu_option_refs ?? ""}")`);
+    return { options, optionRows };
+  }
+  const subjUuid = String(ctx?.payload?.subjectActorUuid ?? "").trim();
+  const subject = subjUuid ? _resolveActorByUuidSyncSE(subjUuid) : null;
+  if (!subject) return { options, optionRows };
+  const seen = new Set();
+  for (const item of subject.items ?? []) {
+    const p = item?.system?.props ?? {};
+    const st = String(p.skill_type ?? "").trim().toLowerCase();
+    const isWeapon = String(p.item_type ?? "").trim().toLowerCase() === "weapon" && p.isEquipped === true;
+    if (!(st === "attack" || st === "spell" || isWeapon)) continue;
+    const name = String(item.name ?? "").trim();
+    if (!name || seen.has(name)) continue;
+    seen.add(name);
+    options.push({
+      label: name,
+      description: isWeapon ? "Basic attack (weapon)" : (st === "spell" ? "Spell" : "Basic attack"),
+      icon: item.img ?? null, color: null, disabled: false, badge: null,
+    });
+    optionRows.push({ ...baseRow, ae_remember_value: name, effect_label: `${baseRow.effect_label}:${item.id}` });
+  }
+  // A PC's basic attack is named by its HAND prop (snapshot.resolveAttackerWeapon:
+  // weapon.name = props.main_hand / off_hand), which need not have an embedded item.
+  const sp = subject.system?.props ?? {};
+  for (const hand of ["main_hand", "off_hand"]) {
+    const name = String(sp[hand] ?? "").trim();
+    if (!name || name === "-" || seen.has(name)) continue;
+    seen.add(name);
+    options.push({ label: name, description: "Basic attack (weapon)", icon: null, color: null, disabled: false, badge: null });
+    optionRows.push({ ...baseRow, ae_remember_value: name, effect_label: `${baseRow.effect_label}:${hand}` });
   }
   return { options, optionRows };
 }

@@ -206,7 +206,7 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // since the Arcanist summon loop, never declared: Hina's wired Bind and Summon
   // row lived on these two keys alone, and an undeclared key is pruned by the
   // next reloadTemplate — the loop went dark with no error.
-  textCol("menu_dynamic_source", "Dynamic Options", { tooltip: "Build the option list at runtime instead of from Option Refs: arcanum (the caster's bound Arcana — Bind and Summon) or clock (live clocks).", vis: OAM_VIS }),
+  textCol("menu_dynamic_source", "Dynamic Options", { tooltip: "Build the option list at runtime instead of from Option Refs: arcanum (the caster's bound Arcana — Bind and Summon), clock (live clocks) or subject_actions (the trigger subject's basic attacks + spells; each pick runs the FIRST Option Ref with the picked action's name remembered — Lockdown).", vis: OAM_VIS }),
   textCol("summon_cost_formula", "Summon Cost", { tooltip: "Dynamic source arcanum: MP cost formula to summon (default 40). Free while an Arcanum is merged.", vis: OAM_VIS }),
   // Who answers the menu. Engine-read (promptMenuList) since Cruel Ultimatum but
   // never declared, so the next reloadTemplate would prune it. "target" routes the
@@ -235,7 +235,7 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // [[feedback_csb_template_gating]].
   textCol("damage_element", "Damage Element", { tooltip: "deal_damage element: fire/ice/bolt/earth/air/light/dark/physical/poison (default elementless).", vis: DEAL_VIS }),
   checkboxCol("damage_ignore_affinity", "Ignore Affinity", { tooltip: "deal_damage lands flat — skips RS/VU/IM/AB + condition-forced VU (for fixed/'true' damage like an opposed-check consequence). DR/shield still apply.", vis: DEAL_VIS }),
-  textCol("damage_keywords", "Damage Keywords", { tooltip: "Comma-separated action keywords carried by THIS damage instance (the effect-damage counterpart of a weapon's action_keywords). Read today: crush = damage cannot be reduced (skips flat + % DR, a reducing weapon-efficiency, and a <1 damage_taken_mult) AND steps affinity down exactly ONE rung (AB→IM→RS→NE), so Crush into Immune is still Resistant, not full. For a real bypass use the CLAMP keywords instead — ignore_resistance (RS→NE), ignore_immunity (RS+IM→NE), ignore_absorption (RS+IM+AB→NE); they collapse everything at or below the named rung and compose after crush. ignore_affinity collapses EVERY affinity incl. VU to NE ("ignore Affinities"). The others never touch VU (a bypass strips defence, it must not cancel a vulnerability) and none bypass shields.", vis: DEAL_VIS }),
+  textCol("damage_keywords", "Damage Keywords", { tooltip: "Comma-separated action keywords carried by THIS damage instance (the effect-damage counterpart of a weapon's action_keywords). Read today: crush = damage cannot be reduced (skips flat + % DR, a reducing weapon-efficiency, and a <1 damage_taken_mult) AND steps affinity down exactly ONE rung (AB→IM→RS→NE), so Crush into Immune is still Resistant, not full. For a real bypass use the CLAMP keywords instead — ignore_resistance (RS→NE), ignore_immunity (RS+IM→NE), ignore_absorption (RS+IM+AB→NE); they collapse everything at or below the named rung and compose after crush. ignore_affinity collapses EVERY affinity incl. VU to NE (\"ignore Affinities\"). The others never touch VU (a bypass strips defence, it must not cancel a vulnerability) and none bypass shields.", vis: DEAL_VIS }),
   checkboxCol("consume_can_defeat", "Can Defeat Target", { tooltip: "consume_resource: report an HP debit from this row to the battle director so the settle's Crisis and Defeat reactors fire — i.e. this loss can knock the target out. A plain consume writes HP silently, so it can empty the HP bar without ever KO-ing (Crisis still lands via the standing updateActor hook; Defeat does not, because auto-defeat is NPC-only). Turn ON for 'you lose X HP' curses (Cursed Sword); leave OFF for ordinary costs, which should never defeat their payer. To also let the debit take the LAST points instead of refusing when the target is short, set On Empty = drain — that is a separate control.", vis: CONSUME_RES_VIS }),
   // consume_item config — which carried item gets spent. Default subject is the
   // firing skill's container (a gear's linked _skill consumes its own gear), but
@@ -485,6 +485,10 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // Per-application duration override. Without it, "for the rest of the scene"
   // could only be expressed by giving the item its own COPY of a shared status,
   // which splits the definition (Blue Bovine vs Milk both grant Strong).
+  // Action-memory marker. Authored on shipped rows (base Dance family) and on
+  // Lockdown but never a column, so a sheet save could strip it. Checkbox with
+  // defaultChecked:false = no stamped default on any instance.
+  checkboxCol("ae_remember_action", "Remember Action", { tooltip: "apply_ae: stamp the NAME of an action onto the AE (flag rememberedAction), read back with AE_FLAG(\"<AE name>\",\"rememberedAction\") and compared to PERFORMED_SKILL. Default = the action that triggered this row; under a subject_actions menu = the action the player PICKED.", vis: APPLY_AE_VIS }),
   textCol("ae_duration_rounds", "Duration (turns)", { tooltip: "apply_ae: how long THIS application lasts, overriding the AE template's duration.rounds. \"scene\" (or 0) = lasts until the battle ends (no turn counter; the scene-end sweep removes it). A number = that many turns. Blank = the template's duration.rounds, else the 3-turn default.", vis: APPLY_AE_VIS }),
   selectCol("auto_target", "Auto-target", [
     { key: "auto",    value: "Auto — GM skips, player confirms (default)" },

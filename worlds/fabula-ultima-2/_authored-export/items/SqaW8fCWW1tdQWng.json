@@ -31,6 +31,7 @@
       "description": "<p>When you rest in the wilderness, you may ask the Game Master up to <strong>[SL]</strong> questions about creatures in the area; the Game Master will answer truthfully.</p>\n",
       "duration": "",
       "heroic_requirement": "",
+      "implementation_note": "Resolved at the table. When the party rests in the wilderness, ask the GM up to SL questions about creatures in the area; the GM answers truthfully.",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,

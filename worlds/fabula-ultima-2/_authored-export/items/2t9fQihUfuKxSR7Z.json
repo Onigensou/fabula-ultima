@@ -8,6 +8,2632 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "87e9F5jSDBO9HNxQ",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679399245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Your attacks against <strong>Demon</strong> creatures let you inflict <strong>Slow</strong>, <strong>Weak</strong>, or strip one damage Resistance until the end of the scene.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "87e9F5jSDBO9HNxQ",
+          "originalParentId": "2t9fQihUfuKxSR7Z",
+          "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.87e9F5jSDBO9HNxQ"
+        },
+        "fabula-ultima-companion": {
+          "aeFamily": "bane-oil",
+          "category": "buff",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "$deleted": false,
+                "effect_kind": "open_action_menu",
+                "effect_label": "bo_hit",
+                "menu_option_labels": "Slow|Weak|Lose a Resistance",
+                "menu_option_refs": "bo_slow, bo_weak, bo_res",
+                "menu_subtitle": "The demon bane oil bites. Choose one.",
+                "menu_title": "Bane Oils"
+              },
+              "1": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_template_ref": "Slow",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_slow",
+                "target_ref": "trigger_subject"
+              },
+              "2": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_template_ref": "Weak",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_weak",
+                "target_ref": "trigger_subject"
+              },
+              "3": {
+                "$deleted": false,
+                "condition_formula": "TARGET_AFFINITY_PHYSICAL == 1 || TARGET_AFFINITY_AIR == 1 || TARGET_AFFINITY_BOLT == 1 || TARGET_AFFINITY_DARK == 1 || TARGET_AFFINITY_EARTH == 1 || TARGET_AFFINITY_FIRE == 1 || TARGET_AFFINITY_ICE == 1 || TARGET_AFFINITY_LIGHT == 1 || TARGET_AFFINITY_POISON == 1",
+                "effect_kind": "open_action_menu",
+                "effect_label": "bo_res",
+                "menu_option_labels": "Physical|Air|Bolt|Dark|Earth|Fire|Ice|Light|Poison",
+                "menu_option_refs": "bo_r_physical, bo_r_air, bo_r_bolt, bo_r_dark, bo_r_earth, bo_r_fire, bo_r_ice, bo_r_light, bo_r_poison",
+                "menu_subtitle": "Choose the damage Resistance the creature loses until the end of the scene.",
+                "menu_title": "Bane Oils: Resistance"
+              },
+              "4": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Physical)",
+                "condition_formula": "TARGET_AFFINITY_PHYSICAL == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_physical",
+                "target_ref": "trigger_subject"
+              },
+              "5": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Air)",
+                "condition_formula": "TARGET_AFFINITY_AIR == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_air",
+                "target_ref": "trigger_subject"
+              },
+              "6": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Bolt)",
+                "condition_formula": "TARGET_AFFINITY_BOLT == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_bolt",
+                "target_ref": "trigger_subject"
+              },
+              "7": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Dark)",
+                "condition_formula": "TARGET_AFFINITY_DARK == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_dark",
+                "target_ref": "trigger_subject"
+              },
+              "8": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Earth)",
+                "condition_formula": "TARGET_AFFINITY_EARTH == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_earth",
+                "target_ref": "trigger_subject"
+              },
+              "9": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Fire)",
+                "condition_formula": "TARGET_AFFINITY_FIRE == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_fire",
+                "target_ref": "trigger_subject"
+              },
+              "10": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Ice)",
+                "condition_formula": "TARGET_AFFINITY_ICE == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_ice",
+                "target_ref": "trigger_subject"
+              },
+              "11": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Light)",
+                "condition_formula": "TARGET_AFFINITY_LIGHT == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_light",
+                "target_ref": "trigger_subject"
+              },
+              "12": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Poison)",
+                "condition_formula": "TARGET_AFFINITY_POISON == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_poison",
+                "target_ref": "trigger_subject"
+              }
+            },
+            "name": "Bane Oils",
+            "reaction_config_table": {
+              "0": {
+                "$deleted": false,
+                "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_SPECIES_IS_DEMON == 1",
+                "reaction_effect_ref": "bo_hit",
+                "reaction_passive_mode": "ask",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_deals_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/consumables/potions/bottle-round-corked-green.webp",
+      "name": "Bane Oils (Demon)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-bane-oils-demon"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "8Y7aF6wmG5YMHPBD",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679399245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_7",
+          "mode": 5,
+          "priority": 90,
+          "value": "aeAffinityCap(\"NA\")"
+        }
+      ],
+      "description": "<p>A bane oil has stripped this creature's Resistance to <strong>ice</strong> damage until the end of the scene.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "8Y7aF6wmG5YMHPBD",
+          "originalParentId": "2t9fQihUfuKxSR7Z",
+          "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.8Y7aF6wmG5YMHPBD"
+        },
+        "fabula-ultima-companion": {
+          "category": "debuff"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/unholy/strike-body-life-soul-green.webp",
+      "name": "Bane Oils Exposed (Ice)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-bane-oils-exposed-ice"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "9kbKjWyQXhCLxWWA",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679399245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.bane_oil_construct",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>Chosen Species for Bane Oils. Enable one of these per Skill Level taken.</p>",
+      "disabled": true,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "9kbKjWyQXhCLxWWA",
+          "originalParentId": "2t9fQihUfuKxSR7Z",
+          "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.9kbKjWyQXhCLxWWA"
+        },
+        "fabula-ultima-companion": {},
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/consumables/potions/bottle-round-corked-green.webp",
+      "name": "Bane Oils: Construct",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "ahKbaoQM72QP5Vog",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679399245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.bane_oil_monster",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>Chosen Species for Bane Oils. Enable one of these per Skill Level taken.</p>",
+      "disabled": true,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "ahKbaoQM72QP5Vog",
+          "originalParentId": "2t9fQihUfuKxSR7Z",
+          "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.ahKbaoQM72QP5Vog"
+        },
+        "fabula-ultima-companion": {},
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/consumables/potions/bottle-round-corked-green.webp",
+      "name": "Bane Oils: Monster",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "AQ7awZsm2X1kPwCa",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679399245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.bane_oil_elemental",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>Chosen Species for Bane Oils. Enable one of these per Skill Level taken.</p>",
+      "disabled": true,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "AQ7awZsm2X1kPwCa",
+          "originalParentId": "2t9fQihUfuKxSR7Z",
+          "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.AQ7awZsm2X1kPwCa"
+        },
+        "fabula-ultima-companion": {},
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/consumables/potions/bottle-round-corked-green.webp",
+      "name": "Bane Oils: Elemental",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "D0Uz3HCKmvfJVogm",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679399245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_4",
+          "mode": 5,
+          "priority": 90,
+          "value": "aeAffinityCap(\"NA\")"
+        }
+      ],
+      "description": "<p>A bane oil has stripped this creature's Resistance to <strong>dark</strong> damage until the end of the scene.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "D0Uz3HCKmvfJVogm",
+          "originalParentId": "2t9fQihUfuKxSR7Z",
+          "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.D0Uz3HCKmvfJVogm"
+        },
+        "fabula-ultima-companion": {
+          "category": "debuff"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/unholy/strike-body-life-soul-green.webp",
+      "name": "Bane Oils Exposed (Dark)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-bane-oils-exposed-dark"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "dTRVRi4seVcVrYks",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679399245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_3",
+          "mode": 5,
+          "priority": 90,
+          "value": "aeAffinityCap(\"NA\")"
+        }
+      ],
+      "description": "<p>A bane oil has stripped this creature's Resistance to <strong>bolt</strong> damage until the end of the scene.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "dTRVRi4seVcVrYks",
+          "originalParentId": "2t9fQihUfuKxSR7Z",
+          "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.dTRVRi4seVcVrYks"
+        },
+        "fabula-ultima-companion": {
+          "category": "debuff"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/unholy/strike-body-life-soul-green.webp",
+      "name": "Bane Oils Exposed (Bolt)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-bane-oils-exposed-bolt"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "f21SCGF1PgKj6Ogm",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679399245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_2",
+          "mode": 5,
+          "priority": 90,
+          "value": "aeAffinityCap(\"NA\")"
+        }
+      ],
+      "description": "<p>A bane oil has stripped this creature's Resistance to <strong>air</strong> damage until the end of the scene.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "f21SCGF1PgKj6Ogm",
+          "originalParentId": "2t9fQihUfuKxSR7Z",
+          "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.f21SCGF1PgKj6Ogm"
+        },
+        "fabula-ultima-companion": {
+          "category": "debuff"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/unholy/strike-body-life-soul-green.webp",
+      "name": "Bane Oils Exposed (Air)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-bane-oils-exposed-air"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "Jqb8kJGbHNgJpkAi",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679399245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_9",
+          "mode": 5,
+          "priority": 90,
+          "value": "aeAffinityCap(\"NA\")"
+        }
+      ],
+      "description": "<p>A bane oil has stripped this creature's Resistance to <strong>poison</strong> damage until the end of the scene.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "Jqb8kJGbHNgJpkAi",
+          "originalParentId": "2t9fQihUfuKxSR7Z",
+          "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.Jqb8kJGbHNgJpkAi"
+        },
+        "fabula-ultima-companion": {
+          "category": "debuff"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/unholy/strike-body-life-soul-green.webp",
+      "name": "Bane Oils Exposed (Poison)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-bane-oils-exposed-poison"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "KiSbdjWXCARk7ush",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679399245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_8",
+          "mode": 5,
+          "priority": 90,
+          "value": "aeAffinityCap(\"NA\")"
+        }
+      ],
+      "description": "<p>A bane oil has stripped this creature's Resistance to <strong>light</strong> damage until the end of the scene.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "KiSbdjWXCARk7ush",
+          "originalParentId": "2t9fQihUfuKxSR7Z",
+          "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.KiSbdjWXCARk7ush"
+        },
+        "fabula-ultima-companion": {
+          "category": "debuff"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/unholy/strike-body-life-soul-green.webp",
+      "name": "Bane Oils Exposed (Light)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-bane-oils-exposed-light"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "luzL0iuRktQYbOUQ",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679399245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Your attacks against <strong>Plant</strong> creatures let you inflict <strong>Slow</strong>, <strong>Weak</strong>, or strip one damage Resistance until the end of the scene.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "luzL0iuRktQYbOUQ",
+          "originalParentId": "2t9fQihUfuKxSR7Z",
+          "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.luzL0iuRktQYbOUQ"
+        },
+        "fabula-ultima-companion": {
+          "aeFamily": "bane-oil",
+          "category": "buff",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "$deleted": false,
+                "effect_kind": "open_action_menu",
+                "effect_label": "bo_hit",
+                "menu_option_labels": "Slow|Weak|Lose a Resistance",
+                "menu_option_refs": "bo_slow, bo_weak, bo_res",
+                "menu_subtitle": "The plant bane oil bites. Choose one.",
+                "menu_title": "Bane Oils"
+              },
+              "1": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_template_ref": "Slow",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_slow",
+                "target_ref": "trigger_subject"
+              },
+              "2": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_template_ref": "Weak",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_weak",
+                "target_ref": "trigger_subject"
+              },
+              "3": {
+                "$deleted": false,
+                "condition_formula": "TARGET_AFFINITY_PHYSICAL == 1 || TARGET_AFFINITY_AIR == 1 || TARGET_AFFINITY_BOLT == 1 || TARGET_AFFINITY_DARK == 1 || TARGET_AFFINITY_EARTH == 1 || TARGET_AFFINITY_FIRE == 1 || TARGET_AFFINITY_ICE == 1 || TARGET_AFFINITY_LIGHT == 1 || TARGET_AFFINITY_POISON == 1",
+                "effect_kind": "open_action_menu",
+                "effect_label": "bo_res",
+                "menu_option_labels": "Physical|Air|Bolt|Dark|Earth|Fire|Ice|Light|Poison",
+                "menu_option_refs": "bo_r_physical, bo_r_air, bo_r_bolt, bo_r_dark, bo_r_earth, bo_r_fire, bo_r_ice, bo_r_light, bo_r_poison",
+                "menu_subtitle": "Choose the damage Resistance the creature loses until the end of the scene.",
+                "menu_title": "Bane Oils: Resistance"
+              },
+              "4": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Physical)",
+                "condition_formula": "TARGET_AFFINITY_PHYSICAL == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_physical",
+                "target_ref": "trigger_subject"
+              },
+              "5": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Air)",
+                "condition_formula": "TARGET_AFFINITY_AIR == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_air",
+                "target_ref": "trigger_subject"
+              },
+              "6": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Bolt)",
+                "condition_formula": "TARGET_AFFINITY_BOLT == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_bolt",
+                "target_ref": "trigger_subject"
+              },
+              "7": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Dark)",
+                "condition_formula": "TARGET_AFFINITY_DARK == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_dark",
+                "target_ref": "trigger_subject"
+              },
+              "8": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Earth)",
+                "condition_formula": "TARGET_AFFINITY_EARTH == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_earth",
+                "target_ref": "trigger_subject"
+              },
+              "9": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Fire)",
+                "condition_formula": "TARGET_AFFINITY_FIRE == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_fire",
+                "target_ref": "trigger_subject"
+              },
+              "10": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Ice)",
+                "condition_formula": "TARGET_AFFINITY_ICE == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_ice",
+                "target_ref": "trigger_subject"
+              },
+              "11": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Light)",
+                "condition_formula": "TARGET_AFFINITY_LIGHT == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_light",
+                "target_ref": "trigger_subject"
+              },
+              "12": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Poison)",
+                "condition_formula": "TARGET_AFFINITY_POISON == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_poison",
+                "target_ref": "trigger_subject"
+              }
+            },
+            "name": "Bane Oils",
+            "reaction_config_table": {
+              "0": {
+                "$deleted": false,
+                "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_SPECIES_IS_PLANT == 1",
+                "reaction_effect_ref": "bo_hit",
+                "reaction_passive_mode": "ask",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_deals_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/consumables/potions/bottle-round-corked-green.webp",
+      "name": "Bane Oils (Plant)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-bane-oils-plant"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "oCaRcyFMwClRv1hE",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679399245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.bane_oil_beast",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>Chosen Species for Bane Oils. Enable one of these per Skill Level taken.</p>",
+      "disabled": true,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "oCaRcyFMwClRv1hE",
+          "originalParentId": "2t9fQihUfuKxSR7Z",
+          "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.oCaRcyFMwClRv1hE"
+        },
+        "fabula-ultima-companion": {},
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/consumables/potions/bottle-round-corked-green.webp",
+      "name": "Bane Oils: Beast",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "pgQgaqsTCKRvn9iC",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679399245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_1",
+          "mode": 5,
+          "priority": 90,
+          "value": "aeAffinityCap(\"NA\")"
+        }
+      ],
+      "description": "<p>A bane oil has stripped this creature's Resistance to <strong>physical</strong> damage until the end of the scene.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "pgQgaqsTCKRvn9iC",
+          "originalParentId": "2t9fQihUfuKxSR7Z",
+          "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.pgQgaqsTCKRvn9iC"
+        },
+        "fabula-ultima-companion": {
+          "category": "debuff"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/unholy/strike-body-life-soul-green.webp",
+      "name": "Bane Oils Exposed (Physical)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-bane-oils-exposed-physical"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "PrxzNH7NIvLDs1Or",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679399245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Your attacks against <strong>Elemental</strong> creatures let you inflict <strong>Slow</strong>, <strong>Weak</strong>, or strip one damage Resistance until the end of the scene.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "PrxzNH7NIvLDs1Or",
+          "originalParentId": "2t9fQihUfuKxSR7Z",
+          "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.PrxzNH7NIvLDs1Or"
+        },
+        "fabula-ultima-companion": {
+          "aeFamily": "bane-oil",
+          "category": "buff",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "$deleted": false,
+                "effect_kind": "open_action_menu",
+                "effect_label": "bo_hit",
+                "menu_option_labels": "Slow|Weak|Lose a Resistance",
+                "menu_option_refs": "bo_slow, bo_weak, bo_res",
+                "menu_subtitle": "The elemental bane oil bites. Choose one.",
+                "menu_title": "Bane Oils"
+              },
+              "1": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_template_ref": "Slow",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_slow",
+                "target_ref": "trigger_subject"
+              },
+              "2": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_template_ref": "Weak",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_weak",
+                "target_ref": "trigger_subject"
+              },
+              "3": {
+                "$deleted": false,
+                "condition_formula": "TARGET_AFFINITY_PHYSICAL == 1 || TARGET_AFFINITY_AIR == 1 || TARGET_AFFINITY_BOLT == 1 || TARGET_AFFINITY_DARK == 1 || TARGET_AFFINITY_EARTH == 1 || TARGET_AFFINITY_FIRE == 1 || TARGET_AFFINITY_ICE == 1 || TARGET_AFFINITY_LIGHT == 1 || TARGET_AFFINITY_POISON == 1",
+                "effect_kind": "open_action_menu",
+                "effect_label": "bo_res",
+                "menu_option_labels": "Physical|Air|Bolt|Dark|Earth|Fire|Ice|Light|Poison",
+                "menu_option_refs": "bo_r_physical, bo_r_air, bo_r_bolt, bo_r_dark, bo_r_earth, bo_r_fire, bo_r_ice, bo_r_light, bo_r_poison",
+                "menu_subtitle": "Choose the damage Resistance the creature loses until the end of the scene.",
+                "menu_title": "Bane Oils: Resistance"
+              },
+              "4": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Physical)",
+                "condition_formula": "TARGET_AFFINITY_PHYSICAL == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_physical",
+                "target_ref": "trigger_subject"
+              },
+              "5": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Air)",
+                "condition_formula": "TARGET_AFFINITY_AIR == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_air",
+                "target_ref": "trigger_subject"
+              },
+              "6": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Bolt)",
+                "condition_formula": "TARGET_AFFINITY_BOLT == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_bolt",
+                "target_ref": "trigger_subject"
+              },
+              "7": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Dark)",
+                "condition_formula": "TARGET_AFFINITY_DARK == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_dark",
+                "target_ref": "trigger_subject"
+              },
+              "8": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Earth)",
+                "condition_formula": "TARGET_AFFINITY_EARTH == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_earth",
+                "target_ref": "trigger_subject"
+              },
+              "9": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Fire)",
+                "condition_formula": "TARGET_AFFINITY_FIRE == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_fire",
+                "target_ref": "trigger_subject"
+              },
+              "10": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Ice)",
+                "condition_formula": "TARGET_AFFINITY_ICE == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_ice",
+                "target_ref": "trigger_subject"
+              },
+              "11": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Light)",
+                "condition_formula": "TARGET_AFFINITY_LIGHT == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_light",
+                "target_ref": "trigger_subject"
+              },
+              "12": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Poison)",
+                "condition_formula": "TARGET_AFFINITY_POISON == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_poison",
+                "target_ref": "trigger_subject"
+              }
+            },
+            "name": "Bane Oils",
+            "reaction_config_table": {
+              "0": {
+                "$deleted": false,
+                "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_SPECIES_IS_ELEMENTAL == 1",
+                "reaction_effect_ref": "bo_hit",
+                "reaction_passive_mode": "ask",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_deals_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/consumables/potions/bottle-round-corked-green.webp",
+      "name": "Bane Oils (Elemental)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-bane-oils-elemental"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "R3qPjZmQG8Q6ZzxX",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679399245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.bane_oil_demon",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>Chosen Species for Bane Oils. Enable one of these per Skill Level taken.</p>",
+      "disabled": true,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "R3qPjZmQG8Q6ZzxX",
+          "originalParentId": "2t9fQihUfuKxSR7Z",
+          "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.R3qPjZmQG8Q6ZzxX"
+        },
+        "fabula-ultima-companion": {},
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/consumables/potions/bottle-round-corked-green.webp",
+      "name": "Bane Oils: Demon",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "rrnrsMrw4f3hn5cP",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679399245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Your attacks against <strong>Construct</strong> creatures let you inflict <strong>Slow</strong>, <strong>Weak</strong>, or strip one damage Resistance until the end of the scene.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "rrnrsMrw4f3hn5cP",
+          "originalParentId": "2t9fQihUfuKxSR7Z",
+          "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.rrnrsMrw4f3hn5cP"
+        },
+        "fabula-ultima-companion": {
+          "aeFamily": "bane-oil",
+          "category": "buff",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "$deleted": false,
+                "effect_kind": "open_action_menu",
+                "effect_label": "bo_hit",
+                "menu_option_labels": "Slow|Weak|Lose a Resistance",
+                "menu_option_refs": "bo_slow, bo_weak, bo_res",
+                "menu_subtitle": "The construct bane oil bites. Choose one.",
+                "menu_title": "Bane Oils"
+              },
+              "1": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_template_ref": "Slow",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_slow",
+                "target_ref": "trigger_subject"
+              },
+              "2": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_template_ref": "Weak",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_weak",
+                "target_ref": "trigger_subject"
+              },
+              "3": {
+                "$deleted": false,
+                "condition_formula": "TARGET_AFFINITY_PHYSICAL == 1 || TARGET_AFFINITY_AIR == 1 || TARGET_AFFINITY_BOLT == 1 || TARGET_AFFINITY_DARK == 1 || TARGET_AFFINITY_EARTH == 1 || TARGET_AFFINITY_FIRE == 1 || TARGET_AFFINITY_ICE == 1 || TARGET_AFFINITY_LIGHT == 1 || TARGET_AFFINITY_POISON == 1",
+                "effect_kind": "open_action_menu",
+                "effect_label": "bo_res",
+                "menu_option_labels": "Physical|Air|Bolt|Dark|Earth|Fire|Ice|Light|Poison",
+                "menu_option_refs": "bo_r_physical, bo_r_air, bo_r_bolt, bo_r_dark, bo_r_earth, bo_r_fire, bo_r_ice, bo_r_light, bo_r_poison",
+                "menu_subtitle": "Choose the damage Resistance the creature loses until the end of the scene.",
+                "menu_title": "Bane Oils: Resistance"
+              },
+              "4": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Physical)",
+                "condition_formula": "TARGET_AFFINITY_PHYSICAL == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_physical",
+                "target_ref": "trigger_subject"
+              },
+              "5": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Air)",
+                "condition_formula": "TARGET_AFFINITY_AIR == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_air",
+                "target_ref": "trigger_subject"
+              },
+              "6": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Bolt)",
+                "condition_formula": "TARGET_AFFINITY_BOLT == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_bolt",
+                "target_ref": "trigger_subject"
+              },
+              "7": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Dark)",
+                "condition_formula": "TARGET_AFFINITY_DARK == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_dark",
+                "target_ref": "trigger_subject"
+              },
+              "8": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Earth)",
+                "condition_formula": "TARGET_AFFINITY_EARTH == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_earth",
+                "target_ref": "trigger_subject"
+              },
+              "9": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Fire)",
+                "condition_formula": "TARGET_AFFINITY_FIRE == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_fire",
+                "target_ref": "trigger_subject"
+              },
+              "10": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Ice)",
+                "condition_formula": "TARGET_AFFINITY_ICE == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_ice",
+                "target_ref": "trigger_subject"
+              },
+              "11": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Light)",
+                "condition_formula": "TARGET_AFFINITY_LIGHT == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_light",
+                "target_ref": "trigger_subject"
+              },
+              "12": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Poison)",
+                "condition_formula": "TARGET_AFFINITY_POISON == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_poison",
+                "target_ref": "trigger_subject"
+              }
+            },
+            "name": "Bane Oils",
+            "reaction_config_table": {
+              "0": {
+                "$deleted": false,
+                "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_SPECIES_IS_CONSTRUCT == 1",
+                "reaction_effect_ref": "bo_hit",
+                "reaction_passive_mode": "ask",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_deals_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/consumables/potions/bottle-round-corked-green.webp",
+      "name": "Bane Oils (Construct)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-bane-oils-construct"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "sKcAooWkSuj09K9h",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679399245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_5",
+          "mode": 5,
+          "priority": 90,
+          "value": "aeAffinityCap(\"NA\")"
+        }
+      ],
+      "description": "<p>A bane oil has stripped this creature's Resistance to <strong>earth</strong> damage until the end of the scene.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "sKcAooWkSuj09K9h",
+          "originalParentId": "2t9fQihUfuKxSR7Z",
+          "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.sKcAooWkSuj09K9h"
+        },
+        "fabula-ultima-companion": {
+          "category": "debuff"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/unholy/strike-body-life-soul-green.webp",
+      "name": "Bane Oils Exposed (Earth)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-bane-oils-exposed-earth"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "sUl3Bw219GQQn6dL",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679399245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Your attacks against <strong>Undead</strong> creatures let you inflict <strong>Slow</strong>, <strong>Weak</strong>, or strip one damage Resistance until the end of the scene.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "sUl3Bw219GQQn6dL",
+          "originalParentId": "2t9fQihUfuKxSR7Z",
+          "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.sUl3Bw219GQQn6dL"
+        },
+        "fabula-ultima-companion": {
+          "aeFamily": "bane-oil",
+          "category": "buff",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "$deleted": false,
+                "effect_kind": "open_action_menu",
+                "effect_label": "bo_hit",
+                "menu_option_labels": "Slow|Weak|Lose a Resistance",
+                "menu_option_refs": "bo_slow, bo_weak, bo_res",
+                "menu_subtitle": "The undead bane oil bites. Choose one.",
+                "menu_title": "Bane Oils"
+              },
+              "1": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_template_ref": "Slow",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_slow",
+                "target_ref": "trigger_subject"
+              },
+              "2": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_template_ref": "Weak",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_weak",
+                "target_ref": "trigger_subject"
+              },
+              "3": {
+                "$deleted": false,
+                "condition_formula": "TARGET_AFFINITY_PHYSICAL == 1 || TARGET_AFFINITY_AIR == 1 || TARGET_AFFINITY_BOLT == 1 || TARGET_AFFINITY_DARK == 1 || TARGET_AFFINITY_EARTH == 1 || TARGET_AFFINITY_FIRE == 1 || TARGET_AFFINITY_ICE == 1 || TARGET_AFFINITY_LIGHT == 1 || TARGET_AFFINITY_POISON == 1",
+                "effect_kind": "open_action_menu",
+                "effect_label": "bo_res",
+                "menu_option_labels": "Physical|Air|Bolt|Dark|Earth|Fire|Ice|Light|Poison",
+                "menu_option_refs": "bo_r_physical, bo_r_air, bo_r_bolt, bo_r_dark, bo_r_earth, bo_r_fire, bo_r_ice, bo_r_light, bo_r_poison",
+                "menu_subtitle": "Choose the damage Resistance the creature loses until the end of the scene.",
+                "menu_title": "Bane Oils: Resistance"
+              },
+              "4": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Physical)",
+                "condition_formula": "TARGET_AFFINITY_PHYSICAL == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_physical",
+                "target_ref": "trigger_subject"
+              },
+              "5": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Air)",
+                "condition_formula": "TARGET_AFFINITY_AIR == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_air",
+                "target_ref": "trigger_subject"
+              },
+              "6": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Bolt)",
+                "condition_formula": "TARGET_AFFINITY_BOLT == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_bolt",
+                "target_ref": "trigger_subject"
+              },
+              "7": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Dark)",
+                "condition_formula": "TARGET_AFFINITY_DARK == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_dark",
+                "target_ref": "trigger_subject"
+              },
+              "8": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Earth)",
+                "condition_formula": "TARGET_AFFINITY_EARTH == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_earth",
+                "target_ref": "trigger_subject"
+              },
+              "9": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Fire)",
+                "condition_formula": "TARGET_AFFINITY_FIRE == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_fire",
+                "target_ref": "trigger_subject"
+              },
+              "10": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Ice)",
+                "condition_formula": "TARGET_AFFINITY_ICE == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_ice",
+                "target_ref": "trigger_subject"
+              },
+              "11": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Light)",
+                "condition_formula": "TARGET_AFFINITY_LIGHT == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_light",
+                "target_ref": "trigger_subject"
+              },
+              "12": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Poison)",
+                "condition_formula": "TARGET_AFFINITY_POISON == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_poison",
+                "target_ref": "trigger_subject"
+              }
+            },
+            "name": "Bane Oils",
+            "reaction_config_table": {
+              "0": {
+                "$deleted": false,
+                "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_SPECIES_IS_UNDEAD == 1",
+                "reaction_effect_ref": "bo_hit",
+                "reaction_passive_mode": "ask",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_deals_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/consumables/potions/bottle-round-corked-green.webp",
+      "name": "Bane Oils (Undead)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-bane-oils-undead"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "VQmx7LT1dPQxnQXM",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679399245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Your attacks against <strong>Beast</strong> creatures let you inflict <strong>Slow</strong>, <strong>Weak</strong>, or strip one damage Resistance until the end of the scene.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "VQmx7LT1dPQxnQXM",
+          "originalParentId": "2t9fQihUfuKxSR7Z",
+          "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.VQmx7LT1dPQxnQXM"
+        },
+        "fabula-ultima-companion": {
+          "aeFamily": "bane-oil",
+          "category": "buff",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "$deleted": false,
+                "effect_kind": "open_action_menu",
+                "effect_label": "bo_hit",
+                "menu_option_labels": "Slow|Weak|Lose a Resistance",
+                "menu_option_refs": "bo_slow, bo_weak, bo_res",
+                "menu_subtitle": "The beast bane oil bites. Choose one.",
+                "menu_title": "Bane Oils"
+              },
+              "1": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_template_ref": "Slow",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_slow",
+                "target_ref": "trigger_subject"
+              },
+              "2": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_template_ref": "Weak",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_weak",
+                "target_ref": "trigger_subject"
+              },
+              "3": {
+                "$deleted": false,
+                "condition_formula": "TARGET_AFFINITY_PHYSICAL == 1 || TARGET_AFFINITY_AIR == 1 || TARGET_AFFINITY_BOLT == 1 || TARGET_AFFINITY_DARK == 1 || TARGET_AFFINITY_EARTH == 1 || TARGET_AFFINITY_FIRE == 1 || TARGET_AFFINITY_ICE == 1 || TARGET_AFFINITY_LIGHT == 1 || TARGET_AFFINITY_POISON == 1",
+                "effect_kind": "open_action_menu",
+                "effect_label": "bo_res",
+                "menu_option_labels": "Physical|Air|Bolt|Dark|Earth|Fire|Ice|Light|Poison",
+                "menu_option_refs": "bo_r_physical, bo_r_air, bo_r_bolt, bo_r_dark, bo_r_earth, bo_r_fire, bo_r_ice, bo_r_light, bo_r_poison",
+                "menu_subtitle": "Choose the damage Resistance the creature loses until the end of the scene.",
+                "menu_title": "Bane Oils: Resistance"
+              },
+              "4": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Physical)",
+                "condition_formula": "TARGET_AFFINITY_PHYSICAL == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_physical",
+                "target_ref": "trigger_subject"
+              },
+              "5": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Air)",
+                "condition_formula": "TARGET_AFFINITY_AIR == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_air",
+                "target_ref": "trigger_subject"
+              },
+              "6": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Bolt)",
+                "condition_formula": "TARGET_AFFINITY_BOLT == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_bolt",
+                "target_ref": "trigger_subject"
+              },
+              "7": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Dark)",
+                "condition_formula": "TARGET_AFFINITY_DARK == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_dark",
+                "target_ref": "trigger_subject"
+              },
+              "8": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Earth)",
+                "condition_formula": "TARGET_AFFINITY_EARTH == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_earth",
+                "target_ref": "trigger_subject"
+              },
+              "9": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Fire)",
+                "condition_formula": "TARGET_AFFINITY_FIRE == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_fire",
+                "target_ref": "trigger_subject"
+              },
+              "10": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Ice)",
+                "condition_formula": "TARGET_AFFINITY_ICE == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_ice",
+                "target_ref": "trigger_subject"
+              },
+              "11": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Light)",
+                "condition_formula": "TARGET_AFFINITY_LIGHT == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_light",
+                "target_ref": "trigger_subject"
+              },
+              "12": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Poison)",
+                "condition_formula": "TARGET_AFFINITY_POISON == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_poison",
+                "target_ref": "trigger_subject"
+              }
+            },
+            "name": "Bane Oils",
+            "reaction_config_table": {
+              "0": {
+                "$deleted": false,
+                "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_SPECIES_IS_BEAST == 1",
+                "reaction_effect_ref": "bo_hit",
+                "reaction_passive_mode": "ask",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_deals_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/consumables/potions/bottle-round-corked-green.webp",
+      "name": "Bane Oils (Beast)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-bane-oils-beast"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "wCT70c8KKYlPu1O1",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679399245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.bane_oil_humanoid",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>Chosen Species for Bane Oils. Enable one of these per Skill Level taken.</p>",
+      "disabled": true,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "wCT70c8KKYlPu1O1",
+          "originalParentId": "2t9fQihUfuKxSR7Z",
+          "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.wCT70c8KKYlPu1O1"
+        },
+        "fabula-ultima-companion": {},
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/consumables/potions/bottle-round-corked-green.webp",
+      "name": "Bane Oils: Humanoid",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "XRwduso2VW7vIcKP",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679399245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_6",
+          "mode": 5,
+          "priority": 90,
+          "value": "aeAffinityCap(\"NA\")"
+        }
+      ],
+      "description": "<p>A bane oil has stripped this creature's Resistance to <strong>fire</strong> damage until the end of the scene.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "XRwduso2VW7vIcKP",
+          "originalParentId": "2t9fQihUfuKxSR7Z",
+          "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.XRwduso2VW7vIcKP"
+        },
+        "fabula-ultima-companion": {
+          "category": "debuff"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/unholy/strike-body-life-soul-green.webp",
+      "name": "Bane Oils Exposed (Fire)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-bane-oils-exposed-fire"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "y4x7BX8a9u6aZmsg",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679399245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Your attacks against <strong>Humanoid</strong> creatures let you inflict <strong>Slow</strong>, <strong>Weak</strong>, or strip one damage Resistance until the end of the scene.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "y4x7BX8a9u6aZmsg",
+          "originalParentId": "2t9fQihUfuKxSR7Z",
+          "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.y4x7BX8a9u6aZmsg"
+        },
+        "fabula-ultima-companion": {
+          "aeFamily": "bane-oil",
+          "category": "buff",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "$deleted": false,
+                "effect_kind": "open_action_menu",
+                "effect_label": "bo_hit",
+                "menu_option_labels": "Slow|Weak|Lose a Resistance",
+                "menu_option_refs": "bo_slow, bo_weak, bo_res",
+                "menu_subtitle": "The humanoid bane oil bites. Choose one.",
+                "menu_title": "Bane Oils"
+              },
+              "1": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_template_ref": "Slow",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_slow",
+                "target_ref": "trigger_subject"
+              },
+              "2": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_template_ref": "Weak",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_weak",
+                "target_ref": "trigger_subject"
+              },
+              "3": {
+                "$deleted": false,
+                "condition_formula": "TARGET_AFFINITY_PHYSICAL == 1 || TARGET_AFFINITY_AIR == 1 || TARGET_AFFINITY_BOLT == 1 || TARGET_AFFINITY_DARK == 1 || TARGET_AFFINITY_EARTH == 1 || TARGET_AFFINITY_FIRE == 1 || TARGET_AFFINITY_ICE == 1 || TARGET_AFFINITY_LIGHT == 1 || TARGET_AFFINITY_POISON == 1",
+                "effect_kind": "open_action_menu",
+                "effect_label": "bo_res",
+                "menu_option_labels": "Physical|Air|Bolt|Dark|Earth|Fire|Ice|Light|Poison",
+                "menu_option_refs": "bo_r_physical, bo_r_air, bo_r_bolt, bo_r_dark, bo_r_earth, bo_r_fire, bo_r_ice, bo_r_light, bo_r_poison",
+                "menu_subtitle": "Choose the damage Resistance the creature loses until the end of the scene.",
+                "menu_title": "Bane Oils: Resistance"
+              },
+              "4": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Physical)",
+                "condition_formula": "TARGET_AFFINITY_PHYSICAL == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_physical",
+                "target_ref": "trigger_subject"
+              },
+              "5": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Air)",
+                "condition_formula": "TARGET_AFFINITY_AIR == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_air",
+                "target_ref": "trigger_subject"
+              },
+              "6": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Bolt)",
+                "condition_formula": "TARGET_AFFINITY_BOLT == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_bolt",
+                "target_ref": "trigger_subject"
+              },
+              "7": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Dark)",
+                "condition_formula": "TARGET_AFFINITY_DARK == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_dark",
+                "target_ref": "trigger_subject"
+              },
+              "8": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Earth)",
+                "condition_formula": "TARGET_AFFINITY_EARTH == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_earth",
+                "target_ref": "trigger_subject"
+              },
+              "9": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Fire)",
+                "condition_formula": "TARGET_AFFINITY_FIRE == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_fire",
+                "target_ref": "trigger_subject"
+              },
+              "10": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Ice)",
+                "condition_formula": "TARGET_AFFINITY_ICE == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_ice",
+                "target_ref": "trigger_subject"
+              },
+              "11": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Light)",
+                "condition_formula": "TARGET_AFFINITY_LIGHT == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_light",
+                "target_ref": "trigger_subject"
+              },
+              "12": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Poison)",
+                "condition_formula": "TARGET_AFFINITY_POISON == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_poison",
+                "target_ref": "trigger_subject"
+              }
+            },
+            "name": "Bane Oils",
+            "reaction_config_table": {
+              "0": {
+                "$deleted": false,
+                "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_SPECIES_IS_HUMANOID == 1",
+                "reaction_effect_ref": "bo_hit",
+                "reaction_passive_mode": "ask",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_deals_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/consumables/potions/bottle-round-corked-green.webp",
+      "name": "Bane Oils (Humanoid)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-bane-oils-humanoid"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "YeRWYZZkpmKTyEm2",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679399245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.bane_oil_plant",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>Chosen Species for Bane Oils. Enable one of these per Skill Level taken.</p>",
+      "disabled": true,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "YeRWYZZkpmKTyEm2",
+          "originalParentId": "2t9fQihUfuKxSR7Z",
+          "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.YeRWYZZkpmKTyEm2"
+        },
+        "fabula-ultima-companion": {},
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/consumables/potions/bottle-round-corked-green.webp",
+      "name": "Bane Oils: Plant",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "yF4FNdDR3Uy1xA66",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679399245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.bane_oil_undead",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>Chosen Species for Bane Oils. Enable one of these per Skill Level taken.</p>",
+      "disabled": true,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "yF4FNdDR3Uy1xA66",
+          "originalParentId": "2t9fQihUfuKxSR7Z",
+          "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.yF4FNdDR3Uy1xA66"
+        },
+        "fabula-ultima-companion": {},
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/consumables/potions/bottle-round-corked-green.webp",
+      "name": "Bane Oils: Undead",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "ZkC1BDjIsaJiwvzu",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790679399245,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Your attacks against <strong>Monster</strong> creatures let you inflict <strong>Slow</strong>, <strong>Weak</strong>, or strip one damage Resistance until the end of the scene.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "ZkC1BDjIsaJiwvzu",
+          "originalParentId": "2t9fQihUfuKxSR7Z",
+          "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.ZkC1BDjIsaJiwvzu"
+        },
+        "fabula-ultima-companion": {
+          "aeFamily": "bane-oil",
+          "category": "buff",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "$deleted": false,
+                "effect_kind": "open_action_menu",
+                "effect_label": "bo_hit",
+                "menu_option_labels": "Slow|Weak|Lose a Resistance",
+                "menu_option_refs": "bo_slow, bo_weak, bo_res",
+                "menu_subtitle": "The monster bane oil bites. Choose one.",
+                "menu_title": "Bane Oils"
+              },
+              "1": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_template_ref": "Slow",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_slow",
+                "target_ref": "trigger_subject"
+              },
+              "2": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_template_ref": "Weak",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_weak",
+                "target_ref": "trigger_subject"
+              },
+              "3": {
+                "$deleted": false,
+                "condition_formula": "TARGET_AFFINITY_PHYSICAL == 1 || TARGET_AFFINITY_AIR == 1 || TARGET_AFFINITY_BOLT == 1 || TARGET_AFFINITY_DARK == 1 || TARGET_AFFINITY_EARTH == 1 || TARGET_AFFINITY_FIRE == 1 || TARGET_AFFINITY_ICE == 1 || TARGET_AFFINITY_LIGHT == 1 || TARGET_AFFINITY_POISON == 1",
+                "effect_kind": "open_action_menu",
+                "effect_label": "bo_res",
+                "menu_option_labels": "Physical|Air|Bolt|Dark|Earth|Fire|Ice|Light|Poison",
+                "menu_option_refs": "bo_r_physical, bo_r_air, bo_r_bolt, bo_r_dark, bo_r_earth, bo_r_fire, bo_r_ice, bo_r_light, bo_r_poison",
+                "menu_subtitle": "Choose the damage Resistance the creature loses until the end of the scene.",
+                "menu_title": "Bane Oils: Resistance"
+              },
+              "4": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Physical)",
+                "condition_formula": "TARGET_AFFINITY_PHYSICAL == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_physical",
+                "target_ref": "trigger_subject"
+              },
+              "5": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Air)",
+                "condition_formula": "TARGET_AFFINITY_AIR == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_air",
+                "target_ref": "trigger_subject"
+              },
+              "6": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Bolt)",
+                "condition_formula": "TARGET_AFFINITY_BOLT == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_bolt",
+                "target_ref": "trigger_subject"
+              },
+              "7": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Dark)",
+                "condition_formula": "TARGET_AFFINITY_DARK == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_dark",
+                "target_ref": "trigger_subject"
+              },
+              "8": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Earth)",
+                "condition_formula": "TARGET_AFFINITY_EARTH == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_earth",
+                "target_ref": "trigger_subject"
+              },
+              "9": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Fire)",
+                "condition_formula": "TARGET_AFFINITY_FIRE == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_fire",
+                "target_ref": "trigger_subject"
+              },
+              "10": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Ice)",
+                "condition_formula": "TARGET_AFFINITY_ICE == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_ice",
+                "target_ref": "trigger_subject"
+              },
+              "11": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Light)",
+                "condition_formula": "TARGET_AFFINITY_LIGHT == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_light",
+                "target_ref": "trigger_subject"
+              },
+              "12": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Bane Oils Exposed (Poison)",
+                "condition_formula": "TARGET_AFFINITY_POISON == 1",
+                "effect_kind": "apply_ae",
+                "effect_label": "bo_r_poison",
+                "target_ref": "trigger_subject"
+              }
+            },
+            "name": "Bane Oils",
+            "reaction_config_table": {
+              "0": {
+                "$deleted": false,
+                "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_SPECIES_IS_MONSTER == 1",
+                "reaction_effect_ref": "bo_hit",
+                "reaction_passive_mode": "ask",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_deals_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/consumables/potions/bottle-round-corked-green.webp",
+      "name": "Bane Oils (Monster)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-bane-oils-monster"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -24,26 +2650,188 @@
   "system": {
     "container": null,
     "props": {
+      "availability_formula": "FLAG_BANE_OIL_BEAST + FLAG_BANE_OIL_CONSTRUCT + FLAG_BANE_OIL_DEMON + FLAG_BANE_OIL_ELEMENTAL + FLAG_BANE_OIL_HUMANOID + FLAG_BANE_OIL_MONSTER + FLAG_BANE_OIL_PLANT + FLAG_BANE_OIL_UNDEAD >= 1",
+      "availability_reason": "Choose a Species first: enable a 'Bane Oils: <Species>' effect on this Skill.",
       "check_bonus": "0",
       "class": "Slayer",
       "cost": "2 IP",
       "damage_bonus": "0",
       "description": "<p>Each time you take this Skill, choose a <strong>creature Species</strong>. You may use an action and spend 2 Inventory Points to apply a <strong>bane oil</strong> for one of your chosen Species to a weapon equipped by you or a willing creature. If you have the weapon equipped, you may perform a <strong>free attack</strong> with it as part of the same action.</p>\n\n<p>Until the end of the scene or a different bane oil is applied to the weapon, when a creature of the same Species as the bane oil is hit by the weapon, the attacker picks one of the following:</p>\n<ul>\n  <li>the creature becomes \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n      <a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\">\n        <strong><span style=\"text-decoration: underline;\">Slow</span></strong>\n      </a>\n    </span></span>\n  </li>\n  <li>the creature becomes \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n      <a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\">\n        <strong><span style=\"text-decoration: underline;\">Weak</span></strong>\n      </a>\n    </span></span>\n  </li>\n  <li>the creature loses one of its damage Resistances until the end of the scene</li>\n</ul>\n<p>The attacker may choose the damage type; otherwise, the GM chooses one at random.</p>\n",
       "duration": "Scene",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "effect_kind": "open_action_menu",
+          "effect_label": "bo_menu",
+          "menu_option_labels": "Beast|Construct|Demon|Elemental|Humanoid|Monster|Plant|Undead",
+          "menu_option_refs": "bo_beast, bo_construct, bo_demon, bo_elemental, bo_humanoid, bo_monster, bo_plant, bo_undead",
+          "menu_subtitle": "Choose the bane oil to apply.",
+          "menu_title": "Bane Oils"
+        },
+        "1": {
+          "$deleted": false,
+          "chain_steps": "bo_ae_beast, bo_free",
+          "condition_formula": "FLAG_BANE_OIL_BEAST == 1",
+          "effect_kind": "chain",
+          "effect_label": "bo_beast"
+        },
+        "2": {
+          "$deleted": false,
+          "chain_steps": "bo_ae_construct, bo_free",
+          "condition_formula": "FLAG_BANE_OIL_CONSTRUCT == 1",
+          "effect_kind": "chain",
+          "effect_label": "bo_construct"
+        },
+        "3": {
+          "$deleted": false,
+          "chain_steps": "bo_ae_demon, bo_free",
+          "condition_formula": "FLAG_BANE_OIL_DEMON == 1",
+          "effect_kind": "chain",
+          "effect_label": "bo_demon"
+        },
+        "4": {
+          "$deleted": false,
+          "chain_steps": "bo_ae_elemental, bo_free",
+          "condition_formula": "FLAG_BANE_OIL_ELEMENTAL == 1",
+          "effect_kind": "chain",
+          "effect_label": "bo_elemental"
+        },
+        "5": {
+          "$deleted": false,
+          "chain_steps": "bo_ae_humanoid, bo_free",
+          "condition_formula": "FLAG_BANE_OIL_HUMANOID == 1",
+          "effect_kind": "chain",
+          "effect_label": "bo_humanoid"
+        },
+        "6": {
+          "$deleted": false,
+          "chain_steps": "bo_ae_monster, bo_free",
+          "condition_formula": "FLAG_BANE_OIL_MONSTER == 1",
+          "effect_kind": "chain",
+          "effect_label": "bo_monster"
+        },
+        "7": {
+          "$deleted": false,
+          "chain_steps": "bo_ae_plant, bo_free",
+          "condition_formula": "FLAG_BANE_OIL_PLANT == 1",
+          "effect_kind": "chain",
+          "effect_label": "bo_plant"
+        },
+        "8": {
+          "$deleted": false,
+          "chain_steps": "bo_ae_undead, bo_free",
+          "condition_formula": "FLAG_BANE_OIL_UNDEAD == 1",
+          "effect_kind": "chain",
+          "effect_label": "bo_undead"
+        },
+        "9": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace_family",
+          "ae_duration_rounds": "scene",
+          "ae_family": "bane-oil",
+          "ae_template_ref": "Bane Oils (Beast)",
+          "effect_kind": "apply_ae",
+          "effect_label": "bo_ae_beast",
+          "target_ref": "action_targets"
+        },
+        "10": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace_family",
+          "ae_duration_rounds": "scene",
+          "ae_family": "bane-oil",
+          "ae_template_ref": "Bane Oils (Construct)",
+          "effect_kind": "apply_ae",
+          "effect_label": "bo_ae_construct",
+          "target_ref": "action_targets"
+        },
+        "11": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace_family",
+          "ae_duration_rounds": "scene",
+          "ae_family": "bane-oil",
+          "ae_template_ref": "Bane Oils (Demon)",
+          "effect_kind": "apply_ae",
+          "effect_label": "bo_ae_demon",
+          "target_ref": "action_targets"
+        },
+        "12": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace_family",
+          "ae_duration_rounds": "scene",
+          "ae_family": "bane-oil",
+          "ae_template_ref": "Bane Oils (Elemental)",
+          "effect_kind": "apply_ae",
+          "effect_label": "bo_ae_elemental",
+          "target_ref": "action_targets"
+        },
+        "13": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace_family",
+          "ae_duration_rounds": "scene",
+          "ae_family": "bane-oil",
+          "ae_template_ref": "Bane Oils (Humanoid)",
+          "effect_kind": "apply_ae",
+          "effect_label": "bo_ae_humanoid",
+          "target_ref": "action_targets"
+        },
+        "14": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace_family",
+          "ae_duration_rounds": "scene",
+          "ae_family": "bane-oil",
+          "ae_template_ref": "Bane Oils (Monster)",
+          "effect_kind": "apply_ae",
+          "effect_label": "bo_ae_monster",
+          "target_ref": "action_targets"
+        },
+        "15": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace_family",
+          "ae_duration_rounds": "scene",
+          "ae_family": "bane-oil",
+          "ae_template_ref": "Bane Oils (Plant)",
+          "effect_kind": "apply_ae",
+          "effect_label": "bo_ae_plant",
+          "target_ref": "action_targets"
+        },
+        "16": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace_family",
+          "ae_duration_rounds": "scene",
+          "ae_family": "bane-oil",
+          "ae_template_ref": "Bane Oils (Undead)",
+          "effect_kind": "apply_ae",
+          "effect_label": "bo_ae_undead",
+          "target_ref": "action_targets"
+        },
+        "17": {
+          "$deleted": false,
+          "allowed_types": "Attack",
+          "condition_formula": "ACTION_TARGETS_SELF == 1",
+          "effect_kind": "open_action_menu",
+          "effect_label": "bo_free",
+          "free_mode": true
+        }
+      },
       "heroic_requirement": "",
+      "implementation_note": "Species: enable one 'Bane Oils: <Species>' effect on this skill for each Skill Level taken (the menu only offers enabled species; the count is not enforced). The oil rides the WIELDER's weapon attacks (not one specific weapon). The attacker always chooses which Resistance is lost.",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
       "isOffensiveSpell": false,
+      "isReaction": false,
       "level": "1",
       "max_level": "5",
       "name": "Bane Oils",
+      "on_activate_effect_ref": "bo_menu",
       "optional_params": {},
+      "pre_activate_effect_ref": "bo_menu",
+      "reaction_config_table": {},
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",
       "skill_range": "Any",
-      "skill_target": "One creature of the chosen species",
+      "skill_target": "One Weapon",
       "skill_type": "Active",
       "type_damage": "",
       "use_optional_params": false
