@@ -5,11 +5,14 @@
 // Flag path: flags.<MODULE_ID>.dungeonPathing.tileStates
 //
 // Each entry:
-//   { initialType, currentType, initialTexture }
+//   { initialType, currentType, initialTexture, expired? }
 //
 // Developer API:
 //   DungeonPathing.TileState.resetDungeon(scene)        - reset all to initial
 //   DungeonPathing.TileState.clearTile(scene, tileId)   - mark tile as blank
+//   DungeonPathing.TileState.expireTile(scene, tileId)  - story tile played (desaturate, keep type)
+//   DungeonPathing.TileState.unexpireTile(scene, tileId)
+//   DungeonPathing.TileState.expireVisitedStoryTiles(scene?) - one-shot back-fill
 //   DungeonPathing.TileState.mutateTile(scene, tileId, newType, newTexture)
 //   DungeonPathing.TileState.getCurrentType(scene, tileId)
 //   DungeonPathing.TileState.getInitialType(scene, tileId)
@@ -133,6 +136,66 @@
     await td.unsetFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.consumed`).catch(() => {});
   }
 
+  // ── Expired story tiles ─────────────────────────────────────────────────────
+  // A Story / Final Story tile the party already played goes "expired": it keeps
+  // its type (Fast Travel, teleporter and scan mode still see a story tile) and
+  // only swaps to a desaturated texture. Recorded in two places, like `consumed`:
+  // the scene-flag entry (`tileStates.<id>.expired`) and the TILE DOCUMENT
+  // (`dungeonPathing.expired`), plus the pre-expire texture so a reset restores
+  // the real look rather than a stale `initialTexture`.
+  const STORY_TYPES = new Set(["story", "final"]);
+
+  function expiredKey()  { return `${DP.PATHING_ROOT_KEY}.expired`; }
+  function preTexKey()   { return `${DP.PATHING_ROOT_KEY}.preExpireTexture`; }
+
+  function isDocExpired(tileDoc) {
+    const raw = tileDoc?.getFlag?.(DP.MODULE_ID, expiredKey());
+    return raw === true || raw === "true";
+  }
+
+  // Undo an expiry: restore the stashed texture and drop both markers.
+  // Returns true when the tile was expired. Must run as GM.
+  async function unexpire(scene, tileId) {
+    const td      = scene?.tiles?.get(tileId);
+    const entry   = getStates(scene)[tileId];
+    const wasExp  = isDocExpired(td) || !!entry?.expired;
+    if (!wasExp) return false;
+
+    if (entry && "expired" in entry) {
+      await scene.unsetFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.tileStates.${tileId}.expired`)
+        .catch(e => console.warn(TAG, "unexpire: state unset failed", e));
+    }
+    if (td) {
+      const stash  = td.getFlag(DP.MODULE_ID, preTexKey());
+      const update = {
+        [`flags.${DP.MODULE_ID}.${DP.PATHING_ROOT_KEY}.-=expired`]:          null,
+        [`flags.${DP.MODULE_ID}.${DP.PATHING_ROOT_KEY}.-=preExpireTexture`]: null,
+      };
+      if (stash) update["texture.src"] = stash;
+      await td.update(update, { dungeonPathing: true })
+        .catch(e => console.warn(TAG, "unexpire: tile update failed", e));
+    }
+    return true;
+  }
+
+  // Shared body of resetDungeon / resetTiles for one tile: re-arm it, restore its
+  // look, and return the entry to write back (without the `expired` marker —
+  // unexpire() already deleted it, and setStates merges so it must not reappear).
+  async function restoreEntry(scene, id, entry) {
+    await unstampConsumed(scene, id);
+    const wasExpired = await unexpire(scene, id);
+    // An untouched story tile keeps its current texture: its `initialTexture` is
+    // often stale (seeded while the tile still wore Blank/Door art), so
+    // "restoring" it would blank a live story tile.
+    const keepLook = STORY_TYPES.has(entry.initialType) && entry.currentType === entry.initialType;
+    if (!wasExpired && !keepLook && entry.initialTexture) {
+      const tileDoc = scene.tiles.get(id);
+      if (tileDoc) await tileDoc.update({ "texture.src": entry.initialTexture }).catch(() => {});
+    }
+    const { expired, ...rest } = entry;
+    return { ...rest, currentType: entry.initialType };
+  }
+
   DP.TileState = {
     /**
      * Ensure a tile has a state entry.  Call this when the graph is first built.
@@ -160,11 +223,19 @@
       const initialTexture = tileDoc.texture?.src ?? null;
 
       // Write only this tile's entry — avoids broadcasting the full 129-tile object.
-      await scene.setFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.tileStates.${id}`, {
+      const entry = {
         initialType:    inferredType,
         currentType:    isConsumed ? DP.TILE_TYPES.BLANK : inferredType,
         initialTexture,
-      }).catch(e => console.warn(TAG, "ensure failed", e));
+      };
+      // Same durability for an expired story tile: the tile-doc marker survives
+      // a lost scene entry, so carry it back into the fresh one.
+      if (isDocExpired(tileDoc)) {
+        entry.expired        = true;
+        entry.initialTexture = tileDoc.getFlag(DP.MODULE_ID, preTexKey()) ?? initialTexture;
+      }
+      await scene.setFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.tileStates.${id}`, entry)
+        .catch(e => console.warn(TAG, "ensure failed", e));
     },
 
     /** Get the CURRENT type of a tile (after any mutations). */
@@ -229,6 +300,79 @@
     },
 
     /**
+     * Mark a Story / Final Story tile as played: swap to the desaturated texture
+     * and record it, WITHOUT changing its type — the tile (and any teleporter on
+     * it) keeps working. Idempotent: re-landing on an expired tile writes nothing.
+     * Must run as GM.  Returns { ok, changed }.
+     */
+    async expireTile(scene, tileId) {
+      if (!game.user?.isGM) return { ok: false, changed: false };
+      const td = scene?.tiles?.get(tileId);
+      if (!td) return { ok: false, changed: false };
+
+      // A partial entry ({ expired }) would make ensure() skip the tile forever,
+      // leaving it with no type — so seed the full entry first.
+      if (!getStates(scene)[tileId]) await this.ensure(scene, td);
+      const entry = getStates(scene)[tileId];
+
+      const docDone   = isDocExpired(td) && td.texture?.src === DP.EXPIRED_STORY_TILE_SRC;
+      const stateDone = !entry || entry.expired === true;
+      if (docDone && stateDone) return { ok: true, changed: false };
+
+      if (entry && entry.expired !== true) {
+        await scene.setFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.tileStates.${tileId}.expired`, true)
+          .catch(e => console.warn(TAG, "expireTile: state write failed", e));
+      }
+      if (!docDone) {
+        const cur    = td.texture?.src ?? null;
+        const update = {
+          "texture.src": DP.EXPIRED_STORY_TILE_SRC,
+          [`flags.${DP.MODULE_ID}.${expiredKey()}`]: true,
+        };
+        // Never stash the expired texture itself (a repeat call after a partial write).
+        if (cur && cur !== DP.EXPIRED_STORY_TILE_SRC) {
+          update[`flags.${DP.MODULE_ID}.${preTexKey()}`] = cur;
+        }
+        await td.update(update, { dungeonPathing: true })
+          .catch(e => console.warn(TAG, "expireTile: tile update failed", e));
+      }
+      return { ok: true, changed: true };
+    },
+
+    /** Restore an expired story tile to its un-played look. Must run as GM. */
+    async unexpireTile(scene, tileId) {
+      if (!game.user?.isGM) return false;
+      return unexpire(scene, tileId);
+    },
+
+    /** True if the party already played this Story / Final Story tile. */
+    isExpired(scene, tileId) {
+      return !!getStates(scene)[tileId]?.expired || isDocExpired(scene?.tiles?.get(tileId));
+    },
+
+    /**
+     * One-shot back-fill: expire every Story / Final Story tile the party has
+     * already stepped on (visitedTiles) — story beats played before this
+     * feature existed. Idempotent. Pass no scene to sweep the world. Must run as GM.
+     */
+    async expireVisitedStoryTiles(scene = null) {
+      if (!game.user?.isGM) return { expired: 0, details: [] };
+      const scenes  = scene ? [scene] : [...game.scenes];
+      const details = [];
+      for (const sc of scenes) {
+        const states  = getStates(sc);
+        const visited = getVisited(sc);
+        for (const [id, st] of Object.entries(states)) {
+          if (!STORY_TYPES.has(st?.initialType) || !visited[id]) continue;
+          const { changed } = await this.expireTile(sc, id);
+          if (changed) details.push({ scene: sc.name, tileId: id, type: st.initialType });
+        }
+      }
+      if (details.length) console.log(TAG, `expireVisitedStoryTiles — expired ${details.length} tile(s)`, details);
+      return { expired: details.length, details };
+    },
+
+    /**
      * Reset ALL tiles back to their initial state.
      * Restores textures as well.  Intended as a developer tool.
      * Must run as GM.
@@ -250,12 +394,7 @@
       // Restore tile states + textures
       const updated = {};
       for (const [id, entry] of Object.entries(states)) {
-        updated[id] = { ...entry, currentType: entry.initialType };
-        await unstampConsumed(scene, id);
-        if (entry.initialTexture) {
-          const tileDoc = scene.tiles.get(id);
-          if (tileDoc) await tileDoc.update({ "texture.src": entry.initialTexture }).catch(() => {});
-        }
+        updated[id] = await restoreEntry(scene, id, entry);
       }
       await setStates(scene, updated).catch(e => console.warn(TAG, "resetDungeon — setStates failed:", e));
       console.log(TAG, `resetDungeon — tile states restored to initial (${stateCount} tile(s)).`);
@@ -360,12 +499,7 @@
 
       const updated = {};
       for (const [id, entry] of Object.entries(states)) {
-        updated[id] = { ...entry, currentType: entry.initialType };
-        await unstampConsumed(scene, id);
-        if (entry.initialTexture) {
-          const tileDoc = scene.tiles.get(id);
-          if (tileDoc) await tileDoc.update({ "texture.src": entry.initialTexture }).catch(() => {});
-        }
+        updated[id] = await restoreEntry(scene, id, entry);
       }
       await setStates(scene, updated).catch(e => console.warn(TAG, "resetTiles — setStates failed:", e));
       await scene.unsetFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.visitedTiles`)
