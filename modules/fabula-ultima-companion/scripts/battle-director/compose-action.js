@@ -182,7 +182,13 @@ export async function composeAction({
       budgetText: grant ? `${grant.sourceLabel ?? "Free"} Free Action` : null,
       // Action-gating debuffs (Frightened/Silence/…) — frozen Array<{label,
       // reason}> captured at snapshot time; the menu greys + red-stamps these.
-      disabledLabels: [...(snap?.blockedActions ?? []), ...ultimaDisabled, ...objectiveDisabled],
+      // A label with a per-skill exemption (skill tag ignore_gating_<ae>, e.g.
+      // Rumble! under Berserk) stays OPEN; composeSkill narrows its picker to the
+      // exempt skills and the GM DECLARE backstop admits only those.
+      disabledLabels: [
+        ...(snap?.blockedActions ?? []).filter((b) => !(snap?.gatingExemptions ?? []).some((e) => e?.label === b?.label)),
+        ...ultimaDisabled, ...objectiveDisabled,
+      ],
       showUltima: !!ultimaSpec,
     });
     if (externallyCancelled || command === null) break;
@@ -1134,7 +1140,27 @@ async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell,
   // player-cast free-action spell (Bimagus, Acceleration) lost its MP cap +
   // allow-list on the client — the picker showed every spell uncapped.
   const grant = freeActionGrant ?? freeActions.get(snap.actorId);
-  const allowedRefs = grant?.allowedSkillRefs ?? null;
+  let allowedRefs = grant?.allowedSkillRefs ?? null;
+  // Gated label with per-skill exemptions (Berserk → only Attack, but Rumble! is
+  // tagged ignore_gating_berserk): the blade was left open, so restrict the menu
+  // to the exempt skills — intersected with any free-action allow-list.
+  const gateLabel = isSpell ? "Spell" : "Skill";
+  const gatingEx = (snap?.blockedActions ?? []).some((b) => b?.label === gateLabel)
+    ? (snap?.gatingExemptions ?? []).find((e) => e?.label === gateLabel) ?? null
+    : null;
+  if (gatingEx) {
+    const exRefs = [...(gatingEx.refs ?? [])];
+    if (Array.isArray(allowedRefs) && allowedRefs.length) {
+      const want = new Set(allowedRefs.map((r) => String(r ?? "").trim().toLowerCase()));
+      allowedRefs = exRefs.filter((u, i) => want.has(String(u).toLowerCase()) || want.has(String(gatingEx.names?.[i] ?? "")));
+    } else {
+      allowedRefs = exRefs;
+    }
+    if (!allowedRefs.length) {
+      ui.notifications?.warn(`${gatingEx.reason}: cannot use the ${gateLabel} action.`);
+      return { cancelled: true, reason: "gated" };
+    }
+  }
   // Free-action MP cap (Acceleration → spells ≤ 10 MP). Spell-only: a Skill/Active
   // free action carries no spell-cost cap. Null on a normal turn or uncapped grant.
   const maxMpCost = isSpell ? (grant?.maxMpCost ?? null) : null;

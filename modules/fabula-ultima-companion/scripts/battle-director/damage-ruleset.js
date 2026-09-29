@@ -92,6 +92,32 @@ export function hasCrush(keywords) {
   return normalizeKeywords(keywords).includes("crush");
 }
 
+// Keywords an ActiveEffect grants to EVERY damage instance its bearer deals —
+// the AE change `{ key: "outgoing_action_keywords", value: "ignore_affinity" }`
+// (comma list). A pure change-row marker the engine reads itself, like
+// disable_action / max_action_targets: CSB never applies it to a prop. Folded
+// into the action's keywords on the card path (action-profile describePrimary)
+// and into a deal_damage row's keywords on the effect path (skill-effects), so
+// "until the end of this turn, all damage you deal …" is one AE. First user:
+// Phantom Strength (ignore_affinity).
+export const OUTGOING_KEYWORDS_AE_KEY = "outgoing_action_keywords";
+export function aeOutgoingActionKeywords(actor) {
+  if (!actor) return [];
+  const effects = actor?.appliedEffects
+    ? Array.from(actor.appliedEffects)
+    : (actor?.effects?.contents ?? actor?.effects ?? []);
+  const out = new Set();
+  for (const ae of effects) {
+    if (!ae || ae.disabled) continue;
+    for (const ch of (ae.changes ?? [])) {
+      const k = String(ch?.key ?? "").replace(/^system\.props\./, "");
+      if (k !== OUTGOING_KEYWORDS_AE_KEY) continue;
+      for (const kw of normalizeKeywords(ch.value)) out.add(kw);
+    }
+  }
+  return [...out];
+}
+
 // Shared normaliser for the three keyword sources above.
 function normalizeKeywords(keywords) {
   if (!keywords) return [];
@@ -118,7 +144,13 @@ const BYPASS_KEYWORD_RANK = Object.freeze({
   ignore_resistance: 1,   // RS -> NE
   ignore_immunity: 2,     // RS, IM -> NE  (implies resistance)
   ignore_absorption: 3,   // RS, IM, AB -> NE
+  // "…ignore Affinities" (Phantom Strength) — the one member that ALSO
+  // neutralises VU: the text ignores affinities as such, not just defences, so
+  // the damage lands as if every affinity were NE (a real trade-off vs a
+  // Vulnerable target, which is why the skill makes it optional).
+  ignore_affinity: 4,     // VU, RS, IM, AB -> NE
 });
+const IGNORE_ALL_AFFINITY_RANK = 4;
 
 // Highest bypass rank present in the list (0 = none).
 export function affinityBypassRank(keywords) {
@@ -134,6 +166,7 @@ export function affinityBypassRank(keywords) {
 export function bypassAffinity(code, rank) {
   if (!rank) return code;
   const c = String(code ?? "").toUpperCase();
+  if (rank >= IGNORE_ALL_AFFINITY_RANK && (c === "VU" || AFFINITY_RANK[c] !== undefined)) return "NE";
   const r = AFFINITY_RANK[c];
   if (r === undefined || r === 0) return code;   // NE / VU / unknown untouched
   return r <= rank ? "NE" : code;

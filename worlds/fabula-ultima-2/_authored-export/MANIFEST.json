@@ -9392,7 +9392,7 @@
         "id": "soSETT1ahFCMf5Aa",
         "name": "Phantom Strength",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "1MKMX1WMuNV4WCBx",
@@ -12986,7 +12986,7 @@
         "id": "efPl3XRtsxc9W2lY",
         "name": "Wind Wall",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "quJxn5TAZFaY5i7C",

@@ -23,7 +23,7 @@ import {
 import { applyAffinityToDamage, readWeaponEfficiency, snapshotTargetForToken, resolvesVsMagicDefense,
          attackerHitRuleInverted } from "./snapshot.js";
 import { applyClassAffinityAndMult, crushAffinity,
-  bypassAffinity, affinityBypassRank } from "./damage-ruleset.js";
+  bypassAffinity, affinityBypassRank, aeOutgoingActionKeywords } from "./damage-ruleset.js";
 import { resolveResourceDef } from "./resources.js";
 import { deriveCheck, decideHit, buildCheckDistribution, checkHitChance } from "./check.js";
 import { applyGmDamageInput, gmDamageInput, applyGmPrimaryOverrides } from "./gm-card-override.js";
@@ -201,7 +201,11 @@ export function crisisKeywordOps(keywords, inCrisis) {
 function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = null, chainVars = null }) {
   const kind = view?.kind ?? ar?.kind ?? "Skill";
   const props = liveAttacker?.system?.props ?? null;
-  const keywords = parseActionKeywords(view);
+  // Inherent keywords + any the ATTACKER's AEs grant to all its damage
+  // (outgoing_action_keywords — Phantom Strength's ignore_affinity).
+  const _aeKw = aeOutgoingActionKeywords(liveAttacker);
+  const _inherentKw = parseActionKeywords(view);
+  const keywords = _aeKw.length ? [...new Set([..._inherentKw, ..._aeKw])] : _inherentKw;
 
   if (kind === "Attack") {
     // An Attack's `view.source` is null (buildActionViewFromAr), so inherent
@@ -756,6 +760,9 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       }
       // Reaction-granted Crush — same one-level step as the inherent one above.
       if (reactionKeywords?.includes("crush")) affinityCode = crushAffinity(affinityCode);
+      // Clamp keywords (inherent/AE-granted + reaction-granted) also cover a
+      // reaction ELEMENT override, which replaced computeAffinity's result above.
+      affinityCode = bypassAffinity(affinityCode, affinityBypassRank([...(primary.keywords ?? []), ...(reactionKeywords ?? [])]));
       damageVal = applyAffinityToDamage(rawDamage, affinityCode);
 
       // Damage-class affinity (strike/magic) + universal damage_taken_mult — the

@@ -695,6 +695,9 @@ export function snapshotDirectorCombatant(dc) {
       // Action-gating debuffs (Frightened/Silence/Confused/Disarmed/Berserk) →
       // frozen Array<{label, reason}>; the Octopath menu greys + red-stamps these.
       blockedActions: snapshotBlockedActions(actor),
+      // Per-skill exemptions from those gates (skill tag ignore_gating_<ae>) —
+      // the menu keeps the blade open and narrows the picker to these skills.
+      gatingExemptions: snapshotGatingExemptions(actor),
       // Intent-filter set (`disable_action_intent`) — the compose-action pickers
       // re-apply it per-entry (hide aid/neutral spells/skills). See Charm/Domination.
       disabledActionIntents: snapshotDisabledActionIntents(actor),
@@ -746,6 +749,9 @@ export function snapshotCombatant(combat) {
       }),
       fumbleThreshold: readPropNum(actor, ["fumble_threshold"], 1),
       blockedActions: snapshotBlockedActions(actor),
+      // Per-skill exemptions from those gates (skill tag ignore_gating_<ae>) —
+      // the menu keeps the blade open and narrows the picker to these skills.
+      gatingExemptions: snapshotGatingExemptions(actor),
       // Intent-filter set (`disable_action_intent`) — the compose-action pickers
       // re-apply it per-entry (hide aid/neutral spells/skills). See Charm/Domination.
       disabledActionIntents: snapshotDisabledActionIntents(actor),
@@ -1282,6 +1288,94 @@ export function getBlockedActionLabels(actor) {
 }
 
 registerBlockedActionReader(getBlockedActionLabels);
+
+// Per-SKILL exemption from label gating — "You may perform this skill even if you
+// are inflicted with Berserk" (Rumble!, Berserker Showdown). A skill opts out of
+// the gate a NAMED AE imposes by carrying the skill tag
+//   ignore_gating_<ae name slug>        e.g. ignore_gating_berserk
+// in `skill_tags`. Only the two label gates (disable_action / enable_action_only)
+// are exemptible, and a skill is exempt from a label only when it names EVERY AE
+// blocking that label — Berserk + Silence on a Spell still blocks a spell tagged
+// for Berserk alone. An intent-filter block (Charm) is never exempt.
+//
+// getBlockedActionLabels is deliberately UNCHANGED: the label stays blocked for
+// every reader (ACTION_BLOCKED_<LABEL>, ActionReader, the NPC autopilot). The
+// exemption is consumed only by the player menu (blade stays open, the picker is
+// narrowed to the exempt skills) and the DECLARE backstop (lets exactly those
+// skills through). Returns Array<{ label, reason, refs:[uuid], names:[lower] }>,
+// one entry per blocked label that has at least one exempt skill.
+export const GATING_EXEMPT_TAG_PREFIX = "ignore_gating_";
+const _gatingSlug = (s) => String(s ?? "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+const _GATING_LABEL_SKILL_TYPE = Object.freeze({ Skill: "active", Spell: "spell" });
+export function getGatingExemptions(actor) {
+  if (!actor || hasIgnoreActionGating(actor)) return [];
+  const blockers = new Map();          // label → Set<ae slug>
+  const addBlocker = (label, slug) => {
+    const L = canonActionLabel(label);
+    if (!L) return;
+    if (!blockers.has(L)) blockers.set(L, new Set());
+    blockers.get(L).add(slug);
+  };
+  const effects = actor?.appliedEffects
+    ? Array.from(actor.appliedEffects)
+    : (actor?.effects?.contents ?? actor?.effects ?? []);
+  const splitList = (raw) => String(raw ?? "").split(/[\s,]+/).map((s) => s.trim()).filter(Boolean);
+  for (const ae of effects) {
+    if (ae?.disabled) continue;
+    const slug = _gatingSlug(ae?.name) || "__unnamed__";
+    for (const ch of (ae?.changes ?? [])) {
+      if (ch?.key === "disable_action") {
+        for (const lbl of splitList(ch.value)) addBlocker(lbl, slug);
+      } else if (ch?.key === "enable_action_only") {
+        const allow = new Set(splitList(ch.value).map(canonActionLabel));
+        for (const lbl of GATEABLE_ACTION_LABELS) if (!allow.has(lbl)) addBlocker(lbl, slug);
+      }
+    }
+  }
+  // Intent blocks on a label can't be exempted — poison the label's set.
+  const disabledIntents = getDisabledActionIntents(actor);
+  for (const [label, intent] of Object.entries(ACTION_LABEL_INTENT)) {
+    if (disabledIntents.has(intent)) addBlocker(label, "__intent__");
+  }
+  const blocked = getBlockedActionLabels(actor);
+  const out = [];
+  for (const [label, slugs] of blockers) {
+    const wantType = _GATING_LABEL_SKILL_TYPE[label];
+    if (!wantType || !blocked.has(label) || slugs.has("__intent__")) continue;
+    const refs = [];
+    const names = [];
+    for (const it of (actor.items?.contents ?? actor.items ?? [])) {
+      const p = it?.system?.props ?? {};
+      if (String(p.skill_type ?? "").trim().toLowerCase() !== wantType) continue;
+      const tags = new Set(String(p.skill_tags ?? "").split(/[\s,]+/)
+        .map((t) => t.trim().toLowerCase().split("@")[0]).filter(Boolean));
+      if (![...slugs].every((s) => tags.has(`${GATING_EXEMPT_TAG_PREFIX}${s}`))) continue;
+      refs.push(it.uuid);
+      names.push(String(it.name ?? "").trim().toLowerCase());
+    }
+    if (refs.length) out.push({ label, reason: blocked.get(label), refs, names });
+  }
+  return out;
+}
+
+function snapshotGatingExemptions(actor) {
+  try {
+    return Object.freeze(getGatingExemptions(actor).map((e) => Object.freeze({
+      label: e.label, reason: e.reason, refs: Object.freeze([...e.refs]), names: Object.freeze([...e.names]),
+    })));
+  } catch (e) {
+    warn("snapshotGatingExemptions threw", e);
+    return Object.freeze([]);
+  }
+}
+
+// True when a DECLARE bundle for a blocked label is one of the exempt skills.
+export function isGatingExemptBundle(snap, bundle) {
+  const ex = (snap?.gatingExemptions ?? []).find((e) => e?.label === bundle?.command);
+  if (!ex) return false;
+  const u = String(bundle?.skillUuid ?? "").trim();
+  return !!u && ex.refs.includes(u);
+}
 
 // Walk an actor's active effects and collect every `disable_action_intent`
 // change → Map<intent, reason> (reason = source-AE name, for the menu stamp).

@@ -32,12 +32,14 @@
       "description": "<p>The target loses 20 Mind Points and also suffers \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a>. <em>Only usable if a Lightning wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>MP loss becomes <strong>30</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>MP loss becomes <strong>40</strong>.</p>\n",
       "duration": "Instantanious",
       "heroic_requirement": "",
+      "implementation_note": "Catalogue entry. Cast through Invocation: its option menu offers this invocation when your Skill Level and the matching Wellspring allow it. Hidden from the action menu so it cannot be clicked on its own.",
       "isCheck": false,
       "isFacet": true,
       "isHeroic": false,
       "isOffensiveSpell": false,
       "level": "1",
       "max_level": "1",
+      "menu_hidden": true,
       "name": "Invoke: Thunder",
       "optional_params": {
         "0": {

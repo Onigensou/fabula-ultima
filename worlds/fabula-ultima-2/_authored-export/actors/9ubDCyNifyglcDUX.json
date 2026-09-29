@@ -962,6 +962,169 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "K9NaIp5RI2yi2pNs",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1790675473779,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "outgoing_action_keywords",
+              "mode": 0,
+              "priority": 20,
+              "value": "ignore_affinity"
+            }
+          ],
+          "description": "<p>Until the end of this turn, all damage you deal ignores Affinities.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "K9NaIp5RI2yi2pNs",
+              "originalParentId": "fODE10J2f6cXvP8t",
+              "originalUuid": "Actor.9ubDCyNifyglcDUX.Item.fODE10J2f6cXvP8t.ActiveEffect.K9NaIp5RI2yi2pNs"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff",
+              "chargeKey": "phantom-strength",
+              "charges": 1,
+              "chargesMax": 1,
+              "lifetimeMode": "applier_turn_end"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/aetherflow.png",
+          "name": "Phantom Strength",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-phantom-strength"
+          ],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "LAWeswGl7CPDEltn",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1790675473779,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "extra_damage_mod_all",
+              "mode": 2,
+              "priority": 20,
+              "value": "SL + 4"
+            }
+          ],
+          "description": "<p>The next time you deal damage before the end of this turn, you deal <strong>[SL + 4]</strong> extra damage.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "LAWeswGl7CPDEltn",
+              "originalParentId": "fODE10J2f6cXvP8t",
+              "originalUuid": "Actor.9ubDCyNifyglcDUX.Item.fODE10J2f6cXvP8t.ActiveEffect.LAWeswGl7CPDEltn"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff",
+              "chargeKey": "phantom-strength-extra-damage",
+              "charges": 1,
+              "chargesMax": 1,
+              "lifetimeMode": "applier_turn_end",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "$deleted": false,
+                    "ae_template_ref": "Phantom Strength (Extra Damage)",
+                    "count": "all",
+                    "effect_kind": "remove_ae",
+                    "effect_label": "ps_spent",
+                    "target_ref": "self"
+                  }
+                },
+                "name": "Phantom Strength (Extra Damage)",
+                "reaction_config_table": {
+                  "0": {
+                    "$deleted": false,
+                    "condition_formula": "CAUSE_IS_SELF == 1",
+                    "reaction_cause_filter": "damage",
+                    "reaction_effect_ref": "ps_spent",
+                    "reaction_passive_mode": "force",
+                    "reaction_resource_filter": "",
+                    "reaction_source": "all",
+                    "reaction_trigger": "creature_lose_resource"
+                  }
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/aetherflow.png",
+          "name": "Phantom Strength (Extra Damage)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-phantom-strength-extra-damage"
+          ],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.4"
@@ -986,16 +1149,52 @@
           "defense_target_type": "def",
           "description": "<p>When you perform a <em><strong>pulse</strong></em>, before resolving its effects, you may choose to have all damage you deal ignore Affinities until the end of this turn. If you do, the next time you deal damage before the end of this turn, you deal <strong>[SL + 4]</strong> extra damage.</p>",
           "duration": "-",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_steps": "ps_ignore, ps_surge",
+              "effect_kind": "chain",
+              "effect_label": "ps_go"
+            },
+            "1": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace_per_caster",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Phantom Strength",
+              "effect_kind": "apply_ae",
+              "effect_label": "ps_ignore",
+              "target_ref": "self"
+            },
+            "2": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace_per_caster",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Phantom Strength (Extra Damage)",
+              "effect_kind": "apply_ae",
+              "effect_label": "ps_surge",
+              "target_ref": "self"
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
-          "isReaction": false,
+          "isReaction": true,
           "level": "6",
           "max_level": "6",
           "name": "Phantom Strength",
           "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "SKILL_HAS_TAG_PULSE == 1",
+              "reaction_effect_ref": "ps_go",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_performs_action"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",

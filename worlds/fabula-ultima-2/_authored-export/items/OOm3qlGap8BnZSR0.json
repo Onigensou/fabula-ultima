@@ -31,12 +31,14 @@
       "description": "<p>Until the start of your next turn, the target suffers 5 extra damage from all sources that deal \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d7a9ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a> and \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#ffae00 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a> damage. <em>Only usable if an Air wellspring is present on the scene.</em></p>\n",
       "duration": "Instantanious",
       "heroic_requirement": "",
+      "implementation_note": "Catalogue entry. Cast through Invocation: its option menu offers this invocation when your Skill Level and the matching Wellspring allow it. Hidden from the action menu so it cannot be clicked on its own.",
       "isCheck": false,
       "isFacet": true,
       "isHeroic": false,
       "isOffensiveSpell": false,
       "level": "1",
       "max_level": "1",
+      "menu_hidden": true,
       "name": "Aero Hex",
       "optional_params": {
         "0": {

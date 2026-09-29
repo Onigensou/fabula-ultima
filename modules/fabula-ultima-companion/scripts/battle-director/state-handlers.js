@@ -13,7 +13,7 @@ import { isGmOverrideEmpty, summarizeGmOverride, dropGmRemovedReactions } from "
 import { runBattleEndSequence } from "./battle-end/battle-end-orchestrator.js";
 import { STATES } from "./states.js";
 import { INTENTS } from "./intents.js";
-import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, pinActionKindForSkill, resolvePrimaryAttackWeapon, captureSubjectSnapshot, resolvesVsMagicDefense, attackRangeBlockedBy, getBlockedActionLabels } from "./snapshot.js";
+import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, pinActionKindForSkill, resolvePrimaryAttackWeapon, captureSubjectSnapshot, resolvesVsMagicDefense, attackRangeBlockedBy, getBlockedActionLabels, isGatingExemptBundle } from "./snapshot.js";
 import { TurnUI } from "./turn-ui.js";
 import { TurnPicker } from "./turn-picker.js";
 import { requestTargeting } from "./target-picker.js";
@@ -2943,7 +2943,11 @@ const Declare = {
     // arrive — refuse it here (the GM is the source of truth) and bounce so the
     // turn isn't spent on an illegal action.
     const blockedHit = (snap.blockedActions ?? []).find((b) => b?.label === winnerBundle.command);
-    if (blockedHit) {
+    // …unless the picked skill carries a per-skill exemption from that gate
+    // (skill tag ignore_gating_<ae> — Rumble! "even if you are inflicted with Berserk").
+    if (blockedHit && isGatingExemptBundle(snap, winnerBundle)) {
+      log(`DECLARE: ${winnerBundle.command} is gated by ${blockedHit.reason} but the picked skill is exempt — allowed`);
+    } else if (blockedHit) {
       warn(`DECLARE: winner command "${winnerBundle.command}" blocked by ${blockedHit.reason} — refusing`);
       ui.notifications?.warn(`${blockedHit.reason}: cannot use the ${winnerBundle.command} action.`);
       director.enqueue({ type: INTENTS.TIMEOUT });

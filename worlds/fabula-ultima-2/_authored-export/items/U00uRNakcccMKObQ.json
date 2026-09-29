@@ -31,12 +31,14 @@
       "description": "<p>You deal 20 <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d7a9ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a> damage to the target. <em>Only usable if a Lightning wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>Damage becomes <strong>25</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>Damage becomes <strong>30</strong>.</p>\n",
       "duration": "Instantanious",
       "heroic_requirement": "",
+      "implementation_note": "Catalogue entry. Cast through Invocation: its option menu offers this invocation when your Skill Level and the matching Wellspring allow it. Hidden from the action menu so it cannot be clicked on its own.",
       "isCheck": false,
       "isFacet": true,
       "isHeroic": false,
       "isOffensiveSpell": false,
       "level": "1",
       "max_level": "1",
+      "menu_hidden": true,
       "name": "Electro Blast",
       "optional_params": {
         "0": {

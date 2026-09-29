@@ -30,7 +30,7 @@ import { RESOURCE_REGISTRY } from "./resources.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor, isPersistentCounter } from "./skill-charges.js";
 import { readPropNum, resolveAffinity, skillDeclaresVersatile, resolvesVsMagicDefense } from "./snapshot.js";
 import { isActorDefeated } from "./defeat-reactor.js";
-import { computeIncomingDamage } from "./damage-ruleset.js";
+import { computeIncomingDamage, aeOutgoingActionKeywords } from "./damage-ruleset.js";
 import { appendBattleLog, buildDamageRow } from "./director-battle-log.js";
 import { isAutoFireReactionMode } from "./reaction-modes.js";
 import { getIntentChannel } from "./intent-channel.js";
@@ -4722,7 +4722,7 @@ export const EFFECT_KIND_LABELS = {
   destroy_summon:      "Destroy Summon (shatter/despawn one of my summons)",
   add_target:          "Add Target",
   save_check:          "Save Check (each target rolls vs a DL; failures → save_failed_targets)",
-  contest_check:       "Contest Check (performer and target both roll, higher wins, ties reroll; losers → contest_lost_targets)",
+  contest_check:       "Contest Check (performer and target both roll, higher wins, ties reroll; losers → contest_lost_targets. contest_mode lowest: targets contest each other, lowest total(s) lose)",
   group_check:         "Group Check (FU leader + helpers vs a DL; leader result → VAR_<gc_var>)",
   adjust_grant:        "Adjust Grant (op on the action's restore — multiply/set/cap/floor/add)",
   roll_loot_table:     "Roll Loot Table",
@@ -5987,8 +5987,16 @@ async function dealDamageApply(row, ctx, d) {
       // family scores damage dealt, and draining MP is resource denial rather
       // than damage (it already skips affinity and shield for the same reason).
       const isMp = d.damageResource === "mp";
+      // The dealer's AE-granted outgoing keywords (outgoing_action_keywords —
+      // Phantom Strength's ignore_affinity) join the row's own. Not on self-damage
+      // (_srcActor is nulled for that above) and not on an ambient condition tick.
+      const _aeKw = _srcActor ? aeOutgoingActionKeywords(_srcActor) : [];
+      const _kw = _aeKw.length
+        ? [...new Set([...(Array.isArray(d.damageKeywords) ? d.damageKeywords : String(d.damageKeywords ?? "").split(/[,\n]/))
+            .map((k) => String(k).trim().toLowerCase()).filter(Boolean), ..._aeKw])]
+        : d.damageKeywords;
       const ruled = isMp ? null : computeIncomingDamage(actor, {
-        base: _outgoing, element, ignoreAffinity, keywords: d.damageKeywords,
+        base: _outgoing, element, ignoreAffinity, keywords: _kw,
       });
       const hpBefore = readPropNum(actor, ["current_hp", "hp"]);
       const res = await applyDamageToTarget({
@@ -10183,6 +10191,51 @@ async function applyContestCheckEffect(row, ctx) {
 
   const label = ctx.skill?.name ?? row.effect_label ?? "Contest";
   const mode = String(row.save_mode ?? "interactive").trim().toLowerCase() === "silent" ? "silent" : "interactive";
+
+  // contest_mode "lowest" — the targets contest EACH OTHER and the performer does
+  // not roll (Rumble!: "every creature inflicted with Enraged must make a contest
+  // check; the creature(s) who make the lowest check take …"). Everyone rolls
+  // tAttrA + tAttrB once; the creature(s) holding the minimum total LOSE (a tie
+  // at the bottom loses together — RAW's "creature(s)"), everyone else WINS.
+  // Same outputs as the default mode (contest_lost/won_targets), so consequences
+  // author identically. Failure direction mirrors the default: an unrunnable
+  // roll or an unreadable total counts as a LOSS for that creature. A lone
+  // participant is the lowest by definition and is not asked to roll.
+  if (String(row.contest_mode ?? "").trim().toLowerCase() === "lowest") {
+    const CRl = globalThis.ONI?.CheckRequester;
+    const totals = new Map();   // actorUuid → total (NaN = unreadable)
+    if (uniqueActorUuids.length > 1 && CRl?.request) {
+      let results = null;
+      try {
+        results = await CRl.request(uniqueActorUuids, {
+          attrA: tAttrA, attrB: tAttrB, dl: 0, label, hiddenDl: true,
+          mode, allowInvokes: true, postChat: true,
+          context: { checkContext: "opposed" },
+        });
+      } catch (e) { warn("contest_check(lowest): roll threw", e); }
+      for (const r of (Array.isArray(results) ? results : [])) {
+        if (r?.actorUuid && !totals.has(r.actorUuid)) totals.set(r.actorUuid, Number(r.total));
+      }
+    } else if (uniqueActorUuids.length > 1) {
+      warn(`contest_check(lowest): no CheckRequester — all ${uniqueActorUuids.length} participant(s) default to LOSS`);
+    }
+    const finite = [...totals.values()].filter((v) => Number.isFinite(v));
+    const minTotal = finite.length ? Math.min(...finite) : null;
+    const lostL = uniqueActorUuids.filter((u) => {
+      if (uniqueActorUuids.length === 1) return true;
+      const t = totals.get(u);
+      return !Number.isFinite(t) || (minTotal != null && t <= minTotal);
+    });
+    const wonL = uniqueActorUuids.filter((u) => !lostL.includes(u));
+    ctx.contestLostTargetUuids = lostL;
+    ctx.contestWonTargetUuids  = wonL;
+    for (const u of lostL) { const t = actorToToken.get(u); if (t) ctx.contestLostTokenUuids.push(t); }
+    for (const u of wonL)  { const t = actorToToken.get(u); if (t) ctx.contestWonTokenUuids.push(t); }
+    log(`contest_check(lowest): ${tAttrA}+${tAttrB} among ${uniqueActorUuids.length} — totals {${uniqueActorUuids.map((u) => totals.has(u) ? totals.get(u) : "-").join(", ")}} low ${minTotal ?? "-"} → ${lostL.length} lost / ${wonL.length} won`);
+    return { ok: true, kind: "contest_check", mode: "lowest", lost: lostL, won: wonL, lowestTotal: minTotal,
+      totals: Object.fromEntries(totals) };
+  }
+
   const maxRerolls = Math.min(
     CONTEST_MAX_REROLLS_CAP,
     Math.max(0, Math.floor(Number(String(row.contest_max_rerolls ?? "5").trim()) || 0)),

@@ -46,6 +46,7 @@
       "menu_hidden": false,
       "name": "Avatar of Vengeance: Pulse",
       "on_activate_effect_ref": "aov_pulse",
+      "skill_tags": "pulse",
       "skill_target": "Up to three creatures",
       "skill_type": "Active",
       "uuid": "Item.jhd1fKKHvVFuzKqB"

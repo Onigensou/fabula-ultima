@@ -35,17 +35,109 @@
       "defense_target_type": "def",
       "description": "<p>When you spend one or more <strong>Fabula Points</strong>, you get an additional benefit — <strong>choose</strong> one option:</p><ul><li><p>you recover <strong>【SL × 5】</strong> Hit Points</p></li><li><p>You recover <strong>【SL × 5】</strong> Mind Points</p></li><li><p>You recover from a single status effect of your choice.</p></li></ul>",
       "duration": "",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "effect_kind": "open_action_menu",
+          "effect_label": "is_menu",
+          "menu_option_labels": "Recover HP|Recover MP|Dazed|Enraged|Poisoned|Shaken|Slow|Weak",
+          "menu_option_refs": "is_hp,is_mp,is_rm_dazed,is_rm_enraged,is_rm_poisoned,is_rm_shaken,is_rm_slow,is_rm_weak",
+          "menu_pick_count": "1",
+          "menu_subtitle": "You spent a Fabula Point — recover HP, recover MP, or recover from one status effect",
+          "menu_title": "Indomitable Spirit"
+        },
+        "1": {
+          "$deleted": false,
+          "effect_kind": "grant",
+          "effect_label": "is_hp",
+          "grant_amount": "SL * 5",
+          "grant_resource": "hp",
+          "target_ref": "self"
+        },
+        "2": {
+          "$deleted": false,
+          "effect_kind": "grant",
+          "effect_label": "is_mp",
+          "grant_amount": "SL * 5",
+          "grant_resource": "mp",
+          "target_ref": "self"
+        },
+        "3": {
+          "$deleted": false,
+          "ae_template_ref": "Dazed",
+          "condition_formula": "HAS_STATUS_DAZED == 1",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "is_rm_dazed",
+          "target_ref": "self"
+        },
+        "4": {
+          "$deleted": false,
+          "ae_template_ref": "Enraged",
+          "condition_formula": "HAS_STATUS_ENRAGED == 1",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "is_rm_enraged",
+          "target_ref": "self"
+        },
+        "5": {
+          "$deleted": false,
+          "ae_template_ref": "Poisoned",
+          "condition_formula": "HAS_STATUS_POISONED == 1",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "is_rm_poisoned",
+          "target_ref": "self"
+        },
+        "6": {
+          "$deleted": false,
+          "ae_template_ref": "Shaken",
+          "condition_formula": "HAS_STATUS_SHAKEN == 1",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "is_rm_shaken",
+          "target_ref": "self"
+        },
+        "7": {
+          "$deleted": false,
+          "ae_template_ref": "Slow",
+          "condition_formula": "HAS_STATUS_SLOW == 1",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "is_rm_slow",
+          "target_ref": "self"
+        },
+        "8": {
+          "$deleted": false,
+          "ae_template_ref": "Weak",
+          "condition_formula": "HAS_STATUS_WEAK == 1",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "is_rm_weak",
+          "target_ref": "self"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
       "isOffensiveSpell": false,
-      "isReaction": false,
+      "isReaction": true,
       "level": "1",
       "max_level": "4",
       "name": "Indomitable Spirit",
       "optional_params": {},
-      "reaction_config_table": {},
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "reaction_cause_filter": "spend",
+          "reaction_effect_ref": "is_menu",
+          "reaction_passive_mode": "ask",
+          "reaction_resource_filter": "fp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_lose_resource"
+        }
+      },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_default": "",

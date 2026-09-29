@@ -8,6 +8,88 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "1g6YkY0lXrs91dj4",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790670576584,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>A roaring gale surrounds you, blowing away arrows and bullets. You gain a <strong>+2</strong> bonus to your <strong>Defense</strong> against <strong>Range</strong> attacks.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": 999999,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "1g6YkY0lXrs91dj4",
+          "originalParentId": "efPl3XRtsxc9W2lY",
+          "originalUuid": "Item.efPl3XRtsxc9W2lY.ActiveEffect.1g6YkY0lXrs91dj4"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "$deleted": false,
+                "defense_amount": "2",
+                "defense_operation": "add",
+                "effect_kind": "adjust_defense",
+                "effect_label": "wind_wall_def"
+              }
+            },
+            "name": "Wind Wall",
+            "reaction_config_table": {
+              "0": {
+                "$deleted": false,
+                "condition_formula": "ATTACK_IS_RANGED == 1",
+                "reaction_effect_ref": "wind_wall_def",
+                "reaction_passive_mode": "on",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_targeted_by_action"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": null,
+      "name": "Wind Wall",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-wind-wall"
+      ],
+      "system": {
+        "tags": [
+          "buff",
+          "dispellable"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -33,6 +115,17 @@
       "defense_target_type": "def",
       "description": "<p>A roaring gale surrounds you, blowing away arrows and bullets. Until this spell ends, you gain a +2 bonus to your Defense against <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Fcq1HgCEh3jxxELa\" data-id=\"Fcq1HgCEh3jxxELa\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Range</span></strong></a></span> <strong>attacks.</strong></p>",
       "duration": "Scene",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_duration_rounds": "scene",
+          "ae_template_ref": "Wind Wall",
+          "effect_kind": "apply_ae",
+          "effect_label": "wind_wall_apply",
+          "target_ref": "self"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": true,
@@ -42,6 +135,7 @@
       "level": "1",
       "max_level": "1",
       "name": "Wind Wall",
+      "on_activate_effect_ref": "wind_wall_apply",
       "optional_params": {},
       "rolled_atr1": "-",
       "rolled_atr2": "-",

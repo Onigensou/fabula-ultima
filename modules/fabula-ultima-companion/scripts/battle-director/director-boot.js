@@ -88,7 +88,7 @@ import { initDevToolsMenu, registerDevTool } from "./dev-tools-menu.js";
 import { registerAutopilotSetting, registerAutopilotDevTool } from "./enemy-autopilot.js";
 import { registerSummonAutopilotSetting, registerSummonAutopilotDevTool } from "./summon-autopilot.js";
 import { initDirectorSurfaces, getActiveSurfaces, hasSurface, countSurfaces, clearAllSurfaces } from "./director-surfaces.js";
-import { sweepTransientAEsAtSceneEnd, sweepRetainedSummonsAtSceneEnd, firePassiveTriggers, installRiderAeLinkage } from "./skill-effects.js";
+import { sweepTransientAEsAtSceneEnd, sweepRetainedSummonsAtSceneEnd, firePassiveTriggers, installRiderAeLinkage, fireResourceChangeTrigger } from "./skill-effects.js";
 import { LEGACY_BRIDGED_TRIGGERS } from "./director-triggers.js";
 import { PassiveManager } from "./passive-manager.js";
 import { initPassiveCardUi, passiveCardQueue } from "./passive-card-ui/director-passive-card-ui.js";
@@ -1450,6 +1450,56 @@ Hooks.once("ready", () => {
         scope: null, scene: null, phase: "forced",
       });
     } catch (e) { warn("equip-lifecycle reaction dispatch threw", e); }
+  });
+
+  // Fabula Point spend → resource ledger. Every FP spend in the game ends in a
+  // raw `actor.update({"system.props.fabula_point": n - k})` — the Check
+  // Requester invoke/reroll (cr-api), the check-roller invoke buttons, the BD
+  // invoke worker, a "1 Fabula Point" skill cost (skill-cost.debitCost), a
+  // consume_resource fp row — and several of those run on the PLAYER's client,
+  // where the director (and its ledger queue) does not exist. So the seam is ONE
+  // standing updateActor hook on the host GM, which sees every client's write:
+  // a DECREASE of fabula_point queues `creature_lose_resource` {resource:"fp",
+  // cause:"spend", amount} on the running instance — drained with the rest of the
+  // ledger at the RESOLVE tail / lifecycle settle, observer-aware. Indomitable
+  // Spirit ("when you spend one or more Fabula Points…") rides it with
+  // reaction_resource_filter "fp" + reaction_cause_filter "spend".
+  // In-combat only, like every ledger event (fireResourceChangeTrigger no-ops
+  // without a director). The previous value comes from a per-actor cache seeded
+  // here and on createActor — updateActor carries only the NEW value, and
+  // preUpdateActor fires only on the client that made the change.
+  // ⚠ A GM lowering FP by hand on the sheet during a battle counts as a spend.
+  // ⚠ The event surfaces at the NEXT ledger settle: a spend inside an action
+  //   (check invoke, cost) drains at that action's RESOLVE tail; a spend after it
+  //   (an ask reaction that pays FP post-settle) waits for the next settle.
+  const _fpSeen = new Map();
+  const _fpOf = (a) => Number(a?.system?.props?.fabula_point);
+  try { for (const a of game.actors?.contents ?? []) { const v = _fpOf(a); if (Number.isFinite(v)) _fpSeen.set(a.uuid, v); } } catch (_e) {}
+  Hooks.on("createActor", (a) => { try { const v = _fpOf(a); if (Number.isFinite(v)) _fpSeen.set(a.uuid, v); } catch (_e) {} });
+  Hooks.on("updateActor", (actor, changes) => {
+    try {
+      const raw = changes?.system?.props?.fabula_point;
+      if (raw === undefined) return;
+      const next = Number(raw);
+      const prev = _fpSeen.get(actor.uuid);
+      if (Number.isFinite(next)) _fpSeen.set(actor.uuid, next);
+      if (!game.user?.isGM) return;
+      if (!Number.isFinite(next) || !Number.isFinite(prev) || next >= prev) return;
+      const director = _instance;
+      const dc = director?.dCombat;
+      if (!dc?.started || dc.ended) return;
+      const c = (dc.combatants ?? []).find((x) => x?.actorDoc?.uuid === actor.uuid || x?.actorUuid === actor.uuid);
+      if (!c) return;
+      // Static import (no await before the push): a spend made DURING a settle pass
+      // must land on the queue before that pass's loop re-checks it.
+      fireResourceChangeTrigger({
+        director, actor, tokenUuid: c.tokenDoc?.uuid ?? c.tokenUuid ?? null,
+        resource: "fp", direction: "loss", amount: prev - next, cause: "spend",
+        source: { actorUuid: actor.uuid, tokenUuid: c.tokenDoc?.uuid ?? null },
+        originLabel: "Fabula Point",
+      });
+      log(`fp-spend: ${actor.name} spent ${prev - next} Fabula Point(s) (${prev} → ${next}) — queued creature_lose_resource`);
+    } catch (e) { warn("fp-spend ledger hook threw", e); }
   });
 
   // Async-load freeActions onto the api surface (require isn't available
