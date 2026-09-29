@@ -13,7 +13,6 @@
   const HANDLERS = {
     CLEAR_TILE:             "dungeonPathing.clearTile",
     MUTATE_TILE:            "dungeonPathing.mutateTile",
-    EXPIRE_TILE:            "dungeonPathing.expireTile",
     RESET_DUNGEON:          "dungeonPathing.resetDungeon",
     TRIGGER_TREASURE:       "dungeonPathing.triggerTreasure",
     RANDOM_BATTLE:          "dungeonPathing.randomBattle",
@@ -31,6 +30,7 @@
   const MSG_AS    = "DP_ACTIVATE_SCENE";
   const MSG_TAE   = "DP_TICK_PARTY_AES";
   const MSG_FOG   = "DP_FOG_REVEALED";
+  const MSG_EXP   = "DP_EXPIRE_STORY_TILE";
   const MSG_VTG_A = "DP_VERTIGO_APPLY";
   const MSG_VTG_T = "DP_VERTIGO_TICK";
   const MSG_VTG_C = "DP_VERTIGO_CLEAR";
@@ -97,6 +97,17 @@
           return;
         }
 
+        if (msg?.type === MSG_EXP) {
+          const { sceneId, tileId } = msg.payload ?? {};
+          const scene = game.scenes.get(sceneId);
+          if (!scene || !tileId) { console.warn(TAG, "raw expireTile: bad payload", msg.payload); return; }
+          await (DP.gmSerialize ?? (fn => fn()))(() =>
+            DP.TileState.expireTile(scene, tileId)
+              .catch(e => console.warn(TAG, "raw expireTile failed:", e))
+          );
+          return;
+        }
+
         // ── Vertigo ──────────────────────────────────────────────────────────
         // The scene flag is the single source of truth and only a GM may write
         // it. Player clients emit here; the primary-GM gate above keeps the
@@ -120,7 +131,7 @@
         }
       });
 
-      console.debug(TAG, "Raw socket listener installed (markVisited, activateScene, tickPartyAEs, vertigo).");
+      console.debug(TAG, "Raw socket listener installed (markVisited, activateScene, tickPartyAEs, expireTile, vertigo).");
     },
 
     /** Called from dp-bootstrap once socketlib is ready. */
@@ -149,18 +160,6 @@
           return { ok: true };
         } catch (e) {
           console.error(TAG, "mutateTile socket handler failed", e);
-          return { ok: false, error: e?.message };
-        }
-      });
-
-      socket.register(HANDLERS.EXPIRE_TILE, async ({ sceneId, tileId }) => {
-        if (!game.user?.isGM) return { ok: false, error: "Not GM" };
-        const scene = game.scenes.get(sceneId);
-        if (!scene) return { ok: false, error: "Scene not found" };
-        try {
-          return await DP.TileState.expireTile(scene, tileId);
-        } catch (e) {
-          console.error(TAG, "expireTile socket handler failed", e);
           return { ok: false, error: e?.message };
         }
       });
@@ -267,13 +266,14 @@
       return socket.executeAsGM(HANDLERS.CLEAR_TILE, { sceneId: scene.id, tileId, updateTexture });
     },
 
+    // Raw channel, not socketlib: the socketlib handlers are registered on a
+    // socketlib.ready hook that has already fired (see RAW_CH above), so
+    // executeAsGM from a player client never reaches a handler.
     async expireTile(scene, tileId) {
       if (game.user?.isGM) {
-        return DP.TileState.expireTile(scene, tileId);
+        return (DP.gmSerialize ?? (fn => fn()))(() => DP.TileState.expireTile(scene, tileId));
       }
-      const socket = this._socket ?? window.FUCompanionSocket;
-      if (!socket) { console.warn(TAG, "Socket not ready for expireTile"); return; }
-      return socket.executeAsGM(HANDLERS.EXPIRE_TILE, { sceneId: scene.id, tileId });
+      game.socket.emit(RAW_CH, { type: MSG_EXP, payload: { sceneId: scene.id, tileId } });
     },
 
     async mutateTile(scene, tileId, newType, newTexture = null) {
