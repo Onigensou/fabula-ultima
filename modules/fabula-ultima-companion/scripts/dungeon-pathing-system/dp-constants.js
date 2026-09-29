@@ -312,4 +312,9 @@
   // Blank tile asset
   DP.BLANK_TILE_SRC =
     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png";
+
+  // Desaturated look for a Story / Final Story tile the party already played.
+  // The tile keeps its type (and any teleporter) — this is purely a "seen" marker.
+  DP.EXPIRED_STORY_TILE_SRC =
+    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Expired_Story_Tile.png";
 })();

@@ -13,6 +13,7 @@
   const HANDLERS = {
     CLEAR_TILE:             "dungeonPathing.clearTile",
     MUTATE_TILE:            "dungeonPathing.mutateTile",
+    EXPIRE_TILE:            "dungeonPathing.expireTile",
     RESET_DUNGEON:          "dungeonPathing.resetDungeon",
     TRIGGER_TREASURE:       "dungeonPathing.triggerTreasure",
     RANDOM_BATTLE:          "dungeonPathing.randomBattle",
@@ -152,6 +153,18 @@
         }
       });
 
+      socket.register(HANDLERS.EXPIRE_TILE, async ({ sceneId, tileId }) => {
+        if (!game.user?.isGM) return { ok: false, error: "Not GM" };
+        const scene = game.scenes.get(sceneId);
+        if (!scene) return { ok: false, error: "Scene not found" };
+        try {
+          return await DP.TileState.expireTile(scene, tileId);
+        } catch (e) {
+          console.error(TAG, "expireTile socket handler failed", e);
+          return { ok: false, error: e?.message };
+        }
+      });
+
       socket.register(HANDLERS.RESET_DUNGEON, async ({ sceneId }) => {
         if (!game.user?.isGM) return { ok: false, error: "Not GM" };
         const scene = game.scenes.get(sceneId);
@@ -252,6 +265,15 @@
       const socket = this._socket ?? window.FUCompanionSocket;
       if (!socket) { console.warn(TAG, "Socket not ready for clearTile"); return; }
       return socket.executeAsGM(HANDLERS.CLEAR_TILE, { sceneId: scene.id, tileId, updateTexture });
+    },
+
+    async expireTile(scene, tileId) {
+      if (game.user?.isGM) {
+        return DP.TileState.expireTile(scene, tileId);
+      }
+      const socket = this._socket ?? window.FUCompanionSocket;
+      if (!socket) { console.warn(TAG, "Socket not ready for expireTile"); return; }
+      return socket.executeAsGM(HANDLERS.EXPIRE_TILE, { sceneId: scene.id, tileId });
     },
 
     async mutateTile(scene, tileId, newType, newTexture = null) {
