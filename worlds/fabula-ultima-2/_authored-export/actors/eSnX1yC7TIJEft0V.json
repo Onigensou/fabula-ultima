@@ -272,23 +272,77 @@
           "damage_bonus": "0",
           "description": "<p>After another Player Character who is able to hear you performs a Check, you may spend <strong>1 Fabula Point</strong> and invoke one of their <strong>Traits</strong> or <strong>Bonds</strong> in order to let them reroll dice or improve the Result of the Check (following the normal rules). Then, if you have a <strong>Bond</strong> towards that character, they recover <strong>【SL × 10】</strong> Mind Points.</p>",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "consume_amount": "1",
+              "consume_resource": "fp",
+              "effect_kind": "consume_resource",
+              "effect_label": "mtu_fp",
+              "on_empty": "abort",
+              "target_ref": "self"
+            },
+            "1": {
+              "effect_kind": "open_action_menu",
+              "effect_label": "mtu_menu",
+              "menu_hide_disabled": true,
+              "menu_option_labels": "Invoke a Trait: reroll the Check|Invoke a Bond: +${SUBJECT_BOND_STRENGTH_MAX} to the Result",
+              "menu_option_refs": "mtu_reroll, mtu_improve",
+              "menu_pick_count": "1",
+              "menu_subtitle": "Invoke one of their Traits (reroll) or their strongest Bond (+Bond strength).",
+              "menu_title": "My Trust in You"
+            },
+            "2": {
+              "effect_kind": "check_reroll",
+              "effect_label": "mtu_reroll"
+            },
+            "3": {
+              "accuracy_amount": "SUBJECT_BOND_STRENGTH_MAX",
+              "accuracy_operation": "add",
+              "condition_formula": "SUBJECT_BOND_STRENGTH_MAX >= 1",
+              "effect_kind": "adjust_accuracy",
+              "effect_label": "mtu_improve"
+            },
+            "4": {
+              "condition_formula": "BONDED_TO_SOURCE >= 1",
+              "effect_kind": "grant",
+              "effect_label": "mtu_mp",
+              "grant_amount": "SL * 10",
+              "grant_resource": "mp",
+              "target_ref": "trigger_actor"
+            },
+            "5": {
+              "chain_steps": "mtu_fp, mtu_menu, mtu_mp",
+              "effect_kind": "chain",
+              "effect_label": "mtu_root"
+            }
+          },
           "heroic_requirement": "",
-          "implementation_note": "Not automated yet — resolve at the table: after another Player Character performs a Check, spend 1 Fabula Point and invoke one of their Traits (reroll) or Bonds (+Bond strength); if you have a Bond towards them they recover SL×10 MP. Hidden from the battle menu so it cannot spend FP with no effect.",
+          "implementation_note": "After another Player Character performs an accuracy Check in battle (not a Critical or Fumble), you are offered My Trust in You: spend 1 Fabula Point and invoke one of their Traits (reroll both dice) or their strongest Bond (+its strength to the Result). If you have a Bond towards them, they recover SL×10 MP. Out of battle the GM applies the invoke and you spend the FP on your sheet.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "2",
-          "menu_hidden": true,
+          "menu_hidden": false,
           "name": "My Trust in You",
           "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "ACTION_ROLLS_ACCURACY == 1 && ATTACK_IS_CRIT == 0 && ATTACK_IS_FUMBLE == 0 && SUBJECT_IS_NPC == 0 && CUR_FP >= 1",
+              "reaction_effect_ref": "mtu_root",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "ally",
+              "reaction_trigger": "creature_performs_action"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>MP Recovers</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>10</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>20</p></td></tr></tbody></table>",
           "skill_range": "Any",
-          "skill_target": "One ally",
-          "skill_type": "Active",
+          "skill_target": "-",
+          "skill_type": "Passive",
           "type_damage": "",
           "use_optional_params": false
         },
@@ -425,11 +479,11 @@
       },
       "effects": [
         {
-          "_id": "ekSUFrELK5JDOSNO",
+          "_id": "LFnz3wcC5lmePHx9",
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1790870481595,
+            "createdTime": 1790872244349,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -456,9 +510,9 @@
           "flags": {
             "custom-system-builder": {
               "isFromTemplate": false,
-              "originalId": "ekSUFrELK5JDOSNO",
+              "originalId": "LFnz3wcC5lmePHx9",
               "originalParentId": "YMvMMBtKHJtz1MFI",
-              "originalUuid": "Actor.eSnX1yC7TIJEft0V.Item.YMvMMBtKHJtz1MFI.ActiveEffect.ekSUFrELK5JDOSNO"
+              "originalUuid": "Actor.eSnX1yC7TIJEft0V.Item.YMvMMBtKHJtz1MFI.ActiveEffect.LFnz3wcC5lmePHx9"
             },
             "fabula-ultima-companion": {
               "category": "buff"
@@ -489,11 +543,11 @@
           "type": "base"
         },
         {
-          "_id": "FtJpsQYQCS4hkSAg",
+          "_id": "P7hi3ylEbsDdcpH1",
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1790870481595,
+            "createdTime": 1790872244349,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -520,9 +574,9 @@
           "flags": {
             "custom-system-builder": {
               "isFromTemplate": false,
-              "originalId": "FtJpsQYQCS4hkSAg",
+              "originalId": "P7hi3ylEbsDdcpH1",
               "originalParentId": "YMvMMBtKHJtz1MFI",
-              "originalUuid": "Actor.eSnX1yC7TIJEft0V.Item.YMvMMBtKHJtz1MFI.ActiveEffect.FtJpsQYQCS4hkSAg"
+              "originalUuid": "Actor.eSnX1yC7TIJEft0V.Item.YMvMMBtKHJtz1MFI.ActiveEffect.P7hi3ylEbsDdcpH1"
             },
             "fabula-ultima-companion": {
               "category": "buff"
@@ -553,11 +607,11 @@
           "type": "base"
         },
         {
-          "_id": "LFoEeNaflpfBBB4U",
+          "_id": "ziUmVcfAOa7TK6OT",
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1790870481595,
+            "createdTime": 1790872244349,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -584,9 +638,9 @@
           "flags": {
             "custom-system-builder": {
               "isFromTemplate": false,
-              "originalId": "LFoEeNaflpfBBB4U",
+              "originalId": "ziUmVcfAOa7TK6OT",
               "originalParentId": "YMvMMBtKHJtz1MFI",
-              "originalUuid": "Actor.eSnX1yC7TIJEft0V.Item.YMvMMBtKHJtz1MFI.ActiveEffect.LFoEeNaflpfBBB4U"
+              "originalUuid": "Actor.eSnX1yC7TIJEft0V.Item.YMvMMBtKHJtz1MFI.ActiveEffect.ziUmVcfAOa7TK6OT"
             },
             "fabula-ultima-companion": {
               "category": "buff"
@@ -617,11 +671,11 @@
           "type": "base"
         },
         {
-          "_id": "mnpoVcecUAN7rh8R",
+          "_id": "zuXgScV7onqR2A3f",
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1790870481595,
+            "createdTime": 1790872244349,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -648,9 +702,9 @@
           "flags": {
             "custom-system-builder": {
               "isFromTemplate": false,
-              "originalId": "mnpoVcecUAN7rh8R",
+              "originalId": "zuXgScV7onqR2A3f",
               "originalParentId": "YMvMMBtKHJtz1MFI",
-              "originalUuid": "Actor.eSnX1yC7TIJEft0V.Item.YMvMMBtKHJtz1MFI.ActiveEffect.mnpoVcecUAN7rh8R"
+              "originalUuid": "Actor.eSnX1yC7TIJEft0V.Item.YMvMMBtKHJtz1MFI.ActiveEffect.zuXgScV7onqR2A3f"
             },
             "fabula-ultima-companion": {
               "category": "buff"

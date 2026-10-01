@@ -2123,6 +2123,15 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedCardReactio
         // self reaction) so `creature_check_adjusted` feeds dependent reactions free.
         const result = await applySetCheckDieMutation(ctx, cand, row);
         if (result === "applied") { mutationsApplied += 1; pushAdjuster(cand, "set_check_die"); }
+      } else if (kind === "check_reroll") {
+        // A menu that offers "reroll" vs "improve" (My Trust in You: invoke a
+        // Trait vs a Bond) keeps each in its own option chain — same handling
+        // as Phase 2's direct rows.
+        const result = await applyCheckRerollMutation(ctx, cand, row);
+        if (result === "applied") { mutationsApplied += 1; pushAdjuster(cand, "check_reroll"); }
+      } else if (kind === "adjust_accuracy") {
+        const result = await applyAdjustAccuracyMutation(ctx, cand, row);
+        if (result === "applied") { mutationsApplied += 1; pushAdjuster(cand, "adjust_accuracy"); }
       }
     }
   }

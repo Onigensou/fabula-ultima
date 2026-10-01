@@ -893,6 +893,14 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // always carry 3 entries with blanks, hence filter(Boolean).
       case "BOND_STRENGTH_MAX":
         return getBondSlots(actor).reduce((m, s) => Math.max(m, s.emotions.filter(Boolean).length), 0);
+      // The SUBJECT's strongest Bond toward anyone — "invoke one of THEIR Bonds"
+      // (My Trust in You). BOND_STRENGTH_MAX reads the reactor; an observer
+      // reaction needs the performer, which the payload carries as the subject.
+      case "SUBJECT_BOND_STRENGTH_MAX": {
+        const ref = payload?.subjectActorUuid ?? payload?.sourceActorUuid ?? null;
+        const s = ref ? _resolveActorByUuidSync(String(ref)) : null;
+        return s ? getBondSlots(s).reduce((m, b) => Math.max(m, b.emotions.filter(Boolean).length), 0) : 0;
+      }
       // Strongest Bond the reactor holds toward ANY creature in the trigger's
       // target/hit list (vs BOND_STRENGTH which only reads the single payload
       // subject by name). Resolves each target uuid → actor → name, matched

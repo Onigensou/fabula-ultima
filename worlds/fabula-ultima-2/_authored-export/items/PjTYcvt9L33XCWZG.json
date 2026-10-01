@@ -10,11 +10,75 @@
   },
   "effects": [
     {
-      "_id": "5axsfAhWJIxTa2S1",
+      "_id": "4csMLRuObZ4fQX9C",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1790870482376,
+        "createdTime": 1790872245383,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "ins_current",
+          "mode": 2,
+          "priority": 1,
+          "value": "2"
+        }
+      ],
+      "description": "<p>Encourage: Insight is treated as one die size higher (up to d12) until the start of the Orator's next turn.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "4csMLRuObZ4fQX9C",
+          "originalParentId": "PjTYcvt9L33XCWZG",
+          "originalUuid": "Item.PjTYcvt9L33XCWZG.ActiveEffect.4csMLRuObZ4fQX9C"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/upgrade.svg",
+      "name": "Encourage (Insight)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-encourage-insight"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "dcIwjja8vrhwX2kF",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790872245383,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -41,9 +105,9 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "5axsfAhWJIxTa2S1",
+          "originalId": "dcIwjja8vrhwX2kF",
           "originalParentId": "PjTYcvt9L33XCWZG",
-          "originalUuid": "Item.PjTYcvt9L33XCWZG.ActiveEffect.5axsfAhWJIxTa2S1"
+          "originalUuid": "Item.PjTYcvt9L33XCWZG.ActiveEffect.dcIwjja8vrhwX2kF"
         },
         "fabula-ultima-companion": {
           "category": "buff"
@@ -74,75 +138,11 @@
       "type": "base"
     },
     {
-      "_id": "TLxW9zn5F4qvtJvx",
+      "_id": "ItJvzU8jMLxJWT68",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1790870482376,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "mig_current",
-          "mode": 2,
-          "priority": 1,
-          "value": "2"
-        }
-      ],
-      "description": "<p>Encourage: Might is treated as one die size higher (up to d12) until the start of the Orator's next turn.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": null,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "TLxW9zn5F4qvtJvx",
-          "originalParentId": "PjTYcvt9L33XCWZG",
-          "originalUuid": "Item.PjTYcvt9L33XCWZG.ActiveEffect.TLxW9zn5F4qvtJvx"
-        },
-        "fabula-ultima-companion": {
-          "category": "buff"
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/svg/upgrade.svg",
-      "name": "Encourage (Might)",
-      "origin": null,
-      "sort": 0,
-      "statuses": [
-        "fud-encourage-might"
-      ],
-      "system": {
-        "tags": [
-          "buff"
-        ]
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "vGs6RYWPtzRqPYqo",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1790870482376,
+        "createdTime": 1790872245383,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -169,9 +169,9 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "vGs6RYWPtzRqPYqo",
+          "originalId": "ItJvzU8jMLxJWT68",
           "originalParentId": "PjTYcvt9L33XCWZG",
-          "originalUuid": "Item.PjTYcvt9L33XCWZG.ActiveEffect.vGs6RYWPtzRqPYqo"
+          "originalUuid": "Item.PjTYcvt9L33XCWZG.ActiveEffect.ItJvzU8jMLxJWT68"
         },
         "fabula-ultima-companion": {
           "category": "buff"
@@ -202,24 +202,24 @@
       "type": "base"
     },
     {
-      "_id": "wcfctsvqkJbitr1O",
+      "_id": "ox7V0G1mW0i31ATw",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1790870482376,
+        "createdTime": 1790872245383,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "changes": [
         {
-          "key": "ins_current",
+          "key": "mig_current",
           "mode": 2,
           "priority": 1,
           "value": "2"
         }
       ],
-      "description": "<p>Encourage: Insight is treated as one die size higher (up to d12) until the start of the Orator's next turn.</p>",
+      "description": "<p>Encourage: Might is treated as one die size higher (up to d12) until the start of the Orator's next turn.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -233,9 +233,9 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "wcfctsvqkJbitr1O",
+          "originalId": "ox7V0G1mW0i31ATw",
           "originalParentId": "PjTYcvt9L33XCWZG",
-          "originalUuid": "Item.PjTYcvt9L33XCWZG.ActiveEffect.wcfctsvqkJbitr1O"
+          "originalUuid": "Item.PjTYcvt9L33XCWZG.ActiveEffect.ox7V0G1mW0i31ATw"
         },
         "fabula-ultima-companion": {
           "category": "buff"
@@ -250,11 +250,11 @@
         }
       },
       "img": "icons/svg/upgrade.svg",
-      "name": "Encourage (Insight)",
+      "name": "Encourage (Might)",
       "origin": null,
       "sort": 0,
       "statuses": [
-        "fud-encourage-insight"
+        "fud-encourage-might"
       ],
       "system": {
         "tags": [

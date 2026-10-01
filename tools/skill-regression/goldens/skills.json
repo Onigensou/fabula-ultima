@@ -76,7 +76,7 @@
       "Zarg"
     ],
     "enemyTarget": "Test Target Enemy",
-    "count": 500,
+    "count": 499,
     "engineVersion": "1.0.426",
     "override": {
       "SL": 5,
@@ -5150,19 +5150,6 @@
       ],
       "roll": null,
       "skill": "Encourage",
-      "skillType": "Active",
-      "targets": 1
-    },
-    "Orator / My Trust in You": {
-      "caster": "Orator",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": false,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
-      "skill": "My Trust in You",
       "skillType": "Active",
       "targets": 1
     },

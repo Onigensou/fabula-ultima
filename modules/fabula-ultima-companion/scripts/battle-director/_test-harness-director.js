@@ -606,6 +606,8 @@ async function probeCardReactions({
   // Optional: skip the COMPUTE step and probe an actionResult you already have.
   actionResult = null,
   depsToken = null,
+  // Also scan BYSTANDER reactors for creature_performs_action, as live CONFIRM does.
+  observers = false,
 } = {}) {
   const _wg = _guardWrites("probeCardReactions");
   if (!game.user?.isGM) return { ok: false, reason: "gm_only" };
@@ -663,6 +665,77 @@ async function probeCardReactions({
           available: c?.available !== false,
           unavailableKind: c?.unavailableKind ?? null,
           unavailableReason: c?.unavailableReason ?? null,
+        });
+      }
+    }
+  }
+  // Observer scan (opt-in): a BYSTANDER's creature_performs_action reaction
+  // (Divination, My Trust in You). The loop above scans only the performer, so
+  // an observer reaction always read `no_reaction_fired`. Mirrors CONFIRM's
+  // observer block in state-handlers.js (payload overrides, the explicit-source /
+  // ref / add_target filters and the reactor stamp) over the canvas tokens,
+  // which stand in for dCombat.combatants.
+  if (observers && ar.canMiss && (ar.passIndex ?? 1) <= 1) {
+    const performerUuid = attackerActor.uuid;
+    const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid);
+    // Live spreads `actionBase`, which lacks the performer-only keys the performs
+    // payload carries (roll dice, costs, tags, duration) — strip them, or an
+    // observer gate reading CHECK_DIE_* / ACTION_COST_* / SKILL_HAS_TAG_* /
+    // ACTION_DURATION resolves here and reads 0 or blank in play.
+    const { rollDieA, rollDieB, rollDieAAttr, rollDieBAttr, rollCheckBonus,
+      costHp, costMp, costIp, skillTags, skillDuration, ...observerBase } = performsPayloads[0] ?? {};
+    const observerPayload = {
+      ...observerBase,
+      sourceActorUuid: performerUuid,
+      subjectActorUuid: performerUuid,
+      sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
+      targets: allTargetUuids,
+      targetTokenUuids: allTargetUuids,
+      actionIntent: ar.actionIntent ?? "harmful",
+      actionKind: ar.kind ?? "Attack",
+      actionSkillType: String(ar.skillType ?? "").toLowerCase(),
+      actionIsCheck: !!ar.isCheck,
+      actionCanMiss: !!ar.canMiss,
+      actionName: ar.weapon?.name ?? ar.skillName ?? ar.kind ?? "Action",
+      sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
+      checkTotal: Number(ar.roll?.total ?? 0) || 0,
+      isCrit: !!ar.roll?.isCrit,
+      isFumble: !!ar.roll?.isFumble,
+      weaponRange: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
+      skillUuid: ar.skillUuid ?? null,
+      weaponUuid: ar.weapon?.uuid ?? null,
+    };
+    // Live skips `c.defeated`; with no dCombat here, a 0-HP or "dead" bearer stands in.
+    const isDown = (a) => a.statuses?.has?.("dead") || Number(a.system?.props?.current_hp ?? 1) <= 0;
+    const reactors = [...new Map((canvas?.tokens?.placeables ?? [])
+      .map((t) => t.actor).filter((a) => a && a.uuid !== performerUuid && !isDown(a))
+      .map((a) => [a.uuid, a])).values()];
+    for (const reactor of reactors) {
+      let scanned = null;
+      try {
+        scanned = await deps.findPassiveCandidates({
+          casterActor: reactor, trigger: "creature_performs_action", payload: observerPayload, includeUnavailable: true,
+        });
+      } catch (e) {
+        scanLog.push({ trigger: "creature_performs_action", observer: reactor.name, threw: String(e?.message ?? e) });
+        continue;
+      }
+      for (const c of scanned ?? []) {
+        if (c.kind === "passive" && c.mode === "off") continue;
+        if (!c.reactionSource || !c.ref || c.usesAddTarget) continue;
+        const key = `${c?.rowKey}::${c?.carrierUuid}::${reactor.uuid}`;
+        if (byKey.has(key)) continue;
+        byKey.set(key, {
+          ...c, _trigger: "creature_performs_action", phaseTrigger: "creature_performs_action",
+          reactorActorUuid: reactor.uuid, reactorActorName: reactor.name,
+          reactorActorImg: reactor.img ?? c.carrierImg, reactorIsPlayer: !!reactor.hasPlayerOwner,
+          subjectActorUuid: performerUuid, subjectTokenUuid: ar.attacker?.tokenUuid ?? null,
+          payloadAtFire: observerPayload,
+        });
+        scanLog.push({
+          trigger: "creature_performs_action", observer: reactor.name, key,
+          carrierName: c?.carrierName ?? null, rowKey: c?.rowKey ?? null, ref: c?.ref ?? null, mode: c?.mode ?? null,
+          available: c?.available !== false, unavailableReason: c?.unavailableReason ?? null,
         });
       }
     }
