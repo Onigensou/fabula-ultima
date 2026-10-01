@@ -551,5 +551,79 @@ console.log("\n— CORPUS round-trip (the contract) —");
   }
 }
 
+// ── linking: connectNodes / disconnectEdge ─────────────────────────────────
+//
+// The canvas draws links by hand. They must leave by the same road as the
+// inspector, and must keep every LITERAL in the field — rebuilding a value list
+// from step edges alone would drop `self` out of `target_ref: "self, tgt"`.
+console.log("\n— linking —");
+{
+  const props = {
+    on_activate_effect_ref: "root",
+    effect_table: {
+      0: { effect_kind: "targeting", effect_label: "tgt", candidate_source: "combat" },
+      1: { effect_kind: "targeting", effect_label: "tgt2", candidate_source: "combat" },
+      2: { effect_kind: "deal_damage", effect_label: "hit", target_ref: "self, tgt", chain_then_ref: "" },
+      3: { effect_kind: "chain", effect_label: "root", chain_steps: "hit" },
+      4: { effect_kind: "deal_damage", effect_label: "other", target_ref: "self" },
+      5: { effect_kind: "deal_damage", target_ref: "self" },
+    },
+    reaction_config_table: { 0: { reaction_trigger: "on_hit", reaction_effect_ref: "" } },
+  };
+  const id = (g, l) => g.nodes.find((n) => n.label === l).id;
+
+  let g = gm.toGraph(props);
+  let r = gm.connectNodes(g, id(g, "hit"), id(g, "tgt2"), "target_ref");
+  eq("a list link appends", r.ok, true);
+  eq("…keeping the literal and the order", gm.refValues(g, id(g, "hit"), "target_ref"), ["self", "tgt", "tgt2"]);
+  eq("…and it is what gets written",
+    gm.fromGraphWithEdges(g).effect_table[2].target_ref.split(",").map((s) => s.trim()), ["self", "tgt", "tgt2"]);
+  r = gm.connectNodes(g, id(g, "hit"), id(g, "tgt2"), "target_ref");
+  eq("linking the same step twice is a no-op, not a duplicate",
+    [r.unchanged, gm.refValues(g, id(g, "hit"), "target_ref").length], [true, 3]);
+
+  g = gm.toGraph(props);
+  r = gm.connectNodes(g, id(g, "hit"), id(g, "other"), "chain_then_ref");
+  eq("a single link sets the field", gm.refValues(g, id(g, "hit"), "chain_then_ref"), ["other"]);
+  r = gm.connectNodes(g, id(g, "hit"), id(g, "root"), "chain_then_ref");
+  eq("…and replacing it SAYS what it replaced", r.replaced, "other");
+  eq("…leaving only the new one", gm.refValues(g, id(g, "hit"), "chain_then_ref"), ["root"]);
+
+  g = gm.toGraph(props);
+  eq("a step cannot point at itself", gm.connectNodes(g, id(g, "hit"), id(g, "hit"), "chain_then_ref").ok, false);
+  const nameless = g.nodes.find((n) => n.labelIsSynthetic && !n.isTrigger).id;
+  eq("a nameless row cannot be pointed at", gm.connectNodes(g, id(g, "root"), nameless, "chain_steps").ok, false);
+  const trig = g.nodes.find((n) => n.isTrigger).id;
+  eq("nothing points at a trigger row", gm.connectNodes(g, id(g, "root"), trig, "chain_steps").ok, false);
+  eq("a trigger row CAN point into the effects",
+    gm.connectNodes(g, trig, id(g, "hit"), "reaction_effect_ref").ok, true);
+  eq("…and that is written on the reaction row",
+    gm.fromGraphWithEdges(g).reaction_config_table[0].reaction_effect_ref, "hit");
+
+  g = gm.toGraph(props);
+  r = gm.connectNodes(g, "__document__", id(g, "hit"), "on_activate_effect_ref");
+  eq("a document link sets the fire point", [g.entry, r.replaced], ["hit", "root"]);
+  eq("…and a non-fire-point field is refused there",
+    gm.connectNodes(g, "__document__", id(g, "hit"), "chain_steps").ok, false);
+  r = gm.connectNodes(g, "__document__", id(g, "hit"), "on_activate_effect_ref");
+  eq("re-linking the fire point to where it already starts is a no-op, not an edit",
+    [r.ok, r.unchanged, r.replaced], [true, true, undefined]);
+  eq("a fire point the document does not carry is refused (it would ADD a prop)",
+    gm.connectNodes(g, "__document__", id(g, "hit"), "pre_activate_effect_ref").ok, false);
+  eq("…and nothing was added", "pre_activate_effect_ref" in g.entries, false);
+
+  g = gm.toGraph(props);
+  gm.disconnectEdge(g, { from: id(g, "hit"), field: "target_ref", order: 1 });
+  eq("unlinking removes ONE value and keeps the literal", gm.refValues(g, id(g, "hit"), "target_ref"), ["self"]);
+  gm.disconnectEdge(g, { from: id(g, "root"), field: "chain_steps", order: 0 });
+  eq("unlinking the last value clears the field", gm.refValues(g, id(g, "root"), "chain_steps"), []);
+  eq("…and the column stays present as a blank (it was authored)",
+    gm.fromGraphWithEdges(g).effect_table[3].chain_steps, "");
+  eq("unlinking a link that does not exist is refused",
+    gm.disconnectEdge(g, { from: id(g, "root"), field: "chain_steps", order: 4 }).ok, false);
+  gm.disconnectEdge(g, { from: "__document__", field: "on_activate_effect_ref" });
+  eq("unlinking a fire point clears it", g.entry, null);
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
