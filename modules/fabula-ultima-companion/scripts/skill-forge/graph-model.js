@@ -770,3 +770,84 @@ export function addNode(graph, table, row) {
 
   return { ok: true, nodeId: node.id, rowKey };
 }
+
+// ── linking (the canvas's drag-to-connect) ──────────────────────────────────
+//
+// Thin compositions of `setNodeRef` / `setEntry`, so a link drawn by hand on
+// the canvas leaves by exactly the same road as one typed into the inspector.
+// They exist as named operations — rather than the canvas rebuilding a value
+// list itself — because the list has to be the field's FULL current contents,
+// literals included: rebuilding it from the step edges alone would silently
+// drop `self` out of `target_ref: "self, tgt"` the moment someone linked `tgt2`.
+
+/** Every value a ref field holds now, in authored order — steps AND literals. */
+export function refValues(graph, nodeId, field) {
+  return graph.edges
+    .filter((e) => e.from === nodeId && e.field === field)
+    .sort((a, b) => a.order - b.order)
+    .map((e) => e.toLabel);
+}
+
+/**
+ * Point `field` on `fromId` at `toId`.
+ *
+ * A LIST field gains the target at the end (a second link to the same step is
+ * a no-op, not a duplicate). A SINGLE field is REPLACED, and the value it held
+ * is returned as `replaced` so the caller can say so out loud.
+ * `fromId === "__document__"` sets a fire point instead.
+ */
+export function connectNodes(graph, fromId, toId, field) {
+  const to = graph.nodes.find((n) => n.id === toId);
+  if (!to) return { ok: false, reason: "no such step" };
+  // A nameless row has no label that exists in the data, so nothing can point
+  // at it — `setNodeRef` would refuse it anyway; refusing here says why.
+  if (to.labelIsSynthetic) return { ok: false, reason: "that step has no name, so nothing can point at it" };
+  if (to.isTrigger) return { ok: false, reason: "a trigger row starts on its own — nothing points at one" };
+
+  if (fromId === "__document__") {
+    if (!(field in FIRE_POINTS)) return { ok: false, reason: "not a fire point" };
+    // Only a fire point the document already carries (on_activate always).
+    // Setting any other one ADDS a document prop — the undeclared-key failure
+    // `toGraph` refuses to commit for exactly this reason.
+    if (field !== "on_activate_effect_ref" && !(field in (graph.entries ?? {}))) {
+      return { ok: false, reason: "this skill does not use that starting point" };
+    }
+    const current = graph.entries?.[field] || null;
+    if (current === to.label) return { ok: true, unchanged: true };
+    return { ...setEntry(graph, to.label, field), replaced: current };
+  }
+
+  const from = graph.nodes.find((n) => n.id === fromId);
+  const spec = REF_FIELDS[field];
+  if (!from) return { ok: false, reason: "no such step" };
+  if (!spec) return { ok: false, reason: "not an editable reference" };
+  // A step that runs itself is an infinite loop the engine only stops at its
+  // runaway-depth backstop. Never something an author means to draw.
+  if (fromId === toId) return { ok: false, reason: "a step cannot point at itself" };
+
+  const current = refValues(graph, fromId, field);
+  if (spec.kind === "list") {
+    if (current.includes(to.label)) return { ok: true, unchanged: true };
+    return setNodeRef(graph, fromId, field, [...current, to.label]);
+  }
+  const replaced = current[0] && current[0] !== to.label ? current[0] : null;
+  if (current[0] === to.label) return { ok: true, unchanged: true };
+  return { ...setNodeRef(graph, fromId, field, [to.label]), replaced };
+}
+
+/**
+ * Remove ONE value from a ref field — the edge at `order` — keeping the rest,
+ * literals included, in their order. A fire-point edge clears that fire point.
+ */
+export function disconnectEdge(graph, { from, field, order = 0 }) {
+  if (from === "__document__") {
+    if (!(field in FIRE_POINTS)) return { ok: false, reason: "not a fire point" };
+    return setEntry(graph, "", field);
+  }
+  if (!REF_FIELDS[field]) return { ok: false, reason: "not an editable reference" };
+  const edges = graph.edges
+    .filter((e) => e.from === from && e.field === field)
+    .sort((a, b) => a.order - b.order);
+  if (!edges.some((e) => e.order === order)) return { ok: false, reason: "no such link" };
+  return setNodeRef(graph, from, field, edges.filter((e) => e.order !== order).map((e) => e.toLabel));
+}
