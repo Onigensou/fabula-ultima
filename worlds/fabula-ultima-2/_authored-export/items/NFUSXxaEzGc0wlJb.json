@@ -24,13 +24,63 @@
   "system": {
     "container": null,
     "props": {
+      "action_intent": "harmful",
       "check_bonus": "0",
       "class": "Orator",
       "cost": "5 MP",
       "damage_bonus": "0",
       "description": "<p>You may use an action and spend 5 Mind Points to perform an Opposed <strong>【INS + WLP】</strong> Check against a creature that can hear and understand you — describe your accusations! If you succeed, the target loses <strong>【SL × 10】</strong> Mind Points and suffers <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span> or <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span> <em>(your choice)</em>. </p><p>You gain a bonus equal to <strong>【SL】</strong> to your <strong>【INS + WLP】</strong> Checks for this Skill.</p>",
       "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "cdm_pick",
+          "menu_option_labels": "Dazed|Shaken",
+          "menu_option_refs": "cdm_dazed, cdm_shaken",
+          "menu_pick_count": "1",
+          "menu_subtitle": "If you win the Opposed Check, the target suffers this status.",
+          "menu_title": "Condemn — choose a status"
+        },
+        "1": {
+          "ae_template_ref": "Dazed",
+          "effect_kind": "apply_ae",
+          "effect_label": "cdm_dazed",
+          "target_ref": "contest_lost_targets"
+        },
+        "2": {
+          "ae_template_ref": "Shaken",
+          "effect_kind": "apply_ae",
+          "effect_label": "cdm_shaken",
+          "target_ref": "contest_lost_targets"
+        },
+        "3": {
+          "contest_attr1": "ins",
+          "contest_attr2": "wlp",
+          "contest_bonus": "SL",
+          "contest_max_rerolls": "5",
+          "effect_kind": "contest_check",
+          "effect_label": "cdm_contest",
+          "save_attr1": "ins",
+          "save_attr2": "wlp",
+          "save_mode": "interactive",
+          "target_ref": "action_targets"
+        },
+        "4": {
+          "consume_amount": "SL * 10",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "cdm_mp",
+          "on_empty": "drain",
+          "target_ref": "contest_lost_targets"
+        },
+        "5": {
+          "chain_steps": "cdm_contest, cdm_mp, cdm_pick",
+          "effect_kind": "chain",
+          "effect_label": "cdm_root"
+        }
+      },
       "heroic_requirement": "",
+      "implementation_note": "Choose Dazed or Shaken, then make an Opposed INS + WLP Check (+SL) against the target, who also rolls INS + WLP. If the target loses, it loses SL×10 MP (all it has if fewer) and suffers the chosen status. Whether the target can hear and understand you is up to the GM.",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
@@ -38,7 +88,9 @@
       "level": "1",
       "max_level": "4",
       "name": "Condemn",
+      "on_activate_effect_ref": "cdm_root",
       "optional_params": {},
+      "pre_activate_effect_ref": "cdm_pick",
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",
@@ -46,6 +98,7 @@
       "skill_range": "Any",
       "skill_target": "One creature",
       "skill_type": "Active",
+      "target_eligibility": "IS_SOURCE == 0",
       "type_damage": "",
       "use_optional_params": false
     },

@@ -32,7 +32,17 @@
       "defense_target_type": "def",
       "description": "<p>When you perform an Accuracy Check, you may replace <strong>one</strong> of the Attribute dice with <strong>Insight</strong> (such as <strong>【INS + INS】</strong> for a pistol or <strong>【INS + MIG】</strong> for a waraxe).</p>",
       "duration": "",
+      "effect_table": {
+        "0": {
+          "condition_formula": "ACTION_IS_SPELL == 0",
+          "effect_kind": "check_die_swap",
+          "effect_label": "kip_swap",
+          "swap_mode": "ask",
+          "swap_to_attribute": "INS"
+        }
+      },
       "heroic_requirement": "",
+      "implementation_note": "When you make an Accuracy Check (weapon attacks and attack Skills; not Magic Checks), you may replace one Attribute die with Insight. Offered only when your Insight die is larger than the die it replaces.",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,

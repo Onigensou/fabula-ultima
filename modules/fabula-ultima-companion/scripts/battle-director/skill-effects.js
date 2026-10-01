@@ -11833,9 +11833,15 @@ async function applyRemoveTaggedAeEffect(row, ctx) {
   // filter, so a stale name (status already gone) is a safe no-op. Reuses the
   // open_action_menu capture plumbing — no new persistence field.
   const label = String(row.effect_label ?? "");
+  const capturedNames = ctx?.captureMode ? null : (ctx?.capturedMenuPicksByLabel?.[label] ?? null);
   const replayNames = ctx?.captureMode ? null
-    : (ctx?.capturedMenuPicksByLabel?.[label]
-       ?? (Array.isArray(ctx?.menuPicks) ? ctx.menuPicks : null));
+    : (capturedNames ?? (Array.isArray(ctx?.menuPicks) ? ctx.menuPicks : null));
+  // `ctx.menuPicks` is the card pill's picks for the WHOLE chain — usually
+  // open_action_menu option labels, not AE names. When none of them names an AE
+  // on this target they were never meant for this row, so fall through to the
+  // normal removal instead of silently removing nothing (Queen's Gambit's
+  // qg_disarm ahead of qg_menu, accepted with a pick, used to leave its marker).
+  const replayIsGeneric = !capturedNames;
 
   const removed = [];
   for (const token of tokens) {
@@ -11881,9 +11887,9 @@ async function applyRemoveTaggedAeEffect(row, ctx) {
     }
 
     // ── RESOLVE replay: remove the pre-card pick(s) by name, no prompt.
-    if (replayNames && replayNames.length) {
-      const want = new Set(replayNames.map((n) => String(n)));
-      const pick = matches.filter((m) => want.has(String(m.name)));
+    const want = new Set((replayNames ?? []).map((n) => String(n)));
+    const pick = matches.filter((m) => want.has(String(m.name)));
+    if (replayNames && replayNames.length && !(replayIsGeneric && !pick.length)) {
       const slice = (count === Infinity) ? pick : pick.slice(0, count);
       if (slice.length) {
         try {

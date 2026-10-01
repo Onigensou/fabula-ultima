@@ -3446,7 +3446,7 @@
         "id": "cy0XWEqKnjvJ9B4c",
         "name": "Bishop's Edict",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "TSCAUfjpOlNl6WwV",
@@ -5312,7 +5312,7 @@
         "id": "PjTYcvt9L33XCWZG",
         "name": "Encourage",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 4
       },
       {
         "id": "DO5WAMWcUFtLTxfi",
@@ -5768,7 +5768,7 @@
         "id": "8teyVsUtTl8EHP17",
         "name": "Focused",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "aP3bmiJNoOzRUBaB",
@@ -7616,7 +7616,7 @@
         "id": "j2zsAZo4RuolWM6b",
         "name": "King's Castle",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "Ou5w7XHSNGb02T9y",
@@ -9920,7 +9920,7 @@
         "id": "f7LAMimGFhqpUUWX",
         "name": "Queen's Gambit",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "GT1JF2Q4w7W6vQ4P",

@@ -105,6 +105,7 @@
           "description": "<p>When you successfully perform a Check to fill or erase sections of a Clock, if your approach relied on <strong>charm, diplomacy, deception</strong> or <strong>intimidation</strong>, you may spend up to <strong>【SL × 20】</strong> Mind Points. If you do, fill or erase an additional section of that Clock for every 20 Mind Points you spend this way.</p>",
           "duration": "",
           "heroic_requirement": "",
+          "implementation_note": "GM-adjudicated: after you SUCCEED on a Check that fills or erases Clock sections using charm, diplomacy, deception or intimidation, you may spend up to SL×20 MP; for every 20 MP the GM fills/erases one more section (GM left/right-clicks the clock; deduct the MP on your sheet).",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -155,13 +156,63 @@
       "system": {
         "container": null,
         "props": {
+          "action_intent": "harmful",
           "check_bonus": "0",
           "class": "Orator",
           "cost": "5 MP",
           "damage_bonus": "0",
           "description": "<p>You may use an action and spend 5 Mind Points to perform an Opposed <strong>【INS + WLP】</strong> Check against a creature that can hear and understand you — describe your accusations! If you succeed, the target loses <strong>【SL × 10】</strong> Mind Points and suffers <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span> or <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span> <em>(your choice)</em>. </p><p>You gain a bonus equal to <strong>【SL】</strong> to your <strong>【INS + WLP】</strong> Checks for this Skill.</p>",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "effect_kind": "open_action_menu",
+              "effect_label": "cdm_pick",
+              "menu_option_labels": "Dazed|Shaken",
+              "menu_option_refs": "cdm_dazed, cdm_shaken",
+              "menu_pick_count": "1",
+              "menu_subtitle": "If you win the Opposed Check, the target suffers this status.",
+              "menu_title": "Condemn — choose a status"
+            },
+            "1": {
+              "ae_template_ref": "Dazed",
+              "effect_kind": "apply_ae",
+              "effect_label": "cdm_dazed",
+              "target_ref": "contest_lost_targets"
+            },
+            "2": {
+              "ae_template_ref": "Shaken",
+              "effect_kind": "apply_ae",
+              "effect_label": "cdm_shaken",
+              "target_ref": "contest_lost_targets"
+            },
+            "3": {
+              "contest_attr1": "ins",
+              "contest_attr2": "wlp",
+              "contest_bonus": "SL",
+              "contest_max_rerolls": "5",
+              "effect_kind": "contest_check",
+              "effect_label": "cdm_contest",
+              "save_attr1": "ins",
+              "save_attr2": "wlp",
+              "save_mode": "interactive",
+              "target_ref": "action_targets"
+            },
+            "4": {
+              "consume_amount": "SL * 10",
+              "consume_resource": "mp",
+              "effect_kind": "consume_resource",
+              "effect_label": "cdm_mp",
+              "on_empty": "drain",
+              "target_ref": "contest_lost_targets"
+            },
+            "5": {
+              "chain_steps": "cdm_contest, cdm_mp, cdm_pick",
+              "effect_kind": "chain",
+              "effect_label": "cdm_root"
+            }
+          },
           "heroic_requirement": "",
+          "implementation_note": "Choose Dazed or Shaken, then make an Opposed INS + WLP Check (+SL) against the target, who also rolls INS + WLP. If the target loses, it loses SL×10 MP (all it has if fewer) and suffers the chosen status. Whether the target can hear and understand you is up to the GM.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -169,13 +220,16 @@
           "level": "1",
           "max_level": "4",
           "name": "Condemn",
+          "on_activate_effect_ref": "cdm_root",
           "optional_params": {},
+          "pre_activate_effect_ref": "cdm_pick",
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>Check Bonus</strong></p></td><td><p><strong>Enemy MP lost</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>+1</p></td><td><p>-10 MP</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>+2</p></td><td><p>-20 MP</p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p>+3</p></td><td><p>-30 MP</p></td></tr><tr><td data-colwidth=\"79\"><p>4</p></td><td data-colwidth=\"148\"><p>+4</p></td><td><p>-40 MP</p></td></tr></tbody></table>",
           "skill_range": "Any",
           "skill_target": "One creature",
           "skill_type": "Active",
+          "target_eligibility": "IS_SOURCE == 0",
           "type_damage": "",
           "use_optional_params": false
         },
@@ -219,12 +273,14 @@
           "description": "<p>After another Player Character who is able to hear you performs a Check, you may spend <strong>1 Fabula Point</strong> and invoke one of their <strong>Traits</strong> or <strong>Bonds</strong> in order to let them reroll dice or improve the Result of the Check (following the normal rules). Then, if you have a <strong>Bond</strong> towards that character, they recover <strong>【SL × 10】</strong> Mind Points.</p>",
           "duration": "Instantaneous",
           "heroic_requirement": "",
+          "implementation_note": "Not automated yet — resolve at the table: after another Player Character performs a Check, spend 1 Fabula Point and invoke one of their Traits (reroll) or Bonds (+Bond strength); if you have a Bond towards them they recover SL×10 MP. Hidden from the battle menu so it cannot spend FP with no effect.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
           "level": "1",
           "max_level": "2",
+          "menu_hidden": true,
           "name": "My Trust in You",
           "optional_params": {},
           "rolled_atr1": "-",
@@ -332,12 +388,14 @@
           "description": "<p>You may use an action and spend <strong>1 Fabula Point</strong> to choose a <strong>non-hostile</strong> creature able to hear and understand you. If you do, that creature becomes helpful towards you so long as you are kind and respectful to them and your requests are reasonable.</p>",
           "duration": "Special",
           "heroic_requirement": "",
+          "implementation_note": "GM-adjudicated: spend 1 Fabula Point (deduct on your sheet); a non-hostile creature that can hear and understand you becomes helpful while you remain kind, respectful and reasonable.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
           "level": "1",
           "max_level": "1",
+          "menu_hidden": true,
           "name": "Unexpected Ally",
           "optional_params": {},
           "rolled_atr1": "-",
@@ -365,6 +423,264 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "ekSUFrELK5JDOSNO",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1790870481595,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "wlp_current",
+              "mode": 2,
+              "priority": 1,
+              "value": "2"
+            }
+          ],
+          "description": "<p>Encourage: Willpower is treated as one die size higher (up to d12) until the start of the Orator's next turn.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "ekSUFrELK5JDOSNO",
+              "originalParentId": "YMvMMBtKHJtz1MFI",
+              "originalUuid": "Actor.eSnX1yC7TIJEft0V.Item.YMvMMBtKHJtz1MFI.ActiveEffect.ekSUFrELK5JDOSNO"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Encourage (Willpower)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-encourage-willpower"
+          ],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "FtJpsQYQCS4hkSAg",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1790870481595,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "ins_current",
+              "mode": 2,
+              "priority": 1,
+              "value": "2"
+            }
+          ],
+          "description": "<p>Encourage: Insight is treated as one die size higher (up to d12) until the start of the Orator's next turn.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "FtJpsQYQCS4hkSAg",
+              "originalParentId": "YMvMMBtKHJtz1MFI",
+              "originalUuid": "Actor.eSnX1yC7TIJEft0V.Item.YMvMMBtKHJtz1MFI.ActiveEffect.FtJpsQYQCS4hkSAg"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Encourage (Insight)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-encourage-insight"
+          ],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "LFoEeNaflpfBBB4U",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1790870481595,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "mig_current",
+              "mode": 2,
+              "priority": 1,
+              "value": "2"
+            }
+          ],
+          "description": "<p>Encourage: Might is treated as one die size higher (up to d12) until the start of the Orator's next turn.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "LFoEeNaflpfBBB4U",
+              "originalParentId": "YMvMMBtKHJtz1MFI",
+              "originalUuid": "Actor.eSnX1yC7TIJEft0V.Item.YMvMMBtKHJtz1MFI.ActiveEffect.LFoEeNaflpfBBB4U"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Encourage (Might)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-encourage-might"
+          ],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "mnpoVcecUAN7rh8R",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1790870481595,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "dex_current",
+              "mode": 2,
+              "priority": 1,
+              "value": "2"
+            }
+          ],
+          "description": "<p>Encourage: Dexterity is treated as one die size higher (up to d12) until the start of the Orator's next turn.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "mnpoVcecUAN7rh8R",
+              "originalParentId": "YMvMMBtKHJtz1MFI",
+              "originalUuid": "Actor.eSnX1yC7TIJEft0V.Item.YMvMMBtKHJtz1MFI.ActiveEffect.mnpoVcecUAN7rh8R"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Encourage (Dexterity)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-encourage-dexterity"
+          ],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -386,8 +702,64 @@
           "cost": "5 MP",
           "damage_bonus": "0",
           "description": "<p>During a conflict, you may use an action and spend 5 Mind Points to choose another creature that can hear and understand you. That creature recovers <strong>【SL × 5】</strong> Hit Points and chooses <strong>Dexterity</strong>, <strong>Insight</strong>, <strong>Might</strong>, or <strong>Willpower</strong>: they treat the chosen Attribute as being one die size higher (up to a maximum of <strong>d12</strong>) until the start of your next turn.</p>",
-          "duration": "Instantaneous",
+          "duration": "Until the start of your next turn",
+          "effect_table": {
+            "0": {
+              "effect_kind": "open_action_menu",
+              "effect_label": "enc_pick",
+              "menu_option_labels": "Dexterity|Insight|Might|Willpower",
+              "menu_option_refs": "enc_dex, enc_ins, enc_mig, enc_wlp",
+              "menu_pick_count": "1",
+              "menu_subtitle": "Choose the Attribute the target treats as one die size higher (max d12) until the start of your next turn.",
+              "menu_title": "Encourage"
+            },
+            "1": {
+              "effect_kind": "grant",
+              "effect_label": "enc_heal",
+              "grant_amount": "SL * 5",
+              "grant_resource": "hp",
+              "target_ref": "action_targets"
+            },
+            "2": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Encourage (Dexterity)",
+              "effect_kind": "apply_ae",
+              "effect_label": "enc_dex",
+              "target_ref": "action_targets"
+            },
+            "3": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Encourage (Insight)",
+              "effect_kind": "apply_ae",
+              "effect_label": "enc_ins",
+              "target_ref": "action_targets"
+            },
+            "4": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Encourage (Might)",
+              "effect_kind": "apply_ae",
+              "effect_label": "enc_mig",
+              "target_ref": "action_targets"
+            },
+            "5": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Encourage (Willpower)",
+              "effect_kind": "apply_ae",
+              "effect_label": "enc_wlp",
+              "target_ref": "action_targets"
+            },
+            "6": {
+              "chain_steps": "enc_heal, enc_pick",
+              "effect_kind": "chain",
+              "effect_label": "enc_root"
+            }
+          },
           "heroic_requirement": "",
+          "implementation_note": "Choose another creature: it recovers SL×5 HP and treats the chosen Attribute as one die size higher (max d12) until the start of your next turn. RAW lets the target choose the Attribute; the Orator picks it on their behalf.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -395,13 +767,16 @@
           "level": "1",
           "max_level": "6",
           "name": "Encourage",
+          "on_activate_effect_ref": "enc_root",
           "optional_params": {},
+          "pre_activate_effect_ref": "enc_pick",
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>HP Recovers</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>5 HP</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>10 HP</p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p>15 HP</p></td></tr><tr><td data-colwidth=\"79\"><p>4</p></td><td data-colwidth=\"148\"><p>20 HP</p></td></tr><tr><td data-colwidth=\"79\"><p>5</p></td><td data-colwidth=\"148\"><p>25 HP</p></td></tr><tr><td data-colwidth=\"79\"><p>6</p></td><td data-colwidth=\"148\"><p>30 HP</p></td></tr></tbody></table>",
           "skill_range": "Any",
           "skill_target": "One creature",
           "skill_type": "Active",
+          "target_eligibility": "IS_SOURCE == 0",
           "type_damage": "",
           "use_optional_params": false
         },

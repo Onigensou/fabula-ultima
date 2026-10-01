@@ -849,10 +849,34 @@ async function attachHealEffects({ rows, view, ar, targets, resolver, liveAttack
   const isPreRoll = !!(check?.required && check?.total == null);
   const fireLabel = String(view?.fire_points?.on_activate_effect_ref ?? "").trim();
   const tbl = view?.effect_table ?? {};
+  // Only a grant the ACTIVATION can reach is this action's heal. With an
+  // on_activate ref, walk its chain_steps / menu_option_refs; a grant that only a
+  // REACTION row fires (Queen's Gambit's post-attack heal, Avatar of Vengeance's
+  // Burn regen) is not previewed on the activation card. No on_activate ref =
+  // the legacy first-grant fallback, unchanged.
+  let reachable = null;
+  if (fireLabel) {
+    const byLabel = new Map();
+    for (const r of Object.values(tbl)) {
+      if (r && !r.$deleted && r.effect_label) byLabel.set(String(r.effect_label).trim(), r);
+    }
+    reachable = new Set();
+    const walk = (lbl) => {
+      if (!lbl || reachable.has(lbl)) return;
+      reachable.add(lbl);
+      const r = byLabel.get(lbl);
+      if (!r) return;
+      for (const f of ["chain_steps", "menu_option_refs"]) {
+        for (const s of String(r[f] ?? "").split(/[,\n]+/).map((x) => x.trim()).filter(Boolean)) walk(s);
+      }
+    };
+    walk(fireLabel);
+  }
   let grantRow = null;
   for (const k of Object.keys(tbl)) {
     const row = tbl[k];
     if (!row || row.$deleted || row.effect_kind !== "grant") continue;
+    if (reachable && !reachable.has(String(row.effect_label ?? "").trim())) continue;
     if (fireLabel && row.effect_label === fireLabel) { grantRow = row; break; }
     if (!grantRow) grantRow = row;
   }

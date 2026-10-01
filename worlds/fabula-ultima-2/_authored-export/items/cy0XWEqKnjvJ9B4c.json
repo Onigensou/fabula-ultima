@@ -8,6 +8,195 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "hZfuuO0oi42I4sXS",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790684163798,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.damage_taken_increased_physical",
+          "mode": 2,
+          "priority": 20,
+          "value": "SL * 3"
+        },
+        {
+          "key": "flags.fabula-ultima-companion.damage_taken_increased_air",
+          "mode": 2,
+          "priority": 20,
+          "value": "SL * 3"
+        },
+        {
+          "key": "flags.fabula-ultima-companion.damage_taken_increased_bolt",
+          "mode": 2,
+          "priority": 20,
+          "value": "SL * 3"
+        },
+        {
+          "key": "flags.fabula-ultima-companion.damage_taken_increased_dark",
+          "mode": 2,
+          "priority": 20,
+          "value": "SL * 3"
+        },
+        {
+          "key": "flags.fabula-ultima-companion.damage_taken_increased_earth",
+          "mode": 2,
+          "priority": 20,
+          "value": "SL * 3"
+        },
+        {
+          "key": "flags.fabula-ultima-companion.damage_taken_increased_fire",
+          "mode": 2,
+          "priority": 20,
+          "value": "SL * 3"
+        },
+        {
+          "key": "flags.fabula-ultima-companion.damage_taken_increased_ice",
+          "mode": 2,
+          "priority": 20,
+          "value": "SL * 3"
+        },
+        {
+          "key": "flags.fabula-ultima-companion.damage_taken_increased_light",
+          "mode": 2,
+          "priority": 20,
+          "value": "SL * 3"
+        },
+        {
+          "key": "flags.fabula-ultima-companion.damage_taken_increased_poison",
+          "mode": 2,
+          "priority": 20,
+          "value": "SL * 3"
+        }
+      ],
+      "description": "<p>Bishop's Edict: until the start of the Commander's next turn, every source of damage deals extra damage to this creature.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "hZfuuO0oi42I4sXS",
+          "originalParentId": "cy0XWEqKnjvJ9B4c",
+          "originalUuid": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.hZfuuO0oi42I4sXS"
+        },
+        "fabula-ultima-companion": {},
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/blood.svg",
+      "name": "Bishop's Edict (Damage)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-bishops-edict-damage"
+      ],
+      "system": {
+        "tags": [
+          "command"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "mFSWPTmn4RYIlxzV",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790684163798,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Bishop's Edict: until the start of the Commander's next turn, this creature's Mind Point costs are doubled.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "mFSWPTmn4RYIlxzV",
+          "originalParentId": "cy0XWEqKnjvJ9B4c",
+          "originalUuid": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.mFSWPTmn4RYIlxzV"
+        },
+        "fabula-ultima-companion": {
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "cost_amount": "ACTION_COST_MP",
+                "cost_operation": "add",
+                "cost_resource": "mp",
+                "effect_kind": "adjust_cost",
+                "effect_label": "bec_double"
+              }
+            },
+            "name": "Bishop's Edict (Costs)",
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "ACTION_COST_MP > 0 && ACTION_IS_FREE_CAST == 0",
+                "reaction_effect_ref": "bec_double",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_performs_action"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/downgrade.svg",
+      "name": "Bishop's Edict (Costs)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-bishops-edict-costs"
+      ],
+      "system": {
+        "tags": [
+          "command"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -30,21 +219,56 @@
       "damage_bonus": "0",
       "description": "<p>During a conflict, you may use an action and spend 10 Mind Points to <strong>choose one option:</strong></p><ul><li>All MP costs are doubled</li><li>All sources of damage deal <strong>【SL × 3】</strong> extra damage</li></ul><p>The chosen effect lasts until the start of your next turn.</p>",
       "duration": "Until the start of your next turn",
+      "effect_table": {
+        "0": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "be_menu",
+          "menu_option_refs": "be_cost, be_dmg",
+          "menu_pick_count": "1",
+          "menu_subtitle": "Affects friends and foes alike, until the start of your next turn.",
+          "menu_title": "Bishop's Edict"
+        },
+        "1": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_duration_rounds": "1",
+          "ae_template_ref": "Bishop's Edict (Costs)",
+          "effect_kind": "apply_ae",
+          "effect_label": "be_cost",
+          "menu_description": "Every creature's Mind Point costs are doubled until the start of your next turn.",
+          "menu_label": "All MP costs are doubled",
+          "target_ref": "all_combatants"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_duration_rounds": "1",
+          "ae_template_ref": "Bishop's Edict (Damage)",
+          "effect_kind": "apply_ae",
+          "effect_label": "be_dmg",
+          "menu_description": "All sources of damage deal ${SL * 3} extra damage until the start of your next turn.",
+          "menu_label": "All damage +${SL * 3}",
+          "target_ref": "all_combatants"
+        }
+      },
       "heroic_requirement": "",
+      "implementation_note": "Choose one option when you use it; it applies to EVERY creature in the conflict (you, allies and enemies) until the start of your next turn. Costs: each creature's actions with a printed MP cost cost double (the extra is added to the action card). Not doubled: MP a skill spends inside its own effect chain (e.g. Gadgets, Stolen Time, High Speed). A creature that cannot afford the doubled cost is not stopped automatically: it spends all its remaining MP and the action still resolves, so the GM should rule that action out at the table. Damage: every hit any creature takes gets +SL×3 before Affinities; typeless/true damage is not increased.",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
       "isOffensiveSpell": false,
+      "isReaction": false,
       "level": "1",
       "max_level": "5",
       "name": "Bishop's Edict",
+      "on_activate_effect_ref": "be_menu",
       "optional_params": {},
+      "pre_activate_effect_ref": "be_menu",
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",
       "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Extra Damage</strong></p></td></tr><tr><td><p>1</p></td><td><p>+3</p></td></tr><tr><td><p>2</p></td><td><p>+6</p></td></tr><tr><td><p>3</p></td><td><p>+9</p></td></tr><tr><td><p>4</p></td><td><p>+12</p></td></tr><tr><td><p>5</p></td><td><p>+15</p></td></tr></tbody></table>",
       "skill_range": "Any",
-      "skill_target": "All creature",
+      "skill_tags": "command",
+      "skill_target": "Self",
       "skill_type": "Active",
       "type_damage": "",
       "use_optional_params": false

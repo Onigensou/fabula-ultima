@@ -30,14 +30,110 @@
       "damage_bonus": "0",
       "description": "<p>At the start of a conflict, you may spend up to <strong>【SL × 5】</strong> Mind Points. For every 5 Mind Points you spend this way, <strong>Choose:</strong></p><ul><li><p> Choose a creature you can see and the GM reveals one of their <strong>Traits</strong></p></li><li><p>Name a damage type and choose a creature you can see, and the GM reveals that creature's <strong>Affinity</strong> towards that damage type.</p></li></ul>",
       "duration": "",
+      "effect_table": {
+        "0": {
+          "auto_confirm_when_obvious": true,
+          "candidate_source": "self",
+          "count": 1,
+          "effect_kind": "targeting",
+          "effect_label": "qa_self",
+          "iteration_mode": "together",
+          "mode": "exact",
+          "skip_when_passive": true
+        },
+        "1": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "qa_menu",
+          "menu_option_refs": "qa_5, qa_10, qa_15, qa_20, qa_25, qa_30",
+          "menu_pick_count": "1",
+          "menu_subtitle": "Spend Mind Points: every 5 MP = one Trait or one Affinity the GM reveals.",
+          "menu_title": "Quick Assessment"
+        },
+        "2": {
+          "condition_formula": "SL >= 1 && CUR_MP >= 5",
+          "consume_amount": "5",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "qa_5",
+          "menu_description": "The GM reveals 1 piece of information: for each, one Trait of a creature you can see, or that creature's Affinity to a damage type you name.",
+          "menu_label": "Spend 5 MP",
+          "on_empty": "abort",
+          "target_ref": "qa_self"
+        },
+        "3": {
+          "condition_formula": "SL >= 2 && CUR_MP >= 10",
+          "consume_amount": "10",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "qa_10",
+          "menu_description": "The GM reveals 2 pieces of information: for each, one Trait of a creature you can see, or that creature's Affinity to a damage type you name.",
+          "menu_label": "Spend 10 MP",
+          "on_empty": "abort",
+          "target_ref": "qa_self"
+        },
+        "4": {
+          "condition_formula": "SL >= 3 && CUR_MP >= 15",
+          "consume_amount": "15",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "qa_15",
+          "menu_description": "The GM reveals 3 pieces of information: for each, one Trait of a creature you can see, or that creature's Affinity to a damage type you name.",
+          "menu_label": "Spend 15 MP",
+          "on_empty": "abort",
+          "target_ref": "qa_self"
+        },
+        "5": {
+          "condition_formula": "SL >= 4 && CUR_MP >= 20",
+          "consume_amount": "20",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "qa_20",
+          "menu_description": "The GM reveals 4 pieces of information: for each, one Trait of a creature you can see, or that creature's Affinity to a damage type you name.",
+          "menu_label": "Spend 20 MP",
+          "on_empty": "abort",
+          "target_ref": "qa_self"
+        },
+        "6": {
+          "condition_formula": "SL >= 5 && CUR_MP >= 25",
+          "consume_amount": "25",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "qa_25",
+          "menu_description": "The GM reveals 5 pieces of information: for each, one Trait of a creature you can see, or that creature's Affinity to a damage type you name.",
+          "menu_label": "Spend 25 MP",
+          "on_empty": "abort",
+          "target_ref": "qa_self"
+        },
+        "7": {
+          "condition_formula": "SL >= 6 && CUR_MP >= 30",
+          "consume_amount": "30",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "qa_30",
+          "menu_description": "The GM reveals 6 pieces of information: for each, one Trait of a creature you can see, or that creature's Affinity to a damage type you name.",
+          "menu_label": "Spend 30 MP",
+          "on_empty": "abort",
+          "target_ref": "qa_self"
+        }
+      },
       "heroic_requirement": "",
+      "implementation_note": "At conflict start you are offered Quick Assessment; pick how much MP to spend (5 MP steps, up to SL × 5). The MP is spent automatically. Tell the GM which reveals you want: for every 5 MP, one Trait of a creature you can see, or that creature's Affinity to a damage type you name. The GM answers at the table.",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
+      "isReaction": true,
       "level": "1",
       "max_level": "6",
       "name": "Quick Assessment",
       "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "CUR_MP >= 5",
+          "reaction_effect_ref": "qa_menu",
+          "reaction_passive_mode": "ask",
+          "reaction_trigger": "conflict_start"
+        }
+      },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",

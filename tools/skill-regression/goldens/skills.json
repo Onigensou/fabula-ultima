@@ -13,9 +13,11 @@
       "⭐️ Wandering Flame",
       "Ace of Cards",
       "Arcanist",
+      "Arcanist (Variant)",
       "Berserker",
       "Blanche",
       "Bruce",
+      "Cardinal Gora",
       "Cherry",
       "Chiyo",
       "Commander",
@@ -39,9 +41,11 @@
       "Hunter",
       "Illusionist",
       "Invoker",
+      "Juno",
       "Kalina",
       "Keren",
       "Kiki",
+      "Koshka",
       "Loremaster",
       "Matador",
       "Monk",
@@ -72,7 +76,7 @@
       "Zarg"
     ],
     "enemyTarget": "Test Target Enemy",
-    "count": 486,
+    "count": 500,
     "engineVersion": "1.0.426",
     "override": {
       "SL": 5,
@@ -109,6 +113,24 @@
       "perTarget": [],
       "roll": null,
       "skill": "Magic Cards",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Arcanist (Variant) / Bind and Summon (variant)": {
+      "caster": "Arcanist (Variant)",
+      "offensive": true,
+      "ok": false,
+      "reason": "compute_refused:TARGET_BACK",
+      "skill": "Bind and Summon (variant)",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Arcanist / Bind and Summon": {
+      "caster": "Arcanist",
+      "offensive": true,
+      "ok": false,
+      "reason": "compute_refused:TARGET_BACK",
+      "skill": "Bind and Summon",
       "skillType": "Active",
       "targets": 1
     },
@@ -416,6 +438,32 @@
         "hr": 6
       },
       "skill": "Zero Power: Teleport Slash",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Cardinal Gora / Omega": {
+      "caster": "Cardinal Gora",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Omega",
       "skillType": "Spell",
       "targets": 1
     },
@@ -1459,12 +1507,25 @@
       "element": "",
       "hasDamage": false,
       "hasHealing": false,
-      "offensive": false,
+      "offensive": true,
       "ok": true,
-      "perTarget": [],
-      "roll": null,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
       "skill": "Anomaly",
-      "skillType": "Active",
+      "skillType": "Spell",
       "targets": 1
     },
     "Entropist / Bimagus": {
@@ -1586,15 +1647,24 @@
     },
     "Entropist / Gamble": {
       "caster": "Entropist",
-      "element": "",
+      "element": "hp",
       "hasDamage": false,
-      "hasHealing": false,
+      "hasHealing": true,
       "offensive": false,
       "ok": true,
-      "perTarget": [],
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": 50,
+          "grantRes": "hp",
+          "hit": true,
+          "resource": null
+        }
+      ],
       "roll": null,
       "skill": "Gamble",
-      "skillType": "Active",
+      "skillType": "Spell",
       "targets": 1
     },
     "Entropist / Mirror": {
@@ -1607,7 +1677,7 @@
       "perTarget": [],
       "roll": null,
       "skill": "Mirror",
-      "skillType": "Active",
+      "skillType": "Spell",
       "targets": 1
     },
     "Entropist / Omega": {
@@ -1615,12 +1685,25 @@
       "element": "",
       "hasDamage": false,
       "hasHealing": false,
-      "offensive": false,
+      "offensive": true,
       "ok": true,
-      "perTarget": [],
-      "roll": null,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
       "skill": "Omega",
-      "skillType": "Active",
+      "skillType": "Spell",
       "targets": 1
     },
     "Entropist / Stolen Time": {
@@ -1803,14 +1886,32 @@
     },
     "Esper / Reassuring Presence": {
       "caster": "Esper",
-      "element": "",
+      "element": "mp",
       "hasDamage": false,
-      "hasHealing": false,
+      "hasHealing": true,
       "offensive": false,
       "ok": true,
-      "perTarget": [],
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": 30,
+          "grantRes": "mp",
+          "hit": true,
+          "resource": null
+        }
+      ],
       "roll": null,
       "skill": "Reassuring Presence",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Farian Pasta / Bind and Summon (variant)": {
+      "caster": "Farian Pasta",
+      "offensive": true,
+      "ok": false,
+      "reason": "compute_refused:TARGET_BACK",
+      "skill": "Bind and Summon (variant)",
       "skillType": "Active",
       "targets": 1
     },
@@ -2322,12 +2423,12 @@
       "element": "",
       "hasDamage": false,
       "hasHealing": false,
-      "offensive": false,
+      "offensive": true,
       "ok": true,
       "perTarget": [],
       "roll": null,
       "skill": "Abyss",
-      "skillType": "Active",
+      "skillType": "Spell",
       "targets": 1
     },
     "Hexer / Acid Splash": {
@@ -2353,7 +2454,7 @@
         "hr": 6
       },
       "skill": "Acid Splash",
-      "skillType": "Active",
+      "skillType": "Spell",
       "targets": 1
     },
     "Hexer / Aura of Decay": {
@@ -2374,7 +2475,7 @@
       "element": "",
       "hasDamage": false,
       "hasHealing": false,
-      "offensive": false,
+      "offensive": true,
       "ok": true,
       "perTarget": [
         {
@@ -2392,7 +2493,7 @@
         "hr": 6
       },
       "skill": "Blind",
-      "skillType": "Active",
+      "skillType": "Spell",
       "targets": 1
     },
     "Hexer / Deteriorate": {
@@ -2400,7 +2501,7 @@
       "element": "",
       "hasDamage": false,
       "hasHealing": false,
-      "offensive": false,
+      "offensive": true,
       "ok": true,
       "perTarget": [
         {
@@ -2418,7 +2519,7 @@
         "hr": 6
       },
       "skill": "Deteriorate",
-      "skillType": "Active",
+      "skillType": "Spell",
       "targets": 1
     },
     "Hexer / Muddle": {
@@ -2426,7 +2527,7 @@
       "element": "",
       "hasDamage": false,
       "hasHealing": false,
-      "offensive": false,
+      "offensive": true,
       "ok": true,
       "perTarget": [
         {
@@ -2444,7 +2545,7 @@
         "hr": 6
       },
       "skill": "Muddle",
-      "skillType": "Active",
+      "skillType": "Spell",
       "targets": 1
     },
     "Hexer / Plague": {
@@ -2459,7 +2560,7 @@
       "element": "",
       "hasDamage": false,
       "hasHealing": false,
-      "offensive": false,
+      "offensive": true,
       "ok": true,
       "perTarget": [
         {
@@ -2477,7 +2578,7 @@
         "hr": 6
       },
       "skill": "Pressure",
-      "skillType": "Active",
+      "skillType": "Spell",
       "targets": 1
     },
     "Hexer / Seething Blight": {
@@ -2492,12 +2593,12 @@
       "element": "",
       "hasDamage": false,
       "hasHealing": false,
-      "offensive": false,
+      "offensive": true,
       "ok": true,
       "perTarget": [],
       "roll": null,
       "skill": "Shadow Mask",
-      "skillType": "Active",
+      "skillType": "Spell",
       "targets": 1
     },
     "Hexer / Symptom Shift": {
@@ -2509,15 +2610,24 @@
     },
     "Hexer / Transfer Life": {
       "caster": "Hexer",
-      "element": "",
+      "element": "hp",
       "hasDamage": false,
-      "hasHealing": false,
-      "offensive": false,
+      "hasHealing": true,
+      "offensive": true,
       "ok": true,
-      "perTarget": [],
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": 50,
+          "grantRes": "hp",
+          "hit": true,
+          "resource": null
+        }
+      ],
       "roll": null,
       "skill": "Transfer Life",
-      "skillType": "Active",
+      "skillType": "Spell",
       "targets": 1
     },
     "Hexer / Venomous Weapon": {
@@ -2525,12 +2635,12 @@
       "element": "",
       "hasDamage": false,
       "hasHealing": false,
-      "offensive": false,
+      "offensive": true,
       "ok": true,
       "perTarget": [],
       "roll": null,
       "skill": "Venomous Weapon",
-      "skillType": "Active",
+      "skillType": "Spell",
       "targets": 1
     },
     "Hina (Backup) / Acceleration": {
@@ -2870,6 +2980,19 @@
       "perTarget": [],
       "roll": null,
       "skill": "Bimagus",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Hina / Bind and Summon (variant)": {
+      "caster": "Hina",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Bind and Summon (variant)",
       "skillType": "Active",
       "targets": 1
     },
@@ -3471,26 +3594,9 @@
     },
     "Illusionist / Create Phantasm: Mockery": {
       "caster": "Illusionist",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
       "offensive": true,
-      "ok": true,
-      "perTarget": [
-        {
-          "affinity": "NE",
-          "damage": 0,
-          "grant": null,
-          "grantRes": null,
-          "hit": true,
-          "resource": "hp"
-        }
-      ],
-      "roll": {
-        "crit": false,
-        "fumble": false,
-        "hr": 6
-      },
+      "ok": false,
+      "reason": "compute_refused:TARGET_BACK",
       "skill": "Create Phantasm: Mockery",
       "skillType": "Spell",
       "targets": 1
@@ -3526,13 +3632,9 @@
     },
     "Illusionist / Essence Sacrifice": {
       "caster": "Illusionist",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": true,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
+      "offensive": false,
+      "ok": false,
+      "reason": "compute_refused:TARGET_BACK",
       "skill": "Essence Sacrifice",
       "skillType": "Spell",
       "targets": 1
@@ -3611,18 +3713,14 @@
     },
     "Illusionist / Phantasmal Recovery": {
       "caster": "Illusionist",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
       "offensive": false,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
+      "ok": false,
+      "reason": "compute_refused:TARGET_BACK",
       "skill": "Phantasmal Recovery",
       "skillType": "Active",
       "targets": 1
     },
-    "Illusionist / Placebo Energy #CpCx:CqAmHz": {
+    "Illusionist / Placebo Energy": {
       "caster": "Illusionist",
       "element": "",
       "hasDamage": false,
@@ -3632,20 +3730,7 @@
       "perTarget": [],
       "roll": null,
       "skill": "Placebo Energy",
-      "skillType": "Active",
-      "targets": 1
-    },
-    "Illusionist / Placebo Energy #CpCx:WHzVR6": {
-      "caster": "Illusionist",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": false,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
-      "skill": "Placebo Energy",
-      "skillType": "Active",
+      "skillType": "Spell",
       "targets": 1
     },
     "Illusionist / Spectral Light": {
@@ -3653,7 +3738,7 @@
       "element": "",
       "hasDamage": false,
       "hasHealing": false,
-      "offensive": false,
+      "offensive": true,
       "ok": true,
       "perTarget": [
         {
@@ -3671,20 +3756,16 @@
         "hr": 6
       },
       "skill": "Spectral Light",
-      "skillType": "Active",
+      "skillType": "Spell",
       "targets": 1
     },
     "Illusionist / Vital Sacrifice": {
       "caster": "Illusionist",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
       "offensive": false,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
+      "ok": false,
+      "reason": "compute_refused:TARGET_BACK",
       "skill": "Vital Sacrifice",
-      "skillType": "Active",
+      "skillType": "Spell",
       "targets": 1
     },
     "Invoker / Aero Blast": {
@@ -3952,6 +4033,32 @@
       "roll": null,
       "skill": "Pyro Hex",
       "skillType": "Active",
+      "targets": 1
+    },
+    "Juno / Disintegration Drone(Anomaly)": {
+      "caster": "Juno",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Disintegration Drone(Anomaly)",
+      "skillType": "Spell",
       "targets": 1
     },
     "Kalina / Dragonfire Dive": {
@@ -4254,7 +4361,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 31,
+          "damage": 33,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -4264,7 +4371,7 @@
       "roll": {
         "crit": false,
         "fumble": false,
-        "hr": 6
+        "hr": 8
       },
       "skill": "Flare",
       "skillType": "Spell",
@@ -4280,7 +4387,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 31,
+          "damage": 33,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -4290,7 +4397,7 @@
       "roll": {
         "crit": false,
         "fumble": false,
-        "hr": 6
+        "hr": 8
       },
       "skill": "Iceberg",
       "skillType": "Spell",
@@ -4306,7 +4413,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 31,
+          "damage": 33,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -4316,7 +4423,7 @@
       "roll": {
         "crit": false,
         "fumble": false,
-        "hr": 6
+        "hr": 8
       },
       "skill": "Rift",
       "skillType": "Spell",
@@ -4332,7 +4439,7 @@
       "perTarget": [
         {
           "affinity": "VU",
-          "damage": 62,
+          "damage": 66,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -4342,7 +4449,7 @@
       "roll": {
         "crit": false,
         "fumble": false,
-        "hr": 6
+        "hr": 8
       },
       "skill": "Thunderbolt",
       "skillType": "Spell",
@@ -4373,6 +4480,150 @@
       "skill": "Wind Wall",
       "skillType": "Spell",
       "targets": 1
+    },
+    "Koshka / Anomaly": {
+      "caster": "Koshka",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Anomaly",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Koshka / Blind": {
+      "caster": "Koshka",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Blind",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Koshka / Deteriorate": {
+      "caster": "Koshka",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Deteriorate",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Koshka / Muddle": {
+      "caster": "Koshka",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Muddle",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Koshka / Omega": {
+      "caster": "Koshka",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Omega",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Koshka / Plague": {
+      "caster": "Koshka",
+      "ok": false,
+      "reason": "skipped",
+      "skill": "Plague",
+      "skillType": "Spell"
+    },
+    "Koshka / Seething Blight": {
+      "caster": "Koshka",
+      "ok": false,
+      "reason": "skipped",
+      "skill": "Seething Blight",
+      "skillType": "Spell"
     },
     "Loremaster / Predictable!": {
       "caster": "Loremaster",
@@ -4541,12 +4792,21 @@
     },
     "Matador / Triumphal Salute": {
       "caster": "Matador",
-      "element": "",
+      "element": "zero_power",
       "hasDamage": false,
-      "hasHealing": false,
+      "hasHealing": true,
       "offensive": false,
       "ok": true,
-      "perTarget": [],
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": 3,
+          "grantRes": "zero_power",
+          "hit": true,
+          "resource": null
+        }
+      ],
       "roll": null,
       "skill": "Triumphal Salute",
       "skillType": "Active",
@@ -4873,12 +5133,21 @@
     },
     "Orator / Encourage": {
       "caster": "Orator",
-      "element": "",
+      "element": "hp",
       "hasDamage": false,
-      "hasHealing": false,
+      "hasHealing": true,
       "offensive": false,
       "ok": true,
-      "perTarget": [],
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": 25,
+          "grantRes": "hp",
+          "hit": true,
+          "resource": null
+        }
+      ],
       "roll": null,
       "skill": "Encourage",
       "skillType": "Active",
@@ -5248,6 +5517,15 @@
       "skillType": "Active",
       "targets": 1
     },
+    "RaiRai / Bind and Summon": {
+      "caster": "RaiRai",
+      "offensive": true,
+      "ok": false,
+      "reason": "compute_refused:TARGET_BACK",
+      "skill": "Bind and Summon",
+      "skillType": "Active",
+      "targets": 1
+    },
     "RaiRai / Elemental Weapon": {
       "caster": "RaiRai",
       "ok": false,
@@ -5265,7 +5543,7 @@
       "perTarget": [
         {
           "affinity": "VU",
-          "damage": 42,
+          "damage": 44,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -5275,7 +5553,7 @@
       "roll": {
         "crit": false,
         "fumble": false,
-        "hr": 6
+        "hr": 7
       },
       "skill": "Fulgur",
       "skillType": "Spell",
@@ -5291,7 +5569,7 @@
       "perTarget": [
         {
           "affinity": "VU",
-          "damage": 62,
+          "damage": 64,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -5301,7 +5579,7 @@
       "roll": {
         "crit": false,
         "fumble": false,
-        "hr": 6
+        "hr": 7
       },
       "skill": "Thunderbolt",
       "skillType": "Spell",
@@ -6371,13 +6649,9 @@
     },
     "Tinkerer / Gadgets": {
       "caster": "Tinkerer",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
       "offensive": true,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
+      "ok": false,
+      "reason": "compute_refused:TARGET_BACK",
       "skill": "Gadgets",
       "skillType": "Active",
       "targets": 1
@@ -6470,6 +6744,15 @@
       "perTarget": [],
       "roll": null,
       "skill": "Adrenaline Rush",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Varan / Bind and Summon": {
+      "caster": "Varan",
+      "offensive": true,
+      "ok": false,
+      "reason": "compute_refused:TARGET_BACK",
+      "skill": "Bind and Summon",
       "skillType": "Active",
       "targets": 1
     },
@@ -6574,13 +6857,9 @@
     },
     "Zarg / Gadgets": {
       "caster": "Zarg",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
       "offensive": true,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
+      "ok": false,
+      "reason": "compute_refused:TARGET_BACK",
       "skill": "Gadgets",
       "skillType": "Active",
       "targets": 1

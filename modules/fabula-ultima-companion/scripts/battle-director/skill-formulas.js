@@ -1670,6 +1670,14 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const sp = subject.system?.props ?? {};
         return (String(sp.npc_rank ?? "").trim() || String(sp.species ?? "").trim()) ? 1 : 0;
       }
+      // IS_NPC — the resolver-ACTOR twin of SUBJECT_IS_NPC (same discriminator:
+      // an NPC carries `npc_rank` or `species`, a PC neither). In a targeting
+      // row's target_filter the resolver actor is the CANDIDATE, so "another
+      // Player Character" is `IS_NPC == 0` (Commander's Crushing Chariot).
+      case "IS_NPC": {
+        const sp = actor?.system?.props ?? {};
+        return (String(sp.npc_rank ?? "").trim() || String(sp.species ?? "").trim()) ? 1 : 0;
+      }
       default:
         // Dynamic VAR_<NAME> — a chain-local variable captured earlier in the
         // SAME effect chain. `prompt_number` stores the player's entered amount

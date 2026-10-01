@@ -80,6 +80,65 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "054cXA4Q8uMxqWYx",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1790682100097,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "max_mp",
+              "mode": 2,
+              "priority": 20,
+              "value": "${level * 3}$"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "054cXA4Q8uMxqWYx",
+              "originalParentId": "GE2JH51LAImUNKg7",
+              "originalUuid": "Actor.WKglGpKgoeGQfF8j.Item.GE2JH51LAImUNKg7.ActiveEffect.054cXA4Q8uMxqWYx"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/aura.svg",
+          "name": "Focused",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -102,7 +161,16 @@
           "damage_bonus": "0",
           "description": "<p>Permanently increase your maximum Mind Points by <strong>【SL × 3】.</strong></p><p>When you perform an Open Check using <strong>【INS + INS】</strong>, you gain a bonus equal to <strong>【SL】</strong> on that Check <em>(this <strong>only</strong> applies to Open Checks).</em></p>",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "check_buff_action": "study",
+              "check_buff_amount": "SL",
+              "effect_kind": "check_buff",
+              "effect_label": "foc_study"
+            }
+          },
           "heroic_requirement": "",
+          "implementation_note": "Max MP +SL×3 is automatic (always-on). The +SL bonus applies automatically to Study (the INS + INS Open Check) in battle, and to Check Requester rolls the GM tags \"Study\". For any other INS + INS Open Check, the GM adds +SL at the table.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -158,6 +226,7 @@
           "description": "<p>When you roll a <strong>13 or higher</strong> on a Check performed to investigate a creature, item or location — this includes using the <strong>Study</strong> action during a conflict — you may ask the Game Master up to <strong>【SL】</strong> questions concerning the subject of your investigation. You may ask these questions immediately or save them for later; whenever you ask one of these questions, the Game Master will answer truthfully and you will describe your character's deductive process. </p><p>This Skill may only be used once on the same creature, item or location</p>",
           "duration": "",
           "heroic_requirement": "",
+          "implementation_note": "Resolved at the table (no automation). When your Check to investigate a creature, item or location totals 13 or higher (Study included), you may ask the GM up to SL questions about it, now or saved for later; the GM answers truthfully. Once per subject. Trained Memory lets this apply to remembered scenes.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -266,14 +335,110 @@
           "damage_bonus": "0",
           "description": "<p>At the start of a conflict, you may spend up to <strong>【SL × 5】</strong> Mind Points. For every 5 Mind Points you spend this way, <strong>Choose:</strong></p><ul><li><p> Choose a creature you can see and the GM reveals one of their <strong>Traits</strong></p></li><li><p>Name a damage type and choose a creature you can see, and the GM reveals that creature's <strong>Affinity</strong> towards that damage type.</p></li></ul>",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "auto_confirm_when_obvious": true,
+              "candidate_source": "self",
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "qa_self",
+              "iteration_mode": "together",
+              "mode": "exact",
+              "skip_when_passive": true
+            },
+            "1": {
+              "effect_kind": "open_action_menu",
+              "effect_label": "qa_menu",
+              "menu_option_refs": "qa_5, qa_10, qa_15, qa_20, qa_25, qa_30",
+              "menu_pick_count": "1",
+              "menu_subtitle": "Spend Mind Points: every 5 MP = one Trait or one Affinity the GM reveals.",
+              "menu_title": "Quick Assessment"
+            },
+            "2": {
+              "condition_formula": "SL >= 1 && CUR_MP >= 5",
+              "consume_amount": "5",
+              "consume_resource": "mp",
+              "effect_kind": "consume_resource",
+              "effect_label": "qa_5",
+              "menu_description": "The GM reveals 1 piece of information: for each, one Trait of a creature you can see, or that creature's Affinity to a damage type you name.",
+              "menu_label": "Spend 5 MP",
+              "on_empty": "abort",
+              "target_ref": "qa_self"
+            },
+            "3": {
+              "condition_formula": "SL >= 2 && CUR_MP >= 10",
+              "consume_amount": "10",
+              "consume_resource": "mp",
+              "effect_kind": "consume_resource",
+              "effect_label": "qa_10",
+              "menu_description": "The GM reveals 2 pieces of information: for each, one Trait of a creature you can see, or that creature's Affinity to a damage type you name.",
+              "menu_label": "Spend 10 MP",
+              "on_empty": "abort",
+              "target_ref": "qa_self"
+            },
+            "4": {
+              "condition_formula": "SL >= 3 && CUR_MP >= 15",
+              "consume_amount": "15",
+              "consume_resource": "mp",
+              "effect_kind": "consume_resource",
+              "effect_label": "qa_15",
+              "menu_description": "The GM reveals 3 pieces of information: for each, one Trait of a creature you can see, or that creature's Affinity to a damage type you name.",
+              "menu_label": "Spend 15 MP",
+              "on_empty": "abort",
+              "target_ref": "qa_self"
+            },
+            "5": {
+              "condition_formula": "SL >= 4 && CUR_MP >= 20",
+              "consume_amount": "20",
+              "consume_resource": "mp",
+              "effect_kind": "consume_resource",
+              "effect_label": "qa_20",
+              "menu_description": "The GM reveals 4 pieces of information: for each, one Trait of a creature you can see, or that creature's Affinity to a damage type you name.",
+              "menu_label": "Spend 20 MP",
+              "on_empty": "abort",
+              "target_ref": "qa_self"
+            },
+            "6": {
+              "condition_formula": "SL >= 5 && CUR_MP >= 25",
+              "consume_amount": "25",
+              "consume_resource": "mp",
+              "effect_kind": "consume_resource",
+              "effect_label": "qa_25",
+              "menu_description": "The GM reveals 5 pieces of information: for each, one Trait of a creature you can see, or that creature's Affinity to a damage type you name.",
+              "menu_label": "Spend 25 MP",
+              "on_empty": "abort",
+              "target_ref": "qa_self"
+            },
+            "7": {
+              "condition_formula": "SL >= 6 && CUR_MP >= 30",
+              "consume_amount": "30",
+              "consume_resource": "mp",
+              "effect_kind": "consume_resource",
+              "effect_label": "qa_30",
+              "menu_description": "The GM reveals 6 pieces of information: for each, one Trait of a creature you can see, or that creature's Affinity to a damage type you name.",
+              "menu_label": "Spend 30 MP",
+              "on_empty": "abort",
+              "target_ref": "qa_self"
+            }
+          },
           "heroic_requirement": "",
+          "implementation_note": "At conflict start you are offered Quick Assessment; pick how much MP to spend (5 MP steps, up to SL × 5). The MP is spent automatically. Tell the GM which reveals you want: for every 5 MP, one Trait of a creature you can see, or that creature's Affinity to a damage type you name. The GM answers at the table.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "6",
           "name": "Quick Assessment",
           "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "CUR_MP >= 5",
+              "reaction_effect_ref": "qa_menu",
+              "reaction_passive_mode": "ask",
+              "reaction_trigger": "conflict_start"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>Spendable MP</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>5 MP</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>10 MP</p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p>15 MP</p></td></tr><tr><td data-colwidth=\"79\"><p>4</p></td><td data-colwidth=\"148\"><p>20 MP</p></td></tr><tr><td data-colwidth=\"79\"><p>5</p></td><td data-colwidth=\"148\"><p>25 MP</p></td></tr><tr><td data-colwidth=\"79\"><p>6</p></td><td data-colwidth=\"148\"><p>30 MP</p></td></tr></tbody></table>",
@@ -378,6 +543,7 @@
           "description": "<p>You may perfectly recall the details of any scene you have visited within the past week. You can \"go back in time\" within your mind in order to examine and investigate such scenes again — your 【📜 <strong>Flash of Insight】</strong> Skill will apply to these memories as well.</p>",
           "duration": "",
           "heroic_requirement": "",
+          "implementation_note": "Resolved at the table (no automation). You can perfectly recall and mentally re-investigate any scene you visited within the past week; Flash of Insight applies to those memories.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -432,7 +598,17 @@
           "damage_bonus": "0",
           "description": "<p>When you perform an Accuracy Check, you may replace <strong>one</strong> of the Attribute dice with <strong>Insight</strong> (such as <strong>【INS + INS】</strong> for a pistol or <strong>【INS + MIG】</strong> for a waraxe).</p>",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "condition_formula": "ACTION_IS_SPELL == 0",
+              "effect_kind": "check_die_swap",
+              "effect_label": "kip_swap",
+              "swap_mode": "ask",
+              "swap_to_attribute": "INS"
+            }
+          },
           "heroic_requirement": "",
+          "implementation_note": "When you make an Accuracy Check (weapon attacks and attack Skills; not Magic Checks), you may replace one Attribute die with Insight. Offered only when your Insight die is larger than the die it replaces.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,

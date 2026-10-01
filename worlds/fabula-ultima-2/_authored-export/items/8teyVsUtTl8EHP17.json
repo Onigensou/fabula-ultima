@@ -8,6 +8,65 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "2ZixU0ApoLgwwQpO",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790682099140,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "max_mp",
+          "mode": 2,
+          "priority": 20,
+          "value": "${level * 3}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "2ZixU0ApoLgwwQpO",
+          "originalParentId": "8teyVsUtTl8EHP17",
+          "originalUuid": "Item.8teyVsUtTl8EHP17.ActiveEffect.2ZixU0ApoLgwwQpO"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/aura.svg",
+      "name": "Focused",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -30,7 +89,16 @@
       "damage_bonus": "0",
       "description": "<p>Permanently increase your maximum Mind Points by <strong>【SL × 3】.</strong></p><p>When you perform an Open Check using <strong>【INS + INS】</strong>, you gain a bonus equal to <strong>【SL】</strong> on that Check <em>(this <strong>only</strong> applies to Open Checks).</em></p>",
       "duration": "",
+      "effect_table": {
+        "0": {
+          "check_buff_action": "study",
+          "check_buff_amount": "SL",
+          "effect_kind": "check_buff",
+          "effect_label": "foc_study"
+        }
+      },
       "heroic_requirement": "",
+      "implementation_note": "Max MP +SL×3 is automatic (always-on). The +SL bonus applies automatically to Study (the INS + INS Open Check) in battle, and to Check Requester rolls the GM tags \"Study\". For any other INS + INS Open Check, the GM adds +SL at the table.",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,

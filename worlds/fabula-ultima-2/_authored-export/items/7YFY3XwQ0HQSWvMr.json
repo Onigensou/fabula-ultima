@@ -30,15 +30,53 @@
       "damage_bonus": "0",
       "description": "<p>After you use <strong>【💥Bishop’s Edict】, 【💥Charging Cavalry】 </strong>or<strong>【💥King's Castle</strong>】, you may choose another Player Character that can hear you who has yet to take a turn during this round. That character may take their turn immediately after yours during this round.</p>",
       "duration": "",
+      "effect_table": {
+        "0": {
+          "chain_steps": "cch_pick, cch_next",
+          "effect_kind": "chain",
+          "effect_label": "cch_root"
+        },
+        "1": {
+          "auto_confirm_when_obvious": true,
+          "auto_target": "confirm",
+          "candidate_source": "combat",
+          "category": "ally",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "cch_pick",
+          "exclude_self": true,
+          "iteration_mode": "together",
+          "mode": "exact",
+          "skip_when_passive": false,
+          "target_filter": "TURNS_REMAINING > 0 && IS_NPC == 0",
+          "target_prompt": "Choose a Player Character who has yet to act this round"
+        },
+        "2": {
+          "effect_kind": "take_turn_next",
+          "effect_label": "cch_next",
+          "target_ref": "cch_pick"
+        }
+      },
       "heroic_requirement": "",
+      "implementation_note": "When you use Bishop's Edict, Charging Cavalry or King's Castle, you are offered Crushing Chariot on that action: pick another Player Character (not an NPC ally) who still has a turn this round; they act right after you.",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
       "isOffensiveSpell": false,
+      "isReaction": true,
       "level": "1",
       "max_level": "1",
       "name": "Crushing Chariot",
       "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "SKILL_HAS_TAG_COMMAND == 1",
+          "reaction_effect_ref": "cch_root",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_performs_action"
+        }
+      },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",

@@ -31,6 +31,7 @@
       "description": "<p>You may perfectly recall the details of any scene you have visited within the past week. You can \"go back in time\" within your mind in order to examine and investigate such scenes again — your 【📜 <strong>Flash of Insight】</strong> Skill will apply to these memories as well.</p>",
       "duration": "",
       "heroic_requirement": "",
+      "implementation_note": "Resolved at the table (no automation). You can perfectly recall and mentally re-investigate any scene you visited within the past week; Flash of Insight applies to those memories.",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,

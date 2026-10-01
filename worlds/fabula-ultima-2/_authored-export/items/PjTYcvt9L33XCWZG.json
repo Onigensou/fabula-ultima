@@ -8,6 +8,264 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "5axsfAhWJIxTa2S1",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790870482376,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "wlp_current",
+          "mode": 2,
+          "priority": 1,
+          "value": "2"
+        }
+      ],
+      "description": "<p>Encourage: Willpower is treated as one die size higher (up to d12) until the start of the Orator's next turn.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "5axsfAhWJIxTa2S1",
+          "originalParentId": "PjTYcvt9L33XCWZG",
+          "originalUuid": "Item.PjTYcvt9L33XCWZG.ActiveEffect.5axsfAhWJIxTa2S1"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/upgrade.svg",
+      "name": "Encourage (Willpower)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-encourage-willpower"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "TLxW9zn5F4qvtJvx",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790870482376,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "mig_current",
+          "mode": 2,
+          "priority": 1,
+          "value": "2"
+        }
+      ],
+      "description": "<p>Encourage: Might is treated as one die size higher (up to d12) until the start of the Orator's next turn.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "TLxW9zn5F4qvtJvx",
+          "originalParentId": "PjTYcvt9L33XCWZG",
+          "originalUuid": "Item.PjTYcvt9L33XCWZG.ActiveEffect.TLxW9zn5F4qvtJvx"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/upgrade.svg",
+      "name": "Encourage (Might)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-encourage-might"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "vGs6RYWPtzRqPYqo",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790870482376,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "dex_current",
+          "mode": 2,
+          "priority": 1,
+          "value": "2"
+        }
+      ],
+      "description": "<p>Encourage: Dexterity is treated as one die size higher (up to d12) until the start of the Orator's next turn.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "vGs6RYWPtzRqPYqo",
+          "originalParentId": "PjTYcvt9L33XCWZG",
+          "originalUuid": "Item.PjTYcvt9L33XCWZG.ActiveEffect.vGs6RYWPtzRqPYqo"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/upgrade.svg",
+      "name": "Encourage (Dexterity)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-encourage-dexterity"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "wcfctsvqkJbitr1O",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1790870482376,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "ins_current",
+          "mode": 2,
+          "priority": 1,
+          "value": "2"
+        }
+      ],
+      "description": "<p>Encourage: Insight is treated as one die size higher (up to d12) until the start of the Orator's next turn.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "wcfctsvqkJbitr1O",
+          "originalParentId": "PjTYcvt9L33XCWZG",
+          "originalUuid": "Item.PjTYcvt9L33XCWZG.ActiveEffect.wcfctsvqkJbitr1O"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/upgrade.svg",
+      "name": "Encourage (Insight)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-encourage-insight"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -29,8 +287,64 @@
       "cost": "5 MP",
       "damage_bonus": "0",
       "description": "<p>During a conflict, you may use an action and spend 5 Mind Points to choose another creature that can hear and understand you. That creature recovers <strong>【SL × 5】</strong> Hit Points and chooses <strong>Dexterity</strong>, <strong>Insight</strong>, <strong>Might</strong>, or <strong>Willpower</strong>: they treat the chosen Attribute as being one die size higher (up to a maximum of <strong>d12</strong>) until the start of your next turn.</p>",
-      "duration": "Instantaneous",
+      "duration": "Until the start of your next turn",
+      "effect_table": {
+        "0": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "enc_pick",
+          "menu_option_labels": "Dexterity|Insight|Might|Willpower",
+          "menu_option_refs": "enc_dex, enc_ins, enc_mig, enc_wlp",
+          "menu_pick_count": "1",
+          "menu_subtitle": "Choose the Attribute the target treats as one die size higher (max d12) until the start of your next turn.",
+          "menu_title": "Encourage"
+        },
+        "1": {
+          "effect_kind": "grant",
+          "effect_label": "enc_heal",
+          "grant_amount": "SL * 5",
+          "grant_resource": "hp",
+          "target_ref": "action_targets"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "1",
+          "ae_template_ref": "Encourage (Dexterity)",
+          "effect_kind": "apply_ae",
+          "effect_label": "enc_dex",
+          "target_ref": "action_targets"
+        },
+        "3": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "1",
+          "ae_template_ref": "Encourage (Insight)",
+          "effect_kind": "apply_ae",
+          "effect_label": "enc_ins",
+          "target_ref": "action_targets"
+        },
+        "4": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "1",
+          "ae_template_ref": "Encourage (Might)",
+          "effect_kind": "apply_ae",
+          "effect_label": "enc_mig",
+          "target_ref": "action_targets"
+        },
+        "5": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "1",
+          "ae_template_ref": "Encourage (Willpower)",
+          "effect_kind": "apply_ae",
+          "effect_label": "enc_wlp",
+          "target_ref": "action_targets"
+        },
+        "6": {
+          "chain_steps": "enc_heal, enc_pick",
+          "effect_kind": "chain",
+          "effect_label": "enc_root"
+        }
+      },
       "heroic_requirement": "",
+      "implementation_note": "Choose another creature: it recovers SL×5 HP and treats the chosen Attribute as one die size higher (max d12) until the start of your next turn. RAW lets the target choose the Attribute; the Orator picks it on their behalf.",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
@@ -38,7 +352,9 @@
       "level": "1",
       "max_level": "6",
       "name": "Encourage",
+      "on_activate_effect_ref": "enc_root",
       "optional_params": {},
+      "pre_activate_effect_ref": "enc_pick",
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",
@@ -46,6 +362,7 @@
       "skill_range": "Any",
       "skill_target": "One creature",
       "skill_type": "Active",
+      "target_eligibility": "IS_SOURCE == 0",
       "type_damage": "",
       "use_optional_params": false
     },
