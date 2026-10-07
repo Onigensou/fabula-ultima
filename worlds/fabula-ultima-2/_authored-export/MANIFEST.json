@@ -5951,6 +5951,12 @@
         "effects": 0
       },
       {
+        "id": "6cqEvyeolNozKZT8",
+        "name": "Fugu",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "3SG96LfUyQaA0qAp",
         "name": "Fulgur",
         "type": "equippableItem",
@@ -12011,6 +12017,12 @@
         "effects": 0
       },
       {
+        "id": "zhgbWslDKK1nb1G6",
+        "name": "Tempest Manta",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "h6WLw95EerjpSAzk",
         "name": "Tempest Strike",
         "type": "equippableItem",
@@ -12689,6 +12701,12 @@
         "effects": 0
       },
       {
+        "id": "H3JIjcQunuxMakJt",
+        "name": "Urchin",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "NqcG61Mir9aOQAqe",
         "name": "Vajra",
         "type": "equippableItem",
@@ -12751,6 +12769,12 @@
       {
         "id": "2v7Z5aljbQkZyDzl",
         "name": "Venom Claw",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "HfOBPSyDPpddoajY",
+        "name": "Venom Jellyfish",
         "type": "equippableItem",
         "effects": 0
       },
@@ -25534,6 +25558,11 @@
         "id": "0LEghOv3aJyZVyVs",
         "name": "Valley of the Dragon - Enemies",
         "results": 11
+      },
+      {
+        "id": "pEHm2gU70pTHQM6v",
+        "name": "Valley of the Dragon - Fish",
+        "results": 2
       },
       {
         "id": "nrt4wbj4Unk8Xi9W",

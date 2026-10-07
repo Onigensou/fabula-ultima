@@ -119,7 +119,8 @@
             "item": "RollTable.NLPoKqwDtbfTc2JA",
             "zenit": "RollTable.3tGY9xvFTeQhFIzU",
             "treasure": "RollTable.DMeYaPoSPUxH6xVE",
-            "material": "RollTable.QailcoOmaoZW0v6b"
+            "material": "RollTable.QailcoOmaoZW0v6b",
+            "fish": "RollTable.pEHm2gU70pTHQM6v"
           }
         }
       },
@@ -202,7 +203,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791358997301,
-      "modifiedTime": 1791392287059,
+      "modifiedTime": 1791408003656,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "walls": [

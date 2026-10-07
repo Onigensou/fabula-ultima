@@ -119,7 +119,8 @@
             "item": "RollTable.NLPoKqwDtbfTc2JA",
             "zenit": "RollTable.3tGY9xvFTeQhFIzU",
             "treasure": "RollTable.DMeYaPoSPUxH6xVE",
-            "material": "RollTable.QailcoOmaoZW0v6b"
+            "material": "RollTable.QailcoOmaoZW0v6b",
+            "fish": "RollTable.pEHm2gU70pTHQM6v"
           }
         },
         "dungeonPathing": {
@@ -370,9 +371,9 @@
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
             },
             "I87y14MEgmH9XTpr": {
-              "initialType": "blank",
-              "currentType": "blank",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+              "initialType": "fishing",
+              "currentType": "fishing",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Fishing_Tile.png"
             },
             "6P9FNnSD307VqGoY": {
               "initialType": "blank",
@@ -463,7 +464,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359018436,
-      "modifiedTime": 1791397155991,
+      "modifiedTime": 1791408003986,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [

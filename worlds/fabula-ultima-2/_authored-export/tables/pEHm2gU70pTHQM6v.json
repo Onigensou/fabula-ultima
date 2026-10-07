@@ -1,0 +1,56 @@
+{
+  "_id": "pEHm2gU70pTHQM6v",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791407904360,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {},
+  "folder": "4bqgn7jZFnmardZp",
+  "formula": "1d2",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Fishing_Tile.png",
+  "name": "Valley of the Dragon - Fish",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "3c9tsCId50lEulD9",
+      "documentCollection": "Item",
+      "documentId": "0ieofw23oYf5FNCc",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Caravan_eel_icon1.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Bolt Eel",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "lg3KnPtNRkCH3Xlk",
+      "documentCollection": "Item",
+      "documentId": "zhgbWslDKK1nb1G6",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Blind_manta_icon1.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Tempest Manta",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

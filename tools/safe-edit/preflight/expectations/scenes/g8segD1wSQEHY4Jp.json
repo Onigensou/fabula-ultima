@@ -119,7 +119,8 @@
             "item": "RollTable.NLPoKqwDtbfTc2JA",
             "zenit": "RollTable.3tGY9xvFTeQhFIzU",
             "treasure": "RollTable.DMeYaPoSPUxH6xVE",
-            "material": "RollTable.QailcoOmaoZW0v6b"
+            "material": "RollTable.QailcoOmaoZW0v6b",
+            "fish": "RollTable.pEHm2gU70pTHQM6v"
           }
         },
         "dungeonPathing": {
@@ -285,7 +286,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359051802,
-      "modifiedTime": 1791392287175,
+      "modifiedTime": 1791408003875,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [
