@@ -1,12 +1,12 @@
 {
   "sceneId": "V1pUCPofEqLN4sze",
-  "name": "Valley_Map020",
+  "name": "Valley_Map013",
   "tokens": [],
   "tokensFull": [],
   "notes": [],
   "tileCount": 0,
   "full": {
-    "name": "Valley_Map020",
+    "name": "Valley_Map013",
     "navName": "Valley of the Dragon - Crossroads",
     "navigation": false,
     "folder": "RBurzhUXBqf46PbU",
@@ -29,7 +29,7 @@
     "backgroundColor": "#000000",
     "grid": {
       "type": 0,
-      "size": 100,
+      "size": 140,
       "style": "solidLines",
       "thickness": 1,
       "color": "#000000",
@@ -182,8 +182,118 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359033081,
-      "modifiedTime": 1791359112078,
+      "modifiedTime": 1791381146461,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
-    }
+    },
+    "walls": [
+      {
+        "c": [
+          0,
+          0,
+          2017,
+          0
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "W5TfLqlo7w6KzrVK",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          2017,
+          2973,
+          0,
+          2973
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "ePtUZzjfIhelTOoi",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          0,
+          2973,
+          0,
+          0
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "mGSvjohvGZEfZw1b",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          2017,
+          0,
+          2017,
+          2973
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "z4Br5qJAg6G02Yb4",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      }
+    ]
   }
 }

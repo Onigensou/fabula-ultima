@@ -1,12 +1,12 @@
 {
   "sceneId": "kuqgG7QW9bkZtZ7P",
-  "name": "Valley_Map010",
+  "name": "Valley_Map003",
   "tokens": [],
   "tokensFull": [],
   "notes": [],
   "tileCount": 0,
   "full": {
-    "name": "Valley_Map010",
+    "name": "Valley_Map003",
     "navName": "Valley Entrance",
     "navigation": false,
     "folder": "RBurzhUXBqf46PbU",
@@ -29,7 +29,7 @@
     "backgroundColor": "#000000",
     "grid": {
       "type": 0,
-      "size": 100,
+      "size": 120,
       "style": "solidLines",
       "thickness": 1,
       "color": "#000000",
@@ -182,8 +182,820 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791358997301,
-      "modifiedTime": 1791359112057,
+      "modifiedTime": 1791381146263,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
-    }
+    },
+    "walls": [
+      {
+        "c": [
+          430,
+          1790,
+          450,
+          1900
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "3JXKyf1XJ9SveGhs",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          450,
+          1900,
+          520,
+          2000
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "5eZFO3WAnTS7y5iM",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          0,
+          1780,
+          120,
+          1640
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "93jRvZiXAt3ThAXK",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          360,
+          790,
+          400,
+          740
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "9lP4nITwb9TncaGj",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          600,
+          900,
+          680,
+          1000
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "IrCytmfMQCY6mYbi",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          400,
+          740,
+          530,
+          740
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "J5E0vQfbpCWT8bLb",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          90,
+          1320,
+          180,
+          1250
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "Ly4vi9eUA7JYKPjO",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          180,
+          1250,
+          300,
+          1180
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "MJkiDyCVjCpqiQ73",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          120,
+          1640,
+          100,
+          1500
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "QGZrfG63HnXkvMam",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          470,
+          1480,
+          600,
+          1520
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "UKMvP3eOmhT9GxxD",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          680,
+          1200,
+          640,
+          1280
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "XOOgZ5GqdHUrMThT",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          0,
+          2122,
+          0,
+          1780
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "YQqImLtOaaBQEjrr",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          600,
+          1520,
+          760,
+          1600
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "afkTPq2gbKtImVyR",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          700,
+          1100,
+          680,
+          1200
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "bDA4jzEjSruOS9dg",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          100,
+          1500,
+          90,
+          1320
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "cX85cuskFi89UzQZ",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          760,
+          1700,
+          560,
+          1740
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "cwmA61w0hTk3W7SW",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          760,
+          1600,
+          760,
+          1700
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "exAUKAradVcQN0QF",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          440,
+          1380,
+          470,
+          1480
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "fgGeRfsDWo6eMuHF",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          560,
+          2122,
+          0,
+          2122
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "fz1CaFCcTIXosbaY",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          280,
+          880,
+          360,
+          790
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "gW6Y38P7D4y22Jk9",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          530,
+          740,
+          560,
+          800
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "hnNGeYNOQETvSDTV",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          520,
+          2000,
+          560,
+          2122
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "jToN9ZZAJi0Mhfdw",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          640,
+          1280,
+          500,
+          1300
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "kDcP6AD6HVoUrW8z",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          680,
+          1000,
+          700,
+          1100
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "kFYWPnbGuYF3gCoS",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          300,
+          1180,
+          330,
+          1100
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "nxxlcTdA4PpzBDci",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          560,
+          1740,
+          430,
+          1790
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "qUejA50GCEcR4Eh3",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          500,
+          1300,
+          440,
+          1380
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "vhx0kuvvV5wcDZRP",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          290,
+          1000,
+          280,
+          880
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "xGij441VUjSsoq42",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          560,
+          800,
+          600,
+          900
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "yN1pyaO7KL3dpe50",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          330,
+          1100,
+          290,
+          1000
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "ySlMj2g2rfrrI4iz",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      }
+    ]
   }
 }

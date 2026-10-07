@@ -29,7 +29,7 @@
     "backgroundColor": "#000000",
     "grid": {
       "type": 0,
-      "size": 100,
+      "size": 40,
       "style": "solidLines",
       "thickness": 1,
       "color": "#000000",
@@ -182,8 +182,118 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359084392,
-      "modifiedTime": 1791359112107,
+      "modifiedTime": 1791381146489,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
-    }
+    },
+    "walls": [
+      {
+        "c": [
+          0,
+          1545,
+          0,
+          0
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "N1JIGYnSUyshOvL9",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          1051,
+          0,
+          1051,
+          1545
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "aTtsUjaiEKpiBgmd",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          1051,
+          1545,
+          0,
+          1545
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "f7Qd0gl7ns2aR70j",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          0,
+          0,
+          1051,
+          0
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-10-07"
+          }
+        },
+        "_id": "tnNwXj3UC0TdpPDH",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      }
+    ]
   }
 }
