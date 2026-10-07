@@ -4,7 +4,7 @@
   "tokens": [],
   "tokensFull": [],
   "notes": [],
-  "tileCount": 0,
+  "tileCount": 1,
   "full": {
     "name": "Valley_Map008",
     "navName": "Maelstrom Confluence",
@@ -89,7 +89,14 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "Maelstrom Confluence",
-            "sceneVisited": false
+            "sceneVisited": false,
+            "wellspring_air": true,
+            "wellspring_earth": false,
+            "wellspring_fire": false,
+            "wellspring_bolt": true,
+            "wellspring_ice": false,
+            "wellspring_dark": false,
+            "wellspring_light": false
           },
           "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Waterfall Trail\",\"id\":\"YR0pYJVokhIgKQj0\"}]"
         },
@@ -182,7 +189,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359014636,
-      "modifiedTime": 1791382530012,
+      "modifiedTime": 1791392287121,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "walls": [

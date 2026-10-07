@@ -4,7 +4,7 @@
   "tokens": [],
   "tokensFull": [],
   "notes": [],
-  "tileCount": 0,
+  "tileCount": 1,
   "full": {
     "name": "Valley_Map003",
     "navName": "Valley Entrance",
@@ -89,7 +89,14 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "Valley Entrance",
-            "sceneVisited": false
+            "sceneVisited": false,
+            "wellspring_air": true,
+            "wellspring_earth": false,
+            "wellspring_fire": false,
+            "wellspring_bolt": true,
+            "wellspring_ice": false,
+            "wellspring_dark": false,
+            "wellspring_light": false
           },
           "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Lower Trail\",\"id\":\"QIUobWQvzsjvZK08\"}]"
         },
@@ -113,6 +120,19 @@
             "zenit": "RollTable.3tGY9xvFTeQhFIzU",
             "treasure": "RollTable.DMeYaPoSPUxH6xVE",
             "material": "RollTable.QailcoOmaoZW0v6b"
+          }
+        }
+      },
+      "fxmaster": {
+        "filters": {
+          "core_lightning": {
+            "type": "lightning",
+            "options": {
+              "belowTokens": false,
+              "frequency": 1645,
+              "spark_duration": 1310,
+              "brightness": 1.3
+            }
           }
         }
       }
@@ -182,7 +202,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791358997301,
-      "modifiedTime": 1791382529973,
+      "modifiedTime": 1791392287059,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "walls": [

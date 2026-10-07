@@ -4,7 +4,7 @@
   "tokens": [],
   "tokensFull": [],
   "notes": [],
-  "tileCount": 0,
+  "tileCount": 1,
   "full": {
     "name": "FafnirCastle_Map004",
     "navName": "Hatchery",
@@ -89,7 +89,14 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "Hatchery",
-            "sceneVisited": false
+            "sceneVisited": false,
+            "wellspring_air": false,
+            "wellspring_earth": false,
+            "wellspring_fire": false,
+            "wellspring_bolt": true,
+            "wellspring_ice": false,
+            "wellspring_dark": true,
+            "wellspring_light": false
           },
           "sceneNetwork": "[{\"name\":\"Fafnir Castle - Chain Bridges\",\"id\":\"KvNYZ6DkF9IK3U6h\"}]"
         },
@@ -182,7 +189,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359080420,
-      "modifiedTime": 1791382530088,
+      "modifiedTime": 1791392287329,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "walls": [

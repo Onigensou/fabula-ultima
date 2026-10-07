@@ -1103,10 +1103,12 @@
             "navigationName": "",
             "sceneVisited": true,
             "wellspring_air": true,
-            "wellspring_earth": true,
-            "wellspring_fire": true,
+            "wellspring_earth": false,
+            "wellspring_fire": false,
             "wellspring_bolt": true,
-            "wellspring_ice": true
+            "wellspring_ice": false,
+            "wellspring_dark": false,
+            "wellspring_light": false
           },
           "sceneNetwork": "[]"
         },
@@ -1204,7 +1206,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1784341931883,
-      "modifiedTime": 1787097735227,
+      "modifiedTime": 1791392287043,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "lights": [

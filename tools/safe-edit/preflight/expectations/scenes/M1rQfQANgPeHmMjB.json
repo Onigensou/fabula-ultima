@@ -4,7 +4,7 @@
   "tokens": [],
   "tokensFull": [],
   "notes": [],
-  "tileCount": 0,
+  "tileCount": 1,
   "full": {
     "name": "FafnirCastle_Map007",
     "navName": "Treasure Hoard",
@@ -89,7 +89,14 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "Treasure Hoard",
-            "sceneVisited": false
+            "sceneVisited": false,
+            "wellspring_air": false,
+            "wellspring_earth": false,
+            "wellspring_fire": false,
+            "wellspring_bolt": true,
+            "wellspring_ice": false,
+            "wellspring_dark": true,
+            "wellspring_light": false
           },
           "sceneNetwork": "[{\"name\":\"Fafnir Castle - Treasury\",\"id\":\"iQ026ac7nbWz8Mnr\"}]"
         },
@@ -182,7 +189,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359091976,
-      "modifiedTime": 1791382530099,
+      "modifiedTime": 1791392287353,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "walls": [

@@ -4,7 +4,7 @@
   "tokens": [],
   "tokensFull": [],
   "notes": [],
-  "tileCount": 0,
+  "tileCount": 1,
   "full": {
     "name": "Valley_Map022",
     "navName": "Sacrificial Altar",
@@ -89,7 +89,14 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "Sacrificial Altar",
-            "sceneVisited": false
+            "sceneVisited": false,
+            "wellspring_air": true,
+            "wellspring_earth": false,
+            "wellspring_fire": false,
+            "wellspring_bolt": true,
+            "wellspring_ice": false,
+            "wellspring_dark": false,
+            "wellspring_light": false
           },
           "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Summit Trail\",\"id\":\"EtlYqCkE1aTvbwKo\"}]"
         },
@@ -113,6 +120,43 @@
             "zenit": "RollTable.3tGY9xvFTeQhFIzU",
             "treasure": "RollTable.DMeYaPoSPUxH6xVE",
             "material": "RollTable.QailcoOmaoZW0v6b"
+          }
+        }
+      },
+      "fxmaster": {
+        "effects": {
+          "core_clouds": {
+            "type": "clouds",
+            "options": {
+              "belowTokens": false,
+              "tint": {
+                "apply": false,
+                "value": "#FFFFFF"
+              },
+              "scale": 0.6,
+              "direction": 305,
+              "speed": 2.2,
+              "lifetime": 1.3,
+              "density": 0.032,
+              "alpha": 0.4,
+              "dropShadow": false,
+              "shadowOnly": false,
+              "shadowRotation": 315,
+              "shadowDistance": 70,
+              "shadowBlur": 2,
+              "shadowOpacity": 1
+            }
+          }
+        },
+        "filters": {
+          "core_lightning": {
+            "type": "lightning",
+            "options": {
+              "belowTokens": false,
+              "frequency": 2500,
+              "spark_duration": 1310,
+              "brightness": 1.3
+            }
           }
         }
       }
@@ -182,7 +226,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359066298,
-      "modifiedTime": 1791382530073,
+      "modifiedTime": 1791392287203,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "walls": [

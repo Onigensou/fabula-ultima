@@ -4,7 +4,7 @@
   "tokens": [],
   "tokensFull": [],
   "notes": [],
-  "tileCount": 0,
+  "tileCount": 1,
   "full": {
     "name": "Valley_Map011",
     "navName": "The Great Seal",
@@ -89,7 +89,14 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "The Great Seal",
-            "sceneVisited": false
+            "sceneVisited": false,
+            "wellspring_air": false,
+            "wellspring_earth": true,
+            "wellspring_fire": false,
+            "wellspring_bolt": false,
+            "wellspring_ice": false,
+            "wellspring_dark": true,
+            "wellspring_light": false
           },
           "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Seal Cavern\",\"id\":\"52LLgHZIyAXBrbMq\"}]"
         },
@@ -97,7 +104,7 @@
           "threatLevel": "medium",
           "encounterTable": "RollTable.Oijx8ksubxq9pc1R",
           "enemiesTable": "RollTable.0LEghOv3aJyZVyVs",
-          "battleMap": "Scene.XHe8LfutYAkPuR5B",
+          "battleMap": "",
           "battleBGM": "DRG_Battle",
           "bossBGM": "DRG_Boss",
           "event": {
@@ -182,7 +189,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359025817,
-      "modifiedTime": 1791382530027,
+      "modifiedTime": 1791392446602,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "walls": [
