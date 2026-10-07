@@ -404,7 +404,8 @@
         // ── Fishing minigame (two-phase: Cast + Battle) ───────────────────
         if (type === CAMP.MSG.FISHING_START) {
           CAMP.FishingUI?.show(payload?.actorId, payload?.actorName, payload?.stats,
-            { battleTimeout: payload?.battleTimeout ?? 0, totalRounds: payload?.totalRounds });
+            { battleTimeout: payload?.battleTimeout ?? 0, totalRounds: payload?.totalRounds,
+              dungeonFish: payload?.dungeonFish ?? null });
           return;
         }
         if (type === CAMP.MSG.FISHING_BEGIN) {

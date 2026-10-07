@@ -57,11 +57,17 @@
   // here but not there awards nothing.
   // ---------------------------------------------------------------------------
   const FISH_TIERS  = [
-    ["Mudfish",     "Wind Bass",       "Bolt Eel",      "Silt Catfish", "Flame Salmon", "Ice Pike"],
-    ["River Trout", "Shadow Sturgeon", "Shine Herring", "Toxic Puffer", "Blade Angler", "Lucky Loach"],
-    ["Moonfish",    "Stash Gar",       "Hearty Cod",    "Mindful Sole", "Keystone Ray", "Wandering Shark"],
+    ["Mudfish",     "Wind Bass",       "Bolt Eel",      "Silt Catfish", "Flame Salmon", "Ice Pike", "Venom Jellyfish"],
+    ["River Trout", "Shadow Sturgeon", "Shine Herring", "Toxic Puffer", "Blade Angler", "Lucky Loach", "Fugu"],
+    ["Moonfish",    "Stash Gar",       "Hearty Cod",    "Mindful Sole", "Keystone Ray", "Wandering Shark", "Urchin"],
     ["Prophet Tuna", "Magnificent Mahi-mahi", "Golden Koi"],
   ];
+  // Dungeon fishing spots: the GM sends that dungeon's fish names per tier with
+  // FISHING_START (null at camp). A catch there comes from the dungeon pool for
+  // its tier this often, when that pool has anything in it.
+  const DUNGEON_FISH_CHANCE = 0.5;
+  let _dungeonFish = null;
+
   const TIER_NAMES  = ["Shallow Waters", "River Catch", "Deep Waters", "Legendary"];
   const TIER_COLORS = ["#7a8c7a",        "#3a7a35",     "#3a5a9a",    "#c8a84b"];
 
@@ -218,7 +224,8 @@
 
   function _pickFish(strength) {
     const tier  = _fishTier(strength);
-    const pool  = FISH_TIERS[tier];
+    const local = _dungeonFish?.[tier];
+    const pool  = (local?.length && Math.random() < DUNGEON_FISH_CHANCE) ? local : FISH_TIERS[tier];
     return { fishName: pool[Math.floor(Math.random() * pool.length)], tier };
   }
 
@@ -1107,7 +1114,8 @@
     if (!stage) return;
 
     if (fishName) {
-      const tier      = FISH_TIERS.findIndex(pool => pool.includes(fishName));
+      let tier        = FISH_TIERS.findIndex(pool => pool.includes(fishName));
+      if (tier < 0 && _dungeonFish) tier = _dungeonFish.findIndex(pool => pool?.includes(fishName));
       const tierColor = TIER_COLORS[Math.max(0, tier)];
       const tierName  = TIER_NAMES[Math.max(0, tier)];
       stage.innerHTML = `
@@ -1214,6 +1222,7 @@
       _currentRound  = 1;
       _totalRounds   = options?.totalRounds ?? 3;
       _battleTimeout = options?.battleTimeout ?? 0;
+      _dungeonFish   = Array.isArray(options?.dungeonFish) ? options.dungeonFish : null;
 
       if (_isOwner) {
         _loadStats(actorId);   // read fresh from actor

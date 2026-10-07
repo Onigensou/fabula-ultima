@@ -42,6 +42,7 @@
       { id: "4Ddvp1twE1rwqB9P", name: "Silt Catfish" },
       { id: "ZGvuE5jHpDgxMHNQ", name: "Flame Salmon" },
       { id: "0xZvao2eWYVjrHp9", name: "Ice Pike" },
+      { id: "HfOBPSyDPpddoajY", name: "Venom Jellyfish" },
     ],
     [ // Tier 2 — River Catch
       { id: "14X26PHWXppupLYt", name: "River Trout" },
@@ -50,6 +51,7 @@
       { id: "s28J2fB5xoskAtwu", name: "Toxic Puffer" },
       { id: "enbL361u8CaT5owG", name: "Blade Angler" },
       { id: "ALRbhk8NLRpzUcPc", name: "Lucky Loach" },
+      { id: "6cqEvyeolNozKZT8", name: "Fugu" },
     ],
     [ // Tier 3 — Deep Waters
       { id: "czkjXYoh6vPaj5bQ", name: "Moonfish" },
@@ -58,6 +60,7 @@
       { id: "SOQKbs6yuSbbHkvv", name: "Mindful Sole" },
       { id: "WtBVtnY6ergJWXHv", name: "Keystone Ray" },
       { id: "bgVJ3tF898fertoZ", name: "Wandering Shark" },
+      { id: "H3JIjcQunuxMakJt", name: "Urchin" },
     ],
     [ // Tier 4 — Legendary
       { id: "epTljNMoOwYyy3FD", name: "Prophet Tuna" },
@@ -65,6 +68,40 @@
       { id: "lTqvatWNAQ4vdfkM", name: "Golden Koi" },
     ],
   ];
+
+  // ---------------------------------------------------------------------------
+  // Dungeon fish — a fishing spot can pass a RollTable (scene flag
+  // oniDungeon.loot.fish) listing the fish that live in that dungeon. Each row
+  // links an Item; the tier comes from the item's rarity, same as the generic
+  // roster. The GM resolves the table once per session and broadcasts the names
+  // with FISHING_START, so these fish need no entry in FISH_TABLE / FISH_TIERS.
+  // A generic fish may be listed too — it then simply bites more often there.
+  // ---------------------------------------------------------------------------
+  const RARITY_TIER = { common: 0, uncommon: 1, rare: 2, legendary: 3 };
+
+  // actorId → [{ id, name }] for the session in progress (dungeon fish only)
+  const _sessionFish = new Map();
+
+  async function _resolveDungeonFish(tableRef) {
+    const ref = String(tableRef ?? "").trim();
+    if (!ref) return null;
+    let table = game.tables?.get(ref) ?? null;
+    if (!table) {
+      const doc = await fromUuid(ref).catch(() => null);
+      if (doc?.documentName === "RollTable") table = doc;
+    }
+    if (!table) { console.warn(TAG, "Fish table not found:", ref); return null; }
+
+    const tiers = [[], [], [], []];
+    for (const row of table.results) {
+      if (row.documentCollection !== "Item" || !row.documentId) continue;
+      const item = game.items.get(row.documentId);
+      if (!item) { console.warn(TAG, "Fish table row points at a missing item:", row.text); continue; }
+      const tier = RARITY_TIER[String(item.system?.props?.item_rarity ?? "").trim().toLowerCase()] ?? 0;
+      if (!tiers[tier].some(e => e.id === item.id)) tiers[tier].push({ id: item.id, name: item.name });
+    }
+    return tiers.some(pool => pool.length) ? tiers : null;
+  }
 
   // ---------------------------------------------------------------------------
   // Stat helpers
@@ -110,7 +147,9 @@
   // UI resolved a name this table doesn't know (i.e. the two tables drifted).
   // ---------------------------------------------------------------------------
   async function _awardFish(actor, fishName) {
-    const entry = FISH_TABLE.flat().find(e => e.name === fishName) ?? { name: fishName };
+    const entry = (_sessionFish.get(actor.id) ?? []).find(e => e.name === fishName)
+               ?? FISH_TABLE.flat().find(e => e.name === fishName)
+               ?? { name: fishName };
     if (entry.id) {
       const worldItem = game.items.get(entry.id);
       if (!worldItem) {
@@ -240,6 +279,12 @@
         // per angler); camp passes nothing → default TOTAL_ROUNDS.
         const totalRounds = Math.max(1, Number(opts?.totalRounds ?? TOTAL_ROUNDS));
 
+        // Dungeon fishing spots pass the scene's fish table; camp passes nothing.
+        const dungeonTiers = await _resolveDungeonFish(opts?.fishTable);
+        const dungeonFish  = dungeonTiers?.map(pool => pool.map(e => e.name)) ?? null;
+        if (dungeonTiers) _sessionFish.set(actor.id, dungeonTiers.flat());
+        else _sessionFish.delete(actor.id);
+
         CAMP.Sound?.play(CAMP.SFX?.CAMP_START);
 
         // Broadcast START with stats so all clients can display them
@@ -251,8 +296,9 @@
           stats,
           battleTimeout: BATTLE_TIMEOUT,
           totalRounds,
+          dungeonFish,
         });
-        CAMP.FishingUI?.show(actor.id, actor.name, stats, { battleTimeout: BATTLE_TIMEOUT, totalRounds });
+        CAMP.FishingUI?.show(actor.id, actor.name, stats, { battleTimeout: BATTLE_TIMEOUT, totalRounds, dungeonFish });
 
         await new Promise(r => setTimeout(r, 300));
 
@@ -305,6 +351,7 @@
         // ------------------------------------------------------------------
         await _postChatResult(actor, catches);
         await _waitForProceed(actor);
+        _sessionFish.delete(actor.id);
 
         CAMP.Socket.broadcast(CAMP.MSG.FISHING_DONE, { actorId: actor.id });
         CAMP.FishingUI?.hide();
