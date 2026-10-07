@@ -4241,6 +4241,12 @@
         "effects": 0
       },
       {
+        "id": "NX83y58twFEzmOG1",
+        "name": "Clear Liquid",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "oisg7B7Nu3qpdW8Q",
         "name": "Cleaving Strike",
         "type": "equippableItem",
@@ -4943,6 +4949,12 @@
         "effects": 0
       },
       {
+        "id": "tuT3D0cQOJ6JBaZz",
+        "name": "Draconic Essence",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "g3r4oZYBrA3O9ssW",
         "name": "Draconic Roar",
         "type": "equippableItem",
@@ -5531,6 +5543,12 @@
         "effects": 0
       },
       {
+        "id": "QLv40CHewlaiU2VE",
+        "name": "Eyeball",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "QoqDCnNVtkavPDcg",
         "name": "Faena",
         "type": "equippableItem",
@@ -5659,6 +5677,12 @@
       {
         "id": "eTC044V2Msm9OhcA",
         "name": "Fire Wand",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "nP3vrf5FrG7YwG1t",
+        "name": "Fish Fin",
         "type": "equippableItem",
         "effects": 0
       },
@@ -9023,6 +9047,12 @@
         "effects": 0
       },
       {
+        "id": "qwLfGN1ahEvnV4Tg",
+        "name": "Mystic Horn",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "XwoHbYxHvfqvHHAZ",
         "name": "Mystic Infusion",
         "type": "equippableItem",
@@ -9175,6 +9205,12 @@
       {
         "id": "UgcS71lsTsfnUG1b",
         "name": "Oak Staff",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "Ct03jR1j4OXXr55R",
+        "name": "Obsidian",
         "type": "equippableItem",
         "effects": 0
       },
@@ -11519,6 +11555,12 @@
         "effects": 0
       },
       {
+        "id": "dmiYBQ7BczRfTH1w",
+        "name": "Steel",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "ZXaslUkB4sJRWJn3",
         "name": "Steel Dagger",
         "type": "equippableItem",
@@ -11971,6 +12013,12 @@
       {
         "id": "h6WLw95EerjpSAzk",
         "name": "Tempest Strike",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "WrevyMV4vanMBBx1",
+        "name": "Tentacle",
         "type": "equippableItem",
         "effects": 0
       },
@@ -14022,12 +14070,32 @@
         "type": "character",
         "items": [
           {
+            "id": "mLo9DFLDP2pBWPkh",
+            "name": "(Empty)"
+          },
+          {
             "id": "25CGufwQTX7ZHwW6",
             "name": "Bubble Beam"
           },
           {
             "id": "oN5ck6b98DPZbfPj",
             "name": "Bubble Splash"
+          },
+          {
+            "id": "duD9acPtxV85FxkE",
+            "name": "Draconic Essence"
+          },
+          {
+            "id": "96fARD1RhftXvDyC",
+            "name": "Fish Fin"
+          },
+          {
+            "id": "wDh8JUX0axpgzLV3",
+            "name": "Silver Bolt"
+          },
+          {
+            "id": "oC7kgVnmgEnMmgwT",
+            "name": "Tincture of Endurance"
           },
           {
             "id": "IQjzHjHJRozJJ4Oe",
@@ -14185,6 +14253,10 @@
           {
             "id": "0bN7A6pXFG2cX2q9",
             "name": "Ascension"
+          },
+          {
+            "id": "ll1QCriD5ganoy1h",
+            "name": "Demongrin"
           },
           {
             "id": "nYbYx0X2yfIdteZ7",
@@ -15339,6 +15411,14 @@
         "type": "character",
         "items": [
           {
+            "id": "GVW8stkRBKSipG9U",
+            "name": "(Empty)"
+          },
+          {
+            "id": "DdLfy0SHcR2lMGzd",
+            "name": "Dead Branch"
+          },
+          {
             "id": "sn3eTbtgsHfEm7Y9",
             "name": "Mind Sap"
           },
@@ -15347,12 +15427,20 @@
             "name": "Stinky Breath"
           },
           {
+            "id": "q6RjF0jWrCE36aYJ",
+            "name": "Tentacle"
+          },
+          {
             "id": "b7Y9eRcNEGOUthwH",
             "name": "Tentacle Grab"
           },
           {
             "id": "aL8M4ZB1s4i6wgSG",
             "name": "Tentacle Slap"
+          },
+          {
+            "id": "kalNH4kN3r4C4r8N",
+            "name": "Verdant Force"
           }
         ],
         "effects": 0
@@ -16286,6 +16374,10 @@
         "type": "character",
         "items": [
           {
+            "id": "h609NKxbcjxzRMqH",
+            "name": "(Empty)"
+          },
+          {
             "id": "guM3PAJ3LLLcuBEA",
             "name": "Death Gaze"
           },
@@ -16294,8 +16386,20 @@
             "name": "Eye Beam"
           },
           {
+            "id": "2BebXC5kNdWhAriJ",
+            "name": "Eyeball"
+          },
+          {
+            "id": "dYEhD6GBeMCZda9f",
+            "name": "Gorgon Eye"
+          },
+          {
             "id": "hzb6hDpTEl7SkijL",
             "name": "Mind Sear"
+          },
+          {
+            "id": "GxeA0rQcWddBbbSa",
+            "name": "Tincture of Spirit"
           }
         ],
         "effects": 0
@@ -16313,6 +16417,14 @@
         "type": "character",
         "items": [
           {
+            "id": "ymiY3ADsUq2C31QS",
+            "name": "(Empty)"
+          },
+          {
+            "id": "fyr650NFNzC3eyZj",
+            "name": "Animal Fang"
+          },
+          {
             "id": "q2NIu6N6TdhdPxJ8",
             "name": "Brutish Fury"
           },
@@ -16321,8 +16433,16 @@
             "name": "Cleaver"
           },
           {
+            "id": "0N01ou8l3oX55zdZ",
+            "name": "Giants Belt"
+          },
+          {
             "id": "gxnIJRcVBVP8M73A",
             "name": "Skull Splitter"
+          },
+          {
+            "id": "s07PFXvprDa4i5tu",
+            "name": "Tincture of Strength"
           },
           {
             "id": "IPgB7f91GpMaQZ3k",
@@ -16358,8 +16478,20 @@
         "type": "character",
         "items": [
           {
+            "id": "pLxMc2VAGJFJ8KHk",
+            "name": "(Empty)"
+          },
+          {
+            "id": "b2Gn7gT8ytJKzf55",
+            "name": "Draconic Essence"
+          },
+          {
             "id": "aJVIAhwQL1cNYBb7",
             "name": "Flame Breath"
+          },
+          {
+            "id": "J07wJynA0M1wpCEC",
+            "name": "Halberd"
           },
           {
             "id": "5sJ5sMpp003FLyBG",
@@ -16368,6 +16500,10 @@
           {
             "id": "HuoudKM5TQjFuBKI",
             "name": "Suppressing Sweep"
+          },
+          {
+            "id": "fZYepzUpUVgzh5yZ",
+            "name": "Tincture of Endurance"
           }
         ],
         "effects": 0
@@ -16390,12 +16526,28 @@
         "type": "character",
         "items": [
           {
+            "id": "LRjpHDN4C7LkmIM9",
+            "name": "(Empty)"
+          },
+          {
+            "id": "diFUD4XFsQCZnNfY",
+            "name": "Draconic Essence"
+          },
+          {
             "id": "kP5nGNoNUV2Q7AhM",
             "name": "Dragon Claw"
           },
           {
+            "id": "pgic8tmpRhHB5h5T",
+            "name": "Dragontrap Bow"
+          },
+          {
             "id": "vP0c8mCKoBQY4ggP",
             "name": "Drako Fury"
+          },
+          {
+            "id": "R7v5EKI3mMosxrzG",
+            "name": "Polymorph Potion: Drakoza"
           },
           {
             "id": "h6YfA3CbD5IBMeXs",
@@ -16532,8 +16684,20 @@
         "type": "character",
         "items": [
           {
+            "id": "l3hWTVUKHXBzkyV2",
+            "name": "(Empty)"
+          },
+          {
             "id": "mdcuBtzL5PWDIUyS",
             "name": "Electro Explosion"
+          },
+          {
+            "id": "pIIm0bD25xb0XmIH",
+            "name": "Elemental Shard"
+          },
+          {
+            "id": "ndiyCO0NzAwoPOTT",
+            "name": "Jellopy"
           },
           {
             "id": "k0uNeyXmxVZg6C6x",
@@ -16542,6 +16706,10 @@
           {
             "id": "uoaz0irHsOyvsa22",
             "name": "Tackle"
+          },
+          {
+            "id": "FUbKCWzDtxTT4Nfp",
+            "name": "Topaz Pendant"
           }
         ],
         "effects": 0
@@ -17632,12 +17800,24 @@
         "type": "character",
         "items": [
           {
+            "id": "lGWeJLFFNKYYPBRR",
+            "name": "(Empty)"
+          },
+          {
             "id": "4BJmgpI7mskSpcoI",
             "name": "Amplify Fire"
           },
           {
+            "id": "AtYkiG2WQ1yDff29",
+            "name": "Draconic Essence"
+          },
+          {
             "id": "QRpemavpmHqUAkZR",
             "name": "Dragon Claw"
+          },
+          {
+            "id": "AITfSNP3EOVmjjVx",
+            "name": "Flame Essence"
           },
           {
             "id": "LZ2eEx6DHsDCwelq",
@@ -18108,6 +18288,10 @@
             "name": "(Empty)"
           },
           {
+            "id": "SFqfcFYS3M9qMuQm",
+            "name": "Animal Fur"
+          },
+          {
             "id": "VS9Qv9BV3xT38H4E",
             "name": "Giant Club"
           },
@@ -18122,6 +18306,10 @@
           {
             "id": "UFyiZDIkbhPmtqlG",
             "name": "Oaf"
+          },
+          {
+            "id": "XcCKCpbLCnfiUbh5",
+            "name": "Tincture of Strength"
           }
         ],
         "effects": 0
@@ -19479,6 +19667,26 @@
         "type": "character",
         "items": [
           {
+            "id": "ITnrnv0pGYV403ga",
+            "name": "(Empty)"
+          },
+          {
+            "id": "OvyFYyABMmXJ34iq",
+            "name": "Clear Liquid"
+          },
+          {
+            "id": "P2BnXeLkXVTlX0xm",
+            "name": "Imp's Tail"
+          },
+          {
+            "id": "sQkPh8hYEdcvoACB",
+            "name": "Love Potion"
+          },
+          {
+            "id": "XVdCCrCvndrrBx5k",
+            "name": "Panties"
+          },
+          {
             "id": "ygUBr1y0wj6muUyv",
             "name": "Pitchfork"
           },
@@ -19728,6 +19936,22 @@
         "type": "character",
         "items": [
           {
+            "id": "JMts2hx49koS7qCz",
+            "name": "(Empty)"
+          },
+          {
+            "id": "WmNJjB4GEn9hYbgq",
+            "name": "Berserker Sword"
+          },
+          {
+            "id": "rvoScI8fqwuMAfo4",
+            "name": "Golem Fragment"
+          },
+          {
+            "id": "eIX6VRkH9l9ZRFTY",
+            "name": "Golem Heart"
+          },
+          {
             "id": "gAfogT3m3BAMPabJ",
             "name": "Grinding Quake"
           },
@@ -19738,6 +19962,10 @@
           {
             "id": "kv2ZeGq61arj5dtG",
             "name": "Siege Fist"
+          },
+          {
+            "id": "UBtVBbNForBYgqxi",
+            "name": "Steel"
           }
         ],
         "effects": 0
@@ -20338,6 +20566,10 @@
         "type": "character",
         "items": [
           {
+            "id": "IrsyQ2uBZJja1GWU",
+            "name": "(Empty)"
+          },
+          {
             "id": "IIkAGJ0BQxtk1sBt",
             "name": "Hooves"
           },
@@ -20350,8 +20582,20 @@
             "name": "Lightning Charge"
           },
           {
+            "id": "EQAK97MsaFD6Zp2e",
+            "name": "Lightning Rod"
+          },
+          {
+            "id": "EFdFBDBt4HBeuqcR",
+            "name": "Mystic Horn"
+          },
+          {
             "id": "zNhzAhg1phFoHW8q",
             "name": "Rail Stream"
+          },
+          {
+            "id": "WWDKHIwgzpCOpLwZ",
+            "name": "Tincture of Strength"
           }
         ],
         "effects": 0
@@ -20537,6 +20781,10 @@
         "type": "character",
         "items": [
           {
+            "id": "vYQz94FdV4anj3Rb",
+            "name": "(Empty)"
+          },
+          {
             "id": "gKFT4EYiteltgpb2",
             "name": "Amplify Bolt"
           },
@@ -20545,8 +20793,16 @@
             "name": "Arc Volt"
           },
           {
+            "id": "ygBtaq0GD8TI5mS7",
+            "name": "Draconic Essence"
+          },
+          {
             "id": "PK3xOjy9Ijjpuj1d",
             "name": "Dragon Claw"
+          },
+          {
+            "id": "U1xColQ1BraFbCR8",
+            "name": "Lightning Essence"
           }
         ],
         "effects": 0
@@ -20557,6 +20813,10 @@
         "type": "character",
         "items": [
           {
+            "id": "Ecd7yAz4bJzpjYCu",
+            "name": "(Empty)"
+          },
+          {
             "id": "TCaVBk4RDaht1x9c",
             "name": "Arc Spark"
           },
@@ -20565,8 +20825,20 @@
             "name": "Fulgur Finis"
           },
           {
+            "id": "WIlYpte68LPIvSsw",
+            "name": "Lightning Essence"
+          },
+          {
+            "id": "JTYdNeZbg8rE1MuR",
+            "name": "Lightning Wand"
+          },
+          {
             "id": "TDfsEA9gh8Pc6aUP",
             "name": "Overcharge"
+          },
+          {
+            "id": "y1IEf2JEyMvRH9fF",
+            "name": "Tincture of Spirit"
           }
         ],
         "effects": 0
@@ -20695,12 +20967,28 @@
         "type": "character",
         "items": [
           {
+            "id": "qCBP6yZDF4BzIb1f",
+            "name": "(Empty)"
+          },
+          {
+            "id": "1H4pCcamtnE519lN",
+            "name": "Fish Fin"
+          },
+          {
             "id": "nEeldo45VbyKqFpS",
             "name": "Flying"
           },
           {
+            "id": "CXdG2Wt4OsplkwVm",
+            "name": "Mana Catcher"
+          },
+          {
             "id": "lK1xNxttDeXzwhVh",
             "name": "Mana Stinger"
+          },
+          {
+            "id": "QXp0UwkAfDQGVXyq",
+            "name": "Tincture of Spirit"
           },
           {
             "id": "qQ1UsyvTJj5TpCqy",
@@ -20884,6 +21172,18 @@
         "type": "character",
         "items": [
           {
+            "id": "m07woIfbHppYQACI",
+            "name": "(Empty)"
+          },
+          {
+            "id": "94qlPMHTwlahgtqN",
+            "name": "Draconic Essence"
+          },
+          {
+            "id": "lunfMzl1Vt2DEcZT",
+            "name": "Dragonslayer Pendant"
+          },
+          {
             "id": "vvdntvwGzqaQ3m41",
             "name": "Illusory Form"
           },
@@ -20910,6 +21210,10 @@
           {
             "id": "fecg9O0PTPyAsxVj",
             "name": "Phantom Shift: Venomstone Spines"
+          },
+          {
+            "id": "LmUOfpQePj2YsTCF",
+            "name": "Polymorph Potion: Mist Dragon"
           }
         ],
         "effects": 0
@@ -21307,8 +21611,20 @@
         "type": "character",
         "items": [
           {
+            "id": "Rz6MxM4zQ4nEkmTS",
+            "name": "(Empty)"
+          },
+          {
             "id": "tln7B8f8cmuOjBTO",
             "name": "Basalt Crush"
+          },
+          {
+            "id": "vHIDrLXZyKEq7QAp",
+            "name": "Earth Stone"
+          },
+          {
+            "id": "oonXg07HFTSKAAPt",
+            "name": "Elemental Ward"
           },
           {
             "id": "blW2o4tFoB0oVzEM",
@@ -21317,6 +21633,10 @@
           {
             "id": "DV5xg2tEq1zFsIFx",
             "name": "Miasma Nova"
+          },
+          {
+            "id": "Y8n5jn0LcE4HngCZ",
+            "name": "Obsidian"
           },
           {
             "id": "YXM7WD2ZekwmlDQg",
@@ -22339,8 +22659,20 @@
         "type": "character",
         "items": [
           {
+            "id": "kLRd2lhU5wcl37LZ",
+            "name": "(Empty)"
+          },
+          {
             "id": "5nRPZWogdOXD6n2I",
             "name": "Approach"
+          },
+          {
+            "id": "uE1IpmKnFruXqqRC",
+            "name": "Bloodied Coin"
+          },
+          {
+            "id": "AJ0QS7lmvRq8qbmJ",
+            "name": "Chef's Knife"
           },
           {
             "id": "IqytDxaB5BGEtSZZ",
@@ -22353,6 +22685,14 @@
           {
             "id": "0HCvn5LC3qIdq3W3",
             "name": "Karma"
+          },
+          {
+            "id": "ZLbuZgjs8h1qICAj",
+            "name": "Torned Fabric"
+          },
+          {
+            "id": "DQafVscYseIBalt1",
+            "name": "Zombie Potion"
           }
         ],
         "effects": 0
@@ -22679,8 +23019,20 @@
         "type": "character",
         "items": [
           {
+            "id": "D0uts61zAlFfc8aJ",
+            "name": "(Empty)"
+          },
+          {
             "id": "IbE6lOJCeAs8Bb4n",
             "name": "Chain Reaction"
+          },
+          {
+            "id": "us2cwD7ImrjNUQRY",
+            "name": "Lightning Essence"
+          },
+          {
+            "id": "nyuXWO3HmNijGCnK",
+            "name": "Lightning Greaves"
           },
           {
             "id": "oezr2w4m0LMEFM6F",
@@ -22697,6 +23049,10 @@
           {
             "id": "4XkAxScm0Tj8sBjv",
             "name": "Thunder Strike (Riposte)"
+          },
+          {
+            "id": "A1oZh6TNti6zAMGq",
+            "name": "Tincture of Precision"
           }
         ],
         "effects": 0
@@ -23255,8 +23611,20 @@
         "type": "character",
         "items": [
           {
+            "id": "7HCx14SNyCj2CjJV",
+            "name": "(Empty)"
+          },
+          {
+            "id": "hN5IkJdmMjvuGmey",
+            "name": "Bikini Armor"
+          },
+          {
             "id": "X6IFQS3RflxhDvyU",
             "name": "Charm"
+          },
+          {
+            "id": "ESkF3vpH29JuuMua",
+            "name": "Clear Liquid"
           },
           {
             "id": "BRCBx1Wiudbxux6L",
@@ -23265,6 +23633,10 @@
           {
             "id": "Mn7LzSfHjvhcLBZs",
             "name": "Draining Kiss"
+          },
+          {
+            "id": "PaxDcC4eNgOWn710",
+            "name": "Love Potion"
           },
           {
             "id": "iitlLOnNVod66GjL",

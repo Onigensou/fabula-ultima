@@ -714,6 +714,243 @@
       "type": "equippableItem"
     },
     {
+      "_id": "ll1QCriD5ganoy1h",
+      "_stats": {
+        "compendiumSource": "Item.WT3oJrnIrKPU6PkO",
+        "coreVersion": "12.343",
+        "createdTime": 1791399213688,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fabula-ultima-companion": {
+          "armorDefMdefAeMassPatchBackup_v1": {
+            "createdAt": 1777705755424,
+            "effects": [
+              {
+                "changes": [
+                  {
+                    "key": "defense",
+                    "mode": 2,
+                    "priority": 1,
+                    "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+                  },
+                  {
+                    "key": "defense",
+                    "mode": 4,
+                    "priority": 2,
+                    "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+                  }
+                ],
+                "id": "TlMCRfo2h3MeTeUa",
+                "name": "Armor DEF"
+              },
+              {
+                "changes": [
+                  {
+                    "key": "magic_defense",
+                    "mode": 2,
+                    "priority": 1,
+                    "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+                  },
+                  {
+                    "key": "magic_defense",
+                    "mode": 4,
+                    "priority": 2,
+                    "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+                  }
+                ],
+                "id": "CP7p0r8hNj11AMfz",
+                "name": "Armor MDEF"
+              }
+            ],
+            "itemName": "Demongrin",
+            "itemUuid": "Item.WT3oJrnIrKPU6PkO",
+            "parentName": "",
+            "parentType": "World"
+          },
+          "defMdefHelperKeyPatchBackup_v1": {
+            "createdAt": 1777708465375,
+            "effects": [
+              {
+                "changes": [
+                  {
+                    "key": "defense",
+                    "mode": 2,
+                    "priority": 1,
+                    "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+                  },
+                  {
+                    "key": "defense",
+                    "mode": 4,
+                    "priority": 2,
+                    "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+                  }
+                ],
+                "id": "TlMCRfo2h3MeTeUa",
+                "name": "Armor DEF"
+              },
+              {
+                "changes": [
+                  {
+                    "key": "magic_defense",
+                    "mode": 2,
+                    "priority": 1,
+                    "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+                  },
+                  {
+                    "key": "magic_defense",
+                    "mode": 4,
+                    "priority": 2,
+                    "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+                  }
+                ],
+                "id": "CP7p0r8hNj11AMfz",
+                "name": "Armor MDEF"
+              }
+            ],
+            "itemId": "WT3oJrnIrKPU6PkO",
+            "itemName": "Demongrin",
+            "itemType": "armor",
+            "itemUuid": "Item.WT3oJrnIrKPU6PkO",
+            "owner": {
+              "actor": "",
+              "actorUuid": "",
+              "source": "World Item"
+            }
+          }
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "armor",
+            "fromTemplate": "5Z0gKtN5R51ebJOa",
+            "itemId": "WT3oJrnIrKPU6PkO",
+            "itemName": "Demongrin",
+            "pickedOldProps": {
+              "cost": "1500",
+              "def_bonus": "",
+              "defense": "12",
+              "defense_include_dex": false,
+              "initiative": "-4",
+              "magic_defense": "0",
+              "magic_defense_include_ins": false,
+              "martial": true,
+              "mdef_bonus": "",
+              "shield": false
+            },
+            "ts": 1769647435478
+          }
+        }
+      },
+      "folder": "cSLVeZ3TavIe40F1",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/drasta.png",
+      "name": "Demongrin",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 1600000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul>\n<li>After a creature hits you with a <strong>melee attack</strong>, you deal 5<strong> fire damage</strong> to that<br>creature<em> (after the attack has been resolved).</em></li>\n</ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "WT3oJrnIrKPU6PkO",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/drasta.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": true,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "12",
+          "item_baseMdef": "0",
+          "item_cost": "1500",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Uncommon",
+          "item_type": "armor",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Demongrin",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.WT3oJrnIrKPU6PkO",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "WT3oJrnIrKPU6PkO"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "NFruWlBHrgfNSJmM",
       "_stats": {
         "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
@@ -3453,8 +3690,22 @@
       "species": "DEMON",
       "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
       "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
-      "steal_percentage_table": {},
-      "stealable_loot": {},
+      "steal_percentage_table": {
+        "0": {
+          "$deleted": false,
+          "loot_id": "Demongrin",
+          "loot_percentage": "100"
+        }
+      },
+      "stealable_loot": {
+        "ll1QCriD5ganoy1h": {
+          "id": "${item.id}",
+          "loot_description": "<ul>\n<li>After a creature hits you with a <strong>melee attack</strong>, you deal 5<strong> fire damage</strong> to that<br>creature<em> (after the attack has been resolved).</em></li>\n</ul>",
+          "name": "Demongrin",
+          "roll": "",
+          "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.ll1QCriD5ganoy1h"
+        }
+      },
       "study_text": "<p>Not a demon — a <strong>demi-god</strong>, and it will say so between blows. Strike it with an element and one of its four blades takes the flame: it will never be caught by that element twice, but a blade it has not yet lit is still an open wound. In this valley the <strong>storm</strong> lights one for it before the fight even starts. When all four burn at once, step back — and when they go out, that is your moment.</p>",
       "subtype": "Sub-Type",
       "subtype_list": "DEMI-HUMAN",
