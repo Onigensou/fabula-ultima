@@ -1601,7 +1601,7 @@
     },
     "_id": "aL3JJcEetiRIAW6D",
     "active": false,
-    "navigation": true,
+    "navigation": false,
     "navOrder": 0,
     "foreground": null,
     "foregroundElevation": 8,
@@ -1671,8 +1671,8 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780669400384,
-      "modifiedTime": 1783778913669,
-      "lastModifiedBy": "WQGFvLStTZeWGpak"
+      "modifiedTime": 1784388156261,
+      "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [
       {

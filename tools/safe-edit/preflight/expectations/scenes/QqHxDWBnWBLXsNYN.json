@@ -487,8 +487,7 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": [],
-        "isTriggered": false
+        "sequence": []
       },
       "wall-height": {
         "advancedVision": true
@@ -749,7 +748,8 @@
             "e2Gp5GbcE7z50TKJ": {
               "initialType": "final",
               "currentType": "final",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Final_Story%20Tile.png"
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Final_Story%20Tile.png",
+              "expired": true
             },
             "l23zuD4T8Bu5Kp4U": {
               "initialType": "gathering",
@@ -789,7 +789,8 @@
             "IRqGtvgldwZIXkcB": {
               "initialType": "story",
               "currentType": "story",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Story_Tile.png"
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Story_Tile.png",
+              "expired": true
             },
             "GBaHikALVgxK7goP": {
               "initialType": "armor",
@@ -889,11 +890,6 @@
             "2NWNT1c83hRByFEL": {
               "initialType": "weapon",
               "currentType": "weapon",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
-            },
-            "IozOVwtp0dygTEya": {
-              "initialType": "consumable",
-              "currentType": "consumable",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
             },
             "lxzNBAQF5y7yWOIr": {
@@ -1299,22 +1295,30 @@
             "K5GOvjBWOrBnwF1I": {
               "initialType": "story",
               "currentType": "story",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Story_Tile.png"
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Story_Tile.png",
+              "expired": true
             },
             "migBX5N48ot5Ciqq": {
               "initialType": "story",
               "currentType": "story",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Story_Tile.png"
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Story_Tile.png",
+              "expired": true
             },
             "qK2wUrb5u7HEdlO0": {
               "initialType": "story",
               "currentType": "story",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Story_Tile.png"
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Story_Tile.png",
+              "expired": true
             },
             "u9v7Kxsa4TID3qH8": {
               "initialType": "obstacle",
               "currentType": "obstacle",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Onstacle_Tile.png"
+            },
+            "IozOVwtp0dygTEya": {
+              "initialType": "consumable",
+              "currentType": "blank",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
             }
           },
           "visitedTiles": {
@@ -2195,7 +2199,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1773847209650,
-      "modifiedTime": 1784370880185,
+      "modifiedTime": 1790690187601,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "_id": "QqHxDWBnWBLXsNYN",

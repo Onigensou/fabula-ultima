@@ -11,9 +11,135 @@
       "name": "Eidrachian Knight B",
       "actorId": "N4hYREOor4xOIaT1",
       "actorLink": false
+    },
+    {
+      "name": "Princess Hilde",
+      "actorId": "yghaJlx5fcj6DtfX",
+      "actorLink": true
+    },
+    {
+      "name": "Geist",
+      "actorId": "zAsUhIYMdLDOWJFt",
+      "actorLink": true
     }
   ],
   "tokensFull": [
+    {
+      "name": "Princess Hilde",
+      "displayName": 0,
+      "actorLink": true,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Princess%20Hilde/Hilde_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": -1.1,
+        "scaleY": 1.1,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        }
+      },
+      "actorId": "yghaJlx5fcj6DtfX",
+      "hidden": false,
+      "sort": 2,
+      "x": 183,
+      "y": 384,
+      "elevation": 0,
+      "locked": false,
+      "_regions": [
+        "JxqaSIS2kSs3sOk5"
+      ],
+      "_id": "7GQUDVIbqOFLgiiL"
+    },
     {
       "name": "Eidrachian Knight A",
       "displayName": 0,
@@ -119,7 +245,7 @@
         }
       },
       "actorId": "N4hYREOor4xOIaT1",
-      "hidden": false,
+      "hidden": true,
       "sort": 0,
       "_id": "H7vU8uit00DVumWR",
       "x": 185,
@@ -129,6 +255,132 @@
       "_regions": [
         "JxqaSIS2kSs3sOk5"
       ]
+    },
+    {
+      "name": "Geist",
+      "displayName": 0,
+      "actorLink": true,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Geist/Geist_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.17,
+        "scaleY": 1.17,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Geist/Geist_Standard.png",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "dominanceCrestOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "idleAnimToken": {
+            "float": false,
+            "bounce": false
+          }
+        }
+      },
+      "actorId": "zAsUhIYMdLDOWJFt",
+      "hidden": false,
+      "sort": 1,
+      "x": 269,
+      "y": 385,
+      "elevation": 0,
+      "locked": false,
+      "_regions": [
+        "JxqaSIS2kSs3sOk5"
+      ],
+      "_id": "IzKBj0ur9KvHmiyO"
     },
     {
       "name": "Eidrachian Knight B",
@@ -235,7 +487,7 @@
         }
       },
       "actorId": "N4hYREOor4xOIaT1",
-      "hidden": false,
+      "hidden": true,
       "sort": 0,
       "x": 293,
       "y": 212,
@@ -348,7 +600,8 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": []
+        "sequence": [],
+        "isTriggered": false
       },
       "levels": {
         "backgroundElevation": 0,
@@ -385,7 +638,21 @@
       "fabula-ultima-companion": {
         "oniFabula": {
           "general": {
-            "cameraFollowToken": true
+            "cameraFollowToken": true,
+            "sceneMode": "exploration",
+            "scanRadius": null,
+            "fastTravelEnabled": true,
+            "disableTransition": false,
+            "isOverworld": false,
+            "isTown": false,
+            "isDungeon": false,
+            "navigationName": "",
+            "sceneVisited": false,
+            "wellspring_air": true,
+            "wellspring_earth": true,
+            "wellspring_fire": true,
+            "wellspring_bolt": true,
+            "wellspring_ice": true
           },
           "sceneNetwork": "[{\"name\":\"Eisendrache Castle\",\"id\":\"Scene.pUnXd1fJPC3wnVMB\"}]"
         },
@@ -406,7 +673,25 @@
             "consumable": "",
             "item": "",
             "treasure": "",
-            "zenit": ""
+            "zenit": "",
+            "material": ""
+          },
+          "threatLevel": "medium"
+        },
+        "campSceneUuid": ""
+      },
+      "fxmaster": {
+        "filters": {
+          "core_oldfilm": {
+            "type": "oldfilm",
+            "options": {
+              "belowTokens": false,
+              "sepia": 1,
+              "noise": 0.2,
+              "noiseSize": 0.2,
+              "scratchDensity": 0.1,
+              "scratch": 0.15
+            }
           }
         }
       }
@@ -418,7 +703,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.4",
       "createdTime": 1766124303277,
-      "modifiedTime": 1781425619761,
+      "modifiedTime": 1784383685787,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "_id": "vfpS5zFzjW6ygEJu",

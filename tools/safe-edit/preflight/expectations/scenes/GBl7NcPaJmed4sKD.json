@@ -1082,6 +1082,64 @@
             "cameraFollowToken": false
           },
           "sceneNetwork": "[]"
+        },
+        "stealthConfig": {
+          "routes": {
+            "lTmTumlCVihivFBj": [
+              {
+                "i": 9,
+                "j": 14
+              },
+              {
+                "i": 9,
+                "j": 24
+              }
+            ],
+            "pizVPdeuFRtAWE28": [
+              {
+                "i": 12,
+                "j": 18
+              },
+              {
+                "i": 16,
+                "j": 18
+              }
+            ],
+            "RrzU6lXc1jEdPeLn": [
+              {
+                "i": 18,
+                "j": 3
+              },
+              {
+                "i": 18,
+                "j": 10
+              }
+            ],
+            "IBJYGNDkPTCvfbn0": [
+              {
+                "i": 25,
+                "j": 29
+              },
+              {
+                "i": 25,
+                "j": 24
+              }
+            ]
+          },
+          "spawnPoints": [
+            {
+              "i": 0,
+              "j": 0
+            },
+            {
+              "i": 29,
+              "j": 35
+            },
+            {
+              "i": 29,
+              "j": 0
+            }
+          ]
         }
       },
       "custom-system-builder": {},
@@ -1111,7 +1169,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1774705561613,
-      "modifiedTime": 1781874963258,
+      "modifiedTime": 1788364971429,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "environment": {

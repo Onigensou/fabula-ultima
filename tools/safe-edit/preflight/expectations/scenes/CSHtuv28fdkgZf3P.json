@@ -197,7 +197,8 @@
             "rYQthCRsEuHwsWue": {
               "initialType": "story",
               "currentType": "story",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png",
+              "expired": true
             },
             "2bfpP9cbZrzX4aH7": {
               "initialType": "blank",
@@ -515,7 +516,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780396670285,
-      "modifiedTime": 1784370880512,
+      "modifiedTime": 1790690187790,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [
