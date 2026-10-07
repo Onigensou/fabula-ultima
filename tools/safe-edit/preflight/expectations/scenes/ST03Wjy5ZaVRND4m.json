@@ -384,90 +384,6 @@
         "interface": false
       },
       {
-        "x": 1187.5132903540991,
-        "y": 576.673057857865,
-        "shape": {
-          "type": "p",
-          "points": [
-            0,
-            0,
-            -87.02658070819825,
-            -71.3461157157301
-          ],
-          "width": 0,
-          "height": 0,
-          "radius": null
-        },
-        "strokeColor": "#ffffff",
-        "strokeWidth": 4,
-        "strokeAlpha": 0.6,
-        "fillType": 0,
-        "fillAlpha": 0,
-        "text": "",
-        "flags": {
-          "fabula-ultima-companion": {
-            "draftTiles": "claude-2026-10-07"
-          }
-        },
-        "_id": "63s5MdpcRNeviB4x",
-        "author": "JQGNzKpDPHJmcUIW",
-        "elevation": 0,
-        "sort": 0,
-        "rotation": 0,
-        "bezierFactor": 0,
-        "fillColor": "#1e00ff",
-        "texture": null,
-        "fontFamily": "Signika",
-        "fontSize": 48,
-        "textColor": "#ffffff",
-        "textAlpha": 1,
-        "hidden": false,
-        "locked": false,
-        "interface": false
-      },
-      {
-        "x": 946.5694150761021,
-        "y": 728.2661592751924,
-        "shape": {
-          "type": "p",
-          "points": [
-            0,
-            0,
-            133.86116984779574,
-            -219.53231855038484
-          ],
-          "width": 0,
-          "height": 0,
-          "radius": null
-        },
-        "strokeColor": "#ffffff",
-        "strokeWidth": 4,
-        "strokeAlpha": 0.6,
-        "fillType": 0,
-        "fillAlpha": 0,
-        "text": "",
-        "flags": {
-          "fabula-ultima-companion": {
-            "draftTiles": "claude-2026-10-07"
-          }
-        },
-        "_id": "8OmTXe7N4uiHFBLo",
-        "author": "JQGNzKpDPHJmcUIW",
-        "elevation": 0,
-        "sort": 0,
-        "rotation": 0,
-        "bezierFactor": 0,
-        "fillColor": "#1e00ff",
-        "texture": null,
-        "fontFamily": "Signika",
-        "fontSize": 48,
-        "textColor": "#ffffff",
-        "textAlpha": 1,
-        "hidden": false,
-        "locked": false,
-        "interface": false
-      },
-      {
         "x": 55.993854083818654,
         "y": 1390.0635534060896,
         "shape": {
@@ -552,6 +468,48 @@
         "interface": false
       },
       {
+        "x": 1187.5132903540991,
+        "y": 576.673057857865,
+        "shape": {
+          "type": "p",
+          "points": [
+            0,
+            0,
+            -87.02658070819825,
+            -71.3461157157301
+          ],
+          "width": 0,
+          "height": 0,
+          "radius": null
+        },
+        "strokeColor": "#ffffff",
+        "strokeWidth": 4,
+        "strokeAlpha": 0.6,
+        "fillType": 0,
+        "fillAlpha": 0,
+        "text": "",
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftTiles": "claude-2026-10-07"
+          }
+        },
+        "_id": "EI9qG3KqMTZF7szd",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": 0,
+        "sort": 1,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "fillColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "locked": false,
+        "interface": false
+      },
+      {
         "x": 1082.2811532868818,
         "y": 481.3022556172208,
         "shape": {
@@ -581,6 +539,48 @@
         "author": "JQGNzKpDPHJmcUIW",
         "elevation": 0,
         "sort": 0,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "fillColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "locked": false,
+        "interface": false
+      },
+      {
+        "x": 1050.8583548804463,
+        "y": 840.266618402973,
+        "shape": {
+          "type": "p",
+          "points": [
+            0,
+            0,
+            -100.71670976089263,
+            -88.53323680594599
+          ],
+          "width": 0,
+          "height": 0,
+          "radius": null
+        },
+        "strokeColor": "#ffffff",
+        "strokeWidth": 4,
+        "strokeAlpha": 0.6,
+        "fillType": 0,
+        "fillAlpha": 0,
+        "text": "",
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftTiles": "claude-2026-10-07"
+          }
+        },
+        "_id": "UUMNdS0V8MReCbzB",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": 0,
+        "sort": 1,
         "rotation": 0,
         "bezierFactor": 0,
         "fillColor": "#1e00ff",
@@ -636,15 +636,15 @@
         "interface": false
       },
       {
-        "x": 1069.6394790641007,
-        "y": 836.7421717304921,
+        "x": 951.8270479948285,
+        "y": 733.5854695816153,
         "shape": {
           "type": "p",
           "points": [
             0,
             0,
-            122.72104187179866,
-            -236.4843434609843
+            234.34590401034302,
+            -139.1709391632305
           ],
           "width": 0,
           "height": 0,
@@ -661,52 +661,10 @@
             "draftTiles": "claude-2026-10-07"
           }
         },
-        "_id": "agixqiyqq5eqiBIa",
+        "_id": "fTMiXY3gpZa4IQc1",
         "author": "JQGNzKpDPHJmcUIW",
         "elevation": 0,
-        "sort": 0,
-        "rotation": 0,
-        "bezierFactor": 0,
-        "fillColor": "#1e00ff",
-        "texture": null,
-        "fontFamily": "Signika",
-        "fontSize": 48,
-        "textColor": "#ffffff",
-        "textAlpha": 1,
-        "hidden": false,
-        "locked": false,
-        "interface": false
-      },
-      {
-        "x": 1050.8583548804463,
-        "y": 840.266618402973,
-        "shape": {
-          "type": "p",
-          "points": [
-            0,
-            0,
-            -100.71670976089263,
-            -88.53323680594599
-          ],
-          "width": 0,
-          "height": 0,
-          "radius": null
-        },
-        "strokeColor": "#ffffff",
-        "strokeWidth": 4,
-        "strokeAlpha": 0.6,
-        "fillType": 0,
-        "fillAlpha": 0,
-        "text": "",
-        "flags": {
-          "fabula-ultima-companion": {
-            "draftTiles": "claude-2026-10-07"
-          }
-        },
-        "_id": "gmqXF836SjI9lUMe",
-        "author": "JQGNzKpDPHJmcUIW",
-        "elevation": 0,
-        "sort": 0,
+        "sort": 1,
         "rotation": 0,
         "bezierFactor": 0,
         "fillColor": "#1e00ff",
