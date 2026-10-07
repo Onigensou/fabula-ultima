@@ -169,7 +169,7 @@
           }
         },
         "oniFabula": {
-          "sceneNetwork": "[{\"name\":\"Vastwind Field -High Road\",\"id\":\"Scene.6DtXM0iqCabvl7Ce\"},{\"name\":\"Vastwind Field - Lower Road\",\"id\":\"Scene.LGlN5j78oeE35Tnr\"}]",
+          "sceneNetwork": "[{\"name\":\"Vastwind Field -High Road\",\"id\":\"Scene.6DtXM0iqCabvl7Ce\"},{\"name\":\"Vastwind Field - Lower Road\",\"id\":\"Scene.LGlN5j78oeE35Tnr\"},{\"name\":\"Valley Entrance\",\"id\":\"kuqgG7QW9bkZtZ7P\"},{\"name\":\"Valley of the Dragon - Camp\",\"id\":\"zo6ZTpspg2C5GnP4\"},{\"name\":\"Valley of the Dragon - Lower Trail\",\"id\":\"QIUobWQvzsjvZK08\"},{\"name\":\"Valley of the Dragon - Winding Trail\",\"id\":\"8ZqllaT165aEOEOn\"},{\"name\":\"Valley of the Dragon - Waterfall Trail\",\"id\":\"YR0pYJVokhIgKQj0\"},{\"name\":\"Maelstrom Confluence\",\"id\":\"w0Ol6v1IYj2lG39s\"},{\"name\":\"Valley of the Dragon - Underground Area\",\"id\":\"09CApvaBfOesGfbp\"},{\"name\":\"Valley of the Dragon - Seal Cavern\",\"id\":\"52LLgHZIyAXBrbMq\"},{\"name\":\"The Great Seal\",\"id\":\"MWQBX1ZnbjcFkvq2\"},{\"name\":\"Ancient Mural\",\"id\":\"bcg4esedBAmZTEVL\"},{\"name\":\"Valley of the Dragon - Crossroads\",\"id\":\"V1pUCPofEqLN4sze\"},{\"name\":\"Valley of the Dragon - West Ridge\",\"id\":\"QfybShj4gr9Bd2rn\"},{\"name\":\"Valley of the Dragon - Monastery Road\",\"id\":\"67ucunbbGU3GvUUX\"},{\"name\":\"Abandoned Monastery\",\"id\":\"fWcFHcIHLO8WOrlr\"},{\"name\":\"Abandoned Monastery Interior\",\"id\":\"YnGINTK5qxtt0rnO\"},{\"name\":\"Valley of the Dragon - East Ridge\",\"id\":\"g8segD1wSQEHY4Jp\"},{\"name\":\"Valley of the Dragon - Pit Road\",\"id\":\"ST03Wjy5ZaVRND4m\"},{\"name\":\"Feeding Pit\",\"id\":\"XNTSewM1NcPG59L1\"},{\"name\":\"Valley of the Dragon - Summit Trail\",\"id\":\"EtlYqCkE1aTvbwKo\"},{\"name\":\"Sacrificial Altar\",\"id\":\"or2XPkXT448qmdrh\"}]",
           "general": {
             "cameraFollowToken": false
           }
@@ -195,7 +195,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1772243190953,
-      "modifiedTime": 1781425605199,
+      "modifiedTime": 1791359112113,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "environment": {

@@ -111,6 +111,12 @@
         "parent": "sWfX0st2X6sPXPd0"
       },
       {
+        "id": "dDFCxuzpgyr3RtkP",
+        "name": "Ancient Capital Midgard",
+        "type": "Scene",
+        "parent": "yvRW0RqT5kwSxKFl"
+      },
+      {
         "id": "CV8Zf4WP413xJFvR",
         "name": "Ancient Temple",
         "type": "Scene",
@@ -859,6 +865,12 @@
         "name": "Fafnir Castle",
         "type": "RollTable",
         "parent": "OeC0hsLCW5zTWD6w"
+      },
+      {
+        "id": "fXu6HGk4WO95bxkf",
+        "name": "Fafnir Castle",
+        "type": "Scene",
+        "parent": "yvRW0RqT5kwSxKFl"
       },
       {
         "id": "NeeNG1EvptEsQ9lg",
