@@ -56,7 +56,7 @@
     return members;
   }
 
-  // ── Fish Table (scene oniDungeon.loot.fish) — fish that live in this dungeon ─
+  // ── Fish Table (scene oniDungeon.loot.fish) — everything that bites here ────
   function resolveFishTableRef(scene) {
     try {
       const dungeon = window.oni?.FabulaConfig?.readDungeon?.(scene)

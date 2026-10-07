@@ -51,22 +51,12 @@
   };
 
   // ---------------------------------------------------------------------------
-  // Fish tier tables (mirrors FISH_TABLE in activity-fishing.js — needed for
-  // display). MUST stay name-for-name identical: this client picks the name, the
-  // GM trusts it and looks it up in FISH_TABLE for the item id. A name present
-  // here but not there awards nothing.
+  // Fish pools for the session in progress — one array per tier of
+  // { name, weight }. The GM reads them from the scene's fish RollTable (or the
+  // generic one) and sends them with FISHING_START; this client picks the name
+  // and the GM awards that name's item. No roster lives in this file.
   // ---------------------------------------------------------------------------
-  const FISH_TIERS  = [
-    ["Mudfish",     "Wind Bass",       "Bolt Eel",      "Silt Catfish", "Flame Salmon", "Ice Pike", "Venom Jellyfish"],
-    ["River Trout", "Shadow Sturgeon", "Shine Herring", "Toxic Puffer", "Blade Angler", "Lucky Loach", "Fugu"],
-    ["Moonfish",    "Stash Gar",       "Hearty Cod",    "Mindful Sole", "Keystone Ray", "Wandering Shark", "Urchin"],
-    ["Prophet Tuna", "Magnificent Mahi-mahi", "Golden Koi"],
-  ];
-  // Dungeon fishing spots: the GM sends that dungeon's fish names per tier with
-  // FISHING_START (null at camp). A catch there comes from the dungeon pool for
-  // its tier this often, when that pool has anything in it.
-  const DUNGEON_FISH_CHANCE = 0.5;
-  let _dungeonFish = null;
+  let _fishPools = [[], [], [], []];
 
   const TIER_NAMES  = ["Shallow Waters", "River Catch", "Deep Waters", "Legendary"];
   const TIER_COLORS = ["#7a8c7a",        "#3a7a35",     "#3a5a9a",    "#c8a84b"];
@@ -223,10 +213,15 @@
   }
 
   function _pickFish(strength) {
-    const tier  = _fishTier(strength);
-    const local = _dungeonFish?.[tier];
-    const pool  = (local?.length && Math.random() < DUNGEON_FISH_CHANCE) ? local : FISH_TIERS[tier];
-    return { fishName: pool[Math.floor(Math.random() * pool.length)], tier };
+    // A tier this scene's table leaves empty falls to the nearest lower tier
+    // that has fish, then to the nearest higher one.
+    const want  = _fishTier(strength);
+    const order = [0, 1, 2, 3].sort((a, b) => (a <= want ? want - a : 10 + a) - (b <= want ? want - b : 10 + b));
+    const tier  = order.find(t => _fishPools[t]?.length) ?? want;
+    const pool  = _fishPools[tier] ?? [];
+    let roll = Math.random() * pool.reduce((sum, f) => sum + f.weight, 0);
+    const fish = pool.find(f => (roll -= f.weight) < 0) ?? pool[pool.length - 1];
+    return { fishName: fish?.name ?? null, tier };
   }
 
   // ---------------------------------------------------------------------------
@@ -1114,8 +1109,7 @@
     if (!stage) return;
 
     if (fishName) {
-      let tier        = FISH_TIERS.findIndex(pool => pool.includes(fishName));
-      if (tier < 0 && _dungeonFish) tier = _dungeonFish.findIndex(pool => pool?.includes(fishName));
+      const tier      = _fishPools.findIndex(pool => pool?.some(f => f.name === fishName));
       const tierColor = TIER_COLORS[Math.max(0, tier)];
       const tierName  = TIER_NAMES[Math.max(0, tier)];
       stage.innerHTML = `
@@ -1222,7 +1216,7 @@
       _currentRound  = 1;
       _totalRounds   = options?.totalRounds ?? 3;
       _battleTimeout = options?.battleTimeout ?? 0;
-      _dungeonFish   = Array.isArray(options?.dungeonFish) ? options.dungeonFish : null;
+      _fishPools     = Array.isArray(options?.fishPools) ? options.fishPools : [[], [], [], []];
 
       if (_isOwner) {
         _loadStats(actorId);   // read fresh from actor
