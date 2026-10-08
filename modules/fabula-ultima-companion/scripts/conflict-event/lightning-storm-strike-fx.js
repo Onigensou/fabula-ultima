@@ -43,6 +43,7 @@
 
 import { playSfx } from "../battle-director/director-sfx.js";
 import { playImpactFxLocal } from "../battle-director/damage-numbers/director-impact-fx.js";
+import { playHurtReactionLocal } from "../battle-director/damage-numbers/director-hurt-reaction.js";
 import { shouldRender } from "../battle-director/presentation-clock.js";
 
 const MODULE_ID = "fabula-ultima-companion";
@@ -62,6 +63,7 @@ const CFG = {
   dimInMs: 250,       // battlefield fades down
   holdMs: 150,        // beat of darkness before the bolt
   strikeMs: 1100,     // bolt on screen
+  impactDelayMs: 250, // bolt appears → bolt reaches the token (the flinch beat)
   dimOutMs: 300,      // lights back up
   dimAlpha: 0.78,     // how dark the battlefield gets
   dimColor: 0x02000A,
@@ -218,6 +220,7 @@ function mountLayer(token) {
   if (clone) {
     clone.zIndex = 1;
     layer.addChild(clone);
+    layer.fuSpotlight = clone;
   } else {
     log("no mesh texture to clone — dimming without a spotlight");
   }
@@ -232,6 +235,41 @@ function mountLayer(token) {
   }, STRIKE_TOTAL_MS + 2000);
 
   return dim;
+}
+
+/**
+ * The struck token flinches as the bolt lands — the director's standard hurt
+ * reaction, the same one every damaging hit plays.
+ *
+ * That reaction is a DOM stand-in drawn over the token, and it hides the real
+ * sprite while it runs. Here the visible sprite is our spotlit CLONE, so the
+ * clone has to step aside too, or the flinch plays over a copy standing still.
+ * The clone follows the real mesh's alpha rather than a timer: it hides only
+ * if the reaction actually took the mesh away, and comes back the frame the
+ * reaction hands it back — so a reaction that bails leaves the clone alone.
+ *
+ * LOCAL, like the bolt: the whole timeline already runs once per client.
+ */
+async function flinchUnderSpotlight(token, tokenUuid) {
+  try {
+    const mesh = token?.mesh ?? null;
+    const before = mesh?.alpha ?? 1;
+    await playHurtReactionLocal({ tokenUuid, intensity: "normal" });
+
+    const clone = _layer?.fuSpotlight ?? null;
+    if (!clone || clone.destroyed || !mesh || before <= 0 || mesh.alpha > 0) return;
+
+    clone.visible = false;
+    const ticker = PIXI.Ticker.shared;
+    const deadline = performance.now() + 1500;
+    const restore = () => {
+      const gone = clone.destroyed;
+      if (!gone && !mesh.destroyed && mesh.alpha <= 0 && performance.now() < deadline) return;
+      try { ticker.remove(restore); } catch { /* gone */ }
+      if (!gone) clone.visible = true;
+    };
+    ticker.add(restore);
+  } catch (e) { warn("impact flinch threw", e); }
 }
 
 /**
@@ -255,6 +293,18 @@ export async function playLightningStrikeLocal({ tokenUuid } = {}) {
     const dim = mountLayer(token);
     if (!dim) { setRodCursorHiddenLocal(false); return; }
 
+    // Warm the token art for the impact flinch while the lights go down. The
+    // flinch draws the art as a DOM <img>, which the canvas never fetched as
+    // one — cold, the first strike on a token left it blank for the length of
+    // the download, so the target vanished under the bolt instead of flinching.
+    // (Animated tokens are snapshotted from the canvas and need no warm-up.)
+    const artSrc = token.document?.texture?.src ?? "";
+    let warmArt = null;
+    if (artSrc && !/\.(webm|mp4|m4v|ogv)$/i.test(artSrc)) {
+      warmArt = new Image();
+      warmArt.src = artSrc;
+    }
+
     await tweenAlpha(dim, CFG.dimAlpha, CFG.dimInMs);
     await wait(CFG.holdMs);
 
@@ -273,7 +323,12 @@ export async function playLightningStrikeLocal({ tokenUuid } = {}) {
     try { playSfx(THUNDER_SFX, CFG.sfxVolume); }
     catch (e) { warn("thunder SFX threw", e); }
 
-    await wait(CFG.strikeMs);
+    await wait(CFG.impactDelayMs);
+    // Fire-and-forget; swallows its own errors. Skipped if the art is still
+    // downloading — a strike without a flinch beats a target that blinks out.
+    if (!warmArt || (warmArt.complete && warmArt.naturalWidth > 0)) flinchUnderSpotlight(token, tokenUuid);
+
+    await wait(CFG.strikeMs - CFG.impactDelayMs);
     await tweenAlpha(dim, 0, CFG.dimOutMs);
   } catch (e) {
     warn("cinematic threw (cleaning up)", e);
