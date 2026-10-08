@@ -1,0 +1,67 @@
+{
+  "_id": "6RQzGcVHA1dMjZks",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791475477553,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dress.png",
+  "name": "White Tunic (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "aURvtyi45KxNXa43",
+    "props": {
+      "cost": "",
+      "description": "<ul>\n<li>Spells you cast whose effects restore Hit Points will restore 5 extra Hit Points.</li>\n</ul>",
+      "effect_table": {
+        "0": {
+          "effect_kind": "adjust_grant",
+          "effect_label": "wtunic_heal",
+          "grant_amount": "5",
+          "grant_operation": "add",
+          "grant_resource": "hp",
+          "grant_round": "up",
+          "grant_scope": "per_action"
+        }
+      },
+      "id": "6RQzGcVHA1dMjZks",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dress.png",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "White Tunic (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "reaction_action_kind": "Spell",
+          "reaction_effect_ref": "wtunic_heal",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_performs_action"
+        }
+      },
+      "skill_description": "<ul>\n<li>Spells you cast whose effects restore Hit Points will restore 5 extra Hit Points.</li>\n</ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.6RQzGcVHA1dMjZks"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "6RQzGcVHA1dMjZks"
+  },
+  "type": "equippableItem"
+}

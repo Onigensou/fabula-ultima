@@ -2819,6 +2819,12 @@
         "effects": 0
       },
       {
+        "id": "LUvox7eCZ95MS0yT",
+        "name": "Arcana Avant (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "zR5wRkqGCREtQuii",
         "name": "Arcane Circle",
         "type": "equippableItem",
@@ -4274,7 +4280,13 @@
         "id": "DeIMdUFdNlbApDVT",
         "name": "Clockwork Heart",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
+      },
+      {
+        "id": "zfi7tJxmcaQGRHRi",
+        "name": "Clockwork Heart (Passive)",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "8ta8kqa1PLv1b04D",
@@ -4495,6 +4507,12 @@
       {
         "id": "Xb0RBOMwfTAQSDw7",
         "name": "Crimson Gloves",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "xpI8x62bhRT2pdw2",
+        "name": "Crimson Gloves (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -4796,7 +4814,13 @@
         "id": "9Z9bVEVwAW9hiuFe",
         "name": "Demonshield",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
+      },
+      {
+        "id": "49dhNVvJRJpD2v4W",
+        "name": "Demonshield (Passive)",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "BQjAeoIEgbzy47oG",
@@ -6572,7 +6596,7 @@
         "id": "wzwQj3HC41TFByOw",
         "name": "Gravity Mace",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "o4g4GTVkuj3yJGME",
@@ -6692,7 +6716,7 @@
         "id": "CYfthrIA03zaPLGj",
         "name": "Gungnir",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "acdicWHrJMEMe20N",
@@ -7646,7 +7670,7 @@
         "id": "yOJKXAQJq4R2mzCa",
         "name": "Jumping Boots",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "9mEeAoPKlrCCQjRN",
@@ -7963,6 +7987,12 @@
       {
         "id": "bOyrz1SaqA1TQRzo",
         "name": "Longinus",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "L9sBnpQmCpKpyXKQ",
+        "name": "Longinus (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -9092,7 +9122,7 @@
         "id": "lFAG6dMR89JX4H9h",
         "name": "Multigroa Skin Gloves",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "KRD2oLQnj3dgVq0j",
@@ -10463,6 +10493,12 @@
         "effects": 0
       },
       {
+        "id": "RnAowtZKK2SGLtOR",
+        "name": "Ring of Defiance (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "Lh6I0HHQ2SMWmwPl",
         "name": "Ring of Frost",
         "type": "equippableItem",
@@ -10496,7 +10532,7 @@
         "id": "L7rj8OpM3zYetpPb",
         "name": "Ring of the Egg",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "TE1ftGWxTGcSp7CI",
@@ -10922,7 +10958,7 @@
         "id": "NAZlvtDB6iZX0mqr",
         "name": "Seigfried",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "jmbtQQsJBq9Tyway",
@@ -11323,6 +11359,12 @@
       {
         "id": "jDsRKKpWmXs6aAJF",
         "name": "Sniper Scope",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "kepuJymPWTa06LHB",
+        "name": "Sniper Scope (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -11759,6 +11801,12 @@
         "effects": 0
       },
       {
+        "id": "eVSxhFxfzxfxSii2",
+        "name": "Straw Doll (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "8IUc1Fb4toLru5kk",
         "name": "Street Boots",
         "type": "equippableItem",
@@ -11815,6 +11863,12 @@
       {
         "id": "mdeoJdBYRUook3Vm",
         "name": "Sunglasses",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "IqREaj1FVwVrCiUI",
+        "name": "Super Tonic",
         "type": "equippableItem",
         "effects": 0
       },
@@ -11923,6 +11977,12 @@
       {
         "id": "ZdwdNhKXtC96Z2VB",
         "name": "Sylvan Reaper",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "8vO1aPET9hgTgQn4",
+        "name": "Sylvan Reaper (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -12695,6 +12755,12 @@
         "effects": 0
       },
       {
+        "id": "oadRZ01kinQY8jiF",
+        "name": "Turbo Tonic",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "e0DdLAuqVh7EwpB8",
         "name": "Turn Undead",
         "type": "equippableItem",
@@ -12845,10 +12911,16 @@
         "effects": 0
       },
       {
+        "id": "CLgQXnqra3eY2FUy",
+        "name": "Valkyrie Flight",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "3JRMahpv7q0004l4",
         "name": "Valkyrie Spear",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "S1Wdikp3QcyfRvCs",
@@ -13161,6 +13233,12 @@
         "name": "White Tunic",
         "type": "equippableItem",
         "effects": 2
+      },
+      {
+        "id": "6RQzGcVHA1dMjZks",
+        "name": "White Tunic (Passive)",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "YWDErqkiLduFGt3z",

@@ -1,0 +1,111 @@
+{
+  "_id": "49dhNVvJRJpD2v4W",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791475476822,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/shield.png",
+  "name": "Demonshield (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "9Z9bVEVwAW9hiuFe",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>After a creature deals damage to you, if you are in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong>, you may have that<br>creature suffer <strong>@UUID[JournalEntry.ImFKpNNGjstom7Q9]{Shaken},&nbsp;</strong>if they are already&nbsp;<strong>Shaken</strong>, they suffers <strong>@UUID[JournalEntry.TOF8epes1eGHwx5J]{Frightened}&nbsp;</strong>instead.</p></li><li>You have resistance to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(163, 139, 80) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span> damage.</li></ul>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "ds_t_fright, ds_fright",
+          "effect_kind": "chain",
+          "effect_label": "ds_do_fright"
+        },
+        "1": {
+          "allow_empty": true,
+          "auto_target": "skip",
+          "candidate_source": "cause_actor",
+          "effect_kind": "targeting",
+          "effect_label": "ds_t_fright",
+          "mode": "all",
+          "target_filter": "AE_COUNT_SHAKEN > 0"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Frightened",
+          "effect_kind": "apply_ae",
+          "effect_label": "ds_fright",
+          "target_ref": "ds_t_fright"
+        },
+        "3": {
+          "chain_steps": "ds_t_shaken, ds_shaken",
+          "effect_kind": "chain",
+          "effect_label": "ds_do_shaken"
+        },
+        "4": {
+          "allow_empty": true,
+          "auto_target": "skip",
+          "candidate_source": "cause_actor",
+          "effect_kind": "targeting",
+          "effect_label": "ds_t_shaken",
+          "mode": "all",
+          "target_filter": "AE_COUNT_SHAKEN == 0"
+        },
+        "5": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Shaken",
+          "effect_kind": "apply_ae",
+          "effect_label": "ds_shaken",
+          "target_ref": "ds_t_shaken"
+        }
+      },
+      "id": "49dhNVvJRJpD2v4W",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/shield.png",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Demonshield (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "HAS_STATUS_CRISIS == 1",
+          "reaction_cause_filter": "damage",
+          "reaction_effect_ref": "ds_do_fright",
+          "reaction_passive_mode": "on",
+          "reaction_resource_filter": "hp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_lose_resource"
+        },
+        "1": {
+          "condition_formula": "HAS_STATUS_CRISIS == 1",
+          "reaction_cause_filter": "damage",
+          "reaction_effect_ref": "ds_do_shaken",
+          "reaction_passive_mode": "on",
+          "reaction_resource_filter": "hp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_lose_resource"
+        }
+      },
+      "skill_description": "<ul><li><p>After a creature deals damage to you, if you are in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong>, you may have that<br>creature suffer <strong>@UUID[JournalEntry.ImFKpNNGjstom7Q9]{Shaken},&nbsp;</strong>if they are already&nbsp;<strong>Shaken</strong>, they suffers <strong>@UUID[JournalEntry.TOF8epes1eGHwx5J]{Frightened}&nbsp;</strong>instead.</p></li><li>You have resistance to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(163, 139, 80) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span> damage.</li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.49dhNVvJRJpD2v4W"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "49dhNVvJRJpD2v4W"
+  },
+  "type": "equippableItem"
+}

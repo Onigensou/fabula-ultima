@@ -1,0 +1,131 @@
+{
+  "_id": "L9sBnpQmCpKpyXKQ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791475475807,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+  "name": "Longinus (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "bOyrz1SaqA1TQRzo",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.KYehgac3Pw1fKC9S]{Weak},&nbsp;</strong>if they are already <strong>Weak,&nbsp;</strong>replace it with <strong>@UUID[JournalEntry.GePNxftPupElcCWp]{Bleed},&nbsp;</strong>if the target already suffers&nbsp;<strong>Bleed</strong>, replace it with <strong>@UUID[JournalEntry.SNK1IJTKfxjAy2NS]{Bane},&nbsp;</strong>If they are already&nbsp;<strong>Bane,&nbsp;</strong>replace it with <strong>@UUID[JournalEntry.Do0VLf6wW9uCSLwD]{Doom},&nbsp;</strong>if they are <strong>Doom,&nbsp;</strong>reduce their <strong>HP</strong> to <strong>0.</strong></p></li></ul>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "lg_kill, lg_doom, lg_bane, lg_bleed, lg_weak, lg_un_bane, lg_un_bleed, lg_un_weak",
+          "effect_kind": "chain",
+          "effect_label": "longinus_hit"
+        },
+        "1": {
+          "condition_formula": "TARGET_AE_COUNT_DOOMED > 0 && TARGET_IS_CHAMPION == 0",
+          "damage_amount": "TARGET_CURRENT_HP",
+          "damage_cause": "damage",
+          "damage_element": "dark",
+          "damage_ignore_affinity": true,
+          "damage_keywords": "crush",
+          "effect_kind": "deal_damage",
+          "effect_label": "lg_kill",
+          "target_ref": "trigger_subject"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Doomed",
+          "condition_formula": "TARGET_AE_COUNT_BANE > 0 && TARGET_AE_COUNT_DOOMED == 0",
+          "effect_kind": "apply_ae",
+          "effect_label": "lg_doom",
+          "target_ref": "trigger_subject"
+        },
+        "3": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Bane",
+          "condition_formula": "TARGET_AE_COUNT_BLEED > 0 && TARGET_AE_COUNT_BANE == 0 && TARGET_AE_COUNT_DOOMED == 0",
+          "effect_kind": "apply_ae",
+          "effect_label": "lg_bane",
+          "target_ref": "trigger_subject"
+        },
+        "4": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Bleed",
+          "condition_formula": "TARGET_AE_COUNT_WEAK > 0 && TARGET_AE_COUNT_BLEED == 0 && TARGET_AE_COUNT_BANE == 0 && TARGET_AE_COUNT_DOOMED == 0",
+          "effect_kind": "apply_ae",
+          "effect_label": "lg_bleed",
+          "target_ref": "trigger_subject"
+        },
+        "5": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Weak",
+          "condition_formula": "TARGET_AE_COUNT_WEAK == 0 && TARGET_AE_COUNT_BLEED == 0 && TARGET_AE_COUNT_BANE == 0 && TARGET_AE_COUNT_DOOMED == 0",
+          "effect_kind": "apply_ae",
+          "effect_label": "lg_weak",
+          "target_ref": "trigger_subject"
+        },
+        "6": {
+          "ae_template_ref": "Bane",
+          "condition_formula": "TARGET_AE_COUNT_BANE > 0 && TARGET_AE_COUNT_DOOMED > 0",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "lg_un_bane",
+          "target_ref": "trigger_subject"
+        },
+        "7": {
+          "ae_template_ref": "Bleed",
+          "condition_formula": "TARGET_AE_COUNT_BLEED > 0 && TARGET_AE_COUNT_BANE > 0",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "lg_un_bleed",
+          "target_ref": "trigger_subject"
+        },
+        "8": {
+          "ae_template_ref": "Weak",
+          "condition_formula": "TARGET_AE_COUNT_WEAK > 0 && TARGET_AE_COUNT_BLEED > 0",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "lg_un_weak",
+          "target_ref": "trigger_subject"
+        }
+      },
+      "id": "L9sBnpQmCpKpyXKQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Longinus (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "longinus_hit",
+          "reaction_passive_mode": "on",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_deals_damage"
+        }
+      },
+      "skill_description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.KYehgac3Pw1fKC9S]{Weak},&nbsp;</strong>if they are already <strong>Weak,&nbsp;</strong>replace it with <strong>@UUID[JournalEntry.GePNxftPupElcCWp]{Bleed},&nbsp;</strong>if the target already suffers&nbsp;<strong>Bleed</strong>, replace it with <strong>@UUID[JournalEntry.SNK1IJTKfxjAy2NS]{Bane},&nbsp;</strong>If they are already&nbsp;<strong>Bane,&nbsp;</strong>replace it with <strong>@UUID[JournalEntry.Do0VLf6wW9uCSLwD]{Doom},&nbsp;</strong>if they are <strong>Doom,&nbsp;</strong>reduce their <strong>HP</strong> to <strong>0.</strong></p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.L9sBnpQmCpKpyXKQ"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "L9sBnpQmCpKpyXKQ"
+  },
+  "type": "equippableItem"
+}
