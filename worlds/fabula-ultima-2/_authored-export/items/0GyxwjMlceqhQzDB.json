@@ -1,9 +1,9 @@
 {
-  "_id": "Vt0MPszloAOQXcus",
+  "_id": "0GyxwjMlceqhQzDB",
   "_stats": {
     "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
     "coreVersion": "12.343",
-    "createdTime": 1769593150381,
+    "createdTime": 1791472275616,
     "duplicateSource": "Item.cneU6dfTzI13k0U2",
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
@@ -14,15 +14,15 @@
     }
   },
   "folder": "ft3358qUh5ZDldYQ",
-  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213818.767.png",
-  "name": "Mega-Elixir",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Wind%20Stone.gif",
+  "name": "Wind Stone",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
-  "sort": 100000,
+  "sort": 0,
   "system": {
-    "container": "kMbhsJ2cDIFndrKy",
+    "container": "W12k5UVEouxIPrDf",
     "props": {
       "action_command": "item",
       "active_effect_config_table": {},
@@ -34,18 +34,20 @@
       "cost": "-",
       "damage_bonus": "0",
       "defense_target_type": "def",
-      "description": "<ul><li><p>Target creature <strong>recovers 100 MP</strong></p></li></ul>",
+      "description": "<ul><li><p>Deals <strong>40 Air </strong>damage to target creature</p></li></ul>",
       "duration": "Instantaneous",
       "effect_table": {
         "0": {
-          "effect_kind": "grant",
-          "effect_label": "megaelixir_mp",
-          "grant_amount": "100",
-          "grant_resource": "mp",
+          "damage_amount": "40",
+          "damage_element": "air",
+          "effect_kind": "deal_damage",
+          "effect_label": "wstone_dmg",
           "target_ref": "action_targets"
         }
       },
       "heroic_requirement": "",
+      "id": "0GyxwjMlceqhQzDB",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Wind%20Stone.gif",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
@@ -53,26 +55,28 @@
       "isReaction": false,
       "level": "1",
       "max_level": "1",
-      "name": "Mega-Elixir",
-      "on_activate_effect_ref": "megaelixir_mp",
+      "name": "Wind Stone",
+      "on_activate_effect_ref": "wstone_dmg",
       "optional_params": {},
       "reaction_config_table": {},
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_default": "",
       "skill_animation_mode": "default",
+      "skill_description": "<ul><li><p>Deals <strong>40 Air </strong>damage to target creature</p></li></ul>",
       "skill_information": "",
       "skill_range": "Any",
-      "skill_tags": "potion",
+      "skill_tags": "",
       "skill_target": "One Creature",
       "skill_type": "Item",
       "type_damage": "",
-      "use_optional_params": false
+      "use_optional_params": false,
+      "uuid": "Item.0GyxwjMlceqhQzDB"
     },
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2125250754,
     "unique": false,
-    "uniqueId": "Vt0MPszloAOQXcus"
+    "uniqueId": "0GyxwjMlceqhQzDB"
   },
   "type": "equippableItem"
 }

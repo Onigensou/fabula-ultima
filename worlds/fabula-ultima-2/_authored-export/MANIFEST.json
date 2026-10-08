@@ -3428,7 +3428,7 @@
         "id": "fhAho99WpytMzCtx",
         "name": "Bio Plate",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "ZTyfhNr10Pa42pAB",
@@ -3769,6 +3769,12 @@
       {
         "id": "xswSyDHMuKJdHGZf",
         "name": "Boots of Swiftness",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "OyTw9FegtPhNorsO",
+        "name": "Boots of Swiftness (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -4279,6 +4285,12 @@
       {
         "id": "w7aYOFr8mnN0SLhD",
         "name": "Cold Finger",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "xLdAspRazwaLWNew",
+        "name": "Cold Finger (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -5064,6 +5076,12 @@
       },
       {
         "id": "6wg3JxDlU6GD4uqq",
+        "name": "Earth Stone",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "mwMWruQEVG6DRGCq",
         "name": "Earth Stone",
         "type": "equippableItem",
         "effects": 0
@@ -5975,6 +5993,12 @@
         "effects": 0
       },
       {
+        "id": "nUVRyBNSbOlqbh0Y",
+        "name": "Fulgur Alta",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "MWH6Za46Bjii884i",
         "name": "Fulgur Finis",
         "type": "equippableItem",
@@ -5984,7 +6008,7 @@
         "id": "586POqqfHOk7TgY8",
         "name": "Fulgur Shield",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "U1WUGQw6hkUo1La7",
@@ -6001,6 +6025,12 @@
       {
         "id": "i4oM2NTWVz9lRIZz",
         "name": "Gae Bolg",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "qesmCvPumDLyWAuy",
+        "name": "Gae Bolg (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -6246,6 +6276,12 @@
       },
       {
         "id": "a7QM5eiDwGGrBPL4",
+        "name": "Goddess Tear",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "sIkLqWqs6rtZI2cU",
         "name": "Goddess Tear",
         "type": "equippableItem",
         "effects": 0
@@ -6539,6 +6575,12 @@
         "effects": 0
       },
       {
+        "id": "o4g4GTVkuj3yJGME",
+        "name": "Gravity Mace (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "teBt2B2zQ6m8RUQQ",
         "name": "Grease Oil",
         "type": "equippableItem",
@@ -6632,7 +6674,7 @@
         "id": "Li5RjJZdG2g7WFJ2",
         "name": "Guardian Emblem",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "apTtxjIGZbuM8Ofc",
@@ -6697,6 +6739,12 @@
       {
         "id": "4sRQe37ayG9OebW3",
         "name": "Hannya Mask",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "RwBCUv6voor57gDu",
+        "name": "Hannya Mask (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -6805,6 +6853,12 @@
       {
         "id": "GTydGAnT25DCc6Va",
         "name": "Heart Stone",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "Rtl3EmsDG8aGBXCt",
+        "name": "Heart Stone (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -7853,6 +7907,12 @@
         "effects": 0
       },
       {
+        "id": "IkBK4OzWHLkUUYXA",
+        "name": "Liquid Hope",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "TIeKQs0l9tWaNO0y",
         "name": "Liquid Hope",
         "type": "equippableItem",
@@ -7881,6 +7941,12 @@
         "name": "Lobster Claw",
         "type": "equippableItem",
         "effects": 1
+      },
+      {
+        "id": "vGhOBmRM6TlwtImZ",
+        "name": "Lobster Claw (Passive)",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "4E3auFhcWT06tIn5",
@@ -8054,7 +8120,7 @@
         "id": "LovcBRnMztRvrtVw",
         "name": "Mage Emblem",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "6fN45LX3i4bmqIFY",
@@ -8235,6 +8301,12 @@
         "name": "Magus Robe",
         "type": "equippableItem",
         "effects": 2
+      },
+      {
+        "id": "PsPKj3jaXv6BOpFb",
+        "name": "Magus Robe (Passive)",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "ZZG5sHvIc3GH26w7",
@@ -8558,7 +8630,7 @@
         "id": "19AYZWXLj7vbeMLY",
         "name": "Miner Hat",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 3
       },
       {
         "id": "seumBxHYbWkD4puo",
@@ -8665,6 +8737,12 @@
       {
         "id": "Knt8Qr5y1rgq3TSa",
         "name": "Mjolnir",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "lGv8LhV2TMJ4zE63",
+        "name": "Mjolnir (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -9197,6 +9275,12 @@
         "effects": 0
       },
       {
+        "id": "oTPXDmefeZbJ2Yhp",
+        "name": "Norimitsu (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "Gk0pJtWurS6kIDzK",
         "name": "npc_attack",
         "type": "equippableItem",
@@ -9499,6 +9583,12 @@
       {
         "id": "ecMYjBVVRm8TieSi",
         "name": "Pinwheel Rod",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "WYi7CDOr9Z2y4ajc",
+        "name": "Pinwheel Rod (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -9935,6 +10025,12 @@
         "effects": 0
       },
       {
+        "id": "Q81j6M4k4ILDDCLd",
+        "name": "Punishment (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "NaNRVXthIlP4iXtL",
         "name": "Pyro Blast",
         "type": "equippableItem",
@@ -9967,6 +10063,12 @@
       {
         "id": "NUmsmp8rNcSFbH6j",
         "name": "Quatermain",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "YJRaNLeVP0n0pgeD",
+        "name": "Quatermain (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -10673,6 +10775,12 @@
         "effects": 0
       },
       {
+        "id": "1XAVlkivXswdvW6j",
+        "name": "Sage Ring (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "YdYhFx1vrvod4P2Y",
         "name": "Sage Robe",
         "type": "equippableItem",
@@ -10817,6 +10925,12 @@
         "effects": 0
       },
       {
+        "id": "jmbtQQsJBq9Tyway",
+        "name": "Seigfried (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "iQ9BRZAuT9lfex5O",
         "name": "Seismic Pillar",
         "type": "equippableItem",
@@ -10951,6 +11065,12 @@
       {
         "id": "vNzVes988MJdlWGn",
         "name": "Shooting Star Crystal",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "wwrB7X0CJ2Bve2v9",
+        "name": "Shooting Star Crystal (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -12044,7 +12164,7 @@
         "id": "xsPKJsuXuuwK2Oyd",
         "name": "Terra Shield",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "k1ws4o2xY7qXkfaf",
@@ -12719,6 +12839,12 @@
         "effects": 0
       },
       {
+        "id": "DYRzdLtX6sks8TXP",
+        "name": "Vajra (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "3JRMahpv7q0004l4",
         "name": "Valkyrie Spear",
         "type": "equippableItem",
@@ -12953,6 +13079,12 @@
         "effects": 0
       },
       {
+        "id": "rJeqysQwMBULVHQY",
+        "name": "Warrior Emblem (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "q3AX5ylHljeAnmKj",
         "name": "Warrior Seal",
         "type": "equippableItem",
@@ -13061,6 +13193,12 @@
         "effects": 0
       },
       {
+        "id": "0GyxwjMlceqhQzDB",
+        "name": "Wind Stone",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "W12k5UVEouxIPrDf",
         "name": "Wind Stone",
         "type": "equippableItem",
@@ -13139,6 +13277,12 @@
         "effects": 0
       },
       {
+        "id": "naXTQ5YOmPSqGJ9h",
+        "name": "Wolf Officer Hat (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "VlMyCpNWOxyfGlod",
         "name": "Wooly Cuirass",
         "type": "equippableItem",
@@ -13165,6 +13309,12 @@
       {
         "id": "LHxw85DB0ONmPTc7",
         "name": "Yellow Book",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "89SUvlTXjpInX8qd",
+        "name": "Yellow Book (Passive)",
         "type": "equippableItem",
         "effects": 0
       },

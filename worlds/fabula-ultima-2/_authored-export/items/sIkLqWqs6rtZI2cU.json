@@ -1,9 +1,9 @@
 {
-  "_id": "Vt0MPszloAOQXcus",
+  "_id": "sIkLqWqs6rtZI2cU",
   "_stats": {
     "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
     "coreVersion": "12.343",
-    "createdTime": 1769593150381,
+    "createdTime": 1791472273722,
     "duplicateSource": "Item.cneU6dfTzI13k0U2",
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
@@ -14,15 +14,15 @@
     }
   },
   "folder": "ft3358qUh5ZDldYQ",
-  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213818.767.png",
-  "name": "Mega-Elixir",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/8a55d0840792a95596fa37808f93e478.jpg",
+  "name": "Goddess Tear",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
-  "sort": 100000,
+  "sort": 0,
   "system": {
-    "container": "kMbhsJ2cDIFndrKy",
+    "container": "a7QM5eiDwGGrBPL4",
     "props": {
       "action_command": "item",
       "active_effect_config_table": {},
@@ -34,18 +34,32 @@
       "cost": "-",
       "damage_bonus": "0",
       "defense_target_type": "def",
-      "description": "<ul><li><p>Target creature <strong>recovers 100 MP</strong></p></li></ul>",
+      "description": "<ul><li><p>Fully restore the target <strong>HP </strong>and <strong>MP</strong></p></li></ul>",
       "duration": "Instantaneous",
       "effect_table": {
         "0": {
+          "chain_steps": "gtear_hp, gtear_mp",
+          "effect_kind": "chain",
+          "effect_label": "gtear_use"
+        },
+        "1": {
           "effect_kind": "grant",
-          "effect_label": "megaelixir_mp",
-          "grant_amount": "100",
+          "effect_label": "gtear_hp",
+          "grant_amount": "9999",
+          "grant_resource": "hp",
+          "target_ref": "action_targets"
+        },
+        "2": {
+          "effect_kind": "grant",
+          "effect_label": "gtear_mp",
+          "grant_amount": "9999",
           "grant_resource": "mp",
           "target_ref": "action_targets"
         }
       },
       "heroic_requirement": "",
+      "id": "sIkLqWqs6rtZI2cU",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/8a55d0840792a95596fa37808f93e478.jpg",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
@@ -53,26 +67,28 @@
       "isReaction": false,
       "level": "1",
       "max_level": "1",
-      "name": "Mega-Elixir",
-      "on_activate_effect_ref": "megaelixir_mp",
+      "name": "Goddess Tear",
+      "on_activate_effect_ref": "gtear_use",
       "optional_params": {},
       "reaction_config_table": {},
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_default": "",
       "skill_animation_mode": "default",
+      "skill_description": "<ul><li><p>Fully restore the target <strong>HP </strong>and <strong>MP</strong></p></li></ul>",
       "skill_information": "",
       "skill_range": "Any",
-      "skill_tags": "potion",
+      "skill_tags": "",
       "skill_target": "One Creature",
       "skill_type": "Item",
       "type_damage": "",
-      "use_optional_params": false
+      "use_optional_params": false,
+      "uuid": "Item.sIkLqWqs6rtZI2cU"
     },
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2125250754,
     "unique": false,
-    "uniqueId": "Vt0MPszloAOQXcus"
+    "uniqueId": "sIkLqWqs6rtZI2cU"
   },
   "type": "equippableItem"
 }

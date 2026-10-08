@@ -1,0 +1,65 @@
+{
+  "_id": "naXTQ5YOmPSqGJ9h",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791472268426,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Wolf%20Hat.png",
+  "name": "Wolf Officer Hat (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "Cqm1AVi7jJ1ozlrd",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>You deal 5 extra damage to creatures in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li><li>You can speak and communicate with creatures belonging to the <strong>Beast</strong> species.</li></ul>",
+      "effect_table": {
+        "0": {
+          "damage_amount": "5",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "wolfhat_bonus"
+        }
+      },
+      "id": "naXTQ5YOmPSqGJ9h",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Wolf%20Hat.png",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Wolf Officer Hat (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "TARGET_AE_COUNT_CRISIS > 0 && DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "wolfhat_bonus",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_description": "<ul><li><p>You deal 5 extra damage to creatures in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li><li>You can speak and communicate with creatures belonging to the <strong>Beast</strong> species.</li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.naXTQ5YOmPSqGJ9h"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "naXTQ5YOmPSqGJ9h"
+  },
+  "type": "equippableItem"
+}

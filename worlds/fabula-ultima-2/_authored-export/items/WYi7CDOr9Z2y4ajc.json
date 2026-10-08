@@ -1,0 +1,66 @@
+{
+  "_id": "WYi7CDOr9Z2y4ajc",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791472263527,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Rod.gif",
+  "name": "Pinwheel Rod (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "ecMYjBVVRm8TieSi",
+    "props": {
+      "cost": "",
+      "description": "<ul>\n<li>As long as one of your <strong>spells</strong> or <strong>invocations</strong>&nbsp;deals <strong>air</strong> damage, it deals <strong>10</strong> extra damage.</li>\n</ul>",
+      "effect_table": {
+        "0": {
+          "damage_amount": "10",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "pinwheel_bonus"
+        }
+      },
+      "id": "WYi7CDOr9Z2y4ajc",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Rod.gif",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Pinwheel Rod (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ACTION_IS_ATTACK == 0",
+          "reaction_damage_type": "air",
+          "reaction_effect_ref": "pinwheel_bonus",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_description": "<ul>\n<li>As long as one of your <strong>spells</strong> or <strong>invocations</strong>&nbsp;deals <strong>air</strong> damage, it deals <strong>10</strong> extra damage.</li>\n</ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.WYi7CDOr9Z2y4ajc"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "WYi7CDOr9Z2y4ajc"
+  },
+  "type": "equippableItem"
+}

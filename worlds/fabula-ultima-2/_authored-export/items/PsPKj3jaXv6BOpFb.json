@@ -1,0 +1,65 @@
+{
+  "_id": "PsPKj3jaXv6BOpFb",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791472267121,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2327.gif",
+  "name": "Magus Robe (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "P8L1KkGNgdqvydZT",
+    "props": {
+      "cost": "",
+      "description": "<ul><li>【⚡Offensive Spell】 you cast that deals damage deal extra damage equal to 50% of the <strong>base</strong> <strong>MP </strong>spent to cast it. <em>(Round up)</em></li></ul>",
+      "effect_table": {
+        "0": {
+          "damage_amount": "ceil(ACTION_COST_MP / 2)",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "magus_bonus"
+        }
+      },
+      "id": "PsPKj3jaXv6BOpFb",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2327.gif",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Magus Robe (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ACTION_IS_OFFENSIVE_SPELL == 1 && ACTION_COST_MP > 0",
+          "reaction_effect_ref": "magus_bonus",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_description": "<ul><li>【⚡Offensive Spell】 you cast that deals damage deal extra damage equal to 50% of the <strong>base</strong> <strong>MP </strong>spent to cast it. <em>(Round up)</em></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.PsPKj3jaXv6BOpFb"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "PsPKj3jaXv6BOpFb"
+  },
+  "type": "equippableItem"
+}

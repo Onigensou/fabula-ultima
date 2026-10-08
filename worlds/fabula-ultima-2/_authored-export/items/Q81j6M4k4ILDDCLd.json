@@ -1,0 +1,66 @@
+{
+  "_id": "Q81j6M4k4ILDDCLd",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791472265721,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Broad%20Sword.gif",
+  "name": "Punishment (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "pl3WqLGgAKPapUWh",
+    "props": {
+      "cost": "",
+      "description": "<ul>\n<li>This weapon deals&nbsp;<strong>5&nbsp;</strong>bonus damage for&nbsp;<strong>each&nbsp;</strong>debuff you are&nbsp;<strong>inflicted&nbsp;</strong>with</li>\n</ul>",
+      "effect_table": {
+        "0": {
+          "damage_amount": "STATUS_COUNT * 5",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "punish_bonus"
+        }
+      },
+      "id": "Q81j6M4k4ILDDCLd",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Broad%20Sword.gif",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Punishment (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ACTION_IS_ATTACK == 1 && STATUS_COUNT > 0",
+          "reaction_effect_ref": "punish_bonus",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_description": "<ul>\n<li>This weapon deals&nbsp;<strong>5&nbsp;</strong>bonus damage for&nbsp;<strong>each&nbsp;</strong>debuff you are&nbsp;<strong>inflicted&nbsp;</strong>with</li>\n</ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.Q81j6M4k4ILDDCLd"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "Q81j6M4k4ILDDCLd"
+  },
+  "type": "equippableItem"
+}
