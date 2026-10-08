@@ -1,7 +1,7 @@
 // ============================================================================
 // Lightning Rod cursor — the floating marker over the Storm's current holder.
 //
-// A downward purple arrow bobbing above the Rod holder's RENDERED sprite. The
+// A downward purple spike bobbing above the Rod holder's RENDERED sprite. The
 // Rod is a singleton battlefield status whose whole strategy layer is "who is
 // carrying it right now"; before this existed that fact was legible only as an
 // effect icon in a row of other effect icons, which is exactly the confusion
@@ -48,14 +48,16 @@ const ROD_AE_NAME = "Lightning Rod";
 const CURSOR_Z_INDEX = 60;
 
 /**
- * Placeholder art switch.
+ * Marker art.
  *
- * `null` draws the built-in CSS arrow (a purple triangle). Set this to an image
- * URL and the cursor renders that instead, at CURSOR_ART_HEIGHT px — nothing
- * else in this file needs to change when the real art lands.
+ * An 80x58 pixel-art spike, drawn at its native height so the pixels stay
+ * square (CURSOR_ART_HEIGHT is 1:1 with the source — change both together, in
+ * whole multiples). Set this to `null` to fall back to the built-in CSS arrow
+ * (a purple triangle), which is all this file drew before the art landed.
  */
-const ROD_CURSOR_SRC = null;
-const CURSOR_ART_HEIGHT = 44;
+const ROD_CURSOR_SRC =
+  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/VFX/vfx_LightningMarker.png";
+const CURSOR_ART_HEIGHT = 58;
 
 /** Gap in screen px between the sprite's top edge and the arrow's tip. */
 const CURSOR_GAP = 6;
@@ -98,8 +100,8 @@ function ensureStyles() {
   0%, 100% { translate: 0 0; }
   50%      { translate: 0 -8px; }
 }
-/* Placeholder graphic: a pure-CSS downward triangle. Replaced wholesale when
-   ROD_CURSOR_SRC is set. */
+/* Fallback graphic: a pure-CSS downward triangle, drawn only when
+   ROD_CURSOR_SRC is null. */
 .fud-rod-cursor .arrow {
   width: 0; height: 0;
   border-left: 11px solid transparent;
@@ -109,6 +111,7 @@ function ensureStyles() {
 /* The global stylesheet borders every <img>; never on ours. */
 .fud-rod-cursor img {
   display: block; height: ${CURSOR_ART_HEIGHT}px; width: auto;
+  image-rendering: pixelated;
   border: 0 !important; outline: 0 !important; box-shadow: none !important;
   background: transparent;
 }
