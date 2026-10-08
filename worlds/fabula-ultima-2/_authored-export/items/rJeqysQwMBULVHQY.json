@@ -28,8 +28,8 @@
       "description": "<ul>\n<li>Your&nbsp;<strong>Attacks&nbsp;</strong>deal&nbsp;<strong>10&nbsp;</strong>bonus damage</li>\n</ul>",
       "effect_table": {
         "0": {
-          "damage_amount": "10",
-          "damage_operation": "add",
+          "damage_amount": "1.2",
+          "damage_operation": "multiply",
           "damage_stage": "outgoing",
           "effect_kind": "adjust_damage",
           "effect_label": "wemblem_bonus"

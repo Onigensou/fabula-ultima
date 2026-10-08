@@ -6092,7 +6092,7 @@
         "id": "i4oM2NTWVz9lRIZz",
         "name": "Gae Bolg",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "qesmCvPumDLyWAuy",
@@ -25916,7 +25916,7 @@
       {
         "id": "DMeYaPoSPUxH6xVE",
         "name": "Valley of the Dragon - Treasure",
-        "results": 18
+        "results": 16
       },
       {
         "id": "StbIP7EczNqm98PR",

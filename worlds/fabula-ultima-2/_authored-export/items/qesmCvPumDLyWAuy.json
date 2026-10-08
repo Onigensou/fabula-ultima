@@ -28,7 +28,7 @@
       "description": "<ul>\n<li>If you roll a <strong>critical success</strong> on an Accuracy Check with this weapon, that attack deals <strong>200%</strong> damage.</li>\n</ul>",
       "effect_table": {
         "0": {
-          "damage_amount": "2",
+          "damage_amount": "3",
           "damage_operation": "multiply",
           "damage_stage": "outgoing",
           "effect_kind": "adjust_damage",
