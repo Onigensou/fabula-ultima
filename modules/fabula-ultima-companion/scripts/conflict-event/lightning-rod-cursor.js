@@ -62,7 +62,16 @@ const CURSOR_ART_HEIGHT = 58;
 /** Gap in screen px between the sprite's top edge and the arrow's tip. */
 const CURSOR_GAP = 6;
 
-const _cursors = new Map(); // tokenId -> { el, missingFrames }
+/**
+ * Appear / disappear fade, in ms. The marker eases in when a token gains the
+ * Rod and eases out when it loses it, so a Rod changing hands reads as a
+ * cross-fade rather than a teleport. Drives the CSS transition below.
+ */
+const CURSOR_FADE_MS = 600;
+/** The strike cinematic's hide stays quick — it must be gone before the bolt. */
+const CURSOR_ANIM_HIDE_MS = 300;
+
+const _cursors = new Map(); // tokenId -> { el, missingFrames, leaving, leaveTimer }
 let _tickerOn = false;
 let _hooksOn = false;
 
@@ -87,7 +96,7 @@ function ensureStyles() {
   transform: translate(-50%, -100%);
   z-index: ${CURSOR_Z_INDEX};
   pointer-events: none;
-  transition: opacity .3s ease;
+  transition: opacity ${CURSOR_FADE_MS}ms ease-in-out;
   /* The bob rides the CSS "translate" PROPERTY, leaving "transform" free to
      hold the centering above. Composing them this way means the per-frame
      tracker can keep writing left/top without fighting the animation.
@@ -95,7 +104,10 @@ function ensureStyles() {
   animation: fud-rod-bob 1.8s ease-in-out infinite;
   filter: drop-shadow(0 0 6px rgba(168,85,247,.85)) drop-shadow(0 2px 3px rgba(0,0,0,.55));
 }
-.fud-rod-cursor.is-anim-hidden { opacity: 0 !important; }
+.fud-rod-cursor.is-anim-hidden {
+  opacity: 0 !important;
+  transition-duration: ${CURSOR_ANIM_HIDE_MS}ms;
+}
 @keyframes fud-rod-bob {
   0%, 100% { translate: 0 0; }
   50%      { translate: 0 -8px; }
@@ -151,7 +163,9 @@ export function isRodAe(effect) {
   return String(effect?.name ?? "").trim() === ROD_AE_NAME;
 }
 
-function buildCursor(token) {
+// `fadeIn: false` is for a rescan re-mounting a marker that was already on
+// screen — easing that one in again would read as a blink.
+function buildCursor(token, { fadeIn = true } = {}) {
   ensureStyles();
   const el = document.createElement("div");
   el.className = "fud-rod-cursor";
@@ -165,16 +179,23 @@ function buildCursor(token) {
     el.appendChild(arrow);
   }
   if (_hiddenByAnimation) el.classList.add("is-anim-hidden");
+  if (fadeIn) el.style.opacity = "0";
   document.body.appendChild(el);
-  const rec = { el, missingFrames: 0 };
+  // Commit the opacity-0 start before the tracker writes the real value on
+  // the next frame — without a style flush the browser sees only the final
+  // opacity and there is nothing to transition from.
+  if (fadeIn) void el.offsetWidth;
+  const rec = { el, missingFrames: 0, leaving: false, leaveTimer: null };
   _cursors.set(token.id, rec);
   if (!_tickerOn) { PIXI.Ticker.shared.add(cursorTick); _tickerOn = true; }
   return rec;
 }
 
-function dropCursor(tokenId) {
+/** Take the marker off the page NOW. For a token or canvas that is gone. */
+function removeCursor(tokenId) {
   const rec = _cursors.get(tokenId);
   if (!rec) return;
+  if (rec.leaveTimer) { try { clearTimeout(rec.leaveTimer); } catch { /* fired */ } rec.leaveTimer = null; }
   try { rec.el.remove(); } catch { /* already gone */ }
   _cursors.delete(tokenId);
   if (!_cursors.size && _tickerOn) {
@@ -183,13 +204,36 @@ function dropCursor(tokenId) {
   }
 }
 
+/**
+ * Fade the marker out, then remove it. For a token that lost the Rod but is
+ * still standing there. The record stays in the map while it fades so the
+ * tracker keeps it pinned to the token through a pan or zoom.
+ */
+function dropCursor(tokenId) {
+  const rec = _cursors.get(tokenId);
+  if (!rec || rec.leaving) return;
+  rec.leaving = true;
+  try { rec.el.style.opacity = "0"; } catch { /* element gone */ }
+  // A timer, not transitionend: the event never fires when the marker is
+  // already at opacity 0 (hidden by the strike, or on an unseen token).
+  rec.leaveTimer = setTimeout(() => {
+    if (_cursors.get(tokenId) === rec && rec.leaving) removeCursor(tokenId);
+  }, CURSOR_FADE_MS + 50);
+}
+
+/** The Rod came back while the marker was still fading out — bring it back up. */
+function reviveCursor(rec) {
+  if (rec.leaveTimer) { try { clearTimeout(rec.leaveTimer); } catch { /* fired */ } rec.leaveTimer = null; }
+  rec.leaving = false;
+}
+
 function cursorTick() {
   if (!_cursors.size) return;
   for (const [tokenId, rec] of _cursors) {
     const token = canvas?.tokens?.get?.(tokenId);
     if (!token || token.destroyed) {
       // Placeables rebuild across canvas redraws — short grace before drop.
-      if (++rec.missingFrames > 30) dropCursor(tokenId);
+      if (++rec.missingFrames > 30) removeCursor(tokenId);
       else rec.el.style.opacity = "0";
       continue;
     }
@@ -197,33 +241,47 @@ function cursorTick() {
     const b = spriteClientBounds(token);
     rec.el.style.left = `${b.left + b.width / 2}px`;
     rec.el.style.top = `${b.top - CURSOR_GAP}px`;
+    // Fading out — keep tracking the token, but leave opacity to the fade.
+    if (rec.leaving) continue;
     // Follow the token's visibility (fog, hidden toggle, Escape fade) — a
     // holder the viewer cannot see must not be given away by a purple arrow.
     rec.el.style.opacity = token.visible === false ? "0" : String(token.alpha ?? 1);
   }
 }
 
-/** Re-derive the cursor across every canvas token of `actor`. */
-function syncActorCursor(actor) {
+/**
+ * Re-derive the cursor across every canvas token of `actor`.
+ * `instantFor` — token ids whose marker mounts without the fade-in (rescans).
+ */
+function syncActorCursor(actor, instantFor = null) {
   if (!actor) return;
   const has = holdsRod(actor);
   let tokens = [];
   try { tokens = actor.getActiveTokens?.(true) ?? []; } catch { /* no canvas */ }
   for (const token of tokens) {
     if (!has) { dropCursor(token.id); continue; }
-    if (!_cursors.has(token.id)) buildCursor(token);
+    const rec = _cursors.get(token.id);
+    if (!rec) buildCursor(token, { fadeIn: !instantFor?.has(token.id) });
+    else if (rec.leaving) reviveCursor(rec);
   }
 }
 
 function rescanCanvas() {
-  for (const rec of _cursors.values()) { try { rec.el.remove(); } catch { /* already gone */ } }
+  // Markers that were steadily on screen come back without a fade-in, so the
+  // delayed boot sweep and a same-scene redraw don't blink a live Rod.
+  const wasShown = new Set();
+  for (const [tokenId, rec] of _cursors) {
+    if (!rec.leaving) wasShown.add(tokenId);
+    if (rec.leaveTimer) { try { clearTimeout(rec.leaveTimer); } catch { /* fired */ } }
+    try { rec.el.remove(); } catch { /* already gone */ }
+  }
   _cursors.clear();
   if (_tickerOn) {
     try { PIXI.Ticker.shared.remove(cursorTick); } catch { /* never added */ }
     _tickerOn = false;
   }
   for (const token of canvas?.tokens?.placeables ?? []) {
-    if (token?.actor) syncActorCursor(token.actor);
+    if (token?.actor) syncActorCursor(token.actor, wasShown);
   }
   log(`rescan — ${_cursors.size} cursor(s) on ${canvas?.scene?.name ?? "?"}`);
 }
@@ -254,7 +312,7 @@ export function initLightningRodCursor() {
     setTimeout(() => { try { syncActorCursor(tokenDoc.actor); } catch (e) { warn("createToken sync threw", e); } }, 100);
   });
   Hooks.on("deleteToken", (tokenDoc) => {
-    try { dropCursor(tokenDoc?.id); } catch { /* nothing mounted */ }
+    try { removeCursor(tokenDoc?.id); } catch { /* nothing mounted */ }
   });
 
   Hooks.on("canvasReady", () => {
