@@ -26,7 +26,7 @@ const TILE_TYPES = Object.freeze({
   HAZARD: "hazard", HEALING: "healing", FORCE_MOVE: "force_move", POISON: "poison",
   RECIPE: "recipe", SETTLEMENT: "settlement", OBSTACLE: "obstacle", SKILL_CHECK: "skill_check",
   SLIPPERY: "slippery", TRAP: "trap", CAMP: "camp", ALERT: "alert", DOOR: "door",
-  GUSTY: "gusty", DIRT: "dirt", UNKNOWN: "unknown",
+  GUSTY: "gusty", DIRT: "dirt", VERTIGO: "vertigo", UNKNOWN: "unknown",
 });
 
 const VALID_TYPES = new Set(Object.values(TILE_TYPES));
@@ -47,7 +47,7 @@ const KNOWN = [
   "poison", "recipe", "settlement", "obstacle", "skill check",
   "skillcheck", "slippery", "trap", "camp", "alert", "door", "treasure",
   "item", "weapon", "armor", "accessory", "consumable",
-  "dirt", "gusty",
+  "dirt", "gusty", "vertigo",
 ];
 
 const FORCE = TILE_TYPES.FORCE_MOVE;
