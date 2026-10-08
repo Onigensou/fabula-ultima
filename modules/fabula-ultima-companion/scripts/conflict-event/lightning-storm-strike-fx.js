@@ -65,7 +65,7 @@ const CFG = {
   dimOutMs: 300,      // lights back up
   dimAlpha: 0.78,     // how dark the battlefield gets
   dimColor: 0x02000A,
-  strikeScale: 4.95,  // bolt size relative to the token's on-screen footprint
+  strikeScale: 7.425, // bolt size relative to the token's on-screen footprint
   sfxVolume: 0.85,
   zIndex: 99500,      // above every canvas group, below the cut-in layer
 };
