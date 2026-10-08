@@ -1,0 +1,98 @@
+{
+  "_id": "DzPCCPnqF7PioX20",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791482904501,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/mirror.png",
+  "name": "Magic Mirror (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "1bAmygPgkEEVuGph",
+    "props": {
+      "cost": "",
+      "description": "<ul>\n<li>You may use this item immediately when you are targeted by a spell, <strong>Negate</strong> the spell and <strong>Reflect </strong>it back to the caster.</li>\n<li>You may only hold 1 copy of this item in your inventory.</li>\n</ul>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "mirror_redirect, mirror_spend",
+          "effect_kind": "chain",
+          "effect_label": "mirror_reflect"
+        },
+        "1": {
+          "auto_confirm_when_obvious": true,
+          "auto_target": "skip",
+          "candidate_source": "trigger_attacker",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "mirror_caster",
+          "iteration_mode": "together",
+          "mode": "exact",
+          "skip_when_passive": true
+        },
+        "2": {
+          "destination_ref": "mirror_caster",
+          "effect_kind": "redirect_target",
+          "effect_label": "mirror_redirect",
+          "rebuild_card": true,
+          "target_ref": "mirror_me"
+        },
+        "3": {
+          "consume_item_name": "Magic Mirror",
+          "effect_kind": "consume_item",
+          "effect_label": "mirror_spend"
+        },
+        "4": {
+          "auto_confirm_when_obvious": true,
+          "auto_target": "skip",
+          "candidate_source": "self",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "mirror_me",
+          "iteration_mode": "together",
+          "mode": "exact",
+          "skip_when_passive": true
+        }
+      },
+      "id": "DzPCCPnqF7PioX20",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/mirror.png",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Magic Mirror (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ACTION_IS_SPELL == 1",
+          "reaction_action_intent": "harmful",
+          "reaction_effect_ref": "mirror_reflect",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_targeted_by_action"
+        }
+      },
+      "skill_description": "<ul>\n<li>You may use this item immediately when you are targeted by a spell, <strong>Negate</strong> the spell and <strong>Reflect </strong>it back to the caster.</li>\n<li>You may only hold 1 copy of this item in your inventory.</li>\n</ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.DzPCCPnqF7PioX20"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "DzPCCPnqF7PioX20"
+  },
+  "type": "equippableItem"
+}

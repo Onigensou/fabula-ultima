@@ -8,6 +8,67 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "RQxY4Y3L9lvsPGCJ",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791482463938,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "RQxY4Y3L9lvsPGCJ",
+          "originalParentId": "WQzVAB1xoaPdDTS7",
+          "originalUuid": "Item.WQzVAB1xoaPdDTS7.ActiveEffect.RQxY4Y3L9lvsPGCJ"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "chargeKey": "solar-charge",
+          "charges": 1,
+          "chargesMax": 6,
+          "crossScene": false,
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Solar Charge",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"
@@ -58,29 +119,142 @@
       "defense_target_type": "mdef",
       "description": "<p>When you cast this spell, create a <strong>6-section Solar Beam clock </strong>with this effect<strong> </strong>if you didn't have one already</p><blockquote><p>Whenever you take <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(163, 139, 80) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>damage, Fill 1 section of your Solar Beam clock</p></blockquote><p>then, <strong>choose one:</strong></p><ul><li><p><strong>Fill 1 section </strong>of your <strong>Solar Beam </strong>clock</p></li><li><p><strong>Consume </strong>all filled section and deal 【<strong>50 x The number of consumed section</strong>】<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(163, 139, 80) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span>&nbsp;damage to target creature</p></li></ul>",
       "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "solar_menu",
+          "menu_option_refs": "solar_fill, solar_fire",
+          "menu_pick_count": "1",
+          "menu_subtitle": "Choose one",
+          "menu_title": "Solar Beam"
+        },
+        "1": {
+          "ae_duplicate_mode": "add_charges",
+          "ae_initial_charges": "1",
+          "ae_initial_charges_max": "6",
+          "ae_template_ref": "Item.WQzVAB1xoaPdDTS7.ActiveEffect.RQxY4Y3L9lvsPGCJ",
+          "effect_kind": "apply_ae",
+          "effect_label": "solar_fill",
+          "menu_description": "Fill 1 section of your Solar Beam clock.",
+          "menu_label": "Gather light",
+          "target_ref": "self"
+        },
+        "2": {
+          "ae_duplicate_mode": "add_charges",
+          "ae_initial_charges": "1",
+          "ae_initial_charges_max": "6",
+          "ae_template_ref": "Item.WQzVAB1xoaPdDTS7.ActiveEffect.RQxY4Y3L9lvsPGCJ",
+          "effect_kind": "apply_ae",
+          "effect_label": "solar_absorb",
+          "target_ref": "self"
+        },
+        "3": {
+          "chain_steps": "solar_dmg_1, solar_dmg_2, solar_dmg_3, solar_dmg_4, solar_dmg_5, solar_dmg_6, solar_spend",
+          "condition_formula": "AE_CHARGES_SOLAR_CHARGE > 0",
+          "disable_ui_type": "disabled",
+          "disabled_reason": "No sections filled",
+          "effect_kind": "chain",
+          "effect_label": "solar_fire",
+          "menu_description": "Consume every filled section and deal Light damage to the target.",
+          "menu_label": "Fire"
+        },
+        "4": {
+          "condition_formula": "AE_CHARGES_SOLAR_CHARGE == 1",
+          "damage_amount": "50",
+          "damage_cause": "damage",
+          "damage_element": "light",
+          "effect_kind": "deal_damage",
+          "effect_label": "solar_dmg_1",
+          "target_ref": "action_targets"
+        },
+        "5": {
+          "condition_formula": "AE_CHARGES_SOLAR_CHARGE == 2",
+          "damage_amount": "100",
+          "damage_cause": "damage",
+          "damage_element": "light",
+          "effect_kind": "deal_damage",
+          "effect_label": "solar_dmg_2",
+          "target_ref": "action_targets"
+        },
+        "6": {
+          "condition_formula": "AE_CHARGES_SOLAR_CHARGE == 3",
+          "damage_amount": "150",
+          "damage_cause": "damage",
+          "damage_element": "light",
+          "effect_kind": "deal_damage",
+          "effect_label": "solar_dmg_3",
+          "target_ref": "action_targets"
+        },
+        "7": {
+          "condition_formula": "AE_CHARGES_SOLAR_CHARGE == 4",
+          "damage_amount": "200",
+          "damage_cause": "damage",
+          "damage_element": "light",
+          "effect_kind": "deal_damage",
+          "effect_label": "solar_dmg_4",
+          "target_ref": "action_targets"
+        },
+        "8": {
+          "condition_formula": "AE_CHARGES_SOLAR_CHARGE == 5",
+          "damage_amount": "250",
+          "damage_cause": "damage",
+          "damage_element": "light",
+          "effect_kind": "deal_damage",
+          "effect_label": "solar_dmg_5",
+          "target_ref": "action_targets"
+        },
+        "9": {
+          "condition_formula": "AE_CHARGES_SOLAR_CHARGE >= 6",
+          "damage_amount": "300",
+          "damage_cause": "damage",
+          "damage_element": "light",
+          "effect_kind": "deal_damage",
+          "effect_label": "solar_dmg_6",
+          "target_ref": "action_targets"
+        },
+        "10": {
+          "ae_template_ref": "Solar Charge",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "solar_spend",
+          "include_persistent": true,
+          "target_ref": "self"
+        }
+      },
       "heroic_requirement": "",
       "ignore_hr": false,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213224.506.png",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
-      "isOffensiveSpell": true,
-      "isReaction": false,
+      "isOffensiveSpell": false,
+      "isReaction": true,
       "isZeroPower": false,
       "level": "1",
       "max_level": "1",
       "name": "Solar Beam",
+      "on_activate_effect_ref": "solar_menu",
       "optional_params": {},
-      "reaction_config_table": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "TRIGGER_DAMAGE_IS_LIGHT == 1 && AE_COUNT_SOLAR_CHARGE > 0",
+          "reaction_cause_filter": "damage",
+          "reaction_effect_ref": "solar_absorb",
+          "reaction_passive_mode": "force",
+          "reaction_resource_filter": "hp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_lose_resource"
+        }
+      },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_default": "",
       "skill_animation_mode": "default",
       "skill_information": "",
       "skill_range": "Range",
-      "skill_target": "Special",
+      "skill_target": "One Creature",
       "skill_type": "Spell",
-      "type_damage": "Light",
+      "type_damage": "",
       "use_optional_params": false
     },
     "template": "j0F5Msw5RZ8aIB3j",

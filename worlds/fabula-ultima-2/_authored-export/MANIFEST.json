@@ -2609,6 +2609,12 @@
         "effects": 0
       },
       {
+        "id": "mjcOkC66OwKtDYwy",
+        "name": "Alchemist Codex (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "GtDJyikCuScbp7CI",
         "name": "Alchemist Vial",
         "type": "equippableItem",
@@ -2906,7 +2912,7 @@
         "id": "eSAFGyccW3pweDdx",
         "name": "Armor of Heroes",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "66VhBlUJJiIHvdF7",
@@ -3476,7 +3482,7 @@
         "id": "cy0XWEqKnjvJ9B4c",
         "name": "Bishop's Edict",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 6
       },
       {
         "id": "TSCAUfjpOlNl6WwV",
@@ -4367,6 +4373,12 @@
         "effects": 0
       },
       {
+        "id": "7WR5iBvxjbXtA14B",
+        "name": "Commander Banner (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "4XfF0BEkoOIxD3Yr",
         "name": "Composite Bow",
         "type": "equippableItem",
@@ -4593,6 +4605,12 @@
         "name": "Crystal Powder",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "ZigbhzlCo1jFZMLd",
+        "name": "Crystal Powder",
+        "type": "equippableItem",
+        "effects": 2
       },
       {
         "id": "FoodCucumber0001",
@@ -7766,7 +7784,7 @@
         "id": "j2zsAZo4RuolWM6b",
         "name": "King's Castle",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 5
       },
       {
         "id": "Ou5w7XHSNGb02T9y",
@@ -8221,6 +8239,12 @@
       {
         "id": "1bAmygPgkEEVuGph",
         "name": "Magic Mirror",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "DzPCCPnqF7PioX20",
+        "name": "Magic Mirror (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -10136,7 +10160,7 @@
         "id": "f7LAMimGFhqpUUWX",
         "name": "Queen's Gambit",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "GT1JF2Q4w7W6vQ4P",
@@ -10310,7 +10334,7 @@
         "id": "iCihob3zRqeQ0neA",
         "name": "Red Tunic",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "ghki8JXtqcKxQFCa",
@@ -10418,7 +10442,13 @@
         "id": "Qvpvcl0RlEtn4sSd",
         "name": "Rest&Rage",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
+      },
+      {
+        "id": "YMGyD6WwrLiVOo1I",
+        "name": "Rest&Rage (Passive)",
+        "type": "equippableItem",
+        "effects": 2
       },
       {
         "id": "27Jn6EkSRTRbh1Ld",
@@ -11432,7 +11462,7 @@
         "id": "WQzVAB1xoaPdDTS7",
         "name": "Solar Beam",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "l5qcG0XESXrlsDtE",
@@ -12344,7 +12374,7 @@
         "id": "oSodj9KjjoM0VLFa",
         "name": "The Wasp",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "2OGYloKUIUQjZL8G",
@@ -12446,7 +12476,7 @@
         "id": "2qhIJG9OTmyPYMFB",
         "name": "Thunder Vulcan",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "eMFnmNlwEks944Vk",
@@ -13279,6 +13309,12 @@
       {
         "id": "bjiYR2V7wNcjI3dv",
         "name": "Whirling Axe",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "v1FBABLgBO8NFFrM",
+        "name": "Whirling Axe (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -25830,7 +25866,7 @@
       {
         "id": "VgiHGix1LOByKDdu",
         "name": "Valley of the Dragon - Armor",
-        "results": 15
+        "results": 17
       },
       {
         "id": "11corNhirrKGdkGE",
@@ -25840,7 +25876,7 @@
       {
         "id": "S4PHPxGHldBoJVxj",
         "name": "Valley of the Dragon - Consumable",
-        "results": 20
+        "results": 22
       },
       {
         "id": "Oijx8ksubxq9pc1R",
@@ -25880,12 +25916,12 @@
       {
         "id": "DMeYaPoSPUxH6xVE",
         "name": "Valley of the Dragon - Treasure",
-        "results": 13
+        "results": 18
       },
       {
         "id": "StbIP7EczNqm98PR",
         "name": "Valley of the Dragon - Weapon",
-        "results": 23
+        "results": 25
       },
       {
         "id": "3tGY9xvFTeQhFIzU",

@@ -104,15 +104,97 @@
           "damage_bonus": "0",
           "description": "<p>During a conflict, you may use an action and spend 10 Mind Points to <strong>choose one option:</strong></p><ul><li>All MP costs are doubled</li><li>All sources of damage deal <strong>【SL × 3】</strong> extra damage</li></ul><p>The chosen effect lasts until the start of your next turn.</p>",
           "duration": "Until the start of your next turn",
+          "effect_table": {
+            "0": {
+              "effect_kind": "open_action_menu",
+              "effect_label": "edict_menu",
+              "menu_option_refs": "edict_opt_tithe, edict_opt_zeal",
+              "menu_pick_count": "1",
+              "menu_subtitle": "Until the start of your next turn",
+              "menu_title": "Bishop's Edict"
+            },
+            "1": {
+              "auto_target": "skip",
+              "candidate_source": "combat",
+              "effect_kind": "targeting",
+              "effect_label": "edict_all",
+              "mode": "all"
+            },
+            "2": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.zrSNdhBwjm1IU2FB",
+              "effect_kind": "apply_ae",
+              "effect_label": "edict_opt_tithe",
+              "menu_description": "All MP costs are doubled.",
+              "menu_label": "Tithe",
+              "target_ref": "edict_all"
+            },
+            "3": {
+              "chain_steps": "edict_zeal_1, edict_zeal_2, edict_zeal_3, edict_zeal_4, edict_zeal_5",
+              "effect_kind": "chain",
+              "effect_label": "edict_opt_zeal",
+              "menu_description": "All sources of damage deal extra damage.",
+              "menu_label": "Zeal"
+            },
+            "4": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.F7p5CecN5dDfHEWy",
+              "condition_formula": "SL == 1",
+              "effect_kind": "apply_ae",
+              "effect_label": "edict_zeal_1",
+              "target_ref": "edict_all"
+            },
+            "5": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.AnJnEssmbiUk3ZnF",
+              "condition_formula": "SL == 2",
+              "effect_kind": "apply_ae",
+              "effect_label": "edict_zeal_2",
+              "target_ref": "edict_all"
+            },
+            "6": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.yQ1nGHFiMMSj79c3",
+              "condition_formula": "SL == 3",
+              "effect_kind": "apply_ae",
+              "effect_label": "edict_zeal_3",
+              "target_ref": "edict_all"
+            },
+            "7": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.ILY0O2ZcWraq1DC7",
+              "condition_formula": "SL == 4",
+              "effect_kind": "apply_ae",
+              "effect_label": "edict_zeal_4",
+              "target_ref": "edict_all"
+            },
+            "8": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.mJ5rlg16GgqaTpXO",
+              "condition_formula": "SL >= 5",
+              "effect_kind": "apply_ae",
+              "effect_label": "edict_zeal_5",
+              "target_ref": "edict_all"
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "5",
           "name": "Bishop's Edict",
+          "on_activate_effect_ref": "edict_menu",
           "optional_params": {},
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Extra Damage</strong></p></td></tr><tr><td><p>1</p></td><td><p>+3</p></td></tr><tr><td><p>2</p></td><td><p>+6</p></td></tr><tr><td><p>3</p></td><td><p>+9</p></td></tr><tr><td><p>4</p></td><td><p>+12</p></td></tr><tr><td><p>5</p></td><td><p>+15</p></td></tr></tbody></table>",
@@ -265,15 +347,30 @@
           "damage_bonus": "0",
           "description": "<p>During a conflict, you may use an action and spend 10 MP to choose one ally that can hear you. That ally may immediately perform a <strong>free attack</strong> with a weapon they have equipped (or with a basic attack if they are an NPC). They gain a bonus equal to <strong>【SL + 3】</strong> to the Accuracy Check, but treat their High Roll (HR) as 0 when calculating damage.</p>",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "action_ref": "Attack",
+              "check_bonus_formula": "SL + 3",
+              "effect_kind": "free_action",
+              "effect_label": "cc_charge",
+              "free_hr_as_zero": true,
+              "menu_description": "Free attack with bonus accuracy (treat HR as 0 for damage).",
+              "menu_label": "Charging Cavalry",
+              "performer_ref": "action_targets"
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": false,
           "level": "1",
           "max_level": "5",
           "name": "Charging Cavalry",
+          "on_activate_effect_ref": "cc_charge",
           "optional_params": {},
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Accuracy Bonus</strong></p></td></tr><tr><td><p>1</p></td><td><p>+4</p></td></tr><tr><td><p>2</p></td><td><p>+5</p></td></tr><tr><td><p>3</p></td><td><p>+6</p></td></tr><tr><td><p>4</p></td><td><p>+7</p></td></tr><tr><td><p>5</p></td><td><p>+8</p></td></tr></tbody></table>",
@@ -322,20 +419,115 @@
           "damage_bonus": "0",
           "description": "<p>During a conflict, you may use an action to perform a <strong>free attack</strong> with a weapon you have equipped, treating your High Roll (HR) as 0 when calculating damage. After the attack is resolved, <strong>choose one option:</strong></p><ul><li>One ally who is able to hear you recovers <strong>【5 + (SL × 5)】</strong> Hit Points</li><li>You may immediately use a Skill you acquired among <strong>【💥Bishop’s Edict】</strong>, <strong>【💥Charging Cavalry】</strong> or <strong>【💥King's Castle</strong>】 for free (spending the appropriate MP)</li></ul>",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "chain_steps": "qg_mark, qg_attack",
+              "effect_kind": "chain",
+              "effect_label": "qg_open"
+            },
+            "1": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Item.f7LAMimGFhqpUUWX.ActiveEffect.jx4eiUgiapCKYtOm",
+              "effect_kind": "apply_ae",
+              "effect_label": "qg_mark",
+              "target_ref": "self"
+            },
+            "2": {
+              "action_ref": "Attack",
+              "effect_kind": "free_action",
+              "effect_label": "qg_attack",
+              "free_hr_as_zero": true,
+              "menu_description": "Free attack (treat HR as 0 for damage).",
+              "menu_label": "Queen's Gambit"
+            },
+            "3": {
+              "chain_steps": "qg_clear, qg_menu",
+              "effect_kind": "chain",
+              "effect_label": "qg_after"
+            },
+            "4": {
+              "ae_template_ref": "Gambit Pending",
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "qg_clear",
+              "include_persistent": true,
+              "target_ref": "self"
+            },
+            "5": {
+              "effect_kind": "open_action_menu",
+              "effect_label": "qg_menu",
+              "menu_option_refs": "qg_heal, qg_skill",
+              "menu_pick_count": "1",
+              "menu_subtitle": "Choose one",
+              "menu_title": "Queen's Gambit"
+            },
+            "6": {
+              "chain_steps": "qg_pick, qg_heal_do",
+              "effect_kind": "chain",
+              "effect_label": "qg_heal",
+              "menu_description": "One ally recovers Hit Points.",
+              "menu_label": "Rally"
+            },
+            "7": {
+              "auto_confirm_when_obvious": true,
+              "auto_target": "confirm",
+              "candidate_source": "combat",
+              "category": "ally",
+              "count": "1",
+              "effect_kind": "targeting",
+              "effect_label": "qg_pick",
+              "mode": "exact"
+            },
+            "8": {
+              "effect_kind": "grant",
+              "effect_label": "qg_heal_do",
+              "grant_amount": "5 + SL * 5",
+              "grant_resource": "hp",
+              "target_ref": "qg_pick"
+            },
+            "9": {
+              "action_ref": "Skill",
+              "allowed_skill_refs": "Bishop's Edict,Charging Cavalry,King's Castle",
+              "effect_kind": "free_action",
+              "effect_label": "qg_skill",
+              "menu_description": "Use Bishop's Edict, Charging Cavalry or King's Castle now (pay its MP).",
+              "menu_label": "Command"
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "6",
           "name": "Queen's Gambit",
+          "on_activate_effect_ref": "qg_open",
           "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "AE_COUNT_GAMBIT_PENDING > 0",
+              "reaction_effect_ref": "qg_after",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_completes_attack"
+            },
+            "1": {
+              "condition_formula": "AE_COUNT_GAMBIT_PENDING > 0",
+              "reaction_effect_ref": "qg_clear",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "self",
+              "reaction_trigger": "turn_end"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>HP Recovered</strong></p></td></tr><tr><td><p>1</p></td><td><p>10</p></td></tr><tr><td><p>2</p></td><td><p>15</p></td></tr><tr><td><p>3</p></td><td><p>20</p></td></tr><tr><td><p>4</p></td><td><p>25</p></td></tr><tr><td><p>5</p></td><td><p>30</p></td></tr><tr><td><p>6</p></td><td><p>35</p></td></tr></tbody></table>",
           "skill_range": "Any",
-          "skill_target": "Special",
+          "skill_target": "Self",
           "skill_type": "Active",
           "type_damage": "",
           "use_optional_params": false
@@ -379,15 +571,88 @@
           "damage_bonus": "0",
           "description": "<p>During a conflict, you may use an action and spend 10 Mind Points to <strong>choose one option:</strong></p><ul><li>No creature can recover Hit Points or Mind Points</li><li>All effects that restore Mind Points restore <strong>【SL × 5】</strong> additional Mind Points</li></ul><p>The chosen effect lasts until the start of your next turn.</p>",
           "duration": "Until the start of your next turn",
+          "effect_table": {
+            "0": {
+              "effect_kind": "open_action_menu",
+              "effect_label": "castle_menu",
+              "menu_option_refs": "castle_opt_siege, castle_opt_supply",
+              "menu_pick_count": "1",
+              "menu_subtitle": "Until the start of your next turn",
+              "menu_title": "King's Castle"
+            },
+            "1": {
+              "auto_target": "skip",
+              "candidate_source": "combat",
+              "effect_kind": "targeting",
+              "effect_label": "castle_all",
+              "mode": "all"
+            },
+            "2": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Item.j2zsAZo4RuolWM6b.ActiveEffect.6qsVnvVLmDH0MszM",
+              "effect_kind": "apply_ae",
+              "effect_label": "castle_opt_siege",
+              "menu_description": "No creature can recover Hit Points or Mind Points.",
+              "menu_label": "Siege",
+              "target_ref": "castle_all"
+            },
+            "3": {
+              "chain_steps": "castle_supply_1, castle_supply_2, castle_supply_3, castle_supply_4",
+              "effect_kind": "chain",
+              "effect_label": "castle_opt_supply",
+              "menu_description": "All effects that restore Mind Points restore more.",
+              "menu_label": "Supply"
+            },
+            "4": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Item.j2zsAZo4RuolWM6b.ActiveEffect.asRgJomGuZx1OYij",
+              "condition_formula": "SL == 1",
+              "effect_kind": "apply_ae",
+              "effect_label": "castle_supply_1",
+              "target_ref": "castle_all"
+            },
+            "5": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Item.j2zsAZo4RuolWM6b.ActiveEffect.pCT86gdAZOuntbtT",
+              "condition_formula": "SL == 2",
+              "effect_kind": "apply_ae",
+              "effect_label": "castle_supply_2",
+              "target_ref": "castle_all"
+            },
+            "6": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Item.j2zsAZo4RuolWM6b.ActiveEffect.4nrXvjMGJig4cXPs",
+              "condition_formula": "SL == 3",
+              "effect_kind": "apply_ae",
+              "effect_label": "castle_supply_3",
+              "target_ref": "castle_all"
+            },
+            "7": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Item.j2zsAZo4RuolWM6b.ActiveEffect.cHtmzzfWqxTBsX9P",
+              "condition_formula": "SL >= 4",
+              "effect_kind": "apply_ae",
+              "effect_label": "castle_supply_4",
+              "target_ref": "castle_all"
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": false,
           "level": "1",
           "max_level": "4",
           "name": "King's Castle",
+          "on_activate_effect_ref": "castle_menu",
           "optional_params": {},
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Extra MP Restored</strong></p></td></tr><tr><td><p>1</p></td><td><p>+5</p></td></tr><tr><td><p>2</p></td><td><p>+10</p></td></tr><tr><td><p>3</p></td><td><p>+15</p></td></tr><tr><td><p>4</p></td><td><p>+20</p></td></tr><tr><td><p>5</p></td><td><p>+25</p></td></tr></tbody></table>",

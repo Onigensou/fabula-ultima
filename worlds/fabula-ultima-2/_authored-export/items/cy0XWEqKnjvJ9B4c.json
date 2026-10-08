@@ -8,6 +8,453 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "AnJnEssmbiUk3ZnF",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791482462468,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "AnJnEssmbiUk3ZnF",
+          "originalParentId": "cy0XWEqKnjvJ9B4c",
+          "originalUuid": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.AnJnEssmbiUk3ZnF"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "damage_amount": "6",
+                "damage_operation": "add",
+                "damage_stage": "outgoing",
+                "effect_kind": "adjust_damage",
+                "effect_label": "edict_zeal"
+              }
+            },
+            "name": "Bishop's Edict",
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "edict_zeal",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_will_deal_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Bishop's Edict Zeal 2",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "F7p5CecN5dDfHEWy",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791482462468,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "F7p5CecN5dDfHEWy",
+          "originalParentId": "cy0XWEqKnjvJ9B4c",
+          "originalUuid": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.F7p5CecN5dDfHEWy"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "damage_amount": "3",
+                "damage_operation": "add",
+                "damage_stage": "outgoing",
+                "effect_kind": "adjust_damage",
+                "effect_label": "edict_zeal"
+              }
+            },
+            "name": "Bishop's Edict",
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "edict_zeal",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_will_deal_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Bishop's Edict Zeal 1",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "ILY0O2ZcWraq1DC7",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791482462468,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "ILY0O2ZcWraq1DC7",
+          "originalParentId": "cy0XWEqKnjvJ9B4c",
+          "originalUuid": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.ILY0O2ZcWraq1DC7"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "damage_amount": "12",
+                "damage_operation": "add",
+                "damage_stage": "outgoing",
+                "effect_kind": "adjust_damage",
+                "effect_label": "edict_zeal"
+              }
+            },
+            "name": "Bishop's Edict",
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "edict_zeal",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_will_deal_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Bishop's Edict Zeal 4",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "mJ5rlg16GgqaTpXO",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791482462468,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "mJ5rlg16GgqaTpXO",
+          "originalParentId": "cy0XWEqKnjvJ9B4c",
+          "originalUuid": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.mJ5rlg16GgqaTpXO"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "damage_amount": "15",
+                "damage_operation": "add",
+                "damage_stage": "outgoing",
+                "effect_kind": "adjust_damage",
+                "effect_label": "edict_zeal"
+              }
+            },
+            "name": "Bishop's Edict",
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "edict_zeal",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_will_deal_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Bishop's Edict Zeal 5",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "yQ1nGHFiMMSj79c3",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791482462468,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "yQ1nGHFiMMSj79c3",
+          "originalParentId": "cy0XWEqKnjvJ9B4c",
+          "originalUuid": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.yQ1nGHFiMMSj79c3"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "damage_amount": "9",
+                "damage_operation": "add",
+                "damage_stage": "outgoing",
+                "effect_kind": "adjust_damage",
+                "effect_label": "edict_zeal"
+              }
+            },
+            "name": "Bishop's Edict",
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "edict_zeal",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_will_deal_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Bishop's Edict Zeal 3",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "zrSNdhBwjm1IU2FB",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791482462468,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "zrSNdhBwjm1IU2FB",
+          "originalParentId": "cy0XWEqKnjvJ9B4c",
+          "originalUuid": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.zrSNdhBwjm1IU2FB"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "cost_amount": "ACTION_COST_MP",
+                "cost_operation": "add",
+                "cost_resource": "mp",
+                "effect_kind": "adjust_cost",
+                "effect_label": "edict_tithe"
+              }
+            },
+            "name": "Bishop's Edict",
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "ACTION_COST_MP > 0",
+                "reaction_effect_ref": "edict_tithe",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_performs_action"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Bishop's Edict Tithe",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -30,15 +477,97 @@
       "damage_bonus": "0",
       "description": "<p>During a conflict, you may use an action and spend 10 Mind Points to <strong>choose one option:</strong></p><ul><li>All MP costs are doubled</li><li>All sources of damage deal <strong>【SL × 3】</strong> extra damage</li></ul><p>The chosen effect lasts until the start of your next turn.</p>",
       "duration": "Until the start of your next turn",
+      "effect_table": {
+        "0": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "edict_menu",
+          "menu_option_refs": "edict_opt_tithe, edict_opt_zeal",
+          "menu_pick_count": "1",
+          "menu_subtitle": "Until the start of your next turn",
+          "menu_title": "Bishop's Edict"
+        },
+        "1": {
+          "auto_target": "skip",
+          "candidate_source": "combat",
+          "effect_kind": "targeting",
+          "effect_label": "edict_all",
+          "mode": "all"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "1",
+          "ae_template_ref": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.zrSNdhBwjm1IU2FB",
+          "effect_kind": "apply_ae",
+          "effect_label": "edict_opt_tithe",
+          "menu_description": "All MP costs are doubled.",
+          "menu_label": "Tithe",
+          "target_ref": "edict_all"
+        },
+        "3": {
+          "chain_steps": "edict_zeal_1, edict_zeal_2, edict_zeal_3, edict_zeal_4, edict_zeal_5",
+          "effect_kind": "chain",
+          "effect_label": "edict_opt_zeal",
+          "menu_description": "All sources of damage deal extra damage.",
+          "menu_label": "Zeal"
+        },
+        "4": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "1",
+          "ae_template_ref": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.F7p5CecN5dDfHEWy",
+          "condition_formula": "SL == 1",
+          "effect_kind": "apply_ae",
+          "effect_label": "edict_zeal_1",
+          "target_ref": "edict_all"
+        },
+        "5": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "1",
+          "ae_template_ref": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.AnJnEssmbiUk3ZnF",
+          "condition_formula": "SL == 2",
+          "effect_kind": "apply_ae",
+          "effect_label": "edict_zeal_2",
+          "target_ref": "edict_all"
+        },
+        "6": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "1",
+          "ae_template_ref": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.yQ1nGHFiMMSj79c3",
+          "condition_formula": "SL == 3",
+          "effect_kind": "apply_ae",
+          "effect_label": "edict_zeal_3",
+          "target_ref": "edict_all"
+        },
+        "7": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "1",
+          "ae_template_ref": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.ILY0O2ZcWraq1DC7",
+          "condition_formula": "SL == 4",
+          "effect_kind": "apply_ae",
+          "effect_label": "edict_zeal_4",
+          "target_ref": "edict_all"
+        },
+        "8": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "1",
+          "ae_template_ref": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.mJ5rlg16GgqaTpXO",
+          "condition_formula": "SL >= 5",
+          "effect_kind": "apply_ae",
+          "effect_label": "edict_zeal_5",
+          "target_ref": "edict_all"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
       "isOffensiveSpell": false,
+      "isReaction": true,
       "level": "1",
       "max_level": "5",
       "name": "Bishop's Edict",
+      "on_activate_effect_ref": "edict_menu",
       "optional_params": {},
+      "reaction_config_table": {},
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",

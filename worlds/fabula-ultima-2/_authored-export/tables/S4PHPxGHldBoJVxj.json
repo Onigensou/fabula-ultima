@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "4bqgn7jZFnmardZp",
-  "formula": "1d20",
+  "formula": "1d22",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
   "name": "Valley of the Dragon - Consumable",
   "ownership": {
@@ -202,6 +202,21 @@
       "weight": 1
     },
     {
+      "_id": "M8ARmkUaq1gqIvCE",
+      "documentCollection": "Item",
+      "documentId": "DAZcD3sQRwPfW9Jz",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/coke.png",
+      "range": [
+        22,
+        22
+      ],
+      "text": "Crystal Powder",
+      "type": "document",
+      "weight": 1
+    },
+    {
       "_id": "MohkYTvdzu2euube",
       "documentCollection": "Item",
       "documentId": "a7QM5eiDwGGrBPL4",
@@ -318,6 +333,21 @@
         3
       ],
       "text": "Tincture of Endurance",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "TYo9ymYev1pW73b4",
+      "documentCollection": "Item",
+      "documentId": "1bAmygPgkEEVuGph",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/mirror.png",
+      "range": [
+        21,
+        21
+      ],
+      "text": "Magic Mirror",
       "type": "document",
       "weight": 1
     }

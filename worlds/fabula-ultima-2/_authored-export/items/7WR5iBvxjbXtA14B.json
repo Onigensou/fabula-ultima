@@ -1,0 +1,165 @@
+{
+  "_id": "7WR5iBvxjbXtA14B",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791482461678,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Commander_Banner.png",
+  "name": "Commander Banner (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "TonJhOEDvCr8RrdU",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>Attack with this weapon gain bonus Accuracy equal to <strong>【The amount of buff with different name affecting all your ally】</strong></p></li><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Cz6U0ps98sYN8jMH\" data-id=\"Cz6U0ps98sYN8jMH\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Conquer</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;5</span></strong></span></span> All Ally gain a <strong>buff</strong> of your choice</p></li><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Cz6U0ps98sYN8jMH\" data-id=\"Cz6U0ps98sYN8jMH\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Conquer</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;15</span></strong></span></span> If you have the skill <strong>【✨ Queen's Gambit】, </strong>You may perform the skill 【<strong>✨ Queen's Gambit】</strong>as a <strong>Free Action. </strong>This effect may trigger <strong>once per turn.</strong></p></li></ul>",
+      "effect_table": {
+        "0": {
+          "accuracy_amount": "ALLY_DISTINCT_BUFF_COUNT",
+          "accuracy_operation": "add",
+          "effect_kind": "adjust_accuracy",
+          "effect_label": "banner_acc"
+        },
+        "1": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "banner_rally",
+          "menu_option_refs": "banner_strong, banner_swift, banner_focus, banner_energized, banner_clarity, banner_awake",
+          "menu_pick_count": "1",
+          "menu_subtitle": "All allies gain one buff",
+          "menu_title": "Commander Banner"
+        },
+        "2": {
+          "auto_target": "skip",
+          "candidate_source": "combat",
+          "category": "ally",
+          "effect_kind": "targeting",
+          "effect_label": "banner_allies",
+          "mode": "all"
+        },
+        "3": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Strong",
+          "effect_kind": "apply_ae",
+          "effect_label": "banner_strong",
+          "menu_description": "All allies gain Strong.",
+          "menu_label": "Strong",
+          "target_ref": "banner_allies"
+        },
+        "4": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Swift",
+          "effect_kind": "apply_ae",
+          "effect_label": "banner_swift",
+          "menu_description": "All allies gain Swift.",
+          "menu_label": "Swift",
+          "target_ref": "banner_allies"
+        },
+        "5": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Focus",
+          "effect_kind": "apply_ae",
+          "effect_label": "banner_focus",
+          "menu_description": "All allies gain Focus.",
+          "menu_label": "Focus",
+          "target_ref": "banner_allies"
+        },
+        "6": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Energized",
+          "effect_kind": "apply_ae",
+          "effect_label": "banner_energized",
+          "menu_description": "All allies gain Energized.",
+          "menu_label": "Energized",
+          "target_ref": "banner_allies"
+        },
+        "7": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Clarity",
+          "effect_kind": "apply_ae",
+          "effect_label": "banner_clarity",
+          "menu_description": "All allies gain Clarity.",
+          "menu_label": "Clarity",
+          "target_ref": "banner_allies"
+        },
+        "8": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Awake",
+          "effect_kind": "apply_ae",
+          "effect_label": "banner_awake",
+          "menu_description": "All allies gain Awake.",
+          "menu_label": "Awake",
+          "target_ref": "banner_allies"
+        },
+        "9": {
+          "action_ref": "Skill",
+          "allowed_skill_refs": "Queen's Gambit",
+          "effect_kind": "free_action",
+          "effect_label": "banner_gambit",
+          "menu_description": "Perform Queen's Gambit as a free action.",
+          "menu_label": "Queen's Gambit"
+        }
+      },
+      "id": "7WR5iBvxjbXtA14B",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Commander_Banner.png",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Commander Banner (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ALLY_DISTINCT_BUFF_COUNT > 0",
+          "reaction_action_kind": "Attack",
+          "reaction_effect_ref": "banner_acc",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_performs_action"
+        },
+        "1": {
+          "condition_formula": "HIT_MARGIN >= 5 && DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "banner_rally",
+          "reaction_max_per_round": "1",
+          "reaction_max_scope": "round",
+          "reaction_passive_mode": "ask",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_deals_damage"
+        },
+        "2": {
+          "condition_formula": "HIT_MARGIN >= 15 && DAMAGE_IS_HP == 1 && HAS_SKILL_QUEENS_GAMBIT == 1",
+          "reaction_effect_ref": "banner_gambit",
+          "reaction_max_per_round": "1",
+          "reaction_max_scope": "round",
+          "reaction_passive_mode": "ask",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_deals_damage"
+        }
+      },
+      "skill_description": "<ul><li><p>Attack with this weapon gain bonus Accuracy equal to <strong>【The amount of buff with different name affecting all your ally】</strong></p></li><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Cz6U0ps98sYN8jMH\" data-id=\"Cz6U0ps98sYN8jMH\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Conquer</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;5</span></strong></span></span> All Ally gain a <strong>buff</strong> of your choice</p></li><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Cz6U0ps98sYN8jMH\" data-id=\"Cz6U0ps98sYN8jMH\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Conquer</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;15</span></strong></span></span> If you have the skill <strong>【✨ Queen's Gambit】, </strong>You may perform the skill 【<strong>✨ Queen's Gambit】</strong>as a <strong>Free Action. </strong>This effect may trigger <strong>once per turn.</strong></p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.7WR5iBvxjbXtA14B"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "7WR5iBvxjbXtA14B"
+  },
+  "type": "equippableItem"
+}

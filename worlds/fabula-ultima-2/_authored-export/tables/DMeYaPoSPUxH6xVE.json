@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "4bqgn7jZFnmardZp",
-  "formula": "1d13",
+  "formula": "1d18",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/treas.png",
   "name": "Valley of the Dragon - Treasure",
   "ownership": {
@@ -33,6 +33,21 @@
         9
       ],
       "text": "Heart Stone",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "2iKTpEbeJcH48nfp",
+      "documentCollection": "Item",
+      "documentId": "oSodj9KjjoM0VLFa",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Knife.gif",
+      "range": [
+        14,
+        14
+      ],
+      "text": "The Wasp",
       "type": "document",
       "weight": 1
     },
@@ -82,6 +97,21 @@
       "weight": 1
     },
     {
+      "_id": "F6EpOsLw3GjwI4Ae",
+      "documentCollection": "Item",
+      "documentId": "TonJhOEDvCr8RrdU",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Commander_Banner.png",
+      "range": [
+        16,
+        16
+      ],
+      "text": "Commander Banner",
+      "type": "document",
+      "weight": 1
+    },
+    {
       "_id": "HFZkHixRhUQPTIHI",
       "documentCollection": "Item",
       "documentId": "DzXNAIk2nGsnrNmU",
@@ -93,6 +123,21 @@
         10
       ],
       "text": "Warrior Emblem",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "HhVMA73NkRdmh1w7",
+      "documentCollection": "Item",
+      "documentId": "nxAL0WdeqCy6tVwq",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+      "range": [
+        18,
+        18
+      ],
+      "text": "Alchemist Codex",
       "type": "document",
       "weight": 1
     },
@@ -168,6 +213,36 @@
         8
       ],
       "text": "Demonshield",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "S5CT8CadBkI5SIRy",
+      "documentCollection": "Item",
+      "documentId": "xvzmpqg8yVtkNoJg",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1637.gif",
+      "range": [
+        17,
+        17
+      ],
+      "text": "Sunflower Staff",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ukaPNWQWANVaSQHA",
+      "documentCollection": "Item",
+      "documentId": "2qhIJG9OTmyPYMFB",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png",
+      "range": [
+        15,
+        15
+      ],
+      "text": "Thunder Vulcan",
       "type": "document",
       "weight": 1
     },

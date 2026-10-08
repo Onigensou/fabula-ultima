@@ -16,7 +16,7 @@
     }
   },
   "folder": "4bqgn7jZFnmardZp",
-  "formula": "1d23",
+  "formula": "1d25",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
   "name": "Valley of the Dragon - Weapon",
   "ownership": {
@@ -322,6 +322,36 @@
         1
       ],
       "text": "Explosion Whip",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "vQfjdmJc69BCgHSq",
+      "documentCollection": "Item",
+      "documentId": "bjiYR2V7wNcjI3dv",
+      "drawn": false,
+      "flags": {},
+      "img": "https://www.dotafire.com/images/skill/troll-warlord-whirling-axes-ranged.png",
+      "range": [
+        25,
+        25
+      ],
+      "text": "Whirling Axe",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "vqpcLVMRNgM4NNcA",
+      "documentCollection": "Item",
+      "documentId": "Qvpvcl0RlEtn4sSd",
+      "drawn": false,
+      "flags": {},
+      "img": "https://img.altema.jp/valkyrieconnect/sobi/ico/686.jpg",
+      "range": [
+        24,
+        24
+      ],
+      "text": "Rest&amp;Rage",
       "type": "document",
       "weight": 1
     },

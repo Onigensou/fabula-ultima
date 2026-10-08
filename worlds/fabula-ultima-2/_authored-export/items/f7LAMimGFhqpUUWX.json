@@ -8,6 +8,64 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "jx4eiUgiapCKYtOm",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791482462381,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "jx4eiUgiapCKYtOm",
+          "originalParentId": "f7LAMimGFhqpUUWX",
+          "originalUuid": "Item.f7LAMimGFhqpUUWX.ActiveEffect.jx4eiUgiapCKYtOm"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "directorPermanent": true,
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Gambit Pending",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -30,21 +88,116 @@
       "damage_bonus": "0",
       "description": "<p>During a conflict, you may use an action to perform a <strong>free attack</strong> with a weapon you have equipped, treating your High Roll (HR) as 0 when calculating damage. After the attack is resolved, <strong>choose one option:</strong></p><ul><li>One ally who is able to hear you recovers <strong>【5 + (SL × 5)】</strong> Hit Points</li><li>You may immediately use a Skill you acquired among <strong>【💥Bishop’s Edict】</strong>, <strong>【💥Charging Cavalry】</strong> or <strong>【💥King's Castle</strong>】 for free (spending the appropriate MP)</li></ul>",
       "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "chain_steps": "qg_mark, qg_attack",
+          "effect_kind": "chain",
+          "effect_label": "qg_open"
+        },
+        "1": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Item.f7LAMimGFhqpUUWX.ActiveEffect.jx4eiUgiapCKYtOm",
+          "effect_kind": "apply_ae",
+          "effect_label": "qg_mark",
+          "target_ref": "self"
+        },
+        "2": {
+          "action_ref": "Attack",
+          "effect_kind": "free_action",
+          "effect_label": "qg_attack",
+          "free_hr_as_zero": true,
+          "menu_description": "Free attack (treat HR as 0 for damage).",
+          "menu_label": "Queen's Gambit"
+        },
+        "3": {
+          "chain_steps": "qg_clear, qg_menu",
+          "effect_kind": "chain",
+          "effect_label": "qg_after"
+        },
+        "4": {
+          "ae_template_ref": "Gambit Pending",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "qg_clear",
+          "include_persistent": true,
+          "target_ref": "self"
+        },
+        "5": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "qg_menu",
+          "menu_option_refs": "qg_heal, qg_skill",
+          "menu_pick_count": "1",
+          "menu_subtitle": "Choose one",
+          "menu_title": "Queen's Gambit"
+        },
+        "6": {
+          "chain_steps": "qg_pick, qg_heal_do",
+          "effect_kind": "chain",
+          "effect_label": "qg_heal",
+          "menu_description": "One ally recovers Hit Points.",
+          "menu_label": "Rally"
+        },
+        "7": {
+          "auto_confirm_when_obvious": true,
+          "auto_target": "confirm",
+          "candidate_source": "combat",
+          "category": "ally",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "qg_pick",
+          "mode": "exact"
+        },
+        "8": {
+          "effect_kind": "grant",
+          "effect_label": "qg_heal_do",
+          "grant_amount": "5 + SL * 5",
+          "grant_resource": "hp",
+          "target_ref": "qg_pick"
+        },
+        "9": {
+          "action_ref": "Skill",
+          "allowed_skill_refs": "Bishop's Edict,Charging Cavalry,King's Castle",
+          "effect_kind": "free_action",
+          "effect_label": "qg_skill",
+          "menu_description": "Use Bishop's Edict, Charging Cavalry or King's Castle now (pay its MP).",
+          "menu_label": "Command"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
       "isOffensiveSpell": false,
+      "isReaction": true,
       "level": "1",
       "max_level": "6",
       "name": "Queen's Gambit",
+      "on_activate_effect_ref": "qg_open",
       "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "AE_COUNT_GAMBIT_PENDING > 0",
+          "reaction_effect_ref": "qg_after",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_completes_attack"
+        },
+        "1": {
+          "condition_formula": "AE_COUNT_GAMBIT_PENDING > 0",
+          "reaction_effect_ref": "qg_clear",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_trigger": "turn_end"
+        }
+      },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",
       "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>HP Recovered</strong></p></td></tr><tr><td><p>1</p></td><td><p>10</p></td></tr><tr><td><p>2</p></td><td><p>15</p></td></tr><tr><td><p>3</p></td><td><p>20</p></td></tr><tr><td><p>4</p></td><td><p>25</p></td></tr><tr><td><p>5</p></td><td><p>30</p></td></tr><tr><td><p>6</p></td><td><p>35</p></td></tr></tbody></table>",
       "skill_range": "Any",
-      "skill_target": "Special",
+      "skill_target": "Self",
       "skill_type": "Active",
       "type_damage": "",
       "use_optional_params": false

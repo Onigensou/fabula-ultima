@@ -8,6 +8,319 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "4nrXvjMGJig4cXPs",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791482462507,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "mp_receiving_flat_all",
+          "mode": 2,
+          "priority": 20,
+          "value": "15"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "4nrXvjMGJig4cXPs",
+          "originalParentId": "j2zsAZo4RuolWM6b",
+          "originalUuid": "Item.j2zsAZo4RuolWM6b.ActiveEffect.4nrXvjMGJig4cXPs"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "King's Castle Supply 3",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "6qsVnvVLmDH0MszM",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791482462507,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "heal_receiving_mod_all",
+          "mode": 2,
+          "priority": 20,
+          "value": "-1"
+        },
+        {
+          "key": "mp_receiving_mod_all",
+          "mode": 2,
+          "priority": 20,
+          "value": "-1"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "6qsVnvVLmDH0MszM",
+          "originalParentId": "j2zsAZo4RuolWM6b",
+          "originalUuid": "Item.j2zsAZo4RuolWM6b.ActiveEffect.6qsVnvVLmDH0MszM"
+        },
+        "fabula-ultima-companion": {
+          "category": "debuff"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "King's Castle Siege",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "asRgJomGuZx1OYij",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791482462507,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "mp_receiving_flat_all",
+          "mode": 2,
+          "priority": 20,
+          "value": "5"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "asRgJomGuZx1OYij",
+          "originalParentId": "j2zsAZo4RuolWM6b",
+          "originalUuid": "Item.j2zsAZo4RuolWM6b.ActiveEffect.asRgJomGuZx1OYij"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "King's Castle Supply 1",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "cHtmzzfWqxTBsX9P",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791482462507,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "mp_receiving_flat_all",
+          "mode": 2,
+          "priority": 20,
+          "value": "20"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "cHtmzzfWqxTBsX9P",
+          "originalParentId": "j2zsAZo4RuolWM6b",
+          "originalUuid": "Item.j2zsAZo4RuolWM6b.ActiveEffect.cHtmzzfWqxTBsX9P"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "King's Castle Supply 4",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "pCT86gdAZOuntbtT",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791482462507,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "mp_receiving_flat_all",
+          "mode": 2,
+          "priority": 20,
+          "value": "10"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "pCT86gdAZOuntbtT",
+          "originalParentId": "j2zsAZo4RuolWM6b",
+          "originalUuid": "Item.j2zsAZo4RuolWM6b.ActiveEffect.pCT86gdAZOuntbtT"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "King's Castle Supply 2",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -30,15 +343,88 @@
       "damage_bonus": "0",
       "description": "<p>During a conflict, you may use an action and spend 10 Mind Points to <strong>choose one option:</strong></p><ul><li>No creature can recover Hit Points or Mind Points</li><li>All effects that restore Mind Points restore <strong>【SL × 5】</strong> additional Mind Points</li></ul><p>The chosen effect lasts until the start of your next turn.</p>",
       "duration": "Until the start of your next turn",
+      "effect_table": {
+        "0": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "castle_menu",
+          "menu_option_refs": "castle_opt_siege, castle_opt_supply",
+          "menu_pick_count": "1",
+          "menu_subtitle": "Until the start of your next turn",
+          "menu_title": "King's Castle"
+        },
+        "1": {
+          "auto_target": "skip",
+          "candidate_source": "combat",
+          "effect_kind": "targeting",
+          "effect_label": "castle_all",
+          "mode": "all"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "1",
+          "ae_template_ref": "Item.j2zsAZo4RuolWM6b.ActiveEffect.6qsVnvVLmDH0MszM",
+          "effect_kind": "apply_ae",
+          "effect_label": "castle_opt_siege",
+          "menu_description": "No creature can recover Hit Points or Mind Points.",
+          "menu_label": "Siege",
+          "target_ref": "castle_all"
+        },
+        "3": {
+          "chain_steps": "castle_supply_1, castle_supply_2, castle_supply_3, castle_supply_4",
+          "effect_kind": "chain",
+          "effect_label": "castle_opt_supply",
+          "menu_description": "All effects that restore Mind Points restore more.",
+          "menu_label": "Supply"
+        },
+        "4": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "1",
+          "ae_template_ref": "Item.j2zsAZo4RuolWM6b.ActiveEffect.asRgJomGuZx1OYij",
+          "condition_formula": "SL == 1",
+          "effect_kind": "apply_ae",
+          "effect_label": "castle_supply_1",
+          "target_ref": "castle_all"
+        },
+        "5": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "1",
+          "ae_template_ref": "Item.j2zsAZo4RuolWM6b.ActiveEffect.pCT86gdAZOuntbtT",
+          "condition_formula": "SL == 2",
+          "effect_kind": "apply_ae",
+          "effect_label": "castle_supply_2",
+          "target_ref": "castle_all"
+        },
+        "6": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "1",
+          "ae_template_ref": "Item.j2zsAZo4RuolWM6b.ActiveEffect.4nrXvjMGJig4cXPs",
+          "condition_formula": "SL == 3",
+          "effect_kind": "apply_ae",
+          "effect_label": "castle_supply_3",
+          "target_ref": "castle_all"
+        },
+        "7": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "1",
+          "ae_template_ref": "Item.j2zsAZo4RuolWM6b.ActiveEffect.cHtmzzfWqxTBsX9P",
+          "condition_formula": "SL >= 4",
+          "effect_kind": "apply_ae",
+          "effect_label": "castle_supply_4",
+          "target_ref": "castle_all"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
       "isOffensiveSpell": false,
+      "isReaction": false,
       "level": "1",
       "max_level": "4",
       "name": "King's Castle",
+      "on_activate_effect_ref": "castle_menu",
       "optional_params": {},
+      "reaction_config_table": {},
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",
