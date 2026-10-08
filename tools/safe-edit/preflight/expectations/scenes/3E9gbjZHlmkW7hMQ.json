@@ -1,0 +1,341 @@
+{
+  "sceneId": "3E9gbjZHlmkW7hMQ",
+  "name": "FafnirCastle_Battlemap002",
+  "tokens": [],
+  "tokensFull": [],
+  "notes": [],
+  "tileCount": 0,
+  "full": {
+    "folder": "cZFr8Jrws41eCfyO",
+    "name": "FafnirCastle_Battlemap002",
+    "active": false,
+    "navigation": false,
+    "navOrder": 1000000,
+    "navName": "Fafnir Castle - Treasure Horde (Battle)",
+    "background": {
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Battlemap/FafnirCastle_Battlemap002.webp",
+      "scaleX": 1,
+      "scaleY": 1,
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "tint": "#ffffff",
+      "anchorX": 0,
+      "anchorY": 0,
+      "fit": "fill",
+      "alphaThreshold": 0
+    },
+    "foreground": null,
+    "foregroundElevation": 999,
+    "width": 2560,
+    "height": 1270,
+    "padding": 0,
+    "initial": {
+      "x": null,
+      "y": null,
+      "scale": null
+    },
+    "backgroundColor": "#000000",
+    "grid": {
+      "type": 0,
+      "size": 110,
+      "color": "#000000",
+      "alpha": 0.2,
+      "distance": 2,
+      "units": "m",
+      "style": "solidLines",
+      "thickness": 1
+    },
+    "tokenVision": false,
+    "playlist": null,
+    "playlistSound": null,
+    "journal": null,
+    "journalEntryPage": null,
+    "weather": "",
+    "sort": 100000,
+    "ownership": {
+      "default": 0,
+      "JQGNzKpDPHJmcUIW": 3
+    },
+    "flags": {
+      "smalltime": {
+        "darkness-link": false,
+        "player-vis": "0",
+        "moonlight": false
+      },
+      "fxmaster": {
+        "effects": {},
+        "filters": {},
+        "invert": true
+      },
+      "LockView": {
+        "lockPan": false,
+        "lockPanInit": false,
+        "lockZoom": false,
+        "lockZoomInit": false,
+        "boundingBox": false,
+        "boundingBoxInit": false,
+        "autoScale": "0",
+        "rotation": "0",
+        "sidebar": "noChange",
+        "blackenSidebar": false,
+        "excludeSidebar": false,
+        "hideUI": true,
+        "forceInit": true,
+        "hideUIelements": {
+          "controls": true,
+          "hotbar": true,
+          "logo": true,
+          "navigation": true,
+          "players": true,
+          "sidebar": false
+        },
+        "editViewbox": false
+      },
+      "levels": {
+        "backgroundElevation": 0,
+        "lightMasking": true,
+        "weatherElevation": null,
+        "sceneLevels": []
+      },
+      "wall-height": {
+        "advancedVision": true
+      },
+      "battle-transitions": {
+        "version": "1.1.6",
+        "autoTrigger": false,
+        "sequence": [],
+        "isTriggered": false
+      },
+      "sequencer": {
+        "effects": []
+      },
+      "fabula-ultima-companion": {
+        "oniDungeon": {
+          "encounterTable": "",
+          "enemiesTable": "",
+          "battleMap": "",
+          "battleBGM": "",
+          "bossBGM": "",
+          "event": {
+            "skillCheckEvent": "",
+            "clockEvent": ""
+          },
+          "loot": {
+            "weapon": "",
+            "armor": "",
+            "accessory": "",
+            "consumable": "",
+            "item": "",
+            "treasure": "",
+            "zenit": "",
+            "material": ""
+          },
+          "threatLevel": "medium",
+          "encounterNoveltyBias": null
+        },
+        "oniFabula": {
+          "general": {
+            "cameraFollowToken": false,
+            "sceneMode": "conflict",
+            "conflictEvent": "",
+            "sceneVisited": false,
+            "scanRadius": null,
+            "fastTravelEnabled": true,
+            "disableTransition": false,
+            "isOverworld": false,
+            "isTown": false,
+            "isDungeon": false,
+            "navigationName": "",
+            "wellspring_air": false,
+            "wellspring_earth": false,
+            "wellspring_fire": false,
+            "wellspring_bolt": true,
+            "wellspring_ice": false,
+            "wellspring_dark": true,
+            "wellspring_light": false
+          },
+          "sceneNetwork": "[]"
+        },
+        "conflict": {
+          "version": 2,
+          "stage": {
+            "x": 439,
+            "y": 241,
+            "w": 1682,
+            "h": 788
+          }
+        },
+        "campSceneUuid": ""
+      },
+      "custom-system-builder": {},
+      "1000-fish": {},
+      "JB2A_DnD5e": {},
+      "_CodeMirror": {},
+      "_chatcommands": {},
+      "afk-ready-check": {},
+      "animated-spell-effects": {},
+      "barbrawl": {},
+      "better-rolltables": {},
+      "boss-loot-assets-free": {},
+      "chat-images": {},
+      "chat-portrait": {},
+      "color-picker": {},
+      "colorsettings": {},
+      "combat-chat": {},
+      "cursor-hider": {},
+      "curtain-animations": {},
+      "custom-css": {},
+      "df-architect": {}
+    },
+    "environment": {
+      "globalLight": {
+        "luminosity": 0,
+        "enabled": true,
+        "darkness": {
+          "max": 0,
+          "min": 0
+        },
+        "alpha": 0.5,
+        "bright": false,
+        "color": null,
+        "coloration": 1,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0
+      },
+      "darknessLevel": 0.15,
+      "darknessLock": false,
+      "cycle": true,
+      "base": {
+        "hue": 0,
+        "intensity": 0,
+        "luminosity": 0.05,
+        "saturation": 0.05,
+        "shadows": 0
+      },
+      "dark": {
+        "hue": 0.7138888888888889,
+        "intensity": 0,
+        "luminosity": -0.25,
+        "saturation": 0,
+        "shadows": 0
+      }
+    },
+    "fog": {
+      "exploration": true,
+      "reset": 1704027409584,
+      "overlay": null,
+      "colors": {
+        "explored": null,
+        "unexplored": null
+      }
+    },
+    "_id": "3E9gbjZHlmkW7hMQ",
+    "thumb": "worlds/fabula-ultima-2/assets/scenes/3E9gbjZHlmkW7hMQ-thumb.webp",
+    "_stats": {
+      "compendiumSource": null,
+      "duplicateSource": null,
+      "coreVersion": "12.343",
+      "systemId": "custom-system-builder",
+      "systemVersion": "4.8.5",
+      "createdTime": 1791438130665,
+      "modifiedTime": 1791438130665,
+      "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+    },
+    "walls": [
+      {
+        "c": [
+          439,
+          1029,
+          439,
+          241
+        ],
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "light": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {},
+        "_id": "4pSvQcQg4lzlstHp"
+      },
+      {
+        "c": [
+          2121,
+          1029,
+          439,
+          1029
+        ],
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "light": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {},
+        "_id": "9jwAtPZFLXWKNGzY"
+      },
+      {
+        "c": [
+          439,
+          241,
+          2121,
+          241
+        ],
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "light": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {},
+        "_id": "HM8n8PrCBpynFkiv"
+      },
+      {
+        "c": [
+          2121,
+          241,
+          2121,
+          1029
+        ],
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "light": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {},
+        "_id": "g5aC8ulzut9Prasl"
+      }
+    ]
+  }
+}
