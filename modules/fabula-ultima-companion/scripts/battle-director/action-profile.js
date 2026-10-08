@@ -128,6 +128,15 @@ function makeStudiedGate(attacker) {
 // "pierce → Resistance treated as neutral". Pierce has been miss-for-half ONLY
 // since the 2026-08-02 keyword split; resistance-bypass is `ignore_resistance`
 // / `crush` — see bypassAffinity + crushAffinity in damage-ruleset.js.)
+// True when the attack MODE zeroes the High Roll: every two-weapon style pass does,
+// except a multi-attack grant that keeps it (a weapon Chain — ctx.multiAttackKeepHr,
+// stamped at TARGET from the grant).
+function modeForcesHrZero(ctx) {
+  const mode = String(ctx?.attackMode ?? "");
+  if (!mode.startsWith("two-weapon")) return false;
+  return !(mode === "two-weapon-multi" && ctx?.multiAttackKeepHr);
+}
+
 function parseActionKeywords(view) {
   const raw = view?.source?.system?.props?.action_keywords ?? "";
   return String(raw).split(/[,\n]+/).map((s) => s.trim().toLowerCase()).filter(Boolean);
@@ -529,15 +538,22 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
     defenseTargetType: ar?.defenseTargetType ?? weapon?.defenseTargetType,
     isSpell,
   });
-  const pickDef = (e) => vsMDef ? (e.magicDefense ?? 0) : (e.defense ?? 0);
+  // Exploit keyword: "this action's Accuracy Check targets whichever is lower
+  // between DEF or MDEF" — decided per target. `exploits` is assigned just below,
+  // once the action's keyword set is known (pickDef is only CALLED after that).
+  let exploits = false;
+  const pickDef = (e) => exploits
+    ? Math.min(e.defense ?? 0, e.magicDefense ?? 0)
+    : (vsMDef ? (e.magicDefense ?? 0) : (e.defense ?? 0));
 
   // Inherent action keywords for THIS action (item prop + weapon prop + the
   // primary's own set) — action-level, so resolved once; Execute / Cripple then
   // apply per target inside the loop.
   const actionKeywordSet = collectActionKeywords({ view, weapon, kind, primary });
+  exploits = actionKeywordSet.includes("exploit");
 
   const rolled = check.required && check.total != null;
-  const effectiveHr = check.grantHrAsZero || String(ctx?.attackMode ?? "").startsWith("two-weapon")
+  const effectiveHr = check.grantHrAsZero || modeForcesHrZero(ctx)
     ? 0
     : (check.isFumble ? 0 : (check.hr ?? 0));
 
@@ -631,7 +647,7 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       // into both ends so the preview anticipates them. Per-target reduction /
       // affinity are NOT applied to the pre-roll range (matches the legacy
       // pre-roll card's generic "potential damage" range).
-      const ignoreHR = check.grantHrAsZero || String(ctx?.attackMode ?? "").startsWith("two-weapon");
+      const ignoreHR = check.grantHrAsZero || modeForcesHrZero(ctx);
       const rawAt = (h) => {
         const d = foldOps(Math.floor((h + primary.damageBonus + primary.outgoingTotal) * atkDmgMult), targetOps);
         return Math.max(0, Math.floor(d));
@@ -1182,12 +1198,12 @@ export async function computeActionProfile(input) {
       hasHealing: !!healingObj,
       damageResource: primary.resource,
       // Attack-only HR-as-0 (two-weapon OR a free-action grant with hrAsZero).
-      ignoreHR: kind === "Attack" && (check.grantHrAsZero || String(ctx?.attackMode ?? "").startsWith("two-weapon")),
+      ignoreHR: kind === "Attack" && (check.grantHrAsZero || modeForcesHrZero(ctx)),
       // Human-readable WHY HR is 0 — two-weapon vs the actual grant source
       // (Hawkeye take-aim / Soaring Strike), so the card stops blaming
       // Two-Weapon Fighting for every HR-as-0.
       hrZeroReason: kind !== "Attack" ? null
-        : String(ctx?.attackMode ?? "").startsWith("two-weapon") ? "Two-Weapon Fighting forces HR=0"
+        : modeForcesHrZero(ctx) ? (ctx?.attackMode === "two-weapon-multi" ? "Multi-attack forces HR=0" : "Two-Weapon Fighting forces HR=0")
         : check.grantHrAsZero ? `${ctx?.grant?.sourceLabel || "Free action"} treats HR as 0`
         : null,
       primary, healingObj,

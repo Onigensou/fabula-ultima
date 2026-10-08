@@ -167,7 +167,7 @@ function pairMeta(first, second) {
   ], a === b ? a : `${a} &rarr; ${b}`);
 }
 
-export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwoWeapon = false, twoWeaponSolo = false, virtualAttacks = [], rangeBlock = null, externalCancel = null }) {
+export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwoWeapon = false, twoWeaponSolo = false, multiAttack = null, virtualAttacks = [], rangeBlock = null, externalCancel = null }) {
   const arrow = `<i class="fa-solid fa-arrow-right" style="opacity:0.55; font-size:10.5px;"></i>`;
   const sections = [];
 
@@ -263,6 +263,29 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
           secondary: pairMeta(offWeapon, mainWeapon),
           badges: [NO_HR_CHIP],
           ...(blockOf(mainWeapon, offWeapon) ?? {}),
+        },
+      ],
+    });
+  }
+
+  // Multi-attack grant (weapon Chain / Thunder Vulcan): the MAIN weapon attacks N
+  // times, each its own roll and target. Its own row, independent of the
+  // off-hand. Emits "two-weapon-multi" so it rides the existing multi-pass flow;
+  // High Roll is dropped unless the grant keeps it.
+  if (multiAttack && mainWeapon && Number(multiAttack.count) >= 2) {
+    const n = Math.floor(Number(multiAttack.count));
+    sections.push({
+      label: multiAttackLabel(n),
+      hint: `One weapon, ${n} separate rolls`,
+      items: [
+        {
+          value: "two-weapon-multi",
+          imageUrl: safeUrl(mainWeapon.imageUrl),
+          fallbackIcon: `<i class="fa-solid fa-swords" aria-hidden="true"></i>`,
+          primary: `${escapeHtml(mainWeapon.name)} ×${n}`,
+          secondary: pairMeta(mainWeapon, mainWeapon),
+          badges: multiAttack.keepHr ? [dmgChip(mainWeapon)] : [NO_HR_CHIP, dmgChip(mainWeapon, { noHighRoll: true })],
+          ...(blockOf(mainWeapon) ?? {}),
         },
       ],
     });

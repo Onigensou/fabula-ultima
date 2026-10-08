@@ -569,6 +569,55 @@ export function actorTwoWeaponGrants(actor) {
   return out;
 }
 
+// Multi-attack grant — "this weapon attacks N times with one Attack action"
+// (the house Chain keyword on a weapon, Thunder Vulcan's triple shot). Distinct
+// from Two-Weapon Fighting: it never needs or consumes the off-hand, and it may
+// keep the High Roll. An AE carries
+//   flags.fabula-ultima-companion.multiAttackGrant = <grant> | <grant>[]
+//   grant = { attacks:number(>=2), keepHighRoll?:bool, weaponName?:string,
+//             category?:string, condition_formula?:string }
+// weaponName / category scope the grant to the MAIN-hand weapon (blank = any).
+// A gear carrier is dormant unless equipped (gearCarrierDormant). The largest
+// qualifying `attacks` wins. Returns { count, keepHr } | null. The picker offers
+// it as its own row (attackMode "two-weapon-multi"), so it rides the existing
+// multi-pass flow: one card, one target pick and one Accuracy Check per attack.
+export function actorMultiAttackGrant(actor, weapon) {
+  if (!actor || !weapon) return null;
+  let effs = [];
+  try {
+    if (actor.appliedEffects) effs = Array.from(actor.appliedEffects);
+    else if (actor.effects?.contents) effs = actor.effects.contents;
+    else if (actor.effects) effs = Array.from(actor.effects);
+  } catch (e) { warn("actorMultiAttackGrant: effect enumeration threw", e); effs = []; }
+  const wName = String(weapon?.name ?? "").trim().toLowerCase();
+  const wCat = String(weapon?.weaponType ?? "").trim().toLowerCase();
+  let resolver = null;
+  const passesCond = (cond) => {
+    if (cond == null || cond === "") return true;
+    resolver ??= buildSkillResolver({ actor });
+    return !!(isFormulaString(cond) ? evaluateFormula(cond, resolver, 0) : Number(cond));
+  };
+  let best = null;
+  for (const ae of effs) {
+    if (ae?.disabled) continue;
+    const spec = ae?.flags?.[FLAG_NS]?.multiAttackGrant;
+    if (!spec) continue;
+    if (gearCarrierDormant(ae)) continue;
+    for (const g of (Array.isArray(spec) ? spec : [spec])) {
+      if (!g || typeof g !== "object") continue;
+      const count = Math.floor(Number(g.attacks) || 0);
+      if (count < 2) continue;
+      const gName = String(g.weaponName ?? "").trim().toLowerCase();
+      const gCat = String(g.category ?? "").trim().toLowerCase();
+      if (gName && gName !== wName) continue;
+      if (gCat && gCat !== wCat) continue;
+      if (!passesCond(g.condition_formula)) continue;
+      if (!best || count > best.count) best = { count, keepHr: !!g.keepHighRoll };
+    }
+  }
+  return best;
+}
+
 // Evaluate the ordered rule list against the equipped weapons. Returns
 // { ok, off }: off is the weapon driving the SECOND attack (the off-hand for
 // genuine TWF, or the main weapon itself for a soloWeapon grant).
@@ -657,7 +706,12 @@ function buildWeaponBundle(actor) {
     virtualAttacks = Object.freeze(merged.map((v, i) => Object.freeze({ ...v, virtualIndex: i })));
   } catch (e) { warn("buildWeaponBundle: virtual/versatile resolve threw", e); }
 
-  return { actorKind: kind, weapon, offWeapon, canTwoWeaponFight, twoWeaponSolo, npcAttackItems: Object.freeze([]), virtualAttacks };
+  // Multi-attack grant for the MAIN-hand weapon (see actorMultiAttackGrant).
+  let multiAttack = null;
+  try { multiAttack = weapon ? actorMultiAttackGrant(actor, weapon) : null; }
+  catch (e) { warn("buildWeaponBundle: multi-attack resolve threw", e); multiAttack = null; }
+
+  return { actorKind: kind, weapon, offWeapon, canTwoWeaponFight, twoWeaponSolo, multiAttack: multiAttack ? Object.freeze(multiAttack) : null, npcAttackItems: Object.freeze([]), virtualAttacks };
 }
 
 // Director-owned snapshot. Takes a DirectorCombatant (live tokenDoc + actorDoc
@@ -1015,6 +1069,36 @@ export function actorAttacksTargetMagicDefense(actor) {
     if (ae?.disabled) continue;
     if (gearCarrierDormant(ae)) continue;
     if ((ae.changes ?? []).some((ch) => ch?.key === "attacks_target_mdef")) return true;
+  }
+  return false;
+}
+
+// Values of every LIVE AE change with key `key` on `actor` — the generic reader
+// for raw rule keys (the same enumeration + gear equip gate the readers above
+// use). Empty array = the actor carries no live instance of the rule.
+export function actorLiveRuleValues(actor, key) {
+  const out = [];
+  const effs = actor?.appliedEffects ?? actor?.effects?.contents ?? actor?.effects ?? [];
+  for (const ae of effs) {
+    if (ae?.disabled) continue;
+    if (gearCarrierDormant(ae)) continue;
+    for (const ch of (ae.changes ?? [])) if (ch?.key === key) out.push(String(ch.value ?? ""));
+  }
+  return out;
+}
+
+// True if any TARGET of the action carries a live `deny_crit_opportunity` rule —
+// "critical successes on attacks and offensive spells that include you among
+// their targets do not generate opportunities" (Armor of Heroes). Read once at
+// RESOLVE, where the Opportunity window is stamped.
+export function anyTargetDeniesCritOpportunity(ar) {
+  const rows = Array.isArray(ar?.perTargetResults) && ar.perTargetResults.length ? ar.perTargetResults : (ar?.targets ?? []);
+  for (const r of rows) {
+    const uuid = r?.actorUuid ?? null;
+    if (!uuid) continue;
+    let actor = null;
+    try { actor = globalThis.fromUuidSync?.(uuid) ?? null; } catch (_) { actor = null; }
+    if (actor && actorLiveRuleValues(actor, "deny_crit_opportunity").length) return true;
   }
   return false;
 }

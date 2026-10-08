@@ -486,6 +486,8 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
       // attack." Chain strikes are not free attacks and keep their passes.
       allowTwoWeapon: !!snap.canTwoWeaponFight && !grantLockedUuid && !(grant?.freeAttack && !grant?.chain),
       twoWeaponSolo: !!snap.twoWeaponSolo,
+      // A multi-attack grant is a multi-pass attack too — same lock-outs as above.
+      multiAttack: (!grantLockedUuid && !(grant?.freeAttack && !grant?.chain)) ? (snap.multiAttack ?? null) : null,
       virtualAttacks,
       // Range-class lockouts (Snared / Obscure). Passed in so the picker can
       // OPEN with those weapons visible-but-disabled and red-tagged, instead of
@@ -575,7 +577,7 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
   // (e.g. Zarg's Bow "Up to two creatures" → Multi(2)), resolved through the
   // same plan resolver the NPC-attack composer and GM-side resolveActionTargets
   // use, so the player pre-picks up to N here and the GM trusts that pre-compose.
-  const isMultiPass = attackMode === "two-weapon" || attackMode === "two-weapon-off-first";
+  const isMultiPass = attackMode === "two-weapon" || attackMode === "two-weapon-off-first" || attackMode === "two-weapon-multi";
 
   // Forced target from the grant (Counterattack / Counter Pass: "must have
   // that enemy as its ONLY target"). Until now lockedTargetTokenUuid was

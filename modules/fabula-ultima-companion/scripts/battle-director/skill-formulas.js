@@ -777,6 +777,10 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // Strategy — "two or more DIFFERENT status effects"). Unions identities,
       // so two Dazed enemies = 1, one Dazed + one Slow = 2.
       case "ENEMY_DISTINCT_STATUS_COUNT": return countEnemyDistinctStatuses(actor);
+      // Number of DIFFERENTLY-NAMED buffs across the actor and its allies
+      // (Commander Banner "the amount of buff with different name affecting all
+      // your ally").
+      case "ALLY_DISTINCT_BUFF_COUNT": return countAllyDistinctBuffs(actor);
       // 1 if ANY enemy combatant is currently in Crisis, else 0 (Fafnir's
       // "Zero Trigger: Suffering" — gain Zero Power at any turn start while an
       // enemy is bloodied). Crisis = the canonical "Crisis" AE (crisis-reactor).
@@ -2456,8 +2460,14 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
 function hasNamedSkill(actor, wantedLower) {
   if (!actor) return false;
   const items = actor.items?.contents ?? (Array.isArray(actor.items) ? actor.items : []);
+  // An identifier cannot carry punctuation, so a skill named with an apostrophe
+  // ("Queen's Gambit") is asked for as HAS_SKILL_QUEENS_GAMBIT — match the name
+  // with punctuation stripped as a fallback.
+  const bare = (s) => String(s ?? "").toLowerCase().replace(/[^a-z0-9 ]+/g, "").replace(/\s+/g, " ").trim();
+  const wantedBare = bare(wantedLower);
   for (const item of items) {
-    if (String(item?.name ?? "").trim().toLowerCase() === wantedLower) return true;
+    const nm = String(item?.name ?? "").trim().toLowerCase();
+    if (nm === wantedLower || (wantedBare && bare(nm) === wantedBare)) return true;
   }
   return false;
 }
@@ -2513,6 +2523,21 @@ function hasEquippedWeaponOfType(actor, weaponType) {
     const cat = String(p.category ?? p.weapon_type ?? p.type ?? "").toLowerCase();
     const range = String(p.weapon_range ?? "").toLowerCase();
     if (cat === wanted || range === wanted) return true;
+  }
+  // "You are treated as having an <X> weapon equipped" (Red Tunic): a live
+  // `counts_as_weapon_category` AE change whose comma-list names the family.
+  // Gear carriers only count while equipped. Kept local (no snapshot.js import —
+  // snapshot.js imports this file).
+  const effs = actor?.appliedEffects ?? actor?.effects?.contents ?? [];
+  for (const ae of effs) {
+    if (ae?.disabled) continue;
+    const item = ae?.parent?.documentName === "Item" ? ae.parent : null;
+    const itype = String(item?.system?.props?.item_type ?? "").toLowerCase();
+    if (["accessory", "armor", "weapon", "shield"].includes(itype) && item?.system?.props?.isEquipped !== true) continue;
+    for (const ch of (ae.changes ?? [])) {
+      if (ch?.key !== "counts_as_weapon_category") continue;
+      if (String(ch.value ?? "").toLowerCase().split(/[\s,]+/).filter(Boolean).includes(wanted)) return true;
+    }
   }
   return false;
 }
@@ -3073,6 +3098,32 @@ function subjectDispositionVs(actor, payload) {
   if (mine == null || theirs == null || !Number.isFinite(mine) || !Number.isFinite(theirs)) return null;
   if (mine === 0 || theirs === 0) return "neutral";
   return mine * theirs > 0 ? "ally" : "enemy";
+}
+
+// Union of distinct BUFF names on the actor + its allies. A buff = an effect
+// classified "buff" by the AE manager, its category flag, or a "buff" tag —
+// the mirror of collectDebuffStatusKeys' classification.
+function countAllyDistinctBuffs(actor) {
+  const union = new Set();
+  const aem = globalThis.FUCompanion?.api?.activeEffectManager;
+  const seen = new Set();
+  for (const a of [actor, ...allyActorsOf(actor)]) {
+    if (!a?.effects || seen.has(a)) continue;
+    seen.add(a);
+    for (const eff of Array.from(a.effects)) {
+      if (eff.disabled) continue;
+      let aemCat = null; try { aemCat = aem?.inferCategory?.(eff); } catch {}
+      const flagCat = eff.flags?.["fabula-ultima-companion"]?.category;
+      const tags = eff.system?.tags;
+      const isBuff = String(aemCat ?? "").toLowerCase() === "buff"
+        || String(flagCat ?? "").toLowerCase() === "buff"
+        || (Array.isArray(tags) && tags.includes("buff"));
+      if (!isBuff) continue;
+      const key = String(eff.name ?? "").trim().toLowerCase();
+      if (key) union.add(key);
+    }
+  }
+  return union.size;
 }
 
 function countEnemyDistinctStatuses(actor) {

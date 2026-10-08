@@ -8,6 +8,7 @@
 // rules require equipped-weapon lookup, status effects, affinities, etc.,
 // which are deliberately out of scope for the prototype).
 
+import { anyTargetDeniesCritOpportunity } from "./snapshot.js";
 import { log, warn, err } from "./logger.js";
 import { isGmOverrideEmpty, summarizeGmOverride, dropGmRemovedReactions } from "./gm-card-override.js";
 import { runBattleEndSequence } from "./battle-end/battle-end-orchestrator.js";
@@ -4121,7 +4122,7 @@ const Target = {
         log(`TARGET (Attack): using pre-composed attackMode=${attackMode}`);
       } else {
         const totalRealOptions = (hasMain ? 1 : 0) + (hasOff ? 1 : 0);
-        const needsPicker = totalRealOptions + virtualAttacks.length > 1;
+        const needsPicker = totalRealOptions + virtualAttacks.length + (attacker.multiAttack ? 1 : 0) > 1;
         if (needsPicker) {
           // Live actor for the range-lockout read (the snapshot carries no AEs).
           let liveActorForBlock = null;
@@ -4132,6 +4133,7 @@ const Target = {
             offWeapon: attacker.offWeapon,
             allowTwoWeapon: !!attacker.canTwoWeaponFight,
             twoWeaponSolo: !!attacker.twoWeaponSolo,
+            multiAttack: attacker.multiAttack ?? null,
             virtualAttacks,
             // Snared / Obscure — shown as disabled, red-tagged rows rather than
             // refusing the attack after the pick (mirrors composeAttack).
@@ -4162,12 +4164,18 @@ const Target = {
       // sole weapon for that attack (Twin Shields is RAW two-handed).
       const weaponsUsed = attackMode.startsWith("virtual:")
         ? [virtualAttacks[Number(attackMode.slice("virtual:".length)) | 0]].filter(Boolean)
+        : (attackMode === "two-weapon-multi")
+          // Multi-attack grant: the MAIN weapon, N passes (see actorMultiAttackGrant).
+          ? Array.from({ length: Math.max(2, Math.floor(Number(attacker.multiAttack?.count) || 2)) }, () => attacker.weapon)
         : (attackMode === "two-weapon")
           ? [attacker.weapon, attacker.offWeapon]
           : (attackMode === "two-weapon-off-first")
             ? [attacker.offWeapon, attacker.weapon]
             : (attackMode === "off" ? [attacker.offWeapon] : [attacker.weapon]);
       director.ctx.attackMode = attackMode;
+      // Whether THIS multi-pass attack keeps its High Roll (a Chain grant) — read by
+      // action-profile.modeForcesHrZero via the COMPUTE ctx. Re-set on every attack.
+      director.ctx.multiAttackKeepHr = attackMode === "two-weapon-multi" && !!attacker.multiAttack?.keepHr;
       director.ctx.weaponsUsed = weaponsUsed;
       director.ctx.pendingPasses = [...weaponsUsed];   // shifted by COMPUTE
       director.ctx.totalPasses = weaponsUsed.length;
@@ -4866,7 +4874,7 @@ const Compute = {
         const profile = await computeActionProfile({
           view: { kind: "Attack", check_mode: "opposed", effect_table: {}, fire_points: {}, source: null },
           attacker, weapon: weaponEff, targets: targetSnapshots, dice: { rA: c.rA, rB: c.rB },
-          ctx: { round: director.dCombat?.round ?? 0, attackMode: director.ctx.attackMode, grant: attackGrant },
+          ctx: { round: director.dCombat?.round ?? 0, attackMode: director.ctx.attackMode, multiAttackKeepHr: !!director.ctx.multiAttackKeepHr, grant: attackGrant },
         });
         const delta = projectProfileToActionResult(profile, null, targetSnapshots);
         director.ctx.actionResult = freezeActionResult({
@@ -6412,7 +6420,7 @@ const Confirm = {
               view: { kind: "Attack", check_mode: "opposed", effect_table: {}, fire_points: {}, source: null },
               attacker: fullAttacker, weapon: fullWeapon, targets: newSnaps,
               dice: { rA: ar.roll.rA, rB: ar.roll.rB },
-              ctx: { round: director.dCombat?.round ?? 0, attackMode: director.ctx.attackMode, grant },
+              ctx: { round: director.dCombat?.round ?? 0, attackMode: director.ctx.attackMode, multiAttackKeepHr: !!director.ctx.multiAttackKeepHr, grant },
             });
             const delta = projectProfileToActionResult(profile, null, newSnaps);
             const addedRows = delta.perTargetResults ?? [];
@@ -7249,7 +7257,7 @@ const Resolve = {
     // Crit → stamp opportunity payload so the RESOLVE transition branches to
     // OPPORTUNITY_WINDOW. Stamped after the persistence checkpoint so an F5
     // during the picker gracefully skips the opportunity (action already committed).
-    if (ar.roll?.opportunities) {
+    if (ar.roll?.opportunities && !anyTargetDeniesCritOpportunity(ar)) {
       director.ctx.hasPendingOpportunity = {
         actorUuid:    ar.attackerActorRef ?? ar.attacker?.actorUuid ?? null,
         actorName:    ar.attacker?.name ?? "?",
