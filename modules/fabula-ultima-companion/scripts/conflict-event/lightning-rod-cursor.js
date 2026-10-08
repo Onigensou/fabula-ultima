@@ -50,14 +50,14 @@ const CURSOR_Z_INDEX = 60;
 /**
  * Marker art.
  *
- * An 80x58 pixel-art spike, drawn at its native height so the pixels stay
- * square (CURSOR_ART_HEIGHT is 1:1 with the source — change both together, in
- * whole multiples). Set this to `null` to fall back to the built-in CSS arrow
+ * An 80x58 pixel-art spike, drawn at exactly half its native height — native
+ * size sat too heavy over a token. Keep CURSOR_ART_HEIGHT a clean fraction or
+ * multiple of 58 so the pixels scale evenly. Set this to `null` to fall back to the built-in CSS arrow
  * (a purple triangle), which is all this file drew before the art landed.
  */
 const ROD_CURSOR_SRC =
   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/VFX/vfx_LightningMarker.png";
-const CURSOR_ART_HEIGHT = 58;
+const CURSOR_ART_HEIGHT = 29;
 
 /** Gap in screen px between the sprite's top edge and the arrow's tip. */
 const CURSOR_GAP = 6;
