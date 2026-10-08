@@ -144,6 +144,84 @@
       "tint": "#ffffff",
       "transfer": true,
       "type": "base"
+    },
+    {
+      "_id": "zlKaVv86V4CjGMDF",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791479468010,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "zlKaVv86V4CjGMDF",
+          "originalParentId": "NYZZNYBAwPhpNOzH",
+          "originalUuid": "Item.NYZZNYBAwPhpNOzH.ActiveEffect.zlKaVv86V4CjGMDF"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "crossScene": false,
+          "directorPermanent": true,
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "damage_amount": "0",
+                "damage_operation": "cap",
+                "damage_stage": "incoming",
+                "effect_kind": "adjust_damage",
+                "effect_label": "metallica_null"
+              }
+            },
+            "name": "Metallica",
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "CUR_SHIELD > 0",
+                "reaction_damage_type": "physical",
+                "reaction_effect_ref": "metallica_null",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_takes_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Metallica",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
     }
   ],
   "flags": {
@@ -274,6 +352,7 @@
       "isKey": false,
       "isMartial": false,
       "isModule": false,
+      "isReaction": true,
       "isRelatedItem": false,
       "isSet": false,
       "isUnique": false,

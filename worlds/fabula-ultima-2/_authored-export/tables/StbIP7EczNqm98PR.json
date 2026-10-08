@@ -16,7 +16,7 @@
     }
   },
   "folder": "4bqgn7jZFnmardZp",
-  "formula": "1d3",
+  "formula": "1d23",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
   "name": "Valley of the Dragon - Weapon",
   "ownership": {
@@ -25,6 +25,36 @@
   },
   "replacement": true,
   "results": [
+    {
+      "_id": "0BXo4Fyh4qss21NE",
+      "documentCollection": "Item",
+      "documentId": "QOGYJMwOPTaWVUfG",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
+      "range": [
+        22,
+        22
+      ],
+      "text": "Norimitsu",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "0IvjHtvkNndTfIPs",
+      "documentCollection": "Item",
+      "documentId": "LcVYiCwO9GrXG0tx",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1745.gif",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Eagle Eye",
+      "type": "document",
+      "weight": 1
+    },
     {
       "_id": "67YROVnmaChdetN2",
       "documentCollection": "Item",
@@ -56,6 +86,231 @@
       "weight": 1
     },
     {
+      "_id": "7RLeqB1vzfTpw9iI",
+      "documentCollection": "Item",
+      "documentId": "iQ9BRZAuT9lfex5O",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/axe.png",
+      "range": [
+        17,
+        17
+      ],
+      "text": "Seismic Pillar",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "a6TasX0uKc355dAp",
+      "documentCollection": "Item",
+      "documentId": "OSaOzEBWrArAvd3a",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glove.png",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Lobster Claw",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "AhJvNilYuErdP8ge",
+      "documentCollection": "Item",
+      "documentId": "ecMYjBVVRm8TieSi",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Rod.gif",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Pinwheel Rod",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "blHSTDzXeNgZy9WQ",
+      "documentCollection": "Item",
+      "documentId": "NUmsmp8rNcSFbH6j",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Quatermain",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "CNnz5oWYlzOr2A5h",
+      "documentCollection": "Item",
+      "documentId": "i4oM2NTWVz9lRIZz",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "range": [
+        20,
+        20
+      ],
+      "text": "Gae Bolg",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "EaPSPJwMtYOrEcf6",
+      "documentCollection": "Item",
+      "documentId": "Knt8Qr5y1rgq3TSa",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/axe.png",
+      "range": [
+        15,
+        15
+      ],
+      "text": "Mjolnir",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Hny0a2bkLqTuByCd",
+      "documentCollection": "Item",
+      "documentId": "bOyrz1SaqA1TQRzo",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "range": [
+        19,
+        19
+      ],
+      "text": "Longinus",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "jg29NMuFc2gMFIB4",
+      "documentCollection": "Item",
+      "documentId": "B6Sj8UiSrWnVfcxz",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wand.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Adept Lightning Wand",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "kvdcKdrFq9KqefBk",
+      "documentCollection": "Item",
+      "documentId": "wzwQj3HC41TFByOw",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/axe.png",
+      "range": [
+        16,
+        16
+      ],
+      "text": "Gravity Mace",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "lIOhvVzneEjQz4JX",
+      "documentCollection": "Item",
+      "documentId": "5rmKFhigrbXO5Pcl",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glove.png",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Steady Knuckle",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "oCajho6WGxQES4V1",
+      "documentCollection": "Item",
+      "documentId": "2ggfKmIlCUEqMaPm",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
+      "range": [
+        21,
+        21
+      ],
+      "text": "Kusanagi",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "OpIzssntV6ZtWgv6",
+      "documentCollection": "Item",
+      "documentId": "Je1rOYjmdqS1MWGc",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Magnum Piercer",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "PBtcQWBhRLfxwCXu",
+      "documentCollection": "Item",
+      "documentId": "LHxw85DB0ONmPTc7",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Yellow Book",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "QcQowT4412nKySZ9",
+      "documentCollection": "Item",
+      "documentId": "3JRMahpv7q0004l4",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "range": [
+        18,
+        18
+      ],
+      "text": "Valkyrie Spear",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "s0p4Qq1hS0TopFVX",
+      "documentCollection": "Item",
+      "documentId": "jsT5SaI4Rj9WFW2a",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1979.gif",
+      "range": [
+        14,
+        14
+      ],
+      "text": "Bloodthirster",
+      "type": "document",
+      "weight": 1
+    },
+    {
       "_id": "uALZ2WjNXslPgJws",
       "documentCollection": "Item",
       "documentId": "UQmfh1jf8CSx6uHU",
@@ -67,6 +322,51 @@
         1
       ],
       "text": "Explosion Whip",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Y2jC6gfoUoPsOY4s",
+      "documentCollection": "Item",
+      "documentId": "NqcG61Mir9aOQAqe",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/expkod.png",
+      "range": [
+        23,
+        23
+      ],
+      "text": "Vajra",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "yi0sHSbaTehdOp9y",
+      "documentCollection": "Item",
+      "documentId": "w7aYOFr8mnN0SLhD",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Knife.gif",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Cold Finger",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "zHbWZl9BajvJfK40",
+      "documentCollection": "Item",
+      "documentId": "oGgmpgLvobjAbm3d",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Gatling Crossbow",
       "type": "document",
       "weight": 1
     }

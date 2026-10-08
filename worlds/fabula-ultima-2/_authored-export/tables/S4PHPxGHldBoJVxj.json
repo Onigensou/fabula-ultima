@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "4bqgn7jZFnmardZp",
-  "formula": "1d4",
+  "formula": "1d20",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
   "name": "Valley of the Dragon - Consumable",
   "ownership": {
@@ -21,6 +21,21 @@
   },
   "replacement": true,
   "results": [
+    {
+      "_id": "0v2FqMtrkklZtwUB",
+      "documentCollection": "Item",
+      "documentId": "9vM7Xu5q3cj7EFQt",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion3.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Mega-Remedy",
+      "type": "document",
+      "weight": 1
+    },
     {
       "_id": "2JCy0EcDSMMm2gLT",
       "documentCollection": "Item",
@@ -33,6 +48,111 @@
         4
       ],
       "text": "Tincture of Precision",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "435zHamkmce8fN4U",
+      "documentCollection": "Item",
+      "documentId": "S71vgGdSVCmEGWN0",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Pokemon/poke-doll.png",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Decoy Doll",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "4GTkKQ7nQ9qxeRVe",
+      "documentCollection": "Item",
+      "documentId": "a9elI6g2FZ6qPY51",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Remedy_Icon_HD.webp",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Turbo Tonic",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "cpVTdAGnWYf22io1",
+      "documentCollection": "Item",
+      "documentId": "TIeKQs0l9tWaNO0y",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Liquid Hope",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "DWBZnSHgJ8AxN1fB",
+      "documentCollection": "Item",
+      "documentId": "W12k5UVEouxIPrDf",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Wind%20Stone.gif",
+      "range": [
+        17,
+        17
+      ],
+      "text": "Wind Stone",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ejRM4jkRb3NGJEfA",
+      "documentCollection": "Item",
+      "documentId": "ky7HMdQIZBJxlPqx",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Magic_Tag_Icon_HD.webp",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Super Tonic",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "elYHuNdwTUIwDV9u",
+      "documentCollection": "Item",
+      "documentId": "QXgHt7VEXEaVdPz1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Phoenix_Down_Icon.webp",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Phoenix Feather",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "flSchQi4YgfV0CSv",
+      "documentCollection": "Item",
+      "documentId": "kMbhsJ2cDIFndrKy",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion4.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Mega-Elixir",
       "type": "document",
       "weight": 1
     },
@@ -52,6 +172,51 @@
       "weight": 1
     },
     {
+      "_id": "KE8Fo0VewNwc3LgJ",
+      "documentCollection": "Item",
+      "documentId": "ivWUbFevDoyWAgAl",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Key.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Skeletal Key",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "LIKfDuZ13UOzBOpG",
+      "documentCollection": "Item",
+      "documentId": "SccgW4PlHy8m6ph5",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wingd.png",
+      "range": [
+        15,
+        15
+      ],
+      "text": "Life Charm",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "MohkYTvdzu2euube",
+      "documentCollection": "Item",
+      "documentId": "a7QM5eiDwGGrBPL4",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/8a55d0840792a95596fa37808f93e478.jpg",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Goddess Tear",
+      "type": "document",
+      "weight": 1
+    },
+    {
       "_id": "MQgVEBxKfWZB2qJv",
       "documentCollection": "Item",
       "documentId": "AUCB5IXRys9uxu5F",
@@ -63,6 +228,81 @@
         1
       ],
       "text": "Tincture of Strength",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "oA8vpf8ayoRq4HNR",
+      "documentCollection": "Item",
+      "documentId": "B1s2K9VLjc4XF4GB",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Mineral2.png",
+      "range": [
+        18,
+        18
+      ],
+      "text": "Golem Soulstone",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "od2E6ADrP59WccSR",
+      "documentCollection": "Item",
+      "documentId": "K15fwnjgY9lNwZfL",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "range": [
+        19,
+        19
+      ],
+      "text": "Turbo Remedy",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "oVWWF2QahmywEsng",
+      "documentCollection": "Item",
+      "documentId": "POaW4RjRIguvQpqU",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "range": [
+        20,
+        20
+      ],
+      "text": "Mixed Juice",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "pWiVShoTIOO0UBd8",
+      "documentCollection": "Item",
+      "documentId": "0QiniCtRtk5J0IvL",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/saturn.png",
+      "range": [
+        14,
+        14
+      ],
+      "text": "Barrier Sphere",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "rA98bG7Ko37wG6CK",
+      "documentCollection": "Item",
+      "documentId": "6wg3JxDlU6GD4uqq",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Earth%20Stone.gif",
+      "range": [
+        16,
+        16
+      ],
+      "text": "Earth Stone",
       "type": "document",
       "weight": 1
     },

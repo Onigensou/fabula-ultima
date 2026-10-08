@@ -45,7 +45,8 @@
       "on_activate_effect_ref": "",
       "reaction_config_table": {
         "0": {
-          "reaction_action_kind": "Spell",
+          "condition_formula": "ACTION_IS_SPELL == 1",
+          "reaction_action_kind": "",
           "reaction_effect_ref": "wtunic_heal",
           "reaction_passive_mode": "force",
           "reaction_source": "self",

@@ -106,11 +106,13 @@
       "on_activate_effect_ref": "",
       "reaction_config_table": {
         "0": {
+          "condition_formula": "HAS_STATUS_CRISIS == 1 && AE_COUNT_CLOCKWORK_HEART_STOPPED == 0",
           "reaction_effect_ref": "cheart_stop",
           "reaction_passive_mode": "force",
+          "reaction_resource_filter": "hp",
           "reaction_source": "self",
-          "reaction_status_filter": "Crisis",
-          "reaction_trigger": "creature_status_applied"
+          "reaction_status_filter": "",
+          "reaction_trigger": "creature_lose_resource"
         },
         "1": {
           "reaction_effect_ref": "cheart_restart",

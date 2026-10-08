@@ -35,18 +35,76 @@
       "defense_target_type": "def",
       "description": "<p>On hit, Deals damage equals to your <strong>【DEF】 </strong>to the target. <strong>Choose one of the following effects:</strong></p><ul><li><p>Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.IBN7DtvWLFDo8jNh\" data-id=\"IBN7DtvWLFDo8jNh\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); text-shadow: rgb(255, 0, 0) 0px 0px 8px; padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Stagger</span></strong></a></span></span> to the target</p></li><li><p>Choose one ally you can see who has yet to take a turn during this round: that ally may take their turn immediately after yours during this round.</p></li></ul>",
       "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "damage_amount": "DEF",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "tblaze_def"
+        },
+        "1": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "tblaze_menu",
+          "menu_option_refs": "tblaze_stagger, tblaze_ally",
+          "menu_pick_count": "1",
+          "menu_subtitle": "Choose one effect",
+          "menu_title": "Trailblaze Strike"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Stagger",
+          "effect_kind": "apply_ae",
+          "effect_label": "tblaze_stagger",
+          "menu_description": "The target suffers Stagger.",
+          "menu_label": "Stagger",
+          "target_ref": "hit_action_targets"
+        },
+        "3": {
+          "chain_steps": "tblaze_pick, tblaze_turn",
+          "effect_kind": "chain",
+          "effect_label": "tblaze_ally",
+          "menu_description": "One ally who has not acted this round takes their turn right after yours.",
+          "menu_label": "Blaze a trail"
+        },
+        "4": {
+          "auto_confirm_when_obvious": true,
+          "auto_target": "confirm",
+          "candidate_source": "combat",
+          "category": "ally",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "tblaze_pick",
+          "exclude_self": true,
+          "mode": "exact"
+        },
+        "5": {
+          "effect_kind": "take_turn_next",
+          "effect_label": "tblaze_turn",
+          "target_ref": "tblaze_pick"
+        }
+      },
       "heroic_requirement": "",
       "img": "icons/equipment/shield/heater-stone-orange.webp",
       "isCheck": true,
       "isFacet": false,
       "isHeroic": false,
       "isOffensiveSpell": false,
-      "isReaction": false,
+      "isReaction": true,
       "level": "1",
       "max_level": "1",
       "name": "Trailblaze Strike",
+      "on_activate_effect_ref": "tblaze_menu",
       "optional_params": {},
-      "reaction_config_table": {},
+      "reaction_config_table": {
+        "0": {
+          "reaction_effect_ref": "tblaze_def",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_source_skill": "Trailblaze Strike",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
       "rolled_atr1": "MIG",
       "rolled_atr2": "WLP",
       "skill_animation_default": "",

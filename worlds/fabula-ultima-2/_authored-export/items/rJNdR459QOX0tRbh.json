@@ -1,0 +1,156 @@
+{
+  "_id": "rJNdR459QOX0tRbh",
+  "_stats": {
+    "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
+    "coreVersion": "12.343",
+    "createdTime": 1791479469789,
+    "duplicateSource": "Item.cneU6dfTzI13k0U2",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "s4PPqrhHe8TBYrja",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "lifetimeMode": "round_end",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "damage_amount": "0",
+                "damage_operation": "cap",
+                "damage_stage": "incoming",
+                "effect_kind": "adjust_damage",
+                "effect_label": "barrier_block"
+              }
+            },
+            "name": "Barrier Sphere",
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "barrier_block",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_takes_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Barrier Sphere",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/saturn.png",
+  "name": "Barrier Sphere",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "0QiniCtRtk5J0IvL",
+    "props": {
+      "action_command": "item",
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "",
+      "cost": "-",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<ul><li><p>Target creature gain the following effect until the end of this round:</p><blockquote><p><strong>HP </strong>cannot be reduce</p></blockquote></li><li>You may only hold 1 copy of this item in your inventory</li></ul>",
+      "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Item.rJNdR459QOX0tRbh.ActiveEffect.s4PPqrhHe8TBYrja",
+          "effect_kind": "apply_ae",
+          "effect_label": "barrier_apply",
+          "target_ref": "action_targets"
+        }
+      },
+      "heroic_requirement": "",
+      "id": "rJNdR459QOX0tRbh",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/saturn.png",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": true,
+      "level": "1",
+      "max_level": "1",
+      "name": "Barrier Sphere",
+      "on_activate_effect_ref": "barrier_apply",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_description": "<ul><li><p>Target creature gain the following effect until the end of this round:</p><blockquote><p><strong>HP </strong>cannot be reduce</p></blockquote></li><li>You may only hold 1 copy of this item in your inventory</li></ul>",
+      "skill_information": "",
+      "skill_range": "Any",
+      "skill_tags": "",
+      "skill_target": "One Creature",
+      "skill_type": "Item",
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Item.rJNdR459QOX0tRbh"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "rJNdR459QOX0tRbh"
+  },
+  "type": "equippableItem"
+}

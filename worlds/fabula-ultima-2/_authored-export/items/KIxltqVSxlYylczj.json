@@ -1,0 +1,173 @@
+{
+  "_id": "KIxltqVSxlYylczj",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791479470814,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "t74U4vsb6nVBe2BX",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "directorPermanent": true,
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Vengeance Stored",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/equipment/chest/breastplate-layered-steel-black.webp",
+  "name": "Vengueful Yoroi (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "CptpnDmAZDa0y12E",
+    "props": {
+      "cost": "",
+      "description": "<ul><li>When you receive damage, you may choose to receive <strong>10 extra damage</strong>. If you do, your next attack or spell that require accuracy check may deals <strong>10 extra damage</strong>.</li><li>If you receive damage from a creature that you have a <strong>hatred </strong>bond with, you may receive above benefit <strong>without</strong> receiving <strong>extra damage</strong>.</li></ul><p><strong>【Set Bonus】</strong></p><p><strong>2-Piece</strong></p><ul><li>When you hit a creature with an attack, Gain <strong>10&nbsp;HP</strong></li></ul><hr contenteditable=\"false\"><p><strong>3-Piece</strong></p><ul><li>????????</li></ul><hr class=\"\" contenteditable=\"false\">",
+      "effect_table": {
+        "0": {
+          "chain_steps": "yoroi_hurt, yoroi_mark",
+          "effect_kind": "chain",
+          "effect_label": "yoroi_store"
+        },
+        "1": {
+          "damage_amount": "10",
+          "damage_cause": "hazard",
+          "damage_element": "physical",
+          "damage_ignore_affinity": true,
+          "effect_kind": "deal_damage",
+          "effect_label": "yoroi_hurt",
+          "target_ref": "self"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Item.KIxltqVSxlYylczj.ActiveEffect.t74U4vsb6nVBe2BX",
+          "effect_kind": "apply_ae",
+          "effect_label": "yoroi_mark",
+          "target_ref": "self"
+        },
+        "3": {
+          "damage_amount": "10",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "yoroi_bonus"
+        },
+        "4": {
+          "ae_template_ref": "Vengeance Stored",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "yoroi_spend",
+          "include_persistent": true,
+          "target_ref": "self"
+        }
+      },
+      "id": "KIxltqVSxlYylczj",
+      "img": "icons/equipment/chest/breastplate-layered-steel-black.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Vengueful Yoroi (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "AE_COUNT_VENGEANCE_STORED == 0 && CUR_HP > 10",
+          "reaction_cause_filter": "damage",
+          "reaction_effect_ref": "yoroi_store",
+          "reaction_passive_mode": "ask",
+          "reaction_resource_filter": "hp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_lose_resource"
+        },
+        "1": {
+          "condition_formula": "AE_COUNT_VENGEANCE_STORED > 0 && ACTION_ROLLS_ACCURACY == 1",
+          "reaction_effect_ref": "yoroi_bonus",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        },
+        "2": {
+          "condition_formula": "AE_COUNT_VENGEANCE_STORED > 0 && ACTION_ROLLS_ACCURACY == 1",
+          "reaction_effect_ref": "yoroi_spend",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_completes_action"
+        },
+        "3": {
+          "condition_formula": "AE_COUNT_VENGEANCE_STORED > 0",
+          "reaction_effect_ref": "yoroi_spend",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_trigger": "conflict_end"
+        }
+      },
+      "skill_description": "<ul><li>When you receive damage, you may choose to receive <strong>10 extra damage</strong>. If you do, your next attack or spell that require accuracy check may deals <strong>10 extra damage</strong>.</li><li>If you receive damage from a creature that you have a <strong>hatred </strong>bond with, you may receive above benefit <strong>without</strong> receiving <strong>extra damage</strong>.</li></ul><p><strong>【Set Bonus】</strong></p><p><strong>2-Piece</strong></p><ul><li>When you hit a creature with an attack, Gain <strong>10&nbsp;HP</strong></li></ul><hr contenteditable=\"false\"><p><strong>3-Piece</strong></p><ul><li>????????</li></ul><hr class=\"\" contenteditable=\"false\">",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.KIxltqVSxlYylczj"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "KIxltqVSxlYylczj"
+  },
+  "type": "equippableItem"
+}

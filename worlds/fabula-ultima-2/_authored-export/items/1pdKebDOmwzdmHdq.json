@@ -1,0 +1,367 @@
+{
+  "_id": "1pdKebDOmwzdmHdq",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791479468056,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "KKEb1idhaVQNXHU8",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "condition_slow",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_dazed",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_weak",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_shaken",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_poisoned",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_enraged",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_silence",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_stagger",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_frightened",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_paralyzed",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_confused",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_panic",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_grappled",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_envenomed",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_burn",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_blind",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_zombie",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_wither",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_bleed",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_obscure",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_fatigue",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_charm",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_berserk",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_despair",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_doom",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_bane",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_curse",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_wet",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_oil",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_petrify",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_hypothermia",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_turbulence",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_delayed",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_isolate",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_suppress",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_disarmed",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_anomaly",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "directorPermanent": true,
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Seraph Ward",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wingd.png",
+  "name": "Seraph Shield (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "kAPQGMazVwFUkbMO",
+    "props": {
+      "cost": "",
+      "description": "<ul><li>As long as you are in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, you are immune to all status effects.</li><li>You have resistance to <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(75, 0, 130) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> damage.</li></ul>",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Item.1pdKebDOmwzdmHdq.ActiveEffect.KKEb1idhaVQNXHU8",
+          "effect_kind": "apply_ae",
+          "effect_label": "seraph_on",
+          "target_ref": "self"
+        },
+        "1": {
+          "ae_template_ref": "Seraph Ward",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "seraph_off",
+          "include_persistent": true,
+          "target_ref": "self"
+        }
+      },
+      "id": "1pdKebDOmwzdmHdq",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wingd.png",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Seraph Shield (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "HAS_STATUS_CRISIS == 1 && AE_COUNT_SERAPH_WARD == 0",
+          "reaction_effect_ref": "seraph_on",
+          "reaction_passive_mode": "force",
+          "reaction_resource_filter": "hp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_lose_resource"
+        },
+        "1": {
+          "condition_formula": "HAS_STATUS_CRISIS == 0 && AE_COUNT_SERAPH_WARD > 0",
+          "reaction_effect_ref": "seraph_off",
+          "reaction_passive_mode": "force",
+          "reaction_resource_filter": "hp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_gain_resource"
+        },
+        "2": {
+          "condition_formula": "AE_COUNT_SERAPH_WARD > 0",
+          "reaction_effect_ref": "seraph_off",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_trigger": "conflict_end"
+        }
+      },
+      "skill_description": "<ul><li>As long as you are in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, you are immune to all status effects.</li><li>You have resistance to <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(75, 0, 130) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> damage.</li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.1pdKebDOmwzdmHdq"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "1pdKebDOmwzdmHdq"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,70 @@
+{
+  "_id": "mLAOS5OJ5BUwVWrb",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791479469053,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/scan.png",
+  "name": "Auto Aimer (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "7ywxRYdvYmDk94bL",
+    "props": {
+      "cost": "",
+      "description": "<ul>\n<li>When perform an attack and <strong>missed</strong>. You may perform a <strong>Free Attack&nbsp;</strong>with the same weapon at the same target, treat your HR as 0 when calculating damage for this attack. This effect can trigger&nbsp;<strong>once&nbsp;</strong>per attack.</li>\n</ul>",
+      "effect_table": {
+        "0": {
+          "action_ref": "Attack",
+          "effect_kind": "free_action",
+          "effect_label": "aimer_retry",
+          "free_hr_as_zero": true,
+          "menu_description": "Free attack at the same target (treat HR as 0 for damage).",
+          "menu_label": "Auto Aimer",
+          "target_ref": "action_targets"
+        }
+      },
+      "id": "mLAOS5OJ5BUwVWrb",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/scan.png",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Auto Aimer (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "HIT_COUNT == 0",
+          "reaction_effect_ref": "aimer_retry",
+          "reaction_max_per_round": "1",
+          "reaction_max_scope": "round",
+          "reaction_passive_mode": "ask",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_completes_attack"
+        }
+      },
+      "skill_description": "<ul>\n<li>When perform an attack and <strong>missed</strong>. You may perform a <strong>Free Attack&nbsp;</strong>with the same weapon at the same target, treat your HR as 0 when calculating damage for this attack. This effect can trigger&nbsp;<strong>once&nbsp;</strong>per attack.</li>\n</ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.mLAOS5OJ5BUwVWrb"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "mLAOS5OJ5BUwVWrb"
+  },
+  "type": "equippableItem"
+}

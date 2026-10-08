@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "4bqgn7jZFnmardZp",
-  "formula": "1d1",
+  "formula": "1d12",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Red%20Berry.png",
   "name": "Valley of the Dragon - Material",
   "ownership": {
@@ -20,5 +20,187 @@
     "default": 0
   },
   "replacement": true,
+  "results": [
+    {
+      "_id": "5pc1CLnNByL5w7GA",
+      "documentCollection": "Item",
+      "documentId": "0nnDHyX2zs80s8qz",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/905.gif",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Darkroot Herb",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "9rF1iKfrWbnlqBf2",
+      "documentCollection": "Item",
+      "documentId": "nP3vrf5FrG7YwG1t",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/951.gif",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Fish Fin",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "aPoz9HC4Cve4QLDP",
+      "documentCollection": "Item",
+      "documentId": "7OvlYY62jp1Br152",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Starshroom.webp",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Moonshroom",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "egA5mo7ztr8cTaYz",
+      "documentCollection": "Item",
+      "documentId": "ugn10gyqh2bFbrot",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7121.gif",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Honey",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "HzIEawxpVW930jmO",
+      "documentCollection": "Item",
+      "documentId": "qwLfGN1ahEvnV4Tg",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Genshin/Item_Black_Bronze_Horn.webp",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Mystic Horn",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "LULRWE0UKYRVQ3Qc",
+      "documentCollection": "Item",
+      "documentId": "E1emEssenceB01t0",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/commodities/gems/gem-rough-cushion-yellow.webp",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Lightning Essence",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "nbhYJgHa5p256fm1",
+      "documentCollection": "Item",
+      "documentId": "tuT3D0cQOJ6JBaZz",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Genshin/Item_Dracolite.webp",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Draconic Essence",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "pYOnPOAD41tBHBbB",
+      "documentCollection": "Item",
+      "documentId": "OfQc5hgDif7XsRH8",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/914.gif",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Animal Fur",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "UedDkjuOks9QIVeN",
+      "documentCollection": "Item",
+      "documentId": "F00dStap1eSa1t00",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/consumables/food/salt-seasoning-spice-pink.webp",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Rock Salt",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "urjAnhWzloGBfdnP",
+      "documentCollection": "Item",
+      "documentId": "L1ki1clOnOhpl7wN",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/909.gif",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Jellopy",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "uzYFhzSSDvBSP1uA",
+      "documentCollection": "Item",
+      "documentId": "FoodTurnip000001",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Ingredient/turnip_gph.webp",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Turnip",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "v8Jm1g9ZVl5Kmxyo",
+      "documentCollection": "Item",
+      "documentId": "Ct03jR1j4OXXr55R",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Genshin/Item_Noctilucous_Jade.webp",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Obsidian",
+      "type": "document",
+      "weight": 1
+    }
+  ],
   "sort": 0
 }

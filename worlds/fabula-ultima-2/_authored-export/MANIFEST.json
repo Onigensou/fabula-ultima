@@ -2834,7 +2834,7 @@
         "id": "nfE7jC3VPwmuncNW",
         "name": "Arcane Earring",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "FPPoi5iBGBTzQ7zR",
@@ -3013,6 +3013,12 @@
       {
         "id": "7ywxRYdvYmDk94bL",
         "name": "Auto Aimer",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "mLAOS5OJ5BUwVWrb",
+        "name": "Auto Aimer (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -3225,6 +3231,12 @@
         "name": "Barrier Sphere",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "rJNdR459QOX0tRbh",
+        "name": "Barrier Sphere",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "ofCKWctVhPv8vC9H",
@@ -3677,6 +3689,12 @@
         "effects": 0
       },
       {
+        "id": "oFcM8ZUpllAK30pF",
+        "name": "Bloodthirster (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "6bkrtQQmXtzbAshK",
         "name": "Blue Bovine",
         "type": "equippableItem",
@@ -4125,6 +4143,12 @@
         "name": "Chameleon Armor",
         "type": "equippableItem",
         "effects": 2
+      },
+      {
+        "id": "wrybxaRfRueI59fU",
+        "name": "Chameleon Armor (Passive)",
+        "type": "equippableItem",
+        "effects": 9
       },
       {
         "id": "QuzY0QG9S1RfjuUF",
@@ -6200,7 +6224,7 @@
         "id": "PavIYTUnaqWtpy2D",
         "name": "Geo Suits",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "ROQw6telXF9qyZC8",
@@ -6355,6 +6379,12 @@
       {
         "id": "t2hmo5SnPi9LCcdZ",
         "name": "Golem Fist",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "hArlldtJn8DH9wKi",
+        "name": "Golem Fist (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -7466,7 +7496,7 @@
         "id": "Yd8hCDTlIOKKc5XB",
         "name": "Intruder Alarm",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "cSynFyjRWqRbgrZx",
@@ -8570,7 +8600,7 @@
         "id": "NYZZNYBAwPhpNOzH",
         "name": "Metallica",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "HSqGOczwuAfiN0Od",
@@ -10529,6 +10559,12 @@
         "effects": 0
       },
       {
+        "id": "BQ2ldHY3byexu8Rq",
+        "name": "Ring of Tales (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "L7rj8OpM3zYetpPb",
         "name": "Ring of the Egg",
         "type": "equippableItem",
@@ -10973,6 +11009,12 @@
         "effects": 0
       },
       {
+        "id": "I71DEY1AKTbrxrGY",
+        "name": "Seismic Pillar (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "zI5VtjavzBGg6AbY",
         "name": "Selachian Fang",
         "type": "equippableItem",
@@ -10994,7 +11036,13 @@
         "id": "kAPQGMazVwFUkbMO",
         "name": "Seraph Shield",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
+      },
+      {
+        "id": "1pdKebDOmwzdmHdq",
+        "name": "Seraph Shield (Passive)",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "VXGW0EAulcUnmnZd",
@@ -11713,6 +11761,12 @@
       {
         "id": "5rmKFhigrbXO5Pcl",
         "name": "Steady Knuckle",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "sbIiYgtes1zQWyEN",
+        "name": "Steady Knuckle (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -12957,6 +13011,12 @@
         "name": "Vengueful Yoroi",
         "type": "equippableItem",
         "effects": 2
+      },
+      {
+        "id": "KIxltqVSxlYylczj",
+        "name": "Vengueful Yoroi (Passive)",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "Mt04b0K0gNEE9kYs",
@@ -25765,12 +25825,12 @@
       {
         "id": "86Lj4WaVPFkt286A",
         "name": "Valley of the Dragon - Accessory",
-        "results": 0
+        "results": 19
       },
       {
         "id": "VgiHGix1LOByKDdu",
         "name": "Valley of the Dragon - Armor",
-        "results": 2
+        "results": 15
       },
       {
         "id": "11corNhirrKGdkGE",
@@ -25780,7 +25840,7 @@
       {
         "id": "S4PHPxGHldBoJVxj",
         "name": "Valley of the Dragon - Consumable",
-        "results": 4
+        "results": 20
       },
       {
         "id": "Oijx8ksubxq9pc1R",
@@ -25810,7 +25870,7 @@
       {
         "id": "QailcoOmaoZW0v6b",
         "name": "Valley of the Dragon - Material",
-        "results": 0
+        "results": 12
       },
       {
         "id": "6wpUcG8RjL8A05Kd",
@@ -25820,12 +25880,12 @@
       {
         "id": "DMeYaPoSPUxH6xVE",
         "name": "Valley of the Dragon - Treasure",
-        "results": 0
+        "results": 13
       },
       {
         "id": "StbIP7EczNqm98PR",
         "name": "Valley of the Dragon - Weapon",
-        "results": 3
+        "results": 23
       },
       {
         "id": "3tGY9xvFTeQhFIzU",
