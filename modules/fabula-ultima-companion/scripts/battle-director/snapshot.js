@@ -346,7 +346,11 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
     // that "deals Magic Damage" (Arc Wand) sets `defense_target_type: "mdef"` so its
     // Attack resolves vs Magic Defense; blank falls back to the kind default
     // (Attack → DEF) via resolvesVsMagicDefense. No bespoke per-weapon boolean.
-    defenseTargetType: String(weaponItem?.system?.props?.defense_target_type ?? "").trim().toLowerCase(),
+    // An actor-wide `attacks_target_mdef` effect (Arcane Earring "all your attacks
+    // deal Magic Damage") overrides the weapon's own tag.
+    defenseTargetType: actorAttacksTargetMagicDefense(actor)
+      ? "mdef"
+      : String(weaponItem?.system?.props?.defense_target_type ?? "").trim().toLowerCase(),
   });
 }
 
@@ -996,6 +1000,21 @@ export function attackerCanMeleeFlying(actor, weaponType) {
       const cats = String(ch.value ?? "").split(/[\s,]+/).map((s) => s.trim().toLowerCase()).filter(Boolean);
       if (cats.length === 0 || cats.includes(cat)) return true;
     }
+  }
+  return false;
+}
+
+// True if `actor` carries a live `attacks_target_mdef` AE change — "all your
+// attacks deal Magic Damage" (Arcane Earring). Makes every weapon Attack the
+// actor performs resolve vs Magic Defense, whatever the weapon's own
+// `defense_target_type` says. Same enumeration + equip gate as the Flying
+// exception above (a GEAR carrier is dormant unless equipped).
+export function actorAttacksTargetMagicDefense(actor) {
+  const effs = actor?.appliedEffects ?? actor?.effects?.contents ?? actor?.effects ?? [];
+  for (const ae of effs) {
+    if (ae?.disabled) continue;
+    if (gearCarrierDormant(ae)) continue;
+    if ((ae.changes ?? []).some((ch) => ch?.key === "attacks_target_mdef")) return true;
   }
   return false;
 }

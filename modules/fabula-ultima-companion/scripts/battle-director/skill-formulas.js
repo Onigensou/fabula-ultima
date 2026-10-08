@@ -1220,6 +1220,38 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const p = subject?.system?.props ?? {};
         return Number(p.magic_defense ?? p.current_mdef ?? p.mdef ?? 0) || 0;
       }
+      // Defense (derived) of the trigger's SUBJECT creature — twin of TARGET_MDEF.
+      case "TARGET_DEF": {
+        const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+        if (!subjectUuid) return 0;
+        const subject = _resolveActorByUuidSync(subjectUuid);
+        if (!subject) return 0;
+        const p = subject?.system?.props ?? {};
+        return Number(p.defense ?? p.current_def ?? p.def ?? 0) || 0;
+      }
+      // The reactor's OWN derived Defense / Magic Defense. Powers gear whose
+      // damage scales on the wielder's defence (Golem Fist "+your Defense score",
+      // Trailblaze Strike "damage equal to your DEF", Golem Punch's DEF gap).
+      case "DEF": {
+        const p = actor?.system?.props ?? {};
+        return Number(p.defense ?? p.current_def ?? p.def ?? 0) || 0;
+      }
+      case "MDEF": {
+        const p = actor?.system?.props ?? {};
+        return Number(p.magic_defense ?? p.current_mdef ?? p.mdef ?? 0) || 0;
+      }
+      // Current attribute die size of the trigger's SUBJECT creature — the
+      // TARGET_ twin of <ATTR>_CURRENT_DIE below. Powers "a creature whose
+      // current Might die is lower than yours" (Seismic Pillar).
+      case "TARGET_INS_CURRENT_DIE": case "TARGET_MIG_CURRENT_DIE":
+      case "TARGET_DEX_CURRENT_DIE": case "TARGET_WLP_CURRENT_DIE": {
+        const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+        if (!subjectUuid) return 0;
+        const subject = _resolveActorByUuidSync(subjectUuid);
+        if (!subject) return 0;
+        const attr = name.slice("TARGET_".length, "TARGET_".length + 3).toLowerCase();
+        return readProp(subject, `${attr}_current`) || readProp(subject, `${attr}_base`);
+      }
       // 1 iff the trigger's SUBJECT creature is Champion-rank (NPC rank lives at
       // system.props.npc_rank — soldier/elite/champion/companion). Twin of
       // TARGET_CURRENT_HP (same subjectActorUuid resolve). Used by The Tormentor's

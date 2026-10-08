@@ -864,7 +864,11 @@ async function resolveAction(director, ar, opts = {}) {
           // deal_damage site) has always passed the raw element through — this
           // is the attack path catching up, not a new convention. On a LOSS the
           // two expressions are identical, so the loss path is unchanged.
-          element: ar.damageType,
+          // A weapon ATTACK carries no top-level `damageType` — its element lives
+          // on `ar.damage.element` — so without the fallback every Attack-caused
+          // resource event read element null and no TRIGGER_DAMAGE_IS_<ELEMENT>
+          // gate could match a basic attack (Chameleon Armor, Icarus Wing).
+          element: ar.damageType ?? ar.damage?.element ?? null,
 
           originLabel: ar.skillName ?? skill?.name ?? null,  // the attack/skill that dealt it
           originUuid: skill?.uuid ?? null,
