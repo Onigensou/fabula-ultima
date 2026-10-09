@@ -142,11 +142,12 @@
   padding: 0;
   text-align: center;
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 400;
   line-height: 1.5;
-  letter-spacing: .4px;
+  letter-spacing: .3px;
   color: #3a1e06;
 }
+#oni-tp-prompt .oni-tp-msg strong { font-weight: 700; }
 /* Yes / No hang off the bottom-right corner */
 #oni-tp-prompt .oni-tp-actions {
   position: absolute;
@@ -168,9 +169,9 @@
   color: #f4e8c0;
   font-family: inherit;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 400;
   line-height: 1;
-  letter-spacing: 1px;
+  letter-spacing: .8px;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(40,18,4,0.38), inset 0 1px 0 rgba(255,225,140,0.14);
   transition: border-color .12s, color .12s, background .12s, box-shadow .12s;
@@ -457,13 +458,14 @@
     const currentSceneId = canvas?.scene?.id;
     const isCrossScene   = destination?.sceneId && destination.sceneId !== currentSceneId;
 
+    // [before, area name (shown bold), after] — a plain string has no highlight
     let promptText;
     if (isCrossScene) {
       const destScene = game.scenes.get(destination.sceneId);
       const navName   = destScene?.navName?.trim()
         || destScene?.flags?.[MODULE_ID]?.oniFabula?.general?.navigationName?.trim?.()
         || null;
-      promptText = navName ? `Enter ${navName}?` : "Enter Area?";
+      promptText = navName ? ["Enter ", navName, "?"] : "Enter Area?";
     } else {
       promptText = "Go to next Area?";
     }
@@ -497,7 +499,14 @@
           <button type="button" class="oni-tp-choice yes">Yes</button>
           <button type="button" class="oni-tp-choice no">No</button>
         </div>`;
-      el.querySelector(".oni-tp-msg").textContent = text;
+      const msg = el.querySelector(".oni-tp-msg");
+      if (Array.isArray(text)) {
+        const strong = document.createElement("strong");
+        strong.textContent = text[1] ?? "";
+        msg.append(text[0] ?? "", strong, text[2] ?? "");
+      } else {
+        msg.textContent = text;
+      }
 
       const yesBtn = el.querySelector(".yes");
       const noBtn  = el.querySelector(".no");
