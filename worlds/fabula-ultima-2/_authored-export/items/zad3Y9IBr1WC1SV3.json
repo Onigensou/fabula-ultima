@@ -1,0 +1,64 @@
+{
+  "_id": "zad3Y9IBr1WC1SV3",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791564026568,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/grieve.png",
+  "name": "Lightning Greaves (gear skill)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "YJ5lY7F4Y6JIsEw4",
+    "props": {
+      "description": "<p>At the start of a conflict, you gain Quickened.</p>",
+      "details_roller": "Show",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Quickened",
+          "effect_kind": "apply_ae",
+          "effect_label": "lg_quick",
+          "target_ref": "self"
+        }
+      },
+      "id": "zad3Y9IBr1WC1SV3",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/grieve.png",
+      "isReaction": true,
+      "name": "Lightning Greaves (gear skill)",
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "reaction_effect_ref": "lg_quick",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        }
+      },
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "uuid": "Item.zad3Y9IBr1WC1SV3"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "zad3Y9IBr1WC1SV3"
+  },
+  "type": "equippableItem"
+}

@@ -8,6 +8,78 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "RAIltaGsUAKZdvKR",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791565963179,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_4",
+          "mode": 5,
+          "priority": 1,
+          "value": "${isEquipped ? 'RS' : 'NA'}$"
+        },
+        {
+          "key": "affinity_9",
+          "mode": 5,
+          "priority": 1,
+          "value": "${isEquipped ? 'RS' : 'NA'}$"
+        },
+        {
+          "key": "condition_envenomed",
+          "mode": 5,
+          "priority": 1,
+          "value": "${isEquipped ? 'RS' : 'NA'}$"
+        }
+      ],
+      "description": "<p>Gain resistance to <span style=\"font-family:Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;scrollbar-color:var(--color-scrollbar) var(--color-scrollbar-track);cursor:pointer;--content-link-background:rgba(0, 0, 0, 0.1);background-image:none !important;background-position:initial !important;background-size:initial !important;background-repeat:initial !important;background-attachment:initial !important;background-origin:initial !important;background-clip:initial !important;background-color:rgb(102, 102, 102);padding:0px !important;border:none !important;border-radius:2px;white-space:nowrap;word-break:break-all;color:rgb(155, 89, 182) !important;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(215, 169, 255) 0px 0px 4px;font-family:Signika, sans-serif;font-size:14px;font-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;letter-spacing:normal;orphans:2;text-align:start;text-indent:0px;text-transform:none;widows:2;word-spacing:0px;-webkit-text-stroke-width:0px\"><strong><span style=\"text-decoration:underline\">Bolt</span></strong></a></span><span style=\"text-decoration:underline\"><span style=\"font-family:Signika, sans-serif\"><strong><span style=\"text-decoration:underline\"> </span></strong></span></span>damage</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "RAIltaGsUAKZdvKR",
+          "originalParentId": "z0uVJxJnpkrsViSG",
+          "originalUuid": "Item.z0uVJxJnpkrsViSG.ActiveEffect.RAIltaGsUAKZdvKR"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glove.png",
+      "name": "Old Bandages",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "3.2.4"

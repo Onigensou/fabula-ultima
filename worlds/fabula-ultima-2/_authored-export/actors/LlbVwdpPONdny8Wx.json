@@ -33,6 +33,91 @@
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Bombado.png",
   "items": [
     {
+      "_id": "4j8mHAro68xE3pyA",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791564629213,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "VzpCG9mySsd9sQSL",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "name": "Turbo Remedy",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "9Xmu4YF2yDOcr9Pp",
+        "props": {
+          "description": "<ul><li><p><em>All allies recover <strong>50 Hit Points</strong>.</em></p></li></ul>",
+          "effect_table": {
+            "0": {
+              "chain_steps": "turboremedy_targets,turboremedy_heal",
+              "effect_kind": "chain",
+              "effect_label": "turboremedy_use"
+            },
+            "1": {
+              "auto_target": "skip",
+              "candidate_source": "combat",
+              "category": "ally",
+              "effect_kind": "targeting",
+              "effect_label": "turboremedy_targets",
+              "exclude_self": false,
+              "mode": "all"
+            },
+            "2": {
+              "effect_kind": "grant",
+              "effect_label": "turboremedy_heal",
+              "grant_amount": "50",
+              "grant_resource": "hp",
+              "target_ref": "turboremedy_targets"
+            }
+          },
+          "ip_cost": "6",
+          "isEquipped": false,
+          "isUnique": false,
+          "item_quantity": "1",
+          "item_rarity": "Common",
+          "item_skill_active": {
+            "jwexX699IchAonpS": {
+              "id": "${item.id}",
+              "name": "Turbo Remedy",
+              "skill_cost": "-",
+              "skill_description": "<ul><li><p><em>All allies recover <strong>50 Hit Points</strong>.</em></p></li></ul>",
+              "skill_maxLevel": 1,
+              "uuid": "Item.jwexX699IchAonpS"
+            }
+          },
+          "item_type": "consumable",
+          "name": "Turbo Remedy",
+          "related_item_list": {
+            "jwexX699IchAonpS": {
+              "id": "${item.id}",
+              "name": "Turbo Remedy",
+              "related_item_description": "<ul><li><p><em>All allies recover <strong>50 Hit Points</strong>.</em></p></li></ul>",
+              "uuid": "Item.jwexX699IchAonpS"
+            }
+          },
+          "skill_target": "All allies"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "5iEQw0ZjgLYLcdcA"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "6rLxtobPtXV3D7rG",
       "_stats": {
         "compendiumSource": null,
@@ -225,6 +310,69 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "IqREaj1FVwVrCiUI"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "9Xmu4YF2yDOcr9Pp",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791564629035,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "consumable",
+            "fromTemplate": "xdZPhVF8AnmwQEPM",
+            "itemId": "H3KLjkXtbUzgDfXg",
+            "itemName": "Turbo Remedy Recipe",
+            "pickedOldProps": {
+              "consumable_cost": "2800",
+              "consumable_description": "<ul><li>Learned how to create <strong>Turbo Remedy</strong> with <strong>6 IP</strong></li></ul>",
+              "consumable_ip": "6",
+              "consumable_label": ""
+            },
+            "ts": 1769647436622
+          }
+        }
+      },
+      "folder": "3xHGNagIXPyzukcU",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+      "name": "Turbo Remedy Recipe",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 150000,
+      "system": {
+        "container": null,
+        "props": {
+          "description": "<ul><li>Learned how to create <strong>Turbo Remedy</strong> with <strong>6 IP</strong></li></ul>",
+          "ip_cost": "6",
+          "item_cost": "2800",
+          "item_quantity": "1",
+          "item_type": "recipe",
+          "name": "Turbo Remedy Recipe",
+          "related_item_list": {
+            "5iEQw0ZjgLYLcdcA": {
+              "id": "${item.id}",
+              "name": "Turbo Remedy",
+              "related_item_description": "<ul><li><p><em>All allies recover <strong>50 Hit Points</strong>.</em></p></li></ul>",
+              "uuid": "Item.5iEQw0ZjgLYLcdcA"
+            }
+          }
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "H3KLjkXtbUzgDfXg"
       },
       "type": "equippableItem"
     },
@@ -666,6 +814,71 @@
       "type": "equippableItem"
     },
     {
+      "_id": "CdIRJo9wT9YaQZgq",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791564629379,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "name": "Turbo Remedy",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "4j8mHAro68xE3pyA",
+        "props": {
+          "action_command": "item",
+          "description": "<ul><li><p><em>All allies recover <strong>50 Hit Points</strong>.</em></p></li></ul>",
+          "effect_table": {
+            "0": {
+              "chain_steps": "turboremedy_targets,turboremedy_heal",
+              "effect_kind": "chain",
+              "effect_label": "turboremedy_use"
+            },
+            "1": {
+              "auto_target": "skip",
+              "candidate_source": "combat",
+              "category": "ally",
+              "effect_kind": "targeting",
+              "effect_label": "turboremedy_targets",
+              "exclude_self": false,
+              "mode": "all"
+            },
+            "2": {
+              "effect_kind": "grant",
+              "effect_label": "turboremedy_heal",
+              "grant_amount": "50",
+              "grant_resource": "hp",
+              "target_ref": "turboremedy_targets"
+            }
+          },
+          "name": "Turbo Remedy",
+          "on_activate_effect_ref": "turboremedy_use",
+          "skill_description": "<ul><li><p><em>All allies recover <strong>50 Hit Points</strong>.</em></p></li></ul>",
+          "skill_target": "All allies",
+          "skill_type": "Item"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "jwexX699IchAonpS"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "Cfr7D7UNYf1lRVK6",
       "_stats": {
         "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
@@ -756,91 +969,6 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "sIkLqWqs6rtZI2cU"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "CTLXPhnYmnyhXvUf",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1791562655361,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": "VzpCG9mySsd9sQSL",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
-      "name": "Turbo Remedy",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "container": "kFyUzZMDfghlfMfB",
-        "props": {
-          "description": "<ul><li><p><em>All allies recover <strong>50 Hit Points</strong>.</em></p></li></ul>",
-          "effect_table": {
-            "0": {
-              "chain_steps": "turboremedy_targets,turboremedy_heal",
-              "effect_kind": "chain",
-              "effect_label": "turboremedy_use"
-            },
-            "1": {
-              "auto_target": "skip",
-              "candidate_source": "combat",
-              "category": "ally",
-              "effect_kind": "targeting",
-              "effect_label": "turboremedy_targets",
-              "exclude_self": false,
-              "mode": "all"
-            },
-            "2": {
-              "effect_kind": "grant",
-              "effect_label": "turboremedy_heal",
-              "grant_amount": "50",
-              "grant_resource": "hp",
-              "target_ref": "turboremedy_targets"
-            }
-          },
-          "ip_cost": "6",
-          "isEquipped": false,
-          "isUnique": false,
-          "item_quantity": "1",
-          "item_rarity": "Common",
-          "item_skill_active": {
-            "jwexX699IchAonpS": {
-              "id": "${item.id}",
-              "name": "Turbo Remedy",
-              "skill_cost": "-",
-              "skill_description": "<ul><li><p><em>All allies recover <strong>50 Hit Points</strong>.</em></p></li></ul>",
-              "skill_maxLevel": 1,
-              "uuid": "Item.jwexX699IchAonpS"
-            }
-          },
-          "item_type": "consumable",
-          "name": "Turbo Remedy",
-          "related_item_list": {
-            "jwexX699IchAonpS": {
-              "id": "${item.id}",
-              "name": "Turbo Remedy",
-              "related_item_description": "<ul><li><p><em>All allies recover <strong>50 Hit Points</strong>.</em></p></li></ul>",
-              "uuid": "Item.jwexX699IchAonpS"
-            }
-          },
-          "skill_target": "All allies"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 3202566307,
-        "unique": false,
-        "uniqueId": "5iEQw0ZjgLYLcdcA"
       },
       "type": "equippableItem"
     },
@@ -1748,69 +1876,6 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "2dTUIP5vUweRF9ir"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "kFyUzZMDfghlfMfB",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1791562655109,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        },
-        "fucompanion": {
-          "itemMigratorBackup": {
-            "detectedType": "consumable",
-            "fromTemplate": "xdZPhVF8AnmwQEPM",
-            "itemId": "H3KLjkXtbUzgDfXg",
-            "itemName": "Turbo Remedy Recipe",
-            "pickedOldProps": {
-              "consumable_cost": "2800",
-              "consumable_description": "<ul><li>Learned how to create <strong>Turbo Remedy</strong> with <strong>6 IP</strong></li></ul>",
-              "consumable_ip": "6",
-              "consumable_label": ""
-            },
-            "ts": 1769647436622
-          }
-        }
-      },
-      "folder": "3xHGNagIXPyzukcU",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
-      "name": "Turbo Remedy Recipe",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 150000,
-      "system": {
-        "container": null,
-        "props": {
-          "description": "<ul><li>Learned how to create <strong>Turbo Remedy</strong> with <strong>6 IP</strong></li></ul>",
-          "ip_cost": "6",
-          "item_cost": "2800",
-          "item_quantity": "1",
-          "item_type": "recipe",
-          "name": "Turbo Remedy Recipe",
-          "related_item_list": {
-            "5iEQw0ZjgLYLcdcA": {
-              "id": "${item.id}",
-              "name": "Turbo Remedy",
-              "related_item_description": "<ul><li><p><em>All allies recover <strong>50 Hit Points</strong>.</em></p></li></ul>",
-              "uuid": "Item.5iEQw0ZjgLYLcdcA"
-            }
-          }
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 3202566307,
-        "unique": false,
-        "uniqueId": "H3KLjkXtbUzgDfXg"
       },
       "type": "equippableItem"
     },

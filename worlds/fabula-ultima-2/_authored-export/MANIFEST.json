@@ -2567,6 +2567,12 @@
         "effects": 0
       },
       {
+        "id": "E0SS6NYLKUyvisTv",
+        "name": "Aegis Field",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "sLUFIsIYIAmmO0lI",
         "name": "Aenigma of Adaptation",
         "type": "equippableItem",
@@ -2971,6 +2977,12 @@
       {
         "id": "m8kOI8j6mhWVSQtR",
         "name": "Assassin's Blade",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "GmbT4IyKBC7fb9Uu",
+        "name": "Assassin's Blade (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -3596,7 +3608,13 @@
         "id": "Rrjrpt19t7sM6Mbu",
         "name": "Blindfold",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
+      },
+      {
+        "id": "bjhFQPrkM1MR1Yoa",
+        "name": "Blindfold (gear skill)",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "CgaVYR30by1N2kZ2",
@@ -4532,7 +4550,7 @@
         "id": "tQu0n4qZRcPcQBlo",
         "name": "Crested Helm",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "LhKeJaeNKyD9TBal",
@@ -4859,6 +4877,12 @@
         "effects": 2
       },
       {
+        "id": "D14OMH5uNi2SUFz1",
+        "name": "Demongrin (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "9Z9bVEVwAW9hiuFe",
         "name": "Demonshield",
         "type": "equippableItem",
@@ -5029,6 +5053,12 @@
       {
         "id": "37zrTkcEtdrwiIIF",
         "name": "Draconic Claw",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "CSayaO2mcgjutXio",
+        "name": "Draconic Claw (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -5630,7 +5660,7 @@
         "id": "uEzR5wTAvhvgACGv",
         "name": "Eye of Skadi",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "QLv40CHewlaiU2VE",
@@ -6284,7 +6314,7 @@
         "id": "LAsmmXgH0GT6KIXS",
         "name": "Giants Belt",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "G1gaPudd1ngD1sh0",
@@ -7715,6 +7745,12 @@
         "effects": 0
       },
       {
+        "id": "whsGum6GvIiHHpl6",
+        "name": "Jormungand (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "VxlBjTtpZgMiMU1q",
         "name": "Joyeuse",
         "type": "equippableItem",
@@ -7927,6 +7963,12 @@
       {
         "id": "YJ5lY7F4Y6JIsEw4",
         "name": "Lightning Greaves",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "zad3Y9IBr1WC1SV3",
+        "name": "Lightning Greaves (gear skill)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -9269,6 +9311,12 @@
         "effects": 0
       },
       {
+        "id": "mUmVssoKyCteJGv1",
+        "name": "Near-Death Sword (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "o4NlOrOA5Bgq0kq4",
         "name": "Necronomicon",
         "type": "equippableItem",
@@ -9347,6 +9395,12 @@
         "effects": 2
       },
       {
+        "id": "2AO7brQmvgfkHRl6",
+        "name": "Noble Dress (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "xOIJH5IfGbZTH6Tu",
         "name": "Nocebo Weapon",
         "type": "equippableItem",
@@ -9410,7 +9464,7 @@
         "id": "z0uVJxJnpkrsViSG",
         "name": "Old Bandages",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "K33p1P1Eb3RtLNLe",
@@ -10358,6 +10412,12 @@
         "id": "OmWE7jRa80TMTc1x",
         "name": "Regen",
         "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "vwdKavkWNuq0Alp1",
+        "name": "Regen",
+        "type": "equippableItem",
         "effects": 0
       },
       {
@@ -11201,6 +11261,12 @@
         "effects": 0
       },
       {
+        "id": "SmFU8jzoDpU5mK5P",
+        "name": "Shooting Star Fragment (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "e0jdBTIQ8BACGIph",
         "name": "Shortbow",
         "type": "equippableItem",
@@ -11539,6 +11605,12 @@
       {
         "id": "VgaustkUmW90hgSl",
         "name": "Soul Ring",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "kts0d30fHnryE14F",
+        "name": "Soul Ring (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -11990,7 +12062,7 @@
         "id": "ilPepoZYIkxZEKuR",
         "name": "Survivor’s Crest",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "FTxwTUZVmLFmzJ7w",
@@ -13025,6 +13097,12 @@
         "effects": 0
       },
       {
+        "id": "gYYK1flu0FxWTlVN",
+        "name": "Vampire Cloak (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "Q7LRl9Vb1LcccX8R",
         "name": "Vanish",
         "type": "equippableItem",
@@ -13106,7 +13184,7 @@
         "id": "9mf0ak73ocEfdbFU",
         "name": "Ventus Shield",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "RJXZsu4p2oxhhKGC",
@@ -13478,7 +13556,7 @@
         "id": "zxlE71eM45gZXMJy",
         "name": "Wyrmwing",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "lpMBVDYMYKxDBqUm",
@@ -15554,39 +15632,55 @@
         "type": "character",
         "items": [
           {
-            "id": "neDHmR84DzCj3P1Z",
+            "id": "mSopH9vR6TaV6LsG",
             "name": "Assassin's Blade"
           },
           {
-            "id": "rP38vbA9hLOLnyYm",
-            "name": "Blazing Impact"
+            "id": "SrnkJUG8qujywxzY",
+            "name": "Assassin's Blade (Passive)"
           },
           {
-            "id": "ZZBq5cEKfEVE4FN1",
-            "name": "Blazing Sword"
-          },
-          {
-            "id": "jgkINdelMUf2u6Wt",
-            "name": "Demongrin"
-          },
-          {
-            "id": "65AedzZG3CDFuIfr",
-            "name": "Draconic Claw"
-          },
-          {
-            "id": "y0uKNTEvfGfYIhqF",
+            "id": "omiDvkfAGcvuCn3F",
             "name": "Jormungand"
           },
           {
-            "id": "nKXboeeHrBkXpSUj",
+            "id": "BXbr0CbJQh0ZrmVt",
+            "name": "Jormungand (Passive)"
+          },
+          {
+            "id": "mtITyraf0q57MwAv",
+            "name": "Near-Death Sword"
+          },
+          {
+            "id": "EcoXzdduUyaGu8SQ",
+            "name": "Near-Death Sword (Passive)"
+          },
+          {
+            "id": "jFf8K6iBhHdESWEM",
+            "name": "Noble Dress"
+          },
+          {
+            "id": "xns4hKmXNxb1vJbQ",
+            "name": "Noble Dress (Passive)"
+          },
+          {
+            "id": "ZZBoeXs5Z21l1SW4",
             "name": "Oak Staff"
           },
           {
-            "id": "DwFBUzppq97jtMNs",
-            "name": "Shield of Egis"
+            "id": "ELypj9xLd46897H9",
+            "name": "Old Bandages"
           },
           {
-            "id": "7OFB899fd6kF0aQg",
+            "id": "zNtMIxqQBHSN8CA5",
+            "name": "Regen"
+          },
+          {
+            "id": "GBb6Xy8rB4pJ6DzP",
+            "name": "Ventus Shield"
+          },
+          {
+            "id": "YLGNzPrZhVnx2Nff",
             "name": "Wyrmwing"
           }
         ],
@@ -23524,11 +23618,15 @@
             "name": "Tincture of Strength"
           },
           {
+            "id": "4j8mHAro68xE3pyA",
+            "name": "Turbo Remedy"
+          },
+          {
             "id": "AabyvUvNTyT7xnni",
             "name": "Turbo Remedy"
           },
           {
-            "id": "CTLXPhnYmnyhXvUf",
+            "id": "CdIRJo9wT9YaQZgq",
             "name": "Turbo Remedy"
           },
           {
@@ -23536,7 +23634,7 @@
             "name": "Turbo Remedy"
           },
           {
-            "id": "kFyUzZMDfghlfMfB",
+            "id": "9Xmu4YF2yDOcr9Pp",
             "name": "Turbo Remedy Recipe"
           },
           {
@@ -23702,36 +23800,48 @@
         "type": "character",
         "items": [
           {
-            "id": "84s0yaKEXH2NgPma",
+            "id": "ZMLZAszoZbkqPmqx",
             "name": "Blindfold"
           },
           {
-            "id": "eiqGG49RMrF0XWgO",
-            "name": "Draconic Roar"
+            "id": "kdHoFNX91fHehCcz",
+            "name": "Blindfold (gear skill)"
           },
           {
-            "id": "SE9tk0i0y88WneJL",
-            "name": "Dragonskull Helm"
-          },
-          {
-            "id": "05RSdUe417iwooVa",
-            "name": "Eye of Skadi"
-          },
-          {
-            "id": "qLlnHV9watrmmdp3",
-            "name": "Giants Belt"
-          },
-          {
-            "id": "1ICaKHef0PZZRnzA",
-            "name": "Lightning Greaves"
+            "id": "XLJ2gGaCqdlt1PnI",
+            "name": "Crested Helm"
           },
           {
             "id": "eIKHoniMYvSLbBk8",
             "name": "Ring of Regeneration"
           },
           {
-            "id": "NjGm4QC65wiiNzJl",
+            "id": "bZU0PYEbLUHqt5ub",
+            "name": "Shooting Star Fragment"
+          },
+          {
+            "id": "R38kjwM1hPJFPgfy",
+            "name": "Shooting Star Fragment (Passive)"
+          },
+          {
+            "id": "0YmQOxhBAjHujoXY",
             "name": "Soul Ring"
+          },
+          {
+            "id": "91Zwx4d0R84aQkBs",
+            "name": "Soul Ring (Passive)"
+          },
+          {
+            "id": "VBzFqBbhT0FnxHNL",
+            "name": "Survivor’s Crest"
+          },
+          {
+            "id": "uOQF3Sjkh1YNlEEE",
+            "name": "Vampire Cloak"
+          },
+          {
+            "id": "I9l5e2qiTHb7oF9v",
+            "name": "Vampire Cloak (Passive)"
           }
         ],
         "effects": 0

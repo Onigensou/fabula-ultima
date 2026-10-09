@@ -1,0 +1,164 @@
+{
+  "_id": "bjhFQPrkM1MR1Yoa",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791563893783,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "qocNhbKr4HLsjYGM",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791563894469,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "check_mod_accuracy",
+          "mode": 2,
+          "priority": 20,
+          "value": "-2"
+        }
+      ],
+      "description": "<p>Reduce <strong>Accuracy</strong></p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "qocNhbKr4HLsjYGM",
+          "originalParentId": "bjhFQPrkM1MR1Yoa",
+          "originalUuid": "Item.bjhFQPrkM1MR1Yoa.ActiveEffect.qocNhbKr4HLsjYGM"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-blind",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "directorPermanent": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Blind.png",
+      "name": "Blind",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "7FLtIUvENcYDAJKC"
+      ],
+      "system": {
+        "tags": [
+          "blindfold-blind"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/scarf.png",
+  "name": "Blindfold (gear skill)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "Rrjrpt19t7sM6Mbu",
+    "props": {
+      "description": "<p>You are always Blind while this is equipped.</p>",
+      "details_roller": "Show",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_duration_rounds": "scene",
+          "ae_template_ref": "Item.bjhFQPrkM1MR1Yoa.ActiveEffect.qocNhbKr4HLsjYGM",
+          "effect_kind": "apply_ae",
+          "effect_label": "bf_on",
+          "target_ref": "self"
+        },
+        "1": {
+          "$deleted": false,
+          "count": "all",
+          "effect_kind": "remove_tagged_ae",
+          "effect_label": "bf_off",
+          "filter_tag": "blindfold-blind",
+          "target_ref": "self"
+        }
+      },
+      "id": "bjhFQPrkM1MR1Yoa",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/scarf.png",
+      "isReaction": true,
+      "name": "Blindfold (gear skill)",
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "reaction_effect_ref": "bf_on",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        },
+        "1": {
+          "$deleted": false,
+          "reaction_effect_ref": "bf_on",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "creature_equips_item"
+        },
+        "2": {
+          "$deleted": false,
+          "reaction_effect_ref": "bf_off",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "creature_unequips_item"
+        }
+      },
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "uuid": "Item.bjhFQPrkM1MR1Yoa"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "bjhFQPrkM1MR1Yoa"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,70 @@
+{
+  "_id": "D14OMH5uNi2SUFz1",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791564025991,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/drasta.png",
+  "name": "Demongrin (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "WT3oJrnIrKPU6PkO",
+    "props": {
+      "cost": "",
+      "description": "<p>After a creature damages you with a melee attack, it takes 5 Fire damage.</p>",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "damage_amount": "5",
+          "damage_cause": "damage",
+          "damage_element": "fire",
+          "effect_kind": "deal_damage",
+          "effect_label": "dgrin_burn",
+          "target_ref": "cause_actor"
+        }
+      },
+      "id": "D14OMH5uNi2SUFz1",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/drasta.png",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Demongrin (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "ATTACK_IS_MELEE == 1",
+          "reaction_cause_filter": "damage",
+          "reaction_effect_ref": "dgrin_burn",
+          "reaction_passive_mode": "on",
+          "reaction_resource_filter": "hp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_lose_resource"
+        }
+      },
+      "skill_description": "<ul><li><p>@UUID[JournalEntry.2hNU23YLpCcZCCmf]{Pierce}</p></li><li><p>@UUID[JournalEntry.Cz6U0ps98sYN8jMH]{Conquer 3}: inflicts @UUID[JournalEntry.GePNxftPupElcCWp]{Bleed} on the target.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.D14OMH5uNi2SUFz1"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "D14OMH5uNi2SUFz1"
+  },
+  "type": "equippableItem"
+}

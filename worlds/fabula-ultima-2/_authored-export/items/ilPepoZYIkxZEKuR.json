@@ -8,6 +8,155 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "5e2L5ztdFzCk4Xy8",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791566182070,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "5e2L5ztdFzCk4Xy8",
+          "originalParentId": "ilPepoZYIkxZEKuR",
+          "originalUuid": "Item.ilPepoZYIkxZEKuR.ActiveEffect.5e2L5ztdFzCk4Xy8"
+        },
+        "fabula-ultima-companion": {
+          "category": "other",
+          "crossScene": false,
+          "directorPermanent": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/devui.png",
+      "name": "Crest Spent",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "crest-spent"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "avG7T15lQFsP3smH",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791565964536,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "avG7T15lQFsP3smH",
+          "originalParentId": "ilPepoZYIkxZEKuR",
+          "originalUuid": "Item.ilPepoZYIkxZEKuR.ActiveEffect.avG7T15lQFsP3smH"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "crossScene": false,
+          "directorPermanent": true,
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "chain_steps": "screst_cap,screst_mark",
+                "effect_kind": "chain",
+                "effect_label": "screst_hold"
+              },
+              "1": {
+                "damage_amount": "CUR_HP - 1",
+                "damage_operation": "cap",
+                "damage_stage": "incoming",
+                "effect_kind": "adjust_damage",
+                "effect_label": "screst_cap",
+                "modify_mode": "set_hp_floor",
+                "modify_value": 1
+              },
+              "2": {
+                "ae_duplicate_mode": "replace",
+                "ae_duration_rounds": "scene",
+                "ae_template_ref": "Item.ilPepoZYIkxZEKuR.ActiveEffect.5e2L5ztdFzCk4Xy8",
+                "effect_kind": "apply_ae",
+                "effect_label": "screst_mark",
+                "target_ref": "self"
+              }
+            },
+            "name": "Survivor's Crest",
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "AE_COUNT_CREST_SPENT == 0",
+                "reaction_damage_outcome": "would_reduce_to_zero",
+                "reaction_effect_ref": "screst_hold",
+                "reaction_passive_mode": "ask",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_takes_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/devui.png",
+      "name": "Survivor's Crest",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "3.2.4"
@@ -67,6 +216,7 @@
     "container": null,
     "props": {
       "description": "<ul>\n<li>Once per scene, When you are reduced to <strong>0 HP,&nbsp;</strong>you may hold on at <strong>1</strong> HP instead.</li>\n</ul>",
+      "isReaction": true,
       "item_baseDef": "0",
       "item_baseMdef": "0",
       "item_cost": "2000",
