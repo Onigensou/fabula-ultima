@@ -319,6 +319,7 @@
       const flags       = tileDoc.getFlag?.(MODULE_ID, FLAG_ROOT) ?? {};
       const isEnabled   = flags.enabled     === true  || flags.enabled     === "true";
       const isConfirm   = flags.confirmMode !== false  && flags.confirmMode !== "false";
+      const isDialog    = flags.confirmDialog !== false && flags.confirmDialog !== "false";
       const isTwoWay    = flags.twoWay      === true  || flags.twoWay      === "true";
       const destination = flags.destination ?? null;
       const sfxUrl      = typeof flags.sfxUrl === "string" ? flags.sfxUrl : "";
@@ -350,6 +351,21 @@
             <b>Off</b>: teleportation happens instantly.<br>
             <em>In Dungeon mode, the DP Confirm button already confirms the move;
             this adds a separate teleport-specific prompt.</em>
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label>"Enter X?" After Button</label>
+          <div class="form-fields">
+            <input type="checkbox"
+                   name="flags.${MODULE_ID}.${FLAG_ROOT}.confirmDialog"
+                   data-dtype="Boolean"
+                   ${isDialog ? "checked" : ""} />
+          </div>
+          <p class="notes">
+            Exploration mode only, with Ask for Confirmation on.<br>
+            <b>On</b>: clicking the door button opens an "Enter &lt;area&gt;?" dialog.<br>
+            <b>Off</b>: clicking the door button teleports at once.
           </p>
         </div>
 

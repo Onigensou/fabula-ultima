@@ -10,8 +10,10 @@
 //
 // EXPLORATION MODE ("exploration"):
 //   Hooks "updateToken".  Runs on ALL clients (players + GM).
-//   confirmMode=true  → floating 🚪 button above the token while on the tile;
-//                        clicking the button triggers teleport.
+//   confirmMode=true  → floating 🚪 button above the token while on the tile.
+//                        confirmDialog on (default) → clicking the button opens
+//                        the same "Enter <navName>?" dialog as dungeon mode.
+//                        confirmDialog off → the button click teleports at once.
 //   confirmMode=false → teleport fires automatically when token enters tile
 //                        (original instant behavior, no button shown).
 //
@@ -416,16 +418,27 @@
     // Immediately position before the first RAF so there's no single-frame misplace
     _positionHudBtn(btn, tokenDoc);
 
-    // Click → teleport immediately (the button IS the confirmation)
+    // Click → "Enter X?" dialog when the tile's confirmDialog is on (default),
+    // otherwise teleport immediately (the button IS the confirmation).
     btn.addEventListener("pointerdown", async (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
       const tile  = _hudBtnTile;
       const token = _hudBtnToken;
       hideTpHudButton();
-      if (tile && token) {
-        await triggerTeleporter(tile, token, { applyDpOffset: false, forcedNodeId: null });
+      if (!tile || !token) return;
+
+      const flags = getFlags(tile);
+      const wantsDialog = flags?.confirmDialog !== false && flags?.confirmDialog !== "false";
+      if (wantsDialog && flags?.destination) {
+        const confirmed = await askTeleportConfirm(flags.destination);
+        if (!confirmed) {
+          // Declined: bring the button back if the token is still standing on the tile.
+          if (!_hudBtn && _tokenOnTile.get(token.id)?.has(tile.id)) showTpHudButton(tile, token);
+          return;
+        }
       }
+      await triggerTeleporter(tile, token, { applyDpOffset: false, forcedNodeId: null });
     });
 
     // RAF loop: re-position every frame while camera is moving to follow the token
@@ -454,16 +467,19 @@
     }
   }
 
-  // ── Dungeon confirmation dialog — parchment/JRPG themed with smart text ──────
+  // ── Confirmation dialog — parchment/JRPG themed with smart text ──────────────
+  // Shared by dungeon mode (on turn end) and exploration mode (after the button).
 
-  async function askTeleportConfirmDungeon(destination) {
+  async function askTeleportConfirm(destination) {
     const currentSceneId = canvas?.scene?.id;
     const isCrossScene   = destination?.sceneId && destination.sceneId !== currentSceneId;
 
     let promptText;
     if (isCrossScene) {
       const destScene = game.scenes.get(destination.sceneId);
-      const navName   = destScene?.navName?.trim() || null;
+      const navName   = destScene?.navName?.trim()
+        || destScene?.flags?.[MODULE_ID]?.oniFabula?.general?.navigationName?.trim?.()
+        || null;
       promptText = navName ? `Enter ${navName}?` : "Enter Area?";
     } else {
       promptText = "Go to next Area?";
@@ -504,7 +520,7 @@
     // Exploration mode: button click was the confirmation — no dialog shown here.
     const confirmMode = flags.confirmMode !== false && flags.confirmMode !== "false";
     if (confirmMode && getSceneMode() === "dungeon") {
-      const confirmed = await askTeleportConfirmDungeon(flags.destination);
+      const confirmed = await askTeleportConfirm(flags.destination);
       if (!confirmed) return;
     }
 
