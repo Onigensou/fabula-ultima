@@ -3,7 +3,7 @@
 //
 // DUNGEON MODE ("dungeon"):
 //   Hooks "dungeonPathing.turnEnd" which fires { tokenDoc, node }.
-//   confirmMode=true → custom cream prompt box with the feather cursor (showTpPrompt,
+//   confirmMode=true → custom prompt box in the Save/Load skin (showTpPrompt,
 //   plain DOM — not a Foundry Dialog) with smart text:
 //     same-scene  → "Go to next Area?"
 //     cross-scene → "Enter <navName>?" or "Enter Area?"
@@ -92,30 +92,37 @@
   50%     { box-shadow: 0 0 24px rgba(190,130,255,.75), 0 4px 18px rgba(0,0,0,.55); }
 }
 
-/* ── Teleporter prompt box — flat cream panel, dark-brown outline, feather cursor ── */
+/* ── Teleporter prompt box ──
+   Same skin as the Save/Load confirm panel (save-ui.js .ss-conf-inner /
+   .ss-choice-btn): ruled parchment, thin gold border with a wood ring,
+   letter-spaced system caps, dark-wood choice buttons, feather cursor.
+   Layout: message panel with Yes / No hanging off the bottom-right corner. */
 #oni-tp-prompt {
-  --tp-cream: #f5e8d2;
-  --tp-brown: #4e281a;
   position: fixed;
   left: 50%;
   top: 42%;
   z-index: 9995;
   box-sizing: border-box;
-  min-width: 440px;
-  max-width: min(860px, 90vw);
-  padding: 40px 56px 54px;
-  border: 6px solid var(--tp-brown);
-  border-radius: 46px;
-  background: var(--tp-cream);
-  box-shadow: 0 10px 26px rgba(0,0,0,.38);
-  font-family: "SuplexmentaryComic","ComicInk","Signika",sans-serif;
-  color: var(--tp-brown);
+  min-width: 420px;
+  max-width: min(820px, 90vw);
+  padding: 30px 46px 40px;
+  border: 2px solid #c9a44a;
+  border-radius: 14px;
+  background: linear-gradient(168deg, #f8f0d4 0%, #ede0b0 100%);
+  box-shadow: 0 0 0 2px #7a4e20, 0 0 0 4px #b8865a, 0 0 28px rgba(0,0,0,0.40), inset 0 1px 0 rgba(255,245,200,0.70);
+  font-family: 'Lucida Console', 'Courier New', monospace;
+  color: #3a1e06;
   user-select: none;
   pointer-events: auto;
   opacity: 0;
   transform: translate(-50%, calc(-50% + 26px));
   transition: opacity 360ms cubic-bezier(.25,.46,.45,.94),
               transform 360ms cubic-bezier(.25,.46,.45,.94);
+}
+/* faint ruled lines, as on the save screens */
+#oni-tp-prompt::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: 12px;
+  background: repeating-linear-gradient(0deg, transparent, transparent 23px, rgba(140,90,30,0.04) 23px, rgba(140,90,30,0.04) 24px);
 }
 #oni-tp-prompt.tp-visible {
   opacity: 1;
@@ -129,60 +136,67 @@
   pointer-events: none;
 }
 #oni-tp-prompt .oni-tp-msg {
+  position: relative;
   margin: 0;
   padding: 0;
   text-align: center;
   text-transform: uppercase;
-  font-size: 30px;
-  font-weight: 400;
-  line-height: 1.3;
-  letter-spacing: 1px;
-  color: var(--tp-brown);
-  -webkit-text-stroke: .6px var(--tp-brown);
+  font-size: 17px;
+  font-weight: bold;
+  line-height: 1.5;
+  letter-spacing: 3px;
+  color: #3a1e06;
 }
-/* Yes / No hang off the bottom-right corner, overlapping the outline */
+/* Yes / No hang off the bottom-right corner */
 #oni-tp-prompt .oni-tp-actions {
   position: absolute;
-  right: -6px;
-  bottom: -34px;
+  right: 18px;
+  bottom: -22px;
   display: flex;
-  gap: 18px;
+  gap: 12px;
 }
 #oni-tp-prompt .oni-tp-choice {
   position: relative;
   box-sizing: border-box;
-  width: 132px;
-  height: 58px;
+  min-width: 112px;
+  height: 40px;
   margin: 0;
-  padding: 0;
-  border: 5px solid var(--tp-brown);
-  border-radius: 18px;
-  background: var(--tp-cream);
-  color: var(--tp-brown);
-  font: inherit;
-  font-size: 24px;
+  padding: 0 26px;
+  border: 1px solid #9b7040;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #7a5230 0%, #5c3818 100%);
+  color: #f4e8c0;
+  font-family: inherit;
+  font-size: 12px;
   line-height: 1;
-  letter-spacing: 1px;
+  letter-spacing: 3px;
   text-transform: uppercase;
-  -webkit-text-stroke: .5px var(--tp-brown);
   cursor: pointer;
-  box-shadow: none;
-  transition: transform .1s ease, background-color .12s ease;
+  box-shadow: 0 2px 6px rgba(40,18,4,0.38), inset 0 1px 0 rgba(255,225,140,0.14);
+  transition: border-color .12s, color .12s, background .12s, box-shadow .12s;
 }
-#oni-tp-prompt .oni-tp-choice:focus { outline: none; box-shadow: none; }
-#oni-tp-prompt .oni-tp-choice.is-picked { background: #fbf3e2; transform: translateY(-2px); }
-#oni-tp-prompt .oni-tp-choice:active   { transform: translateY(1px); }
+#oni-tp-prompt .oni-tp-choice:focus { outline: none; }
+#oni-tp-prompt .oni-tp-choice.is-picked {
+  border-color: #c9a22a; color: #fff8e0;
+  background: linear-gradient(180deg, #9b6840 0%, #7a4a22 100%);
+  box-shadow: 0 0 18px rgba(201,162,42,0.28), 0 2px 6px rgba(40,18,4,0.38), inset 0 1px 0 rgba(255,225,140,0.22);
+}
+#oni-tp-prompt .oni-tp-choice.no.is-picked {
+  border-color: #8b3820; color: #ffd0c0;
+  background: linear-gradient(180deg, #7a2e18 0%, #5a1c08 100%);
+  box-shadow: 0 0 18px rgba(180,52,28,0.28), 0 2px 6px rgba(40,18,4,0.38);
+}
 /* Feather cursor — the same icon the other system UIs use — rides the picked button */
 #oni-tp-prompt .oni-tp-feather {
   position: absolute;
-  right: -22px;
-  top: -42px;
-  width: 62px;
-  height: 62px;
+  right: -16px;
+  top: -34px;
+  width: 46px;
+  height: 46px;
   pointer-events: none;
   border: none !important; outline: none !important;
   box-shadow: none !important; background: transparent !important;
-  filter: drop-shadow(0 2px 2px rgba(0,0,0,.25));
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,.35));
   animation: oni-tp-feather-float 2.2s ease-in-out infinite;
 }
 @keyframes oni-tp-feather-float {
