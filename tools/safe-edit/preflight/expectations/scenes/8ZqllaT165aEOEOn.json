@@ -98,7 +98,7 @@
             "wellspring_dark": false,
             "wellspring_light": false
           },
-          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Lower Trail\",\"id\":\"QIUobWQvzsjvZK08\"},{\"name\":\"Valley of the Dragon - Waterfall Trail\",\"id\":\"YR0pYJVokhIgKQj0\"},{\"name\":\"Valley of the Dragon - Underground Area\",\"id\":\"09CApvaBfOesGfbp\"}]"
+          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Mountain Ascending Path\",\"id\":\"Scene.TYsXMeeVahBSG3VV\"},{\"name\":\"Valley of the Dragon - Lower Trail\",\"id\":\"QIUobWQvzsjvZK08\"},{\"name\":\"Valley of the Dragon - Waterfall Trail\",\"id\":\"YR0pYJVokhIgKQj0\"},{\"name\":\"Valley of the Dragon - Underground Area\",\"id\":\"09CApvaBfOesGfbp\"}]"
         },
         "oniDungeon": {
           "threatLevel": "medium",
@@ -317,7 +317,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359007469,
-      "modifiedTime": 1791435813339,
+      "modifiedTime": 1791552456253,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [

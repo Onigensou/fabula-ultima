@@ -98,7 +98,7 @@
             "wellspring_dark": false,
             "wellspring_light": false
           },
-          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Crossroads\",\"id\":\"V1pUCPofEqLN4sze\"},{\"name\":\"Sacrificial Altar\",\"id\":\"or2XPkXT448qmdrh\"}]"
+          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Mountain Ascending Path\",\"id\":\"Scene.TYsXMeeVahBSG3VV\"},{\"name\":\"Valley of the Dragon - Crossroads\",\"id\":\"V1pUCPofEqLN4sze\"},{\"name\":\"Sacrificial Altar\",\"id\":\"or2XPkXT448qmdrh\"}]"
         },
         "oniDungeon": {
           "threatLevel": "medium",
@@ -276,7 +276,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359062714,
-      "modifiedTime": 1791434571100,
+      "modifiedTime": 1791552456354,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [

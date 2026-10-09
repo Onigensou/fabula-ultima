@@ -98,7 +98,7 @@
             "wellspring_dark": false,
             "wellspring_light": false
           },
-          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Underground Area\",\"id\":\"09CApvaBfOesGfbp\"}]"
+          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Cavern\",\"id\":\"Scene.Uas0vCUZJOjrpgB0\"},{\"name\":\"Valley of the Dragon - Underground Area\",\"id\":\"09CApvaBfOesGfbp\"}]"
         },
         "oniDungeon": {
           "threatLevel": "medium",
@@ -190,7 +190,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359029316,
-      "modifiedTime": 1791438123239,
+      "modifiedTime": 1791552456415,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "walls": [

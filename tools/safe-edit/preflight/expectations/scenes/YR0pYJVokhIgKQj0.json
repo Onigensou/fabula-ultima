@@ -98,7 +98,7 @@
             "wellspring_dark": false,
             "wellspring_light": false
           },
-          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Winding Trail\",\"id\":\"8ZqllaT165aEOEOn\"},{\"name\":\"Valley of the Dragon - Crossroads\",\"id\":\"V1pUCPofEqLN4sze\"},{\"name\":\"Maelstrom Confluence\",\"id\":\"w0Ol6v1IYj2lG39s\"}]"
+          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Mountain Ascending Path\",\"id\":\"Scene.TYsXMeeVahBSG3VV\"},{\"name\":\"Valley of the Dragon - Winding Trail\",\"id\":\"8ZqllaT165aEOEOn\"},{\"name\":\"Valley of the Dragon - Crossroads\",\"id\":\"V1pUCPofEqLN4sze\"},{\"name\":\"Maelstrom Confluence\",\"id\":\"w0Ol6v1IYj2lG39s\"}]"
         },
         "oniDungeon": {
           "threatLevel": "medium",
@@ -361,7 +361,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359011161,
-      "modifiedTime": 1791435813367,
+      "modifiedTime": 1791552456271,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [

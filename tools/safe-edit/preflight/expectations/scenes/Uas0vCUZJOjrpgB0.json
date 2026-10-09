@@ -1,0 +1,219 @@
+{
+  "sceneId": "Uas0vCUZJOjrpgB0",
+  "name": "Valley of the Dragon - Cavern",
+  "tokens": [],
+  "tokensFull": [],
+  "notes": [],
+  "tileCount": 0,
+  "full": {
+    "folder": "7YQ4ZWxpYvijJPmb",
+    "name": "Valley of the Dragon - Cavern",
+    "active": false,
+    "navigation": false,
+    "navOrder": 1200000,
+    "navName": "Valley_Scene3",
+    "background": {
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Scene/Valley_Scene003.png",
+      "scaleX": 1,
+      "scaleY": 1,
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "tint": "#ffffff",
+      "anchorX": 0,
+      "anchorY": 0,
+      "fit": "fill",
+      "alphaThreshold": 0
+    },
+    "foreground": null,
+    "foregroundElevation": 8,
+    "width": 1682,
+    "height": 788,
+    "padding": 0,
+    "initial": {
+      "x": 719,
+      "y": 394,
+      "scale": 1.3363677883297125
+    },
+    "backgroundColor": "#000000",
+    "grid": {
+      "type": 0,
+      "size": 100,
+      "color": "#000000",
+      "alpha": 0.2,
+      "distance": 2,
+      "units": "m",
+      "style": "solidLines",
+      "thickness": 1
+    },
+    "tokenVision": false,
+    "playlist": "VrpdABUTSoREMDR5",
+    "playlistSound": "3iyVwTQ7wOmOzsmr",
+    "journal": null,
+    "journalEntryPage": null,
+    "weather": "",
+    "sort": 200000,
+    "ownership": {
+      "default": 0,
+      "JQGNzKpDPHJmcUIW": 3
+    },
+    "flags": {
+      "smalltime": {
+        "darkness-link": true,
+        "player-vis": "2",
+        "moonlight": false
+      },
+      "LockView": {
+        "lockPan": true,
+        "lockPanInit": true,
+        "lockZoom": true,
+        "lockZoomInit": true,
+        "boundingBox": true,
+        "boundingBoxInit": true,
+        "autoScale": "0",
+        "rotation": "0",
+        "sidebar": "noChange",
+        "blackenSidebar": false,
+        "excludeSidebar": false,
+        "hideUI": true,
+        "forceInit": true,
+        "hideUIelements": {
+          "controls": false,
+          "hotbar": false,
+          "logo": false,
+          "navigation": false,
+          "players": false,
+          "sidebar": false
+        },
+        "editViewbox": false
+      },
+      "fxmaster": {
+        "filters": {
+          "core_predator": {
+            "type": "predator",
+            "options": {
+              "noise": 0,
+              "period": 0,
+              "lineWidth": 2,
+              "belowTokens": false
+            }
+          }
+        },
+        "effects": {}
+      },
+      "battle-transitions": {
+        "version": "1.1.6",
+        "autoTrigger": false,
+        "sequence": []
+      },
+      "levels": {
+        "backgroundElevation": 0,
+        "lightMasking": true,
+        "weatherElevation": null
+      },
+      "wall-height": {
+        "advancedVision": true
+      },
+      "fabula-ultima-companion": {
+        "oniDungeon": {
+          "encounterTable": "",
+          "enemiesTable": "",
+          "battleMap": "",
+          "battleBGM": "",
+          "bossBGM": "",
+          "event": {
+            "skillCheckEvent": "",
+            "clockEvent": ""
+          },
+          "loot": {
+            "weapon": "",
+            "armor": "",
+            "accessory": "",
+            "consumable": "",
+            "item": "",
+            "treasure": "",
+            "zenit": ""
+          }
+        },
+        "oniFabula": {
+          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Underground Area\",\"id\":\"09CApvaBfOesGfbp\"},{\"name\":\"Valley of the Dragon - Seal Cavern\",\"id\":\"52LLgHZIyAXBrbMq\"},{\"name\":\"Ancient Mural\",\"id\":\"bcg4esedBAmZTEVL\"}]",
+          "general": {
+            "sceneMode": "theatre",
+            "scanRadius": null,
+            "fastTravelEnabled": true,
+            "disableTransition": false,
+            "isOverworld": false,
+            "isTown": false,
+            "isDungeon": false,
+            "navigationName": "Valley of the Dragon - Cavern",
+            "sceneVisited": false,
+            "wellspring_air": false,
+            "wellspring_earth": true,
+            "wellspring_fire": false,
+            "wellspring_bolt": true,
+            "wellspring_ice": false,
+            "wellspring_dark": false,
+            "wellspring_light": false,
+            "cameraFollowToken": false
+          }
+        },
+        "campSceneUuid": ""
+      }
+    },
+    "environment": {
+      "globalLight": {
+        "luminosity": 0,
+        "enabled": false,
+        "darkness": {
+          "max": 1,
+          "min": 0
+        },
+        "alpha": 0.5,
+        "bright": false,
+        "color": null,
+        "coloration": 1,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0
+      },
+      "darknessLevel": 0,
+      "darknessLock": false,
+      "cycle": true,
+      "base": {
+        "hue": 0,
+        "intensity": 0,
+        "luminosity": 0,
+        "saturation": 0,
+        "shadows": 0
+      },
+      "dark": {
+        "hue": 0.7138888888888889,
+        "intensity": 0,
+        "luminosity": -0.25,
+        "saturation": 0,
+        "shadows": 0
+      }
+    },
+    "fog": {
+      "exploration": true,
+      "reset": 1704291191736,
+      "overlay": null,
+      "colors": {
+        "explored": null,
+        "unexplored": null
+      }
+    },
+    "_id": "Uas0vCUZJOjrpgB0",
+    "thumb": "worlds/fabula-ultima-2/assets/scenes/Uas0vCUZJOjrpgB0-thumb.webp",
+    "_stats": {
+      "compendiumSource": null,
+      "duplicateSource": null,
+      "coreVersion": "12.343",
+      "systemId": "custom-system-builder",
+      "systemVersion": "4.8.5",
+      "createdTime": 1791552425912,
+      "modifiedTime": 1791552456210,
+      "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+    }
+  }
+}

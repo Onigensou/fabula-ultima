@@ -98,7 +98,7 @@
             "wellspring_dark": false,
             "wellspring_light": false
           },
-          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Lower Trail\",\"id\":\"QIUobWQvzsjvZK08\"},{\"name\":\"Valley of the Dragon - Winding Trail\",\"id\":\"8ZqllaT165aEOEOn\"},{\"name\":\"Valley of the Dragon - Seal Cavern\",\"id\":\"52LLgHZIyAXBrbMq\"},{\"name\":\"Ancient Mural\",\"id\":\"bcg4esedBAmZTEVL\"}]"
+          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Cavern\",\"id\":\"Scene.Uas0vCUZJOjrpgB0\"},{\"name\":\"Valley of the Dragon - Lower Trail\",\"id\":\"QIUobWQvzsjvZK08\"},{\"name\":\"Valley of the Dragon - Winding Trail\",\"id\":\"8ZqllaT165aEOEOn\"},{\"name\":\"Valley of the Dragon - Seal Cavern\",\"id\":\"52LLgHZIyAXBrbMq\"},{\"name\":\"Ancient Mural\",\"id\":\"bcg4esedBAmZTEVL\"}]"
         },
         "oniDungeon": {
           "threatLevel": "medium",
@@ -464,7 +464,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359018436,
-      "modifiedTime": 1791438123166,
+      "modifiedTime": 1791552456364,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [

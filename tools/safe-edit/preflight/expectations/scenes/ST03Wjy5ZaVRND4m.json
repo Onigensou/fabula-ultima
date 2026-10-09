@@ -98,7 +98,7 @@
             "wellspring_dark": false,
             "wellspring_light": false
           },
-          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - East Ridge\",\"id\":\"g8segD1wSQEHY4Jp\"},{\"name\":\"Feeding Pit\",\"id\":\"XNTSewM1NcPG59L1\"}]"
+          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Mountain Ascending Path\",\"id\":\"Scene.TYsXMeeVahBSG3VV\"},{\"name\":\"Valley of the Dragon - East Ridge\",\"id\":\"g8segD1wSQEHY4Jp\"},{\"name\":\"Feeding Pit\",\"id\":\"XNTSewM1NcPG59L1\"}]"
         },
         "oniDungeon": {
           "threatLevel": "medium",
@@ -296,7 +296,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359055288,
-      "modifiedTime": 1791434571085,
+      "modifiedTime": 1791552456344,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [

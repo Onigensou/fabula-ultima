@@ -98,7 +98,7 @@
             "wellspring_dark": false,
             "wellspring_light": false
           },
-          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - West Ridge\",\"id\":\"QfybShj4gr9Bd2rn\"},{\"name\":\"Abandoned Monastery\",\"id\":\"fWcFHcIHLO8WOrlr\"}]"
+          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Mountain Ascending Path\",\"id\":\"Scene.TYsXMeeVahBSG3VV\"},{\"name\":\"Valley of the Dragon - West Ridge\",\"id\":\"QfybShj4gr9Bd2rn\"},{\"name\":\"Abandoned Monastery\",\"id\":\"fWcFHcIHLO8WOrlr\"}]"
         },
         "oniDungeon": {
           "threatLevel": "medium",
@@ -286,7 +286,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359040071,
-      "modifiedTime": 1791435813517,
+      "modifiedTime": 1791552456320,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [

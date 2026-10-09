@@ -98,7 +98,7 @@
             "wellspring_dark": true,
             "wellspring_light": false
           },
-          "sceneNetwork": "[{\"name\":\"Fafnir Castle - Grand Hall\",\"id\":\"ob5P49Qh7Q0arM4h\"}]"
+          "sceneNetwork": "[{\"name\":\"Fafnir Castle Theatre Scene\",\"id\":\"Scene.VfitjBBc0KnJi8KM\"},{\"name\":\"Fafnir Castle - Grand Hall\",\"id\":\"ob5P49Qh7Q0arM4h\"}]"
         },
         "oniDungeon": {
           "threatLevel": "medium",
@@ -189,7 +189,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359069589,
-      "modifiedTime": 1791438127479,
+      "modifiedTime": 1791552456429,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "walls": [
