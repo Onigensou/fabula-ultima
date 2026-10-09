@@ -1,8 +1,1256 @@
 {
   "sceneId": "M7tMjQIVNww5OzFw",
   "name": "Midgard_Map001",
-  "tokens": [],
-  "tokensFull": [],
+  "tokens": [
+    {
+      "name": "King Gorger",
+      "actorId": "A8vBJMBvMT9ON8O4",
+      "actorLink": false
+    },
+    {
+      "name": "Ingrid",
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "actorLink": false
+    },
+    {
+      "name": "Wilhelm",
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "actorLink": false
+    },
+    {
+      "name": "Otto",
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "actorLink": false
+    },
+    {
+      "name": "Ulfar",
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "actorLink": false
+    },
+    {
+      "name": "Gunther",
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "actorLink": false
+    },
+    {
+      "name": "Hedwig",
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "actorLink": false
+    },
+    {
+      "name": "Greta",
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "actorLink": false
+    },
+    {
+      "name": "Runa",
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "actorLink": false
+    }
+  ],
+  "tokensFull": [
+    {
+      "actorLink": false,
+      "alpha": 1,
+      "appendNumber": false,
+      "bar1": {
+        "attribute": "attributeBar.current_hp"
+      },
+      "bar2": {
+        "attribute": "attributeBar.current_mp"
+      },
+      "detectionModes": [],
+      "displayBars": 50,
+      "displayName": 0,
+      "disposition": 1,
+      "flags": {
+        "Border-Control": {
+          "borderCustomBaseOpacity": 0.5,
+          "borderCustomColorExt": "#000000",
+          "borderCustomColorInt": "#000000",
+          "borderCustomFrameOpacity": 0.5,
+          "noBorder": false
+        },
+        "barbrawl": {
+          "resourceBars": {
+            "bar1": {
+              "attribute": "attributeBar.current_hp",
+              "bgImage": "",
+              "fgImage": "",
+              "gmVisibility": -1,
+              "hideCombat": false,
+              "hideEmpty": false,
+              "hideFull": false,
+              "hideHud": false,
+              "hideNoCombat": false,
+              "id": "bar1",
+              "ignoreMax": false,
+              "ignoreMin": false,
+              "indentLeft": null,
+              "indentRight": null,
+              "invert": false,
+              "invertDirection": false,
+              "label": "HP",
+              "max": null,
+              "maxcolor": "#80FF00",
+              "mincolor": "#FF0000",
+              "opacity": null,
+              "order": 1,
+              "otherVisibility": 0,
+              "ownerVisibility": 50,
+              "position": "bottom-inner",
+              "shareHeight": false,
+              "style": "fraction",
+              "subdivisions": null,
+              "subdivisionsOwner": false,
+              "value": 30
+            },
+            "bar2": {
+              "attribute": "attributeBar.current_mp",
+              "bgImage": "",
+              "fgImage": "",
+              "gmVisibility": -1,
+              "hideCombat": false,
+              "hideEmpty": false,
+              "hideFull": false,
+              "hideHud": false,
+              "hideNoCombat": false,
+              "id": "bar2",
+              "ignoreMax": false,
+              "ignoreMin": false,
+              "indentLeft": null,
+              "indentRight": null,
+              "invert": false,
+              "invertDirection": false,
+              "label": "MP",
+              "max": null,
+              "maxcolor": "#80B3FF",
+              "mincolor": "#000080",
+              "opacity": null,
+              "order": 0,
+              "otherVisibility": 0,
+              "ownerVisibility": 50,
+              "position": "bottom-inner",
+              "shareHeight": false,
+              "style": "fraction",
+              "subdivisions": null,
+              "subdivisionsOwner": false,
+              "value": 60
+            },
+            "bar3": {
+              "attribute": "attributeBar.shield_value",
+              "bgImage": "",
+              "fgImage": "",
+              "gmVisibility": -1,
+              "hideCombat": false,
+              "hideEmpty": true,
+              "hideFull": false,
+              "hideHud": false,
+              "hideNoCombat": false,
+              "id": "bar3",
+              "ignoreMax": false,
+              "ignoreMin": false,
+              "indentLeft": null,
+              "indentRight": null,
+              "invert": false,
+              "invertDirection": false,
+              "label": "",
+              "max": 3,
+              "maxcolor": "#FFFFFF",
+              "mincolor": "#000000",
+              "opacity": null,
+              "order": 2,
+              "otherVisibility": 50,
+              "ownerVisibility": 50,
+              "position": "bottom-inner",
+              "shareHeight": false,
+              "style": "fraction",
+              "subdivisions": null,
+              "subdivisionsOwner": false,
+              "value": 0
+            },
+            "bar4": {
+              "attribute": "custom",
+              "bgImage": "",
+              "fgImage": "",
+              "gmVisibility": -1,
+              "hideCombat": false,
+              "hideEmpty": false,
+              "hideFull": false,
+              "hideHud": false,
+              "hideNoCombat": false,
+              "id": "bar4",
+              "ignoreMax": false,
+              "ignoreMin": false,
+              "indentLeft": null,
+              "indentRight": null,
+              "invert": false,
+              "invertDirection": false,
+              "label": "🍖",
+              "max": 3,
+              "maxcolor": "#2dca2b",
+              "mincolor": "#53e45d",
+              "opacity": null,
+              "order": 3,
+              "otherVisibility": 0,
+              "ownerVisibility": 50,
+              "position": "bottom-inner",
+              "shareHeight": false,
+              "style": "fraction",
+              "subdivisions": null,
+              "subdivisionsOwner": false,
+              "value": 0
+            }
+          }
+        },
+        "hex-size-support": {
+          "alternateOrientation": false,
+          "hideBorder": true,
+          "hideFill": false,
+          "pivotx": null,
+          "pivoty": null
+        },
+        "token-variants": {
+          "disableHUDButton": false,
+          "randomImgDefault": ""
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "fabula-ultima-companion": {
+          "draftTokens": "claude-2026-10-09",
+          "draftName": "King Gorger"
+        }
+      },
+      "height": 1,
+      "hexagonalShape": 0,
+      "light": {
+        "alpha": 0.5,
+        "angle": 360,
+        "animation": {
+          "intensity": 5,
+          "reverse": false,
+          "speed": 5,
+          "type": null
+        },
+        "attenuation": 0.5,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "contrast": 0,
+        "darkness": {
+          "max": 1,
+          "min": 0
+        },
+        "dim": 0,
+        "luminosity": 0.5,
+        "negative": false,
+        "priority": 0,
+        "saturation": 0,
+        "shadows": 0
+      },
+      "lockRotation": false,
+      "name": "King Gorger",
+      "occludable": {
+        "radius": 0
+      },
+      "prependAdjective": false,
+      "ring": {
+        "colors": {
+          "background": null,
+          "ring": null
+        },
+        "effects": 1,
+        "enabled": false,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "rotation": 0,
+      "sight": {
+        "angle": 360,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "color": null,
+        "contrast": 0,
+        "enabled": false,
+        "range": 0,
+        "saturation": 0,
+        "visionMode": "basic"
+      },
+      "texture": {
+        "alphaThreshold": 0.75,
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "fit": "contain",
+        "offsetX": 0,
+        "offsetY": 0,
+        "rotation": 0,
+        "scaleX": 1.3,
+        "scaleY": 1.3,
+        "src": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+        "tint": "#ffffff"
+      },
+      "width": 1,
+      "actorId": "A8vBJMBvMT9ON8O4",
+      "x": 1333,
+      "y": 1163,
+      "hidden": true,
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": [],
+      "_id": "Fsqw1kyEnsHkvBov"
+    },
+    {
+      "name": "Ingrid",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Zombie_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.1,
+        "scaleY": 1.1,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "draftTokens": "claude-2026-10-09",
+          "draftName": "Ingrid"
+        }
+      },
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "x": 1853,
+      "y": 1093,
+      "hidden": true,
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": [],
+      "_id": "TnQIgkmeSKhtRctv"
+    },
+    {
+      "name": "Wilhelm",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rock%20Golem_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.5,
+        "scaleY": 1.5,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "draftTokens": "claude-2026-10-09",
+          "draftName": "Wilhelm"
+        }
+      },
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "x": 1523,
+      "y": 1443,
+      "hidden": true,
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": [],
+      "_id": "X8XejOQiMaS2RNy8"
+    },
+    {
+      "name": "Otto",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Slime_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 0.66,
+        "scaleY": 0.66,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "draftTokens": "claude-2026-10-09",
+          "draftName": "Otto"
+        }
+      },
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "x": 1253,
+      "y": 1913,
+      "hidden": false,
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": [],
+      "_id": "c3FwTl7mPEGL9mXW"
+    },
+    {
+      "name": "Ulfar",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Wolf_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.1,
+        "scaleY": 1.1,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "draftTokens": "claude-2026-10-09",
+          "draftName": "Ulfar"
+        }
+      },
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "x": 793,
+      "y": 973,
+      "hidden": true,
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": [],
+      "_id": "cgSdxRBZlDTNJnvr"
+    },
+    {
+      "name": "Gunther",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/SkelMiner_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.1,
+        "scaleY": 1.1,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "draftTokens": "claude-2026-10-09",
+          "draftName": "Gunther"
+        }
+      },
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "x": 763,
+      "y": 2133,
+      "hidden": true,
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": [],
+      "_id": "sXgQ422qdfGRtyKD"
+    },
+    {
+      "name": "Hedwig",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Owl%20Bear_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.3,
+        "scaleY": 1.3,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "draftTokens": "claude-2026-10-09",
+          "draftName": "Hedwig"
+        }
+      },
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "x": 1523,
+      "y": 1753,
+      "hidden": true,
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": [],
+      "_id": "t3PBzNCE0hO25959"
+    },
+    {
+      "name": "Greta",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Shroomy_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 0.9,
+        "scaleY": 0.9,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "draftTokens": "claude-2026-10-09",
+          "draftName": "Greta"
+        }
+      },
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "x": 893,
+      "y": 1123,
+      "hidden": true,
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": [],
+      "_id": "xFZWKp8yNySU8hbi"
+    },
+    {
+      "name": "Runa",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Momonga_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 0.76,
+        "scaleY": 0.76,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "draftTokens": "claude-2026-10-09",
+          "draftName": "Runa"
+        }
+      },
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "x": 2293,
+      "y": 583,
+      "hidden": true,
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": [],
+      "_id": "yN1NMcZDq6i4K6EY"
+    }
+  ],
   "notes": [],
   "tileCount": 6,
   "full": {

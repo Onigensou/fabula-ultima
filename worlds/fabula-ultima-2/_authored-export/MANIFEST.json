@@ -111,6 +111,12 @@
         "parent": "sWfX0st2X6sPXPd0"
       },
       {
+        "id": "b6xZrcMjGI3ARizQ",
+        "name": "Ancient Capital Midgard",
+        "type": "Actor",
+        "parent": "yrt0v9PKovSRpKQJ"
+      },
+      {
         "id": "dDFCxuzpgyr3RtkP",
         "name": "Ancient Capital Midgard",
         "type": "Scene",
@@ -15543,6 +15549,50 @@
         "effects": 0
       },
       {
+        "id": "fe2OhexLAGieIBQy",
+        "name": "Brandr",
+        "type": "character",
+        "items": [
+          {
+            "id": "neDHmR84DzCj3P1Z",
+            "name": "Assassin's Blade"
+          },
+          {
+            "id": "rP38vbA9hLOLnyYm",
+            "name": "Blazing Impact"
+          },
+          {
+            "id": "ZZBq5cEKfEVE4FN1",
+            "name": "Blazing Sword"
+          },
+          {
+            "id": "jgkINdelMUf2u6Wt",
+            "name": "Demongrin"
+          },
+          {
+            "id": "65AedzZG3CDFuIfr",
+            "name": "Draconic Claw"
+          },
+          {
+            "id": "y0uKNTEvfGfYIhqF",
+            "name": "Jormungand"
+          },
+          {
+            "id": "nKXboeeHrBkXpSUj",
+            "name": "Oak Staff"
+          },
+          {
+            "id": "DwFBUzppq97jtMNs",
+            "name": "Shield of Egis"
+          },
+          {
+            "id": "7OFB899fd6kF0aQg",
+            "name": "Wyrmwing"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "Usyut9yS2Tm5ZCXI",
         "name": "Bruce",
         "type": "character",
@@ -18419,6 +18469,13 @@
       {
         "id": "REiWhq9LCn6WgjHG",
         "name": "Freya",
+        "type": "character",
+        "items": [],
+        "effects": 0
+      },
+      {
+        "id": "cFaGfpGk19dJ3MdK",
+        "name": "Freydis",
         "type": "character",
         "items": [],
         "effects": 0
@@ -23366,6 +23423,134 @@
         "effects": 0
       },
       {
+        "id": "LlbVwdpPONdny8Wx",
+        "name": "Sigrun",
+        "type": "character",
+        "items": [
+          {
+            "id": "B8M5OwbWNloqDioE",
+            "name": "Adrenaline Endure"
+          },
+          {
+            "id": "jZ0zNnSMO9YHC26k",
+            "name": "Adrenaline Potion"
+          },
+          {
+            "id": "mvBmSUOhE3nVSRz8",
+            "name": "Adrenaline Rush"
+          },
+          {
+            "id": "F9UxHr2T2gt1ij4v",
+            "name": "Decoy Doll"
+          },
+          {
+            "id": "zyEPv2RBUjlqR0e7",
+            "name": "Decoy Doll"
+          },
+          {
+            "id": "6rLxtobPtXV3D7rG",
+            "name": "Goddess Tear"
+          },
+          {
+            "id": "Cfr7D7UNYf1lRVK6",
+            "name": "Goddess Tear"
+          },
+          {
+            "id": "Sve4f89RRnWR6oik",
+            "name": "Life Charm"
+          },
+          {
+            "id": "UjzVAodr4C5gtRvo",
+            "name": "Mega-Elixir"
+          },
+          {
+            "id": "V2yZCjnaotni7zcK",
+            "name": "Mega-Elixir"
+          },
+          {
+            "id": "mVdmDMJakbyb0mcm",
+            "name": "Mega-Remedy"
+          },
+          {
+            "id": "wnITd6x8gRmu78Ok",
+            "name": "Mega-Remedy"
+          },
+          {
+            "id": "hYhTDntXjraRqybM",
+            "name": "Phoenix Feather"
+          },
+          {
+            "id": "saY4FUjNr8sIUGXD",
+            "name": "Phoenix Feather"
+          },
+          {
+            "id": "7khiRwnT7lDsr0J4",
+            "name": "Super Tonic"
+          },
+          {
+            "id": "GJP6mDQrQ3Smqruf",
+            "name": "Super Tonic"
+          },
+          {
+            "id": "atrQHS4TaWoUFFZa",
+            "name": "Tincture of Endurance"
+          },
+          {
+            "id": "D33hQhemILGESO78",
+            "name": "Tincture of Endurance"
+          },
+          {
+            "id": "EI7UZDJIQWq4ReVz",
+            "name": "Tincture of Precision"
+          },
+          {
+            "id": "QEwS73Wa0PjJCsMn",
+            "name": "Tincture of Precision"
+          },
+          {
+            "id": "bob4BLBL1hCzFFUF",
+            "name": "Tincture of Spirit"
+          },
+          {
+            "id": "GCa6DzeTr7PxKCEU",
+            "name": "Tincture of Spirit"
+          },
+          {
+            "id": "Ffpjj8oAo13UuDj0",
+            "name": "Tincture of Strength"
+          },
+          {
+            "id": "fp7MBP5dbESUREoW",
+            "name": "Tincture of Strength"
+          },
+          {
+            "id": "AabyvUvNTyT7xnni",
+            "name": "Turbo Remedy"
+          },
+          {
+            "id": "CTLXPhnYmnyhXvUf",
+            "name": "Turbo Remedy"
+          },
+          {
+            "id": "NGQ4fxI5NnMq9GaD",
+            "name": "Turbo Remedy"
+          },
+          {
+            "id": "kFyUzZMDfghlfMfB",
+            "name": "Turbo Remedy Recipe"
+          },
+          {
+            "id": "LECW7qy9hVqsxWpJ",
+            "name": "Turbo Tonic"
+          },
+          {
+            "id": "ZOB7csf6j87OKcZi",
+            "name": "Turbo Tonic"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "I2sSkVIQ4FCunZBE",
         "name": "Skizzik",
         "type": "character",
@@ -23507,6 +23692,46 @@
           {
             "id": "VKa14MboPF9kz4y3",
             "name": "Take Aim"
+          }
+        ],
+        "effects": 0
+      },
+      {
+        "id": "2JGRG053wW37YeHP",
+        "name": "Solveig",
+        "type": "character",
+        "items": [
+          {
+            "id": "84s0yaKEXH2NgPma",
+            "name": "Blindfold"
+          },
+          {
+            "id": "eiqGG49RMrF0XWgO",
+            "name": "Draconic Roar"
+          },
+          {
+            "id": "SE9tk0i0y88WneJL",
+            "name": "Dragonskull Helm"
+          },
+          {
+            "id": "05RSdUe417iwooVa",
+            "name": "Eye of Skadi"
+          },
+          {
+            "id": "qLlnHV9watrmmdp3",
+            "name": "Giants Belt"
+          },
+          {
+            "id": "1ICaKHef0PZZRnzA",
+            "name": "Lightning Greaves"
+          },
+          {
+            "id": "eIKHoniMYvSLbBk8",
+            "name": "Ring of Regeneration"
+          },
+          {
+            "id": "NjGm4QC65wiiNzJl",
+            "name": "Soul Ring"
           }
         ],
         "effects": 0

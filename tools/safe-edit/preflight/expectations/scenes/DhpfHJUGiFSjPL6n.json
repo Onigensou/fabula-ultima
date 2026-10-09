@@ -1,8 +1,450 @@
 {
   "sceneId": "DhpfHJUGiFSjPL6n",
   "name": "Midgard_Map005",
-  "tokens": [],
-  "tokensFull": [],
+  "tokens": [
+    {
+      "name": "Freydis",
+      "actorId": "cFaGfpGk19dJ3MdK",
+      "actorLink": true
+    },
+    {
+      "name": "Dietrich",
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "actorLink": false
+    },
+    {
+      "name": "Geirolf",
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "actorLink": false
+    }
+  ],
+  "tokensFull": [
+    {
+      "name": "Dietrich",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Anio.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1,
+        "scaleY": 1,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "draftTokens": "claude-2026-10-09",
+          "draftName": "Dietrich"
+        }
+      },
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "x": 508,
+      "y": 548,
+      "hidden": true,
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": [],
+      "_id": "6BTzsZBF07kW3RN7"
+    },
+    {
+      "name": "Geirolf",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Looker_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.53,
+        "scaleY": 1.53,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "draftTokens": "claude-2026-10-09",
+          "draftName": "Geirolf"
+        }
+      },
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "x": 1028,
+      "y": 468,
+      "hidden": true,
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": [],
+      "_id": "RMWBfMkuQOvLrck0"
+    },
+    {
+      "name": "Freydis",
+      "displayName": 0,
+      "actorLink": true,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Succubus_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.04,
+        "scaleY": 1.04,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": "attributeBar.current_hp"
+      },
+      "bar2": {
+        "attribute": "attributeBar.current_mp"
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {
+            "bar2": {
+              "order": 0,
+              "id": "bar2",
+              "attribute": "attributeBar.current_mp",
+              "mincolor": "#000080",
+              "maxcolor": "#80B3FF",
+              "position": "bottom-inner",
+              "otherVisibility": 0,
+              "ownerVisibility": 50,
+              "gmVisibility": -1,
+              "hideFull": false,
+              "hideEmpty": false,
+              "hideCombat": false,
+              "hideNoCombat": false,
+              "hideHud": false,
+              "indentLeft": null,
+              "indentRight": null,
+              "shareHeight": false,
+              "style": "fraction",
+              "label": "MP",
+              "invert": false,
+              "invertDirection": false,
+              "subdivisions": null,
+              "subdivisionsOwner": false,
+              "fgImage": "",
+              "bgImage": "",
+              "opacity": null
+            },
+            "bar1": {
+              "order": 1,
+              "id": "bar1",
+              "attribute": "attributeBar.current_hp",
+              "mincolor": "#FF0000",
+              "maxcolor": "#80FF00",
+              "position": "bottom-inner",
+              "otherVisibility": 0,
+              "ownerVisibility": 50,
+              "gmVisibility": -1,
+              "hideFull": false,
+              "hideEmpty": false,
+              "hideCombat": false,
+              "hideNoCombat": false,
+              "hideHud": false,
+              "indentLeft": null,
+              "indentRight": null,
+              "shareHeight": false,
+              "style": "fraction",
+              "label": "HP",
+              "invert": false,
+              "invertDirection": false,
+              "subdivisions": null,
+              "subdivisionsOwner": false,
+              "fgImage": "",
+              "bgImage": "",
+              "opacity": null
+            },
+            "bar3": {
+              "order": 2,
+              "id": "bar3",
+              "attribute": "attributeBar.shield_value",
+              "mincolor": "#000000",
+              "maxcolor": "#FFFFFF",
+              "position": "bottom-inner",
+              "otherVisibility": 50,
+              "ownerVisibility": 50,
+              "gmVisibility": -1,
+              "hideFull": false,
+              "hideEmpty": true,
+              "hideCombat": false,
+              "hideNoCombat": false,
+              "hideHud": false,
+              "indentLeft": null,
+              "indentRight": null,
+              "shareHeight": false,
+              "style": "fraction",
+              "label": "",
+              "invert": false,
+              "invertDirection": false,
+              "subdivisions": null,
+              "subdivisionsOwner": false,
+              "fgImage": "",
+              "bgImage": "",
+              "opacity": null
+            }
+          }
+        },
+        "fabula-ultima-companion": {
+          "draftTokens": "claude-2026-10-09",
+          "draftName": "Freydis"
+        }
+      },
+      "actorId": "cFaGfpGk19dJ3MdK",
+      "x": 413,
+      "y": 148,
+      "hidden": true,
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": [],
+      "_id": "SZ48mMDKWf01RxQj"
+    }
+  ],
   "notes": [],
   "tileCount": 1,
   "full": {
