@@ -1147,7 +1147,7 @@
           "damage_bonus": "4",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul><li><p>Deals <strong>5 extra damage</strong> to targets who are in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li><li><p>When you score a <strong>Critical Success</strong> on an attack with this weapon, if the target is not a <strong>Villian&nbsp;</strong>or&nbsp;<strong>Boss</strong> type enemy, reduce its&nbsp;<strong>HP&nbsp;</strong>until it is in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li></ul>",
+          "description": "<ul><li><p>Deals <strong>5 extra damage</strong> to targets who are in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li><li><p>When you hit with this weapon, there is a <strong>15% chance</strong> that, if the target is not a <strong>Villian&nbsp;</strong>or&nbsp;<strong>Boss</strong> type enemy, its&nbsp;<strong>HP&nbsp;</strong>is reduced until it is in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li></ul>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -1423,7 +1423,7 @@
         "container": "mSopH9vR6TaV6LsG",
         "props": {
           "cost": "",
-          "description": "<p>This weapon deals 5 extra damage to a target in Crisis. On a Critical Success with this weapon, a target that is not a Villain or Champion is reduced to its Crisis score.</p>",
+          "description": "<p>This weapon deals 5 extra damage to a target in Crisis. Each hit with this weapon has a 15% chance to reduce a target that is not a Villain or Champion to its Crisis score.</p>",
           "effect_table": {
             "0": {
               "$deleted": false,
@@ -1444,6 +1444,13 @@
               "effect_kind": "deal_damage",
               "effect_label": "ablade_crit",
               "target_ref": "trigger_subject"
+            },
+            "2": {
+              "$deleted": false,
+              "chance_percent": "15",
+              "chance_then_ref": "ablade_crit",
+              "effect_kind": "chance",
+              "effect_label": "ablade_roll"
             }
           },
           "id": "GmbT4IyKBC7fb9Uu",
@@ -1464,8 +1471,8 @@
             },
             "1": {
               "$deleted": false,
-              "condition_formula": "ATTACK_IS_CRIT == 1 && DAMAGE_IS_HP == 1",
-              "reaction_effect_ref": "ablade_crit",
+              "condition_formula": "DAMAGE_IS_HP == 1",
+              "reaction_effect_ref": "ablade_roll",
               "reaction_passive_mode": "on",
               "reaction_requires_weapon_used": true,
               "reaction_source": "self",

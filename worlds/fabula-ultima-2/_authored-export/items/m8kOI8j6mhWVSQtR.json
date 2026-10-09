@@ -72,7 +72,7 @@
       "damage_bonus": "4",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>Deals <strong>5 extra damage</strong> to targets who are in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li><li><p>When you score a <strong>Critical Success</strong> on an attack with this weapon, if the target is not a <strong>Villian&nbsp;</strong>or&nbsp;<strong>Boss</strong> type enemy, reduce its&nbsp;<strong>HP&nbsp;</strong>until it is in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li></ul>",
+      "description": "<ul><li><p>Deals <strong>5 extra damage</strong> to targets who are in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li><li><p>When you hit with this weapon, there is a <strong>15% chance</strong> that, if the target is not a <strong>Villian&nbsp;</strong>or&nbsp;<strong>Boss</strong> type enemy, its&nbsp;<strong>HP&nbsp;</strong>is reduced until it is in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
