@@ -11,7 +11,8 @@
 //
 // EXPLORATION MODE ("exploration"):
 //   Hooks "updateToken".  Runs on ALL clients (players + GM).
-//   confirmMode=true  → floating 🚪 button above the token while on the tile.
+//   confirmMode=true  → floating 🚪 button above the token while on the tile,
+//                        shown ONLY to the Main Controller and to GMs.
 //                        confirmDialog on (default) → clicking the button opens
 //                        the same "Enter <navName>?" dialog as dungeon mode.
 //                        confirmDialog off → the button click teleports at once.
@@ -95,7 +96,8 @@
 /* ── Teleporter prompt box ──
    Same skin as the Save/Load confirm panel (save-ui.js .ss-conf-inner /
    .ss-choice-btn): ruled parchment, thin gold border with a wood ring,
-   dark-wood choice buttons, feather cursor. Lettering is Signika, as in the
+   dark-wood choice buttons; the picked one gets a bright border ring.
+   Lettering is Signika, as in the
    Healing and Shop windows (the save screens' monospace read as awkward here).
    Layout: message panel with Yes / No hanging off the bottom-right corner. */
 #oni-tp-prompt {
@@ -116,7 +118,7 @@
   user-select: none;
   pointer-events: auto;
   opacity: 0;
-  transform: translate(-50%, calc(-50% + 26px));
+  transform: translate(calc(-50% - 32px), -50%);   /* enters from the left */
   transition: opacity 360ms cubic-bezier(.25,.46,.45,.94),
               transform 360ms cubic-bezier(.25,.46,.45,.94);
 }
@@ -131,7 +133,7 @@
 }
 #oni-tp-prompt.tp-leaving {
   opacity: 0;
-  transform: translate(-50%, calc(-50% - 20px));
+  transform: translate(calc(-50% + 32px), -50%);   /* leaves to the right */
   transition: opacity 280ms cubic-bezier(.55,.085,.68,.53),
               transform 280ms cubic-bezier(.55,.085,.68,.53);
   pointer-events: none;
@@ -178,31 +180,14 @@
 }
 #oni-tp-prompt .oni-tp-choice:focus { outline: none; }
 #oni-tp-prompt .oni-tp-choice.is-picked {
-  border-color: #c9a22a; color: #fff8e0;
+  border-color: #f4d488; color: #fff8e0;
   background: linear-gradient(180deg, #9b6840 0%, #7a4a22 100%);
-  box-shadow: 0 0 18px rgba(201,162,42,0.28), 0 2px 6px rgba(40,18,4,0.38), inset 0 1px 0 rgba(255,225,140,0.22);
+  box-shadow: 0 0 0 2px #f4d488, 0 0 18px rgba(244,212,136,0.55), 0 2px 6px rgba(40,18,4,0.38), inset 0 1px 0 rgba(255,225,140,0.22);
 }
 #oni-tp-prompt .oni-tp-choice.no.is-picked {
-  border-color: #8b3820; color: #ffd0c0;
+  border-color: #f0a488; color: #ffd0c0;
   background: linear-gradient(180deg, #7a2e18 0%, #5a1c08 100%);
-  box-shadow: 0 0 18px rgba(180,52,28,0.28), 0 2px 6px rgba(40,18,4,0.38);
-}
-/* Feather cursor — the same icon the other system UIs use — rides the picked button */
-#oni-tp-prompt .oni-tp-feather {
-  position: absolute;
-  right: -16px;
-  top: -34px;
-  width: 46px;
-  height: 46px;
-  pointer-events: none;
-  border: none !important; outline: none !important;
-  box-shadow: none !important; background: transparent !important;
-  filter: drop-shadow(0 2px 2px rgba(0,0,0,.35));
-  animation: oni-tp-feather-float 2.2s ease-in-out infinite;
-}
-@keyframes oni-tp-feather-float {
-  0%,100% { transform: translateY(0); }
-  50%     { transform: translateY(-5px); }
+  box-shadow: 0 0 0 2px #f0a488, 0 0 18px rgba(230,110,80,0.50), 0 2px 6px rgba(40,18,4,0.38);
 }
     `;
     document.head.appendChild(s);
@@ -409,6 +394,8 @@
       const token = _hudBtnToken;
       hideTpHudButton();
       if (!tile || !token) return;
+      // Control may have been handed over while the button was up.
+      if (!(await canOperateTeleporter())) return;
 
       const flags = getFlags(tile);
       const wantsDialog = flags?.confirmDialog !== false && flags?.confirmDialog !== "false";
@@ -477,7 +464,6 @@
   // One prompt at a time. Resolves true (Yes / Enter) or false (No / Esc /
   // closed from outside, e.g. the token walked off the tile or the scene changed).
 
-  const TP_FEATHER_URL = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/feather.png";
   const TP_PROMPT_OUT_MS = 280; // keep in step with #oni-tp-prompt.tp-leaving
   let _tpPrompt = null;         // { el, finish }
 
@@ -510,19 +496,14 @@
 
       const yesBtn = el.querySelector(".yes");
       const noBtn  = el.querySelector(".no");
-      const feather = document.createElement("img");
-      feather.className = "oni-tp-feather";
-      feather.src = TP_FEATHER_URL;
-      feather.alt = "";
 
-      // The feather marks the picked answer: hover or ←/→ moves it, Enter takes it.
+      // The border highlight marks the picked answer: hover or ←/→ moves it, Enter takes it.
       let picked = null;
       const pick = (btn) => {
         if (picked === btn) return;
         picked?.classList.remove("is-picked");
         picked = btn;
         btn.classList.add("is-picked");
-        btn.appendChild(feather);
       };
 
       const entry = { el, finish: null };
@@ -563,6 +544,23 @@
         if (_tpPrompt === entry) el.classList.add("tp-visible");
       }));
     });
+  }
+
+  // ── Main Controller gate (exploration button mode) ───────────────────────────
+  // The ticker detects tile entry on EVERY client, so without a gate each player
+  // would get their own door button and could answer the prompt. Only the
+  // Movement Control main controller — or any GM — may operate it, the same rule
+  // dungeon movement, Fast Travel and Scene Travel use. Players fail closed if
+  // the Movement Control API is not ready.
+
+  async function canOperateTeleporter() {
+    if (game.user?.isGM) return true;
+    const api = globalThis.__ONI_MOVEMENT_CONTROL_API__
+      ?? globalThis.FUCompanion?.api?.MovementControl
+      ?? null;
+    if (!api?.isCurrentUserMainController) return false;
+    try { return !!(await api.isCurrentUserMainController()); }
+    catch { return false; }
   }
 
   // ── Core trigger ──────────────────────────────────────────────────────────────
@@ -810,7 +808,10 @@
       // (With animate:true, tokenDoc.x/y = final destination — already known.)
       const docC = tokenCenter(tokenDoc);
       if (docC.x >= rx && docC.x <= rx + rw && docC.y >= ry && docC.y <= ry + rh) {
-        showTpHudButton(tileDoc, tokenDoc);
+        canOperateTeleporter().then((ok) => {
+          // still standing on the tile once the controller check resolves?
+          if (ok && _tokenOnTile.get(tokenDoc.id)?.has(tileDoc.id)) showTpHudButton(tileDoc, tokenDoc);
+        });
       }
     } else {
       // Auto mode: fire the moment the visual center crosses the tile boundary,
