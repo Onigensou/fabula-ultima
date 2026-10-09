@@ -246,7 +246,8 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": []
+        "sequence": [],
+        "isTriggered": false
       },
       "LockView": {
         "editViewbox": false,
@@ -288,7 +289,25 @@
             "isDungeon": false,
             "navigationName": "Midgard - Item Shop",
             "sceneVisited": false,
-            "areaName": "Midgard - Item Shop"
+            "areaName": "Midgard - Item Shop",
+            "conflictEvent": "none",
+            "depthEnabled": false,
+            "depthFarY": null,
+            "depthNearY": null,
+            "depthFarScale": null,
+            "depthNearScale": null,
+            "depthCurve": null,
+            "depthSort": true,
+            "areaPanelEnabled": true,
+            "areaPanelAlwaysShow": false,
+            "wellspring_air": true,
+            "wellspring_earth": true,
+            "wellspring_fire": true,
+            "wellspring_bolt": true,
+            "wellspring_ice": true,
+            "wellspring_dark": false,
+            "wellspring_light": false,
+            "fieldEffects": ""
           },
           "sceneNetwork": "[{\"name\":\"Ancient Capital Midgard\",\"id\":\"M7tMjQIVNww5OzFw\"}]"
         },
@@ -311,16 +330,21 @@
             "item": "",
             "zenit": "",
             "treasure": "",
-            "material": ""
-          }
+            "material": "",
+            "fish": ""
+          },
+          "encounterNoveltyBias": null
         }
+      },
+      "wall-height": {
+        "advancedVision": true
       }
     },
     "_id": "Yiw5noqR6owuCGOD",
     "active": false,
     "navOrder": 0,
     "foreground": null,
-    "foregroundElevation": null,
+    "foregroundElevation": 8,
     "thumb": "worlds/fabula-ultima-2/assets/scenes/Yiw5noqR6owuCGOD-thumb.webp",
     "fog": {
       "exploration": true,
@@ -331,7 +355,7 @@
       }
     },
     "environment": {
-      "darknessLevel": 0,
+      "darknessLevel": 0.1,
       "darknessLock": false,
       "globalLight": {
         "enabled": false,
@@ -381,9 +405,257 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791358979810,
-      "modifiedTime": 1791560263906,
+      "modifiedTime": 1791577721380,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
+    "lights": [
+      {
+        "x": 1087,
+        "y": 388,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 1.74,
+          "bright": 0.87,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#e8851a",
+          "alpha": 0.5,
+          "animation": {
+            "type": "flame",
+            "speed": 5,
+            "intensity": 5,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "cauldron",
+            "draftKind": "fire"
+          }
+        },
+        "_id": "Mm4n64mXo68YRi24",
+        "elevation": 0,
+        "rotation": 0
+      },
+      {
+        "x": 283,
+        "y": 415,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 1.48,
+          "bright": 0.74,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#eeb61b",
+          "alpha": 0.5,
+          "animation": {
+            "type": "flame",
+            "speed": 3,
+            "intensity": 3,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "counter-lantern",
+            "draftKind": "lantern"
+          }
+        },
+        "_id": "QWShI9mDQwyDY8hk",
+        "elevation": 0,
+        "rotation": 0
+      },
+      {
+        "x": 255,
+        "y": 200,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 3.48,
+          "bright": 1.74,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#feecc8",
+          "alpha": 0.15,
+          "animation": {
+            "type": "sunburst",
+            "speed": 1,
+            "intensity": 5,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "roof-shaft",
+            "draftKind": "sun"
+          }
+        },
+        "_id": "ZwVdDyUJ1jFH82S7",
+        "elevation": 0,
+        "rotation": 0
+      },
+      {
+        "x": 520,
+        "y": 1060,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 2.78,
+          "bright": 1.39,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#feecc8",
+          "alpha": 0.15,
+          "animation": {
+            "type": "sunburst",
+            "speed": 1,
+            "intensity": 5,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "doorway",
+            "draftKind": "sun"
+          }
+        },
+        "_id": "gP6R3wZIj09uAlDs",
+        "elevation": 0,
+        "rotation": 0
+      },
+      {
+        "x": 1000,
+        "y": 300,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 0.87,
+          "bright": 0.44,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#ef9b25",
+          "alpha": 0.5,
+          "animation": {
+            "type": "flame",
+            "speed": 3,
+            "intensity": 4,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "nook-candle",
+            "draftKind": "candle"
+          }
+        },
+        "_id": "lhHB4UOVpTsdvVu0",
+        "elevation": 0,
+        "rotation": 0
+      },
+      {
+        "x": 160,
+        "y": 400,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 1.22,
+          "bright": 0.61,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#eeb61b",
+          "alpha": 0.5,
+          "animation": {
+            "type": "flame",
+            "speed": 3,
+            "intensity": 3,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "shelf-lantern",
+            "draftKind": "lantern"
+          }
+        },
+        "_id": "xl0RODVTcx6Y3yU5",
+        "elevation": 0,
+        "rotation": 0
+      }
+    ],
     "regions": [
       {
         "name": "Ground",

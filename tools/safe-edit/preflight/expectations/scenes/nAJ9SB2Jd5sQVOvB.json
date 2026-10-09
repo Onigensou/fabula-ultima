@@ -185,6 +185,336 @@
       "modifiedTime": 1791560264342,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
+    "lights": [
+      {
+        "x": 1400,
+        "y": 845,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 4.29,
+          "bright": 2.15,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#feecc8",
+          "alpha": 0.15,
+          "animation": {
+            "type": "sunburst",
+            "speed": 1,
+            "intensity": 5,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "hall-shaft-r",
+            "draftKind": "sun"
+          }
+        },
+        "_id": "0jroPGskspMSK80x",
+        "elevation": 0,
+        "rotation": 0
+      },
+      {
+        "x": 740,
+        "y": 830,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 4.29,
+          "bright": 2.15,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#feecc8",
+          "alpha": 0.15,
+          "animation": {
+            "type": "sunburst",
+            "speed": 1,
+            "intensity": 5,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "hall-shaft-l",
+            "draftKind": "sun"
+          }
+        },
+        "_id": "HhLw8UeTioYbn8lL",
+        "elevation": 0,
+        "rotation": 0
+      },
+      {
+        "x": 900,
+        "y": 90,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 4.86,
+          "bright": 2.43,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#feecc8",
+          "alpha": 0.15,
+          "animation": {
+            "type": "sunburst",
+            "speed": 1,
+            "intensity": 5,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "throne-shaft-l",
+            "draftKind": "sun"
+          }
+        },
+        "_id": "Jobq1JX9clwSX0gd",
+        "elevation": 0,
+        "rotation": 0
+      },
+      {
+        "x": 885,
+        "y": 815,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 3.14,
+          "bright": 1.57,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#feecc8",
+          "alpha": 0.15,
+          "animation": {
+            "type": "sunburst",
+            "speed": 1,
+            "intensity": 5,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "hall-shaft-m",
+            "draftKind": "sun"
+          }
+        },
+        "_id": "P6HaUYehBo1hm674",
+        "elevation": 0,
+        "rotation": 0
+      },
+      {
+        "x": 1265,
+        "y": 95,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 4.86,
+          "bright": 2.43,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#feecc8",
+          "alpha": 0.15,
+          "animation": {
+            "type": "sunburst",
+            "speed": 1,
+            "intensity": 5,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "throne-shaft-r",
+            "draftKind": "sun"
+          }
+        },
+        "_id": "QtpblrtdBnu9OveP",
+        "elevation": 0,
+        "rotation": 0
+      },
+      {
+        "x": 480,
+        "y": 1020,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 4.29,
+          "bright": 2.15,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#feecc8",
+          "alpha": 0.15,
+          "animation": {
+            "type": "sunburst",
+            "speed": 1,
+            "intensity": 5,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "dining-shaft",
+            "draftKind": "sun"
+          }
+        },
+        "_id": "jeY1KxTikVQvW85Q",
+        "elevation": 0,
+        "rotation": 0
+      },
+      {
+        "x": 2040,
+        "y": 955,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 4.29,
+          "bright": 2.15,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#feecc8",
+          "alpha": 0.15,
+          "animation": {
+            "type": "sunburst",
+            "speed": 1,
+            "intensity": 5,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "armory-shaft",
+            "draftKind": "sun"
+          }
+        },
+        "_id": "t9ql8X9Qq2FnaTkh",
+        "elevation": 0,
+        "rotation": 0
+      },
+      {
+        "x": 310,
+        "y": 620,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 6.29,
+          "bright": 3.15,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#729097",
+          "alpha": 0.25,
+          "animation": {
+            "type": "fog",
+            "speed": 5,
+            "intensity": 5,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "stair-mist",
+            "draftKind": "mist"
+          }
+        },
+        "_id": "zEx3pqVLTpZSkVQy",
+        "elevation": 0,
+        "rotation": 0
+      }
+    ],
     "regions": [
       {
         "name": "Ground",

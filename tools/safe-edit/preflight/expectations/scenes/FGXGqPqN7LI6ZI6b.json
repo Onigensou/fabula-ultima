@@ -289,7 +289,25 @@
             "isDungeon": false,
             "navigationName": "Midgard - Accessories Shop",
             "sceneVisited": false,
-            "areaName": "Midgard - Accessories Shop"
+            "areaName": "Midgard - Accessories Shop",
+            "conflictEvent": "none",
+            "depthEnabled": false,
+            "depthFarY": null,
+            "depthNearY": null,
+            "depthFarScale": null,
+            "depthNearScale": null,
+            "depthCurve": null,
+            "depthSort": true,
+            "areaPanelEnabled": true,
+            "areaPanelAlwaysShow": false,
+            "wellspring_air": true,
+            "wellspring_earth": true,
+            "wellspring_fire": true,
+            "wellspring_bolt": true,
+            "wellspring_ice": true,
+            "wellspring_dark": false,
+            "wellspring_light": false,
+            "fieldEffects": ""
           },
           "sceneNetwork": "[{\"name\":\"Ancient Capital Midgard\",\"id\":\"M7tMjQIVNww5OzFw\"}]"
         },
@@ -312,16 +330,21 @@
             "item": "",
             "zenit": "",
             "treasure": "",
-            "material": ""
-          }
+            "material": "",
+            "fish": ""
+          },
+          "encounterNoveltyBias": null
         }
+      },
+      "wall-height": {
+        "advancedVision": true
       }
     },
     "_id": "FGXGqPqN7LI6ZI6b",
     "active": false,
     "navOrder": 0,
     "foreground": null,
-    "foregroundElevation": null,
+    "foregroundElevation": 8,
     "thumb": "worlds/fabula-ultima-2/assets/scenes/FGXGqPqN7LI6ZI6b-thumb.webp",
     "fog": {
       "exploration": true,
@@ -332,7 +355,7 @@
       }
     },
     "environment": {
-      "darknessLevel": 0,
+      "darknessLevel": 0.1,
       "darknessLock": false,
       "globalLight": {
         "enabled": false,
@@ -382,9 +405,421 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791358983426,
-      "modifiedTime": 1791557695555,
+      "modifiedTime": 1791577700765,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
+    "lights": [
+      {
+        "x": 857,
+        "y": 292,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 0.91,
+          "bright": 0.46,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#ef9b25",
+          "alpha": 0.5,
+          "animation": {
+            "type": "flame",
+            "speed": 3,
+            "intensity": 4,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "candle-apse-r",
+            "draftKind": "candle"
+          }
+        },
+        "_id": "5emLgMsP5SPhMgei",
+        "elevation": 0,
+        "rotation": 0
+      },
+      {
+        "x": 420,
+        "y": 268,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 0.91,
+          "bright": 0.46,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#ef9b25",
+          "alpha": 0.5,
+          "animation": {
+            "type": "flame",
+            "speed": 3,
+            "intensity": 4,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "candle-apse-l",
+            "draftKind": "candle"
+          }
+        },
+        "_id": "GFQdy0gOmWxCICHl",
+        "elevation": 0,
+        "rotation": 0
+      },
+      {
+        "x": 1027,
+        "y": 493,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 0.91,
+          "bright": 0.46,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#ef9b25",
+          "alpha": 0.5,
+          "animation": {
+            "type": "flame",
+            "speed": 3,
+            "intensity": 4,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "candle-east",
+            "draftKind": "candle"
+          }
+        },
+        "_id": "LeZuCWvxkf9LvbRG",
+        "elevation": 0,
+        "rotation": 0
+      },
+      {
+        "x": 610,
+        "y": 1110,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 2.91,
+          "bright": 1.46,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#feecc8",
+          "alpha": 0.15,
+          "animation": {
+            "type": "sunburst",
+            "speed": 1,
+            "intensity": 5,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "doorway",
+            "draftKind": "sun"
+          }
+        },
+        "_id": "M6IKLmFw0ro5rPEx",
+        "elevation": 0,
+        "rotation": 0
+      },
+      {
+        "x": 187,
+        "y": 810,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 0.91,
+          "bright": 0.46,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#ef9b25",
+          "alpha": 0.5,
+          "animation": {
+            "type": "flame",
+            "speed": 3,
+            "intensity": 4,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "candle-workbench",
+            "draftKind": "candle"
+          }
+        },
+        "_id": "QEZWGL7etVrYNW6E",
+        "elevation": 0,
+        "rotation": 0
+      },
+      {
+        "x": 880,
+        "y": 650,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 4,
+          "bright": 2,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#feecc8",
+          "alpha": 0.15,
+          "animation": {
+            "type": "sunburst",
+            "speed": 1,
+            "intensity": 5,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "floor-shaft",
+            "draftKind": "sun"
+          }
+        },
+        "_id": "ROszZIRJq9UwXtu1",
+        "elevation": 0,
+        "rotation": 0
+      },
+      {
+        "x": 252,
+        "y": 700,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 0.91,
+          "bright": 0.46,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#ef9b25",
+          "alpha": 0.5,
+          "animation": {
+            "type": "flame",
+            "speed": 3,
+            "intensity": 4,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "candle-west-b",
+            "draftKind": "candle"
+          }
+        },
+        "_id": "UaXECR2yBXDV4Pz5",
+        "elevation": 0,
+        "rotation": 0
+      },
+      {
+        "x": 862,
+        "y": 380,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 0.91,
+          "bright": 0.46,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#ef9b25",
+          "alpha": 0.5,
+          "animation": {
+            "type": "flame",
+            "speed": 3,
+            "intensity": 4,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "candle-counter-r",
+            "draftKind": "candle"
+          }
+        },
+        "_id": "a45N8okfuw2LHR8L",
+        "elevation": 0,
+        "rotation": 0
+      },
+      {
+        "x": 468,
+        "y": 380,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 0.91,
+          "bright": 0.46,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#ef9b25",
+          "alpha": 0.5,
+          "animation": {
+            "type": "flame",
+            "speed": 3,
+            "intensity": 4,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "candle-counter-l",
+            "draftKind": "candle"
+          }
+        },
+        "_id": "dN2ORZBMMQmMmV6c",
+        "elevation": 0,
+        "rotation": 0
+      },
+      {
+        "x": 188,
+        "y": 345,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 0.91,
+          "bright": 0.46,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#ef9b25",
+          "alpha": 0.5,
+          "animation": {
+            "type": "flame",
+            "speed": 3,
+            "intensity": 4,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "candle-west-a",
+            "draftKind": "candle"
+          }
+        },
+        "_id": "iN2K2qp7i6I7a0JA",
+        "elevation": 0,
+        "rotation": 0
+      }
+    ],
     "regions": [
       {
         "name": "Ground",
