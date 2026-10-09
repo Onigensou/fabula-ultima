@@ -35,7 +35,12 @@
 //   Per-token cooldown map (tokenId → timestamp).  2-second window blocks
 //   A→B→A infinite loops when both tiles are teleporters.
 //
-// SCENE MODE "none": fully disabled.
+// FREE-MAP SCENES (scene mode unset or "none" — e.g. the Overworld, where the
+// party token is dragged between small location tiles):
+//   Same detection as exploration, but a confirmMode tile skips the door button
+//   and opens the "Enter X?" prompt as soon as the party token stops on it.
+//   Only tiles carrying an enabled teleporter flag react, so legacy maps whose
+//   doors run on Monk's Active Tiles actions are untouched.
 // ============================================================================
 (() => {
   const GUARD = "__ONI_TP_BOOTSTRAP__";
@@ -263,7 +268,7 @@
   function _startExploreWatch() {
     if (_tpTickerFn || !canvas?.app?.ticker) return;
     _tpTickerFn = () => {
-      if (_getSceneMode() !== "exploration") return;
+      if (_getSceneMode() !== "exploration" && !_isFreeMap()) return;
       if (!_tpWatchToken) return;
       const vis = _tpWatchToken.center; // PIXI visual position — live during animation
       _runExploreDetect(_tpWatchToken.document, vis.x, vis.y);
@@ -324,7 +329,19 @@
     return (_cachedSceneMode = getSceneMode());
   }
 
-  function _invalidateSceneMode() { _cachedSceneMode = null; }
+  // Free map = the scene has no mode at all (or an explicit "none"). Read the RAW
+  // flag: getSceneMode() also reports "none" for stealth / conflict / title etc.
+  let _cachedFreeMap = null;
+
+  function _isFreeMap() {
+    if (_cachedFreeMap !== null) return _cachedFreeMap;
+    const DP  = globalThis.DungeonPathing;
+    const raw = canvas?.scene?.flags?.[MODULE_ID]?.[DP?.FABULA_ROOT_KEY ?? "oniFabula"]?.[DP?.GENERAL_KEY ?? "general"]?.[DP?.SCENE_MODE_KEY ?? "sceneMode"];
+    const noMode = raw === undefined || raw === null || raw === "" || raw === "none";
+    return (_cachedFreeMap = noMode && _getSceneMode() === "none");
+  }
+
+  function _invalidateSceneMode() { _cachedSceneMode = null; _cachedFreeMap = null; }
 
   Hooks.on("updateScene", (sceneDoc, changes) => {
     if ("flags" in changes) _invalidateSceneMode();
@@ -394,22 +411,7 @@
       const token = _hudBtnToken;
       hideTpHudButton();
       if (!tile || !token) return;
-      // Control may have been handed over while the button was up.
-      if (!(await canOperateTeleporter())) return;
-
-      const flags = getFlags(tile);
-      const wantsDialog = flags?.confirmDialog !== false && flags?.confirmDialog !== "false";
-      if (wantsDialog && flags?.destination) {
-        _promptTileId = tile.id;
-        const confirmed = await askTeleportConfirm(flags.destination);
-        _promptTileId = null;
-        if (!confirmed) {
-          // Declined: bring the button back if the token is still standing on the tile.
-          if (!_hudBtn && _tokenOnTile.get(token.id)?.has(tile.id)) showTpHudButton(tile, token);
-          return;
-        }
-      }
-      await triggerTeleporter(tile, token, { applyDpOffset: false, forcedNodeId: null });
+      await confirmAndTeleport(tile, token, { rearmButton: true });
     });
 
     // RAF loop: re-position every frame while camera is moving to follow the token
@@ -419,6 +421,27 @@
       _hudBtnRaf = requestAnimationFrame(track);
     }
     _hudBtnRaf = requestAnimationFrame(track);
+  }
+
+  // Prompt (when the tile's confirmDialog is on, the default) → teleport.
+  // rearmButton: after a "No", bring the door button back while the token is
+  // still on the tile (exploration). Free maps have no button; step off and on.
+  async function confirmAndTeleport(tile, token, { rearmButton = false } = {}) {
+    // Control may have been handed over since the tile was entered.
+    if (!(await canOperateTeleporter())) return;
+
+    const flags = getFlags(tile);
+    const wantsDialog = flags?.confirmDialog !== false && flags?.confirmDialog !== "false";
+    if (wantsDialog && flags?.destination) {
+      _promptTileId = tile.id;
+      const confirmed = await askTeleportConfirm(flags.destination);
+      _promptTileId = null;
+      if (!confirmed) {
+        if (rearmButton && !_hudBtn && _tokenOnTile.get(token.id)?.has(tile.id)) showTpHudButton(tile, token);
+        return;
+      }
+    }
+    await triggerTeleporter(tile, token, { applyDpOffset: false, forcedNodeId: null });
   }
 
   function hideTpHudButton(animate = false) {
@@ -808,9 +831,16 @@
       // (With animate:true, tokenDoc.x/y = final destination — already known.)
       const docC = tokenCenter(tokenDoc);
       if (docC.x >= rx && docC.x <= rx + rw && docC.y >= ry && docC.y <= ry + rh) {
+        const freeMap = _isFreeMap();
         canOperateTeleporter().then((ok) => {
           // still standing on the tile once the controller check resolves?
-          if (ok && _tokenOnTile.get(tokenDoc.id)?.has(tileDoc.id)) showTpHudButton(tileDoc, tokenDoc);
+          if (!ok || !_tokenOnTile.get(tokenDoc.id)?.has(tileDoc.id)) return;
+          if (freeMap) {
+            // Location tile on a free map: no door button, straight to the prompt.
+            confirmAndTeleport(tileDoc, tokenDoc).catch(e => console.error(TAG, "teleport error:", e));
+          } else {
+            showTpHudButton(tileDoc, tokenDoc);
+          }
         });
       }
     } else {
