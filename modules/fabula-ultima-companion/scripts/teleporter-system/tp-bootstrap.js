@@ -3,7 +3,8 @@
 //
 // DUNGEON MODE ("dungeon"):
 //   Hooks "dungeonPathing.turnEnd" which fires { tokenDoc, node }.
-//   confirmMode=true → styled parchment/JRPG dialog with smart text:
+//   confirmMode=true → custom parchment/gold/wood prompt box (showTpPrompt,
+//   plain DOM — not a Foundry Dialog) with smart text:
 //     same-scene  → "Go to next Area?"
 //     cross-scene → "Enter <navName>?" or "Enter Area?"
 //   confirmMode=false → teleport immediately after turn end.
@@ -91,137 +92,126 @@
   50%     { box-shadow: 0 0 24px rgba(190,130,255,.75), 0 4px 18px rgba(0,0,0,.55); }
 }
 
-/* ── Teleporter dungeon dialog — parchment/JRPG theme ── */
-.oni-tp-dialog {
+/* ── Teleporter prompt box — parchment / gold / wood (custom DOM, no Foundry Dialog) ── */
+#oni-tp-prompt {
   --parchment-1:#f6ebd3; --parchment-2:#efdfc3; --parchment-3:#e7d3b1;
   --wood-1:#a87649; --wood-2:#8d5f38; --wood-3:#6f4526;
   --gold-1:#f4d488; --gold-2:#caa44d; --gold-3:#9a7a2b;
-  --ink:#3b2a19; --shadow:rgba(0,0,0,.35); --glow:rgba(250,230,160,.55);
-}
-.oni-tp-dialog.window-app {
-  position: relative !important;
-  border: 2px solid rgba(80,52,30,.8) !important;
-  border-radius: 14px !important;
-  background:
-    radial-gradient(120% 80% at 50% 0%,rgba(255,255,255,.45) 0%,rgba(255,255,255,.15) 22%,transparent 40%),
-    linear-gradient(180deg,var(--parchment-1) 0%,var(--parchment-2) 55%,var(--parchment-3) 100%) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.6),
-    inset 0 0 0 2px rgba(255,255,255,.08),
-    0 0 0 8px rgba(90,60,34,.5),
-    0 16px 32px var(--shadow) !important;
-  overflow: visible !important;
-  color: var(--ink) !important;
-  font-family: "Signika","Noto Sans","Inter",system-ui,sans-serif;
-}
-/* Wooden frame extends beyond dialog border */
-.oni-tp-dialog.window-app::before {
-  content: "";
-  position: absolute;
-  inset: -11px;
-  border-radius: 22px;
+  --ink:#3b2a19;
+  position: fixed;
+  left: 50%;
+  top: 42%;
+  z-index: 9995;
+  min-width: 300px;
+  max-width: min(460px, 86vw);
+  padding: 11px;                       /* the wooden frame */
+  border-radius: 20px;
   background:
     linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,.12)),
     repeating-linear-gradient(22deg,
       var(--wood-1) 0 10px, var(--wood-2) 10px 20px,
       var(--wood-3) 20px 30px, var(--wood-2) 30px 40px);
-  box-shadow: 0 0 0 1px rgba(52,32,18,.85), 0 10px 32px rgba(0,0,0,.5);
-  z-index: -1;
-  filter: saturate(.94) contrast(1.06) sepia(.12);
+  box-shadow: 0 0 0 1px rgba(52,32,18,.85), 0 14px 34px rgba(0,0,0,.55);
+  font-family: "Signika","Noto Sans","Inter",system-ui,sans-serif;
+  color: var(--ink);
+  user-select: none;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translate(-50%, calc(-50% + 26px));
+  transition: opacity 360ms cubic-bezier(.25,.46,.45,.94),
+              transform 360ms cubic-bezier(.25,.46,.45,.94);
+}
+#oni-tp-prompt.tp-visible {
+  opacity: 1;
+  transform: translate(-50%, -50%);
+}
+#oni-tp-prompt.tp-leaving {
+  opacity: 0;
+  transform: translate(-50%, calc(-50% - 20px));
+  transition: opacity 280ms cubic-bezier(.55,.085,.68,.53),
+              transform 280ms cubic-bezier(.55,.085,.68,.53);
   pointer-events: none;
 }
-/* Brass studs — top-left anchor; rest faked via box-shadow */
-.oni-tp-dialog.window-app::after {
-  --r:10px;
-  content: "";
+#oni-tp-prompt .oni-tp-sheet {
+  position: relative;
+  border: 2px solid rgba(80,52,30,.8);
+  border-radius: 12px;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 80% at 50% 0%,rgba(255,255,255,.45) 0%,rgba(255,255,255,.15) 22%,transparent 40%),
+    linear-gradient(180deg,var(--parchment-1) 0%,var(--parchment-2) 55%,var(--parchment-3) 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.6), inset 0 0 0 2px rgba(255,255,255,.08);
+}
+/* Brass studs in the four corners of the sheet */
+#oni-tp-prompt .oni-tp-stud {
   position: absolute;
-  width: var(--r); height: var(--r);
+  width: 9px; height: 9px;
   border-radius: 50%;
-  top: 8px; left: 8px;
   background:
     radial-gradient(circle at 35% 35%,#fff8,#fff0 55%),
-    radial-gradient(circle at 62% 65%,#0003,#0000 60%),
     linear-gradient(180deg,var(--gold-1),var(--gold-2) 60%,var(--gold-3));
-  box-shadow:
-    calc(100% - 16px + 2px) 0  0 0 var(--gold-2),
-    0 calc(100% - 16px + 2px) 0 0 var(--gold-2),
-    calc(100% - 16px + 2px) calc(100% - 16px + 2px) 0 0 var(--gold-2),
-    0 0 10px var(--glow);
-  z-index: 1;
+  box-shadow: 0 0 0 1px rgba(90,60,34,.55), 0 0 8px rgba(250,230,160,.45);
   pointer-events: none;
 }
-/* Header — gold plaque */
-.oni-tp-dialog .window-header {
-  background: linear-gradient(180deg,var(--gold-1) 0%,var(--gold-2) 55%,var(--gold-3) 100%) !important;
-  border-bottom: 2px solid rgba(90,60,34,.55);
-  border-radius: 12px 12px 0 0;
-  color: #4b3517 !important;
-  text-shadow: 0 1px 0 rgba(255,255,255,.55);
-  padding: 8px 14px;
-}
-.oni-tp-dialog .window-header .window-title {
-  color: #4b3517 !important;
-  font-weight: 700;
-  letter-spacing: .3px;
-}
-.oni-tp-dialog .window-header .header-button {
-  color: #5c421e !important;
-}
-/* Content */
-.oni-tp-dialog .window-content {
-  background: transparent !important;
-  color: var(--ink) !important;
-  font-family: "Signika","Noto Sans","Inter",system-ui,sans-serif;
-  padding: 14px 18px 6px;
-}
-.oni-tp-dialog .window-content p,
-.oni-tp-dialog .window-content .oni-tp-msg {
-  text-align: center;
-  padding: 6px 4px;
+#oni-tp-prompt .oni-tp-stud.tl { top: 6px;    left: 6px; }
+#oni-tp-prompt .oni-tp-stud.tr { top: 6px;    right: 6px; }
+#oni-tp-prompt .oni-tp-stud.bl { bottom: 6px; left: 6px; }
+#oni-tp-prompt .oni-tp-stud.br { bottom: 6px; right: 6px; }
+#oni-tp-prompt .oni-tp-msg {
   margin: 0;
-  font-size: 1.08em;
-  font-weight: 600;
-  color: var(--ink) !important;
-  line-height: 1.55;
-}
-/* Divider above buttons */
-.oni-tp-dialog .dialog-buttons,
-.oni-tp-dialog footer.dialog-buttons {
-  border-top: 1px solid rgba(92,66,30,.35);
-  padding: 8px 12px 10px;
-  background: transparent !important;
-  display: flex;
-  gap: 8px;
-}
-/* JRPG gold buttons */
-.oni-tp-dialog .dialog-buttons button,
-.oni-tp-dialog footer.dialog-buttons button {
-  flex: 1;
-  border: 1px solid rgba(90,60,34,.68) !important;
-  border-radius: 10px !important;
-  padding: 7px 14px !important;
+  padding: 22px 26px 16px;
+  text-align: center;
+  font-size: 18px;
   font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: .2px;
+  color: var(--ink);
+  text-shadow: 0 1px 0 rgba(255,255,255,.55);
+}
+#oni-tp-prompt .oni-tp-actions {
+  display: flex;
+  gap: 10px;
+  padding: 10px 18px 16px;
+  border-top: 1px solid rgba(92,66,30,.35);
+}
+#oni-tp-prompt .oni-tp-choice {
+  flex: 1;
+  margin: 0;
+  border: 1px solid rgba(90,60,34,.68);
+  border-radius: 10px;
+  padding: 8px 14px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
   cursor: pointer;
-  background: linear-gradient(180deg,var(--gold-1) 0%,var(--gold-2) 58%,var(--gold-3) 100%) !important;
-  color: #4b3517 !important;
+  background: linear-gradient(180deg,var(--gold-1) 0%,var(--gold-2) 58%,var(--gold-3) 100%);
+  color: #4b3517;
   text-shadow: 0 1px 0 rgba(255,255,255,.6);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.6),
     0 0 0 2px rgba(90,60,34,.26),
-    0 6px 16px rgba(0,0,0,.2) !important;
+    0 6px 16px rgba(0,0,0,.2);
   transition: transform .06s ease, filter .12s ease, box-shadow .12s ease;
 }
-.oni-tp-dialog .dialog-buttons button:hover,
-.oni-tp-dialog footer.dialog-buttons button:hover {
-  filter: brightness(1.07) saturate(1.06);
+#oni-tp-prompt .oni-tp-choice.no {
+  background: linear-gradient(180deg,#e9dcc0 0%,#cdb88f 58%,#a8926a 100%);
 }
-.oni-tp-dialog .dialog-buttons button:active,
-.oni-tp-dialog footer.dialog-buttons button:active {
-  transform: translateY(1px) !important;
+#oni-tp-prompt .oni-tp-choice:hover,
+#oni-tp-prompt .oni-tp-choice:focus-visible {
+  filter: brightness(1.07) saturate(1.06);
+  outline: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.6),
+    0 0 0 2px rgba(154,122,43,.75),
+    0 6px 16px rgba(0,0,0,.2);
+}
+#oni-tp-prompt .oni-tp-choice:active {
+  transform: translateY(1px);
   box-shadow:
     inset 0 1px 0 rgba(0,0,0,.1),
     0 0 0 2px rgba(90,60,34,.26),
-    0 3px 8px rgba(0,0,0,.28) !important;
+    0 3px 8px rgba(0,0,0,.28);
 }
     `;
     document.head.appendChild(s);
@@ -385,6 +375,7 @@
   let _hudBtnTile  = null;
   let _hudBtnToken = null;
   let _hudBtnRaf   = null;
+  let _promptTileId = null; // exploration: tile whose "Enter X?" prompt is open
 
   function _positionHudBtn(btn, tokenDoc) {
     if (!btn || !tokenDoc) return;
@@ -431,7 +422,9 @@
       const flags = getFlags(tile);
       const wantsDialog = flags?.confirmDialog !== false && flags?.confirmDialog !== "false";
       if (wantsDialog && flags?.destination) {
+        _promptTileId = tile.id;
         const confirmed = await askTeleportConfirm(flags.destination);
+        _promptTileId = null;
         if (!confirmed) {
           // Declined: bring the button back if the token is still standing on the tile.
           if (!_hudBtn && _tokenOnTile.get(token.id)?.has(tile.id)) showTpHudButton(tile, token);
@@ -485,16 +478,70 @@
       promptText = "Go to next Area?";
     }
 
-    return Dialog.confirm(
-      {
-        title:   "Teleporter",
-        content: `<p class="oni-tp-msg">${promptText}</p>`,
-      },
-      {
-        classes: ["dialog", "oni-tp-dialog"],
-        width:   280,
-      }
-    );
+    return showTpPrompt(promptText);
+  }
+
+  // ── Custom prompt box ─────────────────────────────────────────────────────────
+  // One prompt at a time. Resolves true (Yes / Enter) or false (No / Esc /
+  // closed from outside, e.g. the token walked off the tile or the scene changed).
+
+  const TP_PROMPT_OUT_MS = 280; // keep in step with #oni-tp-prompt.tp-leaving
+  let _tpPrompt = null;         // { el, finish }
+
+  function closeTpPrompt(result = false) {
+    _tpPrompt?.finish(result);
+  }
+
+  function showTpPrompt(text) {
+    closeTpPrompt(false);
+    ensureStyle();
+
+    return new Promise((resolve) => {
+      const el = document.createElement("div");
+      el.id = "oni-tp-prompt";
+      el.setAttribute("role", "dialog");
+      el.innerHTML = `
+        <div class="oni-tp-sheet">
+          <span class="oni-tp-stud tl"></span><span class="oni-tp-stud tr"></span>
+          <span class="oni-tp-stud bl"></span><span class="oni-tp-stud br"></span>
+          <p class="oni-tp-msg"></p>
+          <div class="oni-tp-actions">
+            <button type="button" class="oni-tp-choice yes">Yes</button>
+            <button type="button" class="oni-tp-choice no">No</button>
+          </div>
+        </div>`;
+      el.querySelector(".oni-tp-msg").textContent = text;
+
+      const entry = { el, finish: null };
+      const onKey = (ev) => {
+        // Leave typing alone (chat box, sheet fields) — Enter there must not teleport.
+        if (ev.target?.closest?.("input, textarea, select, [contenteditable='true']")) return;
+        if (ev.key === "Escape")     { ev.preventDefault(); ev.stopPropagation(); entry.finish(false); }
+        else if (ev.key === "Enter")  { ev.preventDefault(); ev.stopPropagation(); entry.finish(true); }
+      };
+      entry.finish = (result) => {
+        if (_tpPrompt !== entry) return;   // already finished
+        _tpPrompt = null;
+        window.removeEventListener("keydown", onKey, true);
+        el.classList.remove("tp-visible");
+        el.classList.add("tp-leaving");
+        setTimeout(() => el.remove(), TP_PROMPT_OUT_MS + 40);
+        resolve(result === true);
+      };
+
+      // pointerdown is swallowed so the click never reaches the canvas underneath
+      el.addEventListener("pointerdown", (ev) => ev.stopPropagation());
+      el.querySelector(".yes").addEventListener("click", () => entry.finish(true));
+      el.querySelector(".no").addEventListener("click",  () => entry.finish(false));
+      window.addEventListener("keydown", onKey, true);
+
+      document.body.appendChild(el);
+      _tpPrompt = entry;
+      // Two frames so the starting (hidden, offset) state is painted before the transition.
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        if (_tpPrompt === entry) el.classList.add("tp-visible");
+      }));
+    });
   }
 
   // ── Core trigger ──────────────────────────────────────────────────────────────
@@ -728,6 +775,8 @@
       const onTile = _tokenOnTile.get(tokenDoc.id);
       if (!onTile?.has(_hudBtnTile.id)) hideTpHudButton(true); // animated exit
     }
+    // Walked off the tile with the prompt still open → treat as "No"
+    if (_promptTileId && !_tokenOnTile.get(tokenDoc.id)?.has(_promptTileId)) closeTpPrompt(false);
 
     if (entered.length === 0) return;
 
@@ -753,6 +802,7 @@
 
   // Stop ticker and clean up button when scene unloads
   Hooks.on("canvasTearDown", () => {
+    closeTpPrompt(false);
     hideTpHudButton();
     _stopExploreWatch();
   });
