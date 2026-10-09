@@ -3,7 +3,7 @@
 //
 // DUNGEON MODE ("dungeon"):
 //   Hooks "dungeonPathing.turnEnd" which fires { tokenDoc, node }.
-//   confirmMode=true → custom parchment/gold/wood prompt box (showTpPrompt,
+//   confirmMode=true → custom cream prompt box with the feather cursor (showTpPrompt,
 //   plain DOM — not a Foundry Dialog) with smart text:
 //     same-scene  → "Go to next Area?"
 //     cross-scene → "Enter <navName>?" or "Enter Area?"
@@ -92,28 +92,24 @@
   50%     { box-shadow: 0 0 24px rgba(190,130,255,.75), 0 4px 18px rgba(0,0,0,.55); }
 }
 
-/* ── Teleporter prompt box — parchment / gold / wood (custom DOM, no Foundry Dialog) ── */
+/* ── Teleporter prompt box — flat cream panel, dark-brown outline, feather cursor ── */
 #oni-tp-prompt {
-  --parchment-1:#f6ebd3; --parchment-2:#efdfc3; --parchment-3:#e7d3b1;
-  --wood-1:#a87649; --wood-2:#8d5f38; --wood-3:#6f4526;
-  --gold-1:#f4d488; --gold-2:#caa44d; --gold-3:#9a7a2b;
-  --ink:#3b2a19;
+  --tp-cream: #f5e8d2;
+  --tp-brown: #4e281a;
   position: fixed;
   left: 50%;
   top: 42%;
   z-index: 9995;
-  min-width: 300px;
-  max-width: min(460px, 86vw);
-  padding: 11px;                       /* the wooden frame */
-  border-radius: 20px;
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,.12)),
-    repeating-linear-gradient(22deg,
-      var(--wood-1) 0 10px, var(--wood-2) 10px 20px,
-      var(--wood-3) 20px 30px, var(--wood-2) 30px 40px);
-  box-shadow: 0 0 0 1px rgba(52,32,18,.85), 0 14px 34px rgba(0,0,0,.55);
-  font-family: "Signika","Noto Sans","Inter",system-ui,sans-serif;
-  color: var(--ink);
+  box-sizing: border-box;
+  min-width: 440px;
+  max-width: min(860px, 90vw);
+  padding: 40px 56px 54px;
+  border: 6px solid var(--tp-brown);
+  border-radius: 46px;
+  background: var(--tp-cream);
+  box-shadow: 0 10px 26px rgba(0,0,0,.38);
+  font-family: "SuplexmentaryComic","ComicInk","Signika",sans-serif;
+  color: var(--tp-brown);
   user-select: none;
   pointer-events: auto;
   opacity: 0;
@@ -132,86 +128,66 @@
               transform 280ms cubic-bezier(.55,.085,.68,.53);
   pointer-events: none;
 }
-#oni-tp-prompt .oni-tp-sheet {
-  position: relative;
-  border: 2px solid rgba(80,52,30,.8);
-  border-radius: 12px;
-  overflow: hidden;
-  background:
-    radial-gradient(120% 80% at 50% 0%,rgba(255,255,255,.45) 0%,rgba(255,255,255,.15) 22%,transparent 40%),
-    linear-gradient(180deg,var(--parchment-1) 0%,var(--parchment-2) 55%,var(--parchment-3) 100%);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.6), inset 0 0 0 2px rgba(255,255,255,.08);
-}
-/* Brass studs in the four corners of the sheet */
-#oni-tp-prompt .oni-tp-stud {
-  position: absolute;
-  width: 9px; height: 9px;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 35% 35%,#fff8,#fff0 55%),
-    linear-gradient(180deg,var(--gold-1),var(--gold-2) 60%,var(--gold-3));
-  box-shadow: 0 0 0 1px rgba(90,60,34,.55), 0 0 8px rgba(250,230,160,.45);
-  pointer-events: none;
-}
-#oni-tp-prompt .oni-tp-stud.tl { top: 6px;    left: 6px; }
-#oni-tp-prompt .oni-tp-stud.tr { top: 6px;    right: 6px; }
-#oni-tp-prompt .oni-tp-stud.bl { bottom: 6px; left: 6px; }
-#oni-tp-prompt .oni-tp-stud.br { bottom: 6px; right: 6px; }
 #oni-tp-prompt .oni-tp-msg {
   margin: 0;
-  padding: 22px 26px 16px;
+  padding: 0;
   text-align: center;
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1.45;
-  letter-spacing: .2px;
-  color: var(--ink);
-  text-shadow: 0 1px 0 rgba(255,255,255,.55);
+  text-transform: uppercase;
+  font-size: 30px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 1px;
+  color: var(--tp-brown);
+  -webkit-text-stroke: .6px var(--tp-brown);
 }
+/* Yes / No hang off the bottom-right corner, overlapping the outline */
 #oni-tp-prompt .oni-tp-actions {
+  position: absolute;
+  right: -6px;
+  bottom: -34px;
   display: flex;
-  gap: 10px;
-  padding: 10px 18px 16px;
-  border-top: 1px solid rgba(92,66,30,.35);
+  gap: 18px;
 }
 #oni-tp-prompt .oni-tp-choice {
-  flex: 1;
+  position: relative;
+  box-sizing: border-box;
+  width: 132px;
+  height: 58px;
   margin: 0;
-  border: 1px solid rgba(90,60,34,.68);
-  border-radius: 10px;
-  padding: 8px 14px;
+  padding: 0;
+  border: 5px solid var(--tp-brown);
+  border-radius: 18px;
+  background: var(--tp-cream);
+  color: var(--tp-brown);
   font: inherit;
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.2;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  -webkit-text-stroke: .5px var(--tp-brown);
   cursor: pointer;
-  background: linear-gradient(180deg,var(--gold-1) 0%,var(--gold-2) 58%,var(--gold-3) 100%);
-  color: #4b3517;
-  text-shadow: 0 1px 0 rgba(255,255,255,.6);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.6),
-    0 0 0 2px rgba(90,60,34,.26),
-    0 6px 16px rgba(0,0,0,.2);
-  transition: transform .06s ease, filter .12s ease, box-shadow .12s ease;
+  box-shadow: none;
+  transition: transform .1s ease, background-color .12s ease;
 }
-#oni-tp-prompt .oni-tp-choice.no {
-  background: linear-gradient(180deg,#e9dcc0 0%,#cdb88f 58%,#a8926a 100%);
+#oni-tp-prompt .oni-tp-choice:focus { outline: none; box-shadow: none; }
+#oni-tp-prompt .oni-tp-choice.is-picked { background: #fbf3e2; transform: translateY(-2px); }
+#oni-tp-prompt .oni-tp-choice:active   { transform: translateY(1px); }
+/* Feather cursor — the same icon the other system UIs use — rides the picked button */
+#oni-tp-prompt .oni-tp-feather {
+  position: absolute;
+  right: -22px;
+  top: -42px;
+  width: 62px;
+  height: 62px;
+  pointer-events: none;
+  border: none !important; outline: none !important;
+  box-shadow: none !important; background: transparent !important;
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,.25));
+  animation: oni-tp-feather-float 2.2s ease-in-out infinite;
 }
-#oni-tp-prompt .oni-tp-choice:hover,
-#oni-tp-prompt .oni-tp-choice:focus-visible {
-  filter: brightness(1.07) saturate(1.06);
-  outline: none;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.6),
-    0 0 0 2px rgba(154,122,43,.75),
-    0 6px 16px rgba(0,0,0,.2);
-}
-#oni-tp-prompt .oni-tp-choice:active {
-  transform: translateY(1px);
-  box-shadow:
-    inset 0 1px 0 rgba(0,0,0,.1),
-    0 0 0 2px rgba(90,60,34,.26),
-    0 3px 8px rgba(0,0,0,.28);
+@keyframes oni-tp-feather-float {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-5px); }
 }
     `;
     document.head.appendChild(s);
@@ -485,6 +461,7 @@
   // One prompt at a time. Resolves true (Yes / Enter) or false (No / Esc /
   // closed from outside, e.g. the token walked off the tile or the scene changed).
 
+  const TP_FEATHER_URL = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/feather.png";
   const TP_PROMPT_OUT_MS = 280; // keep in step with #oni-tp-prompt.tp-leaving
   let _tpPrompt = null;         // { el, finish }
 
@@ -501,23 +478,41 @@
       el.id = "oni-tp-prompt";
       el.setAttribute("role", "dialog");
       el.innerHTML = `
-        <div class="oni-tp-sheet">
-          <span class="oni-tp-stud tl"></span><span class="oni-tp-stud tr"></span>
-          <span class="oni-tp-stud bl"></span><span class="oni-tp-stud br"></span>
-          <p class="oni-tp-msg"></p>
-          <div class="oni-tp-actions">
-            <button type="button" class="oni-tp-choice yes">Yes</button>
-            <button type="button" class="oni-tp-choice no">No</button>
-          </div>
+        <p class="oni-tp-msg"></p>
+        <div class="oni-tp-actions">
+          <button type="button" class="oni-tp-choice yes">Yes</button>
+          <button type="button" class="oni-tp-choice no">No</button>
         </div>`;
       el.querySelector(".oni-tp-msg").textContent = text;
+
+      const yesBtn = el.querySelector(".yes");
+      const noBtn  = el.querySelector(".no");
+      const feather = document.createElement("img");
+      feather.className = "oni-tp-feather";
+      feather.src = TP_FEATHER_URL;
+      feather.alt = "";
+
+      // The feather marks the picked answer: hover or ←/→ moves it, Enter takes it.
+      let picked = null;
+      const pick = (btn) => {
+        if (picked === btn) return;
+        picked?.classList.remove("is-picked");
+        picked = btn;
+        btn.classList.add("is-picked");
+        btn.appendChild(feather);
+      };
 
       const entry = { el, finish: null };
       const onKey = (ev) => {
         // Leave typing alone (chat box, sheet fields) — Enter there must not teleport.
         if (ev.target?.closest?.("input, textarea, select, [contenteditable='true']")) return;
-        if (ev.key === "Escape")     { ev.preventDefault(); ev.stopPropagation(); entry.finish(false); }
-        else if (ev.key === "Enter")  { ev.preventDefault(); ev.stopPropagation(); entry.finish(true); }
+        let handled = true;
+        if (ev.key === "Escape")                                entry.finish(false);
+        else if (ev.key === "Enter" || ev.key === " ")          entry.finish(picked === yesBtn);
+        else if (ev.key === "ArrowLeft"  || ev.key === "a" || ev.key === "A") pick(yesBtn);
+        else if (ev.key === "ArrowRight" || ev.key === "d" || ev.key === "D") pick(noBtn);
+        else handled = false;
+        if (handled) { ev.preventDefault(); ev.stopPropagation(); }
       };
       entry.finish = (result) => {
         if (_tpPrompt !== entry) return;   // already finished
@@ -531,10 +526,13 @@
 
       // pointerdown is swallowed so the click never reaches the canvas underneath
       el.addEventListener("pointerdown", (ev) => ev.stopPropagation());
-      el.querySelector(".yes").addEventListener("click", () => entry.finish(true));
-      el.querySelector(".no").addEventListener("click",  () => entry.finish(false));
+      yesBtn.addEventListener("pointerenter", () => pick(yesBtn));
+      noBtn.addEventListener("pointerenter",  () => pick(noBtn));
+      yesBtn.addEventListener("click", () => entry.finish(true));
+      noBtn.addEventListener("click",  () => entry.finish(false));
       window.addEventListener("keydown", onKey, true);
 
+      pick(yesBtn);
       document.body.appendChild(el);
       _tpPrompt = entry;
       // Two frames so the starting (hidden, offset) state is painted before the transition.
