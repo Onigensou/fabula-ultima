@@ -323,6 +323,8 @@
       const isTwoWay    = flags.twoWay      === true  || flags.twoWay      === "true";
       const destination = flags.destination ?? null;
       const sfxUrl      = typeof flags.sfxUrl === "string" ? flags.sfxUrl : "";
+      const promptName  = typeof flags.promptName === "string" ? flags.promptName : "";
+      const escAttr     = (v) => String(v).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 
       tabPanel.innerHTML = `
         <h3 style="margin-top:0;"><i class="fas fa-exchange-alt"></i> Teleporter Settings</h3>
@@ -367,6 +369,17 @@
             <b>On</b>: clicking the door button opens an "Enter &lt;area&gt;?" dialog.<br>
             <b>Off</b>: clicking the door button teleports at once.
           </p>
+        </div>
+
+        <div class="form-group">
+          <label>Prompt Name</label>
+          <div class="form-fields">
+            <input type="text"
+                   name="flags.${MODULE_ID}.${FLAG_ROOT}.promptName"
+                   value="${escAttr(promptName)}"
+                   placeholder="(destination's name)" />
+          </div>
+          <p class="notes">Name shown in the "Enter <b>Name</b>?" prompt. Leave blank to use the destination scene's name.</p>
         </div>
 
         <h3><i class="fas fa-map-marker-alt"></i> Destination</h3>

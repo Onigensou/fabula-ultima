@@ -434,7 +434,7 @@
     const wantsDialog = flags?.confirmDialog !== false && flags?.confirmDialog !== "false";
     if (wantsDialog && flags?.destination) {
       _promptTileId = tile.id;
-      const confirmed = await askTeleportConfirm(flags.destination);
+      const confirmed = await askTeleportConfirm(flags.destination, flags);
       _promptTileId = null;
       if (!confirmed) {
         if (rearmButton && !_hudBtn && _tokenOnTile.get(token.id)?.has(tile.id)) showTpHudButton(tile, token);
@@ -464,13 +464,18 @@
   // ── Confirmation dialog — parchment/JRPG themed with smart text ──────────────
   // Shared by dungeon mode (on turn end) and exploration mode (after the button).
 
-  async function askTeleportConfirm(destination) {
+  async function askTeleportConfirm(destination, flags = null) {
     const currentSceneId = canvas?.scene?.id;
     const isCrossScene   = destination?.sceneId && destination.sceneId !== currentSceneId;
 
     // [before, area name (shown bold), after] — a plain string has no highlight
     let promptText;
-    if (isCrossScene) {
+    // promptName on the tile wins over the destination scene's own name — e.g. an
+    // Overworld door labelled "The Wyrmwood - Exit" that lands on the last map.
+    const custom = typeof flags?.promptName === "string" ? flags.promptName.trim() : "";
+    if (custom) {
+      promptText = ["Enter ", custom, "?"];
+    } else if (isCrossScene) {
       const destScene = game.scenes.get(destination.sceneId);
       const navName   = destScene?.navName?.trim()
         || destScene?.flags?.[MODULE_ID]?.oniFabula?.general?.navigationName?.trim?.()
@@ -609,7 +614,7 @@
     // Exploration mode: button click was the confirmation — no dialog shown here.
     const confirmMode = flags.confirmMode !== false && flags.confirmMode !== "false";
     if (confirmMode && getSceneMode() === "dungeon") {
-      const confirmed = await askTeleportConfirm(flags.destination);
+      const confirmed = await askTeleportConfirm(flags.destination, flags);
       if (!confirmed) return;
     }
 
