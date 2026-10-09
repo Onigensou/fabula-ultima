@@ -193,6 +193,61 @@
       "modifiedTime": 1791552456422,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
+    "regions": [
+      {
+        "name": "Ground",
+        "color": "#ee5311",
+        "shapes": [
+          {
+            "type": "rectangle",
+            "x": -20,
+            "y": -20,
+            "width": 1488,
+            "height": 1126,
+            "rotation": 0,
+            "hole": false
+          }
+        ],
+        "elevation": {
+          "bottom": null,
+          "top": null
+        },
+        "visibility": 0,
+        "locked": false,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftRegions": "claude-2026-10-09"
+          }
+        },
+        "_id": "CilycQJWVymXk80Q",
+        "behaviors": [
+          {
+            "name": "FootstepGround",
+            "type": "executeMacro",
+            "system": {
+              "events": [
+                "tokenPreMove"
+              ],
+              "uuid": "Macro.v6CQ0x21Egd7LmcG",
+              "everyone": false
+            },
+            "disabled": false,
+            "_id": "LAbFKJYyRIPwckr4",
+            "flags": {},
+            "_stats": {
+              "compendiumSource": null,
+              "duplicateSource": null,
+              "coreVersion": "12.343",
+              "systemId": "custom-system-builder",
+              "systemVersion": "4.8.5",
+              "createdTime": null,
+              "modifiedTime": null,
+              "lastModifiedBy": null
+            }
+          }
+        ]
+      }
+    ],
     "walls": [
       {
         "c": [

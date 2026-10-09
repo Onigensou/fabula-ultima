@@ -10,11 +10,11 @@
   },
   "effects": [
     {
-      "_id": "akimtiHNW5uHGqXo",
+      "_id": "94WWGwHLkB9Wejpk",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1789901503165,
+        "createdTime": 1791560091832,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -41,9 +41,9 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "akimtiHNW5uHGqXo",
+          "originalId": "94WWGwHLkB9Wejpk",
           "originalParentId": "RGTVLgTWTLzwK650",
-          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.akimtiHNW5uHGqXo"
+          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.94WWGwHLkB9Wejpk"
         },
         "fabula-ultima-companion": {
           "directorPermanent": true,
@@ -75,76 +75,11 @@
       "type": "base"
     },
     {
-      "_id": "CCZkHnNoOnXLap7V",
+      "_id": "CbyKniw3I7PsEI64",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1789901503165,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "flags.fabula-ultima-companion.wellspring_fire",
-          "mode": 5,
-          "priority": 20,
-          "value": "1"
-        }
-      ],
-      "description": "<p>The <strong>Fire</strong> wellspring is present. Invokers may draw fire invocations from it.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "CCZkHnNoOnXLap7V",
-          "originalParentId": "RGTVLgTWTLzwK650",
-          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.CCZkHnNoOnXLap7V"
-        },
-        "fabula-ultima-companion": {
-          "directorPermanent": true,
-          "fieldOrigin": "scene",
-          "fieldSceneId": "jvvy4FvYYmCJtLoz",
-          "wellspring": "fire"
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/magic/fire/flame-burning-campfire-orange.webp",
-      "name": "Fire Wellspring",
-      "origin": null,
-      "sort": 0,
-      "statuses": [],
-      "system": {
-        "tags": [
-          "wellspring"
-        ]
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "cHJzCANFmpZMatBg",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1789901503165,
+        "createdTime": 1791560091832,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -171,9 +106,9 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "cHJzCANFmpZMatBg",
+          "originalId": "CbyKniw3I7PsEI64",
           "originalParentId": "RGTVLgTWTLzwK650",
-          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.cHJzCANFmpZMatBg"
+          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.CbyKniw3I7PsEI64"
         },
         "fabula-ultima-companion": {
           "directorPermanent": true,
@@ -205,11 +140,11 @@
       "type": "base"
     },
     {
-      "_id": "ojivT7FTf22OaTpS",
+      "_id": "n3nEwTBDN3kkBa8I",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1789901503165,
+        "createdTime": 1791560091832,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -236,9 +171,9 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "ojivT7FTf22OaTpS",
+          "originalId": "n3nEwTBDN3kkBa8I",
           "originalParentId": "RGTVLgTWTLzwK650",
-          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.ojivT7FTf22OaTpS"
+          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.n3nEwTBDN3kkBa8I"
         },
         "fabula-ultima-companion": {
           "directorPermanent": true,
@@ -270,11 +205,76 @@
       "type": "base"
     },
     {
-      "_id": "U66BPRLXZvIWcYPj",
+      "_id": "UcWmAegqKPBPTT21",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1789901503165,
+        "createdTime": 1791560091832,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.wellspring_fire",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>The <strong>Fire</strong> wellspring is present. Invokers may draw fire invocations from it.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "UcWmAegqKPBPTT21",
+          "originalParentId": "RGTVLgTWTLzwK650",
+          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.UcWmAegqKPBPTT21"
+        },
+        "fabula-ultima-companion": {
+          "directorPermanent": true,
+          "fieldOrigin": "scene",
+          "fieldSceneId": "jvvy4FvYYmCJtLoz",
+          "wellspring": "fire"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/fire/flame-burning-campfire-orange.webp",
+      "name": "Fire Wellspring",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "wellspring"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "w48efkthMJy13S6u",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791560091832,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -301,9 +301,9 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "U66BPRLXZvIWcYPj",
+          "originalId": "w48efkthMJy13S6u",
           "originalParentId": "RGTVLgTWTLzwK650",
-          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.U66BPRLXZvIWcYPj"
+          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.w48efkthMJy13S6u"
         },
         "fabula-ultima-companion": {
           "directorPermanent": true,

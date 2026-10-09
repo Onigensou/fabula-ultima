@@ -4,7 +4,7 @@
   "tokens": [],
   "tokensFull": [],
   "notes": [],
-  "tileCount": 0,
+  "tileCount": 6,
   "full": {
     "name": "Midgard_Map001",
     "navName": "Ancient Capital Midgard",
@@ -47,8 +47,7 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": [],
-        "isTriggered": false
+        "sequence": []
       },
       "LockView": {
         "editViewbox": false,
@@ -89,9 +88,10 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "Ancient Capital Midgard",
-            "sceneVisited": false
+            "sceneVisited": false,
+            "areaName": "Ancient Capital Midgard"
           },
-          "sceneNetwork": "[{\"name\":\"Midgard - Weapon Shop\",\"id\":\"ZpMbv36000qG3wLQ\"},{\"name\":\"Midgard - Item Shop\",\"id\":\"Yiw5noqR6owuCGOD\"},{\"name\":\"Midgard - Accessories Shop\",\"id\":\"FGXGqPqN7LI6ZI6b\"},{\"name\":\"Midgard - Inn\",\"id\":\"DhpfHJUGiFSjPL6n\"},{\"name\":\"Castle Midgard - Interior\",\"id\":\"nAJ9SB2Jd5sQVOvB\"}]"
+          "sceneNetwork": "[{\"name\":\"Midgard - Weapon Shop\",\"id\":\"ZpMbv36000qG3wLQ\"},{\"name\":\"Midgard - Item Shop\",\"id\":\"Yiw5noqR6owuCGOD\"},{\"name\":\"Midgard - Accessories Shop\",\"id\":\"FGXGqPqN7LI6ZI6b\"},{\"name\":\"Midgard - Inn\",\"id\":\"DhpfHJUGiFSjPL6n\"},{\"name\":\"Midgard Castle\",\"id\":\"nAJ9SB2Jd5sQVOvB\"}]"
         },
         "oniDungeon": {
           "threatLevel": "medium",
@@ -182,9 +182,204 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791358972643,
-      "modifiedTime": 1791382988900,
+      "modifiedTime": 1791560263680,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
+    "regions": [
+      {
+        "name": "Ground",
+        "color": "#ee5311",
+        "shapes": [
+          {
+            "type": "rectangle",
+            "x": -20,
+            "y": -20,
+            "width": 2779,
+            "height": 2555,
+            "rotation": 0,
+            "hole": false
+          },
+          {
+            "type": "polygon",
+            "points": [
+              0,
+              0,
+              640,
+              0,
+              640,
+              330,
+              300,
+              560,
+              0,
+              620
+            ],
+            "hole": true
+          },
+          {
+            "type": "polygon",
+            "points": [
+              0,
+              1880,
+              330,
+              2150,
+              700,
+              2250,
+              900,
+              2515,
+              0,
+              2515
+            ],
+            "hole": true
+          },
+          {
+            "type": "polygon",
+            "points": [
+              1650,
+              2515,
+              1900,
+              2300,
+              2250,
+              2150,
+              2739,
+              1900,
+              2739,
+              2515
+            ],
+            "hole": true
+          }
+        ],
+        "elevation": {
+          "bottom": null,
+          "top": null
+        },
+        "visibility": 0,
+        "locked": false,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftRegions": "claude-2026-10-09"
+          }
+        },
+        "_id": "a0KIqAnkNrlvkSgx",
+        "behaviors": [
+          {
+            "name": "FootstepGround",
+            "type": "executeMacro",
+            "system": {
+              "events": [
+                "tokenPreMove"
+              ],
+              "uuid": "Macro.v6CQ0x21Egd7LmcG",
+              "everyone": false
+            },
+            "disabled": false,
+            "_id": "eqAhlbfyhlLT8Tw8",
+            "flags": {},
+            "_stats": {
+              "compendiumSource": null,
+              "duplicateSource": null,
+              "coreVersion": "12.343",
+              "systemId": "custom-system-builder",
+              "systemVersion": "4.8.5",
+              "createdTime": null,
+              "modifiedTime": null,
+              "lastModifiedBy": null
+            }
+          }
+        ]
+      },
+      {
+        "name": "Grass",
+        "color": "#52e811",
+        "shapes": [
+          {
+            "type": "polygon",
+            "points": [
+              0,
+              0,
+              640,
+              0,
+              640,
+              330,
+              300,
+              560,
+              0,
+              620
+            ],
+            "hole": false
+          },
+          {
+            "type": "polygon",
+            "points": [
+              0,
+              1880,
+              330,
+              2150,
+              700,
+              2250,
+              900,
+              2515,
+              0,
+              2515
+            ],
+            "hole": false
+          },
+          {
+            "type": "polygon",
+            "points": [
+              1650,
+              2515,
+              1900,
+              2300,
+              2250,
+              2150,
+              2739,
+              1900,
+              2739,
+              2515
+            ],
+            "hole": false
+          }
+        ],
+        "elevation": {
+          "bottom": null,
+          "top": null
+        },
+        "visibility": 0,
+        "locked": false,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftRegions": "claude-2026-10-09"
+          }
+        },
+        "_id": "rPByKv1ixzhDM9YE",
+        "behaviors": [
+          {
+            "name": "FootstepGrass1",
+            "type": "executeMacro",
+            "system": {
+              "events": [
+                "tokenPreMove"
+              ],
+              "uuid": "Macro.CRagAwYLpsANGP9h",
+              "everyone": false
+            },
+            "disabled": false,
+            "_id": "GB2Fex5S3NEbFQTD",
+            "flags": {},
+            "_stats": {
+              "compendiumSource": null,
+              "duplicateSource": null,
+              "coreVersion": "12.343",
+              "systemId": "custom-system-builder",
+              "systemVersion": "4.8.5",
+              "createdTime": null,
+              "modifiedTime": null,
+              "lastModifiedBy": null
+            }
+          }
+        ]
+      }
+    ],
     "walls": [
       {
         "c": [
