@@ -95,7 +95,8 @@
 /* ── Teleporter prompt box ──
    Same skin as the Save/Load confirm panel (save-ui.js .ss-conf-inner /
    .ss-choice-btn): ruled parchment, thin gold border with a wood ring,
-   letter-spaced system caps, dark-wood choice buttons, feather cursor.
+   dark-wood choice buttons, feather cursor. Lettering is Signika, as in the
+   Healing and Shop windows (the save screens' monospace read as awkward here).
    Layout: message panel with Yes / No hanging off the bottom-right corner. */
 #oni-tp-prompt {
   position: fixed;
@@ -110,7 +111,7 @@
   border-radius: 14px;
   background: linear-gradient(168deg, #f8f0d4 0%, #ede0b0 100%);
   box-shadow: 0 0 0 2px #7a4e20, 0 0 0 4px #b8865a, 0 0 28px rgba(0,0,0,0.40), inset 0 1px 0 rgba(255,245,200,0.70);
-  font-family: 'Lucida Console', 'Courier New', monospace;
+  font-family: "Signika","Noto Sans","Segoe UI",sans-serif;
   color: #3a1e06;
   user-select: none;
   pointer-events: auto;
@@ -140,11 +141,10 @@
   margin: 0;
   padding: 0;
   text-align: center;
-  text-transform: uppercase;
-  font-size: 17px;
-  font-weight: bold;
+  font-size: 20px;
+  font-weight: 700;
   line-height: 1.5;
-  letter-spacing: 3px;
+  letter-spacing: .4px;
   color: #3a1e06;
 }
 /* Yes / No hang off the bottom-right corner */
@@ -167,10 +167,10 @@
   background: linear-gradient(180deg, #7a5230 0%, #5c3818 100%);
   color: #f4e8c0;
   font-family: inherit;
-  font-size: 12px;
+  font-size: 16px;
+  font-weight: 700;
   line-height: 1;
-  letter-spacing: 3px;
-  text-transform: uppercase;
+  letter-spacing: 1px;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(40,18,4,0.38), inset 0 1px 0 rgba(255,225,140,0.14);
   transition: border-color .12s, color .12s, background .12s, box-shadow .12s;
