@@ -11,7 +11,7 @@
   "tokensFull": [
     {
       "name": "Sigrun",
-      "displayName": 0,
+      "displayName": 30,
       "actorLink": true,
       "appendNumber": false,
       "prependAdjective": false,
@@ -105,8 +105,8 @@
               "maxcolor": "#80B3FF",
               "position": "bottom-inner",
               "otherVisibility": 0,
-              "ownerVisibility": 50,
-              "gmVisibility": -1,
+              "ownerVisibility": 0,
+              "gmVisibility": 0,
               "hideFull": false,
               "hideEmpty": false,
               "hideCombat": false,
@@ -133,8 +133,8 @@
               "maxcolor": "#80FF00",
               "position": "bottom-inner",
               "otherVisibility": 0,
-              "ownerVisibility": 50,
-              "gmVisibility": -1,
+              "ownerVisibility": 0,
+              "gmVisibility": 0,
               "hideFull": false,
               "hideEmpty": false,
               "hideCombat": false,
@@ -160,9 +160,9 @@
               "mincolor": "#000000",
               "maxcolor": "#FFFFFF",
               "position": "bottom-inner",
-              "otherVisibility": 50,
-              "ownerVisibility": 50,
-              "gmVisibility": -1,
+              "otherVisibility": 0,
+              "ownerVisibility": 0,
+              "gmVisibility": 0,
               "hideFull": false,
               "hideEmpty": true,
               "hideCombat": false,
@@ -186,6 +186,9 @@
         "fabula-ultima-companion": {
           "draftTokens": "claude-2026-10-09",
           "draftName": "Sigrun"
+        },
+        "hex-size-support": {
+          "hideBorder": true
         }
       },
       "actorId": "LlbVwdpPONdny8Wx",

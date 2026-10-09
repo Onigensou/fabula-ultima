@@ -61,7 +61,7 @@
       },
       "detectionModes": [],
       "displayBars": 50,
-      "displayName": 0,
+      "displayName": 30,
       "disposition": 1,
       "flags": {
         "Border-Control": {
@@ -77,7 +77,7 @@
               "attribute": "attributeBar.current_hp",
               "bgImage": "",
               "fgImage": "",
-              "gmVisibility": -1,
+              "gmVisibility": 0,
               "hideCombat": false,
               "hideEmpty": false,
               "hideFull": false,
@@ -97,7 +97,7 @@
               "opacity": null,
               "order": 1,
               "otherVisibility": 0,
-              "ownerVisibility": 50,
+              "ownerVisibility": 0,
               "position": "bottom-inner",
               "shareHeight": false,
               "style": "fraction",
@@ -109,7 +109,7 @@
               "attribute": "attributeBar.current_mp",
               "bgImage": "",
               "fgImage": "",
-              "gmVisibility": -1,
+              "gmVisibility": 0,
               "hideCombat": false,
               "hideEmpty": false,
               "hideFull": false,
@@ -129,7 +129,7 @@
               "opacity": null,
               "order": 0,
               "otherVisibility": 0,
-              "ownerVisibility": 50,
+              "ownerVisibility": 0,
               "position": "bottom-inner",
               "shareHeight": false,
               "style": "fraction",
@@ -141,7 +141,7 @@
               "attribute": "attributeBar.shield_value",
               "bgImage": "",
               "fgImage": "",
-              "gmVisibility": -1,
+              "gmVisibility": 0,
               "hideCombat": false,
               "hideEmpty": true,
               "hideFull": false,
@@ -160,8 +160,8 @@
               "mincolor": "#000000",
               "opacity": null,
               "order": 2,
-              "otherVisibility": 50,
-              "ownerVisibility": 50,
+              "otherVisibility": 0,
+              "ownerVisibility": 0,
               "position": "bottom-inner",
               "shareHeight": false,
               "style": "fraction",
@@ -173,7 +173,7 @@
               "attribute": "custom",
               "bgImage": "",
               "fgImage": "",
-              "gmVisibility": -1,
+              "gmVisibility": 0,
               "hideCombat": false,
               "hideEmpty": false,
               "hideFull": false,
@@ -193,7 +193,7 @@
               "opacity": null,
               "order": 3,
               "otherVisibility": 0,
-              "ownerVisibility": 50,
+              "ownerVisibility": 0,
               "position": "bottom-inner",
               "shareHeight": false,
               "style": "fraction",
@@ -223,6 +223,39 @@
         "fabula-ultima-companion": {
           "draftTokens": "claude-2026-10-09",
           "draftName": "King Gorger"
+        },
+        "tokenmagic": {
+          "filters": [
+            {
+              "tmFilters": {
+                "tmFilterId": "fudFlyLift",
+                "tmFilterInternalId": "AbkBCl9CoFccHGLp",
+                "tmFilterType": "transform",
+                "tmFilterOwner": "JQGNzKpDPHJmcUIW",
+                "tmParams": {
+                  "filterType": "transform",
+                  "filterId": "fudFlyLift",
+                  "padding": 50,
+                  "translationY": 0.08,
+                  "animated": {
+                    "translationY": {
+                      "animType": "cosOscillation",
+                      "val1": 0.03,
+                      "val2": 0.13,
+                      "loopDuration": 3000
+                    }
+                  },
+                  "updateId": "Kb4Mj0fZrAW2uHal",
+                  "rank": 10001,
+                  "enabled": true,
+                  "placeableId": "Fsqw1kyEnsHkvBov",
+                  "filterInternalId": "AbkBCl9CoFccHGLp",
+                  "filterOwner": "JQGNzKpDPHJmcUIW",
+                  "placeableType": "Token"
+                }
+              }
+            }
+          ]
         }
       },
       "height": 1,
@@ -308,7 +341,7 @@
     },
     {
       "name": "Ingrid",
-      "displayName": 0,
+      "displayName": 30,
       "actorLink": false,
       "appendNumber": false,
       "prependAdjective": false,
@@ -426,7 +459,7 @@
     },
     {
       "name": "Wilhelm",
-      "displayName": 0,
+      "displayName": 30,
       "actorLink": false,
       "appendNumber": false,
       "prependAdjective": false,
@@ -544,7 +577,7 @@
     },
     {
       "name": "Otto",
-      "displayName": 0,
+      "displayName": 30,
       "actorLink": false,
       "appendNumber": false,
       "prependAdjective": false,
@@ -651,18 +684,20 @@
         }
       },
       "actorId": "TnOKgQbmyxFzD6Oe",
-      "x": 1253,
-      "y": 1913,
+      "x": 1328,
+      "y": 1855,
       "hidden": false,
       "elevation": 0,
       "sort": 0,
       "locked": false,
-      "_regions": [],
+      "_regions": [
+        "a0KIqAnkNrlvkSgx"
+      ],
       "_id": "c3FwTl7mPEGL9mXW"
     },
     {
       "name": "Ulfar",
-      "displayName": 0,
+      "displayName": 30,
       "actorLink": false,
       "appendNumber": false,
       "prependAdjective": false,
@@ -769,18 +804,20 @@
         }
       },
       "actorId": "TnOKgQbmyxFzD6Oe",
-      "x": 793,
-      "y": 973,
+      "x": 795,
+      "y": 1023,
       "hidden": true,
       "elevation": 0,
       "sort": 0,
       "locked": false,
-      "_regions": [],
+      "_regions": [
+        "a0KIqAnkNrlvkSgx"
+      ],
       "_id": "cgSdxRBZlDTNJnvr"
     },
     {
       "name": "Gunther",
-      "displayName": 0,
+      "displayName": 30,
       "actorLink": false,
       "appendNumber": false,
       "prependAdjective": false,
@@ -898,7 +935,7 @@
     },
     {
       "name": "Hedwig",
-      "displayName": 0,
+      "displayName": 30,
       "actorLink": false,
       "appendNumber": false,
       "prependAdjective": false,
@@ -1016,7 +1053,7 @@
     },
     {
       "name": "Greta",
-      "displayName": 0,
+      "displayName": 30,
       "actorLink": false,
       "appendNumber": false,
       "prependAdjective": false,
@@ -1123,18 +1160,20 @@
         }
       },
       "actorId": "TnOKgQbmyxFzD6Oe",
-      "x": 893,
-      "y": 1123,
+      "x": 1313,
+      "y": 1035,
       "hidden": true,
       "elevation": 0,
       "sort": 0,
       "locked": false,
-      "_regions": [],
+      "_regions": [
+        "a0KIqAnkNrlvkSgx"
+      ],
       "_id": "xFZWKp8yNySU8hbi"
     },
     {
       "name": "Runa",
-      "displayName": 0,
+      "displayName": 30,
       "actorLink": false,
       "appendNumber": false,
       "prependAdjective": false,
@@ -1241,13 +1280,15 @@
         }
       },
       "actorId": "TnOKgQbmyxFzD6Oe",
-      "x": 2293,
-      "y": 583,
+      "x": 2372,
+      "y": 516,
       "hidden": true,
       "elevation": 0,
       "sort": 0,
       "locked": false,
-      "_regions": [],
+      "_regions": [
+        "a0KIqAnkNrlvkSgx"
+      ],
       "_id": "yN1NMcZDq6i4K6EY"
     }
   ],
