@@ -423,7 +423,7 @@
             "name": "Bishop's Edict",
             "reaction_config_table": {
               "0": {
-                "condition_formula": "ACTION_COST_MP > 0",
+                "condition_formula": "ACTION_COST_MP > 0 && ACTION_IS_FREE_CAST == 0",
                 "reaction_effect_ref": "edict_tithe",
                 "reaction_passive_mode": "force",
                 "reaction_source": "self",
@@ -573,6 +573,7 @@
       "skill_animation_mode": "default",
       "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Extra Damage</strong></p></td></tr><tr><td><p>1</p></td><td><p>+3</p></td></tr><tr><td><p>2</p></td><td><p>+6</p></td></tr><tr><td><p>3</p></td><td><p>+9</p></td></tr><tr><td><p>4</p></td><td><p>+12</p></td></tr><tr><td><p>5</p></td><td><p>+15</p></td></tr></tbody></table>",
       "skill_range": "Any",
+      "skill_tags": "command",
       "skill_target": "All creature",
       "skill_type": "Active",
       "type_damage": "",

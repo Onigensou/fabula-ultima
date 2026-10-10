@@ -92,6 +92,18 @@
           "mode": 2,
           "priority": 20,
           "value": "-1"
+        },
+        {
+          "key": "heal_receiving_flat_all",
+          "mode": 2,
+          "priority": 20,
+          "value": "-999"
+        },
+        {
+          "key": "mp_receiving_flat_all",
+          "mode": 2,
+          "priority": 20,
+          "value": "-999"
         }
       ],
       "description": "",
@@ -430,6 +442,7 @@
       "skill_animation_mode": "default",
       "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Extra MP Restored</strong></p></td></tr><tr><td><p>1</p></td><td><p>+5</p></td></tr><tr><td><p>2</p></td><td><p>+10</p></td></tr><tr><td><p>3</p></td><td><p>+15</p></td></tr><tr><td><p>4</p></td><td><p>+20</p></td></tr><tr><td><p>5</p></td><td><p>+25</p></td></tr></tbody></table>",
       "skill_range": "Any",
+      "skill_tags": "command",
       "skill_target": "All creature",
       "skill_type": "Active",
       "type_damage": "",
