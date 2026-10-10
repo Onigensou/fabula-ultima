@@ -114,9 +114,15 @@ export function request(reqType, payload, { timeoutMs = DEFAULT_TIMEOUT_MS } = {
   });
 }
 
-async function onSocket(msg) {
+async function onSocket(msg, senderId) {
   if (!msg || typeof msg !== "object") return;
-  const { type, payload } = msg;
+  const { type } = msg;
+  // The requester is whoever SENT this frame, never what the frame claims —
+  // every client can read game.users, so a self-reported GM id is free to forge.
+  // Foundry hands the sender's user id to module-channel listeners.
+  const payload = (senderId && msg.payload && typeof msg.payload === "object")
+    ? { ...msg.payload, requesterUserId: senderId }
+    : msg.payload;
 
   // A reply coming back to whoever asked.
   for (const [, { resType }] of _handlers) {

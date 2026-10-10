@@ -34,6 +34,7 @@
     BUTTONS: [
       { id: "oni-chat-open-character-btn", order: 10, gmOnly: false },
       { id: "oni-chat-open-party-btn", order: 20, gmOnly: false },
+      { id: "oni-chat-open-party-menu-btn", order: 25, gmOnly: false },
       { id: "oni-chat-open-trade-btn", order: 30, gmOnly: false },
       { id: "oni-chat-emote-config-btn", order: 40, gmOnly: false },
       { id: "oni-chat-scene-network-btn", order: 50, gmOnly: true }

@@ -37,6 +37,7 @@ import { getIntentChannel } from "./intent-channel.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { INTENTS } from "./intents.js";
 import { NAME as CODE_BACKED_NAME } from "../shared/code-backed-content.js";
+import { boundSummonRef } from "../shared/summon-bindings.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -4121,6 +4122,22 @@ async function applyDestroySummonEffect(row, ctx) {
           catch (e) { warn(`skill-effects.destroy_summon: token delete failed for ${td.uuid}`, e); }
         }
       } catch (e) { warn("skill-effects.destroy_summon: carrier token despawn threw", e); }
+      // A summon somebody PICKED in the Party Menu (persistentSummonBound) is a
+      // real world actor — possibly a bestiary entry — not an engine clone.
+      // Release it from its owner instead of deleting it.
+      if (pf.persistentSummonBound === true) {
+        try {
+          await actor.update({
+            "flags.fabula-ultima-companion.-=isPersistentSummon": null,
+            "flags.fabula-ultima-companion.-=summonOwnerActorUuid": null,
+            "flags.fabula-ultima-companion.-=persistentSummonKind": null,
+            "flags.fabula-ultima-companion.-=persistentSummonBound": null,
+          });
+          applied.push(actor.uuid);
+          log(`skill-effects.destroy_summon: released bound summon actor ${actor.name} (kept — it was picked, not cloned)`);
+        } catch (e) { warn(`skill-effects.destroy_summon: release threw for ${actor?.name}`, e); }
+        continue;
+      }
       try {
         await actor.delete();
         applied.push(actor.uuid);
@@ -8994,7 +9011,7 @@ function arcanumTemplateId() {
 // gather the actor's items of that template, no flag or container hard-link
 // needed. Falls back to the namespaced flag / legacy `class:"Arcanum"` prop for
 // hand-authored data or if the template can't be resolved.
-function isArcanumContainer(item) {
+export function isArcanumContainer(item) {
   const tid = arcanumTemplateId();
   if (tid && String(item?.system?.template ?? "") === tid) return true;
   if (item?.flags?.[FLAG_NS]?.isArcanum) return true;
@@ -10858,7 +10875,14 @@ async function applySummonEffect(row, ctx) {
   const refsRaw = String(row.summon_actor ?? "").trim();
   const wantsClone = row.summon_clone_target === true
     || String(row.summon_clone_target ?? "").trim().toLowerCase() === "true";
-  if (!refsRaw && !wantsClone) {
+  // Per-character binding (Party Menu → Ability → Summon): the caster's own copy
+  // of the skill may name the actor this row spawns, overriding `summon_actor`
+  // for that character only. A ClassTemplate skill names ONE actor for every
+  // learner — Create Phantasm: Numen summoned Crysta for any Illusionist. The
+  // binding replaces the whole authored list; a dangling one falls back to it
+  // in the spawn-plan build below. See shared/summon-bindings.js.
+  const boundRef = wantsClone ? "" : boundSummonRef(ctx?.skill, row.effect_label);
+  if (!refsRaw && !wantsClone && !boundRef) {
     warn(`skill-effects.summon: missing summon_actor on "${row.effect_label}"`);
     return { ok: false, kind: "summon", reason: "no-actor" };
   }
@@ -11197,7 +11221,27 @@ async function applySummonEffect(row, ctx) {
       spawnPlan.push({ actor: clone, cloneOverrides: cloneOv, cloneUuid: clone.uuid, deleteOnDespawn: !persistClone, deleteOnDeath: persistClone });
     }
   } else {
-    for (const ref of refs) {
+    let fixedRefs = refs;
+    if (boundRef) {
+      let bound = await resolveRef(boundRef);
+      // Backstop for a binding written around the Party Menu's own checks: never
+      // spawn the caster itself, the Field, a guest, or another standing summon
+      // (whose linked actor would be dragged into this fight).
+      const bf = bound?.flags?.[FLAG_NS] ?? {};
+      if (bound && (bound.id === ctx.reactorActor?.id || bound.type === "_template"
+          || bf.isField || bf.bdGuest || bf.isPersistentSummon)) {
+        warn(`skill-effects.summon: bound summon ${bound.name} on "${row.effect_label}" is not summonable — using the authored summon_actor`);
+        bound = null;
+      }
+      if (bound) {
+        spawnPlan.push({ actor: bound, cloneOverrides: null, cloneUuid: null, deleteOnDespawn: false, deleteOnDeath: false });
+        fixedRefs = [];
+        log(`skill-effects.summon: "${row.effect_label}" uses ${ctx.reactorActor?.name ?? "caster"}'s bound summon ${bound.name}`);
+      } else {
+        warn(`skill-effects.summon: bound summon "${boundRef}" on "${row.effect_label}" not found — using the authored summon_actor`);
+      }
+    }
+    for (const ref of fixedRefs) {
       const actor = await resolveRef(ref);
       if (!actor) { warn(`skill-effects.summon: actor "${ref}" not found`); continue; }
       spawnPlan.push({ actor, cloneOverrides: null, cloneUuid: null, deleteOnDespawn: false, deleteOnDeath: false });
