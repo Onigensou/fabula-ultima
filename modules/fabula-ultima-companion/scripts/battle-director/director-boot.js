@@ -68,6 +68,7 @@ import { initTokenTint } from "./token-tint.js";
 import { initBrandMark } from "./brand-mark.js";
 import { initCameraAuthority } from "./camera-authority.js";
 import { initLightningRodCursor } from "../conflict-event/lightning-rod-cursor.js";
+import { initLightningCrystalCountdown } from "../conflict-event/lightning-crystal-countdown.js";
 import { initLightningStormFx } from "../conflict-event/lightning-storm-strike-fx.js";
 // Damage-number audition (look-only) tool is intentionally not registered as a
 // dev-tool button — consolidated into the live-path tool below to save space.
@@ -1720,6 +1721,8 @@ Hooks.once("ready", () => {
   // The strike cinematic registers its socketlib handler on every client.
   try { initLightningRodCursor(); }
   catch (e) { warn("initLightningRodCursor on ready threw", e); }
+  try { initLightningCrystalCountdown(); }
+  catch (e) { warn("initLightningCrystalCountdown on ready threw", e); }
   try { initLightningStormFx(); }
   catch (e) { warn("initLightningStormFx on ready threw", e); }
 
