@@ -310,25 +310,92 @@ async function refreshRoster(ctx) {
 
 // ── The blast ───────────────────────────────────────────────────────────────
 
-async function playBlast(ctx, entry) {
+/** Text on the announcement card that precedes a blast. */
+const ANNOUNCE_TITLE = "Lightning Explosion";
+
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * Is anybody watching? A sim at "fast" pace and a hidden GM window both skip
+ * the show — and must then skip the WAITS too, or a fight nobody can see sits
+ * through seconds of dwell per blast. Skip the show, never the rules.
+ */
+async function showing() {
   try {
-    const tokenUuid = tokenDocOf(entry)?.uuid ?? null;
-    if (!tokenUuid) return;
-    // Placeholder look: the Storm's own strike, landing on the crystal. It
-    // already dims the field, keeps the struck token lit and resolves before
-    // the damage — which is the ordering a detonation needs.
-    const { emitLightningStrike } = await import("../lightning-storm-strike-fx.js");
-    await emitLightningStrike({ tokenUuid });
+    const { shouldRender } = await import("../../battle-director/presentation-clock.js");
+    return shouldRender();
+  } catch { return false; }
+}
+
+/**
+ * The announcement card — the same action namecard every skill uses, so a
+ * blast is introduced exactly the way an enemy's big move is. Awaited through
+ * its slide-in and hold, so the explosion starts as the card leaves.
+ */
+async function announceBlast(ctx) {
+  try {
+    if (!await showing()) return;
+    const render = globalThis.FUCompanion?.api?.namecardBroadcast;
+    if (typeof render !== "function") return;
+    const { buildActionNamecardOptions } = await import("../../battle-director/director-vfx.js");
+    const { options } = await buildActionNamecardOptions({ kind: "Skill", skillName: ANNOUNCE_TITLE });
+    options.iconOverride = "⚡";
+    // Not awaited: the renderer resolves when the card is GONE, and the
+    // explosion should begin as it slides away, not after.
+    Promise.resolve(render({ title: ANNOUNCE_TITLE, options })).catch(() => {});
+    await wait((Number(options.inMs) || 350) + (Number(options.holdMs) || 1400));
   } catch (e) {
-    ctx.warn("blast cinematic threw — the blast still resolves", e);
+    ctx.warn("announcement threw — the blast still resolves", e);
   }
+}
+
+/**
+ * The explosion on the crystal, its shatter, and the beat before the damage.
+ *
+ * The crystal visibly goes WITH the explosion, not after the damage has
+ * finished walking across every target a couple of seconds later. Writing
+ * `crystalShattering` is what plays the flash + fade on every client
+ * (lightning-crystal-fx.js); the token's own alpha is then zeroed with
+ * `animate: false`, because Foundry would otherwise tween the document change
+ * itself — snapping the already-faded crystal back to full and fading it a
+ * second time.
+ *
+ * Borrows BD's impact-FX player (a webm pinned to a token, broadcast to every
+ * client) and its SFX channel rather than building a second pair. The targets
+ * need nothing from here: the damage that follows goes through the director's
+ * normal loss path, which already gives every creature it hits a flinch, an
+ * impact burst and a damage number.
+ */
+async function playExplosion(ctx, entry, ae) {
+  const tokenDoc = tokenDocOf(entry);
+  const hide = async () => {
+    try { await tokenDoc?.update?.({ alpha: 0 }, { animate: false }); }
+    catch (e) { ctx.warn("could not hide the shattered crystal", e); }
+  };
+  try {
+    const tokenUuid = tokenDoc?.uuid ?? null;
+    if (!tokenUuid || !await showing()) { await hide(); return; }
+    const [{ emitImpactFx }, { broadcastSfx }, { CRYSTAL_FX }] = await Promise.all([
+      import("../../battle-director/damage-numbers/director-impact-fx.js"),
+      import("../../battle-director/director-sfx.js"),
+      import("../lightning-crystal-fx.js"),
+    ]);
+    emitImpactFx({ tokenUuid, file: CRYSTAL_FX.explosionWebm, scale: CRYSTAL_FX.explosionScale, durationMs: CRYSTAL_FX.explosionMs });
+    broadcastSfx(CRYSTAL_FX.explosionSfx, CRYSTAL_FX.explosionVolume);
+    await writeState(ae, { crystalShattering: true });
+    await wait(CRYSTAL_FX.explosionImpactMs);
+  } catch (e) {
+    ctx.warn("explosion FX threw — the blast still resolves", e);
+  }
+  await hide();
 }
 
 async function detonate(ctx, entry) {
   const state = readState(entry.actor);
   if (!state.ae || state.spent) return;
 
-  await playBlast(ctx, entry);
+  await announceBlast(ctx);
+  await playExplosion(ctx, entry, state.ae);
 
   // Everything standing, except other objects — one crystal's blast is not
   // what moves another's clock (and they are Bolt-immune regardless).
@@ -369,8 +436,6 @@ async function detonate(ctx, entry) {
     [`flags.${FLAG_NS}.crystalCountdown`]: 0,
     changes: [{ key: "cannot_be_targeted_by", mode: 5, value: "any", priority: 0 }],
   });
-  try { await tokenDocOf(entry)?.update?.({ alpha: 0 }); }
-  catch (e) { ctx.warn("could not hide the shattered crystal", e); }
 }
 
 /**

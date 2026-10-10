@@ -77,15 +77,15 @@ function ensureStyles() {
 }
 .fud-crystal-count .num {
   display: inline-block;
-  font-size: 40px;
+  font-size: 30px;
   color: #f4f1ff;
   text-shadow: ${outline}, 0 0 10px rgba(168,85,247,.9);
   transition: color 300ms ease-in-out;
 }
 .fud-crystal-count .cap {
   display: block;
-  margin-top: 2px;
-  font-size: 11px;
+  margin-top: 1px;
+  font-size: 9px;
   letter-spacing: .08em;
   text-transform: uppercase;
   color: #d9ccff;
@@ -106,7 +106,7 @@ function ensureStyles() {
   left: 100%;
   top: 0;
   margin-left: 4px;
-  font-size: 24px;
+  font-size: 19px;
   color: #8ef0a4;
   text-shadow: ${outline};
   white-space: nowrap;
@@ -160,7 +160,7 @@ function countdownOf(actor) {
     const ae = actor?.effects?.find?.((e) => isCountdownAe(e) && !e.disabled);
     if (!ae) return null;
     const f = ae.flags?.[FLAG_NS] ?? {};
-    if (f.crystalSpent === true) return null;
+    if (f.crystalSpent === true || f.crystalShattering === true) return null;
     const n = Number(f.crystalCountdown);
     return Number.isFinite(n) && n > 0 ? n : null;
   } catch { return null; }

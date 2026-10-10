@@ -159,9 +159,36 @@ A large number above the crystal's rendered sprite: white, amber at 3, pulsing
 red at 1, a pop on each change and a floating `+N` when a hit buys time.
 Derived per client from the AE, the same no-socket contract as the Rod cursor.
 
-The blast currently borrows the Storm's strike cinematic, landing on the
-crystal. It has the right ordering (dim, strike, then damage) and is a
-placeholder for a real detonation.
+### Arrival, tick and detonation
+
+[`lightning-crystal-fx.js`](../scripts/conflict-event/lightning-crystal-fx.js)
+holds the presentation that follows from documents every client already
+receives, so it needs no socket either. All timings, sounds and sizes are in
+one `CRYSTAL_FX` block at the top of that file.
+
+| Beat | Trigger | What plays |
+|---|---|---|
+| Spawn-in | the crystal's token is drawn with no countdown effect yet | slides down 160px while fading in (0.9s), then a thud (`Soundboard/Earth3.ogg`) |
+| Tick | the countdown effect's tick stamp changes | `System_Tick.mp3`, once even when two crystals tick together |
+| Shatter | the effect is flagged `crystalShattering` | a white flash, then a quick fade-out |
+
+The detonation is sequenced by the event, because it is ordered around game
+state:
+
+1. **Announcement card** — "⚡ Lightning Explosion", the same action namecard
+   every skill uses. The event waits through its slide-in and hold.
+2. **Explosion** on the crystal (`Explosion_02_Blue`, through BD's impact-FX
+   player) with `Soundboard/Explosion2.ogg`; the crystal flashes and fades in
+   the same instant.
+3. **Damage** lands 0.6s later. Each creature hit gets its flinch, impact
+   burst and damage number from the director's normal loss path — nothing
+   crystal-specific.
+
+The token's own alpha is zeroed with `animate: false`; Foundry would otherwise
+tween that document change and fade the crystal a second time.
+
+A hidden window or a fast-paced sim skips every visual and every wait, never
+the rules.
 
 ### Pinning the count
 
@@ -196,7 +223,12 @@ white, amber and red states.
   covers a crystal left behind.
 - **Rewind across a shatter.** The countdown rewinds; a crystal that has
   already been removed does not come back.
-- **The blast cinematic** has not been eyeballed on a crystal.
+- **The detonation sequence** (card → explosion + shatter → damage with
+  impacts) and the tick sound were confirmed by event trace in a watch-paced
+  sim, and the spawn-in by a hand-placed token. **Nobody has listened to the
+  three sounds in context** — they were chosen by name from the Forge library.
+- **The spawn-in does not play in a sim**, where presentation is suppressed
+  while the battle sets up. It has not been seen at the start of a real battle.
 - **The reward exclusion** (no EXP or Zenit for a crystal) is in the code but
   its numbers were not checked against a real reward screen.
 - **The sim's party brains ignore crystals** (`sim/hazard-brain.js` only knows
@@ -204,7 +236,7 @@ white, amber and red states.
 - **Chain Reaction off a blast** was not observed — Skizzik was already down
   when the crystals went off. It uses the same trigger path as Overcharge.
 - **Asura** was balanced around Rod strikes and should stay off these maps.
-- Art, a real detonation effect, and the study text's final wording.
+- Final art, and the study text's final wording.
 
 ---
 
