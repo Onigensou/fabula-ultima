@@ -606,6 +606,13 @@ export const ActionReaderCore = {
      the range grammar: `getTargetSideBlocks` / `hasUnconditionalTargetBlock` in
      battle-director/snapshot.js — keep the two in step. */
   isUntargetableActor(actor) {
+    // A battlefield object (battle-director/battlefield-object.js — a Lightning
+    // Crystal) is never an AI's candidate either: monsters must not spend a
+    // heal or a buff on it, an autopiloted summon must not waste its attack on
+    // it, and it is not a creature for any pattern's count. Players still
+    // target it freely — that goes through the Battle Director's own pickers.
+    // Same flag, read directly, for the zero-imports reason given above.
+    if (actor?.flags?.["fabula-ultima-companion"]?.bdObject === true) return true;
     const effects = actor?.effects?.contents ?? actor?.effects ?? [];
     for (const ae of effects) {
       if (ae?.disabled) continue;

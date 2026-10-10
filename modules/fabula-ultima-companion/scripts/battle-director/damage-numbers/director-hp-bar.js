@@ -52,6 +52,7 @@
 
 import { log, warn } from "../logger.js";
 import { registerAnimation } from "../director-surfaces.js";
+import { isBattlefieldObject } from "../battlefield-object.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const ACTION_PLAY = "FU_DIRECTOR_HPBAR_PLAY";
@@ -194,6 +195,7 @@ export function emitNpcHpBar({ tokenUuid, actor = null, hpBefore, hpAfter, maxHp
     if (!tokenDoc) { log(`hp-bar: gated out (token not found) — ${who}`); return; }
     const HOSTILE = CONST?.TOKEN_DISPOSITIONS?.HOSTILE ?? -1;
     if (tokenDoc.disposition !== HOSTILE) { log(`hp-bar: gated out (not hostile) — ${who}`); return; }
+    if (isBattlefieldObject(actor ?? tokenDoc.actor)) { log(`hp-bar: gated out (battlefield object) — ${who}`); return; }
     if (!isStudiedMonster(tokenDoc, actor)) { log(`hp-bar: gated out (not studied) — ${who}`); return; }
     emitNpcHpBarUnchecked({
       tokenUuid,
