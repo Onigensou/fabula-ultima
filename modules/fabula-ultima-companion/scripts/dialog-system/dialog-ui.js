@@ -108,6 +108,36 @@
     } catch (_) {}
   }
 
+  // Hint markup: <b>…</b> is typed out bold in the hint colour; any other tag stays literal text.
+  function parseHintMarkup(raw) {
+    const segments = [];
+    let hint = false;
+    for (const part of String(raw ?? "").split(/(<\/?b>)/i)) {
+      if (/^<b>$/i.test(part)) { hint = true; continue; }
+      if (/^<\/b>$/i.test(part)) { hint = false; continue; }
+      if (part) segments.push({ text: part, hint });
+    }
+    return segments;
+  }
+
+  function renderHintSegments(el, segments, count) {
+    el.replaceChildren();
+    let left = count;
+    for (const seg of segments) {
+      if (left <= 0) break;
+      const piece = seg.text.slice(0, left);
+      left -= piece.length;
+      if (seg.hint) {
+        const b = document.createElement("b");
+        b.className = "fu-hint";
+        b.textContent = piece;
+        el.appendChild(b);
+      } else {
+        el.appendChild(document.createTextNode(piece));
+      }
+    }
+  }
+
   function ensureLayerAndStyles() {
     if (!document.getElementById(STYLE_ID)) {
       const css = document.createElement("style");
@@ -144,6 +174,7 @@
 .fu-name { font-weight:700; font-size:1.05rem; letter-spacing:.02em; color:#2a1c0f;
   text-shadow:0 1px 0 rgba(255,255,255,.6); margin:12px 16px 6px; }
 .fu-text { font-size:1.05rem; line-height:1.5; min-height:2.7em; margin:0 16px 14px; }
+.fu-hint { font-weight:800; color:#a3231f; }
 .fu-tail { position:absolute; bottom:-16px; left:44px; width:0; height:0;
   border-left:14px solid transparent; border-right:14px solid transparent; border-top:16px solid #e8e0cf;
   filter: drop-shadow(0 -2px 0 rgba(0,0,0,.08)); }
@@ -309,7 +340,8 @@
     }
 
     const typed = box.querySelector(".fu-typed");
-    const full = String(payload.text ?? "");
+    const segments = parseHintMarkup(payload.text);
+    const full = segments.map(s => s.text).join("");
     const STEP = Math.max(1, Math.round(60 / cps));
     let i = 0, f = 0, done = false, fastForward = false;
     let autoTimer = null;
@@ -325,7 +357,7 @@
       if (!box.isConnected) return;
 
       if (fastForward) {
-        typed.textContent = full;
+        renderHintSegments(typed, segments, full.length);
         done = true;
         scheduleAutoClose();
         return;
@@ -337,7 +369,7 @@
         const nextI = Math.min(full.length, i + 1);
         const ch = full.slice(i, nextI);
         i = nextI;
-        typed.textContent = full.slice(0, i);
+        renderHintSegments(typed, segments, i);
         blipMaybe(ch);
 
         if (i >= full.length) {
@@ -353,7 +385,7 @@
     function closeBubble() {
       if (!done) {
         fastForward = true;
-        typed.textContent = full;
+        renderHintSegments(typed, segments, full.length);
         done = true;
       }
       box.classList.remove("fu-enter");

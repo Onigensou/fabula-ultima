@@ -7,8 +7,9 @@
  *
  * What this does:
  * - Auto-installs after Foundry is ready
- * - Reads Tile flags from flags.oni-event-system.*
- * - Scans for nearby Event Tiles
+ * - Reads Tile and Token flags from flags.oni-event-system.*
+ *   (a Token carrying the flags is an NPC you can talk to)
+ * - Scans for nearby Event Tiles / Event Tokens
  * - Uses nearest valid Event Tile as the current candidate
  * - Sends execution requests to GM through fabula-ultima-companion socket
  * - Executes event rows in strict sequence, waiting for each row to finish
@@ -96,15 +97,29 @@
     return String(value ?? "").trim();
   }
 
+  function isTokenSource(sourceLike) {
+    const d = sourceLike?.document ?? sourceLike;
+    return d?.documentName === "Token";
+  }
+
+  function getSourceGridSize(sourceLike) {
+    const d = sourceLike?.document ?? sourceLike;
+    return Number(d?.parent?.grid?.size ?? canvas?.grid?.size ?? 100) || 100;
+  }
+
   function getTileRect(tileLike) {
     const d = tileLike?.document ?? tileLike;
+    // A token's width/height are in grid units, a tile's are in pixels.
+    const unit = isTokenSource(d) ? getSourceGridSize(d) : 1;
+    const width = Number(d?.width ?? 0) * unit;
+    const height = Number(d?.height ?? 0) * unit;
     return {
       left: Number(d?.x ?? 0),
       top: Number(d?.y ?? 0),
-      width: Number(d?.width ?? 0),
-      height: Number(d?.height ?? 0),
-      right: Number(d?.x ?? 0) + Number(d?.width ?? 0),
-      bottom: Number(d?.y ?? 0) + Number(d?.height ?? 0)
+      width,
+      height,
+      right: Number(d?.x ?? 0) + width,
+      bottom: Number(d?.y ?? 0) + height
     };
   }
 
@@ -204,7 +219,11 @@
     return {
       isEventTile: normalizeBoolean(data?.isEventTile, false),
       isHidden: !!doc?.hidden,
-      proximityPx: normalizeProximityPx(data?.proximityPx, C.DEFAULT_PROXIMITY_PX ?? 0),
+      // An NPC with no range set is talkable from one grid away.
+      proximityPx: normalizeProximityPx(
+        data?.proximityPx,
+        isTokenSource(doc) ? getSourceGridSize(doc) : (C.DEFAULT_PROXIMITY_PX ?? 0)
+      ),
       eventRows: normalizeEventRows(data?.eventRows ?? []),
       _scope: found?.scope ?? null,
       _raw: data
@@ -303,7 +322,8 @@
       tokenId: partyToken?.id ?? null,
       actorId: partyToken?.actor?.id ?? null,
       partyToken,
-      partyActor: partyToken?.actor ?? null
+      partyActor: partyToken?.actor ?? null,
+      sourceTokenId: isTokenSource(tileDoc) ? (tileDoc?.id ?? null) : null
     };
   }
 
@@ -341,7 +361,7 @@
         return { ok: false, reason: "sceneNotFound", tileId: safeTileId };
       }
 
-      const tileDoc = scene.tiles?.get(safeTileId);
+      const tileDoc = scene.tiles?.get(safeTileId) ?? scene.tokens?.get(safeTileId);
       if (!tileDoc) {
         DBG.warn(DEBUG_SCOPE, "Tile not found.", { tileId: safeTileId, sceneId: safeSceneId });
         return { ok: false, reason: "tileNotFound", tileId: safeTileId };
@@ -373,6 +393,11 @@
       if (!partyToken) {
         DBG.warn(DEBUG_SCOPE, "Execution blocked because no party token could be resolved.", { tileId: safeTileId });
         return { ok: false, reason: "noPartyToken", tileId: safeTileId };
+      }
+
+      if (String(partyToken.id) === safeTileId) {
+        DBG.warn(DEBUG_SCOPE, "Execution blocked because the event token is the party token.", { tileId: safeTileId });
+        return { ok: false, reason: "sourceIsPartyToken", tileId: safeTileId };
       }
 
       const proximity = await checkProximityForTile(tileDoc, partyToken, null);
@@ -598,7 +623,10 @@
           ov ? { x: ov.x, y: ov.y } : null
         );
 
-        const tiles = canvas.tiles?.placeables ?? [];
+        const tiles = [
+          ...(canvas.tiles?.placeables ?? []),
+          ...(canvas.tokens?.placeables ?? []).filter(t => t.id !== partyToken.id)
+        ];
         let best = null;
 
         for (const tile of tiles) {
@@ -777,11 +805,16 @@
 
       const onUpdateToken = async (tokenDoc, changes) => {
         const moved = ("x" in changes) || ("y" in changes);
-        if (!moved) return;
 
         const partyToken = await resolvePartyToken();
-        if (!partyToken) return;
-        if (String(tokenDoc.id) !== String(partyToken.id)) return;
+        if (!partyToken || String(tokenDoc.id) !== String(partyToken.id)) {
+          // An event token moved, was hidden/revealed, or had its event edited.
+          if (moved || ("hidden" in changes) || ("flags" in changes)) {
+            this._queueScan("updateToken(other)");
+          }
+          return;
+        }
+        if (!moved) return;
 
         const afterX = ("x" in changes) ? changes.x : tokenDoc.x;
         const afterY = ("y" in changes) ? changes.y : tokenDoc.y;

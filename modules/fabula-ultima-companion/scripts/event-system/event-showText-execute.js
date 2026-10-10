@@ -110,7 +110,7 @@
 
   function estimateDialogLifetimeMs(text, speed) {
     const cps = Math.max(1, Number(speed) || 28);
-    const chars = String(text ?? "").length;
+    const chars = String(text ?? "").replace(/<\/?b>/gi, "").length;
     const typingMs = Math.ceil((chars / cps) * 1000);
     const holdMs = 1600;
     const enterExitMs = 600;

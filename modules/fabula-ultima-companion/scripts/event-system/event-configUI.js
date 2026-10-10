@@ -455,10 +455,11 @@
             type="text"
             class="oni-event-row-speaker"
             value="${escapeHTML(String(rowData.speaker ?? C.DEFAULT_SHOW_TEXT_SPEAKER ?? "Self"))}"
-            placeholder="Self / Actor UUID / Token UUID / Name"
+            placeholder="Self / This / Actor UUID / Token UUID / Name"
           />
           <div class="oni-event-mini-note">
-            Leave blank for <b>Self</b>. You can also use Actor UUID, Token UUID, or plain text.
+            Leave blank for <b>Self</b> (the party). <b>This</b> = the token carrying this event.
+            You can also use Actor UUID, Token UUID, or a name.
           </div>
         </div>
       </div>
@@ -469,9 +470,9 @@
           <textarea
             class="oni-event-row-text oni-event-textarea"
             placeholder="Write the dialog text here..."
-          >${String(rowData.text ?? "")}</textarea>
+          >${escapeHTML(String(rowData.text ?? ""))}</textarea>
           <div class="oni-event-mini-note">
-            This field stores rich text / HTML content. For now it is edited as a large text area.
+            Wrap a word in <code>&lt;b&gt;…&lt;/b&gt;</code> to highlight it as a hint (bold + colour).
           </div>
         </div>
       </div>
@@ -641,11 +642,24 @@
   // ------------------------------------------------------------
   // Main injection
   // ------------------------------------------------------------
-  RAW("renderTileConfig hook registered.");
+  RAW("renderTileConfig / renderTokenConfig hooks registered.");
 
-  Hooks.on("renderTileConfig", async (app, html) => {
-    RAW("renderTileConfig FIRED", { appId: app?.appId, tileId: app?.document?.id ?? app?.object?.id });
+  Hooks.on("renderTileConfig", (app, html) => injectEventConfig(app, html, "tile"));
+  // A token carries the same event data as a tile: an NPC you walk up to and talk to.
+  Hooks.on("renderTokenConfig", (app, html) => injectEventConfig(app, html, "token"));
+
+  async function injectEventConfig(app, html, sourceKind = "tile") {
+    RAW("render config FIRED", { sourceKind, appId: app?.appId, tileId: app?.document?.id ?? app?.object?.id });
     let grouped = false;
+
+    const isToken = sourceKind === "token";
+    // Prototype tokens are skipped: an event belongs to one placed NPC.
+    if (isToken && (app?.isPrototype || !(app?.document ?? app?.object)?.parent)) return;
+
+    const sourceLabel = isToken ? "Token" : "Tile";
+    const defaultProximityPx = isToken
+      ? (Number(canvas?.grid?.size) || 100)
+      : Number(C.DEFAULT_PROXIMITY_PX ?? 0);
 
     try {
       ensureStyle();
@@ -693,7 +707,7 @@
           // Detect whether dp-tile-config already created the shared Fabula Configuration tab.
       // Query by [data-oni-fabula-panel="1"] — NOT by [data-tab="oni-fabula-config"] which
       // would match the nav button BEFORE the panel (both share data-tab).
-      const fabulaPanel = sheetBody.querySelector('[data-oni-fabula-panel="1"]');
+      const fabulaPanel = isToken ? null : sheetBody.querySelector('[data-oni-fabula-panel="1"]');
       const fabulaMode  = !!fabulaPanel;
 
       DBG.log(DEBUG_SCOPE, "fabulaMode detection", {
@@ -736,12 +750,14 @@
       tabPanel.innerHTML = `
         <div class="oni-event-wrap">
           <div class="oni-event-subtle">
-            Saved into <b>Tile Flags</b>: <code>flags.${SCOPE}.*</code><br>
-            If <b>Is Event Tile</b> is OFF, the Event System should ignore this tile completely.
+            Saved into <b>${sourceLabel} Flags</b>: <code>flags.${SCOPE}.*</code><br>
+            ${isToken
+              ? "Turn this ON to let the party walk up to this token and talk to it. A hidden token cannot be talked to."
+              : "If <b>Is Event Tile</b> is OFF, the Event System should ignore this tile completely."}
           </div>
 
           <div class="form-group">
-            <label>Is Event Tile</label>
+            <label>${isToken ? "Has Event (NPC dialogue)" : "Is Event Tile"}</label>
             <div class="form-fields">
               <input
                 type="checkbox"
@@ -750,7 +766,7 @@
               />
             </div>
             <p class="notes">
-              Main enable/disable gate for this tile.
+              Main enable/disable gate for this ${sourceLabel.toLowerCase()}.
             </p>
           </div>
 
@@ -762,13 +778,15 @@
                   type="number"
                   name="flags.${SCOPE}.proximityPx"
                   class="oni-event-proximity"
-                  value="${Number(C.DEFAULT_PROXIMITY_PX ?? 0)}"
+                  value="${defaultProximityPx}"
                   min="${Number(C.MIN_PROXIMITY_PX ?? 0)}"
                   step="${Number(C.PROXIMITY_STEP_PX ?? 10)}"
                 />
               </div>
               <p class="notes">
-                <b>0</b> means the party must be basically on top of the tile before the <b>!</b> icon appears.
+                ${isToken
+                  ? "How close the party must stand to this token before the <b>!</b> icon appears (default: one grid)."
+                  : "<b>0</b> means the party must be basically on top of the tile before the <b>!</b> icon appears."}
               </p>
             </div>
 
@@ -801,7 +819,7 @@
             </div>
 
             <p class="notes">
-              Changes save only when you click <b>Save Changes</b> in the Tile Config window.
+              Changes save only when you click the save button of this ${sourceLabel} Config window.
             </p>
           </div>
         </div>
@@ -848,8 +866,8 @@
       const flags = readEventFlags(tileDoc);
       const isEventTile = normalizeBoolean(safeGet(flags, "isEventTile", false), false);
       const proximityPx = normalizeProximityPx(
-        safeGet(flags, "proximityPx", C.DEFAULT_PROXIMITY_PX),
-        C.DEFAULT_PROXIMITY_PX
+        safeGet(flags, "proximityPx", defaultProximityPx),
+        defaultProximityPx
       );
       const eventRows = normalizeEventRows(safeGet(flags, "eventRows", []));
 
@@ -889,6 +907,7 @@
 
       addRowBtn?.addEventListener("click", () => {
         const row = buildDefaultRow(C.DEFAULT_ROW_TYPE || C.EVENT_TYPES?.SHOW_TEXT || "showText");
+        if (isToken) row.speaker = C.SPECIAL_SPEAKER_SOURCE || "This";
         rowsWrap.appendChild(createRowElement(row, rowsWrap, hiddenJsonEl));
         updateRowIndices(rowsWrap);
         updateEmptyState(rowsWrap);
@@ -929,11 +948,11 @@
         tileId: tileDoc?.id ?? null
       });
     } catch (e) {
-      console.error(INSTALL_TAG, "Fatal error in renderTileConfig:", e);
+      console.error(INSTALL_TAG, "Fatal error injecting Event Config:", e);
     } finally {
       if (grouped) DBG.groupEnd?.();
     }
-  });
+  }
 
   // ------------------------------------------------------------
   // Publish API
