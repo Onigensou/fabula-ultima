@@ -38,6 +38,7 @@ import {
 // ── Event sub-scripts ───────────────────────────────────────────────────────
 // Importing registers. Add new events here.
 import "./events/lightning-storm.js";
+import "./events/lightning-crystal.js";
 
 const TAG = "[FU][ConflictEvent]";
 
