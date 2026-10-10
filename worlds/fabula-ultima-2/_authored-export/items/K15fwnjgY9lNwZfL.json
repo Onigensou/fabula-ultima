@@ -50,6 +50,7 @@
       "ip_cost": "6",
       "isEquipped": false,
       "isUnique": false,
+      "item_cost": "600",
       "item_quantity": "1",
       "item_rarity": "Common",
       "item_skill_active": {

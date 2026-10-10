@@ -1,0 +1,94 @@
+{
+  "_id": "sIkLqWqs6rtZI2cU",
+  "_stats": {
+    "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
+    "coreVersion": "12.343",
+    "createdTime": 1791472273722,
+    "duplicateSource": "Item.cneU6dfTzI13k0U2",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/8a55d0840792a95596fa37808f93e478.jpg",
+  "name": "Goddess Tear",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "a7QM5eiDwGGrBPL4",
+    "props": {
+      "action_command": "item",
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "",
+      "cost": "-",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<ul><li><p>Fully restore the target <strong>HP </strong>and <strong>MP</strong></p></li></ul>",
+      "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "chain_steps": "gtear_hp, gtear_mp",
+          "effect_kind": "chain",
+          "effect_label": "gtear_use"
+        },
+        "1": {
+          "effect_kind": "grant",
+          "effect_label": "gtear_hp",
+          "grant_amount": "9999",
+          "grant_resource": "hp",
+          "target_ref": "action_targets"
+        },
+        "2": {
+          "effect_kind": "grant",
+          "effect_label": "gtear_mp",
+          "grant_amount": "9999",
+          "grant_resource": "mp",
+          "target_ref": "action_targets"
+        }
+      },
+      "heroic_requirement": "",
+      "id": "sIkLqWqs6rtZI2cU",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/8a55d0840792a95596fa37808f93e478.jpg",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Goddess Tear",
+      "on_activate_effect_ref": "gtear_use",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_description": "<ul><li><p>Fully restore the target <strong>HP </strong>and <strong>MP</strong></p></li></ul>",
+      "skill_information": "",
+      "skill_range": "Any",
+      "skill_tags": "",
+      "skill_target": "One Creature",
+      "skill_type": "Item",
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Item.sIkLqWqs6rtZI2cU"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "sIkLqWqs6rtZI2cU"
+  },
+  "type": "equippableItem"
+}

@@ -8,6 +8,88 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "FX1xDQlwuiCJsYVs",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791475479023,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "FX1xDQlwuiCJsYVs",
+          "originalParentId": "L7rj8OpM3zYetpPb",
+          "originalUuid": "Item.L7rj8OpM3zYetpPb.ActiveEffect.FX1xDQlwuiCJsYVs"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "crossScene": false,
+          "directorPermanent": true,
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "consume_self": true,
+                "damage_amount": "CUR_HP - 1",
+                "damage_operation": "cap",
+                "damage_stage": "incoming",
+                "effect_kind": "adjust_damage",
+                "effect_label": "egg_hold",
+                "modify_mode": "set_hp_floor",
+                "modify_value": 1
+              }
+            },
+            "name": "Ring of the Egg",
+            "reaction_config_table": {
+              "0": {
+                "reaction_damage_outcome": "would_reduce_to_zero",
+                "reaction_effect_ref": "egg_hold",
+                "reaction_passive_mode": "ask",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_takes_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Ring of the Egg",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "3.2.4"
@@ -100,6 +182,7 @@
       "isKey": false,
       "isMartial": false,
       "isModule": false,
+      "isReaction": true,
       "isRelatedItem": false,
       "isSet": false,
       "isUnique": false,

@@ -1,0 +1,70 @@
+{
+  "_id": "kts0d30fHnryE14F",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791564027652,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/ring.png",
+  "name": "Soul Ring (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "VgaustkUmW90hgSl",
+    "props": {
+      "cost": "",
+      "description": "<p>When you cast a spell without enough MP to pay for it, you may pay double its cost in HP instead. This cannot reduce you to 0 HP. If the spell would heal you, you recover no HP.</p>",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "effect_kind": "substitute_cost",
+          "effect_label": "sring_swap",
+          "from_resource": "mp",
+          "min_remaining": 1,
+          "multiplier": 2,
+          "suppress_self_grant": true,
+          "target_ref": "self",
+          "to_resource": "hp"
+        }
+      },
+      "id": "kts0d30fHnryE14F",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/ring.png",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Soul Ring (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "reaction_effect_ref": "sring_swap",
+          "reaction_passive_mode": "ask",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_trigger": "caster_short_on_mp"
+        }
+      },
+      "skill_description": "<ul><li><p>Treat <strong>1 IP</strong> as equal to <strong>10 MP</strong> or <strong>10 HP</strong>, You may pay costs using any combination of IP, MP, or HP.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.kts0d30fHnryE14F"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "kts0d30fHnryE14F"
+  },
+  "type": "equippableItem"
+}

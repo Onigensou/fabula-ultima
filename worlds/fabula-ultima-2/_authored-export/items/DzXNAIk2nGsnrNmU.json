@@ -79,7 +79,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul>\n<li>Your&nbsp;<strong>Attacks&nbsp;</strong>deal&nbsp;<strong>10&nbsp;</strong>bonus damage</li>\n</ul>",
+      "description": "<ul>\n<li>Your&nbsp;<strong>Attacks&nbsp;</strong>deal&nbsp;<strong>20%&nbsp;</strong>more damage</li>\n</ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

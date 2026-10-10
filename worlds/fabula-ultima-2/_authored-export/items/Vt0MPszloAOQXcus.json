@@ -32,10 +32,19 @@
       "check_bonus": "0",
       "class": "",
       "cost": "-",
-      "damage_bonus": "100",
+      "damage_bonus": "0",
       "defense_target_type": "def",
       "description": "<ul><li><p>Target creature <strong>recovers 100 MP</strong></p></li></ul>",
       "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "effect_kind": "grant",
+          "effect_label": "megaelixir_mp",
+          "grant_amount": "100",
+          "grant_resource": "mp",
+          "target_ref": "action_targets"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": false,
@@ -45,6 +54,7 @@
       "level": "1",
       "max_level": "1",
       "name": "Mega-Elixir",
+      "on_activate_effect_ref": "megaelixir_mp",
       "optional_params": {},
       "reaction_config_table": {},
       "rolled_atr1": "-",
@@ -53,9 +63,10 @@
       "skill_animation_mode": "default",
       "skill_information": "",
       "skill_range": "Any",
+      "skill_tags": "potion",
       "skill_target": "One Creature",
       "skill_type": "Item",
-      "type_damage": "MP",
+      "type_damage": "",
       "use_optional_params": false
     },
     "template": "j0F5Msw5RZ8aIB3j",

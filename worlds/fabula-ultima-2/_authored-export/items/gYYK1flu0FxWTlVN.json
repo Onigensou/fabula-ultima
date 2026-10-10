@@ -1,0 +1,81 @@
+{
+  "_id": "gYYK1flu0FxWTlVN",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791565965659,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+  "name": "Vampire Cloak (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "hMJnRXDNfdXiaMlX",
+    "props": {
+      "cost": "",
+      "description": "<p>At the start of your turn, you lose 15 HP. Your attacks gain Drain.</p>",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "consume_amount": "15",
+          "consume_resource": "hp",
+          "effect_kind": "consume_resource",
+          "effect_label": "vcloak_bleed",
+          "target_ref": "self"
+        },
+        "1": {
+          "$deleted": false,
+          "action_keyword": "drain",
+          "effect_kind": "apply_action_keyword",
+          "effect_label": "vcloak_drain"
+        }
+      },
+      "id": "gYYK1flu0FxWTlVN",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Vampire Cloak (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "reaction_effect_ref": "vcloak_bleed",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_trigger": "turn_start"
+        },
+        "1": {
+          "$deleted": false,
+          "condition_formula": "ACTION_IS_ATTACK == 1 && DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "vcloak_drain",
+          "reaction_passive_mode": "on",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_description": "<ul><li><p>@UUID[JournalEntry.2hNU23YLpCcZCCmf]{Pierce}</p></li><li><p>@UUID[JournalEntry.Cz6U0ps98sYN8jMH]{Conquer 3}: inflicts @UUID[JournalEntry.GePNxftPupElcCWp]{Bleed} on the target.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.gYYK1flu0FxWTlVN"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "gYYK1flu0FxWTlVN"
+  },
+  "type": "equippableItem"
+}

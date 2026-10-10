@@ -84,6 +84,64 @@
       "type": "base"
     },
     {
+      "_id": "kMpp08xSn72IJlcT",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791480113949,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "magic_defense",
+          "mode": 3,
+          "priority": 50,
+          "value": "${isEquipped ? 0 : 999}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "kMpp08xSn72IJlcT",
+          "originalParentId": "PavIYTUnaqWtpy2D",
+          "originalUuid": "Item.PavIYTUnaqWtpy2D.ActiveEffect.kMpp08xSn72IJlcT"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Geo Suits",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
       "_id": "tU0XpA1y2nuDRDWH",
       "_stats": {
         "compendiumSource": null,

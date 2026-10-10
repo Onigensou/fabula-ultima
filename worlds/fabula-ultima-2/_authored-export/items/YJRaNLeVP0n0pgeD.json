@@ -1,0 +1,66 @@
+{
+  "_id": "YJRaNLeVP0n0pgeD",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791472264613,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png",
+  "name": "Quatermain (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "NUmsmp8rNcSFbH6j",
+    "props": {
+      "cost": "",
+      "description": "<ul>\n<li>Deals extra damage equal to the difference between your current and maximum Inventory Points.</li>\n</ul>",
+      "effect_table": {
+        "0": {
+          "damage_amount": "max(0, MAX_IP - CUR_IP)",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "quater_bonus"
+        }
+      },
+      "id": "YJRaNLeVP0n0pgeD",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Quatermain (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ACTION_IS_ATTACK == 1 && MAX_IP > CUR_IP",
+          "reaction_effect_ref": "quater_bonus",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_description": "<ul>\n<li>Deals extra damage equal to the difference between your current and maximum Inventory Points.</li>\n</ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.YJRaNLeVP0n0pgeD"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "YJRaNLeVP0n0pgeD"
+  },
+  "type": "equippableItem"
+}

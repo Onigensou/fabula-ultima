@@ -844,6 +844,24 @@ export class DirectorCombat {
 //         and OVERRIDES firstSide/currentSide before the first turn is picked.
 //       – initiativeMode "sidePriority" → legacy fixed rule: any enemy
 //         Villain/Boss present → enemies first; else party first.
+// True if `actor` carries a live `prevent_ambush` AE change. A gear carrier
+// (accessory / armor / weapon / shield) only counts while equipped — the same
+// rule snapshot.js applies to the other raw rule keys, restated here because
+// this file deliberately imports nothing but the logger.
+const _AMBUSH_GEAR_TYPES = new Set(["accessory", "armor", "weapon", "shield"]);
+function actorPreventsAmbush(actor) {
+  const effs = actor?.appliedEffects ?? actor?.effects?.contents ?? actor?.effects ?? [];
+  for (const ae of effs) {
+    if (ae?.disabled) continue;
+    if (!(ae.changes ?? []).some((ch) => ch?.key === "prevent_ambush")) continue;
+    const item = ae?.parent?.documentName === "Item" ? ae.parent : null;
+    const itemType = String(item?.system?.props?.item_type ?? "").toLowerCase();
+    if (_AMBUSH_GEAR_TYPES.has(itemType) && item?.system?.props?.isEquipped !== true) continue;
+    return true;
+  }
+  return false;
+}
+
 export function buildDirectorCombat({
   scene, partyTokens, enemyTokens, sourceSceneId = null,
   initiativeMode = "rolled", engagement = "normal",
@@ -858,6 +876,14 @@ export function buildDirectorCombat({
   for (const td of (enemyTokens ?? [])) {
     if (!td) continue;
     dc.addCombatant({ tokenDoc: td, side: "enemy", disposition: -1 });
+  }
+
+  // Ambush immunity (Intruder Alarm "prevents your party from getting Ambushed"):
+  // a party member carrying a live `prevent_ambush` AE change turns an Ambush
+  // into a normal engagement, before the first side is decided.
+  if (dc.engagement === "ambush" && (partyTokens ?? []).some((td) => actorPreventsAmbush(td?.actor))) {
+    log("buildDirectorCombat: ambush prevented by a party member's prevent_ambush effect");
+    dc.engagement = "normal";
   }
 
   const villainPresent = dc.combatants.some((c) => c.side === "enemy" && (c.isVillain || c.isBoss));

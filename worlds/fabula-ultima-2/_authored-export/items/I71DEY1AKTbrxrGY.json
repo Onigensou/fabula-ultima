@@ -1,0 +1,64 @@
+{
+  "_id": "I71DEY1AKTbrxrGY",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791480113059,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/axe.png",
+  "name": "Seismic Pillar (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "iQ9BRZAuT9lfex5O",
+    "props": {
+      "cost": "",
+      "description": "<ul>\n<li>Damage dealt by this weapon to creatures whose current <strong>Might die size</strong> is lower than yours ignores Immunities and Resistances.</li>\n</ul>",
+      "effect_table": {
+        "0": {
+          "action_keyword": "ignore_immunity",
+          "effect_kind": "apply_action_keyword",
+          "effect_label": "seismic_break"
+        }
+      },
+      "id": "I71DEY1AKTbrxrGY",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/axe.png",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Seismic Pillar (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_MIG_CURRENT_DIE > 0 && TARGET_MIG_CURRENT_DIE < MIG_CURRENT_DIE",
+          "reaction_effect_ref": "seismic_break",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_description": "<ul>\n<li>Damage dealt by this weapon to creatures whose current <strong>Might die size</strong> is lower than yours ignores Immunities and Resistances.</li>\n</ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.I71DEY1AKTbrxrGY"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "I71DEY1AKTbrxrGY"
+  },
+  "type": "equippableItem"
+}

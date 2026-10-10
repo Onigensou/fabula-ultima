@@ -3,6 +3,11 @@
   "name": "AncientTemple_Map003",
   "tokens": [
     {
+      "name": "Blacksmith Shade A",
+      "actorId": "9FM2UddgOdcbHvVR",
+      "actorLink": true
+    },
+    {
       "name": "Hina",
       "actorId": "dafTLBUscCDNgq8H",
       "actorLink": true
@@ -47,7 +52,7 @@
       },
       "hexagonalShape": 0,
       "lockRotation": false,
-      "rotation": 0,
+      "rotation": 90,
       "alpha": 1,
       "disposition": 1,
       "displayBars": 50,
@@ -217,8 +222,8 @@
       "hidden": false,
       "sort": 0,
       "_id": "3zVUu4RRZIvy6Sj1",
-      "x": 597,
-      "y": 152,
+      "x": 348,
+      "y": 415,
       "elevation": 0,
       "locked": false,
       "_regions": []
@@ -416,11 +421,148 @@
       "hidden": false,
       "sort": 1,
       "_id": "CwdbMyZRnealMKhA",
-      "x": 487,
-      "y": 231,
+      "x": 290,
+      "y": 342,
       "elevation": 0,
       "locked": false,
       "_regions": []
+    },
+    {
+      "name": "Blacksmith Shade A",
+      "displayName": 0,
+      "actorLink": true,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Shopkeeper%20Shade/NPCShade_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.64,
+        "scaleY": 1.64,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 0.8,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Shopkeeper%20Shade/NPCShade_Standard.png",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "dominanceCrestOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "idleAnimToken": {
+            "float": false,
+            "bounce": false
+          }
+        },
+        "world": {
+          "oniTokenMask": {
+            "enabled": true,
+            "cfg": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "pad": 32,
+              "maskWholeToken": false
+            }
+          }
+        }
+      },
+      "actorId": "9FM2UddgOdcbHvVR",
+      "hidden": true,
+      "sort": 0,
+      "x": 535,
+      "y": 570,
+      "elevation": 0,
+      "locked": false,
+      "_regions": [],
+      "_id": "JU3aqOrFVB0TfZ3Q"
     },
     {
       "name": "Zarg",
@@ -437,7 +579,7 @@
         "offsetX": 0,
         "offsetY": 0,
         "fit": "contain",
-        "scaleX": -1.56,
+        "scaleX": 1.56,
         "scaleY": 1.56,
         "rotation": 0,
         "tint": "#ffffff",
@@ -615,8 +757,8 @@
       "hidden": false,
       "sort": 1,
       "_id": "QJO49LaK7MhjjCER",
-      "x": 318,
-      "y": 214,
+      "x": 390,
+      "y": 431,
       "elevation": 0,
       "locked": false,
       "_regions": []
@@ -814,15 +956,15 @@
       "hidden": false,
       "sort": 2,
       "_id": "TOiS2BCXOJobYIZk",
-      "x": 204,
-      "y": 393,
+      "x": 311,
+      "y": 436,
       "elevation": 0,
       "locked": false,
       "_regions": []
     }
   ],
   "notes": [],
-  "tileCount": 0,
+  "tileCount": 1,
   "full": {
     "name": "AncientTemple_Map003",
     "navName": "Ancient Temple - Inn Room",
@@ -1026,7 +1168,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780398840576,
-      "modifiedTime": 1784380529430,
+      "modifiedTime": 1784383773515,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "walls": [

@@ -117,6 +117,7 @@ async function loadDeps(reuseToken = null) {
     // equipped item. The live Attack flow offers them as `virtual:<N>` and
     // Skill COMPUTE reaches them via resolvePrimaryAttackWeapon.
     resolveVirtualAttacks: snapshot.resolveVirtualAttacks,
+    actorMultiAttackGrant: snapshot.actorMultiAttackGrant,
     resolvePrimaryAttackWeapon: snapshot.resolvePrimaryAttackWeapon,
     applyAffinityToDamage: snapshot.applyAffinityToDamage,
     classifyActionIntent: skillIntent.classifyActionIntent,
@@ -1344,7 +1345,7 @@ function resolveWeaponSentinels(p, attackerSnap, deps) {
 }
 
 function buildAttackerSnapshot(tokenDoc, deps) {
-  const { readPropNum, attrDieSize, resolveAttackerWeapon, resolveVirtualAttacks } = deps;
+  const { readPropNum, attrDieSize, resolveAttackerWeapon, resolveVirtualAttacks, actorMultiAttackGrant } = deps;
   const actor = tokenDoc?.actor;
   if (!actor) return null;
   return Object.freeze({
@@ -1373,6 +1374,9 @@ function buildAttackerSnapshot(tokenDoc, deps) {
     // (not wrapped in `{ weapon }`). Mirror snapshot.js buildWeaponBundle.
     weapon: resolveAttackerWeapon(actor, { which: "main" }) ?? null,
     offWeapon: resolveAttackerWeapon(actor, { which: "off" }) ?? null,
+    // Multi-attack grant for the main weapon (mode "two-weapon-multi").
+    multiAttack: (typeof actorMultiAttackGrant === "function"
+      ? (actorMultiAttackGrant(actor, resolveAttackerWeapon(actor, { which: "main" }) ?? null) ?? null) : null),
     // A weaponless-looking actor may still have a real attack. Blanche equips
     // two shields and NO weapon, and the harness reported `no_main_weapon` --
     // which read as "that is her build" and was recorded as such. It is not:
@@ -2798,6 +2802,12 @@ async function runDirectorAttackCompute({
     queue = [pseudo];
   } else if (Array.isArray(pendingPasses) && pendingPasses.length) {
     queue = [...pendingPasses];
+  } else if (mode === "two-weapon-multi") {
+    // Multi-attack grant: the MAIN weapon, N passes (mirrors TARGET).
+    if (!attackerSnap.weapon || !attackerSnap.multiAttack) {
+      return { ok: false, reason: "no_multi_attack_grant", hint: "The attacker has no live multiAttackGrant for its main weapon." };
+    }
+    queue = Array.from({ length: Math.max(2, Math.floor(Number(attackerSnap.multiAttack.count) || 2)) }, () => attackerSnap.weapon);
   } else if (mode === "two-weapon" || mode === "two-weapon-main-first") {
     const off = attackerSnap.offWeapon;
     if (!attackerSnap.weapon || !off) {
@@ -2853,6 +2863,7 @@ async function runDirectorAttackCompute({
       // pass the queue but leave `attackSkillItem` null, and the on-hit reaction
       // rows declared on the attack item would attribute to nothing.
       attackMode: isNpcAttack ? "npc" : mode,
+      multiAttackKeepHr: mode === "two-weapon-multi" && !!attackerSnap.multiAttack?.keepHr,
       ...(isNpcAttack ? { npcAttackItemUuid: npcAttackItem.uuid } : {}),
       passIndex,
       totalPasses: Number.isFinite(totalPasses) ? totalPasses : queue.length,

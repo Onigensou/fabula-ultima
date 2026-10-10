@@ -56,6 +56,16 @@
     return members;
   }
 
+  // ── Fish Table (scene oniDungeon.loot.fish) — everything that bites here ────
+  function resolveFishTableRef(scene) {
+    try {
+      const dungeon = window.oni?.FabulaConfig?.readDungeon?.(scene)
+                   ?? scene?.getFlag?.(MODULE_ID, "oniDungeon")
+                   ?? {};
+      return String(dungeon?.loot?.fish ?? "").trim();
+    } catch { return ""; }
+  }
+
   // ── Main flow (GM only) ────────────────────────────────────────────────────
   async function runFishing(scene, tileDoc) {
     if (!game.user?.isGM) return;
@@ -92,8 +102,9 @@
 
       // Each angler fishes ONE round, in sequence (the UI is a singleton).
       // 4 party members → 4 rounds total across the table.
+      const fishTable = resolveFishTableRef(scene);
       for (const actor of participants) {
-        await fishing.execute(actor, null, { totalRounds: 1 })
+        await fishing.execute(actor, null, { totalRounds: 1, fishTable })
           .catch(e => console.error(TAG, `Fishing session failed for ${actor?.name}:`, e));
       }
 

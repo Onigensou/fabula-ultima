@@ -1,0 +1,806 @@
+{
+  "_id": "wrybxaRfRueI59fU",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791479470298,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "a4NxzOkohfkUA4rG",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_4",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "directorPermanent": true,
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Chameleon Dark",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "dyvYFpY8lYA4WxhR",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_5",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "directorPermanent": true,
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Chameleon Earth",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "mBXJMjM4lIgelGjf",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_8",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "directorPermanent": true,
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Chameleon Light",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "na9rojUCScTSNGK6",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_3",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "directorPermanent": true,
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Chameleon Bolt",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "Oxtt5ZUKqMcKhMJk",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_7",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "directorPermanent": true,
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Chameleon Ice",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "ryIFcHABvt41c61k",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_2",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "directorPermanent": true,
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Chameleon Air",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "spUdWHuo6RKBTDLF",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_6",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "directorPermanent": true,
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Chameleon Fire",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "U38Ce6GcQim8fmvq",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_1",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "directorPermanent": true,
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Chameleon Physical",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "XBzQLmo3dv5iO6fE",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_9",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "directorPermanent": true,
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Chameleon Poison",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2386.gif",
+  "name": "Chameleon Armor (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "vNmsoBmSPYlVAPWM",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>When you're <strong>hit </strong>by any damage, you may spend <strong>10 MP, </strong>if you do, <strong>Gain Resistance to that damage type </strong>until the end of this scene, or until you gain a different type with this effect.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "consume_amount": "10",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "cham_pay",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "1": {
+          "ae_template_ref": "Chameleon Physical, Chameleon Air, Chameleon Bolt, Chameleon Dark, Chameleon Earth, Chameleon Fire, Chameleon Ice, Chameleon Light, Chameleon Poison",
+          "condition_formula": "(AE_COUNT_CHAMELEON_PHYSICAL + AE_COUNT_CHAMELEON_AIR + AE_COUNT_CHAMELEON_BOLT + AE_COUNT_CHAMELEON_DARK + AE_COUNT_CHAMELEON_EARTH + AE_COUNT_CHAMELEON_FIRE + AE_COUNT_CHAMELEON_ICE + AE_COUNT_CHAMELEON_LIGHT + AE_COUNT_CHAMELEON_POISON) > 0",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "cham_clear",
+          "include_persistent": true,
+          "target_ref": "self"
+        },
+        "2": {
+          "chain_steps": "cham_pay, cham_clear, cham_physical",
+          "effect_kind": "chain",
+          "effect_label": "cham_to_physical"
+        },
+        "3": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Item.wrybxaRfRueI59fU.ActiveEffect.U38Ce6GcQim8fmvq",
+          "effect_kind": "apply_ae",
+          "effect_label": "cham_physical",
+          "target_ref": "self"
+        },
+        "4": {
+          "chain_steps": "cham_pay, cham_clear, cham_air",
+          "effect_kind": "chain",
+          "effect_label": "cham_to_air"
+        },
+        "5": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Item.wrybxaRfRueI59fU.ActiveEffect.ryIFcHABvt41c61k",
+          "effect_kind": "apply_ae",
+          "effect_label": "cham_air",
+          "target_ref": "self"
+        },
+        "6": {
+          "chain_steps": "cham_pay, cham_clear, cham_bolt",
+          "effect_kind": "chain",
+          "effect_label": "cham_to_bolt"
+        },
+        "7": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Item.wrybxaRfRueI59fU.ActiveEffect.na9rojUCScTSNGK6",
+          "effect_kind": "apply_ae",
+          "effect_label": "cham_bolt",
+          "target_ref": "self"
+        },
+        "8": {
+          "chain_steps": "cham_pay, cham_clear, cham_dark",
+          "effect_kind": "chain",
+          "effect_label": "cham_to_dark"
+        },
+        "9": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Item.wrybxaRfRueI59fU.ActiveEffect.a4NxzOkohfkUA4rG",
+          "effect_kind": "apply_ae",
+          "effect_label": "cham_dark",
+          "target_ref": "self"
+        },
+        "10": {
+          "chain_steps": "cham_pay, cham_clear, cham_earth",
+          "effect_kind": "chain",
+          "effect_label": "cham_to_earth"
+        },
+        "11": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Item.wrybxaRfRueI59fU.ActiveEffect.dyvYFpY8lYA4WxhR",
+          "effect_kind": "apply_ae",
+          "effect_label": "cham_earth",
+          "target_ref": "self"
+        },
+        "12": {
+          "chain_steps": "cham_pay, cham_clear, cham_fire",
+          "effect_kind": "chain",
+          "effect_label": "cham_to_fire"
+        },
+        "13": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Item.wrybxaRfRueI59fU.ActiveEffect.spUdWHuo6RKBTDLF",
+          "effect_kind": "apply_ae",
+          "effect_label": "cham_fire",
+          "target_ref": "self"
+        },
+        "14": {
+          "chain_steps": "cham_pay, cham_clear, cham_ice",
+          "effect_kind": "chain",
+          "effect_label": "cham_to_ice"
+        },
+        "15": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Item.wrybxaRfRueI59fU.ActiveEffect.Oxtt5ZUKqMcKhMJk",
+          "effect_kind": "apply_ae",
+          "effect_label": "cham_ice",
+          "target_ref": "self"
+        },
+        "16": {
+          "chain_steps": "cham_pay, cham_clear, cham_light",
+          "effect_kind": "chain",
+          "effect_label": "cham_to_light"
+        },
+        "17": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Item.wrybxaRfRueI59fU.ActiveEffect.mBXJMjM4lIgelGjf",
+          "effect_kind": "apply_ae",
+          "effect_label": "cham_light",
+          "target_ref": "self"
+        },
+        "18": {
+          "chain_steps": "cham_pay, cham_clear, cham_poison",
+          "effect_kind": "chain",
+          "effect_label": "cham_to_poison"
+        },
+        "19": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Item.wrybxaRfRueI59fU.ActiveEffect.XBzQLmo3dv5iO6fE",
+          "effect_kind": "apply_ae",
+          "effect_label": "cham_poison",
+          "target_ref": "self"
+        }
+      },
+      "id": "wrybxaRfRueI59fU",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2386.gif",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Chameleon Armor (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "CUR_MP >= 10 && TRIGGER_DAMAGE_IS_PHYSICAL == 1 && AE_COUNT_CHAMELEON_PHYSICAL == 0",
+          "reaction_cause_filter": "damage",
+          "reaction_effect_ref": "cham_to_physical",
+          "reaction_passive_mode": "ask",
+          "reaction_resource_filter": "hp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_lose_resource"
+        },
+        "1": {
+          "condition_formula": "CUR_MP >= 10 && TRIGGER_DAMAGE_IS_AIR == 1 && AE_COUNT_CHAMELEON_AIR == 0",
+          "reaction_cause_filter": "damage",
+          "reaction_effect_ref": "cham_to_air",
+          "reaction_passive_mode": "ask",
+          "reaction_resource_filter": "hp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_lose_resource"
+        },
+        "2": {
+          "condition_formula": "CUR_MP >= 10 && TRIGGER_DAMAGE_IS_BOLT == 1 && AE_COUNT_CHAMELEON_BOLT == 0",
+          "reaction_cause_filter": "damage",
+          "reaction_effect_ref": "cham_to_bolt",
+          "reaction_passive_mode": "ask",
+          "reaction_resource_filter": "hp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_lose_resource"
+        },
+        "3": {
+          "condition_formula": "CUR_MP >= 10 && TRIGGER_DAMAGE_IS_DARK == 1 && AE_COUNT_CHAMELEON_DARK == 0",
+          "reaction_cause_filter": "damage",
+          "reaction_effect_ref": "cham_to_dark",
+          "reaction_passive_mode": "ask",
+          "reaction_resource_filter": "hp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_lose_resource"
+        },
+        "4": {
+          "condition_formula": "CUR_MP >= 10 && TRIGGER_DAMAGE_IS_EARTH == 1 && AE_COUNT_CHAMELEON_EARTH == 0",
+          "reaction_cause_filter": "damage",
+          "reaction_effect_ref": "cham_to_earth",
+          "reaction_passive_mode": "ask",
+          "reaction_resource_filter": "hp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_lose_resource"
+        },
+        "5": {
+          "condition_formula": "CUR_MP >= 10 && TRIGGER_DAMAGE_IS_FIRE == 1 && AE_COUNT_CHAMELEON_FIRE == 0",
+          "reaction_cause_filter": "damage",
+          "reaction_effect_ref": "cham_to_fire",
+          "reaction_passive_mode": "ask",
+          "reaction_resource_filter": "hp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_lose_resource"
+        },
+        "6": {
+          "condition_formula": "CUR_MP >= 10 && TRIGGER_DAMAGE_IS_ICE == 1 && AE_COUNT_CHAMELEON_ICE == 0",
+          "reaction_cause_filter": "damage",
+          "reaction_effect_ref": "cham_to_ice",
+          "reaction_passive_mode": "ask",
+          "reaction_resource_filter": "hp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_lose_resource"
+        },
+        "7": {
+          "condition_formula": "CUR_MP >= 10 && TRIGGER_DAMAGE_IS_LIGHT == 1 && AE_COUNT_CHAMELEON_LIGHT == 0",
+          "reaction_cause_filter": "damage",
+          "reaction_effect_ref": "cham_to_light",
+          "reaction_passive_mode": "ask",
+          "reaction_resource_filter": "hp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_lose_resource"
+        },
+        "8": {
+          "condition_formula": "CUR_MP >= 10 && TRIGGER_DAMAGE_IS_POISON == 1 && AE_COUNT_CHAMELEON_POISON == 0",
+          "reaction_cause_filter": "damage",
+          "reaction_effect_ref": "cham_to_poison",
+          "reaction_passive_mode": "ask",
+          "reaction_resource_filter": "hp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_lose_resource"
+        },
+        "9": {
+          "condition_formula": "(AE_COUNT_CHAMELEON_PHYSICAL + AE_COUNT_CHAMELEON_AIR + AE_COUNT_CHAMELEON_BOLT + AE_COUNT_CHAMELEON_DARK + AE_COUNT_CHAMELEON_EARTH + AE_COUNT_CHAMELEON_FIRE + AE_COUNT_CHAMELEON_ICE + AE_COUNT_CHAMELEON_LIGHT + AE_COUNT_CHAMELEON_POISON) > 0",
+          "reaction_effect_ref": "cham_clear",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_trigger": "conflict_end"
+        }
+      },
+      "skill_description": "<ul><li><p>When you're <strong>hit </strong>by any damage, you may spend <strong>10 MP, </strong>if you do, <strong>Gain Resistance to that damage type </strong>until the end of this scene, or until you gain a different type with this effect.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.wrybxaRfRueI59fU"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "wrybxaRfRueI59fU"
+  },
+  "type": "equippableItem"
+}

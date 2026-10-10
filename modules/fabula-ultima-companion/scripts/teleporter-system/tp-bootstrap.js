@@ -3,15 +3,19 @@
 //
 // DUNGEON MODE ("dungeon"):
 //   Hooks "dungeonPathing.turnEnd" which fires { tokenDoc, node }.
-//   confirmMode=true → styled parchment/JRPG dialog with smart text:
+//   confirmMode=true → custom prompt box in the Save/Load skin (showTpPrompt,
+//   plain DOM — not a Foundry Dialog) with smart text:
 //     same-scene  → "Go to next Area?"
 //     cross-scene → "Enter <navName>?" or "Enter Area?"
 //   confirmMode=false → teleport immediately after turn end.
 //
 // EXPLORATION MODE ("exploration"):
 //   Hooks "updateToken".  Runs on ALL clients (players + GM).
-//   confirmMode=true  → floating 🚪 button above the token while on the tile;
-//                        clicking the button triggers teleport.
+//   confirmMode=true  → floating 🚪 button above the token while on the tile,
+//                        shown ONLY to the Main Controller and to GMs.
+//                        confirmDialog on (default) → clicking the button opens
+//                        the same "Enter <navName>?" dialog as dungeon mode.
+//                        confirmDialog off → the button click teleports at once.
 //   confirmMode=false → teleport fires automatically when token enters tile
 //                        (original instant behavior, no button shown).
 //
@@ -31,7 +35,12 @@
 //   Per-token cooldown map (tokenId → timestamp).  2-second window blocks
 //   A→B→A infinite loops when both tiles are teleporters.
 //
-// SCENE MODE "none": fully disabled.
+// FREE-MAP SCENES (scene mode unset or "none" — e.g. the Overworld, where the
+// party token is dragged between small location tiles):
+//   Same detection as exploration, but a confirmMode tile skips the door button
+//   and opens the "Enter X?" prompt as soon as the party token stops on it.
+//   Only tiles carrying an enabled teleporter flag react, so legacy maps whose
+//   doors run on Monk's Active Tiles actions are untouched.
 // ============================================================================
 (() => {
   const GUARD = "__ONI_TP_BOOTSTRAP__";
@@ -89,137 +98,101 @@
   50%     { box-shadow: 0 0 24px rgba(190,130,255,.75), 0 4px 18px rgba(0,0,0,.55); }
 }
 
-/* ── Teleporter dungeon dialog — parchment/JRPG theme ── */
-.oni-tp-dialog {
-  --parchment-1:#f6ebd3; --parchment-2:#efdfc3; --parchment-3:#e7d3b1;
-  --wood-1:#a87649; --wood-2:#8d5f38; --wood-3:#6f4526;
-  --gold-1:#f4d488; --gold-2:#caa44d; --gold-3:#9a7a2b;
-  --ink:#3b2a19; --shadow:rgba(0,0,0,.35); --glow:rgba(250,230,160,.55);
+/* ── Teleporter prompt box ──
+   Same skin as the Save/Load confirm panel (save-ui.js .ss-conf-inner /
+   .ss-choice-btn): ruled parchment, thin gold border with a wood ring,
+   dark-wood choice buttons; the picked one gets a bright border ring.
+   Lettering is Signika, as in the
+   Healing and Shop windows (the save screens' monospace read as awkward here).
+   Layout: message panel with Yes / No hanging off the bottom-right corner. */
+#oni-tp-prompt {
+  position: fixed;
+  left: 50%;
+  top: 42%;
+  z-index: 9995;
+  box-sizing: border-box;
+  min-width: 420px;
+  max-width: min(820px, 90vw);
+  padding: 30px 46px 40px;
+  border: 2px solid #c9a44a;
+  border-radius: 14px;
+  background: linear-gradient(168deg, #f8f0d4 0%, #ede0b0 100%);
+  box-shadow: 0 0 0 2px #7a4e20, 0 0 0 4px #b8865a, 0 0 28px rgba(0,0,0,0.40), inset 0 1px 0 rgba(255,245,200,0.70);
+  font-family: "Signika","Noto Sans","Segoe UI",sans-serif;
+  color: #3a1e06;
+  user-select: none;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translate(calc(-50% - 32px), -50%);   /* enters from the left */
+  transition: opacity 360ms cubic-bezier(.25,.46,.45,.94),
+              transform 360ms cubic-bezier(.25,.46,.45,.94);
 }
-.oni-tp-dialog.window-app {
-  position: relative !important;
-  border: 2px solid rgba(80,52,30,.8) !important;
-  border-radius: 14px !important;
-  background:
-    radial-gradient(120% 80% at 50% 0%,rgba(255,255,255,.45) 0%,rgba(255,255,255,.15) 22%,transparent 40%),
-    linear-gradient(180deg,var(--parchment-1) 0%,var(--parchment-2) 55%,var(--parchment-3) 100%) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.6),
-    inset 0 0 0 2px rgba(255,255,255,.08),
-    0 0 0 8px rgba(90,60,34,.5),
-    0 16px 32px var(--shadow) !important;
-  overflow: visible !important;
-  color: var(--ink) !important;
-  font-family: "Signika","Noto Sans","Inter",system-ui,sans-serif;
+/* faint ruled lines, as on the save screens */
+#oni-tp-prompt::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: 12px;
+  background: repeating-linear-gradient(0deg, transparent, transparent 23px, rgba(140,90,30,0.04) 23px, rgba(140,90,30,0.04) 24px);
 }
-/* Wooden frame extends beyond dialog border */
-.oni-tp-dialog.window-app::before {
-  content: "";
-  position: absolute;
-  inset: -11px;
-  border-radius: 22px;
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,.12)),
-    repeating-linear-gradient(22deg,
-      var(--wood-1) 0 10px, var(--wood-2) 10px 20px,
-      var(--wood-3) 20px 30px, var(--wood-2) 30px 40px);
-  box-shadow: 0 0 0 1px rgba(52,32,18,.85), 0 10px 32px rgba(0,0,0,.5);
-  z-index: -1;
-  filter: saturate(.94) contrast(1.06) sepia(.12);
+#oni-tp-prompt.tp-visible {
+  opacity: 1;
+  transform: translate(-50%, -50%);
+}
+#oni-tp-prompt.tp-leaving {
+  opacity: 0;
+  transform: translate(calc(-50% + 32px), -50%);   /* leaves to the right */
+  transition: opacity 280ms cubic-bezier(.55,.085,.68,.53),
+              transform 280ms cubic-bezier(.55,.085,.68,.53);
   pointer-events: none;
 }
-/* Brass studs — top-left anchor; rest faked via box-shadow */
-.oni-tp-dialog.window-app::after {
-  --r:10px;
-  content: "";
-  position: absolute;
-  width: var(--r); height: var(--r);
-  border-radius: 50%;
-  top: 8px; left: 8px;
-  background:
-    radial-gradient(circle at 35% 35%,#fff8,#fff0 55%),
-    radial-gradient(circle at 62% 65%,#0003,#0000 60%),
-    linear-gradient(180deg,var(--gold-1),var(--gold-2) 60%,var(--gold-3));
-  box-shadow:
-    calc(100% - 16px + 2px) 0  0 0 var(--gold-2),
-    0 calc(100% - 16px + 2px) 0 0 var(--gold-2),
-    calc(100% - 16px + 2px) calc(100% - 16px + 2px) 0 0 var(--gold-2),
-    0 0 10px var(--glow);
-  z-index: 1;
-  pointer-events: none;
-}
-/* Header — gold plaque */
-.oni-tp-dialog .window-header {
-  background: linear-gradient(180deg,var(--gold-1) 0%,var(--gold-2) 55%,var(--gold-3) 100%) !important;
-  border-bottom: 2px solid rgba(90,60,34,.55);
-  border-radius: 12px 12px 0 0;
-  color: #4b3517 !important;
-  text-shadow: 0 1px 0 rgba(255,255,255,.55);
-  padding: 8px 14px;
-}
-.oni-tp-dialog .window-header .window-title {
-  color: #4b3517 !important;
-  font-weight: 700;
-  letter-spacing: .3px;
-}
-.oni-tp-dialog .window-header .header-button {
-  color: #5c421e !important;
-}
-/* Content */
-.oni-tp-dialog .window-content {
-  background: transparent !important;
-  color: var(--ink) !important;
-  font-family: "Signika","Noto Sans","Inter",system-ui,sans-serif;
-  padding: 14px 18px 6px;
-}
-.oni-tp-dialog .window-content p,
-.oni-tp-dialog .window-content .oni-tp-msg {
-  text-align: center;
-  padding: 6px 4px;
+#oni-tp-prompt .oni-tp-msg {
+  position: relative;
   margin: 0;
-  font-size: 1.08em;
-  font-weight: 600;
-  color: var(--ink) !important;
-  line-height: 1.55;
+  padding: 0;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: .3px;
+  color: #3a1e06;
 }
-/* Divider above buttons */
-.oni-tp-dialog .dialog-buttons,
-.oni-tp-dialog footer.dialog-buttons {
-  border-top: 1px solid rgba(92,66,30,.35);
-  padding: 8px 12px 10px;
-  background: transparent !important;
+#oni-tp-prompt .oni-tp-msg strong { font-weight: 700; }
+/* Yes / No hang off the bottom-right corner */
+#oni-tp-prompt .oni-tp-actions {
+  position: absolute;
+  right: 18px;
+  bottom: -22px;
   display: flex;
-  gap: 8px;
+  gap: 12px;
 }
-/* JRPG gold buttons */
-.oni-tp-dialog .dialog-buttons button,
-.oni-tp-dialog footer.dialog-buttons button {
-  flex: 1;
-  border: 1px solid rgba(90,60,34,.68) !important;
-  border-radius: 10px !important;
-  padding: 7px 14px !important;
-  font-weight: 700;
+#oni-tp-prompt .oni-tp-choice {
+  position: relative;
+  box-sizing: border-box;
+  min-width: 112px;
+  height: 40px;
+  margin: 0;
+  padding: 0 26px;
+  border: 1px solid #9b7040;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #7a5230 0%, #5c3818 100%);
+  color: #f4e8c0;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: .8px;
   cursor: pointer;
-  background: linear-gradient(180deg,var(--gold-1) 0%,var(--gold-2) 58%,var(--gold-3) 100%) !important;
-  color: #4b3517 !important;
-  text-shadow: 0 1px 0 rgba(255,255,255,.6);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.6),
-    0 0 0 2px rgba(90,60,34,.26),
-    0 6px 16px rgba(0,0,0,.2) !important;
-  transition: transform .06s ease, filter .12s ease, box-shadow .12s ease;
+  box-shadow: 0 2px 6px rgba(40,18,4,0.38), inset 0 1px 0 rgba(255,225,140,0.14);
+  transition: border-color .12s, color .12s, background .12s, box-shadow .12s;
 }
-.oni-tp-dialog .dialog-buttons button:hover,
-.oni-tp-dialog footer.dialog-buttons button:hover {
-  filter: brightness(1.07) saturate(1.06);
+#oni-tp-prompt .oni-tp-choice:focus { outline: none; }
+#oni-tp-prompt .oni-tp-choice.is-picked {
+  border-color: #f4d488; color: #fff8e0;
+  background: linear-gradient(180deg, #9b6840 0%, #7a4a22 100%);
+  box-shadow: 0 0 0 2px #f4d488, 0 0 18px rgba(244,212,136,0.55), 0 2px 6px rgba(40,18,4,0.38), inset 0 1px 0 rgba(255,225,140,0.22);
 }
-.oni-tp-dialog .dialog-buttons button:active,
-.oni-tp-dialog footer.dialog-buttons button:active {
-  transform: translateY(1px) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(0,0,0,.1),
-    0 0 0 2px rgba(90,60,34,.26),
-    0 3px 8px rgba(0,0,0,.28) !important;
+#oni-tp-prompt .oni-tp-choice.no.is-picked {
+  border-color: #f0a488; color: #ffd0c0;
+  background: linear-gradient(180deg, #7a2e18 0%, #5a1c08 100%);
+  box-shadow: 0 0 0 2px #f0a488, 0 0 18px rgba(230,110,80,0.50), 0 2px 6px rgba(40,18,4,0.38);
 }
     `;
     document.head.appendChild(s);
@@ -295,7 +268,7 @@
   function _startExploreWatch() {
     if (_tpTickerFn || !canvas?.app?.ticker) return;
     _tpTickerFn = () => {
-      if (_getSceneMode() !== "exploration") return;
+      if (_getSceneMode() !== "exploration" && !_isFreeMap()) return;
       if (!_tpWatchToken) return;
       const vis = _tpWatchToken.center; // PIXI visual position — live during animation
       _runExploreDetect(_tpWatchToken.document, vis.x, vis.y);
@@ -356,7 +329,19 @@
     return (_cachedSceneMode = getSceneMode());
   }
 
-  function _invalidateSceneMode() { _cachedSceneMode = null; }
+  // Free map = the scene has no mode at all (or an explicit "none"). Read the RAW
+  // flag: getSceneMode() also reports "none" for stealth / conflict / title etc.
+  let _cachedFreeMap = null;
+
+  function _isFreeMap() {
+    if (_cachedFreeMap !== null) return _cachedFreeMap;
+    const DP  = globalThis.DungeonPathing;
+    const raw = canvas?.scene?.flags?.[MODULE_ID]?.[DP?.FABULA_ROOT_KEY ?? "oniFabula"]?.[DP?.GENERAL_KEY ?? "general"]?.[DP?.SCENE_MODE_KEY ?? "sceneMode"];
+    const noMode = raw === undefined || raw === null || raw === "" || raw === "none";
+    return (_cachedFreeMap = noMode && _getSceneMode() === "none");
+  }
+
+  function _invalidateSceneMode() { _cachedSceneMode = null; _cachedFreeMap = null; }
 
   Hooks.on("updateScene", (sceneDoc, changes) => {
     if ("flags" in changes) _invalidateSceneMode();
@@ -383,6 +368,7 @@
   let _hudBtnTile  = null;
   let _hudBtnToken = null;
   let _hudBtnRaf   = null;
+  let _promptTileId = null; // exploration: tile whose "Enter X?" prompt is open
 
   function _positionHudBtn(btn, tokenDoc) {
     if (!btn || !tokenDoc) return;
@@ -416,16 +402,16 @@
     // Immediately position before the first RAF so there's no single-frame misplace
     _positionHudBtn(btn, tokenDoc);
 
-    // Click → teleport immediately (the button IS the confirmation)
+    // Click → "Enter X?" dialog when the tile's confirmDialog is on (default),
+    // otherwise teleport immediately (the button IS the confirmation).
     btn.addEventListener("pointerdown", async (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
       const tile  = _hudBtnTile;
       const token = _hudBtnToken;
       hideTpHudButton();
-      if (tile && token) {
-        await triggerTeleporter(tile, token, { applyDpOffset: false, forcedNodeId: null });
-      }
+      if (!tile || !token) return;
+      await confirmAndTeleport(tile, token, { rearmButton: true });
     });
 
     // RAF loop: re-position every frame while camera is moving to follow the token
@@ -435,6 +421,27 @@
       _hudBtnRaf = requestAnimationFrame(track);
     }
     _hudBtnRaf = requestAnimationFrame(track);
+  }
+
+  // Prompt (when the tile's confirmDialog is on, the default) → teleport.
+  // rearmButton: after a "No", bring the door button back while the token is
+  // still on the tile (exploration). Free maps have no button; step off and on.
+  async function confirmAndTeleport(tile, token, { rearmButton = false } = {}) {
+    // Control may have been handed over since the tile was entered.
+    if (!(await canOperateTeleporter())) return;
+
+    const flags = getFlags(tile);
+    const wantsDialog = flags?.confirmDialog !== false && flags?.confirmDialog !== "false";
+    if (wantsDialog && flags?.destination) {
+      _promptTileId = tile.id;
+      const confirmed = await askTeleportConfirm(flags.destination, flags);
+      _promptTileId = null;
+      if (!confirmed) {
+        if (rearmButton && !_hudBtn && _tokenOnTile.get(token.id)?.has(tile.id)) showTpHudButton(tile, token);
+        return;
+      }
+    }
+    await triggerTeleporter(tile, token, { applyDpOffset: false, forcedNodeId: null });
   }
 
   function hideTpHudButton(animate = false) {
@@ -454,31 +461,134 @@
     }
   }
 
-  // ── Dungeon confirmation dialog — parchment/JRPG themed with smart text ──────
+  // ── Confirmation dialog — parchment/JRPG themed with smart text ──────────────
+  // Shared by dungeon mode (on turn end) and exploration mode (after the button).
 
-  async function askTeleportConfirmDungeon(destination) {
+  async function askTeleportConfirm(destination, flags = null) {
     const currentSceneId = canvas?.scene?.id;
     const isCrossScene   = destination?.sceneId && destination.sceneId !== currentSceneId;
 
+    // [before, area name (shown bold), after] — a plain string has no highlight
     let promptText;
-    if (isCrossScene) {
+    // promptName on the tile wins over the destination scene's own name — e.g. an
+    // Overworld door labelled "The Wyrmwood - Exit" that lands on the last map.
+    const custom = typeof flags?.promptName === "string" ? flags.promptName.trim() : "";
+    if (custom) {
+      promptText = ["Enter ", custom, "?"];
+    } else if (isCrossScene) {
       const destScene = game.scenes.get(destination.sceneId);
-      const navName   = destScene?.navName?.trim() || null;
-      promptText = navName ? `Enter ${navName}?` : "Enter Area?";
+      const navName   = destScene?.navName?.trim()
+        || destScene?.flags?.[MODULE_ID]?.oniFabula?.general?.navigationName?.trim?.()
+        || null;
+      promptText = navName ? ["Enter ", navName, "?"] : "Enter Area?";
     } else {
       promptText = "Go to next Area?";
     }
 
-    return Dialog.confirm(
-      {
-        title:   "Teleporter",
-        content: `<p class="oni-tp-msg">${promptText}</p>`,
-      },
-      {
-        classes: ["dialog", "oni-tp-dialog"],
-        width:   280,
+    return showTpPrompt(promptText);
+  }
+
+  // ── Custom prompt box ─────────────────────────────────────────────────────────
+  // One prompt at a time. Resolves true (Yes / Enter) or false (No / Esc /
+  // closed from outside, e.g. the token walked off the tile or the scene changed).
+
+  const TP_PROMPT_OUT_MS = 280; // keep in step with #oni-tp-prompt.tp-leaving
+  let _tpPrompt = null;         // { el, finish }
+
+  function closeTpPrompt(result = false) {
+    _tpPrompt?.finish(result);
+  }
+
+  function showTpPrompt(text) {
+    closeTpPrompt(false);
+    ensureStyle();
+
+    return new Promise((resolve) => {
+      const el = document.createElement("div");
+      el.id = "oni-tp-prompt";
+      el.setAttribute("role", "dialog");
+      el.innerHTML = `
+        <p class="oni-tp-msg"></p>
+        <div class="oni-tp-actions">
+          <button type="button" class="oni-tp-choice yes">Yes</button>
+          <button type="button" class="oni-tp-choice no">No</button>
+        </div>`;
+      const msg = el.querySelector(".oni-tp-msg");
+      if (Array.isArray(text)) {
+        const strong = document.createElement("strong");
+        strong.textContent = text[1] ?? "";
+        msg.append(text[0] ?? "", strong, text[2] ?? "");
+      } else {
+        msg.textContent = text;
       }
-    );
+
+      const yesBtn = el.querySelector(".yes");
+      const noBtn  = el.querySelector(".no");
+
+      // The border highlight marks the picked answer: hover or ←/→ moves it, Enter takes it.
+      let picked = null;
+      const pick = (btn) => {
+        if (picked === btn) return;
+        picked?.classList.remove("is-picked");
+        picked = btn;
+        btn.classList.add("is-picked");
+      };
+
+      const entry = { el, finish: null };
+      const onKey = (ev) => {
+        // Leave typing alone (chat box, sheet fields) — Enter there must not teleport.
+        if (ev.target?.closest?.("input, textarea, select, [contenteditable='true']")) return;
+        let handled = true;
+        if (ev.key === "Escape")                                entry.finish(false);
+        else if (ev.key === "Enter" || ev.key === " ")          entry.finish(picked === yesBtn);
+        else if (ev.key === "ArrowLeft"  || ev.key === "a" || ev.key === "A") pick(yesBtn);
+        else if (ev.key === "ArrowRight" || ev.key === "d" || ev.key === "D") pick(noBtn);
+        else handled = false;
+        if (handled) { ev.preventDefault(); ev.stopPropagation(); }
+      };
+      entry.finish = (result) => {
+        if (_tpPrompt !== entry) return;   // already finished
+        _tpPrompt = null;
+        window.removeEventListener("keydown", onKey, true);
+        el.classList.remove("tp-visible");
+        el.classList.add("tp-leaving");
+        setTimeout(() => el.remove(), TP_PROMPT_OUT_MS + 40);
+        resolve(result === true);
+      };
+
+      // pointerdown is swallowed so the click never reaches the canvas underneath
+      el.addEventListener("pointerdown", (ev) => ev.stopPropagation());
+      yesBtn.addEventListener("pointerenter", () => pick(yesBtn));
+      noBtn.addEventListener("pointerenter",  () => pick(noBtn));
+      yesBtn.addEventListener("click", () => entry.finish(true));
+      noBtn.addEventListener("click",  () => entry.finish(false));
+      window.addEventListener("keydown", onKey, true);
+
+      pick(yesBtn);
+      document.body.appendChild(el);
+      _tpPrompt = entry;
+      // Two frames so the starting (hidden, offset) state is painted before the transition.
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        if (_tpPrompt === entry) el.classList.add("tp-visible");
+      }));
+    });
+  }
+
+  // ── Main Controller gate (exploration button mode) ───────────────────────────
+  // The ticker detects tile entry on EVERY client, so without a gate each player
+  // would get their own door button and could answer the prompt. Only the
+  // Movement Control main controller — or any GM — may operate it, the same rule
+  // dungeon movement, Fast Travel and Scene Travel use. Players fail closed if
+  // the Movement Control API is not ready.
+
+  async function canOperateTeleporter() {
+    if (game.user?.isGM) return true;
+    const api = globalThis.__ONI_MOVEMENT_CONTROL_API__
+      ?? globalThis.FUCompanion?.api?.MovementControl
+      ?? null;
+    if (!api?.isCurrentUserMainController) return false;
+    try { return !!(await api.isCurrentUserMainController()); }
+    catch { return false; }
   }
 
   // ── Core trigger ──────────────────────────────────────────────────────────────
@@ -504,7 +614,7 @@
     // Exploration mode: button click was the confirmation — no dialog shown here.
     const confirmMode = flags.confirmMode !== false && flags.confirmMode !== "false";
     if (confirmMode && getSceneMode() === "dungeon") {
-      const confirmed = await askTeleportConfirmDungeon(flags.destination);
+      const confirmed = await askTeleportConfirm(flags.destination, flags);
       if (!confirmed) return;
     }
 
@@ -712,6 +822,8 @@
       const onTile = _tokenOnTile.get(tokenDoc.id);
       if (!onTile?.has(_hudBtnTile.id)) hideTpHudButton(true); // animated exit
     }
+    // Walked off the tile with the prompt still open → treat as "No"
+    if (_promptTileId && !_tokenOnTile.get(tokenDoc.id)?.has(_promptTileId)) closeTpPrompt(false);
 
     if (entered.length === 0) return;
 
@@ -724,7 +836,17 @@
       // (With animate:true, tokenDoc.x/y = final destination — already known.)
       const docC = tokenCenter(tokenDoc);
       if (docC.x >= rx && docC.x <= rx + rw && docC.y >= ry && docC.y <= ry + rh) {
-        showTpHudButton(tileDoc, tokenDoc);
+        const freeMap = _isFreeMap();
+        canOperateTeleporter().then((ok) => {
+          // still standing on the tile once the controller check resolves?
+          if (!ok || !_tokenOnTile.get(tokenDoc.id)?.has(tileDoc.id)) return;
+          if (freeMap) {
+            // Location tile on a free map: no door button, straight to the prompt.
+            confirmAndTeleport(tileDoc, tokenDoc).catch(e => console.error(TAG, "teleport error:", e));
+          } else {
+            showTpHudButton(tileDoc, tokenDoc);
+          }
+        });
       }
     } else {
       // Auto mode: fire the moment the visual center crosses the tile boundary,
@@ -737,6 +859,7 @@
 
   // Stop ticker and clean up button when scene unloads
   Hooks.on("canvasTearDown", () => {
+    closeTpPrompt(false);
     hideTpHudButton();
     _stopExploreWatch();
   });

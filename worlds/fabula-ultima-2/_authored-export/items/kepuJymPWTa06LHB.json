@@ -1,0 +1,66 @@
+{
+  "_id": "kepuJymPWTa06LHB",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791475479054,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/scan.png",
+  "name": "Sniper Scope (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "jDsRKKpWmXs6aAJF",
+    "props": {
+      "cost": "",
+      "description": "<ul>\n<li>Gain +1 to <strong>Accuracy</strong> Check, if you are using a&nbsp;<strong>Firearm</strong> weapon, gain +2 instead</li>\n<li>You can target&nbsp;<strong>Hidden&nbsp;</strong>creature as though they are not hidden.</li>\n</ul>",
+      "effect_table": {
+        "0": {
+          "accuracy_amount": "1",
+          "accuracy_operation": "add",
+          "effect_kind": "adjust_accuracy",
+          "effect_label": "scope_firearm"
+        }
+      },
+      "id": "kepuJymPWTa06LHB",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/scan.png",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Sniper Scope (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "USED_WEAPON_CATEGORY_IS_FIREARM == 1",
+          "reaction_action_kind": "Attack",
+          "reaction_effect_ref": "scope_firearm",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_performs_action"
+        }
+      },
+      "skill_description": "<ul>\n<li>Gain +1 to <strong>Accuracy</strong> Check, if you are using a&nbsp;<strong>Firearm</strong> weapon, gain +2 instead</li>\n<li>You can target&nbsp;<strong>Hidden&nbsp;</strong>creature as though they are not hidden.</li>\n</ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.kepuJymPWTa06LHB"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "kepuJymPWTa06LHB"
+  },
+  "type": "equippableItem"
+}

@@ -111,6 +111,18 @@
         "parent": "sWfX0st2X6sPXPd0"
       },
       {
+        "id": "b6xZrcMjGI3ARizQ",
+        "name": "Ancient Capital Midgard",
+        "type": "Actor",
+        "parent": "yrt0v9PKovSRpKQJ"
+      },
+      {
+        "id": "dDFCxuzpgyr3RtkP",
+        "name": "Ancient Capital Midgard",
+        "type": "Scene",
+        "parent": "yvRW0RqT5kwSxKFl"
+      },
+      {
         "id": "CV8Zf4WP413xJFvR",
         "name": "Ancient Temple",
         "type": "Scene",
@@ -859,6 +871,12 @@
         "name": "Fafnir Castle",
         "type": "RollTable",
         "parent": "OeC0hsLCW5zTWD6w"
+      },
+      {
+        "id": "fXu6HGk4WO95bxkf",
+        "name": "Fafnir Castle",
+        "type": "Scene",
+        "parent": "yvRW0RqT5kwSxKFl"
       },
       {
         "id": "NeeNG1EvptEsQ9lg",
@@ -2549,6 +2567,12 @@
         "effects": 0
       },
       {
+        "id": "E0SS6NYLKUyvisTv",
+        "name": "Aegis Field",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "sLUFIsIYIAmmO0lI",
         "name": "Aenigma of Adaptation",
         "type": "equippableItem",
@@ -2593,6 +2617,12 @@
       {
         "id": "nxAL0WdeqCy6tVwq",
         "name": "Alchemist Codex",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "mjcOkC66OwKtDYwy",
+        "name": "Alchemist Codex (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -2807,6 +2837,12 @@
         "effects": 0
       },
       {
+        "id": "LUvox7eCZ95MS0yT",
+        "name": "Arcana Avant (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "zR5wRkqGCREtQuii",
         "name": "Arcane Circle",
         "type": "equippableItem",
@@ -2816,7 +2852,7 @@
         "id": "nfE7jC3VPwmuncNW",
         "name": "Arcane Earring",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "FPPoi5iBGBTzQ7zR",
@@ -2888,7 +2924,7 @@
         "id": "eSAFGyccW3pweDdx",
         "name": "Armor of Heroes",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "66VhBlUJJiIHvdF7",
@@ -2945,6 +2981,12 @@
         "effects": 0
       },
       {
+        "id": "GmbT4IyKBC7fb9Uu",
+        "name": "Assassin's Blade (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "NzmcGwUf0XAzSHjl",
         "name": "Atmokinesis",
         "type": "equippableItem",
@@ -2995,6 +3037,12 @@
       {
         "id": "7ywxRYdvYmDk94bL",
         "name": "Auto Aimer",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "mLAOS5OJ5BUwVWrb",
+        "name": "Auto Aimer (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -3209,6 +3257,12 @@
         "effects": 0
       },
       {
+        "id": "rJNdR459QOX0tRbh",
+        "name": "Barrier Sphere",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "ofCKWctVhPv8vC9H",
         "name": "Basic Alchemy",
         "type": "equippableItem",
@@ -3416,7 +3470,7 @@
         "id": "fhAho99WpytMzCtx",
         "name": "Bio Plate",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "ZTyfhNr10Pa42pAB",
@@ -3446,7 +3500,7 @@
         "id": "cy0XWEqKnjvJ9B4c",
         "name": "Bishop's Edict",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 6
       },
       {
         "id": "TSCAUfjpOlNl6WwV",
@@ -3554,7 +3608,13 @@
         "id": "Rrjrpt19t7sM6Mbu",
         "name": "Blindfold",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
+      },
+      {
+        "id": "bjhFQPrkM1MR1Yoa",
+        "name": "Blindfold (gear skill)",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "CgaVYR30by1N2kZ2",
@@ -3659,6 +3719,12 @@
         "effects": 0
       },
       {
+        "id": "oFcM8ZUpllAK30pF",
+        "name": "Bloodthirster (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "6bkrtQQmXtzbAshK",
         "name": "Blue Bovine",
         "type": "equippableItem",
@@ -3757,6 +3823,12 @@
       {
         "id": "xswSyDHMuKJdHGZf",
         "name": "Boots of Swiftness",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "OyTw9FegtPhNorsO",
+        "name": "Boots of Swiftness (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -4103,6 +4175,12 @@
         "effects": 2
       },
       {
+        "id": "wrybxaRfRueI59fU",
+        "name": "Chameleon Armor (Passive)",
+        "type": "equippableItem",
+        "effects": 9
+      },
+      {
         "id": "QuzY0QG9S1RfjuUF",
         "name": "Champion Gloves",
         "type": "equippableItem",
@@ -4229,6 +4307,12 @@
         "effects": 0
       },
       {
+        "id": "NX83y58twFEzmOG1",
+        "name": "Clear Liquid",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "oisg7B7Nu3qpdW8Q",
         "name": "Cleaving Strike",
         "type": "equippableItem",
@@ -4250,7 +4334,13 @@
         "id": "DeIMdUFdNlbApDVT",
         "name": "Clockwork Heart",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
+      },
+      {
+        "id": "zfi7tJxmcaQGRHRi",
+        "name": "Clockwork Heart (Passive)",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "8ta8kqa1PLv1b04D",
@@ -4261,6 +4351,12 @@
       {
         "id": "w7aYOFr8mnN0SLhD",
         "name": "Cold Finger",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "xLdAspRazwaLWNew",
+        "name": "Cold Finger (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -4297,6 +4393,12 @@
       {
         "id": "TonJhOEDvCr8RrdU",
         "name": "Commander Banner",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "7WR5iBvxjbXtA14B",
+        "name": "Commander Banner (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -4448,7 +4550,7 @@
         "id": "tQu0n4qZRcPcQBlo",
         "name": "Crested Helm",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "LhKeJaeNKyD9TBal",
@@ -4465,6 +4567,12 @@
       {
         "id": "Xb0RBOMwfTAQSDw7",
         "name": "Crimson Gloves",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "xpI8x62bhRT2pdw2",
+        "name": "Crimson Gloves (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -4521,6 +4629,12 @@
         "name": "Crystal Powder",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "ZigbhzlCo1jFZMLd",
+        "name": "Crystal Powder",
+        "type": "equippableItem",
+        "effects": 2
       },
       {
         "id": "FoodCucumber0001",
@@ -4763,10 +4877,22 @@
         "effects": 2
       },
       {
+        "id": "D14OMH5uNi2SUFz1",
+        "name": "Demongrin (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "9Z9bVEVwAW9hiuFe",
         "name": "Demonshield",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
+      },
+      {
+        "id": "49dhNVvJRJpD2v4W",
+        "name": "Demonshield (Passive)",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "BQjAeoIEgbzy47oG",
@@ -4931,6 +5057,18 @@
         "effects": 0
       },
       {
+        "id": "CSayaO2mcgjutXio",
+        "name": "Draconic Claw (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "tuT3D0cQOJ6JBaZz",
+        "name": "Draconic Essence",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "g3r4oZYBrA3O9ssW",
         "name": "Draconic Roar",
         "type": "equippableItem",
@@ -5040,6 +5178,12 @@
       },
       {
         "id": "6wg3JxDlU6GD4uqq",
+        "name": "Earth Stone",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "mwMWruQEVG6DRGCq",
         "name": "Earth Stone",
         "type": "equippableItem",
         "effects": 0
@@ -5516,6 +5660,12 @@
         "id": "uEzR5wTAvhvgACGv",
         "name": "Eye of Skadi",
         "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "QLv40CHewlaiU2VE",
+        "name": "Eyeball",
+        "type": "equippableItem",
         "effects": 0
       },
       {
@@ -5647,6 +5797,12 @@
       {
         "id": "eTC044V2Msm9OhcA",
         "name": "Fire Wand",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "nP3vrf5FrG7YwG1t",
+        "name": "Fish Fin",
         "type": "equippableItem",
         "effects": 0
       },
@@ -5915,6 +6071,12 @@
         "effects": 0
       },
       {
+        "id": "6cqEvyeolNozKZT8",
+        "name": "Fugu",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "3SG96LfUyQaA0qAp",
         "name": "Fulgur",
         "type": "equippableItem",
@@ -5933,6 +6095,12 @@
         "effects": 0
       },
       {
+        "id": "nUVRyBNSbOlqbh0Y",
+        "name": "Fulgur Alta",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "MWH6Za46Bjii884i",
         "name": "Fulgur Finis",
         "type": "equippableItem",
@@ -5942,7 +6110,7 @@
         "id": "586POqqfHOk7TgY8",
         "name": "Fulgur Shield",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "U1WUGQw6hkUo1La7",
@@ -5959,6 +6127,12 @@
       {
         "id": "i4oM2NTWVz9lRIZz",
         "name": "Gae Bolg",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "qesmCvPumDLyWAuy",
+        "name": "Gae Bolg (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -6104,7 +6278,7 @@
         "id": "PavIYTUnaqWtpy2D",
         "name": "Geo Suits",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "ROQw6telXF9qyZC8",
@@ -6140,7 +6314,7 @@
         "id": "LAsmmXgH0GT6KIXS",
         "name": "Giants Belt",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "G1gaPudd1ngD1sh0",
@@ -6209,6 +6383,12 @@
         "effects": 0
       },
       {
+        "id": "sIkLqWqs6rtZI2cU",
+        "name": "Goddess Tear",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "l37t04IQeGTGCNDn",
         "name": "Gold Bar",
         "type": "equippableItem",
@@ -6253,6 +6433,12 @@
       {
         "id": "t2hmo5SnPi9LCcdZ",
         "name": "Golem Fist",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "hArlldtJn8DH9wKi",
+        "name": "Golem Fist (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -6494,6 +6680,12 @@
         "id": "wzwQj3HC41TFByOw",
         "name": "Gravity Mace",
         "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "o4g4GTVkuj3yJGME",
+        "name": "Gravity Mace (Passive)",
+        "type": "equippableItem",
         "effects": 0
       },
       {
@@ -6590,7 +6782,7 @@
         "id": "Li5RjJZdG2g7WFJ2",
         "name": "Guardian Emblem",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "apTtxjIGZbuM8Ofc",
@@ -6608,7 +6800,7 @@
         "id": "CYfthrIA03zaPLGj",
         "name": "Gungnir",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "acdicWHrJMEMe20N",
@@ -6655,6 +6847,12 @@
       {
         "id": "4sRQe37ayG9OebW3",
         "name": "Hannya Mask",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "RwBCUv6voor57gDu",
+        "name": "Hannya Mask (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -6763,6 +6961,12 @@
       {
         "id": "GTydGAnT25DCc6Va",
         "name": "Heart Stone",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "Rtl3EmsDG8aGBXCt",
+        "name": "Heart Stone (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -7346,7 +7550,7 @@
         "id": "Yd8hCDTlIOKKc5XB",
         "name": "Intruder Alarm",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "cSynFyjRWqRbgrZx",
@@ -7541,6 +7745,12 @@
         "effects": 0
       },
       {
+        "id": "whsGum6GvIiHHpl6",
+        "name": "Jormungand (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "VxlBjTtpZgMiMU1q",
         "name": "Joyeuse",
         "type": "equippableItem",
@@ -7550,7 +7760,7 @@
         "id": "yOJKXAQJq4R2mzCa",
         "name": "Jumping Boots",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "9mEeAoPKlrCCQjRN",
@@ -7616,7 +7826,7 @@
         "id": "j2zsAZo4RuolWM6b",
         "name": "King's Castle",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 5
       },
       {
         "id": "Ou5w7XHSNGb02T9y",
@@ -7754,6 +7964,12 @@
         "id": "YJ5lY7F4Y6JIsEw4",
         "name": "Lightning Greaves",
         "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "zad3Y9IBr1WC1SV3",
+        "name": "Lightning Greaves (gear skill)",
+        "type": "equippableItem",
         "effects": 0
       },
       {
@@ -7811,6 +8027,12 @@
         "effects": 0
       },
       {
+        "id": "IkBK4OzWHLkUUYXA",
+        "name": "Liquid Hope",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "TIeKQs0l9tWaNO0y",
         "name": "Liquid Hope",
         "type": "equippableItem",
@@ -7841,6 +8063,12 @@
         "effects": 1
       },
       {
+        "id": "vGhOBmRM6TlwtImZ",
+        "name": "Lobster Claw (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "4E3auFhcWT06tIn5",
         "name": "Lock-On",
         "type": "equippableItem",
@@ -7855,6 +8083,12 @@
       {
         "id": "bOyrz1SaqA1TQRzo",
         "name": "Longinus",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "L9sBnpQmCpKpyXKQ",
+        "name": "Longinus (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -8012,7 +8246,7 @@
         "id": "LovcBRnMztRvrtVw",
         "name": "Mage Emblem",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "6fN45LX3i4bmqIFY",
@@ -8053,6 +8287,12 @@
       {
         "id": "1bAmygPgkEEVuGph",
         "name": "Magic Mirror",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "DzPCCPnqF7PioX20",
+        "name": "Magic Mirror (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -8193,6 +8433,12 @@
         "name": "Magus Robe",
         "type": "equippableItem",
         "effects": 2
+      },
+      {
+        "id": "PsPKj3jaXv6BOpFb",
+        "name": "Magus Robe (Passive)",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "ZZG5sHvIc3GH26w7",
@@ -8426,7 +8672,7 @@
         "id": "NYZZNYBAwPhpNOzH",
         "name": "Metallica",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "HSqGOczwuAfiN0Od",
@@ -8516,7 +8762,7 @@
         "id": "19AYZWXLj7vbeMLY",
         "name": "Miner Hat",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 3
       },
       {
         "id": "seumBxHYbWkD4puo",
@@ -8623,6 +8869,12 @@
       {
         "id": "Knt8Qr5y1rgq3TSa",
         "name": "Mjolnir",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "lGv8LhV2TMJ4zE63",
+        "name": "Mjolnir (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -8972,7 +9224,7 @@
         "id": "lFAG6dMR89JX4H9h",
         "name": "Multigroa Skin Gloves",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "KRD2oLQnj3dgVq0j",
@@ -9007,6 +9259,12 @@
       {
         "id": "spYAfHOWI0OG5M9X",
         "name": "Mysterious Hot-Pot",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "qwLfGN1ahEvnV4Tg",
+        "name": "Mystic Horn",
         "type": "equippableItem",
         "effects": 0
       },
@@ -9049,6 +9307,12 @@
       {
         "id": "wjUCpLZK3lxYd16i",
         "name": "Near-Death Sword",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "mUmVssoKyCteJGv1",
+        "name": "Near-Death Sword (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -9131,6 +9395,12 @@
         "effects": 2
       },
       {
+        "id": "2AO7brQmvgfkHRl6",
+        "name": "Noble Dress (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "xOIJH5IfGbZTH6Tu",
         "name": "Nocebo Weapon",
         "type": "equippableItem",
@@ -9145,6 +9415,12 @@
       {
         "id": "QOGYJMwOPTaWVUfG",
         "name": "Norimitsu",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "oTPXDmefeZbJ2Yhp",
+        "name": "Norimitsu (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -9167,6 +9443,12 @@
         "effects": 0
       },
       {
+        "id": "Ct03jR1j4OXXr55R",
+        "name": "Obsidian",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "2YiUymRL6Uxakssg",
         "name": "Ocean Lotus",
         "type": "equippableItem",
@@ -9182,7 +9464,7 @@
         "id": "z0uVJxJnpkrsViSG",
         "name": "Old Bandages",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "K33p1P1Eb3RtLNLe",
@@ -9445,6 +9727,12 @@
       {
         "id": "ecMYjBVVRm8TieSi",
         "name": "Pinwheel Rod",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "WYi7CDOr9Z2y4ajc",
+        "name": "Pinwheel Rod (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -9881,6 +10169,12 @@
         "effects": 0
       },
       {
+        "id": "Q81j6M4k4ILDDCLd",
+        "name": "Punishment (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "NaNRVXthIlP4iXtL",
         "name": "Pyro Blast",
         "type": "equippableItem",
@@ -9913,6 +10207,12 @@
       {
         "id": "NUmsmp8rNcSFbH6j",
         "name": "Quatermain",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "YJRaNLeVP0n0pgeD",
+        "name": "Quatermain (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -10094,7 +10394,7 @@
         "id": "iCihob3zRqeQ0neA",
         "name": "Red Tunic",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "ghki8JXtqcKxQFCa",
@@ -10110,6 +10410,12 @@
       },
       {
         "id": "OmWE7jRa80TMTc1x",
+        "name": "Regen",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "vwdKavkWNuq0Alp1",
         "name": "Regen",
         "type": "equippableItem",
         "effects": 0
@@ -10202,7 +10508,13 @@
         "id": "Qvpvcl0RlEtn4sSd",
         "name": "Rest&Rage",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
+      },
+      {
+        "id": "YMGyD6WwrLiVOo1I",
+        "name": "Rest&Rage (Passive)",
+        "type": "equippableItem",
+        "effects": 2
       },
       {
         "id": "27Jn6EkSRTRbh1Ld",
@@ -10307,6 +10619,12 @@
         "effects": 0
       },
       {
+        "id": "RnAowtZKK2SGLtOR",
+        "name": "Ring of Defiance (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "Lh6I0HHQ2SMWmwPl",
         "name": "Ring of Frost",
         "type": "equippableItem",
@@ -10337,10 +10655,16 @@
         "effects": 0
       },
       {
+        "id": "BQ2ldHY3byexu8Rq",
+        "name": "Ring of Tales (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "L7rj8OpM3zYetpPb",
         "name": "Ring of the Egg",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "TE1ftGWxTGcSp7CI",
@@ -10619,6 +10943,12 @@
         "effects": 0
       },
       {
+        "id": "1XAVlkivXswdvW6j",
+        "name": "Sage Ring (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "YdYhFx1vrvod4P2Y",
         "name": "Sage Robe",
         "type": "equippableItem",
@@ -10760,11 +11090,23 @@
         "id": "NAZlvtDB6iZX0mqr",
         "name": "Seigfried",
         "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "jmbtQQsJBq9Tyway",
+        "name": "Seigfried (Passive)",
+        "type": "equippableItem",
         "effects": 0
       },
       {
         "id": "iQ9BRZAuT9lfex5O",
         "name": "Seismic Pillar",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "I71DEY1AKTbrxrGY",
+        "name": "Seismic Pillar (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -10790,7 +11132,13 @@
         "id": "kAPQGMazVwFUkbMO",
         "name": "Seraph Shield",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
+      },
+      {
+        "id": "1pdKebDOmwzdmHdq",
+        "name": "Seraph Shield (Passive)",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "VXGW0EAulcUnmnZd",
@@ -10901,8 +11249,20 @@
         "effects": 0
       },
       {
+        "id": "wwrB7X0CJ2Bve2v9",
+        "name": "Shooting Star Crystal (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "3QlMaxE5sjpo5bfS",
         "name": "Shooting Star Fragment",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "SmFU8jzoDpU5mK5P",
+        "name": "Shooting Star Fragment (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -11150,6 +11510,12 @@
         "id": "jDsRKKpWmXs6aAJF",
         "name": "Sniper Scope",
         "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "kepuJymPWTa06LHB",
+        "name": "Sniper Scope (Passive)",
+        "type": "equippableItem",
         "effects": 0
       },
       {
@@ -11168,7 +11534,7 @@
         "id": "WQzVAB1xoaPdDTS7",
         "name": "Solar Beam",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "l5qcG0XESXrlsDtE",
@@ -11239,6 +11605,12 @@
       {
         "id": "VgaustkUmW90hgSl",
         "name": "Soul Ring",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "kts0d30fHnryE14F",
+        "name": "Soul Ring (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -11501,8 +11873,20 @@
         "effects": 0
       },
       {
+        "id": "sbIiYgtes1zQWyEN",
+        "name": "Steady Knuckle (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "hyeTHYWrH4Vfey3j",
         "name": "Steal Item",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "dmiYBQ7BczRfTH1w",
+        "name": "Steel",
         "type": "equippableItem",
         "effects": 0
       },
@@ -11579,6 +11963,12 @@
         "effects": 0
       },
       {
+        "id": "eVSxhFxfzxfxSii2",
+        "name": "Straw Doll (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "8IUc1Fb4toLru5kk",
         "name": "Street Boots",
         "type": "equippableItem",
@@ -11639,6 +12029,12 @@
         "effects": 0
       },
       {
+        "id": "IqREaj1FVwVrCiUI",
+        "name": "Super Tonic",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "ky7HMdQIZBJxlPqx",
         "name": "Super Tonic",
         "type": "equippableItem",
@@ -11666,7 +12062,7 @@
         "id": "ilPepoZYIkxZEKuR",
         "name": "Survivor’s Crest",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "FTxwTUZVmLFmzJ7w",
@@ -11743,6 +12139,12 @@
       {
         "id": "ZdwdNhKXtC96Z2VB",
         "name": "Sylvan Reaper",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "8vO1aPET9hgTgQn4",
+        "name": "Sylvan Reaper (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -11957,8 +12359,20 @@
         "effects": 0
       },
       {
+        "id": "zhgbWslDKK1nb1G6",
+        "name": "Tempest Manta",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "h6WLw95EerjpSAzk",
         "name": "Tempest Strike",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "WrevyMV4vanMBBx1",
+        "name": "Tentacle",
         "type": "equippableItem",
         "effects": 0
       },
@@ -11972,7 +12386,7 @@
         "id": "xsPKJsuXuuwK2Oyd",
         "name": "Terra Shield",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "k1ws4o2xY7qXkfaf",
@@ -12038,7 +12452,7 @@
         "id": "oSodj9KjjoM0VLFa",
         "name": "The Wasp",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "2OGYloKUIUQjZL8G",
@@ -12140,7 +12554,7 @@
         "id": "2qhIJG9OTmyPYMFB",
         "name": "Thunder Vulcan",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "eMFnmNlwEks944Vk",
@@ -12503,6 +12917,12 @@
         "effects": 0
       },
       {
+        "id": "oadRZ01kinQY8jiF",
+        "name": "Turbo Tonic",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "e0DdLAuqVh7EwpB8",
         "name": "Turn Undead",
         "type": "equippableItem",
@@ -12629,6 +13049,12 @@
         "effects": 0
       },
       {
+        "id": "H3JIjcQunuxMakJt",
+        "name": "Urchin",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "NqcG61Mir9aOQAqe",
         "name": "Vajra",
         "type": "equippableItem",
@@ -12641,10 +13067,22 @@
         "effects": 0
       },
       {
+        "id": "DYRzdLtX6sks8TXP",
+        "name": "Vajra (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "CLgQXnqra3eY2FUy",
+        "name": "Valkyrie Flight",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "3JRMahpv7q0004l4",
         "name": "Valkyrie Spear",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "S1Wdikp3QcyfRvCs",
@@ -12655,6 +13093,12 @@
       {
         "id": "hMJnRXDNfdXiaMlX",
         "name": "Vampire Cloak",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "gYYK1flu0FxWTlVN",
+        "name": "Vampire Cloak (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -12683,6 +13127,12 @@
         "effects": 2
       },
       {
+        "id": "KIxltqVSxlYylczj",
+        "name": "Vengueful Yoroi (Passive)",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "Mt04b0K0gNEE9kYs",
         "name": "Vengueful Yoroi Old",
         "type": "equippableItem",
@@ -12691,6 +13141,12 @@
       {
         "id": "2v7Z5aljbQkZyDzl",
         "name": "Venom Claw",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "HfOBPSyDPpddoajY",
+        "name": "Venom Jellyfish",
         "type": "equippableItem",
         "effects": 0
       },
@@ -12728,7 +13184,7 @@
         "id": "9mf0ak73ocEfdbFU",
         "name": "Ventus Shield",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "RJXZsu4p2oxhhKGC",
@@ -12869,6 +13325,12 @@
         "effects": 0
       },
       {
+        "id": "rJeqysQwMBULVHQY",
+        "name": "Warrior Emblem (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "q3AX5ylHljeAnmKj",
         "name": "Warrior Seal",
         "type": "equippableItem",
@@ -12932,6 +13394,12 @@
         "id": "bjiYR2V7wNcjI3dv",
         "name": "Whirling Axe",
         "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "v1FBABLgBO8NFFrM",
+        "name": "Whirling Axe (Passive)",
+        "type": "equippableItem",
         "effects": 0
       },
       {
@@ -12945,6 +13413,12 @@
         "name": "White Tunic",
         "type": "equippableItem",
         "effects": 2
+      },
+      {
+        "id": "6RQzGcVHA1dMjZks",
+        "name": "White Tunic (Passive)",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "YWDErqkiLduFGt3z",
@@ -12973,6 +13447,12 @@
       {
         "id": "XvIFVYaPoF31ImhK",
         "name": "Wind Glider",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "0GyxwjMlceqhQzDB",
+        "name": "Wind Stone",
         "type": "equippableItem",
         "effects": 0
       },
@@ -13055,6 +13535,12 @@
         "effects": 0
       },
       {
+        "id": "naXTQ5YOmPSqGJ9h",
+        "name": "Wolf Officer Hat (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "VlMyCpNWOxyfGlod",
         "name": "Wooly Cuirass",
         "type": "equippableItem",
@@ -13070,7 +13556,7 @@
         "id": "zxlE71eM45gZXMJy",
         "name": "Wyrmwing",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "lpMBVDYMYKxDBqUm",
@@ -13081,6 +13567,12 @@
       {
         "id": "LHxw85DB0ONmPTc7",
         "name": "Yellow Book",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "89SUvlTXjpInX8qd",
+        "name": "Yellow Book (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -14010,12 +14502,32 @@
         "type": "character",
         "items": [
           {
+            "id": "mLo9DFLDP2pBWPkh",
+            "name": "(Empty)"
+          },
+          {
             "id": "25CGufwQTX7ZHwW6",
             "name": "Bubble Beam"
           },
           {
             "id": "oN5ck6b98DPZbfPj",
             "name": "Bubble Splash"
+          },
+          {
+            "id": "duD9acPtxV85FxkE",
+            "name": "Draconic Essence"
+          },
+          {
+            "id": "96fARD1RhftXvDyC",
+            "name": "Fish Fin"
+          },
+          {
+            "id": "wDh8JUX0axpgzLV3",
+            "name": "Silver Bolt"
+          },
+          {
+            "id": "oC7kgVnmgEnMmgwT",
+            "name": "Tincture of Endurance"
           },
           {
             "id": "IQjzHjHJRozJJ4Oe",
@@ -14173,6 +14685,10 @@
           {
             "id": "0bN7A6pXFG2cX2q9",
             "name": "Ascension"
+          },
+          {
+            "id": "ll1QCriD5ganoy1h",
+            "name": "Demongrin"
           },
           {
             "id": "nYbYx0X2yfIdteZ7",
@@ -14818,6 +15334,10 @@
             "name": "Gae Bolg"
           },
           {
+            "id": "wreWL2706Kab4u4n",
+            "name": "Gae Bolg (Passive)"
+          },
+          {
             "id": "5X0s5FIyhltSPWtt",
             "name": "Granny Vest"
           },
@@ -15107,6 +15627,66 @@
         "effects": 0
       },
       {
+        "id": "fe2OhexLAGieIBQy",
+        "name": "Brandr",
+        "type": "character",
+        "items": [
+          {
+            "id": "mSopH9vR6TaV6LsG",
+            "name": "Assassin's Blade"
+          },
+          {
+            "id": "SrnkJUG8qujywxzY",
+            "name": "Assassin's Blade (Passive)"
+          },
+          {
+            "id": "omiDvkfAGcvuCn3F",
+            "name": "Jormungand"
+          },
+          {
+            "id": "BXbr0CbJQh0ZrmVt",
+            "name": "Jormungand (Passive)"
+          },
+          {
+            "id": "mtITyraf0q57MwAv",
+            "name": "Near-Death Sword"
+          },
+          {
+            "id": "EcoXzdduUyaGu8SQ",
+            "name": "Near-Death Sword (Passive)"
+          },
+          {
+            "id": "jFf8K6iBhHdESWEM",
+            "name": "Noble Dress"
+          },
+          {
+            "id": "xns4hKmXNxb1vJbQ",
+            "name": "Noble Dress (Passive)"
+          },
+          {
+            "id": "ZZBoeXs5Z21l1SW4",
+            "name": "Oak Staff"
+          },
+          {
+            "id": "ELypj9xLd46897H9",
+            "name": "Old Bandages"
+          },
+          {
+            "id": "zNtMIxqQBHSN8CA5",
+            "name": "Regen"
+          },
+          {
+            "id": "GBb6Xy8rB4pJ6DzP",
+            "name": "Ventus Shield"
+          },
+          {
+            "id": "YLGNzPrZhVnx2Nff",
+            "name": "Wyrmwing"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "Usyut9yS2Tm5ZCXI",
         "name": "Bruce",
         "type": "character",
@@ -15327,6 +15907,14 @@
         "type": "character",
         "items": [
           {
+            "id": "GVW8stkRBKSipG9U",
+            "name": "(Empty)"
+          },
+          {
+            "id": "DdLfy0SHcR2lMGzd",
+            "name": "Dead Branch"
+          },
+          {
             "id": "sn3eTbtgsHfEm7Y9",
             "name": "Mind Sap"
           },
@@ -15335,12 +15923,20 @@
             "name": "Stinky Breath"
           },
           {
+            "id": "q6RjF0jWrCE36aYJ",
+            "name": "Tentacle"
+          },
+          {
             "id": "b7Y9eRcNEGOUthwH",
             "name": "Tentacle Grab"
           },
           {
             "id": "aL8M4ZB1s4i6wgSG",
             "name": "Tentacle Slap"
+          },
+          {
+            "id": "kalNH4kN3r4C4r8N",
+            "name": "Verdant Force"
           }
         ],
         "effects": 0
@@ -16274,6 +16870,10 @@
         "type": "character",
         "items": [
           {
+            "id": "h609NKxbcjxzRMqH",
+            "name": "(Empty)"
+          },
+          {
             "id": "guM3PAJ3LLLcuBEA",
             "name": "Death Gaze"
           },
@@ -16282,8 +16882,20 @@
             "name": "Eye Beam"
           },
           {
+            "id": "2BebXC5kNdWhAriJ",
+            "name": "Eyeball"
+          },
+          {
+            "id": "dYEhD6GBeMCZda9f",
+            "name": "Gorgon Eye"
+          },
+          {
             "id": "hzb6hDpTEl7SkijL",
             "name": "Mind Sear"
+          },
+          {
+            "id": "GxeA0rQcWddBbbSa",
+            "name": "Tincture of Spirit"
           }
         ],
         "effects": 0
@@ -16301,6 +16913,14 @@
         "type": "character",
         "items": [
           {
+            "id": "ymiY3ADsUq2C31QS",
+            "name": "(Empty)"
+          },
+          {
+            "id": "fyr650NFNzC3eyZj",
+            "name": "Animal Fang"
+          },
+          {
             "id": "q2NIu6N6TdhdPxJ8",
             "name": "Brutish Fury"
           },
@@ -16309,8 +16929,16 @@
             "name": "Cleaver"
           },
           {
+            "id": "0N01ou8l3oX55zdZ",
+            "name": "Giants Belt"
+          },
+          {
             "id": "gxnIJRcVBVP8M73A",
             "name": "Skull Splitter"
+          },
+          {
+            "id": "s07PFXvprDa4i5tu",
+            "name": "Tincture of Strength"
           },
           {
             "id": "IPgB7f91GpMaQZ3k",
@@ -16346,8 +16974,20 @@
         "type": "character",
         "items": [
           {
+            "id": "pLxMc2VAGJFJ8KHk",
+            "name": "(Empty)"
+          },
+          {
+            "id": "b2Gn7gT8ytJKzf55",
+            "name": "Draconic Essence"
+          },
+          {
             "id": "aJVIAhwQL1cNYBb7",
             "name": "Flame Breath"
+          },
+          {
+            "id": "J07wJynA0M1wpCEC",
+            "name": "Halberd"
           },
           {
             "id": "5sJ5sMpp003FLyBG",
@@ -16356,6 +16996,10 @@
           {
             "id": "HuoudKM5TQjFuBKI",
             "name": "Suppressing Sweep"
+          },
+          {
+            "id": "fZYepzUpUVgzh5yZ",
+            "name": "Tincture of Endurance"
           }
         ],
         "effects": 0
@@ -16378,12 +17022,28 @@
         "type": "character",
         "items": [
           {
+            "id": "LRjpHDN4C7LkmIM9",
+            "name": "(Empty)"
+          },
+          {
+            "id": "diFUD4XFsQCZnNfY",
+            "name": "Draconic Essence"
+          },
+          {
             "id": "kP5nGNoNUV2Q7AhM",
             "name": "Dragon Claw"
           },
           {
+            "id": "pgic8tmpRhHB5h5T",
+            "name": "Dragontrap Bow"
+          },
+          {
             "id": "vP0c8mCKoBQY4ggP",
             "name": "Drako Fury"
+          },
+          {
+            "id": "R7v5EKI3mMosxrzG",
+            "name": "Polymorph Potion: Drakoza"
           },
           {
             "id": "h6YfA3CbD5IBMeXs",
@@ -16520,8 +17180,20 @@
         "type": "character",
         "items": [
           {
+            "id": "l3hWTVUKHXBzkyV2",
+            "name": "(Empty)"
+          },
+          {
             "id": "mdcuBtzL5PWDIUyS",
             "name": "Electro Explosion"
+          },
+          {
+            "id": "pIIm0bD25xb0XmIH",
+            "name": "Elemental Shard"
+          },
+          {
+            "id": "ndiyCO0NzAwoPOTT",
+            "name": "Jellopy"
           },
           {
             "id": "k0uNeyXmxVZg6C6x",
@@ -16530,6 +17202,10 @@
           {
             "id": "uoaz0irHsOyvsa22",
             "name": "Tackle"
+          },
+          {
+            "id": "FUbKCWzDtxTT4Nfp",
+            "name": "Topaz Pendant"
           }
         ],
         "effects": 0
@@ -17620,12 +18296,24 @@
         "type": "character",
         "items": [
           {
+            "id": "lGWeJLFFNKYYPBRR",
+            "name": "(Empty)"
+          },
+          {
             "id": "4BJmgpI7mskSpcoI",
             "name": "Amplify Fire"
           },
           {
+            "id": "AtYkiG2WQ1yDff29",
+            "name": "Draconic Essence"
+          },
+          {
             "id": "QRpemavpmHqUAkZR",
             "name": "Dragon Claw"
+          },
+          {
+            "id": "AITfSNP3EOVmjjVx",
+            "name": "Flame Essence"
           },
           {
             "id": "LZ2eEx6DHsDCwelq",
@@ -17880,6 +18568,13 @@
         "effects": 0
       },
       {
+        "id": "cFaGfpGk19dJ3MdK",
+        "name": "Freydis",
+        "type": "character",
+        "items": [],
+        "effects": 0
+      },
+      {
         "id": "RTx2b68mGqAXebwh",
         "name": "Fury",
         "type": "character",
@@ -18096,6 +18791,10 @@
             "name": "(Empty)"
           },
           {
+            "id": "SFqfcFYS3M9qMuQm",
+            "name": "Animal Fur"
+          },
+          {
             "id": "VS9Qv9BV3xT38H4E",
             "name": "Giant Club"
           },
@@ -18110,6 +18809,10 @@
           {
             "id": "UFyiZDIkbhPmtqlG",
             "name": "Oaf"
+          },
+          {
+            "id": "XcCKCpbLCnfiUbh5",
+            "name": "Tincture of Strength"
           }
         ],
         "effects": 0
@@ -19467,6 +20170,26 @@
         "type": "character",
         "items": [
           {
+            "id": "ITnrnv0pGYV403ga",
+            "name": "(Empty)"
+          },
+          {
+            "id": "OvyFYyABMmXJ34iq",
+            "name": "Clear Liquid"
+          },
+          {
+            "id": "P2BnXeLkXVTlX0xm",
+            "name": "Imp's Tail"
+          },
+          {
+            "id": "sQkPh8hYEdcvoACB",
+            "name": "Love Potion"
+          },
+          {
+            "id": "XVdCCrCvndrrBx5k",
+            "name": "Panties"
+          },
+          {
             "id": "ygUBr1y0wj6muUyv",
             "name": "Pitchfork"
           },
@@ -19716,6 +20439,22 @@
         "type": "character",
         "items": [
           {
+            "id": "JMts2hx49koS7qCz",
+            "name": "(Empty)"
+          },
+          {
+            "id": "WmNJjB4GEn9hYbgq",
+            "name": "Berserker Sword"
+          },
+          {
+            "id": "rvoScI8fqwuMAfo4",
+            "name": "Golem Fragment"
+          },
+          {
+            "id": "eIX6VRkH9l9ZRFTY",
+            "name": "Golem Heart"
+          },
+          {
             "id": "gAfogT3m3BAMPabJ",
             "name": "Grinding Quake"
           },
@@ -19726,6 +20465,10 @@
           {
             "id": "kv2ZeGq61arj5dtG",
             "name": "Siege Fist"
+          },
+          {
+            "id": "UBtVBbNForBYgqxi",
+            "name": "Steel"
           }
         ],
         "effects": 0
@@ -20326,6 +21069,10 @@
         "type": "character",
         "items": [
           {
+            "id": "IrsyQ2uBZJja1GWU",
+            "name": "(Empty)"
+          },
+          {
             "id": "IIkAGJ0BQxtk1sBt",
             "name": "Hooves"
           },
@@ -20338,8 +21085,20 @@
             "name": "Lightning Charge"
           },
           {
+            "id": "EQAK97MsaFD6Zp2e",
+            "name": "Lightning Rod"
+          },
+          {
+            "id": "EFdFBDBt4HBeuqcR",
+            "name": "Mystic Horn"
+          },
+          {
             "id": "zNhzAhg1phFoHW8q",
             "name": "Rail Stream"
+          },
+          {
+            "id": "WWDKHIwgzpCOpLwZ",
+            "name": "Tincture of Strength"
           }
         ],
         "effects": 0
@@ -20525,6 +21284,10 @@
         "type": "character",
         "items": [
           {
+            "id": "vYQz94FdV4anj3Rb",
+            "name": "(Empty)"
+          },
+          {
             "id": "gKFT4EYiteltgpb2",
             "name": "Amplify Bolt"
           },
@@ -20533,8 +21296,16 @@
             "name": "Arc Volt"
           },
           {
+            "id": "ygBtaq0GD8TI5mS7",
+            "name": "Draconic Essence"
+          },
+          {
             "id": "PK3xOjy9Ijjpuj1d",
             "name": "Dragon Claw"
+          },
+          {
+            "id": "U1xColQ1BraFbCR8",
+            "name": "Lightning Essence"
           }
         ],
         "effects": 0
@@ -20545,6 +21316,10 @@
         "type": "character",
         "items": [
           {
+            "id": "Ecd7yAz4bJzpjYCu",
+            "name": "(Empty)"
+          },
+          {
             "id": "TCaVBk4RDaht1x9c",
             "name": "Arc Spark"
           },
@@ -20553,8 +21328,20 @@
             "name": "Fulgur Finis"
           },
           {
+            "id": "WIlYpte68LPIvSsw",
+            "name": "Lightning Essence"
+          },
+          {
+            "id": "JTYdNeZbg8rE1MuR",
+            "name": "Lightning Wand"
+          },
+          {
             "id": "TDfsEA9gh8Pc6aUP",
             "name": "Overcharge"
+          },
+          {
+            "id": "y1IEf2JEyMvRH9fF",
+            "name": "Tincture of Spirit"
           }
         ],
         "effects": 0
@@ -20683,12 +21470,28 @@
         "type": "character",
         "items": [
           {
+            "id": "qCBP6yZDF4BzIb1f",
+            "name": "(Empty)"
+          },
+          {
+            "id": "1H4pCcamtnE519lN",
+            "name": "Fish Fin"
+          },
+          {
             "id": "nEeldo45VbyKqFpS",
             "name": "Flying"
           },
           {
+            "id": "CXdG2Wt4OsplkwVm",
+            "name": "Mana Catcher"
+          },
+          {
             "id": "lK1xNxttDeXzwhVh",
             "name": "Mana Stinger"
+          },
+          {
+            "id": "QXp0UwkAfDQGVXyq",
+            "name": "Tincture of Spirit"
           },
           {
             "id": "qQ1UsyvTJj5TpCqy",
@@ -20872,6 +21675,18 @@
         "type": "character",
         "items": [
           {
+            "id": "m07woIfbHppYQACI",
+            "name": "(Empty)"
+          },
+          {
+            "id": "94qlPMHTwlahgtqN",
+            "name": "Draconic Essence"
+          },
+          {
+            "id": "lunfMzl1Vt2DEcZT",
+            "name": "Dragonslayer Pendant"
+          },
+          {
             "id": "vvdntvwGzqaQ3m41",
             "name": "Illusory Form"
           },
@@ -20898,6 +21713,10 @@
           {
             "id": "fecg9O0PTPyAsxVj",
             "name": "Phantom Shift: Venomstone Spines"
+          },
+          {
+            "id": "LmUOfpQePj2YsTCF",
+            "name": "Polymorph Potion: Mist Dragon"
           }
         ],
         "effects": 0
@@ -21295,8 +22114,20 @@
         "type": "character",
         "items": [
           {
+            "id": "Rz6MxM4zQ4nEkmTS",
+            "name": "(Empty)"
+          },
+          {
             "id": "tln7B8f8cmuOjBTO",
             "name": "Basalt Crush"
+          },
+          {
+            "id": "vHIDrLXZyKEq7QAp",
+            "name": "Earth Stone"
+          },
+          {
+            "id": "oonXg07HFTSKAAPt",
+            "name": "Elemental Ward"
           },
           {
             "id": "blW2o4tFoB0oVzEM",
@@ -21305,6 +22136,10 @@
           {
             "id": "DV5xg2tEq1zFsIFx",
             "name": "Miasma Nova"
+          },
+          {
+            "id": "Y8n5jn0LcE4HngCZ",
+            "name": "Obsidian"
           },
           {
             "id": "YXM7WD2ZekwmlDQg",
@@ -22327,8 +23162,20 @@
         "type": "character",
         "items": [
           {
+            "id": "kLRd2lhU5wcl37LZ",
+            "name": "(Empty)"
+          },
+          {
             "id": "5nRPZWogdOXD6n2I",
             "name": "Approach"
+          },
+          {
+            "id": "uE1IpmKnFruXqqRC",
+            "name": "Bloodied Coin"
+          },
+          {
+            "id": "AJ0QS7lmvRq8qbmJ",
+            "name": "Chef's Knife"
           },
           {
             "id": "IqytDxaB5BGEtSZZ",
@@ -22341,6 +23188,14 @@
           {
             "id": "0HCvn5LC3qIdq3W3",
             "name": "Karma"
+          },
+          {
+            "id": "ZLbuZgjs8h1qICAj",
+            "name": "Torned Fabric"
+          },
+          {
+            "id": "DQafVscYseIBalt1",
+            "name": "Zombie Potion"
           }
         ],
         "effects": 0
@@ -22662,13 +23517,157 @@
         "effects": 0
       },
       {
+        "id": "LlbVwdpPONdny8Wx",
+        "name": "Sigrun",
+        "type": "character",
+        "items": [
+          {
+            "id": "B8M5OwbWNloqDioE",
+            "name": "Adrenaline Endure"
+          },
+          {
+            "id": "jZ0zNnSMO9YHC26k",
+            "name": "Adrenaline Potion"
+          },
+          {
+            "id": "mvBmSUOhE3nVSRz8",
+            "name": "Adrenaline Rush"
+          },
+          {
+            "id": "F9UxHr2T2gt1ij4v",
+            "name": "Decoy Doll"
+          },
+          {
+            "id": "zyEPv2RBUjlqR0e7",
+            "name": "Decoy Doll"
+          },
+          {
+            "id": "6rLxtobPtXV3D7rG",
+            "name": "Goddess Tear"
+          },
+          {
+            "id": "Cfr7D7UNYf1lRVK6",
+            "name": "Goddess Tear"
+          },
+          {
+            "id": "Sve4f89RRnWR6oik",
+            "name": "Life Charm"
+          },
+          {
+            "id": "UjzVAodr4C5gtRvo",
+            "name": "Mega-Elixir"
+          },
+          {
+            "id": "V2yZCjnaotni7zcK",
+            "name": "Mega-Elixir"
+          },
+          {
+            "id": "mVdmDMJakbyb0mcm",
+            "name": "Mega-Remedy"
+          },
+          {
+            "id": "wnITd6x8gRmu78Ok",
+            "name": "Mega-Remedy"
+          },
+          {
+            "id": "hYhTDntXjraRqybM",
+            "name": "Phoenix Feather"
+          },
+          {
+            "id": "saY4FUjNr8sIUGXD",
+            "name": "Phoenix Feather"
+          },
+          {
+            "id": "7khiRwnT7lDsr0J4",
+            "name": "Super Tonic"
+          },
+          {
+            "id": "GJP6mDQrQ3Smqruf",
+            "name": "Super Tonic"
+          },
+          {
+            "id": "atrQHS4TaWoUFFZa",
+            "name": "Tincture of Endurance"
+          },
+          {
+            "id": "D33hQhemILGESO78",
+            "name": "Tincture of Endurance"
+          },
+          {
+            "id": "EI7UZDJIQWq4ReVz",
+            "name": "Tincture of Precision"
+          },
+          {
+            "id": "QEwS73Wa0PjJCsMn",
+            "name": "Tincture of Precision"
+          },
+          {
+            "id": "bob4BLBL1hCzFFUF",
+            "name": "Tincture of Spirit"
+          },
+          {
+            "id": "GCa6DzeTr7PxKCEU",
+            "name": "Tincture of Spirit"
+          },
+          {
+            "id": "Ffpjj8oAo13UuDj0",
+            "name": "Tincture of Strength"
+          },
+          {
+            "id": "fp7MBP5dbESUREoW",
+            "name": "Tincture of Strength"
+          },
+          {
+            "id": "4j8mHAro68xE3pyA",
+            "name": "Turbo Remedy"
+          },
+          {
+            "id": "AabyvUvNTyT7xnni",
+            "name": "Turbo Remedy"
+          },
+          {
+            "id": "CdIRJo9wT9YaQZgq",
+            "name": "Turbo Remedy"
+          },
+          {
+            "id": "NGQ4fxI5NnMq9GaD",
+            "name": "Turbo Remedy"
+          },
+          {
+            "id": "9Xmu4YF2yDOcr9Pp",
+            "name": "Turbo Remedy Recipe"
+          },
+          {
+            "id": "LECW7qy9hVqsxWpJ",
+            "name": "Turbo Tonic"
+          },
+          {
+            "id": "ZOB7csf6j87OKcZi",
+            "name": "Turbo Tonic"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "I2sSkVIQ4FCunZBE",
         "name": "Skizzik",
         "type": "character",
         "items": [
           {
+            "id": "D0uts61zAlFfc8aJ",
+            "name": "(Empty)"
+          },
+          {
             "id": "IbE6lOJCeAs8Bb4n",
             "name": "Chain Reaction"
+          },
+          {
+            "id": "us2cwD7ImrjNUQRY",
+            "name": "Lightning Essence"
+          },
+          {
+            "id": "nyuXWO3HmNijGCnK",
+            "name": "Lightning Greaves"
           },
           {
             "id": "oezr2w4m0LMEFM6F",
@@ -22685,6 +23684,10 @@
           {
             "id": "4XkAxScm0Tj8sBjv",
             "name": "Thunder Strike (Riposte)"
+          },
+          {
+            "id": "A1oZh6TNti6zAMGq",
+            "name": "Tincture of Precision"
           }
         ],
         "effects": 0
@@ -22787,6 +23790,58 @@
           {
             "id": "VKa14MboPF9kz4y3",
             "name": "Take Aim"
+          }
+        ],
+        "effects": 0
+      },
+      {
+        "id": "2JGRG053wW37YeHP",
+        "name": "Solveig",
+        "type": "character",
+        "items": [
+          {
+            "id": "ZMLZAszoZbkqPmqx",
+            "name": "Blindfold"
+          },
+          {
+            "id": "kdHoFNX91fHehCcz",
+            "name": "Blindfold (gear skill)"
+          },
+          {
+            "id": "XLJ2gGaCqdlt1PnI",
+            "name": "Crested Helm"
+          },
+          {
+            "id": "eIKHoniMYvSLbBk8",
+            "name": "Ring of Regeneration"
+          },
+          {
+            "id": "bZU0PYEbLUHqt5ub",
+            "name": "Shooting Star Fragment"
+          },
+          {
+            "id": "R38kjwM1hPJFPgfy",
+            "name": "Shooting Star Fragment (Passive)"
+          },
+          {
+            "id": "0YmQOxhBAjHujoXY",
+            "name": "Soul Ring"
+          },
+          {
+            "id": "91Zwx4d0R84aQkBs",
+            "name": "Soul Ring (Passive)"
+          },
+          {
+            "id": "VBzFqBbhT0FnxHNL",
+            "name": "Survivor’s Crest"
+          },
+          {
+            "id": "uOQF3Sjkh1YNlEEE",
+            "name": "Vampire Cloak"
+          },
+          {
+            "id": "I9l5e2qiTHb7oF9v",
+            "name": "Vampire Cloak (Passive)"
           }
         ],
         "effects": 0
@@ -23243,8 +24298,20 @@
         "type": "character",
         "items": [
           {
+            "id": "7HCx14SNyCj2CjJV",
+            "name": "(Empty)"
+          },
+          {
+            "id": "hN5IkJdmMjvuGmey",
+            "name": "Bikini Armor"
+          },
+          {
             "id": "X6IFQS3RflxhDvyU",
             "name": "Charm"
+          },
+          {
+            "id": "ESkF3vpH29JuuMua",
+            "name": "Clear Liquid"
           },
           {
             "id": "BRCBx1Wiudbxux6L",
@@ -23253,6 +24320,10 @@
           {
             "id": "Mn7LzSfHjvhcLBZs",
             "name": "Draining Kiss"
+          },
+          {
+            "id": "PaxDcC4eNgOWn710",
+            "name": "Love Potion"
           },
           {
             "id": "iitlLOnNVod66GjL",
@@ -24977,6 +26048,11 @@
         "results": 12
       },
       {
+        "id": "krmgo70mxn7HYI8w",
+        "name": "Generic - Fish",
+        "results": 24
+      },
+      {
         "id": "Cif65dOA8pczlg6f",
         "name": "Milky Holstein",
         "results": 8
@@ -25124,12 +26200,12 @@
       {
         "id": "86Lj4WaVPFkt286A",
         "name": "Valley of the Dragon - Accessory",
-        "results": 0
+        "results": 19
       },
       {
         "id": "VgiHGix1LOByKDdu",
         "name": "Valley of the Dragon - Armor",
-        "results": 2
+        "results": 17
       },
       {
         "id": "11corNhirrKGdkGE",
@@ -25139,7 +26215,7 @@
       {
         "id": "S4PHPxGHldBoJVxj",
         "name": "Valley of the Dragon - Consumable",
-        "results": 4
+        "results": 22
       },
       {
         "id": "Oijx8ksubxq9pc1R",
@@ -25150,6 +26226,11 @@
         "id": "0LEghOv3aJyZVyVs",
         "name": "Valley of the Dragon - Enemies",
         "results": 11
+      },
+      {
+        "id": "pEHm2gU70pTHQM6v",
+        "name": "Valley of the Dragon - Fish",
+        "results": 25
       },
       {
         "id": "nrt4wbj4Unk8Xi9W",
@@ -25164,7 +26245,7 @@
       {
         "id": "QailcoOmaoZW0v6b",
         "name": "Valley of the Dragon - Material",
-        "results": 0
+        "results": 12
       },
       {
         "id": "6wpUcG8RjL8A05Kd",
@@ -25174,12 +26255,12 @@
       {
         "id": "DMeYaPoSPUxH6xVE",
         "name": "Valley of the Dragon - Treasure",
-        "results": 0
+        "results": 16
       },
       {
         "id": "StbIP7EczNqm98PR",
         "name": "Valley of the Dragon - Weapon",
-        "results": 3
+        "results": 25
       },
       {
         "id": "3tGY9xvFTeQhFIzU",
@@ -25326,7 +26407,7 @@
       {
         "id": "VrpdABUTSoREMDR5",
         "name": "The Legend of Dragonslayer",
-        "sounds": 19
+        "sounds": 21
       },
       {
         "id": "nXC5wp5sOxn42vJl",

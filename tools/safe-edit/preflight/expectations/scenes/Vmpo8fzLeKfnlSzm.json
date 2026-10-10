@@ -440,7 +440,7 @@
         }
       },
       "actorId": "Ax1nVCBhZOG0ZzHx",
-      "hidden": true,
+      "hidden": false,
       "sort": 2,
       "_id": "NY4KCoztR7gTYJAf",
       "x": 1050,
@@ -798,15 +798,15 @@
         }
       },
       "actorId": "mZBLhQvDqiIZby50",
-      "hidden": true,
+      "hidden": false,
       "sort": 1,
       "_id": "c7pRTAE4uVeoSBMb",
-      "x": 438,
-      "y": 849,
+      "x": 665,
+      "y": 455,
       "elevation": 0,
       "locked": false,
       "_regions": [
-        "wkroB67d2FzZxmSi"
+        "rTD2N59oBG2xSDP6"
       ]
     },
     {
@@ -1160,8 +1160,8 @@
       "actorId": "mZBLhQvDqiIZby50",
       "hidden": false,
       "sort": 1,
-      "x": 648,
-      "y": 303,
+      "x": 875,
+      "y": 245,
       "elevation": 0,
       "locked": false,
       "_regions": [
@@ -1521,8 +1521,8 @@
       "actorId": "mZBLhQvDqiIZby50",
       "hidden": false,
       "sort": 1,
-      "x": 613,
-      "y": 424,
+      "x": 525,
+      "y": 105,
       "elevation": 0,
       "locked": false,
       "_regions": [
@@ -1644,7 +1644,7 @@
       "hidden": false,
       "sort": 1,
       "x": 595,
-      "y": 455,
+      "y": 420,
       "elevation": 0,
       "locked": false,
       "_regions": [
@@ -1763,7 +1763,7 @@
         }
       },
       "actorId": "mZBLhQvDqiIZby50",
-      "hidden": true,
+      "hidden": false,
       "sort": 1,
       "x": 473,
       "y": 849,
@@ -2129,7 +2129,7 @@
         }
       },
       "actorId": "mZBLhQvDqiIZby50",
-      "hidden": true,
+      "hidden": false,
       "sort": 1,
       "x": 298,
       "y": 849,
@@ -2176,7 +2176,7 @@
     },
     "backgroundColor": "#000000",
     "grid": {
-      "type": 2,
+      "type": 1,
       "size": 35,
       "style": "solidLines",
       "thickness": 1,
@@ -2185,7 +2185,7 @@
       "distance": 0.5,
       "units": "m"
     },
-    "tokenVision": true,
+    "tokenVision": false,
     "fog": {
       "exploration": true,
       "overlay": null,
@@ -2195,10 +2195,10 @@
       }
     },
     "environment": {
-      "darknessLevel": 0.7,
+      "darknessLevel": 0,
       "darknessLock": false,
       "globalLight": {
-        "enabled": false,
+        "enabled": true,
         "alpha": 0.5,
         "bright": false,
         "color": null,
@@ -2274,7 +2274,9 @@
       "fabula-ultima-companion": {
         "oniFabula": {
           "general": {
-            "cameraFollowToken": true
+            "cameraFollowToken": true,
+            "sceneMode": "stealth",
+            "sceneVisited": true
           },
           "sceneNetwork": "[{\"name\":\"Bandits Hideout Scene\",\"id\":\"Scene.9yADUFveStIW8WtE\"}]"
         },
@@ -2296,6 +2298,76 @@
             "item": "RollTable.scss9vwAOPcEarWf",
             "zenit": "RollTable.kDjxoeSbJMMkqtFd",
             "treasure": "RollTable.xcvyadSZsEqYvjJA"
+          }
+        },
+        "stealthConfig": {
+          "routes": {
+            "lTmTumlCVihivFBj": [
+              {
+                "i": 6,
+                "j": 27
+              },
+              {
+                "i": 9,
+                "j": 14
+              }
+            ],
+            "pizVPdeuFRtAWE28": [
+              {
+                "i": 3,
+                "j": 15
+              },
+              {
+                "i": 15,
+                "j": 19
+              }
+            ],
+            "RrzU6lXc1jEdPeLn": [
+              {
+                "i": 29,
+                "j": 6
+              },
+              {
+                "i": 17,
+                "j": 2
+              }
+            ],
+            "IBJYGNDkPTCvfbn0": [
+              {
+                "i": 25,
+                "j": 29
+              },
+              {
+                "i": 25,
+                "j": 24
+              }
+            ]
+          },
+          "spawnPoints": [
+            {
+              "i": 0,
+              "j": 0
+            },
+            {
+              "i": 29,
+              "j": 35
+            },
+            {
+              "i": 29,
+              "j": 0
+            }
+          ],
+          "facings": {
+            "ppNFXYCMy0B4dWoj": "N",
+            "rATCnWDV21dK3MA6": "E",
+            "qwNHaptiOtUITyko": "W",
+            "FuMn6PAP2twfrUsJ": "NW",
+            "lTmTumlCVihivFBj": "W",
+            "pizVPdeuFRtAWE28": "N",
+            "RrzU6lXc1jEdPeLn": "E",
+            "IBJYGNDkPTCvfbn0": "W",
+            "jk0fEEIK9JiWUvWz": "E",
+            "nFP6CF7OJx9DJ5f8": "E"
           }
         }
       },
@@ -2323,7 +2395,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1773847215175,
-      "modifiedTime": 1781425620727,
+      "modifiedTime": 1788339919168,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "_id": "Vmpo8fzLeKfnlSzm",

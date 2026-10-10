@@ -1,0 +1,65 @@
+{
+  "_id": "89SUvlTXjpInX8qd",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791472264076,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+  "name": "Yellow Book (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "LHxw85DB0ONmPTc7",
+    "props": {
+      "cost": "",
+      "description": "<ul><li>Spells you cast deal <strong>5</strong> extra damage.</li></ul>",
+      "effect_table": {
+        "0": {
+          "damage_amount": "5",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "ybook_bonus"
+        }
+      },
+      "id": "89SUvlTXjpInX8qd",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Yellow Book (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ACTION_IS_SPELL == 1",
+          "reaction_effect_ref": "ybook_bonus",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_description": "<ul><li>Spells you cast deal <strong>5</strong> extra damage.</li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.89SUvlTXjpInX8qd"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "89SUvlTXjpInX8qd"
+  },
+  "type": "equippableItem"
+}

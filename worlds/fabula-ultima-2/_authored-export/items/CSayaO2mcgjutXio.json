@@ -1,0 +1,84 @@
+{
+  "_id": "CSayaO2mcgjutXio",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791564024625,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1813.gif",
+  "name": "Draconic Claw (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "37zrTkcEtdrwiIIF",
+    "props": {
+      "cost": "",
+      "description": "<p>Each target hit by this weapon suffers Burn. If it already has Burn, its Burn triggers instead.</p>",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "chain_steps": "dclaw_tick, dclaw_burn",
+          "effect_kind": "chain",
+          "effect_label": "dclaw_hit"
+        },
+        "1": {
+          "$deleted": false,
+          "condition_formula": "TARGET_AE_COUNT_BURN > 0",
+          "consume_charges": false,
+          "effect_kind": "trigger_status",
+          "effect_label": "dclaw_tick",
+          "status_name": "Burn",
+          "target_ref": "trigger_subject",
+          "trigger_count": "1"
+        },
+        "2": {
+          "$deleted": false,
+          "ae_template_ref": "Burn",
+          "condition_formula": "TARGET_AE_COUNT_BURN == 0",
+          "effect_kind": "apply_ae",
+          "effect_label": "dclaw_burn",
+          "target_ref": "trigger_subject"
+        }
+      },
+      "id": "CSayaO2mcgjutXio",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1813.gif",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Draconic Claw (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "dclaw_hit",
+          "reaction_passive_mode": "on",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_deals_damage"
+        }
+      },
+      "skill_description": "<ul><li><p>@UUID[JournalEntry.2hNU23YLpCcZCCmf]{Pierce}</p></li><li><p>@UUID[JournalEntry.Cz6U0ps98sYN8jMH]{Conquer 3}: inflicts @UUID[JournalEntry.GePNxftPupElcCWp]{Bleed} on the target.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.CSayaO2mcgjutXio"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "CSayaO2mcgjutXio"
+  },
+  "type": "equippableItem"
+}

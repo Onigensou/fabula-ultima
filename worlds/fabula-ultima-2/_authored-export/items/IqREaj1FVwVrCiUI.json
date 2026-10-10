@@ -1,0 +1,82 @@
+{
+  "_id": "IqREaj1FVwVrCiUI",
+  "_stats": {
+    "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
+    "coreVersion": "12.343",
+    "createdTime": 1791475480462,
+    "duplicateSource": "Item.cneU6dfTzI13k0U2",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Magic_Tag_Icon_HD.webp",
+  "name": "Super Tonic",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "ky7HMdQIZBJxlPqx",
+    "props": {
+      "action_command": "item",
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "",
+      "cost": "-",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<ul>\n<li>Cure all <strong>Debuff </strong>from target creature</li>\n</ul>",
+      "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "count": "all",
+          "effect_kind": "remove_tagged_ae",
+          "effect_label": "stonic_cure",
+          "filter_tag": "debuff",
+          "target_ref": "action_targets"
+        }
+      },
+      "heroic_requirement": "",
+      "id": "IqREaj1FVwVrCiUI",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Magic_Tag_Icon_HD.webp",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Super Tonic",
+      "on_activate_effect_ref": "stonic_cure",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_description": "<ul>\n<li>Cure all <strong>Debuff </strong>from target creature</li>\n</ul>",
+      "skill_information": "",
+      "skill_range": "Any",
+      "skill_tags": "",
+      "skill_target": "One Creature",
+      "skill_type": "Item",
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Item.IqREaj1FVwVrCiUI"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "IqREaj1FVwVrCiUI"
+  },
+  "type": "equippableItem"
+}

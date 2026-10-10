@@ -77,6 +77,7 @@
       "isKey": false,
       "isMartial": false,
       "isModule": false,
+      "isReaction": true,
       "isRelatedItem": false,
       "isSet": false,
       "isUnique": false,

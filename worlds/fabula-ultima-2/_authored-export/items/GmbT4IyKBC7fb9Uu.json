@@ -1,0 +1,96 @@
+{
+  "_id": "GmbT4IyKBC7fb9Uu",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791564025443,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Knife.gif",
+  "name": "Assassin's Blade (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "m8kOI8j6mhWVSQtR",
+    "props": {
+      "cost": "",
+      "description": "<p>This weapon deals 5 extra damage to a target in Crisis. Each hit with this weapon has a 15% chance to reduce a target that is not a Villain or Champion to its Crisis score.</p>",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "damage_amount": "5",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "ablade_bonus"
+        },
+        "1": {
+          "$deleted": false,
+          "condition_formula": "TARGET_IS_VILLAIN == 0 && TARGET_IS_CHAMPION == 0 && TARGET_CURRENT_HP > floor(TARGET_MAX_HP / 2)",
+          "damage_amount": "TARGET_CURRENT_HP - floor(TARGET_MAX_HP / 2)",
+          "damage_cause": "damage",
+          "damage_element": "physical",
+          "damage_ignore_affinity": true,
+          "damage_keywords": "crush",
+          "effect_kind": "deal_damage",
+          "effect_label": "ablade_crit",
+          "target_ref": "trigger_subject"
+        },
+        "2": {
+          "$deleted": false,
+          "chance_percent": "15",
+          "chance_then_ref": "ablade_crit",
+          "effect_kind": "chance",
+          "effect_label": "ablade_roll"
+        }
+      },
+      "id": "GmbT4IyKBC7fb9Uu",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Knife.gif",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Assassin's Blade (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "TARGET_AE_COUNT_CRISIS > 0 && DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "ablade_bonus",
+          "reaction_passive_mode": "on",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        },
+        "1": {
+          "$deleted": false,
+          "condition_formula": "DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "ablade_roll",
+          "reaction_passive_mode": "on",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_deals_damage"
+        }
+      },
+      "skill_description": "<ul><li><p>@UUID[JournalEntry.2hNU23YLpCcZCCmf]{Pierce}</p></li><li><p>@UUID[JournalEntry.Cz6U0ps98sYN8jMH]{Conquer 3}: inflicts @UUID[JournalEntry.GePNxftPupElcCWp]{Bleed} on the target.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.GmbT4IyKBC7fb9Uu"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "GmbT4IyKBC7fb9Uu"
+  },
+  "type": "equippableItem"
+}

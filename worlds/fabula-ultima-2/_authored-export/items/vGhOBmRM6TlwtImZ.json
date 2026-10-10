@@ -1,0 +1,66 @@
+{
+  "_id": "vGhOBmRM6TlwtImZ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791472260319,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glove.png",
+  "name": "Lobster Claw (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "OSaOzEBWrArAvd3a",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.HHmYmj7xffQMqtzT]{Slow}.</strong></p></li><li>Gain +1 to Skill Checks that require <strong>【MIG】</strong></li></ul>",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Slow",
+          "effect_kind": "apply_ae",
+          "effect_label": "lclaw_slow",
+          "target_ref": "trigger_subject"
+        }
+      },
+      "id": "vGhOBmRM6TlwtImZ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glove.png",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Lobster Claw (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "lclaw_slow",
+          "reaction_passive_mode": "on",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_deals_damage"
+        }
+      },
+      "skill_description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.HHmYmj7xffQMqtzT]{Slow}.</strong></p></li><li>Gain +1 to Skill Checks that require <strong>【MIG】</strong></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.vGhOBmRM6TlwtImZ"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "vGhOBmRM6TlwtImZ"
+  },
+  "type": "equippableItem"
+}

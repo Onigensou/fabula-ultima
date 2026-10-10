@@ -36,6 +36,15 @@
       "defense_target_type": "def",
       "description": "<p>This skill deals <strong>bonus damage </strong>equal to the 【<strong>difference between this creature DEF and the target x 10 】</strong></p>",
       "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "damage_amount": "(DEF - TARGET_DEF) * 10",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "gpunch_gap"
+        }
+      },
       "heroic_requirement": "",
       "ignore_hr": false,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2350.gif",
@@ -43,13 +52,22 @@
       "isFacet": false,
       "isHeroic": false,
       "isOffensiveSpell": false,
-      "isReaction": false,
+      "isReaction": true,
       "isZeroPower": false,
       "level": "1",
       "max_level": "1",
       "name": "Golem Punch",
       "optional_params": {},
-      "reaction_config_table": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "DEF > TARGET_DEF",
+          "reaction_effect_ref": "gpunch_gap",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_source_skill": "Golem Punch",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
       "rolled_atr1": "MIG",
       "rolled_atr2": "MIG",
       "skill_animation_default": "",

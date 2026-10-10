@@ -1,0 +1,68 @@
+{
+  "_id": "mUmVssoKyCteJGv1",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791565963229,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
+  "name": "Near-Death Sword (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "wjUCpLZK3lxYd16i",
+    "props": {
+      "cost": "",
+      "description": "<p>This weapon deals 5 extra damage for each of these that is true: you are in Crisis, you are Doomed, you have a debuff, your HP is below 10.</p>",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "damage_amount": "5 * ((HAS_STATUS_CRISIS == 1) + (AE_COUNT_DOOMED > 0) + (STATUS_COUNT > 0) + (CUR_HP < 10))",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "nds_bonus"
+        }
+      },
+      "id": "mUmVssoKyCteJGv1",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Near-Death Sword (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "DAMAGE_IS_HP == 1 && (HAS_STATUS_CRISIS == 1 || AE_COUNT_DOOMED > 0 || STATUS_COUNT > 0 || CUR_HP < 10)",
+          "reaction_effect_ref": "nds_bonus",
+          "reaction_passive_mode": "on",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_description": "<ul><li><p>@UUID[JournalEntry.2hNU23YLpCcZCCmf]{Pierce}</p></li><li><p>@UUID[JournalEntry.Cz6U0ps98sYN8jMH]{Conquer 3}: inflicts @UUID[JournalEntry.GePNxftPupElcCWp]{Bleed} on the target.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.mUmVssoKyCteJGv1"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "mUmVssoKyCteJGv1"
+  },
+  "type": "equippableItem"
+}

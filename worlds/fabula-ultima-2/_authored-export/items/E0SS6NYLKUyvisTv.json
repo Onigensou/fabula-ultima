@@ -1,0 +1,142 @@
+{
+  "_id": "E0SS6NYLKUyvisTv",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791564061119,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "category": "skill",
+        "detectedType": "spellcard_v1",
+        "fromTemplate": "XfUpjwaovj4v9AjI",
+        "itemId": "OmWE7jRa80TMTc1x",
+        "itemName": "Regen",
+        "pickedOldProps": {
+          "class": "Spiritist",
+          "cost": "10 MP",
+          "damage": "0",
+          "description": "<p>You awaken the regenerative power in target creature, For the next <strong>3 rounds,</strong> The target gains the following effects:</p><ul><li><p>At the start of your turn, restore <strong>【20% of your Max HP】</strong></p></li></ul>",
+          "discipline": "spiritism",
+          "duration": "3 Round",
+          "id": "OmWE7jRa80TMTc1x",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213818.767.png",
+          "name": "Regen",
+          "target": "One Creature",
+          "type_damage": "",
+          "uuid": "Item.OmWE7jRa80TMTc1x"
+        },
+        "ts": 1770021428497
+      }
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Bradium%20Shield.gif",
+  "name": "Aegis Field",
+  "ownership": {
+    "2vy7wrEUqBy0kzsU": 3,
+    "6DmgigM5jq76r0Gd": 3,
+    "7hKw8KGsimboeDif": 3,
+    "9sFgrDy4MvAgoCmQ": 3,
+    "Am7qxPOavfKeDGPd": 3,
+    "JQGNzKpDPHJmcUIW": 3,
+    "JvF9tXvr7aaiS06m": 3,
+    "KD5d0efqHETPpIux": 3,
+    "LT3Z8EnRdMVk5ncQ": 3,
+    "MwTL6zXFCEpVBTpI": 3,
+    "NozW36XIGEGx7oVH": 3,
+    "NpGkA7uxaarkPiwS": 3,
+    "ULBTZPjtza939Mvy": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3,
+    "eGu3tuw7HwJd2bpx": 3,
+    "iLeUVmwqnze8ulOI": 3,
+    "mE5aEkDlrQJIYyhG": 3,
+    "nSGZ1sz1rdKao0kz": 3,
+    "nXC7OD7u5Zw5UDDU": 3,
+    "t41knaXNbgCEygM5": 3,
+    "tz9BP9MKfNGf2P3n": 3,
+    "wNzPmItLYCKE1I8t": 3,
+    "yL2PQxh3R9ddt0te": 3,
+    "yUfwoVmEPVdFG3AY": 3
+  },
+  "sort": 600000,
+  "system": {
+    "container": "8kYk4DuNB20Eb8Yg",
+    "props": {
+      "action_command": "spell",
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "",
+      "cost": "80 MP",
+      "damage_bonus": "",
+      "defense_target_type": "def",
+      "description": "<p>Until the end of this round, the HP of every creature in the scene cannot be reduced.</p>",
+      "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "chain_steps": "aegis_all, aegis_apply",
+          "effect_kind": "chain",
+          "effect_label": "aegis_use"
+        },
+        "1": {
+          "$deleted": false,
+          "auto_target": "skip",
+          "candidate_source": "combat",
+          "effect_kind": "targeting",
+          "effect_label": "aegis_all",
+          "mode": "all"
+        },
+        "2": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Item.rJNdR459QOX0tRbh.ActiveEffect.s4PPqrhHe8TBYrja",
+          "effect_kind": "apply_ae",
+          "effect_label": "aegis_apply",
+          "target_ref": "aegis_all"
+        }
+      },
+      "heroic_requirement": "",
+      "id": "E0SS6NYLKUyvisTv",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Bradium%20Shield.gif",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Aegis Field",
+      "on_activate_effect_ref": "aegis_use",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Any",
+      "skill_target": "All creature",
+      "skill_type": "Spell",
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Item.E0SS6NYLKUyvisTv"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "E0SS6NYLKUyvisTv"
+  },
+  "type": "equippableItem"
+}

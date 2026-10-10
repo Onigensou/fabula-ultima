@@ -79,7 +79,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>You may spend your <strong>HP</strong> instead of <strong>MP</strong> when casting spell.</p></li></ul>",
+      "description": "<p>When you cast a spell without enough MP to pay for it, you may pay double its cost in HP instead. This cannot reduce you to 0 HP. If the spell would heal you, you recover no HP.</p>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

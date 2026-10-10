@@ -1,0 +1,19 @@
+{
+  "_id": "b6xZrcMjGI3ARizQ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791562622561,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "yrt0v9PKovSRpKQJ",
+  "name": "Ancient Capital Midgard",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Actor"
+}

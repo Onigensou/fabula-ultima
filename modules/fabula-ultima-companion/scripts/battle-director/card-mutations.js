@@ -196,11 +196,16 @@ function recomputePerTargetForRedirect({ ar, reactor, reactorTok, applyAffinityT
     isSpell: String(ar.kind ?? "").toLowerCase() === "spell"
           || String(ar.skillType ?? "").toLowerCase() === "spell",
   });
-  const newDef = Number(
-    isMagicCheck
-      ? (props.magic_defense ?? props.base_magic_defense ?? 10)
-      : (props.defense ?? props.base_defense ?? 10)
-  );
+  // Exploit keyword (weapon or skill `action_keywords`): the redirected check
+  // targets the lower of the new target's DEF / MDEF, same as the hit test.
+  const _kwOf = (raw) => String(raw ?? "").split(/[,\n]+/).map((s) => s.trim().toLowerCase());
+  let _exploit = _kwOf(ar.weapon?.actionKeywords).includes("exploit");
+  if (!_exploit && ar.skillUuid) {
+    try { _exploit = _kwOf(globalThis.fromUuidSync?.(ar.skillUuid)?.system?.props?.action_keywords).includes("exploit"); } catch (_) {}
+  }
+  const _mdefVal = Number(props.magic_defense ?? props.base_magic_defense ?? 10);
+  const _defVal = Number(props.defense ?? props.base_defense ?? 10);
+  const newDef = _exploit ? Math.min(_defVal, _mdefVal) : (isMagicCheck ? _mdefVal : _defVal);
 
   const total = Number(ar.roll?.total ?? 0);
   const isFumble = !!ar.roll?.isFumble;

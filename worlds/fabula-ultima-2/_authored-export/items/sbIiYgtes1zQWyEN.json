@@ -1,0 +1,66 @@
+{
+  "_id": "sbIiYgtes1zQWyEN",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791479466949,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glove.png",
+  "name": "Steady Knuckle (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "5rmKFhigrbXO5Pcl",
+    "props": {
+      "cost": "",
+      "description": "<ul>\n<li>As long as the current die size of one of your <strong>Attributes</strong> is higher than its base die size, your attacks with this weapon deal extra damage equal to your Skill Level in <strong>Withstand.</strong></li>\n</ul>",
+      "effect_table": {
+        "0": {
+          "damage_amount": "SL_WITHSTAND",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "steady_bonus"
+        }
+      },
+      "id": "sbIiYgtes1zQWyEN",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glove.png",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Steady Knuckle (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ACTION_IS_ATTACK == 1 && SL_WITHSTAND > 0 && (DEX_CURRENT_DIE > DEX_BASE_DIE || INS_CURRENT_DIE > INS_BASE_DIE || MIG_CURRENT_DIE > MIG_BASE_DIE || WLP_CURRENT_DIE > WLP_BASE_DIE)",
+          "reaction_effect_ref": "steady_bonus",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_description": "<ul>\n<li>As long as the current die size of one of your <strong>Attributes</strong> is higher than its base die size, your attacks with this weapon deal extra damage equal to your Skill Level in <strong>Withstand.</strong></li>\n</ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.sbIiYgtes1zQWyEN"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "sbIiYgtes1zQWyEN"
+  },
+  "type": "equippableItem"
+}

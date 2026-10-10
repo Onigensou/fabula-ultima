@@ -10,11 +10,72 @@
   },
   "effects": [
     {
-      "_id": "cNn1xAVM84uTvqpp",
+      "_id": "4nrXvjMGJig4cXPs",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1790684166015,
+        "createdTime": 1791482462507,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "mp_receiving_flat_all",
+          "mode": 2,
+          "priority": 20,
+          "value": "15"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "4nrXvjMGJig4cXPs",
+          "originalParentId": "j2zsAZo4RuolWM6b",
+          "originalUuid": "Item.j2zsAZo4RuolWM6b.ActiveEffect.4nrXvjMGJig4cXPs"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "King's Castle Supply 3",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "6qsVnvVLmDH0MszM",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791482462507,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -27,25 +88,13 @@
           "value": "-1"
         },
         {
-          "key": "heal_receiving_flat_all",
-          "mode": 2,
-          "priority": 20,
-          "value": "-999"
-        },
-        {
           "key": "mp_receiving_mod_all",
           "mode": 2,
           "priority": 20,
           "value": "-1"
-        },
-        {
-          "key": "mp_receiving_flat_all",
-          "mode": 2,
-          "priority": 20,
-          "value": "-999"
         }
       ],
-      "description": "<p>King's Castle: until the start of the Commander's next turn, this creature cannot recover Hit Points or Mind Points.</p>",
+      "description": "",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -59,13 +108,16 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "cNn1xAVM84uTvqpp",
+          "originalId": "6qsVnvVLmDH0MszM",
           "originalParentId": "j2zsAZo4RuolWM6b",
-          "originalUuid": "Item.j2zsAZo4RuolWM6b.ActiveEffect.cNn1xAVM84uTvqpp"
+          "originalUuid": "Item.j2zsAZo4RuolWM6b.ActiveEffect.6qsVnvVLmDH0MszM"
         },
-        "fabula-ultima-companion": {},
+        "fabula-ultima-companion": {
+          "category": "debuff"
+        },
         "statuscounter": {
           "config": {
+            "dataSource": "flags.statuscounter.value",
             "multiplyEffect": true,
             "type": "default"
           },
@@ -73,28 +125,24 @@
           "visible": false
         }
       },
-      "img": "icons/svg/cancel.svg",
-      "name": "King's Castle (No Recovery)",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "King's Castle Siege",
       "origin": null,
       "sort": 0,
-      "statuses": [
-        "fud-kings-castle-block"
-      ],
+      "statuses": [],
       "system": {
-        "tags": [
-          "command"
-        ]
+        "tags": []
       },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
     },
     {
-      "_id": "Is2IZnnVTCM6BJ8E",
+      "_id": "asRgJomGuZx1OYij",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1790684166015,
+        "createdTime": 1791482462507,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -104,10 +152,10 @@
           "key": "mp_receiving_flat_all",
           "mode": 2,
           "priority": 20,
-          "value": "SL * 5"
+          "value": "5"
         }
       ],
-      "description": "<p>King's Castle: until the start of the Commander's next turn, effects that restore Mind Points to this creature restore extra MP.</p>",
+      "description": "",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -121,13 +169,16 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "Is2IZnnVTCM6BJ8E",
+          "originalId": "asRgJomGuZx1OYij",
           "originalParentId": "j2zsAZo4RuolWM6b",
-          "originalUuid": "Item.j2zsAZo4RuolWM6b.ActiveEffect.Is2IZnnVTCM6BJ8E"
+          "originalUuid": "Item.j2zsAZo4RuolWM6b.ActiveEffect.asRgJomGuZx1OYij"
         },
-        "fabula-ultima-companion": {},
+        "fabula-ultima-companion": {
+          "category": "buff"
+        },
         "statuscounter": {
           "config": {
+            "dataSource": "flags.statuscounter.value",
             "multiplyEffect": true,
             "type": "default"
           },
@@ -135,17 +186,135 @@
           "visible": false
         }
       },
-      "img": "icons/svg/regen.svg",
-      "name": "King's Castle (Mana)",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "King's Castle Supply 1",
       "origin": null,
       "sort": 0,
-      "statuses": [
-        "fud-kings-castle-mana"
-      ],
+      "statuses": [],
       "system": {
-        "tags": [
-          "command"
-        ]
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "cHtmzzfWqxTBsX9P",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791482462507,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "mp_receiving_flat_all",
+          "mode": 2,
+          "priority": 20,
+          "value": "20"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "cHtmzzfWqxTBsX9P",
+          "originalParentId": "j2zsAZo4RuolWM6b",
+          "originalUuid": "Item.j2zsAZo4RuolWM6b.ActiveEffect.cHtmzzfWqxTBsX9P"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "King's Castle Supply 4",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "pCT86gdAZOuntbtT",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791482462507,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "mp_receiving_flat_all",
+          "mode": 2,
+          "priority": 20,
+          "value": "10"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "pCT86gdAZOuntbtT",
+          "originalParentId": "j2zsAZo4RuolWM6b",
+          "originalUuid": "Item.j2zsAZo4RuolWM6b.ActiveEffect.pCT86gdAZOuntbtT"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "King's Castle Supply 2",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
       },
       "tint": "#ffffff",
       "transfer": false,
@@ -177,35 +346,74 @@
       "effect_table": {
         "0": {
           "effect_kind": "open_action_menu",
-          "effect_label": "kc_menu",
-          "menu_option_refs": "kc_block, kc_mana",
+          "effect_label": "castle_menu",
+          "menu_option_refs": "castle_opt_siege, castle_opt_supply",
           "menu_pick_count": "1",
-          "menu_subtitle": "Affects friends and foes alike, until the start of your next turn.",
+          "menu_subtitle": "Until the start of your next turn",
           "menu_title": "King's Castle"
         },
         "1": {
-          "ae_duplicate_mode": "replace_per_caster",
-          "ae_duration_rounds": "1",
-          "ae_template_ref": "King's Castle (No Recovery)",
-          "effect_kind": "apply_ae",
-          "effect_label": "kc_block",
-          "menu_description": "No creature can recover Hit Points or Mind Points until the start of your next turn.",
-          "menu_label": "No creature can recover HP or MP",
-          "target_ref": "all_combatants"
+          "auto_target": "skip",
+          "candidate_source": "combat",
+          "effect_kind": "targeting",
+          "effect_label": "castle_all",
+          "mode": "all"
         },
         "2": {
-          "ae_duplicate_mode": "replace_per_caster",
+          "ae_duplicate_mode": "replace",
           "ae_duration_rounds": "1",
-          "ae_template_ref": "King's Castle (Mana)",
+          "ae_template_ref": "Item.j2zsAZo4RuolWM6b.ActiveEffect.6qsVnvVLmDH0MszM",
           "effect_kind": "apply_ae",
-          "effect_label": "kc_mana",
-          "menu_description": "All effects that restore Mind Points restore ${SL * 5} additional MP until the start of your next turn.",
-          "menu_label": "MP restoration +${SL * 5}",
-          "target_ref": "all_combatants"
+          "effect_label": "castle_opt_siege",
+          "menu_description": "No creature can recover Hit Points or Mind Points.",
+          "menu_label": "Siege",
+          "target_ref": "castle_all"
+        },
+        "3": {
+          "chain_steps": "castle_supply_1, castle_supply_2, castle_supply_3, castle_supply_4",
+          "effect_kind": "chain",
+          "effect_label": "castle_opt_supply",
+          "menu_description": "All effects that restore Mind Points restore more.",
+          "menu_label": "Supply"
+        },
+        "4": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "1",
+          "ae_template_ref": "Item.j2zsAZo4RuolWM6b.ActiveEffect.asRgJomGuZx1OYij",
+          "condition_formula": "SL == 1",
+          "effect_kind": "apply_ae",
+          "effect_label": "castle_supply_1",
+          "target_ref": "castle_all"
+        },
+        "5": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "1",
+          "ae_template_ref": "Item.j2zsAZo4RuolWM6b.ActiveEffect.pCT86gdAZOuntbtT",
+          "condition_formula": "SL == 2",
+          "effect_kind": "apply_ae",
+          "effect_label": "castle_supply_2",
+          "target_ref": "castle_all"
+        },
+        "6": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "1",
+          "ae_template_ref": "Item.j2zsAZo4RuolWM6b.ActiveEffect.4nrXvjMGJig4cXPs",
+          "condition_formula": "SL == 3",
+          "effect_kind": "apply_ae",
+          "effect_label": "castle_supply_3",
+          "target_ref": "castle_all"
+        },
+        "7": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "1",
+          "ae_template_ref": "Item.j2zsAZo4RuolWM6b.ActiveEffect.cHtmzzfWqxTBsX9P",
+          "condition_formula": "SL >= 4",
+          "effect_kind": "apply_ae",
+          "effect_label": "castle_supply_4",
+          "target_ref": "castle_all"
         }
       },
       "heroic_requirement": "",
-      "implementation_note": "Choose one option when you use it; it applies to EVERY creature in the conflict (you, allies and enemies) until the start of your next turn. No Recovery: every HP/MP recovery from skills, spells and items becomes 0. Not blocked: healing from absorbing damage (AB affinity) and direct resource writes outside the heal/restore path. Mana: every effect that restores MP restores +SL×5 more.",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
@@ -214,16 +422,15 @@
       "level": "1",
       "max_level": "4",
       "name": "King's Castle",
-      "on_activate_effect_ref": "kc_menu",
+      "on_activate_effect_ref": "castle_menu",
       "optional_params": {},
-      "pre_activate_effect_ref": "kc_menu",
+      "reaction_config_table": {},
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",
       "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Extra MP Restored</strong></p></td></tr><tr><td><p>1</p></td><td><p>+5</p></td></tr><tr><td><p>2</p></td><td><p>+10</p></td></tr><tr><td><p>3</p></td><td><p>+15</p></td></tr><tr><td><p>4</p></td><td><p>+20</p></td></tr><tr><td><p>5</p></td><td><p>+25</p></td></tr></tbody></table>",
       "skill_range": "Any",
-      "skill_tags": "command",
-      "skill_target": "Self",
+      "skill_target": "All creature",
       "skill_type": "Active",
       "type_damage": "",
       "use_optional_params": false

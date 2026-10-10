@@ -1,0 +1,95 @@
+{
+  "_id": "oadRZ01kinQY8jiF",
+  "_stats": {
+    "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
+    "coreVersion": "12.343",
+    "createdTime": 1791475480952,
+    "duplicateSource": "Item.cneU6dfTzI13k0U2",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Remedy_Icon_HD.webp",
+  "name": "Turbo Tonic",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "a9elI6g2FZ6qPY51",
+    "props": {
+      "action_command": "item",
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "",
+      "cost": "-",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<ul>\n<li>Cure all <strong>Debuff </strong>from all ally.</li>\n</ul>",
+      "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "chain_steps": "ttonic_targets, ttonic_cure",
+          "effect_kind": "chain",
+          "effect_label": "ttonic_use"
+        },
+        "1": {
+          "auto_target": "skip",
+          "candidate_source": "combat",
+          "category": "ally",
+          "effect_kind": "targeting",
+          "effect_label": "ttonic_targets",
+          "mode": "all"
+        },
+        "2": {
+          "count": "all",
+          "effect_kind": "remove_tagged_ae",
+          "effect_label": "ttonic_cure",
+          "filter_tag": "debuff",
+          "target_ref": "ttonic_targets"
+        }
+      },
+      "heroic_requirement": "",
+      "id": "oadRZ01kinQY8jiF",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Remedy_Icon_HD.webp",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Turbo Tonic",
+      "on_activate_effect_ref": "ttonic_use",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_description": "<ul>\n<li>Cure all <strong>Debuff </strong>from all ally.</li>\n</ul>",
+      "skill_information": "",
+      "skill_range": "Any",
+      "skill_tags": "",
+      "skill_target": "All allies",
+      "skill_type": "Item",
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Item.oadRZ01kinQY8jiF"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "oadRZ01kinQY8jiF"
+  },
+  "type": "equippableItem"
+}

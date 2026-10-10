@@ -4,7 +4,7 @@
   "tokens": [],
   "tokensFull": [],
   "notes": [],
-  "tileCount": 5,
+  "tileCount": 0,
   "full": {
     "folder": "7YQ4ZWxpYvijJPmb",
     "name": "Gacha Scene",
@@ -138,7 +138,9 @@
         "oniFabula": {
           "sceneNetwork": "[{\"name\":\"Eisendrache Castle - Hall\",\"id\":\"Scene.Hg2uMkxwMVBz2XD0\"},{\"name\":\"Eisendrache Castle - Courtyard\",\"id\":\"Scene.vfpS5zFzjW6ygEJu\"},{\"name\":\"Eisendrache Castle - Library\",\"id\":\"Scene.JFewEPdldTnVO3HK\"},{\"name\":\"Eisendrache Castle - Kitchen\",\"id\":\"Scene.iS2Jhy69P1KUXYfM\"},{\"name\":\"Eisendrache Castle - Throneroom\",\"id\":\"Scene.FAsgNrS2ICl9yZmj\"}]",
           "general": {
-            "cameraFollowToken": false
+            "cameraFollowToken": false,
+            "sceneMode": "gacha",
+            "sceneVisited": true
           }
         }
       }
@@ -150,8 +152,8 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1769772246226,
-      "modifiedTime": 1783778403163,
-      "lastModifiedBy": "WQGFvLStTZeWGpak"
+      "modifiedTime": 1787608837245,
+      "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "environment": {
       "globalLight": {

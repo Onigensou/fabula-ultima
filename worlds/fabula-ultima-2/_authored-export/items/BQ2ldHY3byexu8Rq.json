@@ -1,0 +1,67 @@
+{
+  "_id": "BQ2ldHY3byexu8Rq",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791479468566,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2790.gif",
+  "name": "Ring of Tales (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "Ykbs1UX7TZAfYOwl",
+    "props": {
+      "cost": "",
+      "description": "<ul><li>When you roll a <strong>critical success</strong>, you may spend that opportunity to gain 1 <strong>Fabula Point</strong>.</li></ul>",
+      "effect_table": {
+        "0": {
+          "effect_kind": "grant",
+          "effect_label": "tales_fp",
+          "grant_amount": "1",
+          "grant_resource": "fp",
+          "target_ref": "self"
+        }
+      },
+      "id": "BQ2ldHY3byexu8Rq",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2790.gif",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Ring of Tales (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ATTACK_IS_CRIT == 1",
+          "reaction_effect_ref": "tales_fp",
+          "reaction_max_per_round": "1",
+          "reaction_max_scope": "round",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_deals_damage"
+        }
+      },
+      "skill_description": "<ul><li>When you roll a <strong>critical success</strong>, you may spend that opportunity to gain 1 <strong>Fabula Point</strong>.</li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.BQ2ldHY3byexu8Rq"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "BQ2ldHY3byexu8Rq"
+  },
+  "type": "equippableItem"
+}

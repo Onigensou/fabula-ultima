@@ -8,6 +8,66 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "tU2iDKqW5JKRCivK",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1791475474794,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "can_target_flying_with",
+          "mode": 0,
+          "priority": 1,
+          "value": "spear"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "tU2iDKqW5JKRCivK",
+          "originalParentId": "CYfthrIA03zaPLGj",
+          "originalUuid": "Item.CYfthrIA03zaPLGj.ActiveEffect.tU2iDKqW5JKRCivK"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Gungnir — Reach Flying",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "3.2.4"
@@ -37,6 +97,7 @@
   "system": {
     "container": null,
     "props": {
+      "action_keywords": "pierce, exploit",
       "active_effect_config_table": {},
       "aquatic_ef": "100",
       "automaton_ef": "100",

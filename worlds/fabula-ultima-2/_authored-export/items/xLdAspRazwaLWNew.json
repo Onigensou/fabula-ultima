@@ -1,0 +1,80 @@
+{
+  "_id": "xLdAspRazwaLWNew",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791472262387,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Knife.gif",
+  "name": "Cold Finger (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "w7aYOFr8mnN0SLhD",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.KYehgac3Pw1fKC9S]{Weak},&nbsp;</strong>if they already suffers&nbsp;<strong>Weak,&nbsp;</strong>they suffers <strong>@UUID[JournalEntry.QgECPH7ZhbRhag3K]{Hypothermia}&nbsp;</strong>instead.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "cfinger_hypo, cfinger_weak",
+          "effect_kind": "chain",
+          "effect_label": "cfinger_hit"
+        },
+        "1": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Hypothermia",
+          "condition_formula": "TARGET_AE_COUNT_WEAK > 0",
+          "effect_kind": "apply_ae",
+          "effect_label": "cfinger_hypo",
+          "target_ref": "trigger_subject"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Weak",
+          "condition_formula": "TARGET_AE_COUNT_WEAK == 0",
+          "effect_kind": "apply_ae",
+          "effect_label": "cfinger_weak",
+          "target_ref": "trigger_subject"
+        }
+      },
+      "id": "xLdAspRazwaLWNew",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Knife.gif",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Cold Finger (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "cfinger_hit",
+          "reaction_passive_mode": "on",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_deals_damage"
+        }
+      },
+      "skill_description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.KYehgac3Pw1fKC9S]{Weak},&nbsp;</strong>if they already suffers&nbsp;<strong>Weak,&nbsp;</strong>they suffers <strong>@UUID[JournalEntry.QgECPH7ZhbRhag3K]{Hypothermia}&nbsp;</strong>instead.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.xLdAspRazwaLWNew"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "xLdAspRazwaLWNew"
+  },
+  "type": "equippableItem"
+}

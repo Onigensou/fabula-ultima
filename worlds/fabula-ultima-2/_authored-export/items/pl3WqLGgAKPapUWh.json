@@ -69,7 +69,7 @@
       "celestial_ef": "100",
       "check_bonus": "0",
       "construct_ef": "100",
-      "damage_bonus": "5",
+      "damage_bonus": "10",
       "demiHuman_ef": "100",
       "demon_ef": "100",
       "description": "<ul>\n<li>This weapon deals&nbsp;<strong>5&nbsp;</strong>bonus damage for&nbsp;<strong>each&nbsp;</strong>debuff you are&nbsp;<strong>inflicted&nbsp;</strong>with</li>\n</ul>",

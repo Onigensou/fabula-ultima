@@ -1,0 +1,65 @@
+{
+  "_id": "wwrB7X0CJ2Bve2v9",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791472271219,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+  "name": "Shooting Star Crystal (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "vNzVes988MJdlWGn",
+    "props": {
+      "cost": "",
+      "description": "<ul>\n<li>You start the&nbsp;<strong>Conflicts </strong>with&nbsp;<strong>6 Zero Power</strong></li>\n</ul>",
+      "effect_table": {
+        "0": {
+          "effect_kind": "set_resource",
+          "effect_label": "sstar_zp",
+          "grant_amount": "6",
+          "grant_resource": "zero_power",
+          "target_ref": "self"
+        }
+      },
+      "id": "wwrB7X0CJ2Bve2v9",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Shooting Star Crystal (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "CUR_ZERO_POWER < 6",
+          "reaction_effect_ref": "sstar_zp",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_trigger": "conflict_start"
+        }
+      },
+      "skill_description": "<ul>\n<li>You start the&nbsp;<strong>Conflicts </strong>with&nbsp;<strong>6 Zero Power</strong></li>\n</ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.wwrB7X0CJ2Bve2v9"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "wwrB7X0CJ2Bve2v9"
+  },
+  "type": "equippableItem"
+}

@@ -1,8 +1,533 @@
 {
   "sceneId": "vJYGQtwXxP4HMBAW",
   "name": "AncientTemple_Map010",
-  "tokens": [],
-  "tokensFull": [],
+  "tokens": [
+    {
+      "name": "⭐️ Wandering Flames",
+      "actorId": "KygETN50UthluNPl",
+      "actorLink": true
+    },
+    {
+      "name": "⭐️ Masked Girl",
+      "actorId": "LnlydRl7Ed7agd1g",
+      "actorLink": true
+    },
+    {
+      "name": "Zarg",
+      "actorId": "t6E3CQ0pGxwLgXrn",
+      "actorLink": true
+    },
+    {
+      "name": "Geist",
+      "actorId": "zAsUhIYMdLDOWJFt",
+      "actorLink": true
+    }
+  ],
+  "tokensFull": [
+    {
+      "name": "⭐️ Wandering Flames",
+      "displayName": 50,
+      "actorLink": true,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/WanderingFlame_Standard.png",
+        "anchorX": 0.2,
+        "anchorY": 0.7,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.71,
+        "scaleY": 1.71,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": -1,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "fabula-ultima-companion": {
+          "dominanceCrestOffset": {
+            "x": 44,
+            "y": 35
+          },
+          "idleAnimToken": {
+            "float": false,
+            "bounce": false
+          }
+        }
+      },
+      "actorId": "KygETN50UthluNPl",
+      "hidden": true,
+      "sort": 2,
+      "_id": "55YSwmjWR3xayj3k",
+      "x": 854,
+      "y": 583,
+      "elevation": 0,
+      "locked": false,
+      "_regions": [
+        "FMDIcVwsXTDh2poP"
+      ]
+    },
+    {
+      "name": "⭐️ Masked Girl",
+      "displayName": 0,
+      "actorLink": true,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Kalina_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.7,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1,
+        "scaleY": 1,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": -1,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Kalina_Standard.png",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true,
+          "hideBorderFill": true
+        },
+        "token-border-supplements": {
+          "hideBorder": true,
+          "hideBorderFill": true
+        },
+        "tokenborder": {
+          "hideBorder": true,
+          "hideBorderFill": true
+        },
+        "fabula-ultima-companion": {
+          "dominanceCrestOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "idleAnimToken": {
+            "float": false,
+            "bounce": false
+          }
+        }
+      },
+      "actorId": "LnlydRl7Ed7agd1g",
+      "hidden": true,
+      "sort": 1,
+      "x": 577,
+      "y": 1344,
+      "elevation": 0,
+      "locked": false,
+      "_regions": [
+        "oZdqe45fiPqsPbLa"
+      ],
+      "_id": "6ecHTv7VUsO2fd0g"
+    },
+    {
+      "name": "Zarg",
+      "displayName": 0,
+      "actorLink": true,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": -1.14,
+        "scaleY": 1.14,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 1,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.15,
+        "angle": 360,
+        "bright": 0,
+        "color": "#eea149",
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": "flame",
+          "speed": 2,
+          "intensity": 4,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 5,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Overworld%20Tokens/Hina%20Party/Hina_Standard.png",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        }
+      },
+      "actorId": "t6E3CQ0pGxwLgXrn",
+      "hidden": false,
+      "sort": 0,
+      "_id": "NBHs68wrU3SkREqZ",
+      "x": 551,
+      "y": 1383,
+      "elevation": 0,
+      "locked": false,
+      "_regions": [
+        "oZdqe45fiPqsPbLa"
+      ]
+    },
+    {
+      "name": "Geist",
+      "displayName": 0,
+      "actorLink": true,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Geist/Geist_KO.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.17,
+        "scaleY": 1.17,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Geist/Geist_Standard.png",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "dominanceCrestOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "idleAnimToken": {
+            "float": false,
+            "bounce": false
+          }
+        }
+      },
+      "actorId": "zAsUhIYMdLDOWJFt",
+      "hidden": true,
+      "sort": 1,
+      "_id": "zAATkfp1nnMjOKCl",
+      "x": 828,
+      "y": 1241,
+      "elevation": 0,
+      "locked": false,
+      "_regions": [
+        "oZdqe45fiPqsPbLa"
+      ]
+    }
+  ],
   "notes": [],
   "tileCount": 0,
   "full": {
@@ -48,7 +573,7 @@
       "y": 1220,
       "scale": 1.773391753112249
     },
-    "tokenVision": true,
+    "tokenVision": false,
     "fog": {
       "exploration": true,
       "overlay": null,
@@ -91,8 +616,8 @@
         "shadows": 0
       }
     },
-    "playlist": "VrpdABUTSoREMDR5",
-    "playlistSound": "mQZsYO0giqEz2YD2",
+    "playlist": "POV9fioQ0Kkj7hKC",
+    "playlistSound": "jbYOpNW8Y7FXYJVD",
     "journal": null,
     "journalEntryPage": null,
     "weather": "",
@@ -129,7 +654,8 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": []
+        "sequence": [],
+        "isTriggered": false
       },
       "core": {
         "forceInitialView": true
@@ -163,8 +689,8 @@
           "encounterTable": "RollTable.wcdUb4RPnvw1uTTO",
           "enemiesTable": "RollTable.3RdJ30rU43jtnkFF",
           "battleMap": "Scene.cuv0etY2LHsVmveW",
-          "battleBGM": "",
-          "bossBGM": "",
+          "battleBGM": "DRG_Battle",
+          "bossBGM": "DRG_Boss",
           "event": {
             "skillCheckEvent": "RollTable.iwjb2W18shMqJzBJ",
             "clockEvent": "RollTable.vlzaVsLzBucp1mP9"
@@ -205,19 +731,19 @@
           "latestPayload": {
             "meta": {
               "schemaVersion": 1,
-              "battleId": "d72FyyNK6U6hvbTu",
-              "createdAt": "2026-07-18T13:01:22.997Z",
+              "battleId": "XaZEPLVQZmbodGI4",
+              "createdAt": "2026-07-19T10:51:02.295Z",
               "debug": {
                 "enabled": true,
                 "trace": [
                   {
                     "phase": "prompt",
-                    "at": "2026-07-18T13:01:22.997Z",
+                    "at": "2026-07-19T10:51:02.295Z",
                     "note": "Created initial BattlePayload from GM prompt."
                   },
                   {
                     "phase": "prompt",
-                    "at": "2026-07-18T13:01:22.997Z",
+                    "at": "2026-07-19T10:51:02.295Z",
                     "note": "Clear Battle Log: ok"
                   }
                 ]
@@ -237,20 +763,20 @@
               "encounterTableUuid": "RollTable.wcdUb4RPnvw1uTTO",
               "enemiesTableUuid": "RollTable.3RdJ30rU43jtnkFF",
               "battleSceneUuid": "Scene.cuv0etY2LHsVmveW",
-              "bgm": ""
+              "bgm": "DRG_Boss"
             },
             "battleConfigDefaults": {
               "encounterTableUuidDefault": "RollTable.wcdUb4RPnvw1uTTO",
               "enemiesTableUuidDefault": "RollTable.3RdJ30rU43jtnkFF",
               "battleSceneUuidDefault": "Scene.cuv0etY2LHsVmveW",
-              "battleBgmDefault": "",
-              "bossBgmDefault": ""
+              "battleBgmDefault": "DRG_Battle",
+              "bossBgmDefault": "DRG_Boss"
             },
             "party": {
               "mode": "dbPartyMembers",
               "source": {
                 "gameName": "The Legend of Dragonslayer",
-                "resolvedAt": "2026-07-18T13:01:14.567Z"
+                "resolvedAt": "2026-07-19T10:50:51.978Z"
               },
               "members": [
                 {
@@ -286,7 +812,7 @@
             },
             "battlePlan": {
               "type": "boss",
-              "randomChancePercent": 85,
+              "randomChancePercent": 26,
               "isBoss": true,
               "initiativeMode": "rolled",
               "engagement": "normal"
@@ -356,18 +882,18 @@
             "phases": {
               "prompt": {
                 "status": "ok",
-                "at": "2026-07-18T13:01:22.997Z"
+                "at": "2026-07-19T10:51:02.295Z"
               },
               "directorManager": {
                 "status": "ok",
-                "at": "2026-07-18T13:01:37.206Z",
+                "at": "2026-07-19T10:51:14.518Z",
                 "initialState": "STANDALONE_REACTION_WINDOW",
                 "note": "PREP runs asynchronously after this; check FUCompanion.api.experimental.battleDirector.status() for progress."
               }
             },
             "manager": {
               "status": "ok",
-              "stoppedAt": "2026-07-18T13:01:37.206Z"
+              "stoppedAt": "2026-07-19T10:51:14.518Z"
             }
           }
         }
@@ -380,7 +906,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780398857383,
-      "modifiedTime": 1784379884733,
+      "modifiedTime": 1784475452968,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "lights": [

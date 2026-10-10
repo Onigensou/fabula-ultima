@@ -1,0 +1,394 @@
+{
+  "_id": "ZigbhzlCo1jFZMLd",
+  "_stats": {
+    "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
+    "coreVersion": "12.343",
+    "createdTime": 1791482462553,
+    "duplicateSource": "Item.cneU6dfTzI13k0U2",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "1BcNVQVxAhAskzFE",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "directorPermanent": true,
+          "lifetimeMode": "persistent_counter",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "chain_steps": "cc_end, cc_burn, cc_strip, cc_slow, cc_dazed, cc_weak, cc_shaken, cc_enraged, cc_poisoned",
+                "effect_kind": "chain",
+                "effect_label": "crystal_crash"
+              },
+              "1": {
+                "ae_template_ref": "Crystal High",
+                "count": "all",
+                "effect_kind": "remove_ae",
+                "effect_label": "cc_end",
+                "include_persistent": true,
+                "target_ref": "self"
+              },
+              "2": {
+                "ae_duplicate_mode": "replace",
+                "ae_template_ref": "Item.ZigbhzlCo1jFZMLd.ActiveEffect.zrlBp6eJZiMmLNYi",
+                "effect_kind": "apply_ae",
+                "effect_label": "cc_burn",
+                "target_ref": "self"
+              },
+              "3": {
+                "ae_template_ref": "Strong, Swift, Focus, Energized, Clarity, Awake",
+                "count": "all",
+                "effect_kind": "remove_ae",
+                "effect_label": "cc_strip",
+                "target_ref": "self"
+              },
+              "4": {
+                "ae_duplicate_mode": "replace_same_status",
+                "ae_template_ref": "Slow",
+                "effect_kind": "apply_ae",
+                "effect_label": "cc_slow",
+                "target_ref": "self"
+              },
+              "5": {
+                "ae_duplicate_mode": "replace_same_status",
+                "ae_template_ref": "Dazed",
+                "effect_kind": "apply_ae",
+                "effect_label": "cc_dazed",
+                "target_ref": "self"
+              },
+              "6": {
+                "ae_duplicate_mode": "replace_same_status",
+                "ae_template_ref": "Weak",
+                "effect_kind": "apply_ae",
+                "effect_label": "cc_weak",
+                "target_ref": "self"
+              },
+              "7": {
+                "ae_duplicate_mode": "replace_same_status",
+                "ae_template_ref": "Shaken",
+                "effect_kind": "apply_ae",
+                "effect_label": "cc_shaken",
+                "target_ref": "self"
+              },
+              "8": {
+                "ae_duplicate_mode": "replace_same_status",
+                "ae_template_ref": "Enraged",
+                "effect_kind": "apply_ae",
+                "effect_label": "cc_enraged",
+                "target_ref": "self"
+              },
+              "9": {
+                "ae_duplicate_mode": "replace_same_status",
+                "ae_template_ref": "Poisoned",
+                "effect_kind": "apply_ae",
+                "effect_label": "cc_poisoned",
+                "target_ref": "self"
+              }
+            },
+            "name": "Crystal Powder",
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "AE_COUNT_CRYSTAL_HIGH > 0",
+                "reaction_effect_ref": "crystal_crash",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_loses_status"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Crystal High",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "zrlBp6eJZiMmLNYi",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false
+        },
+        "fabula-ultima-companion": {
+          "category": "debuff",
+          "directorPermanent": true,
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Crystal Crash",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/coke.png",
+  "name": "Crystal Powder",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "DAZcD3sQRwPfW9Jz",
+    "props": {
+      "action_command": "item",
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "",
+      "cost": "-",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<ul><li><p>Target creature gain <strong>All Basic Buffs </strong>when any of these <strong>condition </strong>is removed from you, remove all <strong>conditions </strong>gain this way, then, inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\">All Basic Debuffs</span></strong></span></span>&nbsp;to the target.</p></li><li><p>If the target has already <strong>consume </strong>a <strong>Crystal Powder </strong>before in this scene inflicts <strong>All Basic Debuffs</strong>&nbsp;instead.</p></li></ul>",
+      "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "chain_steps": "cp_fresh, cp_used, cp_mark, cp_strong, cp_swift, cp_focus, cp_energized, cp_clarity, cp_awake, cpx_slow, cpx_dazed, cpx_weak, cpx_shaken, cpx_enraged, cpx_poisoned",
+          "effect_kind": "chain",
+          "effect_label": "cp_use"
+        },
+        "1": {
+          "allow_empty": true,
+          "auto_target": "skip",
+          "candidate_source": "action_targets",
+          "effect_kind": "targeting",
+          "effect_label": "cp_fresh",
+          "mode": "all",
+          "target_filter": "AE_COUNT_CRYSTAL_HIGH == 0 && AE_COUNT_CRYSTAL_CRASH == 0"
+        },
+        "2": {
+          "allow_empty": true,
+          "auto_target": "skip",
+          "candidate_source": "action_targets",
+          "effect_kind": "targeting",
+          "effect_label": "cp_used",
+          "mode": "all",
+          "target_filter": "AE_COUNT_CRYSTAL_HIGH + AE_COUNT_CRYSTAL_CRASH > 0"
+        },
+        "3": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "scene",
+          "ae_template_ref": "Item.ZigbhzlCo1jFZMLd.ActiveEffect.1BcNVQVxAhAskzFE",
+          "effect_kind": "apply_ae",
+          "effect_label": "cp_mark",
+          "on_empty": "skip",
+          "target_ref": "cp_fresh"
+        },
+        "4": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Strong",
+          "effect_kind": "apply_ae",
+          "effect_label": "cp_strong",
+          "on_empty": "skip",
+          "target_ref": "cp_fresh"
+        },
+        "5": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Swift",
+          "effect_kind": "apply_ae",
+          "effect_label": "cp_swift",
+          "on_empty": "skip",
+          "target_ref": "cp_fresh"
+        },
+        "6": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Focus",
+          "effect_kind": "apply_ae",
+          "effect_label": "cp_focus",
+          "on_empty": "skip",
+          "target_ref": "cp_fresh"
+        },
+        "7": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Energized",
+          "effect_kind": "apply_ae",
+          "effect_label": "cp_energized",
+          "on_empty": "skip",
+          "target_ref": "cp_fresh"
+        },
+        "8": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Clarity",
+          "effect_kind": "apply_ae",
+          "effect_label": "cp_clarity",
+          "on_empty": "skip",
+          "target_ref": "cp_fresh"
+        },
+        "9": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Awake",
+          "effect_kind": "apply_ae",
+          "effect_label": "cp_awake",
+          "on_empty": "skip",
+          "target_ref": "cp_fresh"
+        },
+        "10": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Slow",
+          "effect_kind": "apply_ae",
+          "effect_label": "cpx_slow",
+          "on_empty": "skip",
+          "target_ref": "cp_used"
+        },
+        "11": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Dazed",
+          "effect_kind": "apply_ae",
+          "effect_label": "cpx_dazed",
+          "on_empty": "skip",
+          "target_ref": "cp_used"
+        },
+        "12": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Weak",
+          "effect_kind": "apply_ae",
+          "effect_label": "cpx_weak",
+          "on_empty": "skip",
+          "target_ref": "cp_used"
+        },
+        "13": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Shaken",
+          "effect_kind": "apply_ae",
+          "effect_label": "cpx_shaken",
+          "on_empty": "skip",
+          "target_ref": "cp_used"
+        },
+        "14": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Enraged",
+          "effect_kind": "apply_ae",
+          "effect_label": "cpx_enraged",
+          "on_empty": "skip",
+          "target_ref": "cp_used"
+        },
+        "15": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Poisoned",
+          "effect_kind": "apply_ae",
+          "effect_label": "cpx_poisoned",
+          "on_empty": "skip",
+          "target_ref": "cp_used"
+        }
+      },
+      "heroic_requirement": "",
+      "id": "ZigbhzlCo1jFZMLd",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/coke.png",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": true,
+      "level": "1",
+      "max_level": "1",
+      "name": "Crystal Powder",
+      "on_activate_effect_ref": "cp_use",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_description": "<ul><li><p>Target creature gain <strong>All Basic Buffs </strong>when any of these <strong>condition </strong>is removed from you, remove all <strong>conditions </strong>gain this way, then, inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\">All Basic Debuffs</span></strong></span></span>&nbsp;to the target.</p></li><li><p>If the target has already <strong>consume </strong>a <strong>Crystal Powder </strong>before in this scene inflicts <strong>All Basic Debuffs</strong>&nbsp;instead.</p></li></ul>",
+      "skill_information": "",
+      "skill_range": "Any",
+      "skill_tags": "",
+      "skill_target": "One Creature",
+      "skill_type": "Item",
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Item.ZigbhzlCo1jFZMLd"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "ZigbhzlCo1jFZMLd"
+  },
+  "type": "equippableItem"
+}

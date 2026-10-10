@@ -1,0 +1,66 @@
+{
+  "_id": "qesmCvPumDLyWAuy",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791472265139,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+  "name": "Gae Bolg (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "i4oM2NTWVz9lRIZz",
+    "props": {
+      "cost": "",
+      "description": "<ul>\n<li>If you roll a <strong>critical success</strong> on an Accuracy Check with this weapon, that attack deals <strong>200%</strong> damage.</li>\n</ul>",
+      "effect_table": {
+        "0": {
+          "damage_amount": "3",
+          "damage_operation": "multiply",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "gaebolg_crit"
+        }
+      },
+      "id": "qesmCvPumDLyWAuy",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Gae Bolg (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ATTACK_IS_CRIT == 1 && DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "gaebolg_crit",
+          "reaction_passive_mode": "on",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_description": "<ul>\n<li>If you roll a <strong>critical success</strong> on an Accuracy Check with this weapon, that attack deals <strong>200%</strong> damage.</li>\n</ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.qesmCvPumDLyWAuy"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "qesmCvPumDLyWAuy"
+  },
+  "type": "equippableItem"
+}

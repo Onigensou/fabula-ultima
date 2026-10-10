@@ -1,0 +1,81 @@
+{
+  "_id": "o4g4GTVkuj3yJGME",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791472260952,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/axe.png",
+  "name": "Gravity Mace (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "wzwQj3HC41TFByOw",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.HHmYmj7xffQMqtzT]{Slow}</strong></p></li><li><p>You may target <strong>@UUID[JournalEntry.q6keqwDWUsEgSWDw]{Flying}&nbsp;</strong>as though they didn't have Flying, When you hit a <strong>Flying</strong> target with this weapon, it immediately land.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Slow",
+          "effect_kind": "apply_ae",
+          "effect_label": "gmace_slow",
+          "target_ref": "trigger_subject"
+        },
+        "1": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Grounded",
+          "effect_kind": "apply_ae",
+          "effect_label": "gmace_ground",
+          "target_ref": "trigger_subject"
+        }
+      },
+      "id": "o4g4GTVkuj3yJGME",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/axe.png",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Gravity Mace (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "gmace_slow",
+          "reaction_passive_mode": "on",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_deals_damage"
+        },
+        "1": {
+          "condition_formula": "DAMAGE_IS_HP == 1 && TARGET_IS_FLYING == 1",
+          "reaction_effect_ref": "gmace_ground",
+          "reaction_passive_mode": "on",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_deals_damage"
+        }
+      },
+      "skill_description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.HHmYmj7xffQMqtzT]{Slow}</strong></p></li><li><p>You may target <strong>@UUID[JournalEntry.q6keqwDWUsEgSWDw]{Flying}&nbsp;</strong>as though they didn't have Flying, When you hit a <strong>Flying</strong> target with this weapon, it immediately land.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.o4g4GTVkuj3yJGME"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "o4g4GTVkuj3yJGME"
+  },
+  "type": "equippableItem"
+}

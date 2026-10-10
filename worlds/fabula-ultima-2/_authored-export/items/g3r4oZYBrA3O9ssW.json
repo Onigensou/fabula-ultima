@@ -60,7 +60,17 @@
       "description": "<p>Unleash a terrifying roar, Deals <strong>【HR+13】Non-Elemental </strong>damage to all enemies and  inflicted them with a random <strong>Basic Debuff</strong></p><p>Enemy with Levels lower than you are afflicted by even <strong>stronger debuff</strong></p>",
       "details_roller": "Show",
       "duration": "Instantaneous",
-      "effect_table": {},
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace",
+          "ae_name_pool": "Dazed, Enraged, Poisoned, Shaken, Slow, Weak",
+          "effect_kind": "apply_ae",
+          "effect_label": "roar_debuff",
+          "on_empty": "skip",
+          "target_ref": "hit_action_targets"
+        }
+      },
       "heroic_requirement": "",
       "id": "g3r4oZYBrA3O9ssW",
       "ignore_hr": false,
@@ -69,14 +79,24 @@
       "isFacet": false,
       "isHeroic": false,
       "isOffensiveSpell": false,
-      "isReaction": false,
+      "isReaction": true,
       "isZeroPower": false,
       "level": "1",
       "max_level": "1",
       "name": "Draconic Roar",
       "on_activate_effect_ref": "",
       "optional_params": {},
-      "reaction_config_table": {},
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "roar_debuff",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_source_skill": "Draconic Roar",
+          "reaction_trigger": "creature_deals_damage"
+        }
+      },
       "rolled_atr1": "INS",
       "rolled_atr2": "WLP",
       "skill_animation_default": "",

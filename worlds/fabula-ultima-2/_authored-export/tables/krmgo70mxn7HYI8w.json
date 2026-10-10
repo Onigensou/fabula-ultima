@@ -1,0 +1,386 @@
+{
+  "_id": "krmgo70mxn7HYI8w",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791409260441,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {},
+  "folder": "OeC0hsLCW5zTWD6w",
+  "formula": "1d24",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Fishing_Tile.png",
+  "name": "Generic - Fish",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "55ukXu0R3ys32E7X",
+      "documentCollection": "Item",
+      "documentId": "s28J2fB5xoskAtwu",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Balloonfish_icon1.png",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Toxic Puffer",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "6SP0yV9jO4wbOdHS",
+      "documentCollection": "Item",
+      "documentId": "ZGvuE5jHpDgxMHNQ",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Goblin_perch_icon1.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Flame Salmon",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "8kIhtE62irPYK7Qm",
+      "documentCollection": "Item",
+      "documentId": "HfOBPSyDPpddoajY",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Blue_medusa_icon1.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Venom Jellyfish",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "8tq9rl10RHV2oeOM",
+      "documentCollection": "Item",
+      "documentId": "zQfpEWAxwJjaBVIe",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Garpike_icon1.png",
+      "range": [
+        16,
+        16
+      ],
+      "text": "Stash Gar",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "abuE1OLxpkPE9kTu",
+      "documentCollection": "Item",
+      "documentId": "lTqvatWNAQ4vdfkM",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Silverfish_icon1.png",
+      "range": [
+        24,
+        24
+      ],
+      "text": "Golden Koi",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "AZe4Ci7mkoDi1sj9",
+      "documentCollection": "Item",
+      "documentId": "FSj6trk1hdPaDpPd",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Harbor_herring_icon1.png",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Shine Herring",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "C81rZfy9IIrrEwa1",
+      "documentCollection": "Item",
+      "documentId": "fnd9BxHv1albIMpM",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Whilom_catfish_icon1.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Mudfish",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "fqYvkcgR4zQOJliI",
+      "documentCollection": "Item",
+      "documentId": "bgVJ3tF898fertoZ",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Silver_shark_icon1.png",
+      "range": [
+        20,
+        20
+      ],
+      "text": "Wandering Shark",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ggK9r6KkyYJGhu64",
+      "documentCollection": "Item",
+      "documentId": "SOQKbs6yuSbbHkvv",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Black_sole_icon1.png",
+      "range": [
+        18,
+        18
+      ],
+      "text": "Mindful Sole",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "gXgfRMU2LFJgV6mJ",
+      "documentCollection": "Item",
+      "documentId": "0ieofw23oYf5FNCc",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Caravan_eel_icon1.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Bolt Eel",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "hBoWlxHjCGKfciM2",
+      "documentCollection": "Item",
+      "documentId": "enbL361u8CaT5owG",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Warmwater_trout_icon1.png",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Blade Angler",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ITZBUo39DZuGE4Gh",
+      "documentCollection": "Item",
+      "documentId": "unAiIGTSSYpmonn8",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Tiger_cod_icon1.png",
+      "range": [
+        17,
+        17
+      ],
+      "text": "Hearty Cod",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "iVSpmmvVXc2tSnnk",
+      "documentCollection": "Item",
+      "documentId": "6cqEvyeolNozKZT8",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Blowfish_icon1.png",
+      "range": [
+        14,
+        14
+      ],
+      "text": "Fugu",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "jZpQ1UIXW7TuJv65",
+      "documentCollection": "Item",
+      "documentId": "H3JIjcQunuxMakJt",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Lake_urchin_icon1.png",
+      "range": [
+        21,
+        21
+      ],
+      "text": "Urchin",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "NcaHC5kc1SfZOone",
+      "documentCollection": "Item",
+      "documentId": "uvtEB71f8xmQAiRB",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Coelacanth_icon1.png",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Shadow Sturgeon",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "po0vddF5lPnM5l41",
+      "documentCollection": "Item",
+      "documentId": "ALRbhk8NLRpzUcPc",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Brass_loach_icon1.png",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Lucky Loach",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "PUK3Twvts0qQ21lC",
+      "documentCollection": "Item",
+      "documentId": "4Ddvp1twE1rwqB9P",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Southern_pike_icon1.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Silt Catfish",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ra3Xs3pw7lwQ55ee",
+      "documentCollection": "Item",
+      "documentId": "epTljNMoOwYyy3FD",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Ash_tuna_icon1.png",
+      "range": [
+        22,
+        22
+      ],
+      "text": "Prophet Tuna",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "rGdeFJCGBZHOGyLG",
+      "documentCollection": "Item",
+      "documentId": "WtBVtnY6ergJWXHv",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Monke_onke_icon1.png",
+      "range": [
+        19,
+        19
+      ],
+      "text": "Keystone Ray",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "rNjooPMr11pxLklx",
+      "documentCollection": "Item",
+      "documentId": "n5oeHTFJ7MApEWe4",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Dark_bass_icon1.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Wind Bass",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "V8PjdOr5yMvotaIj",
+      "documentCollection": "Item",
+      "documentId": "14X26PHWXppupLYt",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Warmwater_trout_icon1.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "River Trout",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "vhMaTN0u34lCryMw",
+      "documentCollection": "Item",
+      "documentId": "ZHfjikNnFjGQr8Kq",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/Mahi-mahi_icon2.png",
+      "range": [
+        23,
+        23
+      ],
+      "text": "Magnificent Mahi-mahi",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Xrgi5QYHba8iBcIT",
+      "documentCollection": "Item",
+      "documentId": "0xZvao2eWYVjrHp9",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Southern_pike_icon1.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Ice Pike",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "zNdtpmCanUFPBOJQ",
+      "documentCollection": "Item",
+      "documentId": "czkjXYoh6vPaj5bQ",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Silverfish_icon1.png",
+      "range": [
+        15,
+        15
+      ],
+      "text": "Moonfish",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

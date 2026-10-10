@@ -377,6 +377,7 @@
     dungeonPanel.querySelector(`input[name="flags.${MODULE_ID}.${DUNGEON_ROOT_KEY}.loot.zenit"]`).value      = safeGet(data, "loot.zenit", "");
     dungeonPanel.querySelector(`input[name="flags.${MODULE_ID}.${DUNGEON_ROOT_KEY}.loot.treasure"]`).value   = safeGet(data, "loot.treasure", "");
     dungeonPanel.querySelector(`input[name="flags.${MODULE_ID}.${DUNGEON_ROOT_KEY}.loot.material"]`).value    = safeGet(data, "loot.material", "");
+    dungeonPanel.querySelector(`input[name="flags.${MODULE_ID}.${DUNGEON_ROOT_KEY}.loot.fish"]`).value        = safeGet(data, "loot.fish", "");
 
     // Threat level prefill
     const threatSelect = dungeonPanel.querySelector(`select[name="flags.${MODULE_ID}.${DUNGEON_ROOT_KEY}.threatLevel"]`);
@@ -1029,6 +1030,7 @@
           <div class="form-group"><label>Zenit</label><div class="form-fields"><input type="text" name="flags.${MODULE_ID}.${DUNGEON_ROOT_KEY}.loot.zenit" placeholder="RollTable UUID" /></div></div>
           <div class="form-group"><label>Treasure</label><div class="form-fields"><input type="text" name="flags.${MODULE_ID}.${DUNGEON_ROOT_KEY}.loot.treasure" placeholder="RollTable UUID" /></div></div>
           <div class="form-group"><label>Material</label><div class="form-fields"><input type="text" name="flags.${MODULE_ID}.${DUNGEON_ROOT_KEY}.loot.material" placeholder="RollTable UUID" /></div><p class="notes" style="margin:0;">Materials the party can gather on <b>Gathering</b> tiles in this scene.</p></div>
+          <div class="form-group"><label>Fish</label><div class="form-fields"><input type="text" name="flags.${MODULE_ID}.${DUNGEON_ROOT_KEY}.loot.fish" placeholder="RollTable UUID" /></div><p class="notes" style="margin:0;">Every fish that can be caught in this scene (<b>Fishing</b> tiles and camp fishing). Tier = item rarity; row weight = odds within that tier. Blank uses <b>Generic - Fish</b>.</p></div>
 
           <div class="oni-fabula-actions">
             <button type="button" class="oni-dungeon-log">

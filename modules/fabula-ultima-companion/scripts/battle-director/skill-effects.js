@@ -6584,7 +6584,14 @@ async function applyApplyAeEffect(row, ctx) {
   const targetResult = await resolveTargetRef(row.target_ref, ctx);
   if (!targetResult.ok) return { ok: false, kind: "apply_ae", reason: targetResult.reason ?? "no-targets", cancelled: !!targetResult.cancelled };
   const tokens = targetResult.tokens;
-  if (!tokens.length) return { ok: false, kind: "apply_ae", reason: "no-targets" };
+  // `on_empty: "skip"` — an empty target list is a legitimate answer for this row
+  // (a branch of a chain that only applies to SOME targets), so it must not stop
+  // the chain. Opt-in: the default stays a failed step.
+  if (!tokens.length) {
+    return String(row.on_empty ?? "").trim().toLowerCase() === "skip"
+      ? { ok: true, kind: "apply_ae", applied: [], reason: "no-targets" }
+      : { ok: false, kind: "apply_ae", reason: "no-targets" };
+  }
 
   // Resolve the AE template data. B.1 supports:
   //   - "Item.<id>.ActiveEffect.<id>"  full UUID

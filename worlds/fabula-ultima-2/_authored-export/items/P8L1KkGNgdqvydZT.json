@@ -306,7 +306,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li>【⚡Offensive Spell】 you cast that deals damage deal extra damage equal to 50% of the <strong>base</strong> <strong>MP </strong>spent to cast it. <em>(Round up)</em></li></ul>",
+      "description": "<ul><li>【⚡Offensive Spell】 you cast that deals damage deal extra damage equal to 50% of the <strong>base</strong> <strong>MP </strong>spent <strong>per target</strong> to cast it. <em>(Round up)</em></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

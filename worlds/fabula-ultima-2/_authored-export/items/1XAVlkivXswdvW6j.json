@@ -1,0 +1,75 @@
+{
+  "_id": "1XAVlkivXswdvW6j",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791472269862,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2741.gif",
+  "name": "Sage Ring (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "NHQNneNjKb1Je06v",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>At the start of your turn, you recovers <strong>10 MP, </strong>this effect trigger <strong>once </strong>per round.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "effect_kind": "grant",
+          "effect_label": "sage_mp",
+          "grant_amount": "10",
+          "grant_resource": "mp",
+          "target_ref": "sage_self"
+        },
+        "1": {
+          "auto_confirm_when_obvious": true,
+          "candidate_source": "self",
+          "count": 1,
+          "effect_kind": "targeting",
+          "effect_label": "sage_self",
+          "iteration_mode": "together",
+          "mode": "exact",
+          "skip_when_passive": true
+        }
+      },
+      "id": "1XAVlkivXswdvW6j",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2741.gif",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Sage Ring (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "reaction_effect_ref": "sage_mp",
+          "reaction_passive_mode": "on",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_trigger": "turn_start"
+        }
+      },
+      "skill_description": "<ul><li><p>At the start of your turn, you recovers <strong>10 MP, </strong>this effect trigger <strong>once </strong>per round.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.1XAVlkivXswdvW6j"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "1XAVlkivXswdvW6j"
+  },
+  "type": "equippableItem"
+}

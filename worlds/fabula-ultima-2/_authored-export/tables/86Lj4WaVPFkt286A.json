@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "4bqgn7jZFnmardZp",
-  "formula": "1d1",
+  "formula": "1d19",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/neck.png",
   "name": "Valley of the Dragon - Accessory",
   "ownership": {
@@ -20,5 +20,292 @@
     "default": 0
   },
   "replacement": true,
+  "results": [
+    {
+      "_id": "5ecmSXxBwhrLokXh",
+      "documentCollection": "Item",
+      "documentId": "yOJKXAQJq4R2mzCa",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/boot.png",
+      "range": [
+        17,
+        17
+      ],
+      "text": "Jumping Boots",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "7t4SzQWb4hnguES3",
+      "documentCollection": "Item",
+      "documentId": "19AYZWXLj7vbeMLY",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/helm.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Miner Hat",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "AMmREfnNyCogIG53",
+      "documentCollection": "Item",
+      "documentId": "4sRQe37ayG9OebW3",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Savage_Mask.webp",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Hannya Mask",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "aTWMcjXrH48nWdM3",
+      "documentCollection": "Item",
+      "documentId": "Xb0RBOMwfTAQSDw7",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Red_Gloves.webp",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Crimson Gloves",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "aZlJOaKF0cVaBNCz",
+      "documentCollection": "Item",
+      "documentId": "LovcBRnMztRvrtVw",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gcry.png",
+      "range": [
+        19,
+        19
+      ],
+      "text": "Mage Emblem",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "BiwIvgjdc39gGExM",
+      "documentCollection": "Item",
+      "documentId": "7ywxRYdvYmDk94bL",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/scan.png",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Auto Aimer",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "CDIYgnJzD2HUYwQx",
+      "documentCollection": "Item",
+      "documentId": "DeIMdUFdNlbApDVT",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/yorb.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Clockwork Heart",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "irBjE3zGShaH47Zt",
+      "documentCollection": "Item",
+      "documentId": "Li5RjJZdG2g7WFJ2",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "range": [
+        18,
+        18
+      ],
+      "text": "Guardian Emblem",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "lkYyz9GrM6YmYEMS",
+      "documentCollection": "Item",
+      "documentId": "1wK4VjvHOefDJ4Ig",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Valkyrie%20Connect/Hati_the_Doll_(Sp.)_icon.webp",
+      "range": [
+        14,
+        14
+      ],
+      "text": "Straw Doll",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "M0QFD3zu1hJ32tMx",
+      "documentCollection": "Item",
+      "documentId": "Cqm1AVi7jJ1ozlrd",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Wolf%20Hat.png",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Wolf Officer Hat",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "mAaJj2ggi2T0T8XE",
+      "documentCollection": "Item",
+      "documentId": "xswSyDHMuKJdHGZf",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Footgear/2437.gif",
+      "range": [
+        16,
+        16
+      ],
+      "text": "Boots of Swiftness",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "nhozYqGzYlp97uAy",
+      "documentCollection": "Item",
+      "documentId": "5WURnu429nWHULpD",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Ring.gif",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Ring of Defiance",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "nRGAuMgG1G1CUl0u",
+      "documentCollection": "Item",
+      "documentId": "L7rj8OpM3zYetpPb",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2634.gif",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Ring of the Egg",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "oCfd3yiyHxVRb3qi",
+      "documentCollection": "Item",
+      "documentId": "NHQNneNjKb1Je06v",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2741.gif",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Sage Ring",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "TciZpT560ubdi2tL",
+      "documentCollection": "Item",
+      "documentId": "jDsRKKpWmXs6aAJF",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/scan.png",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Sniper Scope",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "UxAkmbxRAcWWTynW",
+      "documentCollection": "Item",
+      "documentId": "Yd8hCDTlIOKKc5XB",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Pokemon/metronome.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Intruder Alarm",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "WjsOOxvdm2w3Sx6O",
+      "documentCollection": "Item",
+      "documentId": "lFAG6dMR89JX4H9h",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Soft_Gloves.webp",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Multigroa Skin Gloves",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "XtXsm4muw7OvaUPq",
+      "documentCollection": "Item",
+      "documentId": "nfE7jC3VPwmuncNW",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/borb.png",
+      "range": [
+        15,
+        15
+      ],
+      "text": "Arcane Earring",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "zadMgT3yWGl5fbKI",
+      "documentCollection": "Item",
+      "documentId": "Ykbs1UX7TZAfYOwl",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2790.gif",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Ring of Tales",
+      "type": "document",
+      "weight": 1
+    }
+  ],
   "sort": 0
 }

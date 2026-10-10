@@ -1,0 +1,62 @@
+{
+  "_id": "CLgQXnqra3eY2FUy",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791475476281,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+  "name": "Valkyrie Flight",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "3JRMahpv7q0004l4",
+    "props": {
+      "cost": "-",
+      "description": "<p>You gain <strong>Flying</strong> for 3 rounds.</p>",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_initial_charges": "3",
+          "ae_initial_charges_max": "3",
+          "ae_lifetime_mode": "target_turn_end",
+          "ae_template_ref": "Flying",
+          "effect_kind": "apply_ae",
+          "effect_label": "valk_fly",
+          "target_ref": "self"
+        }
+      },
+      "id": "CLgQXnqra3eY2FUy",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "isReaction": false,
+      "max_level": "1",
+      "name": "Valkyrie Flight",
+      "on_activate_effect_ref": "valk_fly",
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_description": "<p>You gain <strong>Flying</strong> for 3 rounds.</p>",
+      "skill_target": "Self",
+      "skill_type": "Active",
+      "uuid": "Item.CLgQXnqra3eY2FUy"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "CLgQXnqra3eY2FUy"
+  },
+  "type": "equippableItem"
+}

@@ -82,195 +82,6 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "effects": [
-        {
-          "_id": "cHwR3BJDKafipJ3y",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": 1790684164957,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [],
-          "description": "<p>Bishop's Edict: until the start of the Commander's next turn, this creature's Mind Point costs are doubled.</p>",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "cHwR3BJDKafipJ3y",
-              "originalParentId": "atv5MhidCVT4i6ux",
-              "originalUuid": "Actor.3KulR3t3i0HpcCid.Item.atv5MhidCVT4i6ux.ActiveEffect.cHwR3BJDKafipJ3y"
-            },
-            "fabula-ultima-companion": {
-              "reactionConfig": {
-                "effect_table": {
-                  "0": {
-                    "cost_amount": "ACTION_COST_MP",
-                    "cost_operation": "add",
-                    "cost_resource": "mp",
-                    "effect_kind": "adjust_cost",
-                    "effect_label": "bec_double"
-                  }
-                },
-                "name": "Bishop's Edict (Costs)",
-                "reaction_config_table": {
-                  "0": {
-                    "condition_formula": "ACTION_COST_MP > 0 && ACTION_IS_FREE_CAST == 0",
-                    "reaction_effect_ref": "bec_double",
-                    "reaction_passive_mode": "force",
-                    "reaction_source": "self",
-                    "reaction_trigger": "creature_performs_action"
-                  }
-                }
-              }
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "icons/svg/downgrade.svg",
-          "name": "Bishop's Edict (Costs)",
-          "origin": null,
-          "sort": 0,
-          "statuses": [
-            "fud-bishops-edict-costs"
-          ],
-          "system": {
-            "tags": [
-              "command"
-            ]
-          },
-          "tint": "#ffffff",
-          "transfer": false,
-          "type": "base"
-        },
-        {
-          "_id": "ogDqEbIBEOk1MBH8",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": 1790684164957,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [
-            {
-              "key": "flags.fabula-ultima-companion.damage_taken_increased_physical",
-              "mode": 2,
-              "priority": 20,
-              "value": "SL * 3"
-            },
-            {
-              "key": "flags.fabula-ultima-companion.damage_taken_increased_air",
-              "mode": 2,
-              "priority": 20,
-              "value": "SL * 3"
-            },
-            {
-              "key": "flags.fabula-ultima-companion.damage_taken_increased_bolt",
-              "mode": 2,
-              "priority": 20,
-              "value": "SL * 3"
-            },
-            {
-              "key": "flags.fabula-ultima-companion.damage_taken_increased_dark",
-              "mode": 2,
-              "priority": 20,
-              "value": "SL * 3"
-            },
-            {
-              "key": "flags.fabula-ultima-companion.damage_taken_increased_earth",
-              "mode": 2,
-              "priority": 20,
-              "value": "SL * 3"
-            },
-            {
-              "key": "flags.fabula-ultima-companion.damage_taken_increased_fire",
-              "mode": 2,
-              "priority": 20,
-              "value": "SL * 3"
-            },
-            {
-              "key": "flags.fabula-ultima-companion.damage_taken_increased_ice",
-              "mode": 2,
-              "priority": 20,
-              "value": "SL * 3"
-            },
-            {
-              "key": "flags.fabula-ultima-companion.damage_taken_increased_light",
-              "mode": 2,
-              "priority": 20,
-              "value": "SL * 3"
-            },
-            {
-              "key": "flags.fabula-ultima-companion.damage_taken_increased_poison",
-              "mode": 2,
-              "priority": 20,
-              "value": "SL * 3"
-            }
-          ],
-          "description": "<p>Bishop's Edict: until the start of the Commander's next turn, every source of damage deals extra damage to this creature.</p>",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "ogDqEbIBEOk1MBH8",
-              "originalParentId": "atv5MhidCVT4i6ux",
-              "originalUuid": "Actor.3KulR3t3i0HpcCid.Item.atv5MhidCVT4i6ux.ActiveEffect.ogDqEbIBEOk1MBH8"
-            },
-            "fabula-ultima-companion": {},
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "icons/svg/blood.svg",
-          "name": "Bishop's Edict (Damage)",
-          "origin": null,
-          "sort": 0,
-          "statuses": [
-            "fud-bishops-edict-damage"
-          ],
-          "system": {
-            "tags": [
-              "command"
-            ]
-          },
-          "tint": "#ffffff",
-          "transfer": false,
-          "type": "base"
-        }
-      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -296,52 +107,99 @@
           "effect_table": {
             "0": {
               "effect_kind": "open_action_menu",
-              "effect_label": "be_menu",
-              "menu_option_refs": "be_cost, be_dmg",
+              "effect_label": "edict_menu",
+              "menu_option_refs": "edict_opt_tithe, edict_opt_zeal",
               "menu_pick_count": "1",
-              "menu_subtitle": "Affects friends and foes alike, until the start of your next turn.",
+              "menu_subtitle": "Until the start of your next turn",
               "menu_title": "Bishop's Edict"
             },
             "1": {
-              "ae_duplicate_mode": "replace_per_caster",
-              "ae_duration_rounds": "1",
-              "ae_template_ref": "Bishop's Edict (Costs)",
-              "effect_kind": "apply_ae",
-              "effect_label": "be_cost",
-              "menu_description": "Every creature's Mind Point costs are doubled until the start of your next turn.",
-              "menu_label": "All MP costs are doubled",
-              "target_ref": "all_combatants"
+              "auto_target": "skip",
+              "candidate_source": "combat",
+              "effect_kind": "targeting",
+              "effect_label": "edict_all",
+              "mode": "all"
             },
             "2": {
-              "ae_duplicate_mode": "replace_per_caster",
+              "ae_duplicate_mode": "replace",
               "ae_duration_rounds": "1",
-              "ae_template_ref": "Bishop's Edict (Damage)",
+              "ae_template_ref": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.zrSNdhBwjm1IU2FB",
               "effect_kind": "apply_ae",
-              "effect_label": "be_dmg",
-              "menu_description": "All sources of damage deal ${SL * 3} extra damage until the start of your next turn.",
-              "menu_label": "All damage +${SL * 3}",
-              "target_ref": "all_combatants"
+              "effect_label": "edict_opt_tithe",
+              "menu_description": "All MP costs are doubled.",
+              "menu_label": "Tithe",
+              "target_ref": "edict_all"
+            },
+            "3": {
+              "chain_steps": "edict_zeal_1, edict_zeal_2, edict_zeal_3, edict_zeal_4, edict_zeal_5",
+              "effect_kind": "chain",
+              "effect_label": "edict_opt_zeal",
+              "menu_description": "All sources of damage deal extra damage.",
+              "menu_label": "Zeal"
+            },
+            "4": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.F7p5CecN5dDfHEWy",
+              "condition_formula": "SL == 1",
+              "effect_kind": "apply_ae",
+              "effect_label": "edict_zeal_1",
+              "target_ref": "edict_all"
+            },
+            "5": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.AnJnEssmbiUk3ZnF",
+              "condition_formula": "SL == 2",
+              "effect_kind": "apply_ae",
+              "effect_label": "edict_zeal_2",
+              "target_ref": "edict_all"
+            },
+            "6": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.yQ1nGHFiMMSj79c3",
+              "condition_formula": "SL == 3",
+              "effect_kind": "apply_ae",
+              "effect_label": "edict_zeal_3",
+              "target_ref": "edict_all"
+            },
+            "7": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.ILY0O2ZcWraq1DC7",
+              "condition_formula": "SL == 4",
+              "effect_kind": "apply_ae",
+              "effect_label": "edict_zeal_4",
+              "target_ref": "edict_all"
+            },
+            "8": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Item.cy0XWEqKnjvJ9B4c.ActiveEffect.mJ5rlg16GgqaTpXO",
+              "condition_formula": "SL >= 5",
+              "effect_kind": "apply_ae",
+              "effect_label": "edict_zeal_5",
+              "target_ref": "edict_all"
             }
           },
           "heroic_requirement": "",
-          "implementation_note": "Choose one option when you use it; it applies to EVERY creature in the conflict (you, allies and enemies) until the start of your next turn. Costs: each creature's actions with a printed MP cost cost double (the extra is added to the action card). Not doubled: MP a skill spends inside its own effect chain (e.g. Gadgets, Stolen Time, High Speed). A creature that cannot afford the doubled cost is not stopped automatically: it spends all its remaining MP and the action still resolves, so the GM should rule that action out at the table. Damage: every hit any creature takes gets +SL×3 before Affinities; typeless/true damage is not increased.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
-          "isReaction": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "5",
           "name": "Bishop's Edict",
-          "on_activate_effect_ref": "be_menu",
+          "on_activate_effect_ref": "edict_menu",
           "optional_params": {},
-          "pre_activate_effect_ref": "be_menu",
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Extra Damage</strong></p></td></tr><tr><td><p>1</p></td><td><p>+3</p></td></tr><tr><td><p>2</p></td><td><p>+6</p></td></tr><tr><td><p>3</p></td><td><p>+9</p></td></tr><tr><td><p>4</p></td><td><p>+12</p></td></tr><tr><td><p>5</p></td><td><p>+15</p></td></tr></tbody></table>",
           "skill_range": "Any",
-          "skill_tags": "command",
-          "skill_target": "Self",
+          "skill_target": "All creature",
           "skill_type": "Active",
           "type_damage": "",
           "use_optional_params": false
@@ -494,13 +352,14 @@
               "action_ref": "Attack",
               "check_bonus_formula": "SL + 3",
               "effect_kind": "free_action",
-              "effect_label": "cc_free",
+              "effect_label": "cc_charge",
               "free_hr_as_zero": true,
+              "menu_description": "Free attack with bonus accuracy (treat HR as 0 for damage).",
+              "menu_label": "Charging Cavalry",
               "performer_ref": "action_targets"
             }
           },
           "heroic_requirement": "",
-          "implementation_note": "Choose one ally (not yourself). That ally immediately gets a free attack (an equipped weapon, or a basic attack for an NPC) with +SL+3 to the Accuracy Check, treating their High Roll as 0 for damage.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -509,16 +368,15 @@
           "level": "1",
           "max_level": "5",
           "name": "Charging Cavalry",
-          "on_activate_effect_ref": "cc_free",
+          "on_activate_effect_ref": "cc_charge",
           "optional_params": {},
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Accuracy Bonus</strong></p></td></tr><tr><td><p>1</p></td><td><p>+4</p></td></tr><tr><td><p>2</p></td><td><p>+5</p></td></tr><tr><td><p>3</p></td><td><p>+6</p></td></tr><tr><td><p>4</p></td><td><p>+7</p></td></tr><tr><td><p>5</p></td><td><p>+8</p></td></tr></tbody></table>",
           "skill_range": "Any",
-          "skill_tags": "command",
           "skill_target": "One ally",
           "skill_type": "Active",
-          "target_eligibility": "IS_SOURCE == 0",
           "type_damage": "",
           "use_optional_params": false
         },
@@ -539,69 +397,6 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "effects": [
-        {
-          "_id": "WitQEvT0N9nuclov",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": 1790684170556,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [],
-          "description": "<p>Queen's Gambit is armed: when this free attack resolves, choose to heal an ally or issue a command.</p>",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "WitQEvT0N9nuclov",
-              "originalParentId": "tPtT9d23WitBs5Qb",
-              "originalUuid": "Actor.3KulR3t3i0HpcCid.Item.tPtT9d23WitBs5Qb.ActiveEffect.WitQEvT0N9nuclov"
-            },
-            "fabula-ultima-companion": {
-              "directorPermanent": false,
-              "lifetimeMode": "persistent_counter",
-              "tags": [
-                "command-marker"
-              ]
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "icons/svg/sword.svg",
-          "name": "Queens Gambit Armed",
-          "origin": null,
-          "sort": 0,
-          "statuses": [
-            "fud-queens-gambit-armed"
-          ],
-          "system": {
-            "tags": [
-              "command-marker"
-            ]
-          },
-          "tint": "#ffffff",
-          "transfer": false,
-          "type": "base"
-        }
-      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -618,8 +413,6 @@
       "system": {
         "container": null,
         "props": {
-          "availability_formula": "EQUIPPED_WEAPON_COUNT >= 1",
-          "availability_reason": "Requires an equipped weapon",
           "check_bonus": "0",
           "class": "Commander",
           "cost": "",
@@ -628,50 +421,52 @@
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
-              "chain_steps": "qg_arm, qg_free",
+              "chain_steps": "qg_mark, qg_attack",
               "effect_kind": "chain",
-              "effect_label": "qg_root"
+              "effect_label": "qg_open"
             },
             "1": {
               "ae_duplicate_mode": "replace",
-              "ae_template_ref": "Queens Gambit Armed",
+              "ae_template_ref": "Item.f7LAMimGFhqpUUWX.ActiveEffect.jx4eiUgiapCKYtOm",
               "effect_kind": "apply_ae",
-              "effect_label": "qg_arm",
+              "effect_label": "qg_mark",
               "target_ref": "self"
             },
             "2": {
               "action_ref": "Attack",
               "effect_kind": "free_action",
-              "effect_label": "qg_free",
-              "free_hr_as_zero": true
+              "effect_label": "qg_attack",
+              "free_hr_as_zero": true,
+              "menu_description": "Free attack (treat HR as 0 for damage).",
+              "menu_label": "Queen's Gambit"
             },
             "3": {
-              "chain_steps": "qg_disarm, qg_menu",
+              "chain_steps": "qg_clear, qg_menu",
               "effect_kind": "chain",
               "effect_label": "qg_after"
             },
             "4": {
-              "ae_template_ref": "Queens Gambit Armed",
+              "ae_template_ref": "Gambit Pending",
               "count": "all",
               "effect_kind": "remove_ae",
-              "effect_label": "qg_disarm",
+              "effect_label": "qg_clear",
               "include_persistent": true,
               "target_ref": "self"
             },
             "5": {
               "effect_kind": "open_action_menu",
               "effect_label": "qg_menu",
-              "menu_option_refs": "qg_heal, qg_order",
+              "menu_option_refs": "qg_heal, qg_skill",
               "menu_pick_count": "1",
-              "menu_subtitle": "The attack is resolved — choose one option.",
+              "menu_subtitle": "Choose one",
               "menu_title": "Queen's Gambit"
             },
             "6": {
-              "chain_steps": "qg_heal_pick, qg_heal_hp",
+              "chain_steps": "qg_pick, qg_heal_do",
               "effect_kind": "chain",
               "effect_label": "qg_heal",
-              "menu_description": "One ally who can hear you recovers ${5 + SL * 5} HP.",
-              "menu_label": "Rally an ally"
+              "menu_description": "One ally recovers Hit Points.",
+              "menu_label": "Rally"
             },
             "7": {
               "auto_confirm_when_obvious": true,
@@ -680,34 +475,26 @@
               "category": "ally",
               "count": "1",
               "effect_kind": "targeting",
-              "effect_label": "qg_heal_pick",
-              "exclude_self": true,
-              "iteration_mode": "together",
-              "mode": "exact",
-              "skip_when_passive": false,
-              "target_prompt": "Choose an ally to recover HP"
+              "effect_label": "qg_pick",
+              "mode": "exact"
             },
             "8": {
               "effect_kind": "grant",
-              "effect_label": "qg_heal_hp",
+              "effect_label": "qg_heal_do",
               "grant_amount": "5 + SL * 5",
               "grant_resource": "hp",
-              "target_ref": "qg_heal_pick"
+              "target_ref": "qg_pick"
             },
             "9": {
               "action_ref": "Skill",
-              "allowed_skill_refs": "tag:command",
-              "condition_formula": "OWN_SKILL_TAG_COUNT_COMMAND >= 1",
-              "disable_ui_type": "dim",
-              "disabled_reason": "You have none of Bishop's Edict, Charging Cavalry or King's Castle",
+              "allowed_skill_refs": "Bishop's Edict,Charging Cavalry,King's Castle",
               "effect_kind": "free_action",
-              "effect_label": "qg_order",
-              "menu_description": "Immediately use Bishop's Edict, Charging Cavalry or King's Castle (you still pay its MP).",
-              "menu_label": "Issue a command"
+              "effect_label": "qg_skill",
+              "menu_description": "Use Bishop's Edict, Charging Cavalry or King's Castle now (pay its MP).",
+              "menu_label": "Command"
             }
           },
           "heroic_requirement": "",
-          "implementation_note": "You make a free attack with an equipped weapon (High Roll counts as 0 for damage). When that attack resolves, choose one: an ally (not you) recovers 5 + SL×5 HP, or immediately use Bishop's Edict, Charging Cavalry or King's Castle (you still pay its MP). If the free attack never happens, the option lapses at the end of your turn.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -716,11 +503,11 @@
           "level": "1",
           "max_level": "6",
           "name": "Queen's Gambit",
-          "on_activate_effect_ref": "qg_root",
+          "on_activate_effect_ref": "qg_open",
           "optional_params": {},
           "reaction_config_table": {
             "0": {
-              "condition_formula": "AE_COUNT_QUEENS_GAMBIT_ARMED > 0",
+              "condition_formula": "AE_COUNT_GAMBIT_PENDING > 0",
               "reaction_effect_ref": "qg_after",
               "reaction_passive_mode": "force",
               "reaction_passive_target": "self",
@@ -728,8 +515,8 @@
               "reaction_trigger": "creature_completes_attack"
             },
             "1": {
-              "condition_formula": "AE_COUNT_QUEENS_GAMBIT_ARMED > 0",
-              "reaction_effect_ref": "qg_disarm",
+              "condition_formula": "AE_COUNT_GAMBIT_PENDING > 0",
+              "reaction_effect_ref": "qg_clear",
               "reaction_passive_mode": "force",
               "reaction_passive_target": "self",
               "reaction_source": "self",
@@ -762,150 +549,6 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "effects": [
-        {
-          "_id": "B0rCuOBr3oL7AfCt",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": 1790684167193,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [
-            {
-              "key": "mp_receiving_flat_all",
-              "mode": 2,
-              "priority": 20,
-              "value": "SL * 5"
-            }
-          ],
-          "description": "<p>King's Castle: until the start of the Commander's next turn, effects that restore Mind Points to this creature restore extra MP.</p>",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "B0rCuOBr3oL7AfCt",
-              "originalParentId": "VHMVsqg7NWBneqyw",
-              "originalUuid": "Actor.3KulR3t3i0HpcCid.Item.VHMVsqg7NWBneqyw.ActiveEffect.B0rCuOBr3oL7AfCt"
-            },
-            "fabula-ultima-companion": {},
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "icons/svg/regen.svg",
-          "name": "King's Castle (Mana)",
-          "origin": null,
-          "sort": 0,
-          "statuses": [
-            "fud-kings-castle-mana"
-          ],
-          "system": {
-            "tags": [
-              "command"
-            ]
-          },
-          "tint": "#ffffff",
-          "transfer": false,
-          "type": "base"
-        },
-        {
-          "_id": "iJLumauv1uYdphE6",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": 1790684167193,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [
-            {
-              "key": "heal_receiving_mod_all",
-              "mode": 2,
-              "priority": 20,
-              "value": "-1"
-            },
-            {
-              "key": "heal_receiving_flat_all",
-              "mode": 2,
-              "priority": 20,
-              "value": "-999"
-            },
-            {
-              "key": "mp_receiving_mod_all",
-              "mode": 2,
-              "priority": 20,
-              "value": "-1"
-            },
-            {
-              "key": "mp_receiving_flat_all",
-              "mode": 2,
-              "priority": 20,
-              "value": "-999"
-            }
-          ],
-          "description": "<p>King's Castle: until the start of the Commander's next turn, this creature cannot recover Hit Points or Mind Points.</p>",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "iJLumauv1uYdphE6",
-              "originalParentId": "VHMVsqg7NWBneqyw",
-              "originalUuid": "Actor.3KulR3t3i0HpcCid.Item.VHMVsqg7NWBneqyw.ActiveEffect.iJLumauv1uYdphE6"
-            },
-            "fabula-ultima-companion": {},
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "icons/svg/cancel.svg",
-          "name": "King's Castle (No Recovery)",
-          "origin": null,
-          "sort": 0,
-          "statuses": [
-            "fud-kings-castle-block"
-          ],
-          "system": {
-            "tags": [
-              "command"
-            ]
-          },
-          "tint": "#ffffff",
-          "transfer": false,
-          "type": "base"
-        }
-      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -931,35 +574,74 @@
           "effect_table": {
             "0": {
               "effect_kind": "open_action_menu",
-              "effect_label": "kc_menu",
-              "menu_option_refs": "kc_block, kc_mana",
+              "effect_label": "castle_menu",
+              "menu_option_refs": "castle_opt_siege, castle_opt_supply",
               "menu_pick_count": "1",
-              "menu_subtitle": "Affects friends and foes alike, until the start of your next turn.",
+              "menu_subtitle": "Until the start of your next turn",
               "menu_title": "King's Castle"
             },
             "1": {
-              "ae_duplicate_mode": "replace_per_caster",
-              "ae_duration_rounds": "1",
-              "ae_template_ref": "King's Castle (No Recovery)",
-              "effect_kind": "apply_ae",
-              "effect_label": "kc_block",
-              "menu_description": "No creature can recover Hit Points or Mind Points until the start of your next turn.",
-              "menu_label": "No creature can recover HP or MP",
-              "target_ref": "all_combatants"
+              "auto_target": "skip",
+              "candidate_source": "combat",
+              "effect_kind": "targeting",
+              "effect_label": "castle_all",
+              "mode": "all"
             },
             "2": {
-              "ae_duplicate_mode": "replace_per_caster",
+              "ae_duplicate_mode": "replace",
               "ae_duration_rounds": "1",
-              "ae_template_ref": "King's Castle (Mana)",
+              "ae_template_ref": "Item.j2zsAZo4RuolWM6b.ActiveEffect.6qsVnvVLmDH0MszM",
               "effect_kind": "apply_ae",
-              "effect_label": "kc_mana",
-              "menu_description": "All effects that restore Mind Points restore ${SL * 5} additional MP until the start of your next turn.",
-              "menu_label": "MP restoration +${SL * 5}",
-              "target_ref": "all_combatants"
+              "effect_label": "castle_opt_siege",
+              "menu_description": "No creature can recover Hit Points or Mind Points.",
+              "menu_label": "Siege",
+              "target_ref": "castle_all"
+            },
+            "3": {
+              "chain_steps": "castle_supply_1, castle_supply_2, castle_supply_3, castle_supply_4",
+              "effect_kind": "chain",
+              "effect_label": "castle_opt_supply",
+              "menu_description": "All effects that restore Mind Points restore more.",
+              "menu_label": "Supply"
+            },
+            "4": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Item.j2zsAZo4RuolWM6b.ActiveEffect.asRgJomGuZx1OYij",
+              "condition_formula": "SL == 1",
+              "effect_kind": "apply_ae",
+              "effect_label": "castle_supply_1",
+              "target_ref": "castle_all"
+            },
+            "5": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Item.j2zsAZo4RuolWM6b.ActiveEffect.pCT86gdAZOuntbtT",
+              "condition_formula": "SL == 2",
+              "effect_kind": "apply_ae",
+              "effect_label": "castle_supply_2",
+              "target_ref": "castle_all"
+            },
+            "6": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Item.j2zsAZo4RuolWM6b.ActiveEffect.4nrXvjMGJig4cXPs",
+              "condition_formula": "SL == 3",
+              "effect_kind": "apply_ae",
+              "effect_label": "castle_supply_3",
+              "target_ref": "castle_all"
+            },
+            "7": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Item.j2zsAZo4RuolWM6b.ActiveEffect.cHtmzzfWqxTBsX9P",
+              "condition_formula": "SL >= 4",
+              "effect_kind": "apply_ae",
+              "effect_label": "castle_supply_4",
+              "target_ref": "castle_all"
             }
           },
           "heroic_requirement": "",
-          "implementation_note": "Choose one option when you use it; it applies to EVERY creature in the conflict (you, allies and enemies) until the start of your next turn. No Recovery: every HP/MP recovery from skills, spells and items becomes 0. Not blocked: healing from absorbing damage (AB affinity) and direct resource writes outside the heal/restore path. Mana: every effect that restores MP restores +SL×5 more.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -968,15 +650,14 @@
           "level": "1",
           "max_level": "4",
           "name": "King's Castle",
-          "on_activate_effect_ref": "kc_menu",
+          "on_activate_effect_ref": "castle_menu",
           "optional_params": {},
-          "pre_activate_effect_ref": "kc_menu",
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Extra MP Restored</strong></p></td></tr><tr><td><p>1</p></td><td><p>+5</p></td></tr><tr><td><p>2</p></td><td><p>+10</p></td></tr><tr><td><p>3</p></td><td><p>+15</p></td></tr><tr><td><p>4</p></td><td><p>+20</p></td></tr><tr><td><p>5</p></td><td><p>+25</p></td></tr></tbody></table>",
           "skill_range": "Any",
-          "skill_tags": "command",
-          "skill_target": "Self",
+          "skill_target": "All creature",
           "skill_type": "Active",
           "type_damage": "",
           "use_optional_params": false

@@ -1,0 +1,66 @@
+{
+  "_id": "xpI8x62bhRT2pdw2",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791475479987,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Red_Gloves.webp",
+  "name": "Crimson Gloves (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "Xb0RBOMwfTAQSDw7",
+    "props": {
+      "cost": "",
+      "description": "<ul><li>When you perform an attack with <strong>multi</strong>, you gain a +2 bonus to your <strong>Accuracy Check</strong>.</li></ul>",
+      "effect_table": {
+        "0": {
+          "accuracy_amount": "2",
+          "accuracy_operation": "add",
+          "effect_kind": "adjust_accuracy",
+          "effect_label": "crimson_acc"
+        }
+      },
+      "id": "xpI8x62bhRT2pdw2",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Red_Gloves.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Crimson Gloves (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ACTION_TARGET_COUNT >= 2",
+          "reaction_action_kind": "Attack",
+          "reaction_effect_ref": "crimson_acc",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_performs_action"
+        }
+      },
+      "skill_description": "<ul><li>When you perform an attack with <strong>multi</strong>, you gain a +2 bonus to your <strong>Accuracy Check</strong>.</li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.xpI8x62bhRT2pdw2"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "xpI8x62bhRT2pdw2"
+  },
+  "type": "equippableItem"
+}

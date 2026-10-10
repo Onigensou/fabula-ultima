@@ -37,6 +37,7 @@
   "system": {
     "container": null,
     "props": {
+      "action_keywords": "pierce",
       "active_effect_config_table": {},
       "aquatic_ef": "100",
       "automaton_ef": "100",
@@ -47,7 +48,7 @@
       "check": "Check",
       "check_bonus": "0",
       "construct_ef": "100",
-      "damage_bonus": "10",
+      "damage_bonus": "14",
       "demiHuman_ef": "100",
       "demon_ef": "100",
       "description": "<ul><li><p><strong>@UUID[JournalEntry.2hNU23YLpCcZCCmf]{Pierce}</strong></p></li></ul>",

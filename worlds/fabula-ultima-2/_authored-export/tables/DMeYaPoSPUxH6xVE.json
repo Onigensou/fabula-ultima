@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "4bqgn7jZFnmardZp",
-  "formula": "1d1",
+  "formula": "1d16",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/treas.png",
   "name": "Valley of the Dragon - Treasure",
   "ownership": {
@@ -20,5 +20,247 @@
     "default": 0
   },
   "replacement": true,
+  "results": [
+    {
+      "_id": "0mL4rTK6XzVRFxHp",
+      "documentCollection": "Item",
+      "documentId": "GTydGAnT25DCc6Va",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/yorb.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Heart Stone",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "2iKTpEbeJcH48nfp",
+      "documentCollection": "Item",
+      "documentId": "oSodj9KjjoM0VLFa",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Knife.gif",
+      "range": [
+        12,
+        12
+      ],
+      "text": "The Wasp",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "b4cYVzzhju9nR7yc",
+      "documentCollection": "Item",
+      "documentId": "36xO7InIbrbVP2Kx",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Genshin/The_First_Great_Magic.webp",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Arcana Avant",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "CLswFpexnK2XMtVH",
+      "documentCollection": "Item",
+      "documentId": "NYZZNYBAwPhpNOzH",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/shield.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Metallica",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "F6EpOsLw3GjwI4Ae",
+      "documentCollection": "Item",
+      "documentId": "TonJhOEDvCr8RrdU",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Commander_Banner.png",
+      "range": [
+        14,
+        14
+      ],
+      "text": "Commander Banner",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "HFZkHixRhUQPTIHI",
+      "documentCollection": "Item",
+      "documentId": "DzXNAIk2nGsnrNmU",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/beast.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Warrior Emblem",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "HhVMA73NkRdmh1w7",
+      "documentCollection": "Item",
+      "documentId": "nxAL0WdeqCy6tVwq",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+      "range": [
+        16,
+        16
+      ],
+      "text": "Alchemist Codex",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "llPyE5wK7dyFOl4P",
+      "documentCollection": "Item",
+      "documentId": "vNzVes988MJdlWGn",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Shooting Star Crystal",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "PQhCirHUje3DUvaB",
+      "documentCollection": "Item",
+      "documentId": "CYfthrIA03zaPLGj",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Gungnir",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "QSaIKeaCfvHQP3eQ",
+      "documentCollection": "Item",
+      "documentId": "pl3WqLGgAKPapUWh",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Broad%20Sword.gif",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Punishment",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "rjWGkdJcTARC39cA",
+      "documentCollection": "Item",
+      "documentId": "9Z9bVEVwAW9hiuFe",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/shield.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Demonshield",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "S5CT8CadBkI5SIRy",
+      "documentCollection": "Item",
+      "documentId": "xvzmpqg8yVtkNoJg",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1637.gif",
+      "range": [
+        15,
+        15
+      ],
+      "text": "Sunflower Staff",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ukaPNWQWANVaSQHA",
+      "documentCollection": "Item",
+      "documentId": "2qhIJG9OTmyPYMFB",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Thunder Vulcan",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "UzUYgl94fSWrZogp",
+      "documentCollection": "Item",
+      "documentId": "ivWUbFevDoyWAgAl",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Key.png",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Skeletal Key",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "vDlNlQyWryBf2imJ",
+      "documentCollection": "Item",
+      "documentId": "Ujk1ocZwtp6B5kuy",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bra.png",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Bikini Armor",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "zoeFlo2TdZqrlDI4",
+      "documentCollection": "Item",
+      "documentId": "ZdwdNhKXtC96Z2VB",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Eiyuu%20Senki/054%253F%253F%253F%253F.webp",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Sylvan Reaper",
+      "type": "document",
+      "weight": 1
+    }
+  ],
   "sort": 0
 }

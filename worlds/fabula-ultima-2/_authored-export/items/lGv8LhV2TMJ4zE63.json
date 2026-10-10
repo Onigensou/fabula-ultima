@@ -1,0 +1,80 @@
+{
+  "_id": "lGv8LhV2TMJ4zE63",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1791472261496,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/axe.png",
+  "name": "Mjolnir (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "Knt8Qr5y1rgq3TSa",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.3nmUvPei3zrOJkEt]{Dazed},&nbsp;</strong>if they are already&nbsp;<strong>Dazed</strong>, they suffers <strong>@UUID[JournalEntry.GqqgHkKOs0hkghdG]{Paralyzed}&nbsp;</strong>instead.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "mjolnir_para, mjolnir_daze",
+          "effect_kind": "chain",
+          "effect_label": "mjolnir_hit"
+        },
+        "1": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Paralyzed",
+          "condition_formula": "TARGET_AE_COUNT_DAZED > 0",
+          "effect_kind": "apply_ae",
+          "effect_label": "mjolnir_para",
+          "target_ref": "trigger_subject"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Dazed",
+          "condition_formula": "TARGET_AE_COUNT_DAZED == 0",
+          "effect_kind": "apply_ae",
+          "effect_label": "mjolnir_daze",
+          "target_ref": "trigger_subject"
+        }
+      },
+      "id": "lGv8LhV2TMJ4zE63",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/axe.png",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Mjolnir (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "mjolnir_hit",
+          "reaction_passive_mode": "on",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_deals_damage"
+        }
+      },
+      "skill_description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.3nmUvPei3zrOJkEt]{Dazed},&nbsp;</strong>if they are already&nbsp;<strong>Dazed</strong>, they suffers <strong>@UUID[JournalEntry.GqqgHkKOs0hkghdG]{Paralyzed}&nbsp;</strong>instead.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.lGv8LhV2TMJ4zE63"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "lGv8LhV2TMJ4zE63"
+  },
+  "type": "equippableItem"
+}
