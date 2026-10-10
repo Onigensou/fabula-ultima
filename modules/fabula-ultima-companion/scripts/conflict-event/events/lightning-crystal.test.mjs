@@ -15,7 +15,7 @@ globalThis.game = { user: { isGM: true } };
 globalThis.canvas = null;
 
 const {
-  rollCrystalCount, rollCountdown, rollBlastDamage,
+  rollCrystalCount, pinnedCrystalCount, rollCountdown, rollBlastDamage,
   bumpForDamage, crystalBumpFor, tickKeyFor,
 } = await import("./lightning-crystal.js");
 
@@ -35,6 +35,17 @@ eq("roll 0.749 → one", rollCrystalCount(0.749), 1);
 eq("roll 0.75 → two", rollCrystalCount(0.75), 2);
 eq("roll 0.999 → two", rollCrystalCount(0.999), 2);
 eq("a roll of exactly 1 cannot produce a third crystal", rollCrystalCount(1), 2);
+
+const pin = (v) => pinnedCrystalCount({ context: { conflictEventOptions: { crystalCount: v } } });
+eq("no payload → roll", pinnedCrystalCount(null), null);
+eq("no options → roll", pinnedCrystalCount({ context: {} }), null);
+eq("pinned 0 is honoured, not treated as unset", pin(0), 0);
+eq("pinned 2", pin(2), 2);
+eq("a string count from a form field", pin("1"), 1);
+eq("pinned above the cap clamps to 2", pin(7), 2);
+eq("pinned negative clamps to 0", pin(-3), 0);
+eq("garbage → roll", pin("many"), null);
+eq("blank → roll", pin(""), null);
 
 // ── Ranges ──────────────────────────────────────────────────────────────────
 
@@ -71,26 +82,27 @@ eq("undefined buys nothing", bumpForDamage(undefined), 0);
 const CRYSTAL = "Scene.s.Token.t.Actor.crystal";
 const ev = (payload, trigger = "creature_lose_resource") => ({ trigger, payload });
 const hitPayload = (over = {}) => ({
-  resource: "hp", cause: "damage", element: "physical", finalValue: 30,
+  resource: "hp", cause: "damage", element: "physical", amount: 30,
   subjectActorUuid: CRYSTAL, causeActorUuid: "Actor.hero",
   ...over,
 });
 const hit = (over = {}) => ev(hitPayload(over));
 
-eq("a normal hit", crystalBumpFor(hit()), { subjectUuid: CRYSTAL, turns: 2 });
-eq("an Earth hit, already doubled by the vulnerability", crystalBumpFor(hit({ element: "earth", finalValue: 60 })), { subjectUuid: CRYSTAL, turns: 3 });
-eq("a weak hit", crystalBumpFor(hit({ finalValue: 12 })), { subjectUuid: CRYSTAL, turns: 1 });
+eq("a normal hit", crystalBumpFor(hit()), { subjectUuid: CRYSTAL, turns: 2, damage: 30 });
+eq("an Earth hit, already doubled by the vulnerability", crystalBumpFor(hit({ element: "earth", amount: 60 })), { subjectUuid: CRYSTAL, turns: 3, damage: 60 });
+eq("a weak hit", crystalBumpFor(hit({ amount: 12 })), { subjectUuid: CRYSTAL, turns: 1, damage: 12 });
 
 eq("Bolt never delays", crystalBumpFor(hit({ element: "bolt" })), null);
-eq("Bolt never delays, whatever the case", crystalBumpFor(hit({ element: "Bolt", finalValue: 80 })), null);
-eq("a zero (immune) hit does nothing", crystalBumpFor(hit({ finalValue: 0 })), null);
+eq("Bolt never delays, whatever the case", crystalBumpFor(hit({ element: "Bolt", amount: 80 })), null);
+eq("a zero (immune) hit does nothing", crystalBumpFor(hit({ amount: 0 })), null);
 
 // Effect-row damage defaults to the hazard cause; it still counts.
-eq("hazard-cause damage still delays", crystalBumpFor(hit({ cause: "hazard" })), { subjectUuid: CRYSTAL, turns: 2 });
+eq("hazard-cause damage still delays", crystalBumpFor(hit({ cause: "hazard" })), { subjectUuid: CRYSTAL, turns: 2, damage: 30 });
 
 eq("MP loss is not damage", crystalBumpFor(hit({ resource: "mp" })), null);
 eq("a recovery is not a loss", crystalBumpFor(ev(hitPayload(), "creature_gain_resource")), null);
 eq("defeat is not a bump", crystalBumpFor(ev(hitPayload(), "creature_defeated")), null);
+eq("a payload with no amount", crystalBumpFor(hit({ amount: undefined })), null);
 eq("no subject", crystalBumpFor(hit({ subjectActorUuid: null })), null);
 eq("no payload", crystalBumpFor({ trigger: "creature_lose_resource" }), null);
 eq("null cfg", crystalBumpFor(null), null);

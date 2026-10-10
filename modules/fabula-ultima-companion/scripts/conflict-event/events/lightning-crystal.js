@@ -90,6 +90,21 @@ const ANCHORS = {
 
 // ── Pure rules (exported for the bare-Node harness) ─────────────────────────
 
+/**
+ * A pinned crystal count from the battle payload, or null to roll.
+ *
+ * `payload.context.conflictEventOptions.crystalCount` — for a scripted
+ * encounter that wants a known number, and for balance sims, which are
+ * meaningless if each run silently fights a different hazard.
+ */
+export function pinnedCrystalCount(payload) {
+  const raw = payload?.context?.conflictEventOptions?.crystalCount;
+  if (raw == null || raw === "") return null;
+  const n = Math.floor(Number(raw));
+  if (!Number.isFinite(n)) return null;
+  return Math.min(Math.max(n, 0), SPAWN_WEIGHTS.length - 1);
+}
+
 /** How many crystals this conflict gets. `rand` is a 0..1 roll. */
 export function rollCrystalCount(rand = Math.random()) {
   let acc = 0;
@@ -140,9 +155,13 @@ export function crystalBumpFor(cfg) {
   if (String(p.element ?? "").toLowerCase() === "bolt") return null;
   const subjectUuid = p.subjectActorUuid ?? null;
   if (!subjectUuid) return null;
-  const turns = bumpForDamage(p.finalValue);
+  // The ledger carries the HP that actually came off as `amount` (already
+  // through affinity, so an Earth hit arrives doubled and a Bolt hit never
+  // arrives at all — fireResourceChangeTrigger drops a zero).
+  const damage = Number(p.amount);
+  const turns = bumpForDamage(damage);
   if (turns <= 0) return null;
-  return { subjectUuid, turns };
+  return { subjectUuid, turns, damage };
 }
 
 /**
@@ -223,10 +242,17 @@ function countdownAeData(countdown) {
   };
 }
 
+/**
+ * Write countdown fields. Returns false when the crystal is already gone —
+ * the hit that ends a battle can still be settling while the battle-end sweep
+ * deletes the tokens, and a countdown on a deleted crystal is nobody's loss.
+ */
 async function writeState(ae, patch) {
+  if (!ae?.parent?.effects?.has?.(ae.id)) return false;
   const upd = {};
   for (const [k, v] of Object.entries(patch)) upd[`flags.${FLAG_NS}.${k}`] = v;
-  await ae.update(upd);
+  try { await ae.update(upd); return true; }
+  catch { return false; }
 }
 
 /**
@@ -387,8 +413,9 @@ registerConflictEvent({
     for (const entry of await crystalsOnField(ctx)) await removeCrystal(ctx, entry);
     await deleteStrayCrystalTokens(ctx);
 
-    const count = rollCrystalCount();
-    ctx.log(`conflict start — ${count} crystal(s)`);
+    const pinned = pinnedCrystalCount(ctx.director?.ctx?.payload);
+    const count = pinned ?? rollCrystalCount();
+    ctx.log(`conflict start — ${count} crystal(s)${pinned != null ? " (pinned)" : ""}`);
     if (!count) return;
 
     const actor = findCrystalActor();
@@ -428,7 +455,7 @@ registerConflictEvent({
       if (key && state.tickKey === key) continue;
 
       const next = Math.max(0, state.countdown - 1);
-      await writeState(state.ae, { crystalCountdown: next, crystalTickKey: key });
+      if (!await writeState(state.ae, { crystalCountdown: next, crystalTickKey: key })) continue;
       if (next <= 0) await detonate(ctx, entry);
     }
   },
@@ -437,14 +464,16 @@ registerConflictEvent({
   async onLedgerEvent(ctx, cfg) {
     const bump = crystalBumpFor(cfg);
     if (!bump) return;
+    // The fight is over — the crystals are being swept, not managed.
+    if (ctx.dCombat?.ended) return;
 
     const entry = (await crystalsOnField(ctx)).find((e) => e.actor?.uuid === bump.subjectUuid);
     if (!entry) return;
     const state = readState(entry.actor);
     if (!state.ae || state.spent || state.countdown == null || state.countdown <= 0) return;
 
-    await writeState(state.ae, { crystalCountdown: state.countdown + bump.turns });
-    ctx.log(`${entry.actor.name} took ${cfg.payload?.finalValue} — countdown ${state.countdown} → ${state.countdown + bump.turns}`);
+    if (!await writeState(state.ae, { crystalCountdown: state.countdown + bump.turns })) return;
+    ctx.log(`${entry.actor.name} took ${bump.damage} — countdown ${state.countdown} → ${state.countdown + bump.turns}`);
   },
 
   // A crystal must never outlive its fight.
