@@ -1345,7 +1345,7 @@
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
           "check_bonus": "0",
-          "class": "",
+          "class": "Necromancer",
           "cost": "-",
           "damage_bonus": "",
           "defense_target_type": "def",
