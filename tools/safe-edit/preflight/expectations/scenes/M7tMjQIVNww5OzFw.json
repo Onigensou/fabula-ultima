@@ -445,6 +445,19 @@
         "fabula-ultima-companion": {
           "draftTokens": "claude-2026-10-09",
           "draftName": "Ingrid"
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "proximityPx": 75,
+          "eventRows": [
+            {
+              "id": "9ItxCUrYoFPFnWpT",
+              "type": "showText",
+              "speaker": "This",
+              "text": "My Past? Sorry, I'm afraid I can't remember much... When I first open my eyes, the only thing I recalled was a <b>dimly lit room</b>"
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"id\": \"9ItxCUrYoFPFnWpT\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"My Past? Sorry, I'm afraid I can't remember much... When I first open my eyes, the only thing I recalled was a <b>dimly lit room</b>\"\n  }\n]"
         }
       },
       "actorId": "TnOKgQbmyxFzD6Oe",
@@ -681,6 +694,19 @@
         "fabula-ultima-companion": {
           "draftTokens": "claude-2026-10-09",
           "draftName": "Otto"
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "proximityPx": 75,
+          "eventRows": [
+            {
+              "id": "7C8VRfR5MTOjYMcb",
+              "type": "showText",
+              "speaker": "This",
+              "text": "After I awake, I found myself in the <b>Dark Place</b>, I ran as far as I could and before I know it I found myself here..."
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"id\": \"7C8VRfR5MTOjYMcb\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"After I awake, I found myself in the <b>Dark Place</b>, I ran as far as I could and before I know it I found myself here...\"\n  }\n]"
         }
       },
       "actorId": "TnOKgQbmyxFzD6Oe",
@@ -1293,7 +1319,7 @@
     }
   ],
   "notes": [],
-  "tileCount": 6,
+  "tileCount": 9,
   "full": {
     "name": "Midgard_Map001",
     "navName": "Ancient Capital Midgard",
