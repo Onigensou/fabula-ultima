@@ -7,8 +7,12 @@ unchanged; a conflict event automates exactly one extra rule inside it.
 Status: **BUILT 2026-08-16. NOT LIVE-TESTED.** Branch
 `feat/conflict-event-system`.
 
-First event: [Lightning Storm](lightning-storm-design.md), the Valley of the
-Dragon hazard.
+Events so far:
+
+- [Lightning Storm](lightning-storm-design.md) — the Valley of the Dragon
+  hazard (a moving status).
+- [Lightning Crystal](lightning-crystal-design.md) — its underground
+  counterpart (spawned battlefield objects with a countdown).
 
 ---
 
@@ -30,6 +34,7 @@ scripts/conflict-event/
   conflict-event-api.js         FUCompanion.api.conflictEvents + event imports
   events/
     lightning-storm.js          one file per event
+    lightning-crystal.js
 ```
 
 ### The contract
@@ -40,6 +45,7 @@ Every handler is optional; an event implements only the beats it needs.
 |---|---|
 | `onConflictStart(ctx)` | the conflict has begun (round 0) — seed here |
 | `onRoundStart(ctx)` | a new round has begun — re-seed / upkeep |
+| `onTurnStart(ctx)` | any creature's turn is starting — awaited, and ahead of the forced reaction pass |
 | `onLedgerEvent(ctx, cfg, extra)` | a resource/status ledger event is settling |
 | `onConflictEnd(ctx)` | the conflict is over — sweep here |
 
@@ -300,5 +306,6 @@ end. Worth doing once both have more than one consumer — not before.
 ## Related
 
 - [lightning-storm-design.md](lightning-storm-design.md) — the first event
+- [lightning-crystal-design.md](lightning-crystal-design.md) — the second; also where battlefield objects are explained
 - [reaction-config-schema.md](reaction-config-schema.md) — trigger + effect field reference
 - `[[project_battle_director]]`, `[[project_bd_effect_pipeline]]`

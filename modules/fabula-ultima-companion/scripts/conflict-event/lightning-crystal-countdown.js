@@ -50,7 +50,7 @@ const FADE_MS = 500;
 const POP_MS = 420;
 const GAIN_MS = 1500;
 
-const _badges = new Map(); // tokenId -> { el, num, value, missingFrames }
+const _badges = new Map(); // tokenId -> { el, num, cap, value, missingFrames }
 let _tickerOn = false;
 let _hooksOn = false;
 
@@ -170,6 +170,7 @@ function applyValue(rec, value, { animate = true } = {}) {
   const prev = rec.value;
   rec.value = value;
   rec.num.textContent = String(value);
+  rec.cap.textContent = value === 1 ? "turn" : "turns";
   rec.el.classList.toggle("is-warn", value <= WARN_AT && value > DANGER_AT);
   rec.el.classList.toggle("is-danger", value <= DANGER_AT);
   if (!animate || prev == null || prev === value) return;
@@ -197,12 +198,11 @@ function buildBadge(token, value, { fadeIn = true } = {}) {
   num.className = "num";
   const cap = document.createElement("div");
   cap.className = "cap";
-  cap.textContent = "turns";
   el.append(num, cap);
   if (fadeIn) el.style.opacity = "0";
   document.body.appendChild(el);
   if (fadeIn) void el.offsetWidth;
-  const rec = { el, num, value: null, missingFrames: 0 };
+  const rec = { el, num, cap, value: null, missingFrames: 0 };
   applyValue(rec, value, { animate: false });
   _badges.set(token.id, rec);
   if (!_tickerOn) { PIXI.Ticker.shared.add(badgeTick); _tickerOn = true; }
