@@ -52,7 +52,7 @@ export const CRYSTAL_FX = Object.freeze({
   explosionSfx: SOUND_BASE + "Soundboard/Explosion2.ogg",
   explosionVolume: 0.7,
   explosionWebm: "modules/JB2A_DnD5e/Library/Generic/Explosion/Explosion_02_Blue_400x400.webm",
-  explosionScale: 2.4,     // relative to the impact player's own token-sized default
+  explosionScale: 5.5,     // relative to the impact player's own token-sized default
   explosionMs: 1400,
   explosionImpactMs: 620,  // explosion appears → damage lands on the targets.
                            // Must cover the shatter (flashMs + fadeOutMs).
