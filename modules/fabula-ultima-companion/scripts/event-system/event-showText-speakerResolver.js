@@ -83,6 +83,11 @@
     return s === String(C.SPECIAL_SPEAKER_SELF).toLowerCase();
   }
 
+  function isSourceSyntax(raw) {
+    const s = normalizeSpeakerInput(raw).toLowerCase();
+    return s === String(C.SPECIAL_SPEAKER_SOURCE || "This").toLowerCase();
+  }
+
   function getCurrentSceneId(context = {}) {
     return stringOrEmpty(context.sceneId) || canvas?.scene?.id || null;
   }
@@ -300,6 +305,30 @@
   }
 
   // ------------------------------------------------------------
+  // Source resolution (the token that carries the event)
+  // ------------------------------------------------------------
+  function resolveSourceSpeaker(context = {}) {
+    const token = findCurrentSceneTokenByTokenId(context.sourceTokenId, context);
+    if (!token) return null;
+
+    const actor = getTokenActor(token);
+
+    const result = makeResult({
+      ok: true,
+      mode: "source",
+      input: C.SPECIAL_SPEAKER_SOURCE || "This",
+      matchedBy: "sourceToken",
+      speakerName: getTokenName(token),
+      token,
+      actor,
+      document: token?.document ?? token
+    });
+
+    DBG.verboseLog(DEBUG_SCOPE, "Resolved speaker from event source token:", result);
+    return result;
+  }
+
+  // ------------------------------------------------------------
   // UUID resolution
   // ------------------------------------------------------------
   async function resolveUuidSpeaker(raw, context = {}) {
@@ -480,6 +509,11 @@
       // Self / empty
       if (isSelfSyntax(normalized)) {
         return resolveSelfSpeaker(context);
+      }
+
+      // Event source token (NPC dialogue)
+      if (isSourceSyntax(normalized)) {
+        return resolveSourceSpeaker(context) || resolveSelfSpeaker(context);
       }
 
       // UUID path

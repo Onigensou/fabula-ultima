@@ -103,6 +103,8 @@
     // Special syntax
     // -------------------------
     SPECIAL_SPEAKER_SELF: "Self",
+    // The token that carries the event (NPC dialogue). On a tile it falls back to Self.
+    SPECIAL_SPEAKER_SOURCE: "This",
 
     // -------------------------
     // Debug setting keys
