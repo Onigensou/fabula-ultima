@@ -124,7 +124,28 @@
         },
         "fabula-ultima-companion": {
           "draftTokens": "claude-2026-10-09",
-          "draftName": "Dietrich"
+          "draftName": "Dietrich",
+          "draftDialogue": "claude-2026-10-12",
+          "dialogueTier": "mundane"
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "proximityPx": 105,
+          "eventRows": [
+            {
+              "id": "FOhCJkwtGSXexSdn",
+              "type": "showText",
+              "speaker": "This",
+              "text": "There's only monster food here."
+            },
+            {
+              "id": "LOFNOmPV5470OBhr",
+              "type": "showText",
+              "speaker": "This",
+              "text": "Do you want to try some?"
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"id\": \"FOhCJkwtGSXexSdn\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"There's only monster food here.\"\n  },\n  {\n    \"id\": \"LOFNOmPV5470OBhr\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"Do you want to try some?\"\n  }\n]"
         }
       },
       "actorId": "TnOKgQbmyxFzD6Oe",
@@ -242,7 +263,34 @@
         },
         "fabula-ultima-companion": {
           "draftTokens": "claude-2026-10-09",
-          "draftName": "Geirolf"
+          "draftName": "Geirolf",
+          "draftDialogue": "claude-2026-10-12",
+          "dialogueTier": "mundane"
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "proximityPx": 105,
+          "eventRows": [
+            {
+              "id": "J2jRi0ndJMC6NijI",
+              "type": "showText",
+              "speaker": "This",
+              "text": "The beds here ain't half bad."
+            },
+            {
+              "id": "03LkS2oN3jJ9Gcvq",
+              "type": "showText",
+              "speaker": "This",
+              "text": "What?"
+            },
+            {
+              "id": "bkExvaH3K2s1ZRRg",
+              "type": "showText",
+              "speaker": "This",
+              "text": "We don't like hard beds as much as you do."
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"id\": \"J2jRi0ndJMC6NijI\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"The beds here ain't half bad.\"\n  },\n  {\n    \"id\": \"03LkS2oN3jJ9Gcvq\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"What?\"\n  },\n  {\n    \"id\": \"bkExvaH3K2s1ZRRg\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"We don't like hard beds as much as you do.\"\n  }\n]"
         }
       },
       "actorId": "TnOKgQbmyxFzD6Oe",
@@ -431,10 +479,31 @@
         },
         "fabula-ultima-companion": {
           "draftTokens": "claude-2026-10-09",
-          "draftName": "Freydis"
+          "draftName": "Freydis",
+          "draftDialogue": "claude-2026-10-12",
+          "dialogueTier": "mundane"
         },
         "hex-size-support": {
           "hideBorder": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "proximityPx": 105,
+          "eventRows": [
+            {
+              "id": "HaffZmoaYTZut8RD",
+              "type": "showText",
+              "speaker": "This",
+              "text": "You're the first humans to stay here."
+            },
+            {
+              "id": "viD8ezjg0N2weaLk",
+              "type": "showText",
+              "speaker": "This",
+              "text": "Tell me if the room is too dark."
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"id\": \"HaffZmoaYTZut8RD\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"You're the first humans to stay here.\"\n  },\n  {\n    \"id\": \"viD8ezjg0N2weaLk\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"Tell me if the room is too dark.\"\n  }\n]"
         }
       },
       "actorId": "cFaGfpGk19dJ3MdK",
@@ -492,8 +561,7 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": [],
-        "isTriggered": false
+        "sequence": []
       },
       "LockView": {
         "editViewbox": false,
@@ -651,7 +719,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791358986767,
-      "modifiedTime": 1791577746319,
+      "modifiedTime": 1791745049434,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "lights": [

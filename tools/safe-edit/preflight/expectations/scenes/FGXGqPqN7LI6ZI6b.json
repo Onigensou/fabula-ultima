@@ -185,10 +185,31 @@
         },
         "fabula-ultima-companion": {
           "draftTokens": "claude-2026-10-09",
-          "draftName": "Solveig"
+          "draftName": "Solveig",
+          "draftDialogue": "claude-2026-10-12",
+          "dialogueTier": "mundane"
         },
         "hex-size-support": {
           "hideBorder": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "proximityPx": 110,
+          "eventRows": [
+            {
+              "id": "p0NNpDmBJhhHadYq",
+              "type": "showText",
+              "speaker": "This",
+              "text": "I make everything here myself."
+            },
+            {
+              "id": "ommrjQ2oqswLuM7x",
+              "type": "showText",
+              "speaker": "This",
+              "text": "Small hands help."
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"id\": \"p0NNpDmBJhhHadYq\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"I make everything here myself.\"\n  },\n  {\n    \"id\": \"ommrjQ2oqswLuM7x\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"Small hands help.\"\n  }\n]"
         }
       },
       "actorId": "2JGRG053wW37YeHP",

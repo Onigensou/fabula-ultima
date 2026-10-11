@@ -185,10 +185,25 @@
         },
         "fabula-ultima-companion": {
           "draftTokens": "claude-2026-10-09",
-          "draftName": "Sigrun"
+          "draftName": "Sigrun",
+          "draftDialogue": "claude-2026-10-12",
+          "dialogueTier": "mundane"
         },
         "hex-size-support": {
           "hideBorder": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "proximityPx": 115,
+          "eventRows": [
+            {
+              "id": "IzvoMMGm6n35xz5Q",
+              "type": "showText",
+              "speaker": "This",
+              "text": "Don't shake the bottles."
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"id\": \"IzvoMMGm6n35xz5Q\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"Don't shake the bottles.\"\n  }\n]"
         }
       },
       "actorId": "LlbVwdpPONdny8Wx",

@@ -47,8 +47,7 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": [],
-        "isTriggered": false
+        "sequence": []
       },
       "LockView": {
         "editViewbox": false,
@@ -202,7 +201,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791358994126,
-      "modifiedTime": 1791577249235,
+      "modifiedTime": 1791745049887,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "lights": [

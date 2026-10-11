@@ -185,20 +185,43 @@
         },
         "fabula-ultima-companion": {
           "draftTokens": "claude-2026-10-09",
-          "draftName": "Brandr"
+          "draftName": "Brandr",
+          "draftDialogue": "claude-2026-10-12",
+          "dialogueTier": "mundane"
         },
         "hex-size-support": {
           "hideBorder": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "proximityPx": 120,
+          "eventRows": [
+            {
+              "id": "XlSO9UxcBJmJt28g",
+              "type": "showText",
+              "speaker": "This",
+              "text": "I fix what the others find."
+            },
+            {
+              "id": "NAK8YZOiC0GrbCg1",
+              "type": "showText",
+              "speaker": "This",
+              "text": "Some of it is even sharp."
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"id\": \"XlSO9UxcBJmJt28g\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"I fix what the others find.\"\n  },\n  {\n    \"id\": \"NAK8YZOiC0GrbCg1\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"Some of it is even sharp.\"\n  }\n]"
         }
       },
       "actorId": "fe2OhexLAGieIBQy",
-      "x": 560,
-      "y": 270,
+      "x": 566,
+      "y": 282,
       "hidden": true,
       "elevation": 0,
       "sort": 0,
       "locked": false,
-      "_regions": [],
+      "_regions": [
+        "s3C7q5ssO9daOYNW"
+      ],
       "_id": "pL1pA0XcFUzeCnpj"
     }
   ],
@@ -246,8 +269,7 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": [],
-        "isTriggered": false
+        "sequence": []
       },
       "LockView": {
         "editViewbox": false,
@@ -405,7 +427,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791358976293,
-      "modifiedTime": 1791577710429,
+      "modifiedTime": 1791745049224,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "lights": [

@@ -575,7 +575,28 @@
         },
         "fabula-ultima-companion": {
           "draftTokens": "claude-2026-10-09",
-          "draftName": "Wilhelm"
+          "draftName": "Wilhelm",
+          "draftDialogue": "claude-2026-10-12",
+          "dialogueTier": "mundane"
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "proximityPx": 75,
+          "eventRows": [
+            {
+              "id": "Hnz3FcVeTQgtahw7",
+              "type": "showText",
+              "speaker": "This",
+              "text": "I thought there were only bad humans."
+            },
+            {
+              "id": "Vykd2wEmloJpVWVc",
+              "type": "showText",
+              "speaker": "This",
+              "text": "But I guess if your Mayor said so, then you're okay."
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"id\": \"Hnz3FcVeTQgtahw7\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"I thought there were only bad humans.\"\n  },\n  {\n    \"id\": \"Vykd2wEmloJpVWVc\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"But I guess if your Mayor said so, then you're okay.\"\n  }\n]"
         }
       },
       "actorId": "TnOKgQbmyxFzD6Oe",
@@ -710,8 +731,8 @@
         }
       },
       "actorId": "TnOKgQbmyxFzD6Oe",
-      "x": 1328,
-      "y": 1855,
+      "x": 1338,
+      "y": 1847,
       "hidden": false,
       "elevation": 0,
       "sort": 0,
@@ -826,7 +847,28 @@
         },
         "fabula-ultima-companion": {
           "draftTokens": "claude-2026-10-09",
-          "draftName": "Ulfar"
+          "draftName": "Ulfar",
+          "draftDialogue": "claude-2026-10-12",
+          "dialogueTier": "mundane"
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "proximityPx": 75,
+          "eventRows": [
+            {
+              "id": "5N8JqWEOKM60iUl8",
+              "type": "showText",
+              "speaker": "This",
+              "text": "I drink from the pool every day."
+            },
+            {
+              "id": "JpsvLH61CSJHQDNp",
+              "type": "showText",
+              "speaker": "This",
+              "text": "It tastes fine to me."
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"id\": \"5N8JqWEOKM60iUl8\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"I drink from the pool every day.\"\n  },\n  {\n    \"id\": \"JpsvLH61CSJHQDNp\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"It tastes fine to me.\"\n  }\n]"
         }
       },
       "actorId": "TnOKgQbmyxFzD6Oe",
@@ -946,7 +988,28 @@
         },
         "fabula-ultima-companion": {
           "draftTokens": "claude-2026-10-09",
-          "draftName": "Gunther"
+          "draftName": "Gunther",
+          "draftDialogue": "claude-2026-10-12",
+          "dialogueTier": "mundane"
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "proximityPx": 75,
+          "eventRows": [
+            {
+              "id": "3TKc8ZwTfzdfOd0r",
+              "type": "showText",
+              "speaker": "This",
+              "text": "Soldiers pass through here a couple times a year."
+            },
+            {
+              "id": "mVUoEz1Rig6TL6Qd",
+              "type": "showText",
+              "speaker": "This",
+              "text": "We always hide when they do."
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"id\": \"3TKc8ZwTfzdfOd0r\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"Soldiers pass through here a couple times a year.\"\n  },\n  {\n    \"id\": \"mVUoEz1Rig6TL6Qd\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"We always hide when they do.\"\n  }\n]"
         }
       },
       "actorId": "TnOKgQbmyxFzD6Oe",
@@ -1064,7 +1127,22 @@
         },
         "fabula-ultima-companion": {
           "draftTokens": "claude-2026-10-09",
-          "draftName": "Hedwig"
+          "draftName": "Hedwig",
+          "draftDialogue": "claude-2026-10-12",
+          "dialogueTier": "mundane"
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "proximityPx": 75,
+          "eventRows": [
+            {
+              "id": "Q2WQlgtxJLba2dD6",
+              "type": "showText",
+              "speaker": "This",
+              "text": "Good day today."
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"id\": \"Q2WQlgtxJLba2dD6\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"Good day today.\"\n  }\n]"
         }
       },
       "actorId": "TnOKgQbmyxFzD6Oe",
@@ -1182,12 +1260,33 @@
         },
         "fabula-ultima-companion": {
           "draftTokens": "claude-2026-10-09",
-          "draftName": "Greta"
+          "draftName": "Greta",
+          "draftDialogue": "claude-2026-10-12",
+          "dialogueTier": "mundane"
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "proximityPx": 75,
+          "eventRows": [
+            {
+              "id": "FIKGtJSCR39SPxEK",
+              "type": "showText",
+              "speaker": "This",
+              "text": "This is my spot."
+            },
+            {
+              "id": "lcxlMVM8cT9MBdRW",
+              "type": "showText",
+              "speaker": "This",
+              "text": "It gets the least sun."
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"id\": \"FIKGtJSCR39SPxEK\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"This is my spot.\"\n  },\n  {\n    \"id\": \"lcxlMVM8cT9MBdRW\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"It gets the least sun.\"\n  }\n]"
         }
       },
       "actorId": "TnOKgQbmyxFzD6Oe",
-      "x": 1313,
-      "y": 1035,
+      "x": 1329,
+      "y": 1029,
       "hidden": true,
       "elevation": 0,
       "sort": 0,
@@ -1302,7 +1401,28 @@
         },
         "fabula-ultima-companion": {
           "draftTokens": "claude-2026-10-09",
-          "draftName": "Runa"
+          "draftName": "Runa",
+          "draftDialogue": "claude-2026-10-12",
+          "dialogueTier": "mundane"
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "proximityPx": 75,
+          "eventRows": [
+            {
+              "id": "cnnB2wjJlpj2H3BI",
+              "type": "showText",
+              "speaker": "This",
+              "text": "I can see the whole town from up high."
+            },
+            {
+              "id": "O5WawLqORRI1R8qf",
+              "type": "showText",
+              "speaker": "This",
+              "text": "Not much happens."
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"id\": \"cnnB2wjJlpj2H3BI\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"I can see the whole town from up high.\"\n  },\n  {\n    \"id\": \"O5WawLqORRI1R8qf\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"Not much happens.\"\n  }\n]"
         }
       },
       "actorId": "TnOKgQbmyxFzD6Oe",
@@ -1433,7 +1553,7 @@
       }
     },
     "_id": "M7tMjQIVNww5OzFw",
-    "active": false,
+    "active": true,
     "navOrder": 0,
     "foreground": null,
     "foregroundElevation": null,
@@ -1497,7 +1617,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791358972643,
-      "modifiedTime": 1791599107425,
+      "modifiedTime": 1791745049023,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [
