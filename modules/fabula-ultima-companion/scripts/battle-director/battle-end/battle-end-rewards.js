@@ -19,6 +19,7 @@
 
 import { log, warn } from "../logger.js";
 import { computeExpAward } from "../../shared/exp-core.js";
+import { isBattlefieldObject } from "../battlefield-object.js";
 
 function randIntInclusive(min, max) {
   const lo = Math.min(Math.floor(Number(min)), Math.floor(Number(max)));
@@ -41,7 +42,9 @@ export async function computeBattleEndRewards(dCombat, isBoss) {
   if (!dCombat) return { expByActorId, zenitByActorId };
 
   const partyCombatants = dCombat.combatants.filter(c => c.side === "party" && c.actorDoc);
-  const enemyCombatants = dCombat.combatants.filter(c => c.side === "enemy" && c.actorDoc);
+  // A battlefield object (a Lightning Crystal) is on the enemy side but is not
+  // an enemy — it is worth no EXP and carries no Zenit.
+  const enemyCombatants = dCombat.combatants.filter(c => c.side === "enemy" && c.actorDoc && !isBattlefieldObject(c.actorDoc));
 
   if (!partyCombatants.length || !enemyCombatants.length) {
     warn("[BattleEnd:Rewards] Missing party or enemy combatants — snapshot will be empty");

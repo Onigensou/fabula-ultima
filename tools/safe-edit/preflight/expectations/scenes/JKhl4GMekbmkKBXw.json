@@ -138,7 +138,7 @@
           "general": {
             "cameraFollowToken": false,
             "sceneMode": "conflict",
-            "conflictEvent": "",
+            "conflictEvent": "lightning-crystal",
             "sceneVisited": false,
             "scanRadius": null,
             "fastTravelEnabled": true,
@@ -240,7 +240,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791438123126,
-      "modifiedTime": 1791438123126,
+      "modifiedTime": 1791651686717,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "walls": [

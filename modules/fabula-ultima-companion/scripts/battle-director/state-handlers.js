@@ -107,6 +107,7 @@ import { computeActionProfile, projectProfileToActionResult, resolveChosenChainR
 import { classifyActionIntent, resolveActionTags, INVENTORY_ACTION_TAG } from "./skill-intent.js";
 import { isAutopilotEnabled, isAiControlledTurn, isAiControlledCombatant, autopilotPickCombatant, autopilotDecideAction } from "./enemy-autopilot.js";
 import { isSummonAutopilotEnabled, isAutomatedSummon, isAutomatedSummonTurn, summonVetoMs, isGuestActor } from "./summon-autopilot.js";
+import { isBattlefieldObject } from "./battlefield-object.js";
 import { resolveAnimationSpec, playDirectorAnimation } from "./director-animation.js";
 import { witnessNpcAbility, witnessFiredCandidate } from "./encyclopedia-witness.js";
 import { SimMode } from "./sim/sim-mode.js";
@@ -230,8 +231,14 @@ export function installApplierReaperWatcher(director) {
 // target can still be killed, so it must keep counting here. These are two
 // different questions and conflating them would silently drop real combatants
 // from the tally.
+//
+// A battlefield object (battlefield-object.js) is the same problem from the
+// other side: an indestructible Lightning Crystal sits on the ENEMY side, so
+// without this the enemy side could never be wiped and no fight on its map
+// would ever reach victory.
 function countsForSideWipe(c) {
-  return !isGuestActor(c?.actorDoc ?? null);
+  const actor = c?.actorDoc ?? null;
+  return !isGuestActor(actor) && !isBattlefieldObject(actor);
 }
 
 function sideIsWiped(dc, side) {

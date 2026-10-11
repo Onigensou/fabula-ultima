@@ -391,6 +391,9 @@ function snapshotCombat(director) {
       // A guest sits on the party SIDE but is not a party MEMBER, and every
       // verdict below has to know the difference — see countsForReporting.
       isGuest: !!c.actorDoc?.getFlag?.("fabula-ultima-companion", "bdGuest"),
+      // A battlefield object (a Lightning Crystal) is on the enemy side and
+      // cannot be defeated either — the mirror image of the guest problem.
+      isObject: c.actorDoc?.flags?.["fabula-ultima-companion"]?.bdObject === true,
       ...readHp(c.actorDoc),
     })),
   };
@@ -405,14 +408,18 @@ function snapshotCombat(director) {
 // This is the same distinction `countsForSideWipe` draws in state-handlers; the
 // combat correctly ENDS on a wipe, and only the sim's REPORTING was still
 // counting the guest. Applied in one predicate so the two cannot drift.
+//
+// A battlefield object is the same thing on the enemy side: with a crystal
+// still standing, `enemyDead` was unreachable and a clean win reported
+// "inconclusive".
 function countsForReporting(c) {
-  return !c?.isGuest;
+  return !c?.isGuest && !c?.isObject;
 }
 
 function classify(snap) {
   if (!snap) return "unknown";
   const party = snap.combatants.filter((c) => c.side === "party" && countsForReporting(c));
-  const enemy = snap.combatants.filter((c) => c.side === "enemy");
+  const enemy = snap.combatants.filter((c) => c.side === "enemy" && countsForReporting(c));
   const partyDead = party.length > 0 && party.every((c) => c.defeated);
   const enemyDead = enemy.length > 0 && enemy.every((c) => c.defeated);
   if (partyDead && enemyDead) return "mutual-destruction";
@@ -481,6 +488,11 @@ export async function run({
   // with its hazard SILENTLY ABSENT. Pass the event id to arm it, e.g.
   // "lightning-storm". See [[conflict-event]].
   conflictEvent = null,
+  // Free-form knobs for that event, read by the event itself from
+  // payload.context.conflictEventOptions — e.g. { crystalCount: 2 } pins the
+  // Lightning Crystal spawn roll, so a balance run measures a KNOWN hazard
+  // rather than whichever of 0/1/2 the dice happened to give it.
+  conflictEventOptions = null,
 } = {}) {
   const a = api();
   if (!a?.start) { ui.notifications?.error("[SIM] Battle Director API not ready."); return null; }
@@ -578,6 +590,7 @@ export async function run({
       context: {
         battleSceneUuid: scene.uuid, sourceSceneId: scene.id, lean: true,
         ...(conflictEvent ? { conflictEventId: String(conflictEvent) } : {}),
+        ...(conflictEventOptions ? { conflictEventOptions } : {}),
       },
       encounterPlan: { mode: "manual", manualPicks },
       party: { members },
