@@ -147,11 +147,15 @@ any first encounters), with *Fight now* and *Customize…*. It runs **while the
 encounter SFX plays**, so the pause it adds sits inside a beat the players are
 already watching. Untouched, it launches.
 
-**The curate toggle** — 🎬 in the dungeon HUD, GM-only, dungeon scenes only. When
-ON, the next random battle skips the timer entirely and opens the Battle Prompt.
-It is one-shot: `run()` clears it as it fires. This is the pre-emptive path for
-when the GM already knows they want to author the next fight, and it costs zero
-latency on every other encounter.
+**Customize Next Battle** — a toggle in the GM's Developer Tools speed-dial
+(🎲 off / 📝 armed), beside the AI Autopilot toggle. It is GM-only, so it does
+not sit in the player-facing dungeon command dock. When ON, the next random
+battle skips the timer entirely and opens the Battle Prompt. It is one-shot:
+`run()` clears it as it fires, and the button flips back to 🎲. This is the
+pre-emptive path for when the GM already knows they want to author the next
+fight, and it costs zero latency on every other encounter. It can be armed from
+any scene; it waits for the next dungeon random battle. (Formerly the 🎬 "curate
+next encounter" button; the stored setting key is still `dpCurateNextEncounter`.)
 
 > **Customize does not pre-fill the Battle Prompt.** It runs the standard
 > `BattleInit — BattleInit Manager` macro, exactly as the ⚔️ button does.

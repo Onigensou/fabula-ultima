@@ -25,9 +25,13 @@
   const TAG = "[DungeonPathing][RandomBattle]";
   const MOD = DP.MODULE_ID ?? "fabula-ultima-companion";
 
-  // GM-only sticky toggle: when ON, the next random battle skips the auto-launch
-  // and hands the GM the standard Battle Prompt instead. Cleared once it fires.
-  const CURATE_SETTING = "dpCurateNextEncounter";
+  // "Customize Next Battle" — GM-only sticky toggle: when ON, the next random
+  // battle skips the auto-launch and hands the GM the standard Battle Prompt
+  // instead. Cleared once it fires. The stored key predates the rename (the
+  // toggle used to be called "curate next encounter") and is kept so the world
+  // setting is not orphaned.
+  const CUSTOMIZE_SETTING = "dpCurateNextEncounter";
+  const CUSTOMIZE_TOOL_ID = "customize-next-battle";
 
   const BATTLE_INIT_MACRO = "BattleInit — BattleInit Manager";
 
@@ -47,18 +51,54 @@
   // ── Settings ───────────────────────────────────────────────────────────────
   Hooks.once("init", () => {
     try {
-      game.settings.register(MOD, CURATE_SETTING, {
+      game.settings.register(MOD, CUSTOMIZE_SETTING, {
         scope: "world", config: false, default: false, type: Boolean,
+        // Fires on every client, so the dev-tools button stays truthful when
+        // run() consumes the one-shot and when the other GM flips it.
+        onChange: () => { registerCustomizeDevTool(); },
       });
     } catch (e) { warn("settings.register failed", e); }
   });
 
-  function getCurate() {
-    try { return !!game.settings.get(MOD, CURATE_SETTING); } catch { return false; }
+  function getCustomizeNext() {
+    try { return !!game.settings.get(MOD, CUSTOMIZE_SETTING); } catch { return false; }
   }
-  async function setCurate(on) {
-    try { await game.settings.set(MOD, CURATE_SETTING, !!on); } catch (e) { warn("settings.set failed", e); }
+  async function setCustomizeNext(on) {
+    try { await game.settings.set(MOD, CUSTOMIZE_SETTING, !!on); } catch (e) { warn("settings.set failed", e); }
   }
+
+  // ── Dev-tools toggle button ────────────────────────────────────────────────
+  // GM-only, so it lives in the Developer Tools speed-dial (beside the AI
+  // Autopilot toggle) rather than the player-facing dungeon command dock. The
+  // icon + label reflect the live state; re-registering refreshes them.
+  //
+  // ABSOLUTE specifier: this is a classic (non-module) script, so a relative
+  // import() would resolve against the PAGE url, not against this file.
+  async function registerCustomizeDevTool() {
+    if (!game.user?.isGM) return;
+    try {
+      const { registerDevTool } = await import(
+        `/modules/${MOD}/scripts/battle-director/dev-tools-menu.js`
+      );
+      const on = getCustomizeNext();
+      registerDevTool({
+        id: CUSTOMIZE_TOOL_ID,
+        icon: on ? "📝" : "🎲",
+        label: on
+          ? "Customize Next Battle: ON — the next random battle opens the Battle Prompt instead of auto-launching (click to cancel)"
+          : "Customize Next Battle: OFF — random battles launch automatically (click to arm)",
+        onClick: async () => {
+          const next = !getCustomizeNext();
+          await setCustomizeNext(next);
+          ui.notifications?.info?.(`Customize Next Battle ${next
+            ? "ON — the next random battle will open the Battle Prompt."
+            : "OFF — random battles will launch automatically."}`);
+        },
+      });
+    } catch (e) { warn("could not register in the dev-tools menu", e); }
+  }
+
+  Hooks.once("ready", () => { registerCustomizeDevTool(); });
 
   // ── Weighted pick (borrowed from ActionReader) ─────────────────────────────
   // AR is an ES module and this file is a classic script, so it is pulled in
@@ -623,9 +663,9 @@
 
     // 5. GM interception.
     let verdict = "auto";
-    if (getCurate()) {
+    if (getCustomizeNext()) {
       verdict = "customize";
-      await setCurate(false);      // one-shot: consumed by this encounter
+      await setCustomizeNext(false);   // one-shot: consumed by this encounter
     } else if (OVERRIDE_WINDOW_MS > 0) {
       verdict = await showOverrideToast(picks, engagement, OVERRIDE_WINDOW_MS);
     }
@@ -681,8 +721,8 @@
 
   DP.RandomBattle = {
     run,
-    getCurate,
-    setCurate,
+    getCustomizeNext,
+    setCustomizeNext,
     /** Exposed for the offline weighting sanity-check and for live debugging. */
     _internals: { pickEncounter, isUnseen, baseWeight, readNoveltyBias, resolvePartyMembers, buildPayload },
   };
