@@ -172,11 +172,12 @@
   /**
    * Content signature of an item's sub-item tree, independent of document ids
    * and of the owning actor: one entry per child — name, type, template, stored
-   * props, and its effects (changes, statuses, duration, transfer, module flags,
+   * props (prose fields left out), and its effects (changes, statuses, duration, transfer, module flags,
    * where gear reaction config lives). Prop dicts keyed by ids inside the tree
    * (itemContainer rows) are re-keyed by the child's name, so the same tree on
    * two actors signs the same. Compare two with `sameChildTree`.
    */
+  const PROSE_PROPS = new Set(["description", "skill_description", "skill_information"]);
   function childTreeSignature(parentItem) {
     const nodes = snapshotChildTree(parentItem);
     const alias = new Map([[parentItem.id, "#parent"]]);
@@ -187,6 +188,8 @@
         // CSB stamps the header `name` prop on sheet render; the document name
         // is already compared, so a copy with it and one without are the same.
         if (k === "name" && v === docName) continue;
+        // Prose changes nothing the item does; merging two wordings loses none.
+        if (PROSE_PROPS.has(k)) continue;
         out[k] = (v && typeof v === "object" && !Array.isArray(v))
           ? Object.fromEntries(Object.entries(v).map(([rk, rv]) => [alias.get(rk) ?? rk, rv]))
           : v;
@@ -220,25 +223,61 @@
     return false;
   }
 
+  // Every field / table-column default a CSB template declares, by key. Opening
+  // a sheet WRITES these into the item ("0", "default", "-", "Any" …), so a
+  // copy that has been rendered carries keys an unrendered twin lacks; the two
+  // are still the same item. Cached per template version.
+  const _templateDefaults = new Map();
+  function templateDefaults(templateId) {
+    const tmpl = templateId ? game.items?.get(templateId) : null;
+    if (!tmpl) return null;
+    const stamp = `${templateId}:${tmpl._stats?.modifiedTime ?? ""}`;
+    const hit = _templateDefaults.get(templateId);
+    if (hit?.stamp === stamp) return hit.defs;
+    const defs = new Map();
+    (function walk(n, d) {
+      if (d > 24 || !n || typeof n !== "object") return;
+      if (typeof n.key === "string" && n.key) {
+        if ("defaultValue" in n && n.defaultValue != null) defs.set(n.key, String(n.defaultValue));
+        else if ("defaultChecked" in n) defs.set(n.key, String(!!n.defaultChecked));
+      }
+      if (Array.isArray(n)) n.forEach((v) => walk(v, d + 1));
+      else for (const k of Object.keys(n)) walk(n[k], d + 1);
+    })({ header: tmpl.system?.header, body: tmpl.system?.body }, 0);
+    _templateDefaults.set(templateId, { stamp, defs });
+    return defs;
+  }
+
+  // Is `v`, stored under prop/column `key`, just "nothing authored here"?
+  function isUnauthored(key, v, defs) {
+    if (isEmptyValue(v)) return true;
+    // A number field renders an unset value as "0" (and every reader treats a
+    // missing number as 0), unless the template declares some other default.
+    if ((v === 0 || v === "0") && !["", "0"].includes(defs?.get(key) ?? "")) return false;
+    if (v === 0 || v === "0") return true;
+    return !!defs?.has(key) && (v === null || typeof v !== "object") && String(v) === defs.get(key);
+  }
+
   // Deep equality that tolerates CSB's stamping: a key present on one side only
-  // counts when its value is non-empty (sheet renders write column defaults
-  // into rows), and "1" equals 1 (CSB stores numbers either way).
-  function equivalent(a, b) {
+  // counts when its value is authored (not empty, not the template's default),
+  // an empty value equals the default, and "1" equals 1 (CSB stores numbers
+  // either way).
+  function equivalent(a, b, defs = null, key = "") {
     if (a === b) return true;
     const isObj = (v) => v && typeof v === "object";
     if (Array.isArray(a) || Array.isArray(b)) {
-      return Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.every((v, i) => equivalent(v, b[i]));
+      return Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.every((v, i) => equivalent(v, b[i], defs, key));
     }
     if (isObj(a) && isObj(b)) {
       for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) {
-        if (!(k in a)) { if (!isEmptyValue(b[k])) return false; continue; }
-        if (!(k in b)) { if (!isEmptyValue(a[k])) return false; continue; }
-        if (!equivalent(a[k], b[k])) return false;
+        if (!(k in a)) { if (!isUnauthored(k, b[k], defs)) return false; continue; }
+        if (!(k in b)) { if (!isUnauthored(k, a[k], defs)) return false; continue; }
+        if (!equivalent(a[k], b[k], defs, k)) return false;
       }
       return true;
     }
     if (isObj(a) || isObj(b)) return isEmptyValue(a) && isEmptyValue(b);
-    if (isEmptyValue(a) && isEmptyValue(b)) return true;
+    if (isUnauthored(key, a, defs) && isUnauthored(key, b, defs)) return true;
     return (typeof a === "number" || typeof b === "number") && String(a) === String(b);
   }
 
@@ -250,7 +289,15 @@
    */
   function sameChildTree(sa, sb) {
     if (!sa.length || !sb.length) return true;
-    return sa.length === sb.length && sa.every((s, i) => equivalent(s, sb[i]));
+    return sa.length === sb.length && sa.every((s, i) => equivalent(s, sb[i], templateDefaults(s.template)));
+  }
+
+  /** Would `a` stack onto `b` (same name, type and linked-skill content)? */
+  function canStackTogether(a, b) {
+    if (!a || !b || a.name !== b.name || a.type !== b.type) return false;
+    const t = (i) => String(i?.system?.props?.item_type ?? "").trim().toLowerCase();
+    if (t(a) !== "consumable" || t(b) !== "consumable") return false;
+    return sameChildTree(childTreeSignature(a), childTreeSignature(b));
   }
 
     // --------------------------------------------------------------------------
@@ -1302,6 +1349,7 @@
     // Sub-item (CSB container) primitives, for any copier outside this module
     prepareItemCopyData,
     copySubItemTree,
+    canStackTogether,
 
     // Zenit / currency API
     transferZenit: transferZenitBetweenActors,

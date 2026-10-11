@@ -454,11 +454,10 @@
         "props": {
           "action_command": "item",
           "cost": "-",
-          "description": "<p><em>Golem Soulstone:</em> target ally gains 10 Shield (keep the bigger).</p>",
+          "description": "<ul><li><p><em>Target creature gains <strong>10 Shield</strong>; if the target already has a Shield, increase that shield value by 10 instead.</em></p></li></ul>",
           "effect_table": {
             "0": {
-              "$deleted": false,
-              "effect_kind": "set_resource",
+              "effect_kind": "grant",
               "effect_label": "golemstone_shield",
               "grant_amount": "10",
               "grant_resource": "shield",
@@ -467,6 +466,7 @@
           },
           "isCheck": false,
           "on_activate_effect_ref": "golemstone_shield",
+          "skill_description": "<ul><li><p><em>Target creature gains <strong>10 Shield</strong>; if the target already has a Shield, increase that shield value by 10 instead.</em></p></li></ul>",
           "skill_target": "One Ally",
           "skill_type": "Item",
           "type_damage": ""
@@ -970,7 +970,7 @@
           "dragon_ef": "100",
           "effect_table": {
             "0": {
-              "effect_kind": "set_resource",
+              "effect_kind": "grant",
               "effect_label": "golemstone_shield",
               "grant_amount": "10",
               "grant_resource": "shield",
