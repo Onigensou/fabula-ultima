@@ -205,11 +205,36 @@ function partitionInventory(actor) {
   };
 }
 
-// Find the index of the currently-equipped item by name match against
-// `actor.system.props[propName]`. Returns -1 if not found.
-function indexByEquippedName(items, equippedName) {
-  if (!equippedName) return -1;
-  return items.findIndex((it) => it?.system?.props?.name === equippedName);
+// The slot props hold item NAMES, and two items can share one (a pair of
+// identical daggers, a duplicate ring). Resolve each slot to a DISTINCT item:
+// prefer a copy already flagged isEquipped, and never hand the second slot the
+// copy the first slot took while another copy exists. With a single copy named
+// in both slots it still resolves to that one item, as before.
+function pickByName(items, name, taken) {
+  if (!name) return null;
+  const matches = items.filter((it) => it?.system?.props?.name === name);
+  if (!matches.length) return null;
+  const free = matches.filter((it) => !taken.has(it.id));
+  const pool = free.length ? free : matches;
+  return pool.find((it) => it.system?.props?.isEquipped === true) ?? pool[0];
+}
+
+/** The item worn in each slot, resolved from the slot props (see pickByName). */
+function resolveWornItems(actor) {
+  const props = actor?.system?.props ?? {};
+  const inv = partitionInventory(actor);
+  const handItems = [...inv.weapons, ...inv.shields];
+  const handTaken = new Set();
+  const main = pickByName(handItems, props.main_hand, handTaken);
+  if (main) handTaken.add(main.id);
+  const off = pickByName(handItems, props.off_hand, handTaken);
+  const accTaken = new Set();
+  const acc1 = pickByName(inv.accessories, props.accessory_name, accTaken);
+  if (acc1) accTaken.add(acc1.id);
+  const acc2 = pickByName(inv.accessories, props.accessory2_name, accTaken);
+  // Armor has no slot prop — its own isEquipped is the source of truth.
+  const armorWorn = inv.armor.find((a) => !!a?.system?.props?.isEquipped) ?? null;
+  return { ...inv, handItems, main, off, acc1, acc2, armorWorn };
 }
 
 // ─── Weapon FORMS (Transform) ───────────────────────────────────────────
@@ -247,11 +272,9 @@ function activeFormOf(item) {
 // matching the actor's slot prop (main_hand / off_hand) against item names —
 // the same source-of-truth resolveAttackerWeapon + the equip slot props use.
 function equippedWeaponInSlot(actor, slotKey) {
-  const props = actor?.system?.props ?? {};
-  const name = slotKey === "off" ? props.off_hand : props.main_hand;
-  if (!name) return null;
-  const { weapons } = partitionInventory(actor);
-  return weapons.find((w) => (w.system?.props?.name ?? w.name) === name) ?? null;
+  const worn = resolveWornItems(actor);
+  const item = slotKey === "off" ? worn.off : worn.main;
+  return item?.system?.props?.item_type === ITEM_TYPE_WEAPON ? item : null;
 }
 
 // Set the active form on the weapon worn in `slotKey`. Idempotent (no write
@@ -302,20 +325,13 @@ function activeFormFreeAvailable(item, round) {
 // The currently-equipped item id per slot (null when empty). Mirrors how the
 // Equipment card resolves "current" so a no-change submission reads as no change.
 function currentEquippedIds(actor) {
-  const props = actor?.system?.props ?? {};
-  const { weapons, shields, accessories, armor } = partitionInventory(actor);
-  const hand = [...weapons, ...shields];
-  const byName = (list, name) => {
-    const i = indexByEquippedName(list, name);
-    return i >= 0 ? list[i].id : null;
-  };
+  const w = resolveWornItems(actor);
   return {
-    main: byName(hand, props.main_hand),
-    off: byName(hand, props.off_hand),
-    accessory1: byName(accessories, props.accessory_name),
-    accessory2: byName(accessories, props.accessory2_name),
-    // Armor has no slot prop — its own isEquipped is the source of truth.
-    armor: armor.find((a) => !!a?.system?.props?.isEquipped)?.id ?? null,
+    main: w.main?.id ?? null,
+    off: w.off?.id ?? null,
+    accessory1: w.acc1?.id ?? null,
+    accessory2: w.acc2?.id ?? null,
+    armor: w.armorWorn?.id ?? null,
   };
 }
 
@@ -483,14 +499,8 @@ export function buildArmorCandidate(it) {
 export function gatherEquipmentSlots(actor, { round = null, includeArmor = false } = {}) {
   if (!actor) return { slots: [], hasUnarmed: false };
 
-  const { weapons, shields, accessories, armor } = partitionInventory(actor);
-  const handItems = [...weapons, ...shields];
-
-  const props = actor.system?.props ?? {};
-  const mainEquipped = props.main_hand ?? "";
-  const offEquipped  = props.off_hand ?? "";
-  const acc1Equipped = props.accessory_name ?? "";
-  const acc2Equipped = props.accessory2_name ?? "";
+  const worn = resolveWornItems(actor);
+  const { accessories, armor, handItems } = worn;
 
   // Main-hand-shield gate. RAW: shields are off-hand by default; the
   // Dual Shieldbearer skill relaxes the rule for owners. UI hides
@@ -504,10 +514,10 @@ export function gatherEquipmentSlots(actor, { round = null, includeArmor = false
   const offHandCandidates  = handItems.map(buildHandCandidate);
   const accCandidates      = accessories.map(buildAccCandidate);
 
-  const mainIdx = indexByEquippedName(handItems, mainEquipped);
-  const offIdx  = indexByEquippedName(handItems, offEquipped);
-  const acc1Idx = indexByEquippedName(accessories, acc1Equipped);
-  const acc2Idx = indexByEquippedName(accessories, acc2Equipped);
+  const mainIdx = worn.main ? handItems.indexOf(worn.main) : -1;
+  const offIdx  = worn.off ? handItems.indexOf(worn.off) : -1;
+  const acc1Idx = worn.acc1 ? accessories.indexOf(worn.acc1) : -1;
+  const acc2Idx = worn.acc2 ? accessories.indexOf(worn.acc2) : -1;
 
   return {
     slots: [
@@ -545,11 +555,11 @@ export function gatherEquipmentSlots(actor, { round = null, includeArmor = false
       // source of truth (no hand/accessory slot prop). Omitted entirely unless
       // includeArmor, so a normal battle's card is unchanged.
       ...(includeArmor ? [(() => {
-        const worn = armor.find((a) => !!a?.system?.props?.isEquipped) ?? null;
+        const wornArmor = worn.armorWorn;
         return {
           key: "armor", label: "Armor",
-          currentItemId: worn?.id ?? null,
-          currentName: worn?.system?.props?.name ?? "—",
+          currentItemId: wornArmor?.id ?? null,
+          currentName: wornArmor?.system?.props?.name ?? "—",
           candidates: armor.map(buildArmorCandidate),
         };
       })()] : []),
@@ -715,16 +725,10 @@ async function _applyEquipmentSwap(actor, selections, opts = {}) {
       && !actorOwnsDualShieldbearer(actor)) {
     warn(`applyEquipmentSwap: ${actor.name} cannot equip shield "${wantMain.name}" in main hand without Dual Shieldbearer — dropped.`);
     try { ui.notifications?.warn(`${actor.name} cannot equip a shield in the main hand without the Dual Shieldbearer skill.`); } catch {}
-    wantMain = findById(handItems, indexByEquippedName(handItems, actor.system?.props?.main_hand) >= 0
-      ? handItems[indexByEquippedName(handItems, actor.system?.props?.main_hand)].id
-      : null);
+    wantMain = resolveWornItems(actor).main;
   }
 
-  const props = actor.system?.props ?? {};
-  const curMain = findById(handItems, indexByEquippedName(handItems, props.main_hand) >= 0 ? handItems[indexByEquippedName(handItems, props.main_hand)].id : null);
-  const curOff  = findById(handItems, indexByEquippedName(handItems, props.off_hand)  >= 0 ? handItems[indexByEquippedName(handItems, props.off_hand)].id  : null);
-  const curAcc1 = findById(accessories, indexByEquippedName(accessories, props.accessory_name)  >= 0 ? accessories[indexByEquippedName(accessories, props.accessory_name)].id  : null);
-  const curAcc2 = findById(accessories, indexByEquippedName(accessories, props.accessory2_name) >= 0 ? accessories[indexByEquippedName(accessories, props.accessory2_name)].id : null);
+  const { main: curMain, off: curOff, acc1: curAcc1, acc2: curAcc2 } = resolveWornItems(actor);
 
   const actorUpdates = {};
   const itemUpdateMap = new Map();   // itemId → { _id, ...patch }
@@ -834,6 +838,23 @@ async function _applyEquipmentSwap(actor, selections, opts = {}) {
         if (cur !== next) addItemPatch(a.id, "system.props.isEquipped", next);
         queueEffectSync(a, next);
       }
+      // The sheet's armor display fields, as the legacy Equipment macro writes
+      // them. Two need care (the macro follows the same rule):
+      //  - `init_penalty` is written ONLY from an armor item that carries the
+      //    field. None does yet, while 28 actors hold a hand-set signed value —
+      //    defaulting a missing field to 0 zeroed them on every armor change.
+      //  - `is_martialarmor` is never written: martialGrants reads it as armor
+      //    PROFICIENCY, not "the worn armor is martial".
+      const ap = wantArmor?.system?.props ?? {};
+      const martial = !!ap.isMartial;
+      actorUpdates["system.props.armor_name"]        = wantArmor ? (ap.name ?? wantArmor.name ?? "") : "";
+      actorUpdates["system.props.armor_mod"]         = wantArmor ? (Number(martial ? ap.item_baseDef : ap.item_def_bonus) || 0) : 0;
+      actorUpdates["system.props.magic_defense_mod"] = wantArmor ? (Number(martial ? ap.item_baseMdef : ap.item_mdef_bonus) || 0) : 0;
+      actorUpdates["system.props.armor_details"]     = wantArmor ? String(ap.description ?? "") : "";
+      const rawPenalty = ap.init_penalty ?? ap.item_init_penalty ?? ap.initiative_penalty;
+      if (wantArmor && rawPenalty != null && String(rawPenalty).trim() !== "") {
+        actorUpdates["system.props.init_penalty"] = Number(rawPenalty) || 0;
+      }
       changes.push({
         slot: "Armor",
         fromName: curArmor?.system?.props?.name ?? "None",
@@ -910,18 +931,10 @@ export async function reconcileEquip(actor) {
 async function _reconcileEquip(actor) {
   const { weapons, shields, accessories } = partitionInventory(actor);
   const handItems = [...weapons, ...shields];
-  const props = actor.system?.props ?? {};
 
-  const wornHandIds = new Set();
-  for (const slot of ["main_hand", "off_hand"]) {
-    const idx = indexByEquippedName(handItems, props[slot]);
-    if (idx >= 0) wornHandIds.add(handItems[idx].id);
-  }
-  const wornAccIds = new Set();
-  for (const slot of ["accessory_name", "accessory2_name"]) {
-    const idx = indexByEquippedName(accessories, props[slot]);
-    if (idx >= 0) wornAccIds.add(accessories[idx].id);
-  }
+  const worn = resolveWornItems(actor);
+  const wornHandIds = new Set([worn.main?.id, worn.off?.id].filter(Boolean));
+  const wornAccIds = new Set([worn.acc1?.id, worn.acc2?.id].filter(Boolean));
 
   const itemUpdates = [];
   const aeWork = [];

@@ -16,7 +16,10 @@
 //     GMs) and emits APPLY_RES back to the requesting user.
 //
 // The GM re-resolves the heal AUTHORITATIVELY via resolveHealAction (never
-// trusts client-sent amounts) and re-validates affordability + stock.
+// trusts client-sent amounts) and re-validates affordability + stock. It also
+// checks WHO asked: the requester is the socket frame's server-stamped sender
+// (never a self-reported id), and a player may only act as a caster they own,
+// spending only that caster's own consumables / skills.
 // ============================================================================
 
 import { HEAL_TAG } from "./healing-const.js";
@@ -26,6 +29,7 @@ import { HealingFeedback } from "./healing-feedback.js";
 import { debitCost } from "../battle-director/skill-cost.js";
 import { consumeOne, spendIp } from "../battle-director/item-resource.js";
 import { getPotionRain, isPotionItem, halveHeal } from "./potion-rain.js";
+import { gatherHealingActions } from "./healing-actions.js";
 
 const CHANNEL = "module.fabula-ultima-companion";
 const T_REQ = "healing.apply.req";
@@ -67,15 +71,63 @@ async function _applyCleanseToTarget(target, scope, debuffId) {
   return entries;
 }
 
+// Is `doc` an embedded document of `actor` (world actor or token synthetic)?
+function _isOn(doc, actor) {
+  return !!doc && !!actor && doc.parent?.uuid === actor.uuid;
+}
+
+const _same = (a, b) => (a ?? null) === (b ?? null);
+
+// Party members a player may heal: the HUD's own target grid.
+async function _partyActorIds() {
+  try {
+    const party = await globalThis.CampSystem?.Party?.resolve?.();
+    if (Array.isArray(party)) return new Set(party.map((m) => m?.actor?.id ?? m?.actorId).filter(Boolean));
+  } catch (e) { console.warn(HEAL_TAG, "party resolve failed", e); }
+  return null;
+}
+
+// Authorise a request, or refuse it. A GM may heal from any caster (the HUD's
+// GM fallback picks the first party member) and is trusted as sent. A player's
+// request is only honoured as one of the caster's REAL actions: the GM gathers
+// the caster's healing actions itself and requires the payload to name one row
+// exactly. Everything that decides cost and effect — kind, cleanse scope, IP
+// cost, the carrier — then comes from that row, never from the payload, so a
+// hand-built frame can't pair a free cost with a strong heal, skip consuming a
+// potion, or turn a one-target tonic into a cleanse-all.
+async function _authorise(user, payload, { caster, consumable, targets }) {
+  if (!user) return { refusal: "unknown-user" };
+  if (user.isGM) return { row: null };
+  if (!caster.testUserPermission?.(user, "OWNER")) return { refusal: "not-your-caster" };
+  if (consumable && !_isOn(consumable, caster)) return { refusal: "not-your-item" };
+
+  const actions = Object.values(await gatherHealingActions(caster)).flat();
+  const row = actions.find((d) =>
+    _same(d.effectItemUuid, payload.effectItemUuid) && _same(d.costItemUuid, payload.costItemUuid)
+    && _same(d.consumableUuid, payload.consumableUuid) && _same(d.mode ?? "use", payload.mode ?? "use")
+    && _same(d.carrierUuid, payload.carrierUuid));
+  if (!row) return { refusal: "not-an-action" };
+
+  // Targets: the active party only, and only as many as the action reaches.
+  const party = await _partyActorIds();
+  const allowed = party?.size ? party : new Set([caster.id]);
+  if (targets.some((t) => !allowed.has(t.id))) return { refusal: "target-not-in-party" };
+  if (row.targeting === "self" && targets.some((t) => t.id !== caster.id)) return { refusal: "self-only" };
+  if (row.targeting !== "all" && targets.length > 1 && !payload.potionRain) return { refusal: "too-many-targets" };
+  return { row };
+}
+
 // ── Authoritative apply (GM only) — heal OR cleanse, one OR many targets ─────
-async function applyHeal(payload) {
+// `requesterUserId` is who asked: this client on a direct apply, the socket
+// frame's sender on a relayed one.
+async function applyHeal(payload, requesterUserId = game.user?.id) {
+  payload = payload ?? {};
   const {
-    kind = "heal", casterUuid, targetUuids = [], effectItemUuid, costItemUuid, consumableUuid = null,
-    mode = "use", ipCost = 0, cleanseScope = null, cleansePicks = null, targetCount = 1,
-    potionRain = false, carrierUuid = null,
-  } = payload ?? {};
+    casterUuid, targetUuids = [], effectItemUuid, costItemUuid, consumableUuid = null,
+    mode = "use", cleansePicks = null, potionRain = false,
+  } = payload;
+  let { kind = "heal", ipCost = 0, cleanseScope = null, carrierUuid = null } = payload;
   const isCreate = mode === "create";
-  const isCleanse = kind === "cleanse";
 
   const caster = await fromUuid(casterUuid).catch(() => null);
   const effectItem = await fromUuid(effectItemUuid).catch(() => null);
@@ -84,7 +136,24 @@ async function applyHeal(payload) {
   for (const u of targetUuids) { const t = await fromUuid(u).catch(() => null); if (t) targets.push(t); }
   if (!caster || !effectItem || !targets.length) return { ok: false, reason: "resolve-failed" };
 
-  // Cost is resolved ONCE against the action (targetCount drives "×T" costs).
+  const consumable = (!isCreate && consumableUuid) ? await fromUuid(consumableUuid).catch(() => null) : null;
+  const { refusal, row } = await _authorise(game.users?.get(requesterUserId) ?? null, payload, { caster, consumable, targets });
+  if (refusal) {
+    console.warn(HEAL_TAG, `apply refused (${refusal})`, { requesterUserId, casterUuid, effectItemUuid, consumableUuid, costItemUuid });
+    return { ok: false, reason: refusal };
+  }
+  if (row) {
+    kind = row.kind ?? "heal";
+    cleanseScope = row.cleanseScope ?? null;
+    ipCost = row.ipCost ?? 0;
+    carrierUuid = row.carrierUuid ?? null;
+  }
+  const isCleanse = kind === "cleanse";
+
+  // Cost is resolved ONCE against the action ("×T" costs scale with targets).
+  // The count is the targets actually sent — a Potion Rain spread is one use —
+  // never a client-reported number.
+  const targetCount = (potionRain && targets.length > 1) ? 1 : targets.length;
   const resolved = resolveHealAction({ caster, effectItem, costItem, targetCount: Math.max(1, targetCount) });
   if (!isCleanse && !resolved.ok) return { ok: false, reason: resolved.reason ?? "no-heal" };
   if (!resolved.affordable) return { ok: false, reason: "unaffordable", missing: resolved.missing };
@@ -94,7 +163,7 @@ async function applyHeal(payload) {
   if (isCreate) {
     if (_readNum(caster, "current_ip") < ipCost) return { ok: false, reason: "unaffordable-ip" };
   } else if (consumableUuid) {
-    carrier = await fromUuid(consumableUuid).catch(() => null);
+    carrier = consumable;
     if (!carrier) return { ok: false, reason: "consumable-missing" };
     const isUnique = !!carrier.system?.props?.isUnique;
     const qty = Number(carrier.system?.props?.item_quantity ?? 0) || 0;
@@ -201,12 +270,15 @@ async function applyHeal(payload) {
 }
 
 // ── Socket plumbing ─────────────────────────────────────────────────────────
-function _onSocket(msg) {
+// `senderId` is stamped by the server on module-channel frames — the requester
+// is whoever SENT the frame, never `msg.fromUserId` (any client can claim a GM's
+// id). Without it the request is refused rather than trusted.
+function _onSocket(msg, senderId) {
   if (!msg || typeof msg !== "object") return;
 
   if (msg.type === T_REQ) {
     if (!_isActiveGM()) return;
-    Promise.resolve(applyHeal(msg.payload))
+    Promise.resolve(applyHeal(msg.payload, senderId ?? null))
       .then((result) => game.socket.emit(CHANNEL, { type: T_RES, id: msg.id, toUserId: msg.fromUserId, result }))
       .catch((e) => {
         console.warn(HEAL_TAG, "applyHeal threw", e);

@@ -229,7 +229,7 @@ function finalCard(d) {
         ${row("Crisis", STAT_ICON.crisis, baseCrisis, delta(f.crisis - baseCrisis), f.crisis, "half of HP")}
         ${row("DEF", STAT_ICON.def, base.def, defMod, f.def, equip.defBase != null ? "martial armor" : "")}
         ${row("MDEF", STAT_ICON.mdef, base.mdef, mdefMod, f.mdef, "")}
-        ${row("Initiative", STAT_ICON.init, fmtInit(base.init), delta(-num(equip.initPenalty, 0)),
+        ${row("Initiative", STAT_ICON.init, fmtInit(base.init), delta(num(equip.initPenalty, 0)),
               fmtInit(f.init), equip.initPenalty ? "armor penalty" : "")}
         ${row("Zenit", STAT_ICON.zenit, budget, delta(-spent), Math.max(0, budget - spent),
               spent ? "spent on gear" : "nothing bought")}

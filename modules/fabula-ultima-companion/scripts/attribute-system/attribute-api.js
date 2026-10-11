@@ -126,7 +126,9 @@ export function readStatus(actorUuid) {
  */
 function readDerived(p, byKey) {
   const avgRoll = (die) => (num(die, 0) + 1) / 2;
-  const initMod = num(p.check_mod_init, 0) - num(p.init_penalty, 0);
+  // init_penalty is the armor's SIGNED initiative modifier (Steel Plate −4), added
+  // as the sheet's own Initiative roll does.
+  const initMod = num(p.check_mod_init, 0) + num(p.init_penalty, 0);
 
   return {
     hp:   { cur: num(p.current_hp, 0), max: num(p.max_hp, 0) },

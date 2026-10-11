@@ -17,10 +17,10 @@
 //
 // Data model (verified against live actors):
 //   • Enemy Initiative Score      = actor.system.props.init   (flat number)
-//   • PC Initiative modifier      = -actor.system.props.init_penalty (armor)
+//   • PC Initiative modifier      = actor.system.props.init_penalty (armor; SIGNED)
 //   • DEX / INS die sizes         = actor.system.props.dex_current / ins_current
 //   PCs have no init score; they simply roll DEX + INS. The auto-leader is the
-//   living PC with the best (dex_current + ins_current − init_penalty) proxy,
+//   living PC with the best (dex_current + ins_current + init_penalty) proxy,
 //   random tiebreak.
 
 import { log, warn } from "./logger.js";
@@ -42,10 +42,13 @@ export function readEnemyInitScore(actor) {
   return numberish(raw, null);
 }
 
-// PC Initiative modifier applied to the DEX+INS roll — the negative of the
-// armor initiative penalty. (init_penalty is stored as a positive magnitude.)
+// PC Initiative modifier applied to the DEX+INS roll: the armor's initiative
+// modifier, stored SIGNED and added as-is. Measured on the world 2026-10-11:
+// all 28 actors with a value store it negative (Steel Plate −4, Runic Plate −3,
+// Sage Robe −2), and the character sheet's own Initiative roll is
+// `D1 + D2 + init_penalty`. Negating it here gave Steel Plate +4.
 export function readPcInitiativeModifier(actor) {
-  return -numberish(actor?.system?.props?.init_penalty, 0);
+  return numberish(actor?.system?.props?.init_penalty, 0);
 }
 
 // Leader-selection proxy for PCs (they have no init score): higher DEX+INS die
@@ -54,7 +57,7 @@ export function readPcInitiativeModifier(actor) {
 //
 // The modifier here MUST match what rollInitiativeCheck actually applies, or a
 // character can be the fastest in the party on paper and still not be chosen to
-// lead. rollInitiativeCheck adds BOTH -init_penalty (armor, added directly) and
+// lead. rollInitiativeCheck adds BOTH init_penalty (armor, added directly) and
 // check_mod_init (added by the Check Requester via checkContext "init"), so the
 // proxy adds both too. Without check_mod_init an Initiative Up wearer would get
 // the bonus on their roll but never be favoured for the leader slot — and as a
@@ -74,7 +77,7 @@ function pcInitiativeProxy(actor) {
 
 // Roll ONE silent DEX+INS check for `actor` at `dl`. Even though it runs backend,
 // this is a real CHECK, so it honours the full tagged-modifier stack:
-//   • RAW Initiative modifier   — armor penalty (-init_penalty), added here.
+//   • RAW Initiative modifier   — armor modifier (init_penalty, signed), added here.
 //   • check_mod_all + check_mod_init — resolved by the CR silent path via
 //     context.checkContext = "init" (matches the actor's check_mod_init prop).
 //   • check_mod_dex + check_mod_ins  — the rolled attributes; the CR silent

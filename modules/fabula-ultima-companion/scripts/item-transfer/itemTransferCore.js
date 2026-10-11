@@ -135,7 +135,7 @@
    * - system.props.item_type
    * - system.props.item_quantity
    */
-  function findStackableItemOnActor(actor, sourceItem) {
+  function findStackableItemOnActor(actor, sourceItem, { childSignature = null } = {}) {
     const sourceName = sourceItem?.name;
     const sourceDocType = sourceItem?.type;
 
@@ -150,9 +150,107 @@
     return actor.items.find(i => {
       const targetItemType = String(i?.system?.props?.item_type ?? "").trim().toLowerCase();
       if (targetItemType !== "consumable") return false;
-
-      return i.name === sourceName && i.type === sourceDocType;
+      if (i.name !== sourceName || i.type !== sourceDocType) return false;
+      // A stack keeps ONE sub-item tree. Merging a copy whose linked skill
+      // differs would silently replace that skill with the stack's, and moving
+      // the item back would hand out the other copy's content. Such copies stay
+      // separate rows instead. (`childSignature` is the source's, taken by the
+      // caller BEFORE any sender-side delete cascades its children away.)
+      return !childSignature || sameChildTree(childSignature, childTreeSignature(i));
     }) ?? null;
+  }
+
+  // Key-sorted JSON, so two equal objects always serialize the same.
+  function stableStringify(value) {
+    if (Array.isArray(value)) return `[${value.map(stableStringify).join(",")}]`;
+    if (value && typeof value === "object") {
+      return `{${Object.keys(value).sort().map((k) => `${JSON.stringify(k)}:${stableStringify(value[k])}`).join(",")}}`;
+    }
+    return JSON.stringify(value ?? null);
+  }
+
+  /**
+   * Content signature of an item's sub-item tree, independent of document ids
+   * and of the owning actor: one entry per child — name, type, template, stored
+   * props, and its effects (changes, statuses, duration, transfer, module flags,
+   * where gear reaction config lives). Prop dicts keyed by ids inside the tree
+   * (itemContainer rows) are re-keyed by the child's name, so the same tree on
+   * two actors signs the same. Compare two with `sameChildTree`.
+   */
+  function childTreeSignature(parentItem) {
+    const nodes = snapshotChildTree(parentItem);
+    const alias = new Map([[parentItem.id, "#parent"]]);
+    for (const n of nodes) alias.set(n.srcId, `#${n.doc.name}`);
+    const rekey = (props, docName) => {
+      const out = {};
+      for (const [k, v] of Object.entries(props ?? {})) {
+        // CSB stamps the header `name` prop on sheet render; the document name
+        // is already compared, so a copy with it and one without are the same.
+        if (k === "name" && v === docName) continue;
+        out[k] = (v && typeof v === "object" && !Array.isArray(v))
+          ? Object.fromEntries(Object.entries(v).map(([rk, rv]) => [alias.get(rk) ?? rk, rv]))
+          : v;
+      }
+      return out;
+    };
+    const entries = nodes.map((n) => ({
+      name: n.doc.name,
+      type: n.doc.type,
+      template: n.doc.system?.template ?? null,
+      parent: alias.get(n.srcContainerId) ?? null,
+      // STORED props, not the prepared ones: CSB derives some props against the
+      // owning actor, so the same skill on two actors prepares differently.
+      props: rekey((n.doc._source ?? n.doc).system?.props, n.doc.name),
+      effects: (n.doc.effects?.contents ?? []).map((e) => ({
+        name: e.name, disabled: !!e.disabled, transfer: !!e.transfer, changes: e.changes ?? [],
+        statuses: [...(e.statuses ?? [])].sort(),
+        duration: { rounds: e.duration?.rounds ?? null, turns: e.duration?.turns ?? null, seconds: e.duration?.seconds ?? null },
+        flags: e.flags?.["fabula-ultima-companion"] ?? null,
+      })).sort((a, b) => stableStringify(a).localeCompare(stableStringify(b))),
+    }));
+    return entries.sort((a, b) =>
+      `${a.parent}|${a.name}`.localeCompare(`${b.parent}|${b.name}`) || stableStringify(a).localeCompare(stableStringify(b)));
+  }
+
+  // A value CSB may simply not have written yet ("", null, an empty row …).
+  function isEmptyValue(v) {
+    if (v == null || v === "" || v === false) return true;
+    if (Array.isArray(v)) return v.length === 0;
+    if (typeof v === "object") return Object.values(v).every(isEmptyValue);
+    return false;
+  }
+
+  // Deep equality that tolerates CSB's stamping: a key present on one side only
+  // counts when its value is non-empty (sheet renders write column defaults
+  // into rows), and "1" equals 1 (CSB stores numbers either way).
+  function equivalent(a, b) {
+    if (a === b) return true;
+    const isObj = (v) => v && typeof v === "object";
+    if (Array.isArray(a) || Array.isArray(b)) {
+      return Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.every((v, i) => equivalent(v, b[i]));
+    }
+    if (isObj(a) && isObj(b)) {
+      for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) {
+        if (!(k in a)) { if (!isEmptyValue(b[k])) return false; continue; }
+        if (!(k in b)) { if (!isEmptyValue(a[k])) return false; continue; }
+        if (!equivalent(a[k], b[k])) return false;
+      }
+      return true;
+    }
+    if (isObj(a) || isObj(b)) return isEmptyValue(a) && isEmptyValue(b);
+    if (isEmptyValue(a) && isEmptyValue(b)) return true;
+    return (typeof a === "number" || typeof b === "number") && String(a) === String(b);
+  }
+
+  /**
+   * Can a copy signed `sa` merge into a stack signed `sb` without losing a
+   * sub-item tree? Yes when the trees match — or when either side has none: a
+   * childless copy (minted by the old partial-transfer path) loses nothing, and
+   * a childless stack gets repaired from the incoming copy.
+   */
+  function sameChildTree(sa, sb) {
+    if (!sa.length || !sb.length) return true;
+    return sa.length === sb.length && sa.every((s, i) => equivalent(s, sb[i]));
   }
 
     // --------------------------------------------------------------------------
@@ -625,6 +723,7 @@
     // brand-new parent on the receiver, and that copy needs its OWN children —
     // the sender keeping theirs is not the receiver getting any.
     const childNodesToCopy = snapshotChildTree(sourceItem);
+    const sourceChildSignature = childTreeSignature(sourceItem);
 
     if (senderRemaining > 0) {
       await sourceItem.update(makeQuantityUpdate(senderRemaining));
@@ -642,8 +741,9 @@
       });
     }
 
-    // 2) Update receiver: stack or create new
-    const stackTarget = findStackableItemOnActor(receiverActor, sourceItem);
+    // 2) Update receiver: stack or create new — only onto a stack whose
+    //    sub-item tree matches the one snapshotted above.
+    const stackTarget = findStackableItemOnActor(receiverActor, sourceItem, { childSignature: sourceChildSignature });
     let receiverItemUuid = null;
     let receiverNewQty = null;
     let createdParent = null;

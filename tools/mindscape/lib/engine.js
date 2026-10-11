@@ -103,13 +103,14 @@ function attrs(c) {
   return R.effectiveAttributes(c.actor.attributes, c.actor.statuses ?? {});
 }
 
-// Initiative: (DEX + INS) / 2, minus an armor penalty when the sheet carries one.
+// Initiative: (DEX + INS) / 2, plus the armor's SIGNED initiative modifier (stored
+// negative on actors: Steel Plate −4), as the sheet's own Initiative roll adds it.
 // Static rather than rolled — a simplification, flagged in the spec's Part 6
 // sense: it removes variance from turn order without favouring either side.
 function initiative(c) {
   const a = attrs(c);
   const pen = Number(c.actor._rawProps?.init_penalty) || 0;
-  return (a.dex + a.ins) / 2 - pen;
+  return (a.dex + a.ins) / 2 + pen;
 }
 
 // ── Affordability ───────────────────────────────────────────────────────────

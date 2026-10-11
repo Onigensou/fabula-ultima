@@ -432,13 +432,20 @@
                   <span style="color:red">🥋 ${newArmor?.system?.props?.name ?? "No Armor"}</span>
                 </p>`;
 
-              // Update actor sheet armor fields (mirrors weapon/accessory pattern)
+              // Update actor sheet armor fields (mirrors weapon/accessory pattern).
+              // Two actor props follow the same rule as equipment-swap's armor
+              // branch:
+              //  - `init_penalty` is written ONLY from an armor item that carries
+              //    the field. None does yet, while the actor holds a hand-set
+              //    SIGNED value (Steel Plate -4) — defaulting a missing field to 0
+              //    zeroed that value on every armor change.
+              //  - `is_martialarmor` is never written: it is the martial-armor
+              //    PROFICIENCY (levelup grants it, martialGrants reads it), not
+              //    "the worn armor is martial" — unequipping armor stripped it.
               if (!newArmor) {
                 updates["system.props.armor_name"] = "";
                 updates["system.props.armor_mod"] = 0;
-                updates["system.props.is_martialarmor"] = false;
                 updates["system.props.magic_defense_mod"] = 0;
-                updates["system.props.init_penalty"] = 0;
                 updates["system.props.armor_details"] = "";
               } else {
                 const a = newArmor.system?.props ?? {};
@@ -446,15 +453,16 @@
 
                 const armorMod = Number(isMartial ? (a.item_baseDef ?? 0) : (a.item_def_bonus ?? 0)) || 0;
                 const mdefMod = Number(isMartial ? (a.item_baseMdef ?? 0) : (a.item_mdef_bonus ?? 0)) || 0;
-                const initPenalty = Number(a.init_penalty ?? a.item_init_penalty ?? a.initiative_penalty ?? 0) || 0;
                 const details = String(a.description ?? "");
+                const rawPenalty = a.init_penalty ?? a.item_init_penalty ?? a.initiative_penalty;
 
                 updates["system.props.armor_name"] = a.name ?? newArmor.name ?? "";
                 updates["system.props.armor_mod"] = armorMod;
-                updates["system.props.is_martialarmor"] = isMartial;
                 updates["system.props.magic_defense_mod"] = mdefMod;
-                updates["system.props.init_penalty"] = initPenalty;
                 updates["system.props.armor_details"] = details;
+                if (rawPenalty != null && String(rawPenalty).trim() !== "") {
+                  updates["system.props.init_penalty"] = Number(rawPenalty) || 0;
+                }
               }
             }
           }

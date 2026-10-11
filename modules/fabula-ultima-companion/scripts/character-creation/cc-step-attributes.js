@@ -146,7 +146,8 @@ export function finalDerived(d, equip = null) {
     maxHp, maxMp, maxIp,
     crisis: Math.floor(maxHp / 2),
     def, mdef,
-    init: base.init - num(e.initPenalty, 0),
+    // The armor's initiative modifier is SIGNED (Steel Plate −4) and added, as on the sheet.
+    init: base.init + num(e.initPenalty, 0),
     base, bonus: t, equip: e,
   };
 }

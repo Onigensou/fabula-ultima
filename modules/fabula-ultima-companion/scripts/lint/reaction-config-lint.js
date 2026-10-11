@@ -1437,18 +1437,29 @@
   }
 
   async function parseEngineEffectKinds() {
+    // The engine's own registry first (skill-effects.js publishes the keys of
+    // EFFECT_KIND_DISPATCH, every dispatchable kind) — the same source
+    // getEffectKindValues reads.
+    const live = globalThis.FUCompanion?.api?.effectKinds?.all;
+    if (live instanceof Set && live.size) return new Set([...SIDECAR_EFFECT_KINDS, ...live]);
+    // Not loaded yet: read the source. Dispatch is a set of kind-keyed tables
+    // (EFFECT_KIND_DISPATCH / EFFECT_KIND_PREVIEW, then `EFFECT_KIND.<kind> =`
+    // registrations) — there is no `switch` any more, so scraping `case` arms
+    // found almost nothing and flagged every real kind as an orphan.
     try {
       const res = await fetch(SKILL_EFFECTS_PATH + "?cb=" + Date.now(), { cache: "no-store" });
       if (!res.ok) return null;
       const src = await res.text();
-      // Match `case "<kind>":` inside the applyEffectRow switch.
-      const block = src.match(/applyEffectRow[\s\S]*?\bswitch\s*\([^)]*\)\s*\{([\s\S]*?)\n\s*\}/);
       const out = new Set(SIDECAR_EFFECT_KINDS);
-      const re = /case\s+["']([a-z_]+)["']/g;
-      const scan = block ? block[1] : src;
       let m;
-      while ((m = re.exec(scan))) out.add(m[1]);
-      return out;
+      for (const table of ["EFFECT_KIND_DISPATCH", "EFFECT_KIND_PREVIEW"]) {
+        const block = src.match(new RegExp(`const\\s+${table}\\s*=\\s*\\{([\\s\\S]*?)\\r?\\n\\};`));
+        const re = /^ {2}([a-z_]+)\s*:/gm;
+        while (block && (m = re.exec(block[1]))) out.add(m[1]);
+      }
+      const reg = /^EFFECT_KIND\.([a-z_]+)\s*=/gm;
+      while ((m = reg.exec(src))) out.add(m[1]);
+      return out.size ? out : null;
     } catch (e) {
       console.warn(`${TAG} parseEngineEffectKinds fetch failed`, e);
       return null;

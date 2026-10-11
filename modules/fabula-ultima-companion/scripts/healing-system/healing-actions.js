@@ -197,12 +197,16 @@ export async function gatherHealingActions(actor) {
   if (!actor) return out;
 
   const items = Array.from(actor.items ?? []);
-  const seenEffect = new Set();   // dedupe by effect-item uuid across all sources
+  // Dedupe across sources: one row per effect item, except a consumable, which
+  // is its own row — two stacks of a potion whose heal lives on the same linked
+  // action are two things to use up, and the second must not vanish.
+  const seenEffect = new Set();
 
   const push = (desc) => {
     if (!desc) return;
-    if (seenEffect.has(desc.effectItemUuid)) return;
-    seenEffect.add(desc.effectItemUuid);
+    const key = desc.consumableUuid ?? desc.effectItemUuid;
+    if (seenEffect.has(key)) return;
+    seenEffect.add(key);
     out[desc.category].push(desc);
   };
 

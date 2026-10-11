@@ -264,10 +264,22 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
     try { weaponItem = actor.items?.get?.(String(entry.uuid).split(".").pop()) ?? null; } catch (_) {}
   }
   if (!weaponItem) {
-    weaponItem = actor.items?.find?.(
-      (i) => i?.name === handName &&
-        String(i?.system?.props?.item_type ?? "").toLowerCase() === "weapon"
-    ) ?? null;
+    // Same distinct-copy rule as equipment-swap's resolveWornItems: the slot props
+    // hold NAMES, so with two copies of one weapon (Kiki's three Wakizashi) prefer
+    // the copy flagged isEquipped, and never give the off hand the copy the main
+    // hand took. Without it a form or on-hit row set on the off-hand copy never
+    // reached the attack.
+    const typeOf = (i) => String(i?.system?.props?.item_type ?? "").toLowerCase();
+    const handMatches = (name) => (name ? (actor.items?.filter?.((i) =>
+      (i?.system?.props?.name ?? i?.name) === name && (typeOf(i) === "weapon" || typeOf(i) === "shield")) ?? []) : []);
+    const pick = (list, taken) => {
+      const free = list.filter((i) => !taken.has(i.id));
+      const pool = free.length ? free : list;
+      return pool.find((i) => i.system?.props?.isEquipped === true) ?? pool[0] ?? null;
+    };
+    const mainItem = pick(handMatches(props.main_hand), new Set());
+    const handItem = isMain ? mainItem : pick(handMatches(props.off_hand), new Set(mainItem ? [mainItem.id] : []));
+    weaponItem = typeOf(handItem) === "weapon" ? handItem : null;
   }
   const imageUrl = entry?.img ?? entry?.image ?? weaponItem?.img ?? null;
 

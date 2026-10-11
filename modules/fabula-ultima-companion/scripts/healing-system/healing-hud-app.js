@@ -31,6 +31,10 @@ function escapeHtml(s) {
   return String(s ?? "").replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
 }
 function keyMatch(ev, list) { return list.includes(ev.key); }
+// A row's identity — the same key healing-actions dedupes on: a consumable is
+// its own row (two stacks can share one linked heal action), anything else is
+// its effect item.
+const rowKey = (d) => d?.consumableUuid ?? d?.effectItemUuid;
 
 const HealingHUD = {
   _root: null,
@@ -106,10 +110,21 @@ const HealingHUD = {
     this._armed = null;
     this._targetIndex = 0;
 
+    // `focusItemUuid` (the Party Menu's "Use"): open on that item's row, armed,
+    // so the player goes straight to choosing who it is for.
+    let focusFound = false;
+    if (opts.focusItemUuid) {
+      for (const cat of CATEGORY_ORDER) {
+        const i = (this._actions[cat] ?? []).findIndex((d) => d.consumableUuid === opts.focusItemUuid);
+        if (i >= 0) { this._category = cat; this._listIndex = i; focusFound = true; break; }
+      }
+    }
+
     this._build();
     this._installKeyboard();
     this._installUpdateHook();
     playHealSfx("OPEN");
+    if (focusFound) this._armAction();
 
     requestAnimationFrame(() => {
       this._root?.classList.add("visible");
@@ -285,7 +300,7 @@ const HealingHUD = {
       row.addEventListener("click", () => {
         // Toggle: clicking the already-armed action disarms it (mouse parity
         // with the keyboard X-to-cancel behaviour).
-        if (this._armed && this._armed.effectItemUuid === desc.effectItemUuid) { this._disarm(); return; }
+        if (this._armed && rowKey(this._armed) === rowKey(desc)) { this._disarm(); return; }
         this._listIndex = i; this._renderList();
         this._armAction();
       });
@@ -870,7 +885,7 @@ const HealingHUD = {
       this._renderTabs();
       // Re-bind the armed descriptor to the refreshed list (affordability/qty updated).
       if (this._armed) {
-        const fresh = (this._actions[this._armed.category] ?? []).find((d) => d.effectItemUuid === this._armed.effectItemUuid);
+        const fresh = (this._actions[this._armed.category] ?? []).find((d) => rowKey(d) === rowKey(this._armed));
         if (fresh && fresh.affordable) { this._armed = fresh; }
         else { this._armed = null; this._zone = "list"; }
       }

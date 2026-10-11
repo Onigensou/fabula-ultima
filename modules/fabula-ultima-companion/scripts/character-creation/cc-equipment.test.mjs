@@ -200,12 +200,12 @@ eq("martial shields need the shield right", E.martialNeed(runicShield), "shield"
 
   const plate = E.readEquip(mkItem("Steel Plate", "armor", {
     item_cost: "300", isMartial: true, item_type: "armor",
-    item_baseDef: 11, item_baseMdef: 9, init_penalty: 3,
+    item_baseDef: 11, item_baseMdef: 9, init_penalty: -3,
   }), "armor");
   eq("martial armor reports a replacement base", plate.defBase, 11);
   eq("...and contributes no bonus", plate.defBonus, 0);
   eq("...and its MDEF base", plate.mdefBase, 9);
-  eq("...and its initiative penalty", plate.initPenalty, 3);
+  eq("...and its initiative penalty", plate.initPenalty, -3);
 
   const garb = E.readEquip(mkItem("Travel Garb", "armor", {
     item_cost: "100", isMartial: false, item_type: "armor",
@@ -242,7 +242,7 @@ eq("martial shields need the shield right", E.martialNeed(runicShield), "shield"
   E.addPick(p, plate); E.addPick(p, shield);
   const worn = E.equipBonuses(p, ALL);
   eq("plate sets the base and the shield adds on top", [worn.defBase, worn.defBonus], [11, 2]);
-  eq("the penalty carries", worn.initPenalty, 3);
+  eq("the penalty carries", worn.initPenalty, -3);
 
   // Untrained gear is carried, not worn -- it must not reach the projection.
   const untrained = E.equipBonuses(p, NONE);
@@ -257,12 +257,12 @@ eq("martial shields need the shield right", E.martialNeed(runicShield), "shield"
   E.addPick(d, E.readEquip({
     uuid: "Item.x", id: "x", name: "Runic Plate", img: "",
     system: { props: { item_cost: "250", isMartial: true, item_type: "armor",
-                       item_baseDef: 11, item_baseMdef: 9, init_penalty: 2 } },
+                       item_baseDef: 11, item_baseMdef: 9, init_penalty: -2 } },
   }, "armor"));
   const pick = E.picks(d)[0];
   eq("defBase is copied onto the pick", pick.defBase, 11);
   eq("mdefBase too", pick.mdefBase, 9);
-  eq("and the penalty", pick.initPenalty, 2);
+  eq("and the penalty", pick.initPenalty, -2);
   eq("a pick is plain data, safe to serialise",
     JSON.parse(JSON.stringify(pick)).defBase, 11);
 }

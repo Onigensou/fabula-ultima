@@ -18,6 +18,7 @@ import {
 } from "../shared/summon-bindings.js";
 import { skillDeclaresVersatile } from "../battle-director/snapshot.js";
 import { isArcanumContainer, isArcanumMerged } from "../battle-director/skill-effects.js";
+import { canUseCommand } from "./party-menu-access.js";
 
 const TAG = "[PartyMenu]";
 const log = (...a) => console.log(TAG, ...a);
@@ -31,9 +32,9 @@ const NS = MODULE_ID;
 // is the only discriminator.
 const SKILL_TEMPLATES = new Set(["j0F5Msw5RZ8aIB3j", "FZmpKcQRP7hZQqbV"]);
 
-const ACTIVE_SLOTS = 4;
-const BENCH_SLOTS = 6;
-const AWAY_SLOTS = 4;
+export const ACTIVE_SLOTS = 4;
+export const BENCH_SLOTS = 6;
+export const AWAY_SLOTS = 4;
 
 const MSG = {
   BIND_REQ: "partyMenu.bindPersistent.req",
@@ -55,7 +56,7 @@ const KIND_PROFILE_DEFAULTS = {
 const str = (v) => String(v ?? "").trim();
 const num = (v, d = 0) => { const n = Number(v); return Number.isFinite(n) ? n : d; };
 
-function actorFromRef(ref) {
+export function actorFromRef(ref) {
   const raw = str(ref);
   if (!raw) return null;
   const id = raw.startsWith("Actor.") ? raw.slice(6) : raw;
@@ -374,6 +375,7 @@ export function bindRefusal(actor, owner, slot, roster) {
 
 /** Bind (or with `actor = null`, reset) a fixed summon row on the owner's skill. */
 export async function setFixedBinding(owner, item, label, actor) {
+  if (!canUseCommand("ability")) return { ok: false, reason: "not-granted" };
   if (!canEditActor(owner)) return { ok: false, reason: "not-owner" };
   if (!item || item.parent?.id !== owner.id) return { ok: false, reason: "not-owners-skill" };
   // The label becomes a flag-path segment; a dot in it would nest the write.
@@ -426,6 +428,7 @@ async function applyPersistentBind(payload) {
   const user = game.users?.get(payload?.requesterUserId);
   const allowed = user?.isGM || owner.testUserPermission?.(user, "OWNER");
   if (!allowed) return { ok: false, reason: "not-owner" };
+  if (!canUseCommand("ability", user)) return { ok: false, reason: "not-granted" };
 
   const kind = str(payload?.kind).toLowerCase();
   if (!/^[a-z0-9_]+$/.test(kind)) return { ok: false, reason: "bad-kind" };

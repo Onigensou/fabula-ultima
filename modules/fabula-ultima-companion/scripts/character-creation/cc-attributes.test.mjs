@@ -185,11 +185,13 @@ eq("returning something not placed reports none",
   eq("ordinary armor adds to the die", soft.def, 10);
   eq("...and to MDEF", soft.mdef, 9);
 
-  const plate = A.finalDerived(d, { defBase: 11, defBonus: 0, mdefBase: 9, mdefBonus: 0, initPenalty: 3 });
+  // The armor initiative modifier is SIGNED, as stored on actors (Steel Plate −4)
+  // and added, as the sheet's own Initiative roll does.
+  const plate = A.finalDerived(d, { defBase: 11, defBonus: 0, mdefBase: 9, mdefBonus: 0, initPenalty: -3 });
   eq("martial armor replaces the die", plate.def, 11);
   eq("...rather than adding to it", plate.def === 8 + 11, false);
   eq("MDEF is replaced too", plate.mdef, 9);
-  eq("an initiative penalty subtracts", plate.init, bare.init - 3);
+  eq("a (negative) initiative modifier lowers initiative", plate.init, bare.init - 3);
 
   // A shield on top of martial armour still adds.
   const both = A.finalDerived(d, { defBase: 11, defBonus: 2, mdefBase: 9, mdefBonus: 0, initPenalty: 0 });

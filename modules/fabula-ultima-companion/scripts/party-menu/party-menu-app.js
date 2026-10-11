@@ -11,35 +11,38 @@
 // control of the frame. The CSB party sheet is NOT touched — this sits beside
 // it until it earns the swap.
 //
-// Commands live today: Ability (skill list, read-only, with summon binding on
-// summon skills). The rest are shown dimmed so the roadmap is visible.
+// Commands: Item (own + shared Party Bag), Ability (skills, summon binding),
+// Equip, Status, and the GM-only Setup (roster, player access). The command
+// column shows only what this user may open — see party-menu-access.js.
+// Main + Ability live in this file; the others are VIEWS modules.
 
 import {
   getPartyRoster, vitalsOf, skillsOf, skillSummary, resolvedSlotsOf, summonSkillIds,
   candidateActors, setFixedBinding, setPersistentBinding, canEditActor, folderPath,
   skillSource, sourceRanker, SOURCE_KINDS, skillAccess,
 } from "./party-menu-core.js";
+import { COMMAND_DEFS, canUseCommand } from "./party-menu-access.js";
+import { SND, play, STAT, esc, plain, safeHtml, bar, gridStep as gridStepIn } from "./party-menu-ui.js";
+import { itemView } from "./party-menu-view-item.js";
+import { equipView, statusView } from "./party-menu-view-gear.js";
+import { setupView } from "./party-menu-view-setup.js";
 
 const TAG = "[PartyMenu]";
 const ROOT_ID = "fud-party-menu";
 const STYLE_ID = "fud-party-menu-style";
 
-const SND = {
-  move: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_2.wav",
-  ok: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav",
-  back: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_1.wav",
-  buzz: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Buzzer2.ogg",
-  done: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/success_4.wav",
-};
+// Commands that first ask "whose?" by moving the hand onto the party list.
+const NEEDS_MEMBER = new Set(["item", "ability", "equip", "status"]);
 
-const COMMANDS = [
-  { id: "item", label: "Item", live: false },
-  { id: "ability", label: "Ability", live: true },
-  { id: "equip", label: "Equip", live: false },
-  { id: "status", label: "Status", live: false },
-  { id: "order", label: "Order", live: false },
-  { id: "close", label: "Close", live: true },
-];
+// Views other than main/ability live in their own modules behind one interface:
+// enter(ctx, actor) · render(ctx) · key(ctx, k, ev) · click(ctx, action, el)
+// · hover(ctx, action, index) → bool · input?(ctx, ev).
+const VIEWS = { item: itemView, equip: equipView, status: statusView, setup: setupView };
+
+/** The command column for THIS user: what Setup granted them, plus Close. */
+function visibleCommands() {
+  return [...COMMAND_DEFS.filter((c) => canUseCommand(c.id)), { id: "close", label: "Close" }];
+}
 
 const FILTERS = [
   { id: "all", label: "All", icon: "fa-layer-group" },
@@ -50,13 +53,6 @@ const FILTERS = [
   { id: "summon", label: "Summon", icon: "fa-paw" },
 ];
 
-// Same stat labels as the CSB character sheet: red heart HP, blue star MP, briefcase IP.
-const STAT = {
-  hp: `<em class="hp"><i class="fas fa-heart"></i>HP</em>`,
-  mp: `<em class="mp"><i class="fas fa-star"></i>MP</em>`,
-  ip: `<em class="ip"><i class="fas fa-briefcase"></i>IP</em>`,
-};
-
 const REASONS = {
   "not-owner": "Only this character's player or the GM can change that.",
   "target-in-party": "That actor is in the party.",
@@ -65,60 +61,22 @@ const REASONS = {
   timeout: "No GM answered. A GM must be online to change a companion.",
   unregistered_request: "The Party Menu is not loaded on this client.",
   "not-a-candidate": "That actor isn't one you can pick.",
+  "not-granted": "The GM hasn't opened that to players.",
   "bad-target": "That actor can't be used as a summon.",
 };
-
-const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => (
-  { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c]
-));
-
-// Skill descriptions are player-editable HTML and this menu is opened by the
-// GM, so they are parsed INERT (DOMParser runs no scripts and loads no images,
-// unlike innerHTML on a detached element) and stripped of anything active
-// before they are shown.
-const inert = (html) => new DOMParser().parseFromString(String(html ?? ""), "text/html").body;
-// textContent glues block elements together ("Choose one:the Phantasm inflicts
-// Weakthe…"), so put a space after every block before flattening.
-const plain = (html) => {
-  const body = inert(html);
-  body.querySelectorAll("p,li,div,br,h1,h2,h3,h4,h5,h6,tr,hr").forEach((el) => el.after(" "));
-  return (body.textContent ?? "").replace(/\s+/g, " ").trim();
-};
-const DROP_TAGS = "script,style,iframe,object,embed,link,meta,base,form,input,button,textarea,select,svg,math,template";
-function safeHtml(html) {
-  const body = inert(html);
-  body.querySelectorAll(DROP_TAGS).forEach((el) => el.remove());
-  for (const el of body.querySelectorAll("*")) {
-    for (const attr of [...el.attributes]) {
-      const n = attr.name.toLowerCase();
-      const v = attr.value.trim().toLowerCase();
-      // Inline colour/weight styling is kept — descriptions are authored for the
-      // parchment sheets and their keyword colours read correctly on it. Anything
-      // that can fetch, overlay or script is not.
-      const badStyle = n === "style" && /url\(|expression|position|behavior|binding|@import|z-index/.test(v);
-      if (n.startsWith("on") || n === "srcdoc" || badStyle
-          || ((n === "href" || n === "src" || n === "xlink:href") && !/^(https?:|\/|#|[\w.-]+\/)/.test(v))) {
-        el.removeAttribute(attr.name);
-      }
-    }
-  }
-  return body.innerHTML;
-}
-
-function play(src, volume = 0.6) {
-  try { foundry.audio.AudioHelper.play({ src, volume, loop: false }, false); }
-  catch { /* sound is decoration */ }
-}
 
 // ── state ─────────────────────────────────────────────────────────────────────
 
 const S = {
   open: false,
-  view: "main",          // main | ability
+  view: "main",          // main | ability | a VIEWS key
   focus: "cmd",          // cmd | member | skills | slots | picker
-  cmd: 1,                // index into COMMANDS (starts on Ability)
+  cmd: 0,                // index into visibleCommands()
+  pendingCmd: null,      // command waiting for a character pick
   member: 0,             // index into roster.active
-  actorId: null,         // character shown in the Ability view
+  actorId: null,         // character shown in the Ability / Equip / Status view
+  v: null,               // view-local state of a VIEWS view
+  focusSearch: false,    // focus a view's search box on the next render
   filter: "all",
   skill: 0,              // index into the filtered skill list
   slot: 0,               // index into the highlighted skill's summon slots
@@ -186,6 +144,7 @@ function currentSkill(actor) {
 // ── open / close ──────────────────────────────────────────────────────────────
 
 export async function openPartyMenu({ actorId = null } = {}) {
+  if (S.open && S.busy) return;   // a write is in flight; its view still owns S.v
   ensureStyles();
   S.roster = await getPartyRoster();
   if (!S.roster.db) {
@@ -197,11 +156,13 @@ export async function openPartyMenu({ actorId = null } = {}) {
   S.modal = false;
   _memo = null;
   S.toast = "";
-  if (actorId && game.actors?.get(actorId)) {
+  S.v = null;
+  S.pendingCmd = null;
+  if (actorId && game.actors?.get(actorId) && canUseCommand("ability")) {
     S.actorId = actorId;
     S.view = "ability"; S.focus = "skills"; S.skill = 0; S.filter = "all";
   } else {
-    S.view = "main"; S.focus = "cmd"; S.cmd = 1;
+    S.view = "main"; S.focus = "cmd"; S.cmd = 0;
     const mine = game.user?.character?.id;
     const idx = S.roster.active.findIndex((a) => a.id === mine);
     S.member = idx >= 0 ? idx : 0;
@@ -254,14 +215,14 @@ function render() {
   // Keep the detail pane where the reader left it while the same skill is shown
   // (hovering its buttons re-renders the whole menu).
   const detail = _root.querySelector(".pm-detail > .pm-scroll");
-  const detailKey = detail?.dataset.key ?? null;
+  const detailKey = detail ? `${S.view}|${detail.dataset.key ?? ""}` : null;
   const detailScroll = detail?.scrollTop ?? 0;
   const searchHadFocus = document.activeElement?.classList?.contains("pm-search");
 
   _root.innerHTML = `
     <div class="pm-backdrop"></div>
-    <div class="pm-stage ${S.picker ? "has-picker" : ""}">
-      ${S.view === "main" ? renderMain() : renderAbility()}
+    <div class="pm-stage ${S.picker || viewOverlay() ? "has-picker" : ""}">
+      ${S.view === "main" ? renderMain() : VIEWS[S.view] ? VIEWS[S.view].render(ctx) : renderAbility()}
       ${S.picker ? renderPicker() : ""}
       ${S.toast ? `<div class="pm-toast pm-pill">${esc(S.toast)}</div>` : ""}
     </div>`;
@@ -272,19 +233,22 @@ function render() {
     newList.querySelector(".is-cursor")?.scrollIntoView({ block: "nearest" });
   }
   const newDetail = _root.querySelector(".pm-detail > .pm-scroll");
-  if (newDetail && detailKey && newDetail.dataset.key === detailKey) newDetail.scrollTop = detailScroll;
+  if (newDetail && detailKey && `${S.view}|${newDetail.dataset.key ?? ""}` === detailKey) newDetail.scrollTop = detailScroll;
   _root.querySelector(".pm-picker-list .is-cursor")?.scrollIntoView({ block: "nearest" });
-  if (S.picker && (searchHadFocus || S.picker.focusSearch)) {
+  if (searchHadFocus || S.picker?.focusSearch || S.focusSearch) {
     const inp = _root.querySelector(".pm-search");
     if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }
-    S.picker.focusSearch = false;
+    if (S.picker) S.picker.focusSearch = false;
+    S.focusSearch = false;
   }
 }
 
-function bar(cur, max, cls) {
-  const pct = max > 0 ? Math.max(0, Math.min(100, (cur / max) * 100)) : 0;
-  return `<div class="pm-bar ${cls}"><i style="width:${pct.toFixed(1)}%"></i></div>`;
+/** Does the current VIEWS view have a modal list open over it (dims the rest)? */
+function viewOverlay() {
+  const v = S.v;
+  return !!(VIEWS[S.view] && v && (v.picker || v.focus === "dest" || v.focus === "qty"));
 }
+
 
 function memberCard(actor, i) {
   const v = vitalsOf(actor);
@@ -316,10 +280,12 @@ function renderMain() {
     ? `<div class="pm-reserve"><span class="pm-label">Reserve</span>${r.reserve.map((a) =>
         `<img class="pm-chip" src="${esc(a.img)}" title="${esc(a.name)}" alt="" onerror="this.style.visibility='hidden'">`).join("")}</div>`
     : "";
-  const cmds = COMMANDS.map((c, i) => `
-    <div class="pm-cmd pm-hit ${c.live ? "" : "is-off"} ${S.focus === "cmd" && S.cmd === i ? "is-cursor" : ""}
-         ${S.focus === "member" && S.cmd === i ? "is-held" : ""}"
-         data-action="cmd" data-index="${i}" ${c.live ? "" : `title="Not available yet"`}>${esc(c.label)}</div>`).join("");
+  const visible = visibleCommands();
+  S.cmd = Math.max(0, Math.min(S.cmd, visible.length - 1));
+  const cmds = visible.map((c, i) => `
+    <div class="pm-cmd pm-hit ${S.focus === "cmd" && S.cmd === i ? "is-cursor" : ""}
+         ${S.focus === "member" && S.cmd === i ? "is-held" : ""} ${c.gmOnly ? "is-gm" : ""}"
+         data-action="cmd" data-index="${i}" title="${esc(c.hint ?? "")}">${esc(c.label)}${c.gmOnly ? `<i class="fas fa-crown pm-gmmark" title="GM only"></i>` : ""}</div>`).join("");
   return `
     <div class="pm-main">
       <div class="pm-win pm-party"><div class="pm-scroll pm-party-list">${members}${reserve}</div></div>
@@ -515,6 +481,7 @@ function moveCursor(key, delta) {
 
 function enterAbility(actor) {
   if (!actor) return;
+  if (!canUseCommand("ability")) { play(SND.buzz, 0.5); return; }
   S.actorId = actor.id;
   S.view = "ability"; S.focus = "skills"; S.skill = 0; S.slot = 0; S.filter = "all";
   _listScroll = 0;
@@ -528,9 +495,64 @@ function cycleCharacter(delta) {
   const i = list.findIndex((a) => a.id === S.actorId);
   const next = list[(i + delta + list.length) % list.length];
   S.actorId = next.id; S.skill = 0; S.slot = 0; S.focus = "skills"; _listScroll = 0;
+  if (VIEWS[S.view]) VIEWS[S.view].enter(ctx, next);
   play(SND.move, 0.45);
   render();
 }
+
+/** Open a VIEWS view, for `actor` when it is about one character. */
+function enterView(id, actor = null) {
+  const view = VIEWS[id];
+  if (!view || !canUseCommand(id)) { play(SND.buzz, 0.5); return; }
+  if (actor) S.actorId = actor.id;
+  S.view = id; S.pendingCmd = null; _listScroll = 0;
+  view.enter(ctx, actor);
+  play(SND.ok);
+  render();
+}
+
+/** Back from a view to the party list, hand on the character it was about. */
+function backToMain() {
+  const id = S.view;
+  S.view = "main"; S.v = null;
+  const i = S.roster.active.findIndex((a) => a.id === S.actorId);
+  if (NEEDS_MEMBER.has(id) && i >= 0) { S.focus = "member"; S.member = i; S.pendingCmd = id; }
+  else { S.focus = "cmd"; S.pendingCmd = null; }
+  const at = visibleCommands().findIndex((c) => c.id === id);
+  if (at >= 0) S.cmd = at;
+  play(SND.back);
+  render();
+}
+
+/** A character was picked on the main screen for the waiting command. */
+function pickMember(actor) {
+  if (!actor) return;
+  // Clicking a portrait straight from the command column picks for the command
+  // under the hand (FF9 lets the mouse skip the "whose?" step).
+  const held = visibleCommands()[S.cmd]?.id;
+  const id = S.pendingCmd ?? (NEEDS_MEMBER.has(held) ? held : "ability");
+  if (!canUseCommand(id)) { play(SND.buzz, 0.5); return; }
+  if (id === "ability") enterAbility(actor);
+  else enterView(id, actor);
+}
+
+// What the VIEWS views get to drive the menu with.
+const ctx = {
+  S,
+  render: () => render(),
+  toast: (msg) => toast(msg),
+  root: () => _root,
+  roster: () => S.roster,
+  actor: () => currentActor(),
+  back: () => backToMain(),
+  cycleCharacter: (d) => cycleCharacter(d),
+  setBusy: (b) => { S.busy = !!b; },
+  resetScroll: () => { _listScroll = 0; },
+  focusSearch: () => { S.focusSearch = true; },
+  refreshRoster: async () => { S.roster = await getPartyRoster(); },
+  close: () => closePartyMenu(),
+  isOpen: () => S.open,
+};
 
 function setFilter(id) {
   S.filter = id; S.skill = 0; S.slot = 0; S.focus = "skills"; _listScroll = 0;
@@ -539,13 +561,19 @@ function setFilter(id) {
 }
 
 function confirmCmd() {
-  const c = COMMANDS[S.cmd];
-  if (!c.live) { play(SND.buzz, 0.5); return; }
+  const c = visibleCommands()[S.cmd];
+  if (!c) return;
   if (c.id === "close") { closePartyMenu(); return; }
-  if (c.id === "ability") {
+  if (!canUseCommand(c.id)) { play(SND.buzz, 0.5); return; }
+  if (NEEDS_MEMBER.has(c.id)) {
     if (!S.roster.active.length) { play(SND.buzz, 0.5); return; }
-    S.focus = "member"; play(SND.ok); render();
+    // Start on the user's own character when they have one in the party.
+    const mine = S.roster.active.findIndex((a) => a.id === game.user?.character?.id || (!game.user?.isGM && a.isOwner));
+    if (S.focus !== "member" && mine >= 0) S.member = mine;
+    S.pendingCmd = c.id; S.focus = "member"; play(SND.ok); render();
+    return;
   }
+  enterView(c.id);
 }
 
 function openSlots(actor) {
@@ -640,6 +668,7 @@ function onHover(ev) {
   else if (a === "skill" && S.focus === "skills" && S.skill !== i) { S.skill = i; changed = true; }
   else if (a === "slot" && S.focus === "slots" && S.slot !== i) { S.slot = i; changed = true; }
   else if (a === "pick" && S.picker && S.picker.index !== i) { S.picker.index = i; changed = true; }
+  else if (VIEWS[S.view]) changed = !!VIEWS[S.view].hover(ctx, a, i);
   if (changed) { play(SND.move, 0.3); render(); }
 }
 
@@ -651,7 +680,7 @@ async function onClick(ev) {
   const actor = currentActor();
   switch (a) {
     case "cmd": S.focus = "cmd"; S.cmd = i; confirmCmd(); break;
-    case "member": enterAbility(S.roster.active[i]); break;
+    case "member": pickMember(S.roster.active[i]); break;
     case "filter": if (!S.picker) setFilter(el.dataset.id); break;
     case "prev-char": cycleCharacter(-1); break;
     case "next-char": cycleCharacter(1); break;
@@ -672,41 +701,21 @@ async function onClick(ev) {
     case "showall":
       if (S.picker) { S.picker.showAll = el.checked; await refreshPickerList(actor); render(); }
       break;
-    default: break;
+    default:
+      if (VIEWS[S.view]) await VIEWS[S.view].click(ctx, a, el, ev);
+      break;
   }
 }
 
 function onInput(ev) {
+  if (VIEWS[S.view]) { VIEWS[S.view].input?.(ctx, ev); return; }
   if (!ev.target.classList?.contains("pm-search") || !S.picker) return;
   S.picker.query = ev.target.value;
   S.picker.index = S.picker.query ? 1 : 0;
   render();
 }
 
-/**
- * Next skill index for an arrow key, found by LAYOUT rather than index math:
- * section headers span the full row, so after a section with an odd count the
- * grid's columns no longer line up with `index ± 2`. Left/Right stay in
- * reading order; Up/Down pick the nearest row above/below, closest column.
- */
-function gridStep(k) {
-  const els = [..._root?.querySelectorAll(".pm-skill-list .pm-skill") ?? []];
-  const cur = els[S.skill];
-  if (!cur) return null;
-  if (k === "ArrowLeft") return S.skill > 0 ? S.skill - 1 : null;
-  if (k === "ArrowRight") return S.skill < els.length - 1 ? S.skill + 1 : null;
-  const r0 = cur.getBoundingClientRect();
-  const down = k === "ArrowDown";
-  let best = null, bestScore = Infinity;
-  els.forEach((el, i) => {
-    const r = el.getBoundingClientRect();
-    const dy = down ? r.top - r0.top : r0.top - r.top;
-    if (dy < 4) return;                       // same row or wrong direction
-    const score = dy * 1000 + Math.abs(r.left - r0.left);
-    if (score < bestScore) { bestScore = score; best = i; }
-  });
-  return best;
-}
+const gridStep = (k) => gridStepIn(_root, ".pm-skill-list .pm-skill", S.skill, k);
 
 // The "Open Party Menu" keybinding must also CLOSE it, but this capture-phase
 // handler stops the event before Foundry's keybinding manager would see it.
@@ -723,13 +732,13 @@ function onKey(ev) {
   const typing = ev.target?.classList?.contains("pm-search");
   if (!typing && isToggleKey(ev)) {
     ev.preventDefault(); ev.stopPropagation();
-    closePartyMenu();
+    if (!S.busy) closePartyMenu();   // never mid-write: the view still owns S.v
     return;
   }
   const k = ev.key;
   const nav = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter", "Escape", "Tab", "Backspace", "Delete"];
   if (typing && !["ArrowUp", "ArrowDown", "Enter", "Escape"].includes(k)) return;
-  if (!nav.includes(k) && !["q", "e", "Q", "E", "PageUp", "PageDown"].includes(k)) {
+  if (!nav.includes(k) && !["q", "e", "Q", "E", "u", "U", "PageUp", "PageDown"].includes(k)) {
     // Swallow everything else too while the menu is up, so WASD / hotkeys do
     // not drive the canvas behind it. Typing in the search box returned above.
     ev.stopPropagation();
@@ -752,19 +761,22 @@ function onKey(ev) {
 
   if (S.view === "main") {
     if (S.focus === "cmd") {
-      if (k === "ArrowUp") { moveCursor("cmd", -1); S.cmd = (S.cmd + COMMANDS.length) % COMMANDS.length; render(); }
-      else if (k === "ArrowDown") { moveCursor("cmd", 1); S.cmd %= COMMANDS.length; render(); }
+      const n = visibleCommands().length;
+      if (k === "ArrowUp") { moveCursor("cmd", -1); S.cmd = (S.cmd + n) % n; render(); }
+      else if (k === "ArrowDown") { moveCursor("cmd", 1); S.cmd %= n; render(); }
       else if (k === "Enter") confirmCmd();
       else if (k === "Escape") closePartyMenu();
     } else if (S.focus === "member") {
       const n = S.roster.active.length || 1;
       if (k === "ArrowUp") { moveCursor("member", -1); S.member = (S.member + n) % n; render(); }
       else if (k === "ArrowDown") { moveCursor("member", 1); S.member %= n; render(); }
-      else if (k === "Enter") enterAbility(S.roster.active[S.member]);
-      else if (k === "Escape") { S.focus = "cmd"; play(SND.back); render(); }
+      else if (k === "Enter") pickMember(S.roster.active[S.member]);
+      else if (k === "Escape") { S.focus = "cmd"; S.pendingCmd = null; play(SND.back); render(); }
     }
     return;
   }
+
+  if (VIEWS[S.view]) { VIEWS[S.view].key(ctx, k, ev); return; }
 
   // Ability view
   if (k === "q" || k === "Q" || k === "PageUp") return cycleCharacter(-1);
@@ -775,12 +787,12 @@ function onKey(ev) {
   }
   if (S.focus === "skills") {
     const n = filteredSkills(actor).length;
-    if (!n) { if (k === "Escape") { S.view = "main"; S.focus = "member"; play(SND.back); render(); } return; }
+    if (!n) { if (k === "Escape") backToMain(); return; }
     if (k.startsWith("Arrow")) {
       const next = gridStep(k);
       if (next !== null && next >= 0 && next < n) { moveCursor("skill", next - S.skill); render(); }
     } else if (k === "Enter") openSlots(actor);
-    else if (k === "Escape") { S.view = "main"; S.focus = "member"; play(SND.back); render(); }
+    else if (k === "Escape") backToMain();
   } else if (S.focus === "slots") {
     const slots = resolvedSlotsOf(actor, currentSkill(actor));
     if (k === "ArrowUp" && S.slot > 0) { moveCursor("slot", -1); render(); }
@@ -810,7 +822,24 @@ Hooks.on("updateActor", (actor, change) => {
 for (const hook of ["updateItem", "createItem", "deleteItem"]) {
   Hooks.on(hook, (item) => { if (item?.parent && isRelevantActor(item.parent)) scheduleRender(); });
 }
+// Status lists applied effects: an AE on the character, or on an item they carry.
+for (const hook of ["createActiveEffect", "updateActiveEffect", "deleteActiveEffect"]) {
+  Hooks.on(hook, (fx) => {
+    const owner = fx?.parent?.documentName === "Item" ? fx.parent.parent : fx?.parent;
+    if (owner?.documentName === "Actor" && isRelevantActor(owner)) scheduleRender();
+  });
+}
 Hooks.on("canvasReady", () => scheduleRender());
+// The GM changed what players may open: leave a view that is no longer granted.
+Hooks.on("fuPartyMenuAccessChanged", () => {
+  if (!S.open) return;
+  const stale = (S.view !== "main" && !canUseCommand(S.view)) || (S.pendingCmd && !canUseCommand(S.pendingCmd));
+  // A write in flight still holds S.v; it is reset when that write returns.
+  if (stale && !S.busy) {
+    S.view = "main"; S.focus = "cmd"; S.v = null; S.picker = null; S.pendingCmd = null;
+  }
+  scheduleRender();
+});
 
 // ── styles ────────────────────────────────────────────────────────────────────
 
@@ -1024,6 +1053,70 @@ function ensureStyles() {
 #${ROOT_ID} .pm-pick { display: flex; align-items: center; gap: 10px; padding: 3px 6px; border-radius: 8px; cursor: pointer; font-size: 16px; }
 
 #${ROOT_ID} .pm-toast { position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%); font-size: 16px; font-weight: 700; padding: 8px 20px; }
+
+/* a label that opens a window would sit on the gold rivet */
+#${ROOT_ID} .pm-win > .pm-label:first-child, #${ROOT_ID} .pm-win > .pm-scroll > .pm-label:first-child { padding-left: 12px; }
+#${ROOT_ID} .pm-who.pm-who-plain { padding-left: 26px; }
+
+/* command column: GM-only mark */
+#${ROOT_ID} .pm-gmmark { font-size: 11px; margin-left: 8px; color: var(--gold-3); vertical-align: middle; }
+
+/* shared list bits for the Item / Equip / Status / Setup views */
+#${ROOT_ID} .pm-skill-list.pm-onecol { grid-template-columns: minmax(0, 1fr); }
+#${ROOT_ID} .pm-qty { color: var(--ink-soft); }
+#${ROOT_ID} .pm-worn { font-weight: 700; font-size: 11px; padding: 0 5px; border-radius: 4px; color: #fff; background: var(--accent); text-shadow: none; }
+#${ROOT_ID} .pm-bagicon { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; font-size: 26px; color: var(--gold-3); }
+#${ROOT_ID} .pm-portrait.xs .pm-bagicon { font-size: 18px; }
+#${ROOT_ID} .pm-actions { display: flex; gap: 8px; margin: 0 0 10px; }
+#${ROOT_ID} .pm-why { margin-left: auto; font-size: 11px; font-weight: 600; color: var(--ink-soft); opacity: .85; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 55%; }
+#${ROOT_ID} .pm-pick.is-locked, #${ROOT_ID} .pm-surow.is-locked { opacity: .5; }
+#${ROOT_ID} .pm-pick.is-locked img { filter: grayscale(1); }
+#${ROOT_ID} .pm-qtybox { width: min(380px, calc(100% - 48px)); }
+#${ROOT_ID} .pm-qtyrow { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 10px 0; }
+#${ROOT_ID} .pm-qtyval { font-size: 32px; font-weight: 700; min-width: 2.2em; text-align: center; font-variant-numeric: tabular-nums; }
+
+/* equip */
+#${ROOT_ID} .pm-eqwin { padding-left: 46px; }
+#${ROOT_ID} .pm-eqlist { display: flex; flex-direction: column; gap: 4px; }
+#${ROOT_ID} .pm-eqslot { display: grid; grid-template-columns: 130px 30px minmax(0, 1fr); align-items: center; gap: 10px; padding: 6px 8px; border-radius: 8px; cursor: pointer; }
+#${ROOT_ID} .pm-eqslot img, #${ROOT_ID} .pm-eqnone { width: 30px; height: 30px; border: 0; border-radius: 4px; }
+#${ROOT_ID} .pm-eqnone { background: rgba(59,42,25,.08); box-shadow: inset 0 0 0 1px rgba(80,52,30,.2); }
+#${ROOT_ID} .pm-eqlabel { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+#${ROOT_ID} .pm-eqlabel i { width: 18px; margin-right: 6px; text-align: center; color: var(--gold-3); }
+#${ROOT_ID} .pm-eqname { font-size: 17px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#${ROOT_ID} .pm-eqname.is-empty, #${ROOT_ID} .pm-suname.is-empty { color: var(--ink-dim); font-style: italic; }
+#${ROOT_ID} .pm-eqslot.is-cursor, #${ROOT_ID} .pm-surow.is-cursor {
+  background: linear-gradient(rgba(255,255,255,.55), rgba(255,255,255,.12) 70%);
+  box-shadow: inset 0 0 0 1px rgba(154,122,43,.45), 0 0 10px var(--glow);
+}
+#${ROOT_ID} .pm-candhead { margin-bottom: 6px; }
+#${ROOT_ID} .pm-candlist { max-height: none; }
+#${ROOT_ID} .pm-defline { display: flex; gap: 22px; margin-top: auto; padding-top: 10px; border-top: 1px solid rgba(92,66,30,.3); font-size: 18px; font-variant-numeric: tabular-nums; }
+#${ROOT_ID} .pm-defline b { font-weight: 700; }
+
+/* status */
+#${ROOT_ID} .pm-attrs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 4px 0 6px; }
+#${ROOT_ID} .pm-attr { display: flex; flex-direction: column; align-items: center; padding: 6px 4px; border-radius: 8px; background: rgba(255,247,213,.55); box-shadow: inset 0 0 0 1px rgba(154,122,43,.45); }
+#${ROOT_ID} .pm-attr b { font-size: 22px; }
+#${ROOT_ID} .pm-attr em { margin: 0; }
+#${ROOT_ID} .pm-detail .pm-defline { margin: 6px 0 10px; }
+#${ROOT_ID} .pm-affs { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 4px; margin: 4px 0 10px; }
+#${ROOT_ID} .pm-aff { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 0; border-radius: 6px; font-size: 12px; background: rgba(59,42,25,.06); }
+#${ROOT_ID} .pm-aff i { font-size: 15px; color: var(--ink-soft); }
+#${ROOT_ID} .pm-aff.aff-vu b { color: var(--low); } #${ROOT_ID} .pm-aff.aff-rs b { color: var(--mp); }
+#${ROOT_ID} .pm-aff.aff-im b { color: #4b3517; } #${ROOT_ID} .pm-aff.aff-ab b { color: #2e7d32; }
+#${ROOT_ID} .pm-effdesc { margin-top: 8px; max-height: 40%; overflow-y: auto; }
+
+/* setup */
+#${ROOT_ID} .pm-sulist { padding-left: 36px; }
+#${ROOT_ID} .pm-surow { display: flex; align-items: center; gap: 10px; padding: 4px 6px; border-radius: 8px; cursor: pointer; min-height: 34px; }
+#${ROOT_ID} .pm-surow .pm-portrait.xs { width: 30px; height: 30px; }
+#${ROOT_ID} .pm-sunum { width: 14px; text-align: right; font-weight: 700; color: var(--ink-soft); font-size: 13px; }
+#${ROOT_ID} .pm-suname { flex: 0 1 auto; font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#${ROOT_ID} .pm-surow .pm-sub { margin-left: auto; text-align: right; }
+#${ROOT_ID} .pm-check { width: 18px; text-align: center; color: var(--gold-3); font-size: 16px; }
+#${ROOT_ID} .pm-btn.pm-mini { margin-left: auto; padding: 0 8px; font-size: 11px; line-height: 1.6; }
+#${ROOT_ID} .pm-sunote { margin-top: 12px; }
 
 @media (max-width: 760px) {
   #${ROOT_ID} .pm-main { grid-template-columns: 1fr; height: auto; max-height: calc(100vh - 90px); }
