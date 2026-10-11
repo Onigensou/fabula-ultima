@@ -534,6 +534,7 @@
     _posOverrides: new Map(),
     _scanQueued: false,
     _activeCandidate: null,
+    _activeTalkCandidate: null,
     _followupScanTimers: [],
 
     getActiveCandidate() {
@@ -612,7 +613,8 @@
         const partyToken = await resolvePartyToken();
         if (!partyToken) {
           this._activeCandidate = null;
-          this.ui?.hide();
+          this._activeTalkCandidate = null;
+          this.ui?.hideAll();
           DBG.verboseLog(DEBUG_SCOPE, "Scan aborted: no party token.", { reason });
           return;
         }
@@ -627,7 +629,10 @@
           ...(canvas.tiles?.placeables ?? []),
           ...(canvas.tokens?.placeables ?? []).filter(t => t.id !== partyToken.id)
         ];
+        // Examine points (tiles) and talking NPCs (tokens) are offered side by
+        // side, so the nearest of each kind is tracked separately.
         let best = null;
+        let bestTalk = null;
 
         for (const tile of tiles) {
           const data = readEventData(tile);
@@ -641,17 +646,22 @@
 
           if (d > data.proximityPx) continue;
 
-          if (!best || d < best.distance) {
-            best = {
-              tileId: tile.id,
-              tileName: tile.document?.name || tile.name || "Event Tile",
-              distance: d,
-              proximityPx: data.proximityPx
-            };
+          const candidate = {
+            tileId: tile.id,
+            tileName: tile.document?.name || tile.name || "Event Tile",
+            distance: d,
+            proximityPx: data.proximityPx
+          };
+
+          if (isTokenSource(tile)) {
+            if (!bestTalk || d < bestTalk.distance) bestTalk = candidate;
+          } else if (!best || d < best.distance) {
+            best = candidate;
           }
         }
 
         this._activeCandidate = best;
+        this._activeTalkCandidate = bestTalk;
 
         if (best) {
           this.ui?.showForCandidate(
@@ -663,11 +673,19 @@
           this.ui?.hide();
         }
 
+        const talkToken = bestTalk ? (canvas.tokens?.get(bestTalk.tileId) ?? null) : null;
+        if (talkToken) {
+          this.ui?.showTalkForCandidate(bestTalk, talkToken);
+        } else {
+          this.ui?.hideTalk();
+        }
+
         DBG.verboseLog(DEBUG_SCOPE, "Scan result.", {
           reason,
           partyTokenId: partyToken.id,
           override: ov ?? null,
-          activeCandidate: best
+          activeCandidate: best,
+          activeTalkCandidate: bestTalk
         });
       } catch (e) {
         DBG.error(DEBUG_SCOPE, "scan failed:", e);
@@ -692,6 +710,10 @@
         if (this._activeCandidate?.tileId === safeTileId) {
           this._activeCandidate = null;
           this.ui?.hide();
+        }
+        if (this._activeTalkCandidate?.tileId === safeTileId) {
+          this._activeTalkCandidate = null;
+          this.ui?.hideTalk();
         }
 
         if (game?.user?.isGM) {
@@ -759,6 +781,10 @@
               if (this._activeCandidate?.tileId === runningTileId) {
                 this._activeCandidate = null;
                 this.ui?.hide();
+              }
+              if (this._activeTalkCandidate?.tileId === runningTileId) {
+                this._activeTalkCandidate = null;
+                this.ui?.hideTalk();
               }
             }
 
@@ -900,6 +926,7 @@
       this._posOverrides.clear();
       this._scanQueued = false;
       this._activeCandidate = null;
+      this._activeTalkCandidate = null;
       this._clearFollowupScans();
       clientRunningTiles.clear();
 

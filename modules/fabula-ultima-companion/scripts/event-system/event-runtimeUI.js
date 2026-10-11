@@ -6,11 +6,13 @@
  * scripts/event-system/event-runtimeUI.js
  *
  * What this does:
- * - Handles only the runtime UI/UX for the Event System "!" icon
+ * - Handles only the runtime UI/UX for the Event System buttons:
+ *   "!" over the party token (examine point) and a talk button over an NPC
  * - Creates the overlay layer
  * - Injects CSS styling
  * - Shows / hides the button with animation
- * - Repositions the button so it follows the party token
+ * - Repositions each button so it follows its token, docking beside any
+ *   other overhead icon (shop, blacksmith) already sitting on that token
  *
  * Important:
  * - This script does NOT decide when events should run.
@@ -130,6 +132,11 @@
   transform: translateY(-1px);
 }
 
+.${C.INTERACT_BUTTON_CLASS || "oni-event-btn"}.is-talk .mark {
+  font-size: 17px;
+  transform: none;
+}
+
 .${C.INTERACT_BUTTON_CLASS || "oni-event-btn"}.is-visible {
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
@@ -155,6 +162,190 @@
   }
 
   // ------------------------------------------------------------
+  // Dock
+  // ------------------------------------------------------------
+  // Other systems park their own overhead icon on a token (shop, blacksmith).
+  // An event button on the same token joins that row instead of covering it:
+  // same height, next free slot to the left.
+  const DOCK_NEIGHBOUR_SELECTOR = ".fu-shop-btn, .fu-refine-prox-btn";
+  const DOCK_STEP_PX = 44;
+
+  function findDockNeighbours(tokenId) {
+    const out = [];
+    const id = String(tokenId || "");
+    if (!id) return out;
+
+    for (const el of document.querySelectorAll(DOCK_NEIGHBOUR_SELECTOR)) {
+      if (el.dataset?.tokenId !== id) continue;
+      if (el.classList.contains("is-hiding")) continue;
+
+      const x = parseFloat(el.style.left);
+      const y = parseFloat(el.style.top);
+      if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+
+      out.push({ x, y });
+    }
+
+    return out;
+  }
+
+  function resolveDockPosition(tokenId, nativeX, nativeY) {
+    const neighbours = findDockNeighbours(tokenId);
+    if (!neighbours.length) return { x: nativeX, y: nativeY };
+
+    let leftmost = neighbours[0];
+    for (const n of neighbours) {
+      if (n.x < leftmost.x) leftmost = n;
+    }
+
+    return { x: leftmost.x - DOCK_STEP_PX, y: leftmost.y };
+  }
+
+  // ------------------------------------------------------------
+  // One overhead button (examine "!" or NPC talk)
+  // ------------------------------------------------------------
+  class OverheadButton {
+    constructor(ui, { kind, mark, title }) {
+      this.ui = ui;
+      this.kind = kind;
+      this.defaultTitle = title;
+
+      this.tileId = null;
+      this.tokenId = null;
+
+      this.desiredVisible = false;
+      this.state = "hidden";
+      this.hideTimer = null;
+      this.opening = false;
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = ui.C.INTERACT_BUTTON_CLASS || "oni-event-btn";
+      if (kind === "talk") btn.classList.add("is-talk");
+      btn.title = title;
+      btn.innerHTML = `<div class="mark">${mark}</div>`;
+
+      btn.addEventListener("click", async (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+
+        const tileId = this.tileId;
+        if (!tileId) return;
+        if (this.opening) return;
+
+        this.opening = true;
+        btn.disabled = true;
+
+        try {
+          await ui.onInteract(tileId);
+        } finally {
+          setTimeout(() => {
+            this.opening = false;
+            if (this.el) this.el.disabled = false;
+          }, 350);
+        }
+      });
+
+      ui.layer.appendChild(btn);
+      this.el = btn;
+    }
+
+    destroy() {
+      if (this.hideTimer) {
+        clearTimeout(this.hideTimer);
+        this.hideTimer = null;
+      }
+      this.el?.remove();
+      this.el = null;
+    }
+
+    showFor(candidate, token, overrideXY = null) {
+      if (!this.el || !token) return;
+
+      this.tileId = candidate?.tileId ?? null;
+      this.tokenId = token.id;
+      this.desiredVisible = true;
+      this.el.title = candidate?.tileName ? `${this.defaultTitle}: ${candidate.tileName}` : this.defaultTitle;
+
+      this.place(token, overrideXY);
+      this._show();
+    }
+
+    hide() {
+      this.desiredVisible = false;
+      this.tileId = null;
+      this._hide();
+    }
+
+    tick() {
+      if (!this.desiredVisible) return;
+      if (!this.tokenId) return;
+
+      const token = canvas?.tokens?.get?.(this.tokenId) || null;
+      if (!token) return;
+
+      const override = this.ui.getOverride(this.tokenId);
+      this.place(token, override ? { x: override.x, y: override.y } : null);
+    }
+
+    place(token, overrideXY = null) {
+      if (!this.el || !token) return;
+
+      const center = getAuthoritativeTokenCenterPx(token, overrideXY);
+      const screen = worldToScreen(center.x, center.y);
+
+      // Keep the exact same raised positioning logic from the working version
+      const verticalOffset = Math.max(54, Math.round((token.h / 2) + 63));
+      const docked = resolveDockPosition(token.id, screen.x, screen.y - verticalOffset);
+
+      this.el.style.left = `${docked.x}px`;
+      this.el.style.top = `${docked.y}px`;
+    }
+
+    _show() {
+      if (!this.el) return;
+      if (this.state === "shown" || this.state === "showing") return;
+
+      if (this.state === "hiding") {
+        if (this.hideTimer) clearTimeout(this.hideTimer);
+        this.hideTimer = null;
+      }
+
+      this.state = "showing";
+      this.el.classList.remove("is-hiding");
+
+      requestAnimationFrame(() => {
+        if (!this.el) return;
+        this.el.classList.add("is-visible");
+        this.state = "shown";
+      });
+    }
+
+    _hide() {
+      if (!this.el) return;
+      if (this.state === "hidden" || this.state === "hiding") return;
+
+      this.state = "hiding";
+      this.el.classList.remove("is-visible");
+      this.el.classList.add("is-hiding");
+
+      this.hideTimer = setTimeout(() => {
+        if (this.desiredVisible) {
+          this.el?.classList.remove("is-hiding");
+          this.el?.classList.add("is-visible");
+          this.state = "shown";
+          this.hideTimer = null;
+          return;
+        }
+
+        this.el?.classList.remove("is-hiding");
+        this.state = "hidden";
+        this.hideTimer = null;
+      }, 160);
+    }
+  }
+
+  // ------------------------------------------------------------
   // Runtime UI class
   // ------------------------------------------------------------
   class RuntimeUI {
@@ -170,15 +361,10 @@
       this.onInteract = typeof onInteract === "function" ? onInteract : (async () => {});
 
       this.layer = null;
-      this.button = null;
 
-      this.currentTileId = null;
-      this.currentTokenId = null;
-
-      this.desiredVisible = false;
-      this.state = "hidden";
-      this.hideTimer = null;
-      this.opening = false;
+      // examine = "!" over the party token; talk = over the NPC that speaks
+      this.examine = null;
+      this.talk = null;
 
       this._tickerFn = null;
     }
@@ -192,45 +378,20 @@
       this.layer.id = this.C.UI_LAYER_ID || "oni-event-ui-layer";
       document.body.appendChild(this.layer);
 
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = this.C.INTERACT_BUTTON_CLASS || "oni-event-btn";
-      btn.title = "Interact";
-      btn.innerHTML = `<div class="mark">${this.C.INTERACT_BUTTON_TEXT || "!"}</div>`;
-
-      btn.addEventListener("click", async (ev) => {
-        ev.preventDefault();
-        ev.stopPropagation();
-
-        const tileId = this.currentTileId;
-        if (!tileId) return;
-        if (this.opening) return;
-
-        this.opening = true;
-        btn.disabled = true;
-
-        try {
-          await this.onInteract(tileId);
-        } finally {
-          setTimeout(() => {
-            this.opening = false;
-            if (this.button) this.button.disabled = false;
-          }, 350);
-        }
+      this.examine = new OverheadButton(this, {
+        kind: "examine",
+        mark: this.C.INTERACT_BUTTON_TEXT || "!",
+        title: "Interact"
+      });
+      this.talk = new OverheadButton(this, {
+        kind: "talk",
+        mark: this.C.TALK_BUTTON_TEXT || "💬",
+        title: "Talk"
       });
 
-      this.layer.appendChild(btn);
-      this.button = btn;
-
       this._tickerFn = () => {
-        if (!this.desiredVisible) return;
-        if (!this.currentTokenId) return;
-
-        const token = canvas?.tokens?.get?.(this.currentTokenId) || null;
-        if (!token) return;
-
-        const override = this.getOverride(this.currentTokenId);
-        this.placeForToken(token, override ? { x: override.x, y: override.y } : null);
+        this.examine?.tick();
+        this.talk?.tick();
       };
 
       try {
@@ -241,103 +402,51 @@
     }
 
     stop() {
-      if (this.hideTimer) {
-        clearTimeout(this.hideTimer);
-        this.hideTimer = null;
-      }
-
       try {
         if (this._tickerFn) canvas.app.ticker.remove(this._tickerFn);
       } catch (_) {}
 
-      this.button?.remove();
+      this.examine?.destroy();
+      this.talk?.destroy();
       this.layer?.remove();
 
-      this.button = null;
+      this.examine = null;
+      this.talk = null;
       this.layer = null;
-      this.currentTileId = null;
-      this.currentTokenId = null;
-      this.desiredVisible = false;
-      this.state = "hidden";
-      this.opening = false;
       this._tickerFn = null;
 
       this.DBG.verboseLog(DEBUG_SCOPE, "Runtime UI stopped.");
     }
 
+    // Examine point: the "!" rides on the party token.
     showForCandidate(candidate, partyToken, overrideXY = null) {
-      if (!this.button || !partyToken) return;
-
-      this.currentTileId = candidate?.tileId ?? null;
-      this.currentTokenId = partyToken.id;
-      this.desiredVisible = true;
-      this.button.title = candidate?.tileName ? `Interact: ${candidate.tileName}` : "Interact";
-
-      this.placeForToken(partyToken, overrideXY);
-      this._show();
+      this.examine?.showFor(candidate, partyToken, overrideXY);
     }
 
     hide() {
-      this.desiredVisible = false;
-      this.currentTileId = null;
-      this._hide();
+      this.examine?.hide();
     }
 
-    _show() {
-      if (!this.button) return;
-      if (this.state === "shown" || this.state === "showing") return;
-
-      if (this.state === "hiding") {
-        if (this.hideTimer) clearTimeout(this.hideTimer);
-        this.hideTimer = null;
-      }
-
-      this.state = "showing";
-      this.button.classList.remove("is-hiding");
-
-      requestAnimationFrame(() => {
-        if (!this.button) return;
-        this.button.classList.add("is-visible");
-        this.state = "shown";
-      });
+    // NPC talk: the button sits over the NPC that carries the event.
+    showTalkForCandidate(candidate, npcToken) {
+      this.talk?.showFor(candidate, npcToken, null);
     }
 
-    _hide() {
-      if (!this.button) return;
-      if (this.state === "hidden" || this.state === "hiding") return;
+    hideTalk() {
+      this.talk?.hide();
+    }
 
-      this.state = "hiding";
-      this.button.classList.remove("is-visible");
-      this.button.classList.add("is-hiding");
-
-      this.hideTimer = setTimeout(() => {
-        if (this.desiredVisible) {
-          this.button?.classList.remove("is-hiding");
-          this.button?.classList.add("is-visible");
-          this.state = "shown";
-          this.hideTimer = null;
-          return;
-        }
-
-        this.button?.classList.remove("is-hiding");
-        this.state = "hidden";
-        this.hideTimer = null;
-      }, 160);
+    hideAll() {
+      this.examine?.hide();
+      this.talk?.hide();
     }
 
     placeForToken(token, overrideXY = null) {
-      if (!this.button || !token) return;
-
-      const center = getAuthoritativeTokenCenterPx(token, overrideXY);
-      const screen = worldToScreen(center.x, center.y);
-
-      // Keep the exact same raised positioning logic from the working version
-      const verticalOffset = Math.max(54, Math.round((token.h / 2) + 63));
-      const finalX = screen.x;
-      const finalY = screen.y - verticalOffset;
-
-      this.button.style.left = `${finalX}px`;
-      this.button.style.top = `${finalY}px`;
+      if (!token) return;
+      if (this.examine?.desiredVisible && this.examine.tokenId === token.id) {
+        this.examine.place(token, overrideXY);
+      }
+      this.talk?.tick();
     }
   }
 
