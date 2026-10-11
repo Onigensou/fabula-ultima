@@ -11,6 +11,11 @@
 // Tools self-register via registerDevTool({ id, icon, label, onClick }) — the
 // menu is order-independent (registration appends to a list; the stack reads it
 // when shown). New tools get a slot for free.
+//
+// TOGGLE tools (AI Autopilot, Customize Next Battle, …) also pass `active` and
+// re-register with the same id whenever their state flips. That updates the one
+// button IN PLACE (icon, tooltip, gold "on" ring) — the stack is never rebuilt
+// for it, so the panel stays still under the GM's cursor.
 
 import { log, warn } from "./logger.js";
 
@@ -23,18 +28,25 @@ const CHILD_GAP = 9;      // vertical gap between stacked buttons
 const LEFT = 16;
 const GAP_ABOVE_PLAYERS = 12;
 
-// { id, icon, label, onClick }
+// { id, icon, label, onClick, active }
 const _tools = [];
 let _booted = false;
 
 // ── registration ──────────────────────────────────────────────────────────
-export function registerDevTool({ id, icon = "•", label = "Tool", onClick } = {}) {
+export function registerDevTool({ id, icon = "•", label = "Tool", onClick, active = false } = {}) {
   if (!id || typeof onClick !== "function") return;
   const i = _tools.findIndex((t) => t.id === id);
-  const tool = { id, icon, label, onClick };
+  const tool = { id, icon, label, onClick, active: !!active };
   if (i >= 0) _tools[i] = tool; else _tools.push(tool);
-  // Rebuild the stack if it's currently shown.
-  if (document.getElementById(KIDS_ID)) buildChildren();
+
+  // Keep a shown stack current WITHOUT rebuilding it: a known tool refreshes
+  // its own button, a new one is appended.
+  const kids = document.getElementById(KIDS_ID);
+  if (!kids) return;
+  const existing = [...kids.children].find((c) => c.dataset.toolId === id);
+  if (existing) { paintChild(existing, tool); return; }
+  kids.querySelector(".fud-dt-empty")?.remove();
+  kids.appendChild(makeChild(tool));
 }
 
 // Bottom offset (px) just ABOVE the dev-tools button — tool panels anchor here
@@ -111,6 +123,30 @@ function toggle() {
   }
 }
 
+// Icon / tooltip / "on" ring — everything about a button that can change.
+function paintChild(el, tool) {
+  el.title = tool.label;
+  el.textContent = tool.icon;
+  el.classList.toggle("on", !!tool.active);
+}
+
+function makeChild(tool, delayMs = 0) {
+  const b = document.createElement("div");
+  b.className = "fud-dt-child";
+  b.dataset.toolId = tool.id;
+  paintChild(b, tool);
+  b.style.animationDelay = `${delayMs}ms`;
+  b.addEventListener("click", (ev) => {
+    ev.stopPropagation();
+    // Look the tool up by id — a toggle re-registers itself, so the entry
+    // captured when this button was built may be stale.
+    const live = _tools.find((t) => t.id === tool.id) ?? tool;
+    try { live.onClick(); }
+    catch (e) { warn(`dev-tools-menu: tool "${live.id}" onClick threw`, e); }
+  });
+  return b;
+}
+
 function buildChildren() {
   document.getElementById(KIDS_ID)?.remove();
   const kids = document.createElement("div");
@@ -123,20 +159,8 @@ function buildChildren() {
     empty.title = "No tools registered.";
     kids.appendChild(empty);
   } else {
-    _tools.forEach((tool, i) => {
-      const b = document.createElement("div");
-      b.className = "fud-dt-child";
-      b.title = tool.label;
-      b.textContent = tool.icon;
-      // Staggered pop-in (column-reverse → first tool nearest the parent).
-      b.style.animationDelay = `${i * 35}ms`;
-      b.addEventListener("click", (ev) => {
-        ev.stopPropagation();
-        try { tool.onClick(); }
-        catch (e) { warn(`dev-tools-menu: tool "${tool.id}" onClick threw`, e); }
-      });
-      kids.appendChild(b);
-    });
+    // Staggered pop-in (column-reverse → first tool nearest the parent).
+    _tools.forEach((tool, i) => kids.appendChild(makeChild(tool, i * 35)));
   }
 
   document.body.appendChild(kids);
@@ -179,6 +203,12 @@ function ensureStyle() {
 #${KIDS_ID} .fud-dt-child:hover {
   transform: translateY(-1px) scale(1.08);
   border-color: rgba(255,216,102,.7); box-shadow: 0 4px 12px rgba(0,0,0,.6);
+}
+/* Toggle tool that is switched ON — same gold ring as the open launcher. */
+#${KIDS_ID} .fud-dt-child.on,
+#${KIDS_ID} .fud-dt-child.on:hover {
+  border: 2px solid rgba(255,216,102,.95);
+  box-shadow: 0 0 0 2px rgba(255,216,102,.28), 0 0 10px rgba(255,216,102,.45), 0 2px 7px rgba(0,0,0,.5);
 }
 #${KIDS_ID} .fud-dt-empty {
   pointer-events: auto; width: ${CHILD_SIZE}px; height: ${CHILD_SIZE}px; border-radius: 50%;

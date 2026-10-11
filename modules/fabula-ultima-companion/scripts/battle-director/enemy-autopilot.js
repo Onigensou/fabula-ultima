@@ -103,11 +103,12 @@ export function registerAutopilotDevTool() {
     id: "enemy-autopilot",
     icon: autopilotToolIcon(),
     label: autopilotToolLabel(),
+    active: isAutopilotEnabled(),
     onClick: async () => {
       await setAutopilotEnabled(!isAutopilotEnabled());
       const on = isAutopilotEnabled();
       ui.notifications?.info(`AI Autopilot ${on ? "ON — Director drives non-player combatants (enemies + guests) up to the action card." : "OFF — all turns are manual."}`);
-      register(); // re-register to refresh icon/label (rebuilds the stack if open)
+      register(); // re-register to refresh icon/label/ring (updates the button in place)
     },
   });
   register();

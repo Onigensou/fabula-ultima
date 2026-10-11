@@ -84,6 +84,7 @@
       registerDevTool({
         id: CUSTOMIZE_TOOL_ID,
         icon: on ? "📝" : "🎲",
+        active: on,
         label: on
           ? "Customize Next Battle: ON — the next random battle opens the Battle Prompt instead of auto-launching (click to cancel)"
           : "Customize Next Battle: OFF — random battles launch automatically (click to arm)",

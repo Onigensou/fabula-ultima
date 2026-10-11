@@ -114,6 +114,7 @@ export function registerSummonAutopilotDevTool() {
     id: "summon-autopilot",
     icon: summonToolIcon(),
     label: summonToolLabel(),
+    active: isSummonAutopilotEnabled(),
     onClick: async () => {
       await setSummonAutopilotEnabled(!isSummonAutopilotEnabled());
       const on = isSummonAutopilotEnabled();
