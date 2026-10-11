@@ -132,9 +132,68 @@
   transform: translateY(-1px);
 }
 
-.${C.INTERACT_BUTTON_CLASS || "oni-event-btn"}.is-talk .mark {
-  font-size: 17px;
-  transform: none;
+/* NPC talk: a speech bubble with a tail, so it never reads as a second "!" */
+.${C.INTERACT_BUTTON_CLASS || "oni-event-btn"}.is-talk {
+  width: 42px;
+  height: 40px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.${C.INTERACT_BUTTON_CLASS || "oni-event-btn"}.is-talk .bubble {
+  position: relative;
+  box-sizing: border-box;
+  width: 42px;
+  height: 30px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: rgb(255,255,255);
+  border: 2px solid rgba(0,0,0,0.75);
+  border-radius: 15px;
+  filter: drop-shadow(0 5px 5px rgba(0,0,0,0.35));
+  animation: oni-event-talk-bob 2600ms ease-in-out infinite;
+}
+
+.${C.INTERACT_BUTTON_CLASS || "oni-event-btn"}.is-talk .bubble::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  width: 10px;
+  height: 10px;
+  background: rgb(255,255,255);
+  border-right: 2px solid rgba(0,0,0,0.75);
+  border-bottom: 2px solid rgba(0,0,0,0.75);
+  border-bottom-right-radius: 3px;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.${C.INTERACT_BUTTON_CLASS || "oni-event-btn"}.is-talk .bubble i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(20,16,10,0.95);
+  opacity: 0.35;
+  animation: oni-event-talk-dot 1800ms ease-in-out infinite;
+}
+
+.${C.INTERACT_BUTTON_CLASS || "oni-event-btn"}.is-talk .bubble i:nth-child(2) { animation-delay: 250ms; }
+.${C.INTERACT_BUTTON_CLASS || "oni-event-btn"}.is-talk .bubble i:nth-child(3) { animation-delay: 500ms; }
+
+@keyframes oni-event-talk-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes oni-event-talk-dot {
+  0%, 55%, 100% { opacity: 0.35; transform: translateY(0); }
+  25% { opacity: 1; transform: translateY(-2px); }
 }
 
 .${C.INTERACT_BUTTON_CLASS || "oni-event-btn"}.is-visible {
@@ -213,6 +272,10 @@
       this.tileId = null;
       this.tokenId = null;
 
+      // Last docked screen position, before any nudge away from the other button
+      this.dockX = NaN;
+      this.dockY = NaN;
+
       this.desiredVisible = false;
       this.state = "hidden";
       this.hideTimer = null;
@@ -223,7 +286,9 @@
       btn.className = ui.C.INTERACT_BUTTON_CLASS || "oni-event-btn";
       if (kind === "talk") btn.classList.add("is-talk");
       btn.title = title;
-      btn.innerHTML = `<div class="mark">${mark}</div>`;
+      btn.innerHTML = kind === "talk"
+        ? `<div class="bubble"><i></i><i></i><i></i></div>`
+        : `<div class="mark">${mark}</div>`;
 
       btn.addEventListener("click", async (ev) => {
         ev.preventDefault();
@@ -298,8 +363,13 @@
       const verticalOffset = Math.max(54, Math.round((token.h / 2) + 63));
       const docked = resolveDockPosition(token.id, screen.x, screen.y - verticalOffset);
 
+      this.dockX = docked.x;
+      this.dockY = docked.y;
+
       this.el.style.left = `${docked.x}px`;
       this.el.style.top = `${docked.y}px`;
+
+      this.ui.separateButtons();
     }
 
     _show() {
@@ -385,7 +455,6 @@
       });
       this.talk = new OverheadButton(this, {
         kind: "talk",
-        mark: this.C.TALK_BUTTON_TEXT || "💬",
         title: "Talk"
       });
 
@@ -439,6 +508,28 @@
     hideAll() {
       this.examine?.hide();
       this.talk?.hide();
+    }
+
+    // The party can stand close enough to an NPC that the "!" and the talk
+    // bubble land on each other; slide them apart around their midpoint.
+    separateButtons() {
+      const a = this.examine;
+      const b = this.talk;
+      if (!a?.el || !b?.el) return;
+      if (!a.desiredVisible || !b.desiredVisible) return;
+      if (!Number.isFinite(a.dockX) || !Number.isFinite(b.dockX)) return;
+
+      if (Math.abs(a.dockY - b.dockY) >= DOCK_STEP_PX) return;
+
+      const dx = b.dockX - a.dockX;
+      if (Math.abs(dx) >= DOCK_STEP_PX) return;
+
+      const mid = (a.dockX + b.dockX) / 2;
+      const dir = dx >= 0 ? 1 : -1;
+      const half = DOCK_STEP_PX / 2;
+
+      a.el.style.left = `${mid - (dir * half)}px`;
+      b.el.style.left = `${mid + (dir * half)}px`;
     }
 
     placeForToken(token, overrideXY = null) {

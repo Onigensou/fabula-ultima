@@ -70,7 +70,6 @@
     UI_LAYER_ID: "oni-event-ui-layer",
     INTERACT_BUTTON_CLASS: "oni-event-btn",
     INTERACT_BUTTON_TEXT: "!",
-    TALK_BUTTON_TEXT: "💬",
 
     // -------------------------
     // Defaults
