@@ -83,6 +83,17 @@ const VOLATILE_PLAYBACK = ["playing", "pausedTime", "timeSerial"];
 // only ever shows authored content.
 const VOLATILE_PROPS = ["battle_log", "battle_log_table"];
 
+// Movement-control SESSION state, re-derived from who is online on every
+// refresh (login, token change, scene change) and written back to the world:
+//   - Current Game's `movementControlState` flag (current/last controller), and
+//   - the central party actor's prototype token art, which mirrors the current
+//     controller's character (movementControl-api.js).
+// One player login (any player-seat test) rewrote both and showed up as two
+// modified documents that nobody authored. The next refresh rewrites them
+// anyway, so the committed value carries no content.
+const VOLATILE_FLAGS = [["fabula-ultima-companion", "movementControlState"]];
+const CURRENT_GAME_NAME = "Current Game";
+
 function exportDir(world) {
   return path.join(worldDataDir(world), "..", "_authored-export");
 }
@@ -171,11 +182,43 @@ function sanitize(doc) {
   if (doc && typeof doc._stats === "object" && doc._stats) {
     for (const k of VOLATILE_STATS) delete doc._stats[k];
   }
+  for (const [ns, key] of VOLATILE_FLAGS) {
+    const scope = doc?.flags?.[ns];
+    if (!scope || typeof scope !== "object" || !(key in scope)) continue;
+    delete scope[key];
+    if (!Object.keys(scope).length) delete doc.flags[ns];
+  }
   for (const k of VOLATILE_PLAYBACK) if (k in doc) delete doc[k];
   for (const f of EMBEDDED_FIELDS) {
     if (Array.isArray(doc[f])) for (const child of doc[f]) sanitize(child);
   }
   return doc;
+}
+
+// The central party actor = Current Game's `system.props.game_id` (same lookup
+// as movementControl-resolver.js). Its prototype token art follows the current
+// controller, so it is session state, not authored art.
+function controllerMirroredActorIds(actors) {
+  const ids = new Set();
+  for (const a of actors) {
+    const props = a?.system?.props ?? {};
+    if (a?.name !== CURRENT_GAME_NAME && String(props.name ?? "").trim() !== CURRENT_GAME_NAME) continue;
+    const ref = String(props.game_id ?? "").trim();
+    const m = /(?:^|\.)Actor\.([^.]+)$/.exec(ref);
+    const id = m ? m[1] : (ref && !ref.includes(".") ? ref : null);
+    if (id) ids.add(id);
+  }
+  return ids;
+}
+
+// Cross-document session state (needs the whole collection to identify).
+function stripSessionState(collection, docs) {
+  if (collection !== "actors") return docs;
+  const mirrored = controllerMirroredActorIds(docs);
+  for (const doc of docs) {
+    if (mirrored.has(doc._id) && doc.prototypeToken?.texture) delete doc.prototypeToken.texture.src;
+  }
+  return docs;
 }
 
 function sortKeys(value) {
@@ -206,6 +249,7 @@ async function runExport(world, allowLocked) {
     rmrf(outDir);
     fs.mkdirSync(outDir, { recursive: true });
     const summary = [];
+    stripSessionState(collection, docs);
     for (const doc of docs) {
       fs.writeFileSync(path.join(outDir, `${doc._id}.json`), serialize(doc));
       summary.push(summarize(collection, doc));
@@ -452,9 +496,14 @@ async function main() {
   if (cmd === "check" && hasLosses) process.exit(1);
 }
 
-main().catch((e) => {
-  console.error(`world-export failed: ${e.message}`);
-  // Distinct code 3 = DB locked (game running) so callers/hooks can tell that
-  // apart from a real content-loss failure (exit 1).
-  process.exit(/LOCKED/.test(e.message) ? 3 : 1);
-});
+if (require.main === module) {
+  main().catch((e) => {
+    console.error(`world-export failed: ${e.message}`);
+    // Distinct code 3 = DB locked (game running) so callers/hooks can tell that
+    // apart from a real content-loss failure (exit 1).
+    process.exit(/LOCKED/.test(e.message) ? 3 : 1);
+  });
+}
+
+// For tests (test/world-export-session-state.test.mjs) — no LevelDB needed.
+module.exports = { serialize, stripSessionState };

@@ -11,30 +11,6 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
-    },
-    "fabula-ultima-companion": {
-      "movementControlState": {
-        "centralPartyTokenId": null,
-        "centralPartyTokenName": null,
-        "centralPartyTokenUuid": null,
-        "controllerActorId": "dafTLBUscCDNgq8H",
-        "controllerActorName": "Hina",
-        "controllerActorUuid": "Actor.dafTLBUscCDNgq8H",
-        "currentControllerUserId": "yL2PQxh3R9ddt0te",
-        "currentControllerUserName": "Rinri",
-        "currentGameActorId": "DMpK5Bi119jIrCFZ",
-        "currentGameActorUuid": "Actor.DMpK5Bi119jIrCFZ",
-        "lastControllerUserId": "yL2PQxh3R9ddt0te",
-        "lastControllerUserName": "Rinri",
-        "lastResolvedAt": 1791744799270,
-        "partyActorId": "t6E3CQ0pGxwLgXrn",
-        "partyActorName": "EXFURSION Party",
-        "partyActorUuid": "Actor.t6E3CQ0pGxwLgXrn",
-        "updateReason": "refresh:bootstrap:deleteToken",
-        "updatedAt": 1791744799271,
-        "updatedByUserId": "JQGNzKpDPHJmcUIW",
-        "version": 1
-      }
     }
   },
   "folder": null,

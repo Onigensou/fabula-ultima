@@ -44,6 +44,15 @@ size is exactly what hides a one-line removal, which is the whole thing this
 tool exists to catch. Add any future play-written prop to `VOLATILE_PROPS` in
 `bin/world-export.js`.
 
+**Movement-control state is stripped for the same reason.** Movement control
+re-derives who controls the party from who is online, on every refresh, and
+writes it back: Current Game's `flags.fabula-ultima-companion.movementControlState`,
+and the central party actor's (Current Game `game_id`) `prototypeToken.texture.src`,
+which mirrors the controller's character. A single player login therefore showed
+as two modified documents nobody authored. Both are dropped from the export
+(`VOLATILE_FLAGS` + `stripSessionState`); everything else on those two documents
+still diffs. Test (no game): `node tools/safe-edit/test/world-export-session-state.test.mjs`.
+
 ## Commands
 
 ```
