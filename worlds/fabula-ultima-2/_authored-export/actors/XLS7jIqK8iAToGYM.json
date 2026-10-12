@@ -13,7 +13,7 @@
       "_id": "JZfTXCdIa2EAte4g",
       "_stats": {
         "compendiumSource": null,
-        "coreVersion": "12.331",
+        "coreVersion": "12.343",
         "createdTime": 1761651618764,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
@@ -27,7 +27,7 @@
           "value": "-6"
         }
       ],
-      "description": "",
+      "description": "<p>Rolling the same value on both dice is a <strong>Critical Success</strong>, whatever the value.</p>",
       "disabled": false,
       "duration": {
         "combat": null,

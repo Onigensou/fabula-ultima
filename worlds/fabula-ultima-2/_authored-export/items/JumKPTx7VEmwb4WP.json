@@ -33,7 +33,7 @@
           "value": "${isEquipped ? (isMartial ? 0 : (item_mdef_bonus * 1)) : 0}$"
         }
       ],
-      "description": "",
+      "description": "<p>While equipped, martial armor sets your base <strong>M.DEF</strong>; other armor adds its M.DEF bonus.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -107,7 +107,7 @@
           "value": "${isEquipped ? (isMartial ? 0 : (item_def_bonus * 1)) : 0}$"
         }
       ],
-      "description": "",
+      "description": "<p>While equipped, martial armor sets your base <strong>DEF</strong>; other armor adds its DEF bonus.</p>",
       "disabled": false,
       "duration": {
         "combat": null,

@@ -13,14 +13,14 @@
       "_id": "01SFFP9JbqXDhD6G",
       "_stats": {
         "compendiumSource": null,
-        "coreVersion": "12.331",
+        "coreVersion": "12.343",
         "createdTime": 1755440527363,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.6.4"
       },
       "changes": [],
-      "description": "",
+      "description": "<p>The cold wind of Lacus Frysta has seeped into this creature. When hit by <strong>Fire</strong> damage, all stacks are removed. When hit by <strong>Ice</strong> damage, it is inflicted with <strong>Frozen</strong> (【20 × stacks】) and all stacks are removed. Spells and skills cannot remove Sheer Cold.</p>",
       "disabled": false,
       "duration": {
         "combat": null,

@@ -27,7 +27,7 @@
           "value": "${isEquipped ? (item_def_bonus * 1) : 0}$"
         }
       ],
-      "description": "",
+      "description": "<p>While equipped, increase <strong>DEF</strong> by this item's DEF bonus.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -160,7 +160,7 @@
           "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
         }
       ],
-      "description": "",
+      "description": "<p>While equipped, martial armor sets your base <strong>DEF</strong>; other armor adds its DEF bonus.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -226,7 +226,7 @@
           "value": "${isEquipped ? (item_mdef_bonus * 1) : 0}$"
         }
       ],
-      "description": "",
+      "description": "<p>While equipped, increase <strong>M.DEF</strong> by this item's M.DEF bonus.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -278,7 +278,7 @@
       "_id": "fwMSXmuO6cGw942o",
       "_stats": {
         "compendiumSource": null,
-        "coreVersion": "12.331",
+        "coreVersion": "12.343",
         "createdTime": 1758527635677,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
@@ -292,7 +292,7 @@
           "value": "${isEquipped ? (isMartial ? 0 : ) : 0}$"
         }
       ],
-      "description": "",
+      "description": "<p>While equipped, increase the damage you deal.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -415,7 +415,7 @@
           "value": "${isEquipped ? 2 : 0}$"
         }
       ],
-      "description": "",
+      "description": "<p>While equipped, reduce damage from <strong>Melee</strong> attacks by 2.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -487,7 +487,7 @@
           "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
         }
       ],
-      "description": "",
+      "description": "<p>While equipped, martial armor sets your base <strong>M.DEF</strong>; other armor adds its M.DEF bonus.</p>",
       "disabled": false,
       "duration": {
         "combat": null,

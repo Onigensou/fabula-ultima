@@ -27,7 +27,7 @@
           "value": "${isEquipped ? (item_mdef_bonus * 1) : 0}$"
         }
       ],
-      "description": "",
+      "description": "<p>While equipped, increase <strong>M.DEF</strong> by this item's M.DEF bonus.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -95,7 +95,7 @@
           "value": "${isEquipped ? (item_def_bonus * 1) : 0}$"
         }
       ],
-      "description": "",
+      "description": "<p>While equipped, increase <strong>DEF</strong> by this item's DEF bonus.</p>",
       "disabled": false,
       "duration": {
         "combat": null,

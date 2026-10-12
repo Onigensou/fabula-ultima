@@ -91,7 +91,7 @@
         "systemVersion": "4.8.5"
       },
       "changes": [],
-      "description": "",
+      "description": "<p>Before the next rest, the next Villain you face will be inflicted with a <strong>Bad Debuff</strong> when the conflict begins.</p>",
       "disabled": false,
       "duration": {
         "combat": null,

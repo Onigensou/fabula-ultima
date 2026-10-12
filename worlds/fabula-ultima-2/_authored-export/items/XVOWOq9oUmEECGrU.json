@@ -882,7 +882,7 @@
           "value": "1"
         }
       ],
-      "description": "<p></p>",
+      "description": "<p>Forced to land: loses <strong>Flying</strong> and can be targeted by Melee attacks.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -902,7 +902,7 @@
           "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.a7f7PW8rGYZF8NOs"
         },
         "dfreds-convenient-effects": {
-          "ceEffectId": "grounded",
+          "ceEffectId": "ce-grounded",
           "isBackup": false,
           "isConvenient": true,
           "isDynamic": false,
@@ -3440,7 +3440,7 @@
         "systemVersion": "4.8.5"
       },
       "changes": [],
-      "description": "",
+      "description": "<p>Held in the grappler's space: effects from anyone else that target the grappler also target you, and a Guard-Cover you are performing ends at once. At the start of your turn you may break free with a DL 10 check that uses at least one 【DEX】 or 【MIG】 die, or retry later with the Objective action.</p>",
       "disabled": false,
       "duration": {
         "combat": null,

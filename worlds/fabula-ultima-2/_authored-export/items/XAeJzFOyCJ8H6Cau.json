@@ -27,7 +27,7 @@
           "value": "2"
         }
       ],
-      "description": "",
+      "description": "<p><strong>Dodge</strong> Skill Level +2.</p>",
       "disabled": false,
       "duration": {
         "combat": null,

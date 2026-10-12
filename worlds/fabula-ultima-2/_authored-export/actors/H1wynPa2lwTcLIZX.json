@@ -13,14 +13,14 @@
       "_id": "Do2WNsnFdStuxxkN",
       "_stats": {
         "compendiumSource": null,
-        "coreVersion": "12.331",
+        "coreVersion": "12.343",
         "createdTime": null,
         "duplicateSource": null,
         "systemId": null,
         "systemVersion": null
       },
       "changes": [],
-      "description": "",
+      "description": "<p>This creature has died and is unable to <strong>Act</strong>.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
