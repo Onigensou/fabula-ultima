@@ -1,7 +1,7 @@
 // Party Menu — Item view.
 //
 // One list per bag: the party's shared bag and each character's own items.
-// Q/E (or the arrows by the portrait) walk the bags; Enter on an item opens
+// Q/E walk the bags, or click one in the portrait row; Enter on an item opens
 // "Move to…", then a quantity for stacks. Reading is open to everyone in the
 // party; moving follows moveRefusal (party-menu-inventory.js).
 
@@ -9,7 +9,7 @@ import {
   ITEM_TYPES, ITEM_FILTERS, itemType, sortedInventory, itemSummary, quantityOf, isWorn,
   bagsOf, moveRefusal, moveItem, useRefusal, useItem,
 } from "./party-menu-inventory.js";
-import { esc, plain, safeHtml, play, SND, img, gridStep } from "./party-menu-ui.js";
+import { esc, safeHtml, play, SND, img, gridStep, portraitStrip, overlayFoot, kbd } from "./party-menu-ui.js";
 
 const REASONS = {
   "same-bag": "It's already there.",
@@ -73,12 +73,17 @@ export const itemView = {
     ctx.S.v = { bag: start?.actor.id ?? null, filter: "all", idx: 0, focus: "list", dest: 0, qty: null };
   },
 
-  help(ctx) {
+  nav(ctx) {
     const v = ctx.S.v;
-    if (v.focus === "qty") return "How many?";
-    if (v.focus === "dest") return "Where should it go?";
-    const it = current(ctx);
-    return it ? plain(itemSummary(it).description) || "No description." : "Nothing here.";
+    const bag = bagActor(ctx);
+    const crumbs = [`Item · ${bag?.id === ctx.roster().db?.id ? "Party Bag" : bag?.name ?? ""}`];
+    const actions = [];
+    const it = v.focus === "list" ? current(ctx) : null;
+    if (it) {
+      if (itemType(it) === "consumable" && !useRefusal({ item: it, roster: ctx.roster() })) actions.push({ key: "u", label: "Use", icon: "fa-hand-sparkles" });
+      if (destinations(ctx, it).some((d) => !d.refusal)) actions.push({ key: "Enter", label: "Move to…", icon: "fa-right-left" });
+    }
+    return { crumbs, actions };
   },
 
   render(ctx) {
@@ -118,29 +123,27 @@ export const itemView = {
       ? `Shared by the party · ${items.length} shown`
       : `${game.user.isGM ? "Bag" : bag.isOwner ? "Your bag" : "Teammate's bag"} · <i class="fas fa-coins"></i> ${Number(bag.system?.props?.zenit ?? 0).toLocaleString()} z`;
 
+    // Party Bag first, then each character's own bag — one click switches.
+    const chips = bags(ctx).map((b) => ({
+      id: b.actor.id, name: b.label, img: b.actor.img, icon: b.kind === "party" ? "fa-sack-dollar" : "", reserve: b.kind === "reserve",
+    }));
+    const info = `<div class="pm-member-top"><span class="pm-name">${esc(isParty ? "Party Bag" : bag.name)}</span></div>
+      <div class="pm-sub">${sub}</div>`;
+
     return `
       <div class="pm-ability">
-        <div class="pm-win pm-help"><span>${esc(this.help(ctx))}</span></div>
+        ${ctx.nav()}
         <div class="pm-ability-top">
           <div class="pm-win pm-title"><span class="pm-pill">Item</span></div>
-          <div class="pm-win pm-who">
-            <span class="pm-arrow pm-hit" data-action="it-bag" data-delta="-1" title="Previous bag (Q)">◀</span>
-            <div class="pm-portrait sm">${isParty ? `<i class="fas fa-sack-dollar pm-bagicon"></i>` : img(bag.img)}</div>
-            <div class="pm-who-body">
-              <div class="pm-member-top"><span class="pm-name">${esc(isParty ? "Party Bag" : bag.name)}</span></div>
-              <div class="pm-sub">${sub}</div>
-            </div>
-            <span class="pm-arrow pm-hit" data-action="it-bag" data-delta="1" title="Next bag (E)">▶</span>
-          </div>
+          ${portraitStrip(chips, bag.id, "it-bag-pick", info)}
         </div>
         <div class="pm-ability-body">
           <div class="pm-win pm-skills">
-            <div class="pm-tabs">${tabs}</div>
+            <div class="pm-tabs">${tabs}${kbd("Tab")}</div>
             <div class="pm-skill-list">${rows}</div>
           </div>
           <div class="pm-win pm-detail"><div class="pm-scroll" data-key="${esc(sel?.uuid ?? "")}">${sel ? this.detail(ctx, sel) : ""}</div></div>
         </div>
-        <div class="pm-hint">${v.focus === "list" ? "Arrows choose · Enter move · U use · Tab filter · Q/E bag · Esc back" : "↑↓ choose · Enter confirm · Esc back"}</div>
       </div>
       ${v.focus === "dest" && sel ? this.renderDest(ctx, sel) : ""}
       ${v.focus === "qty" && sel ? this.renderQty(ctx, sel) : ""}`;
@@ -186,7 +189,7 @@ export const itemView = {
       <div class="pm-win pm-picker">
         <div class="pm-picker-head"><span class="pm-label">Move ${esc(item.name)} to…</span></div>
         <div class="pm-picker-list">${rows || `<div class="pm-empty">Nowhere to move it.</div>`}</div>
-        <div class="pm-hint">↑↓ choose · Enter confirm · Esc cancel</div>
+        ${overlayFoot("↑↓ choose · Enter confirm · Esc cancel")}
       </div>`;
   },
 
@@ -203,7 +206,7 @@ export const itemView = {
           <button type="button" class="pm-btn pm-hit" data-action="it-qty" data-delta="max">All</button>
         </div>
         <div class="pm-actions"><button type="button" class="pm-btn pm-hit" data-action="it-qty-ok">Move</button></div>
-        <div class="pm-hint">←→ amount · Enter move · Esc back</div>
+        ${overlayFoot("←→ amount · Enter move · Esc back")}
       </div>`;
   },
 
@@ -215,6 +218,16 @@ export const itemView = {
     ctx.S.v.bag = all[(i + delta + all.length) % all.length].actor.id;
     ctx.S.v.idx = 0; ctx.S.v.focus = "list";
     ctx.resetScroll();
+    ctx.animate("switch");
+    play(SND.move, 0.45);
+    ctx.render();
+  },
+
+  pickBag(ctx, id) {
+    if (id === bagActor(ctx)?.id || !bags(ctx).some((b) => b.actor.id === id)) return;
+    Object.assign(ctx.S.v, { bag: id, idx: 0, focus: "list" });
+    ctx.resetScroll();
+    ctx.animate("switch");
     play(SND.move, 0.45);
     ctx.render();
   },
@@ -341,7 +354,7 @@ export const itemView = {
     const i = Number(el.dataset.index);
     switch (a) {
       case "it-filter": if (v.focus === "list") this.setFilter(ctx, el.dataset.id); break;
-      case "it-bag": this.cycleBag(ctx, Number(el.dataset.delta)); break;
+      case "it-bag-pick": if (v.focus === "list") this.pickBag(ctx, el.dataset.id); break;
       case "it-row":
         if (v.focus !== "list") break;
         if (v.idx === i) this.openDest(ctx);

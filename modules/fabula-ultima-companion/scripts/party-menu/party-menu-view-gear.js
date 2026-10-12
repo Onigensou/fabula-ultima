@@ -1,10 +1,11 @@
 // Party Menu — Equip and Status views.
 //
-// Equip: the five worn slots on the left; Enter on a slot lists what the
-// character carries for it on the right, unwearable entries dimmed with
-// canEquip's own reason. While a candidate is under the hand, the left window
-// compares the character's stats before → after (party-menu-gear-preview.js),
-// and every candidate row carries an FF-style ▲ / ▼ for its overall effect.
+// Equip: the five worn slots on the left, the worn item's card on the right.
+// Enter on a slot swaps the left window to what the character carries for it
+// (two columns, unwearable entries dimmed with canEquip's own reason) over a
+// before → after comparison (party-menu-gear-preview.js), and the right window
+// to the full card of the item under the hand. Every candidate row carries an
+// FF-style ▲ / ▼ for its overall effect.
 // Commits go through setEquipSlot → applyEquipmentSwap.
 // Only gear the character CARRIES is offered: something in the Party Bag is
 // moved over from the Item view first.
@@ -17,7 +18,7 @@
 import {
   equipSlotsOf, equipCandidates, equipRefusal, setEquipSlot, itemSummary, statusOf,
 } from "./party-menu-inventory.js";
-import { esc, plain, safeHtml, play, SND, img, STAT } from "./party-menu-ui.js";
+import { esc, safeHtml, play, SND, img, STAT, bar, portraitStrip, gridStep } from "./party-menu-ui.js";
 import { effectRowsOf } from "./party-menu-effects.js";
 import { previewEquip, peekPreview } from "./party-menu-gear-preview.js";
 import { vitalsOf } from "./party-menu-core.js";
@@ -32,22 +33,33 @@ const EQUIP_REASONS = {
   "no-such-slot": "No such slot.",
 };
 
+/** Title pill + the party's portrait row (click one to switch; Q/E still step). */
 export function who(ctx, actor, title) {
   const v = vitalsOf(actor);
+  const r = ctx.roster();
+  const entries = [
+    ...r.active.map((a) => ({ id: a.id, name: a.name, img: a.img })),
+    ...r.reserve.map((a) => ({ id: a.id, name: a.name, img: a.img, reserve: true })),
+  ];
+  const info = `
+    <div class="pm-member-top"><span class="pm-name">${esc(actor.name)}</span><span class="pm-lv"><em>LV</em>${v.level}</span></div>
+    <div class="pm-sub">${esc(v.classes.slice(0, 3).join(" · ") || v.identity)}</div>`;
   return `
     <div class="pm-ability-top">
       <div class="pm-win pm-title"><span class="pm-pill">${esc(title)}</span></div>
-      <div class="pm-win pm-who">
-        <span class="pm-arrow pm-hit" data-action="prev-char" title="Previous (Q)">◀</span>
-        <div class="pm-portrait sm">${img(actor.img)}</div>
-        <div class="pm-who-body">
-          <div class="pm-member-top"><span class="pm-name">${esc(actor.name)}</span><span class="pm-lv"><em>LV</em>${v.level}</span></div>
-          <div class="pm-stat">${STAT.hp}<b>${v.hp}</b><span>/</span><b>${v.maxHp}</b>
-                               ${STAT.mp}<b>${v.mp}</b><span>/</span><b>${v.maxMp}</b></div>
-        </div>
-        <span class="pm-arrow pm-hit" data-action="next-char" title="Next (E)">▶</span>
-      </div>
+      ${portraitStrip(entries, actor.id, "pick-char", info)}
     </div>`;
+}
+
+/** HP / MP / IP with bars — the header no longer carries them, so Status does. */
+function vitalsBlock(actor) {
+  const v = vitalsOf(actor);
+  const low = v.maxHp > 0 && v.hp <= Math.floor(v.maxHp / 2);
+  return `<div class="pm-stvitals">
+    <div class="pm-stat">${STAT.hp}<b class="${low ? "is-low" : ""}">${v.hp}</b><span>/</span><b>${v.maxHp}</b>${bar(v.hp, v.maxHp, "hp")}</div>
+    <div class="pm-stat">${STAT.mp}<b>${v.mp}</b><span>/</span><b>${v.maxMp}</b>${bar(v.mp, v.maxMp, "mp")}</div>
+    <div class="pm-stat">${STAT.ip}<b>${v.ip}</b><span>/</span><b>${v.maxIp}</b>${bar(v.ip, v.maxIp, "ip")}</div>
+  </div>`;
 }
 
 function itemDetail(item, extra = "") {
@@ -144,17 +156,24 @@ export const equipView = {
 
   enter(ctx) { ctx.S.v = { idx: 0, focus: "slots", cand: 0 }; },
 
-  help(ctx) {
+  nav(ctx) {
     const actor = ctx.actor();
     const v = ctx.S.v;
-    const lock = equipRefusal(actor);
-    if (lock) return EQUIP_REASONS[lock] ?? lock;
-    if (v.focus === "cands") {
-      const c = equipCandidates(actor, equipSlotsOf(actor)[v.idx]?.key)[v.cand - 1];
-      return c ? (c.check.ok ? plain(itemSummary(c.item).description) || c.item.name : c.check.reason) : "Leave this slot empty.";
+    const slot = actor ? equipSlotsOf(actor)[v.idx] : null;
+    const crumbs = [`Equip · ${actor?.name ?? ""}`];
+    const actions = [];
+    if (v.focus === "cands" && slot) {
+      crumbs.push(slot.label);
+      const under = v.cand > 0 ? equipCandidates(actor, slot.key)[v.cand - 1] : null;
+      const bare = slot.key === "main" || slot.key === "off" ? "Unarmed" : "Remove";
+      if (under ? under.check.ok && under.item.id !== slot.item?.id : !!slot.item) {
+        actions.push({ key: "Enter", label: under ? "Equip" : bare, icon: under ? "fa-check" : "fa-xmark" });
+      }
+    } else if (slot && !equipRefusal(actor)) {
+      actions.push({ key: "Enter", label: "Change", icon: "fa-right-left" });
+      if (slot.item) actions.push({ key: "Delete", label: "Remove", icon: "fa-xmark" });
     }
-    const it = equipSlotsOf(actor)[v.idx]?.item;
-    return it ? plain(itemSummary(it).description) || it.name : "Nothing worn here.";
+    return { crumbs, actions };
   },
 
   render(ctx) {
@@ -173,45 +192,61 @@ export const equipView = {
         <span class="pm-eqname ${s.item ? "" : "is-empty"}">${esc(s.item?.name ?? (s.key === "main" || s.key === "off" ? "Unarmed" : "—"))}</span>
       </div>`).join("");
 
-    let right, compare = null;
+    let left, right, cardKey;
     if (v.focus === "cands") {
       const slot = slots[v.idx];
       const cands = equipCandidates(actor, slot.key);
       v.cand = Math.max(0, Math.min(v.cand, cands.length));
       const under = v.cand > 0 ? cands[v.cand - 1] : null;
-      // Compare what is under the hand; a locked candidate explains itself in its row instead.
-      if (!under || under.check.ok) compare = compareBlock(actor, slot, under?.item ?? null);
       schedulePreviews(ctx, actor, slot, cands, under);
-      const removeRow = `<div class="pm-pick pm-hit ${v.cand === 0 ? "is-cursor" : ""}" data-action="eq-cand" data-index="0">
-        <div class="pm-portrait xs"></div><span>${slot.key === "main" || slot.key === "off" ? "Unarmed" : "Remove"}</span>
+      const bare = slot.key === "main" || slot.key === "off" ? "Unarmed" : "Remove";
+      const removeRow = `<div class="pm-skill pm-hit ${v.cand === 0 ? "is-cursor" : ""}" data-action="eq-cand" data-index="0">
+        <span class="pm-eqnone"></span><span class="pm-skill-name is-empty">${bare}</span>
         ${slot.item ? netMark(peekPreview(actor, slot.key, null)) : ""}</div>`;
       const candRows = cands.map((c, i) => `
-        <div class="pm-pick pm-hit ${v.cand === i + 1 ? "is-cursor" : ""} ${c.check.ok ? "" : "is-locked"}" data-action="eq-cand" data-index="${i + 1}" data-id="${esc(c.item.id)}"
-             title="${esc(c.check.reason ?? "")}">
-          <div class="pm-portrait xs">${img(c.item.img)}</div>
-          <span>${esc(c.item.name)}${c.item.id === slot.item?.id ? ` <i class="pm-badge pm-worn">E</i>` : ""}</span>
-          ${c.wornIn ? `<em class="pm-why">${esc(c.wornIn)}</em>` : c.check.reason ? `<em class="pm-why">${esc(c.check.reason)}</em>` : ""}
-          ${c.check.ok && c.item.id !== slot.item?.id ? netMark(peekPreview(actor, slot.key, c.item.id)) : ""}
+        <div class="pm-skill pm-hit ${v.cand === i + 1 ? "is-cursor" : ""} ${c.check.ok ? "" : "is-locked"}" data-action="eq-cand" data-index="${i + 1}" data-id="${esc(c.item.id)}"
+             title="${esc(c.check.reason ?? c.wornIn ?? "")}">
+          ${img(c.item.img)}
+          <span class="pm-skill-name">${esc(c.item.name)}${c.item.id === slot.item?.id ? ` <i class="pm-badge pm-worn">E</i>` : ""}</span>
+          ${c.wornIn ? `<em class="pm-why">${esc(c.wornIn)}</em>` : ""}
+          ${c.check.ok ? (c.item.id !== slot.item?.id ? netMark(peekPreview(actor, slot.key, c.item.id)) : "") : `<i class="fas fa-lock pm-eqlock"></i>`}
         </div>`).join("");
-      right = `<div class="pm-label pm-candhead">${esc(slot.label)} — carried by ${esc(actor.name)}</div>
-        <div class="pm-picker-list pm-candlist">${removeRow}${candRows || `<div class="pm-empty">Nothing carried for this slot.</div>`}</div>`;
+      // A locked row shows only a lock: its reason is on the card (and the tooltip), so the name keeps the room.
+      // Compare what is under the hand; a locked candidate explains itself on its card instead.
+      const compare = !under || under.check.ok ? compareBlock(actor, slot, under?.item ?? null) : defenseLine(actor);
+      left = `
+        <div class="pm-eqpickhead"><span class="pm-eqlabel"><i class="fas ${slot.icon}"></i>${esc(slot.label)}</span>
+          <span class="pm-sub">${cands.length} carried by ${esc(actor.name)}</span></div>
+        <div class="pm-skill-list pm-eqcands">${removeRow}${candRows || `<div class="pm-empty">Nothing carried for this slot.</div>`}</div>
+        ${compare}`;
+      if (under) {
+        const note = !under.check.ok ? `<div class="pm-locked"><i class="fas fa-lock"></i> ${esc(under.check.reason)}</div>`
+          : under.wornIn ? `<div class="pm-locked"><i class="fas fa-circle-info"></i> Worn in ${esc(under.wornIn)}</div>` : "";
+        right = itemDetail(under.item, note);
+        cardKey = under.item.id;
+      } else {
+        right = slot.item
+          ? itemDetail(slot.item, `<div class="pm-locked"><i class="fas fa-circle-info"></i> ${bare === "Unarmed" ? "Choosing Unarmed takes this off" : "Choosing Remove takes this off"}</div>`)
+          : `<div class="pm-empty">Nothing worn here.</div>`;
+        cardKey = "none";
+      }
     } else {
+      left = `
+        <div class="pm-eqlist">${rows}</div>
+        ${lock ? `<div class="pm-locked"><i class="fas fa-lock"></i> ${esc(EQUIP_REASONS[lock] ?? lock)}</div>` : ""}
+        ${defenseLine(actor)}`;
       right = itemDetail(slots[v.idx]?.item);
+      cardKey = `slot|${slots[v.idx]?.key ?? ""}`;
     }
 
     return `
       <div class="pm-ability">
-        <div class="pm-win pm-help"><span>${esc(this.help(ctx))}</span></div>
+        ${ctx.nav()}
         ${who(ctx, actor, "Equip")}
         <div class="pm-ability-body">
-          <div class="pm-win pm-skills pm-eqwin">
-            <div class="pm-eqlist">${rows}</div>
-            ${lock ? `<div class="pm-locked"><i class="fas fa-lock"></i> ${esc(EQUIP_REASONS[lock] ?? lock)}</div>` : ""}
-            ${compare ?? defenseLine(actor)}
-          </div>
-          <div class="pm-win pm-detail"><div class="pm-scroll">${right}</div></div>
+          <div class="pm-win pm-skills pm-eqwin ${v.focus === "cands" ? "is-choosing" : ""}">${left}</div>
+          <div class="pm-win pm-detail"><div class="pm-scroll" data-key="eq|${esc(actor.id)}|${esc(cardKey)}">${right}</div></div>
         </div>
-        <div class="pm-hint">${v.focus === "cands" ? "↑↓ choose (▲ better · ▼ worse) · Enter equip · Esc back" : "↑↓ slot · Enter change · Del remove · Q/E character · Esc back"}</div>
       </div>`;
   },
 
@@ -223,6 +258,8 @@ export const equipView = {
     const cands = equipCandidates(actor, slot.key);
     const at = slot.item ? cands.findIndex((c) => c.item.id === slot.item.id) : -1;
     Object.assign(ctx.S.v, { focus: "cands", cand: at >= 0 ? at + 1 : 0 });
+    ctx.resetScroll();
+    ctx.animate("swap");
     play(SND.ok);
     ctx.render();
   },
@@ -240,13 +277,13 @@ export const equipView = {
   },
 
   async commit(ctx, actor, slot, item) {
-    if ((slot.item?.id ?? null) === (item?.id ?? null)) { ctx.S.v.focus = "slots"; play(SND.back); ctx.render(); return; }
+    if ((slot.item?.id ?? null) === (item?.id ?? null)) { ctx.S.v.focus = "slots"; ctx.animate("unswap"); play(SND.back); ctx.render(); return; }
     ctx.setBusy(true);
     let res;
     try { res = await setEquipSlot(actor, slot.key, item?.id ?? null); }
     catch (e) { console.error("[PartyMenu] equip failed", e); res = { ok: false, reason: e?.message ?? "error" }; }
     finally { ctx.setBusy(false); }
-    if (ctx.S.v) ctx.S.v.focus = "slots";
+    if (ctx.S.v) { ctx.S.v.focus = "slots"; ctx.animate("unswap"); }
     if (res?.ok) { play(SND.done, 0.5); ctx.toast(item ? `${actor.name}: ${item.name} → ${slot.label}` : `${actor.name}: ${slot.label} emptied`); }
     else { play(SND.buzz, 0.5); ctx.toast(res?.detail ?? EQUIP_REASONS[res?.reason] ?? `Could not change it (${res?.reason}).`); }
   },
@@ -255,11 +292,12 @@ export const equipView = {
     const v = ctx.S.v;
     const actor = ctx.actor();
     if (v.focus === "cands") {
-      const n = equipCandidates(actor, equipSlotsOf(actor)[v.idx]?.key).length + 1;
-      if (k === "ArrowUp") { v.cand = (v.cand - 1 + n) % n; play(SND.move, 0.4); ctx.render(); }
-      else if (k === "ArrowDown") { v.cand = (v.cand + 1) % n; play(SND.move, 0.4); ctx.render(); }
-      else if (k === "Enter") this.pick(ctx, v.cand);
-      else if (k === "Escape") { v.focus = "slots"; play(SND.back); ctx.render(); }
+      // Two columns: arrows move by layout, like the Ability and Item lists.
+      if (k.startsWith("Arrow")) {
+        const next = gridStep(ctx.root(), ".pm-eqcands .pm-skill", v.cand, k);
+        if (next !== null && next !== v.cand) { v.cand = next; play(SND.move, 0.4); ctx.render(); }
+      } else if (k === "Enter") this.pick(ctx, v.cand);
+      else if (k === "Escape") { v.focus = "slots"; ctx.animate("unswap"); play(SND.back); ctx.render(); }
       return;
     }
     if (k === "q" || k === "Q" || k === "PageUp") return ctx.cycleCharacter(-1);
@@ -368,14 +406,7 @@ export const statusView = {
 
   enter(ctx) { ctx.S.v = { eff: 0 }; },
 
-  help(ctx) {
-    const st = statusOf(ctx.actor());
-    const row = effectRowsOf(ctx.actor())[ctx.S.v.eff];
-    if (!row) return [st.identity, st.theme, st.origin].filter(Boolean).join(" · ") || "No effects.";
-    const life = row.inactive ? "Inactive" : `${row.temporary ? "Temporary" : "Permanent"}: ${row.lifetime.label}`;
-    const from = row.count > 1 ? `${row.count} sources` : row.sources[0]?.source ? `from ${sourceName(row.sources[0].source)}` : "";
-    return [row.name, life, from].filter(Boolean).join(" — ");
-  },
+  nav(ctx) { return { crumbs: [`Status · ${ctx.actor()?.name ?? ""}`], actions: [] }; },
 
   render(ctx) {
     const actor = ctx.actor();
@@ -410,10 +441,11 @@ export const statusView = {
     const sel = rows[v.eff];
     return `
       <div class="pm-ability">
-        <div class="pm-win pm-help"><span>${esc(this.help(ctx))}</span></div>
+        ${ctx.nav()}
         ${who(ctx, actor, "Status")}
         <div class="pm-ability-body pm-status-body">
           <div class="pm-win pm-detail"><div class="pm-scroll">
+            ${vitalsBlock(actor)}
             <div class="pm-label">Attributes</div><div class="pm-attrs">${attrs}</div>
             ${defenseLine(actor)}
             <div class="pm-label">Affinities</div><div class="pm-affs">${aff}</div>
@@ -425,7 +457,6 @@ export const statusView = {
             ${sel ? `<div class="pm-effcard" data-keep-scroll="eff|${esc(actor.id)}|${esc(sel.key)}">${effectCard(sel)}</div>` : ""}
           </div>
         </div>
-        <div class="pm-hint">↑↓ effect · Q/E character · Esc back</div>
       </div>`;
   },
 

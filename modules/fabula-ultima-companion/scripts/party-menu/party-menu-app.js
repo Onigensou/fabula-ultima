@@ -23,9 +23,9 @@ import {
   skillSource, sourceRanker, SOURCE_KINDS, skillAccess,
 } from "./party-menu-core.js";
 import { COMMAND_DEFS, canUseCommand } from "./party-menu-access.js";
-import { SND, play, STAT, esc, plain, safeHtml, bar, gridStep as gridStepIn } from "./party-menu-ui.js";
+import { SND, play, STAT, esc, safeHtml, bar, gridStep as gridStepIn, navBar, overlayFoot, kbd } from "./party-menu-ui.js";
 import { itemView } from "./party-menu-view-item.js";
-import { equipView, statusView } from "./party-menu-view-gear.js";
+import { equipView, statusView, who } from "./party-menu-view-gear.js";
 import { setupView } from "./party-menu-view-setup.js";
 import { bondsView, BONDS_CSS } from "./party-menu-view-bonds.js";
 import { bestiaryView, BESTIARY_CSS } from "./party-menu-view-bestiary.js";
@@ -95,6 +95,40 @@ const S = {
 let _root = null;
 let _renderQueued = false;
 let _listScroll = 0;
+
+// ── transitions ───────────────────────────────────────────────────────────────
+// Every render rebuilds the menu's DOM, so an entrance animation in plain CSS
+// would replay on each key press. Instead a change of SCREEN (open, enter a
+// view, back, another character, a swapped window, a new tab, an overlay)
+// stamps a one-shot transition; the renders that follow inside its window carry
+// the same class with a negative delay, so a re-render mid-animation (a preview
+// arriving) continues it instead of restarting or cutting it. Moving the hand
+// never animates. Durations here must match the CSS below.
+const ANIM_MS = { open: 170, enter: 150, back: 150, switch: 120, tab: 120, page: 120, swap: 150, unswap: 130, pop: 120 };
+const ANIM_STAGGER = 60;   // the longest per-window delay in the CSS
+let _anim = null;      // { kind, t0 }
+let _pop = null;       // t0 of the overlay that just opened
+let _hadOverlay = false;
+
+function animate(kind) { _anim = { kind, t0: performance.now() }; }
+
+function applyTransition(stage) {
+  const now = performance.now();
+  if (_anim) {
+    const dt = now - _anim.t0;
+    if (dt < ANIM_MS[_anim.kind] + ANIM_STAGGER) {
+      stage.classList.add(`pm-anim-${_anim.kind}`);
+      stage.style.setProperty("--pm-t", `${-Math.round(dt)}ms`);
+    } else _anim = null;
+  }
+  const has = !!(S.picker || viewOverlay());
+  if (has && !_hadOverlay) _pop = now;
+  _hadOverlay = has;
+  if (has && _pop !== null && now - _pop < ANIM_MS.pop) {
+    stage.classList.add("pm-anim-pop");
+    stage.style.setProperty("--pm-tp", `${-Math.round(now - _pop)}ms`);
+  }
+}
 
 // ── data for the current view ─────────────────────────────────────────────────
 
@@ -182,9 +216,15 @@ export async function openPartyMenu({ actorId = null } = {}) {
     // back to whatever row happened to be under the mouse.
     _root.addEventListener("mousemove", onHover);
     _root.addEventListener("input", onInput);
+    // Right-click and the mouse's Back button step back, so the menu works with a mouse alone.
+    _root.addEventListener("contextmenu", onContext);
+    _root.addEventListener("mousedown", onMouseBack);
+    _root.addEventListener("mouseup", onMouseBack);
     document.body.appendChild(_root);
     window.addEventListener("keydown", onKey, true);
   }
+  _hadOverlay = false;
+  animate("open");
   play(SND.ok);
   render();
 }
@@ -235,6 +275,8 @@ function render() {
       ${S.picker ? renderPicker() : ""}
       ${S.toast ? `<div class="pm-toast pm-pill">${esc(S.toast)}</div>` : ""}
     </div>`;
+
+  applyTransition(_root.querySelector(".pm-stage"));
 
   const newList = _root.querySelector(".pm-skill-list");
   if (newList) {
@@ -315,18 +357,15 @@ function renderMain() {
           <div class="pm-info-row"><span class="pm-zenit"><i class="fas fa-coins"></i> ${Number(r.zenit || 0).toLocaleString()}</span><em>z</em></div>
         </div>
       </div>
-      <div class="pm-hint">${S.focus === "member" ? "Choose a character · Esc back" : "↑↓ choose · Enter confirm · Esc close"}</div>
+      <div class="pm-hint">${S.focus === "member" ? "Choose a character · Esc or right-click: back" : "↑↓ choose · Enter confirm · Esc close"}</div>
     </div>`;
 }
 
 function renderAbility() {
   const actor = currentActor();
   if (!actor) return `<div class="pm-win pm-empty">That character is gone.</div>`;
-  const v = vitalsOf(actor);
   const skills = filteredSkills(actor);
   const sel = currentSkill(actor);
-  const sum = sel ? skillSummary(sel) : null;
-  const help = sum ? plain(sum.description) || "No description." : "No skills here.";
 
   const tabs = FILTERS.map((f) => `
     <span class="pm-tab pm-hit ${S.filter === f.id ? "is-on" : ""}" data-action="filter" data-id="${f.id}"><i class="fas ${f.icon}"></i>${esc(f.label)}</span>`).join("");
@@ -355,31 +394,62 @@ function renderAbility() {
 
   return `
     <div class="pm-ability">
-      <div class="pm-win pm-help"><span>${esc(help)}</span></div>
-      <div class="pm-ability-top">
-        <div class="pm-win pm-title"><span class="pm-pill">Ability</span></div>
-        <div class="pm-win pm-who">
-          <span class="pm-arrow pm-hit" data-action="prev-char" title="Previous (Q)">◀</span>
-          <div class="pm-portrait sm"><img src="${esc(actor.img)}" alt="" onerror="this.style.visibility='hidden'"></div>
-          <div class="pm-who-body">
-            <div class="pm-member-top"><span class="pm-name">${esc(actor.name)}</span><span class="pm-lv"><em>LV</em>${v.level}</span></div>
-            <div class="pm-stat">${STAT.hp}<b>${v.hp}</b><span>/</span><b>${v.maxHp}</b>
-                                 ${STAT.mp}<b>${v.mp}</b><span>/</span><b>${v.maxMp}</b></div>
-          </div>
-          <span class="pm-arrow pm-hit" data-action="next-char" title="Next (E)">▶</span>
-        </div>
-      </div>
+      ${renderNav()}
+      ${who(ctx, actor, "Ability")}
       <div class="pm-ability-body">
         <div class="pm-win pm-skills">
-          <div class="pm-tabs">${tabs}</div>
+          <div class="pm-tabs">${tabs}${kbd("Tab")}</div>
           <div class="pm-skill-list">${rows}</div>
         </div>
         <div class="pm-win pm-detail"><div class="pm-scroll" data-key="${esc(sel?.uuid ?? "")}">${sel ? renderDetail(actor, sel) : ""}</div></div>
       </div>
-      <div class="pm-hint">${S.focus === "slots"
-        ? "↑↓ choose · Enter change · Del reset · Esc back"
-        : "Arrows choose · Enter open summon · Tab filter · Q/E character · Esc back"}</div>
     </div>`;
+}
+
+/** The Ability view's place and actions, for the nav bar. */
+function abilityNav() {
+  const actor = currentActor();
+  const sel = actor ? currentSkill(actor) : null;
+  const slots = sel ? resolvedSlotsOf(actor, sel) : [];
+  const crumbs = [`Ability · ${actor?.name ?? ""}`];
+  const actions = [];
+  if (S.focus === "slots" && sel) {
+    crumbs.push(`Summon (${sel.name})`);
+    const slot = slots[S.slot];
+    if (slot && canEditActor(actor)) {
+      actions.push({ key: "Enter", label: "Change", icon: "fa-right-left" });
+      if (slotView(slot).canReset) actions.push({ key: "Delete", label: slot.type === "fixed" ? "Default" : "Clear", icon: "fa-rotate-left" });
+    }
+  } else if (slots.length) actions.push({ key: "Enter", label: "Summon", icon: "fa-paw" });
+  return { crumbs, actions };
+}
+
+/** Where the open view is ({ crumbs: [labels], actions }), "Party" excluded. */
+function navSpec() {
+  if (S.view === "ability") return abilityNav();
+  const view = VIEWS[S.view];
+  return view?.nav?.(ctx) ?? { crumbs: [view?.title ?? ""], actions: [] };
+}
+
+function renderNav() {
+  const { crumbs, actions } = navSpec();
+  const all = ["Party", ...crumbs];
+  return navBar(all.map((label, i) => ({ label, up: i === 0 ? "main" : all.length - 1 - i })), actions);
+}
+
+/** One step back, the way a mouse asks for it (Back button, right-click, mouse Back). */
+function navBack() {
+  if (S.busy) return;
+  if (S.picker || viewOverlay()) return handleKey("Escape");          // close the overlay first
+  if (S.view === "main") { if (S.focus === "member") handleKey("Escape"); return; }   // never closes the menu
+  if (navSpec().crumbs.length > 1) return handleKey("Escape");        // up one level inside the view
+  backToMain();
+}
+
+/** A crumb: "main", or that many steps back. */
+function navTo(up) {
+  if (up === "main") { S.picker = null; return backToMain(); }
+  for (let i = 0; i < Number(up); i++) handleKey("Escape");
 }
 
 function renderDetail(actor, item) {
@@ -480,7 +550,7 @@ function renderPicker() {
       </div>
       <input type="text" class="pm-search" placeholder="Search…" value="${esc(p.query)}">
       <div class="pm-picker-list">${reset}${body || `<div class="pm-empty">No matching actors.</div>`}</div>
-      <div class="pm-hint">↑↓ choose · Enter confirm · Esc cancel${game.user?.isGM ? "" : " · Showing your actors and the summon's own folder"}</div>
+      ${overlayFoot(`↑↓ choose · Enter confirm · Esc cancel${game.user?.isGM ? "" : " · Showing your actors and the summon's own folder"}`)}
     </div>`;
 }
 
@@ -503,6 +573,7 @@ function enterAbility(actor) {
   S.actorId = actor.id;
   S.view = "ability"; S.focus = "skills"; S.skill = 0; S.slot = 0; S.filter = "all";
   _listScroll = 0;
+  animate("enter");
   play(SND.ok);
   render();
 }
@@ -511,9 +582,15 @@ function cycleCharacter(delta) {
   const list = [...S.roster.active, ...S.roster.reserve];
   if (list.length < 2) return;
   const i = list.findIndex((a) => a.id === S.actorId);
-  const next = list[(i + delta + list.length) % list.length];
+  selectCharacter(list[(i + delta + list.length) % list.length]);
+}
+
+/** Show `next` in the current per-character view (Q/E or a click on its portrait). */
+function selectCharacter(next) {
+  if (!next || next.id === S.actorId) return;
   S.actorId = next.id; S.skill = 0; S.slot = 0; S.focus = "skills"; _listScroll = 0;
   if (VIEWS[S.view]) VIEWS[S.view].enter(ctx, next);
+  animate("switch");
   play(SND.move, 0.45);
   render();
 }
@@ -525,6 +602,7 @@ function enterView(id, actor = null) {
   if (actor) S.actorId = actor.id;
   S.view = id; S.pendingCmd = null; _listScroll = 0;
   view.enter(ctx, actor);
+  animate("enter");
   play(SND.ok);
   render();
 }
@@ -538,6 +616,7 @@ function backToMain() {
   else { S.focus = "cmd"; S.pendingCmd = null; }
   const at = visibleCommands().findIndex((c) => c.id === id);
   if (at >= 0) S.cmd = at;
+  animate("back");
   play(SND.back);
   render();
 }
@@ -567,6 +646,8 @@ const ctx = {
   setBusy: (b) => { S.busy = !!b; },
   resetScroll: () => { _listScroll = 0; },
   focusSearch: () => { S.focusSearch = true; },
+  animate: (kind) => animate(kind),
+  nav: () => renderNav(),
   refreshRoster: async () => { S.roster = await getPartyRoster(); },
   close: () => closePartyMenu(),
   isOpen: () => S.open,
@@ -700,8 +781,12 @@ async function onClick(ev) {
     case "cmd": S.focus = "cmd"; S.cmd = i; confirmCmd(); break;
     case "member": pickMember(S.roster.active[i]); break;
     case "filter": if (!S.picker) setFilter(el.dataset.id); break;
-    case "prev-char": cycleCharacter(-1); break;
-    case "next-char": cycleCharacter(1); break;
+    case "nav-back": navBack(); break;
+    case "nav-crumb": navTo(el.dataset.up); break;
+    case "nav-key": handleKey(el.dataset.key); break;
+    case "pick-char":
+      if (!S.picker) selectCharacter([...S.roster.active, ...S.roster.reserve].find((a) => a.id === el.dataset.id));
+      break;
     case "skill":
       if (S.picker) break;
       if (S.focus === "skills" && S.skill === i) openSlots(actor);
@@ -765,7 +850,25 @@ function onKey(ev) {
   ev.preventDefault();
   ev.stopPropagation();
   if (S.busy) return;
+  handleKey(k, ev);
+}
 
+function onContext(ev) {
+  if (ev.target?.closest?.("input, textarea")) return;   // keep the text box's own menu
+  ev.preventDefault();
+  navBack();
+}
+
+// Mouse button 3 = Back. Swallow the press too, or the browser would navigate.
+function onMouseBack(ev) {
+  if (ev.button !== 3) return;
+  ev.preventDefault();
+  if (ev.type === "mouseup") navBack();
+}
+
+/** One key's worth of menu behaviour: real key presses and the nav bar's buttons both land here. */
+function handleKey(k, ev = { key: k, shiftKey: false, target: null }) {
+  if (S.busy) return;
   const actor = currentActor();
 
   if (S.picker) {
@@ -963,8 +1066,6 @@ function ensureStyles() {
 #${ROOT_ID} .pm-lv { font-size: 18px; margin-left: auto; font-weight: 700; }
 #${ROOT_ID} .pm-stat { display: grid; grid-template-columns: 46px 48px 12px 48px minmax(60px, 1fr); align-items: center;
   font-size: 17px; font-variant-numeric: tabular-nums; line-height: 1.4; }
-#${ROOT_ID} .pm-who .pm-stat { grid-template-columns: 46px 44px 12px 44px 58px 44px 12px 44px; }
-#${ROOT_ID} .pm-who .pm-stat em:nth-of-type(2) { padding-left: 14px; }
 #${ROOT_ID} .pm-stat b { font-weight: 600; text-align: right; }
 #${ROOT_ID} .pm-stat b.is-low { color: var(--low); }
 #${ROOT_ID} .pm-stat span { text-align: center; color: var(--ink-soft); }
@@ -990,15 +1091,43 @@ function ensureStyles() {
 /* ability view */
 #${ROOT_ID} .pm-ability { position: relative; display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: 18px;
   width: min(1100px, 100%); height: min(700px, calc(100vh - 90px)); }
-#${ROOT_ID} .pm-help { font-size: 16px; line-height: 1.3; box-sizing: border-box; height: calc(2.6em + 32px); padding-left: 26px; }
-#${ROOT_ID} .pm-help > span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+/* nav bar (navBar): Back · the path here · this screen's actions, each with its key */
+#${ROOT_ID} .pm-nav { display: flex; align-items: center; gap: 14px; box-sizing: border-box; min-height: 50px; padding: 8px 12px 8px 26px; }
+#${ROOT_ID} .pm-navback, #${ROOT_ID} .pm-navact { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px; }
+#${ROOT_ID} .pm-crumbs { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 8px; white-space: nowrap; overflow: hidden; font-size: 15px; }
+#${ROOT_ID} .pm-crumb { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; color: var(--ink-soft); cursor: pointer;
+  border-bottom: 1px dashed rgba(112,74,29,.45); }
+#${ROOT_ID} .pm-crumb:hover { color: var(--accent); }
+#${ROOT_ID} .pm-crumb.is-here { color: var(--ink); font-weight: 700; cursor: default; border-bottom: 0; }
+#${ROOT_ID} .pm-crumbsep { flex: 0 0 auto; font-size: 9px; color: var(--ink-dim); }
+#${ROOT_ID} .pm-navacts { flex: 0 0 auto; display: flex; gap: 8px; }
+#${ROOT_ID} .pm-kbd { display: inline-block; font-family: inherit; font-size: 10px; font-weight: 700; line-height: 1; padding: 2px 5px; border-radius: 4px;
+  color: #5c421e; background: rgba(255,255,255,.5); border: 1px solid rgba(90,60,34,.45); box-shadow: inset 0 -1px 0 rgba(90,60,34,.25); text-shadow: none; }
+#${ROOT_ID} .pm-chips > .pm-kbd { flex: 0 0 auto; opacity: .65; }
+#${ROOT_ID} .pm-tabs > .pm-kbd { margin-left: auto; align-self: center; opacity: .65; }
+#${ROOT_ID} .pm-pickfoot { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
 #${ROOT_ID} .pm-ability-top { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 18px; }
 #${ROOT_ID} .pm-title { display: flex; align-items: center; justify-content: center; }
 #${ROOT_ID} .pm-title .pm-pill { font-size: 20px; }
 #${ROOT_ID} .pm-who { display: flex; align-items: center; gap: 14px; padding: 8px 14px; }
 #${ROOT_ID} .pm-who-body { flex: 1 1 auto; min-width: 0; }
-#${ROOT_ID} .pm-arrow { cursor: pointer; font-size: 16px; color: var(--ink-soft); padding: 6px; }
-#${ROOT_ID} .pm-arrow:hover { color: var(--accent); }
+/* portrait row (portraitStrip): every character as a chip; the shown one is lifted and ringed */
+#${ROOT_ID} .pm-strip { padding: 8px 18px 8px 26px; gap: 18px; }
+#${ROOT_ID} .pm-chips { flex: 0 1 auto; min-width: 0; display: flex; align-items: center; gap: 8px; overflow: hidden; }
+#${ROOT_ID} .pm-pchip { flex: 0 1 50px; min-width: 34px; aspect-ratio: 1; border-radius: 8px; overflow: hidden; cursor: pointer;
+  background: var(--parchment-3); border: 2px solid var(--edge); box-shadow: 0 0 0 1px rgba(202,164,77,.45), 0 2px 5px rgba(0,0,0,.25);
+  opacity: .62; filter: saturate(.7); transition: opacity .12s ease, transform .12s ease, filter .12s ease; }
+#${ROOT_ID} .pm-pchip img { width: 100%; height: 100%; object-fit: cover; object-position: top; border: 0; display: block; }
+#${ROOT_ID} .pm-pchip:hover { opacity: .92; filter: none; }
+#${ROOT_ID} .pm-pchip.is-on { flex-basis: 58px; opacity: 1; filter: none; transform: translateY(-1px);
+  box-shadow: 0 0 0 2px var(--gold-2), 0 0 12px var(--glow), 0 3px 8px rgba(0,0,0,.3); }
+#${ROOT_ID} .pm-pchip.is-reserve:not(.is-on) { opacity: .45; }
+#${ROOT_ID} .pm-pchip .pm-bagicon { font-size: 22px; }
+#${ROOT_ID} .pm-chipsep { flex: 0 0 1px; align-self: stretch; margin: 6px 4px; background: rgba(92,66,30,.35); }
+#${ROOT_ID} .pm-stripinfo { border-left: 1px solid rgba(92,66,30,.25); padding-left: 16px; }
+#${ROOT_ID} .pm-stripinfo .pm-sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (prefers-reduced-motion: reduce) { #${ROOT_ID} .pm-pchip { transition: none; } }
+#${ROOT_ID} .pm-stvitals { margin: 0 0 10px; padding: 0 0 8px; border-bottom: 1px solid rgba(92,66,30,.3); }
 #${ROOT_ID} .pm-ability-body { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 18px; min-height: 0; }
 #${ROOT_ID} .pm-skills { display: flex; flex-direction: column; min-height: 0; padding: 12px 12px 10px 14px; }
 #${ROOT_ID} .pm-tabs { display: flex; flex-wrap: wrap; gap: 4px 16px; padding: 0 0 8px 24px; margin-bottom: 8px;
@@ -1057,8 +1186,9 @@ function ensureStyles() {
 #${ROOT_ID} .pm-btn:active { transform: translateY(1px); }
 
 /* picker */
-#${ROOT_ID} .pm-picker-veil { position: absolute; inset: 0; background: rgba(20, 12, 4, .45); }
-#${ROOT_ID} .pm-picker { position: absolute; width: min(460px, calc(100% - 48px)); max-height: min(560px, calc(100vh - 100px));
+/* overlays sit in their own layer: the drawn scrollbars and the hand use z-index 3 inside the windows below */
+#${ROOT_ID} .pm-picker-veil { position: absolute; inset: 0; z-index: 20; background: rgba(20, 12, 4, .45); }
+#${ROOT_ID} .pm-picker { position: absolute; z-index: 21; width: min(460px, calc(100% - 48px)); max-height: min(560px, calc(100vh - 100px));
   display: flex; flex-direction: column; gap: 8px; padding: 16px 18px; }
 #${ROOT_ID} .pm-picker .pm-hint { position: static; text-align: right; color: var(--ink-soft); text-shadow: none; }
 #${ROOT_ID} .pm-picker-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
@@ -1070,7 +1200,7 @@ function ensureStyles() {
 #${ROOT_ID} .pm-pick-group { color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .06em; margin: 8px 0 2px; text-transform: uppercase; }
 #${ROOT_ID} .pm-pick { display: flex; align-items: center; gap: 10px; padding: 3px 6px; border-radius: 8px; cursor: pointer; font-size: 16px; }
 
-#${ROOT_ID} .pm-toast { position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%); font-size: 16px; font-weight: 700; padding: 8px 20px; }
+#${ROOT_ID} .pm-toast { z-index: 22; position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%); font-size: 16px; font-weight: 700; padding: 8px 20px; }
 
 /* a label that opens a window would sit on the gold rivet */
 #${ROOT_ID} .pm-win > .pm-label:first-child, #${ROOT_ID} .pm-win > .pm-scroll > .pm-label:first-child { padding-left: 12px; }
@@ -1107,8 +1237,15 @@ function ensureStyles() {
   background: linear-gradient(rgba(255,255,255,.55), rgba(255,255,255,.12) 70%);
   box-shadow: inset 0 0 0 1px rgba(154,122,43,.45), 0 0 10px var(--glow);
 }
-#${ROOT_ID} .pm-candhead { margin-bottom: 6px; }
-#${ROOT_ID} .pm-candlist { max-height: none; }
+/* choosing gear: the left window holds the candidates (two columns) over the comparison */
+#${ROOT_ID} .pm-eqwin.is-choosing { padding-left: 14px; }
+#${ROOT_ID} .pm-eqpickhead { display: flex; align-items: baseline; gap: 12px; padding: 0 0 8px 24px; margin-bottom: 6px;
+  border-bottom: 1px solid rgba(92,66,30,.3); }
+#${ROOT_ID} .pm-eqcands { flex: 0 1 auto; min-height: 64px; }
+#${ROOT_ID} .pm-eqcands .pm-eqnone { width: 24px; height: 24px; flex: 0 0 auto; }
+#${ROOT_ID} .pm-eqcands .pm-skill-name.is-empty { color: var(--ink-dim); font-style: italic; }
+#${ROOT_ID} .pm-eqcands .pm-why { max-width: 45%; }
+#${ROOT_ID} .pm-eqlock { flex: 0 0 auto; margin-left: auto; font-size: 11px; color: var(--ink-soft); }
 #${ROOT_ID} .pm-defline { display: flex; gap: 22px; margin-top: auto; padding-top: 10px; border-top: 1px solid rgba(92,66,30,.3); font-size: 18px; font-variant-numeric: tabular-nums; }
 #${ROOT_ID} .pm-defline b { font-weight: 700; }
 
@@ -1123,6 +1260,47 @@ function ensureStyles() {
 #${ROOT_ID} .pm-aff i { font-size: 15px; color: var(--ink-soft); }
 #${ROOT_ID} .pm-aff.aff-vu b { color: var(--low); } #${ROOT_ID} .pm-aff.aff-rs b { color: var(--mp); }
 #${ROOT_ID} .pm-aff.aff-im b { color: #4b3517; } #${ROOT_ID} .pm-aff.aff-ab b { color: #2e7d32; }
+/* screen transitions (applyTransition): short, small, and only on a change of screen.
+   --pm-t is the time already elapsed when a re-render lands mid-animation.
+   The bright parchment WINDOWS never fade — only move. Fading a window over the
+   dark backdrop dips the screen's brightness by ~45% and back within 150 ms,
+   which reads as a flash. Only what is written ON the parchment fades, and
+   never below 35%, so the screen's brightness stays level. */
+@keyframes pm-rise { from { opacity: 0; transform: translateY(8px); } }
+@keyframes pm-lift { from { transform: translateY(8px); } }
+@keyframes pm-settle { from { transform: translateY(-6px); } }
+@keyframes pm-ink { from { opacity: .35; } }
+@keyframes pm-ink-nudge { from { opacity: .55; transform: translateY(3px); } }
+@keyframes pm-ink-right { from { opacity: .35; transform: translateX(12px); } }
+@keyframes pm-ink-left { from { opacity: .35; transform: translateX(-12px); } }
+@keyframes pm-pop { from { opacity: .6; transform: scale(.97); } }
+@keyframes pm-fade { from { opacity: 0; } }
+#${ROOT_ID} .pm-stage[class*="pm-anim-"] { --pm-ease: cubic-bezier(.2, .8, .2, 1); }
+/* opening over the game: the one fade from nothing, once */
+#${ROOT_ID} .pm-anim-open > :is(.pm-main, .pm-ability) { animation: pm-rise 170ms var(--pm-ease) var(--pm-t, 0ms) both; }
+/* into a command: windows lift into place in turn, their text inks in */
+#${ROOT_ID} .pm-anim-enter :is(.pm-ability > .pm-nav, .pm-ability-top > .pm-win, .pm-ability-body > .pm-win) {
+  animation: pm-lift 150ms var(--pm-ease) var(--pm-t, 0ms) both; }
+#${ROOT_ID} .pm-anim-enter :is(.pm-ability > .pm-nav, .pm-ability-top > .pm-win, .pm-ability-body > .pm-win) > * {
+  animation: pm-ink 150ms var(--pm-ease) var(--pm-t, 0ms) both; }
+#${ROOT_ID} .pm-anim-enter :is(.pm-ability-top > .pm-win, .pm-ability-top > .pm-win > *) { animation-delay: calc(var(--pm-t, 0ms) + 20ms); }
+#${ROOT_ID} .pm-anim-enter :is(.pm-ability-body > .pm-win, .pm-ability-body > .pm-win > *) { animation-delay: calc(var(--pm-t, 0ms) + 40ms); }
+#${ROOT_ID} .pm-anim-enter :is(.pm-ability-body > .pm-win + .pm-win, .pm-ability-body > .pm-win + .pm-win > *) { animation-delay: calc(var(--pm-t, 0ms) + 55ms); }
+/* back to the main menu: windows settle from just above */
+#${ROOT_ID} .pm-anim-back :is(.pm-party, .pm-side > .pm-win) { animation: pm-settle 150ms var(--pm-ease) var(--pm-t, 0ms) both; }
+#${ROOT_ID} .pm-anim-back :is(.pm-party, .pm-side > .pm-win) > * { animation: pm-ink 150ms var(--pm-ease) var(--pm-t, 0ms) both; }
+#${ROOT_ID} .pm-anim-back :is(.pm-side > .pm-win, .pm-side > .pm-win > *) { animation-delay: calc(var(--pm-t, 0ms) + 20ms); }
+/* another character / bag / tab: only the content changes, so only the content moves */
+#${ROOT_ID} :is(.pm-anim-switch, .pm-anim-tab) :is(.pm-ability-body > .pm-win > *, .pm-stripinfo, .pm-crumb.is-here) {
+  animation: pm-ink-nudge 120ms var(--pm-ease) var(--pm-t, 0ms) both; }
+#${ROOT_ID} .pm-anim-page .pm-detail > .pm-scroll { animation: pm-ink-nudge 120ms var(--pm-ease) var(--pm-t, 0ms) both; }
+#${ROOT_ID} .pm-anim-swap .pm-eqwin > * { animation: pm-ink-right 150ms var(--pm-ease) var(--pm-t, 0ms) both; }
+#${ROOT_ID} .pm-anim-unswap .pm-eqwin > * { animation: pm-ink-left 130ms var(--pm-ease) var(--pm-t, 0ms) both; }
+#${ROOT_ID} :is(.pm-anim-swap, .pm-anim-unswap) .pm-detail > .pm-scroll { animation: pm-ink 130ms var(--pm-ease) var(--pm-t, 0ms) both; }
+/* an overlay: the dimming eases in (that darkens, it never flashes); the window grows from 97% */
+#${ROOT_ID} .pm-anim-pop .pm-picker { animation: pm-pop 120ms var(--pm-ease) var(--pm-tp, 0ms) both; }
+#${ROOT_ID} .pm-anim-pop .pm-picker-veil { animation: pm-fade 120ms linear var(--pm-tp, 0ms) both; }
+@media (prefers-reduced-motion: reduce) { #${ROOT_ID} .pm-stage[class*="pm-anim-"] * { animation: none !important; } }
 /* drawn scrollbar (party-menu-scrollbar.js): the native one is hidden on these boxes */
 #${ROOT_ID} :is(.pm-skill-list, .pm-scroll, .pm-picker-list, .pm-effcard, .pm-cmpbody) { scrollbar-width: none; }
 #${ROOT_ID} :is(.pm-skill-list, .pm-scroll, .pm-picker-list, .pm-effcard, .pm-cmpbody)::-webkit-scrollbar { width: 0; height: 0; }

@@ -94,3 +94,52 @@ export function gridStep(root, selector, index, key) {
 }
 
 export const cap = (s) => (s ? String(s)[0].toUpperCase() + String(s).slice(1) : "");
+
+/**
+ * The portrait row at the top of a per-character view: every character (and,
+ * for the Item view, the Party Bag) as a chip, so one click jumps straight to
+ * it instead of stepping with Q/E. `entries` = [{ id, name, img?, icon?, reserve? }];
+ * a reserve entry sits after a divider. `info` = HTML for the selected entry,
+ * shown to the right of the chips.
+ */
+export function portraitStrip(entries, selectedId, action, info = "") {
+  let sep = false;
+  const chips = entries.map((e) => {
+    const divider = e.reserve && !sep ? (sep = true, `<span class="pm-chipsep" title="Reserve"></span>`) : "";
+    const face = e.icon ? `<i class="fas ${esc(e.icon)} pm-bagicon"></i>` : img(e.img);
+    return `${divider}<span class="pm-pchip pm-hit ${e.id === selectedId ? "is-on" : ""} ${e.reserve ? "is-reserve" : ""}"
+      data-action="${esc(action)}" data-id="${esc(e.id)}" title="${esc(e.name)}${e.reserve ? " (reserve)" : ""}">${face}</span>`;
+  }).join("");
+  // Q / E step through the same row, so their key caps sit at its two ends.
+  const ends = entries.length > 1 ? [kbd("q"), kbd("e")] : ["", ""];
+  return `<div class="pm-win pm-who pm-strip"><div class="pm-chips">${ends[0]}${chips}${ends[1]}</div><div class="pm-who-body pm-stripinfo">${info}</div></div>`;
+}
+
+const KEY_LABEL = { Enter: "Enter", Delete: "Del", Escape: "Esc", Tab: "Tab", u: "U", q: "Q", e: "E" };
+/** A small key cap, for showing which key does what beside the thing it does. */
+export const kbd = (k) => `<kbd class="pm-kbd">${esc(KEY_LABEL[k] ?? k)}</kbd>`;
+
+/**
+ * The bar at the top of every view: Back, the path to here (each earlier step
+ * clickable), and this screen's actions as buttons that carry their key.
+ * `crumbs` = [{ label, up }] where `up` is "main" or how many steps back the
+ * crumb is; the last crumb is where you are. `actions` = [{ key, label, icon? }]
+ * — a click sends that key, so a button can never do something the key doesn't.
+ */
+export function navBar(crumbs, actions = []) {
+  const path = crumbs.map((c, i) => (i === crumbs.length - 1
+    ? `<b class="pm-crumb is-here">${esc(c.label)}</b>`
+    : `<span class="pm-crumb pm-hit" data-action="nav-crumb" data-up="${esc(c.up)}" title="Back to ${esc(c.label)}">${esc(c.label)}</span>`))
+    .join(`<i class="fas fa-chevron-right pm-crumbsep"></i>`);
+  const acts = actions.map((a) => `<button type="button" class="pm-btn pm-navact pm-hit" data-action="nav-key" data-key="${esc(a.key)}">`
+    + `${a.icon ? `<i class="fas ${esc(a.icon)}"></i>` : ""}${esc(a.label)}${kbd(a.key)}</button>`).join("");
+  return `<div class="pm-win pm-nav">
+    <button type="button" class="pm-btn pm-navback pm-hit" data-action="nav-back" title="Back (Esc or right-click)"><i class="fas fa-chevron-left"></i>Back</button>
+    <div class="pm-crumbs">${path}</div>
+    <div class="pm-navacts">${acts}</div>
+  </div>`;
+}
+
+/** Footer of an overlay window: its key hint and a Cancel button (a mouse user's Esc). */
+export const overlayFoot = (hint) =>
+  `<div class="pm-pickfoot"><span class="pm-hint">${esc(hint)}</span><button type="button" class="pm-btn pm-hit" data-action="nav-back">Cancel</button></div>`;

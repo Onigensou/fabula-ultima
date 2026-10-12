@@ -10,7 +10,7 @@
 import { rosterSlots, rosterCandidates, setRosterSlot } from "./party-menu-inventory.js";
 import { COMMAND_DEFS, playerCommands, setPlayerCommands } from "./party-menu-access.js";
 import { folderPath } from "./party-menu-core.js";
-import { esc, play, SND, img } from "./party-menu-ui.js";
+import { esc, play, SND, img, overlayFoot } from "./party-menu-ui.js";
 
 const grantable = () => COMMAND_DEFS.filter((c) => !c.gmOnly);
 
@@ -27,12 +27,16 @@ export const setupView = {
 
   enter(ctx) { ctx.S.v = { col: "roster", idx: 0, acc: 0, picker: null }; },
 
-  help(ctx) {
+  nav(ctx) {
     const v = ctx.S.v;
-    if (v.picker) return `Choose who sits in ${v.picker.label}.`;
-    if (v.col === "access") return grantable()[v.acc]?.hint ?? "";
-    const s = rosterSlots(ctx.roster().db)[v.idx];
-    return s ? `${s.group} ${s.slot}: ${s.actor?.name ?? "empty"}${s.ref && !s.actor ? ` (missing actor "${s.ref}")` : ""}` : "";
+    const actions = [];
+    if (v.col === "roster") {
+      actions.push({ key: "Enter", label: "Choose", icon: "fa-user-plus" });
+      if (rosterSlots(ctx.roster().db)[v.idx]?.actor) actions.push({ key: "Delete", label: "Empty", icon: "fa-user-minus" });
+    } else if (grantable()[v.acc]) {
+      actions.push({ key: "Enter", label: playerCommands().includes(grantable()[v.acc].id) ? "Don't allow" : "Allow", icon: "fa-square-check" });
+    }
+    return { crumbs: ["Setup"], actions };
   },
 
   render(ctx) {
@@ -67,7 +71,7 @@ export const setupView = {
 
     return `
       <div class="pm-ability">
-        <div class="pm-win pm-help"><span>${esc(this.help(ctx))}</span></div>
+        ${ctx.nav()}
         <div class="pm-ability-top">
           <div class="pm-win pm-title"><span class="pm-pill">Setup</span></div>
           <div class="pm-win pm-who pm-who-plain"><div class="pm-who-body">
@@ -82,7 +86,6 @@ export const setupView = {
             <div class="pm-sub pm-sunote">The GM always sees every command. Players only change what they own — their character, and the Party Bag.</div>
           </div></div>
         </div>
-        <div class="pm-hint">${v.col === "roster" ? "↑↓ slot · Enter choose · Del empty · → access · Esc back" : "↑↓ command · Enter toggle · ← roster · Esc back"}</div>
       </div>
       ${v.picker ? this.renderPicker(ctx) : ""}`;
   },
@@ -113,7 +116,7 @@ export const setupView = {
           <div class="pm-pick pm-hit ${p.index === 0 ? "is-cursor" : ""}" data-action="su-pick" data-index="0"><div class="pm-portrait xs"></div><span>— empty —</span></div>
           ${body || `<div class="pm-empty">No matching characters.</div>`}
         </div>
-        <div class="pm-hint">↑↓ choose · Enter confirm · Esc cancel · a seated character moves here</div>
+        ${overlayFoot("↑↓ choose · Enter confirm · Esc cancel · a seated character moves here")}
       </div>`;
   },
 

@@ -10,7 +10,7 @@
 //     opens that character's bond.
 // Bonds are written at camp (camp-system's bond updater); this view never writes.
 
-import { esc, play, SND, img } from "./party-menu-ui.js";
+import { esc, play, SND, img, kbd } from "./party-menu-ui.js";
 import { who } from "./party-menu-view-gear.js";
 
 const PAIRS = [["admiration", "inferiority"], ["loyalty", "mistrust"], ["affection", "hatred"]];
@@ -148,7 +148,20 @@ export const bondsView = {
     if (i >= 0) { ctx.S.v.row = i; ctx.S.v.col = i === 0 ? 1 : 0; }
   },
 
-  help(ctx) {
+  nav(ctx) {
+    const v = ctx.S.v;
+    if (v.tab !== "party") return { crumbs: [`Bonds · ${ctx.actor()?.name ?? ""}`], actions: [{ key: "Tab", label: "Party grid", icon: "fa-diagram-project" }] };
+    const party = partyOf(ctx);
+    const a = party[v.row], b = party[v.col];
+    const has = a && b && a !== b && bondsOf(a).some((x) => norm(x.name) === norm(b.name));
+    return {
+      crumbs: ["Bonds · Party"],
+      actions: [...(has ? [{ key: "Enter", label: "Open bond", icon: "fa-link" }] : []), { key: "Tab", label: "List", icon: "fa-list" }],
+    };
+  },
+
+  /** What the hand is on, in words (the party grid's cells only show icons). */
+  readout(ctx) {
     const v = ctx.S.v;
     const actor = ctx.actor();
     if (v.tab === "party") {
@@ -170,7 +183,7 @@ export const bondsView = {
       `<span class="pm-tab pm-hit ${v.tab === id ? "is-on" : ""}" data-action="bd-tab" data-id="${id}"><i class="fas ${icon}"></i>${esc(label)}</span>`).join("");
     let body;
     if (v.tab === "party") {
-      body = `<div class="pm-win pm-skills pm-bwide"><div class="pm-tabs">${tabs}</div><div class="pm-scroll">${grid(ctx, v)}</div></div>`;
+      body = `<div class="pm-win pm-skills pm-bwide"><div class="pm-tabs">${tabs}${kbd("Tab")}</div><div class="pm-scroll">${grid(ctx, v)}<div class="pm-bgread">${esc(this.readout(ctx))}</div></div></div>`;
     } else {
       const bonds = bondsOf(actor);
       v.idx = Math.max(0, Math.min(v.idx, Math.max(0, bonds.length - 1)));
@@ -185,15 +198,14 @@ export const bondsView = {
           <span class="pm-bfeels">${feelingChips(b)}</span>${pips(b.strength, b.tone)}</div>`;
       }).join("") || `<div class="pm-empty">No bonds yet.</div>`;
       body = `
-        <div class="pm-win pm-skills"><div class="pm-tabs">${tabs}</div><div class="pm-skill-list pm-onecol pm-bondlist">${list}</div></div>
+        <div class="pm-win pm-skills"><div class="pm-tabs">${tabs}${kbd("Tab")}</div><div class="pm-skill-list pm-onecol pm-bondlist">${list}</div></div>
         <div class="pm-win pm-detail"><div class="pm-scroll" data-key="bond|${esc(actor.id)}|${v.idx}">${card(ctx, actor, bonds[v.idx])}</div></div>`;
     }
     return `
       <div class="pm-ability">
-        <div class="pm-win pm-help"><span>${esc(this.help(ctx))}</span></div>
+        ${ctx.nav()}
         ${who(ctx, actor, "Bonds")}
         <div class="pm-ability-body ${v.tab === "party" ? "pm-onebody" : ""}">${body}</div>
-        <div class="pm-hint">${v.tab === "party" ? "Arrows move · Enter open bond · Tab back to list · Esc back" : "↑↓ bond · Tab party grid · Q/E character · Esc back"}</div>
       </div>`;
   },
 
@@ -206,13 +218,14 @@ export const bondsView = {
     if (i < 0) { play(SND.buzz, 0.5); ctx.toast(`${a.name} has no bond with ${b.name}.`); return; }
     ctx.S.actorId = a.id;
     Object.assign(v, { tab: "mine", idx: i });
+    ctx.animate("tab");
     play(SND.ok);
     ctx.render();
   },
 
   key(ctx, k, ev) {
     const v = ctx.S.v;
-    if (k === "Tab") { v.tab = v.tab === "party" ? "mine" : "party"; play(SND.move, 0.45); ctx.render(); return; }
+    if (k === "Tab") { v.tab = v.tab === "party" ? "mine" : "party"; ctx.animate("tab"); play(SND.move, 0.45); ctx.render(); return; }
     if (k === "Escape") return ctx.back();
     if (v.tab === "party") {
       const n = partyOf(ctx).length;
@@ -236,7 +249,7 @@ export const bondsView = {
 
   async click(ctx, a, el) {
     const v = ctx.S.v;
-    if (a === "bd-tab") { v.tab = el.dataset.id; play(SND.move, 0.45); ctx.render(); }
+    if (a === "bd-tab") { if (v.tab !== el.dataset.id) ctx.animate("tab"); v.tab = el.dataset.id; play(SND.move, 0.45); ctx.render(); }
     else if (a === "bd-bond") { v.idx = Number(el.dataset.index); play(SND.move, 0.4); ctx.render(); }
     else if (a === "bd-cell") {
       const n = partyOf(ctx).length;
@@ -287,6 +300,7 @@ export const BONDS_CSS = `
 #fud-party-menu .pm-bvs { font-size: 11px; color: var(--ink-dim); text-transform: uppercase; letter-spacing: .08em; }
 #fud-party-menu .pm-bnote { margin: 6px 0 12px; }
 #fud-party-menu .pm-bback { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 4px 0 8px; }
+#fud-party-menu .pm-bgread { margin: 10px 0 0 36px; font-size: 15px; color: var(--ink-soft); min-height: 1.4em; }
 #fud-party-menu .pm-onebody { grid-template-columns: minmax(0, 1fr); }
 #fud-party-menu .pm-bwide { padding: 12px 18px 14px; }
 #fud-party-menu .pm-bgrid { display: grid; gap: 6px; align-items: center; padding: 8px 4px 4px 36px; }

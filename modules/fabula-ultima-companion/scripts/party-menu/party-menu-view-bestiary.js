@@ -201,12 +201,11 @@ export const bestiaryView = {
     ctx.S.v = { idx: 0, filter: "all", sort: "rank", query: "", weak: null, page: "profile", act: -1, reveal: false, picked: null };
   },
 
-  help(ctx) {
+  nav(ctx) {
     const v = ctx.S.v;
-    const e = visible(ctx)[v.idx];
-    if (!e) return v.weak ? `No creature the party has studied is known to be weak to ${cap(v.weak)}.` : "No creatures match.";
-    const id = e.identity;
-    return id?.traits || (id ? `${e.name} — ${cap(id.species)}` : `${e.name} — not studied yet. Study it in battle to fill in this entry.`);
+    // Esc clears the search first, then the "Weak to" filter, then leaves.
+    const clear = v.query ? "Clear search" : v.weak ? "Clear Weak to" : "";
+    return { crumbs: ["Bestiary"], actions: clear ? [{ key: "Escape", label: clear, icon: "fa-xmark" }] : [] };
   },
 
   render(ctx) {
@@ -236,7 +235,7 @@ export const bestiaryView = {
 
     return `
       <div class="pm-ability pm-bestiary">
-        <div class="pm-win pm-help"><span>${esc(this.help(ctx))}</span></div>
+        ${ctx.nav()}
         <div class="pm-ability-top">
           <div class="pm-win pm-title"><span class="pm-pill">Bestiary</span></div>
           <div class="pm-win pm-who pm-who-plain pm-bxbar">
@@ -262,7 +261,6 @@ export const bestiaryView = {
             <div class="pm-scroll" data-key="bx|${esc(sel?.pageId ?? "")}|${v.page}">${body}</div>
           </div>
         </div>
-        <div class="pm-hint">Arrows choose · Q/E page · Tab filter · click Search to type · Esc back</div>
       </div>`;
   },
 
@@ -280,6 +278,7 @@ export const bestiaryView = {
     const i = PAGES.findIndex((p) => p.id === v.page);
     v.page = PAGES[(i + delta + PAGES.length) % PAGES.length].id;
     v.act = -1;
+    ctx.animate("page");
     play(SND.move, 0.45);
     ctx.render();
   },
@@ -329,7 +328,7 @@ export const bestiaryView = {
       v.weak = v.weak === el.dataset.id ? null : el.dataset.id;
       play(v.weak ? SND.ok : SND.back, 0.5);
       this.refilter(ctx);
-    } else if (a === "bx-page") { v.page = el.dataset.id; v.act = -1; play(SND.move, 0.45); ctx.render(); }
+    } else if (a === "bx-page") { if (v.page !== el.dataset.id) ctx.animate("page"); v.page = el.dataset.id; v.act = -1; play(SND.move, 0.45); ctx.render(); }
     else if (a === "bx-act") { const i = Number(el.dataset.index); v.act = v.act === i ? -1 : i; play(SND.move, 0.4); ctx.render(); }
     else if (a === "bx-reveal" && game.user?.isGM) { v.reveal = !v.reveal; _cache = null; play(SND.ok, 0.5); ctx.render(); }
   },
