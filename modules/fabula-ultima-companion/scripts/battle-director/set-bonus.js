@@ -242,12 +242,12 @@ function buildSkillGrant(template, tag) {
 
 // ── Reconcile ──────────────────────────────────────────────────────────────
 
-// Reconcile an actor's managed set-bonus grants (AEs + skills) to its currently
-// equipped pieces. Idempotent: creates missing grants whose threshold is met,
-// deletes managed grants whose threshold is no longer met, leaves everything
-// else untouched. Safe on any actor (no set pieces → no-op). Returns a summary.
-export async function reconcileSetBonuses(actor) {
-  if (!actor?.items) return { counts: {}, aeCreated: 0, aeDeleted: 0, skillCreated: 0, skillDeleted: 0 };
+// What reconcileSetBonuses WOULD do for this actor's current equipped pieces:
+// grants to delete (ids) and create (payloads). Pure — reads the actor and the
+// world's Equipment Sets, writes nothing — so a preview (the Party Menu's equip
+// comparison) can run it on an unsaved copy of the actor.
+export function planSetBonuses(actor) {
+  if (!actor?.items) return { counts: {}, aeDelete: [], aeCreate: [], skillDelete: [], skillCreate: [] };
 
   const counts = countEquippedSetPieces(actor);
   const defs = getEquipmentSets();
@@ -309,6 +309,17 @@ export async function reconcileSetBonuses(actor) {
   }
   const skillCreate = [];
   for (const [tag, obj] of wantedSkill) if (!skillPresent.has(tag)) skillCreate.push(obj);
+
+  return { counts, aeDelete, aeCreate, skillDelete, skillCreate };
+}
+
+// Reconcile an actor's managed set-bonus grants (AEs + skills) to its currently
+// equipped pieces. Idempotent: creates missing grants whose threshold is met,
+// deletes managed grants whose threshold is no longer met, leaves everything
+// else untouched. Safe on any actor (no set pieces → no-op). Returns a summary.
+export async function reconcileSetBonuses(actor) {
+  if (!actor?.items) return { counts: {}, aeCreated: 0, aeDeleted: 0, skillCreated: 0, skillDeleted: 0 };
+  const { counts, aeDelete, aeCreate, skillDelete, skillCreate } = planSetBonuses(actor);
 
   // ── Commit (deletes first, then creates) ──
   if (aeDelete.length) {

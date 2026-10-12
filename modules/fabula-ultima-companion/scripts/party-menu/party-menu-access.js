@@ -20,11 +20,13 @@ export const COMMAND_DEFS = [
   { id: "ability", label: "Ability", hint: "Skills, and summon bindings on summon skills" },
   { id: "equip", label: "Equip", hint: "Equip and unequip gear" },
   { id: "status", label: "Status", hint: "Attributes, defenses and active effects" },
+  { id: "bonds", label: "Bonds", hint: "Each character's bonds, and how the party feels about each other" },
+  { id: "bestiary", label: "Bestiary", hint: "Every creature the party has met and studied" },
   { id: "setup", label: "Setup", hint: "Party roster, player access", gmOnly: true },
 ];
 
 /** What players get on a fresh world: in-game data, nothing that sets the game up. */
-export const DEFAULT_PLAYER_COMMANDS = ["item", "ability", "equip", "status"];
+export const DEFAULT_PLAYER_COMMANDS = ["item", "ability", "equip", "status", "bonds", "bestiary"];
 
 Hooks.once("init", () => {
   game.settings.register(MODULE_ID, SETTING, {

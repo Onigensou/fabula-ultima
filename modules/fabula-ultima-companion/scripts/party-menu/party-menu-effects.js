@@ -58,7 +58,7 @@ const cap = (w) => (w ? w[0].toUpperCase() + w.slice(1) : w);
 const bareKey = (key) => String(key ?? "").replace(/^target\./, "").replace(/^system\.props\./, "").replace(/^props\./, "")
   .replace(`flags.${NS}.`, "");
 
-function keyLabel(key) {
+export function keyLabel(key) {
   const k = bareKey(key);
   if (KEY_LABEL[k]) return KEY_LABEL[k];
   const aff = /^affinity_(\d)$/.exec(k);

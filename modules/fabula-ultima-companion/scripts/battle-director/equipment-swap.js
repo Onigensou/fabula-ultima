@@ -702,7 +702,14 @@ export async function applyEquipmentSwap(actor, selections, opts = {}) {
   return withManagedEquip(actor, () => _applyEquipmentSwap(actor, selections, opts));
 }
 
-async function _applyEquipmentSwap(actor, selections, opts = {}) {
+// What applyEquipmentSwap WOULD write, without writing it: the actor props, the
+// per-item `isEquipped` patches and the item-AE `disabled` flips, in the shape
+// the commit below applies them. Pure (reads the actor only), so a preview can
+// apply the same plan to an unsaved copy of the actor — the Party Menu's equip
+// comparison does — and the two can never disagree about what a swap changes.
+// `rejectedShieldMain` names a shield refused in the main hand (the commit
+// reports it); the plan then keeps the current main hand, as the swap does.
+export function planEquipmentSwap(actor, selections, opts = {}) {
   const { allowArmor = false } = opts;
   const { weapons, shields, accessories, armor } = partitionInventory(actor);
   const handItems = [...weapons, ...shields];
@@ -721,10 +728,10 @@ async function _applyEquipmentSwap(actor, selections, opts = {}) {
   // Dual Shieldbearer owners may actually equip one there. Drop the
   // attempt + notify; the swap proceeds with main untouched (curMain
   // stays equipped).
+  let rejectedShieldMain = null;
   if (wantMain?.system?.props?.item_type === ITEM_TYPE_SHIELD
       && !actorOwnsDualShieldbearer(actor)) {
-    warn(`applyEquipmentSwap: ${actor.name} cannot equip shield "${wantMain.name}" in main hand without Dual Shieldbearer — dropped.`);
-    try { ui.notifications?.warn(`${actor.name} cannot equip a shield in the main hand without the Dual Shieldbearer skill.`); } catch {}
+    rejectedShieldMain = wantMain.name;
     wantMain = resolveWornItems(actor).main;
   }
 
@@ -864,6 +871,22 @@ async function _applyEquipmentSwap(actor, selections, opts = {}) {
     }
   }
 
+  return {
+    actorUpdates,
+    itemUpdates: Array.from(itemUpdateMap.values()),
+    effectUpdates: Array.from(aeUpdateMap, ([itemId, fxMap]) => [itemId, [...fxMap.values()]]),
+    changes,
+    rejectedShieldMain,
+  };
+}
+
+async function _applyEquipmentSwap(actor, selections, opts = {}) {
+  const { actorUpdates, itemUpdates, effectUpdates, changes, rejectedShieldMain } = planEquipmentSwap(actor, selections, opts);
+  if (rejectedShieldMain) {
+    warn(`applyEquipmentSwap: ${actor.name} cannot equip shield "${rejectedShieldMain}" in main hand without Dual Shieldbearer — dropped.`);
+    try { ui.notifications?.warn(`${actor.name} cannot equip a shield in the main hand without the Dual Shieldbearer skill.`); } catch {}
+  }
+
   if (!changes.length) {
     return { changes: [], skipped: true };
   }
@@ -872,18 +895,17 @@ async function _applyEquipmentSwap(actor, selections, opts = {}) {
   // so isEquipped is in place when AE-disabled flips read it; effects
   // second so the actor-update finds the new derived stats; actor third.
   try {
-    const embeddedItemUpdates = Array.from(itemUpdateMap.values());
-    if (embeddedItemUpdates.length) {
-      await actor.updateEmbeddedDocuments("Item", embeddedItemUpdates);
+    if (itemUpdates.length) {
+      await actor.updateEmbeddedDocuments("Item", itemUpdates);
     }
   } catch (e) {
     warn("applyEquipmentSwap: item updates failed", e);
   }
-  for (const [itemId, fxMap] of aeUpdateMap) {
+  for (const [itemId, fxUpdates] of effectUpdates) {
     const item = actor.items?.get?.(itemId);
     if (!item) continue;
     try {
-      await item.updateEmbeddedDocuments("ActiveEffect", [...fxMap.values()]);
+      await item.updateEmbeddedDocuments("ActiveEffect", fxUpdates);
     } catch (e) {
       warn(`applyEquipmentSwap: AE updates failed for ${item.name}`, e);
     }

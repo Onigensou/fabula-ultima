@@ -370,6 +370,18 @@ export function equipRefusal(actor, user = game.user) {
 export async function setEquipSlot(actor, slotKey, itemId) {
   const refusal = equipRefusal(actor);
   if (refusal) return { ok: false, reason: refusal };
+  const r = equipSelection(actor, slotKey, itemId);
+  if (!r.ok) return r;
+  const res = await applyEquipmentSwap(actor, r.sel, { allowArmor: true });
+  return { ok: true, changes: res?.changes ?? [] };
+}
+
+/**
+ * The whole loadout after putting `itemId` (or nothing) in `slotKey`, as the
+ * `selections` applyEquipmentSwap takes — shared by the commit above and the
+ * equip comparison (party-menu-gear-preview.js), so both mean the same swap.
+ */
+export function equipSelection(actor, slotKey, itemId) {
   const slots = equipSlotsOf(actor);
   if (!slots.some((s) => s.key === slotKey)) return { ok: false, reason: "no-such-slot" };
   const item = itemId ? actor.items.get(itemId) : null;
@@ -382,8 +394,7 @@ export async function setEquipSlot(actor, slotKey, itemId) {
   if (item) for (const k of Object.keys(sel)) if (sel[k] === item.id) sel[k] = null;   // one item, one slot
   sel[slotKey] = item?.id ?? null;
   if (slotKey === "main" && isTwoHanded(item)) sel.off = null;
-  const res = await applyEquipmentSwap(actor, sel, { allowArmor: true });
-  return { ok: true, changes: res?.changes ?? [] };
+  return { ok: true, sel };
 }
 
 // ── status ────────────────────────────────────────────────────────────────────

@@ -2,7 +2,10 @@
 //
 // Equip: the five worn slots on the left; Enter on a slot lists what the
 // character carries for it on the right, unwearable entries dimmed with
-// canEquip's own reason. Commits go through setEquipSlot → applyEquipmentSwap.
+// canEquip's own reason. While a candidate is under the hand, the left window
+// compares the character's stats before → after (party-menu-gear-preview.js),
+// and every candidate row carries an FF-style ▲ / ▼ for its overall effect.
+// Commits go through setEquipSlot → applyEquipmentSwap.
 // Only gear the character CARRIES is offered: something in the Party Bag is
 // moved over from the Item view first.
 //
@@ -16,6 +19,7 @@ import {
 } from "./party-menu-inventory.js";
 import { esc, plain, safeHtml, play, SND, img, STAT } from "./party-menu-ui.js";
 import { effectRowsOf } from "./party-menu-effects.js";
+import { previewEquip, peekPreview } from "./party-menu-gear-preview.js";
 import { vitalsOf } from "./party-menu-core.js";
 
 const EQUIP_REASONS = {
@@ -28,7 +32,7 @@ const EQUIP_REASONS = {
   "no-such-slot": "No such slot.",
 };
 
-function who(ctx, actor, title) {
+export function who(ctx, actor, title) {
   const v = vitalsOf(actor);
   return `
     <div class="pm-ability-top">
@@ -66,6 +70,73 @@ function defenseLine(actor) {
 
 // ── Equip ─────────────────────────────────────────────────────────────────────
 
+const NET = {
+  up: ["▲", "Better overall"], down: ["▼", "Worse overall"], mixed: ["▲▼", "Better in some ways, worse in others"],
+};
+function netMark(pv) {
+  const m = pv?.ok ? NET[pv.net] : null;
+  return m ? `<span class="pm-net is-${pv.net}" title="${esc(m[1])}">${m[0]}</span>` : "";
+}
+
+function cmpRow(r) {
+  const dir = r.better ? "is-up" : r.worse ? "is-down" : "";
+  const arrow = r.better ? "▲" : r.worse ? "▼" : "";
+  return `<div class="pm-cmprow ${dir} ${r.changed ? "" : "is-same"}"><em>${esc(r.label)}</em><b>${esc(r.before)}</b>`
+    + `<i class="fas fa-arrow-right"></i><b class="pm-cmpafter">${esc(r.after)}</b><span class="pm-cmparrow">${arrow}</span></div>`;
+}
+
+// Previews are computed OFF the render path: building the copy of a character
+// takes a few hundred ms, so the list renders at once and fills in. The row under
+// the hand goes first (shortly after the hand stops, so scrolling through a list
+// does not build a copy per row), then the ▲ / ▼ of the other rows, one at a time
+// while the hand rests. Anything that moves the hand re-arms the timer.
+let _previewTimer = null;
+function schedulePreviews(ctx, actor, slot, cands, under) {
+  clearTimeout(_previewTimer);
+  const ids = [
+    ...(under ? [under.item.id] : slot.item ? [null] : []),
+    ...cands.filter((c) => c.check.ok && c.item.id !== slot.item?.id).map((c) => c.item.id),
+    ...(slot.item ? [null] : []),
+  ];
+  const next = ids.find((id) => !peekPreview(actor, slot.key, id));
+  if (next === undefined) return;
+  const first = next === ids[0];
+  _previewTimer = setTimeout(() => {
+    _previewTimer = null;
+    const v = ctx.S.v;
+    if (!ctx.isOpen() || ctx.S.view !== "equip" || v?.focus !== "cands" || ctx.actor()?.id !== actor.id) return;
+    if (ctx.S.busy) { schedulePreviews(ctx, actor, slot, cands, under); return; }   // a write is in flight; try again
+    if (equipSlotsOf(actor)[v.idx]?.key !== slot.key) return;
+    previewEquip(actor, slot.key, next);
+    ctx.render();
+  }, first ? 120 : 350);
+}
+
+/** The before → after block shown under the slots while a candidate is highlighted. */
+function compareBlock(actor, slot, item) {
+  const pv = peekPreview(actor, slot.key, item?.id ?? null);
+  const what = item ? `Equip ${item.name}` : slot.item ? `Remove ${slot.item.name}` : "No change";
+  if (!item && !slot.item) return defenseLine(actor);   // "Remove" on an empty slot changes nothing
+  if (!pv) return `<div class="pm-cmp"><div class="pm-label pm-cmphead">${esc(what)}</div><div class="pm-sub pm-cmpwait"><i class="fas fa-spinner fa-spin"></i> Comparing…</div></div>`;
+  if (!pv.ok) return `<div class="pm-cmp"><div class="pm-label">${esc(what)}</div><div class="pm-sub">No comparison available.</div></div>`;
+  const rows = pv.rows.filter((r, i) => i < 3 || r.changed).map(cmpRow).join("");
+  const w = pv.weapon;
+  const wl = w ? [["Accuracy", w.before?.accuracy, w.after?.accuracy], ["Damage", w.before?.damage, w.after?.damage]]
+    .filter(([, a, b]) => (a || b) && a !== b)
+    .map(([k, a, b]) => `<div class="pm-cmpnote"><em>${k}</em>${esc(a || "—")} <i class="fas fa-arrow-right"></i> ${esc(b || "—")}</div>`).join("") : "";
+  const notes = [
+    ...pv.also.map((t) => `<div class="pm-cmpnote"><i class="fas fa-right-left"></i>${esc(t)}</div>`),
+    ...pv.gains.map((n) => `<div class="pm-cmpnote is-up"><i class="fas fa-plus"></i>Skill: ${esc(n)}</div>`),
+    ...pv.loses.map((n) => `<div class="pm-cmpnote is-down"><i class="fas fa-minus"></i>Skill: ${esc(n)}</div>`),
+    ...pv.setGained.map((n) => `<div class="pm-cmpnote is-up"><i class="fas fa-link"></i>Set bonus: ${esc(n)}</div>`),
+    ...pv.setLost.map((n) => `<div class="pm-cmpnote is-down"><i class="fas fa-link-slash"></i>Set bonus lost: ${esc(n)}</div>`),
+  ].join("");
+  return `<div class="pm-cmp">
+      <div class="pm-label pm-cmphead">${esc(what)}</div>
+      <div class="pm-cmpbody">${rows}${wl}${notes}</div>
+    </div>`;
+}
+
 export const equipView = {
   id: "equip",
   title: "Equip",
@@ -102,19 +173,25 @@ export const equipView = {
         <span class="pm-eqname ${s.item ? "" : "is-empty"}">${esc(s.item?.name ?? (s.key === "main" || s.key === "off" ? "Unarmed" : "—"))}</span>
       </div>`).join("");
 
-    let right;
+    let right, compare = null;
     if (v.focus === "cands") {
       const slot = slots[v.idx];
       const cands = equipCandidates(actor, slot.key);
       v.cand = Math.max(0, Math.min(v.cand, cands.length));
+      const under = v.cand > 0 ? cands[v.cand - 1] : null;
+      // Compare what is under the hand; a locked candidate explains itself in its row instead.
+      if (!under || under.check.ok) compare = compareBlock(actor, slot, under?.item ?? null);
+      schedulePreviews(ctx, actor, slot, cands, under);
       const removeRow = `<div class="pm-pick pm-hit ${v.cand === 0 ? "is-cursor" : ""}" data-action="eq-cand" data-index="0">
-        <div class="pm-portrait xs"></div><span>${slot.key === "main" || slot.key === "off" ? "Unarmed" : "Remove"}</span></div>`;
+        <div class="pm-portrait xs"></div><span>${slot.key === "main" || slot.key === "off" ? "Unarmed" : "Remove"}</span>
+        ${slot.item ? netMark(peekPreview(actor, slot.key, null)) : ""}</div>`;
       const candRows = cands.map((c, i) => `
         <div class="pm-pick pm-hit ${v.cand === i + 1 ? "is-cursor" : ""} ${c.check.ok ? "" : "is-locked"}" data-action="eq-cand" data-index="${i + 1}" data-id="${esc(c.item.id)}"
              title="${esc(c.check.reason ?? "")}">
           <div class="pm-portrait xs">${img(c.item.img)}</div>
           <span>${esc(c.item.name)}${c.item.id === slot.item?.id ? ` <i class="pm-badge pm-worn">E</i>` : ""}</span>
           ${c.wornIn ? `<em class="pm-why">${esc(c.wornIn)}</em>` : c.check.reason ? `<em class="pm-why">${esc(c.check.reason)}</em>` : ""}
+          ${c.check.ok && c.item.id !== slot.item?.id ? netMark(peekPreview(actor, slot.key, c.item.id)) : ""}
         </div>`).join("");
       right = `<div class="pm-label pm-candhead">${esc(slot.label)} — carried by ${esc(actor.name)}</div>
         <div class="pm-picker-list pm-candlist">${removeRow}${candRows || `<div class="pm-empty">Nothing carried for this slot.</div>`}</div>`;
@@ -130,11 +207,11 @@ export const equipView = {
           <div class="pm-win pm-skills pm-eqwin">
             <div class="pm-eqlist">${rows}</div>
             ${lock ? `<div class="pm-locked"><i class="fas fa-lock"></i> ${esc(EQUIP_REASONS[lock] ?? lock)}</div>` : ""}
-            ${defenseLine(actor)}
+            ${compare ?? defenseLine(actor)}
           </div>
           <div class="pm-win pm-detail"><div class="pm-scroll">${right}</div></div>
         </div>
-        <div class="pm-hint">${v.focus === "cands" ? "↑↓ choose · Enter equip · Esc back" : "↑↓ slot · Enter change · Del remove · Q/E character · Esc back"}</div>
+        <div class="pm-hint">${v.focus === "cands" ? "↑↓ choose (▲ better · ▼ worse) · Enter equip · Esc back" : "↑↓ slot · Enter change · Del remove · Q/E character · Esc back"}</div>
       </div>`;
   },
 

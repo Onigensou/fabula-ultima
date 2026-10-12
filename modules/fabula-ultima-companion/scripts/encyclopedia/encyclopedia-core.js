@@ -1389,6 +1389,128 @@
     }
   }
 
+  // ───────────────────── Structured entry data (custom UIs) ─────────────────────
+  // The page HTML above is one way to show an entry; the Party Menu's Bestiary
+  // draws its own. Both must reveal exactly the same things, so this applies the
+  // same gates as renderPage — Identity ≥ 7, Stats ≥ 8, Details ≥ 13, each action
+  // only once witnessed, inert passives at Details — and returns DATA:
+  //   identity / stats / details / steal are null while their tier is locked;
+  //   an unwitnessed action is { known: false } with no name or text.
+  // `reveal: true` (GM only — ignored for players) lifts every gate but marks what
+  // the party has NOT unlocked with `hidden: true`, so a GM can preview an entry.
+
+  function resolveEntrySync() {
+    const cached = getCachedUuid();
+    return (cached ? game.journal?.get?.(cached.split(".").pop()) : null) ?? game.journal?.getName?.(ENTRY_NAME) ?? null;
+  }
+
+  const plainText = (h) => String(h ?? "").replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
+
+  function actionData(actor, p, ws, showDetails, reveal) {
+    const out = [];
+    const push = (kind, entry, fmt, fields) => {
+      const id = fmt === "new" ? entryItemId(entry) : null;
+      // Old-format entries (no uuid) are always shown, as in renderAttacks & co.
+      let known = id ? ws.has(id) : true;
+      const item = fmt === "new" ? resolveEmbeddedItem(actor, entry) : null;
+      // Same rule as renderPassiveSkills: at Details an INERT passive is read off the page.
+      if (kind === "passive" && !known && showDetails && (!item || !hasExecutableReactionRow(item))) known = true;
+      const base = { kind, id: id ?? `${kind}:${out.length}`, known: known || reveal, hidden: !known };
+      if (!known && !reveal) { out.push(base); return; }
+      out.push({
+        ...base,
+        name: String(fields.name ?? "Unknown"),
+        img: item?.img || fields.icon,
+        meta: fields.meta && fields.meta !== "-" ? String(fields.meta) : "",
+        description: sanitizeRichHtml(fields.desc ?? ""),
+      });
+    };
+    const pick = (newKey, oldKey) => {
+      const n = objectToList(p[newKey]).filter((e) => !e?.$deleted);
+      return n.length ? { fmt: "new", list: n } : { fmt: "old", list: objectToList(p[oldKey]).filter((e) => !e?.$deleted) };
+    };
+    const atk = pick("attack_list", "basic_attacks");
+    for (const e of atk.list) {
+      const a1 = e?.attribute_die1 ?? e?.attrib_1, a2 = e?.attribute_die2 ?? e?.attrib_2;
+      push("attack", e, atk.fmt, { name: atk.fmt === "new" ? e?.name : (e?.basic_name ?? e?.name), icon: ATTACK_ICON,
+        meta: a1 && a2 ? `${a1} + ${a2}` : "", desc: e?.attack_description ?? e?.detail });
+    }
+    const act = pick("skill_active_list", "special_list");
+    for (const e of act.list) push("skill", e, act.fmt, { name: act.fmt === "new" ? e?.name : (e?.special_name ?? e?.name),
+      icon: ABILITY_ICON, meta: e?.active_cost, desc: e?.active_description ?? e?.details ?? e?.detail });
+    const sp = pick("normal_spell_list", "spell_list");
+    for (const e of sp.list) push("spell", e, sp.fmt, { name: sp.fmt === "new" ? e?.name : (e?.spell_name ?? e?.name),
+      icon: SPELL_ICON, meta: e?.cost, desc: e?.spell_description ?? e?.details ?? e?.detail });
+    const pas = pick("skill_passive_list", "other_list");
+    for (const e of pas.list) push("passive", e, pas.fmt, { name: pas.fmt === "new" ? e?.name : (e?.other_name ?? e?.name),
+      icon: ABILITY_ICON, desc: e?.passive_description ?? e?.details ?? e?.detail });
+    return out;
+  }
+
+  /** One entry as data. `pageOrUuid` = a JournalEntryPage or an actor UUID. */
+  function getEntryData(pageOrUuid, { reveal = false } = {}) {
+    const page = typeof pageOrUuid === "string" ? getPageForActor(pageOrUuid) : pageOrUuid;
+    if (!page) return null;
+    const peek = !!reveal && !!game.user?.isGM;
+    const actorUuid = getFlag(page, "actorUuid");
+    const best = Number(getFlag(page, "bestResult")) || 0;
+    let actor = null;
+    try { actor = actorUuid ? fromUuidSync(actorUuid) : null; } catch { /* tolerate */ }
+    const p = actor?.system?.props ?? {};
+    const tiers = { identity: best >= TIER_IDENTITY, stats: best >= TIER_STATS, details: best >= TIER_DETAILS };
+    const show = (t) => peek || tiers[t];
+    const by = getFlag(page, "bestResultBy");
+    const tier = tiers.details ? "Details" : tiers.stats ? "Stats" : tiers.identity ? "Identity" : "Unstudied";
+    const affinities = [];
+    for (let i = 1; i <= 9; i++) affinities.push({ el: AFFINITY_NAME[i], code: String(p[`affinity_${i}`] ?? "") || "NA" });
+    return {
+      pageId: page.id,
+      actorUuid,
+      actorId: actor?.id ?? null,
+      name: page.name || actor?.name || "Unknown Monster",
+      img: actor?.img || PORTRAIT_FALLBACK,
+      best,
+      bestBy: by ? (game.actors?.get?.(by)?.name ?? String(by)) : null,
+      lastUpdated: Number(getFlag(page, "lastUpdated")) || 0,
+      tier,
+      tiers,
+      thresholds: { identity: TIER_IDENTITY, stats: TIER_STATS, details: TIER_DETAILS },
+      // Sort keys only. Rank and level are Identity-tier facts, so a locked entry
+      // gets neutral keys and sorts by name — an order must not hint at a Villain.
+      sort: show("identity") ? { rank: rankSortKey(p.npc_rank), level: Number(p.level) || 999 } : { rank: 99, level: 999 },
+      identity: show("identity") ? {
+        hidden: !tiers.identity,
+        level: String(p.level ?? ""), rank: String(p.npc_rank ?? ""),
+        species: String(p.species ?? ""), subtype: String(p.subtype_list ?? ""), attribute: String(p.attribute ?? ""),
+        hp: p.max_hp ?? null, mp: p.max_mp ?? null, def: p.defense ?? null, mdef: p.magic_defense ?? null,
+        traits: plainText(p.traits), description: sanitizeRichHtml(p.study_text ?? ""),
+      } : null,
+      stats: show("stats") ? { hidden: !tiers.stats, MIG: p.mig_base ?? null, DEX: p.dex_base ?? null, INS: p.ins_base ?? null, WLP: p.wlp_base ?? null } : null,
+      details: show("details") ? {
+        hidden: !tiers.details,
+        affinities,
+        weapons: WEAPON_TYPES.map((wt) => { const n = Number(p[`${wt}_ef`]); return { type: wt, pct: Number.isFinite(n) ? n : 100 }; }),
+        conditions: CONDITIONS.map((c) => ({ name: c, code: String(p[`condition_${c}`] ?? "") }))
+          .filter((c) => ["RS", "VU", "AB", "IM"].includes(c.code)),
+      } : null,
+      steal: show("identity") ? objectToList(p.stealable_loot ?? p.stealable_equipment ?? {}).filter((e) => !isEmptyLootEntry(e)).map((e) => {
+        const embedded = actor?.items?.get?.(String(e?.uuid ?? "").split(".").pop());
+        return { name: String(e?.name ?? "?"), img: embedded?.img || STEAL_ICON, description: sanitizeRichHtml(e?.loot_description ?? e?.description ?? "") };
+      }) : null,
+      actions: actor ? actionData(actor, p, getWitnessedActions(page), tiers.details, peek) : [],
+      missingActor: !actor,
+    };
+  }
+
+  /** Every entry (one per page that names an actor), as getEntryData. */
+  function listEntries(opts = {}) {
+    const entry = resolveEntrySync();
+    if (!entry) return [];
+    // A page the GM has hidden from players stays hidden here too.
+    const can = (pg) => game.user?.isGM || pg.testUserPermission?.(game.user, "OBSERVER") !== false;
+    return [...entry.pages].filter((pg) => getFlag(pg, "actorUuid") && can(pg)).map((pg) => getEntryData(pg, opts)).filter(Boolean);
+  }
+
   // ───────────────────── Boot ─────────────────────
   function mountApi() {
     globalThis.FUCompanion.api.encyclopedia = {
@@ -1443,6 +1565,11 @@
       clearWitnessedActions,
       clearAllWitnessedActions,
       resetStudyTier,
+      // Tier-masked entry data for custom UIs (the Party Menu Bestiary) — same
+      // reveal rules as renderPage. getEntryData(pageOrActorUuid, { reveal })
+      // / listEntries({ reveal }); `reveal` is honoured for GMs only.
+      getEntryData,
+      listEntries,
       _internals: {
         findEntry, createEntry, getCachedUuid, setCachedUuid,
         findStudySkill, createStudySkill, getCachedStudySkillUuid, setCachedStudySkillUuid,

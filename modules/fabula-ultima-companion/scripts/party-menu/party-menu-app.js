@@ -12,7 +12,8 @@
 // it until it earns the swap.
 //
 // Commands: Item (own + shared Party Bag), Ability (skills, summon binding),
-// Equip, Status, and the GM-only Setup (roster, player access). The command
+// Equip (with a before → after comparison), Status, Bonds, Bestiary, and the
+// GM-only Setup (roster, player access). The command
 // column shows only what this user may open — see party-menu-access.js.
 // Main + Ability live in this file; the others are VIEWS modules.
 
@@ -26,6 +27,8 @@ import { SND, play, STAT, esc, plain, safeHtml, bar, gridStep as gridStepIn } fr
 import { itemView } from "./party-menu-view-item.js";
 import { equipView, statusView } from "./party-menu-view-gear.js";
 import { setupView } from "./party-menu-view-setup.js";
+import { bondsView, BONDS_CSS } from "./party-menu-view-bonds.js";
+import { bestiaryView, BESTIARY_CSS } from "./party-menu-view-bestiary.js";
 import { attachScrollbars } from "./party-menu-scrollbar.js";
 
 const TAG = "[PartyMenu]";
@@ -33,12 +36,14 @@ const ROOT_ID = "fud-party-menu";
 const STYLE_ID = "fud-party-menu-style";
 
 // Commands that first ask "whose?" by moving the hand onto the party list.
-const NEEDS_MEMBER = new Set(["item", "ability", "equip", "status"]);
+const NEEDS_MEMBER = new Set(["item", "ability", "equip", "status", "bonds"]);
 
 // Views other than main/ability live in their own modules behind one interface:
 // enter(ctx, actor) · render(ctx) · key(ctx, k, ev) · click(ctx, action, el)
 // · hover(ctx, action, index) → bool · input?(ctx, ev).
-const VIEWS = { item: itemView, equip: equipView, status: statusView, setup: setupView };
+const VIEWS = {
+  item: itemView, equip: equipView, status: statusView, bonds: bondsView, bestiary: bestiaryView, setup: setupView,
+};
 
 /** The command column for THIS user: what Setup granted them, plus Close. */
 function visibleCommands() {
@@ -1119,8 +1124,8 @@ function ensureStyles() {
 #${ROOT_ID} .pm-aff.aff-vu b { color: var(--low); } #${ROOT_ID} .pm-aff.aff-rs b { color: var(--mp); }
 #${ROOT_ID} .pm-aff.aff-im b { color: #4b3517; } #${ROOT_ID} .pm-aff.aff-ab b { color: #2e7d32; }
 /* drawn scrollbar (party-menu-scrollbar.js): the native one is hidden on these boxes */
-#${ROOT_ID} :is(.pm-skill-list, .pm-scroll, .pm-picker-list, .pm-effcard) { scrollbar-width: none; }
-#${ROOT_ID} :is(.pm-skill-list, .pm-scroll, .pm-picker-list, .pm-effcard)::-webkit-scrollbar { width: 0; height: 0; }
+#${ROOT_ID} :is(.pm-skill-list, .pm-scroll, .pm-picker-list, .pm-effcard, .pm-cmpbody) { scrollbar-width: none; }
+#${ROOT_ID} :is(.pm-skill-list, .pm-scroll, .pm-picker-list, .pm-effcard, .pm-cmpbody)::-webkit-scrollbar { width: 0; height: 0; }
 /* quiet at rest (thin ink thumb, no track); widens and warms to gold under the pointer */
 #${ROOT_ID} .pm-sbar { position: absolute; z-index: 3; width: 5px; border-radius: 3px; cursor: pointer;
   background: transparent; transition: width .15s ease, background-color .15s ease; }
@@ -1182,6 +1187,28 @@ function ensureStyles() {
 #${ROOT_ID} .pm-btn.pm-mini { margin-left: auto; padding: 0 8px; font-size: 11px; line-height: 1.6; }
 #${ROOT_ID} .pm-sunote { margin-top: 12px; }
 
+/* equip: before → after comparison (party-menu-gear-preview.js) */
+#${ROOT_ID} .pm-cmp { margin-top: auto; padding-top: 8px; border-top: 1px solid rgba(92,66,30,.3); display: flex; flex-direction: column; min-height: 0; }
+#${ROOT_ID} .pm-cmphead { margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#${ROOT_ID} .pm-cmpbody { overflow-y: auto; max-height: 220px; padding-right: 14px; }
+#${ROOT_ID} .pm-cmprow { display: grid; grid-template-columns: minmax(70px, 1fr) 54px 18px 54px 22px; align-items: center; gap: 4px;
+  font-size: 16px; font-variant-numeric: tabular-nums; line-height: 1.5; }
+#${ROOT_ID} .pm-cmprow em { margin: 0; overflow: hidden; text-overflow: ellipsis; }
+#${ROOT_ID} .pm-cmprow b { text-align: right; font-weight: 600; }
+#${ROOT_ID} .pm-cmprow > i { font-size: 10px; color: var(--ink-dim); text-align: center; }
+#${ROOT_ID} .pm-cmprow.is-same { opacity: .55; }
+#${ROOT_ID} .pm-cmprow.is-up .pm-cmpafter, #${ROOT_ID} .pm-cmprow.is-up .pm-cmparrow { color: #2e7d32; font-weight: 700; }
+#${ROOT_ID} .pm-cmprow.is-down .pm-cmpafter, #${ROOT_ID} .pm-cmprow.is-down .pm-cmparrow { color: var(--low); font-weight: 700; }
+#${ROOT_ID} .pm-cmparrow { font-size: 12px; }
+#${ROOT_ID} .pm-cmpnote { font-size: 13px; color: var(--ink-soft); padding: 1px 0; }
+#${ROOT_ID} .pm-cmpnote i { width: 16px; margin-right: 4px; text-align: center; font-size: 11px; }
+#${ROOT_ID} .pm-cmpnote em { margin-right: 6px; }
+#${ROOT_ID} .pm-cmpnote.is-up { color: #2e7d32; } #${ROOT_ID} .pm-cmpnote.is-down { color: var(--low); }
+#${ROOT_ID} .pm-net { flex: 0 0 auto; margin-left: auto; font-size: 12px; font-weight: 700; letter-spacing: -1px; }
+#${ROOT_ID} .pm-why + .pm-net { margin-left: 8px; }
+#${ROOT_ID} .pm-net.is-up { color: #2e7d32; } #${ROOT_ID} .pm-net.is-down { color: var(--low); } #${ROOT_ID} .pm-net.is-mixed { color: #7a3fb4; }
+${BONDS_CSS}
+${BESTIARY_CSS}
 @media (max-width: 760px) {
   #${ROOT_ID} .pm-main { grid-template-columns: 1fr; height: auto; max-height: calc(100vh - 90px); }
   #${ROOT_ID} .pm-ability-body { grid-template-columns: 1fr; }
