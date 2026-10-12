@@ -444,6 +444,9 @@
           }
         }
       },
+      "fabula-ultima-companion": {
+        "facingLocked": true
+      },
       "hex-size-support": {
         "hideBorder": true,
         "hideFill": false

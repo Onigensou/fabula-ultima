@@ -357,7 +357,12 @@
         },
         "visibility": 0,
         "locked": false,
-        "flags": {},
+        "flags": {
+          "fabula-ultima-companion": {
+            "footstepSurface": "grass",
+            "footstepMuted": false
+          }
+        },
         "behaviors": [
           {
             "name": "FootstepGround",
@@ -369,17 +374,17 @@
               "uuid": "Macro.CRagAwYLpsANGP9h",
               "everyone": false
             },
-            "disabled": false,
+            "disabled": true,
             "flags": {},
             "_stats": {
               "compendiumSource": null,
               "duplicateSource": null,
-              "coreVersion": "12.331",
+              "coreVersion": "12.343",
               "systemId": "custom-system-builder",
               "systemVersion": "4.8.5",
               "createdTime": null,
-              "modifiedTime": null,
-              "lastModifiedBy": null
+              "modifiedTime": 1791838108138,
+              "lastModifiedBy": "JQGNzKpDPHJmcUIW"
             },
             "_id": "6AwHD6FOVxxYLOK3"
           }
@@ -433,7 +438,12 @@
         },
         "visibility": 0,
         "locked": false,
-        "flags": {},
+        "flags": {
+          "fabula-ultima-companion": {
+            "footstepSurface": "ground",
+            "footstepMuted": false
+          }
+        },
         "behaviors": [
           {
             "name": "FootstepGround",
@@ -445,17 +455,17 @@
               "uuid": "Macro.v6CQ0x21Egd7LmcG",
               "everyone": false
             },
-            "disabled": false,
+            "disabled": true,
             "flags": {},
             "_stats": {
               "compendiumSource": null,
               "duplicateSource": null,
-              "coreVersion": "12.331",
+              "coreVersion": "12.343",
               "systemId": "custom-system-builder",
               "systemVersion": "4.8.5",
               "createdTime": null,
-              "modifiedTime": null,
-              "lastModifiedBy": null
+              "modifiedTime": 1791838108141,
+              "lastModifiedBy": "JQGNzKpDPHJmcUIW"
             },
             "_id": "Uj9M4WwNsB8yE4oo"
           }

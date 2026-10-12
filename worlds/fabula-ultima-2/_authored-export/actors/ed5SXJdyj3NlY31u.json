@@ -947,6 +947,9 @@
           }
         }
       },
+      "fabula-ultima-companion": {
+        "facingLocked": true
+      },
       "token-variants": {
         "disableHUDButton": false,
         "randomImgDefault": ""

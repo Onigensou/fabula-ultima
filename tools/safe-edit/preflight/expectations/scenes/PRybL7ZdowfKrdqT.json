@@ -1106,12 +1106,17 @@
         },
         "visibility": 0,
         "locked": false,
-        "flags": {},
+        "flags": {
+          "fabula-ultima-companion": {
+            "footstepSurface": "grass",
+            "footstepMuted": false
+          }
+        },
         "behaviors": [
           {
             "name": "FootstepGround",
             "type": "executeMacro",
-            "disabled": false,
+            "disabled": true,
             "_id": "kRgftBIAQquc7Zlt",
             "system": {
               "events": [
@@ -1124,11 +1129,11 @@
             "_stats": {
               "compendiumSource": null,
               "duplicateSource": null,
-              "coreVersion": "12.331",
+              "coreVersion": "12.343",
               "systemId": "custom-system-builder",
               "systemVersion": "4.8.5",
               "createdTime": 1769564355021,
-              "modifiedTime": 1769565354676,
+              "modifiedTime": 1791838108067,
               "lastModifiedBy": "JQGNzKpDPHJmcUIW"
             }
           }
@@ -1174,12 +1179,17 @@
         },
         "visibility": 0,
         "locked": false,
-        "flags": {},
+        "flags": {
+          "fabula-ultima-companion": {
+            "footstepSurface": "ground",
+            "footstepMuted": false
+          }
+        },
         "behaviors": [
           {
             "name": "FootstepGround",
             "type": "executeMacro",
-            "disabled": false,
+            "disabled": true,
             "_id": "qPxkXAdOX547X9w6",
             "system": {
               "events": [
@@ -1192,11 +1202,11 @@
             "_stats": {
               "compendiumSource": null,
               "duplicateSource": null,
-              "coreVersion": "12.331",
+              "coreVersion": "12.343",
               "systemId": "custom-system-builder",
               "systemVersion": "4.8.5",
               "createdTime": 1769564355025,
-              "modifiedTime": 1769565354680,
+              "modifiedTime": 1791838108070,
               "lastModifiedBy": "JQGNzKpDPHJmcUIW"
             }
           }

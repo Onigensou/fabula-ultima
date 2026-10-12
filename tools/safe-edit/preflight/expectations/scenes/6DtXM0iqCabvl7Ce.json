@@ -2450,7 +2450,12 @@
         },
         "visibility": 0,
         "locked": false,
-        "flags": {},
+        "flags": {
+          "fabula-ultima-companion": {
+            "footstepSurface": "grass",
+            "footstepMuted": true
+          }
+        },
         "behaviors": [
           {
             "name": "Execute Macro",
@@ -2540,7 +2545,12 @@
         },
         "visibility": 0,
         "locked": false,
-        "flags": {},
+        "flags": {
+          "fabula-ultima-companion": {
+            "footstepSurface": "water",
+            "footstepMuted": true
+          }
+        },
         "behaviors": [
           {
             "name": "Execute Macro",

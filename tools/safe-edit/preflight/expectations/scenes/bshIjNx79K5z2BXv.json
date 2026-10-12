@@ -5164,7 +5164,12 @@
         },
         "visibility": 0,
         "locked": false,
-        "flags": {},
+        "flags": {
+          "fabula-ultima-companion": {
+            "footstepSurface": "grass",
+            "footstepMuted": false
+          }
+        },
         "behaviors": [
           {
             "name": "Execute Macro",
@@ -5177,16 +5182,16 @@
               "uuid": "Macro.CRagAwYLpsANGP9h",
               "everyone": false
             },
-            "disabled": false,
+            "disabled": true,
             "flags": {},
             "_stats": {
               "compendiumSource": null,
               "duplicateSource": null,
-              "coreVersion": "12.331",
+              "coreVersion": "12.343",
               "systemId": "custom-system-builder",
               "systemVersion": "4.8.4",
               "createdTime": 1765931087488,
-              "modifiedTime": 1765931094754,
+              "modifiedTime": 1791838107341,
               "lastModifiedBy": "JQGNzKpDPHJmcUIW"
             }
           }
@@ -5598,7 +5603,12 @@
         },
         "visibility": 0,
         "locked": false,
-        "flags": {},
+        "flags": {
+          "fabula-ultima-companion": {
+            "footstepSurface": "water",
+            "footstepMuted": false
+          }
+        },
         "behaviors": [
           {
             "name": "Execute Macro",
@@ -5611,16 +5621,16 @@
               "uuid": "Macro.kyCFucvT7HsnPQks",
               "everyone": false
             },
-            "disabled": false,
+            "disabled": true,
             "flags": {},
             "_stats": {
               "compendiumSource": null,
               "duplicateSource": null,
-              "coreVersion": "12.331",
+              "coreVersion": "12.343",
               "systemId": "custom-system-builder",
               "systemVersion": "4.8.4",
               "createdTime": 1765931103265,
-              "modifiedTime": 1765931110778,
+              "modifiedTime": 1791838107351,
               "lastModifiedBy": "JQGNzKpDPHJmcUIW"
             }
           }
@@ -6310,7 +6320,12 @@
         },
         "visibility": 0,
         "locked": false,
-        "flags": {},
+        "flags": {
+          "fabula-ultima-companion": {
+            "footstepSurface": "ground",
+            "footstepMuted": false
+          }
+        },
         "behaviors": [
           {
             "name": "Execute Macro",
@@ -6323,16 +6338,16 @@
               "uuid": "Macro.v6CQ0x21Egd7LmcG",
               "everyone": false
             },
-            "disabled": false,
+            "disabled": true,
             "flags": {},
             "_stats": {
               "compendiumSource": null,
               "duplicateSource": null,
-              "coreVersion": "12.331",
+              "coreVersion": "12.343",
               "systemId": "custom-system-builder",
               "systemVersion": "4.8.4",
               "createdTime": 1765931010259,
-              "modifiedTime": 1765931044413,
+              "modifiedTime": 1791838107330,
               "lastModifiedBy": "JQGNzKpDPHJmcUIW"
             }
           }

@@ -445,7 +445,12 @@
         },
         "visibility": 0,
         "locked": false,
-        "flags": {},
+        "flags": {
+          "fabula-ultima-companion": {
+            "footstepSurface": "ground",
+            "footstepMuted": false
+          }
+        },
         "behaviors": [
           {
             "name": "Execute Macro",
@@ -458,16 +463,16 @@
               "uuid": "Macro.v6CQ0x21Egd7LmcG",
               "everyone": false
             },
-            "disabled": false,
+            "disabled": true,
             "flags": {},
             "_stats": {
               "compendiumSource": null,
               "duplicateSource": null,
-              "coreVersion": "12.331",
+              "coreVersion": "12.343",
               "systemId": "custom-system-builder",
               "systemVersion": "4.8.4",
               "createdTime": 1766195305410,
-              "modifiedTime": 1766195314942,
+              "modifiedTime": 1791838107464,
               "lastModifiedBy": "JQGNzKpDPHJmcUIW"
             }
           }

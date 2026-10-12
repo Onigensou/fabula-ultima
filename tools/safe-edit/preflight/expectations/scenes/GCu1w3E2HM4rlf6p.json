@@ -1645,7 +1645,12 @@
         },
         "visibility": 0,
         "locked": false,
-        "flags": {},
+        "flags": {
+          "fabula-ultima-companion": {
+            "footstepSurface": "grass",
+            "footstepMuted": false
+          }
+        },
         "behaviors": [
           {
             "name": "FootstepGround",
@@ -1657,7 +1662,7 @@
               "uuid": "Macro.CRagAwYLpsANGP9h",
               "everyone": false
             },
-            "disabled": false,
+            "disabled": true,
             "flags": {},
             "_stats": {
               "compendiumSource": null,
@@ -1666,7 +1671,7 @@
               "systemId": "custom-system-builder",
               "systemVersion": "4.8.5",
               "createdTime": 1773654381982,
-              "modifiedTime": 1773654381982,
+              "modifiedTime": 1791838107838,
               "lastModifiedBy": "JQGNzKpDPHJmcUIW"
             },
             "_id": "g7FlcpqXPU4GUdpH"
@@ -1919,7 +1924,12 @@
         },
         "visibility": 0,
         "locked": false,
-        "flags": {},
+        "flags": {
+          "fabula-ultima-companion": {
+            "footstepSurface": "ground",
+            "footstepMuted": false
+          }
+        },
         "behaviors": [
           {
             "name": "FootstepGround",
@@ -1931,7 +1941,7 @@
               "uuid": "Macro.v6CQ0x21Egd7LmcG",
               "everyone": false
             },
-            "disabled": false,
+            "disabled": true,
             "flags": {},
             "_stats": {
               "compendiumSource": null,
@@ -1940,7 +1950,7 @@
               "systemId": "custom-system-builder",
               "systemVersion": "4.8.5",
               "createdTime": 1773654381985,
-              "modifiedTime": 1773654381985,
+              "modifiedTime": 1791838107843,
               "lastModifiedBy": "JQGNzKpDPHJmcUIW"
             },
             "_id": "h6QjOFqFqMC5H5P9"

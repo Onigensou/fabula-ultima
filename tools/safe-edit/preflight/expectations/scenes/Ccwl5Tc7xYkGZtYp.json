@@ -343,7 +343,12 @@
         },
         "visibility": 0,
         "locked": false,
-        "flags": {},
+        "flags": {
+          "fabula-ultima-companion": {
+            "footstepSurface": "ground",
+            "footstepMuted": false
+          }
+        },
         "behaviors": [
           {
             "name": "FootstepGround",
@@ -355,7 +360,7 @@
               "uuid": "Macro.v6CQ0x21Egd7LmcG",
               "everyone": false
             },
-            "disabled": false,
+            "disabled": true,
             "flags": {},
             "_stats": {
               "compendiumSource": null,
@@ -364,7 +369,7 @@
               "systemId": "custom-system-builder",
               "systemVersion": "4.8.5",
               "createdTime": 1780545390928,
-              "modifiedTime": 1780545390928,
+              "modifiedTime": 1791838107174,
               "lastModifiedBy": "JQGNzKpDPHJmcUIW"
             },
             "_id": "tCWLiMgg5MUMcQn1"
@@ -485,7 +490,12 @@
         },
         "visibility": 0,
         "locked": false,
-        "flags": {},
+        "flags": {
+          "fabula-ultima-companion": {
+            "footstepSurface": "water",
+            "footstepMuted": false
+          }
+        },
         "behaviors": [
           {
             "name": "FootstepGround",
@@ -497,7 +507,7 @@
               "uuid": "Macro.kyCFucvT7HsnPQks",
               "everyone": false
             },
-            "disabled": false,
+            "disabled": true,
             "flags": {},
             "_stats": {
               "compendiumSource": null,
@@ -506,7 +516,7 @@
               "systemId": "custom-system-builder",
               "systemVersion": "4.8.5",
               "createdTime": 1780545390931,
-              "modifiedTime": 1780545521700,
+              "modifiedTime": 1791838107187,
               "lastModifiedBy": "JQGNzKpDPHJmcUIW"
             },
             "_id": "waUqDPruzJHtSZuy"

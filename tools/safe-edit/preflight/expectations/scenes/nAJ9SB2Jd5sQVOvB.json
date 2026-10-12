@@ -538,7 +538,9 @@
         "locked": false,
         "flags": {
           "fabula-ultima-companion": {
-            "draftRegions": "claude-2026-10-09"
+            "draftRegions": "claude-2026-10-09",
+            "footstepSurface": "ground",
+            "footstepMuted": false
           }
         },
         "_id": "eUARyqgZoj8J5BRn",
@@ -553,7 +555,7 @@
               "uuid": "Macro.v6CQ0x21Egd7LmcG",
               "everyone": false
             },
-            "disabled": false,
+            "disabled": true,
             "_id": "QzRYY3UgYTiEwZAd",
             "flags": {},
             "_stats": {
@@ -563,8 +565,8 @@
               "systemId": "custom-system-builder",
               "systemVersion": "4.8.5",
               "createdTime": null,
-              "modifiedTime": null,
-              "lastModifiedBy": null
+              "modifiedTime": 1791838107803,
+              "lastModifiedBy": "JQGNzKpDPHJmcUIW"
             }
           }
         ]

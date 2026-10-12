@@ -2021,6 +2021,9 @@
           }
         }
       },
+      "fabula-ultima-companion": {
+        "facingLocked": true
+      },
       "hex-size-support": {
         "alternateOrientation": false,
         "hideBorder": false,

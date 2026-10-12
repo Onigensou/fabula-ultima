@@ -714,7 +714,11 @@
         },
         "fabula-ultima-companion": {
           "draftTokens": "claude-2026-10-09",
-          "draftName": "Otto"
+          "draftName": "Otto",
+          "dominanceCrestOffset": {
+            "x": 0,
+            "y": 0
+          }
         },
         "oni-event-system": {
           "isEventTile": true,
@@ -1617,7 +1621,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791358972643,
-      "modifiedTime": 1791828461167,
+      "modifiedTime": 1791842360820,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [
@@ -1691,7 +1695,9 @@
         "locked": false,
         "flags": {
           "fabula-ultima-companion": {
-            "draftRegions": "claude-2026-10-09"
+            "draftRegions": "claude-2026-10-09",
+            "footstepSurface": "ground",
+            "footstepMuted": false
           }
         },
         "_id": "a0KIqAnkNrlvkSgx",
@@ -1706,7 +1712,7 @@
               "uuid": "Macro.v6CQ0x21Egd7LmcG",
               "everyone": false
             },
-            "disabled": false,
+            "disabled": true,
             "_id": "eqAhlbfyhlLT8Tw8",
             "flags": {},
             "_stats": {
@@ -1716,8 +1722,8 @@
               "systemId": "custom-system-builder",
               "systemVersion": "4.8.5",
               "createdTime": null,
-              "modifiedTime": null,
-              "lastModifiedBy": null
+              "modifiedTime": 1791838107753,
+              "lastModifiedBy": "JQGNzKpDPHJmcUIW"
             }
           }
         ]
@@ -1783,7 +1789,9 @@
         "locked": false,
         "flags": {
           "fabula-ultima-companion": {
-            "draftRegions": "claude-2026-10-09"
+            "draftRegions": "claude-2026-10-09",
+            "footstepSurface": "grass",
+            "footstepMuted": false
           }
         },
         "_id": "rPByKv1ixzhDM9YE",
@@ -1798,7 +1806,7 @@
               "uuid": "Macro.CRagAwYLpsANGP9h",
               "everyone": false
             },
-            "disabled": false,
+            "disabled": true,
             "_id": "GB2Fex5S3NEbFQTD",
             "flags": {},
             "_stats": {
@@ -1808,8 +1816,8 @@
               "systemId": "custom-system-builder",
               "systemVersion": "4.8.5",
               "createdTime": null,
-              "modifiedTime": null,
-              "lastModifiedBy": null
+              "modifiedTime": 1791838107758,
+              "lastModifiedBy": "JQGNzKpDPHJmcUIW"
             }
           }
         ]

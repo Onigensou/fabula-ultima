@@ -1755,7 +1755,12 @@
         },
         "visibility": 0,
         "locked": false,
-        "flags": {},
+        "flags": {
+          "fabula-ultima-companion": {
+            "footstepSurface": "ground",
+            "footstepMuted": true
+          }
+        },
         "behaviors": [
           {
             "name": "FootstepGround",
@@ -1809,7 +1814,12 @@
         },
         "visibility": 0,
         "locked": false,
-        "flags": {},
+        "flags": {
+          "fabula-ultima-companion": {
+            "footstepSurface": "wood",
+            "footstepMuted": true
+          }
+        },
         "behaviors": [
           {
             "name": "FootstepGround",
@@ -2145,7 +2155,12 @@
         },
         "visibility": 0,
         "locked": false,
-        "flags": {},
+        "flags": {
+          "fabula-ultima-companion": {
+            "footstepSurface": "grass",
+            "footstepMuted": true
+          }
+        },
         "behaviors": [
           {
             "name": "FootstepGround",
@@ -2289,7 +2304,12 @@
         },
         "visibility": 0,
         "locked": false,
-        "flags": {},
+        "flags": {
+          "fabula-ultima-companion": {
+            "footstepSurface": "water",
+            "footstepMuted": true
+          }
+        },
         "behaviors": [
           {
             "name": "FootstepGround",

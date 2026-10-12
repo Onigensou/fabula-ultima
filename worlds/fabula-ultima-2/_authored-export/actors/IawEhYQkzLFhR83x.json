@@ -577,6 +577,9 @@
             "subdivisionsOwner": false
           }
         }
+      },
+      "fabula-ultima-companion": {
+        "facingLocked": true
       }
     },
     "height": 1,

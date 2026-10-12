@@ -427,7 +427,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791358976293,
-      "modifiedTime": 1791745049224,
+      "modifiedTime": 1791842361037,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "lights": [
@@ -619,7 +619,9 @@
         "locked": false,
         "flags": {
           "fabula-ultima-companion": {
-            "draftRegions": "claude-2026-10-09"
+            "draftRegions": "claude-2026-10-09",
+            "footstepSurface": "ground",
+            "footstepMuted": false
           }
         },
         "_id": "s3C7q5ssO9daOYNW",
@@ -634,7 +636,7 @@
               "uuid": "Macro.v6CQ0x21Egd7LmcG",
               "everyone": false
             },
-            "disabled": false,
+            "disabled": true,
             "_id": "S11AaOFiEW0i1Nqw",
             "flags": {},
             "_stats": {
@@ -644,8 +646,8 @@
               "systemId": "custom-system-builder",
               "systemVersion": "4.8.5",
               "createdTime": null,
-              "modifiedTime": null,
-              "lastModifiedBy": null
+              "modifiedTime": 1791838107767,
+              "lastModifiedBy": "JQGNzKpDPHJmcUIW"
             }
           }
         ]
