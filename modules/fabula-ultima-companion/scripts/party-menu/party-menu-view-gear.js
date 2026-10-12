@@ -7,12 +7,15 @@
 // moved over from the Item view first.
 //
 // Status: read-only — attributes, defenses, affinities, classes, bonds and the
-// effects currently applied.
+// effects currently applied, split Temporary / Permanent / Inactive, with a
+// detail card per effect (lifetime, per-source amounts, description; data in
+// party-menu-effects.js).
 
 import {
   equipSlotsOf, equipCandidates, equipRefusal, setEquipSlot, itemSummary, statusOf,
 } from "./party-menu-inventory.js";
 import { esc, plain, safeHtml, play, SND, img, STAT } from "./party-menu-ui.js";
+import { effectRowsOf } from "./party-menu-effects.js";
 import { vitalsOf } from "./party-menu-core.js";
 
 const EQUIP_REASONS = {
@@ -219,6 +222,68 @@ const ELEMENT_ICON = {
   fire: "fa-fire", ice: "fa-snowflake", light: "fa-sun", poison: "fa-skull-crossbones",
 };
 
+const SOURCE_KIND = { gear: "gear", skill: "skill", item: "item", actor: "" };
+
+// One stat chip: an element icon when the stat is element-typed, the stat in
+// small muted caps, the change in bold — or an RS/VU/IM/AB badge for affinities.
+function statChip(c) {
+  const icon = c.el && ELEMENT_ICON[c.el] ? `<i class="fas ${ELEMENT_ICON[c.el]}" title="${esc(c.el)}"></i>` : "";
+  const k = c.k ? `<em>${esc(c.k)}</em>` : "";
+  const v = c.grade
+    ? `<b class="pm-grade aff-${esc(c.grade.toLowerCase())}">${esc(AFF_LABEL[c.grade] ?? c.grade)}</b>`
+    : `<b>${esc(c.v)}</b>`;
+  return `<span class="pm-stat-chip ${c.bad ? "is-bad" : ""}">${icon}${k}${v}</span>`;
+}
+
+// What a row shows beside its name. Temporary: how long it lasts. A tracker: its
+// counter. Otherwise: up to two stat chips, then "+N" (the card lists them all).
+const MAX_CHIPS = 2;
+function rowChips(r) {
+  if (r.inactive) return "";
+  if (r.temporary) return r.short ? `<span class="pm-effchip is-temp"><i class="fas fa-hourglass-half"></i>${esc(r.short)}</span>` : "";
+  if (r.lifetime.counter) return `<span class="pm-effchip is-count">${esc(r.lifetime.counter)}</span>`;
+  if (!r.chips.length) return "";
+  const more = r.chips.length - MAX_CHIPS;
+  const title = [...r.totals.map((t) => t.text), ...r.sources.flatMap((s) => s.amounts.filter((a) => a.active && typeof a.add !== "number").map((a) => a.text))];
+  return `<span class="pm-effstats" title="${esc([...new Set(title)].join(" · "))}">${r.chips.slice(0, MAX_CHIPS).map(statChip).join("")}${more > 0 ? `<span class="pm-effmore">+${more}</span>` : ""}</span>`;
+}
+
+function lifeLine(life) {
+  return life.temporary
+    ? `<span class="pm-efflife is-temp"><i class="fas fa-hourglass-half"></i>Temporary · ${esc(life.label)}</span>`
+    : `<span class="pm-efflife"><i class="fas fa-infinity"></i>Permanent · ${esc(life.label)}${life.counter ? ` (${esc(life.counter)})` : ""}</span>`;
+}
+
+function sourceName(src) {
+  if (!src) return "";
+  const kind = SOURCE_KIND[src.kind];
+  return `${src.name}${kind ? ` (${kind})` : ""}${src.by ? `, cast by ${src.by}` : ""}`;
+}
+
+function effectCard(row) {
+  // Per-source lifetimes only matter for temporary rows (two Wet with different turns left).
+  const mixedLife = row.temporary && new Set(row.sources.map((s) => s.lifetime.label)).size > 1;
+  const lines = row.sources.map((s) => {
+    const amounts = s.amounts.filter((a) => a.active).map((a) => `<b class="${a.chip?.bad ? "is-bad" : ""}">${esc(a.text)}</b>`).join("");
+    const from = s.source ? sourceName(s.source) : row.count > 1 ? "Unknown source" : "";
+    if (!from && !amounts) return "";
+    return `<li><span>${esc(from || "Effect")}${mixedLife ? `<em> · ${esc(s.lifetime.short || s.lifetime.label)}</em>` : ""}</span><span class="pm-effamts">${amounts}</span></li>`;
+  }).filter(Boolean).join("");
+  const total = row.count > 1 && row.totals.length
+    ? `<li class="is-total"><span>Total</span><span class="pm-effamts">${row.totals.map((t) => `<b class="${t.chip?.bad ? "is-bad" : ""}">${esc(t.text)}</b>`).join("")}</span></li>` : "";
+  const only = row.count === 1 ? row.sources[0].source : null;
+  const desc = row.description
+    ? safeHtml(row.description)
+    : only?.description ? `<p class="pm-from">From ${esc(only.name)}:</p>${safeHtml(only.description)}` : "";
+  return `
+    <div class="pm-effcard-head">${img(row.img)}<div>
+      <div class="pm-effcard-name">${esc(row.name)}${row.count > 1 ? ` <span class="pm-qty">×${row.count}</span>` : ""}</div>
+      ${row.inactive ? `<span class="pm-efflife is-off"><i class="fas fa-power-off"></i>Inactive: it currently changes nothing</span>` : lifeLine(row.lifetime)}
+    </div></div>
+    ${lines || total ? `<ul class="pm-effsrc">${lines}${total}</ul>` : ""}
+    ${desc ? `<div class="pm-desc">${desc}</div>` : lines ? "" : `<div class="pm-desc"><p><em>No description.</em></p></div>`}`;
+}
+
 export const statusView = {
   id: "status",
   title: "Status",
@@ -228,16 +293,20 @@ export const statusView = {
 
   help(ctx) {
     const st = statusOf(ctx.actor());
-    const e = st.effects[ctx.S.v.eff];
-    return e ? `${e.name}${e.description ? ` — ${plain(e.description)}` : ""}` : [st.identity, st.theme, st.origin].filter(Boolean).join(" · ") || "No effects.";
+    const row = effectRowsOf(ctx.actor())[ctx.S.v.eff];
+    if (!row) return [st.identity, st.theme, st.origin].filter(Boolean).join(" · ") || "No effects.";
+    const life = row.inactive ? "Inactive" : `${row.temporary ? "Temporary" : "Permanent"}: ${row.lifetime.label}`;
+    const from = row.count > 1 ? `${row.count} sources` : row.sources[0]?.source ? `from ${sourceName(row.sources[0].source)}` : "";
+    return [row.name, life, from].filter(Boolean).join(" — ");
   },
 
   render(ctx) {
     const actor = ctx.actor();
     if (!actor) return `<div class="pm-win pm-empty">That character is gone.</div>`;
     const st = statusOf(actor);
+    const rows = effectRowsOf(actor);
     const v = ctx.S.v;
-    v.eff = Math.max(0, Math.min(v.eff, Math.max(0, st.effects.length - 1)));
+    v.eff = Math.max(0, Math.min(v.eff, Math.max(0, rows.length - 1)));
     const attrs = Object.entries(st.attrs).map(([k, a]) => `
       <div class="pm-attr"><em>${k}</em><b>d${a.cur}</b>${a.cur !== a.base ? `<span class="pm-sub">base d${a.base}</span>` : ""}</div>`).join("");
     const aff = st.affinities.map((x) => `
@@ -245,25 +314,38 @@ export const statusView = {
     const facts = [["Identity", st.identity], ["Theme", st.theme], ["Origin", st.origin],
       ["Classes", st.classes.map((c) => `${c.name} ${c.level}`).join(", ")], ["Bonds", st.bonds.join(", ")],
       ["Zenit", `${st.zenit.toLocaleString()} z`]].filter(([, x]) => x);
-    const effects = st.effects.map((e, i) => `
-      <div class="pm-skill pm-hit ${v.eff === i ? "is-cursor" : ""}" data-action="st-eff" data-index="${i}">
-        ${img(e.img)}<span class="pm-skill-name">${esc(e.name)}</span></div>`).join("") || `<div class="pm-empty">No active effects.</div>`;
-    const sel = st.effects[v.eff];
+    const group = (r) => (r.inactive ? "off" : r.temporary ? "temp" : "perm");
+    const HEAD = {
+      temp: ["fa-hourglass-half", "Temporary"], perm: ["fa-infinity", "Permanent"], off: ["fa-power-off", "Inactive"],
+    };
+    const counts = {};
+    for (const r of rows) counts[group(r)] = (counts[group(r)] ?? 0) + 1;
+    let last = null;
+    const list = rows.map((r, i) => {
+      const g = group(r);
+      const head = g !== last ? `<div class="pm-section"><i class="fas ${HEAD[g][0]}"></i>${HEAD[g][1]} <b>${counts[g]}</b></div>` : "";
+      last = g;
+      return `${head}
+      <div class="pm-skill pm-hit pm-eff ${r.temporary ? "is-temp" : ""} ${r.inactive ? "is-locked" : ""} ${v.eff === i ? "is-cursor" : ""}" data-action="st-eff" data-index="${i}">
+        ${img(r.img)}<span class="pm-skill-name">${esc(r.name)}${r.count > 1 ? ` <span class="pm-qty">×${r.count}</span>` : ""}</span>
+        ${rowChips(r)}</div>`;
+    }).join("") || `<div class="pm-empty">No active effects.</div>`;
+    const sel = rows[v.eff];
     return `
       <div class="pm-ability">
         <div class="pm-win pm-help"><span>${esc(this.help(ctx))}</span></div>
         ${who(ctx, actor, "Status")}
-        <div class="pm-ability-body">
+        <div class="pm-ability-body pm-status-body">
           <div class="pm-win pm-detail"><div class="pm-scroll">
             <div class="pm-label">Attributes</div><div class="pm-attrs">${attrs}</div>
             ${defenseLine(actor)}
             <div class="pm-label">Affinities</div><div class="pm-affs">${aff}</div>
             <dl class="pm-facts pm-stfacts">${facts.map(([k, x]) => `<dt>${esc(k)}</dt><dd>${esc(x)}</dd>`).join("")}</dl>
           </div></div>
-          <div class="pm-win pm-skills">
+          <div class="pm-win pm-skills pm-effpanel">
             <div class="pm-label">Active effects</div>
-            <div class="pm-skill-list pm-onecol">${effects}</div>
-            ${sel?.description ? `<div class="pm-desc pm-effdesc">${safeHtml(sel.description)}</div>` : ""}
+            <div class="pm-skill-list pm-onecol pm-efflist">${list}</div>
+            ${sel ? `<div class="pm-effcard" data-keep-scroll="eff|${esc(actor.id)}|${esc(sel.key)}">${effectCard(sel)}</div>` : ""}
           </div>
         </div>
         <div class="pm-hint">↑↓ effect · Q/E character · Esc back</div>
@@ -274,7 +356,7 @@ export const statusView = {
     const v = ctx.S.v;
     if (k === "q" || k === "Q" || k === "PageUp" || k === "ArrowLeft") return ctx.cycleCharacter(-1);
     if (k === "e" || k === "E" || k === "PageDown" || k === "ArrowRight") return ctx.cycleCharacter(1);
-    const n = statusOf(ctx.actor()).effects.length;
+    const n = effectRowsOf(ctx.actor()).length;
     if (k === "ArrowUp" && n) { v.eff = (v.eff - 1 + n) % n; play(SND.move, 0.4); ctx.render(); }
     else if (k === "ArrowDown" && n) { v.eff = (v.eff + 1) % n; play(SND.move, 0.4); ctx.render(); }
     else if (k === "Escape") ctx.back();

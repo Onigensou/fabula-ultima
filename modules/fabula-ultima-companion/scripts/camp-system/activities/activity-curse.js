@@ -19,18 +19,26 @@
       name: "Curse (Basic)",
       title: "The Curse Takes Hold",
       desc:  "A basic curse coils around your foe. The next Villain you face will be inflicted with a <strong>Basic Debuff</strong> when the conflict begins.",
+      debuff: "Basic Debuff",
     },
     good: {
       name: "Curse (Bad)",
       title: "Your Hex Bites Deep",
       desc:  "A potent hex seeps into the straw. The next Villain you face will be inflicted with a <strong>Bad Debuff</strong> when the conflict begins.",
+      debuff: "Bad Debuff",
     },
     perfect: {
       name: "Curse (Very Bad)",
       title: "The Doll is Ruined!",
       desc:  "Your dark art reaches its peak. The next Villain you face will be inflicted with a <strong>Very Bad Debuff</strong> when the conflict begins.",
+      debuff: "Very Bad Debuff",
     },
   };
+
+  // The effect's own text, in the same "before the next rest" voice as the other
+  // camp activities' effects (Daydream, Cartography, Pep Talk …).
+  const curseDescription = (tier) =>
+    `Before the next rest, the next Villain you face will be inflicted with a ${TIER_META[tier].debuff} when the conflict begins.`;
 
   // ── Grade from raw score (max 40 pts — 20 labels × 2) ─────────────────────
   function _scoreToTier(score) {
@@ -71,6 +79,7 @@
     await actor.createEmbeddedDocuments("ActiveEffect", [{
       name:     TIER_META[tier].name,
       img:      CURSE_ICON,
+      description: curseDescription(tier),
       origin:   `Actor.${actor.id}`,
       disabled: false,
       changes:  [],

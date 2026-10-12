@@ -105,6 +105,7 @@
       await actor.createEmbeddedDocuments("ActiveEffect", [{
         name:     "Ouch! (Exploration)",
         icon:     OUCH_ICON,
+        description: "During this rest, you recover only half the usual HP and MP.",
         origin:   `Actor.${actor.id}`,
         disabled: false,
         changes:  [],

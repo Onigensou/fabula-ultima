@@ -1,10 +1,11 @@
 // ============================================================================
-// ONI — Chat Sidebar "Party Sheet" Button (Foundry VTT v12) — Module Script
+// ONI — Chat Sidebar "Party" Button (Foundry VTT v12) — Module Script
 // ----------------------------------------------------------------------------
 // Adds an icon button to the bottom-right of the chat input bar.
-// Click => opens the "party" sheet (Database Actor) via db-resolver public API:
-//   window.FUCompanion.api.getCurrentGameDb()
-// Plays LOCAL sound only.
+// Click       => toggles the FF9-style Party Menu (FUCompanion.api.partyMenu).
+// Shift-click => GM only: opens the old CSB "party" sheet (Database Actor) via
+//                db-resolver public API window.FUCompanion.api.getCurrentGameDb()
+// Plays LOCAL sound only (the Party Menu plays its own open/close sounds).
 //
 // Refactor note:
 // - This file NO LONGER performs self-layout
@@ -186,7 +187,26 @@
     return chosen;
   }
 
-  async function onClickOpenParty() {
+  async function onClickOpenParty(event) {
+    if (event?.shiftKey && game.user?.isGM) return openPartySheet();
+
+    const menu = window.FUCompanion?.api?.partyMenu;
+    if (!menu?.open) {
+      // Party Menu failed to load — fall back to the sheet rather than a dead button.
+      console.warn("[ONI ChatPartyBtn] Party Menu API not found; opening the party sheet instead.");
+      return openPartySheet();
+    }
+
+    try {
+      if (menu.isOpen?.()) menu.close();
+      else await menu.open();
+    } catch (err) {
+      console.error("[ONI ChatPartyBtn] Failed to open Party Menu:", err);
+      ui.notifications.error("Failed to open Party Menu. Check console.");
+    }
+  }
+
+  async function openPartySheet() {
     const actor = await resolvePartyActorToOpen();
     if (!actor) return;
 
@@ -219,8 +239,8 @@
     const btn = document.createElement("button");
     btn.type = "button";
     btn.id = CFG.BUTTON_ID;
-    btn.title = "Open Party Sheet";
-    btn.setAttribute("aria-label", "Open Party Sheet");
+    btn.title = game.user?.isGM ? "Party Menu (Shift-click: Party Sheet)" : "Party Menu";
+    btn.setAttribute("aria-label", "Party Menu");
 
     const img = document.createElement("img");
     img.src = CFG.IMG_URL;

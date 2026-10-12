@@ -26,6 +26,7 @@ import { SND, play, STAT, esc, plain, safeHtml, bar, gridStep as gridStepIn } fr
 import { itemView } from "./party-menu-view-item.js";
 import { equipView, statusView } from "./party-menu-view-gear.js";
 import { setupView } from "./party-menu-view-setup.js";
+import { attachScrollbars } from "./party-menu-scrollbar.js";
 
 const TAG = "[PartyMenu]";
 const ROOT_ID = "fud-party-menu";
@@ -186,6 +187,7 @@ export async function openPartyMenu({ actorId = null } = {}) {
 export function closePartyMenu() {
   if (!_root) return;
   window.removeEventListener("keydown", onKey, true);
+  attachScrollbars(null);
   _root.remove();
   _root = null;
   S.open = false;
@@ -218,6 +220,8 @@ function render() {
   const detailKey = detail ? `${S.view}|${detail.dataset.key ?? ""}` : null;
   const detailScroll = detail?.scrollTop ?? 0;
   const searchHadFocus = document.activeElement?.classList?.contains("pm-search");
+  // Any other pane that should keep its scroll across a re-render while it shows the same thing.
+  const kept = [..._root.querySelectorAll("[data-keep-scroll]")].map((el) => [el.dataset.keepScroll, el.scrollTop]);
 
   _root.innerHTML = `
     <div class="pm-backdrop"></div>
@@ -230,10 +234,19 @@ function render() {
   const newList = _root.querySelector(".pm-skill-list");
   if (newList) {
     newList.scrollTop = _listScroll;
-    newList.querySelector(".is-cursor")?.scrollIntoView({ block: "nearest" });
+    const cur = newList.querySelector(".is-cursor");
+    // The first row of a section brings its header along, or wrapping to the top hides it.
+    const head = cur?.previousElementSibling;
+    if (head?.classList.contains("pm-section")) head.scrollIntoView({ block: "nearest" });
+    cur?.scrollIntoView({ block: "nearest" });
   }
   const newDetail = _root.querySelector(".pm-detail > .pm-scroll");
   if (newDetail && detailKey && `${S.view}|${newDetail.dataset.key ?? ""}` === detailKey) newDetail.scrollTop = detailScroll;
+  for (const [k, top] of kept) {
+    const el = _root.querySelector(`[data-keep-scroll="${CSS.escape(k)}"]`);
+    if (el) el.scrollTop = top;
+  }
+  attachScrollbars(_root);
   _root.querySelector(".pm-picker-list .is-cursor")?.scrollIntoView({ block: "nearest" });
   if (searchHadFocus || S.picker?.focusSearch || S.focusSearch) {
     const inp = _root.querySelector(".pm-search");
@@ -928,7 +941,7 @@ function ensureStyles() {
   width: min(1040px, 100%); height: min(640px, calc(100vh - 90px)); }
 /* Scrolling lives on an inner .pm-scroll so the hand cursor's 34px left gutter
    is inside the scroller rather than clipped by the window. */
-#${ROOT_ID} .pm-scroll { overflow-y: auto; min-height: 0; height: 100%; }
+#${ROOT_ID} .pm-scroll { overflow-y: auto; min-height: 0; height: 100%; padding-right: 16px; }
 #${ROOT_ID} .pm-party { display: flex; flex-direction: column; min-height: 0; padding: 16px 20px 16px 8px; }
 /* the hand sits 34px left of a row, so that gutter is INSIDE the scroller */
 #${ROOT_ID} .pm-party-list { display: flex; flex-direction: column; gap: 10px; padding-left: 38px; }
@@ -989,7 +1002,7 @@ function ensureStyles() {
 #${ROOT_ID} .pm-tab i { margin-right: 4px; }
 #${ROOT_ID} .pm-tab.is-on { color: var(--ink-soft); font-weight: 700; text-shadow: 0 0 8px rgba(255,0,0,.55); border-bottom-style: solid; }
 #${ROOT_ID} .pm-skill-list { overflow-y: auto; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 30px;
-  align-content: start; padding: 2px 6px 2px 36px; }
+  align-content: start; padding: 2px 18px 2px 36px; }
 /* source section header: spans both columns, CSB panel-title ink with the card's hr rule */
 #${ROOT_ID} .pm-section { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; margin: 10px 0 2px -28px;
   padding: 2px 0 4px; color: var(--ink-soft); font-weight: 700; font-size: 13px; letter-spacing: .08em; text-transform: uppercase;
@@ -1048,7 +1061,7 @@ function ensureStyles() {
 #${ROOT_ID} .pm-search { background: rgba(0,0,0,.05); color: var(--ink); border: 1px solid #7a7971; border-radius: 3px;
   padding: 4px 8px; font-family: inherit; font-size: 14px; }
 #${ROOT_ID} .pm-search::placeholder { color: rgba(59,42,25,.5); }
-#${ROOT_ID} .pm-picker-list { overflow-y: auto; min-height: 120px; padding-left: 36px; }
+#${ROOT_ID} .pm-picker-list { overflow-y: auto; min-height: 120px; padding-left: 36px; padding-right: 18px; }
 #${ROOT_ID} .pm-pick-group { color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .06em; margin: 8px 0 2px; text-transform: uppercase; }
 #${ROOT_ID} .pm-pick { display: flex; align-items: center; gap: 10px; padding: 3px 6px; border-radius: 8px; cursor: pointer; font-size: 16px; }
 
@@ -1105,7 +1118,58 @@ function ensureStyles() {
 #${ROOT_ID} .pm-aff i { font-size: 15px; color: var(--ink-soft); }
 #${ROOT_ID} .pm-aff.aff-vu b { color: var(--low); } #${ROOT_ID} .pm-aff.aff-rs b { color: var(--mp); }
 #${ROOT_ID} .pm-aff.aff-im b { color: #4b3517; } #${ROOT_ID} .pm-aff.aff-ab b { color: #2e7d32; }
-#${ROOT_ID} .pm-effdesc { margin-top: 8px; max-height: 40%; overflow-y: auto; }
+/* drawn scrollbar (party-menu-scrollbar.js): the native one is hidden on these boxes */
+#${ROOT_ID} :is(.pm-skill-list, .pm-scroll, .pm-picker-list, .pm-effcard) { scrollbar-width: none; }
+#${ROOT_ID} :is(.pm-skill-list, .pm-scroll, .pm-picker-list, .pm-effcard)::-webkit-scrollbar { width: 0; height: 0; }
+/* quiet at rest (thin ink thumb, no track); widens and warms to gold under the pointer */
+#${ROOT_ID} .pm-sbar { position: absolute; z-index: 3; width: 5px; border-radius: 3px; cursor: pointer;
+  background: transparent; transition: width .15s ease, background-color .15s ease; }
+#${ROOT_ID} .pm-sbar-thumb { display: block; width: 100%; border-radius: 3px; cursor: grab;
+  background: rgba(92, 66, 30, .26); transition: background-color .15s ease; }
+#${ROOT_ID} .pm-sbar:hover, #${ROOT_ID} .pm-sbar.is-drag { width: 8px; background: rgba(59, 42, 25, .07); }
+#${ROOT_ID} .pm-sbar:hover .pm-sbar-thumb { background: rgba(154, 122, 43, .62); }
+#${ROOT_ID} .pm-sbar.is-drag .pm-sbar-thumb { background: rgba(154, 122, 43, .8); cursor: grabbing; }
+@media (prefers-reduced-motion: reduce) { #${ROOT_ID} .pm-sbar, #${ROOT_ID} .pm-sbar-thumb { transition: none; } }
+
+/* status: effect list (scrolls) over a detail card with a guaranteed share of the column */
+#${ROOT_ID} .pm-status-body { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); }
+#${ROOT_ID} .pm-efflist { flex: 1 1 0; min-height: 96px; margin-top: 4px; }
+#${ROOT_ID} .pm-eff .pm-skill-name .pm-qty { font-size: 13px; font-weight: 700; }
+#${ROOT_ID} .pm-effchip { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700;
+  color: var(--ink-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
+#${ROOT_ID} .pm-effchip.is-temp { color: #9a4d00; padding: 0 7px; border-radius: 999px;
+  background: rgba(240,170,70,.18); box-shadow: inset 0 0 0 1px rgba(170,95,20,.35); }
+#${ROOT_ID} .pm-effchip i { font-size: 10px; }
+/* stat chips: plain text, stat in small muted caps, change in bold; the name truncates first */
+#${ROOT_ID} .pm-effstats { flex: 0 1 auto; min-width: 0; max-width: 58%; display: inline-flex; align-items: baseline; justify-content: flex-end;
+  gap: 14px; white-space: nowrap; overflow: hidden; }
+#${ROOT_ID} .pm-stat-chip { display: inline-flex; align-items: baseline; gap: 5px; min-width: 0; color: var(--ink); }
+#${ROOT_ID} .pm-stat-chip em { font-style: normal; font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--ink-soft); opacity: .85; overflow: hidden; text-overflow: ellipsis; }
+#${ROOT_ID} .pm-stat-chip b { font-size: 13.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
+#${ROOT_ID} .pm-stat-chip i { font-size: 11px; color: var(--ink-soft); align-self: center; }
+#${ROOT_ID} .pm-stat-chip.is-bad b, #${ROOT_ID} .pm-effamts b.is-bad { color: var(--low); }
+#${ROOT_ID} .pm-grade { font-size: 12px !important; letter-spacing: .03em; }
+#${ROOT_ID} .pm-grade.aff-vu { color: var(--low); } #${ROOT_ID} .pm-grade.aff-rs { color: var(--mp); }
+#${ROOT_ID} .pm-grade.aff-im { color: #4b3517; } #${ROOT_ID} .pm-grade.aff-ab { color: #2e7d32; }
+#${ROOT_ID} .pm-effmore { font-size: 11px; font-weight: 700; color: var(--ink-soft); opacity: .75; }
+#${ROOT_ID} .pm-effcard { flex: 0 0 auto; max-height: 50%; overflow-y: auto; margin-top: 8px; padding: 10px 18px 2px 4px;
+  border-top: 1px solid rgba(92,66,30,.35); }
+#${ROOT_ID} .pm-effcard-head { display: flex; gap: 10px; align-items: center; margin-bottom: 6px; }
+#${ROOT_ID} .pm-effcard-head img { width: 36px; height: 36px; border: 1px solid var(--edge); border-radius: 6px; flex: 0 0 auto; }
+#${ROOT_ID} .pm-effcard-name { font-size: 18px; font-weight: 700; color: var(--accent); line-height: 1.2; }
+#${ROOT_ID} .pm-efflife { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; color: var(--ink-soft); }
+#${ROOT_ID} .pm-efflife.is-temp { color: #9a4d00; }
+#${ROOT_ID} .pm-efflife.is-off { color: var(--ink-dim); }
+#${ROOT_ID} .pm-effsrc { list-style: none; margin: 0 0 6px; padding: 0; font-size: 13px; }
+#${ROOT_ID} .pm-effsrc li { display: flex; gap: 10px; justify-content: space-between; padding: 2px 0; border-bottom: 1px dotted rgba(92,66,30,.25); }
+#${ROOT_ID} .pm-effsrc li span { min-width: 0; }
+#${ROOT_ID} .pm-effsrc li em { color: #9a4d00; font-style: normal; }
+#${ROOT_ID} .pm-effamts { flex: 0 0 auto; max-width: 60%; display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
+#${ROOT_ID} .pm-effamts b { text-align: right; font-variant-numeric: tabular-nums; }
+#${ROOT_ID} .pm-effsrc li.is-total { border-bottom: 0; font-weight: 700; color: var(--accent); }
+#${ROOT_ID} .pm-effcard .pm-desc { font-size: 13px; }
+#${ROOT_ID} .pm-from { font-weight: 700; color: var(--ink-soft); }
 
 /* setup */
 #${ROOT_ID} .pm-sulist { padding-left: 36px; }
