@@ -39,6 +39,17 @@
 
   const SMOOTHING = 0.18;
 
+  // Walk speed in grid squares per second. Stated here so every hop, however
+  // short, is a timed glide: left to the defaults, a module such as token-ease
+  // may zero the duration of a short move, which Foundry plays as a warp.
+  const WALK_SPEED = 3;
+
+  // How far short of a wall the token's centre stops, in pixels. Foundry rounds
+  // a collision point to whole pixels, so a centre parked on the wall itself
+  // can land a fraction past it, and from there every click back is blocked.
+  const WALL_STANDOFF_PX = 6;
+  const WALL_BACKOFF_STEPS = 4;
+
   /**
    * Where the followed token should sit, in world units.
    *
@@ -308,6 +319,79 @@
     };
   }
 
+  function topLeftToCenter(topLeft, token) {
+    return {
+      x: topLeft.x + (token.w / 2),
+      y: topLeft.y + (token.h / 2)
+    };
+  }
+
+  function walkCollides(token, origin, center) {
+    try {
+      return token.checkCollision(center, { origin, mode: "any", type: "move" }) === true;
+    } catch {
+      return false;
+    }
+  }
+
+  // Token x/y are whole pixels, so settle on the rounded position first and
+  // test that exact spot rather than the ideal one.
+  function toWalkPosition(center, token) {
+    const topLeft = pointToTopLeftFromCenter(center, token);
+    return clampToSceneTopLeft(Math.round(topLeft.x), Math.round(topLeft.y), token);
+  }
+
+  /**
+   * Where a walk from origin toward destination ends, as a token top-left.
+   * Open ground: the clicked point. Blocked: a point short of the wall, backed
+   * off until the line to it is clear. Null when nowhere that way is reachable.
+   */
+  function resolveWalkTarget(token, origin, destination) {
+    let hit = null;
+    try {
+      hit = token.checkCollision(destination, { origin, mode: "closest", type: "move" });
+    } catch {
+      hit = null;
+    }
+
+    const blocked =
+      hit && typeof hit === "object" && typeof hit.x === "number" && typeof hit.y === "number";
+
+    if (!blocked) {
+      let free = toWalkPosition(destination, token);
+      const snapped = snapTopLeftIfGrid(free.x, free.y);
+      if ((snapped.x !== free.x || snapped.y !== free.y)
+        && !walkCollides(token, origin, topLeftToCenter(snapped, token))) {
+        free = clampToSceneTopLeft(snapped.x, snapped.y, token);
+      }
+      if (!walkCollides(token, origin, topLeftToCenter(free, token))) return free;
+
+      // Rounding or the scene-edge clamp pushed the spot across a wall.
+      hit = destination;
+    }
+
+    const dx = hit.x - origin.x;
+    const dy = hit.y - origin.y;
+    const reach = Math.hypot(dx, dy);
+    if (reach <= WALL_STANDOFF_PX) return null;
+
+    const ux = dx / reach;
+    const uy = dy / reach;
+
+    for (let step = 1; step <= WALL_BACKOFF_STEPS; step++) {
+      const travel = reach - (WALL_STANDOFF_PX * step);
+      if (travel <= 0) break;
+
+      const candidate = toWalkPosition(
+        { x: origin.x + (ux * travel), y: origin.y + (uy * travel) },
+        token
+      );
+      if (!walkCollides(token, origin, topLeftToCenter(candidate, token))) return candidate;
+    }
+
+    return null;
+  }
+
   function removeInputBlockers() {
     for (const remove of state.listeners) {
       try {
@@ -412,8 +496,16 @@
       state.lockX = canvas.stage.pivot.x;
       state.lockY = canvas.stage.pivot.y;
 
-      state.mode = "waiting";
-      state.followTokenId = null;
+      // Keep the token already being followed while the snapshot re-resolves.
+      // Dropping it here opened a window in which the camera stopped and a
+      // right-click found no token to move, so the click was lost.
+      const wasFollowing =
+        state.mode === "follow" && !!state.followTokenId && !!getFollowToken();
+
+      if (!wasFollowing) {
+        state.mode = "waiting";
+        state.followTokenId = null;
+      }
 
       const snapshot = await resolveFollowSnapshot();
 
@@ -427,10 +519,14 @@
       state.followTokenActorName = snapshot?.centralPartyActorName ?? null;
 
       if (token) {
+        const sameToken = wasFollowing && state.followTokenId === token.id;
+
         state.followTokenId = token.id;
         state.mode = "follow";
-        state.curX = canvas.stage.pivot.x;
-        state.curY = canvas.stage.pivot.y;
+        if (!sameToken) {
+          state.curX = canvas.stage.pivot.x;
+          state.curY = canvas.stage.pivot.y;
+        }
 
         DBG.groupCollapsed("CameraRuntime", "Following central party token", {
           reason,
@@ -443,6 +539,13 @@
           isMainController: state.cachedIsMainController
         });
       } else {
+        if (wasFollowing) {
+          state.mode = "waiting";
+          state.followTokenId = null;
+          state.lockX = canvas.stage.pivot.x;
+          state.lockY = canvas.stage.pivot.y;
+        }
+
         DBG.verbose("CameraRuntime", "Camera runtime is waiting for central party token", {
           reason,
           centralPartyActorId: state.followTokenActorId,
@@ -485,59 +588,32 @@
       return;
     }
 
-    const origin = token.center;
+    // token.center is the animated position, so a click made mid-walk is
+    // tested along the line the token will actually travel.
+    const origin = { x: token.center.x, y: token.center.y };
     const destination = { x: destCanvasPoint.x, y: destCanvasPoint.y };
 
-    let collision = null;
-    try {
-      collision = token.checkCollision(destination, {
-        origin,
-        mode: "closest",
-        type: "move"
+    const target = resolveWalkTarget(token, origin, destination);
+    if (!target) {
+      DBG.verbose("CameraRuntime", "Right-click move ignored because no reachable point lies that way", {
+        tokenId: token.id,
+        tokenName: token.name ?? null
       });
-    } catch {
-      collision = null;
+      return;
     }
 
-    let finalCenter = destination;
+    const { x, y } = target;
+    const center = topLeftToCenter(target, token);
+    const distance = Math.hypot(center.x - origin.x, center.y - origin.y);
+    if (distance < 1) return;
 
-    if (
-      collision &&
-      typeof collision === "object" &&
-      typeof collision.x === "number" &&
-      typeof collision.y === "number"
-    ) {
-      finalCenter = { x: collision.x, y: collision.y };
-    }
+    const gridSize = canvas.dimensions?.size || 100;
+    const duration = Math.max(1, Math.round((distance / gridSize / WALK_SPEED) * 1000));
 
-    let { x, y } = pointToTopLeftFromCenter(finalCenter, token);
-
-    const snapped = snapTopLeftIfGrid(x, y);
-    const snappedCenter = {
-      x: snapped.x + token.w / 2,
-      y: snapped.y + token.h / 2
-    };
-
-    let snappedWouldCollide = false;
-    try {
-      const test = token.checkCollision(snappedCenter, {
-        origin: token.center,
-        mode: "any",
-        type: "move"
-      });
-      snappedWouldCollide = test === true;
-    } catch {
-      snappedWouldCollide = false;
-    }
-
-    if (!snappedWouldCollide) {
-      x = snapped.x;
-      y = snapped.y;
-    }
-
-    ({ x, y } = clampToSceneTopLeft(x, y, token));
-
-    await token.document.update({ x, y }, { animate: true });
+    await token.document.update({ x, y }, {
+      animate: true,
+      animation: { duration, movementSpeed: WALK_SPEED }
+    });
 
     DBG.verbose("CameraRuntime", "Central party token moved by right-click", {
       tokenId: token.id,
@@ -809,9 +885,14 @@
       scheduleApply("deleteToken", 20);
     });
 
-    register("updateToken", () => {
+    register("updateToken", (doc, change) => {
       if (game.user?.isGM) return;
       if (!state.followEnabledForScene) return;
+
+      // A plain move cannot change which token is the party token.
+      const keys = Object.keys(change ?? {}).filter(k => k !== "_id");
+      if (keys.length && keys.every(k => k === "x" || k === "y")) return;
+
       scheduleApply("updateToken", 20);
     });
 
