@@ -421,6 +421,7 @@
         tileId: safeTileId,
         requesterId
       });
+      announceExecution("start", safeSceneId, safeTileId);
 
       const context = buildRuntimeContext({
         tileDoc,
@@ -495,6 +496,7 @@
         tileId: safeTileId,
         requesterId
       });
+      announceExecution("done", safeSceneId, safeTileId);
 
       return {
         ok: true,
@@ -521,6 +523,20 @@
       gmActiveExecutions.delete(safeTileId);
       unmarkTileRunning(safeTileId);
       if (grouped) DBG.groupEnd?.();
+    }
+  }
+
+  // Tell the rest of the module, on this client, that an event began or ended.
+  // Sockets do not echo to their sender, so the executing GM calls this
+  // directly and every other client calls it when the broadcast arrives.
+  function announceExecution(phase, sceneId, sourceId) {
+    try {
+      Hooks.callAll(phase === "start" ? "oniEventExecuteStart" : "oniEventExecuteDone", {
+        sceneId: String(sceneId || ""),
+        sourceId: String(sourceId || "")
+      });
+    } catch (e) {
+      DBG.warn(DEBUG_SCOPE, "announceExecution failed.", e);
     }
   }
 
@@ -791,6 +807,7 @@
             const runningTileId = String(msg?.payload?.tileId || "");
             if (runningTileId) {
               markTileRunning(runningTileId);
+              announceExecution("start", msg?.payload?.sceneId, runningTileId);
 
               if (this._activeCandidate?.tileId === runningTileId) {
                 this._activeCandidate = null;
@@ -812,6 +829,7 @@
             const finishedTileId = String(msg?.payload?.tileId || "");
             if (finishedTileId) {
               unmarkTileRunning(finishedTileId);
+              announceExecution("done", msg?.payload?.sceneId, finishedTileId);
             }
 
             this._queueScan("after-execute-done");
