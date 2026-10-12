@@ -535,7 +535,7 @@
     _scanQueued: false,
     _activeCandidate: null,
     _activeTalkCandidate: null,
-    _followupScanTimers: [],
+    _moveWatchTimer: null,
 
     getActiveCandidate() {
       return this._activeCandidate ? foundry.utils.deepClone(this._activeCandidate) : null;
@@ -572,23 +572,34 @@
       }
     },
 
-    _clearFollowupScans() {
-      for (const t of this._followupScanTimers) {
-        try { clearTimeout(t); } catch (_) {}
-      }
-      this._followupScanTimers = [];
+    _stopMoveWatch() {
+      if (this._moveWatchTimer) clearInterval(this._moveWatchTimer);
+      this._moveWatchTimer = null;
     },
 
-    _scheduleFollowupScans(reasonBase = "followup") {
-      this._clearFollowupScans();
+    // Re-scan while the party token is walking, so a button appears as the
+    // token comes into range and goes as it leaves, then once more on arrival.
+    _startMoveWatch(tokenId) {
+      this._stopMoveWatch();
 
-      const delays = [80, 180, 320, 520];
-      for (const ms of delays) {
-        const timer = setTimeout(() => {
-          this._queueScan(`${reasonBase}:${ms}ms`);
-        }, ms);
-        this._followupScanTimers.push(timer);
-      }
+      const startedAt = Date.now();
+      const maxMs = Number(C.MOVE_WATCH_MAX_MS ?? 20000);
+
+      this._moveWatchTimer = setInterval(() => {
+        const doc = canvas?.tokens?.get?.(tokenId)?.document ?? null;
+        const src = doc?._source ?? null;
+
+        const walking = !!doc && !!src
+          && (Math.abs(doc.x - src.x) > 0.5 || Math.abs(doc.y - src.y) > 0.5);
+
+        if (!walking || !this.running || (Date.now() - startedAt) > maxMs) {
+          this._stopMoveWatch();
+          this._queueScan("moveWatch:arrived");
+          return;
+        }
+
+        this._queueScan("moveWatch");
+      }, Number(C.MOVE_WATCH_INTERVAL_MS ?? 100));
     },
 
     _queueScan(reason = "unknown") {
@@ -842,15 +853,11 @@
         }
         if (!moved) return;
 
-        const afterX = ("x" in changes) ? changes.x : tokenDoc.x;
-        const afterY = ("y" in changes) ? changes.y : tokenDoc.y;
-
-        this._setOverride(tokenDoc.id, afterX, afterY);
-
-        this.ui?.placeForToken(partyToken, { x: afterX, y: afterY });
-
+        // No position override here: while a token walks, document.x/y is its
+        // animated position, so the buttons ride on the token and range is
+        // judged from where it is, not from where it was told to go.
         this._queueScan("updateToken(move)");
-        this._scheduleFollowupScans("updateTokenFollowup");
+        this._startMoveWatch(tokenDoc.id);
       };
 
       const onCreateToken = () => this._queueScan("createToken");
@@ -927,7 +934,7 @@
       this._scanQueued = false;
       this._activeCandidate = null;
       this._activeTalkCandidate = null;
-      this._clearFollowupScans();
+      this._stopMoveWatch();
       clientRunningTiles.clear();
 
       this.ui?.stop();

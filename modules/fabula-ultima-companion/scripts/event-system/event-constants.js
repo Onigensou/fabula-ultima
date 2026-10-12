@@ -79,6 +79,10 @@
     PROXIMITY_STEP_PX: 10,
 
     POS_OVERRIDE_TTL_MS: 800,
+
+    // While the party token walks, re-check which buttons are in range
+    MOVE_WATCH_INTERVAL_MS: 100,
+    MOVE_WATCH_MAX_MS: 20000,
     BUTTON_OFFSET_Y: 32,
 
     // -------------------------
