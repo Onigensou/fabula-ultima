@@ -968,7 +968,16 @@
 
       // A plain move cannot change which token is the party token.
       const keys = Object.keys(change ?? {}).filter(k => k !== "_id");
-      if (keys.length && keys.every(k => k === "x" || k === "y")) return;
+      if (keys.length && keys.every(k => k === "x" || k === "y")) {
+        // The full refresh used to re-seat the follow position on the real
+        // camera here. Keep that part: where the camera is held at the map
+        // edge, the follow position would otherwise run on past it.
+        if (state.mode === "follow" && canvas?.stage) {
+          state.curX = canvas.stage.pivot.x;
+          state.curY = canvas.stage.pivot.y;
+        }
+        return;
+      }
 
       scheduleApply("updateToken", 20);
     });
