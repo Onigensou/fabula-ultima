@@ -89,11 +89,13 @@
     // Event types
     // -------------------------
     EVENT_TYPES: {
-      SHOW_TEXT: "showText"
+      SHOW_TEXT: "showText",
+      SET_MOVEMENT: "setMovement"
     },
 
     EVENT_TYPE_LABELS: {
-      showText: "Show Text"
+      showText: "Show Text",
+      setMovement: "Set Movement"
     },
 
     // -------------------------

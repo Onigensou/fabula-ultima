@@ -59,7 +59,9 @@
   const MSG_FLOW = "ONI_EVENT_FLOW_V1";
 
   const LOCK_FLAG = "lockMovement";
-  const ROW_TYPE_MOVEMENT = "setMovement";
+  // Must also be listed in event-constants.js EVENT_TYPES: the registry
+  // folds any type it does not find there into Show Text.
+  const ROW_TYPE_MOVEMENT = C.EVENT_TYPES?.SET_MOVEMENT || "setMovement";
 
   // A line that waits for a press moves on by itself after this long.
   const LINE_MAX_WAIT_MS = 30000;
@@ -339,7 +341,9 @@
   // ------------------------------------------------------------
   // The "Set Movement" event action
   // ------------------------------------------------------------
-  EventRegistry.register({
+  if (!Object.values(C.EVENT_TYPES ?? {}).includes(ROW_TYPE_MOVEMENT)) {
+    console.error(INSTALL_TAG, "Set Movement is missing from EVENT_TYPES; not registering it.");
+  } else EventRegistry.register({
     type: ROW_TYPE_MOVEMENT,
     label: "Set Movement",
     category: "Flow",
