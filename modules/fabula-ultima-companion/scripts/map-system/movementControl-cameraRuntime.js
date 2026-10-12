@@ -125,6 +125,9 @@
     inputLocked: false,
     movementLockIds: new Set(),
 
+    // Who has taken the camera from the follow (an event's camera pan).
+    cameraHolds: new Set(),
+
     inputInstalled: false,
     listeners: [],
     hookIds: [],
@@ -298,6 +301,45 @@
   function getFollowToken() {
     if (!canvas?.ready || !state.followTokenId) return null;
     return canvas.tokens?.get(state.followTokenId) ?? null;
+  }
+
+  // Another system takes the camera for a while (an event pans to a point).
+  // The follow stands down while any hold is out; two systems writing the
+  // same transform is how a camera starts to stutter.
+  function holdCamera(holdId = "default") {
+    state.cameraHolds.add(String(holdId));
+  }
+
+  function releaseCamera(holdId = "default") {
+    state.cameraHolds.delete(String(holdId));
+    if (state.cameraHolds.size > 0 || !canvas?.ready) return;
+
+    // Carry on from where the camera was left, so the follow does not jump.
+    state.curX = canvas.stage.pivot.x;
+    state.curY = canvas.stage.pivot.y;
+  }
+
+  // Where the follow would put the camera right now: { x, y, scale }, or null
+  // when this client's camera is not being driven (the GM, a dungeon scene).
+  function getFollowTarget() {
+    if (!canvas?.ready || state.mode === "inactive") return null;
+
+    const scale = state.lockedScale ?? canvas.stage.scale.x;
+
+    if (state.mode === "follow") {
+      const token = getFollowToken();
+      if (token) {
+        const raw = drawnCenter(token);
+        const off = followOffset(scale);
+        return { x: raw.x + off.x, y: raw.y + off.y, scale };
+      }
+    }
+
+    return {
+      x: state.lockX ?? canvas.stage.pivot.x,
+      y: state.lockY ?? canvas.stage.pivot.y,
+      scale
+    };
   }
 
   function getFollowTokenDocument() {
@@ -984,6 +1026,7 @@
       if (!state.enabled) return;
       if (!canvas?.ready) return;
       if (state.mode === "inactive") return;
+      if (state.cameraHolds.size > 0) return;
 
       const scale = state.lockedScale ?? canvas.stage.scale.x;
 
@@ -1216,6 +1259,10 @@
     getFollowToken,
     getFollowTokenDocument,
     canCurrentUserMovePartyToken,
+
+    holdCamera,
+    releaseCamera,
+    getFollowTarget,
 
     shutdown
   };

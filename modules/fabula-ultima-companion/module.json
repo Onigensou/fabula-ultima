@@ -292,6 +292,7 @@
     "scripts/event-system/event-eventRegistry.js",
     "scripts/event-system/event-flow.js",
     "scripts/event-system/event-rows-flow.js",
+    "scripts/event-system/event-rows-camera.js",
     "scripts/event-system/event-configUI.js",
     "scripts/event-system/event-runtimeUI.js",
     "scripts/event-system/event-executeCore.js",
