@@ -469,9 +469,13 @@
 
     if (preview) {
       const src = String(input.value || "").trim();
+      // The same player the action uses, so the preview is what players hear.
+      const volume = Logic.toNumber(btn.closest(".oni-event-row")?.querySelector(".oni-event-row-sound-volume")?.value, 0.6);
       if (src) {
-        try { foundry.audio.AudioHelper.play({ src, volume: 0.6, autoplay: true, loop: false }, false); }
-        catch (e) { console.warn(INSTALL_TAG, "Preview failed.", e); }
+        window.oni.EventSystem.RowsMedia?.playSound?.(src, volume)?.catch?.((e) => {
+          ui.notifications?.warn?.(`Could not play "${src}".`);
+          console.warn(INSTALL_TAG, "Preview failed.", e);
+        });
       }
       return;
     }

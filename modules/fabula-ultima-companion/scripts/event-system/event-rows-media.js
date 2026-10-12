@@ -79,7 +79,73 @@
     return /\.(webm|mp4|m4v|ogv)(\?.*)?$/i.test(String(src || ""));
   }
 
-  // How long a sound or video runs, in ms; 0 when it cannot be told in time.
+  // ------------------------------------------------------------
+  // Sound: fetch + decode, on Foundry's interface audio context
+  // ------------------------------------------------------------
+  // Not Foundry's own player: it loads through an <audio> element, which
+  // refuses some of the WAV files in the asset library that decode fine
+  // (measured: Sound/switch_mode.wav, "Failed to load audio element"). The
+  // battle SFX play this way for the same reason (director-sfx.js).
+  const audioBuffers = new Map();   // src -> Promise<AudioBuffer>
+  let ownContext = null;
+
+  function audioContext() {
+    const shared = game.audio?.interface;
+    if (shared && typeof shared.decodeAudioData === "function") return shared;
+    ownContext ??= new (window.AudioContext || window.webkitAudioContext)();
+    return ownContext;
+  }
+
+  function loadSound(src) {
+    if (!audioBuffers.has(src)) {
+      const loading = fetch(src)
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.arrayBuffer();
+        })
+        .then((bytes) => audioContext().decodeAudioData(bytes));
+
+      // A failed load is not remembered: the file may be fixed and tried again.
+      loading.catch(() => audioBuffers.delete(src));
+      audioBuffers.set(src, loading);
+    }
+    return audioBuffers.get(src);
+  }
+
+  // Each player's own Interface volume slider still applies.
+  function interfaceVolume() {
+    try {
+      const v = Number(game.settings.get("core", "globalInterfaceVolume"));
+      return Number.isFinite(v) ? v : 1;
+    } catch (_) {
+      return 1;
+    }
+  }
+
+  async function playSound(src, volume = 0.6) {
+    const ctx = audioContext();
+    if (ctx.state === "suspended") ctx.resume().catch(() => {});
+
+    const buffer = await loadSound(src);
+    const node = ctx.createBufferSource();
+    const gain = ctx.createGain();
+    gain.gain.value = clampNumber(volume, 0, 1, 0.6) * interfaceVolume();
+    node.buffer = buffer;
+    node.connect(gain).connect(ctx.destination);
+    node.onended = () => { try { node.disconnect(); gain.disconnect(); } catch (_) {} };
+    node.start(0);
+    return buffer.duration * 1000;
+  }
+
+  async function soundDurationMs(src) {
+    try {
+      return (await loadSound(src)).duration * 1000;
+    } catch (_) {
+      return 0;
+    }
+  }
+
+  // How long a video runs, in ms; 0 when it cannot be told in time.
   function mediaDurationMs(src, tag) {
     return new Promise((resolve) => {
       let settled = false;
@@ -199,16 +265,9 @@
     const src = String(data.src || "").trim();
     if (!src) return;
 
-    try {
-      foundry.audio.AudioHelper.play({
-        src,
-        volume: clampNumber(data.volume, 0, 1, 0.6),
-        autoplay: true,
-        loop: false
-      }, false);
-    } catch (e) {
-      console.warn(INSTALL_TAG, "Play Sound failed.", e);
-    }
+    playSound(src, data.volume).catch((e) => {
+      console.warn(INSTALL_TAG, `Play Sound could not play "${src}".`, e);
+    });
   });
 
   EventRegistry.register({
@@ -224,7 +283,7 @@
       Client.run(context?.tileId, KIND_SOUND, { src, volume: clampNumber(row?.volume, 0, 1, 0.6) });
 
       if (row?.wait === true) {
-        const ms = Math.min(SOUND_WAIT_CAP_MS, await mediaDurationMs(src, "audio"));
+        const ms = Math.min(SOUND_WAIT_CAP_MS, await soundDurationMs(src));
         if (ms > 0) await flow()?.wait?.(context?.tileId, ms);
       }
 
@@ -657,7 +716,11 @@
     })
   });
 
-  window.oni.EventSystem.RowsMedia = { installed: true };
+  window.oni.EventSystem.RowsMedia = {
+    installed: true,
+    // Also used by the config window's preview button.
+    playSound
+  };
 
   console.debug(INSTALL_TAG, "Installed.");
 })();

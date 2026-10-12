@@ -117,9 +117,12 @@
   }
 
   function resolveTarget(data, sourceId) {
-    // A pan that starts while another is still gliding continues from where
-    // that one was heading.
-    const from = view?.target ?? currentView();
+    // An offset is measured from where the camera is MEANT to be, not from
+    // where it happens to be this frame: the party view for a first pan, the
+    // last pan's target after that. A client whose camera is still catching
+    // up (it just joined, its window was covered) would otherwise end up
+    // somewhere else than everyone else (seen live, 2026-10-13).
+    const from = view?.target ?? homeView();
     const scale = Logic.toNumber(data.zoom, 0) > 0 ? Logic.toNumber(data.zoom, from.scale) : from.scale;
 
     if (data.mode === "party") return homeView();
