@@ -285,11 +285,14 @@
     }
     if (Object.keys(wipe).length) await actor.update(wipe);
 
-    await actor.update({
+    const put = {
       [`system.props.${SWITCH_TABLE}`]: snap.switches ?? {},
-      [`system.props.${VARIABLE_TABLE}`]: snap.variables ?? {},
-      [`flags.${MODULE_ID}.${MEMORY_FLAG}`]: snap.memory ?? {}
-    });
+      [`system.props.${VARIABLE_TABLE}`]: snap.variables ?? {}
+    };
+    // No memory in the snapshot means no flag at all, as before any event ran.
+    if (Object.keys(snap.memory ?? {}).length) put[`flags.${MODULE_ID}.${MEMORY_FLAG}`] = snap.memory;
+
+    await actor.update(put);
     return true;
   }
 
