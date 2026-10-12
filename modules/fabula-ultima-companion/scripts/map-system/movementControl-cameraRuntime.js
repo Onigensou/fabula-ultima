@@ -48,7 +48,11 @@
   // a collision point to whole pixels, so a centre parked on the wall itself
   // can land a fraction past it, and from there every click back is blocked.
   const WALL_STANDOFF_PX = 6;
-  const WALL_BACKOFF_STEPS = 4;
+  const WALL_BACKOFF_STEPS = 7;
+
+  // Least distance kept between the token's centre and any wall, measured
+  // square to the wall. Has to exceed the rounding described above.
+  const WALL_CLEARANCE_PX = 3;
 
   /**
    * Where the followed token should sit, in world units.
@@ -319,6 +323,16 @@
     };
   }
 
+  // token.x/y is the drawn position. token.center reads the document, which
+  // follows the walk but snaps to the destination for an instant whenever
+  // Foundry prepares the next move.
+  function drawnCenter(token) {
+    return {
+      x: token.x + (token.w / 2),
+      y: token.y + (token.h / 2)
+    };
+  }
+
   function topLeftToCenter(topLeft, token) {
     return {
       x: topLeft.x + (token.w / 2),
@@ -341,15 +355,75 @@
     return clampToSceneTopLeft(Math.round(topLeft.x), Math.round(topLeft.y), token);
   }
 
+  // Walls that stop a walk from either side. One-way walls are left to
+  // Foundry's own test, which knows their direction.
+  function blockingEdges() {
+    const out = [];
+    for (const edge of canvas.edges?.values?.() ?? []) {
+      if (!edge?.move) continue;
+      if (edge.type === "innerBounds" || edge.type === "outerBounds") continue;
+      if (edge.direction) continue;
+      out.push(edge);
+    }
+    return out;
+  }
+
+  function distanceToEdge(p, edge) {
+    const ax = edge.a.x, ay = edge.a.y;
+    const dx = edge.b.x - ax, dy = edge.b.y - ay;
+    const len2 = (dx * dx) + (dy * dy);
+    let t = len2 ? (((p.x - ax) * dx) + ((p.y - ay) * dy)) / len2 : 0;
+    t = Math.min(Math.max(t, 0), 1);
+    return Math.hypot(p.x - (ax + (t * dx)), p.y - (ay + (t * dy)));
+  }
+
+  function segmentCrossesEdge(p, q, edge) {
+    const side = (a, b, c) => ((b.x - a.x) * (c.y - a.y)) - ((b.y - a.y) * (c.x - a.x));
+    const d1 = side(p, q, edge.a);
+    const d2 = side(p, q, edge.b);
+    const d3 = side(edge.a, edge.b, p);
+    const d4 = side(edge.a, edge.b, q);
+
+    // A token already standing on the wall line must still be able to step off it.
+    if (d3 === 0) return false;
+    return (d1 * d2 <= 0) && (d3 * d4 <= 0) && !(d1 === 0 && d2 === 0);
+  }
+
+  // A spot is safe to walk to when the straight line there is clear and the
+  // spot keeps its distance from every wall. Foundry's test alone is not
+  // enough: it rounds both ends to whole pixels, so a token left a fraction
+  // of a pixel from a wall can be read as already standing on the far side.
+  function isSafeWalkSpot(token, origin, center, edges) {
+    if (walkCollides(token, origin, center)) return false;
+
+    for (const edge of edges) {
+      if (distanceToEdge(center, edge) < WALL_CLEARANCE_PX) return false;
+      if (segmentCrossesEdge(origin, center, edge)) return false;
+    }
+    return true;
+  }
+
   /**
    * Where a walk from origin toward destination ends, as a token top-left.
    * Open ground: the clicked point. Blocked: a point short of the wall, backed
-   * off until the line to it is clear. Null when nowhere that way is reachable.
+   * off along the line until it is safe. Null when nowhere that way is.
    */
   function resolveWalkTarget(token, origin, destination) {
+    const span = Math.hypot(destination.x - origin.x, destination.y - origin.y);
+    if (span < 1) return null;
+
+    const ux = (destination.x - origin.x) / span;
+    const uy = (destination.y - origin.y) / span;
+    const edges = blockingEdges();
+
+    // Probe a little past the click, so a click that lands just in front of
+    // a wall is held back from it the same way a click beyond the wall is.
     let hit = null;
     try {
-      hit = token.checkCollision(destination, { origin, mode: "closest", type: "move" });
+      hit = token.checkCollision(
+        { x: destination.x + (ux * WALL_STANDOFF_PX), y: destination.y + (uy * WALL_STANDOFF_PX) },
+        { origin, mode: "closest", type: "move" }
+      );
     } catch {
       hit = null;
     }
@@ -358,35 +432,32 @@
       hit && typeof hit === "object" && typeof hit.x === "number" && typeof hit.y === "number";
 
     if (!blocked) {
-      let free = toWalkPosition(destination, token);
+      const free = toWalkPosition(destination, token);
       const snapped = snapTopLeftIfGrid(free.x, free.y);
-      if ((snapped.x !== free.x || snapped.y !== free.y)
-        && !walkCollides(token, origin, topLeftToCenter(snapped, token))) {
-        free = clampToSceneTopLeft(snapped.x, snapped.y, token);
-      }
-      if (!walkCollides(token, origin, topLeftToCenter(free, token))) return free;
+      const snappedPos = clampToSceneTopLeft(snapped.x, snapped.y, token);
 
-      // Rounding or the scene-edge clamp pushed the spot across a wall.
-      hit = destination;
+      for (const spot of [snappedPos, free]) {
+        if (isSafeWalkSpot(token, origin, topLeftToCenter(spot, token), edges)) return spot;
+      }
     }
 
-    const dx = hit.x - origin.x;
-    const dy = hit.y - origin.y;
-    const reach = Math.hypot(dx, dy);
-    if (reach <= WALL_STANDOFF_PX) return null;
+    // Blocked, or the clicked spot itself is too tight: back off along the
+    // line. The step doubles so a wall met at a shallow angle, where a short
+    // step back gains almost no distance from it, is still cleared.
+    const reach = blocked
+      ? Math.min(span, Math.hypot(hit.x - origin.x, hit.y - origin.y))
+      : span;
 
-    const ux = dx / reach;
-    const uy = dy / reach;
+    let back = WALL_STANDOFF_PX;
+    for (let step = 0; step < WALL_BACKOFF_STEPS; step++, back *= 2) {
+      const travel = reach - back;
+      if (travel < 1) break;
 
-    for (let step = 1; step <= WALL_BACKOFF_STEPS; step++) {
-      const travel = reach - (WALL_STANDOFF_PX * step);
-      if (travel <= 0) break;
-
-      const candidate = toWalkPosition(
+      const spot = toWalkPosition(
         { x: origin.x + (ux * travel), y: origin.y + (uy * travel) },
         token
       );
-      if (!walkCollides(token, origin, topLeftToCenter(candidate, token))) return candidate;
+      if (isSafeWalkSpot(token, origin, topLeftToCenter(spot, token), edges)) return spot;
     }
 
     return null;
@@ -588,9 +659,9 @@
       return;
     }
 
-    // token.center is the animated position, so a click made mid-walk is
-    // tested along the line the token will actually travel.
-    const origin = { x: token.center.x, y: token.center.y };
+    // Start from where the token is drawn, so a click made mid-walk is tested
+    // along the line the token will actually travel.
+    const origin = drawnCenter(token);
     const destination = { x: destCanvasPoint.x, y: destCanvasPoint.y };
 
     const target = resolveWalkTarget(token, origin, destination);
@@ -666,6 +737,7 @@
 
     const onPointerDown = (ev) => {
       if (state.mode === "inactive") return;
+      if (ev.target !== view) return;
 
       // Right-click
       if (ev.button === 2) {
@@ -700,7 +772,12 @@
         ev.stopPropagation();
       }
     };
-    addDomListener(view, "pointerdown", onPointerDown, { capture: true });
+    // Listen on the window, not the view: the canvas has its own pointerdown
+    // listener on the view, and stopPropagation cannot hold back a listener on
+    // the same element. Left reachable, a quick second right-click on the
+    // party token is Foundry's "open Token Config", and while that sheet is
+    // open every move of the token is applied without animation.
+    addDomListener(window, "pointerdown", onPointerDown, { capture: true });
 
     const onPointerMove = (ev) => {
       if (state.mode === "inactive") return;
@@ -761,7 +838,7 @@
           return;
         }
 
-        const raw = token.center;
+        const raw = drawnCenter(token);
         const off = followOffset(scale);
         const targetCenter = { x: raw.x + off.x, y: raw.y + off.y };
 

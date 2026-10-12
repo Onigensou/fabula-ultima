@@ -125,8 +125,11 @@
 
   function getAuthoritativeTokenCenterPx(token, overrideXY = null) {
     const doc = token?.document;
-    const baseX = overrideXY?.x ?? doc?.x ?? token?.x ?? 0;
-    const baseY = overrideXY?.y ?? doc?.y ?? token?.y ?? 0;
+    // token.x/y is the drawn position. The document follows it during a walk
+    // but snaps to the destination for an instant whenever Foundry prepares
+    // the next move, which would flick anything placed from it.
+    const baseX = overrideXY?.x ?? token?.x ?? doc?.x ?? 0;
+    const baseY = overrideXY?.y ?? token?.y ?? doc?.y ?? 0;
     const w = token?.w ?? 0;
     const h = token?.h ?? 0;
     return { x: baseX + (w / 2), y: baseY + (h / 2) };
@@ -586,11 +589,11 @@
       const maxMs = Number(C.MOVE_WATCH_MAX_MS ?? 20000);
 
       this._moveWatchTimer = setInterval(() => {
-        const doc = canvas?.tokens?.get?.(tokenId)?.document ?? null;
-        const src = doc?._source ?? null;
+        const token = canvas?.tokens?.get?.(tokenId) ?? null;
+        const src = token?.document?._source ?? null;
 
-        const walking = !!doc && !!src
-          && (Math.abs(doc.x - src.x) > 0.5 || Math.abs(doc.y - src.y) > 0.5);
+        const walking = !!token && !!src
+          && (Math.abs(token.x - src.x) > 0.5 || Math.abs(token.y - src.y) > 0.5);
 
         if (!walking || !this.running || (Date.now() - startedAt) > maxMs) {
           this._stopMoveWatch();

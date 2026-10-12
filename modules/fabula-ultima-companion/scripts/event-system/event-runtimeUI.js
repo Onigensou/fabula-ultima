@@ -74,8 +74,11 @@
 
   function getAuthoritativeTokenCenterPx(token, overrideXY = null) {
     const doc = token?.document;
-    const baseX = overrideXY?.x ?? doc?.x ?? token?.x ?? 0;
-    const baseY = overrideXY?.y ?? doc?.y ?? token?.y ?? 0;
+    // token.x/y is the drawn position. The document follows it during a walk
+    // but snaps to the destination for an instant whenever Foundry prepares
+    // the next move, which would flick anything placed from it.
+    const baseX = overrideXY?.x ?? token?.x ?? doc?.x ?? 0;
+    const baseY = overrideXY?.y ?? token?.y ?? doc?.y ?? 0;
     const w = token?.w ?? 0;
     const h = token?.h ?? 0;
     return { x: baseX + (w / 2), y: baseY + (h / 2) };
