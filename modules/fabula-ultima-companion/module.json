@@ -296,6 +296,7 @@
     "scripts/event-system/event-rows-media.js",
     "scripts/event-system/event-rows-choices.js",
     "scripts/event-system/event-gmChip.js",
+    "scripts/event-system/event-lint.js",
     "scripts/event-system/event-configUI.js",
     "scripts/event-system/event-runtimeUI.js",
     "scripts/event-system/event-executeCore.js",
