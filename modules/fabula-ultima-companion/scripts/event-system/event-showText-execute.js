@@ -112,9 +112,12 @@
     const cps = Math.max(1, Number(speed) || 28);
     const chars = String(text ?? "").replace(/<\/?b>/gi, "").length;
     const typingMs = Math.ceil((chars / cps) * 1000);
-    const holdMs = 1600;
+    // The bubble stays up after typing for as long again plus a hold
+    // (dialog-ui.js: max(1200, typing + 1600)). Counting only the hold let a
+    // long line's follow-up start while that line was still showing.
+    const holdMs = Math.max(1200, typingMs + 1600);
     const enterExitMs = 600;
-    return Math.max(2500, Math.min(30000, typingMs + holdMs + enterExitMs + 1200));
+    return Math.max(2500, Math.min(45000, typingMs + holdMs + enterExitMs + 1200));
   }
 
   function getBubbleElById(bubbleId) {
@@ -245,7 +248,14 @@
       speed: payload.speed
     });
 
-       const resultPayload = await dialogApi.show({
+    // A locked event waits on each line for a press; a free one runs on the
+    // bubble's own timer. Either way presses are routed through the flow, so
+    // every client moves on together.
+    const flow = window.oni?.EventSystem?.Flow;
+    const waitForInput = !!flow?.shouldWaitForInput?.(context.tileId);
+    const maxWaitMs = Number(flow?.LINE_MAX_WAIT_MS) || 30000;
+
+    const resultPayload = await dialogApi.show({
       tokenId,
       actorId,
       text: payload.text,
@@ -254,14 +264,20 @@
       speed: payload.speed || 28,
       portraitSrc: payload.portraitSrc || null,
       broadcast: true,
-      sceneId: context.sceneId || canvas?.scene?.id || null
+      sceneId: context.sceneId || canvas?.scene?.id || null,
+      waitForInput,
+      maxWaitMs,
+      controlled: !!flow
     });
 
     const bubbleId = resultPayload?.bubbleId || null;
+    flow?.setActiveBubble?.(context.tileId, bubbleId);
 
     await waitForBubbleToFinish(bubbleId, {
-      timeoutMs: estimateDialogLifetimeMs(payload.text, payload.speed)
+      timeoutMs: estimateDialogLifetimeMs(payload.text, payload.speed) + (waitForInput ? maxWaitMs : 0)
     });
+
+    flow?.setActiveBubble?.(context.tileId, null);
 
     return {
       ok: true,

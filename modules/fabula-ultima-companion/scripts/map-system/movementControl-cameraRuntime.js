@@ -842,6 +842,35 @@
     state.slideTimer = setTimeout(attempt, delay);
   }
 
+  /**
+   * Stop the party where it is drawn. Used when something takes over (an
+   * event beginning) while a walk is still in progress. Only the client that
+   * walks the token acts; everyone else sees the result.
+   */
+  async function haltWalk() {
+    clearPendingMove();
+
+    if (game.user?.isGM || !state.cachedIsMainController) return;
+
+    const token = getFollowToken();
+    const doc = token?.document;
+    if (!doc?.isOwner) return;
+
+    const x = Math.round(token.x);
+    const y = Math.round(token.y);
+    if (Math.abs(x - doc._source.x) < 1 && Math.abs(y - doc._source.y) < 1) return;
+
+    try {
+      await doc.update({ x, y }, {
+        animate: true,
+        animation: { duration: 1, movementSpeed: WALK_SPEED },
+        oniBypassGate: true
+      });
+    } catch (err) {
+      DBG.warn("CameraRuntime", "haltWalk failed", { error: err?.message ?? err });
+    }
+  }
+
   async function consumeMoveQueue() {
     if (state.isMoving) return;
     state.isMoving = true;
@@ -1182,6 +1211,7 @@
     lockMovement,
     unlockMovement,
     setWorldMovementLocked,
+    haltWalk,
 
     getFollowToken,
     getFollowTokenDocument,

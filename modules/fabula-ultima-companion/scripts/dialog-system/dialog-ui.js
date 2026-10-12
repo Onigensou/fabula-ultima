@@ -14,6 +14,9 @@
   // Primary message type
   const MSG_TYPE_SHOW = "FU_DIALOG_SHOW_V1";
 
+  // Complete or close a bubble that is already showing, on every client
+  const MSG_TYPE_CONTROL = "FU_DIALOG_CONTROL_V1";
+
   // Optional debug ping (like our test macro)
   const MSG_TYPE_PING = "FU_DIALOG_PING_V1";
 
@@ -24,6 +27,10 @@
   // --- UI defaults ---
   const DEFAULT_CPS = 28;
   const HOLD_AFTER_TYPING_MS = 1600;
+
+  // A bubble that waits for a press closes by itself after this long, so an
+  // absent player cannot hold the table up. The sender can pass its own.
+  const DEFAULT_MAX_WAIT_MS = 30000;
   const OFFSET_Y = 28;
   const BUBBLE_ANCHOR = 0.62;
   const MAX_BUBBLE_WIDTH = 420;
@@ -48,6 +55,10 @@
     handler: null,
     seen: new Set(),
   });
+
+  // Showing bubbles by id, so one can be completed or closed from outside.
+  store.bubbles ??= new Map();
+  store.pendingControl ??= new Map();
 
   const boot = (...args) => {
     if (BOOT_LOG_ALWAYS) console.debug("%c[FU Dialog:UI][BOOT]", "color:#7dd3fc", ...args);
@@ -210,6 +221,13 @@
 .mode-think .fu-text { margin:0 16px 14px; }
 .mode-think .fu-tail { display:none !important; }
 
+.fu-next { position:absolute; right: 12px; bottom: 4px; font-size: 12px; line-height: 1;
+  color: rgba(40,28,16,0.85); opacity: 0; pointer-events: none; }
+.fu-bubble.fu-awaiting .fu-next { animation: fu-next-bob 900ms ease-in-out infinite; }
+@keyframes fu-next-bob {
+  0%, 100% { opacity: 0.25; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(3px); }
+}
 .fu-think-tail { position:absolute; bottom:-40px; left:0; width: 0; height: 0; pointer-events:none; }
 .mode-think .fu-think-tail { display:block; }
 .fu-think-tail .dot {
@@ -262,6 +280,7 @@
       <div class="fu-paper">
         <div class="fu-name">${htmlEscape(payload.name || token.document?.name || "Speaker")}</div>
         <div class="fu-text"><span class="fu-typed"></span></div>
+        <div class="fu-next">&#9660;</div>
         <div class="fu-tail"></div>
         <div class="fu-think-tail" style="display:${isThink ? "block" : "none"};">
           <div class="dot d1"></div>
@@ -342,53 +361,73 @@
     const typed = box.querySelector(".fu-typed");
     const segments = parseHintMarkup(payload.text);
     const full = segments.map(s => s.text).join("");
-    const STEP = Math.max(1, Math.round(60 / cps));
-    let i = 0, f = 0, done = false, fastForward = false;
-    let autoTimer = null;
+    const typeMs = Math.ceil((full.length / cps) * 1000);
+    const startedAt = performance.now();
+
+    // waitForInput: the line stays up until someone presses, then closes.
+    // controlled: presses are not handled here; whoever runs the dialogue
+    // decides, and tells every client through control().
+    const waitForInput = payload.waitForInput === true;
+    const controlled = payload.controlled === true;
+    const maxWaitMs = Number(payload.maxWaitMs) > 0 ? Number(payload.maxWaitMs) : DEFAULT_MAX_WAIT_MS;
+
+    let shown = 0, done = false, closing = false;
+    let autoTimer = null, doneTimer = null;
 
     function scheduleAutoClose() {
-      const typeMs = Math.ceil((full.length / cps) * 1000);
-      const totalMs = Math.max(1200, typeMs + HOLD_AFTER_TYPING_MS);
+      // A remote copy of a waiting bubble leaves the closing to the sender,
+      // and only closes by itself if that message never comes.
+      const totalMs = waitForInput
+        ? maxWaitMs + (remote ? 3000 : 0)
+        : Math.max(1200, typeMs + HOLD_AFTER_TYPING_MS);
       if (autoTimer) clearTimeout(autoTimer);
       autoTimer = setTimeout(() => closeBubble(), totalMs);
     }
 
-    function typeTick() {
-      if (!box.isConnected) return;
+    function markDone() {
+      if (done) return;
+      done = true;
+      if (doneTimer) clearTimeout(doneTimer);
+      doneTimer = null;
 
-      if (fastForward) {
-        renderHintSegments(typed, segments, full.length);
-        done = true;
-        scheduleAutoClose();
-        return;
+      shown = full.length;
+      renderHintSegments(typed, segments, full.length);
+      if (waitForInput) box.classList.add("fu-awaiting");
+      scheduleAutoClose();
+    }
+
+    // The clock decides when the line is complete. The frame loop below only
+    // draws, so a hidden window (where frames stop) still finishes on time.
+    doneTimer = setTimeout(markDone, typeMs);
+
+    function typeTick() {
+      if (!box.isConnected || done) return;
+
+      const target = Math.min(full.length, Math.floor(((performance.now() - startedAt) * cps) / 1000));
+      if (target > shown) {
+        const ch = full.slice(target - 1, target);
+        shown = target;
+        renderHintSegments(typed, segments, shown);
+        blipMaybe(ch);
       }
 
-      f++;
-      if (f >= STEP) {
-        f = 0;
-        const nextI = Math.min(full.length, i + 1);
-        const ch = full.slice(i, nextI);
-        i = nextI;
-        renderHintSegments(typed, segments, i);
-        blipMaybe(ch);
-
-        if (i >= full.length) {
-          done = true;
-          scheduleAutoClose();
-          return;
-        }
+      if (shown >= full.length) {
+        markDone();
+        return;
       }
       requestAnimationFrame(typeTick);
     }
     requestAnimationFrame(typeTick);
 
     function closeBubble() {
-      if (!done) {
-        fastForward = true;
-        renderHintSegments(typed, segments, full.length);
-        done = true;
-      }
-      box.classList.remove("fu-enter");
+      if (closing) return;
+      closing = true;
+
+      if (!done) markDone();
+      if (autoTimer) clearTimeout(autoTimer);
+      autoTimer = null;
+
+      box.classList.remove("fu-enter", "fu-awaiting");
       box.classList.add("fu-exit");
 
       const finish = () => {
@@ -396,19 +435,44 @@
         cleanup();
       };
       box.addEventListener("animationend", finish);
+
+      // A hidden window does not run the exit animation; do not wait on it.
+      setTimeout(finish, 600);
     }
 
     function handleClick() {
-      (!done) ? (fastForward = true) : closeBubble();
+      if (controlled) {
+        Hooks.callAll("fuDialogBubblePress", { bubbleId: id });
+        return;
+      }
+      (!done) ? markDone() : closeBubble();
     }
     box.addEventListener("click", handleClick);
+
+    store.bubbles.set(id, {
+      isDone: () => done,
+      complete: markDone,
+      close: closeBubble
+    });
+
+    // A control message can beat its bubble here.
+    const early = store.pendingControl.get(id);
+    if (early) {
+      store.pendingControl.delete(id);
+      early === "close" ? closeBubble() : markDone();
+    }
 
     const onDelete = (doc) => { if (doc.id === token.document.id) closeBubble(); };
     Hooks.on("preDeleteToken", onDelete);
 
+    let cleaned = false;
     function cleanup() {
+      if (cleaned) return;
+      cleaned = true;
       try {
         if (autoTimer) clearTimeout(autoTimer);
+        if (doneTimer) clearTimeout(doneTimer);
+        store.bubbles.delete(id);
         box.removeEventListener("click", handleClick);
 
         Hooks.off("canvasPan", onPan);
@@ -423,6 +487,40 @@
         const layer = document.getElementById(LAYER_ID);
         if (layer && !layer.children.length) layer.remove();
       } catch (_) {}
+    }
+  }
+
+  function applyControl(bubbleId, action) {
+    const id = String(bubbleId || "");
+    if (!id) return false;
+
+    const bubble = store.bubbles.get(id);
+    if (!bubble) {
+      // Not drawn here yet: keep it for a moment in case the bubble is on its way.
+      store.pendingControl.set(id, action);
+      setTimeout(() => store.pendingControl.delete(id), 3000);
+      return false;
+    }
+
+    action === "close" ? bubble.close() : bubble.complete();
+    return true;
+  }
+
+  // Complete ("complete") or close ("close") a showing bubble here and, by
+  // default, on every other client.
+  function control(bubbleId, action, { broadcast = true } = {}) {
+    const safeAction = action === "close" ? "close" : "complete";
+    applyControl(bubbleId, safeAction);
+
+    if (broadcast) {
+      try {
+        game.socket.emit(SOCKET_CHANNEL, {
+          type: MSG_TYPE_CONTROL,
+          payload: { bubbleId: String(bubbleId || ""), action: safeAction }
+        });
+      } catch (e) {
+        warn("control broadcast failed", e);
+      }
     }
   }
 
@@ -451,6 +549,11 @@
         // Optional ping debug
         if (data.type === MSG_TYPE_PING) {
           boot("PING received ✅", data.payload);
+          return;
+        }
+
+        if (data.type === MSG_TYPE_CONTROL) {
+          applyControl(data.payload?.bubbleId, data.payload?.action);
           return;
         }
 
@@ -488,8 +591,12 @@
   Object.assign(globalThis.FU.DialogUI, {
     MSG_TYPE_SHOW,
     MSG_TYPE_PING,
+    MSG_TYPE_CONTROL,
     SOCKET_CHANNEL,
     installListener,
+    control,
+    isShowing: (bubbleId) => store.bubbles.has(String(bubbleId || "")),
+    isDone: (bubbleId) => !!store.bubbles.get(String(bubbleId || ""))?.isDone(),
     renderFromPayload: async (payload, { remote = false } = {}) => {
       if (!canvas?.ready) await waitCanvasReady(3000);
       if (!payload?.tokenId) return;

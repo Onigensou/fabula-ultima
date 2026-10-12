@@ -212,6 +212,14 @@
     opacity 140ms ease-in;
 }
 
+/* Not the main controller: the prompt is shown, but it is not theirs to press */
+#${C.UI_LAYER_ID || "oni-event-ui-layer"}.is-readonly .${C.INTERACT_BUTTON_CLASS || "oni-event-btn"} {
+  pointer-events: none;
+  cursor: default;
+  filter: grayscale(0.6);
+  opacity: 0.55;
+}
+
 .${C.INTERACT_BUTTON_CLASS || "oni-event-btn"}:hover {
   transform: translate(-50%, -50%) scale(1.06);
 }
@@ -511,6 +519,11 @@
     hideAll() {
       this.examine?.hide();
       this.talk?.hide();
+    }
+
+    // Only the main controller (and the GM) can press the buttons.
+    setInteractive(value) {
+      this.layer?.classList.toggle("is-readonly", !value);
     }
 
     // The party can stand close enough to an NPC that the "!" and the talk

@@ -105,6 +105,13 @@ async function renderLocal(payload) {
       // behavior
       broadcast = true,
 
+      // waitForInput: stay up until pressed (closes itself after maxWaitMs).
+      // controlled: the caller handles presses and drives the bubble with
+      // FU.DialogUI.control(), so every client stays on the same line.
+      waitForInput = false,
+      maxWaitMs = null,
+      controlled = false,
+
       // optional: override sceneId (rare)
       sceneId = canvas?.scene?.id ?? null,
     } = opts;
@@ -128,6 +135,9 @@ async function renderLocal(payload) {
       mode,
       speed: Math.max(1, Number(speed) || 28),
       portraitSrc: portraitSrc ?? derivePortraitSrc(token),
+      waitForInput: waitForInput === true,
+      maxWaitMs: Number(maxWaitMs) > 0 ? Number(maxWaitMs) : null,
+      controlled: controlled === true,
       fromUserId: game.user.id,
       fromUserName: game.user.name,
       createdAt: Date.now(),

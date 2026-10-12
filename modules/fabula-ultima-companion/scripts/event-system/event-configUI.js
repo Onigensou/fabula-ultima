@@ -432,6 +432,12 @@
         );
       }
 
+      if (type === "setMovement") {
+        row.state = String(rowEl.querySelector(".oni-event-row-movement")?.value || "locked") === "free"
+          ? "free"
+          : "locked";
+      }
+
       rows.push(row);
     }
 
@@ -480,6 +486,28 @@
     return wrapper;
   }
 
+  function buildSetMovementFields(rowData) {
+    const isFree = String(rowData.state ?? "locked") === "free";
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "oni-event-row-body";
+    wrapper.innerHTML = `
+      <div class="oni-event-inline-grid">
+        <label>Movement</label>
+        <div>
+          <select class="oni-event-row-movement">
+            <option value="locked" ${isFree ? "" : "selected"}>Locked</option>
+            <option value="free" ${isFree ? "selected" : ""}>Free</option>
+          </select>
+          <div class="oni-event-mini-note">
+            Changes the lock for the rest of this event. Movement is always freed when the event ends.
+          </div>
+        </div>
+      </div>
+    `;
+    return wrapper;
+  }
+
   function buildUnknownFields(rowData) {
     const wrapper = document.createElement("div");
     wrapper.className = "oni-event-row-body";
@@ -496,6 +524,8 @@
     switch (String(type || "")) {
       case (C.EVENT_TYPES?.SHOW_TEXT || "showText"):
         return buildShowTextFields(rowData);
+      case "setMovement":
+        return buildSetMovementFields(rowData);
       default:
         return buildUnknownFields(rowData);
     }
@@ -790,6 +820,22 @@
               </p>
             </div>
 
+            <div class="form-group">
+              <label>Lock movement while this event runs</label>
+              <div class="form-fields">
+                <input
+                  type="checkbox"
+                  name="flags.${SCOPE}.lockMovement"
+                  class="oni-event-lock-movement"
+                  checked
+                />
+              </div>
+              <p class="notes">
+                On: the party stays put and each line waits for a press (Confirm, or a click).
+                Off: the party can walk away and each line closes by itself.
+              </p>
+            </div>
+
             <input
               type="hidden"
               class="oni-event-hidden-json"
@@ -870,6 +916,13 @@
         defaultProximityPx
       );
       const eventRows = normalizeEventRows(safeGet(flags, "eventRows", []));
+
+      // An event saved before this setting existed counts as locked.
+      const lockEl = tabPanel.querySelector(".oni-event-lock-movement");
+      if (lockEl) {
+        const savedLock = safeGet(flags, "lockMovement", true);
+        lockEl.checked = !(savedLock === false || savedLock === "false");
+      }
 
       const isEventEl = tabPanel.querySelector(".oni-is-event");
       const fieldsWrap = tabPanel.querySelector(".oni-event-fields");

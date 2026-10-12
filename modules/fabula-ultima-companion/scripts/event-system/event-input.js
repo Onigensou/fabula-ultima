@@ -1,0 +1,103 @@
+/**
+ * [ONI] Input — Confirm / Cancel
+ * Foundry VTT v12
+ *
+ * File:
+ * scripts/event-system/event-input.js
+ *
+ * What this does:
+ * - Gives the module one shared pair of inputs, Confirm and Cancel, the way a
+ *   game controller has two face buttons
+ * - Registers them as Foundry keybindings, so they show in Configure Controls
+ *   and each person can rebind them
+ *     Confirm: Z, Enter, Spacebar
+ *     Cancel:  X
+ * - Hands a press to whichever system is currently listening
+ *
+ * A key does nothing here unless a listener takes it. With no listener, or
+ * when the listener declines, the key falls through to whatever it normally
+ * does (Spacebar still pauses for the GM). Foundry itself ignores these keys
+ * while the cursor is in a text field.
+ *
+ * Exposes API to:
+ *   window.oni.Input
+ *
+ * Usage:
+ *   const stop = window.oni.Input.listen(({ action }) => {
+ *     // action is "confirm" or "cancel"; return true when the press was used
+ *   });
+ *   stop(); // when finished
+ */
+
+(() => {
+  const INSTALL_TAG = "[ONI][Input]";
+  const MODULE_ID = "fabula-ultima-companion";
+
+  window.oni = window.oni || {};
+  if (window.oni.Input?.installed) {
+    console.debug(INSTALL_TAG, "Already installed; skipping.");
+    return;
+  }
+
+  const ACTIONS = Object.freeze({ CONFIRM: "confirm", CANCEL: "cancel" });
+
+  // Most recent listener first: a menu opened over a dialogue gets the press.
+  const listeners = [];
+
+  function listen(handler) {
+    if (typeof handler !== "function") return () => {};
+    listeners.unshift(handler);
+    return () => {
+      const index = listeners.indexOf(handler);
+      if (index >= 0) listeners.splice(index, 1);
+    };
+  }
+
+  // Returns true when a listener used the press.
+  function dispatch(action, source = "key") {
+    for (const handler of [...listeners]) {
+      try {
+        if (handler({ action, source }) === true) return true;
+      } catch (e) {
+        console.warn(INSTALL_TAG, "An input listener threw.", e);
+      }
+    }
+    return false;
+  }
+
+  function registerKeybindings() {
+    try {
+      game.keybindings.register(MODULE_ID, "oniConfirm", {
+        name: "Confirm",
+        hint: "Advance dialogue and confirm prompts. Only acts while something is asking for it.",
+        editable: [{ key: "KeyZ" }, { key: "Enter" }, { key: "Space" }],
+        onDown: () => dispatch(ACTIONS.CONFIRM, "key"),
+        restricted: false,
+        precedence: CONST.KEYBINDING_PRECEDENCE.PRIORITY
+      });
+
+      game.keybindings.register(MODULE_ID, "oniCancel", {
+        name: "Cancel",
+        hint: "Cancel or go back. In dialogue it advances, like Confirm. Only acts while something is asking for it.",
+        editable: [{ key: "KeyX" }],
+        onDown: () => dispatch(ACTIONS.CANCEL, "key"),
+        restricted: false,
+        precedence: CONST.KEYBINDING_PRECEDENCE.PRIORITY
+      });
+    } catch (e) {
+      console.error(INSTALL_TAG, "Failed to register keybindings.", e);
+    }
+  }
+
+  window.oni.Input = {
+    installed: true,
+    ACTIONS,
+    listen,
+    dispatch,
+    hasListeners: () => listeners.length > 0
+  };
+
+  Hooks.once("init", registerKeybindings);
+
+  console.debug(INSTALL_TAG, "Installed. API: window.oni.Input");
+})();

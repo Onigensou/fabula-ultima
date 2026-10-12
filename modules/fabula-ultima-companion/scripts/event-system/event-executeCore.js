@@ -415,6 +415,7 @@
 
       gmActiveExecutions.add(safeTileId);
       markTileRunning(safeTileId);
+      window.oni.EventSystem.Flow?.begin(safeTileId, safeSceneId, tileDoc);
 
       emitSocketMessage(MSG_EXECUTE_START, {
         sceneId: safeSceneId,
@@ -474,6 +475,7 @@
             rowId: row?.id ?? null,
             result
           });
+          announceExecution("done", safeSceneId, safeTileId);
 
           return {
             ok: false,
@@ -512,6 +514,7 @@
         requesterId,
         error: String(e?.message || e)
       });
+      announceExecution("done", safeSceneId, safeTileId);
 
       return {
         ok: false,
@@ -522,6 +525,7 @@
     } finally {
       gmActiveExecutions.delete(safeTileId);
       unmarkTileRunning(safeTileId);
+      window.oni.EventSystem.Flow?.end(safeTileId);
       if (grouped) DBG.groupEnd?.();
     }
   }
@@ -692,6 +696,7 @@
 
         this._activeCandidate = best;
         this._activeTalkCandidate = bestTalk;
+        this.ui?.setInteractive?.(window.oni.EventSystem.Flow?.isLocalUserInteractor?.() ?? true);
 
         if (best) {
           this.ui?.showForCandidate(
@@ -728,6 +733,13 @@
       try {
         const sceneId = canvas?.scene?.id;
         if (!sceneId || !safeTileId) return;
+
+        if (window.oni.EventSystem.Flow && !window.oni.EventSystem.Flow.isLocalUserInteractor()) {
+          DBG.verboseLog(DEBUG_SCOPE, "requestExecute ignored: this user is not the main controller.", {
+            tileId: safeTileId
+          });
+          return;
+        }
 
         DBG.log(DEBUG_SCOPE, "requestExecute called.", {
           sceneId,
@@ -796,6 +808,12 @@
             DBG.verboseLog(DEBUG_SCOPE, "Socket RX execute request.", msg);
             if (!game?.user?.isGM) return;
 
+            const flow = window.oni.EventSystem.Flow;
+            if (flow && !(await flow.isUserInteractor(msg?.payload?.requesterId))) {
+              DBG.warn(DEBUG_SCOPE, "Execute request refused: sender is not the main controller.", msg?.payload);
+              return;
+            }
+
             await gmExecuteEventTile(msg.payload);
             this._queueScan("after-socket-execute");
             return;
@@ -842,6 +860,7 @@
             const erroredTileId = String(msg?.payload?.tileId || "");
             if (erroredTileId) {
               unmarkTileRunning(erroredTileId);
+              announceExecution("done", msg?.payload?.sceneId, erroredTileId);
             }
 
             this._queueScan("after-execute-error");
@@ -970,6 +989,7 @@
   // ------------------------------------------------------------
   // Publish API
   // ------------------------------------------------------------
+  core.readEventData = readEventData;
   window.oni.EventSystem.Core = core;
 
   // ------------------------------------------------------------
