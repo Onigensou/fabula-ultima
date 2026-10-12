@@ -54,6 +54,22 @@
   // square to the wall. Has to exceed the rounding described above.
   const WALL_CLEARANCE_PX = 3;
 
+  // Sliding: a walk stopped by a wall carries on along it until the token is
+  // level with the clicked point. Set SLIDE_ENABLED false to stop at the wall.
+  const SLIDE_ENABLED = true;
+
+  // Slides shorter than this are skipped; they read as a twitch, not a step.
+  const SLIDE_MIN_PX = 12;
+
+  // The slide is sent this long before the first leg ends, about one server
+  // round trip, so the token turns along the wall without standing still.
+  const SLIDE_LEAD_MS = 80;
+  const SLIDE_RETRY_MS = 30;
+
+  // The slide aims this far off the wall beyond where the first leg stopped,
+  // so rounding to whole pixels cannot eat into the clearance on the way.
+  const SLIDE_NUDGE_PX = 1.5;
+
   /**
    * Where the followed token should sit, in world units.
    *
@@ -102,6 +118,9 @@
 
     pendingDestination: null,
     isMoving: false,
+
+    walkSeq: 0,
+    slideTimer: null,
 
     inputLocked: false,
     movementLockIds: new Set(),
@@ -202,8 +221,17 @@
     state.listeners.push(() => el.removeEventListener(type, fn, options));
   }
 
+  // Drop a slide that is waiting for its first leg. Every new walk, lock and
+  // scene change goes through here, so a stale second leg can never fire.
+  function cancelPendingSlide() {
+    state.walkSeq++;
+    if (state.slideTimer) clearTimeout(state.slideTimer);
+    state.slideTimer = null;
+  }
+
   function clearPendingMove() {
     state.pendingDestination = null;
+    cancelPendingSlide();
   }
 
   function isMovementLocked() {
@@ -407,10 +435,13 @@
    * Where a walk from origin toward destination ends, as a token top-left.
    * Open ground: the clicked point. Blocked: a point short of the wall, backed
    * off along the line until it is safe. Null when nowhere that way is.
+   *
+   * Returned as `spot`, with `hit`: the point where a wall stopped the walk
+   * (null on open ground), which is what a slide is worked out from.
    */
-  function resolveWalkTarget(token, origin, destination) {
+  function resolveWalk(token, origin, destination) {
     const span = Math.hypot(destination.x - origin.x, destination.y - origin.y);
-    if (span < 1) return null;
+    if (span < 1) return { spot: null, hit: null };
 
     const ux = (destination.x - origin.x) / span;
     const uy = (destination.y - origin.y) / span;
@@ -437,9 +468,11 @@
       const snappedPos = clampToSceneTopLeft(snapped.x, snapped.y, token);
 
       for (const spot of [snappedPos, free]) {
-        if (isSafeWalkSpot(token, origin, topLeftToCenter(spot, token), edges)) return spot;
+        if (isSafeWalkSpot(token, origin, topLeftToCenter(spot, token), edges)) return { spot, hit: null };
       }
     }
+
+    const wallHit = blocked ? { x: hit.x, y: hit.y } : null;
 
     // Blocked, or the clicked spot itself is too tight: back off along the
     // line. The step doubles so a wall met at a shallow angle, where a short
@@ -457,10 +490,64 @@
         { x: origin.x + (ux * travel), y: origin.y + (uy * travel) },
         token
       );
-      if (isSafeWalkSpot(token, origin, topLeftToCenter(spot, token), edges)) return spot;
+      if (isSafeWalkSpot(token, origin, topLeftToCenter(spot, token), edges)) return { spot, hit: wallHit };
     }
 
-    return null;
+    return { spot: null, hit: wallHit };
+  }
+
+  /**
+   * The second leg of a blocked walk: from where the first leg stops (or from
+   * where the token stands, when it is already against the wall), along the
+   * wall that was hit, until level with the clicked point. Returns a token
+   * top-left, or null when there is no slide worth making.
+   */
+  function resolveSlide(token, start, destination, hit) {
+    if (!SLIDE_ENABLED || !hit) return null;
+
+    let wall = null;
+    let wallDistance = WALL_CLEARANCE_PX;
+    for (const edge of blockingEdges()) {
+      const d = distanceToEdge(hit, edge);
+      if (d < wallDistance) {
+        wall = edge;
+        wallDistance = d;
+      }
+    }
+    if (!wall) return null;
+
+    const wx = wall.b.x - wall.a.x;
+    const wy = wall.b.y - wall.a.y;
+    const wallLength = Math.hypot(wx, wy);
+    if (wallLength < 1) return null;
+
+    const tx = wx / wallLength;
+    const ty = wy / wallLength;
+
+    // Only the part of the leftover movement that runs along the wall.
+    const along = ((destination.x - start.x) * tx) + ((destination.y - start.y) * ty);
+    if (Math.abs(along) < SLIDE_MIN_PX) return null;
+
+    // Unit normal pointing to the side of the wall the token is on.
+    let nx = -ty;
+    let ny = tx;
+    if ((((start.x - wall.a.x) * nx) + ((start.y - wall.a.y) * ny)) < 0) {
+      nx = -nx;
+      ny = -ny;
+    }
+
+    const slideTo = {
+      x: start.x + (tx * along) + (nx * SLIDE_NUDGE_PX),
+      y: start.y + (ty * along) + (ny * SLIDE_NUDGE_PX)
+    };
+
+    const spot = resolveWalk(token, start, slideTo).spot;
+    if (!spot) return null;
+
+    const center = topLeftToCenter(spot, token);
+    if (Math.hypot(center.x - start.x, center.y - start.y) < SLIDE_MIN_PX) return null;
+
+    return spot;
   }
 
   function removeInputBlockers() {
@@ -664,8 +751,20 @@
     const origin = drawnCenter(token);
     const destination = { x: destCanvasPoint.x, y: destCanvasPoint.y };
 
-    const target = resolveWalkTarget(token, origin, destination);
-    if (!target) {
+    // A new walk replaces whatever slide the last one still had pending.
+    cancelPendingSlide();
+    const walkSeq = state.walkSeq;
+
+    const walk = resolveWalk(token, origin, destination);
+    const firstCenter = walk.spot ? topLeftToCenter(walk.spot, token) : null;
+    const firstDistance = firstCenter
+      ? Math.hypot(firstCenter.x - origin.x, firstCenter.y - origin.y)
+      : 0;
+    const hasFirstLeg = firstDistance >= 1;
+
+    const slideSpot = resolveSlide(token, hasFirstLeg ? firstCenter : origin, destination, walk.hit);
+
+    if (!hasFirstLeg && !slideSpot) {
       DBG.verbose("CameraRuntime", "Right-click move ignored because no reachable point lies that way", {
         tokenId: token.id,
         tokenName: token.name ?? null
@@ -673,15 +772,29 @@
       return;
     }
 
-    const { x, y } = target;
-    const center = topLeftToCenter(target, token);
-    const distance = Math.hypot(center.x - origin.x, center.y - origin.y);
-    if (distance < 1) return;
+    // Already against the wall: the slide is the whole walk.
+    if (!hasFirstLeg) {
+      await walkTokenTo(token, slideSpot, origin);
+      return;
+    }
 
+    const duration = await walkTokenTo(token, walk.spot, origin);
+    if (!slideSpot || walkSeq !== state.walkSeq) return;
+
+    scheduleSlide(walkSeq, token.id, firstCenter, slideSpot, Math.max(0, duration - SLIDE_LEAD_MS));
+  }
+
+  function walkDuration(distance) {
     const gridSize = canvas.dimensions?.size || 100;
-    const duration = Math.max(1, Math.round((distance / gridSize / WALK_SPEED) * 1000));
+    return Math.max(1, Math.round((distance / gridSize / WALK_SPEED) * 1000));
+  }
 
-    await token.document.update({ x, y }, {
+  // One straight, timed leg. Returns its duration in milliseconds.
+  async function walkTokenTo(token, spot, from) {
+    const center = topLeftToCenter(spot, token);
+    const duration = walkDuration(Math.hypot(center.x - from.x, center.y - from.y));
+
+    await token.document.update({ x: spot.x, y: spot.y }, {
       animate: true,
       animation: { duration, movementSpeed: WALK_SPEED }
     });
@@ -689,9 +802,44 @@
     DBG.verbose("CameraRuntime", "Central party token moved by right-click", {
       tokenId: token.id,
       tokenName: token.name ?? null,
-      x,
-      y
+      x: spot.x,
+      y: spot.y
     });
+
+    return duration;
+  }
+
+  /**
+   * Send the slide leg once the first leg is nearly done. Sent early, the
+   * token bends from wherever it is drawn straight to the end of the slide,
+   * so that shortcut is checked first; while it is not yet safe, wait for the
+   * token to get closer to the wall and try again.
+   */
+  function scheduleSlide(walkSeq, tokenId, firstCenter, slideSpot, delay) {
+    const sceneId = canvas.scene?.id ?? null;
+
+    const attempt = async () => {
+      state.slideTimer = null;
+      if (walkSeq !== state.walkSeq) return;
+      if (!state.enabled || canvas.scene?.id !== sceneId) return;
+      if (!canCurrentUserMovePartyToken()) return;
+
+      const token = getFollowToken();
+      if (!token || token.id !== tokenId || !token.document?.isOwner) return;
+
+      const here = drawnCenter(token);
+      const slideCenter = topLeftToCenter(slideSpot, token);
+      const arrived = Math.hypot(here.x - firstCenter.x, here.y - firstCenter.y) < 1;
+
+      if (!isSafeWalkSpot(token, here, slideCenter, blockingEdges())) {
+        if (!arrived) state.slideTimer = setTimeout(attempt, SLIDE_RETRY_MS);
+        return;
+      }
+
+      await walkTokenTo(token, slideSpot, here);
+    };
+
+    state.slideTimer = setTimeout(attempt, delay);
   }
 
   async function consumeMoveQueue() {
@@ -939,6 +1087,7 @@
 
     register("canvasTearDown", () => {
       if (game.user?.isGM) return;
+      cancelPendingSlide();
       detachTicker();
       removeInputBlockers();
     });
