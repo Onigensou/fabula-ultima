@@ -53,6 +53,16 @@ as two modified documents nobody authored. Both are dropped from the export
 (`VOLATILE_FLAGS` + `stripSessionState`); everything else on those two documents
 still diffs. Test (no game): `node tools/safe-edit/test/world-export-session-state.test.mjs`.
 
+**Event progress is stripped too.** Events read and write the current party's
+switches and variables (`system.props.global_switch_table` /
+`global_variable_table` on the party database actor) and each event's own memory
+(`flags.fabula-ultima-companion.eventState`). Play flips them, so they are left
+out of the export like the battle log. ⚠ That keeps the *review diff* clean; it
+does **not** keep them out of the push — the LevelDB still carries whatever the
+world holds. Before committing after a play-test, put them back: take
+`oni.GameState.snapshot()` before the walk-through and `oni.GameState.restore(snap)`
+after (game open, GM).
+
 ## Commands
 
 ```

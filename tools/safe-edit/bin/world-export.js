@@ -81,7 +81,11 @@ const VOLATILE_PLAYBACK = ["playing", "pausedTime", "timeSerial"];
 // pile of session noise is precisely what hides a one-line removal, which is
 // how the Fafnir moveset went missing in the first place. Strip it so the diff
 // only ever shows authored content.
-const VOLATILE_PROPS = ["battle_log", "battle_log_table"];
+//
+// The party database's switch and variable tables are play state too: events
+// flip them as the party plays (event-gameState.js), and a play-test leaves
+// them changed. They are progress, not authored content.
+const VOLATILE_PROPS = ["battle_log", "battle_log_table", "global_switch_table", "global_variable_table"];
 
 // Movement-control SESSION state, re-derived from who is online on every
 // refresh (login, token change, scene change) and written back to the world:
@@ -91,7 +95,13 @@ const VOLATILE_PROPS = ["battle_log", "battle_log_table"];
 // One player login (any player-seat test) rewrote both and showed up as two
 // modified documents that nobody authored. The next refresh rewrites them
 // anyway, so the committed value carries no content.
-const VOLATILE_FLAGS = [["fabula-ultima-companion", "movementControlState"]];
+//
+// `eventState` is each event's memory on the party database actor ("has run",
+// "erased", its own switches A-D): written by play, like the two tables above.
+const VOLATILE_FLAGS = [
+  ["fabula-ultima-companion", "movementControlState"],
+  ["fabula-ultima-companion", "eventState"],
+];
 const CURRENT_GAME_NAME = "Current Game";
 
 function exportDir(world) {

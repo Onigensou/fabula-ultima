@@ -79,5 +79,14 @@ const otherFlag = clone(base);
 otherFlag[0].flags["fabula-ultima-companion"].someAuthoredFlag = 1;
 check("other flags in the same scope still show", a[CURRENT_GAME] !== exportOf(otherFlag)[CURRENT_GAME]);
 
+// Event progress (event-gameState.js): switches, variables and each event's
+// memory are written by play, so a play-test must not show as a party edit.
+const played = clone(base);
+played[1].system.props.global_switch_table = { 0: { $deleted: false, global_switch_name: "boss_down", global_switch_boolean: "on" } };
+played[1].system.props.global_variable_table = { 0: { $deleted: false, global_variable_name: "festival_score", global_variable_value: "9999" } };
+played[1].flags["fabula-ultima-companion"] = { ...(played[1].flags["fabula-ultima-companion"] ?? {}), eventState: { sceneA: { tileA: { runs: 1 } } } };
+check("precondition: event progress changes the raw party doc", JSON.stringify(base[1]) !== JSON.stringify(played[1]));
+check("party actor export identical after event progress", a[PARTY] === exportOf(played)[PARTY]);
+
 console.log(fail ? `\n${fail} FAILED` : "\nall passed");
 process.exit(fail ? 1 : 0);
