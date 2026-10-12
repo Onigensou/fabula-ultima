@@ -64,6 +64,12 @@
   const DEFAULT_ROLEPLAY_LABEL = "Something else…";
   const MENU_OUT_MS = 280; // keep in step with #oni-event-choice.is-leaving
 
+  // A menu takes no answer for this long after it opens. The press that
+  // closed the line before it, or a player hammering Confirm through the
+  // text, would otherwise pick the first answer before anyone has read it
+  // (seen live, 2026-10-13). Moving the highlight is allowed at once.
+  const settings = { pickGuardMs: 500 };
+
   const flow = () => window.oni.EventSystem.Flow;
   const chip = () => window.oni.EventSystem.GmChip;
   const gameState = () => window.oni.EventSystem.GameState;
@@ -425,6 +431,8 @@
     if (!(await mayChoose(userId))) return;
     if (!pending.has(sourceId)) return;
 
+    const tooSoon = (Date.now() - wait.openedAt) < settings.pickGuardMs;
+
     if (data.op === "move") {
       const index = Number(data.index);
       if (!Number.isInteger(index) || index < 0 || index >= count) return;
@@ -434,6 +442,7 @@
     }
 
     if (data.op === "cancel") {
+      if (tooSoon) return;
       const index = wait.menu.options.findIndex(o => o.cancel);
       if (index >= 0) wait.resolve({ kind: "option", index });
       return;
@@ -442,6 +451,7 @@
     if (data.op === "pick") {
       const index = Number(data.index);
       if (!Number.isInteger(index) || index < 0 || index >= count) return;
+      if (tooSoon) return;
 
       if (wait.menu.roleplay && index === count - 1) {
         wait.roleplaying = true;
@@ -505,6 +515,7 @@
       row,
       highlight: 0,
       roleplaying: false,
+      openedAt: Date.now(),
       resolve: (answer) => resolveAnswer(answer)
     });
 
@@ -644,7 +655,7 @@
     })
   });
 
-  window.oni.EventSystem.RowsChoices = { installed: true };
+  window.oni.EventSystem.RowsChoices = { installed: true, settings };
 
   console.debug(INSTALL_TAG, "Installed.");
 })();

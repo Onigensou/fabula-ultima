@@ -17,9 +17,11 @@ import vm from "node:vm";
 const HERE = dirname(fileURLToPath(import.meta.url));
 const load = (name) => vm.runInThisContext(readFileSync(resolve(HERE, name), "utf8"), { filename: name });
 
+// Kept apart from console.log, which some checks silence while an event runs.
+const print = console.log.bind(console);
 let fail = 0;
 const check = (name, ok, detail = "") => {
-  console.log(`${ok ? "PASS" : "FAIL"} ${name}${detail ? "  " + detail : ""}`);
+  print(`${ok ? "PASS" : "FAIL"} ${name}${detail ? "  " + detail : ""}`);
   if (!ok) fail++;
 };
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
@@ -421,6 +423,27 @@ for (const kind of ["choice.open", "choice.highlight", "choice.roleplay", "choic
 }
 // A request from another client, as the GM running the event receives it.
 const ask = (userId, data) => Flow.state.requestHandlers.get("choice")(data, userId);
+
+// A fresh menu takes no answer for a moment (see pickGuardMs). Checked once
+// here, then switched off so the other checks need not wait it out.
+ES.RowsChoices.settings.pickGuardMs = 150;
+await quiet(async () => {
+  said.length = 0;
+  await runEvent([choice()], {
+    during: async (sourceId) => {
+      await sleep(10);
+      await ask("p1", { sourceId, op: "pick", index: 0 });
+      await ask("p1", { sourceId, op: "cancel" });
+      await sleep(20);
+      check("choices: a press in the first moment after the menu opens picks nothing", said.length === 0);
+      await ask("p1", { sourceId, op: "move", index: 1 });
+      await sleep(180);
+      await ask("p1", { sourceId, op: "pick", index: 1 });
+    }
+  });
+  check("choices: after that moment the pick is taken", said.join(",") === "left it", said.join(","));
+});
+ES.RowsChoices.settings.pickGuardMs = 0;
 
 await quiet(async () => {
   said.length = 0; sent.length = 0;

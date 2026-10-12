@@ -270,7 +270,14 @@
     if (!canvas?.ready) return null;
 
     const controlled = canvas.tokens?.controlled?.[0] ?? null;
-    if (controlled) {
+
+    // A player controls the party token, so their selection IS the party.
+    // A GM selects whatever they are working on: an NPC being placed while
+    // the players play must not be taken for the party (it put the party
+    // "out of range" and the GM refused the players' event; seen live,
+    // 2026-10-13). So a GM looks the party token up first and falls back to
+    // the selection only on a map that has no party token (GM testing).
+    if (controlled && !game.user?.isGM) {
       DBG.verboseLog(DEBUG_SCOPE, "Party token resolved from controlled token.", {
         tokenId: controlled.id,
         tokenName: controlled.name
@@ -279,7 +286,7 @@
     }
 
     const { db, source } = await resolveCurrentDbContext();
-    if (!db) return null;
+    if (!db) return controlled;
 
     const tokens = canvas.tokens?.placeables ?? [];
     const dbToken =
@@ -296,7 +303,7 @@
       });
     }
 
-    return dbToken;
+    return dbToken ?? controlled;
   }
 
   async function checkProximityForTile(tileLike, partyToken, overrideXY = null) {
@@ -861,13 +868,29 @@
             const isPrimaryGM = globalThis.FUCompanion?.isPrimaryGM;
             if (typeof isPrimaryGM === "function" && !isPrimaryGM()) return;
 
+            // A request that never starts must still be answered: the asking
+            // client marked the event as running when it sent the request, and
+            // only a reply takes that mark off again.
+            const refuse = (reason) => emitSocketMessage(MSG_EXECUTE_ERROR, {
+              sceneId: msg?.payload?.sceneId ?? null,
+              tileId: msg?.payload?.tileId ?? null,
+              requesterId: msg?.payload?.requesterId ?? null,
+              refused: reason
+            });
+
             const flow = window.oni.EventSystem.Flow;
             if (flow && !(await flow.isUserInteractor(msg?.payload?.requesterId))) {
               DBG.warn(DEBUG_SCOPE, "Execute request refused: sender is not the main controller.", msg?.payload);
+              refuse("notMainController");
               return;
             }
 
-            await gmExecuteEventTile(msg.payload);
+            const result = await gmExecuteEventTile(msg.payload);
+            // "alreadyExecuting": the run in progress sends its own end.
+            // "rowFailed" / "exception": the run started and has reported itself.
+            if (result && !result.ok && !["alreadyExecuting", "rowFailed", "exception"].includes(result.reason)) {
+              refuse(result.reason);
+            }
             this._queueScan("after-socket-execute");
             return;
           }
