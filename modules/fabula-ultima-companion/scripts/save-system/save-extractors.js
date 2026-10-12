@@ -872,6 +872,13 @@
       const pa = actorFromUuid(data.uuid);
       if (!pa) { console.warn(TAG, "partyActorData apply: not found", data.uuid); return; }
       await wipeStaleCsbListEntries(pa, data.system?.props);
+      // Event memory ("this chest was opened", event-gameState.js) must go
+      // back to what the save held. update() merges flags, so an entry made
+      // after the save would survive the load: drop the flag first and let
+      // the saved one replace it.
+      if (pa.flags?.["fabula-ultima-companion"]?.eventState !== undefined) {
+        await pa.update({ "flags.fabula-ultima-companion.-=eventState": null });
+      }
       await pa.update({ system: data.system, flags: data.flags });
       await applyActorEmbeds(pa, data);
     },
