@@ -464,7 +464,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359018436,
-      "modifiedTime": 1791745695240,
+      "modifiedTime": 1791828461277,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [
@@ -1846,6 +1846,47 @@
         "rotation": 0,
         "bezierFactor": 0,
         "fillColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "locked": false,
+        "interface": false
+      },
+      {
+        "x": 1445.234103834241,
+        "y": 570.5182804072413,
+        "shape": {
+          "type": "p",
+          "points": [
+            0,
+            0,
+            161.53179233151786,
+            -46.03656081448253
+          ],
+          "width": 0,
+          "height": 0,
+          "radius": null
+        },
+        "strokeColor": "#ffffff",
+        "strokeWidth": 6,
+        "strokeAlpha": 0.6,
+        "fillType": 0,
+        "fillAlpha": 0,
+        "fillColor": "#1e00ff",
+        "bezierFactor": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftTiles": "claude-2026-10-13"
+          }
+        },
+        "_id": "eeL5oYwGVAAS7aX5",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": 0,
+        "sort": 2,
+        "rotation": 0,
         "texture": null,
         "fontFamily": "Signika",
         "fontSize": 48,
