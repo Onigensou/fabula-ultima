@@ -261,9 +261,9 @@
     },
     "tokenVision": false,
     "initial": {
-      "x": 627,
-      "y": 627,
-      "scale": 0.8189792663476874
+      "x": 623,
+      "y": 943,
+      "scale": 1.65
     },
     "flags": {
       "battle-transitions": {

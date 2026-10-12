@@ -39,9 +39,9 @@
     },
     "tokenVision": false,
     "initial": {
-      "x": 887,
-      "y": 577,
-      "scale": 0.889948006932409
+      "x": 900,
+      "y": 935,
+      "scale": 2.35
     },
     "flags": {
       "battle-transitions": {

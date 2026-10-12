@@ -553,9 +553,9 @@
     },
     "tokenVision": false,
     "initial": {
-      "x": 768,
-      "y": 512,
-      "scale": 1.0029296875
+      "x": 540,
+      "y": 754,
+      "scale": 1.9
     },
     "flags": {
       "battle-transitions": {
