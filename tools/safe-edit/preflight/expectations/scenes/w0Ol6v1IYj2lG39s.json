@@ -40,8 +40,8 @@
     "tokenVision": false,
     "initial": {
       "x": 860,
-      "y": 940,
-      "scale": 3
+      "y": 864,
+      "scale": 2.0793385478574833
     },
     "flags": {
       "battle-transitions": {
@@ -190,7 +190,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359014636,
-      "modifiedTime": 1791408003746,
+      "modifiedTime": 1791828461269,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

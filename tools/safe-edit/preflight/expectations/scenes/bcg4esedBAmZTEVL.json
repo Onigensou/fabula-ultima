@@ -39,9 +39,9 @@
     },
     "tokenVision": false,
     "initial": {
-      "x": 320,
+      "x": 484,
       "y": 500,
-      "scale": 3
+      "scale": 1.9852856406325181
     },
     "flags": {
       "battle-transitions": {
@@ -125,8 +125,8 @@
         }
       }
     },
-    "playlist": "VrpdABUTSoREMDR5",
-    "playlistSound": "3iyVwTQ7wOmOzsmr",
+    "playlist": "RQCAKkv2ZbCCuyzP",
+    "playlistSound": "e2A4e7o05Bxr3ECY",
     "_id": "bcg4esedBAmZTEVL",
     "active": false,
     "navOrder": 0,
@@ -190,7 +190,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359029316,
-      "modifiedTime": 1791552456415,
+      "modifiedTime": 1791828461320,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

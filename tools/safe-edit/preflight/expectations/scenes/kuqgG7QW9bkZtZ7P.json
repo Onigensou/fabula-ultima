@@ -96,7 +96,14 @@
             "wellspring_bolt": true,
             "wellspring_ice": false,
             "wellspring_dark": false,
-            "wellspring_light": false
+            "wellspring_light": false,
+            "depthEnabled": true,
+            "depthFarY": 700,
+            "depthNearY": 2122,
+            "depthFarScale": 0.45,
+            "depthNearScale": 1,
+            "depthCurve": 1,
+            "depthSort": true
           },
           "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Lower Trail\",\"id\":\"QIUobWQvzsjvZK08\"}]"
         },
@@ -203,7 +210,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791358997301,
-      "modifiedTime": 1791408003656,
+      "modifiedTime": 1791828461205,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [
