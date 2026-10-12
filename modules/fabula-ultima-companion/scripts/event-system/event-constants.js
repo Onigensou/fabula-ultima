@@ -138,10 +138,33 @@
   // ------------------------------------------------------------
   // Helper: normalize event type
   // ------------------------------------------------------------
+  // An empty type means Show Text, as it always did. Any other type is kept
+  // as written: a type nobody registered is left for the caller to skip, not
+  // turned into Show Text.
   CONSTANTS.normalizeEventType = function (rawType) {
     const s = String(rawType || "").trim();
-    if (Object.values(CONSTANTS.EVENT_TYPES).includes(s)) return s;
-    return CONSTANTS.DEFAULT_ROW_TYPE;
+    return s || CONSTANTS.DEFAULT_ROW_TYPE;
+  };
+
+  CONSTANTS.isKnownEventType = function (rawType) {
+    const s = String(rawType || "").trim();
+    return Object.values(CONSTANTS.EVENT_TYPES).includes(s);
+  };
+
+  // ------------------------------------------------------------
+  // Helper: make a type known. The registry calls this on register(), so a
+  // new action is declared in one place.
+  // ------------------------------------------------------------
+  CONSTANTS.registerEventType = function (rawType, label = "") {
+    const type = String(rawType || "").trim();
+    if (!type) return false;
+
+    if (!CONSTANTS.isKnownEventType(type)) {
+      const key = type.replace(/([a-z0-9])([A-Z])/g, "$1_$2").toUpperCase();
+      CONSTANTS.EVENT_TYPES[key] = type;
+    }
+    if (label) CONSTANTS.EVENT_TYPE_LABELS[type] = String(label);
+    return true;
   };
 
   // ------------------------------------------------------------

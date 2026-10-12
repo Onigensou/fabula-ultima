@@ -84,12 +84,20 @@
       .replace(/'/g, "&#039;");
   }
 
+  // {var:name} in a line prints that variable of the current party.
+  function withVariables(text) {
+    const logic = window.oni?.EventSystem?.Logic;
+    const state = window.oni?.EventSystem?.GameState;
+    if (!logic?.substituteVars || !state?.getVariable) return text;
+    return logic.substituteVars(text, (name) => state.getVariable(name));
+  }
+
   function normalizeRow(row = {}) {
     return {
       id: stringOrEmpty(row.id) || foundry.utils.randomID(),
       type: C.normalizeEventType ? C.normalizeEventType(row.type) : String(row.type || C.DEFAULT_ROW_TYPE),
       speaker: stringOrEmpty(row.speaker || C.DEFAULT_SHOW_TEXT_SPEAKER || C.SPECIAL_SPEAKER_SELF),
-      text: String(row.text ?? C.DEFAULT_SHOW_TEXT_MESSAGE ?? ""),
+      text: withVariables(String(row.text ?? C.DEFAULT_SHOW_TEXT_MESSAGE ?? "")),
       bubbleMode: stringOrEmpty(row.bubbleMode || row.mode || "normal") || "normal",
       speed: Number.isFinite(Number(row.speed)) ? Number(row.speed) : 28
     };

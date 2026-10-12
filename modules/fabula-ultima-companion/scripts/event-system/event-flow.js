@@ -13,6 +13,10 @@
  *   and keeps every client on the same line while they do
  * - Adds the "Set Movement" event action (Locked / Free), for an event that
  *   wants to change the lock partway through
+ * - Lets the running GM end an event early (abort), wait a while (wait), and
+ *   stop the safety timers while the table is choosing or roleplaying (hold)
+ * - Carries requests from other clients to the GM running the event (request)
+ * - Ends an event on every client if the GM running it drops out
  *
  * How it fits together:
  * - The GM client that runs an event is the authority. A press on any other
@@ -59,8 +63,6 @@
   const MSG_FLOW = "ONI_EVENT_FLOW_V1";
 
   const LOCK_FLAG = "lockMovement";
-  // Must also be listed in event-constants.js EVENT_TYPES: the registry
-  // folds any type it does not find there into Show Text.
   const ROW_TYPE_MOVEMENT = C.EVENT_TYPES?.SET_MOVEMENT || "setMovement";
 
   // A line that waits for a press moves on by itself after this long.
@@ -73,10 +75,15 @@
   const PRESS_GAP_MS = 120;
 
   const state = {
-    // GM, events this client is running: sourceId -> { sceneId, locked, bubbleId }
+    // GM, events this client is running:
+    //   sourceId -> { sceneId, locked, bubbleId, aborted, aborters, held, progress }
     running: new Map(),
-    // Every client, events in progress on this scene: sourceId -> { locked, timer }
+    // Every client, events in progress on this scene:
+    //   sourceId -> { locked, timer, gmUserId, held }
     active: new Map(),
+
+    // GM, what other clients may ask of the event this client runs: name -> fn
+    requestHandlers: new Map(),
 
     stopInput: null,
     pointerHandler: null,
@@ -148,17 +155,44 @@
     else rt.unlockMovement?.(lockId(sourceId));
   }
 
-  function setActive(sourceId, locked) {
+  // The lock's own time limit. It does not run while the event is held: a
+  // choice menu or a roleplay scene may take as long as the table likes.
+  function armTimer(sourceId, entry) {
+    if (entry.timer) clearTimeout(entry.timer);
+    entry.timer = entry.held ? null : setTimeout(() => forceEnd(sourceId), LOCK_MAX_MS);
+  }
+
+  function setActive(sourceId, locked, gmUserId = null) {
     let entry = state.active.get(sourceId);
     if (!entry) {
-      entry = { locked: false, timer: null };
+      entry = { locked: false, timer: null, gmUserId: null, held: false };
       state.active.set(sourceId, entry);
-      entry.timer = setTimeout(() => endActive(sourceId), LOCK_MAX_MS);
+      armTimer(sourceId, entry);
     }
 
+    if (gmUserId) entry.gmUserId = String(gmUserId);
     entry.locked = !!locked;
     applyLock(sourceId, entry.locked);
     syncInput();
+  }
+
+  function setHeld(sourceId, held) {
+    const entry = state.active.get(sourceId);
+    if (!entry) return;
+    entry.held = !!held;
+    armTimer(sourceId, entry);
+  }
+
+  // End an event on this client without word from the GM running it: its
+  // time limit ran out, or that GM dropped out. The core clears its own state
+  // and announces the end, which frees movement and undoes screen effects.
+  function forceEnd(sourceId) {
+    const id = String(sourceId || "");
+    if (state.running.has(id)) abort(id);
+
+    const core = window.oni.EventSystem.Core;
+    if (typeof core?.forceEndLocal === "function") core.forceEndLocal(id);
+    else endActive(id);
   }
 
   function endActive(sourceId) {
@@ -175,7 +209,7 @@
     for (const sourceId of [...state.active.keys()]) endActive(sourceId);
   }
 
-  function onExecuteStart({ sceneId, sourceId } = {}) {
+  function onExecuteStart({ sceneId, sourceId, gmUserId = null } = {}) {
     if (!sourceId || !canvas?.scene || sceneId !== canvas.scene.id) return;
 
     const locked = eventStartsLocked(findSource(sourceId));
@@ -184,7 +218,7 @@
     // standing where it was when the event began.
     if (locked) walkRuntime()?.haltWalk?.();
 
-    setActive(sourceId, locked);
+    setActive(sourceId, locked, gmUserId);
   }
 
   function onExecuteDone({ sourceId } = {}) {
@@ -275,12 +309,158 @@
     state.running.set(String(sourceId), {
       sceneId: String(sceneId || ""),
       locked: eventStartsLocked(sourceDoc),
-      bubbleId: null
+      bubbleId: null,
+      aborted: false,
+      aborters: new Set(),
+      held: 0,
+      progress: null
     });
   }
 
   function end(sourceId) {
     state.running.delete(String(sourceId));
+  }
+
+  function isRunningHere(sourceId) {
+    return state.running.has(String(sourceId || ""));
+  }
+
+  // ------------------------------------------------------------
+  // Ending an event early
+  // ------------------------------------------------------------
+  // On the GM running the event: stop it where it stands. Whatever is waiting
+  // (a line, a wait, a menu) is told through onAbort. On any other GM: ask the
+  // GM running it.
+  function abort(sourceId) {
+    const id = String(sourceId || "");
+    const run = state.running.get(id);
+
+    if (!run) {
+      if (!game.user?.isGM) return false;
+      emitFlow({ action: "abort", sourceId: id });
+      return false;
+    }
+
+    if (run.aborted) return true;
+    run.aborted = true;
+
+    for (const fn of [...run.aborters]) {
+      try { fn(); } catch (e) { console.warn(INSTALL_TAG, "An abort handler threw.", e); }
+    }
+    run.aborters.clear();
+
+    if (run.bubbleId) {
+      try { globalThis.FU?.DialogUI?.control?.(run.bubbleId, "close"); } catch (_) {}
+    }
+    return true;
+  }
+
+  function isAborted(sourceId) {
+    return state.running.get(String(sourceId || ""))?.aborted === true;
+  }
+
+  // fn runs once if the event is ended early. Returns a function that takes
+  // the handler off again.
+  function onAbort(sourceId, fn) {
+    const run = state.running.get(String(sourceId || ""));
+    if (!run || typeof fn !== "function") return () => {};
+
+    if (run.aborted) {
+      try { fn(); } catch (_) {}
+      return () => {};
+    }
+
+    run.aborters.add(fn);
+    return () => run.aborters.delete(fn);
+  }
+
+  // Resolves true after ms, or false at once if the event is ended early.
+  function wait(sourceId, ms) {
+    return new Promise((resolve) => {
+      let off = null;
+      const timer = setTimeout(() => {
+        off?.();
+        resolve(true);
+      }, Math.max(0, Number(ms) || 0));
+
+      off = onAbort(sourceId, () => {
+        clearTimeout(timer);
+        resolve(false);
+      });
+    });
+  }
+
+  // ------------------------------------------------------------
+  // Holding the safety timers (choice menu, roleplay)
+  // ------------------------------------------------------------
+  function broadcastHeld(sourceId, held) {
+    setHeld(sourceId, held);
+    emitFlow({ action: "held", sourceId, held: !!held });
+  }
+
+  function hold(sourceId) {
+    const id = String(sourceId || "");
+    const run = state.running.get(id);
+    if (!run) return;
+    run.held += 1;
+    if (run.held === 1) broadcastHeld(id, true);
+  }
+
+  function release(sourceId) {
+    const id = String(sourceId || "");
+    const run = state.running.get(id);
+    if (!run || run.held <= 0) return;
+    run.held -= 1;
+    if (run.held === 0) broadcastHeld(id, false);
+  }
+
+  // ------------------------------------------------------------
+  // Requests to the GM running the event
+  // ------------------------------------------------------------
+  // handler(data, userId) runs on the GM that runs the event, whoever asked.
+  function onRequest(name, handler) {
+    if (typeof handler === "function") state.requestHandlers.set(String(name), handler);
+  }
+
+  async function handleRequest(name, data, userId) {
+    const handler = state.requestHandlers.get(String(name));
+    if (!handler) return;
+    try {
+      await handler(data ?? {}, userId);
+    } catch (e) {
+      console.warn(INSTALL_TAG, `Request handler "${name}" threw.`, e);
+    }
+  }
+
+  function request(name, data = {}) {
+    if (state.running.size) {
+      handleRequest(name, data, game.user?.id ?? null);
+      return;
+    }
+    emitFlow({ action: "request", name: String(name), data });
+  }
+
+  // What the event is doing now, for the GM status chip.
+  function setProgress(sourceId, progress) {
+    const id = String(sourceId || "");
+    const run = state.running.get(id);
+    if (run) run.progress = progress ?? null;
+    try { Hooks.callAll("oniEventProgress", { sourceId: id, ...(progress ?? {}) }); } catch (_) {}
+  }
+
+  function emitFlow(payload) {
+    try {
+      game.socket.emit(SOCKET_CHANNEL, {
+        type: MSG_FLOW,
+        payload: {
+          sceneId: canvas?.scene?.id ?? null,
+          userId: game.user?.id ?? null,
+          ...payload
+        }
+      });
+    } catch (e) {
+      console.warn(INSTALL_TAG, "Failed to send a flow message.", e);
+    }
   }
 
   function shouldWaitForInput(sourceId) {
@@ -327,6 +507,23 @@
         return;
       }
 
+      if (payload.action === "held") {
+        setHeld(String(payload.sourceId || ""), !!payload.held);
+        return;
+      }
+
+      if (payload.action === "abort") {
+        if (!game.user?.isGM || !game.users?.get(payload.userId)?.isGM) return;
+        if (isRunningHere(payload.sourceId)) abort(payload.sourceId);
+        return;
+      }
+
+      if (payload.action === "request") {
+        if (!game.user?.isGM || !state.running.size) return;
+        await handleRequest(payload.name, payload.data, payload.userId);
+        return;
+      }
+
       if (payload.action === "advance") {
         if (!game.user?.isGM || !state.running.size) return;
         if (!(await isUserInteractor(payload.userId))) return;
@@ -341,9 +538,7 @@
   // ------------------------------------------------------------
   // The "Set Movement" event action
   // ------------------------------------------------------------
-  if (!Object.values(C.EVENT_TYPES ?? {}).includes(ROW_TYPE_MOVEMENT)) {
-    console.error(INSTALL_TAG, "Set Movement is missing from EVENT_TYPES; not registering it.");
-  } else EventRegistry.register({
+  EventRegistry.register({
     type: ROW_TYPE_MOVEMENT,
     label: "Set Movement",
     category: "Flow",
@@ -356,7 +551,21 @@
       const locked = String(row?.state ?? "locked") !== "free";
       setMovement(context?.tileId, locked);
       return { ok: true, type: ROW_TYPE_MOVEMENT, locked };
-    }
+    },
+    summary: (row) => (String(row?.state ?? "locked") === "free" ? "Free" : "Locked"),
+    buildFields: (row, kit) => kit.fields(
+      kit.field(
+        "Movement",
+        `<select class="oni-event-row-movement">${kit.options(
+          [["locked", "Locked"], ["free", "Free"]],
+          String(row.state ?? "locked") === "free" ? "free" : "locked"
+        )}</select>`,
+        "Changes the lock for the rest of this event. Movement is always freed when the event ends."
+      )
+    ),
+    collectFields: (rowEl, kit) => ({
+      state: kit.readText(rowEl, ".oni-event-row-movement", "locked") === "free" ? "free" : "locked"
+    })
   });
 
   window.oni.EventSystem.Flow = {
@@ -372,16 +581,36 @@
 
     begin,
     end,
+    isRunningHere,
     shouldWaitForInput,
     setActiveBubble,
     setMovement,
-    press
+    press,
+
+    abort,
+    isAborted,
+    onAbort,
+    wait,
+    hold,
+    release,
+    onRequest,
+    request,
+    setProgress
   };
 
   Hooks.on("oniEventExecuteStart", onExecuteStart);
   Hooks.on("oniEventExecuteDone", onExecuteDone);
   Hooks.on("fuDialogBubblePress", () => { press(); });
   Hooks.on("canvasTearDown", endAllActive);
+
+  // The GM running an event has dropped out (closed, reloaded, lost the
+  // connection): nothing will end that event now, so end it here.
+  Hooks.on("userConnected", (user, connected) => {
+    if (connected || !user?.id) return;
+    for (const [sourceId, entry] of [...state.active]) {
+      if (entry.gmUserId && entry.gmUserId === user.id) forceEnd(sourceId);
+    }
+  });
 
   Hooks.once("ready", () => {
     try {

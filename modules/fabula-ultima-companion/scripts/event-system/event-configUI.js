@@ -6,20 +6,24 @@
  * scripts/event-system/event-configUI.js
  *
  * What this does:
- * - Adds an "Event Config" tab to Tile Config
- * - Saves Event System data into Tile flags:
+ * - Adds an "Event Config" tab to Tile Config and Token Config
+ * - Saves Event System data into Tile / Token flags:
  *   flags.oni-event-system.{
  *     isEventTile,
  *     proximityPx,
+ *     lockMovement,
+ *     onceOnly,
+ *     availableWhen,
  *     eventRows
  *   }
- * - Provides a dynamic event row table
- * - Currently supports:
- *   - Show Text
+ * - Hosts the event row list. The list itself, and the fields of each
+ *   action, come from event-configKit.js and the registry: this file knows
+ *   nothing about any one action.
  *
  * Requires:
  * - event-constants.js
  * - event-debug.js
+ * - event-configKit.js
  * - event-eventRegistry.js
  */
 
@@ -43,8 +47,9 @@
   const C = window.oni.EventSystem.Constants;
   const D = window.oni.EventSystem.Debug;
   const EventRegistry = window.oni.EventSystem.EventRegistry;
+  const Kit = window.oni.EventSystem.ConfigKit;
 
-  RAW("Dependency check", { C: !!C, EventRegistry: !!EventRegistry, D: !!D });
+  RAW("Dependency check", { C: !!C, EventRegistry: !!EventRegistry, D: !!D, Kit: !!Kit });
 
   if (!C) {
     console.error(INSTALL_TAG, "Missing Constants. Load event-constants.js first.");
@@ -53,6 +58,11 @@
 
   if (!EventRegistry) {
     console.error(INSTALL_TAG, "Missing EventRegistry. Load event-eventRegistry.js first.");
+    return;
+  }
+
+  if (!Kit) {
+    console.error(INSTALL_TAG, "Missing ConfigKit. Load event-configKit.js first.");
     return;
   }
 
@@ -77,9 +87,10 @@
   const DBG = D || FALLBACK_DEBUG;
 
   // ------------------------------------------------------------
-  // CSS
+  // CSS (the row list brings its own, from the kit)
   // ------------------------------------------------------------
   function ensureStyle() {
+    Kit.ensureStyle();
     if (document.getElementById(STYLE_ID)) return;
 
     const style = document.createElement("style");
@@ -116,92 +127,6 @@
         white-space: nowrap;
       }
 
-      .oni-event-table {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-top: 10px;
-      }
-
-      .oni-event-empty {
-        border: 1px dashed var(--color-border-light-primary, #9993);
-        border-radius: 8px;
-        padding: 12px;
-        opacity: .85;
-        font-size: 12px;
-        background: rgba(0,0,0,0.02);
-      }
-
-      .oni-event-row {
-        border: 1px solid var(--color-border-light-primary, #9993);
-        border-radius: 10px;
-        padding: 10px;
-        background: rgba(0,0,0,0.02);
-      }
-
-      .oni-event-row-head {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
-        margin-bottom: 10px;
-      }
-
-      .oni-event-row-index {
-        min-width: 28px;
-        height: 28px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 999px;
-        font-weight: 800;
-        background: rgba(0,0,0,0.08);
-      }
-
-      .oni-event-row-type {
-        min-width: 220px;
-      }
-
-      .oni-event-row-spacer {
-        flex: 1 1 auto;
-      }
-
-      .oni-event-row-body {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
-
-      .oni-event-inline-grid {
-        display: grid;
-        grid-template-columns: 160px 1fr;
-        gap: 10px;
-        align-items: start;
-      }
-
-      .oni-event-inline-grid label {
-        font-weight: 700;
-        padding-top: 6px;
-      }
-
-      .oni-event-inline-grid input[type="text"],
-      .oni-event-inline-grid input[type="number"],
-      .oni-event-inline-grid select,
-      .oni-event-inline-grid textarea {
-        width: 100%;
-      }
-
-      .oni-event-textarea {
-        min-height: 120px;
-        resize: vertical;
-      }
-
-      .oni-event-row-notes {
-        font-size: 12px;
-        opacity: .82;
-        line-height: 1.4;
-      }
-
       .oni-event-actions {
         margin-top: 10px;
         display: flex;
@@ -209,10 +134,9 @@
         flex-wrap: wrap;
       }
 
-      .oni-event-mini-note {
-        margin-top: 6px;
-        font-size: 12px;
-        opacity: .8;
+      .oni-event-actions button {
+        width: auto;
+        flex: 0 0 auto;
       }
 
       .oni-event-hidden-json {
@@ -257,15 +181,6 @@
     } catch {
       return fallback;
     }
-  }
-
-  function escapeHTML(s) {
-    return String(s ?? "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
   }
 
   function normalizeBoolean(raw, fallback = false) {
@@ -323,309 +238,18 @@
     return {};
   }
 
-  function normalizeEventRows(rawRows) {
-    let rows = rawRows;
-
-    if (typeof rows === "string") {
-      try {
-        rows = JSON.parse(rows);
-      } catch (_) {
-        rows = [];
-      }
-    }
-
-    if (!Array.isArray(rows)) rows = [];
-
-    return rows.map((row) => {
-      const type = EventRegistry.has(row?.type)
-        ? row.type
-        : (C.DEFAULT_ROW_TYPE || C.EVENT_TYPES?.SHOW_TEXT || "showText");
-
-      const fallbackRow = EventRegistry.makeDefaultRow(type);
-
-      const merged = foundry.utils.mergeObject(
-        foundry.utils.deepClone(fallbackRow),
-        foundry.utils.deepClone(row ?? {}),
-        { inplace: false, overwrite: true }
-      );
-
-      merged.id = String(merged.id || foundry.utils.randomID());
-      merged.type = type;
-
-      if (type === (C.EVENT_TYPES?.SHOW_TEXT || "showText")) {
-        merged.speaker = String(
-          merged.speaker ?? C.DEFAULT_SHOW_TEXT_SPEAKER ?? C.SPECIAL_SPEAKER_SELF ?? "Self"
-        );
-        merged.text = String(merged.text ?? C.DEFAULT_SHOW_TEXT_MESSAGE ?? "");
-      }
-
-      return merged;
-    });
+  // The top-level row list and the "available when" editor of this window.
+  function findTopList(root) {
+    return root?.querySelector?.(".oni-event-table > .oni-event-list") ?? null;
   }
 
-  function getDropdownOptions() {
-    const options = EventRegistry.getDropdownOptions?.() ?? [];
-    if (Array.isArray(options) && options.length) return options;
-
-    return [
-      {
-        value: C.EVENT_TYPES?.SHOW_TEXT || "showText",
-        label: C.EVENT_TYPE_LABELS?.showText || "Show Text"
-      }
-    ];
+  function findAvailabilityEditor(root) {
+    return root?.querySelector?.(".oni-event-available > .oni-cond") ?? null;
   }
 
-  function buildDefaultRow(type = null) {
-    try {
-      return EventRegistry.makeDefaultRow(type || C.DEFAULT_ROW_TYPE);
-    } catch (e) {
-      DBG.warn(DEBUG_SCOPE, "buildDefaultRow fallback path used.", e);
-
-      return {
-        id: foundry.utils.randomID(),
-        type: type || C.DEFAULT_ROW_TYPE || "showText",
-        speaker: C.DEFAULT_SHOW_TEXT_SPEAKER || C.SPECIAL_SPEAKER_SELF || "Self",
-        text: C.DEFAULT_SHOW_TEXT_MESSAGE || ""
-      };
-    }
-  }
-
-  function updateRowIndices(rowsWrap) {
-    const rows = Array.from(rowsWrap.querySelectorAll(".oni-event-row"));
-    rows.forEach((rowEl, index) => {
-      const bubble = rowEl.querySelector(".oni-event-row-index");
-      if (bubble) bubble.textContent = String(index + 1);
-    });
-  }
-
-  function updateEmptyState(rowsWrap) {
-    const emptyEl = rowsWrap.querySelector(".oni-event-empty");
-    const rows = rowsWrap.querySelectorAll(".oni-event-row");
-    if (!emptyEl) return;
-
-    emptyEl.style.display = rows.length ? "none" : "";
-  }
-
-  function collectRows(rowsWrap) {
-    const rowEls = Array.from(rowsWrap.querySelectorAll(".oni-event-row"));
-    const rows = [];
-
-    for (const rowEl of rowEls) {
-      const typeEl = rowEl.querySelector(".oni-event-row-type");
-      const type = String(typeEl?.value || C.DEFAULT_ROW_TYPE || "showText");
-
-      const row = {
-        id: String(rowEl.dataset.rowId || foundry.utils.randomID()),
-        type
-      };
-
-      if (type === (C.EVENT_TYPES?.SHOW_TEXT || "showText")) {
-        row.speaker = String(
-          rowEl.querySelector(".oni-event-row-speaker")?.value ??
-          C.DEFAULT_SHOW_TEXT_SPEAKER ??
-          C.SPECIAL_SPEAKER_SELF ??
-          "Self"
-        ).trim() || (C.DEFAULT_SHOW_TEXT_SPEAKER || C.SPECIAL_SPEAKER_SELF || "Self");
-
-        row.text = String(
-          rowEl.querySelector(".oni-event-row-text")?.value ?? ""
-        );
-      }
-
-      if (type === "setMovement") {
-        row.state = String(rowEl.querySelector(".oni-event-row-movement")?.value || "locked") === "free"
-          ? "free"
-          : "locked";
-      }
-
-      rows.push(row);
-    }
-
-    return rows;
-  }
-
-  function syncRowsJson(hiddenJsonEl, rowsWrap) {
+  function syncRowsJson(hiddenJsonEl, root) {
     if (!hiddenJsonEl) return;
-    const rows = collectRows(rowsWrap);
-    hiddenJsonEl.value = JSON.stringify(rows, null, 2);
-  }
-
-  function buildShowTextFields(rowData) {
-    const wrapper = document.createElement("div");
-    wrapper.className = "oni-event-row-body";
-    wrapper.innerHTML = `
-      <div class="oni-event-inline-grid">
-        <label>Speaker</label>
-        <div>
-          <input
-            type="text"
-            class="oni-event-row-speaker"
-            value="${escapeHTML(String(rowData.speaker ?? C.DEFAULT_SHOW_TEXT_SPEAKER ?? "Self"))}"
-            placeholder="Self / This / Actor UUID / Token UUID / Name"
-          />
-          <div class="oni-event-mini-note">
-            Leave blank for <b>Self</b> (the party). <b>This</b> = the token carrying this event.
-            You can also use Actor UUID, Token UUID, or a name.
-          </div>
-        </div>
-      </div>
-
-      <div class="oni-event-inline-grid">
-        <label>Message</label>
-        <div>
-          <textarea
-            class="oni-event-row-text oni-event-textarea"
-            placeholder="Write the dialog text here..."
-          >${escapeHTML(String(rowData.text ?? ""))}</textarea>
-          <div class="oni-event-mini-note">
-            Wrap a word in <code>&lt;b&gt;…&lt;/b&gt;</code> to highlight it as a hint (bold + colour).
-          </div>
-        </div>
-      </div>
-    `;
-    return wrapper;
-  }
-
-  function buildSetMovementFields(rowData) {
-    const isFree = String(rowData.state ?? "locked") === "free";
-
-    const wrapper = document.createElement("div");
-    wrapper.className = "oni-event-row-body";
-    wrapper.innerHTML = `
-      <div class="oni-event-inline-grid">
-        <label>Movement</label>
-        <div>
-          <select class="oni-event-row-movement">
-            <option value="locked" ${isFree ? "" : "selected"}>Locked</option>
-            <option value="free" ${isFree ? "selected" : ""}>Free</option>
-          </select>
-          <div class="oni-event-mini-note">
-            Changes the lock for the rest of this event. Movement is always freed when the event ends.
-          </div>
-        </div>
-      </div>
-    `;
-    return wrapper;
-  }
-
-  function buildUnknownFields(rowData) {
-    const wrapper = document.createElement("div");
-    wrapper.className = "oni-event-row-body";
-    wrapper.innerHTML = `
-      <div class="oni-event-row-notes">
-        This event type is not recognized by the current registry.<br>
-        Type: <code>${escapeHTML(String(rowData.type || ""))}</code>
-      </div>
-    `;
-    return wrapper;
-  }
-
-  function buildFieldsForType(type, rowData) {
-    switch (String(type || "")) {
-      case (C.EVENT_TYPES?.SHOW_TEXT || "showText"):
-        return buildShowTextFields(rowData);
-      case "setMovement":
-        return buildSetMovementFields(rowData);
-      default:
-        return buildUnknownFields(rowData);
-    }
-  }
-
-  function createRowElement(rowData, rowsWrap, hiddenJsonEl) {
-    const row = normalizeEventRows([rowData])[0] || buildDefaultRow();
-
-    const rowEl = document.createElement("div");
-    rowEl.className = "oni-event-row";
-    rowEl.dataset.rowId = String(row.id);
-
-    const head = document.createElement("div");
-    head.className = "oni-event-row-head";
-
-    const indexBubble = document.createElement("div");
-    indexBubble.className = "oni-event-row-index";
-    indexBubble.textContent = "?";
-
-    const typeSelect = document.createElement("select");
-    typeSelect.className = "oni-event-row-type";
-
-    for (const opt of getDropdownOptions()) {
-      const option = document.createElement("option");
-      option.value = String(opt.value);
-      option.textContent = String(opt.label);
-      if (String(opt.value) === String(row.type)) option.selected = true;
-      typeSelect.appendChild(option);
-    }
-
-    const spacer = document.createElement("div");
-    spacer.className = "oni-event-row-spacer";
-
-    const removeBtn = document.createElement("button");
-    removeBtn.type = "button";
-    removeBtn.className = "oni-event-row-remove";
-    removeBtn.innerHTML = `<i class="fas fa-trash"></i> Remove`;
-
-    head.appendChild(indexBubble);
-    head.appendChild(typeSelect);
-    head.appendChild(spacer);
-    head.appendChild(removeBtn);
-
-    const fieldsHost = document.createElement("div");
-    fieldsHost.className = "oni-event-row-fields-host";
-    fieldsHost.appendChild(buildFieldsForType(row.type, row));
-
-    rowEl.appendChild(head);
-    rowEl.appendChild(fieldsHost);
-
-    typeSelect.addEventListener("change", () => {
-      const nextType = String(typeSelect.value || C.DEFAULT_ROW_TYPE || "showText");
-
-      const rebuiltRow = foundry.utils.mergeObject(
-        foundry.utils.deepClone(buildDefaultRow(nextType)),
-        { id: rowEl.dataset.rowId, type: nextType },
-        { inplace: false, overwrite: true }
-      );
-
-      fieldsHost.replaceChildren(buildFieldsForType(nextType, rebuiltRow));
-      syncRowsJson(hiddenJsonEl, rowsWrap);
-
-      DBG.log(DEBUG_SCOPE, "Event row type changed.", {
-        rowId: rowEl.dataset.rowId,
-        newType: nextType
-      });
-    });
-
-    removeBtn.addEventListener("click", () => {
-      rowEl.remove();
-      updateRowIndices(rowsWrap);
-      updateEmptyState(rowsWrap);
-      syncRowsJson(hiddenJsonEl, rowsWrap);
-
-      DBG.log(DEBUG_SCOPE, "Event row removed.", {
-        rowId: rowEl.dataset.rowId
-      });
-    });
-
-    rowEl.addEventListener("input", () => {
-      syncRowsJson(hiddenJsonEl, rowsWrap);
-    });
-
-    rowEl.addEventListener("change", () => {
-      syncRowsJson(hiddenJsonEl, rowsWrap);
-    });
-
-    return rowEl;
-  }
-
-  function renderRows(rowsWrap, rows, hiddenJsonEl) {
-    rowsWrap.querySelectorAll(".oni-event-row").forEach(el => el.remove());
-
-    for (const row of rows) {
-      rowsWrap.appendChild(createRowElement(row, rowsWrap, hiddenJsonEl));
-    }
-
-    updateRowIndices(rowsWrap);
-    updateEmptyState(rowsWrap);
-    syncRowsJson(hiddenJsonEl, rowsWrap);
+    hiddenJsonEl.value = JSON.stringify(Kit.collectList(findTopList(root)), null, 2);
   }
 
   function patchSubmitData(app) {
@@ -638,18 +262,19 @@
 
       try {
         const root = getRoot(null, app);
-        const rowsWrap = root?.querySelector?.(".oni-event-table");
+        const topList = findTopList(root);
 
-        if (!rowsWrap) {
-          DBG.warn(DEBUG_SCOPE, "Patched _getSubmitData could not find current rowsWrap.", {
+        if (!topList) {
+          DBG.warn(DEBUG_SCOPE, "Patched _getSubmitData could not find the event row list.", {
             appId: app?.appId ?? null,
             tileId: app?.document?.id ?? app?.object?.id ?? null
           });
           return data;
         }
 
-        const rows = collectRows(rowsWrap);
+        const rows = Kit.collectList(topList);
         data[`flags.${SCOPE}.eventRows`] = rows;
+        data[`flags.${SCOPE}.availableWhen`] = Kit.readCondition(findAvailabilityEditor(root));
 
         DBG.verboseLog(DEBUG_SCOPE, "Patched _getSubmitData appended eventRows.", {
           tileId: app?.document?.id ?? app?.object?.id ?? null,
@@ -734,7 +359,7 @@
         return;
       }
 
-          // Detect whether dp-tile-config already created the shared Fabula Configuration tab.
+      // Detect whether dp-tile-config already created the shared Fabula Configuration tab.
       // Query by [data-oni-fabula-panel="1"] — NOT by [data-tab="oni-fabula-config"] which
       // would match the nav button BEFORE the panel (both share data-tab).
       const fabulaPanel = isToken ? null : sheetBody.querySelector('[data-oni-fabula-panel="1"]');
@@ -836,6 +461,29 @@
               </p>
             </div>
 
+            <div class="form-group">
+              <label>Once only</label>
+              <div class="form-fields">
+                <input
+                  type="checkbox"
+                  name="flags.${SCOPE}.onceOnly"
+                  class="oni-event-once-only"
+                />
+              </div>
+              <p class="notes">
+                On: after this event has run to its end, its prompt no longer appears for this party.
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label>Available when</label>
+              <div class="form-fields oni-event-available"></div>
+              <p class="notes">
+                The prompt only appears while this holds. Two events on one spot with opposite
+                conditions give "it says something else after the boss".
+              </p>
+            </div>
+
             <input
               type="hidden"
               class="oni-event-hidden-json"
@@ -845,22 +493,20 @@
             <h3 style="margin: 10px 0 6px;">Event Sequence</h3>
 
             <div class="oni-event-row-notes">
-              Events run from top to bottom. Each event waits for the one before it to finish first.
+              Events run from top to bottom. Each event waits for the one before it to finish first,
+              unless its own "Wait for completion" is off.
             </div>
 
-            <div class="oni-event-table">
-              <div class="oni-event-empty">
-                No event rows yet. Click <b>Add Event</b> to create the first one.
-              </div>
-            </div>
+            <div class="oni-event-table"></div>
 
             <div class="oni-event-actions">
-              <button type="button" class="oni-event-add-row">
-                <i class="fas fa-plus"></i> Add Event
-              </button>
-
               <button type="button" class="oni-event-debug-read">
                 <i class="fas fa-terminal"></i> Debug: Log Current Flags
+              </button>
+
+              <button type="button" class="oni-event-reset-memory"
+                title="Forget that this event has run, and clear its own switches A-D, for the current party.">
+                <i class="fas fa-eraser"></i> Reset this event's memory
               </button>
             </div>
 
@@ -915,7 +561,7 @@
         safeGet(flags, "proximityPx", defaultProximityPx),
         defaultProximityPx
       );
-      const eventRows = normalizeEventRows(safeGet(flags, "eventRows", []));
+      const eventRows = EventRegistry.normalizeRows(safeGet(flags, "eventRows", []));
 
       // An event saved before this setting existed counts as locked.
       const lockEl = tabPanel.querySelector(".oni-event-lock-movement");
@@ -924,19 +570,35 @@
         lockEl.checked = !(savedLock === false || savedLock === "false");
       }
 
+      const onceEl = tabPanel.querySelector(".oni-event-once-only");
+      if (onceEl) onceEl.checked = normalizeBoolean(safeGet(flags, "onceOnly", false), false);
+
       const isEventEl = tabPanel.querySelector(".oni-is-event");
       const fieldsWrap = tabPanel.querySelector(".oni-event-fields");
       const proximityEl = tabPanel.querySelector(".oni-event-proximity");
-      const rowsWrap = tabPanel.querySelector(".oni-event-table");
+      const tableHost = tabPanel.querySelector(".oni-event-table");
+      const availableHost = tabPanel.querySelector(".oni-event-available");
       const hiddenJsonEl = tabPanel.querySelector(".oni-event-hidden-json");
-      const addRowBtn = tabPanel.querySelector(".oni-event-add-row");
       const debugBtn = tabPanel.querySelector(".oni-event-debug-read");
+      const resetBtn = tabPanel.querySelector(".oni-event-reset-memory");
 
       isEventEl.checked = isEventTile;
       fieldsWrap.hidden = !isEventTile;
       proximityEl.value = String(proximityPx);
 
-      renderRows(rowsWrap, eventRows, hiddenJsonEl);
+      Kit.refreshNameLists();
+      availableHost.appendChild(Kit.conditionEditor(safeGet(flags, "availableWhen", null)));
+
+      tableHost.appendChild(Kit.buildList(eventRows, {
+        // A new line on an NPC is spoken by that NPC.
+        makeRow: () => {
+          const row = EventRegistry.makeDefaultRow(C.DEFAULT_ROW_TYPE || "showText");
+          if (isToken) row.speaker = C.SPECIAL_SPEAKER_SOURCE || "This";
+          return row;
+        }
+      }));
+
+      syncRowsJson(hiddenJsonEl, tabPanel);
 
       DBG.verboseLog(DEBUG_SCOPE, "Prefill applied.", {
         isEventTile,
@@ -958,39 +620,33 @@
         resizeTileConfigForTabs(app, root);
       });
 
-      addRowBtn?.addEventListener("click", () => {
-        const row = buildDefaultRow(C.DEFAULT_ROW_TYPE || C.EVENT_TYPES?.SHOW_TEXT || "showText");
-        if (isToken) row.speaker = C.SPECIAL_SPEAKER_SOURCE || "This";
-        rowsWrap.appendChild(createRowElement(row, rowsWrap, hiddenJsonEl));
-        updateRowIndices(rowsWrap);
-        updateEmptyState(rowsWrap);
-        syncRowsJson(hiddenJsonEl, rowsWrap);
-
-        DBG.log(DEBUG_SCOPE, "Event row added.", {
-          tileId: tileDoc?.id ?? null,
-          row
-        });
-
-        resizeTileConfigForTabs(app, root);
-      });
-
       debugBtn?.addEventListener("click", () => {
         const dump = {
           isEventTile: isEventEl.checked,
           proximityPx: Number(proximityEl?.value || C.DEFAULT_PROXIMITY_PX || 0),
-          eventRows: collectRows(rowsWrap)
+          onceOnly: !!onceEl?.checked,
+          availableWhen: Kit.readCondition(findAvailabilityEditor(tabPanel)),
+          eventRows: Kit.collectList(findTopList(tabPanel))
         };
 
         DBG.log(DEBUG_SCOPE, "DEBUG READ (current form values):", dump);
         ui.notifications?.info?.("Event Config logged to console.");
       });
 
-      rowsWrap.addEventListener("input", () => {
-        syncRowsJson(hiddenJsonEl, rowsWrap);
+      resetBtn?.addEventListener("click", async () => {
+        const state = window.oni.EventSystem.GameState;
+        if (!state?.resetEvent) return;
+
+        const ok = await state.resetEvent(tileDoc?.parent?.id ?? null, tileDoc?.id ?? null);
+        if (ok) ui.notifications?.info?.("This event's memory was reset for the current party.");
+        else ui.notifications?.warn?.("Could not reset this event's memory (GM only; needs a current party).");
       });
 
-      rowsWrap.addEventListener("change", () => {
-        syncRowsJson(hiddenJsonEl, rowsWrap);
+      // Typing in a field, and adding, removing, moving or retyping a row.
+      tableHost.addEventListener("input", () => syncRowsJson(hiddenJsonEl, tabPanel));
+      tableHost.addEventListener("change", () => {
+        syncRowsJson(hiddenJsonEl, tabPanel);
+        resizeTileConfigForTabs(app, root);
       });
 
       patchSubmitData(app);

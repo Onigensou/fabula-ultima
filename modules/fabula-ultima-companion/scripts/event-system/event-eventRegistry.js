@@ -11,12 +11,26 @@
  * - Resolves which executor should run for a given event row
  * - Keeps event type wiring centralized for easier expansion later
  *
+ * An action registers ONCE, here, and brings everything it needs:
+ *   type, label, category   what it is and where it sits in the dropdown
+ *   defaultData             the fields of a new row
+ *   execute(row, context)   run it on the GM (context.runRows runs a child list)
+ *   buildFields(row, kit)   its fields in the Event Config window
+ *   collectFields(el, kit)  read those fields back into a row
+ *   childLists(row)         [{ label, rows }] for rows that own other rows
+ *   prepare(row)            repair the shape of a saved row
+ *   summary(row)            one short line for the GM status chip
+ *   critical                a failure ends the event (text); otherwise the
+ *                           row is passed over and the event carries on
+ *
  * Exposes API to:
  *   window.oni.EventSystem.EventRegistry
  *
  * Requires:
  * - event-constants.js
  * - event-debug.js
+ * - event-logic.js
+ * - event-configKit.js
  * - event-showText-execute.js
  */
 
@@ -36,10 +50,16 @@
 
   const C = window.oni.EventSystem.Constants;
   const D = window.oni.EventSystem.Debug;
+  const Logic = window.oni.EventSystem.Logic;
   const ShowTextExecute = window.oni.EventSystem.ShowText?.Execute;
 
   if (!C) {
     console.error(INSTALL_TAG, "Missing Constants. Load event-constants.js first.");
+    return;
+  }
+
+  if (!Logic) {
+    console.error(INSTALL_TAG, "Missing Logic. Load event-logic.js first.");
     return;
   }
 
@@ -77,13 +97,13 @@
 
   function cloneDefinition(def) {
     return {
-      type: def.type,
-      label: def.label,
-      category: def.category ?? "General",
-      supportsSequentialWait: def.supportsSequentialWait !== false,
-      defaultData: foundry.utils.deepClone(def.defaultData ?? {}),
-      execute: def.execute
+      ...def,
+      defaultData: foundry.utils.deepClone(def.defaultData ?? {})
     };
+  }
+
+  function optionalFn(value) {
+    return typeof value === "function" ? value : null;
   }
 
   function buildUnknownResult(type) {
@@ -102,10 +122,8 @@
     installed: true,
 
     register(definition = {}) {
-      const type = normalizeType(definition.type);
-      const label =
-        stringOrEmpty(definition.label) ||
-        (typeof C.getEventTypeLabel === "function" ? C.getEventTypeLabel(type) : type);
+      const type = stringOrEmpty(definition.type);
+      const label = stringOrEmpty(definition.label) || type;
 
       if (!type) {
         DBG.error(DEBUG_SCOPE, "register() failed: missing type.", definition);
@@ -125,9 +143,18 @@
         label,
         category: stringOrEmpty(definition.category) || "General",
         supportsSequentialWait: definition.supportsSequentialWait !== false,
+        critical: definition.critical === true,
         defaultData: foundry.utils.deepClone(definition.defaultData ?? {}),
-        execute: definition.execute
+        execute: definition.execute,
+        buildFields: optionalFn(definition.buildFields),
+        collectFields: optionalFn(definition.collectFields),
+        childLists: optionalFn(definition.childLists),
+        prepare: optionalFn(definition.prepare),
+        summary: optionalFn(definition.summary)
       };
+
+      // Make the type known to the constants, so nothing else has to list it.
+      C.registerEventType?.(type, label);
 
       _definitions.set(type, normalized);
 
@@ -163,6 +190,11 @@
       return def ? cloneDefinition(def) : null;
     },
 
+    // The live definition, not a copy. For callers that only read it.
+    peek(rawType) {
+      return _definitions.get(normalizeType(rawType)) ?? null;
+    },
+
     getAll() {
       return Array.from(_definitions.values()).map(cloneDefinition);
     },
@@ -170,30 +202,34 @@
     getDropdownOptions() {
       return this.getAll().map(def => ({
         value: def.type,
-        label: def.label
+        label: def.label,
+        category: def.category
       }));
+    },
+
+    // Rows as stored on a tile or token -> rows safe to run or edit. A row
+    // whose type is not registered is kept as written.
+    normalizeRows(rawRows) {
+      return Logic.normalizeRows(rawRows, (type) => _definitions.get(type) ?? null);
+    },
+
+    // Visit every row, children included. fn(row, depth).
+    walkRows(rows, fn) {
+      return Logic.walkRows(rows, (type) => _definitions.get(type) ?? null, fn);
     },
 
     makeDefaultRow(rawType = null) {
       const type = normalizeType(rawType || C.DEFAULT_ROW_TYPE);
       const def = _definitions.get(type);
 
-      const baseRow =
-        typeof C.makeDefaultEventRow === "function"
-          ? C.makeDefaultEventRow()
-          : {
-              id: foundry.utils.randomID(),
-              type,
-              speaker: C.DEFAULT_SHOW_TEXT_SPEAKER,
-              text: C.DEFAULT_SHOW_TEXT_MESSAGE
-            };
+      // Only the fields the action declares: a Wait row carries no speaker.
+      const baseRow = { id: foundry.utils.randomID(), type };
 
       if (!def) {
         DBG.warn(DEBUG_SCOPE, "makeDefaultRow() requested unknown type. Returning base row.", {
           requestedType: rawType,
           normalizedType: type
         });
-        baseRow.type = type;
         return baseRow;
       }
 
@@ -205,6 +241,7 @@
 
       merged.id = baseRow.id;
       merged.type = def.type;
+      def.prepare?.(merged);
 
       DBG.verboseLog(DEBUG_SCOPE, "Built default row.", {
         requestedType: rawType,
@@ -267,19 +304,45 @@
   // ------------------------------------------------------------
   // Register built-in event types
   // ------------------------------------------------------------
+  const SHOW_TEXT = C.EVENT_TYPES?.SHOW_TEXT || "showText";
+  const DEFAULT_SPEAKER = C.DEFAULT_SHOW_TEXT_SPEAKER || C.SPECIAL_SPEAKER_SELF || "Self";
+
   EventRegistry.register({
-    type: C.EVENT_TYPES?.SHOW_TEXT || "showText",
+    type: SHOW_TEXT,
     label: C.EVENT_TYPE_LABELS?.showText || "Show Text",
     category: "Dialogue",
     supportsSequentialWait: true,
+    critical: true,
     defaultData: {
-      type: C.EVENT_TYPES?.SHOW_TEXT || "showText",
-      speaker: C.DEFAULT_SHOW_TEXT_SPEAKER || C.SPECIAL_SPEAKER_SELF || "Self",
+      type: SHOW_TEXT,
+      speaker: DEFAULT_SPEAKER,
       text: C.DEFAULT_SHOW_TEXT_MESSAGE || ""
     },
     execute: async (row, context) => {
       return ShowTextExecute.execute(row, context);
-    }
+    },
+    summary: (row) => String(row?.text ?? "").replace(/<\/?b>/gi, "").slice(0, 40),
+    buildFields: (row, kit) => kit.fields(
+      kit.field(
+        "Speaker",
+        `<input type="text" class="oni-event-row-speaker"
+           value="${kit.escapeHTML(String(row.speaker ?? DEFAULT_SPEAKER))}"
+           placeholder="Self / This / Actor UUID / Token UUID / Name" />`,
+        `Leave blank for <b>Self</b> (the party). <b>This</b> = the token carrying this event.
+         You can also use Actor UUID, Token UUID, or a name.`
+      ),
+      kit.field(
+        "Message",
+        `<textarea class="oni-event-row-text oni-event-textarea"
+           placeholder="Write the dialog text here...">${kit.escapeHTML(String(row.text ?? ""))}</textarea>`,
+        `Wrap a word in <code>&lt;b&gt;…&lt;/b&gt;</code> to highlight it as a hint (bold + colour).
+         <code>{var:name}</code> prints a variable.`
+      )
+    ),
+    collectFields: (rowEl, kit) => ({
+      speaker: String(kit.own(rowEl, ".oni-event-row-speaker")?.value ?? "").trim() || DEFAULT_SPEAKER,
+      text: String(kit.own(rowEl, ".oni-event-row-text")?.value ?? "")
+    })
   });
 
   // ------------------------------------------------------------

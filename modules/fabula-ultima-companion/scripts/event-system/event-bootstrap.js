@@ -40,6 +40,11 @@
   const required = {
     Constants: ES.Constants,
     Debug: ES.Debug,
+    Logic: ES.Logic,
+    Client: ES.Client,
+    GameState: ES.GameState,
+    ConfigKit: ES.ConfigKit,
+    Flow: ES.Flow,
     ShowTextSpeakerResolver: ES.ShowText?.SpeakerResolver,
     ShowTextExecute: ES.ShowText?.Execute,
     EventRegistry: ES.EventRegistry,

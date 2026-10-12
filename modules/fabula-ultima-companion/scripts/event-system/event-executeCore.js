@@ -13,6 +13,9 @@
  * - Uses nearest valid Event Tile as the current candidate
  * - Sends execution requests to GM through fabula-ultima-companion socket
  * - Executes event rows in strict sequence, waiting for each row to finish
+ *   (a row may own child lists: the branches of a choice or a condition)
+ * - Offers an event only while it is available: not erased, not already run
+ *   when it is "once only", and its "available when" condition holds
  *
  * Refactor notes:
  * - UI/UX for the "!" icon is now handled by:
@@ -44,6 +47,7 @@
   const D = window.oni.EventSystem.Debug;
   const EventRegistry = window.oni.EventSystem.EventRegistry;
   const EventRuntimeUI = window.oni.EventSystem.RuntimeUI;
+  const Logic = window.oni.EventSystem.Logic;
 
   if (!C) {
     console.error(INSTALL_TAG, "Missing Constants. Load event-constants.js first.");
@@ -181,37 +185,27 @@
   }
 
   function normalizeEventRows(rawRows) {
-    let rows = rawRows;
+    return EventRegistry.normalizeRows(rawRows);
+  }
 
-    if (typeof rows === "string") {
-      try {
-        rows = JSON.parse(rows);
-      } catch (_) {
-        rows = [];
-      }
-    }
+  // Is this event offered right now? Read from the party's switches,
+  // variables and this event's own memory; with no game state loaded, it is.
+  function isEventAvailable(sourceLike, data) {
+    const state = window.oni.EventSystem.GameState;
+    if (!state?.readerFor || !Logic) return true;
 
-    if (!Array.isArray(rows)) rows = [];
+    const doc = sourceLike?.document ?? sourceLike;
+    const sceneId = doc?.parent?.id ?? canvas?.scene?.id ?? null;
 
-    return rows.map((row) => {
-      const requestedType = String(row?.type || C.DEFAULT_ROW_TYPE || "showText");
-      const safeType = EventRegistry.has(requestedType)
-        ? requestedType
-        : (C.DEFAULT_ROW_TYPE || C.EVENT_TYPES?.SHOW_TEXT || "showText");
-
-      const baseRow = EventRegistry.makeDefaultRow(safeType);
-
-      const merged = foundry.utils.mergeObject(
-        foundry.utils.deepClone(baseRow),
-        foundry.utils.deepClone(row ?? {}),
-        { inplace: false, overwrite: true }
+    try {
+      return Logic.eventAvailable(
+        { onceOnly: data.onceOnly, availableWhen: data.availableWhen },
+        state.readerFor(sceneId, doc?.id)
       );
-
-      merged.id = String(merged.id || foundry.utils.randomID());
-      merged.type = safeType;
-
-      return merged;
-    });
+    } catch (e) {
+      DBG.warn(DEBUG_SCOPE, "Availability check failed; treating the event as available.", e);
+      return true;
+    }
   }
 
   function readEventData(tileLike) {
@@ -228,6 +222,8 @@
         isTokenSource(doc) ? getSourceGridSize(doc) : (C.DEFAULT_PROXIMITY_PX ?? 0)
       ),
       eventRows: normalizeEventRows(data?.eventRows ?? []),
+      onceOnly: normalizeBoolean(data?.onceOnly, false),
+      availableWhen: data?.availableWhen ?? null,
       _scope: found?.scope ?? null,
       _raw: data
     };
@@ -387,6 +383,11 @@
         return { ok: false, reason: "noEventRows", tileId: safeTileId };
       }
 
+      if (!isEventAvailable(tileDoc, data)) {
+        DBG.warn(DEBUG_SCOPE, "Execution blocked because the event is not available.", { tileId: safeTileId });
+        return { ok: false, reason: "notAvailable", tileId: safeTileId };
+      }
+
       if (gmActiveExecutions.has(safeTileId)) {
         DBG.warn(DEBUG_SCOPE, "Execution blocked because tile is already running.", { tileId: safeTileId });
         return { ok: false, reason: "alreadyExecuting", tileId: safeTileId };
@@ -420,15 +421,17 @@
       emitSocketMessage(MSG_EXECUTE_START, {
         sceneId: safeSceneId,
         tileId: safeTileId,
-        requesterId
+        requesterId,
+        gmUserId: game.user?.id ?? null
       });
-      announceExecution("start", safeSceneId, safeTileId);
+      announceExecution("start", safeSceneId, safeTileId, game.user?.id ?? null);
 
       const context = buildRuntimeContext({
         tileDoc,
         requesterId,
         partyToken
       });
+      context.sourceDoc = tileDoc;
 
       DBG.log(DEBUG_SCOPE, "Beginning event sequence.", {
         tileId: safeTileId,
@@ -438,59 +441,92 @@
       DBG.verboseLog(DEBUG_SCOPE, "Execution context:", context);
       DBG.verboseLog(DEBUG_SCOPE, "Event rows:", data.eventRows);
 
-      for (let i = 0; i < data.eventRows.length; i += 1) {
-        const row = data.eventRows[i];
-        const rowContext = {
-          ...context,
-          rowIndex: i,
-          rowNumber: i + 1,
-          totalRows: data.eventRows.length
-        };
+      const flow = window.oni.EventSystem.Flow;
 
-        DBG.log(DEBUG_SCOPE, "Executing row.", {
+      // One list of rows, top to bottom. A row that owns child lists (a
+      // choice, a condition) runs the one it picks through context.runRows.
+      const runList = (rows) => Logic.runRows(rows, {
+        aborted: () => !!flow?.isAborted?.(safeTileId),
+        isCritical: (row) => EventRegistry.peek(row?.type)?.critical === true,
+
+        onSkip: (row, result) => {
+          DBG.warn(DEBUG_SCOPE, "Row passed over; the event carries on.", {
+            tileId: safeTileId,
+            rowId: row?.id ?? null,
+            type: row?.type ?? null,
+            result
+          });
+        },
+
+        execute: async (row, index, total) => {
+          const def = EventRegistry.peek(row?.type);
+
+          DBG.log(DEBUG_SCOPE, "Executing row.", {
+            tileId: safeTileId,
+            rowIndex: index,
+            rowNumber: index + 1,
+            rowId: row?.id ?? null,
+            type: row?.type ?? null
+          });
+
+          flow?.setProgress?.(safeTileId, {
+            index,
+            total,
+            label: def?.label ?? String(row?.type ?? ""),
+            summary: String(def?.summary?.(row) ?? "")
+          });
+
+          const result = await EventRegistry.executeRow(row, {
+            ...context,
+            rowIndex: index,
+            rowNumber: index + 1,
+            totalRows: total,
+            runRows: runList
+          });
+
+          DBG.verboseLog(DEBUG_SCOPE, "Row result:", result);
+          return result;
+        }
+      });
+
+      const outcome = await runList(data.eventRows);
+
+      if (!outcome?.ok) {
+        DBG.warn(DEBUG_SCOPE, "Sequence stopped because a row failed.", {
           tileId: safeTileId,
-          rowIndex: i,
-          rowNumber: i + 1,
-          rowId: row?.id ?? null,
-          type: row?.type ?? null
+          outcome
         });
 
-        const result = await EventRegistry.executeRow(row, rowContext);
+        emitSocketMessage(MSG_EXECUTE_ERROR, {
+          sceneId: safeSceneId,
+          tileId: safeTileId,
+          requesterId,
+          rowIndex: outcome?.rowIndex ?? null,
+          rowId: outcome?.rowId ?? null
+        });
+        announceExecution("done", safeSceneId, safeTileId);
 
-        DBG.verboseLog(DEBUG_SCOPE, "Row result:", result);
+        return {
+          ok: false,
+          reason: "rowFailed",
+          tileId: safeTileId,
+          rowIndex: outcome?.rowIndex ?? null,
+          rowId: outcome?.rowId ?? null,
+          result: outcome?.result ?? null
+        };
+      }
 
-        if (!result?.ok) {
-          DBG.warn(DEBUG_SCOPE, "Sequence stopped because a row failed.", {
-            tileId: safeTileId,
-            rowIndex: i,
-            rowId: row?.id ?? null,
-            result
-          });
-
-          emitSocketMessage(MSG_EXECUTE_ERROR, {
-            sceneId: safeSceneId,
-            tileId: safeTileId,
-            requesterId,
-            rowIndex: i,
-            rowId: row?.id ?? null,
-            result
-          });
-          announceExecution("done", safeSceneId, safeTileId);
-
-          return {
-            ok: false,
-            reason: "rowFailed",
-            tileId: safeTileId,
-            rowIndex: i,
-            rowId: row?.id ?? null,
-            result
-          };
-        }
+      // An event ended early by the GM has not run: it stays available.
+      const state = window.oni.EventSystem.GameState;
+      if (!outcome.aborted && state?.markRun
+        && Logic.usesRunMemory(data.eventRows, data, (type) => EventRegistry.peek(type))) {
+        await state.markRun(safeSceneId, safeTileId);
       }
 
       DBG.log(DEBUG_SCOPE, "Event sequence finished.", {
         tileId: safeTileId,
-        rowCount: data.eventRows.length
+        rowCount: data.eventRows.length,
+        endedEarly: !!outcome.aborted
       });
 
       emitSocketMessage(MSG_EXECUTE_DONE, {
@@ -533,11 +569,12 @@
   // Tell the rest of the module, on this client, that an event began or ended.
   // Sockets do not echo to their sender, so the executing GM calls this
   // directly and every other client calls it when the broadcast arrives.
-  function announceExecution(phase, sceneId, sourceId) {
+  function announceExecution(phase, sceneId, sourceId, gmUserId = null) {
     try {
       Hooks.callAll(phase === "start" ? "oniEventExecuteStart" : "oniEventExecuteDone", {
         sceneId: String(sceneId || ""),
-        sourceId: String(sourceId || "")
+        sourceId: String(sourceId || ""),
+        gmUserId: gmUserId ? String(gmUserId) : null
       });
     } catch (e) {
       DBG.warn(DEBUG_SCOPE, "announceExecution failed.", e);
@@ -674,6 +711,7 @@
           if (data.isHidden) continue;
           if (!Array.isArray(data.eventRows) || !data.eventRows.length) continue;
           if (isTileRunningAnywhere(tile.id)) continue;
+          if (!isEventAvailable(tile, data)) continue;
 
           const rect = getTileRect(tile);
           const d = pointToRectDistance(partyCenter, rect);
@@ -725,6 +763,17 @@
       } catch (e) {
         DBG.error(DEBUG_SCOPE, "scan failed:", e);
       }
+    },
+
+    // End an event on this client without word from the GM running it (its
+    // time limit ran out, or that GM dropped out).
+    forceEndLocal(sourceId) {
+      const id = String(sourceId || "");
+      if (!id) return;
+
+      unmarkTileRunning(id);
+      announceExecution("done", canvas?.scene?.id ?? null, id);
+      this._queueScan("forceEndLocal");
     },
 
     async requestExecute(tileId) {
@@ -808,6 +857,10 @@
             DBG.verboseLog(DEBUG_SCOPE, "Socket RX execute request.", msg);
             if (!game?.user?.isGM) return;
 
+            // The request reaches every GM client; one of them runs it.
+            const isPrimaryGM = globalThis.FUCompanion?.isPrimaryGM;
+            if (typeof isPrimaryGM === "function" && !isPrimaryGM()) return;
+
             const flow = window.oni.EventSystem.Flow;
             if (flow && !(await flow.isUserInteractor(msg?.payload?.requesterId))) {
               DBG.warn(DEBUG_SCOPE, "Execute request refused: sender is not the main controller.", msg?.payload);
@@ -825,7 +878,7 @@
             const runningTileId = String(msg?.payload?.tileId || "");
             if (runningTileId) {
               markTileRunning(runningTileId);
-              announceExecution("start", msg?.payload?.sceneId, runningTileId);
+              announceExecution("start", msg?.payload?.sceneId, runningTileId, msg?.payload?.gmUserId ?? null);
 
               if (this._activeCandidate?.tileId === runningTileId) {
                 this._activeCandidate = null;
@@ -913,6 +966,8 @@
         this.ui?.placeForToken(partyToken, ov ? { x: ov.x, y: ov.y } : null);
       };
       const onCanvasReady = () => this._queueScan("canvasReady");
+      // A switch flipped, a variable changed, a save was loaded.
+      const onGameStateChanged = () => this._queueScan("gameStateChanged");
       const onResize = async () => {
         const partyToken = await resolvePartyToken();
         if (!partyToken) return;
@@ -929,6 +984,7 @@
       Hooks.on("controlToken", onControlToken);
       Hooks.on("canvasPan", onCanvasPan);
       Hooks.on("canvasReady", onCanvasReady);
+      Hooks.on("oniGameStateChanged", onGameStateChanged);
       window.addEventListener("resize", onResize);
 
       this._hooks.push(["updateToken", onUpdateToken]);
@@ -940,6 +996,7 @@
       this._hooks.push(["controlToken", onControlToken]);
       this._hooks.push(["canvasPan", onCanvasPan]);
       this._hooks.push(["canvasReady", onCanvasReady]);
+      this._hooks.push(["oniGameStateChanged", onGameStateChanged]);
       this._hooks.push(["resize", onResize]);
 
       this.running = true;
