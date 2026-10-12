@@ -603,6 +603,13 @@
   Hooks.on("fuDialogBubblePress", () => { press(); });
   Hooks.on("canvasTearDown", endAllActive);
 
+  // The GM running an event leaves the scene: the rest of its rows would act
+  // on a map nobody is looking at (and a line of text would wait for a press
+  // that cannot come), so the event ends here.
+  Hooks.on("canvasTearDown", () => {
+    for (const sourceId of [...state.running.keys()]) abort(sourceId);
+  });
+
   // The GM running an event has dropped out (closed, reloaded, lost the
   // connection): nothing will end that event now, so end it here.
   Hooks.on("userConnected", (user, connected) => {

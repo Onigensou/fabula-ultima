@@ -274,7 +274,13 @@
       btn.className = "oni-choice-btn";
       if (menu.roleplay && index === labels.length - 1) btn.classList.add("is-roleplay");
       btn.textContent = label;
-      btn.addEventListener("pointerenter", () => move(sourceId, index));
+      // Only a cursor that actually moves takes the highlight. A cursor that
+      // was merely resting where a button appeared also gets "enter" events
+      // (the browser re-tests what is under it), and then stole the highlight
+      // from the keyboard: Enter picked the wrong answer (seen live, 2026-10-13).
+      btn.addEventListener("pointermove", (ev) => {
+        if (ev.movementX || ev.movementY) move(sourceId, index);
+      });
       btn.addEventListener("click", () => pick(sourceId, index));
       list.appendChild(btn);
     });
