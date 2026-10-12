@@ -1,10 +1,11 @@
 // Camera Authority — our own camera rules, in our own system.
 //
-// Three jobs:
+// Four jobs:
 //   1. Keep a player's view inside the play area (the video-game bounding box).
 //   2. Keep the play area out from under the chat sidebar, so nothing on the
 //      map can hide behind chrome.
 //   3. Get out of the way when a cinematic wants the camera.
+//   4. Open each scene on the party token, whichever door they came in by.
 //
 // ── Coexistence with LockView, and why no migration is needed ───────────────
 //
@@ -274,6 +275,58 @@ function watchSidebar() {
   _ro.observe(el);
 }
 
+/* ── Opening on the party ───────────────────────────────────────────────── */
+//
+// A scene's initial view is one fixed point — the forward entrance. Arrive by
+// any other door and the scene opens on an entrance the party is not standing
+// at; on a tile-path map at 3x that leaves them off screen entirely. So once the
+// scene is drawn, centre on the party token if it is here. Position only: the
+// zoom stays whatever the scene opened at, which is the authored one.
+//
+// Runs for the GM too. Exploration's follow camera would glide a player there
+// anyway; this starts them on the party instead, with the same sidebar offset
+// so the two agree and nothing drifts afterwards.
+
+const NO_PARTY_FOCUS_MODES = new Set(["conflict", "theatre", "stealth", "none"]);
+
+async function findPartyToken() {
+  const res = await globalThis.FUCompanion?.api?.getCurrentGameDb?.();
+  for (const actor of [res?.db, res?.source]) {
+    if (!actor) continue;
+    const t = canvas.tokens?.placeables?.find(p => p.actor?.id === actor.id || p.name === actor.name);
+    if (t) return t;
+  }
+  return null;
+}
+
+async function focusPartyOnEntry() {
+  try {
+    const scene = canvas?.scene;
+    if (!canvas?.ready || !scene) return;
+    if (NO_PARTY_FOCUS_MODES.has(sceneModeOf(scene))) return;
+    if (isCameraSuspended()) return;
+
+    const token = await findPartyToken();
+    if (!token || canvas.scene !== scene || isCameraSuspended()) return;
+
+    const scale = canvas.stage.scale.x;
+    const vp = viewportOf();
+    const ins = vp.insets ?? { top: 0, right: 0, bottom: 0, left: 0 };
+    const halfW = Math.max(200, vp.w - ins.left - ins.right) / scale / 2;
+    const halfH = Math.max(200, vp.h - ins.top - ins.bottom) / scale / 2;
+    const r = stageOf(scene);
+    const shift = pivotShift(ins, scale);
+
+    // Keep the visible rect on the map, as the authored initial views are.
+    const c = token.center;
+    canvas.pan({
+      x: clampNum(c.x, r.x + halfW, r.x + r.w - halfW) + shift.x,
+      y: clampNum(c.y, r.y + halfH, r.y + r.h - halfH) + shift.y,
+      scale,
+    });
+  } catch (e) { warn("camera-authority: party focus threw", e); }
+}
+
 /* ── Boot ───────────────────────────────────────────────────────────────── */
 
 export function initCameraAuthority() {
@@ -283,6 +336,7 @@ export function initCameraAuthority() {
   const ok = installConstrainWrapper();
 
   Hooks.on("canvasReady", () => {
+    focusPartyOnEntry();
     // Let LockView's own canvasReady handler swap the prototypes first; ours
     // lives a level below on _constrainView, so ordering only matters for the
     // first framing pass.
@@ -291,7 +345,8 @@ export function initCameraAuthority() {
     }, 300);
   });
 
-  if (canvas?.ready) { watchSidebar(); }
+  // The first canvasReady of a session fires before this runs.
+  if (canvas?.ready) { watchSidebar(); focusPartyOnEntry(); }
 
   globalThis.FUCompanion = globalThis.FUCompanion || {};
   globalThis.FUCompanion.api = globalThis.FUCompanion.api || {};
@@ -301,6 +356,7 @@ export function initCameraAuthority() {
     isSuspended: isCameraSuspended,
     clampToPlayArea,
     reframe: () => scheduleReframe(0),
+    focusParty: focusPartyOnEntry,
     sceneModeOf,
     isOurScene,
     status: cameraAuthorityStatus,
