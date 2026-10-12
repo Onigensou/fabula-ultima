@@ -19,6 +19,8 @@
  *   like the footsteps. A turn is not written to the token: Foundry tweens a
  *   texture change over the whole walk, which reads as a slow squash. The
  *   facing a walk ends on is saved once, at rest, so a reload shows it.
+ * - A character with no walk art sways gently from side to side as it
+ *   walks. With walk art, that plays instead.
  * - Walk art is read from the character sheet: system.props.sprite_walk.
  *   A .webm / .mp4 loops while walking. Anything else is a horizontal strip
  *   of frames, each the shape of the standing sprite, stepped by distance.
@@ -45,8 +47,9 @@
 
   const ENABLED = true;
 
-  // How long a turn takes: the sprite narrows to nothing and opens mirrored.
-  const TURN_MS = 120;
+  // How long a turn takes. 0 is an instant snap, which is what this game
+  // uses. Above 0 the sprite narrows to nothing and opens mirrored.
+  const TURN_MS = 0;
 
   // Sideways share of a frame's movement needed to turn. Walking almost
   // straight up or down keeps the facing it had.
@@ -62,6 +65,11 @@
   // One pass through a strip of walk frames covers this many grid squares:
   // two footsteps' worth.
   const WALK_CYCLE_GRIDS = 1.8;
+
+  // A character with no walk art sways as it walks: a lean from side to side
+  // about the feet and a small hop, once each per footstep.
+  const SWAY_LEAN_RADIANS = 0.05;
+  const SWAY_HOP_SHARE = 0.035; // of the sprite's height on the map
 
   // A talking NPC turns back when the talk ends, when the party walks this many
   // grid squares away, or after this long, whichever comes first.
@@ -94,6 +102,8 @@
     // walk art: src -> { kind, texture, frames, video, failed }
     walkArt: new Map(),
     walkOverrideSrc: null,
+    sourceBySrc: new Map(), // texture src -> actor id
+    sway: null, // { tokenId, dx, dy, lastX, lastY }
     walkShown: null, // { tokenId, src, art, idleTexture }
 
     tickerFn: null
@@ -122,15 +132,32 @@
   // image the token is showing.
   function sourceActorFor(token) {
     const src = cleanString(token?.document?.texture?.src);
-    if (src) {
-      for (const user of game.users ?? []) {
-        const actor = user.character;
-        if (!actor) continue;
-        if (cleanString(actor.prototypeToken?.texture?.src) === src) return actor;
-        if (cleanString(actor.system?.props?.sprite_standard) === src) return actor;
-      }
+    if (!src) return token?.actor ?? null;
+
+    const wears = (actor) =>
+      !!actor && (
+        cleanString(actor.prototypeToken?.texture?.src) === src
+        || cleanString(actor.system?.props?.sprite_standard) === src
+      );
+
+    // The movement system puts the controller's character art on the party
+    // token, so its list of controllers is the first place to look.
+    const rows = globalThis.FUCompanion?.api?.MovementControl?.getLastSnapshot?.()?.eligibleControllers ?? [];
+    for (const row of rows) {
+      const actor = row?.linkedActor ?? row?.user?.character ?? null;
+      if (wears(actor)) return actor;
     }
-    return token?.actor ?? null;
+
+    for (const user of game.users ?? []) {
+      if (wears(user.character)) return user.character;
+    }
+
+    // A controller who is offline, or art set by hand: any actor that owns it.
+    if (!state.sourceBySrc.has(src)) {
+      state.sourceBySrc.set(src, game.actors?.find(a => wears(a))?.id ?? null);
+    }
+    const cachedId = state.sourceBySrc.get(src);
+    return (cachedId ? game.actors?.get(cachedId) : null) ?? token?.actor ?? null;
   }
 
   function isDrawnFacingRight(token) {
@@ -381,6 +408,82 @@
   }
 
   // ------------------------------------------------------------
+  // Sway: the walk of a character with no walk art
+  // ------------------------------------------------------------
+  // Foundry places the mesh on the token every time the token moves, so the
+  // sway is an offset laid over wherever Foundry last put it. A position that
+  // is not the one written here last is Foundry's, and the offset starts from it.
+  function applySway(token) {
+    const mesh = token?.mesh;
+    if (!mesh || mesh.destroyed) return;
+
+    let sway = state.sway;
+    if (!sway || sway.tokenId !== token.id) {
+      clearSway();
+      sway = state.sway = { tokenId: token.id, dx: 0, dy: 0, lastX: null, lastY: null };
+    }
+
+    const ours = sway.lastX !== null
+      && Math.abs(mesh.position.x - sway.lastX) < 1e-6
+      && Math.abs(mesh.position.y - sway.lastY) < 1e-6;
+    const baseX = ours ? mesh.position.x - sway.dx : mesh.position.x;
+    const baseY = ours ? mesh.position.y - sway.dy : mesh.position.y;
+
+    const cycle = (canvas.dimensions?.size || 100) * WALK_CYCLE_GRIDS;
+    const phase = (state.walkDistance / cycle) * Math.PI * 2;
+    const height = Math.abs(mesh.height) || token.h;
+
+    const lean = Math.sin(phase) * SWAY_LEAN_RADIANS;
+    const hop = Math.abs(Math.sin(phase)) * height * SWAY_HOP_SHARE;
+
+    // The skew turns about the middle of the sprite; shifting the mesh by
+    // what the feet would move keeps the feet planted.
+    const feet = (1 - (mesh.anchor?.y ?? 0.5)) * height;
+
+    mesh.skew.x = lean;
+    sway.dx = -Math.sin(lean) * feet;
+    sway.dy = -hop;
+    sway.lastX = baseX + sway.dx;
+    sway.lastY = baseY + sway.dy;
+    mesh.position.set(sway.lastX, sway.lastY);
+  }
+
+  function clearSway() {
+    const sway = state.sway;
+    if (!sway) return;
+    state.sway = null;
+
+    const mesh = canvas?.tokens?.get(sway.tokenId)?.mesh;
+    if (!mesh || mesh.destroyed) return;
+
+    mesh.skew.x = 0;
+    if (sway.lastX !== null
+      && Math.abs(mesh.position.x - sway.lastX) < 1e-6
+      && Math.abs(mesh.position.y - sway.lastY) < 1e-6) {
+      mesh.position.set(sway.lastX - sway.dx, sway.lastY - sway.dy);
+    }
+  }
+
+  // Walk art when the character has it, otherwise the sway.
+  function showWalk(token) {
+    if (isFacingLocked(token)) return;
+
+    showWalkArt(token);
+
+    // A character with walk art never sways, not even for the moment the art
+    // takes to load; only art that failed to load falls back to the sway.
+    const src = walkSrcFor(token);
+    const hasArt = !!src && !state.walkArt.get(src)?.failed;
+    if (hasArt) clearSway();
+    else applySway(token);
+  }
+
+  function hideWalk() {
+    hideWalkArt();
+    clearSway();
+  }
+
+  // ------------------------------------------------------------
   // Party token: facing from movement, walk art, save at rest
   // ------------------------------------------------------------
   async function refreshPartyActor() {
@@ -466,7 +569,7 @@
       if (state.walking && (now - state.lastMoveAt) > WALK_END_MS) {
         state.walking = false;
         state.walkDistance = 0;
-        hideWalkArt();
+        hideWalk();
         scheduleSaveFacing(token);
       }
       return;
@@ -480,7 +583,7 @@
       setFacing(token, dx > 0 ? "right" : "left");
     }
 
-    showWalkArt(token);
+    showWalk(token);
   }
 
   // ------------------------------------------------------------
@@ -586,7 +689,7 @@
     if (state.saveTimer) clearTimeout(state.saveTimer);
     state.saveTimer = null;
 
-    hideWalkArt();
+    hideWalk();
     state.tokens.clear();
     state.talks.clear();
 
@@ -654,8 +757,10 @@
 
     // Testing: play this walk art for the party token on this client,
     // whatever the character sheet says. Pass nothing to clear it.
+    sourceActorFor(token) { return token ? sourceActorFor(token) : null; },
+
     setWalkOverride(src) {
-      hideWalkArt();
+      hideWalk();
       state.walkOverrideSrc = cleanString(src) || null;
     },
 
@@ -712,6 +817,7 @@
     state.tokens.delete(doc.id);
     state.talks.delete(doc.id);
     if (state.walkShown?.tokenId === doc.id) state.walkShown = null;
+    if (state.sway?.tokenId === doc.id) state.sway = null;
   });
 
   Hooks.on("refreshToken", (token) => {
