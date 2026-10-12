@@ -299,10 +299,24 @@ async function findPartyToken() {
   return null;
 }
 
-async function focusPartyOnEntry() {
+// LockView re-forces scene.initial on every lightingRefresh for two seconds after
+// canvasInit (players only; it is disabled for the GM), which can land after the
+// first focus and put the camera back on the entrance. So focus again once that
+// window has closed, but only if the camera is sitting exactly on the initial
+// view: anywhere else means it was not undone, or someone moved it since.
+const REFOCUS_DELAY_MS = 2200;
+
+function atInitialView(scene) {
+  const i = scene?.initial, p = canvas?.stage?.pivot;
+  if (!p || !Number.isFinite(i?.x) || !Number.isFinite(i?.y)) return false;
+  return Math.abs(p.x - i.x) < 1 && Math.abs(p.y - i.y) < 1;
+}
+
+async function focusPartyOnEntry({ onlyIfAtInitial = false } = {}) {
   try {
     const scene = canvas?.scene;
     if (!canvas?.ready || !scene) return;
+    if (onlyIfAtInitial && !atInitialView(scene)) return;
     if (NO_PARTY_FOCUS_MODES.has(sceneModeOf(scene))) return;
     if (isCameraSuspended()) return;
 
@@ -337,6 +351,7 @@ export function initCameraAuthority() {
 
   Hooks.on("canvasReady", () => {
     focusPartyOnEntry();
+    setTimeout(() => focusPartyOnEntry({ onlyIfAtInitial: true }), REFOCUS_DELAY_MS);
     // Let LockView's own canvasReady handler swap the prototypes first; ours
     // lives a level below on _constrainView, so ordering only matters for the
     // first framing pass.
@@ -356,7 +371,7 @@ export function initCameraAuthority() {
     isSuspended: isCameraSuspended,
     clampToPlayArea,
     reframe: () => scheduleReframe(0),
-    focusParty: focusPartyOnEntry,
+    focusParty: () => focusPartyOnEntry(),
     sceneModeOf,
     isOurScene,
     status: cameraAuthorityStatus,
