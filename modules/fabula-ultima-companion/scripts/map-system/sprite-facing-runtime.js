@@ -13,7 +13,8 @@
  * How it works:
  * - Sprites are side-view and drawn facing LEFT (the same convention the
  *   battle setup uses), so facing is left or right: a mirror of the sprite.
- *   A token or prototype token can be marked as drawn facing right.
+ *   A token or prototype token can be marked as drawn facing right, or as
+ *   never turning (a portrait, or art with writing on it).
  * - Everything is drawn locally on each client from what that client sees,
  *   like the footsteps. A turn is not written to the token: Foundry tweens a
  *   texture change over the whole walk, which reads as a slow squash. The
@@ -40,7 +41,7 @@
 
   const FACING_FLAG = "facing";               // token: "left" | "right", saved at rest
   const DRAWN_RIGHT_FLAG = "spriteFacesRight"; // token / prototype token: art is drawn facing right
-  const LOCKED_FLAG = "facingLocked";          // token / prototype token: never turns for a talk
+  const LOCKED_FLAG = "facingLocked";          // token / prototype token: never mirrored at all
 
   const ENABLED = true;
 
@@ -141,7 +142,7 @@
   function isFacingLocked(token) {
     const own = token?.document?.getFlag?.(MODULE_ID, LOCKED_FLAG);
     if (own === true || own === false) return own;
-    return !!token?.actor?.prototypeToken?.flags?.[MODULE_ID]?.[LOCKED_FLAG];
+    return !!sourceActorFor(token)?.prototypeToken?.flags?.[MODULE_ID]?.[LOCKED_FLAG];
   }
 
   function drawnFacing(token) {
@@ -173,6 +174,7 @@
 
   function setFacing(token, facing, { instant = false } = {}) {
     if (facing !== "left" && facing !== "right") return;
+    if (isFacingLocked(token)) return;
 
     const entry = entryFor(token);
     if (entry.facing === facing) return;
@@ -511,7 +513,7 @@
 
     faceToward(party, target);
 
-    if (npc && npc.id !== party.id && !isFacingLocked(npc)) {
+    if (npc && npc.id !== party.id) {
       if (!state.talks.has(npc.id)) {
         state.talks.set(npc.id, { facingBefore: getFacing(npc), startedAt: performance.now() });
       }
@@ -624,10 +626,11 @@
           <p class="hint">Leave off for art drawn facing left, which is the usual way.</p>
         </div>
         <div class="form-group">
-          <label>Never turns when talked to</label>
+          <label>Never turns</label>
           <div class="form-fields">
             <input type="checkbox" name="flags.${MODULE_ID}.${LOCKED_FLAG}" ${flags[LOCKED_FLAG] ? "checked" : ""}>
           </div>
+          <p class="hint">For art that should not be mirrored: a portrait, a name plate, or anything with writing on it.</p>
         </div>
       `;
 
