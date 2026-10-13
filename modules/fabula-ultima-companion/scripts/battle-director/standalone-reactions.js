@@ -670,6 +670,14 @@ export async function dispatchReactionMenu({
     ? `${userDisplayName(ownerUserId)} reacting…`
     : `${reactor.name ?? "Reactor"} reacting…`;
   const menuLabel = label ?? labelForTrigger(trigger);
+  // A GM (this host, or a secondary GM's remote pick) answered a PLAYER's
+  // menu: the player's plate says so — on the close, or on the re-opened menu
+  // after a Use. Cleared once sent.
+  let gmAnswer = null;
+  const noteGmAnswer = (byUserId, text) => {
+    if (!ownerUserId || !byUserId || byUserId === ownerUserId || !game.users?.get(byUserId)?.isGM) return;
+    gmAnswer = { by: byUserId, text };
+  };
 
   function closeMenusEverywhere() {
     ReactionMenu.despawn({ combatId, tokenId: token.id });
@@ -681,7 +689,9 @@ export async function dispatchReactionMenu({
             targetUserIds: closeRecipients,
             kind: "reaction-menu",
             reason: "fired-or-passed",
+            data: gmAnswer ? { answeredBy: gmAnswer.by, answerText: gmAnswer.text } : undefined,
           });
+          gmAnswer = null;
         } catch (e) { warn(`reaction[${trigger}]: broadcastMenuClose(menu) threw`, e); }
       }
       const indicatorTokenUuid = token.document?.uuid ?? token.uuid ?? null;
@@ -706,6 +716,9 @@ export async function dispatchReactionMenu({
       reactorActorUuid: reactor.uuid,
       label: ownerLabel,
       trigger,
+      // Players' "Waiting on" tab: whose menu it is and the trigger's name.
+      ownerUserId: ownerUserId ?? null,
+      triggerLabel: menuLabel,
     };
   }
 
@@ -730,6 +743,8 @@ export async function dispatchReactionMenu({
       label: menuLabel,
       passLabel,
       disabledLabels: mergedDisabledLabels(),
+      answeredBy: gmAnswer?.by ?? null,
+      answerText: gmAnswer?.text ?? null,
     };
   }
 
@@ -915,6 +930,7 @@ export async function dispatchReactionMenu({
         });
       } catch (e) { warn(`reaction[${trigger}]: broadcastMenuOpen threw`, e); }
     }
+    gmAnswer = null;
     if (channel && indicatorRecipients.length) {
       try {
         channel.broadcastMenuOpen({ targetUserIds: indicatorRecipients, menuSpec: buildIndicatorSpec() });
@@ -935,6 +951,7 @@ export async function dispatchReactionMenu({
         if (localPickFired) return;
         localPickFired = true;
         try { remoteAwait?.abort?.("local-won"); } catch {}
+        noteGmAnswer(game.user?.id, `used ${cand?.carrierName ?? "a reaction"}`);
         const keepGoing = await processDecision(cand);
         if (keepGoing) renderMenu();
         else { closeMenusEverywhere(); resolveClose(); }
@@ -943,6 +960,7 @@ export async function dispatchReactionMenu({
         if (localPickFired) return;
         localPickFired = true;
         try { remoteAwait?.abort?.("local-won"); } catch {}
+        noteGmAnswer(game.user?.id, passLabel && /cancel/i.test(passLabel) ? "cancelled" : "passed");
         await processPass();
         closeMenusEverywhere();
         resolveClose();
@@ -974,6 +992,7 @@ export async function dispatchReactionMenu({
         };
         if (body.decision === "pass") {
           sendAck();
+          noteGmAnswer(fromUid, passLabel && /cancel/i.test(passLabel) ? "cancelled" : "passed");
           await processPass();
           closeMenusEverywhere();
           resolveClose();
@@ -988,6 +1007,7 @@ export async function dispatchReactionMenu({
           return;
         }
         sendAck();
+        noteGmAnswer(fromUid, `used ${cand.carrierName ?? "a reaction"}`);
         // A PLAYER accepted remotely → route any secondary picker in the
         // chain (target pick, option menu) back to THEIR client. Only when
         // the sender is a real non-GM user (mirrors the action-card pill's

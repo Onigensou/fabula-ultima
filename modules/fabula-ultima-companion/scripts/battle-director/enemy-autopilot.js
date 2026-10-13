@@ -238,6 +238,51 @@ async function think(token, range) {
   finally { pip.remove(); }
 }
 
+/** The AI's initiative score for an actor (DEX + INS + bonus): higher acts first. */
+export function enemyInitiativeScore(actorDoc) { return readInitiativeScore(actorDoc); }
+
+/**
+ * READ-ONLY preview for the GM desk: the actions the AI is choosing between for
+ * this token right now, with their odds. Runs the same ActionReader stages as a
+ * real turn up to the weighted pick, but with no thinking pip, no delay and no
+ * anti-repeat memory write (recordMemory:false) — nothing is written anywhere.
+ * Conditions with a chance roll are sampled once, so the odds are approximate.
+ * @returns {Promise<Array<{name, icon, pct}>|null>}
+ */
+export async function previewEnemyActionOdds({ tokenId, director = null } = {}) {
+  try {
+    const token = canvas?.tokens?.get(tokenId) ?? null;
+    if (!token) return null;
+    const combat = director?.combat ?? game.combat ?? null;
+    const combatant = combat?.combatants?.find?.((c) => c.tokenId === tokenId) ?? null;
+    const dc = director?.dCombat?.findByTokenId?.(tokenId) ?? null;
+    const activationIndex = dc && Number.isFinite(dc.turnsPerRound) && Number.isFinite(dc.turnsRemaining)
+      ? Math.max(1, dc.turnsPerRound - dc.turnsRemaining + 1) : 1;
+    const ctx = ActionReaderCore.createBaseContext();
+    await resolveActionReaderPerformer(ctx, { token, combat, combatant });
+    if (!ctx.performer?.actor) return null;
+    await buildActionReaderContext(ctx, { overrides: { activationIndex } });
+    maybeInjectSummonFallbackPattern(ctx, dc);
+    await readActionReaderPatternTable(ctx);
+    await evaluateActionReaderConditions(ctx);
+    await matchAndPickActionReaderAction(ctx, { recordMemory: false });
+    const pool = (ctx.actionPickPool ?? []).filter((p) => p.name);
+    const total = pool.reduce((a, p) => a + Math.max(0, p.weight), 0);
+    if (!pool.length || total <= 0) return null;
+    // One line per action name (a pattern can list the same action twice).
+    const by = new Map();
+    for (const p of pool) {
+      const e = by.get(p.name) ?? { name: p.name, icon: p.icon, w: 0 };
+      e.w += Math.max(0, p.weight);
+      by.set(p.name, e);
+    }
+    return [...by.values()].map((e) => ({ name: e.name, icon: e.icon, pct: Math.round((100 * e.w) / total) })).sort((a, b) => b.pct - a.pct);
+  } catch (e) {
+    warn("autopilot: previewEnemyActionOdds threw", e);
+    return null;
+  }
+}
+
 // ── ActionReader run ──────────────────────────────────────────────────────────
 // Chain the pipeline for a single token, stopping before AnnounceResult. Returns
 // the ActionReader context (with chosenAction + chosenTargets) or null on any

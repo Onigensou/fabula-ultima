@@ -450,6 +450,7 @@ function candidateFromSkill(skill, actor, { source, sourceItem, freeOfCost = fal
     // `disable_action_intent` filter (e.g. Charm/Domination hides aid spells).
     intent: classifyActionIntent(skill),
     element: String(p.type_damage ?? "").trim(),
+    elementLabel: elementLabelFor(String(p.type_damage ?? "").trim(), p),
     range: String(p.skill_range ?? "").trim(),
     skillTarget: resolveDisplayFormula(String(p.skill_target ?? "").trim(), actor, skill),
     descriptionHtml: String(p.description ?? ""),
@@ -512,12 +513,26 @@ export function filterToActiveSkillType(candidates) {
   return filterBySkillTypes(candidates, ["active", "spell"]);
 }
 
+// "VAR_ELEMENT" (the caster picks the element when the skill runs) as the
+// choices the skill's own prompt_element row offers: "Earth or Physical",
+// or "Any element" for the full list. Any other element shows as authored.
+function elementLabelFor(raw, p) {
+  if (!/^var_/i.test(raw)) return raw;
+  const rows = Object.values(p?.effect_table ?? {}).filter((r) => r && typeof r === "object" && String(r.effect_kind ?? "") === "prompt_element");
+  const opts = rows.map((r) => String(r.element_options ?? "").trim()).find(Boolean);
+  const list = opts ? [...new Set(opts.split(/[|,\n]/).map((x) => x.trim().toLowerCase()).filter(Boolean))] : [];
+  if (!list.length || list.length >= 9) return "Any element";
+  const cap = (x) => x.charAt(0).toUpperCase() + x.slice(1);
+  const names = list.map(cap);
+  return names.length === 1 ? names[0] : `${names.slice(0, -1).join(", ")} or ${names[names.length - 1]}`;
+}
+
 // ── Picker ──────────────────────────────────────────────────────────────
 
 // Map a gathered candidate to a list-picker row.
 function candidateToRow(c) {
   const subtitleParts = [];
-  if (c.element) subtitleParts.push(escapeHtml(c.element));
+  if (c.element) subtitleParts.push(escapeHtml(c.elementLabel || c.element));
   if (c.range) subtitleParts.push(escapeHtml(c.range));
   if (c.skillTarget) subtitleParts.push(escapeHtml(c.skillTarget));
   const a1 = c.rolledA1 && c.rolledA1 !== "-" ? c.rolledA1 : null;

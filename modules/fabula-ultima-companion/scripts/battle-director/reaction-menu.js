@@ -666,6 +666,9 @@ export const ReactionMenu = {
     _instances.delete(key);
   },
 
+  /** Is any menu open on this client (the player has not answered yet)? */
+  hasAny() { return _instances.size > 0; },
+
   despawnAll() {
     for (const rec of _instances.values()) {
       try { rec.cleanup(); } catch {}

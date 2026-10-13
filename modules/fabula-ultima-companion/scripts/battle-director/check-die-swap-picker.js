@@ -19,7 +19,8 @@
 import { log, warn } from "./logger.js";
 import { getIntentChannel } from "./intent-channel.js";
 import { INTENTS } from "./intents.js";
-import { plateDrawerHost } from "./director-player-hud.js";
+import { plateDrawerHost, notePlateAnswered } from "./director-player-hud.js";
+import { tabAlert, tabAlertClear } from "./tab-alert.js";
 import { pickDockedDieSwap } from "./drawer-views.js";
 
 const CSS_ID  = "fud-die-swap-picker-style";
@@ -274,7 +275,7 @@ export async function resolveDieSwapInteractive({ director, actor, label, A1, A2
     ]);
     if (result.source === "local") {
       try { remoteAwait.abort?.("local-won"); } catch {}
-      try { channel.broadcastMenuClose({ targetUserId: ownerUserId, kind: "die-swap", reason: "local-won" }); } catch {}
+      try { channel.broadcastMenuClose({ targetUserId: ownerUserId, kind: "die-swap", reason: "local-won", data: { answeredBy: game.user?.id ?? null } }); } catch {}
     } else {
       // Owner picked — tear down the GM's local copy.
       try { DieSwapPicker.despawn({ director }); } catch {}
@@ -298,6 +299,7 @@ export function registerPlayerDieSwapHandler(channel, isActiveDirector = () => f
     if (!menuSpec || menuSpec.kind !== "die-swap") return;
     // Primary GM spawns the picker locally in resolveDieSwapInteractive; skip.
     if (isActiveDirector()) return;
+    if (!game.user?.isGM) tabAlert("die-swap", "★ Your pick");
     const res = await pickDieSwap({
       director: null,
       combatId: menuSpec.combatId,
@@ -305,6 +307,7 @@ export function registerPlayerDieSwapHandler(channel, isActiveDirector = () => f
       A1: menuSpec.A1, A2: menuSpec.A2, dA: menuSpec.dA, dB: menuSpec.dB,
       slots: menuSpec.slots, budget: menuSpec.budget,
     });
+    tabAlertClear("die-swap");
     channel.emit({
       type: INTENTS.DIE_SWAP_PICKED,
       body: { swaps: res?.swaps ?? [] },
@@ -315,6 +318,8 @@ export function registerPlayerDieSwapHandler(channel, isActiveDirector = () => f
   const offClose = channel.onMenuClose((payload) => {
     if (payload?.kind && payload.kind !== "die-swap") return;
     try { DieSwapPicker.despawnAll(); } catch {}
+    tabAlertClear("die-swap");
+    if (payload?.reason === "local-won" && payload?.data?.answeredBy) notePlateAnswered({ byUserId: payload.data.answeredBy, text: "chose the die swap" });
   });
 
   return () => { try { offOpen?.(); } catch {} try { offClose?.(); } catch {} };

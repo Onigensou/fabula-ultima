@@ -822,6 +822,9 @@ export async function matchAndPickActionReaderAction(context, options = {}) {
 
     context.actionCandidatesAll = matchedCandidates;
     context.actionCandidates = retained;
+    // The pool the weighted pick drew from, with each weight — the GM desk's
+    // read-only "AI next" preview shows these as odds.
+    context.actionPickPool = (antiRepeat.pool ?? []).map((c) => ({ name: c.itemName ?? null, icon: c.icon ?? null, weight: Number(c.cooldownWeight) || 0 }));
     context.chosenAction = chosenCandidate
       ? {
           candidate: chosenCandidate,

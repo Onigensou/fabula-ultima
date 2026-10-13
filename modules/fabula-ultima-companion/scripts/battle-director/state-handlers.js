@@ -1593,6 +1593,17 @@ async function resolveAction(director, ar, opts = {}) {
       }));
     }
   } catch (e) { warn("resolveAction: emptied-action log row threw", e); }
+  // GM desk "Recent" (host only, local hook): who did what to whom, and what
+  // came of it — the same rows the battle log gets, plus the action's name.
+  try {
+    Hooks.callAll("fuBattleActionResolved", {
+      round: director?.dCombat?.round ?? null,
+      attackerTokenUuid: ar.attacker?.tokenUuid ?? null,
+      attackerName: casterActor?.name ?? null,
+      actionName: skill?.name ?? ar.skillName ?? ar.weapon?.name ?? view?.kind ?? null,
+      rows: battleLogSink.map((x) => x?.row ?? x).map((r) => ({ target: r?.attack_target ?? null, value: r?.value ?? null, mode: r?.apply_mode ?? null, type: r?.value_type ?? null })),
+    });
+  } catch (e) { warn("resolveAction: desk recent hook threw", e); }
   if (battleLogSink.length) await appendBattleLog(battleLogSink);
 }
 
@@ -2269,10 +2280,13 @@ const TurnStart = {
             const result = await Promise.race([
               localPromise.then((id) => ({ source: "local", id })),
               remoteAwait
-                ? remoteAwait.then((intent) => ({ source: "remote", id: intent?.body?.combatantId ?? null }))
+                ? remoteAwait.then((intent) => ({ source: "remote", id: intent?.body?.combatantId ?? null, userId: intent?.fromUserId ?? null }))
                 : new Promise(() => {}),
             ]);
             pickedId = result.id;
+            // Players' plates: "GM II picked who acts · Zarg" when a GM chose.
+            const pickedName = dc.combatants?.find?.((c) => c.id === pickedId)?.name ?? null;
+            const answer = { answeredBy: result.source === "local" ? (game.user?.id ?? null) : result.userId ?? null, answerText: pickedName ? `picked ${pickedName}` : "picked who acts" };
 
             // Cancel the loser side's UI.
             if (result.source === "local") {
@@ -2283,6 +2297,7 @@ const TurnStart = {
                   targetUserIds: broadcastedUserIds,
                   kind: "turn-picker",
                   reason: "local-won",
+                  data: answer,
                 });
               } catch {}
             } else {
@@ -2295,6 +2310,7 @@ const TurnStart = {
                   targetUserIds: broadcastedUserIds,
                   kind: "turn-picker",
                   reason: "remote-won",
+                  data: answer,
                 });
               } catch {}
             }
@@ -2916,6 +2932,7 @@ const Declare = {
               targetUserId: userId,
               kind: "compose-action",
               reason: "local-won",
+              data: { answeredBy: game.user?.id ?? null },
             });
           } catch (e) { warn(`DECLARE: broadcastMenuClose (local-won) to ${userId} threw`, e); }
         }
@@ -2935,6 +2952,7 @@ const Declare = {
               targetUserId: userId,
               kind: "compose-action",
               reason: "lost-race",
+              data: { answeredBy: winnerUserId ?? null },
             });
           } catch (e) { warn(`DECLARE: broadcastMenuClose (lost-race) to ${userId} threw`, e); }
         }

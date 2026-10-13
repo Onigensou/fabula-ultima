@@ -16,6 +16,15 @@
 
 import { INTENTS } from "./intents.js";
 import { log, warn } from "./logger.js";
+import { publishPlateWaiting, notePlateAnswered } from "./director-player-hud.js";
+import { tabAlert, tabAlertClear } from "./tab-alert.js";
+
+// What the other players' plates say while one player answers ("choosing a target").
+function waitLabelOf(kind, spec) {
+  const t = String(spec?.title ?? spec?.label ?? "").replace(/<[^>]*>/g, "").trim();
+  if (t) return t.length > 48 ? `${t.slice(0, 47)}…` : t;
+  return kind === REMOTE_PICK_KINDS.TARGET ? "choosing a target" : kind === REMOTE_PICK_KINDS.NUMBER ? "choosing a number" : "choosing";
+}
 
 // Menu kinds carried over the IntentChannel for the two leaf pickers.
 export const REMOTE_PICK_KINDS = Object.freeze({
@@ -57,6 +66,7 @@ async function renderLocalPick({ kind, spec = {}, externalCancel = null }) {
       preselectAll: spec.preselectAll ?? false,
       preselect: spec.preselect ?? null,
       confirmLabel: spec.confirmLabel ?? "Confirm",
+      contextCard: spec.contextCard ?? null,
       externalCancel,
     });
   }
@@ -140,10 +150,14 @@ export async function remotePick({
   // cancel) so the GM's copy closes instead of lingering.
   let gmCancelFire = null;
   const gmCancel = new Promise((res) => { gmCancelFire = res; });
+  // The other players' plates: "Waiting on Blumairwen · choosing a target".
+  const waitKey = `pick:${requestId}`;
+  publishPlateWaiting(waitKey, { userId: targetUserId, label: waitLabelOf(kind, spec) });
 
   return await new Promise((resolveRace) => {
     let settled = false;
-    const finish = (value) => {
+    // byGm: the GM's own copy answered (the player's plate then says so).
+    const finish = (value, byGm = false) => {
       if (settled) return;
       settled = true;
       // Tear down whichever side didn't win: stop awaiting the player, close the
@@ -151,7 +165,8 @@ export async function remotePick({
       // reconnect replay must not resurrect an already-answered prompt).
       try { awaitP.abort?.("race-settled"); } catch {}
       try { gmCancelFire?.(); } catch {}
-      try { channel.broadcastMenuClose({ targetUserId, kind, data: { requestId } }); } catch {}
+      try { channel.broadcastMenuClose({ targetUserId, kind, data: { requestId, answeredBy: byGm ? game.user?.id ?? null : null } }); } catch {}
+      publishPlateWaiting(waitKey, null);
       resolveRace(value ?? onTimeoutValue);
     };
 
@@ -176,7 +191,7 @@ export async function remotePick({
 
     // GM-local branch — the active racer.
     renderLocalPick({ kind, spec, externalCancel: gmCancel })
-      .then((value) => finish(value))
+      .then((value) => finish(value, true))
       .catch((e) => {
         warn(`remotePick(${kind}): GM-local picker threw`, e);
         finish(onTimeoutValue);
@@ -295,18 +310,23 @@ export function registerRemotePickResponder(channel) {
     // multi-target race another player won, or a GM teardown), tear our open
     // picker down via its `externalCancel`. Scoped by kind + requestId so an
     // unrelated close doesn't dismiss us. Unhooked once the picker settles.
-    let closeFire = null;
+    let closeFire = null, answered = false;
     const closeSignal = new Promise((res) => { closeFire = res; });
     const offClose = channel.onMenuClose((payload) => {
       if (payload?.kind && payload.kind !== kind) return;
       if (payload?.data?.requestId && payload.data.requestId !== menuSpec.requestId) return;
+      // Still open here = the player had not answered: a GM did.
+      if (!answered && payload?.data?.answeredBy) notePlateAnswered({ byUserId: payload.data.answeredBy, text: waitLabelOf(kind, menuSpec) });
       closeFire?.();
     });
+    tabAlert(`pick:${requestId ?? kind}`, "★ Your pick");
     try {
       // Render the SAME leaf picker the GM races locally (see renderLocalPick).
       // closeSignal tears it down when the GM broadcasts MENU_CLOSE for this
       // pick (the GM won the race, a sibling answered, or a teardown).
       const value = await renderLocalPick({ kind, spec: menuSpec, externalCancel: closeSignal });
+      answered = true;
+      tabAlertClear(`pick:${requestId ?? kind}`);
       reply(value);
     } catch (e) {
       warn(`registerRemotePickResponder(${kind}): picker threw`, e);

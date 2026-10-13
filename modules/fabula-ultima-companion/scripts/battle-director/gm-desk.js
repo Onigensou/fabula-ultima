@@ -10,8 +10,8 @@
 //   │ ● Bandit A 45/45 │ ● Keren  96/96  ││ commands │ options │ detail        │
 //   │ …                │ …   ⚡1 Your call││ footer: summary · Back · Confirm   │
 //   └────────────────────────────────────┘└────────────────────────────────────┘
-//                                      battle bar (top right): AI · Summons ·
-//                                      Turn · Round · Rewind · End
+//   battle bar (top LEFT, under the scene navigation — the top right belongs
+//   to the Event Clocks): AI · Summons · Turn · Round · Rewind · End
 //
 //   ROSTER    every combatant (both sides, guests, summons) — replaces the GM's
 //             compact party cards. A creature with an open reaction menu gets a
@@ -29,6 +29,11 @@
 // The ACTION CARD is untouched and stays above the desk: while it is open the
 // console steps aside and Enter / Esc belong to the card.
 //
+// Per GM (this browser): desk size S / M / L, folded to its header strips
+// (it unfolds by itself when a decision needs this GM), and a held key that
+// makes the whole desk see-through ("peek", Configure Controls). Two GMs see
+// which line / tile the other one has open (presence), first answer wins.
+//
 // Layers: the console shows ONE layer at a time — "step" (the compose chain and
 // any picker), "take" (Take Turn tiles) or "react" (reaction menus) — the one
 // opened most recently that still has something in it. A player's step can be
@@ -38,14 +43,24 @@ import { log, warn } from "./logger.js";
 import { playUiHoverSfx, playUiClickSfx } from "./director-ui-sfx.js";
 import { ensureDrawerStyles, escapeHtml as esc, mountDockedReaction, pickDocked } from "./drawer-views.js";
 import { rightEdgeReserve, hudScale, readUnitInfo } from "./director-player-hud.js";
+import { tabAlert, tabAlertClear } from "./tab-alert.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const STYLE_ID = "fud-gm-desk-style";
 const ROOT_ID = "fud-gm-desk";
 const ACTION_MIRROR = "FU_GMD_MIRROR";   // player → GMs: their drawer, live
 const ACTION_CMD = "FU_GMD_CMD";         // secondary GM → host GM: a battle-bar command
+const ACTION_PRESENCE = "FU_GMD_PRESENCE"; // GM → other GMs: the line / tile I have open
+const ACTION_LOG = "FU_GMD_LOG";         // host GM → other GMs: an action resolved (Recent)
 const LOCK_KEY = "fu-gmdesk-locked";
 const OFF_KEY = "fu-gmdesk-off";
+const SIZE_KEY = "fu-gmdesk-size";
+const FOLD_KEY = "fu-gmdesk-folded";
+// Desk size, a multiplier on the HUD's own scale. Capped so the desk always
+// fits: MIN_SPAN stage px for the two panels (roster 2 columns + console 3).
+const SIZES = { s: 0.85, m: 1, l: 1.2 };
+const MIN_SPAN = 1500;
+const LOG_MAX = 8;
 
 // Stage layout at 1920×1080 (the mockup's numbers). The whole desk scales with
 // the HUD (hudScale) so a smaller screen gets the same layout, smaller.
@@ -74,12 +89,19 @@ const D = {
   mirror: new Map(),         // actorId → { html, crumb, card, open, userId, at }
   ring: null,
   ctx: null,                 // { actorId, tokenId, at }: whose follow-up a picker without its own actor belongs to
-  cardRx: new Map(),         // row id → [skill names]: pills still waiting on the action card
-  cardRxSig: "",
+  size: "m", folded: false, foldShown: false, peek: false,
+  hover: null,               // roster row id under the pointer (its token gets the ring)
+  ringLit: null,             // { uid, until }: a clicked line's ring glows for a moment
+  presence: new Map(),       // other GM's userId → { tokenId, what, at }
+  focusSig: "",
+  barW: null,                // { full, compact } stage px
+  aiPrev: { key: "", data: null, busy: false },
 };
 const CTX_MS = 20000;        // a reaction / card pill's follow-up pickers open within this
 let _units = null;           // survives a desk rebuild (snapshot arrives on every client)
 let _socket = null;
+let _log = [];               // Recent: { round, who, action, rows } newest first
+let _ap = null;              // { a: enemy-autopilot, s: summon-autopilot } once loaded
 
 export function deskActive() { return !!D.root?.isConnected; }
 export function deskEnabled() {
@@ -141,7 +163,7 @@ function ensureStyles() {
 .gmd-grow { flex: 1; }
 
 /* ── battle bar ── */
-.gmd-bar { position: absolute; top: ${L.barTop}px; height: 40px; display: flex; align-items: stretch; pointer-events: auto; border-radius: 10px; overflow: hidden;
+.gmd-bar { position: absolute; top: ${L.barTop}px; left: ${L.left}px; height: 40px; display: flex; align-items: stretch; pointer-events: auto; border-radius: 10px; overflow: hidden;
   background: linear-gradient(180deg, var(--p-top), var(--p-bot)); border: 2px solid var(--stroke); box-shadow: 0 0 0 1px rgba(255,255,255,.7) inset, 0 8px 20px rgba(0,0,0,.4); }
 .gmd-bar > * { display: flex; align-items: center; gap: 6px; padding: 0 9px; border-left: 1px solid var(--hair); font: 700 11px "Signika", sans-serif; letter-spacing: .1em;
   text-transform: uppercase; color: var(--tx-soft); white-space: nowrap; cursor: pointer; user-select: none; }
@@ -149,6 +171,10 @@ function ensureStyles() {
 .gmd-bar > [data-cmd]:hover { background: rgba(58,50,40,.06); color: var(--tx); }
 .gmd-bar svg { width: 15px; height: 15px; color: var(--gold-2); flex: none; }
 .gmd-bar .end, .gmd-bar .end svg { color: var(--red); }
+.gmd-bar.is-compact .lbl { display: none; }
+.gmd-bar.is-compact > * { padding: 0 7px; }
+.gmd-bar > [data-cmd].off { opacity: .4; cursor: not-allowed; }
+.gmd-bar > [data-cmd].off:hover { background: none; }
 .gmd-sw { width: 30px; height: 16px; border-radius: 8px; background: rgba(58,50,40,.18); position: relative; flex: none; }
 .gmd-sw::after { content: ""; position: absolute; left: 2px; top: 2px; width: 12px; height: 12px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.3); }
 .gmd-sw.on { background: linear-gradient(180deg, var(--cta-a), var(--cta-b)); } .gmd-sw.on::after { left: 16px; }
@@ -210,6 +236,45 @@ function ensureStyles() {
 .gmd-ban b { overflow: hidden; text-overflow: ellipsis; }
 .gmd-ban .k { font: 700 9.5px "Signika", sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--tx-dim); }
 .gmd-empty { font: italic 600 12px "Signika", sans-serif; color: var(--tx-dim); padding: 4px; }
+.gmd-chip.gmp { color: #5b3a8c; background: rgba(110,70,170,.14); text-transform: none; letter-spacing: .02em; font-size: 11px; }
+.gmd-tile .gmd-chip.gmp { position: absolute; top: 6px; right: 8px; }
+.gmd-ur { cursor: pointer; }
+
+/* roster header: size S/M/L and fold */
+.gmd-hctl { display: inline-flex; align-items: center; gap: 8px; flex: none; }
+.gmd-size { display: inline-flex; border-radius: 6px; overflow: hidden; box-shadow: inset 0 0 0 1.5px rgba(122,106,85,.6); cursor: pointer; user-select: none; }
+.gmd-size span { font: 700 10px/20px "Signika", sans-serif; letter-spacing: .1em; padding: 0 7px; color: var(--tx-dim); }
+.gmd-size span.on { background: var(--tx); color: var(--p-top); }
+.gmd-size span:not(.on):hover { color: var(--tx); background: rgba(58,50,40,.08); }
+.gmd-fold { display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 8px; border-radius: 6px; font: 700 10px "Signika", sans-serif; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--tx-soft); box-shadow: inset 0 0 0 1.5px rgba(122,106,85,.6); cursor: pointer; user-select: none; white-space: nowrap; }
+.gmd-fold:hover { color: var(--tx); background: rgba(58,50,40,.08); }
+
+/* folded: both panels shrink to their header strips */
+.gmd.is-folded .gmd-cols, .gmd.is-folded .gmd-cbody { display: none; }
+.gmd.is-folded .gmd-chd { border-bottom: 0; cursor: pointer; }
+.gmd.is-folded .gmd-ph { border-bottom: 0; }
+/* peek: hold the key and the desk lets you see and click what is under it */
+.gmd.is-peek .gmd-panel, .gmd.is-peek .gmd-bar { opacity: .1; pointer-events: none !important; }
+
+/* idle console: Recent · Enemy order · AI next */
+.gmd-idlegrid { grid-area: main; display: grid; grid-template-columns: minmax(0,1.3fr) minmax(0,.9fr) minmax(0,1fr); min-height: 0; }
+.gmd-idlegrid > div { position: relative; min-width: 0; min-height: 0; padding: 8px 12px; display: flex; flex-direction: column; gap: 3px; overflow: hidden; }
+.gmd-idlegrid > div + div::before { content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 1px; background: linear-gradient(180deg, transparent, var(--gold-2) 15%, var(--gold-2) 85%, transparent); }
+.gmd-idlegrid .gmd-cap { margin-bottom: 3px; }
+.gmd-lg { display: grid; grid-template-columns: 26px minmax(0,1fr); column-gap: 6px; font: 600 12px/1.35 "Signika", sans-serif; color: var(--tx-soft); }
+.gmd-lg .r { color: var(--tx-dim); font-variant-numeric: tabular-nums; }
+.gmd-lg .t { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gmd-lg b { color: var(--tx); } .gmd-lg .dm { color: var(--red); font-weight: 700; } .gmd-lg .hl { color: #1f8a4c; font-weight: 700; }
+.gmd-ord { display: grid; grid-template-columns: 18px 22px minmax(0,1fr) auto; align-items: center; column-gap: 7px; height: 26px; font: 700 12.5px "Signika", sans-serif; }
+.gmd-ord .k { width: 17px; height: 17px; border-radius: 50%; display: grid; place-items: center; font: 700 10px "Signika", sans-serif; background: var(--tx); color: var(--p-top); }
+.gmd-ord.next .k { background: var(--cta-a); }
+.gmd-ord img { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; object-position: 50% 18%; box-shadow: 0 0 0 1.5px rgba(58,50,40,.55); border: 0 !important; }
+.gmd-ord .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gmd-ord .x { color: var(--tx-dim); font-weight: 600; font-size: 11px; }
+.gmd-aiw { border-radius: 8px; padding: 6px 10px; background: rgba(183,147,90,.14); box-shadow: inset 0 0 0 1px rgba(183,147,90,.5); display: grid; gap: 3px; font: 600 12.5px "Signika", sans-serif; color: var(--tx-soft); }
+.gmd-aiw > div { display: grid; grid-template-columns: minmax(0,1fr) auto; column-gap: 8px; } .gmd-aiw b { color: var(--tx); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gmd-note { font: italic 600 11.5px/1.35 "Signika", sans-serif; color: var(--tx-dim); }
 
 /* ── console ── */
 .gmd-chd { flex: none; min-height: 46px; display: flex; align-items: center; gap: 10px; padding: 0 14px; border-bottom: 1px solid var(--hair); }
@@ -231,6 +296,8 @@ function ensureStyles() {
   grid-template-areas: "fbar fbar fbar" "cmds main detail" "foot foot foot";
   grid-template-columns: 0px minmax(0,1fr) 0px; grid-template-rows: auto minmax(0,1fr) 44px; }
 .gmd-cbody.l-step.has-cmds { grid-template-columns: 222px minmax(0,1fr) 320px; }
+.gmd-con.is-narrow .gmd-cbody.l-step.has-cmds { grid-template-columns: 200px minmax(0,1fr) 250px; }
+.gmd-con.is-narrow .gmd-cbody.l-step:not(.has-cmds), .gmd-con.is-narrow .gmd-cbody.l-react { grid-template-columns: 0px minmax(0,1fr) 300px; }
 .gmd-cbody.l-step:not(.has-cmds), .gmd-cbody.l-react { grid-template-columns: 0px minmax(0,1fr) 380px; }
 .gmd-cbody.l-step.has-cmds:has(.gmd-layer[data-layer="step"] .gmd-work .dhv-tcols), .gmd-cbody.l-step.has-cmds.has-targets { grid-template-columns: 0px minmax(0,1fr) 280px; }
 .gmd-cbody.l-step:has(.gmd-layer[data-layer="step"] .gmd-work .dhv-tcols) .gmd-layer[data-layer="step"] .gmd-cmds, .gmd-cbody.l-step.has-targets .gmd-cmds { display: none; }
@@ -260,6 +327,7 @@ function ensureStyles() {
 .gmd-detail .dn { display: flex; align-items: center; gap: 8px; font: 700 15px/1.2 "Signika", sans-serif; }
 .gmd-detail .dn .dhv-ic { width: 26px; height: 26px; border-radius: 6px; }
 .gmd-detail .dc { display: flex; gap: 4px; flex-wrap: wrap; }
+.gmd-detail .gmd-from { font: 700 9.5px "Signika", sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--tx-dim); margin-bottom: -4px; }
 .gmd-detail .why { font: 700 11.5px/1.3 "Signika", sans-serif; color: var(--red); padding: 3px 7px; border-radius: 5px; background: rgba(179,38,30,.08); }
 .gmd-detail .dd { flex: 1 1 auto; min-height: 0; overflow-y: auto; font: 400 12.5px/17px "Signika", sans-serif; color: #4b4338; padding-right: 4px; scrollbar-width: thin; scrollbar-color: var(--gold-2) transparent; }
 .gmd-detail .dd p { margin: 0 0 5px; } .gmd-detail .dd .enh { font-style: italic; color: var(--tx-soft); font-size: 11.5px; }
@@ -360,14 +428,12 @@ function ensureStyles() {
 .gmd .dhv-nums span { min-width: 22px; }
 /* The card's hover description must not stay over the console while the card steps aside for a pick. */
 body:has(#fud-battlefield-card-root.is-hidden-during-pick) .fud-bf-desc-tip { display: none !important; }
-/* Roster → action card: a reactor whose pill waits on the card. */
-.gmd-chip.card { color: #6b4a12; background: rgba(224,165,38,.22); }
-.gmd-ur.oncard { cursor: pointer; background: rgba(224,165,38,.08); }
-#fud-battlefield-card-root .fud-bf-reaction-pill.gmd-lit { box-shadow: 0 0 0 2px #e0a526, 0 0 14px 3px rgba(224,165,38,.75) !important; transition: none !important; }
 
 /* soft dashed ring under the highlighted Take Turn tile's token */
 .gmd-ring { position: fixed; z-index: 30; pointer-events: none; border-radius: 50%; border: 3px dashed rgba(255,214,120,.95); box-shadow: 0 0 12px 2px rgba(255,200,90,.45); transform: translate(-50%, -50%); }
 .gmd-ring.pc { border-color: rgba(156,202,255,.95); box-shadow: 0 0 12px 2px rgba(90,168,255,.4); }
+.gmd-ring.lit { box-shadow: 0 0 20px 7px rgba(255,200,90,.8); }
+.gmd-ring.pc.lit { box-shadow: 0 0 20px 7px rgba(90,168,255,.75); }
 `;
   document.head.appendChild(st);
 }
@@ -379,6 +445,8 @@ const SVG = {
   round: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.4-5.7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M21 3v5h-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   rewind: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M3 3v5h5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   end: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V4M6 4h11l-2.5 4L17 12H6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>',
+  swords: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4l9 9M20 4l-9 9M6 15l3 3M18 15l-3 3M4 20l3-3M20 20l-3-3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
+  summon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.2 5.4 5.8.4-4.5 3.7 1.5 5.7L12 15.1l-5 3.1 1.5-5.7L4 8.8l5.8-.4z" fill="currentColor"/></svg>',
 };
 
 // ── build / destroy ───────────────────────────────────────────────────────────
@@ -392,6 +460,9 @@ export function buildDesk(partyIds = []) {
   ensureStyles();
   ensureSocket();
   try { D.locked = localStorage.getItem(LOCK_KEY) !== "0"; } catch { D.locked = true; }
+  try { D.size = SIZES[localStorage.getItem(SIZE_KEY)] ? localStorage.getItem(SIZE_KEY) : "m"; } catch { D.size = "m"; }
+  try { D.folded = localStorage.getItem(FOLD_KEY) === "1"; } catch { D.folded = false; }
+  D.foldShown = false; D.peek = false; D.hover = null; D.ringLit = null; D.focusSig = ""; D.barW = null;
   D.party = new Set(partyIds.map(String));
   D.units = _units;
   const root = document.createElement("div");
@@ -400,7 +471,7 @@ export function buildDesk(partyIds = []) {
   root.innerHTML = `
     <div class="gmd-bar"></div>
     <section class="gmd-panel gmd-roster">
-      <div class="gmd-ph"><span class="gmd-cap">Units</span><span class="gmd-banwrap" style="display:contents"></span><span class="gmd-grow"></span></div>
+      <div class="gmd-ph"><span class="gmd-cap">Units</span><span class="gmd-banwrap" style="display:contents"></span><span class="gmd-grow"></span><span class="gmd-hctl"></span></div>
       <div class="gmd-cols"><div class="gmd-rcol" data-side="enemy"><span class="gmd-cap foe">Enemies</span></div><div class="gmd-vr"></div><div class="gmd-rcol" data-side="party"><span class="gmd-cap pc">Party</span></div></div>
     </section>
     <section class="gmd-panel gmd-con">
@@ -429,7 +500,17 @@ export function buildDesk(partyIds = []) {
 
   D.bar.addEventListener("click", onBarClick);
   D.roster.addEventListener("click", onRosterClick);
-  D.chd.addEventListener("click", (e) => { if (e.target.closest?.("[data-lock]")) { toggleLock(); } });
+  D.roster.addEventListener("dblclick", onRosterDblClick);
+  D.roster.addEventListener("pointerover", onRosterOver);
+  D.roster.addEventListener("pointerleave", () => { if (D.hover) { D.hover = null; positionRing(true); } });
+  D.chd.addEventListener("click", (e) => {
+    if (e.target.closest?.("[data-lock]")) { toggleLock(); return; }
+    // A folded console strip opens the desk again.
+    if (D.foldShown) setFolded(false);
+  });
+  const onBlur = () => setPeek(false);
+  window.addEventListener("blur", onBlur);
+  D.offFns.push(() => window.removeEventListener("blur", onBlur));
   D.layers.take.addEventListener("click", onTakeClick);
   D.layers.take.addEventListener("pointerover", (e) => {
     const t = e.target.closest?.("[data-ti]");
@@ -443,7 +524,8 @@ export function buildDesk(partyIds = []) {
   const refresh = () => scheduleRows();
   const hooks = [
     ["updateActor", refresh], ["updateToken", refresh], ["createActiveEffect", refresh], ["updateActiveEffect", refresh], ["deleteActiveEffect", refresh],
-    ["updateSetting", () => paintBar()], ["userConnected", () => { scheduleRows(); render(); }],
+    ["updateSetting", () => paintBar()],
+    ["userConnected", (user, connected) => { if (!connected && user?.id) D.presence.delete(user.id); scheduleRows(); render(); }],
   ];
   for (const [h, fn] of hooks) { const id = Hooks.on(h, fn); D.offFns.push(() => Hooks.off(h, id)); }
   const timer = setInterval(tick, 250);
@@ -453,10 +535,11 @@ export function buildDesk(partyIds = []) {
   D.offFns.push(() => window.removeEventListener("resize", onResize));
 
   paintBar();
+  paintHeaderControls();
   paintRoster();
   render();
   place();
-  log(`[GmDesk] built (party ${D.party.size}, units ${D.units?.length ?? 0})`);
+  log(`[GmDesk] built (party ${D.party.size}, units ${D.units?.length ?? 0}, size ${D.size}${D.folded ? ", folded" : ""})`);
   return true;
 }
 
@@ -465,9 +548,11 @@ export function destroyDesk() {
   for (const fn of D.offFns) { try { fn(); } catch { /* */ } }
   D.offFns.length = 0;
   hideRing();
+  tabAlertClear("gm-desk");
+  D.presence.clear();
   // Pending reaction records must not dangle; their owners clean them up.
   D.rx.clear(); D.rxOrder = []; D.rxCur = null; D.take = null;
-  D.cardRx.clear(); D.cardRxSig = ""; D.ctx = null;
+  D.ctx = null;
   try { D.root.remove(); } catch { /* */ }
   D.root = null; D.layers = {}; D.rows.clear(); D.placeKey = "";
   log("[GmDesk] destroyed");
@@ -479,9 +564,26 @@ function isShown(el) {
   if (typeof el.checkVisibility === "function") return el.checkVisibility({ opacityProperty: true, visibilityProperty: true });
   return el.offsetParent !== null;
 }
+function rectOf(id) {
+  const el = document.getElementById(id);
+  if (!el || !isShown(el)) return null;
+  const r = el.getBoundingClientRect();
+  return r.width > 0 && r.height > 0 ? r : null;
+}
+// The desk's scale: the HUD's own, times this GM's size (S / M / L) — but never
+// so big that the two panels stop fitting the window (or take over half its
+// height). Whatever the size setting, the layout below always has MIN_SPAN.
+function deskScale() {
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const want = hudScale() * (SIZES[D.size] ?? 1);
+  const dev = document.getElementById("fud-devtools-btn")?.getBoundingClientRect();
+  const leftPx = dev?.width > 0 ? dev.right + 10 : L.left * want;
+  const avail = vw - leftPx - rightEdgeReserve() - 10;
+  return Math.max(0.45, Math.min(want, avail / MIN_SPAN, (vh * 0.45) / (L.height + L.base)));
+}
 function place() {
   if (!D.root) return;
-  const s = hudScale();
+  const s = deskScale();
   const vw = window.innerWidth, vh = window.innerHeight;
   const W = vw / s, H = vh / s;
   const dev = document.getElementById("fud-devtools-btn")?.getBoundingClientRect();
@@ -504,39 +606,82 @@ function place() {
     return b;
   };
   const rb = baseFor(rx, rx + rw), cb = baseFor(cx, cx + cw);
-  const sideBar = document.getElementById("sidebar");
-  const sbW = sideBar && isShown(sideBar) && !document.body.classList.contains("sidebar-collapsed")
-    ? Math.round((vw - sideBar.getBoundingClientRect().left) / s) : 0;
-  const barRight = Math.max(L.barRight, sbW + 10);
-  // The action card sits centred over the desk: while it is open the roster ends
-  // left of it, so the "On the card" pointers on the party lines stay readable.
-  let rwShown = rw;
-  if (D.cardOpen) {
-    const c = document.querySelector("#fud-battlefield-card-root .fud-bf-card")?.getBoundingClientRect();
-    if (c?.width > 0 && c.left / s < rx + rw && c.right / s > rx) rwShown = Math.max(420, Math.round(c.left / s) - 12 - rx);
-  }
-  const key = [s.toFixed(3), W, H, rx, rw, rwShown, cx, cw, rb, cb, barRight].join("|");
+  const bar = placeBar(s);
+  const key = [s.toFixed(3), W, H, rx, rw, cx, cw, rb, cb, D.foldShown ? 1 : 0, bar.x, bar.y, bar.compact ? 1 : 0].join("|");
   if (key === D.placeKey) return;
   D.placeKey = key;
   Object.assign(D.root.style, { width: `${W}px`, height: `${H}px`, transform: s === 1 ? "none" : `scale(${s})` });
+  D.bar.classList.toggle("is-compact", bar.compact);
+  Object.assign(D.bar.style, { left: `${bar.x}px`, top: `${bar.y}px`, right: "" });
+  if (D.foldShown) {
+    // Folded: each panel is its header strip, sitting on its own base line.
+    const rh = (D.roster.querySelector(".gmd-ph")?.offsetHeight ?? 30) + 4;
+    const ch = (D.chd?.offsetHeight ?? 46) + 4;
+    Object.assign(D.roster.style, { left: `${rx}px`, width: `${rw}px`, top: `${H - rb - rh}px`, height: `${rh}px` });
+    Object.assign(D.con.style, { left: `${cx}px`, width: `${cw}px`, top: `${H - cb - ch}px`, height: `${ch}px` });
+    return;
+  }
   // Both panels keep ONE top line (the mockup's, clear of the lowest tokens);
   // a panel with Foundry's list / hotbar under it ends above them — its rows
   // scroll — but never shorter than L.minH: then the line rises (the spec's
   // "rises over Players"), or the roster showed barely two rows a side.
   const top = Math.min(H - L.base - L.height, H - rb - L.minH, H - cb - L.minH);
-  Object.assign(D.roster.style, { left: `${rx}px`, width: `${rwShown}px`, top: `${top}px`, height: `${Math.max(150, H - rb - top)}px` });
+  Object.assign(D.roster.style, { left: `${rx}px`, width: `${rw}px`, top: `${top}px`, height: `${Math.max(150, H - rb - top)}px` });
   Object.assign(D.con.style, { left: `${cx}px`, width: `${cw}px`, top: `${top}px`, height: `${Math.max(150, H - cb - top)}px` });
-  D.bar.style.right = `${barRight}px`;
+  // A narrow console (small window): the side columns give the list room.
+  D.con.classList.toggle("is-narrow", cw < 860);
+}
+
+// The battle bar sits top LEFT (the top right is the Event Clocks' column):
+// under Foundry's scene navigation, right of the scene controls. If the round's
+// turn-order bar (docked at the top centre) would touch it, the bar first drops
+// its words (icons + switches stay, hover names them), then moves down under it.
+function measureBar() {
+  if (D.barW || !D.bar?.childElementCount) return D.barW;
+  const was = D.bar.classList.contains("is-compact");
+  D.bar.classList.remove("is-compact");
+  const full = D.bar.offsetWidth;
+  D.bar.classList.add("is-compact");
+  const compact = D.bar.offsetWidth;
+  D.bar.classList.toggle("is-compact", was);
+  if (full > 0) D.barW = { full, compact };
+  return D.barW;
+}
+function placeBar(s) {
+  const ctl = rectOf("controls"), nav = rectOf("navigation"), logo = rectOf("logo");
+  const x = Math.round(Math.max(ctl?.right ?? 0, logo?.right ?? 0, 10) / s + 10);
+  let y = Math.round(Math.max(nav?.bottom ?? 0, 0) / s + 8);
+  if (!nav) y = Math.max(y, Math.round((logo?.bottom ?? 0) / s + 8), L.barTop);
+  const w = measureBar() ?? { full: 560, compact: 300 };
+  // The turn-order bar only counts once it has settled at the top (during the
+  // round's entrance it is large and centred mid-screen).
+  const layer = document.querySelector("#fu-dir-round-layer.active");
+  const inner = layer?.querySelector(".fu-rb-inner")?.getBoundingClientRect();
+  const obst = [];
+  // The bar, plus what hangs below its middle (the spotlight portrait and the
+  // ROUND N text, absolutely placed, so outside the bar's own box).
+  if (inner && inner.width > 0 && inner.top < 24) {
+    for (const sel of [".fu-rb-inner", ".fu-rb-spotlight", ".fu-rb-text"]) {
+      const r = layer.querySelector(sel)?.getBoundingClientRect();
+      if (r && r.width > 0 && r.height > 0) obst.push({ l: r.left / s, t: r.top / s, r: r.right / s, b: r.bottom / s });
+    }
+  }
+  const hits = (bx, by, bw) => obst.some((o) => bx < o.r + 8 && bx + bw > o.l - 8 && by < o.b + 4 && by + 40 > o.t - 4);
+  if (!hits(x, y, w.full)) return { x, y, compact: false };
+  if (!hits(x, y, w.compact)) return { x, y, compact: true };
+  const below = Math.round(Math.max(...obst.map((o) => o.b)) + 8);
+  return { x, y: Math.max(y, below), compact: true };
 }
 
 function tick() {
   if (!D.root?.isConnected) return;
   place();
+  if (D.ringLit && D.ringLit.until < Date.now()) D.ringLit = null;
+  if (D.hover || D.ringLit) positionRing();
   // The action card (above the desk) owns Enter / Esc while it is open.
   const card = document.getElementById("fud-battlefield-card-root");
   const open = !!card && card.classList.contains("is-visible") && !card.classList.contains("is-hidden-during-pick") && !!card.querySelector(".fud-bf-card");
   if (open !== D.cardOpen) { D.cardOpen = open; D.root.classList.toggle("is-card", open); render(); }
-  scanCardRx(card);
   // Done chips expire.
   const now = Date.now();
   let expired = false;
@@ -548,22 +693,35 @@ function tick() {
 // ── battle bar ────────────────────────────────────────────────────────────────
 function settingOn(key) { try { return game.settings.get(MODULE_ID, key) === true; } catch { return false; } }
 async function autopilotModules() {
+  if (_ap) return _ap;
   const [a, s] = await Promise.all([import("./enemy-autopilot.js"), import("./summon-autopilot.js")]);
-  return { a, s };
+  _ap = { a, s };
+  return _ap;
 }
+// A side choosing who acts: forcing a turn / round end there broke the turn
+// order (director-boot.js refuses it too) — the buttons wait for the pick.
+function skipBlocked() { return D.turnStatus?.phase === "picking" || !!D.take; }
+const SKIP_BLOCKED_TIP = "Pick who acts first. Skipping during the pick would break the turn order.";
 let _apState = { ai: false, summons: false };
 function paintBar() {
   if (!D.bar) return;
   autopilotModules().then(({ a, s }) => {
     _apState = { ai: a.isAutopilotEnabled(), summons: s.isSummonAutopilotEnabled() };
     if (!D.bar) return;
-    D.bar.innerHTML = `<span>Battle</span>
+    const blocked = skipBlocked();
+    const h = `<span><span class="lbl">Battle</span>${SVG.swords}</span>
       <span data-cmd="ai" title="Enemy autopilot (same switch as the dev tools)">AI<span class="gmd-sw${_apState.ai ? " on" : ""}"></span></span>
-      <span data-cmd="summons" title="Summon autopilot (same switch as the dev tools)">Summons<span class="gmd-sw${_apState.summons ? " on" : ""}"></span></span>
-      <span data-cmd="turn" title="Next Turn — skip the current turn">${SVG.next}Turn</span>
-      <span data-cmd="round" title="Next Round — end this round">${SVG.round}Round</span>
-      <span data-cmd="rewind" title="Rewind to a checkpoint">${SVG.rewind}Rewind</span>
-      <span data-cmd="end" class="end" title="End the battle">${SVG.end}End</span>`;
+      <span data-cmd="summons" title="Summon autopilot (same switch as the dev tools)">${SVG.summon}<span class="lbl">Summons</span><span class="gmd-sw${_apState.summons ? " on" : ""}"></span></span>
+      <span data-cmd="turn"${blocked ? ' class="off"' : ""} title="${blocked ? SKIP_BLOCKED_TIP : "Next Turn — skip the current turn"}">${SVG.next}<span class="lbl">Turn</span></span>
+      <span data-cmd="round"${blocked ? ' class="off"' : ""} title="${blocked ? SKIP_BLOCKED_TIP : "Next Round — end this round"}">${SVG.round}<span class="lbl">Round</span></span>
+      <span data-cmd="rewind" title="Rewind to a checkpoint">${SVG.rewind}<span class="lbl">Rewind</span></span>
+      <span data-cmd="end" class="end" title="End the battle">${SVG.end}<span class="lbl">End</span></span>`;
+    if (D.bar._h === h) return;
+    D.bar._h = h;
+    D.bar.innerHTML = h;
+    D.barW = null;
+    D.placeKey = "";
+    place();
   }).catch((e) => warn("[GmDesk] battle bar paint failed", e));
 }
 async function onBarClick(e) {
@@ -579,6 +737,7 @@ async function onBarClick(e) {
       else await s.setSummonAutopilotEnabled(!s.isSummonAutopilotEnabled());
       paintBar();
     } else if (cmd === "turn" || cmd === "round") {
+      if (skipBlocked()) { ui.notifications?.info(SKIP_BLOCKED_TIP); return; }
       await runOnHost(cmd);
     } else if (cmd === "rewind") {
       const btn = document.getElementById("fud-rewindbtn");
@@ -738,66 +897,6 @@ function rowForToken(tokenId) {
   for (const r of D.rows.values()) if (r.u.tokenId === tokenId || (r.u.tokenUuid && r.u.tokenUuid.endsWith(`.${tokenId}`))) return r;
   return null;
 }
-/** A card pill names its reactor by actor uuid: a token's synthetic actor, or a linked actor. */
-function rowForReactor(uuid) {
-  const s = String(uuid ?? "");
-  const tok = /Token\.([^.]+)/.exec(s)?.[1];
-  if (tok) return rowForToken(tok);
-  const id = /^Actor\.([^.]+)/.exec(s)?.[1];
-  if (!id) return null;
-  for (const r of D.rows.values()) if (String(r.u.actorId) === id) return r;
-  return null;
-}
-
-// ── roster → action card ──────────────────────────────────────────────────────
-// The card keeps its reaction pills (Apply / Skip, the Confirm lock). The roster
-// only POINTS at them: "⚡n · On the card" on each reactor whose pill still
-// waits, and a click lights those pills on the card.
-function cardPills(card = document.getElementById("fud-battlefield-card-root")) {
-  if (!card?.querySelector(".fud-bf-card")) return [];
-  return [...card.querySelectorAll(".fud-bf-reaction-pill")];
-}
-const pillWaits = (p) => p.getAttribute("data-fud-reaction-pending") === "1" && !p.classList.contains("is-resolved");
-function scanCardRx(card) {
-  const map = new Map(), answered = new Map();
-  for (const p of cardPills(card)) {
-    if (!pillWaits(p)) {
-      if (p.classList.contains("is-resolved") && p.getAttribute("data-fud-reaction-gating") === "1") {
-        const r = rowForReactor(p.getAttribute("data-fud-reactor-uuid"));
-        if (r) answered.set(r.u.id, p.classList.contains("is-skipped") ? "Skipped" : "Applied");
-      }
-      continue;
-    }
-    const r = rowForReactor(p.getAttribute("data-fud-reactor-uuid"));
-    if (!r) continue;
-    const nm = p.getAttribute("data-fud-equip-desc-name") || "Reaction";
-    if (!map.has(r.u.id)) map.set(r.u.id, []);
-    map.get(r.u.id).push(nm);
-  }
-  const sig = [...map].map(([k, v]) => `${k}:${v.join(",")}`).join("|");
-  if (sig === D.cardRxSig) return;
-  const fresh = [...map.keys()].find((k) => !D.cardRx.has(k));
-  // Answered on the card: the line says so for a moment, as after a menu.
-  for (const k of D.cardRx.keys()) {
-    const r = map.has(k) ? null : D.rows.get(k);
-    if (r?.u.tokenId && answered.has(k)) D.done.set(r.u.tokenId, { text: answered.get(k), until: Date.now() + DONE_MS });
-  }
-  D.cardRx = map; D.cardRxSig = sig;
-  paintRxCells();
-  // Like a reaction menu: bring the first newly waiting reactor into view.
-  const r = fresh ? D.rows.get(fresh) : null;
-  if (r?.u.tokenId && !D.rx.size) scrollRosterTo(r.u.tokenId);
-}
-function lightCardPills(row) {
-  const pills = cardPills().filter((p) => pillWaits(p) && rowForReactor(p.getAttribute("data-fud-reactor-uuid")) === row);
-  if (!pills.length) return;
-  pills[0].scrollIntoView?.({ block: "nearest" });
-  for (const p of pills) {
-    p.classList.add("gmd-lit");
-    clearTimeout(p._gmdLitT);
-    p._gmdLitT = setTimeout(() => p.classList.remove("gmd-lit"), 1800);
-  }
-}
 /** Apply on a card pill: its follow-up pickers belong to that reactor (console header). */
 function onCardPointer(e) {
   const pill = e.target?.closest?.('#fud-battlefield-card-root [data-fud-reaction-action="apply"]')?.closest?.(".fud-bf-reaction-pill");
@@ -825,15 +924,13 @@ function paintRxCells() {
         : on && !D.locked ? `<span class="gmd-chip you">Answering</span>`
         : `<span class="gmd-chip pl"><span class="gmd-live"><i></i></span>${D.locked ? "Deciding" : "Or you"}</span>`;
       html = `<span class="gmd-rxc-in" title="${esc(names)}" style="display:contents"><span class="gmd-cnt">⚡${n}</span>${state}</span>`;
-    } else if (D.cardRx.has(r.u.id)) {
-      const names = D.cardRx.get(r.u.id);
-      html = `<span class="gmd-rxc-in" title="${esc(names.join(" · "))} — answer on the action card" style="display:contents"><span class="gmd-cnt">⚡${names.length}</span><span class="gmd-chip card">On the card</span></span>`;
     } else if (done) {
       html = `<span class="gmd-chip done">${esc(done.text)}</span>`;
     }
+    const others = presenceOn(r.u.tokenId);
+    if (others.length) html = `<span class="gmd-chip gmp" title="${esc(others.join(", "))} has this open">${esc(others.join(", "))}</span>` + html;
     if (cell._h !== html) { cell.innerHTML = html; cell._h = html; }
-    cell.classList.toggle("isdone", !e && !D.cardRx.has(r.u.id) && !!done);
-    r.el.classList.toggle("oncard", !e && D.cardRx.has(r.u.id));
+    cell.classList.toggle("isdone", !e && !!done);
     r.el.classList.toggle("hasrx", !!e);
     r.el.classList.toggle("rxsel", !!e && D.rxCur === e.key);
   }
@@ -846,22 +943,87 @@ function paintRxCells() {
     const label = open[0].label ?? "Reaction";
     const kind = open.length > 1 ? `${open.length} menus at once` : "one at a time";
     ban = `<span class="gmd-ban"><span class="gmd-cnt">⚡${total}</span><b>${esc(label)}</b><span class="k">${esc(kind)}</span></span>`;
-  } else if (D.cardRx.size) {
-    const total = [...D.cardRx.values()].reduce((s, v) => s + v.length, 0);
-    ban = `<span class="gmd-ban"><span class="gmd-cnt">⚡${total}</span><b>Action card</b><span class="k">answer on the card</span></span>`;
   }
   if (wrap._h !== ban) { wrap.innerHTML = ban; wrap._h = ban; }
 }
 
 function onRosterClick(e) {
+  if (e.target.closest?.("[data-size]")) { onSizeClick(e); return; }
+  if (e.target.closest?.("[data-fold]")) { e.stopPropagation(); playUiClickSfx(); setFolded(!D.folded); return; }
   const tt = e.target.closest?.("[data-take]");
   if (tt) { e.stopPropagation(); pickTile(Number(tt.dataset.take)); return; }
   const row = e.target.closest?.(".gmd-ur");
   if (!row) return;
   const r = D.rows.get(row.dataset.uid);
-  const entry = r ? [...D.rx.values()].find((x) => rowForToken(x.tokenId) === r) : null;
-  if (entry) { playUiClickSfx(); selectRx(entry.key, { user: true }); return; }
-  if (r && D.cardRx.has(r.u.id)) { playUiClickSfx(); lightCardPills(r); }
+  if (!r) return;
+  // Every line shows its creature on the field; a line with a reaction menu
+  // also opens that menu in the console.
+  const entry = [...D.rx.values()].find((x) => rowForToken(x.tokenId) === r);
+  playUiClickSfx();
+  if (entry) selectRx(entry.key, { user: true });
+  showOnField(r);
+}
+function onRosterDblClick(e) {
+  const row = e.target.closest?.(".gmd-ur");
+  const r = row ? D.rows.get(row.dataset.uid) : null;
+  if (!r || e.target.closest?.("[data-take]")) return;
+  const actor = unitActor(r.u);
+  try { actor?.sheet?.render(true); } catch (err) { warn("[GmDesk] open sheet failed", err); }
+}
+function onRosterOver(e) {
+  const row = e.target.closest?.(".gmd-ur");
+  const uid = row?.dataset.uid ?? null;
+  if (uid === D.hover) return;
+  D.hover = uid;
+  positionRing(true);
+}
+// The camera glides to the creature (through the battle camera, so it stays in
+// the play area) and its ring glows for a moment. Never while the battle is
+// moving the camera itself.
+async function showOnField(r) {
+  D.ringLit = { uid: r.u.id, until: Date.now() + 1600 };
+  positionRing(true);
+  const tok = tokenOf(r.u)?.object;
+  if (!tok || !canvas?.ready) return;
+  try {
+    const ca = await import("./camera-authority.js");
+    if (ca.isCameraSuspended?.()) return;
+    const cam = await import("./director-camera.js");
+    await cam.panTo({ x: tok.center.x, y: tok.center.y, scale: canvas.stage.scale.x }, { duration: 450 });
+  } catch (err) { warn("[GmDesk] show on field failed", err); }
+}
+
+// ── size S / M / L, fold, peek ────────────────────────────────────────────────
+function paintHeaderControls() {
+  const el = D.roster?.querySelector(".gmd-hctl");
+  if (!el) return;
+  const size = `<span class="gmd-size" data-size title="Desk size (this browser)">${Object.keys(SIZES).map((k) => `<span data-sz="${k}" class="${k === D.size ? "on" : ""}">${k.toUpperCase()}</span>`).join("")}</span>`;
+  const fold = `<span class="gmd-fold" data-fold title="${D.folded ? "Show the whole desk" : "Fold the desk to its header strips. It opens by itself when a decision needs you."}">${D.folded ? "▴ Show" : "▾ Fold"}</span>`;
+  const h = size + fold;
+  if (el._h !== h) { el.innerHTML = h; el._h = h; }
+}
+function onSizeClick(e) {
+  const k = e.target.closest?.("[data-sz]")?.dataset.sz;
+  e.stopPropagation();
+  if (!k || !SIZES[k] || k === D.size) return;
+  playUiClickSfx();
+  D.size = k;
+  try { localStorage.setItem(SIZE_KEY, k); } catch { /* */ }
+  paintHeaderControls();
+  D.placeKey = "";
+  place();
+  positionRing(true);
+}
+function setFolded(on) {
+  D.folded = !!on;
+  try { localStorage.setItem(FOLD_KEY, D.folded ? "1" : "0"); } catch { /* */ }
+  paintHeaderControls();
+  render();
+}
+function setPeek(on) {
+  if (!D.root || D.peek === !!on) return;
+  D.peek = !!on;
+  D.root.classList.toggle("is-peek", D.peek);
 }
 function scrollRosterTo(tokenId) {
   const r = rowForToken(tokenId);
@@ -963,6 +1125,55 @@ function render() {
   paintHeader(layer, { locked, forPlayer, mirror: showMirror ? mirror : null });
   if (layer === "idle" || layer === "card") paintIdle(layer);
   if (layer === "react") paintRxDetail();
+  // A decision for THIS GM: the desk unfolds by itself, and an away window's tab calls.
+  const mine = (layer === "take" && D.take?.entries.some((e) => takeEnabled(e)))
+    || (layer === "react" && !locked) || (layer === "step" && !locked);
+  const fold = D.folded && !mine;
+  if (fold !== D.foldShown) { D.foldShown = fold; D.root.classList.toggle("is-folded", fold); D.placeKey = ""; place(); }
+  if (mine) tabAlert("gm-desk", layer === "take" ? "★ Take Turn" : layer === "react" ? "★ Your call" : D.step?.cmdsEl?.querySelector(".fud-octopath:not([inert])") ? "★ Your turn" : "★ Your pick");
+  else tabAlertClear("gm-desk");
+  sendPresence(layer, locked);
+}
+
+// ── two GMs: who has what open ────────────────────────────────────────────────
+// Each GM tells the others which creature its console is on (a reaction line,
+// the highlighted Take Turn tile, the unit it composes for). Nothing is locked:
+// first answer still wins; the chip just stops two GMs starting the same one.
+function otherGmIds() { return (game.users?.contents ?? []).filter((u) => u.isGM && u.active && u.id !== game.user?.id).map((u) => u.id); }
+function focusOf(layer, locked) {
+  if (layer === "react") { const e = D.rx.get(D.rxCur); return e ? { tokenId: e.tokenId, what: "reaction" } : null; }
+  if (layer === "take") { const e = D.take?.entries?.[D.take.cur]; const id = e?.token?.id ?? e?.token?.document?.id; return id ? { tokenId: id, what: "take" } : null; }
+  if (layer === "step" && !locked) { const a = stepActor(); const u = a ? unitForActorId(a.id) : null; return u?.tokenId ? { tokenId: u.tokenId, what: "turn" } : null; }
+  return null;
+}
+function sendPresence(layer, locked) {
+  const f = focusOf(layer, locked);
+  const sig = f ? `${f.tokenId}|${f.what}` : "";
+  if (sig === D.focusSig) return;
+  D.focusSig = sig;
+  const ids = otherGmIds();
+  if (!ids.length || !ensureSocket()) return;
+  try { _socket.executeForUsers(ACTION_PRESENCE, ids, { userId: game.user?.id, tokenId: f?.tokenId ?? null, what: f?.what ?? null }); }
+  catch (e) { warn("[GmDesk] presence send failed", e); }
+}
+function receivePresence(p) {
+  if (!game.user?.isGM || !p?.userId || p.userId === game.user.id) return;
+  if (p.tokenId) D.presence.set(p.userId, { tokenId: p.tokenId, what: p.what ?? null, at: Date.now() });
+  else D.presence.delete(p.userId);
+  if (!D.root) return;
+  paintRxCells();
+  if (D.take) paintTake();
+  render();
+}
+/** Names of the other GMs whose console is on this token. */
+function presenceOn(tokenId) {
+  if (!tokenId) return [];
+  const out = [];
+  for (const [uid, pr] of D.presence) {
+    const u = game.users?.get(uid);
+    if (pr.tokenId === tokenId && u?.active) out.push(u.name);
+  }
+  return out;
 }
 
 function whoHTML({ img, name, sub, actor }) {
@@ -1017,31 +1228,98 @@ function paintHeader(layer, { locked, forPlayer, mirror }) {
         + (layer === "card" ? `<span class="gmd-chip plain">Action card open</span>` : "");
     }
   }
+  const f = focusOf(layer, locked);
+  const same = f ? presenceOn(f.tokenId) : [];
+  if (same.length) h += `<span class="gmd-chip gmp">${esc(same.join(", "))} has this open · first answer wins</span>`;
   if (D.chd._h !== h) { D.chd.innerHTML = h; D.chd._h = h; }
 }
 function paintIdle(layer) {
   const el = D.layers.idle;
-  let body, foot;
+  let h;
   if (layer === "card") {
-    body = `The action card is open.<br>Answer its reactions and press <b>Confirm</b> on the card, as before.`;
-    foot = `While the card is open, Enter and Esc belong to the card.`;
+    const body = `The action card is open.<br>Answer its reactions and press <b>Confirm</b> on the card, as before.`;
+    h = `<div class="gmd-idle"><div>${body}</div></div><div class="gmd-foot"><span class="gmd-sum">While the card is open, Enter and Esc belong to the card.</span></div>`;
   } else {
     const ts = D.turnStatus;
     const waiting = [...D.rx.values()].length;
-    if (waiting) {
-      body = `<b>${waiting} reaction menu${waiting === 1 ? " is" : "s are"} open</b> — players are deciding.<br>Click a line marked ⚡ to look.`;
-      foot = `The battle continues when ${waiting === 1 ? "it is" : "they are"} answered.`;
-    } else if (ts?.phase === "acting") {
-      const who = ts.name || "Someone";
-      body = ts.side === "party" ? `<b>${esc(who)}</b> is taking their turn.` : `<b>${esc(who)}</b> is acting.`;
-      foot = "Nothing waiting on you right now.";
-    } else {
-      body = "Nothing to decide right now.";
-      foot = "The next decision opens here by itself.";
-    }
+    let foot;
+    if (waiting) foot = `<b>${waiting} reaction menu${waiting === 1 ? " is" : "s are"} open</b>: players are deciding. Click a line marked ⚡ to look.`;
+    else if (ts?.phase === "acting") foot = `<b>${esc(ts.name || "Someone")}</b> ${ts.side === "party" ? "is taking their turn" : "is acting"}. Nothing is waiting on you.`;
+    else foot = "Nothing to decide right now. The next decision opens here by itself.";
+    h = `<div class="gmd-idlegrid">${idleRecentHTML()}${idleOrderHTML()}${idleAiHTML()}</div><div class="gmd-foot"><span class="gmd-sum">${foot}</span></div>`;
   }
-  const h = `<div class="gmd-idle"><div>${body}</div></div><div class="gmd-foot"><span class="gmd-sum">${esc(foot)}</span></div>`;
   if (el._h !== h) { el.innerHTML = h; el._h = h; }
+}
+function idleRecentHTML() {
+  const rows = _log.slice(0, 6).map((e) => {
+    const res = (e.rows ?? []).slice(0, 3).map((r) => {
+      const t = esc(r.target ?? "");
+      const mode = String(r.mode ?? "");
+      if (/miss/i.test(mode)) return `${t} · missed`;
+      if (/no targets/i.test(mode)) return "no targets";
+      const v = r.value == null || r.value === "" ? NaN : Number(r.value);
+      if (!Number.isFinite(v)) return t ? `${t} · no effect` : "";
+      const unit = r.type && r.type !== "HP" ? ` ${esc(r.type)}` : "";
+      return /heal/i.test(mode) ? `${t} <span class="hl">+${v}${unit}</span>` : `${t} <span class="dm">−${v}${unit}</span>`;
+    }).filter(Boolean);
+    const more = (e.rows?.length ?? 0) > 3 ? ` +${e.rows.length - 3}` : "";
+    return `<div class="gmd-lg"><span class="r">${e.round ? `R${e.round}` : ""}</span><span class="t"><b>${esc(e.who)}</b> ${esc(e.action ?? "")}${res.length ? ` → ${res.join(", ")}${more}` : ""}</span></div>`;
+  }).join("");
+  return `<div><span class="gmd-cap">Recent</span>${rows || `<span class="gmd-note">Actions appear here as they resolve.</span>`}</div>`;
+}
+// Enemies still to act this round. With the AI on, in the AI's own order
+// (its initiative score, highest first); two within 2 points may swap, since
+// the AI adds a small random factor ("≈").
+function enemiesToAct() {
+  const list = unitList().filter((u) => u.side === "enemy" && !u.defeated && Number(u.turnsRemaining) > 0);
+  const score = (u) => { try { return _ap?.a?.enemyInitiativeScore?.(unitActor(u)) ?? 0; } catch { return 0; } };
+  if (!_apState.ai) return list.map((u) => ({ u, close: false }));
+  const scored = list.map((u) => ({ u, sc: score(u) })).sort((a, b) => b.sc - a.sc);
+  return scored.map((x, i) => ({ u: x.u, close: (i > 0 && Math.abs(scored[i - 1].sc - x.sc) <= 2) || (i < scored.length - 1 && Math.abs(scored[i + 1].sc - x.sc) <= 2) }));
+}
+function idleOrderHTML() {
+  const list = enemiesToAct();
+  const acting = unitList().find((u) => u.active);
+  const rows = list.slice(0, 6).map(({ u, close }, i) => {
+    const nextUp = i === 0 && _apState.ai;
+    const x = acting?.id === u.id ? "acting" : nextUp ? "next" : close ? "≈" : "";
+    return `<div class="gmd-ord${nextUp ? " next" : ""}"><span class="k">${i + 1}</span><img src="${esc(unitFace(u, unitActor(u)))}" alt=""><span class="nm">${esc(u.name)}</span><span class="x">${x}</span></div>`;
+  }).join("");
+  const cap = _apState.ai ? "Enemy order · AI" : "Enemies left to act";
+  return `<div><span class="gmd-cap foe">${cap}</span>${rows || `<span class="gmd-note">No enemy has a turn left this round.</span>`}</div>`;
+}
+function idleAiHTML() {
+  if (!_apState.ai) return `<div><span class="gmd-cap">AI next</span><span class="gmd-note">AI autopilot is off: you choose each enemy's action.</span></div>`;
+  const first = enemiesToAct()[0]?.u ?? null;
+  if (!first?.tokenId) return `<div><span class="gmd-cap">AI next</span><span class="gmd-note">No enemy is waiting to act.</span></div>`;
+  refreshAiPreview(first);
+  const pv = D.aiPrev;
+  const odds = pv.key.startsWith(`${first.tokenId}|`) ? pv.data : null;
+  const body = odds?.length
+    ? `<div class="gmd-aiw">${odds.slice(0, 5).map((o) => `<div><b>${esc(o.name)}</b><span>${o.pct}%</span></div>`).join("")}</div><span class="gmd-note">Rolled when its turn starts. Switch AI off to choose yourself.</span>`
+    : `<span class="gmd-note">${pv.busy ? "Reading its action table…" : "No action pattern to preview: the GM chooses this one."}</span>`;
+  return `<div><span class="gmd-cap">AI next · ${esc(first.name)}</span>${body}</div>`;
+}
+// Read-only: the same ActionReader stages as a real AI turn, nothing written.
+function refreshAiPreview(u) {
+  const key = `${u.tokenId}|${u.turnsRemaining}|${D.turnStatus?.phase ?? ""}|${D.turnStatus?.actorId ?? ""}`;
+  if (D.aiPrev.key === key || D.aiPrev.busy) return;
+  D.aiPrev = { key, data: null, busy: true };
+  const director = globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.() ?? null;
+  autopilotModules()
+    .then(({ a }) => a.previewEnemyActionOdds?.({ tokenId: u.tokenId, director }))
+    .then((data) => { if (D.aiPrev.key === key) D.aiPrev = { key, data: data ?? null, busy: false }; })
+    .catch((e) => { warn("[GmDesk] AI preview failed", e); if (D.aiPrev.key === key) D.aiPrev = { key, data: null, busy: false }; })
+    .finally(() => { if (D.root && D.aiPrev.key === key) render(); });
+}
+
+/** Host GM: an action resolved (state-handlers.js resolveAction). */
+function addLog(p) {
+  if (!p) return;
+  let who = p.attackerName ?? "Someone";
+  try { if (p.attackerTokenUuid) who = fromUuidSync(p.attackerTokenUuid)?.name ?? who; } catch { /* */ }
+  _log.unshift({ round: p.round ?? null, who, action: p.actionName ?? null, rows: Array.isArray(p.rows) ? p.rows.slice(0, 8) : [] });
+  _log = _log.slice(0, LOG_MAX);
 }
 
 // ── keys (Take Turn tiles) ────────────────────────────────────────────────────
@@ -1132,10 +1410,12 @@ function paintTake() {
     const on = i === t.cur ? " on" : "";
     const off = ok ? "" : " off";
     const name = esc(e.token?.name ?? e.name ?? "?");
-    if (dens === "small") return `<div class="gmd-tile sm${on}${off}" data-ti="${i}"><img src="${esc(face)}" alt=""><div class="tn"><b>${name}</b><small>${Math.round(hp.v)}/${Math.round(hp.m)} HP</small></div><span class="gmd-tbtn${ok ? "" : " off"}">▶${ok && k ? `<kbd>${k}</kbd>` : ""}</span></div>`;
-    if (dens === "mid") return `<div class="gmd-tile md${on}${off}" data-ti="${i}"><div class="l1"><img src="${esc(face)}" alt=""><div class="tn"><b>${name}</b><small class="${gm ? "gm" : ""}">${esc(sub)}</small></div></div>`
+    const pres = presenceOn(e.token?.id ?? e.token?.document?.id);
+    const presChip = pres.length ? `<span class="gmd-chip gmp">${esc(pres.join(", "))}</span>` : "";
+    if (dens === "small") return `<div class="gmd-tile sm${on}${off}" data-ti="${i}">${presChip}<img src="${esc(face)}" alt=""><div class="tn"><b>${name}</b><small>${Math.round(hp.v)}/${Math.round(hp.m)} HP</small></div><span class="gmd-tbtn${ok ? "" : " off"}">▶${ok && k ? `<kbd>${k}</kbd>` : ""}</span></div>`;
+    if (dens === "mid") return `<div class="gmd-tile md${on}${off}" data-ti="${i}">${presChip}<div class="l1"><img src="${esc(face)}" alt=""><div class="tn"><b>${name}</b><small class="${gm ? "gm" : ""}">${esc(sub)}</small></div></div>`
       + `<div class="mrow"><span><i class="hpf" style="width:${pctOf(hp.v, hp.m)}"></i></span><em>${Math.round(hp.v)}/${Math.round(hp.m)}</em>${btn}</div></div>`;
-    return `<div class="gmd-tile${on}${off}" data-ti="${i}"><div class="l1"><img src="${esc(face)}" alt=""><div class="tn"><b>${name}</b><small class="${gm ? "gm" : ""}">${esc(sub)}</small></div></div>`
+    return `<div class="gmd-tile${on}${off}" data-ti="${i}">${presChip}<div class="l1"><img src="${esc(face)}" alt=""><div class="tn"><b>${name}</b><small class="${gm ? "gm" : ""}">${esc(sub)}</small></div></div>`
       + `<div class="bars"><span><i class="hpf" style="width:${pctOf(hp.v, hp.m)}"></i></span><em>${Math.round(hp.v)}/${Math.round(hp.m)}</em>`
       + (mp ? `<span><i class="mpf" style="width:${pctOf(mp.v, mp.m)}"></i></span><em>${Math.round(mp.v)}/${Math.round(mp.m)}</em>` : "") + `</div>${btn}</div>`;
   }).join("");
@@ -1147,24 +1427,41 @@ function paintTake() {
   const h = `<div class="gmd-tiles ${dens}" style="grid-template-columns:repeat(${cols}, minmax(0, 1fr))">${tiles}</div><div class="gmd-foot">${foot}</div>`;
   if (el._h !== h) { el.innerHTML = h; el._h = h; }
   positionRing(true);
+  // The highlighted tile moved: the other GMs see which one this GM is on.
+  if (activeLayer() === "take") { sendPresence("take", false); paintHeader("take", { locked: false, forPlayer: null, mirror: null }); }
 }
 
-// Soft dashed ring on the highlighted tile's token: a pointer, not a button.
-function positionRing(force = false) {
+// Soft dashed ring on a token: the roster line under the pointer (or just
+// clicked), else the highlighted Take Turn tile. A pointer, not a button.
+function ringTarget() {
+  const lineTok = (uid) => {
+    const r = uid ? D.rows.get(uid) : null;
+    const tok = r ? tokenOf(r.u)?.object : null;
+    return tok && !tok.destroyed ? { tok, pc: r.u.side !== "enemy", lit: D.ringLit?.uid === uid } : null;
+  };
+  const hov = lineTok(D.hover) ?? (D.ringLit ? lineTok(D.ringLit.uid) : null);
+  if (hov) return hov;
   const t = D.take;
   const e = t?.entries?.[t.cur];
   const tok = e?.token && !e.token.destroyed ? e.token : null;
-  if (!tok || !canvas?.stage || activeLayer() !== "take") { hideRing(); return; }
+  if (tok && activeLayer() === "take") return { tok, pc: !!e.owner, lit: false };
+  return null;
+}
+function positionRing(force = false) {
+  const tgt = ringTarget();
+  const tok = tgt?.tok ?? null;
+  if (!tok || !canvas?.stage) { hideRing(); return; }
   if (!D.ring) { D.ring = document.createElement("div"); D.ring.className = "gmd-ring"; document.body.appendChild(D.ring); }
   try {
     const wt = canvas.stage.worldTransform, rect = canvas.app.view.getBoundingClientRect();
     const c = tok.center, p = new PIXI.Point();
     wt.apply({ x: c.x, y: c.y }, p);
     const d = Math.max(tok.w, tok.h) * 0.92 * wt.a;
-    const key = `${Math.round(p.x)}|${Math.round(p.y)}|${Math.round(d)}|${e.owner ? 1 : 0}`;
+    const key = `${Math.round(p.x)}|${Math.round(p.y)}|${Math.round(d)}|${tgt.pc ? 1 : 0}|${tgt.lit ? 1 : 0}`;
     if (!force && D.ring._k === key) return;
     D.ring._k = key;
-    D.ring.classList.toggle("pc", !!e.owner);
+    D.ring.classList.toggle("pc", !!tgt.pc);
+    D.ring.classList.toggle("lit", !!tgt.lit);
     Object.assign(D.ring.style, { left: `${rect.left + p.x}px`, top: `${rect.top + p.y + 4}px`, width: `${d}px`, height: `${d}px`, display: "" });
   } catch { hideRing(); }
 }
@@ -1288,7 +1585,8 @@ function cardHTML(e) {
   const chips = (e.chips ?? []).filter((c) => c?.text && !seen.has(c.text) && seen.add(c.text))
     .map((c) => `<span class="dhv-chip t-${esc(c.tone || "tag")}">${esc(c.text)}</span>`).join("");
   const paras = String(e.body || "").split("\n").filter(Boolean).map((l) => `<p${/^Skill Enhancement/i.test(l) ? ' class="enh"' : ""}>${esc(l)}</p>`).join("");
-  return `<div class="dn">${ic}<span>${esc(e.name)}</span></div>${chips ? `<div class="dc">${chips}</div>` : ""}${e.reason ? `<div class="why">${esc(e.reason)}</div>` : ""}<div class="dd">${paras || `<p class="enh">No description.</p>`}</div>`;
+  const from = e.from ? `<span class="gmd-from">From ${esc(e.from)}</span>` : "";
+  return `${from}<div class="dn">${ic}<span>${esc(e.name)}</span></div>${chips ? `<div class="dc">${chips}</div>` : ""}${e.reason ? `<div class="why">${esc(e.reason)}</div>` : ""}<div class="dd">${paras || `<p class="enh">No description.</p>`}</div>`;
 }
 function paintStepDetail() {
   const det = D.step?.detailEl;
@@ -1459,6 +1757,7 @@ export function deskConfirm({ title, message, buttons, cancelLabel }) {
 export function deskTurnStatus(status) {
   D.turnStatus = status ?? null;
   if (!D.root) return;
+  paintBar();
   render();
 }
 
@@ -1515,7 +1814,8 @@ function paintMirror(m) {
     const chips = face.querySelector(".dhv-schips")?.innerHTML ?? "";
     const ic = face.querySelector(".dhv-ic")?.outerHTML ?? "";
     const why = face.querySelector(".dhv-swhy")?.textContent ?? "";
-    det.innerHTML = `<div class="dn">${ic}<span>${esc(name)}</span></div>${chips ? `<div class="dc">${chips}</div>` : ""}${why ? `<div class="why">${esc(why)}</div>` : ""}<div class="dd">${body}</div>`;
+    const from = face.querySelector(".dhv-sfrom")?.textContent ?? "";
+    det.innerHTML = `${from ? `<span class="gmd-from">${esc(from)}</span>` : ""}<div class="dn">${ic}<span>${esc(name)}</span></div>${chips ? `<div class="dc">${chips}</div>` : ""}${why ? `<div class="why">${esc(why)}</div>` : ""}<div class="dd">${body}</div>`;
   }
 }
 /** Player client → GMs (director-player-hud.js). */
@@ -1550,6 +1850,11 @@ function ensureSocket() {
       if (!game.user?.isGM) return null;
       try { return await runCmd(cmd); } catch (e) { warn("[GmDesk] remote command failed", e); return { ok: false, error: String(e?.message ?? e) }; }
     });
+    _socket.register(ACTION_PRESENCE, (p) => { try { receivePresence(p); } catch (e) { warn("[GmDesk] presence receive failed", e); } });
+    _socket.register(ACTION_LOG, (p) => {
+      try { if (game.user?.isGM) { addLog(p); if (D.root) { D.layers.idle._h = null; render(); } } }
+      catch (e) { warn("[GmDesk] log receive failed", e); }
+    });
   } catch (e) { warn("[GmDesk] socket registration failed", e); _socket = null; }
   return _socket;
 }
@@ -1562,8 +1867,35 @@ function deskState() {
     take: D.take ? D.take.entries.map((e) => ({ name: e.token?.name ?? e.name, owner: e.owner?.name ?? null, enabled: takeEnabled(e) })) : null,
     mirrors: [...D.mirror.keys()],
     rects: D.root ? Object.fromEntries(["gmd-bar", "gmd-roster", "gmd-con"].map((c) => { const r = D.root.querySelector(`.${c}`)?.getBoundingClientRect(); return [c, r ? [Math.round(r.left), Math.round(r.top), Math.round(r.right), Math.round(r.bottom)] : null]; })) : null,
+    size: D.size, scale: D.root ? Number(deskScale().toFixed(3)) : null, folded: D.folded, foldShown: D.foldShown, peek: D.peek,
+    barCompact: !!D.bar?.classList.contains("is-compact"), skipBlocked: skipBlocked(),
+    presence: [...D.presence].map(([uid, p]) => ({ user: game.users?.get(uid)?.name ?? uid, tokenId: p.tokenId, what: p.what })),
+    recent: _log.map((e) => ({ ...e })), aiPreview: D.aiPrev.data, hover: D.hover,
   };
 }
+// Peek: hold the key and the desk turns see-through and lets clicks reach the
+// tokens under it. A normal Foundry binding (Configure Controls), GM only.
+Hooks.once("init", () => {
+  try {
+    game.keybindings.register(MODULE_ID, "gmDeskPeek", {
+      name: "GM Battle Desk: hold to see under it",
+      hint: "While held, the GM Battle Desk turns see-through and clicks reach the tokens under it.",
+      editable: [{ key: "KeyH" }],
+      restricted: true,
+      onDown: () => { if (!deskActive()) return false; setPeek(true); return true; },
+      onUp: () => { if (!deskActive()) return false; setPeek(false); return true; },
+    });
+  } catch (e) { warn("[GmDesk] peek key binding failed", e); }
+});
+// Recent: the host runs the battle, so it hears each resolved action and
+// passes it on to the other GMs.
+Hooks.on("fuBattleActionResolved", (p) => {
+  if (!game.user?.isGM) return;
+  addLog(p);
+  if (D.root) { D.layers.idle._h = null; render(); }
+  const ids = otherGmIds();
+  if (ids.length && ensureSocket()) { try { _socket.executeForUsers(ACTION_LOG, ids, p); } catch (e) { warn("[GmDesk] log send failed", e); } }
+});
 Hooks.once("ready", () => {
   ensureSocket();
   globalThis.FUCompanion = globalThis.FUCompanion || {};
@@ -1571,6 +1903,9 @@ Hooks.once("ready", () => {
   globalThis.FUCompanion.api.gmDesk = Object.freeze({
     state: deskState,
     setLocked(b) { if (!!b !== D.locked) toggleLock(); return D.locked; },
+    setSize(k) { if (SIZES[k]) { D.size = k; try { localStorage.setItem(SIZE_KEY, k); } catch { /* */ } paintHeaderControls(); D.placeKey = ""; place(); } return D.size; },
+    setFolded(b) { setFolded(!!b); return D.folded; },
+    setPeek(b) { setPeek(!!b); return D.peek; },
     // Kill switch (this browser only): back to the compact cards + token pills.
     setEnabled(on) { try { localStorage.setItem(OFF_KEY, on ? "0" : "1"); } catch { /* */ } return deskEnabled(); },
   });

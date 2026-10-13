@@ -25,6 +25,8 @@ import { log, warn } from "./logger.js";
 import { INTENTS } from "./intents.js";
 import { ReactionMenu } from "./reaction-menu.js";
 import { ReactionIndicator } from "./reaction-indicator.js";
+import { setPlateWaiting, notePlateAnswered } from "./director-player-hud.js";
+import { tabAlert, tabAlertClear } from "./tab-alert.js";
 
 // How long the player's token menu waits after picking a blade for the GM to
 // acknowledge before assuming the click was lost (dropped socket / GM not
@@ -81,9 +83,15 @@ export function registerPlayerReactionMenuHandler(channel, isActiveDirector = ()
   // Resolve the token + spawn the actionable reaction menu. Reused for the
   // initial GM broadcast AND for the no-response re-spawn, so a lost pick
   // restores an identical, clickable menu.
+  const rxWaitKeys = new Set();
+  function clearRxWaits() { for (const k of rxWaitKeys) setPlateWaiting(k, null); rxWaitKeys.clear(); }
   async function spawnReactionMenu(menuSpec) {
     const token = await resolveCanvasToken(menuSpec.tokenUuid, "reaction-menu MENU_OPEN");
     if (!token) return;
+    // A GM answered the last menu for this player (a Use re-opens it with the
+    // rest) — say so on the plate; and call an away player back.
+    if (menuSpec.answeredBy) notePlateAnswered({ byUserId: menuSpec.answeredBy, text: menuSpec.answerText ?? "" });
+    if (!game.user?.isGM) tabAlert("reaction-menu", "★ Your reaction");
     const key = resendKey(menuSpec.combatId, token.id);
     clearResend(key); // a fresh spawn supersedes any pending re-send for this token
     const armResend = () => {
@@ -159,6 +167,13 @@ export function registerPlayerReactionMenuHandler(channel, isActiveDirector = ()
     //   - "turn-action-indicator" — someone is composing their turn.
     // Both render the same dimmed pill; only the label differs.
     if (menuSpec.kind === "reaction-indicator" || menuSpec.kind === "turn-action-indicator") {
+      // The plate's "Waiting on" tab names whose reaction the battle waits for.
+      if (menuSpec.kind === "reaction-indicator" && menuSpec.tokenUuid) {
+        let name = null;
+        try { name = fromUuidSync(menuSpec.tokenUuid)?.name ?? null; } catch { /* */ }
+        setPlateWaiting(`rx:${menuSpec.tokenUuid}`, { name, userId: menuSpec.ownerUserId ?? null, label: menuSpec.triggerLabel ?? "Reaction" });
+        rxWaitKeys.add(`rx:${menuSpec.tokenUuid}`);
+      }
       try {
         const token = await resolveCanvasToken(menuSpec.tokenUuid, `${menuSpec.kind} MENU_OPEN`);
         if (!token) return;
@@ -218,8 +233,10 @@ export function registerPlayerReactionMenuHandler(channel, isActiveDirector = ()
       const combatId  = payload?.data?.combatId ?? null;
       if (tokenUuid) {
         try { ReactionIndicator.despawn({ combatId, tokenUuid }); } catch {}
+        if (kind === "reaction-indicator") setPlateWaiting(`rx:${tokenUuid}`, null);
       } else {
         try { ReactionIndicator.despawnAll(); } catch {}
+        if (kind === "reaction-indicator") clearRxWaits();
       }
       return;
     }
@@ -230,9 +247,14 @@ export function registerPlayerReactionMenuHandler(channel, isActiveDirector = ()
     // director.stop or scene-change clears everything. The authoritative
     // close means the GM responded, so cancel any pending re-spawn timers.
     clearAllResend();
+    // The player's menu was still open: if a GM answered it, say so.
+    const wasOpen = ReactionMenu.hasAny?.() ?? true;
     try { ReactionMenu.despawnAll(); } catch {}
+    tabAlertClear("reaction-menu");
+    if (wasOpen && payload?.data?.answeredBy) notePlateAnswered({ byUserId: payload.data.answeredBy, text: payload.data.answerText ?? "" });
     if (!kind) {
       try { ReactionIndicator.despawnAll(); } catch {}
+      clearRxWaits();
     }
   });
 

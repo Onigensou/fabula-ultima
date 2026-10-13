@@ -36,7 +36,8 @@ import { log, warn } from "./logger.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { INTENTS } from "./intents.js";
 import { TurnUI } from "./turn-ui.js";
-import { holdPlateDrawer } from "./director-player-hud.js";
+import { holdPlateDrawer, notePlateAnswered } from "./director-player-hud.js";
+import { tabAlert, tabAlertClear } from "./tab-alert.js";
 import { requestTargeting } from "./target-picker.js";
 import { pickWeaponMode } from "./weapon-mode-picker.js";
 import { pickSkill, gatherSkillsForActor, filterBySkillTypes } from "./skill-picker.js";
@@ -435,6 +436,7 @@ export function registerPlayerComposeActionHandler(channel, isActiveDirector = (
       active = { token: cancelToken, sessionId };
 
       log(`compose-action MENU_OPEN: starting local chain for ${menuSpec.snap?.name}`);
+      if (!game.user?.isGM) tabAlert("compose-action", "★ Your turn");
       const result = await composeAction({
         director: null,
         snap: menuSpec.snap,
@@ -454,6 +456,7 @@ export function registerPlayerComposeActionHandler(channel, isActiveDirector = (
         objectives: menuSpec.objectives ?? null,
       });
 
+      tabAlertClear("compose-action");
       // If the active session changed while we were composing, drop this
       // result silently — a newer MENU_OPEN superseded us.
       if (active?.sessionId !== sessionId) {
@@ -487,6 +490,9 @@ export function registerPlayerComposeActionHandler(channel, isActiveDirector = (
       log(`compose-action MENU_CLOSE: cancelling local chain (${payload?.reason ?? "?"})`);
       try { active.token.cancel(payload?.reason ?? "menu-close"); } catch {}
       active = null;
+      tabAlertClear("compose-action");
+      // A GM took this turn while the player was still choosing.
+      if (payload?.data?.answeredBy) notePlateAnswered({ byUserId: payload.data.answeredBy, text: "chose your action" });
     }
   });
 

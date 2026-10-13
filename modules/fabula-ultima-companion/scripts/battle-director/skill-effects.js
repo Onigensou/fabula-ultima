@@ -8535,7 +8535,18 @@ function resolveEnemyPlayerUserIds(casterActor, casterToken = null) {
 // RESOLVE's replay also chooses nothing instead of re-prompting.
 const MENU_TARGET_DECLINED = Object.freeze({ declined: true });
 export const MENU_DECLINED_PICK = "__declined__";
+// The skill a menu belongs to, as a card: a docked row with no text of its own
+// shows it ("From Thermokinesis") instead of an empty column. Plain data — it
+// rides the remote-pick spec to the player's client.
+function skillContextCard(skill) {
+  if (!skill?.name) return null;
+  return { name: String(skill.name), img: skill.img ?? null, body: String(skill.system?.props?.description ?? "").slice(0, 6000) };
+}
 async function promptMenuList(listArgs, ctx, row, { allowEnemyResponder = false } = {}) {
+  if (listArgs && !listArgs.contextCard) {
+    const card = skillContextCard(ctx?.skill);
+    if (card) listArgs = { ...listArgs, contextCard: card };
+  }
   const responder = String(row.menu_responder ?? "").trim().toLowerCase();
   // menu_responder:"target" — the action's first TARGET's online owner picks
   // (Reassuring Presence: the covered ally heals a status "of their choice").

@@ -124,6 +124,7 @@ import "./director-player-hud.js";
 import { destroyDirectorHud } from "./director-player-hud.js";
 
 // Module-level singleton — at most one director runs per client.
+const TURN_START_BUSY = "A side is choosing who acts. Pick a unit first, then skip.";
 let _instance = null;
 
 // Pre-flight cleanup: handle leftover state from a prior aborted/wedged run
@@ -1257,12 +1258,18 @@ Hooks.once("ready", () => {
         })),
       };
     },
+    // Both force TURN_END without the dispatch lock (transitionTo). While
+    // TURN_START is still inside onEnter — a side choosing who acts, holding
+    // the lock — that ran alongside the open picker: the side flipped under
+    // it, then the pick sent an old-side unit on, so the order ran one side
+    // off. Refused there: pick first, then skip.
     // Skip the current turn — route straight through TURN_END (which advances
     // the turn / flips side, wrapping the round only if all turns are spent).
     forceNextTurn: async () => {
       if (!game.user?.isGM) return { ok: false, error: "GM only" };
       const d = _instance;
       if (!d?.dCombat?.started || d.dCombat.ended) return { ok: false, error: "no active battle" };
+      if (d.state === STATES.TURN_START) return { ok: false, error: TURN_START_BUSY };
       try { await d.transitionTo(STATES.TURN_END); return { ok: true, round: d.dCombat.round }; }
       catch (e) { warn("forceNextTurn threw", e); return { ok: false, error: String(e?.message ?? e) }; }
     },
@@ -1273,6 +1280,7 @@ Hooks.once("ready", () => {
       if (!game.user?.isGM) return { ok: false, error: "GM only" };
       const d = _instance;
       if (!d?.dCombat?.started || d.dCombat.ended) return { ok: false, error: "no active battle" };
+      if (d.state === STATES.TURN_START) return { ok: false, error: TURN_START_BUSY };
       for (const c of d.dCombat.combatants) c.turnsRemaining = 0;
       try { await d.transitionTo(STATES.TURN_END); return { ok: true, round: d.dCombat.round }; }
       catch (e) { warn("forceNextRound threw", e); return { ok: false, error: String(e?.message ?? e) }; }

@@ -41,12 +41,14 @@ import { log, warn } from "./logger.js";
 import { playSfx } from "./director-sfx.js";
 import { setPlateCard } from "./drawer-views.js";
 import { buildDesk, destroyDesk, deskActive, deskEnabled, deskOpenDrawer, deskHold, deskDrawerHost, deskTurnStatus, sendDeskMirror } from "./gm-desk.js";
+import { tabAlert, tabAlertClear } from "./tab-alert.js";
 
 const MODULE_ID  = "fabula-ultima-companion";
 const ACTION_BUILD   = "FU_DIRECTOR_HUD_BUILD";
 const ACTION_DESTROY = "FU_DIRECTOR_HUD_DESTROY";
 const ACTION_TURN     = "FU_DIRECTOR_HUD_TURN";       // GM → everyone: who is choosing / acting
 const ACTION_TURN_GET = "FU_DIRECTOR_HUD_TURN_GET";   // a (re)built client → GM: the latest one
+const ACTION_WAIT     = "FU_DIRECTOR_HUD_WAIT";       // GM → others: a player is answering a pick
 const FLAG_KEY    = "directorHudKey";
 const FLAG_ACTORS = "directorHudActorIds";
 const STYLE_ID    = "fu-director-hud-style";
@@ -726,6 +728,25 @@ function injectStyles() {
 .dhud-unit.is-open .dhud-take .face-tab { opacity: 1; transition-delay: 120ms; }
 .dhud-unit.no-take .dhud-take { display: none; }
 
+/* ── "Waiting on" tab: who the battle waits on while someone else decides,
+   or (garnet, 4 s) that a GM answered this player's menu. Same fused-tab
+   shape as the handle, right of it; never while this player's drawer is out. */
+.dhud-wait {
+  position: absolute; left: 330px; bottom: calc(100% - 4px); z-index: 4; display: none; align-items: center; gap: 8px;
+  max-width: calc(100% - 350px); height: 30px; padding: 0 12px 2px 8px; box-sizing: border-box; border-radius: 10px 10px 0 0;
+  background: linear-gradient(180deg, #f6f1e6, #ebe3d0); border: 2px solid #7a6a55; border-bottom: 0;
+  font: 600 12.5px var(--dhud-ui); color: #6a5d4c; white-space: nowrap; pointer-events: none;
+}
+.dhud-wait .t { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.dhud-wait b { color: #3a3228; }
+.dhud-wait .pl { color: #1f5aa0; font-weight: 700; }
+.dhud-wait .hg { flex: none; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-size: 10px; line-height: 1;
+  color: #f6f1e6; background: #3a3228; box-shadow: 0 0 8px 2px rgba(224,165,38,.55); }
+.dhud-wait.is-on { display: flex; }
+.dhud-wait.is-ans { background: linear-gradient(180deg, #fff3e6, #f2d9c6); border-color: #9b2f24; }
+.dhud-wait.is-ans .hg { background: #9b2f24; box-shadow: 0 0 8px 2px rgba(196,71,58,.5); }
+.dhud-unit.is-open .dhud-wait, .dhud-unit.no-take .dhud-wait { display: none; }
+
 /* ── Drawer: slides out from behind the plate ──
    Its height grows from 0 (grid 0fr -> 1fr) while the command window stays
    pinned to its front edge, so the rows come out of the plate's top like a
@@ -997,6 +1018,7 @@ function makePlate(actor, token) {
         <span class="txt"><span class="lab">Take Turn</span><span class="why"></span></span><span class="key">Enter</span></span>
       <span class="face-tab" aria-hidden="true">Turn Action</span>
     </div>
+    <div class="dhud-wait" role="status"><span class="hg" aria-hidden="true"></span><span class="t"></span></div>
     <div class="dhud-pcard"><div class="art"><img src="${esc(portrait)}" alt=""></div><span class="dhud-pname"><span class="dhud-name">${name}</span><span class="lv"></span></span></div>
     <div class="dhud-drawer"><div class="dhud-dclip"><div class="dhud-dbody"></div></div></div>
     <div class="dhud-plate">
@@ -1163,7 +1185,82 @@ function paintTake(card) {
     clearTimeout(card._arriveT);
     card._arriveT = setTimeout(() => take.classList.remove("is-arrive"), 1500);
     try { playSfx(TAKE_READY_SFX, TAKE_READY_VOL); } catch { /* */ }
+    tabAlert("plate-take", "★ Your turn");
   }
+  if (!s.on && was) tabAlertClear("plate-take");
+  paintWait(card);
+}
+
+// ── "Waiting on" tab ─────────────────────────────────────────────────────────
+// key → { name, userId, userIds, label, at }: a reaction menu another player (or
+// the GM) has open — from the reaction indicator every other player already
+// gets — or a pick the GM sent to one player (ACTION_WAIT).
+const _waits = new Map();
+let _answered = null;   // { html, until }: a GM answered this player's menu
+const WAIT_MAX_MS = 15 * 60 * 1000;
+const ANSWERED_MS = 4000;
+function userName(id) { return game.users?.get(id)?.name ?? null; }
+function waitText() {
+  const now = Date.now();
+  for (const [k, w] of _waits) if (now - w.at > WAIT_MAX_MS) _waits.delete(k);
+  const list = [..._waits.values()].sort((a, b) => a.at - b.at);
+  if (!list.length) return null;
+  const last = list[list.length - 1];
+  if (list.length === 1) {
+    const ids = last.userIds ?? (last.userId ? [last.userId] : []);
+    const players = ids.map(userName).filter(Boolean);
+    if (last.name && players.length) return `Waiting on <b>${esc(last.name)}</b> <span class="pl">(${esc(players.join(", "))})</span> · ${esc(last.label ?? "deciding")}`;
+    if (players.length) return `Waiting on <b class="pl">${esc(players.join(", "))}</b> · ${esc(last.label ?? "deciding")}`;
+    return `Waiting on the GM${last.name ? ` · <b>${esc(last.name)}</b>` : ""} · ${esc(last.label ?? "deciding")}`;
+  }
+  const who = [];
+  for (const w of list) {
+    const ids = w.userIds ?? (w.userId ? [w.userId] : []);
+    const names = ids.map(userName).filter(Boolean);
+    for (const n of names.length ? names : ["the GM"]) if (!who.includes(n)) who.push(n);
+  }
+  return `Waiting on <b>${esc(who.join(", "))}</b> · ${esc(last.label ?? "deciding")}`;
+}
+function paintWait(card) {
+  const el = card?.el?.querySelector?.(".dhud-wait");
+  if (!el) return;
+  const ans = _answered && _answered.until > Date.now() ? _answered : null;
+  const html = ans ? ans.html : waitText();
+  el.classList.toggle("is-on", !!html);
+  el.classList.toggle("is-ans", !!ans);
+  const key = `${ans ? 1 : 0}|${html ?? ""}`;
+  if (el._k === key) return;
+  el._k = key;
+  el.querySelector(".hg").textContent = ans ? "✓" : "⧗";
+  el.querySelector(".t").innerHTML = html ?? "";
+}
+function paintAllWaits() { for (const owner of byKey.values()) if (owner.plate) paintWait(owner.plate); }
+
+/** Someone other than this player is deciding (null info = done). Player clients. */
+export function setPlateWaiting(key, info) {
+  if (!key) return;
+  if (info && typeof info === "object") _waits.set(String(key), { ...info, at: Date.now() });
+  else if (!_waits.delete(String(key))) return;
+  paintAllWaits();
+}
+
+/**
+ * A GM answered this player's open menu (first answer wins). Shows for a few
+ * seconds on the plate: "GM II answered for you · used High Speed".
+ */
+export function notePlateAnswered({ byUserId = null, text = "" } = {}) {
+  const by = game.users?.get(byUserId);
+  if (!by?.isGM || byUserId === game.user?.id) return;
+  _answered = { html: `<b>${esc(by.name)}</b> answered for you${text ? ` · ${esc(text)}` : ""}`, until: Date.now() + ANSWERED_MS };
+  paintAllWaits();
+  setTimeout(paintAllWaits, ANSWERED_MS + 50);
+}
+
+/** GM: tell every other client that one player is answering a pick (null = done). */
+export function publishPlateWaiting(key, info) {
+  if (!game.user?.isGM || !key) return;
+  try { ensureSocket()?.executeForOthers(ACTION_WAIT, { key: String(key), info: info ?? null }); }
+  catch (e) { warn("[DirectorHud] waiting broadcast failed", e); }
 }
 
 function paintAllTakes() {
@@ -1223,6 +1320,7 @@ function onTakeKey(e) {
 // Battle over: the next battle starts with no stale "Hina is acting".
 function resetTurnState() {
   _turnStatus = null; _statusActingId = null; _takeTurn = null; _costPreview = null;
+  _waits.clear(); _answered = null;
 }
 
 /** Apply a turn status (GM publish or socket). */
@@ -1767,6 +1865,14 @@ function ensureSocket() {
     catch (e) { warn("[DirectorHud] socket TURN error:", e); }
   });
   socket.register(ACTION_TURN_GET, () => _turnStatus);
+  socket.register(ACTION_WAIT, ({ key, info } = {}) => {
+    try {
+      // The player being waited on gets the pick itself, not a note about it.
+      const ids = info?.userIds ?? (info?.userId ? [info.userId] : []);
+      if (info && ids.includes(game.user?.id)) return;
+      setPlateWaiting(key, info ?? null);
+    } catch (e) { warn("[DirectorHud] socket WAIT error:", e); }
+  });
 
   _socket = socket;
   return _socket;

@@ -17,7 +17,7 @@
 
 import { log, warn } from "./logger.js";
 import { INTENTS } from "./intents.js";
-import { armPlateTakeTurn } from "./director-player-hud.js";
+import { armPlateTakeTurn, notePlateAnswered } from "./director-player-hud.js";
 import { deskArmTakeTurn } from "./gm-desk.js";
 
 const STYLE_ID = "fud-turnpicker-style";
@@ -380,6 +380,8 @@ export function registerPlayerTurnPickerHandler(channel, isActiveDirector = () =
     // No reliable combatId on the payload; just despawn anything open.
     // At most one turn-picker is up per client at a time.
     try { TurnPicker.despawnAll(); } catch {}
+    // A GM chose who acts while this player was offered the pick.
+    if (payload?.data?.answeredBy) notePlateAnswered({ byUserId: payload.data.answeredBy, text: payload.data.answerText ?? "" });
   });
 
   return () => { try { offOpen?.(); } catch {} try { offClose?.(); } catch {} };

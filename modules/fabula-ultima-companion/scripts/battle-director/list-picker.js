@@ -515,6 +515,9 @@ export async function pickFromList({
   // none / on close). The skill and item pickers use it to preview a row's
   // cost on the player's plate.
   onFocusRow = null,
+  // { name, img, body }: the skill a choice belongs to. A docked row with no
+  // text of its own shows this card ("From Thermokinesis") instead of none.
+  contextCard = null,
   // ── Drawer (players): drawn inside the plate's drawer instead of centre-
   // screen when this client has a plate (drawer-views.js); dock:false keeps
   // the overlay. crumb = the drawer tab ("Spell"); verb = the Confirm label
@@ -622,7 +625,7 @@ export async function pickFromList({
       const docked = pickDocked(host, {
         title, crumb, groups, tabbed, multiSelect, maxSelect, preselectAll, preselect,
         confirmLabel: multiSelect ? confirmLabel : null, cancelLabel, verb, onFocusRow, focusValue,
-        numberShortcuts, externalCancel, onDone: () => host.release(),
+        numberShortcuts, externalCancel, contextCard, onDone: () => host.release(),
       });
       const rec = { cleanup: docked.cleanup, root: null };
       _overlays.set(key, rec);

@@ -174,11 +174,25 @@ export async function promptNumberDialog({ label, min, max, step = 1, def, title
 
         // Click a number to bring it to the center (unless it was a drag).
         for (const it of items) it.addEventListener("click", () => { if (!moved) centerOn(it); });
-        // Arrow keys nudge the selection.
+        // Arrow keys nudge the selection; PgUp/PgDn move by 10; typed digits
+        // jump to the nearest value (same keys as the docked wheel).
+        let typed = "", typedT = null;
         scroll.addEventListener("keydown", (e) => {
           const i = items.findIndex((x) => Number(x.dataset.val) === selected);
-          if (e.key === "ArrowRight" && i < items.length - 1) { centerOn(items[i + 1]); e.preventDefault(); }
-          else if (e.key === "ArrowLeft" && i > 0) { centerOn(items[i - 1]); e.preventDefault(); }
+          const go = (j) => { centerOn(items[Math.max(0, Math.min(items.length - 1, j))]); e.preventDefault(); };
+          if (e.key === "ArrowRight" && i < items.length - 1) go(i + 1);
+          else if (e.key === "ArrowLeft" && i > 0) go(i - 1);
+          else if (e.key === "PageUp") go(i + 10);
+          else if (e.key === "PageDown") go(i - 10);
+          else if (e.key.length === 1 && e.key >= "0" && e.key <= "9") {
+            const maxLen = String(Math.max(...items.map((x) => Math.abs(Number(x.dataset.val))))).length;
+            typed = typed.length >= maxLen || typed === "0" ? e.key : typed + e.key;
+            clearTimeout(typedT); typedT = setTimeout(() => { typed = ""; }, 1200);
+            const want = Number(typed);
+            let best = 0;
+            items.forEach((x, k) => { if (Math.abs(Number(x.dataset.val) - want) < Math.abs(Number(items[best].dataset.val) - want)) best = k; });
+            go(best);
+          }
         });
 
         // Center the default value on open, and RE-center whenever the strip's size

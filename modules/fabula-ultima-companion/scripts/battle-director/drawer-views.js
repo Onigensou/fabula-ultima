@@ -213,6 +213,7 @@ export function ensureDrawerStyles() {
 .dhv-step { width: 30px; height: 30px; border-radius: 7px; border: 1px solid rgba(122,106,85,.5); background: rgba(58,50,40,.06); font: 800 16px/28px var(--dhud-ui, "Signika", sans-serif); text-align: center; color: #3a3228; cursor: pointer; box-sizing: border-box; }
 .dhv-nums { flex: 1; display: flex; justify-content: space-between; align-items: center; height: 46px; padding: 0 8px; border-radius: 8px; background: rgba(58,50,40,.07); box-shadow: inset 0 0 0 1px rgba(122,106,85,.3); }
 .dhv-nums span { font: 800 15px var(--dhud-ui, "Signika", sans-serif); color: #8a7d68; font-variant-numeric: tabular-nums; cursor: pointer; min-width: 26px; text-align: center; }
+.dhv-typed { display: block; width: max-content; margin-top: 3px; padding: 1px 6px; border-radius: 4px; font: 700 10.5px var(--dhud-ui, "Signika", sans-serif); letter-spacing: .06em; text-transform: none; color: #8e2219; background: rgba(196,71,58,.12); }
 .dhv-nums span.is-on { color: #f6f1e6; background: linear-gradient(180deg, #5aa8ff, #2e7bd6); border-radius: 6px; padding: 5px 7px; font-size: 19px; }
 
 /* ── Skill card: the plate's portrait card, turned over ── */
@@ -229,6 +230,7 @@ export function ensureDrawerStyles() {
 .dhv-shead { display: grid; grid-template-columns: 46px minmax(0,1fr); column-gap: 10px; align-items: center; }
 .dhv-shead .dhv-ic { width: 46px; height: 46px; border-radius: 9px; box-shadow: 0 0 0 2px #b7935a, 0 2px 6px rgba(0,0,0,.25); font-size: 20px; }
 .dhv-sname { font: 800 18px/1.15 var(--dhud-ui, "Signika", sans-serif); letter-spacing: .01em; text-wrap: balance; overflow-wrap: anywhere; }
+.dhv-sfrom { font: 800 9.5px/1.3 var(--dhud-ui, "Signika", sans-serif); letter-spacing: .12em; text-transform: uppercase; color: #9a8d76; }
 .dhv-schips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 9px; }
 .dhv-schips .dhv-chip { font-size: 11px; line-height: 18px; padding: 0 7px; max-width: none; }
 .dhv-srule { flex: none; height: 1px; margin: 9px 0 7px; background: linear-gradient(90deg, transparent, #b7935a 12%, #b7935a 88%, transparent); }
@@ -335,7 +337,7 @@ function cardFaceHTML(e) {
     .map((c) => `<span class="dhv-chip t-${escapeHtml(c.tone || "tag")}">${escapeHtml(c.text)}</span>`).join("");
   const paras = String(e.body || "").split("\n").filter(Boolean)
     .map((l) => `<p${/^Skill Enhancement/i.test(l) ? ' class="enh"' : ""}>${escapeHtml(l)}</p>`).join("");
-  return `<div class="dhv-shead">${ic}<div style="min-width:0"><div class="dhv-sname">${escapeHtml(e.name)}</div></div></div>
+  return `<div class="dhv-shead">${ic}<div style="min-width:0">${e.from ? `<div class="dhv-sfrom">From ${escapeHtml(e.from)}</div>` : ""}<div class="dhv-sname">${escapeHtml(e.name)}</div></div></div>
     ${chips ? `<div class="dhv-schips">${chips}</div>` : ""}<div class="dhv-srule"></div>
     ${e.reason ? `<div class="dhv-swhy">${escapeHtml(e.reason)}</div>` : ""}
     <div class="dhv-sbody"><div class="in">${paras || `<p class="enh">No description.</p>`}</div></div>`;
@@ -402,9 +404,16 @@ export function pickDocked(host, {
   title = "Choose", crumb = null, groups, tabbed = false, multiSelect = false, maxSelect = 0,
   preselectAll = false, preselect = null, confirmLabel = null, cancelLabel = "Cancel", verb = null,
   onFocusRow = null, focusValue = null, numberShortcuts = true, externalCancel = null, onDone = null,
+  contextCard = null,
 } = {}) {
   ensureDrawerStyles();
   const flat = [], secOf = [];
+  // A choice inside a skill (Fire or Ice, an element, a menu option) usually
+  // has no text of its own: the card then shows the skill it belongs to.
+  const ctxEntry = contextCard?.name ? {
+    key: `ctx|${contextCard.name}`, kind: "context", name: String(contextCard.name), from: String(contextCard.name),
+    img: contextCard.img ?? null, iconHTML: "", chips: [], body: htmlToCardText(String(contextCard.body ?? "")) || "", reason: "",
+  } : null;
   groups.forEach((g, si) => (g.items ?? []).forEach((r) => { flat.push(r); secOf.push(si); }));
   const useTabs = tabbed && groups.length >= 2;
   const tiles = !useTabs && !multiSelect && groups.length === 1 && flat.length >= 1 && flat.length <= 3 && !groups[0].label;
@@ -480,10 +489,11 @@ export function pickDocked(host, {
     }
     const r = flat[cur];
     // A plain option with no picture and no text (a menu's "Create a new
-    // Phantasm") would flip the portrait into an empty card: leave it be.
+    // Phantasm") gets the card of the skill it belongs to when there is one,
+    // else no card. Never the previous row's: that described another option.
     const entry = r ? rowCardEntry(r, (useTabs ? groups[activeTab]?.label : groups[secOf[cur]]?.label) || tab) : null;
     const worthACard = entry && (entry.img || (entry.body && entry.body !== entry.name && entry.body.length > 24));
-    if (worthACard || !flat.some((x) => x.imageUrl || x.tooltip || x.cardHtml)) host.setCard?.(worthACard ? entry : null);
+    host.setCard?.(worthACard ? entry : ctxEntry && r ? { ...ctxEntry, key: `${ctxEntry.key}|${cur}`, name: stripTags(r.primary) || ctxEntry.from } : ctxEntry);
     try { onFocusRow?.(r ?? null); } catch (e) { warn("drawer list: onFocusRow threw", e); }
   }
   function ensureVisible(list) {
@@ -836,18 +846,41 @@ export function pickDockedNumber(host, { label = "Amount", title = null, opts = 
   const promise = new Promise((r) => { resolveFn = r; });
   const view = document.createElement("div");
   view.className = "dhv-view is-in";
+  // Typed digits jump straight to a value ("2", "7" → 27); the chip says what
+  // was read and clears after a pause without typing.
+  let typed = "", typedNote = "", typedT = null;
   function paint() {
     const lo = Math.max(0, Math.min(i - 4, opts.length - 9)), win = opts.slice(lo, lo + 9);
-    view.innerHTML = `<div class="dhv-main"><div class="dhv-num"><div class="dhv-nlab">${escapeHtml(label)}<b>${escapeHtml(opts[i])}</b></div>`
+    const chip = typed ? `<span class="dhv-typed">typed ${escapeHtml(typed)}${typedNote ? ` · ${escapeHtml(typedNote)}` : ""}</span>` : "";
+    view.innerHTML = `<div class="dhv-main"><div class="dhv-num"><div class="dhv-nlab">${escapeHtml(label)}<b>${escapeHtml(opts[i])}</b>${chip}</div>`
       + `<div class="dhv-strip"><span class="dhv-step" role="button" data-step="-1">−</span><div class="dhv-nums">`
       + win.map((v, k) => `<span class="${lo + k === i ? "is-on" : ""}" data-idx="${lo + k}">${escapeHtml(v)}</span>`).join("")
       + `</div><span class="dhv-step" role="button" data-step="1">+</span></div></div></div>`
-      + footerHTML({ text: `<span class="cnt">${escapeHtml(title ?? label)}</span> · ${escapeHtml(opts[0])}–${escapeHtml(opts[opts.length - 1])}`, hints: "←→ change", back: "Back", go: "Confirm" });
+      + footerHTML({ text: `<span class="cnt">${escapeHtml(title ?? label)}</span> · ${escapeHtml(opts[0])}–${escapeHtml(opts[opts.length - 1])}`, hints: "0–9 type · ←→ ±1 · PgUp/PgDn ±10", back: "Back", go: "Confirm" });
   }
   function set(n) { const j = Math.max(0, Math.min(opts.length - 1, n)); if (j !== i) { i = j; playUiHoverSfx(); paint(); } }
+  function clearTyped() { clearTimeout(typedT); if (typed) { typed = ""; typedNote = ""; paint(); } }
+  // The option nearest the typed number; past either end it stops there.
+  function applyTyped() {
+    clearTimeout(typedT);
+    typedT = setTimeout(clearTyped, 1200);
+    typedNote = "";
+    const want = Number(typed);
+    const nums = opts.map(Number);
+    const lo = nums[0], hi = nums[nums.length - 1];
+    let j = nums.indexOf(want);
+    if (j < 0) {
+      if (want >= Math.max(lo, hi)) { j = hi >= lo ? nums.length - 1 : 0; typedNote = `max ${Math.max(lo, hi)}`; }
+      else if (want <= Math.min(lo, hi)) { j = hi >= lo ? 0 : nums.length - 1; typedNote = `min ${Math.min(lo, hi)}`; }
+      else { let best = 0; for (let k = 1; k < nums.length; k++) if (Math.abs(nums[k] - want) < Math.abs(nums[best] - want)) best = k; j = best; }
+    }
+    if (j !== i) { i = j; playUiHoverSfx(); }
+    paint();
+  }
   function finish(value) {
     if (done) return;
     done = true;
+    clearTimeout(typedT);
     try { window.removeEventListener("keydown", onKey, true); } catch {}
     view.inert = true;
     try { onDone?.(); } catch {}
@@ -872,10 +905,19 @@ export function pickDockedNumber(host, { label = "Amount", title = null, opts = 
     const k = e.key, swallow = () => { e.preventDefault(); e.stopImmediatePropagation(); };
     if (k === "Escape") { swallow(); playUiClickSfx(); finish(null); }
     else if (k === "Enter") { swallow(); playUiClickSfx(); finish(opts[i]); }
-    else if (k === "ArrowLeft" || k === "ArrowDown") { swallow(); set(i - 1); }
-    else if (k === "ArrowRight" || k === "ArrowUp") { swallow(); set(i + 1); }
-    else if (k === "Home") { swallow(); set(0); }
-    else if (k === "End") { swallow(); set(opts.length - 1); }
+    else if (k.length === 1 && k >= "0" && k <= "9" && opts.every((v) => Number.isFinite(Number(v)))) {
+      swallow();
+      // A digit after the number is already as long as the range allows starts a new one.
+      const maxLen = String(Math.max(...opts.map((v) => Math.abs(Number(v))))).length;
+      typed = typed.length >= maxLen ? k : (typed === "0" ? k : typed + k);
+      applyTyped();
+    }
+    else if (k === "Backspace" && typed) { swallow(); typed = typed.slice(0, -1); if (typed) applyTyped(); else clearTyped(); }
+    else if (k === "PageUp" || k === "PageDown") { swallow(); clearTyped(); set(i + (k === "PageUp" ? 10 : -10)); }
+    else if (k === "ArrowLeft" || k === "ArrowDown") { swallow(); clearTyped(); set(i - 1); }
+    else if (k === "ArrowRight" || k === "ArrowUp") { swallow(); clearTyped(); set(i + 1); }
+    else if (k === "Home") { swallow(); clearTyped(); set(0); }
+    else if (k === "End") { swallow(); clearTyped(); set(opts.length - 1); }
   };
   window.addEventListener("keydown", onKey, true);
   if (externalCancel && typeof externalCancel.then === "function") externalCancel.then(() => finish(null));
