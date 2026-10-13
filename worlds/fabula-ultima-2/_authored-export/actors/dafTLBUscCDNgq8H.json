@@ -18386,6 +18386,7 @@
       "spiritism": false,
       "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Hina/Hina_Battler002.webm",
       "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Hina/Hina_Standard.png",
+      "sprite_walk": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Hina/Hina_Walking_PLACEHOLDER.webm",
       "stagger_status": 0,
       "suppress_status": 0,
       "sword_ef": "100",
