@@ -136,6 +136,11 @@
               if (!String(row.name ?? "").trim()) add("warn", "Set Variable with no name.");
               else note(variables, row.name, "written", at);
               break;
+            case "runCheck":
+              if ((row.targets ?? []).some(t => t.kind === "name" && !String(t.name ?? "").trim())) add("warn", "Run Check has a named target with no name.");
+              if (!row.successRows?.length && !row.failureRows?.length) add("info", "Run Check where neither Success nor Failure does anything.");
+              if (String(row.storeVar ?? "").trim()) note(variables, row.storeVar, "written", at);
+              break;
             case "showChoices": {
               const options = row.options ?? [];
               if (options.some(o => !String(o.label ?? "").trim())) add("warn", "Show Choices has an answer with no text.");

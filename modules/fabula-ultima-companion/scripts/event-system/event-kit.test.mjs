@@ -24,6 +24,8 @@ const check = (name, ok, detail = "") => {
   print(`${ok ? "PASS" : "FAIL"} ${name}${detail ? "  " + detail : ""}`);
   if (!ok) fail++;
 };
+// A second name for it, for the block where "check" builds a Run Check row.
+const verify = check;
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 // ---------------------------------------------------------------------------
@@ -82,6 +84,19 @@ const party = makeActor("party1", {
   flags: {}
 });
 
+// Four party members, each owned by one player; the Current Game sheet, which
+// remembers the last main controller's character; and one actor outside the party.
+const member = (id, name, ownerId) => ({
+  id, name, uuid: `Actor.${id}`,
+  testUserPermission: (user) => user?.id === ownerId
+});
+const members = [member("m1", "Hina", "p1"), member("m2", "Keren", "p2"), member("m3", "Blanche", "p3"), member("m4", "Zarg", "p4")];
+members.forEach((m, i) => { party.system.props[`member_id_${i + 1}`] = m.id; });
+const currentGame = { id: "cg", name: "Current Game", flags: { "fabula-ultima-companion": { movementControlState: { controllerActorUuid: "Actor.m3" } } } };
+const outsider = member("x1", "Otto", "nobody");
+const worldActors = () => [party, currentGame, ...members, outsider];
+globalThis.fromUuid = async (uuid) => worldActors().find(a => `Actor.${a.id}` === uuid) ?? null;
+
 const users = new Map([
   ["gm1", { id: "gm1", isGM: true }],
   ["p1", { id: "p1", isGM: false }],   // the main controller
@@ -91,7 +106,11 @@ const users = new Map([
 globalThis.game = {
   user: users.get("gm1"),
   users,
-  actors: { get: (id) => (id === party.id ? party : null) },
+  actors: {
+    get: (id) => worldActors().find(a => a.id === id) ?? null,
+    find: (fn) => worldActors().find(fn),
+    [Symbol.iterator]: () => worldActors()[Symbol.iterator]()
+  },
   socket: { emit: () => {}, on: () => {} },
   settings: { register: () => {}, get: () => false }
 };
@@ -259,7 +278,7 @@ globalThis.oni.EventSystem.ShowText = {
 
 for (const file of [
   "event-client.js", "event-gameState.js", "event-eventRegistry.js", "event-flow.js",
-  "event-rows-flow.js", "event-rows-choices.js"
+  "event-rows-flow.js", "event-rows-choices.js", "event-rows-check.js"
 ]) load(file);
 
 const ES = globalThis.oni.EventSystem;
@@ -550,5 +569,139 @@ await quiet(async () => {
     EventRegistry.makeDefaultRow("showChoices").options.length === 2 && EventRegistry.makeDefaultRow("showChoices").roleplay === true);
 }
 
-console.log(fail ? `\n${fail} FAILED` : "\nall passed");
+// --- Run Check ---------------------------------------------------------------
+// The Check Requester is replaced by a stand-in that records who was asked to
+// roll and answers with the results the test sets up.
+{
+  const asked = [];
+  let nextResults = [];
+  let nextGroup = null;
+  globalThis.ONI = globalThis.ONI ?? {};
+  globalThis.ONI.CheckRequester = {
+    request: async (actors, opts) => {
+      asked.push({ kind: "check", names: actors.map(a => a.name), opts });
+      return actors.map((a, i) => ({ actorUuid: a.uuid, actorName: a.name, ...(nextResults[i] ?? { pass: false }) }));
+    }
+  };
+  globalThis.ONI.GroupCheck = {
+    request: async (opts) => { asked.push({ kind: "group", uuids: opts.allActorUuids, opts }); return nextGroup; }
+  };
+
+  const check = (extra = {}) => ({
+    type: "runCheck", label: "Force the door", attrA: "MIG", attrB: "MIG", dl: 12,
+    successRows: [text("success")], failureRows: [text("failure")],
+    ...extra
+  });
+  const PASS = { pass: true }, FAIL = { pass: false };
+  const CRIT = { pass: true, isCrit: true }, FUMBLE = { pass: false, isFumble: true };
+
+  // Like runEvent, with the user who pressed the prompt.
+  const runAs = async (requesterId, rows, opts = {}) => {
+    const sourceId = `check${++eventSeq}`;
+    const normalized = EventRegistry.normalizeRows(rows);
+    Flow.begin(sourceId, "scene1", { flags: {} });
+    const runList = (list) => Logic.runRows(list, {
+      aborted: () => Flow.isAborted(sourceId),
+      isCritical: (row) => EventRegistry.peek(row?.type)?.critical === true,
+      execute: (row) => EventRegistry.executeRow(row, { sceneId: "scene1", tileId: sourceId, requesterId, runRows: runList })
+    });
+    const running = runList(normalized);
+    if (opts.during) await opts.during(sourceId);
+    const out = await running;
+    Flow.end(sourceId);
+    Hooks.callAll("oniEventExecuteDone", { sceneId: "scene1", sourceId });
+    return out;
+  };
+
+  await quiet(async () => {
+    // Who rolls.
+    asked.length = 0; said.length = 0; nextResults = [PASS];
+    await runAs("p2", [check()]);
+    verify("Run Check: by default the roller is the character of the player who interacted", asked[0]?.names.join() === "Keren", asked[0]?.names.join());
+    verify("Run Check: the check asked for is the one written",
+      asked[0].opts.attrA === "MIG" && asked[0].opts.dl === 12 && asked[0].opts.label === "Force the door" && asked[0].opts.hiddenDl === true);
+    verify("Run Check: a pass runs Success", said.join() === "success");
+
+    asked.length = 0; said.length = 0; nextResults = [FAIL];
+    await runAs("gm1", [check()]);
+    verify("Run Check: when the GM interacted, the main controller's character rolls (p1 holds the controller)", asked[0]?.names.join() === "Hina", asked[0]?.names.join());
+    verify("Run Check: a fail runs Failure", said.join() === "failure");
+
+    asked.length = 0; nextResults = [PASS, PASS, PASS, PASS];
+    await runAs("p1", [check({ targets: [{ kind: "party" }, { kind: "controller" }, { kind: "member", slot: 2 }] })]);
+    verify("Run Check: whole party, and a character named twice rolls once", asked[0]?.names.join() === "Hina,Keren,Blanche,Zarg", asked[0]?.names.join());
+
+    asked.length = 0; nextResults = [PASS, PASS];
+    await runAs("p1", [check({ targets: [{ kind: "member", slot: 4 }, { kind: "name", name: "otto" }, { kind: "name", name: "nobody at all" }] })]);
+    verify("Run Check: a slot and a character by name; a name that matches nobody is left out", asked[0]?.names.join() === "Zarg,Otto", asked[0]?.names.join());
+
+    // Several rollers.
+    said.length = 0; nextResults = [PASS, FAIL];
+    await runAs("p1", [check({ targets: [{ kind: "member", slot: 1 }, { kind: "member", slot: 2 }], combine: "all" })]);
+    said.push("|"); nextResults = [PASS, FAIL];
+    await runAs("p1", [check({ targets: [{ kind: "member", slot: 1 }, { kind: "member", slot: 2 }], combine: "any" })]);
+    verify("Run Check: 'everyone must succeed' fails on one failure, 'one is enough' passes", said.join("") === "failure|success", said.join(""));
+
+    asked.length = 0; said.length = 0;
+    nextGroup = { leaderPass: true, leaderResult: PASS, helperResults: [PASS, FAIL], bonus: 1 };
+    await runAs("p1", [check({ targets: [{ kind: "party" }], combine: "group", storeVar: "door_successes" })]);
+    verify("Run Check: a Group Check goes to the group orchestrator with every roller, and its leader decides",
+      asked[0]?.kind === "group" && asked[0].uuids.length === 4 && asked[0].opts.leaderDl === 12 && said.join() === "success");
+    verify("Run Check: the number of successes is stored (1 helper + the leader)", GameState.getVariable("door_successes") === 2);
+
+    asked.length = 0; said.length = 0; nextGroup = null;
+    const closed = await runAs("p1", [check({ targets: [{ kind: "party" }], combine: "group" }), text("after")]);
+    verify("Run Check: a Group Check closed without a roll runs neither list, and the event carries on", closed.ok && said.join() === "after", said.join());
+
+    asked.length = 0; nextResults = [PASS];
+    await runAs("p1", [check({ targets: [{ kind: "member", slot: 3 }], combine: "group" })]);
+    verify("Run Check: a Group Check with one roller is an ordinary check", asked[0]?.kind === "check");
+
+    // Critical and fumble.
+    const special = { useSpecial: true, critRows: [text("crit")], fumbleRows: [text("fumble")] };
+    said.length = 0;
+    nextResults = [CRIT]; await runAs("p1", [check(special)]);
+    nextResults = [FUMBLE]; await runAs("p1", [check(special)]);
+    nextResults = [CRIT]; await runAs("p1", [check()]);
+    nextResults = [FUMBLE]; await runAs("p1", [check()]);
+    nextResults = [CRIT]; await runAs("p1", [check({ useSpecial: true })]);
+    verify("Run Check: critical and fumble have their own lists only when turned on and filled in",
+      said.join() === "crit,fumble,success,failure,success", said.join());
+
+    said.length = 0; nextResults = [{ pass: false, isCrit: true }];
+    await runAs("p1", [check()]);
+    verify("Run Check: a critical succeeds even under the difficulty", said.join() === "success");
+
+    // Nobody to roll, and the table picking.
+    said.length = 0; asked.length = 0;
+    const none = await runAs("p1", [check({ targets: [{ kind: "name", name: "nobody at all" }] }), text("after")]);
+    verify("Run Check: with nobody to roll it is passed over and the event carries on", none.ok && asked.length === 0 && said.join() === "after");
+
+    said.length = 0; asked.length = 0; sent.length = 0; nextResults = [PASS];
+    await runAs("p1", [check({ targets: [{ kind: "pick" }] })], {
+      during: async (sourceId) => {
+        await sleep(10);
+        const open = sent.find(m => m.kind === "choice.open");
+        verify("Run Check: 'the table picks one' opens a menu of the party, with no roleplay answer",
+          open?.data.menu.options.map(o => o.label).join() === "Hina,Keren,Blanche,Zarg" && open.data.menu.roleplay === false
+          && open.data.menu.prompt === "Force the door: who attempts it?");
+        await ask("p1", { sourceId, op: "pick", index: 2 });
+      }
+    });
+    verify("Run Check: the picked character rolls", asked[0]?.names.join() === "Blanche" && said.join() === "success", asked[0]?.names.join());
+  });
+
+  const R = ES.RowsCheck;
+  verify("Run Check: reading results — a crit among successes is a crit, a fumble among failures is a fumble",
+    R.readIndividual([PASS, CRIT], "all").special === "crit" && R.readIndividual([FAIL, FUMBLE], "all").special === "fumble"
+    && R.readIndividual([PASS, FUMBLE], "any").special === null && R.readIndividual([PASS, FUMBLE], "any").success === true
+    && R.readIndividual([], "all").success === false);
+
+  const row = EventRegistry.normalizeRows([{ type: "runCheck", attrA: "nonsense", targets: [{ kind: "nonsense" }], dl: "x" }])[0];
+  verify("Run Check: a damaged row is repaired to a usable default",
+    row.attrA === "DEX" && row.dl === 10 && row.targets.length === 1 && row.targets[0].kind === "controller"
+    && [row.successRows, row.failureRows, row.critRows, row.fumbleRows].every(Array.isArray));
+}
+
+print(fail ? `\n${fail} FAILED` : "\nall passed");
 process.exit(fail ? 1 : 0);

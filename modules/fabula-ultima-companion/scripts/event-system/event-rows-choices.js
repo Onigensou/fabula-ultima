@@ -501,46 +501,56 @@
     row.roleplayLabel = String(row.roleplayLabel ?? "").trim() || DEFAULT_ROLEPLAY_LABEL;
   }
 
-  async function execute(row, context) {
-    const sourceId = String(context?.tileId || "");
+  // Show a menu on every screen and wait for its answer. For the GM running an
+  // event; also used by other actions that need the table to pick something
+  // (Run Check: "who attempts it?").
+  //   menu: { prompt, options: [{ id, label, cancel? }], roleplay, roleplayLabel }
+  // Resolves { kind: "option", index } | { kind: "none" } | { kind: "abort" }.
+  async function ask(sourceId, menu) {
     const f = flow();
-    if (!sourceId || !f) return { ok: false, reason: "noFlow" };
-
-    const menu = {
-      prompt: withVariables(row.prompt),
-      options: row.options.map(o => ({ id: o.id, label: withVariables(o.label) || "…", cancel: !!o.cancel })),
-      roleplay: row.roleplay !== false,
-      roleplayLabel: withVariables(row.roleplayLabel) || DEFAULT_ROLEPLAY_LABEL
-    };
+    const id = String(sourceId || "");
+    if (!id || !f) return { kind: "abort" };
 
     let resolveAnswer;
     const answered = new Promise((resolve) => { resolveAnswer = resolve; });
 
-    pending.set(sourceId, {
+    pending.set(id, {
       menu,
-      row,
       highlight: 0,
       roleplaying: false,
       openedAt: Date.now(),
       resolve: (answer) => resolveAnswer(answer)
     });
 
-    f.hold(sourceId);
-    const offAbort = f.onAbort(sourceId, () => resolveAnswer({ kind: "abort" }));
-    Client.run(sourceId, KIND_OPEN, { menu, highlight: 0 });
+    f.hold(id);
+    const offAbort = f.onAbort(id, () => resolveAnswer({ kind: "abort" }));
+    Client.run(id, KIND_OPEN, { menu, highlight: 0 });
 
     const answer = await answered;
 
     offAbort();
-    pending.delete(sourceId);
-    f.release(sourceId);
-    Client.run(sourceId, KIND_CLOSE, { index: answer.kind === "option" ? answer.index : null });
-
-    if (answer.kind === "abort") return { ok: true, type: "showChoices", aborted: true };
+    pending.delete(id);
+    f.release(id);
+    Client.run(id, KIND_CLOSE, { index: answer.kind === "option" ? answer.index : null });
 
     // Let the menu leave before whatever the answer starts.
-    await f.wait(sourceId, MENU_OUT_MS + 80);
+    if (answer.kind !== "abort") await f.wait(id, MENU_OUT_MS + 80);
 
+    return answer;
+  }
+
+  async function execute(row, context) {
+    const sourceId = String(context?.tileId || "");
+    if (!sourceId || !flow()) return { ok: false, reason: "noFlow" };
+
+    const answer = await ask(sourceId, {
+      prompt: withVariables(row.prompt),
+      options: row.options.map(o => ({ id: o.id, label: withVariables(o.label) || "…", cancel: !!o.cancel })),
+      roleplay: row.roleplay !== false,
+      roleplayLabel: withVariables(row.roleplayLabel) || DEFAULT_ROLEPLAY_LABEL
+    });
+
+    if (answer.kind === "abort") return { ok: true, type: "showChoices", aborted: true };
     if (answer.kind !== "option") return { ok: true, type: "showChoices", picked: null };
 
     const option = row.options[answer.index];
@@ -661,7 +671,7 @@
     })
   });
 
-  window.oni.EventSystem.RowsChoices = { installed: true, settings };
+  window.oni.EventSystem.RowsChoices = { installed: true, settings, ask };
 
   console.debug(INSTALL_TAG, "Installed.");
 })();
