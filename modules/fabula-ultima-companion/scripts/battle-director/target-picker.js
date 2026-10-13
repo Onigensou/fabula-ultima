@@ -13,6 +13,8 @@
 import { log, warn } from "./logger.js";
 import { playUiHoverSfx } from "./director-ui-sfx.js";
 import { SimMode } from "./sim/sim-mode.js";
+import { plateDrawerHost, readActorHp } from "./director-player-hud.js";
+import { mountDockedTargets, scrollPlateCard } from "./drawer-views.js";
 
 const STYLE_ID = "fud-targetpicker-style";
 
@@ -88,7 +90,7 @@ function ensureStyles() {
       pointer-events:none;
       z-index:31;
       text-shadow:0 1px 2px rgba(0,0,0,.5);
-      font-family:"Inter","Segoe UI",system-ui,sans-serif;
+      font-family:"Inter","Signika","Segoe UI",system-ui,sans-serif;
       max-width:240px;
       overflow:hidden;
       text-overflow:ellipsis;
@@ -104,7 +106,7 @@ function ensureStyles() {
       background:linear-gradient(180deg,#f6f1e6,#ebe3d0);
       border:2px solid #7a6a55;
       box-shadow:0 4px 0 rgba(41,33,24,.55), 0 0 0 1px rgba(255,255,255,.7) inset;
-      font-family:"Inter","Segoe UI",system-ui,sans-serif;
+      font-family:"Inter","Signika","Segoe UI",system-ui,sans-serif;
       font-weight:800; letter-spacing:.32px; text-transform:uppercase;
       color:#3a3228; z-index:9999; pointer-events:auto;
       text-align:center;
@@ -481,7 +483,12 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
         <div class="fud-target-btn confirm" data-fud-target="confirm" role="button" tabindex="0">Confirm</div>
       </div>
     `;
-    document.body.appendChild(banner);
+    // Players: the picker's panel lives in the plate's drawer (Enemies | Allies
+    // columns, Back / Confirm in its footer) instead of this banner. The rings,
+    // selection rules and keyboard below are unchanged; the panel mirrors them.
+    const host = plateDrawerHost({ autoOpen: true });
+    let docked = null;
+    if (!host) document.body.appendChild(banner);
 
     // Tell any on-screen action-card overlay to hide while this picker banner
     // is up — and ONLY while it's up. Paired with the close signal in finish()
@@ -534,11 +541,73 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       // all target slots (exact: must equal count; up_to: at max capacity).
       // Auto-retreat when they drop below that threshold (e.g. a deselect).
       const atMax = selected.size >= count;
+      if (host) { refreshDock(); return; }   // the drawer's Confirm takes Enter
       if (atMax && !bannerFocused) {
         enterBannerMode();
       } else if (!atMax && bannerFocused) {
         exitBannerMode();
       }
+    }
+
+    // ── drawer panel ──────────────────────────────────────────────────────
+    let _dockQueued = false;
+    function refreshDock() {
+      if (!docked || _dockQueued) return;
+      _dockQueued = true;
+      requestAnimationFrame(() => { _dockQueued = false; paintDock(); });
+    }
+    function paintDock() {
+      if (!docked) return;
+      const enemies = [], allies = [];
+      const rowOf = (token, entry, excluded = null) => {
+        const actor = token?.actor ?? null;
+        const hp = actor ? readActorHp(actor) : null;
+        return {
+          uuid: entry.tokenUuid,
+          name: token?.name ?? entry.name ?? "?",
+          img: actor?.img || token?.document?.texture?.src || "",
+          hp: hp ? { v: Math.round(hp.v), m: Math.round(hp.m) } : null,
+          you: !!actor && actor.id === host.actorId,
+          excluded,
+          y: token?.document?.y ?? 0,
+        };
+      };
+      for (const e of eligible) {
+        const t = rings.get(e.tokenUuid)?.token ?? canvas?.tokens?.get(e.tokenId);
+        ((t?.document?.disposition ?? 0) === -1 ? enemies : allies).push(rowOf(t, e));
+      }
+      for (const e of (Array.isArray(eligible?.excluded) ? eligible.excluded : [])) {
+        const t = canvas?.tokens?.get(e.tokenId);
+        const why = Array.isArray(e.reasons) && e.reasons.length ? e.reasons.join(" · ") : "Cannot target";
+        ((t?.document?.disposition ?? 0) === -1 ? enemies : allies).push(rowOf(t, e, why));
+      }
+      const byY = (a, b) => (a.excluded ? 1 : 0) - (b.excluded ? 1 : 0) || a.y - b.y;
+      enemies.sort(byY); allies.sort(byY);
+      const label = String(titleText ?? "").replace(/^[^:]{1,40}:\s*/, "") || `Pick ${mode === "up_to" ? "up to " : ""}${count} target${count === 1 ? "" : "s"}`;
+      docked.update({
+        cols: [
+          { label: "Enemies", rows: enemies, none: "No enemy can be chosen for this." },
+          { label: "Allies", rows: allies, none: "No ally can be chosen for this." },
+        ],
+        focus: kbHoveredUuid,
+        selected,
+        locked: !!lockSelection,
+        random: mode === "random",
+        count: mode === "random" ? "Random" : `${selected.size} / ${Math.max(count, mustInclude.size)}`,
+        label: label.charAt(0).toUpperCase() + label.slice(1),
+        valid: isValidSelection(),
+      });
+    }
+    function focusUuid(uuid) {
+      if (!rings.has(uuid)) return;
+      if (kbHoveredUuid && kbHoveredUuid !== uuid) setHover(kbHoveredUuid, false);
+      kbHoveredUuid = uuid;
+      for (let gi = 0; gi < kbGroups.length; gi++) {
+        const ri = kbGroups[gi].indexOf(uuid);
+        if (ri >= 0) { kbGroupIdx = gi; kbRowIdx = ri; break; }
+      }
+      setHover(uuid, true);
+      playUiHoverSfx();
     }
     updateBanner();
 
@@ -651,6 +720,7 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       const rec = rings.get(tokenUuid);
       if (!rec) return;
       rec.el.classList.toggle("is-hover", on);
+      refreshDock();
     }
 
     function setSelected(tokenUuid, on) {
@@ -845,6 +915,10 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
         const tag = ae.tagName;
         if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || ae.isContentEditable) return;
       }
+      if (host && (e.key === "PageDown" || e.key === "PageUp")) {
+        if (scrollPlateCard(host, e.key === "PageDown" ? 1 : -1)) { e.preventDefault(); e.stopPropagation(); }
+        return;
+      }
       // X and Escape always cancel the whole operation.
       if (e.key === "Escape" || e.key === "x" || e.key === "X") {
         e.preventDefault(); e.stopPropagation();
@@ -992,6 +1066,21 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       kbApplyHover();
     }
 
+    if (host) {
+      docked = mountDockedTargets(host, {
+        action: String(titleText ?? "Targets").replace(/^[^:]{1,40}:\s*/, ""),
+        backLabel: "Back",
+        secondary: secondaryAction ? (secondaryAction.label ?? "Skip") : null,
+        onSecondary: () => finish({ ok: true, cancelled: false, skipped: true, secondaryValue: secondaryAction?.value ?? null, tokenUuids: [] }),
+        onHover: (uuid) => focusUuid(uuid),
+        onToggle: (uuid) => { const rec = rings.get(uuid); if (rec?.token && mode !== "random") onTokenClick(null, rec.token); },
+        onConfirm: () => tryConfirm(),
+        onBack: () => finish({ ok: false, cancelled: true, tokenUuids: [] }),
+      });
+      host.pushCrumb(mode === "random" ? "Random Target" : "Targets");
+      refreshDock();
+    }
+
     // Random mode: strobe all eligible rings indefinitely via CSS animation.
     // The draw is pre-computed but never shown in the picker — the player
     // clicks Confirm (or Cancel) to resolve. No auto-landing timer.
@@ -1020,6 +1109,8 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       }
       clearTargetingDim(dimState);
       firePickerClose();
+      if (docked) { try { docked.destroy(); } catch {} docked = null; }
+      try { host?.release?.(); } catch {}
       try { window.removeEventListener("keydown", onKey, true); } catch {}
       try { canvas.app.view.removeEventListener("pointerdown", handlerClick, true); } catch {}
       try { banner.remove(); } catch {}

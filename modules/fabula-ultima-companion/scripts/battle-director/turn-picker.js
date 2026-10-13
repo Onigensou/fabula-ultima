@@ -17,6 +17,7 @@
 
 import { log, warn } from "./logger.js";
 import { INTENTS } from "./intents.js";
+import { armPlateTakeTurn } from "./director-player-hud.js";
 
 const STYLE_ID = "fud-turnpicker-style";
 
@@ -38,7 +39,7 @@ function ensureStyles() {
       pointer-events:auto; cursor:pointer; user-select:none;
       display:inline-flex; align-items:center; gap:8px;
       padding:8px 14px;
-      font-family:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+      font-family:"Inter","Signika","Segoe UI",system-ui,-apple-system,sans-serif;
       font-weight:800; letter-spacing:.32px; text-transform:uppercase;
       font-size:12px; white-space:nowrap;
       color:var(--fud-ink, #3a3228);
@@ -246,6 +247,7 @@ export const TurnPicker = {
       }
       entries.push({
         combatantId: dc.id ?? dc.combatantId,
+        actorId: dc.actorId ?? token.document?.actorId ?? token.actor?.id ?? null,
         name: dc.name,
         side: dc.side,
         token,
@@ -258,25 +260,33 @@ export const TurnPicker = {
 
     return new Promise((resolve) => {
       let resolved = false;
+      let claim = null;
       const finish = (id) => {
         if (resolved) return;
         resolved = true;
+        try { claim?.release(); } catch {}
         try { rec.cleanup(); } catch {}
         _instances.delete(overlayKey);
         resolve(id);
       };
+      // If caller provided its own onPick (player-side: emit intent),
+      // use it; otherwise default to finish (GM-side: resolve Promise).
+      const pickWith = (id) => {
+        if (typeof onPick === "function") {
+          try { onPick(id); } catch (e) { warn("Turn picker onPick threw", e); }
+        }
+        finish(id);
+      };
+      // This client's own character is picked with its plate's Take Turn
+      // handle (director-player-hud.js) instead of a pill by its token; pills
+      // stay for any other character this client can pick (a shared one, a
+      // summon).
+      try { claim = armPlateTakeTurn(entries, pickWith); } catch (e) { warn("Turn picker: Take Turn arm threw", e); }
       const rec = spawnPicker({
         director,
-        entries,
+        entries: claim ? entries.filter((e) => e.combatantId !== claim.combatantId) : entries,
         combatId: overlayKey,
-        // If caller provided its own onPick (player-side: emit intent),
-        // use it; otherwise default to finish (GM-side: resolve Promise).
-        onPick: (id) => {
-          if (typeof onPick === "function") {
-            try { onPick(id); } catch (e) { warn("Turn picker onPick threw", e); }
-          }
-          finish(id);
-        },
+        onPick: pickWith,
       });
       _instances.set(overlayKey, { rec, resolve: finish });
     });

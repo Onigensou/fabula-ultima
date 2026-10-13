@@ -62,7 +62,7 @@ function ensureBaseStyles() {
       display:inline-flex; align-items:center; gap:8px;
       padding:7px 14px 7px 10px;
       color:#fff8e8;
-      font-family:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+      font-family:"Inter","Signika","Segoe UI",system-ui,-apple-system,sans-serif;
       font-weight:800; letter-spacing:.36px; text-transform:uppercase;
       font-size:12px; white-space:nowrap;
       background:linear-gradient(180deg, #b95535 0%, #843d22 100%);

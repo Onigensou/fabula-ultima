@@ -48,6 +48,8 @@
 
 import { log, warn } from "./logger.js";
 import { ensureDescTooltipStyles, attachDescTooltip, hideDescTooltip } from "./desc-tooltip.js";
+import { plateReactionHost } from "./director-player-hud.js";
+import { mountDockedReaction } from "./drawer-views.js";
 
 const STYLE_ID = "fud-reaction-menu-style";
 
@@ -88,7 +90,7 @@ function ensureBaseStyles() {
       position:relative; display:inline-flex; align-items:center; gap:9px;
       padding:10px 22px 10px 22px;
       color:var(--fud-react-ink);
-      font-family:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+      font-family:"Inter","Signika","Segoe UI",system-ui,-apple-system,sans-serif;
       font-weight:800; letter-spacing:.32px; text-transform:uppercase; white-space:nowrap;
       user-select:none; cursor:pointer; transform-origin:left center; opacity:0;
       font-size:13px;
@@ -195,7 +197,7 @@ function ensureBaseStyles() {
       position:absolute; display:flex; align-items:center;
       padding:5px 12px;
       border-radius:10px;
-      font-family:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+      font-family:"Inter","Signika","Segoe UI",system-ui,-apple-system,sans-serif;
       color:var(--fud-react-ink-soft);
       font-weight:800; letter-spacing:.32px; text-transform:uppercase;
       font-size:11px;
@@ -635,11 +637,16 @@ export const ReactionMenu = {
     const prior = _instances.get(key);
     if (prior) { try { prior.cleanup(); } catch {} }
 
-    const rec = spawnMenuInternal({
-      director, token, combatId,
-      candidates: visible, onPick, onPass, label, trigger, passLabel,
-      disabledLabels,
-    });
+    // Your own character: the menu opens in your plate drawer (drawer-views.js)
+    // instead of as blades by the token. Everyone else keeps the blades.
+    const host = plateReactionHost(token?.actor?.id ?? token?.document?.actorId ?? null);
+    const rec = host
+      ? mountDockedReaction(host, { candidates: visible, onPick, onPass, label: label ?? "Reaction", passLabel: passLabel ?? "Pass", disabledLabels })
+      : spawnMenuInternal({
+        director, token, combatId,
+        candidates: visible, onPick, onPass, label, trigger, passLabel,
+        disabledLabels,
+      });
     _instances.set(key, rec);
     log(`ReactionMenu: spawned ${visible.length} candidate(s) on ${token?.name ?? token.id} for ${trigger ?? "?"}`);
     return rec;

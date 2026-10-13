@@ -15,6 +15,7 @@ import { parseSkillCost, resolveCost, checkAffordable, formatParsedCost,
 import { buildSkillResolver, evaluateFormula, normalizeDamageType, arcanumQuickSummonLock } from "./skill-formulas.js";
 import { analyzeChainCost, estimatePerformReactionCost, isMergedArcanumChild } from "./skill-effects.js";
 import { pickFromList, ListPicker } from "./list-picker.js";
+import { previewPlateCost } from "./director-player-hud.js";
 import { classifyActionIntent } from "./skill-intent.js";
 import { getMaxActionTargets, skillTargetIsMulti, skillTargetIsUpTo, skillDeclaresVersatile } from "./snapshot.js";
 // One pure predicate, so the flag name cannot drift between the tool that sets
@@ -602,6 +603,15 @@ function candidateToRow(c) {
     ...(c.costSwap && !hardBlock ? { glow: "danger" } : {}),
     ...(rangeBlocked ? { stamp: rangeBlocked } : {}),
     disabled: !!hardBlock || !!rangeBlocked || !c.affordable,
+    // What the row would spend, for the plate's cost preview (previewPlateCost).
+    // A swap-funded row spends HP instead, which its costMap does not hold.
+    costPreview: c.freeOfCost || c.costSwap ? null : {
+      mp: Number(c.costMap?.get?.("mp")) || 0,
+      hp: Number(c.costMap?.get?.("hp")) || 0,
+      ip: Number(c.costMap?.get?.("ip")) || 0,
+    },
+    // The drawer's skill card keeps the description's paragraphs.
+    cardHtml: c.descriptionHtml || "",
     tooltip: {
       name: c.name,
       body: stripHtml(c.descriptionHtml || "(no description)"),
@@ -647,6 +657,9 @@ export async function pickSkill({
   // normally and refusing after the pick, which is the same treatment the PC
   // weapon picker gives and the same object as a Stagger/Panic blade stamp.
   rangeBlock = null,
+  // Drawer: start on this row ({skillUuid, sourceItemUuid}) — a step back from
+  // targeting lands on the skill that was picked.
+  focusValue = null,
 }) {
   const all = await gatherSkillsForActor(actor, { freeOfCost });
   // Drop reaction-only items: they carry a skill_type label ("Active"/"Spell")
@@ -758,6 +771,9 @@ export async function pickSkill({
   return pickFromList({
     director,
     title: titleText,
+    crumb: isSpellMode ? "Spell" : /attack/i.test(titleText) ? "Attack" : "Skill",
+    verb: isSpellMode ? "Cast" : /attack/i.test(titleText) ? "Attack" : "Use",
+    focusValue,
     sections: lpSections,
     externalCancel,
     autoFocusFirst: true,
@@ -765,6 +781,7 @@ export async function pickSkill({
     width: 480,
     listHeight: "min(56vh, 440px)",  // consistent size across selector pickers
     zIndex: 96,
+    onFocusRow: (row) => previewPlateCost(actor?.id, row?.costPreview ?? null),
   });
 }
 

@@ -26,7 +26,7 @@ import { postActionCard, BattlefieldActionCard, composeActionCardRenderPayload, 
 import { pickWeaponMode, WeaponModePicker } from "./weapon-mode-picker.js";
 import { pickAttributePair, AttributePairPicker } from "./attribute-pair-picker.js";
 import { runDirectorInit } from "./director-init.js";
-import { destroyDirectorHud } from "./director-player-hud.js";
+import { destroyDirectorHud, publishTurnStatus } from "./director-player-hud.js";
 import { playStudyVfx, playActionNamecard, playMissVfx, playBlockVfx, playResourceSpendVfx } from "./director-vfx.js";
 import { playCritCutin } from "./director-cutin.js";
 import { playRoundBanner, hideRoundBanner } from "./director-round-banner.js";
@@ -2106,6 +2106,11 @@ const TurnStart = {
           director.enqueue({ type: INTENTS.INTERNAL_DONE });
           return;
         }
+        // Players' Take Turn handles: which side is choosing, and who on it
+        // still may act (the rest have acted or are down).
+        try {
+          publishTurnStatus({ phase: "picking", side: dc.currentSide, eligibleActorIds: eligible.map((c) => c.actorId).filter(Boolean) });
+        } catch (e) { warn("TURN_START: turn status (picking) threw", e); }
         // AI Autopilot — auto-pick WHO acts (initiative-ranked, with a "thinking"
         // pause) ONLY when the ENTIRE eligible side is AI-controlled (no
         // player-owned PCs among them). A mixed party side (PCs + guest ally)
@@ -2190,6 +2195,7 @@ const TurnStart = {
             // Pre-build the serialized form once for secondary GMs (full list).
             const allEligibleSerialized = eligible.map((dc2) => ({
               combatantId: dc2.id,
+              actorId: dc2.actorId ?? null,
               name: dc2.name,
               side: dc2.side,
               tokenUuid: dc2.tokenUuid ?? null,
@@ -2218,6 +2224,7 @@ const TurnStart = {
                     if (owns) {
                       myEligible.push({
                         combatantId: dc2.id,
+                        actorId: dc2.actorId ?? actor.id ?? null,
                         name: dc2.name,
                         side: dc2.side,
                         tokenUuid: dc2.tokenUuid ?? null,
@@ -2307,6 +2314,14 @@ const TurnStart = {
         }
       }
       const current = dc.current;
+      if (current) {
+        try {
+          publishTurnStatus({
+            phase: "acting", side: current.side, actorId: current.actorId ?? null, name: current.name ?? "",
+            img: current.actorDoc?.img ?? current.tokenDoc?.texture?.src ?? "",
+          });
+        } catch (e) { warn("TURN_START: turn status (acting) threw", e); }
+      }
       if (!current) {
         warn("TURN_START: dCombat has no current combatant after pick — ending combat");
         director.ctx.endOfCombat = true;

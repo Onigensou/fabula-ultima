@@ -36,11 +36,12 @@ import { log, warn } from "./logger.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { INTENTS } from "./intents.js";
 import { TurnUI } from "./turn-ui.js";
+import { holdPlateDrawer } from "./director-player-hud.js";
 import { requestTargeting } from "./target-picker.js";
 import { pickWeaponMode } from "./weapon-mode-picker.js";
-import { pickSkill } from "./skill-picker.js";
+import { pickSkill, gatherSkillsForActor, filterBySkillTypes } from "./skill-picker.js";
 import { pickItem } from "./item-picker.js";
-import { getLinkedSkillUuid } from "./item-resource.js";
+import { getLinkedSkillUuid, gatherConsumables, gatherCreatables, readActorIp } from "./item-resource.js";
 import { classifyActionIntent } from "./skill-intent.js";
 import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
 import { resolveTargetPlan } from "./target-survey.js";
@@ -94,7 +95,30 @@ async function raceCancel(promise, cancelSentinel) {
 //                    dCombat directly). Shape: { enemies: TargetSnap[],
 //                    allies: TargetSnap[] } where TargetSnap has at least
 //                    { tokenUuid, tokenId, name, img, conditions }.
-export async function composeAction({
+export async function composeAction(args = {}) {
+  // Players: the drawer stays open for the whole chain (command → its list →
+  // targets), each step drawn into it; it slides shut when the chain ends.
+  const a = args ?? {};
+  const actorId = a.snap?.actorId ?? (a.actorUuid ? String(a.actorUuid).split(".").pop() : null);
+  const release = SimMode.active ? () => {} : holdPlateDrawer(actorId);
+  try { return await composeActionChain(a); } finally { release(); }
+}
+
+// A cancelled target pick goes back ONE step — to the list it came from, with
+// the cursor on what was picked — instead of all the way to the command menu.
+// The composer reports the picked value as `picked` on a "target-cancelled".
+async function withStepBack(run, cancelSentinel) {
+  let ext = false;
+  cancelSentinel?.then?.(() => { ext = true; });
+  let focusValue = null;
+  for (;;) {
+    const r = await run(focusValue);
+    if (!r?.cancelled || ext || r.reason !== "target-cancelled" || r.picked == null) return r;
+    focusValue = r.picked;
+  }
+}
+
+async function composeActionChain({
   director = null,
   snap,
   token,
@@ -176,8 +200,14 @@ export async function composeAction({
     const objectiveDisabled = objectiveSpec.buttonDisabledReason
       ? [{ label: "Objective", reason: objectiveSpec.buttonDisabledReason }]
       : [];
+    // Commands with nothing to spend them on are greyed with the reason, so
+    // the player doesn't find out only after the picker opens. Skipped inside a
+    // free action (its grant can make a cast free or narrow the list).
+    const unavailableLabels = grant ? [] : await unavailableCommands(snap, actorUuid);
+    if (externallyCancelled) break;
     const command = await waitForOctopathClick({
       director, token, combatId, actorUuid, cancelSentinel,
+      unavailableLabels,
       enabledLabels: grant?.enabledLabels ?? null,
       budgetText: grant ? `${grant.sourceLabel ?? "Free"} Free Action` : null,
       // Action-gating debuffs (Frightened/Silence/…) — frozen Array<{label,
@@ -223,7 +253,7 @@ export async function composeAction({
     let result;
     switch (command) {
       case "Attack":
-        result = await composeAttack({ director, snap, token, eligible, cancelSentinel, combatId, grant });
+        result = await withStepBack((focusValue) => composeAttack({ director, snap, token, eligible, cancelSentinel, combatId, grant, focusValue }), cancelSentinel);
         break;
       case "Guard":
         result = await composeGuard({ director, snap, eligible, cancelSentinel });
@@ -241,21 +271,21 @@ export async function composeAction({
         break;
       case "Skill":
       case "Spell":
-        result = await composeSkill({
-          director, snap, eligible, cancelSentinel,
+        result = await withStepBack((focusValue) => composeSkill({
+          director, snap, eligible, cancelSentinel, focusValue,
           isSpell: command === "Spell",
           // Thread the resolved grant (already prefers the broadcast
           // freeActionGrant over the GM-only local registry) so the Spell/Skill
           // sub-picker applies the free-action cap + allow-list on the PLAYER's
           // compose chain too — the local registry is empty on a player client.
           freeActionGrant: grant,
-        });
+        }), cancelSentinel);
         break;
       case "Item":
         // Item = source selection (pickItem) then the SHARED targeting, exactly
         // like Skill. After this the consumable flows through the one pipeline
         // (TARGET→COMPUTE→CONFIRM→resolveAction) with no Item-specific path.
-        result = await composeItem({ director, snap, eligible, cancelSentinel });
+        result = await withStepBack((focusValue) => composeItem({ director, snap, eligible, cancelSentinel, focusValue }), cancelSentinel);
         break;
       case "Objective":
         // ONE command; the picked option travels as `objectiveId` on the bundle
@@ -291,9 +321,42 @@ export async function composeAction({
   return { cancelled: true, reason: "external-cancel" };
 }
 
+// Which of Skill / Spell / Item have nothing to spend them on right now —
+// Array<{label, reason}> for the turn menu. Built from the SAME lists the
+// pickers open on (pickSkill / pickItem), so the menu can't disagree with
+// them: no entries at all is what makes those pickers bail with a warning,
+// and none affordable is a picker whose every row is disabled.
+// FAILS OPEN: anything it can't read leaves the command available.
+async function unavailableCommands(snap, actorUuid) {
+  const out = [];
+  let actor = null;
+  try { actor = await fromUuid(snap?.actorUuid ?? actorUuid); } catch {}
+  if (!actor) return out;
+  try {
+    const all = (await gatherSkillsForActor(actor)).filter((c) => !c.isReactionOnly && !c.menuHidden);
+    for (const [label, type, noun] of [["Skill", "active", "skill"], ["Spell", "spell", "spell"]]) {
+      const list = filterBySkillTypes(all, [type]);
+      if (!list.length) out.push({ label, reason: `You have no ${noun}s to use.` });
+      else if (!list.some((c) => c.affordable)) {
+        const short = [...new Set(list.flatMap((c) => (c.missingResources ?? []).map((m) => m.label)))];
+        out.push({ label, reason: `You can't pay for any ${noun} right now${short.length ? ` (not enough ${short.join(" / ")})` : ""}.` });
+      }
+    }
+  } catch (e) { warn("composeAction: skill availability check threw — leaving Skill/Spell open", e); }
+  try {
+    const [use, create] = await Promise.all([gatherConsumables(actor), gatherCreatables(actor)]);
+    const ip = Number(readActorIp(actor)?.current ?? 0) || 0;
+    if (!use.length && !create.length) out.push({ label: "Item", reason: "No items to use and no recipes to craft." });
+    else if (!use.length && !create.some((c) => Number(c.ipCost) <= ip)) {
+      out.push({ label: "Item", reason: `No items to use, and not enough IP to craft (IP ${ip}).` });
+    }
+  } catch (e) { warn("composeAction: item availability check threw — leaving Item open", e); }
+  return out;
+}
+
 // Spawn TurnUI, return a Promise that resolves with the command label
 // or null if cancelled. Cleans up the Octopath in either path.
-function waitForOctopathClick({ director, token, combatId, actorUuid, cancelSentinel, enabledLabels = null, budgetText = null, disabledLabels = null, showUltima = false }) {
+function waitForOctopathClick({ director, token, combatId, actorUuid, cancelSentinel, enabledLabels = null, budgetText = null, disabledLabels = null, unavailableLabels = null, showUltima = false }) {
   return new Promise((resolve) => {
     let resolved = false;
     const finish = (value) => {
@@ -309,6 +372,7 @@ function waitForOctopathClick({ director, token, combatId, actorUuid, cancelSent
       enabledLabels,
       budgetText,
       disabledLabels,
+      unavailableLabels,
       showUltima,
       // Passive button intentionally uses TurnUI's default — opens
       // PassiveManager locally without entering the compose chain. The
@@ -435,12 +499,12 @@ export function registerPlayerComposeActionHandler(channel, isActiveDirector = (
 // pass; subsequent passes for two-weapon are handled by the GM FSM
 // re-entering TARGET, since multi-pass logic is intertwined with
 // COMPUTE/CLEANUP).
-async function composeAttack({ director, snap, token, eligible, cancelSentinel, combatId, grant = null }) {
+async function composeAttack({ director, snap, token, eligible, cancelSentinel, combatId, grant = null, focusValue = null }) {
   // NPC branch — actor has no equipped-weapon concept; the basic attack
   // is chosen from `snap.npcAttackItems` (items with skill_type "Attack").
   // The "weapon-mode" picker doesn't apply: NPCs don't dual-wield in BD.
   if (snap.actorKind === "npc") {
-    return composeAttackNpc({ director, snap, eligible, cancelSentinel, grant });
+    return composeAttackNpc({ director, snap, eligible, cancelSentinel, grant, focusValue });
   }
 
   // A free-action grant may restrict the Attack to a weapon RANGE CLASS
@@ -500,6 +564,7 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
       // Forward the cancel sentinel so the picker overlay tears
       // itself down if the race resolves against us.
       externalCancel: cancelSentinel,
+      focusValue,
     }),
     cancelSentinel,
   );
@@ -617,7 +682,7 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
       cancelSentinel,
     );
     if (!result || !result.ok) {
-      return { cancelled: true, reason: result?.cancelled ? "target-cancelled" : "target-failed" };
+      return { cancelled: true, reason: result?.cancelled ? "target-cancelled" : "target-failed", picked };
     }
     targetUuids = [...result.tokenUuids];
   } else {
@@ -649,7 +714,7 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
         cancelSentinel,
       );
       if (!result || !result.ok) {
-        return { cancelled: true, reason: result?.cancelled ? "target-cancelled" : "target-failed" };
+        return { cancelled: true, reason: result?.cancelled ? "target-cancelled" : "target-failed", picked };
       }
       targetUuids = [...result.tokenUuids];
     }
@@ -671,7 +736,8 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
 //                 npcAttackItemUuid, targetUuids }
 // TARGET phase builds a pseudo-weapon from the picked Item so the rest
 // of the Attack pipeline (COMPUTE / CONFIRM / RESOLVE) is unchanged.
-async function composeAttackNpc({ director, snap, eligible, cancelSentinel, grant = null }) {
+async function composeAttackNpc({ director, snap, eligible, cancelSentinel, grant = null, focusValue = null }) {
+  let pickedValue = null;   // the attack picked, for a step back from targeting
   const attackItems = snap.npcAttackItems ?? [];
   if (!attackItems.length) {
     ui.notifications?.warn(`${snap.name} has no basic Attack available.`);
@@ -703,6 +769,7 @@ async function composeAttackNpc({ director, snap, eligible, cancelSentinel, gran
         titleText: `Choose ${snap.name}'s Attack`,
         emptyMessage: `${snap.name} has no attack items.`,
         externalCancel: cancelSentinel,
+        focusValue,
         // Show a Snared/Obscured attack disabled + rubber-stamped INSIDE the
         // menu instead of letting it be picked and then refused. The post-pick
         // gate below stays as the enforcement point — this is the explanation.
@@ -715,6 +782,7 @@ async function composeAttackNpc({ director, snap, eligible, cancelSentinel, gran
     );
     if (!pick) return { cancelled: true, reason: "npc-attack-cancelled" };
     pickedItemUuid = pick.skillUuid;
+    pickedValue = pick;
   }
 
   // Resolve the attack item to read its targeting + range.
@@ -805,7 +873,7 @@ async function composeAttackNpc({ director, snap, eligible, cancelSentinel, gran
       cancelSentinel,
     );
     if (!result || !result.ok) {
-      return { cancelled: true, reason: result?.cancelled ? "target-cancelled" : "target-failed" };
+      return { cancelled: true, reason: result?.cancelled ? "target-cancelled" : "target-failed", picked: pickedValue };
     }
     targetUuids = [...result.tokenUuids];
   }
@@ -1058,7 +1126,7 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
 // returned bundle carries the source + use/create cost + targets; the GM's
 // TARGET branch shapes the standard actionResult and everything downstream is
 // the one pipeline. No Item-specific path after selection.
-async function composeItem({ director, snap, eligible, cancelSentinel }) {
+async function composeItem({ director, snap, eligible, cancelSentinel, focusValue = null }) {
   let actor = null;
   try { actor = await fromUuid(snap.actorUuid); } catch {}
   if (!actor) {
@@ -1071,7 +1139,7 @@ async function composeItem({ director, snap, eligible, cancelSentinel }) {
   // (shown, not hidden). Map intent→reason for the dimmed-row stamp.
   const excludeIntents = new Map((snap?.disabledActionIntents ?? []).map((d) => [d.intent, d.reason]));
   const pick = await raceCancel(
-    pickItem({ director, actor, externalCancel: cancelSentinel, excludeIntents }),
+    pickItem({ director, actor, externalCancel: cancelSentinel, excludeIntents, focusValue }),
     cancelSentinel,
   );
   if (!pick) return { cancelled: true, reason: "item-cancelled" };
@@ -1101,7 +1169,7 @@ async function composeItem({ director, snap, eligible, cancelSentinel }) {
 
   // Step 3: shared targeting — same code Skill uses, off the activation skill.
   const tr = await resolveTargetsForSource({ director, snap, actor, eligible, source: targetingSource, cancelSentinel });
-  if (tr.cancelled) return { cancelled: true, reason: tr.reason ?? "target-cancelled" };
+  if (tr.cancelled) return { cancelled: true, reason: tr.reason ?? "target-cancelled", picked: pick };
 
   return {
     cancelled: false,
@@ -1118,7 +1186,7 @@ async function composeItem({ director, snap, eligible, cancelSentinel }) {
   };
 }
 
-async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell, freeActionGrant = null }) {
+async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell, freeActionGrant = null, focusValue = null }) {
   // Resolve actor doc. Player has read access to their own PC's data.
   let actor = null;
   try { actor = await fromUuid(snap.actorUuid); } catch {}
@@ -1184,6 +1252,7 @@ async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell,
       // every spell, and with substitutions live it offered to burn HP for a
       // spell that was already free.
       freeOfCost: grant?.freeOfCost === true,
+      focusValue,
     }),
     cancelSentinel,
   );
@@ -1206,7 +1275,7 @@ async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell,
   // spell auto-clamps its target count to fit the cap during targeting.
   const tr = await resolveTargetsForSource({ director, snap, actor, eligible, source: skill, cancelSentinel, maxMpCost });
   if (tr.cancelled) {
-    return { cancelled: true, reason: tr.reason ?? "target-cancelled" };
+    return { cancelled: true, reason: tr.reason ?? "target-cancelled", picked: pick };
   }
   const targetUuids = tr.targetUuids;
 
@@ -1295,6 +1364,8 @@ async function composeObjective({ director, snap, objectiveSpec, cancelSentinel 
     pickFromList({
       director,
       title: "Objective Actions",
+      crumb: "Objective",
+      verb: "Choose",
       subtitle: `${snap.name} • costs your action`,
       width: 460,
       options: rows.map((r) => ({
@@ -1332,6 +1403,8 @@ async function composeUltima({ director, snap, ultimaSpec, cancelSentinel }) {
     pickFromList({
       director,
       title: "Ultima Actions",
+      crumb: "Ultima",
+      verb: "Choose",
       subtitle: `${snap.name} • Ultima Points: ${ultimaSpec.ultimaPoints} • Dominance: ${ultimaSpec.dominancePoints}`,
       width: 420,
       options: rows.map((r) => ({
