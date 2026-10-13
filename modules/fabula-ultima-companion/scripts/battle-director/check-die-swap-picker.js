@@ -19,6 +19,8 @@
 import { log, warn } from "./logger.js";
 import { getIntentChannel } from "./intent-channel.js";
 import { INTENTS } from "./intents.js";
+import { plateDrawerHost } from "./director-player-hud.js";
+import { pickDockedDieSwap } from "./drawer-views.js";
 
 const CSS_ID  = "fud-die-swap-picker-style";
 const ROOT_ID = "fud-die-swap-picker-root";
@@ -92,6 +94,15 @@ export async function pickDieSwap({ director, combatId = null, label = "Die Swap
   combatId = director?.combatId ?? combatId ?? "default";
   const prior = _overlays.get(combatId);
   if (prior) { try { prior.cleanup(); } catch {} _overlays.delete(combatId); }
+
+  // Players: inside the plate's drawer (drawer-views.js), same contract.
+  const host = plateDrawerHost({ autoOpen: true });
+  if (host) {
+    const docked = pickDockedDieSwap(host, { label, A1, A2, dA, dB, slots, budget, onDone: () => host.release() });
+    const rec = { cleanup: docked.cleanup, root: null };
+    _overlays.set(combatId, rec);
+    return docked.promise.finally(() => { if (_overlays.get(combatId) === rec) _overlays.delete(combatId); });
+  }
 
   const slotRow = (s) => {
     const opts = [`<option value="">Default (${escapeHtml(s.attr)} d${s.die})</option>`]

@@ -19,6 +19,9 @@
 //
 // `externalCancel` (a thenable) dismisses an open dialog and resolves null —
 // the tear-down signal remote-pick uses when the other side of the race wins.
+import { plateDrawerHost } from "./director-player-hud.js";
+import { pickDockedNumber } from "./drawer-views.js";
+
 export async function promptNumberDialog({ label, min, max, step = 1, def, title, externalCancel = null }) {
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -27,6 +30,10 @@ export async function promptNumberDialog({ label, min, max, step = 1, def, title
   for (let v = min; v <= max; v += stp) opts.push(v);
   if (!opts.length) opts.push(min);
   const initial = opts.includes(def) ? def : opts[opts.length - 1];
+  // Players: inside the plate's drawer (drawer-views.js), same contract. The
+  // HUD and its drawer views are light and already loaded on every client.
+  const host = plateDrawerHost({ autoOpen: true });
+  if (host) return pickDockedNumber(host, { label, title, opts, initial, externalCancel, onDone: () => host.release() });
   return new Promise((resolve) => {
     let resolved = false;
     let selected = initial;

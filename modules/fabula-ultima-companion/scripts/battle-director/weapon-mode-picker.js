@@ -167,7 +167,7 @@ function pairMeta(first, second) {
   ], a === b ? a : `${a} &rarr; ${b}`);
 }
 
-export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwoWeapon = false, twoWeaponSolo = false, multiAttack = null, virtualAttacks = [], rangeBlock = null, externalCancel = null }) {
+export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwoWeapon = false, twoWeaponSolo = false, multiAttack = null, virtualAttacks = [], rangeBlock = null, externalCancel = null, focusValue = null }) {
   const arrow = `<i class="fa-solid fa-arrow-right" style="opacity:0.55; font-size:10.5px;"></i>`;
   const sections = [];
 
@@ -337,6 +337,9 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
   return pickFromList({
     director,
     title: "Choose Attack Mode",
+    crumb: "Attack",
+    verb: "Choose",
+    focusValue,
     sections,
     externalCancel,
     listHeight: "min(56vh, 440px)",  // consistent size across selector pickers

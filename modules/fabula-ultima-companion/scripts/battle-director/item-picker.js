@@ -13,6 +13,7 @@ import { gatherConsumables, gatherCreatables, readActorIp, describeCandidateForT
 import { pickFromList } from "./list-picker.js";
 import { log, warn } from "./logger.js";
 import { classifyActionIntent } from "./skill-intent.js";
+import { previewPlateCost } from "./director-player-hud.js";
 
 // Does a consumable survive a `disable_action_intent` filter? FAIL-OPEN: a
 // consumable is blocked ONLY when we can POSITIVELY prove it's non-harmful —
@@ -101,11 +102,12 @@ function createRow(c, curIp) {
     badge: intentDisabled ? escapeHtml(intentDisabled) : `${c.ipCost} IP`,
     badgeTone: (intentDisabled || unaffordable) ? "danger" : null,
     disabled: !!intentDisabled || unaffordable,
+    costPreview: { ip: Number(c.ipCost) || 0 },
     tooltip: { name: c.name, body: stripHtml(describeCandidateForTooltip(c) || "(no description)"), cost: `${c.ipCost} IP` },
   };
 }
 
-export async function pickItem({ director, actor, externalCancel = null, excludeIntents = null } = {}) {
+export async function pickItem({ director, actor, externalCancel = null, excludeIntents = null, focusValue = null } = {}) {
   if (!actor) return null;
 
   let [useList, createList] = await Promise.all([
@@ -164,6 +166,9 @@ export async function pickItem({ director, actor, externalCancel = null, exclude
   return pickFromList({
     director,
     title: "Item",
+    crumb: "Item",
+    verb: "Use",
+    focusValue,
     subtitle: "Use a consumable • Spend IP to craft",
     sections,
     externalCancel,
@@ -173,5 +178,6 @@ export async function pickItem({ director, actor, externalCancel = null, exclude
     width: 420,
     listHeight: "min(56vh, 440px)",  // consistent size across selector pickers
     zIndex: 96,
+    onFocusRow: (row) => previewPlateCost(actor?.id, row?.costPreview ?? null),
   });
 }

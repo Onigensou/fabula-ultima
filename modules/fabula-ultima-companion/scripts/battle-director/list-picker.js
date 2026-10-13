@@ -80,6 +80,8 @@
 import { log, warn } from "./logger.js";
 import { playUiHoverSfx } from "./director-ui-sfx.js";
 import { SimMode } from "./sim/sim-mode.js";
+import { plateDrawerHost } from "./director-player-hud.js";
+import { pickDocked } from "./drawer-views.js";
 
 const CSS_ID  = "fud-list-picker-style";
 const ROOT_ID = "fud-list-picker-root";
@@ -509,6 +511,19 @@ export async function pickFromList({
   preselectAll = false,        // start with every (enabled) row checked
   preselect = null,            // OR an array of values to start checked
   confirmLabel = "Confirm",
+  // Called with the row under the keyboard cursor or the mouse (null when
+  // none / on close). The skill and item pickers use it to preview a row's
+  // cost on the player's plate.
+  onFocusRow = null,
+  // ── Drawer (players): drawn inside the plate's drawer instead of centre-
+  // screen when this client has a plate (drawer-views.js); dock:false keeps
+  // the overlay. crumb = the drawer tab ("Spell"); verb = the Confirm label
+  // ("Cast"); focusValue = the row to start on (a step back from targets
+  // lands on the row that was picked).
+  dock = true,
+  crumb = null,
+  verb = null,
+  focusValue = null,
 } = {}) {
   ensureStyles();
   ensureTip();
@@ -600,6 +615,20 @@ export async function pickFromList({
   const key = overlayKey ?? director?.combatId ?? `lp-${++_spawnSeq}`;
   const prior = _overlays.get(key);
   if (prior) { try { prior.cleanup(); } catch {} _overlays.delete(key); }
+
+  if (dock !== false) {
+    const host = plateDrawerHost({ autoOpen: true });
+    if (host) {
+      const docked = pickDocked(host, {
+        title, crumb, groups, tabbed, multiSelect, maxSelect, preselectAll, preselect,
+        confirmLabel: multiSelect ? confirmLabel : null, cancelLabel, verb, onFocusRow, focusValue,
+        numberShortcuts, externalCancel, onDone: () => host.release(),
+      });
+      const rec = { cleanup: docked.cleanup, root: null };
+      _overlays.set(key, rec);
+      return docked.promise.finally(() => { if (_overlays.get(key) === rec) _overlays.delete(key); });
+    }
+  }
 
   // Flatten rows for keyboard/click lookup; remember each row's section index.
   const flat = [];
@@ -732,6 +761,14 @@ export async function pickFromList({
     let kbPos = 0;     // position within the current nav set
     let kbActive = false;
     let activePanel = activeStart;  // active tab index (tabbed mode only)
+    let focusedRow;                  // last row reported to onFocusRow
+    const reportFocus = (idx) => {
+      if (typeof onFocusRow !== "function") return;
+      const row = idx == null ? null : (flat[idx] ?? null);
+      if (row === focusedRow) return;
+      focusedRow = row;
+      try { onFocusRow(row); } catch (e) { warn("list-picker: onFocusRow threw", e); }
+    };
 
     const getOptionEls = () => Array.from(root.querySelectorAll(".fud-lp-option"));
     // Navigable (non-disabled) row indices for the current context — all rows
@@ -780,14 +817,17 @@ export async function pickFromList({
         if (on) focusedEl = el;
       });
       if (focusedEl) focusedEl.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      reportFocus(focusIdx);
       playUiHoverSfx();
     }
 
     root.addEventListener("pointerenter", (e) => {
-      if (kbActive && e.target?.closest?.(".fud-lp-option")) {
+      const optEl = e.target?.closest?.(".fud-lp-option");
+      if (kbActive && optEl) {
         kbActive = false;
         getOptionEls().forEach((el) => el.classList.remove("is-kb-focused"));
       }
+      if (optEl) reportFocus(Number(optEl.dataset.fudLpIdx));
     }, true);
 
     // Tooltip dwell — show a row's description popup after a hover pause.
@@ -813,6 +853,7 @@ export async function pickFromList({
       if (nav.length) {
         kbActive = true; kbPos = 0;
         const focusIdx = nav[0];
+        reportFocus(focusIdx);
         requestAnimationFrame(() => {
           if (resolved) return;
           getOptionEls().forEach((el) => el.classList.toggle("is-kb-focused", Number(el.dataset.fudLpIdx) === focusIdx));
@@ -830,6 +871,7 @@ export async function pickFromList({
       if (resolved) return;
       resolved = true;
       hideTip();
+      reportFocus(null);
       if (hoverDwellTid) { clearTimeout(hoverDwellTid); hoverDwellTid = null; }
       root.classList.remove("is-visible");
       root.classList.add("is-resolving");
@@ -921,6 +963,7 @@ export async function pickFromList({
       try { root.remove(); } catch {}
       _overlays.delete(key);
       hideTip();
+      reportFocus(null);
       if (!resolved) { resolved = true; resolve(null); }
     };
     _overlays.set(key, { cleanup, root });
