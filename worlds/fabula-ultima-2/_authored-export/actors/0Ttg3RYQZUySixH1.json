@@ -280,14 +280,6 @@
       "gacha_rate_rare": "0",
       "game_name": "The Legend of Dragonslayer",
       "gathering_tile_percentage": "0",
-      "global_switch_table": {},
-      "global_variable_table": {
-        "0": {
-          "$deleted": false,
-          "global_variable_name": "Festival Score",
-          "global_variable_value": "1200"
-        }
-      },
       "gold_tile_percentage": "0",
       "hazard_tile_percentage": "0",
       "healing_tile_percentage": "0",
