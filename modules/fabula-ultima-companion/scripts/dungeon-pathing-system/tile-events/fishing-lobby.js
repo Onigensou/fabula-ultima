@@ -302,7 +302,7 @@
     window["__ONI_FISHLOBBY_SOCKET__"] = true;
 
     game.socket.on(SOCKET_CH, msg => {
-      if (!msg?.type?.startsWith("FISHLOBBY_")) return;
+      if (!msg?.type?.startsWith?.("FISHLOBBY_")) return;
 
       if (msg.type === FL_OPEN) {
         // GM opens directly (in request()); player clients open from the socket.

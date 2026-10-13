@@ -268,7 +268,7 @@
 
       game.socket.on(TS.SOCKET_CH, async (msg) => {
         const { type, payload } = msg ?? {};
-        if (!type?.startsWith("TITLE_")) return;
+        if (!type?.startsWith?.("TITLE_")) return;
 
         // ── Primary GM only: vote aggregation (everyone else's votes land here).
         // A second GM client receives these too; it must NOT aggregate or load.

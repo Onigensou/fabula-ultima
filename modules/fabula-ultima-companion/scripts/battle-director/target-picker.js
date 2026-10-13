@@ -14,7 +14,7 @@ import { log, warn } from "./logger.js";
 import { playUiHoverSfx } from "./director-ui-sfx.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { plateDrawerHost, readActorHp } from "./director-player-hud.js";
-import { mountDockedTargets, scrollPlateCard } from "./drawer-views.js";
+import { mountDockedTargets, scrollPlateCard, keysBlockedFor } from "./drawer-views.js";
 
 const STYLE_ID = "fud-targetpicker-style";
 
@@ -568,6 +568,8 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
           img: actor?.img || token?.document?.texture?.src || "",
           hp: hp ? { v: Math.round(hp.v), m: Math.round(hp.m) } : null,
           you: !!actor && actor.id === host.actorId,
+          // A taunt's mandatory target (pre-picked, can't be dropped): say why.
+          status: !excluded && mustInclude.has(entry.tokenUuid) ? "Must target" : null,
           excluded,
           y: token?.document?.y ?? 0,
         };
@@ -583,6 +585,23 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       }
       const byY = (a, b) => (a.excluded ? 1 : 0) - (b.excluded ? 1 : 0) || a.y - b.y;
       enemies.sort(byY); allies.sort(byY);
+      // The GM desk names the columns from the acting creature's side: an
+      // enemy's foes are the party (Foes | Allies), as the mockup draws them.
+      if (host.relativeSides) {
+        const enemyActs = host.actorSide === "enemy";
+        const foes = enemyActs ? allies : enemies, friends = enemyActs ? enemies : allies;
+        docked.update({
+          cols: [
+            { label: "Foes", rows: foes, none: "No foe can be chosen for this." },
+            { label: "Allies", rows: friends, none: "No ally can be chosen for this." },
+          ],
+          focus: kbHoveredUuid, selected, locked: !!lockSelection, random: mode === "random",
+          count: mode === "random" ? "Random" : `${selected.size} / ${Math.max(count, mustInclude.size)}`,
+          label: (() => { const l = String(titleText ?? "").replace(/^[^:]{1,40}:\s*/, "") || `Pick ${mode === "up_to" ? "up to " : ""}${count} target${count === 1 ? "" : "s"}`; return l.charAt(0).toUpperCase() + l.slice(1); })(),
+          valid: isValidSelection(),
+        });
+        return;
+      }
       const label = String(titleText ?? "").replace(/^[^:]{1,40}:\s*/, "") || `Pick ${mode === "up_to" ? "up to " : ""}${count} target${count === 1 ? "" : "s"}`;
       docked.update({
         cols: [
@@ -908,6 +927,7 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     }
 
     function onKey(e) {
+      if (docked && keysBlockedFor(docked.root)) return;
       // Don't steal keys while the user is typing in an input field, textarea,
       // <select>, or any contenteditable surface (chat box, sheet fields, etc.).
       const ae = document.activeElement;
@@ -1011,6 +1031,7 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     // For v1 we use the Foundry hook "clickToken" if available; otherwise
     // we intercept the canvas pointerdown and resolve tokens via canvas API.
     const handlerClick = (event) => {
+      if (docked && keysBlockedFor(docked.root)) return;
       // Random mode: the player cannot manually pick — swallow all canvas clicks.
       if (mode === "random") { event.preventDefault?.(); event.stopPropagation?.(); return; }
       try {

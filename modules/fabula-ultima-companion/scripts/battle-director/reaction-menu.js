@@ -50,6 +50,7 @@ import { log, warn } from "./logger.js";
 import { ensureDescTooltipStyles, attachDescTooltip, hideDescTooltip } from "./desc-tooltip.js";
 import { plateReactionHost } from "./director-player-hud.js";
 import { mountDockedReaction } from "./drawer-views.js";
+import { deskSpawnReaction } from "./gm-desk.js";
 
 const STYLE_ID = "fud-reaction-menu-style";
 
@@ -640,13 +641,18 @@ export const ReactionMenu = {
     // Your own character: the menu opens in your plate drawer (drawer-views.js)
     // instead of as blades by the token. Everyone else keeps the blades.
     const host = plateReactionHost(token?.actor?.id ?? token?.document?.actorId ?? null);
-    const rec = host
+    // A GM with the Battle Desk: listed on the reactor's roster line and
+    // answered in the console (gm-desk.js), not as blades by the token.
+    const deskRec = host ? null : deskSpawnReaction({
+      key, token, candidates: visible, onPick, onPass, label: label ?? "Reaction", passLabel: passLabel ?? "Pass", disabledLabels,
+    });
+    const rec = deskRec ?? (host
       ? mountDockedReaction(host, { candidates: visible, onPick, onPass, label: label ?? "Reaction", passLabel: passLabel ?? "Pass", disabledLabels })
       : spawnMenuInternal({
         director, token, combatId,
         candidates: visible, onPick, onPass, label, trigger, passLabel,
         disabledLabels,
-      });
+      }));
     _instances.set(key, rec);
     log(`ReactionMenu: spawned ${visible.length} candidate(s) on ${token?.name ?? token.id} for ${trigger ?? "?"}`);
     return rec;

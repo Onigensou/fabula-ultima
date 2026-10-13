@@ -35,7 +35,7 @@
 
       game.socket.on(CAMP.SOCKET_CH, async (msg) => {
         const { type, payload } = msg ?? {};
-        if (!type?.startsWith("CAMP_")) return; // not our message
+        if (!type?.startsWith?.("CAMP_")) return; // not our message
 
         // ── Ephemeral: hover (any client, processed by all) ──────────────
         if (type === CAMP.MSG.HOVER_ACTIVITY) {

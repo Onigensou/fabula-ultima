@@ -18,6 +18,8 @@
 
 import { log, warn } from "./logger.js";
 import { SimMode } from "./sim/sim-mode.js";
+import { deskAdopt } from "./gm-desk.js";
+import { keysBlockedFor } from "./drawer-views.js";
 
 const CSS_ID  = "fud-attribute-pair-picker-style";
 const ROOT_ID = "fud-attribute-pair-picker-root";
@@ -328,6 +330,8 @@ export async function pickAttributePair({
     </div>
   `;
   document.body.appendChild(root);
+  // GM Battle Desk: the check is configured in the console.
+  try { deskAdopt(root, { crumb: titleText }); } catch (e) { warn("AttributePairPicker: desk adopt threw", e); }
   requestAnimationFrame(() => root.classList.add("is-visible"));
 
   log("AttributePairPicker spawned", titleText);
@@ -451,12 +455,15 @@ export async function pickAttributePair({
 
     keyListener = (ev) => {
       if (resolved) return;
+      if (keysBlockedFor(root)) return;
       // Don't steal Enter/Esc while the DL input is focused — the GM might
       // be typing a custom value.
       if (document.activeElement === dlInput) return;
-      if (ev.key === "Escape") { ev.preventDefault(); finish(buildResult(false)); }
+      // Swallow the key: an Escape that also reached Foundry opened its main menu.
+      if (ev.key === "Escape") { ev.preventDefault(); ev.stopImmediatePropagation(); finish(buildResult(false)); }
       else if (ev.key === "Enter") {
         ev.preventDefault();
+        ev.stopImmediatePropagation();
         if (selected.A1 && selected.A2) finish(buildResult(true));
       }
     };

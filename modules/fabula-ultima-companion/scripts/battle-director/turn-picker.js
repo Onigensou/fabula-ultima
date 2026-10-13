@@ -18,6 +18,7 @@
 import { log, warn } from "./logger.js";
 import { INTENTS } from "./intents.js";
 import { armPlateTakeTurn } from "./director-player-hud.js";
+import { deskArmTakeTurn } from "./gm-desk.js";
 
 const STYLE_ID = "fud-turnpicker-style";
 
@@ -260,12 +261,14 @@ export const TurnPicker = {
 
     return new Promise((resolve) => {
       let resolved = false;
-      let claim = null;
+      let claim = null, deskClaim = null;
+      let rec = null;
       const finish = (id) => {
         if (resolved) return;
         resolved = true;
         try { claim?.release(); } catch {}
-        try { rec.cleanup(); } catch {}
+        try { deskClaim?.release(); } catch {}
+        try { rec?.cleanup(); } catch {}
         _instances.delete(overlayKey);
         resolve(id);
       };
@@ -282,7 +285,11 @@ export const TurnPicker = {
       // stay for any other character this client can pick (a shared one, a
       // summon).
       try { claim = armPlateTakeTurn(entries, pickWith); } catch (e) { warn("Turn picker: Take Turn arm threw", e); }
-      const rec = spawnPicker({
+      // A GM with the Battle Desk picks from Take Turn tiles in its console;
+      // the GM's screen gets no pills on the tokens.
+      try { deskClaim = claim ? null : deskArmTakeTurn(entries, pickWith); } catch (e) { warn("Turn picker: desk arm threw", e); }
+      if (deskClaim) { _instances.set(overlayKey, { rec: { cleanup() {} }, resolve: finish }); return; }
+      rec = spawnPicker({
         director,
         entries: claim ? entries.filter((e) => e.combatantId !== claim.combatantId) : entries,
         combatId: overlayKey,

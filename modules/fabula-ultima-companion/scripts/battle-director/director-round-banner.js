@@ -19,6 +19,7 @@
 import { log, warn } from "./logger.js";
 import { registerSurface, unregisterSurface } from "./director-surfaces.js";
 import { pWait } from "./presentation-clock.js";
+import { deskUnits } from "./gm-desk.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const ACTION_PLAY = "FU_DIRECTOR_ROUND_PLAY";
@@ -1303,6 +1304,7 @@ function reconcileGroupAnimated(group, desired, left) {
 // while icons slide; crisis/defeated are cheap class toggles when membership
 // is unchanged.
 function renderTurnActionsLocal(combatants = [], opts = {}) {
+  try { deskUnits(Array.isArray(combatants) ? combatants : []); } catch (e) { warn("GM desk roster update failed", e); }
   try {
     const animate = !!opts.animate;
     const layer = ensureLayer();
@@ -1400,6 +1402,7 @@ function renderTurnActionsLocal(combatants = [], opts = {}) {
 }
 
 function clearTurnActionsLocal() {
+  try { deskUnits(null); } catch { /* */ }
   _iconsRevealed = false;
   _revealGen++; // cancel any pending staggered reveal
   unlightEnds();
@@ -1555,6 +1558,11 @@ function buildTurnActionSnapshot(dCombat) {
       defeated: combatantDefeated(c),
       // Token UUID so enemy icons can open that monster's encyclopedia page.
       tokenUuid: c.tokenUuid ?? td?.uuid ?? null,
+      // For the GM desk's roster (gm-desk.js): whose line, and whether it has
+      // turns of its own at all (a Faithful Companion acts inside its owner's).
+      tokenId: td?.id ?? c.tokenId ?? null,
+      actorId: td?.actorId ?? c.actorId ?? null,
+      turnsPerRound: Number(c.turnsPerRound ?? 1),
       focus: normalizeIconFocus(baseActor?.getFlag?.(MODULE_ID, "iconFocus")),
     });
   }

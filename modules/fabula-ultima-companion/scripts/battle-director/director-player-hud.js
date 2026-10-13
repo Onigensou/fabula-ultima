@@ -40,6 +40,7 @@
 import { log, warn } from "./logger.js";
 import { playSfx } from "./director-sfx.js";
 import { setPlateCard } from "./drawer-views.js";
+import { buildDesk, destroyDesk, deskActive, deskEnabled, deskOpenDrawer, deskHold, deskDrawerHost, deskTurnStatus, sendDeskMirror } from "./gm-desk.js";
 
 const MODULE_ID  = "fabula-ultima-companion";
 const ACTION_BUILD   = "FU_DIRECTOR_HUD_BUILD";
@@ -177,6 +178,18 @@ const readZP = a => {
 };
 const readNum = (a, p) => { const n = Number(pick(a, p)); return Number.isFinite(n) ? n : null; };
 const numText = n => (n == null ? "–" : nice(n));
+
+/**
+ * What the GM desk's roster line shows for a creature: HP, MP, and for the
+ * party IP, ZP and Clocks (the GM's compact party cards carried the same).
+ */
+export function readUnitInfo(a) {
+  try {
+    const zpName = String(pick(a, P_ZP_NAME) ?? "").trim();
+    const clocks = collectHudResources(a).map(r => ({ name: r.name, v: r.v, m: r.points ? null : r.m }));
+    return { hp: readHP(a), mp: pair(a, P_MP_V, P_MP_M), ip: readIP(a), zp: zpName ? readZP(a) : null, zpName, clocks };
+  } catch { return null; }
+}
 
 // Crisis = at or below half max HP (FU core); KO = 0 HP.
 const hpState = hp => (!hp ? "" : hp.v <= 0 ? "ko" : hp.v <= hp.m / 2 ? "crisis" : "");
@@ -1218,6 +1231,7 @@ function applyTurnStatus(status) {
   _statusActingId = _turnStatus?.phase === "acting" && _turnStatus.side === "party" ? (_turnStatus.actorId ?? null) : null;
   for (const owner of byKey.values()) paintActing(owner);
   paintAllTakes();
+  try { deskTurnStatus(_turnStatus); } catch (e) { warn("[DirectorHud] desk turn status failed", e); }
 }
 
 /**
@@ -1320,9 +1334,14 @@ function buildLocally(key, entries) {
   const offFns = [];
   const cards  = new Map();
   let plate = null;
+  // The GM's screen: the Battle Desk (gm-desk.js) replaces the compact party
+  // cards — its roster carries what they showed. A previewed plate keeps the
+  // old layout so the player view can still be checked from the GM seat.
+  const desk = !!game.user?.isGM && !_previewPlateActorId && deskEnabled();
 
   for (const { actor, token } of entries) {
     if (!actor) continue;
+    if (desk) continue;
     const isMine = actor.id === mine;
     const card = isMine ? makePlate(actor, token) : makeCompactCard(actor, token);
     if (!card) continue;
@@ -1425,8 +1444,15 @@ function buildLocally(key, entries) {
     if (!_turnStatus) fetchTurnStatus();
   }
 
+  if (desk) {
+    try { buildDesk(entries.map(e => e.actor?.id).filter(Boolean)); }
+    catch (e) { warn("[DirectorHud] GM desk build failed", e); }
+    offFns.push(() => { try { destroyDesk(); } catch { /* */ } });
+  }
+  if (plate && !game.user?.isGM) offFns.push(watchPlateForMirror(plate));
+
   byKey.set(key, owner);
-  log(`[DirectorHud] built key=${key} cards=${cards.size} plate=${plate ? mine : "none"}`);
+  log(`[DirectorHud] built key=${key} cards=${cards.size} plate=${plate ? mine : "none"}${desk ? " desk" : ""}`);
 }
 
 function destroyLocally(key) {
@@ -1464,7 +1490,7 @@ export function openPlateDrawer(actorId, { el, budgetText = "Turn Action" } = {}
   for (const owner of byKey.values()) {
     if (owner.plate && owner.plate.el.dataset.actorId === actorId) { plate = owner.plate; break; }
   }
-  if (!plate?.el?.isConnected) return null;
+  if (!plate?.el?.isConnected) return deskOpenDrawer(actorId, { el, budgetText });
   clearTimeout(plate._closeT);
   if (plate._overlay) {
     // A reaction has the drawer: the window waits underneath and shows once
@@ -1507,6 +1533,31 @@ export function openPlateDrawer(actorId, { el, budgetText = "Turn Action" } = {}
       }, 320);
     },
   };
+}
+
+// ── live mirror for the GM desk ───────────────────────────────────────────────
+// While this player's drawer is open, its content (what they see: commands,
+// list, targets, reaction, with their cursor) goes to the GMs, whose desk shows
+// it live in Watch. Throttled; the HTML is the drawer's own markup.
+function watchPlateForMirror(plate) {
+  let t = null, last = "";
+  const send = () => {
+    t = null;
+    if (!plate.el?.isConnected) return;
+    const open = plate.el.classList.contains("is-open");
+    const pcard = plate.el.querySelector(".dhud-pcard");
+    const card = open && pcard?.classList.contains("is-skill") ? (pcard.querySelector(".dhv-sface")?.innerHTML ?? null) : null;
+    const html = open ? plate.drawer.innerHTML : "";
+    const crumb = open ? (plate.budget?.textContent ?? "").replace(/\s+/g, " ").trim() : "";
+    const sig = `${open}|${crumb}|${html.length}|${html.slice(0, 64)}|${html}|${card ?? ""}`;
+    if (sig === last) return;
+    last = sig;
+    sendDeskMirror({ actorId: plate.el.dataset.actorId, userId: game.user?.id, open, html, crumb, card });
+  };
+  const queue = () => { if (!t) t = setTimeout(send, 140); };
+  const mo = new MutationObserver(queue);
+  mo.observe(plate.el, { subtree: true, childList: true, attributes: true, attributeFilter: ["class", "inert"], characterData: true });
+  return () => { mo.disconnect(); clearTimeout(t); };
 }
 
 // ── drawer host: the steps after a command live in the drawer ─────────────────
@@ -1565,7 +1616,7 @@ function closeHeld(plate) {
 /** Keep this actor's drawer open until the returned release() runs. */
 export function holdPlateDrawer(actorId) {
   const id = actorId ? String(actorId) : null;
-  if (!id || !plateFor(id)) return () => {};
+  if (!id || !plateFor(id)) return (deskActive() && game.user?.isGM ? deskHold(id) : null) ?? (() => {});
   _hold = _hold?.actorId === id ? { actorId: id, n: _hold.n + 1 } : { actorId: id, n: 1 };
   let done = false;
   return () => {
@@ -1657,7 +1708,7 @@ export function plateDrawerHost({ autoOpen = false } = {}) {
     plate = plateFor(null);
     if (plate) release = holdPlateDrawer(plate.el.dataset.actorId);
   }
-  if (!plate) return null;
+  if (!plate) return game.user?.isGM ? deskDrawerHost() : null;
   const host = plateHostFor(plate);
   if (release) host.release = release;
   return host;

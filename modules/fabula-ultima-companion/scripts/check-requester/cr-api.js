@@ -1748,7 +1748,7 @@
     window["__ONI_CR_SOCKET__"] = true;
 
     game.socket.on(SOCKET_CH, async msg => {
-      if (!msg?.type?.startsWith("CR_")) return;
+      if (!msg?.type?.startsWith?.("CR_")) return;
 
       if (msg.type === MSG_OPEN) {
         openOverlay(msg.payload, msg.opts ?? {});

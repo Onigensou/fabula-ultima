@@ -23,6 +23,18 @@ const STYLE_ID = "fud-drawer-views-styles";
 export function escapeHtml(s) {
   return String(s ?? "").replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
 }
+// The GM Battle Desk (gm-desk.js) hosts these views in its console. A view in
+// a desk layer that is hidden (something newer is on top), stashed (detached
+// under a reaction), or locked (Watch: a player is deciding) must not take
+// keys, and none of them may while an action card is open (its Enter/Esc).
+export function keysBlockedFor(node) {
+  if (!node) return false;
+  if (node.dataset?.gmd === "1" && !node.isConnected) return true;
+  const layer = node.closest?.(".gmd-layer");
+  if (!layer) return false;
+  if (layer.classList.contains("is-off") || layer.classList.contains("is-locked")) return true;
+  return !!layer.closest(".gmd")?.classList.contains("is-card");
+}
 const stripTags = (html) => String(html ?? "").replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
 // Rich text → plain text that keeps its paragraphs and list items as lines.
 export function htmlToCardText(html) {
@@ -555,6 +567,7 @@ export function pickDocked(host, {
   view.addEventListener("contextmenu", (e) => { e.preventDefault(); e.stopPropagation(); finish(null, true); });
   const onKey = (e) => {
     if (resolved) return;
+    if (keysBlockedFor(view)) return;
     const ae = document.activeElement;
     if (ae && (ae.tagName === "INPUT" || ae.tagName === "TEXTAREA" || ae.tagName === "SELECT" || ae.isContentEditable)) return;
     if (e.ctrlKey || e.altKey || e.metaKey) return;
@@ -634,6 +647,7 @@ export function mountDockedTargets(host, { action = "Targets", onHover, onToggle
   host.mount(view);
   requestAnimationFrame(() => view.classList.remove("is-in"));
   return {
+    root: view,
     update(next) { state = next; paint(); },
     destroy() { view.inert = true; },
   };
@@ -646,7 +660,7 @@ export function mountDockedTargets(host, { action = "Targets", onHover, onToggle
  * the moment, rows show each option with its mode, Back becomes Pass (P).
  * Same record shape as ReactionMenu's token blades: { cleanup, updateDisabledLabels, root }.
  */
-export function mountDockedReaction(host, { candidates, onPick, onPass, label = "Reaction", passLabel = "Pass", disabledLabels = null }) {
+export function mountDockedReaction(host, { candidates, onPick, onPass, label = "Reaction", passLabel = "Pass", disabledLabels = null, goLabel = "Use" }) {
   ensureDrawerStyles();
   let disabled = new Map(Object.entries(disabledLabels ?? {}));
   const reasonOf = (c) => disabled.get(`${c?.carrierUuid}::${c?.rowKey}`) ?? null;
@@ -672,8 +686,8 @@ export function mountDockedReaction(host, { candidates, onPick, onPass, label = 
     const c = rows[cur];
     const ok = !!c && c.mode !== "on" && !reasonOf(c);
     view.innerHTML = `<div class="dhv-main"><div class="dhv-list is-one">${list}</div></div>`
-      + footerHTML({ text: `<span class="cnt">${escapeHtml(label)}</span> · choose one${typeof onPass === "function" ? ", or pass" : ""}`,
-        back: typeof onPass === "function" ? passLabel : "", backKey: "P", go: "Use", goOk: ok });
+      + footerHTML({ text: `<span class="cnt">${escapeHtml(label)}</span> · choose one${typeof onPass === "function" ? `, or ${escapeHtml(String(passLabel || "Pass").toLowerCase())}` : ""}`,
+        back: typeof onPass === "function" ? passLabel : "", backKey: "P", go: typeof goLabel === "function" ? goLabel() : goLabel, goOk: ok });
     host.setCard?.(c ? entry(c) : null);
   }
   function pick() {
@@ -699,6 +713,7 @@ export function mountDockedReaction(host, { candidates, onPick, onPass, label = 
   });
   const onKey = (e) => {
     if (done) return;
+    if (keysBlockedFor(view)) return;
     const ae = document.activeElement;
     if (ae && (ae.tagName === "INPUT" || ae.tagName === "TEXTAREA" || ae.tagName === "SELECT" || ae.isContentEditable)) return;
     if (e.ctrlKey || e.altKey || e.metaKey) return;
@@ -783,6 +798,7 @@ export function pickDockedDieSwap(host, { label = "Die Swap", A1, A2, dA, dB, sl
   view.addEventListener("contextmenu", (e) => { e.preventDefault(); e.stopPropagation(); finish(true); });
   const onKey = (e) => {
     if (done) return;
+    if (keysBlockedFor(view)) return;
     const ae = document.activeElement;
     if (ae && (ae.tagName === "INPUT" || ae.tagName === "TEXTAREA" || ae.tagName === "SELECT" || ae.isContentEditable)) return;
     if (e.ctrlKey || e.altKey || e.metaKey) return;
@@ -849,6 +865,7 @@ export function pickDockedNumber(host, { label = "Amount", title = null, opts = 
   view.addEventListener("contextmenu", (e) => { e.preventDefault(); e.stopPropagation(); finish(null); });
   const onKey = (e) => {
     if (done) return;
+    if (keysBlockedFor(view)) return;
     const ae = document.activeElement;
     if (ae && (ae.tagName === "INPUT" || ae.tagName === "TEXTAREA" || ae.tagName === "SELECT" || ae.isContentEditable)) return;
     if (e.ctrlKey || e.altKey || e.metaKey) return;

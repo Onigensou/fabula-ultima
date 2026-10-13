@@ -10007,7 +10007,17 @@ export async function postActionCard({ director, kind, payload }) {
         const tag = ae.tagName;
         if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || ae.isContentEditable) return;
       }
-      if (ev.key === "Enter") { ev.preventDefault(); finish("confirm"); }
+      if (ev.key !== "Enter") return;
+      // A pill's follow-up picker (Thermokinesis' element, Follow my lead's ally)
+      // is open and the card has stepped aside for it: Enter is the picker's.
+      // Confirming here resolved the action before the choice was made.
+      if (root.classList.contains("is-hidden-during-pick")) return;
+      ev.preventDefault();
+      // Same lock as the Confirm button: while an ask-mode reaction pill is
+      // still unanswered the button is disabled (CSS), and Enter must not
+      // confirm past it either.
+      if (root.querySelector(".fud-bf-card")?.hasAttribute("data-fud-reactions-pending")) return;
+      finish("confirm");
     };
     window.addEventListener("keydown", keyListener, true);
 

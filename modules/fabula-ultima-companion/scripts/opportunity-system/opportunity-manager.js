@@ -739,7 +739,7 @@
     window["__ONI_OPP_SOCKET__"] = true;
 
     game.socket.on(SOCKET_CH, async msg => {
-      if (!msg?.type?.startsWith("OPP_")) return;
+      if (!msg?.type?.startsWith?.("OPP_")) return;
 
       // OPP_OFFER — targeted player runs full prompt phase (picker + pre), then sends MSG_PICKED
       if (msg.type === MSG_OFFER) {

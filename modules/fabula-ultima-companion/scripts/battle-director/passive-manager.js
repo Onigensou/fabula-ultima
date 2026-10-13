@@ -19,6 +19,7 @@
 // is per-actor configuration).
 
 import { log, warn } from "./logger.js";
+import { deskAdopt } from "./gm-desk.js";
 
 const CSS_ID  = "fud-passive-mgr-style";
 const ROOT_ID = "fud-passive-mgr-root";
@@ -314,6 +315,8 @@ export function showPassiveManager({ actor }) {
     for (const it of passives) buildRow({ item: it, container: list });
   }
 
+  // GM Battle Desk (the Passive command): the manager opens in the console.
+  try { deskAdopt(root, { crumb: "Passive", actorId: actor.id }); } catch (e) { warn("PassiveManager: desk adopt threw", e); }
   requestAnimationFrame(() => root.classList.add("is-visible"));
 
   // Close behaviour — Escape, click on Close, click outside the card.

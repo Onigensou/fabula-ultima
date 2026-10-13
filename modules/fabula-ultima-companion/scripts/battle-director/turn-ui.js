@@ -24,7 +24,7 @@ import { INTENTS } from "./intents.js";
 import { PassiveManager } from "./passive-manager.js";
 import { playUiHoverSfx, playUiClickSfx } from "./director-ui-sfx.js";
 import { openPlateDrawer, setHudActing, rightEdgeReserve, hudScale } from "./director-player-hud.js";
-import { ensureDrawerStyles, goButtonHTML } from "./drawer-views.js";
+import { ensureDrawerStyles, goButtonHTML, keysBlockedFor } from "./drawer-views.js";
 
 const STYLE_ID = "fud-turnui-style";
 
@@ -560,10 +560,22 @@ function spawnMenu({ token, combatId, onPick, onPassive, enabledLabels = null, b
     root.style.transform = scale === 1 ? "none" : `scale(${scale})`;
   }
   // Drawer when the acting actor is this client's plate; else standalone.
+  // In the GM desk's console the commands are one grid of 2 columns x 6 rows
+  // (gm-desk.js); the arrow keys follow that grid instead of the drawer's.
+  function regridForDesk() {
+    if (!root.closest?.(".gmd") || grid._desk) return;
+    const it0 = grid[curC]?.[curR];
+    grid.length = 0;
+    for (let i = 0; i < items.length; i += 6) grid.push(items.slice(i, i + 6));
+    grid.forEach((col, c) => col.forEach((it, r) => { it.c = c; it.r = r; }));
+    grid._desk = true;
+    if (it0) { curC = it0.c; curR = it0.r; }
+  }
   function tryDock() {
     dock = openPlateDrawer(actorId, { el: root, budgetText: budgetEl.textContent });
     root.classList.toggle("is-docked", !!dock);
     if (!dock) return false;
+    regridForDesk();
     placementKey = "";
     root.style.left = root.style.top = root.style.transform = "";
     const it = grid[curC]?.[curR];
@@ -608,6 +620,7 @@ function spawnMenu({ token, combatId, onPick, onPassive, enabledLabels = null, b
   // within a column, left/right across columns keeping the row); Enter / Z
   // pick the command under it; Esc = Cancel when the window has one.
   const keyListener = (e) => {
+    if (keysBlockedFor(root)) return;
     // Don't steal keys while the user is typing in an input field, textarea,
     // <select>, or any contenteditable surface (chat box, sheet fields, etc.).
     const ae = document.activeElement;

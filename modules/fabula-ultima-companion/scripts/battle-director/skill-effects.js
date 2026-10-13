@@ -3771,7 +3771,13 @@ function ensureConfirmStyle() {
 // Render an N-button confirm overlay (parchment theme). `buttons` =
 // [{key,label,style}]; always appends a Cancel button. Resolves to the chosen
 // button key, or null on Cancel / Escape / backdrop click.
-function confirmButtonDialog({ title, message, buttons, cancelLabel, cancelStyle }) {
+async function confirmButtonDialog({ title, message, buttons, cancelLabel, cancelStyle }) {
+  // GM Battle Desk: the same choices as tiles in the console.
+  try {
+    const { deskConfirm } = await import("./gm-desk.js");
+    const docked = deskConfirm({ title, message, buttons, cancelLabel });
+    if (docked !== undefined) return await docked;
+  } catch (e) { warn("confirmButtonDialog: desk route threw — using the dialog", e); }
   ensureConfirmStyle();
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));

@@ -555,7 +555,7 @@
     window["__ONI_GC_SOCKET__"] = true;
 
     game.socket.on(SOCKET_CH, msg => {
-      if (!msg?.type?.startsWith("GC_")) return;
+      if (!msg?.type?.startsWith?.("GC_")) return;
 
       if (msg.type === GC_LOBBY_OPEN) {
         // Only non-GM clients open the lobby from the socket; GM opens it directly
