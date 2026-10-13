@@ -138,7 +138,7 @@
           }
         },
         "oniFabula": {
-          "sceneNetwork": "[]",
+          "sceneNetwork": "[{\"name\":\"Ruhig Village Ruin\",\"id\":\"9SGgZQFhGQxHpFcs\"}]",
           "general": {
             "cameraFollowToken": false
           }
@@ -164,7 +164,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1773641682476,
-      "modifiedTime": 1781425604534,
+      "modifiedTime": 1791880080845,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "environment": {
