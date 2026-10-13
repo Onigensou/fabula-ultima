@@ -5,7 +5,7 @@
   const HOLD_MS     = 180;   // dark hold after canvasReady before revealing
   const FADE_OUT_MS = 700;   // ease-out reveal duration
 
-  // IDLE | COVERED | FADING_OUT
+  // IDLE | COVERED | FADING_OUT | SHATTER (the battle shatter hides the swap)
   let state   = "IDLE";
   let overlay = null;
 
@@ -40,6 +40,20 @@
   // Accepts from any state so rapid double-switches are handled correctly.
 
   function cover() {
+    // The battle shatter (battle-transition/shatter-transition.js) already
+    // hides the scene swap behind its frozen, cracked frame: going black here
+    // would cover the glass. Still announce the cover; the matching reveal
+    // fires when the glass has cleared (fuc:shatterDone).
+    if (document.body.classList.contains("fuc-shatter-active")) {
+      // a cover still up from an earlier scene change would sit behind the
+      // glass and black out the battlefield it opens onto: take it down
+      overlay.style.transition    = "none";
+      overlay.style.opacity       = "0";
+      overlay.style.pointerEvents = "none";
+      state = "SHATTER";
+      Hooks.callAll("oni:screenCovered");
+      return;
+    }
     overlay.style.transition    = "none";
     overlay.style.opacity       = "1";
     overlay.style.pointerEvents = "all";
@@ -115,5 +129,18 @@
 
     Hooks.on("canvasTearDown", cover);
     Hooks.on("canvasReady",    reveal);
+    // the shatter is up: any black cover still showing would sit behind the glass
+    Hooks.on("fuc:shatterStart", () => {
+      if (state !== "COVERED" && state !== "FADING_OUT") return;
+      overlay.style.transition    = "none";
+      overlay.style.opacity       = "0";
+      overlay.style.pointerEvents = "none";
+      state = "SHATTER";
+    });
+    Hooks.on("fuc:shatterDone", () => {
+      if (state !== "SHATTER") return;
+      state = "IDLE";
+      Hooks.callAll("oni:screenRevealed");
+    });
   });
 })();

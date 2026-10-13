@@ -49,6 +49,10 @@
 
     // Loading behavior
     maxConcurrentLoads: 4,
+    // A visual that has not loaded after this long is marked failed (later preloads skip it). Foundry's
+    // texture loader shares one load per URL, so a single load that never settles (seen on JB2A webms
+    // after a boot-time preload) made every battle-start preload wait out its 20 s watchdog.
+    visualTimeoutMs: 6000,
     maxAssetsPerCombat: 250,
 
     preloadVisuals: true,
@@ -882,7 +886,10 @@ if (CFG.broadFallbackScan) {
     }
 
     try {
-      const texture = await loadTexture(cleanUrl);
+      const ms = Number(CFG.visualTimeoutMs) || 0;
+      const texture = ms > 0
+        ? await Promise.race([loadTexture(cleanUrl), new Promise((_, reject) => setTimeout(() => reject(new Error(`not loaded after ${ms} ms`)), ms))])
+        : await loadTexture(cleanUrl);
 
       visualCache.set(key, {
         url: cleanUrl,

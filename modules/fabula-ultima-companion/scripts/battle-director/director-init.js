@@ -31,6 +31,7 @@ import { preloadDirectorCutins } from "./director-cutin.js";
 import { playSfx } from "./director-sfx.js";
 import { playBattleStartBanner } from "./director-round-banner.js";
 import { showBattleLoader, hideBattleLoader } from "./director-battle-loader.js";
+import { beginBattleShatter, battleTransitionMode, releaseActiveShatters } from "../battle-transition/shatter-broadcast.js";
 import { buildDirectorHud, dbPartyActorIds, isHudPartyMember } from "./director-player-hud.js";
 import { extractAnimationUrlsFromActors } from "./director-animation.js";
 import {
@@ -1184,6 +1185,16 @@ async function runInPlaceReinforceInit(payload, battleScene) {
 // ─── Top-level orchestration ───────────────────────────────────────────
 
 export async function runDirectorInit(payload) {
+  try {
+    return await runDirectorInitInner(payload);
+  } catch (e) {
+    // the battle shatter's glass must never hang on a failed prep
+    releaseActiveShatters();
+    throw e;
+  }
+}
+
+async function runDirectorInitInner(payload) {
   if (!game.user?.isGM) throw new Error("runDirectorInit: GM only");
   if (!payload || typeof payload !== "object") throw new Error("runDirectorInit: invalid payload");
 
@@ -1220,17 +1231,35 @@ export async function runDirectorInit(payload) {
   // to the battle scene. Ports the legacy "BattleInit — Battle Transition"
   // cinematic; broadcasts to all clients. Awaited so the crack is visible
   // before the curtain goes black.
-  if (!lean) await playBattleStartTransition({ waitMs: 900 });
+  //
+  // SHATTER (default, setting `battleStartTransition`): instead of the crack +
+  // curtain + loader, every client freezes its own field frame, cracks it and
+  // holds it while its canvas swaps to the battle scene behind the glass; at
+  // step 9 (where the curtain used to drop) the glass breaks and flies past
+  // the camera. See battle-transition/shatter-broadcast.js.
+  // A hidden GM window falls back to classic (it could not draw the glass).
+  const useShatter = !lean && battleTransitionMode() === "shatter" && !globalThis.FUCompanion?.api?.vfxSuppressed?.();
+  let shatter = null;
+  if (useShatter) {
+    await playBattleStartTransition({ waitMs: 0, visual: false, sfx: false });
+    shatter = beginBattleShatter({ battleScene, payload });
+    // the GM's cracked frame is up before the scene swap starts (players got
+    // the start message first, so theirs are up too)
+    await Promise.race([shatter.frozen, wait(3000)]);
+  } else if (!lean) {
+    await playBattleStartTransition({ waitMs: 900 });
+  }
+  const releaseShatter = () => { try { shatter?.release(); } catch (e) { warn("shatter release threw", e); } };
 
   // ── 2. Raise curtain — black screen for the entire prep phase.
-  if (!lean) await raiseCurtain();
+  if (!lean && !shatter) await raiseCurtain();
 
   // ── 2b. Eye-catcher loader — render the "PREPARING BATTLE…" flourish ON TOP
   // of the black curtain (z 26 vs curtain 25) so the scene-activate + preload
   // pause below is covered by motion instead of dead air. Fire-and-forget; it
   // is dismissed (with a min on-screen floor) just before the curtain drops.
   // Broadcasts so every client sees it during their own canvas rebuild.
-  if (!lean) showBattleLoader({ broadcast: true });
+  if (!lean && !shatter) showBattleLoader({ broadcast: true });
 
   // ── 3. Resolve encounter (manual / random / fixed). All of this runs
   // BEHIND the curtain so the user sees nothing until step 9.
@@ -1250,7 +1279,7 @@ export async function runDirectorInit(payload) {
     ui.notifications?.warn?.("Battle Director: no party members resolved. Set party slots in the game DB and try again.");
   }
   if (!party.length && !enemies.length) {
-    await dropCurtain();
+    if (!shatter) await dropCurtain();
     throw new Error("Neither party nor enemies resolved — nothing to spawn");
   }
 
@@ -1352,7 +1381,7 @@ export async function runDirectorInit(payload) {
   // minimum on-screen floor (so a fully-cached load doesn't flash for a frame)
   // then fades out, handing off cleanly into the curtain's own fade — the
   // overlay is always gone before the battlefield is revealed.
-  if (!lean) await hideBattleLoader({ broadcast: true });
+  if (!lean && !shatter) await hideBattleLoader({ broadcast: true });
 
   // ── 9. Drop curtain — only now, after preload ACKs are in. Tokens are
   // positioned but still alpha=0 (invisible) underneath the curtain; the
@@ -1372,11 +1401,19 @@ export async function runDirectorInit(payload) {
     catch (e) { warn("settleRestFraming threw (continuing)", e); }
   }
 
-  if (!lean) await dropCurtain();
+  if (shatter) {
+    // the glass breaks and flies past the camera on every client; the
+    // entrance starts as the GM's glass is finishing (the last pieces are
+    // still passing the lens), so the battle opens without dead air
+    releaseShatter();
+    await shatter.ending;
+  } else {
+    if (!lean) await dropCurtain();
 
-  // Short settle delay so the curtain fade completes visually before
-  // entrance starts.
-  if (!lean) await wait(150);
+    // Short settle delay so the curtain fade completes visually before
+    // entrance starts.
+    if (!lean) await wait(150);
+  }
 
   // ── 10. Entrance animation (party run-in from the right, staggered
   // top→bottom; enemies fade in). In lean mode there's no curtain to reveal

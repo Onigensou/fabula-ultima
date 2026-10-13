@@ -56,6 +56,7 @@ import { initDirectorBattleLoader } from "./director-battle-loader.js";
 import { initIconFocusTuner } from "./icon-focus-tuner.js";
 import { stopBattleBgm, preloadDirectorSfx, playResourceLossVfx, playMissVfx } from "./director-vfx.js";
 import { initDirectorSfx, collapseSidebarLocal } from "./director-sfx.js";
+import { initShatterBroadcast } from "../battle-transition/shatter-broadcast.js";
 import { initSfxAudition } from "./sfx-audition.js";
 import { initDamageNumbers, emitDamageNumber, renderDamageNumberLocal } from "./damage-numbers/director-damage-numbers.js";
 import { initImpactFx } from "./damage-numbers/director-impact-fx.js";
@@ -1631,6 +1632,11 @@ Hooks.once("ready", () => {
   // on every client so the GM-side director can fan cues / UI sync out to all.
   try { initDirectorSfx(); }
   catch (e) { warn("initDirectorSfx on ready threw", e); }
+
+  // Battle shatter transition — every client plays its own glass when the GM
+  // starts a battle (battle-transition/shatter-broadcast.js).
+  try { initShatterBroadcast(); }
+  catch (e) { warn("initShatterBroadcast on ready threw", e); }
 
   // Passive Card UI — registers socket handler on every client so all players
   // see the token-anchored passive trigger card when a passive auto-fires.

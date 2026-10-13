@@ -249,10 +249,15 @@ export async function playActionNamecard(ar, { broadcast = true } = {}) {
 // beat later in PREP), so everyone sees/hears the transition together.
 
 const BATTLE_TRANSITION_FX_FILE = "jb2a.impact.ground_crack.orange";
-const BATTLE_TRANSITION_SFX_URL =
+export const BATTLE_TRANSITION_SFX_URL =
   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Random_Battle.mp3";
+// the battle shatter's crack (its impact); the sting above plays when the glass breaks
+export const BATTLE_CRACK_SFX_URL =
+  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Hit_Ice1.mp3";
 
-export async function playBattleStartTransition({ waitMs = 900, sfxVol = 0.2 } = {}) {
+// visual:false / sfx:false = leave that half out (the battle shatter draws its own visual and
+// plays its own cues, each client at its own impact and break).
+export async function playBattleStartTransition({ waitMs = 900, sfxVol = 0.2, visual = true, sfx = true } = {}) {
   try {
     // Collapse the Foundry sidebar on every client so the battlefield gets the
     // full screen for everyone as the battle scene comes up.
@@ -261,10 +266,12 @@ export async function playBattleStartTransition({ waitMs = 900, sfxVol = 0.2 } =
     // SFX — Web Audio cue played on every client from its own warm cache
     // (broadcast). Warm-decoded at boot so even the first battle's transition
     // plays without a fetch hitch.
-    broadcastSfx(BATTLE_TRANSITION_SFX_URL, sfxVol);
+    if (sfx) broadcastSfx(BATTLE_TRANSITION_SFX_URL, sfxVol);
 
     // Visual — Sequencer broadcasts screen-space effects to all clients.
-    if (typeof Sequence !== "undefined") {
+    if (!visual) {
+      // nothing: the caller plays its own visual
+    } else if (typeof Sequence !== "undefined") {
       try {
         const w = canvas?.app?.renderer?.width ?? window.innerWidth ?? 1000;
         const h = canvas?.app?.renderer?.height ?? window.innerHeight ?? 700;
@@ -646,6 +653,7 @@ export async function preloadDirectorSfx() {
     ...Object.values(RESOURCE_VFX_HEAL_SFX),
     MISS_SFX_URL,                                                          // attack/spell whiff cue
     BATTLE_TRANSITION_SFX_URL,                                              // battle-start transition sting
+    BATTLE_CRACK_SFX_URL,                                                   // battle shatter crack
     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Computer.ogg", // Study cue
     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/DashA.wav",     // party run-in dash cue
     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav", // UI hover cue
