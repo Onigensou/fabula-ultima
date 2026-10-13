@@ -313,12 +313,17 @@
     ["fadeIn", "Fade in"],
     ["flash", "Flash"],
     ["shake", "Shake"],
+    ["dim", "Dim"],
     ["tint", "Tint"],
-    ["clear", "Clear fade and tint"]
+    ["clear", "Clear fade, dim and tint"]
   ];
 
   const EFFECT_DEFAULT_COLOR = { fadeOut: "#000000", flash: "#ffffff", tint: "#000000" };
   const TINT_DEFAULT_STRENGTH = 0.35;
+  // Dim is Tint in black: one way of darkening the screen, under two names,
+  // so that "dim the screen behind the text" can be found in the list.
+  const DIM_COLOR = "#000000";
+  const DIM_DEFAULT_STRENGTH = 0.5;
   const SHAKE_DEFAULT_STRENGTH = 8;
 
   // The lasting fills on this client: { fade, tint } elements, or null.
@@ -386,6 +391,7 @@
     // What the GM status chip says in place of the effect.
     if (effect === "fadeOut") Client.setMarker(info.sourceId, "fade", "screen faded");
     if (effect === "tint") Client.setMarker(info.sourceId, "tint", "screen tinted");
+    if (effect === "dim") Client.setMarker(info.sourceId, "tint", "screen dimmed");
     if (effect === "fadeIn" || effect === "clear") Client.setMarker(info.sourceId, "fade", null);
     if (effect === "clear") Client.setMarker(info.sourceId, "tint", null);
 
@@ -401,6 +407,9 @@
       case "tint":
         fadeTo(fillElement("tint", color), clampNumber(data.strength, 0, 1, TINT_DEFAULT_STRENGTH), ms);
         break;
+      case "dim":
+        fadeTo(fillElement("tint", DIM_COLOR), clampNumber(data.strength, 0, 1, DIM_DEFAULT_STRENGTH), ms);
+        break;
       case "clear":
         clearScreen(ms);
         break;
@@ -414,7 +423,7 @@
         return;
     }
 
-    if (effect === "fadeOut" || effect === "tint") {
+    if (effect === "fadeOut" || effect === "tint" || effect === "dim") {
       Client.addCleanup(info.sourceId, "screen", ({ sceneGone } = {}) => clearScreen(sceneGone ? 0 : END_FADE_MS));
     }
   });
@@ -446,7 +455,7 @@
         kit.field(
           "Effect",
           `<select class="oni-event-row-fx-effect">${kit.options(EFFECTS, effect)}</select>`,
-          `A fade or tint stays until a later row lifts it, or the event ends. The GM is not shown screen effects.`
+          `A fade, dim or tint stays until a later row lifts it, or the event ends. The GM is not shown screen effects.`
         ),
         `<div class="oni-event-row-fx-color-wrap">${kit.field(
           "Colour",
@@ -455,7 +464,7 @@
         `<div class="oni-event-row-fx-strength-wrap">${kit.field(
           "Strength",
           kit.numberInput("oni-event-row-fx-strength", Logic.toNumber(row.strength, 0) > 0 ? row.strength : "", { min: 0, step: 0.05, placeholder: "default" }),
-          `Tint: how strong, 0 to 1 (default ${TINT_DEFAULT_STRENGTH}). Shake: how far, in pixels (default ${SHAKE_DEFAULT_STRENGTH}).`
+          `Dim and Tint: how strong, 0 to 1 (default ${DIM_DEFAULT_STRENGTH} and ${TINT_DEFAULT_STRENGTH}). Shake: how far, in pixels (default ${SHAKE_DEFAULT_STRENGTH}).`
         )}</div>`,
         kit.field(
           "Duration (s)",
@@ -469,7 +478,7 @@
       const sync = () => {
         const value = effectEl.value;
         body.querySelector(".oni-event-row-fx-color-wrap").hidden = !(value in EFFECT_DEFAULT_COLOR);
-        body.querySelector(".oni-event-row-fx-strength-wrap").hidden = !(value === "tint" || value === "shake");
+        body.querySelector(".oni-event-row-fx-strength-wrap").hidden = !(value === "tint" || value === "dim" || value === "shake");
       };
       effectEl.addEventListener("change", () => {
         // A flash starts white and a fade black; either can be recoloured after.

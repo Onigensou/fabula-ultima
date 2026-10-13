@@ -112,6 +112,10 @@
             case "showText":
               if (!String(row.text ?? "").trim()) add("warn", "Show Text with no text.");
               break;
+            case "floatingText":
+              if (!String(row.text ?? "").trim()) add("warn", "Floating Text with no text.");
+              if (row.place === "token" && !String(row.name ?? "").trim()) add("warn", "Floating Text beside a named token, with no name.");
+              break;
             case "playSound":
               if (!String(row.src ?? "").trim()) add("warn", "Play Sound with no file.");
               break;

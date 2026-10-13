@@ -278,7 +278,7 @@ globalThis.oni.EventSystem.ShowText = {
 
 for (const file of [
   "event-client.js", "event-gameState.js", "event-eventRegistry.js", "event-flow.js",
-  "event-rows-flow.js", "event-rows-choices.js", "event-rows-check.js"
+  "event-rows-flow.js", "event-rows-choices.js", "event-rows-check.js", "event-rows-float.js"
 ]) load(file);
 
 const ES = globalThis.oni.EventSystem;
@@ -703,5 +703,97 @@ await quiet(async () => {
     && [row.successRows, row.failureRows, row.critRows, row.fumbleRows].every(Array.isArray));
 }
 
-print(fail ? `\n${fail} FAILED` : "\nall passed");
+// --- Floating Text -----------------------------------------------------------
+// The dialogue system is replaced by a stand-in that records each line shown
+// and each time the floating text is cleared.
+{
+  const log = [];
+  let floating = 0;
+  globalThis.FU = {
+    Dialog: {
+      showFloating: async (opts) => {
+        log.push({ show: opts.text, opts });
+        floating += 1;
+        return { bubbleId: `float${log.length}`, finished: Promise.resolve() };
+      }
+    },
+    DialogUI: {
+      renderFloat: () => {},
+      isFloating: () => floating > 0,
+      clearFloating: () => { log.push({ clear: true }); floating = 0; },
+      FLOAT_FADE_OUT_MS: 1,
+      control: () => {}, isShowing: () => false, isDone: () => true
+    }
+  };
+
+  const float = (t, extra = {}) => ({ type: "floatingText", text: t, ...extra });
+  const trace = () => log.map(e => (e.clear ? "CLEAR" : e.show)).join(" > ");
+
+  // runEvent, passing each row the type of the row after it, as the executor does.
+  const runFloat = async (rows, { sourceDoc = null, locked = true } = {}) => {
+    const sourceId = `float${++eventSeq}`;
+    const normalized = EventRegistry.normalizeRows(rows);
+    Flow.begin(sourceId, "scene1", { flags: { "oni-event-system": { lockMovement: locked } } });
+    const runList = (list) => Logic.runRows(list, {
+      aborted: () => Flow.isAborted(sourceId),
+      isCritical: (row) => EventRegistry.peek(row?.type)?.critical === true,
+      execute: (row, index, total, next) => EventRegistry.executeRow(row, {
+        sceneId: "scene1", tileId: sourceId, sourceDoc, nextRowType: next?.type ?? null, runRows: runList
+      })
+    });
+    const out = await runList(normalized);
+    Flow.end(sourceId);
+    return out;
+  };
+
+  await quiet(async () => {
+    log.length = 0; said.length = 0;
+    await runFloat([float("one"), float("two"), text("spoken"), float("three")]);
+    verify("Floating Text: lines that follow one another stay; the passage is cleared once, when another kind of row comes next",
+      trace() === "one > two > CLEAR > three > CLEAR" && said.join() === "spoken", trace());
+
+    log.length = 0;
+    await runFloat([float("a"), { type: "condition", condition: { kind: "none" }, thenRows: [float("b"), float("c")], elseRows: [] }]);
+    verify("Floating Text: a passage inside a branch is cleared at the end of that branch", trace() === "a > CLEAR > b > c > CLEAR", trace());
+
+    log.length = 0;
+    await runFloat([float("Score {var:Festival Score}", { startFresh: true })]);
+    verify("Floating Text: variables are printed, and 'start fresh' is passed on",
+      log[0].show === "Score 30" && log[0].opts.startFresh === true, log[0].show);
+
+    log.length = 0;
+    await runFloat([float("   ")]);
+    verify("Floating Text: an empty line shows nothing", !log.some(e => e.show));
+
+    // Waiting for a press, or not.
+    log.length = 0;
+    await runFloat([float("locked")], { locked: true });
+    await runFloat([float("free")], { locked: false });
+    await runFloat([float("timed", { autoSeconds: 2.5 })], { locked: true });
+    const [locked, free, timed] = log.filter(e => e.show).map(e => e.opts);
+    verify("Floating Text: in a locked event a line waits for a press; in a free one it does not",
+      locked.waitForInput === true && free.waitForInput === false && locked.controlled === true);
+    verify("Floating Text: 'advance by itself' holds for that long and does not wait for a press",
+      timed.waitForInput === false && timed.holdMs === 2500 && locked.holdMs === null);
+
+    // Where it goes.
+    log.length = 0;
+    await runFloat([float("auto"), float("bottom", { place: "bc", nudgeX: 40, nudgeY: -20 }), float("here", { place: "source" })],
+      { sourceDoc: { documentName: "Tile", id: "tileX" } });
+    const [auto, bottom, here] = log.filter(e => e.show).map(e => e.opts);
+    verify("Floating Text: Auto is the upper centre of the screen, with no nudge", auto.anchor === "tc" && auto.nudge === null && !auto.target);
+    verify("Floating Text: a screen place and its nudge are passed on", bottom.anchor === "bc" && bottom.nudge.x === 40 && bottom.nudge.y === -20);
+    verify("Floating Text: 'beside this event' attaches the line to the event's own tile", here.target?.kind === "tile" && here.target.id === "tileX");
+  });
+
+  const row = EventRegistry.normalizeRows([{ type: "floatingText", place: "nonsense", autoSeconds: 999, nudgeX: "x" }])[0];
+  verify("Floating Text: a damaged row is repaired to a usable default", row.place === "auto" && row.autoSeconds === 60 && row.nudgeX === 0 && row.text === "");
+
+  // The executor hands each row the one that follows it.
+  const seen = [];
+  await Logic.runRows([{ id: 1 }, { id: 2 }], { execute: async (r, i, total, next) => { seen.push(next?.id ?? null); return { ok: true }; } });
+  verify("runRows: each row is told which row comes next", seen.join() === "2,");
+}
+
+console.log(fail ? `\n${fail} FAILED` : "\nall passed");
 process.exit(fail ? 1 : 0);

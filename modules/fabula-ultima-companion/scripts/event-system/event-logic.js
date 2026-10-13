@@ -103,7 +103,8 @@
   }
 
   // Run a list in order.
-  //   env.execute(row, index, total) -> result ({ ok, stop? })
+  //   env.execute(row, index, total, next) -> result ({ ok, stop? })
+  //                                  next: the row after it in this list, or null
   //   env.aborted()                  -> true once the event was ended early
   //   env.isCritical(row)            -> a failure of this row ends the event
   //   env.onSkip(row, result)        -> told about a failed row that was passed over
@@ -117,7 +118,7 @@
       const row = list[i];
       let result;
       try {
-        result = await env.execute(row, i, list.length);
+        result = await env.execute(row, i, list.length, list[i + 1] ?? null);
       } catch (error) {
         result = { ok: false, reason: "executorError", error };
       }

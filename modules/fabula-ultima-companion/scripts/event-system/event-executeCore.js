@@ -465,7 +465,7 @@
           });
         },
 
-        execute: async (row, index, total) => {
+        execute: async (row, index, total, next) => {
           const def = EventRegistry.peek(row?.type);
 
           DBG.log(DEBUG_SCOPE, "Executing row.", {
@@ -488,6 +488,9 @@
             rowIndex: index,
             rowNumber: index + 1,
             totalRows: total,
+            // What follows in this list (Floating Text keeps a passage on
+            // screen while more of it is coming).
+            nextRowType: next?.type ?? null,
             runRows: runList
           });
 

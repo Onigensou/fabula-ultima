@@ -252,14 +252,145 @@
     return layer;
   }
 
+  // Type one line and handle its presses. Shared by every style of line (a
+  // bubble on a token, floating text), so they all type at the same pace, play
+  // the same blip and take a press the same way.
+  //   box      the element that carries the line (it gets .fu-awaiting, and clicks)
+  //   typed    the element the text is typed into
+  //   leave()  called once when the line closes; the caller then removes its
+  //            element, or leaves it standing
+  // Returns { close, dispose, finished }: dispose() from the caller's own
+  // cleanup; finished resolves when the line has closed.
+  function runLine({ box, typed, payload, remote, id, leave }) {
+    const cps = Math.max(1, Number(payload.speed) || DEFAULT_CPS);
+
+    let lastBeep = 0;
+    function blipMaybe(char) {
+      if (SKIP_WHITESPACE && /^\s$/.test(char)) return;
+      const now = performance.now();
+      if (now - lastBeep < BEEP_GAP_MS) return;
+      lastBeep = now;
+
+      if (!remote || REMOTE_PLAYS_SOUND) playOneShot(CURSOR_URL, SOUND_VOLUME);
+    }
+
+    const segments = parseHintMarkup(payload.text);
+    const full = segments.map(s => s.text).join("");
+    const typeMs = Math.ceil((full.length / cps) * 1000);
+    const startedAt = performance.now();
+
+    // waitForInput: the line stays up until someone presses, then closes.
+    // controlled: presses are not handled here; whoever runs the dialogue
+    // decides, and tells every client through control().
+    // holdMs: a line that does not wait closes this long after it is complete
+    // (default: as long again as it took to type, plus a hold).
+    const waitForInput = payload.waitForInput === true;
+    const controlled = payload.controlled === true;
+    const maxWaitMs = Number(payload.maxWaitMs) > 0 ? Number(payload.maxWaitMs) : DEFAULT_MAX_WAIT_MS;
+    const holdMs = Number(payload.holdMs) > 0 ? Number(payload.holdMs) : null;
+
+    let shown = 0, done = false, closing = false;
+    let autoTimer = null, doneTimer = null;
+
+    let resolveFinished;
+    const finished = new Promise((resolve) => { resolveFinished = resolve; });
+
+    function scheduleAutoClose() {
+      // A remote copy of a waiting bubble leaves the closing to the sender,
+      // and only closes by itself if that message never comes.
+      const totalMs = waitForInput
+        ? maxWaitMs + (remote ? 3000 : 0)
+        : (holdMs ?? Math.max(1200, typeMs + HOLD_AFTER_TYPING_MS));
+      if (autoTimer) clearTimeout(autoTimer);
+      autoTimer = setTimeout(() => closeLine(), totalMs);
+    }
+
+    function markDone() {
+      if (done) return;
+      done = true;
+      if (doneTimer) clearTimeout(doneTimer);
+      doneTimer = null;
+
+      shown = full.length;
+      renderHintSegments(typed, segments, full.length);
+      if (waitForInput) box.classList.add("fu-awaiting");
+      scheduleAutoClose();
+    }
+
+    // The clock decides when the line is complete. The frame loop below only
+    // draws, so a hidden window (where frames stop) still finishes on time.
+    doneTimer = setTimeout(markDone, typeMs);
+
+    function typeTick() {
+      if (!box.isConnected || done) return;
+
+      const target = Math.min(full.length, Math.floor(((performance.now() - startedAt) * cps) / 1000));
+      if (target > shown) {
+        const ch = full.slice(target - 1, target);
+        shown = target;
+        renderHintSegments(typed, segments, shown);
+        blipMaybe(ch);
+      }
+
+      if (shown >= full.length) {
+        markDone();
+        return;
+      }
+      requestAnimationFrame(typeTick);
+    }
+    requestAnimationFrame(typeTick);
+
+    function closeLine() {
+      if (closing) return;
+      closing = true;
+
+      if (!done) markDone();
+      if (autoTimer) clearTimeout(autoTimer);
+      autoTimer = null;
+
+      box.classList.remove("fu-awaiting");
+      try { leave(); } finally { resolveFinished(); }
+    }
+
+    function handleClick() {
+      if (controlled) {
+        Hooks.callAll("fuDialogBubblePress", { bubbleId: id });
+        return;
+      }
+      (!done) ? markDone() : closeLine();
+    }
+    box.addEventListener("click", handleClick);
+
+    store.bubbles.set(id, {
+      isDone: () => done,
+      complete: markDone,
+      close: closeLine
+    });
+
+    // A control message can beat its bubble here.
+    const early = store.pendingControl.get(id);
+    if (early) {
+      store.pendingControl.delete(id);
+      early === "close" ? closeLine() : markDone();
+    }
+
+    function dispose() {
+      if (autoTimer) clearTimeout(autoTimer);
+      if (doneTimer) clearTimeout(doneTimer);
+      store.bubbles.delete(id);
+      box.removeEventListener("click", handleClick);
+      resolveFinished();
+    }
+
+    return { close: closeLine, dispose, finished };
+  }
+
   async function renderBubble(token, payload, { remote = false } = {}) {
     const layer = ensureLayerAndStyles();
 
     const mode = (payload.mode || "normal");
     const isShout = mode === "shout";
     const isThink = mode === "think";
-    const cps = Math.max(1, Number(payload.speed) || DEFAULT_CPS);
-
     const portraitSrc =
       payload.portraitSrc ||
       token.actor?.img ||
@@ -348,121 +479,29 @@
     canvas.app.ticker.add(place, undefined, PIXI.UPDATE_PRIORITY.LOW);
     place();
 
-    let lastBeep = 0;
-    function blipMaybe(char) {
-      if (SKIP_WHITESPACE && /^\s$/.test(char)) return;
-      const now = performance.now();
-      if (now - lastBeep < BEEP_GAP_MS) return;
-      lastBeep = now;
+    // Typing, the blip, presses and closing are shared with floating text.
+    const line = runLine({
+      box,
+      typed: box.querySelector(".fu-typed"),
+      payload,
+      remote,
+      id,
+      leave: () => {
+        box.classList.remove("fu-enter");
+        box.classList.add("fu-exit");
 
-      if (!remote || REMOTE_PLAYS_SOUND) playOneShot(CURSOR_URL, SOUND_VOLUME);
-    }
+        const finish = () => {
+          box.removeEventListener("animationend", finish);
+          cleanup();
+        };
+        box.addEventListener("animationend", finish);
 
-    const typed = box.querySelector(".fu-typed");
-    const segments = parseHintMarkup(payload.text);
-    const full = segments.map(s => s.text).join("");
-    const typeMs = Math.ceil((full.length / cps) * 1000);
-    const startedAt = performance.now();
-
-    // waitForInput: the line stays up until someone presses, then closes.
-    // controlled: presses are not handled here; whoever runs the dialogue
-    // decides, and tells every client through control().
-    const waitForInput = payload.waitForInput === true;
-    const controlled = payload.controlled === true;
-    const maxWaitMs = Number(payload.maxWaitMs) > 0 ? Number(payload.maxWaitMs) : DEFAULT_MAX_WAIT_MS;
-
-    let shown = 0, done = false, closing = false;
-    let autoTimer = null, doneTimer = null;
-
-    function scheduleAutoClose() {
-      // A remote copy of a waiting bubble leaves the closing to the sender,
-      // and only closes by itself if that message never comes.
-      const totalMs = waitForInput
-        ? maxWaitMs + (remote ? 3000 : 0)
-        : Math.max(1200, typeMs + HOLD_AFTER_TYPING_MS);
-      if (autoTimer) clearTimeout(autoTimer);
-      autoTimer = setTimeout(() => closeBubble(), totalMs);
-    }
-
-    function markDone() {
-      if (done) return;
-      done = true;
-      if (doneTimer) clearTimeout(doneTimer);
-      doneTimer = null;
-
-      shown = full.length;
-      renderHintSegments(typed, segments, full.length);
-      if (waitForInput) box.classList.add("fu-awaiting");
-      scheduleAutoClose();
-    }
-
-    // The clock decides when the line is complete. The frame loop below only
-    // draws, so a hidden window (where frames stop) still finishes on time.
-    doneTimer = setTimeout(markDone, typeMs);
-
-    function typeTick() {
-      if (!box.isConnected || done) return;
-
-      const target = Math.min(full.length, Math.floor(((performance.now() - startedAt) * cps) / 1000));
-      if (target > shown) {
-        const ch = full.slice(target - 1, target);
-        shown = target;
-        renderHintSegments(typed, segments, shown);
-        blipMaybe(ch);
+        // A hidden window does not run the exit animation; do not wait on it.
+        setTimeout(finish, 600);
       }
-
-      if (shown >= full.length) {
-        markDone();
-        return;
-      }
-      requestAnimationFrame(typeTick);
-    }
-    requestAnimationFrame(typeTick);
-
-    function closeBubble() {
-      if (closing) return;
-      closing = true;
-
-      if (!done) markDone();
-      if (autoTimer) clearTimeout(autoTimer);
-      autoTimer = null;
-
-      box.classList.remove("fu-enter", "fu-awaiting");
-      box.classList.add("fu-exit");
-
-      const finish = () => {
-        box.removeEventListener("animationend", finish);
-        cleanup();
-      };
-      box.addEventListener("animationend", finish);
-
-      // A hidden window does not run the exit animation; do not wait on it.
-      setTimeout(finish, 600);
-    }
-
-    function handleClick() {
-      if (controlled) {
-        Hooks.callAll("fuDialogBubblePress", { bubbleId: id });
-        return;
-      }
-      (!done) ? markDone() : closeBubble();
-    }
-    box.addEventListener("click", handleClick);
-
-    store.bubbles.set(id, {
-      isDone: () => done,
-      complete: markDone,
-      close: closeBubble
     });
 
-    // A control message can beat its bubble here.
-    const early = store.pendingControl.get(id);
-    if (early) {
-      store.pendingControl.delete(id);
-      early === "close" ? closeBubble() : markDone();
-    }
-
-    const onDelete = (doc) => { if (doc.id === token.document.id) closeBubble(); };
+    const onDelete = (doc) => { if (doc.id === token.document.id) line.close(); };
     Hooks.on("preDeleteToken", onDelete);
 
     let cleaned = false;
@@ -470,10 +509,7 @@
       if (cleaned) return;
       cleaned = true;
       try {
-        if (autoTimer) clearTimeout(autoTimer);
-        if (doneTimer) clearTimeout(doneTimer);
-        store.bubbles.delete(id);
-        box.removeEventListener("click", handleClick);
+        line.dispose();
 
         Hooks.off("canvasPan", onPan);
         window.removeEventListener("resize", onResize);
@@ -569,6 +605,12 @@
 
         if (!canvas?.scene?.id || canvas.scene.id !== payload.sceneId) return;
 
+        // Floating text is not anchored to a speaker token.
+        if (payload.mode === "float") {
+          await globalThis.FU?.DialogUI?.renderFloat?.(payload, { remote: true });
+          return;
+        }
+
         const token = getTokenOnCanvas(payload.tokenId);
         if (!token) return;
 
@@ -595,10 +637,20 @@
     SOCKET_CHANNEL,
     installListener,
     control,
+    // For other styles of line (dialog-float.js): the shared typewriter.
+    runLine,
+    randomID,
     isShowing: (bubbleId) => store.bubbles.has(String(bubbleId || "")),
     isDone: (bubbleId) => !!store.bubbles.get(String(bubbleId || ""))?.isDone(),
     renderFromPayload: async (payload, { remote = false } = {}) => {
       if (!canvas?.ready) await waitCanvasReady(3000);
+
+      // Floating text is not anchored to a speaker token (dialog-float.js).
+      if (payload?.mode === "float") {
+        if (!canvas?.scene?.id || canvas.scene.id !== payload.sceneId) return;
+        return globalThis.FU?.DialogUI?.renderFloat?.(payload, { remote });
+      }
+
       if (!payload?.tokenId) return;
 
       if (!canvas?.scene?.id || canvas.scene.id !== payload.sceneId) return;

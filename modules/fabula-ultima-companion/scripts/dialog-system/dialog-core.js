@@ -161,11 +161,83 @@ async function renderLocal(payload) {
     return payload;
   }
 
+  // A line with no speaker and no box, drawn straight on the screen
+  // (dialog-float.js): a narrator, a voice in the head, a voice from a thing.
+  //
+  //   text, speed, broadcast, waitForInput, maxWaitMs, controlled, sceneId
+  //                 as for show()
+  //   holdMs        a line that does not wait closes this long after it is
+  //                 complete (for a line that advances by itself)
+  //   anchor        "tl" "tc" "tr" "ml" "mc" "mr" "bl" "bc" "br"  (default "tc")
+  //   nudge         { x, y } screen pixels from the anchor
+  //   target        { kind: "token" | "tile", id } or { kind: "point", x, y }:
+  //                 beside that thing on the map, instead of a screen anchor
+  //   startFresh    fade whatever is floating before this line
+  //
+  // Returns { ...payload, finished }: finished resolves when the line has
+  // closed HERE. The line stays on screen after that; FU.DialogUI
+  // .clearFloating() takes floating text away.
+  async function showFloating(opts = {}) {
+    const {
+      text = "",
+      speed = 28,
+      broadcast = true,
+      waitForInput = false,
+      maxWaitMs = null,
+      holdMs = null,
+      controlled = false,
+      anchor = "tc",
+      nudge = null,
+      target = null,
+      startFresh = false,
+      sceneId = canvas?.scene?.id ?? null,
+    } = opts;
+
+    if (!sceneId) throw new Error("No active sceneId (canvas not ready?).");
+    if (!text || !String(text).trim()) return null;
+
+    const payload = {
+      bubbleId: `fu-float-${randomID(12)}`,
+      sceneId,
+      mode: "float",
+      text: String(text),
+      speed: Math.max(1, Number(speed) || 28),
+      waitForInput: waitForInput === true,
+      maxWaitMs: Number(maxWaitMs) > 0 ? Number(maxWaitMs) : null,
+      holdMs: Number(holdMs) > 0 ? Number(holdMs) : null,
+      controlled: controlled === true,
+      float: {
+        anchor: String(anchor || "tc"),
+        nudge: nudge ? { x: Number(nudge.x) || 0, y: Number(nudge.y) || 0 } : null,
+        target: target ?? null,
+        startFresh: startFresh === true,
+      },
+      fromUserId: game.user.id,
+      fromUserName: game.user.name,
+      createdAt: Date.now(),
+    };
+
+    debug("showFloating payload", payload);
+
+    const rendered = await renderLocal(payload);
+
+    if (broadcast) {
+      try {
+        await emitToSocket(payload);
+      } catch (e) {
+        console.warn("[FU Dialog:Core] broadcast failed:", e);
+      }
+    }
+
+    return { ...payload, finished: rendered?.finished ?? Promise.resolve() };
+  }
+
   // Create your global API
   globalThis.FU = globalThis.FU ?? {};
   globalThis.FU.Dialog = {
     DEBUG: false, // set true to console.log core+ui
     show,
+    showFloating,
   };
 
   // Also expose via module API (nice for other scripts)
