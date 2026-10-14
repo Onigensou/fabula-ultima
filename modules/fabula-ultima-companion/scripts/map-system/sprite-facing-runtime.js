@@ -24,6 +24,13 @@
  * - Walk art is read from the character sheet: system.props.sprite_walk.
  *   A .webm / .mp4 loops while walking. Anything else is a horizontal strip
  *   of frames, each the shape of the standing sprite, stepped by distance.
+ * - Eight directions. Five are drawn (down, down-left, left, up-left, up), all
+ *   facing left; the right-hand three are mirrors. Each has a walk field and a
+ *   standing field on the sheet; down-left is the original pair (sprite_walk,
+ *   sprite_standard). A direction with no art borrows the nearest one that
+ *   exists: front views when moving down, back views when moving up, then the
+ *   side view, then the other half. So a character with only sprite_walk
+ *   behaves exactly as before. Straight down and up art is never mirrored.
  *
  * Only runs on walk maps. Battle scenes keep their own facing rules.
  *
@@ -51,10 +58,6 @@
   // uses. Above 0 the sprite narrows to nothing and opens mirrored.
   const TURN_MS = 0;
 
-  // Sideways share of a frame's movement needed to turn. Walking almost
-  // straight up or down keeps the facing it had.
-  const TURN_SIDEWAYS_SHARE = 0.3;
-
   // An object closer than this, sideways, is not worth turning for.
   const LOOK_DEADZONE_PX = 6;
 
@@ -77,6 +80,52 @@
   const TALK_MAX_MS = 180000;
 
   const VIDEO_EXTENSIONS = ["webm", "mp4", "m4v", "ogv"];
+
+  // ------------------------------------------------------------
+  // Directions
+  // ------------------------------------------------------------
+  // The five drawn directions and the sheet fields that hold their art.
+  const DIR_FIELDS = {
+    down:     { walk: "sprite_walk_down",    stand: "sprite_stand_down" },
+    downLeft: { walk: "sprite_walk",         stand: "sprite_standard" },
+    left:     { walk: "sprite_walk_left",    stand: "sprite_stand_left" },
+    upLeft:   { walk: "sprite_walk_up_left", stand: "sprite_stand_up_left" },
+    up:       { walk: "sprite_walk_up",      stand: "sprite_stand_up" }
+  };
+
+  // Where a direction with no art looks next: the same half first (front
+  // views when moving down, back views when moving up), then the side view,
+  // then the other half.
+  const DIR_FALLBACK = {
+    down:     ["down", "downLeft", "left", "upLeft", "up"],
+    downLeft: ["downLeft", "down", "left", "upLeft", "up"],
+    left:     ["left", "downLeft", "upLeft", "down", "up"],
+    upLeft:   ["upLeft", "up", "left", "downLeft", "down"],
+    up:       ["up", "upLeft", "left", "downLeft", "down"]
+  };
+
+  // Straight-on art faces the camera or away from it, so it is never mirrored.
+  const NEVER_MIRRORED = new Set(["down", "up"]);
+
+  // Movement split into eight 45-degree slices, counting clockwise from
+  // "right" on screen: the drawn direction to show, and which side it faces
+  // (null = keep the side it had).
+  const SECTORS = [
+    { dir: "left",     side: "right" },
+    { dir: "downLeft", side: "right" },
+    { dir: "down",     side: null },
+    { dir: "downLeft", side: "left" },
+    { dir: "left",     side: "left" },
+    { dir: "upLeft",   side: "left" },
+    { dir: "up",       side: null },
+    { dir: "upLeft",   side: "right" }
+  ];
+
+  // A new slice must be entered this far (about 8 degrees) before the
+  // direction changes, so a winding path does not flicker between two.
+  const SECTOR_STICKY_RADIANS = 0.14;
+
+  const DIR_FLAG = "facingDir"; // token: the drawn direction a walk ended on, saved at rest
 
   const state = {
     installed: true,
@@ -104,7 +153,10 @@
     walkOverrideSrc: null,
     sourceBySrc: new Map(), // texture src -> actor id
     sway: null, // { tokenId, dx, dy, lastX, lastY }
-    walkShown: null, // { tokenId, src, art, idleTexture }
+    walkShown: null, // { tokenId, src, slot, art, idleTexture }
+    standShown: null, // { tokenId, src, slot, art, idleTexture }
+    standDirty: false, // the party token's standing art needs choosing again
+    dirSector: null, // the movement slice the current walk is in
 
     tickerFn: null
   };
@@ -183,8 +235,11 @@
     let entry = state.tokens.get(token.id);
     if (!entry) {
       const saved = token.document?.getFlag?.(MODULE_ID, FACING_FLAG);
+      const savedDir = token.document?.getFlag?.(MODULE_ID, DIR_FLAG);
       entry = {
         facing: (saved === "left" || saved === "right") ? saved : drawnFacing(token),
+        dir: DIR_FIELDS[savedDir] ? savedDir : "downLeft",
+        shownSlot: null, // the drawn direction whose art is on the mesh (null = the token's own art)
         turnFrom: null,
         turnStart: 0,
         baseAbs: null,
@@ -215,6 +270,13 @@
   function faceToward(token, point) {
     const dx = point.x - (token.x + (token.w / 2));
     if (Math.abs(dx) < LOOK_DEADZONE_PX) return;
+
+    // Turning to talk or examine: a party token that stood with its back to
+    // the camera turns round to its usual front view first.
+    if (token.id === state.partyTokenId) {
+      entryFor(token).dir = "downLeft";
+      clearStandArt();
+    }
     setFacing(token, dx > 0 ? "right" : "left");
   }
 
@@ -246,6 +308,9 @@
     let width = entry.baseAbs;
     let sign = signFor(entry.facing);
 
+    // Straight down or up art is shown as drawn, whichever side the token faces.
+    if (entry.shownSlot && NEVER_MIRRORED.has(entry.shownSlot)) sign = docSign;
+
     if (turning) {
       const t = (now - entry.turnStart) / TURN_MS;
       // First half closes on the old side, second half opens on the new one.
@@ -264,9 +329,21 @@
   // ------------------------------------------------------------
   // Walk art
   // ------------------------------------------------------------
+  // The art for a direction: its own field, or the nearest direction that has
+  // art. kind is "walk" or "stand". Art that failed to load counts as missing.
+  function pickSlot(token, kind, dir) {
+    if (kind === "walk" && state.walkOverrideSrc) return { slot: "downLeft", src: state.walkOverrideSrc };
+
+    const props = sourceActorFor(token)?.system?.props ?? {};
+    for (const slot of DIR_FALLBACK[dir] ?? DIR_FALLBACK.downLeft) {
+      const src = cleanString(props[DIR_FIELDS[slot][kind]]);
+      if (src && !state.walkArt.get(src)?.failed) return { slot, src };
+    }
+    return null;
+  }
+
   function walkSrcFor(token) {
-    if (state.walkOverrideSrc) return state.walkOverrideSrc;
-    return cleanString(sourceActorFor(token)?.system?.props?.sprite_walk);
+    return pickSlot(token, "walk", entryFor(token).dir)?.src ?? "";
   }
 
   function isVideoSrc(src) {
@@ -346,7 +423,8 @@
     const mesh = token?.mesh;
     if (!mesh || mesh.destroyed) return;
 
-    const src = walkSrcFor(token);
+    const pick = pickSlot(token, "walk", entryFor(token).dir);
+    const src = pick?.src;
     if (!src) return;
 
     const shown = state.walkShown;
@@ -354,6 +432,7 @@
       advanceWalkArt(token);
       return;
     }
+    // A change of direction mid-walk: put the standing art back, then take the new walk.
     if (shown) hideWalkArt();
 
     const idleTexture = mesh.texture;
@@ -363,7 +442,8 @@
     const frame = art.kind === "strip" ? art.frames[0] : art.texture;
     if (!frame?.valid) return;
 
-    state.walkShown = { tokenId: token.id, src, art, idleTexture };
+    state.walkShown = { tokenId: token.id, src, slot: pick.slot, art, idleTexture };
+    entryFor(token).shownSlot = pick.slot;
     setMeshTexture(token, frame);
 
     if (art.kind === "video" && art.video) {
@@ -400,11 +480,99 @@
       try { shown.art.video.pause(); } catch (_) {}
     }
 
+    const entry = state.tokens.get(shown.tokenId);
+    if (entry) entry.shownSlot = null;
+
     const token = canvas?.tokens?.get(shown.tokenId);
     const mesh = token?.mesh;
     if (!mesh || mesh.destroyed) return;
 
     if (shown.idleTexture?.valid) setMeshTexture(token, shown.idleTexture);
+  }
+
+  // ------------------------------------------------------------
+  // Standing art for the direction a walk ended on
+  // ------------------------------------------------------------
+  // Down-left standing art is the token's own image, so nothing is swapped
+  // for it. Any other direction is laid on the mesh locally, like walk art.
+  function showStandArt(token) {
+    if (!token?.mesh || token.mesh.destroyed || isFacingLocked(token)) return;
+    clearStandArt();
+
+    const entry = entryFor(token);
+    const pick = pickSlot(token, "stand", entry.dir);
+    if (!pick || pick.slot === "downLeft") {
+      entry.shownSlot = null;
+      applyFacing(token);
+      return;
+    }
+
+    const idleTexture = token.mesh.texture;
+    const art = loadWalkArt(pick.src, idleTexture);
+    state.standShown = { tokenId: token.id, src: pick.src, slot: pick.slot, art, idleTexture };
+    holdStandArt(token);
+  }
+
+  // Put the standing art on (again): once it has loaded, and after Foundry
+  // redraws the token with its own image.
+  function holdStandArt(token) {
+    const shown = state.standShown;
+    if (!shown || shown.tokenId !== token?.id || !token.mesh || token.mesh.destroyed) return;
+    if (shown.art.failed) {
+      clearStandArt();
+      state.standDirty = true; // choose again: the next direction on the list
+      return;
+    }
+    if (!shown.art.ready) return;
+
+    const frame = shown.art.kind === "strip" ? shown.art.frames[0] : shown.art.texture;
+    if (!frame?.valid) return;
+
+    if (shown.art.kind === "video" && shown.art.video?.paused) {
+      try {
+        const playing = shown.art.video.play();
+        if (playing?.catch) playing.catch(() => {});
+      } catch (_) {}
+    }
+
+    entryFor(token).shownSlot = shown.slot;
+    if (token.mesh.texture !== frame) setMeshTexture(token, frame);
+  }
+
+  function clearStandArt() {
+    const shown = state.standShown;
+    if (!shown) return;
+    state.standShown = null;
+
+    if (shown.art.kind === "video" && shown.art.video) {
+      try { shown.art.video.pause(); } catch (_) {}
+    }
+
+    const entry = state.tokens.get(shown.tokenId);
+    if (entry) entry.shownSlot = null;
+
+    const token = canvas?.tokens?.get(shown.tokenId);
+    if (!token?.mesh || token.mesh.destroyed) return;
+    if (shown.idleTexture?.valid) setMeshTexture(token, shown.idleTexture);
+  }
+
+  // Which of the eight slices a step falls in, kept on the current one until
+  // the movement is clearly inside the next.
+  function updateDirection(token, dx, dy) {
+    const step = Math.PI / 4;
+    const angle = Math.atan2(dy, dx);
+    let sector = ((Math.round(angle / step) % 8) + 8) % 8;
+
+    const current = state.dirSector;
+    if (current !== null && current !== sector) {
+      const fromCentre = Math.atan2(Math.sin(angle - current * step), Math.cos(angle - current * step));
+      if (Math.abs(fromCentre) < (step / 2) + SECTOR_STICKY_RADIANS) sector = current;
+    }
+    state.dirSector = sector;
+
+    const { dir, side } = SECTORS[sector];
+    entryFor(token).dir = dir;
+    if (side) setFacing(token, side);
   }
 
   // ------------------------------------------------------------
@@ -529,10 +697,16 @@
       // restart the walk animation with its own timing.
       if (Math.abs(doc.x - doc._source.x) > 0.5 || Math.abs(doc.y - doc._source.y) > 0.5) return;
 
-      const facing = state.tokens.get(tokenId)?.facing;
-      if (!facing || doc.getFlag(MODULE_ID, FACING_FLAG) === facing) return;
+      const entry = state.tokens.get(tokenId);
+      const facing = entry?.facing;
+      const dir = entry?.dir;
+      if (!facing) return;
+      if (doc.getFlag(MODULE_ID, FACING_FLAG) === facing && doc.getFlag(MODULE_ID, DIR_FLAG) === dir) return;
 
-      doc.setFlag(MODULE_ID, FACING_FLAG, facing).catch(() => {});
+      doc.update({
+        [`flags.${MODULE_ID}.${FACING_FLAG}`]: facing,
+        [`flags.${MODULE_ID}.${DIR_FLAG}`]: dir
+      }).catch(() => {});
     }, SAVE_FACING_AFTER_MS);
   }
 
@@ -569,19 +743,20 @@
       if (state.walking && (now - state.lastMoveAt) > WALK_END_MS) {
         state.walking = false;
         state.walkDistance = 0;
+        state.dirSector = null;
         hideWalk();
+        showStandArt(token);
         scheduleSaveFacing(token);
       }
       return;
     }
 
     state.lastMoveAt = now;
+    if (!state.walking) clearStandArt(); // walk art is laid over the token's own image
     state.walking = true;
     state.walkDistance += moved;
 
-    if (Math.abs(dx) >= (moved * TURN_SIDEWAYS_SHARE)) {
-      setFacing(token, dx > 0 ? "right" : "left");
-    }
+    updateDirection(token, dx, dy);
 
     showWalk(token);
   }
@@ -662,6 +837,19 @@
     tickParty(now);
     tickTalks(now);
 
+    // At rest, the party token wears the standing art of its direction.
+    if (!state.walking) {
+      const party = findPartyToken();
+      if (party) {
+        if (state.standDirty) {
+          state.standDirty = false;
+          showStandArt(party);
+        } else {
+          holdStandArt(party);
+        }
+      }
+    }
+
     // Hold every tracked sprite on its facing. Foundry rewrites the mesh
     // scale whenever it refreshes a token, which would undo a mirror.
     for (const [tokenId, entry] of state.tokens) {
@@ -670,7 +858,7 @@
         state.tokens.delete(tokenId);
         continue;
       }
-      if (entry.facing !== drawnFacing(token) || entry.turnFrom !== null) applyFacing(token);
+      if (entry.facing !== drawnFacing(token) || entry.turnFrom !== null || entry.shownSlot) applyFacing(token);
     }
   }
 
@@ -690,6 +878,7 @@
     state.saveTimer = null;
 
     hideWalk();
+    clearStandArt();
     state.tokens.clear();
     state.talks.clear();
 
@@ -698,6 +887,8 @@
     state.lastY = null;
     state.walking = false;
     state.walkDistance = 0;
+    state.dirSector = null;
+    state.standDirty = false;
     state.lastMoverIsMe = false;
   }
 
@@ -752,6 +943,8 @@
     LOCKED_FLAG,
 
     getFacing(token) { return token ? getFacing(token) : null; },
+    // The drawn direction a token is on: down, downLeft, left, upLeft or up.
+    getDirection(token) { return token ? entryFor(token).dir : null; },
     setFacing(token, facing, options) { if (token) setFacing(token, facing, options); },
     faceToward(token, point) { if (token && point) faceToward(token, point); },
 
@@ -791,6 +984,9 @@
       }
     }
 
+    // The party token stands the way its last walk ended.
+    state.standDirty = true;
+
     attachTicker();
   }
 
@@ -817,6 +1013,7 @@
     state.tokens.delete(doc.id);
     state.talks.delete(doc.id);
     if (state.walkShown?.tokenId === doc.id) state.walkShown = null;
+    if (state.standShown?.tokenId === doc.id) state.standShown = null;
     if (state.sway?.tokenId === doc.id) state.sway = null;
   });
 
@@ -838,16 +1035,26 @@
       }
     }
 
-    // The standing art changed (control passed to another player).
-    if (change?.texture && ("src" in change.texture) && state.walkShown?.tokenId === doc.id) {
-      state.walkShown = null;
+    // The standing art changed (control passed to another player): the new
+    // character's art is chosen again for the same direction.
+    if (change?.texture && ("src" in change.texture)) {
+      if (state.walkShown?.tokenId === doc.id) state.walkShown = null;
+      if (state.standShown?.tokenId === doc.id) state.standShown = null;
+      const entry = state.tokens.get(doc.id);
+      if (entry) entry.shownSlot = null;
+      if (doc.id === state.partyTokenId) state.standDirty = true;
     }
 
-    // Another client saved the facing its walk ended on.
+    // Another client saved the facing and direction its walk ended on.
     const saved = change?.flags?.[MODULE_ID]?.[FACING_FLAG];
-    if ((saved === "left" || saved === "right") && !(doc.id === state.partyTokenId && state.walking)) {
+    const savedDir = change?.flags?.[MODULE_ID]?.[DIR_FLAG];
+    if (!(doc.id === state.partyTokenId && state.walking)) {
       const token = doc.object;
-      if (token) setFacing(token, saved);
+      if (token && (saved === "left" || saved === "right")) setFacing(token, saved);
+      if (token && DIR_FIELDS[savedDir] && entryFor(token).dir !== savedDir) {
+        entryFor(token).dir = savedDir;
+        if (doc.id === state.partyTokenId) state.standDirty = true;
+      }
     }
   });
 
