@@ -7,12 +7,16 @@
 // dims and drains a little colour, and the music drops while the group is on
 // a break.
 //
-// THE BEAT (the user's storyboard, 2026-10-15) —
-//   1. a thin red line draws in from the left edge across the screen
-//   2. at full width it thickens
-//   3. "Pause" slides in from the left, grey and see-through
-//   4. it lands centred on the line, white with a black outline, and slowly
-//      blinks for as long as the break lasts
+// THE BEAT (the user's storyboard, 2026-10-15, then tuned) —
+//   1. the map dims
+//   2. "Pause" slides in from the left and fades up, landing centred
+//   3. on resume it slides on out to the right the same way, and the dim
+//      lifts just behind it
+// The word is three stacked copies of the text — a gold outer border, a
+// black inner border and a silver-white gradient fill — with a faint warm
+// glow and a drop shadow. Stacked copies give a clean double border on
+// italic glyphs; text-stroke on one layer eats the fill, and text-shadow
+// paints over a background-clip:text fill in Chromium.
 // Times are in TUNING; each step is a CSS animation started by .is-shown.
 //
 // SAME SCREEN FOR EVERYONE — the GM sees exactly what the players see, so the
@@ -20,8 +24,8 @@
 // the "presentation never takes the GM screen" rule, and it keeps that rule's
 // spirit: the whole screen is pointer-events:none and listens to no keys, so
 // the GM keeps moving tokens and placing things underneath it, as core pause
-// allows. On the GM client the line and word also fade out of the way while
-// the GM drags on the map or points at the word.
+// allows. On the GM client the word also fades out of the way while the GM
+// drags on the map or points at it.
 //
 // LAYERING — the screen sits right after the #board canvas at z-index 0: it
 // paints over the map (same z, later in the page) and under the sidebar,
@@ -51,27 +55,22 @@ export const TUNING = {
   MUSIC_FADE_MS: 900,
   // The beat — slow + smooth, see the animation pacing rule.
   DIM_MS: 650,            // map dims
-  LINE_AT_MS: 150,        // red line starts drawing
-  LINE_DRAW_MS: 900,      // ... and reaches the right edge
-  LINE_THICKEN_MS: 300,   // then thickens
-  WORD_AT_MS: 1050,       // "Pause" starts sliding in
+  WORD_AT_MS: 300,        // "Pause" starts sliding in
   WORD_IN_MS: 750,
-  BLINK_AT_MS: 2300,      // first blink
-  BLINK_MS: 2800,         // one slow blink, bright → dim → bright
-  BLINK_LOW: 0.3,         // opacity at the bottom of a blink
-  EXIT_MS: 450,
-  GM_FADE_OPACITY: 0.15,  // line + word opacity while the GM works under them
+  WORD_SLIDE_PX: 140,     // how far it travels in, and on out
+  WORD_OUT_MS: 750,       // slide out on resume (mirrors the slide in)
+  UNDIM_AT_MS: 450,       // the dim starts lifting this far into the slide out
+  UNDIM_MS: 500,
+  GM_FADE_OPACITY: 0.15,  // word opacity while the GM works under it
   GM_FADE_HOLD_MS: 700,   // how long they stay faded after the GM lets go
   WAIT_POLL_MS: 150,
   WAIT_MAX_MS: 12000,     // never hold the pause screen back longer than this
 };
 
 const T = TUNING;
-const OUTLINE = [
-  "3px 0 0 #000", "-3px 0 0 #000", "0 3px 0 #000", "0 -3px 0 #000",
-  "2px 2px 0 #000", "-2px 2px 0 #000", "2px -2px 0 #000", "-2px -2px 0 #000",
-  "6px 7px 10px rgba(0, 0, 0, 0.65)",
-].join(", ");
+// In: decelerates into place. Out: the mirror, accelerating away.
+const EASE_SLIDE = "cubic-bezier(0.22, 1, 0.36, 1)";
+const EASE_SLIDE_OUT = "cubic-bezier(0.64, 0, 0.78, 0)";
 
 const CSS = `
   /* Core's pause logo — replaced by this screen. */
@@ -79,6 +78,7 @@ const CSS = `
 
   #board { transition: filter ${T.DIM_MS}ms ease; }
   body.oni-paused #board { filter: saturate(0.55) brightness(0.8); }
+  body:not(.oni-paused) #board { transition-duration: ${T.UNDIM_MS}ms; }
 
   #${ROOT_ID} {
     position: fixed; inset: 0; z-index: 0;
@@ -95,62 +95,68 @@ const CSS = `
   }
   #${ROOT_ID}.is-shown.is-leaving {
     opacity: 0;
-    transition: opacity ${T.EXIT_MS}ms ease;
+    transition: opacity ${T.UNDIM_MS}ms ease ${T.UNDIM_AT_MS}ms;
   }
 
-  /* The band across the middle: the line, with the word sitting on it. */
   #${ROOT_ID} .ops-stage {
     position: absolute; left: 0; right: 0; top: 46%;
     transform: translateY(-50%);
+    display: flex; justify-content: center;
     transition: opacity 250ms ease;
   }
   #${ROOT_ID}.is-gm-working .ops-stage { opacity: ${T.GM_FADE_OPACITY}; }
 
-  #${ROOT_ID} .ops-line {
-    position: absolute; left: 0; right: 0; top: 84%;
-    height: 6px; margin-top: -3px;
-    transform: scaleX(0); transform-origin: left center;
-  }
-  #${ROOT_ID} .ops-line-bar {
-    width: 100%; height: 100%;
-    background: linear-gradient(180deg, #ff3b3b 0%, #c8101a 55%, #8a0a10 100%);
-    box-shadow: 0 0 10px rgba(255, 40, 40, 0.55), 0 2px 6px rgba(0, 0, 0, 0.6);
-    transform: scaleY(0.34);
-  }
-  #${ROOT_ID}.is-shown .ops-line {
-    animation: ops-line-draw ${T.LINE_DRAW_MS}ms cubic-bezier(0.65, 0, 0.35, 1) ${T.LINE_AT_MS}ms both;
-  }
-  #${ROOT_ID}.is-shown .ops-line-bar {
-    animation: ops-line-thicken ${T.LINE_THICKEN_MS}ms ease-out ${T.LINE_AT_MS + T.LINE_DRAW_MS - 100}ms both;
-  }
-  @keyframes ops-line-draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-  @keyframes ops-line-thicken { from { transform: scaleY(0.34); } to { transform: scaleY(1); } }
-
+  /* The word: three copies of the text stacked in one grid cell. */
   #${ROOT_ID} .ops-word {
-    position: relative;
-    text-align: center;
+    display: grid;
     font-family: "Arial Black", "Arial", "Signika", sans-serif;
     font-weight: 900; font-style: italic;
-    font-size: clamp(64px, 6.2vw, 128px);
-    line-height: 1;
-    letter-spacing: 0.01em;
-    color: #fff;
-    text-shadow: ${OUTLINE};
+    font-size: clamp(72px, 7vw, 140px);
+    line-height: 1.1;
+    letter-spacing: 0.04em;
     opacity: 0;
+    /* faint warm glow, then the drop shadow under everything */
+    filter:
+      drop-shadow(0 0 0.14em rgba(255, 226, 150, 0.38))
+      drop-shadow(0.06em 0.08em 0.03em rgba(0, 0, 0, 0.65));
   }
+  #${ROOT_ID} .ops-word > span {
+    grid-area: 1 / 1;
+    justify-self: center;
+    padding: 0 0.16em; /* room for the italic overhang and the borders */
+    white-space: nowrap;
+  }
+  /* outer border: gold */
+  #${ROOT_ID} .ops-ring {
+    color: #e2bd62;
+    -webkit-text-stroke: 0.15em #e2bd62;
+  }
+  /* inner border: ink */
+  #${ROOT_ID} .ops-ink {
+    color: #120a04;
+    -webkit-text-stroke: 0.09em #120a04;
+  }
+  /* face: silver-white, a little brighter at the top like a PS2 title */
+  #${ROOT_ID} .ops-face {
+    color: transparent;
+    background: linear-gradient(180deg,
+      #ffffff 0%, #fbfcff 40%, #c9d1e0 52%, #eef1f8 78%, #ffffff 100%);
+    -webkit-background-clip: text; background-clip: text;
+  }
+
   #${ROOT_ID}.is-shown .ops-word {
-    animation:
-      ops-word-in ${T.WORD_IN_MS}ms cubic-bezier(0.22, 1, 0.36, 1) ${T.WORD_AT_MS}ms both,
-      ops-word-blink ${T.BLINK_MS}ms ease-in-out ${T.BLINK_AT_MS}ms infinite;
+    animation: ops-word-in ${T.WORD_IN_MS}ms ${EASE_SLIDE} ${T.WORD_AT_MS}ms both;
+  }
+  #${ROOT_ID}.is-shown.is-leaving .ops-word {
+    animation: ops-word-out ${T.WORD_OUT_MS}ms ${EASE_SLIDE_OUT} both;
   }
   @keyframes ops-word-in {
-    from { opacity: 0;    transform: translateX(-140px); color: #8e8e8e; }
-    45%  { opacity: 0.55; color: #a8a8a8; }
-    to   { opacity: 1;    transform: translateX(0);      color: #fff; }
+    from { opacity: 0; transform: translateX(-${T.WORD_SLIDE_PX}px); }
+    to   { opacity: 1; transform: translateX(0); }
   }
-  @keyframes ops-word-blink {
-    0%, 100% { opacity: 1; }
-    50%      { opacity: ${T.BLINK_LOW}; }
+  @keyframes ops-word-out {
+    from { opacity: 1; transform: translateX(0); }
+    to   { opacity: 0; transform: translateX(${T.WORD_SLIDE_PX}px); }
   }
 `;
 
@@ -160,6 +166,7 @@ let root = null;
 let shown = false;
 let waitToken = 0;      // bumps on every pause/resume so a stale wait gives up
 let leaveTimer = null;
+let undimTimer = null;
 let gmFadeTimer = null;
 const ducked = new Map(); // PlaylistSound id → volume we faded it to
 
@@ -182,8 +189,11 @@ function ensureRoot() {
   root.setAttribute("aria-hidden", "true");
   root.innerHTML = `
     <div class="ops-stage">
-      <div class="ops-line"><div class="ops-line-bar"></div></div>
-      <div class="ops-word">Pause</div>
+      <div class="ops-word">
+        <span class="ops-ring">Pause</span>
+        <span class="ops-ink">Pause</span>
+        <span class="ops-face">Pause</span>
+      </div>
     </div>`;
   // Above the map, below the sidebar / controls / windows (see LAYERING).
   const board = document.getElementById("board");
@@ -317,6 +327,7 @@ async function show({ sound = true } = {}) {
   if (shown) return;
   shown = true;
   clearTimeout(leaveTimer);
+  clearTimeout(undimTimer);
   ensureStyle();
   ensureRoot();
   root.classList.remove("is-shown", "is-leaving");
@@ -334,11 +345,14 @@ function hide({ sound = true } = {}) {
   if (!shown) return;
   shown = false;
   bindGmListeners(false);
-  document.body.classList.remove("oni-paused");
-  // Fade out with the line and word still drawn, then reset.
+  // The word slides on out and the dim lifts behind it (the overlay by its
+  // CSS delay, the map filter by this timer); then reset.
   root?.classList.add("is-leaving");
+  clearTimeout(undimTimer);
+  undimTimer = setTimeout(() => document.body.classList.remove("oni-paused"), TUNING.UNDIM_AT_MS);
   clearTimeout(leaveTimer);
-  leaveTimer = setTimeout(() => root?.classList.remove("is-shown", "is-leaving"), TUNING.EXIT_MS + 50);
+  const outMs = Math.max(TUNING.WORD_OUT_MS, TUNING.UNDIM_AT_MS + TUNING.UNDIM_MS);
+  leaveTimer = setTimeout(() => root?.classList.remove("is-shown", "is-leaving"), outMs + 50);
   if (sound) sfx(TUNING.SFX_RESUME);
   restoreMusic();
   log("hidden");
