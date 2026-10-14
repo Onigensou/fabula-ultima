@@ -490,7 +490,8 @@
     "scripts/skill-forge/skill-forge-app.js",
     "scripts/area-panel/area-panel-core.js",
     "scripts/area-panel/area-panel.js",
-    "scripts/area-panel/area-panel-tuner.js"
+    "scripts/area-panel/area-panel-tuner.js",
+    "scripts/pause-screen/pause-screen.js"
   ],
   "styles": [
     "styles/style.css",
