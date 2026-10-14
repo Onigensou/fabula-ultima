@@ -1,0 +1,14 @@
+{
+  "_comment": "PAPER EQUIPMENT — Moonsilver Shield (requested 2026-10-14). Common non-martial shield, 800z. MDEF +3, DEF -3. No passive. Counterpart of the Darksteel Shield (not a set). World item Item.2J3hqlnUcKxTIxJn. Guide Part 9 I.",
+  "name": "Moonsilver Shield",
+  "system": {
+    "props": {
+      "item_type": "shield",
+      "item_rarity": "Common",
+      "isMartial": false,
+      "item_def_bonus": "-3",
+      "item_mdef_bonus": "3",
+      "item_cost": "800"
+    }
+  }
+}

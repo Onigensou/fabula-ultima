@@ -811,9 +811,9 @@ left this round the loss carries as turn debt; the wielder never gains a stack. 
 applies Swift, or Slow + 1 Chronostasis; a spell stack that reaches 3 costs the action at once,
 and the next Chronos Sphere hit starts a fresh stack.
 
-### I. Ferrum Shield and Arcane Shield — a defence trade (2026-10-14)
+### I. Darksteel Shield and Moonsilver Shield — a defence trade (2026-10-14)
 
-*Common shields, non-martial, 800z. Ferrum: DEF +3, MDEF −3. Arcane: MDEF +3, DEF −3. No
+*Common shields, non-martial, 800z. Darksteel: DEF +3, MDEF −3. Moonsilver: MDEF +3, DEF −3. No
 passive. Counterparts, not a set.*
 
 **Designer intent.** Niche picks for a party that has read the area: one defence up, the other
@@ -825,15 +825,15 @@ The Tank is the only archetype with a free off hand.
 
 | Shield | Wyrmwood | Ancient Temple | Valley | Fafnir Castle | House mean |
 |---|---|---|---|---|---|
-| Ferrum +3 / −3 | 1.2% | 0.7% | 2.8% | 1.5% | **1.7%** |
-| Arcane −3 / +3 | −1.5% | −0.7% | −2.8% | −2.9% | **−2.1%** |
+| Darksteel +3 / −3 | 1.2% | 0.7% | 2.8% | 1.5% | **1.7%** |
+| Moonsilver −3 / +3 | −1.5% | −0.7% | −2.8% | −2.9% | **−2.1%** |
 | +4 / −3 (rejected) | 4.7% | 1.7% | 6.3% | 3.4% | 4.4% |
 | +5 / −3 (rejected) | 9.3% | 2.9% | 12.3% | 5.7% | 8.4% |
 
 - **Neither moves fight length or loss rate by a point.** Both sit under the Common budget.
-- **The Ferrum drawback is a shadow cost on a tank.** +3 / 0 measures the same 1.7%: a low-MDEF
+- **The Darksteel drawback is a shadow cost on a tank.** +3 / 0 measures the same 1.7%: a low-MDEF
   wearer is hit by spells either way.
-- **The Arcane Shield is not a tank item.** Its wearer is a one-handed back-liner, which the
+- **The Moonsilver Shield is not a tank item.** Its wearer is a one-handed back-liner, which the
   archetypes cannot model (every caster holds a two-handed weapon). On paper (Part 10 per-point
   row) +3 MDEF is worth about 4.5% in the Wyrmwood, 3.3% in the Temple, 1.2% in Fafnir Castle and
   0.4% in the Valley.
@@ -853,14 +853,14 @@ left.
 
 - At **+3** the DEF ceiling does not move; at **+4** it rises to 24, on a Common the roulette can
   award twice.
-- The Arcane Shield **does** raise the MDEF ceiling by about 2 (to ~21): no earlier shield gives
+- The Moonsilver Shield **does** raise the MDEF ceiling by about 2 (to ~21): no earlier shield gives
   more than +2 MDEF.
 - **Price a defence item at the DEF its likely wearer already has**, not at the archetype's. Use
   the monster's real roll (Part 4 lookup) at that DEF.
 
 **Engine route.** Clones of Bronze Shield: the standard "DEF UP" / "MDEF UP" transfer effects read
 `item_def_bonus` / `item_mdef_bonus`, and a negative value subtracts. **Live-verified** on a temp
-actor (DEF 8 / MDEF 8): Ferrum 11 / 5, Arcane 5 / 11, back to 8 / 8 when unequipped; two Ferrum
+actor (DEF 8 / MDEF 8): Darksteel 11 / 5, Moonsilver 5 / 11, back to 8 / 8 when unequipped; two Darksteel
 14 / 2. Not seen in a real fight.
 
 ---
