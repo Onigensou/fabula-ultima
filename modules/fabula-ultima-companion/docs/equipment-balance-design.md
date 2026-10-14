@@ -811,6 +811,58 @@ left this round the loss carries as turn debt; the wielder never gains a stack. 
 applies Swift, or Slow + 1 Chronostasis; a spell stack that reaches 3 costs the action at once,
 and the next Chronos Sphere hit starts a fresh stack.
 
+### I. Ferrum Shield and Arcanum Shield — a defence trade (2026-10-14)
+
+*Common shields, non-martial, 800z. Ferrum: DEF +3, MDEF −3. Arcanum: MDEF +3, DEF −3. No
+passive. Counterparts, not a set.*
+
+**Designer intent.** Niche picks for a party that has read the area: one defence up, the other
+down. A dungeon may lean to one side, but it should keep both Strike and magic damage in play so
+neither shield shuts it down.
+
+Measured with `check-item` on the Tank (300 runs per arm) against its basic Runic Shield (+2 / +2).
+The Tank is the only archetype with a free off hand.
+
+| Shield | Wyrmwood | Ancient Temple | Valley | Fafnir Castle | House mean |
+|---|---|---|---|---|---|
+| Ferrum +3 / −3 | 1.2% | 0.7% | 2.8% | 1.5% | **1.7%** |
+| Arcanum −3 / +3 | −1.5% | −0.7% | −2.8% | −2.9% | **−2.1%** |
+| +4 / −3 (rejected) | 4.7% | 1.7% | 6.3% | 3.4% | 4.4% |
+| +5 / −3 (rejected) | 9.3% | 2.9% | 12.3% | 5.7% | 8.4% |
+
+- **Neither moves fight length or loss rate by a point.** Both sit under the Common budget.
+- **The Ferrum drawback is a shadow cost on a tank.** +3 / 0 measures the same 1.7%: a low-MDEF
+  wearer is hit by spells either way.
+- **The Arcanum Shield is not a tank item.** Its wearer is a one-handed back-liner, which the
+  archetypes cannot model (every caster holds a two-handed weapon). On paper (Part 10 per-point
+  row) +3 MDEF is worth about 4.5% in the Wyrmwood, 3.3% in the Temple, 1.2% in Fafnir Castle and
+  0.4% in the Valley.
+
+**Why not +4: defence stacks, and each point is worth more the higher it goes.** The basic-gear
+Tank sits at DEF 12–15, where the flat P4 price holds. A geared tank does not. The live Tank is at
+DEF 19 (Paladin Armor 12, Titanic Shield +4, Hekat Shield +2, Matador Cape +1) and wears two
+shields through Twin Shields, so a shield bonus can count twice. Against a Dire Orc's Cleaver
+(d12+d8+5): 30% at DEF 19, 24% at 20, 18% at 21, 14% at 22 — each point removes 20–25% of what is
+left.
+
+| Build | with +3 | with +4 |
+|---|---|---|
+| Armor 14 + one shield + Guardian Emblem | 19 | 20 |
+| Armor 14 + two of this shield + Guardian Emblem | 22 | 24 |
+| Best legacy gear (14 + Titanic 4 + Adamantower 3 + Emblem 2) | 23 | 23 |
+
+- At **+3** the DEF ceiling does not move; at **+4** it rises to 24, on a Common the roulette can
+  award twice.
+- The Arcanum Shield **does** raise the MDEF ceiling by about 2 (to ~21): no earlier shield gives
+  more than +2 MDEF.
+- **Price a defence item at the DEF its likely wearer already has**, not at the archetype's. Use
+  the monster's real roll (Part 4 lookup) at that DEF.
+
+**Engine route.** Clones of Bronze Shield: the standard "DEF UP" / "MDEF UP" transfer effects read
+`item_def_bonus` / `item_mdef_bonus`, and a negative value subtracts. **Live-verified** on a temp
+actor (DEF 8 / MDEF 8): Ferrum 11 / 5, Arcanum 5 / 11, back to 8 / 8 when unequipped; two Ferrum
+14 / 2. Not seen in a real fight.
+
 ---
 
 ## Part 10 — Measured reference ladder (2026-09-13)
