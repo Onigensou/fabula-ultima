@@ -301,8 +301,11 @@
       const totalMs = waitForInput
         ? maxWaitMs + (remote ? 3000 : 0)
         : (holdMs ?? Math.max(1200, typeMs + HOLD_AFTER_TYPING_MS));
-      if (autoTimer) clearTimeout(autoTimer);
-      autoTimer = setTimeout(() => closeLine(), totalMs);
+      autoTimer?.clear();
+      // Stops counting while the game is paused (pause-screen/pause-clock.js).
+      const clock = window.oni?.Pause;
+      if (clock) autoTimer = clock.timeout(() => closeLine(), totalMs);
+      else { const handle = setTimeout(() => closeLine(), totalMs); autoTimer = { clear: () => clearTimeout(handle) }; }
     }
 
     function markDone() {
@@ -345,7 +348,7 @@
       closing = true;
 
       if (!done) markDone();
-      if (autoTimer) clearTimeout(autoTimer);
+      autoTimer?.clear();
       autoTimer = null;
 
       box.classList.remove("fu-awaiting");
@@ -353,6 +356,7 @@
     }
 
     function handleClick() {
+      if (game.paused) return; // nothing advances during a pause
       if (controlled) {
         Hooks.callAll("fuDialogBubblePress", { bubbleId: id });
         return;
@@ -375,7 +379,7 @@
     }
 
     function dispose() {
-      if (autoTimer) clearTimeout(autoTimer);
+      autoTimer?.clear();
       if (doneTimer) clearTimeout(doneTimer);
       store.bubbles.delete(id);
       box.removeEventListener("click", handleClick);

@@ -16,8 +16,8 @@
  *     Down:    Arrow Down, S
  * - Hands a press to whichever system is currently listening
  *
- * A key does nothing here unless a listener takes it. With no listener, or
- * when the listener declines, the key falls through to whatever it normally
+ * A key does nothing here unless a listener takes it. With no listener, while
+ * the game is paused, or when the listener declines, the key falls through to whatever it normally
  * does (Spacebar still pauses for the GM, the arrows and W / S still pan the
  * map). Foundry itself ignores these keys while the cursor is in a text field.
  *
@@ -57,7 +57,10 @@
   }
 
   // Returns true when a listener used the press.
+  // While the game is paused nothing listens, as on a console: the press falls
+  // through, so the GM's Spacebar always reaches core and resumes.
   function dispatch(action, source = "key") {
+    if (globalThis.game?.paused) return false;
     for (const handler of [...listeners]) {
       try {
         if (handler({ action, source }) === true) return true;

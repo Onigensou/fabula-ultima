@@ -155,11 +155,20 @@
     else rt.unlockMovement?.(lockId(sourceId));
   }
 
+  // A timeout that stops counting while the game is paused, so a break does
+  // not run an event on (scripts/pause-screen/pause-clock.js).
+  function pausableTimeout(fn, ms) {
+    const clock = window.oni?.Pause;
+    if (clock) return clock.timeout(fn, ms);
+    const handle = setTimeout(fn, ms);
+    return { clear: () => clearTimeout(handle) };
+  }
+
   // The lock's own time limit. It does not run while the event is held: a
   // choice menu or a roleplay scene may take as long as the table likes.
   function armTimer(sourceId, entry) {
-    if (entry.timer) clearTimeout(entry.timer);
-    entry.timer = entry.held ? null : setTimeout(() => forceEnd(sourceId), LOCK_MAX_MS);
+    entry.timer?.clear();
+    entry.timer = entry.held ? null : pausableTimeout(() => forceEnd(sourceId), LOCK_MAX_MS);
   }
 
   function setActive(sourceId, locked, gmUserId = null) {
@@ -199,7 +208,7 @@
     const entry = state.active.get(sourceId);
     if (!entry) return;
 
-    if (entry.timer) clearTimeout(entry.timer);
+    entry.timer?.clear();
     state.active.delete(sourceId);
     applyLock(sourceId, false);
     syncInput();
@@ -246,6 +255,7 @@
 
   function press() {
     if (!state.active.size) return false;
+    if (game.paused) return false; // nothing advances during a pause
     if (!isLocalUserInteractor()) return false;
 
     const now = performance.now();
@@ -378,13 +388,13 @@
   function wait(sourceId, ms) {
     return new Promise((resolve) => {
       let off = null;
-      const timer = setTimeout(() => {
+      const timer = pausableTimeout(() => {
         off?.();
         resolve(true);
       }, Math.max(0, Number(ms) || 0));
 
       off = onAbort(sourceId, () => {
-        clearTimeout(timer);
+        timer.clear();
         resolve(false);
       });
     });

@@ -491,6 +491,7 @@
     "scripts/area-panel/area-panel-core.js",
     "scripts/area-panel/area-panel.js",
     "scripts/area-panel/area-panel-tuner.js",
+    "scripts/pause-screen/pause-clock.js",
     "scripts/pause-screen/pause-screen.js"
   ],
   "styles": [

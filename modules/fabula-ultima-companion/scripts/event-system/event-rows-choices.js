@@ -228,6 +228,7 @@
   }
 
   function pick(sourceId, index) {
+    if (game.paused) return; // nothing is chosen during a pause
     flow()?.request?.(REQUEST, { sourceId, op: "pick", index });
   }
 
