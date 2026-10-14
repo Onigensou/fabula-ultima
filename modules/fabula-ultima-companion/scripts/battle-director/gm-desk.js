@@ -96,6 +96,7 @@ const D = {
   focusSig: "",
   barW: null,                // { full, compact } stage px
   aiPrev: { key: "", data: null, busy: false },
+  swapSig: null,             // what the console showed last (its content fades in when this changes)
 };
 const CTX_MS = 20000;        // a reaction / card pill's follow-up pickers open within this
 let _units = null;           // survives a desk rebuild (snapshot arrives on every client)
@@ -139,6 +140,75 @@ function liveOwnerOf(actor) {
   return u?.active ? u : null;
 }
 function lockedFor(actor) { return !!(D.locked && liveOwnerOf(actor)); }
+
+// ── motion ────────────────────────────────────────────────────────────────────
+// The desk arrives and leaves with a short move instead of appearing in one
+// frame, and the console's content fades in when it changes. Presentation only
+// (WAAPI on opacity / translate, nothing left behind once a move has played);
+// a client that asks for reduced motion gets the desk as it was.
+const MOTION = { in: 420, out: 280, swap: 220, tile: 260, tileGap: 60, fold: 260 };
+const EASE = "cubic-bezier(.2,.8,.2,1)";
+const RISE = [{ opacity: 0, translate: "0 28px" }, { opacity: 1, translate: "0 0" }];
+const DROP = [{ opacity: 0, translate: "0 -18px" }, { opacity: 1, translate: "0 0" }];
+let _ghost = null;           // the desk that was just destroyed, until it is known to stay gone
+function motionOk() {
+  try { return !window.matchMedia?.("(prefers-reduced-motion: reduce)").matches; } catch { return true; }
+}
+function move(el, frames, opts) {
+  try { return el?.animate?.(frames, { easing: EASE, ...opts }) ?? null; } catch { return null; }
+}
+// The bar drops in from the top, the two panels rise from the bottom. Behind
+// the battle-start glass nobody would see it, so it waits for the glass.
+function enterDesk() {
+  const root = D.root;
+  if (!root) return;
+  const run = () => {
+    if (D.root !== root) return;
+    if (document.body.classList.contains("fuc-shatter-active")) { setTimeout(run, 100); return; }
+    root.style.visibility = "";
+    if (!motionOk()) return;
+    move(D.bar, DROP, { duration: MOTION.in, fill: "backwards" });
+    move(D.roster, RISE, { duration: MOTION.in, delay: 60, fill: "backwards" });
+    move(D.con, RISE, { duration: MOTION.in, delay: 130, fill: "backwards" });
+  };
+  if (document.body.classList.contains("fuc-shatter-active")) root.style.visibility = "hidden";
+  run();
+}
+// A HUD rebuild destroys the desk and builds it again in one go: the old desk
+// is kept for that moment and only one that stays gone plays its exit.
+function leaveDesk(root) {
+  root.removeAttribute("id");
+  root.inert = true;
+  const ghost = { root, t: 0 };
+  ghost.t = setTimeout(() => {
+    if (_ghost === ghost) _ghost = null;
+    if (!motionOk() || root.style.visibility === "hidden") { root.remove(); return; }
+    const out = (frames) => [frames[1], frames[0]];
+    const opts = { duration: MOTION.out, easing: "ease-in", fill: "forwards" };
+    move(root.querySelector(".gmd-bar"), out(DROP), opts);
+    move(root.querySelector(".gmd-roster"), out(RISE), opts);
+    move(root.querySelector(".gmd-con"), out(RISE), { ...opts, delay: 50 });
+    setTimeout(() => root.remove(), MOTION.out + 80);
+  }, 0);
+  _ghost = ghost;
+}
+function dropGhost() {
+  const g = _ghost;
+  if (!g) return false;
+  _ghost = null;
+  clearTimeout(g.t);
+  g.root.remove();
+  return true;
+}
+function swapConsole() {
+  if (motionOk()) move(D.cbody, [{ opacity: 0, translate: "0 6px" }, { opacity: 1, translate: "0 0" }], { duration: MOTION.swap });
+}
+function popTiles() {
+  if (!motionOk()) return;
+  D.layers.take?.querySelectorAll(".gmd-tile").forEach((el, i) => move(el,
+    [{ opacity: 0, scale: ".94", translate: "0 8px" }, { opacity: 1, scale: "1", translate: "0 0" }],
+    { duration: MOTION.tile, delay: i * MOTION.tileGap, fill: "backwards" }));
+}
 
 // ── styles ────────────────────────────────────────────────────────────────────
 function ensureStyles() {
@@ -254,6 +324,9 @@ function ensureStyles() {
 .gmd.is-folded .gmd-cols, .gmd.is-folded .gmd-cbody { display: none; }
 .gmd.is-folded .gmd-chd { border-bottom: 0; cursor: pointer; }
 .gmd.is-folded .gmd-ph { border-bottom: 0; }
+/* folding / unfolding: the panels glide to their new size (only while it happens) */
+.gmd.is-folding .gmd-panel { transition: top ${MOTION.fold}ms ${EASE}, height ${MOTION.fold}ms ${EASE}; }
+@media (prefers-reduced-motion: reduce) { .gmd.is-folding .gmd-panel { transition: none; } }
 /* peek: hold the key and the desk lets you see and click what is under it */
 .gmd.is-peek .gmd-panel, .gmd.is-peek .gmd-bar { opacity: .1; pointer-events: none !important; }
 
@@ -457,12 +530,13 @@ const SVG = {
 export function buildDesk(partyIds = []) {
   if (!deskEnabled()) return false;
   destroyDesk();
+  const rebuilt = dropGhost();
   ensureStyles();
   ensureSocket();
   try { D.locked = localStorage.getItem(LOCK_KEY) !== "0"; } catch { D.locked = true; }
   try { D.size = SIZES[localStorage.getItem(SIZE_KEY)] ? localStorage.getItem(SIZE_KEY) : "m"; } catch { D.size = "m"; }
   try { D.folded = localStorage.getItem(FOLD_KEY) === "1"; } catch { D.folded = false; }
-  D.foldShown = false; D.peek = false; D.hover = null; D.ringLit = null; D.focusSig = ""; D.barW = null;
+  D.foldShown = false; D.peek = false; D.hover = null; D.ringLit = null; D.focusSig = ""; D.barW = null; D.swapSig = null;
   D.party = new Set(partyIds.map(String));
   D.units = _units;
   const root = document.createElement("div");
@@ -539,6 +613,7 @@ export function buildDesk(partyIds = []) {
   paintRoster();
   render();
   place();
+  if (!rebuilt) enterDesk();
   log(`[GmDesk] built (party ${D.party.size}, units ${D.units?.length ?? 0}, size ${D.size}${D.folded ? ", folded" : ""})`);
   return true;
 }
@@ -553,7 +628,7 @@ export function destroyDesk() {
   // Pending reaction records must not dangle; their owners clean them up.
   D.rx.clear(); D.rxOrder = []; D.rxCur = null; D.take = null;
   D.ctx = null;
-  try { D.root.remove(); } catch { /* */ }
+  try { leaveDesk(D.root); } catch { try { D.root.remove(); } catch { /* */ } }
   D.root = null; D.layers = {}; D.rows.clear(); D.placeKey = "";
   log("[GmDesk] destroyed");
 }
@@ -1129,7 +1204,16 @@ function render() {
   const mine = (layer === "take" && D.take?.entries.some((e) => takeEnabled(e)))
     || (layer === "react" && !locked) || (layer === "step" && !locked);
   const fold = D.folded && !mine;
-  if (fold !== D.foldShown) { D.foldShown = fold; D.root.classList.toggle("is-folded", fold); D.placeKey = ""; place(); }
+  if (fold !== D.foldShown) {
+    const root = D.root;
+    root.classList.add("is-folding");
+    clearTimeout(root._foldT);
+    root._foldT = setTimeout(() => root.classList.remove("is-folding"), MOTION.fold + 60);
+    D.foldShown = fold; root.classList.toggle("is-folded", fold); D.placeKey = ""; place();
+  }
+  // New content in the console (another layer, the next reaction menu) fades in.
+  const sig = `${showMirror ? "mirror" : layer === "card" ? "idle" : layer}|${layer === "react" ? D.rxCur ?? "" : ""}`;
+  if (sig !== D.swapSig) { const first = D.swapSig == null; D.swapSig = sig; if (!first) swapConsole(); }
   if (mine) tabAlert("gm-desk", layer === "take" ? "★ Take Turn" : layer === "react" ? "★ Your call" : D.step?.cmdsEl?.querySelector(".fud-octopath:not([inert])") ? "★ Your turn" : "★ Your pick");
   else tabAlertClear("gm-desk");
   sendPresence(layer, locked);
@@ -1358,6 +1442,7 @@ export function deskArmTakeTurn(entries, pick) {
   D.take = token;
   bump("take");
   paintTake();
+  popTiles();
   paintRows();
   const first = list.find((e) => takeEnabled(e)) ?? list[0];
   const fr = first ? D.rows.get(first.combatantId) : null;
