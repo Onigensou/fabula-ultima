@@ -40,7 +40,7 @@
 // replaced by a live MIRROR of that player's own drawer (sent by their client).
 
 import { log, warn } from "./logger.js";
-import { playUiHoverSfx, playUiClickSfx } from "./director-ui-sfx.js";
+import { playUiHoverSfx, playUiClickSfx, playUiOpenSfx, playUiBackSfx } from "./director-ui-sfx.js";
 import { ensureDrawerStyles, escapeHtml as esc, mountDockedReaction, pickDocked } from "./drawer-views.js";
 import { rightEdgeReserve, hudScale, readUnitInfo } from "./director-player-hud.js";
 import { tabAlert, tabAlertClear } from "./tab-alert.js";
@@ -97,6 +97,7 @@ const D = {
   barW: null,                // { full, compact } stage px
   aiPrev: { key: "", data: null, busy: false },
   swapSig: null,             // what the console showed last (its content fades in when this changes)
+  hoverKey: null,            // the bar / header control under the pointer (hover cue)
 };
 const CTX_MS = 20000;        // a reaction / card pill's follow-up pickers open within this
 let _units = null;           // survives a desk rebuild (snapshot arrives on every client)
@@ -166,6 +167,7 @@ function enterDesk() {
     if (D.root !== root) return;
     if (document.body.classList.contains("fuc-shatter-active")) { setTimeout(run, 100); return; }
     root.style.visibility = "";
+    playUiOpenSfx();
     if (!motionOk()) return;
     move(D.bar, DROP, { duration: MOTION.in, fill: "backwards" });
     move(D.roster, RISE, { duration: MOTION.in, delay: 60, fill: "backwards" });
@@ -182,7 +184,9 @@ function leaveDesk(root) {
   const ghost = { root, t: 0 };
   ghost.t = setTimeout(() => {
     if (_ghost === ghost) _ghost = null;
-    if (!motionOk() || root.style.visibility === "hidden") { root.remove(); return; }
+    if (root.style.visibility === "hidden") { root.remove(); return; }
+    playUiBackSfx();
+    if (!motionOk()) { root.remove(); return; }
     const out = (frames) => [frames[1], frames[0]];
     const opts = { duration: MOTION.out, easing: "ease-in", fill: "forwards" };
     move(root.querySelector(".gmd-bar"), out(DROP), opts);
@@ -200,7 +204,8 @@ function dropGhost() {
   g.root.remove();
   return true;
 }
-function swapConsole() {
+function swapConsole(mine) {
+  if (mine) playUiOpenSfx();
   if (motionOk()) move(D.cbody, [{ opacity: 0, translate: "0 6px" }, { opacity: 1, translate: "0 0" }], { duration: MOTION.swap });
 }
 function popTiles() {
@@ -536,7 +541,7 @@ export function buildDesk(partyIds = []) {
   try { D.locked = localStorage.getItem(LOCK_KEY) !== "0"; } catch { D.locked = true; }
   try { D.size = SIZES[localStorage.getItem(SIZE_KEY)] ? localStorage.getItem(SIZE_KEY) : "m"; } catch { D.size = "m"; }
   try { D.folded = localStorage.getItem(FOLD_KEY) === "1"; } catch { D.folded = false; }
-  D.foldShown = false; D.peek = false; D.hover = null; D.ringLit = null; D.focusSig = ""; D.barW = null; D.swapSig = null;
+  D.foldShown = false; D.peek = false; D.hover = null; D.ringLit = null; D.focusSig = ""; D.barW = null; D.swapSig = null; D.hoverKey = null;
   D.party = new Set(partyIds.map(String));
   D.units = _units;
   const root = document.createElement("div");
@@ -588,8 +593,9 @@ export function buildDesk(partyIds = []) {
   D.layers.take.addEventListener("click", onTakeClick);
   D.layers.take.addEventListener("pointerover", (e) => {
     const t = e.target.closest?.("[data-ti]");
-    if (t && D.take && Number(t.dataset.ti) !== D.take.cur) { D.take.cur = Number(t.dataset.ti); paintTake(); }
+    if (t && D.take && Number(t.dataset.ti) !== D.take.cur) { D.take.cur = Number(t.dataset.ti); playUiHoverSfx(); paintTake(); }
   });
+  root.addEventListener("pointerover", onDeskOver);
   window.addEventListener("keydown", onDeskKey, true);
   D.offFns.push(() => window.removeEventListener("keydown", onDeskKey, true));
   document.addEventListener("pointerdown", onCardPointer, true);
@@ -1213,7 +1219,7 @@ function render() {
   }
   // New content in the console (another layer, the next reaction menu) fades in.
   const sig = `${showMirror ? "mirror" : layer === "card" ? "idle" : layer}|${layer === "react" ? D.rxCur ?? "" : ""}`;
-  if (sig !== D.swapSig) { const first = D.swapSig == null; D.swapSig = sig; if (!first) swapConsole(); }
+  if (sig !== D.swapSig) { const first = D.swapSig == null; D.swapSig = sig; if (!first) swapConsole(mine); }
   if (mine) tabAlert("gm-desk", layer === "take" ? "★ Take Turn" : layer === "react" ? "★ Your call" : D.step?.cmdsEl?.querySelector(".fud-octopath:not([inert])") ? "★ Your turn" : "★ Your pick");
   else tabAlertClear("gm-desk");
   sendPresence(layer, locked);
@@ -1404,6 +1410,18 @@ function addLog(p) {
   try { if (p.attackerTokenUuid) who = fromUuidSync(p.attackerTokenUuid)?.name ?? who; } catch { /* */ }
   _log.unshift({ round: p.round ?? null, who, action: p.actionName ?? null, rows: Array.isArray(p.rows) ? p.rows.slice(0, 8) : [] });
   _log = _log.slice(0, LOG_MAX);
+}
+
+// ── hover cue: battle bar commands, size / fold, Watch | Act ──────────────────
+// Keyed by what the control is, not by its element: a repaint under a resting
+// pointer swaps the element and would play the cue again.
+const HOVER_SEL = ".gmd-bar > [data-cmd]:not(.off), .gmd-size [data-sz]:not(.on), [data-fold], [data-lock]";
+function onDeskOver(e) {
+  const el = e.target.closest?.(HOVER_SEL) ?? null;
+  const key = !el ? null : el.dataset.cmd ? `cmd:${el.dataset.cmd}` : el.dataset.sz ? `sz:${el.dataset.sz}` : el.hasAttribute("data-fold") ? "fold" : "lock";
+  if (key === D.hoverKey) return;
+  D.hoverKey = key;
+  if (key) playUiHoverSfx();
 }
 
 // ── keys (Take Turn tiles) ────────────────────────────────────────────────────

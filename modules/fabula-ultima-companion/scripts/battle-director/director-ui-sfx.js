@@ -8,6 +8,9 @@
 // Cues (Legacy parity — same files the legacy Turn UI used):
 //   hover  → BattleCursor_4.wav   (light cursor blip on mouse-enter)
 //   click  → switch_mode.wav      (select / activate)
+//   open   → switch_mode.wav      (a surface opening by itself — the legacy
+//                                  Turn UI's "open"; quiet right after a click)
+//   back   → cursor_back2.wav     (a surface closing by itself)
 //
 // Playback is LOCAL only (playSfx, never broadcast): UI hover/click is each
 // client's own interaction, not something to fan out to other screens. The
@@ -18,7 +21,7 @@
 // and initialised from its ready hook, so it loads on a normal reload.
 
 import { log, warn } from "./logger.js";
-import { playSfx } from "./director-sfx.js";
+import { playSfx, preloadSfx } from "./director-sfx.js";
 
 const FORGE_SOUND_BASE =
   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
@@ -26,9 +29,14 @@ const FORGE_SOUND_BASE =
 export const UI_HOVER_SFX_URL      = FORGE_SOUND_BASE + "BattleCursor_4.wav";
 export const UI_CLICK_SFX_URL      = FORGE_SOUND_BASE + "switch_mode.wav";
 export const UI_TAB_SWITCH_SFX_URL = FORGE_SOUND_BASE + "BattleCursor_1.wav";
+export const UI_BACK_SFX_URL       = FORGE_SOUND_BASE + "cursor_back2.wav";
 
 const HOVER_VOL = 0.5;
 const CLICK_VOL = 0.6;
+// The open cue is the click's file: a surface that opens because of a click
+// (or straight after another one opened) must not play it twice.
+const OPEN_QUIET_MS = 300;
+let _lastSelectAt = 0;
 
 // Every interactive element the director renders. Almost all are
 // `<div role="button">` with a `fud-`-prefixed class; the generic `.pill` /
@@ -98,6 +106,7 @@ function onClick(e) {
     if (!el || isDisabled(el)) return;
     // Invoke buttons play their own HUD-open SFX — suppress the generic click cue.
     if (el.hasAttribute("data-fud-invoke")) return;
+    _lastSelectAt = performance.now();
     playSfx(UI_CLICK_SFX_URL, CLICK_VOL);
   } catch (err) {
     warn("director-ui-sfx onClick threw", err);
@@ -110,7 +119,20 @@ export function playUiHoverSfx() {
   try { playSfx(UI_HOVER_SFX_URL, HOVER_VOL); } catch {}
 }
 export function playUiClickSfx() {
-  try { playSfx(UI_CLICK_SFX_URL, CLICK_VOL); } catch {}
+  try { _lastSelectAt = performance.now(); playSfx(UI_CLICK_SFX_URL, CLICK_VOL); } catch {}
+}
+// A surface that opens or closes by itself (no click behind it): the GM desk
+// arriving, a decision landing in its console, the desk leaving.
+export function playUiOpenSfx() {
+  try {
+    const now = performance.now();
+    if (now - _lastSelectAt < OPEN_QUIET_MS) return;
+    _lastSelectAt = now;
+    playSfx(UI_CLICK_SFX_URL, CLICK_VOL);
+  } catch {}
+}
+export function playUiBackSfx() {
+  try { playSfx(UI_BACK_SFX_URL, CLICK_VOL); } catch {}
 }
 export function playUiTabSwitchSfx() {
   try { playSfx(UI_TAB_SWITCH_SFX_URL, HOVER_VOL); } catch {}
@@ -126,6 +148,8 @@ export function initDirectorUiSfx() {
     document.addEventListener("pointerout", onPointerOut, true);
     document.addEventListener("click", onClick, true);
     _installed = true;
+    // Not in preloadDirectorSfx's list: warm it here so its first play has no fetch hitch.
+    preloadSfx([UI_BACK_SFX_URL]).catch(() => {});
     log("director-ui-sfx: hover/click listeners installed");
   } catch (e) {
     warn("initDirectorUiSfx threw", e);
