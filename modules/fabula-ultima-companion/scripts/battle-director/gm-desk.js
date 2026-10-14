@@ -44,6 +44,7 @@ import { playUiHoverSfx, playUiClickSfx, playUiOpenSfx, playUiBackSfx } from "./
 import { ensureDrawerStyles, escapeHtml as esc, mountDockedReaction, pickDocked } from "./drawer-views.js";
 import { rightEdgeReserve, hudScale, readUnitInfo } from "./director-player-hud.js";
 import { tabAlert, tabAlertClear } from "./tab-alert.js";
+import { setGmFocus, focusState, setFocusPart, setFocusAll, FOCUS_PARTS, FOCUS_TOOLS, toolAvailable, openTool } from "./battle-focus.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const STYLE_ID = "fud-gm-desk-style";
@@ -64,7 +65,7 @@ const LOG_MAX = 8;
 
 // Stage layout at 1920×1080 (the mockup's numbers). The whole desk scales with
 // the HUD (hudScale) so a smaller screen gets the same layout, smaller.
-const L = { left: 74, gap: 10, height: 290, minH: 210, base: 20, rosterShare: 870 / 1726, barTop: 12, barRight: 20 };
+const L = { left: 20, gap: 10, height: 290, minH: 210, base: 20, rosterShare: 870 / 1726, barTop: 14, barW: 64 };
 const HOTKEYS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
 const DONE_MS = 4000;          // how long "Applied / Passed" stays on a roster line
 const CLOSE_GRACE_MS = 160;    // a reaction menu re-opens after a Use: keep its line selected
@@ -94,7 +95,6 @@ const D = {
   ringLit: null,             // { uid, until }: a clicked line's ring glows for a moment
   presence: new Map(),       // other GM's userId → { tokenId, what, at }
   focusSig: "",
-  barW: null,                // { full, compact } stage px
   aiPrev: { key: "", data: null, busy: false },
   swapSig: null,             // what the console showed last (its content fades in when this changes)
   hoverKey: null,            // the bar / header control under the pointer (hover cue)
@@ -238,18 +238,32 @@ function ensureStyles() {
 .gmd-grow { flex: 1; }
 
 /* ── battle bar ── */
-.gmd-bar { position: absolute; top: ${L.barTop}px; left: ${L.left}px; height: 40px; display: flex; align-items: stretch; pointer-events: auto; border-radius: 10px; overflow: hidden;
+/* the GM's command column, top left (Foundry's scene tools step away in battle) */
+.gmd-bar { position: absolute; top: ${L.barTop}px; left: 14px; width: ${L.barW}px; display: flex; flex-direction: column; align-items: stretch; pointer-events: auto; border-radius: 10px; overflow: hidden;
   background: linear-gradient(180deg, var(--p-top), var(--p-bot)); border: 2px solid var(--stroke); box-shadow: 0 0 0 1px rgba(255,255,255,.7) inset, 0 8px 20px rgba(0,0,0,.4); }
-.gmd-bar > * { display: flex; align-items: center; gap: 6px; padding: 0 9px; border-left: 1px solid var(--hair); font: 700 11px "Signika", sans-serif; letter-spacing: .1em;
-  text-transform: uppercase; color: var(--tx-soft); white-space: nowrap; cursor: pointer; user-select: none; }
-.gmd-bar > *:first-child { border-left: 0; cursor: default; color: var(--tx); }
-.gmd-bar > [data-cmd]:hover { background: rgba(58,50,40,.06); color: var(--tx); }
-.gmd-bar svg { width: 15px; height: 15px; color: var(--gold-2); flex: none; }
+.gmd-bar > * { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 7px 2px 6px; border-top: 1px solid var(--hair);
+  font: 700 9.5px "Signika", sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--tx-soft); white-space: nowrap; cursor: pointer; user-select: none; }
+.gmd-bar > *:first-child { border-top: 0; }
+.gmd-bar > .gmd-bsep { border-top: 2px solid rgba(122,106,85,.55); padding: 0; cursor: default; }
+.gmd-bar > [data-cmd]:hover, .gmd-bar > [data-cmd].open { background: rgba(58,50,40,.07); color: var(--tx); }
+.gmd-bar svg { width: 18px; height: 18px; color: #9c763a; flex: none; }
+.gmd-bar .gmd-bico { font-size: 16px; line-height: 17px; height: 17px; letter-spacing: 0; filter: saturate(.75); }
 .gmd-bar .end, .gmd-bar .end svg { color: var(--red); }
-.gmd-bar.is-compact .lbl { display: none; }
-.gmd-bar.is-compact > * { padding: 0 7px; }
 .gmd-bar > [data-cmd].off { opacity: .4; cursor: not-allowed; }
 .gmd-bar > [data-cmd].off:hover { background: none; }
+/* the column's More menu */
+.gmd-more { position: absolute; z-index: 5; pointer-events: auto; min-width: 230px; padding: 6px 0; border-radius: 10px;
+  background: linear-gradient(180deg, var(--p-top), var(--p-bot)); border: 2px solid var(--stroke); box-shadow: 0 0 0 1px rgba(255,255,255,.7) inset, 0 12px 28px rgba(0,0,0,.5);
+  font: 500 13px "Signika", sans-serif; color: var(--tx); user-select: none; }
+.gmd-more .h { font: 700 9.5px "Signika", sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--tx-dim); padding: 6px 14px 3px; }
+.gmd-more .it { display: flex; align-items: center; gap: 10px; padding: 6px 14px; cursor: pointer; }
+.gmd-more .it:hover { background: rgba(58,50,40,.07); }
+.gmd-more .it small { margin-left: auto; color: var(--tx-dim); font-size: 11px; }
+.gmd-more .ck { width: 14px; height: 14px; border-radius: 3px; box-shadow: inset 0 0 0 1.5px rgba(122,106,85,.7); flex: none; position: relative; }
+.gmd-more .ck.on { background: var(--tx); box-shadow: none; }
+.gmd-more .ck.on::after { content: ""; position: absolute; left: 4px; top: 1px; width: 4px; height: 8px; border: solid var(--p-top); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.gmd-more hr { border: 0; border-top: 1px solid var(--hair); margin: 5px 0; }
+.gmd-more .gmd-size { margin-left: auto; }
 .gmd-sw { width: 30px; height: 16px; border-radius: 8px; background: rgba(58,50,40,.18); position: relative; flex: none; }
 .gmd-sw::after { content: ""; position: absolute; left: 2px; top: 2px; width: 12px; height: 12px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.3); }
 .gmd-sw.on { background: linear-gradient(180deg, var(--cta-a), var(--cta-b)); } .gmd-sw.on::after { left: 16px; }
@@ -333,7 +347,7 @@ function ensureStyles() {
 .gmd.is-folding .gmd-panel { transition: top ${MOTION.fold}ms ${EASE}, height ${MOTION.fold}ms ${EASE}; }
 @media (prefers-reduced-motion: reduce) { .gmd.is-folding .gmd-panel { transition: none; } }
 /* peek: hold the key and the desk lets you see and click what is under it */
-.gmd.is-peek .gmd-panel, .gmd.is-peek .gmd-bar { opacity: .1; pointer-events: none !important; }
+.gmd.is-peek .gmd-panel, .gmd.is-peek .gmd-bar, .gmd.is-peek .gmd-more { opacity: .1; pointer-events: none !important; }
 
 /* idle console: Recent · Enemy order · AI next */
 .gmd-idlegrid { grid-area: main; display: grid; grid-template-columns: minmax(0,1.3fr) minmax(0,.9fr) minmax(0,1fr); min-height: 0; }
@@ -525,6 +539,11 @@ const SVG = {
   end: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V4M6 4h11l-2.5 4L17 12H6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>',
   swords: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4l9 9M20 4l-9 9M6 15l3 3M18 15l-3 3M4 20l3-3M20 20l-3-3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
   summon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.2 5.4 5.8.4-4.5 3.7 1.5 5.7L12 15.1l-5 3.1 1.5-5.7L4 8.8l5.8-.4z" fill="currentColor"/></svg>',
+  clock: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 7v5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  target: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/></svg>',
+  die: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>',
+  spark: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c.6 4.6 2.4 6.4 7 7-4.6.6-6.4 2.4-7 7-.6-4.6-2.4-6.4-7-7 4.6-.6 6.4-2.4 7-7z" fill="currentColor"/><path d="M18.5 15.5c.3 2 1 2.7 3 3-2 .3-2.7 1-3 3-.3-2-1-2.7-3-3 2-.3 2.7-1 3-3z" fill="currentColor"/></svg>',
+  more: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="12" r="2" fill="currentColor"/><circle cx="12" cy="12" r="2" fill="currentColor"/><circle cx="18.5" cy="12" r="2" fill="currentColor"/></svg>',
 };
 
 // ── build / destroy ───────────────────────────────────────────────────────────
@@ -566,6 +585,8 @@ export function buildDesk(partyIds = []) {
     </section>`;
   document.body.appendChild(root);
   D.root = root;
+  D.moreOpen = false; D.more = null;
+  setGmFocus(true);
   D.bar = root.querySelector(".gmd-bar");
   D.roster = root.querySelector(".gmd-roster");
   D.con = root.querySelector(".gmd-con");
@@ -600,6 +621,8 @@ export function buildDesk(partyIds = []) {
   D.offFns.push(() => window.removeEventListener("keydown", onDeskKey, true));
   document.addEventListener("pointerdown", onCardPointer, true);
   D.offFns.push(() => document.removeEventListener("pointerdown", onCardPointer, true));
+  document.addEventListener("pointerdown", onDocPointer, true);
+  D.offFns.push(() => document.removeEventListener("pointerdown", onDocPointer, true));
 
   const refresh = () => scheduleRows();
   const hooks = [
@@ -634,6 +657,8 @@ export function destroyDesk() {
   // Pending reaction records must not dangle; their owners clean them up.
   D.rx.clear(); D.rxOrder = []; D.rxCur = null; D.take = null;
   D.ctx = null;
+  D.moreOpen = false; D.more = null;
+  setGmFocus(false);
   try { leaveDesk(D.root); } catch { try { D.root.remove(); } catch { /* */ } }
   D.root = null; D.layers = {}; D.rows.clear(); D.placeKey = "";
   log("[GmDesk] destroyed");
@@ -657,8 +682,8 @@ function rectOf(id) {
 function deskScale() {
   const vw = window.innerWidth, vh = window.innerHeight;
   const want = hudScale() * (SIZES[D.size] ?? 1);
-  const dev = document.getElementById("fud-devtools-btn")?.getBoundingClientRect();
-  const leftPx = dev?.width > 0 ? dev.right + 10 : L.left * want;
+  const dev = rectOf("fud-devtools-btn");
+  const leftPx = dev ? dev.right + 10 : L.left * want;
   const avail = vw - leftPx - rightEdgeReserve() - 10;
   return Math.max(0.45, Math.min(want, avail / MIN_SPAN, (vh * 0.45) / (L.height + L.base)));
 }
@@ -667,12 +692,8 @@ function place() {
   const s = deskScale();
   const vw = window.innerWidth, vh = window.innerHeight;
   const W = vw / s, H = vh / s;
-  const dev = document.getElementById("fud-devtools-btn")?.getBoundingClientRect();
-  const left = dev?.width > 0 ? Math.max(20, Math.round(dev.right / s + 10)) : L.left;
+  const dev = rectOf("fud-devtools-btn");
   const right = Math.round(rightEdgeReserve() / s);
-  const span = Math.max(600, W - left - right);
-  const rw = Math.round((span - L.gap) * L.rosterShare), cw = span - L.gap - rw;
-  const rx = left, cx = left + rw + L.gap;
   // Where a panel must end: above Foundry's Players list / hotbar when one shows under it.
   const baseFor = (x0, x1) => {
     let b = L.base;
@@ -686,14 +707,30 @@ function place() {
     }
     return b;
   };
-  const rb = baseFor(rx, rx + rw), cb = baseFor(cx, cx + cw);
+  const layout = (left) => {
+    const span = Math.max(600, W - left - right);
+    const rw = Math.round((span - L.gap) * L.rosterShare), cw = span - L.gap - rw;
+    const rx = left, cx = left + rw + L.gap;
+    const rb = baseFor(rx, rx + rw), cb = baseFor(cx, cx + cw);
+    // Both panels keep ONE top line (the mockup's, clear of the lowest tokens);
+    // a panel with Foundry's list / hotbar under it ends above them — its rows
+    // scroll — but never shorter than L.minH: then the line rises (the spec's
+    // "rises over Players"), or the roster showed barely two rows a side.
+    const top = Math.min(H - L.base - L.height, H - rb - L.minH, H - cb - L.minH);
+    return { rw, cw, rx, cx, rb, cb, top };
+  };
   const bar = placeBar(s);
-  const key = [s.toFixed(3), W, H, rx, rw, cx, cw, rb, cb, D.foldShown ? 1 : 0, bar.x, bar.y, bar.compact ? 1 : 0].join("|");
+  let P = layout(dev ? Math.max(20, Math.round(dev.right / s + 10)) : L.left);
+  // A short window: the command column reaches the panels' top line, so the
+  // roster starts right of it instead of under it.
+  if (bar.y + bar.h + 8 > (D.foldShown ? H - P.rb - 40 : P.top) && P.rx < bar.x + bar.w + 10) P = layout(bar.x + bar.w + 10);
+  const { rw, cw, rx, cx, rb, cb, top } = P;
+  const key = [s.toFixed(3), W, H, rx, rw, cx, cw, rb, cb, D.foldShown ? 1 : 0, bar.x, bar.y, bar.h].join("|");
   if (key === D.placeKey) return;
   D.placeKey = key;
   Object.assign(D.root.style, { width: `${W}px`, height: `${H}px`, transform: s === 1 ? "none" : `scale(${s})` });
-  D.bar.classList.toggle("is-compact", bar.compact);
   Object.assign(D.bar.style, { left: `${bar.x}px`, top: `${bar.y}px`, right: "" });
+  placeMore();
   if (D.foldShown) {
     // Folded: each panel is its header strip, sitting on its own base line.
     const rh = (D.roster.querySelector(".gmd-ph")?.offsetHeight ?? 30) + 4;
@@ -702,56 +739,21 @@ function place() {
     Object.assign(D.con.style, { left: `${cx}px`, width: `${cw}px`, top: `${H - cb - ch}px`, height: `${ch}px` });
     return;
   }
-  // Both panels keep ONE top line (the mockup's, clear of the lowest tokens);
-  // a panel with Foundry's list / hotbar under it ends above them — its rows
-  // scroll — but never shorter than L.minH: then the line rises (the spec's
-  // "rises over Players"), or the roster showed barely two rows a side.
-  const top = Math.min(H - L.base - L.height, H - rb - L.minH, H - cb - L.minH);
   Object.assign(D.roster.style, { left: `${rx}px`, width: `${rw}px`, top: `${top}px`, height: `${Math.max(150, H - rb - top)}px` });
   Object.assign(D.con.style, { left: `${cx}px`, width: `${cw}px`, top: `${top}px`, height: `${Math.max(150, H - cb - top)}px` });
   // A narrow console (small window): the side columns give the list room.
   D.con.classList.toggle("is-narrow", cw < 860);
 }
 
-// The battle bar sits top LEFT (the top right is the Event Clocks' column):
-// under Foundry's scene navigation, right of the scene controls. If the round's
-// turn-order bar (docked at the top centre) would touch it, the bar first drops
-// its words (icons + switches stay, hover names them), then moves down under it.
-function measureBar() {
-  if (D.barW || !D.bar?.childElementCount) return D.barW;
-  const was = D.bar.classList.contains("is-compact");
-  D.bar.classList.remove("is-compact");
-  const full = D.bar.offsetWidth;
-  D.bar.classList.add("is-compact");
-  const compact = D.bar.offsetWidth;
-  D.bar.classList.toggle("is-compact", was);
-  if (full > 0) D.barW = { full, compact };
-  return D.barW;
-}
+// The command column sits top LEFT, where Foundry's scene tools were (they
+// step away in battle, battle-focus.js). Brought back, the tools / scene list
+// push it right / down. Nothing else lives on the left edge, so it never meets
+// the turn-order bar (top centre) or the Event Clocks (top right).
 function placeBar(s) {
   const ctl = rectOf("controls"), nav = rectOf("navigation"), logo = rectOf("logo");
-  const x = Math.round(Math.max(ctl?.right ?? 0, logo?.right ?? 0, 10) / s + 10);
-  let y = Math.round(Math.max(nav?.bottom ?? 0, 0) / s + 8);
-  if (!nav) y = Math.max(y, Math.round((logo?.bottom ?? 0) / s + 8), L.barTop);
-  const w = measureBar() ?? { full: 560, compact: 300 };
-  // The turn-order bar only counts once it has settled at the top (during the
-  // round's entrance it is large and centred mid-screen).
-  const layer = document.querySelector("#fu-dir-round-layer.active");
-  const inner = layer?.querySelector(".fu-rb-inner")?.getBoundingClientRect();
-  const obst = [];
-  // The bar, plus what hangs below its middle (the spotlight portrait and the
-  // ROUND N text, absolutely placed, so outside the bar's own box).
-  if (inner && inner.width > 0 && inner.top < 24) {
-    for (const sel of [".fu-rb-inner", ".fu-rb-spotlight", ".fu-rb-text"]) {
-      const r = layer.querySelector(sel)?.getBoundingClientRect();
-      if (r && r.width > 0 && r.height > 0) obst.push({ l: r.left / s, t: r.top / s, r: r.right / s, b: r.bottom / s });
-    }
-  }
-  const hits = (bx, by, bw) => obst.some((o) => bx < o.r + 8 && bx + bw > o.l - 8 && by < o.b + 4 && by + 40 > o.t - 4);
-  if (!hits(x, y, w.full)) return { x, y, compact: false };
-  if (!hits(x, y, w.compact)) return { x, y, compact: true };
-  const below = Math.round(Math.max(...obst.map((o) => o.b)) + 8);
-  return { x, y: Math.max(y, below), compact: true };
+  const x = ctl || logo ? Math.round(Math.max(ctl?.right ?? 0, logo?.right ?? 0) / s + 10) : 14;
+  const y = Math.max(L.barTop, Math.round(Math.max(nav?.bottom ?? 0, ctl ? 0 : logo?.bottom ?? 0) / s + 8));
+  return { x, y, w: D.bar.offsetWidth || L.barW, h: D.bar.offsetHeight || 0 };
 }
 
 function tick() {
@@ -790,17 +792,23 @@ function paintBar() {
     _apState = { ai: a.isAutopilotEnabled(), summons: s.isSummonAutopilotEnabled() };
     if (!D.bar) return;
     const blocked = skipBlocked();
-    const h = `<span><span class="lbl">Battle</span>${SVG.swords}</span>
-      <span data-cmd="ai" title="Enemy autopilot (same switch as the dev tools)">AI<span class="gmd-sw${_apState.ai ? " on" : ""}"></span></span>
-      <span data-cmd="summons" title="Summon autopilot (same switch as the dev tools)">${SVG.summon}<span class="lbl">Summons</span><span class="gmd-sw${_apState.summons ? " on" : ""}"></span></span>
+    // The right-edge tools step away in battle (battle-focus.js); each is here
+    // when its button exists on this client.
+    const tool = (k, svg) => (toolAvailable(k) ? `<span data-cmd="tool" data-tool="${k}" title="${FOCUS_TOOLS[k].tip}">${svg}<span class="lbl">${FOCUS_TOOLS[k].label}</span></span>` : "");
+    const tools = tool("clocks", SVG.clock) + tool("check", SVG.target) + tool("roll", SVG.die) + tool("effects", SVG.spark);
+    const h = `<span data-cmd="ai" title="Enemy autopilot (same switch as the dev tools)"><span class="gmd-sw${_apState.ai ? " on" : ""}"></span><span class="lbl">AI</span></span>
+      <span data-cmd="summons" title="Summon autopilot (same switch as the dev tools)"><span class="gmd-sw${_apState.summons ? " on" : ""}"></span><span class="lbl">Summons</span></span>
+      <span class="gmd-bsep"></span>
       <span data-cmd="turn"${blocked ? ' class="off"' : ""} title="${blocked ? SKIP_BLOCKED_TIP : "Next Turn — skip the current turn"}">${SVG.next}<span class="lbl">Turn</span></span>
       <span data-cmd="round"${blocked ? ' class="off"' : ""} title="${blocked ? SKIP_BLOCKED_TIP : "Next Round — end this round"}">${SVG.round}<span class="lbl">Round</span></span>
       <span data-cmd="rewind" title="Rewind to a checkpoint">${SVG.rewind}<span class="lbl">Rewind</span></span>
-      <span data-cmd="end" class="end" title="End the battle">${SVG.end}<span class="lbl">End</span></span>`;
+      <span data-cmd="end" class="end" title="End the battle">${SVG.end}<span class="lbl">End</span></span>
+      ${tools ? `<span class="gmd-bsep"></span>${tools}` : ""}
+      <span class="gmd-bsep"></span>
+      <span data-cmd="more"${D.moreOpen ? ' class="open"' : ""} title="EXP, developer tools, desk size, and bringing back what battle hid">${SVG.more}<span class="lbl">More</span></span>`;
     if (D.bar._h === h) return;
     D.bar._h = h;
     D.bar.innerHTML = h;
-    D.barW = null;
     D.placeKey = "";
     place();
   }).catch((e) => warn("[GmDesk] battle bar paint failed", e));
@@ -809,6 +817,7 @@ async function onBarClick(e) {
   const b = e.target.closest?.("[data-cmd]");
   if (!b) return;
   e.stopPropagation();
+  if (b.classList.contains("off") && (b.dataset.cmd === "turn" || b.dataset.cmd === "round")) { ui.notifications?.info(SKIP_BLOCKED_TIP); return; }
   playUiClickSfx();
   const cmd = b.dataset.cmd;
   try {
@@ -829,9 +838,73 @@ async function onBarClick(e) {
       if (endBtn) endBtn.click();
       else if (typeof api?.battleEndManager === "function") await api.battleEndManager();
       else ui.notifications?.warn("The Battle End manager is not available.");
+    } else if (cmd === "tool") {
+      openTool(b.dataset.tool);
+    } else if (cmd === "more") {
+      setMoreOpen(!D.moreOpen);
     }
   } catch (err) { warn(`[GmDesk] battle bar "${cmd}" failed`, err); }
 }
+
+// ── More menu: EXP, dev tools, desk size, bring back what battle hid ─────────
+function setMoreOpen(on) {
+  D.moreOpen = !!on;
+  if (!D.moreOpen) { D.more?.remove(); D.more = null; }
+  else {
+    if (!D.more) {
+      D.more = document.createElement("div");
+      D.more.className = "gmd-more";
+      D.more.addEventListener("click", onMoreClick);
+      D.root.appendChild(D.more);
+    }
+    paintMore();
+  }
+  D.bar?.querySelector('[data-cmd="more"]')?.classList.toggle("open", D.moreOpen);
+  placeMore();
+}
+function paintMore() {
+  if (!D.more) return;
+  const f = focusState();
+  const ck = (on) => `<span class="ck${on ? " on" : ""}"></span>`;
+  const parts = FOCUS_PARTS.filter((p) => p.key !== "devtools");
+  D.more.innerHTML = `
+    ${toolAvailable("exp") ? `<div class="it" data-mi="exp">EXP Awarder<small>after victory</small></div>` : ""}
+    <div class="it" data-mi="part" data-key="devtools">${ck(f.show.devtools)}Developer tools</div>
+    <div class="it" style="cursor:default">Desk size<span class="gmd-size" data-size title="Desk size (this browser)">${Object.keys(SIZES).map((k) => `<span data-sz="${k}" class="${k === D.size ? "on" : ""}">${k.toUpperCase()}</span>`).join("")}</span></div>
+    <hr><div class="h">Bring back during battle</div>
+    ${parts.map((p) => `<div class="it" data-mi="part" data-key="${p.key}">${ck(f.show[p.key])}${p.label}</div>`).join("")}
+    <hr><div class="it" data-mi="all">${ck(f.all)}Show everything<small>until battle ends</small></div>`;
+}
+function placeMore() {
+  if (!D.more || !D.bar) return;
+  const b = D.bar.querySelector('[data-cmd="more"]');
+  const top = D.bar.offsetTop + (b ? b.offsetTop : 0);
+  Object.assign(D.more.style, { left: `${D.bar.offsetLeft + D.bar.offsetWidth + 8}px`, top: `${Math.max(8, top - 8)}px` });
+  // Keep it inside the window: the desk root is the window in stage px.
+  const H = D.root.offsetHeight || window.innerHeight;
+  const over = D.more.offsetTop + D.more.offsetHeight - (H - 8);
+  if (over > 0) D.more.style.top = `${Math.max(8, D.more.offsetTop - over)}px`;
+}
+function onMoreClick(e) {
+  e.stopPropagation();
+  if (e.target.closest?.("[data-size]")) { onSizeClick(e); paintMore(); return; }
+  const it = e.target.closest?.("[data-mi]");
+  if (!it) return;
+  playUiClickSfx();
+  const mi = it.dataset.mi;
+  if (mi === "exp") { setMoreOpen(false); openTool("exp"); return; }
+  if (mi === "part") setFocusPart(it.dataset.key, !focusState().show[it.dataset.key]);
+  else if (mi === "all") setFocusAll(!focusState().all);
+  paintMore();
+  D.placeKey = "";
+  place();
+}
+function onDocPointer(e) {
+  if (!D.moreOpen) return;
+  if (D.more?.contains(e.target) || D.bar?.querySelector('[data-cmd="more"]')?.contains(e.target)) return;
+  setMoreOpen(false);
+}
+
 // Turn / Round drive the FSM, which lives on the host (first) GM: a secondary
 // GM's click is sent there, like its other battle input.
 async function runOnHost(cmd) {
@@ -1078,9 +1151,9 @@ async function showOnField(r) {
 function paintHeaderControls() {
   const el = D.roster?.querySelector(".gmd-hctl");
   if (!el) return;
-  const size = `<span class="gmd-size" data-size title="Desk size (this browser)">${Object.keys(SIZES).map((k) => `<span data-sz="${k}" class="${k === D.size ? "on" : ""}">${k.toUpperCase()}</span>`).join("")}</span>`;
+  // Desk size lives in the command column's More menu.
   const fold = `<span class="gmd-fold" data-fold title="${D.folded ? "Show the whole desk" : "Fold the desk to its header strips. It opens by itself when a decision needs you."}">${D.folded ? "▴ Show" : "▾ Fold"}</span>`;
-  const h = size + fold;
+  const h = fold;
   if (el._h !== h) { el.innerHTML = h; el._h = h; }
 }
 function onSizeClick(e) {
@@ -1426,6 +1499,8 @@ function onDeskOver(e) {
 
 // ── keys (Take Turn tiles) ────────────────────────────────────────────────────
 function onDeskKey(e) {
+  // Esc closes the More menu before anything else sees it.
+  if (D.moreOpen && e.key === "Escape") { e.preventDefault(); e.stopImmediatePropagation(); setMoreOpen(false); return; }
   if (!D.root || D.cardOpen || activeLayer() !== "take" || !D.take) return;
   const ae = document.activeElement;
   if (ae && (ae.tagName === "INPUT" || ae.tagName === "TEXTAREA" || ae.tagName === "SELECT" || ae.isContentEditable)) return;
@@ -1971,7 +2046,7 @@ function deskState() {
     mirrors: [...D.mirror.keys()],
     rects: D.root ? Object.fromEntries(["gmd-bar", "gmd-roster", "gmd-con"].map((c) => { const r = D.root.querySelector(`.${c}`)?.getBoundingClientRect(); return [c, r ? [Math.round(r.left), Math.round(r.top), Math.round(r.right), Math.round(r.bottom)] : null]; })) : null,
     size: D.size, scale: D.root ? Number(deskScale().toFixed(3)) : null, folded: D.folded, foldShown: D.foldShown, peek: D.peek,
-    barCompact: !!D.bar?.classList.contains("is-compact"), skipBlocked: skipBlocked(),
+    focus: focusState(), skipBlocked: skipBlocked(),
     presence: [...D.presence].map(([uid, p]) => ({ user: game.users?.get(uid)?.name ?? uid, tokenId: p.tokenId, what: p.what })),
     recent: _log.map((e) => ({ ...e })), aiPreview: D.aiPrev.data, hover: D.hover,
   };
