@@ -419,6 +419,13 @@
     applyFacing(token);
   }
 
+  // The token's own image as it is now. Control can pass to another player
+  // mid-walk, so the image taken when a walk began may be the last character's.
+  function ownTexture(token, fallback) {
+    const own = token?.texture;
+    return own?.valid ? own : (fallback?.valid ? fallback : null);
+  }
+
   function showWalkArt(token) {
     const mesh = token?.mesh;
     if (!mesh || mesh.destroyed) return;
@@ -487,7 +494,8 @@
     const mesh = token?.mesh;
     if (!mesh || mesh.destroyed) return;
 
-    if (shown.idleTexture?.valid) setMeshTexture(token, shown.idleTexture);
+    const own = ownTexture(token, shown.idleTexture);
+    if (own) setMeshTexture(token, own);
   }
 
   // ------------------------------------------------------------
@@ -503,13 +511,16 @@
     const pick = pickSlot(token, "stand", entry.dir);
     if (!pick || pick.slot === "downLeft") {
       entry.shownSlot = null;
+      const own = ownTexture(token);
+      if (own) setMeshTexture(token, own);
       applyFacing(token);
       return;
     }
 
     const idleTexture = token.mesh.texture;
     const art = loadWalkArt(pick.src, idleTexture);
-    state.standShown = { tokenId: token.id, src: pick.src, slot: pick.slot, art, idleTexture };
+    const ownSrc = cleanString(token.document?.texture?.src);
+    state.standShown = { tokenId: token.id, src: pick.src, slot: pick.slot, art, idleTexture, ownSrc };
     holdStandArt(token);
   }
 
@@ -518,6 +529,13 @@
   function holdStandArt(token) {
     const shown = state.standShown;
     if (!shown || shown.tokenId !== token?.id || !token.mesh || token.mesh.destroyed) return;
+    // Control passed to another player after this art was chosen (the token's
+    // image can change more than once in a hand-over): choose for the new character.
+    if (shown.ownSrc !== cleanString(token.document?.texture?.src)) {
+      clearStandArt();
+      state.standDirty = true;
+      return;
+    }
     if (shown.art.failed) {
       clearStandArt();
       state.standDirty = true; // choose again: the next direction on the list
@@ -553,7 +571,8 @@
 
     const token = canvas?.tokens?.get(shown.tokenId);
     if (!token?.mesh || token.mesh.destroyed) return;
-    if (shown.idleTexture?.valid) setMeshTexture(token, shown.idleTexture);
+    const own = ownTexture(token, shown.idleTexture);
+    if (own) setMeshTexture(token, own);
   }
 
   // Which of the eight slices a step falls in, kept on the current one until
