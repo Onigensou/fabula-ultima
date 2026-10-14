@@ -53,12 +53,12 @@ export const TUNING = {
   MUSIC_FADE_MS: 900,
   // The beat — slow + smooth, see the animation pacing rule.
   DIM_MS: 650,            // map dims
-  WORD_AT_MS: 300,        // "Pause" starts sliding in
-  WORD_IN_MS: 750,
+  WORD_AT_MS: 150,        // "Pause" starts sliding in
+  WORD_IN_MS: 400,
   WORD_SLIDE_PX: 140,     // how far it travels in, and on out
-  WORD_OUT_MS: 750,       // slide out on resume (mirrors the slide in)
-  UNDIM_AT_MS: 450,       // the dim starts lifting this far into the slide out
-  UNDIM_MS: 500,
+  WORD_OUT_MS: 400,       // slide out on resume (mirrors the slide in)
+  UNDIM_AT_MS: 250,       // the dim starts lifting this far into the slide out
+  UNDIM_MS: 400,
   GM_FADE_OPACITY: 0.15,  // word opacity while the GM works under it
   GM_FADE_HOLD_MS: 700,   // how long they stay faded after the GM lets go
   WAIT_POLL_MS: 150,
@@ -109,7 +109,7 @@ const CSS = `
     display: grid;
     font-family: "Arial Black", "Arial", "Signika", sans-serif;
     font-weight: 900; font-style: italic;
-    font-size: clamp(72px, 7vw, 140px);
+    font-size: clamp(48px, 4.5vw, 92px);
     line-height: 1.1;
     letter-spacing: 0.02em;
     opacity: 0;
