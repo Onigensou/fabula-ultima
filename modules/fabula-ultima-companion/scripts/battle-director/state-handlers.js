@@ -109,7 +109,7 @@ import { isAutopilotEnabled, isAiControlledTurn, isAiControlledCombatant, autopi
 import { isSummonAutopilotEnabled, isAutomatedSummon, isAutomatedSummonTurn, summonVetoMs, isGuestActor } from "./summon-autopilot.js";
 import { isBattlefieldObject } from "./battlefield-object.js";
 import { resolveAnimationSpec, playDirectorAnimation } from "./director-animation.js";
-import { witnessNpcAbility, witnessFiredCandidate } from "./encyclopedia-witness.js";
+import { witnessNpcAbility, witnessFiredCandidate, witnessAffinityHits } from "./encyclopedia-witness.js";
 import { SimMode } from "./sim/sim-mode.js";
 
 // Install a director-scoped watcher that releases Guard / Covered AEs
@@ -7005,6 +7005,10 @@ const Resolve = {
     // "seen". Idempotent + journal-only, so it's safe to await here and a
     // no-op on later passes of a multi-pass attack.
     await recordNpcActionWitness(director, ar);
+    // Learn-by-hitting: damage that lands on a hostile creature reveals its
+    // affinity to that element (Inspect card + Bestiary). Same journal-only,
+    // monotonic bookkeeping as the action witness above.
+    await witnessAffinityHits(ar);
 
     // (Critical-hit cut-in now fires in CONFIRM, as the action card with the
     // roll result appears — see Confirm.onEnter. Not replayed here.)
