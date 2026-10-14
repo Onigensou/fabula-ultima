@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "4bqgn7jZFnmardZp",
-  "formula": "1d17",
+  "formula": "1d19",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dreae.png",
   "name": "Valley of the Dragon - Armor",
   "ownership": {
@@ -33,6 +33,21 @@
         7
       ],
       "text": "Bio Plate",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "9p6NTXKXjR3k5Jy1",
+      "documentCollection": "Item",
+      "documentId": "QyHNMw6UlHaIYRMI",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2114.gif",
+      "range": [
+        18,
+        18
+      ],
+      "text": "Ferrum Shield",
       "type": "document",
       "weight": 1
     },
@@ -138,6 +153,21 @@
         12
       ],
       "text": "Buckler",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "MgIdzCEe60Z08f2v",
+      "documentCollection": "Item",
+      "documentId": "2J3hqlnUcKxTIxJn",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2115.gif",
+      "range": [
+        19,
+        19
+      ],
+      "text": "Arcanum Shield",
       "type": "document",
       "weight": 1
     },

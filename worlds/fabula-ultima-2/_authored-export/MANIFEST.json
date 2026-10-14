@@ -2879,6 +2879,12 @@
         "effects": 0
       },
       {
+        "id": "2J3hqlnUcKxTIxJn",
+        "name": "Arcanum Shield",
+        "type": "equippableItem",
+        "effects": 2
+      },
+      {
         "id": "GlhhS493B7q3hJ8l",
         "name": "Arch Fire Wand",
         "type": "equippableItem",
@@ -5757,6 +5763,12 @@
         "name": "Feral Speech",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "QyHNMw6UlHaIYRMI",
+        "name": "Ferrum Shield",
+        "type": "equippableItem",
+        "effects": 2
       },
       {
         "id": "cesTpxcSXKfS0qwj",
@@ -26212,7 +26224,7 @@
       {
         "id": "VgiHGix1LOByKDdu",
         "name": "Valley of the Dragon - Armor",
-        "results": 17
+        "results": 19
       },
       {
         "id": "11corNhirrKGdkGE",
