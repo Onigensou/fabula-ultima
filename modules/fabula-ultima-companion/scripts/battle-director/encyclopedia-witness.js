@@ -189,3 +189,56 @@ export async function witnessFiredCandidate({ candidate, reactorTokenUuid } = {}
     return null;
   }
 }
+
+/**
+ * Learn-by-hitting: every hostile creature this action's damage LANDED on
+ * reveals its affinity to that damage's element (Octopath / Persona rule). The
+ * battle Inspect card and the Bestiary then show that one element before the
+ * Details tier would.
+ *
+ * Reads the action's per-target rows: a damage row that hit (or pierced a miss)
+ * on a disposition -1 creature. Heal/grant rows carry no element and are skipped.
+ * The element is the row's reaction override, else the action's resolved element.
+ * Grouped per prototype so three Bandits hit by one Fireball cost one write.
+ *
+ * GM-side (RESOLVE.onEnter), journal-only, fire-and-forget like the action witness.
+ */
+export async function witnessAffinityHits(ar) {
+  try {
+    const api = encApi();
+    if (!api?.recordLearnedAffinities || !api?.resolveActorPrototypeUuid) return null;
+    // The director test harness runs the real RESOLVE but only sandboxes actor
+    // writes — never teach the real Bestiary from a simulated action.
+    if (globalThis.__fudActiveDCombat?.__isHarnessCombat === true) return null;
+    // A status-only action still resolves rows with `hit`; only real damage teaches.
+    if (!ar?.damage) return null;
+    const rows = Array.isArray(ar?.perTargetResults) ? ar.perTargetResults : [];
+    // `ar.damage.element` is the HEADLINE element, which folds in the first hit
+    // target's reaction override. A row carries `element` only when its own
+    // override applied; other rows then take the action's native type — when
+    // that is unknown (an attack), they teach nothing rather than a wrong element.
+    const anyOverride = rows.some((r) => r?.element);
+    const native = anyOverride ? (ar.damageType || null) : (ar.damage?.element ?? ar.damageType ?? null);
+    const byProto = new Map();
+    for (const r of rows) {
+      if (!r || r.grantResource || r.grantAmount != null) continue;
+      if (!(r.hit || r.pierceMiss)) continue;
+      if (!(Number(r.rawDamage) > 0)) continue;   // pre-affinity, so Immune / Absorb hits still count
+      if (Number(r.disposition) !== -1 || !r.tokenUuid) continue;
+      const element = String(r.element ?? native ?? "").toLowerCase();
+      if (!element || element === "elementless" || element === "none") continue;
+      const proto = await api.resolveActorPrototypeUuid(r.tokenUuid);
+      if (!proto) continue;
+      if (!byProto.has(proto)) byProto.set(proto, new Set());
+      byProto.get(proto).add(element);
+    }
+    for (const [actorUuid, set] of byProto) {
+      const res = await api.recordLearnedAffinities({ actorUuid, elements: [...set] });
+      if (res?.added?.length) log(`Encyclopedia: learned ${res.added.join(", ")} affinity on ${actorUuid}`);
+    }
+    return byProto.size;
+  } catch (e) {
+    warn("witnessAffinityHits failed", e);
+    return null;
+  }
+}

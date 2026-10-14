@@ -128,7 +128,22 @@ function profile(e) {
 
 function resist(e, v) {
   const d = e.details;
-  if (!d) return lock("Affinities, weapon efficiency and status resistances", e.thresholds.details);
+  if (!d) {
+    // Before Details, elements the party HIT it with are already known (learn-by-hitting).
+    const learned = (e.affinityRow ?? []).filter((a) => a.known);
+    if (!learned.length) return lock("Affinities, weapon efficiency and status resistances", e.thresholds.details);
+    const row = (e.affinityRow ?? []).map((a, i) => {
+      const [, , icon] = ELEMENTS[i];
+      return a.known
+        ? `<div class="pm-aff aff-${esc(String(a.code).toLowerCase())}" title="${esc(`${a.el}: ${GRADE[a.code] ?? a.code} (learned by hitting it)`)}"><i class="fas ${icon}"></i><b>${a.code === "NA" ? "—" : esc(a.code)}</b></div>`
+        : `<div class="pm-aff" title="${esc(`${a.el}: unknown`)}"><i class="fas ${icon}" style="opacity:.35"></i><b>?</b></div>`;
+    }).join("");
+    return `
+    <div class="pm-label">Affinities</div>
+    <div class="pm-affs">${row}</div>
+    <div class="pm-sub pm-bnote">${learned.length} learned by hitting it in battle. Study ${e.thresholds.details}+ reveals the rest.</div>
+    ${lock("Weapon efficiency and status resistances", e.thresholds.details)}`;
+  }
   const aff = d.affinities.map((a, i) => {
     const [id, , icon] = ELEMENTS[i];
     return `<div class="pm-aff aff-${esc(a.code.toLowerCase())} pm-hit ${v.weak === id ? "is-on" : ""}" data-action="bx-weak" data-id="${id}"

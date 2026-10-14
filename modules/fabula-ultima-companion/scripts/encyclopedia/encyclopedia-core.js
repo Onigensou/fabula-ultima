@@ -350,6 +350,15 @@
     return Array.isArray(val) ? new Set(val.filter(Boolean).map(String)) : new Set();
   }
 
+  // Elements the party has learned by HITTING this creature with them (lower-case
+  // keys: "fire", "physical", …). Each one reveals that single affinity before the
+  // Details tier does — the Octopath / Persona rule. Keyed per prototype like the
+  // rest of the page, so every Bandit shares what one Bandit taught.
+  function getLearnedAffinities(page) {
+    const val = getFlag(page, "learnedAffinities");
+    return Array.isArray(val) ? new Set(val.filter(Boolean).map((x) => String(x).toLowerCase())) : new Set();
+  }
+
   function getPageForActor(actorUuid) {
     if (!actorUuid) return null;
     const cached = getCachedUuid();
@@ -1112,6 +1121,33 @@
   }
 
   /**
+   * Record that the party hit this creature with each of `elements`, which
+   * reveals those affinities on the battle Inspect card and in the Bestiary.
+   * GM-only; journal flags only (never actor state), so it stays out of the
+   * rewind snapshot like witnessed actions do — knowledge is monotonic.
+   * The journal page text is NOT re-rendered: it shows affinities by tier only.
+   * → { added: [element…] } | null
+   */
+  async function recordLearnedAffinities({ actorUuid, elements = [] } = {}) {
+    if (!game.user?.isGM) {
+      console.warn(`${TAG} recordLearnedAffinities refused: GM only.`);
+      return null;
+    }
+    const valid = new Set(Object.values(AFFINITY_NAME).map((n) => n.toLowerCase()));
+    const want = [...new Set((elements ?? []).map((e) => String(e ?? "").toLowerCase()))].filter((e) => valid.has(e));
+    if (!actorUuid || !want.length) return null;
+    const page = await upsertPage(actorUuid);
+    if (!page) return null;
+    const known = getLearnedAffinities(page);
+    const added = want.filter((e) => !known.has(e));
+    if (!added.length) return { added: [] };
+    for (const e of added) known.add(e);
+    await page.update({ flags: { [FLAG_NAMESPACE]: { [FLAG_KEY]: { learnedAffinities: Array.from(known) } } } });
+    console.info(`${TAG} Learned affinities recorded: ${page.name} → ${added.join(", ")}`);
+    return { added };
+  }
+
+  /**
    * Clear all witnessed-action data for a single monster.
    * The page is re-rendered so all actions revert to ???.
    * Useful for resetting a specific monster between groups or campaigns.
@@ -1143,7 +1179,7 @@
       "text.content": newContent,
       flags: {
         [FLAG_NAMESPACE]: {
-          [FLAG_KEY]: { witnessedActions: [] }
+          [FLAG_KEY]: { witnessedActions: [], learnedAffinities: [] }
         }
       }
     });
@@ -1193,7 +1229,7 @@
           witnessedActions: new Set()
         });
 
-        const flagPatch = { witnessedActions: [] };
+        const flagPatch = { witnessedActions: [], learnedAffinities: [] };
         if (studyToo) {
           flagPatch.bestResult    = 0;
           flagPatch.bestResultBy  = null;
@@ -1463,6 +1499,14 @@
     const tier = tiers.details ? "Details" : tiers.stats ? "Stats" : tiers.identity ? "Identity" : "Unstudied";
     const affinities = [];
     for (let i = 1; i <= 9; i++) affinities.push({ el: AFFINITY_NAME[i], code: String(p[`affinity_${i}`] ?? "") || "NA" });
+    // Per-element knowledge, ALWAYS present: Details reveals every element, a hit
+    // reveals that one. `code` is null for an element nobody may see yet.
+    const learned = getLearnedAffinities(page);
+    const affinityRow = affinities.map((a) => {
+      const key = a.el.toLowerCase();
+      const playersKnow = tiers.details || learned.has(key);
+      return { el: a.el, key, learned: learned.has(key) && !tiers.details, playersKnow, known: playersKnow || peek, code: playersKnow || peek ? a.code : null };
+    });
     return {
       pageId: page.id,
       actorUuid,
@@ -1498,6 +1542,8 @@
         return { name: String(e?.name ?? "?"), img: embedded?.img || STEAL_ICON, description: sanitizeRichHtml(e?.loot_description ?? e?.description ?? "") };
       }) : null,
       actions: actor ? actionData(actor, p, getWitnessedActions(page), tiers.details, peek) : [],
+      affinityRow,
+      learnedAffinities: Array.from(learned),
       missingActor: !actor,
     };
   }
@@ -1562,6 +1608,9 @@
       //   enc.clearAllWitnessedActions({studyToo:true}) // full reset for new group
       //   enc.clearWitnessedActions("Actor.XXXX")    // single monster
       recordWitnessedAction,
+      // recordLearnedAffinities({ actorUuid, elements }) → { added } | null (GM only):
+      // the party hit this creature with these elements, revealing each affinity.
+      recordLearnedAffinities,
       clearWitnessedActions,
       clearAllWitnessedActions,
       resetStudyTier,

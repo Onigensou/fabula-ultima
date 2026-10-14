@@ -2,7 +2,7 @@
   "id": "fabula-ultima-companion",
   "title": "FabulaUltimaCompanion",
   "description": "Adds custom hooks and cool functionality.",
-  "version": "1.0.429",
+  "version": "1.0.430",
   "compatibility": {
     "minimum": "12",
     "verified": "12"
@@ -444,6 +444,7 @@
     "scripts/battle-director/director-camera.js",
     "scripts/battle-director/camera-authority.js",
     "scripts/battle-director/director-boot.js",
+    "scripts/battle-director/unit-inspect/unit-inspect.js",
     "scripts/battle-director/set-bonus-hooks.js",
     "scripts/battle-director/armor-equip-gate.js",
     "scripts/battle-director/battle-end/battle-end-orchestrator.js",

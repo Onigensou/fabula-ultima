@@ -228,6 +228,9 @@ function bake(texture, g) {
 // ---------------------------------------------------------------------------
 // Per-token sync
 // ---------------------------------------------------------------------------
+/** The live ground-shadow sprite drawn for a token, if it casts one. */
+export const shadowSpriteFor = (tokenId) => _shadows.get(tokenId) ?? null;
+
 function removeShadow(tokenId) {
   const s = _shadows.get(tokenId);
   if (!s) return;
