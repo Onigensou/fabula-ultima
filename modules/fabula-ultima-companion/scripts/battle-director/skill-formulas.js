@@ -1004,12 +1004,21 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "FINAL_DAMAGE":       return Number(payload?.finalDamage) || 0;
       case "DAMAGE_DEALT":       return Number(payload?.finalValue) || 0;
       case "DAMAGE_DEALT_TOTAL": return Number(payload?.finalValue) || 0;
-      case "HP_DEALT":     return payload?.valueType === "hp" ? (Number(payload?.finalValue) || 0) : 0;
-      case "HP_DEALT_TOTAL":     return payload?.valueType === "hp" ? (Number(payload?.finalValue) || 0) : 0;
-      case "MP_DEALT":     return payload?.valueType === "mp" ? (Number(payload?.finalValue) || 0) : 0;
-      case "MP_DEALT_TOTAL":     return payload?.valueType === "mp" ? (Number(payload?.finalValue) || 0) : 0;
-      case "SHIELD_DEALT":       return payload?.valueType === "shield" ? (Number(payload?.finalValue) || 0) : 0;
-      case "SHIELD_DEALT_TOTAL": return payload?.valueType === "shield" ? (Number(payload?.finalValue) || 0) : 0;
+      // <RES>_DEALT is the damage the hit DEALT (a Shield buffer's soak included —
+      // "half the damage dealt" drains and Fling's copy read it that way). A
+      // target that Absorbs the element is HEALED instead (valueDirection
+      // "recover", finalValue > 0); that is not damage dealt, so it reads 0 and a
+      // drain (Drain Spirit, Draining Kiss, Steal Mana) or a copy (Fling) does not
+      // fire off a heal.
+      case "HP_DEALT":           return resourceDealt(payload, "hp");
+      case "HP_DEALT_TOTAL":     return resourceDealt(payload, "hp");
+      case "MP_DEALT":           return resourceDealt(payload, "mp");
+      case "MP_DEALT_TOTAL":     return resourceDealt(payload, "mp");
+      case "SHIELD_DEALT":       return resourceDealt(payload, "shield");
+      case "SHIELD_DEALT_TOTAL": return resourceDealt(payload, "shield");
+      // HP the target actually LOST — HP_DEALT minus what a Shield buffer soaked.
+      // For rules worded "creatures that lose Hit Points this way" (Quaking Titan).
+      case "HP_LOST":            return Math.max(0, resourceDealt(payload, "hp") - (Number(payload?.shieldAbsorbed) || 0));
       // TRIGGER_AMOUNT: the SIZE of the resource change that fired this trigger —
       // `payload.amount`, as stamped by fireResourceChangeTrigger (skill-effects.js).
       // The resource-ledger twin of DAMAGE_DEALT: on `creature_lose_resource` it is
@@ -2606,6 +2615,14 @@ function hasEquippedItemOfType(actor, item_type, { requireMartial = false } = {}
     return true;
   }
   return false;
+}
+
+// Damage of `valueType` a post-damage payload DEALT to its target; 0 for any
+// other resource and for a hit the target absorbed (valueDirection "recover").
+function resourceDealt(payload, valueType) {
+  if (payload?.valueType !== valueType) return 0;
+  if (payload?.valueDirection === "recover") return 0;
+  return Number(payload?.finalValue) || 0;
 }
 
 // Count of EQUIPPED items of a given `item_type` — the multi-item

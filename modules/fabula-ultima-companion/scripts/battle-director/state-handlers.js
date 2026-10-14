@@ -840,6 +840,9 @@ async function resolveAction(director, ar, opts = {}) {
           finalValue,
           valueType,
           valueDirection,
+          // How much of finalValue a Shield buffer soaked (HP untouched by it).
+          // HP_LOST subtracts it (HP_DEALT keeps it: soaked damage was dealt).
+          shieldAbsorbed: Number(dmgRes.shieldAbsorbed) || 0,
           damageType: damageTypeForPayload,
           actionIntent: ar.actionIntent,
           hr: ar.roll?.hr ?? 0,
@@ -7977,6 +7980,9 @@ const FreeActionWindow = {
     // this to bake checkBonus / damageBonus into the action's roll and
     // composeAction reads `enabledLabels` to filter the Octopath.
     freeActions.set(req.reactorActorId, {
+      // The reactor's TOKEN — free-actions reads its actor for the defeated /
+      // preventFreeAttack checks (an unlinked enemy's effects live there).
+      tokenUuid:        req.reactorTokenUuid ?? null,
       enabledLabels:    req.enabledLabels,
       checkBonus:       req.checkBonus,
       damageBonus:      req.damageBonus,

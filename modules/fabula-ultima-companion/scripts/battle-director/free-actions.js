@@ -18,6 +18,8 @@
 //     damageBonus:          number    — flat +N to the action's damage roll
 //     maxMpCost:            number|null — Spell-only: caps the spell's MP cost
 //     lockedTargetTokenUuid:string|null — if set, force this target (Painful Lesson use case)
+//     tokenUuid:            string|null — the grantee's token; its actor is the one
+//                                       checked for defeat / preventFreeAttack
 //   }
 //
 // In-memory only — no persistence to scene flags. Free-action grants
@@ -29,14 +31,33 @@ import { isActorDefeated } from "./defeat-reactor.js";
 const FLAG_NS = "fabula-ultima-companion";
 const _registry = new Map();  // actor.id → grant
 
+// The creature a grant belongs to. Grants are keyed by actor.id, but an
+// UNLINKED token (every spawned enemy — director-init's shouldLinkSpawnedToken)
+// reports its BASE actor's id while its HP and its Active Effects live on the
+// token's own synthetic actor. Looking the id up in game.actors therefore read
+// the untouched world actor: a Quaking Titan "No Free Attack" debuff on a Bandit
+// never suppressed that Bandit's free attack, and a KO'd Bandit kept its grant.
+// The grant carries `tokenUuid` (stamped by FREE_ACTION_WINDOW) — read that
+// token's actor when we have it; fall back to the world actor otherwise.
+function grantActor(actorId, tokenUuid) {
+  if (tokenUuid) {
+    try {
+      const doc = foundry.utils.fromUuidSync?.(tokenUuid) ?? fromUuidSync?.(tokenUuid);
+      const a = doc?.actor ?? null;
+      if (a) return a;
+    } catch { /* fall back to the world actor */ }
+  }
+  return actorId ? (game?.actors?.get?.(actorId) ?? null) : null;
+}
+
 // A defeated creature (HP <= 0) takes NO free action — including chain strikes.
 // This is stronger than preventFreeAttack (which chain bypasses): a KO'd actor
-// forfeits everything. Resolves the actor from its id the same way the
-// preventFreeAttack check does. Fixes "free action still launches after the
-// actor was reduced to 0 HP mid-turn" (e.g. Bimagus after a lethal Instability).
-function actorIdIsDefeated(actorId) {
+// forfeits everything. Resolves the actor the same way the preventFreeAttack
+// check does. Fixes "free action still launches after the actor was reduced to
+// 0 HP mid-turn" (e.g. Bimagus after a lethal Instability).
+function actorIdIsDefeated(actorId, tokenUuid = null) {
   if (!actorId) return false;
-  try { return isActorDefeated(game?.actors?.get?.(actorId)); } catch { return false; }
+  try { return isActorDefeated(grantActor(actorId, tokenUuid)); } catch { return false; }
 }
 
 // Free-attack prevention check. Looks up the live actor and walks its
@@ -44,10 +65,10 @@ function actorIdIsDefeated(actorId) {
 // .preventFreeAttack: true`. Used by Quaking Titan's "No Free Attack"
 // debuff (May 4 2026 playtest); pays forward to any future "this
 // creature can't free-attack" status.
-function actorHasFreeAttackPrevention(actorId) {
+function actorHasFreeAttackPrevention(actorId, tokenUuid = null) {
   if (!actorId) return false;
   try {
-    const actor = game?.actors?.get?.(actorId);
+    const actor = grantActor(actorId, tokenUuid);
     if (!actor) return false;
     const effs = actor.appliedEffects
       ? Array.from(actor.appliedEffects)
@@ -75,17 +96,18 @@ export const freeActions = {
    */
   get(actorId) {
     if (!actorId) return null;
+    const g = _registry.get(actorId) ?? null;
+    const tokenUuid = g?.tokenUuid ?? null;
     // Defeated (HP <= 0) actors take no free action at all — suppress BEFORE the
     // chain bypass below (a KO'd actor doesn't get to continue a chain either).
-    if (actorIdIsDefeated(actorId)) {
+    if (actorIdIsDefeated(actorId, tokenUuid)) {
       log(`freeActions.get: ${actorId} is defeated (HP<=0) — grant suppressed`);
       return null;
     }
-    const g = _registry.get(actorId) ?? null;
     // chain strikes (free_action with chain:true) are NOT "free attacks" — a
     // preventFreeAttack debuff must not stop a Chain N attack. Let them through.
     if (g?.chain === true) return g;
-    if (actorHasFreeAttackPrevention(actorId)) {
+    if (actorHasFreeAttackPrevention(actorId, tokenUuid)) {
       log(`freeActions.get: ${actorId} has preventFreeAttack AE — grant suppressed`);
       return null;
     }
@@ -115,12 +137,12 @@ export const freeActions = {
     // A defeated (HP <= 0) actor can't be granted a free action — refuse at the
     // source so no misleading affordance is surfaced (covers a grant that would
     // arrive AFTER the actor already dropped).
-    if (actorIdIsDefeated(actorId)) {
+    if (actorIdIsDefeated(actorId, grant.tokenUuid ?? null)) {
       log(`freeActions.set: ${actorId} is defeated (HP<=0) — grant refused`);
       return;
     }
     // chain strikes bypass preventFreeAttack (see get()).
-    if (grant.chain !== true && actorHasFreeAttackPrevention(actorId)) {
+    if (grant.chain !== true && actorHasFreeAttackPrevention(actorId, grant.tokenUuid ?? null)) {
       log(`freeActions.set: ${actorId} has preventFreeAttack AE — grant refused`);
       return;
     }
