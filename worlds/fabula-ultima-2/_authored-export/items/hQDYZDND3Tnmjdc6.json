@@ -20,7 +20,7 @@
         "systemVersion": "4.8.5"
       },
       "changes": [],
-      "description": "<p><em>Quaking Titan:</em> Cannot perform free attacks until start of next turn.</p>",
+      "description": "<p><em>Quaking Titan:</em> Cannot perform free attacks until the start of its next turn.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -40,7 +40,8 @@
         },
         "fabula-ultima-companion": {
           "category": "debuff",
-          "lifetimeMode": "round_end",
+          "charges": 1,
+          "lifetimeMode": "target_turn_start",
           "preventFreeAttack": true
         },
         "statuscounter": {
@@ -88,15 +89,9 @@
       "availability_reason": "Requires martial armor equipped",
       "cost": "30 MP",
       "damage_bonus": "HAS_MARTIAL_ARMOR * (20 + (EQUIPPED_SHIELD_COUNT >= 2) * 10 + (CHAR_LEVEL >= 30) * 10)",
-      "description": "<p>As long as your personal vehicle has a steed frame, it may have up to 2 active weapon modules (instead of 1).</p><p>During a conflict, if you have a <strong>martial armor</strong> or <strong>martial armor module</strong> equipped, you may use an action and spend <strong>30 Mind Points</strong> to choose earth or physical. If you do, you deal <strong>20 damage</strong> of the chosen type to every enemy you can see, and enemies that lose Hit Points this way cannot perform <strong>free attacks</strong> until the start of their next turn.</p><p>This effect deals <strong>+10 damage</strong> if you are driving a personal vehicle with a mech frame and/or have <strong>two shields equipped</strong>, and also deals <strong>+10 damage</strong> if you are <strong>level 30 or higher</strong>.</p>",
+      "description": "<p>As long as your personal vehicle has a steed frame, it may have up to 2 active weapon modules (instead of 1).</p><p>As long as you have a <strong>martial armor</strong> equipped, you may use an action and spend <strong>30 Mind Points</strong> to choose earth or physical. If you do, you deal <strong>20 damage</strong> of the chosen type to every enemy you can see, and enemies that lose Hit Points this way cannot perform <strong>free attacks</strong> until the start of their next turn.</p><p>This effect deals <strong>10 extra damage</strong> if you are driving a personal vehicle with a mech frame, or if you have <strong>two shields equipped</strong> and are not driving a personal vehicle with a steed frame; it also deals another <strong>10 extra damage</strong> if you are <strong>level 30 or higher</strong>.</p>",
       "effect_table": {
         "0": {
-          "chain_steps": "qt_apply_status",
-          "condition_formula": "HAS_MARTIAL_ARMOR == 1",
-          "effect_kind": "chain",
-          "effect_label": "qt_activate"
-        },
-        "1": {
           "chain_steps": "",
           "condition_formula": "HAS_MARTIAL_ARMOR == 1",
           "effect_kind": "prompt_element",
@@ -106,15 +101,17 @@
           "on_condition_fail": "abort",
           "prompt_var": "element"
         },
-        "2": {
+        "1": {
           "ae_duplicate_mode": "replace_per_caster",
           "ae_template_ref": "No Free Attack",
+          "condition_formula": "HP_LOST > 0",
           "effect_kind": "apply_ae",
-          "effect_label": "qt_apply_status",
-          "target_ref": "hit_action_targets"
+          "effect_label": "qt_no_free_attack",
+          "target_ref": "trigger_subject"
         }
       },
       "heroic_requirement": "You must have mastered one or more Classes among Guardian and Pilot.",
+      "implementation_note": "Automated (Fabula Ultima playtest, October 1st, 2026): needs a martial armor equipped (HAS_MARTIAL_ARMOR; an equipped martial armor module counts, as the Techno Fantasy Atlas rules), asks earth or physical, deals 20 damage to every enemy, +10 with two shields equipped (EQUIPPED_SHIELD_COUNT; a Shield module counts as a shield), +10 at level 30 or higher. Each enemy that actually lost HP (not one that was immune, absorbed it, or had it soaked by a Shield buffer) gets No Free Attack until the start of its next turn. Not automated: driving. This engine has no driving state and treats modules as ordinary equipped gear, so the steed frame's second weapon module, the mech-frame +10 and the steed-frame exclusion of the two-shield bonus never apply.",
       "isCheck": false,
       "isHeroic": true,
       "isOffensiveSpell": false,
@@ -122,7 +119,8 @@
       "level": 1,
       "max_level": "1",
       "name": "Quaking Titan",
-      "on_activate_effect_ref": "qt_activate",
+      "on_activate_effect_ref": "",
+      "post_damage_effect_ref": "qt_no_free_attack",
       "pre_activate_effect_ref": "qt_gate",
       "reaction_config_table": null,
       "skill_range": "Scene",
