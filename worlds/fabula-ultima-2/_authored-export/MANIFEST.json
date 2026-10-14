@@ -2879,12 +2879,6 @@
         "effects": 0
       },
       {
-        "id": "2J3hqlnUcKxTIxJn",
-        "name": "Arcane Shield",
-        "type": "equippableItem",
-        "effects": 2
-      },
-      {
         "id": "GlhhS493B7q3hJ8l",
         "name": "Arch Fire Wand",
         "type": "equippableItem",
@@ -4793,6 +4787,12 @@
         "effects": 0
       },
       {
+        "id": "QyHNMw6UlHaIYRMI",
+        "name": "Darksteel Shield",
+        "type": "equippableItem",
+        "effects": 2
+      },
+      {
         "id": "1cajyF04dx07aGEU",
         "name": "Dead Branch",
         "type": "equippableItem",
@@ -5763,12 +5763,6 @@
         "name": "Feral Speech",
         "type": "equippableItem",
         "effects": 0
-      },
-      {
-        "id": "QyHNMw6UlHaIYRMI",
-        "name": "Ferrum Shield",
-        "type": "equippableItem",
-        "effects": 2
       },
       {
         "id": "cesTpxcSXKfS0qwj",
@@ -9171,6 +9165,12 @@
         "name": "Moonshroom",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "2J3hqlnUcKxTIxJn",
+        "name": "Moonsilver Shield",
+        "type": "equippableItem",
+        "effects": 2
       },
       {
         "id": "NrUzUjHLW2Id3PJC",

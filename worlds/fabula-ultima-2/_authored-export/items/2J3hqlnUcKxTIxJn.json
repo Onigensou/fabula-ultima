@@ -154,7 +154,7 @@
   },
   "folder": "y2rCDkOoxKBkdu0x",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2115.gif",
-  "name": "Arcane Shield",
+  "name": "Moonsilver Shield",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
     "default": 3
@@ -175,7 +175,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<p><em>A thin ward-plate etched edge to edge. Spells slide off it; a blade goes straight through.</em></p>",
+      "description": "<p><em>A thin plate of moonsilver, pale as frost. Spells slide off it; a blade goes straight through.</em></p>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -206,7 +206,7 @@
       "item_type": "shield",
       "mimic_ef": "100",
       "monster_ef": "100",
-      "name": "Arcane Shield",
+      "name": "Moonsilver Shield",
       "optional_params": {},
       "plant_ef": "100",
       "reptilian_ef": "100",
