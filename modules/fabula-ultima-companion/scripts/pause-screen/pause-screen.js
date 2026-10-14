@@ -12,11 +12,9 @@
 //   2. "Pause" slides in from the left and fades up, landing centred
 //   3. on resume it slides on out to the right the same way, and the dim
 //      lifts just behind it
-// The word is three stacked copies of the text — a gold outer border, a
-// black inner border and a silver-white gradient fill — with a faint warm
-// glow and a drop shadow. Stacked copies give a clean double border on
-// italic glyphs; text-stroke on one layer eats the fill, and text-shadow
-// paints over a background-clip:text fill in Chromium.
+// The word is minimal: bold white italic, a thin black outline, a hard drop
+// shadow and a faint glow. The outline is a stroked copy of the text under
+// the white one, because text-stroke on a single layer eats into the fill.
 // Times are in TUNING; each step is a CSS animation started by .is-shown.
 //
 // SAME SCREEN FOR EVERYONE — the GM sees exactly what the players see, so the
@@ -106,43 +104,31 @@ const CSS = `
   }
   #${ROOT_ID}.is-gm-working .ops-stage { opacity: ${T.GM_FADE_OPACITY}; }
 
-  /* The word: three copies of the text stacked in one grid cell. */
+  /* The word: a stroked black copy under the white one, in one grid cell. */
   #${ROOT_ID} .ops-word {
     display: grid;
     font-family: "Arial Black", "Arial", "Signika", sans-serif;
     font-weight: 900; font-style: italic;
     font-size: clamp(72px, 7vw, 140px);
     line-height: 1.1;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.02em;
     opacity: 0;
-    /* faint warm glow, then the drop shadow under everything */
+    /* faint glow, then a hard drop shadow down-right */
     filter:
-      drop-shadow(0 0 0.14em rgba(255, 226, 150, 0.38))
-      drop-shadow(0.06em 0.08em 0.03em rgba(0, 0, 0, 0.65));
+      drop-shadow(0 0 0.12em rgba(255, 255, 255, 0.28))
+      drop-shadow(0.05em 0.06em 0.015em rgba(0, 0, 0, 0.85));
   }
   #${ROOT_ID} .ops-word > span {
     grid-area: 1 / 1;
     justify-self: center;
-    padding: 0 0.16em; /* room for the italic overhang and the borders */
+    padding: 0 0.12em; /* room for the italic overhang */
     white-space: nowrap;
   }
-  /* outer border: gold */
-  #${ROOT_ID} .ops-ring {
-    color: #e2bd62;
-    -webkit-text-stroke: 0.15em #e2bd62;
-  }
-  /* inner border: ink */
   #${ROOT_ID} .ops-ink {
-    color: #120a04;
-    -webkit-text-stroke: 0.09em #120a04;
+    color: #000;
+    -webkit-text-stroke: 0.06em #000;
   }
-  /* face: silver-white, a little brighter at the top like a PS2 title */
-  #${ROOT_ID} .ops-face {
-    color: transparent;
-    background: linear-gradient(180deg,
-      #ffffff 0%, #fbfcff 40%, #c9d1e0 52%, #eef1f8 78%, #ffffff 100%);
-    -webkit-background-clip: text; background-clip: text;
-  }
+  #${ROOT_ID} .ops-face { color: #fff; }
 
   #${ROOT_ID}.is-shown .ops-word {
     animation: ops-word-in ${T.WORD_IN_MS}ms ${EASE_SLIDE} ${T.WORD_AT_MS}ms both;
@@ -190,7 +176,6 @@ function ensureRoot() {
   root.innerHTML = `
     <div class="ops-stage">
       <div class="ops-word">
-        <span class="ops-ring">Pause</span>
         <span class="ops-ink">Pause</span>
         <span class="ops-face">Pause</span>
       </div>
