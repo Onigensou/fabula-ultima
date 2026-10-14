@@ -546,7 +546,8 @@
     const frame = shown.art.kind === "strip" ? shown.art.frames[0] : shown.art.texture;
     if (!frame?.valid) return;
 
-    if (shown.art.kind === "video" && shown.art.video?.paused) {
+    // Not during a pause: pause-screen.js freezes map videos on purpose.
+    if (shown.art.kind === "video" && shown.art.video?.paused && !game.paused) {
       try {
         const playing = shown.art.video.play();
         if (playing?.catch) playing.catch(() => {});

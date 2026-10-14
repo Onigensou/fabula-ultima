@@ -3,9 +3,9 @@
 // ----------------------------------------------------------------------------
 // The GM still pauses with Space; game.paused stays the real state (it blocks
 // player token movement and is synced by core). This file only replaces what
-// that pause LOOKS like: the spinning "Game Paused" logo is hidden, the map
-// dims and drains a little colour, and the music drops while the group is on
-// a break.
+// that pause LOOKS and SOUNDS like: the spinning "Game Paused" logo is
+// hidden, the map dims behind faint scanlines, and the world freezes the way
+// a console's does while the group is on a break.
 //
 // THE BEAT (the user's storyboard, 2026-10-15, then tuned) —
 //   1. the map dims
@@ -34,8 +34,21 @@
 // TRANSITIONS — a pause during a battle shatter or a scene-change fade waits
 // until the screen is clear, then draws.
 //
-// MUSIC — each playing PlaylistSound is faded to MUSIC_DUCK of its own volume
-// and faded back on resume. Nothing is written to settings or documents.
+// FREEZE — what a console pause stops, done per client, nothing written to
+// settings or documents:
+//   - sound: the music and environment AudioContexts are suspended, which
+//     holds every track at its exact spot; resuming the context continues
+//     from there. Foundry never resumes a context itself, so a track the GM
+//     starts mid-break waits silently for the resume. The interface context
+//     (the pause / resume chimes) keeps running.
+//   - map videos: every playing video texture on the canvas (animated tiles,
+//     video tokens, sprite-facing stand art) is paused and played again on
+//     resume. sprite-facing-runtime.js restarts a paused stand video on its
+//     own, so it skips that while game.paused.
+//   - TokenMagic: its animation loop (the idle float) is detached from the
+//     ticker. TokenMagic times filters on the clock, so a floating token
+//     jumps to the current point of its float on resume.
+// The canvas itself keeps rendering: the GM must still see what they place.
 //
 // Purely client-side: every client reacts to the core pauseGame hook.
 // ============================================================================
@@ -49,8 +62,8 @@ export const TUNING = {
   SFX_PAUSE: `${FORGE}/Sound/ffxiv_sps05001_mp3/FFXIV_Open_Window.mp3`,
   SFX_RESUME: `${FORGE}/Sound/ffxiv_sps05001_mp3/FFXIV_Close_Window.mp3`,
   SFX_VOLUME: 0.6,
-  MUSIC_DUCK: 0.4,        // fraction of each track's own volume while paused
-  MUSIC_FADE_MS: 900,
+  SCANLINES: true,        // faint CRT lines over the paused map
+  SCANLINE_ALPHA: 0.16,
   // The beat — slow + smooth, see the animation pacing rule.
   DIM_MS: 650,            // map dims
   WORD_AT_MS: 150,        // "Pause" starts sliding in
@@ -87,6 +100,13 @@ const CSS = `
     user-select: none;
   }
   #${ROOT_ID} * { pointer-events: none !important; }
+  /* faint CRT scanlines over the paused map, under the word */
+  #${ROOT_ID}.has-scanlines::before {
+    content: ""; position: absolute; inset: 0;
+    background: repeating-linear-gradient(180deg,
+      rgba(0, 0, 0, ${T.SCANLINE_ALPHA}) 0px, rgba(0, 0, 0, ${T.SCANLINE_ALPHA}) 1px,
+      transparent 1px, transparent 3px);
+  }
   #${ROOT_ID}.is-shown {
     opacity: 1; visibility: visible;
     transition: opacity ${T.DIM_MS}ms ease;
@@ -154,7 +174,9 @@ let waitToken = 0;      // bumps on every pause/resume so a stale wait gives up
 let leaveTimer = null;
 let undimTimer = null;
 let gmFadeTimer = null;
-const ducked = new Map(); // PlaylistSound id → volume we faded it to
+const frozenContexts = new Set(); // AudioContexts this file suspended
+const frozenVideos = new Set();   // video elements this file paused
+let tokenMagicFrozen = null;      // TokenMagic's Anime class, while detached
 
 const log = (...a) => console.debug(TAG, ...a);
 
@@ -183,6 +205,7 @@ function ensureRoot() {
   // Above the map, below the sidebar / controls / windows (see LAYERING).
   const board = document.getElementById("board");
   if (board) board.after(root); else document.body.appendChild(root);
+  root.classList.toggle("has-scanlines", !!TUNING.SCANLINES);
   return root;
 }
 
@@ -210,47 +233,65 @@ function sfx(src) {
   catch { /* sound is decoration */ }
 }
 
-function playingSounds() {
-  const out = [];
-  for (const playlist of game.playlists ?? []) {
-    for (const ps of playlist.sounds) if (ps.playing && ps.sound) out.push(ps);
-  }
-  return out;
-}
+// ── Freeze ──────────────────────────────────────────────────────────────────
 
-function duckMusic() {
-  for (const ps of playingSounds()) {
-    const target = ps.volume * TUNING.MUSIC_DUCK;
-    try { ps.sound.fade(target, { duration: TUNING.MUSIC_FADE_MS }); ducked.set(ps.id, target); }
-    catch (e) { log("duck failed", ps.name, e); }
+function freezeAudio() {
+  for (const ctx of [game.audio?.music, game.audio?.environment]) {
+    if (!ctx || ctx.state !== "running" || frozenContexts.has(ctx)) continue;
+    frozenContexts.add(ctx);
+    ctx.suspend().catch((e) => log("suspend failed", e));
   }
 }
 
-function restoreMusic() {
-  for (const ps of playingSounds()) {
-    if (!ducked.has(ps.id)) continue;
-    try { ps.sound.fade(ps.volume, { duration: TUNING.MUSIC_FADE_MS }); }
-    catch (e) { log("restore failed", ps.name, e); }
-  }
-  ducked.clear();
+function thawAudio() {
+  for (const ctx of frozenContexts) ctx.resume().catch((e) => log("resume failed", e));
+  frozenContexts.clear();
 }
 
-// A track started (or a volume changed) mid-break plays at full volume; bring
-// it down once its sound has loaded, which can take a few seconds.
-function reduckSoon(ps) {
-  if (!shown) return;
-  let tries = 0;
-  const tick = () => {
-    if (!shown || !ps.playing) return;
-    if (ps.sound?.playing) {
-      const target = ps.volume * TUNING.MUSIC_DUCK;
-      try { ps.sound.fade(target, { duration: TUNING.MUSIC_FADE_MS }); ducked.set(ps.id, target); }
-      catch { /* decoration */ }
-      return;
-    }
-    if (++tries < 40) setTimeout(tick, 250);
+function canvasVideos() {
+  const found = new Set();
+  const walk = (obj) => {
+    const src = obj?.texture?.baseTexture?.resource?.source;
+    if (src instanceof HTMLVideoElement) found.add(src);
+    for (const child of obj?.children ?? []) walk(child);
   };
-  setTimeout(tick, 400);
+  if (canvas?.stage) walk(canvas.stage);
+  return found;
+}
+
+// TokenMagic keeps its Anime class private; one live animation leads to it.
+function tokenMagicAnime() {
+  try {
+    const first = globalThis.TokenMagic?._getAnimeMap?.()?.values().next().value;
+    const Anime = first?.constructor;
+    return typeof Anime?._suspendAnimation === "function" ? Anime : null;
+  } catch { return null; }
+}
+
+function freezeMap() {
+  for (const video of canvasVideos()) {
+    if (video.paused || frozenVideos.has(video)) continue;
+    try { video.pause(); frozenVideos.add(video); } catch { /* decoration */ }
+  }
+  if (!tokenMagicFrozen) {
+    const Anime = tokenMagicAnime();
+    if (Anime) {
+      try { Anime._suspendAnimation(); tokenMagicFrozen = Anime; }
+      catch (e) { log("TokenMagic suspend failed", e); }
+    }
+  }
+}
+
+function thawMap() {
+  for (const video of frozenVideos) {
+    try { video.play()?.catch?.(() => {}); } catch { /* decoration */ }
+  }
+  frozenVideos.clear();
+  if (tokenMagicFrozen) {
+    try { tokenMagicFrozen._resumeAnimation(); }
+    catch (e) { log("TokenMagic resume failed", e); }
+    tokenMagicFrozen = null;
+  }
 }
 
 // ── GM: get out of the way while working ────────────────────────────────────
@@ -321,7 +362,8 @@ async function show({ sound = true } = {}) {
   document.body.classList.add("oni-paused");
   bindGmListeners(true);
   if (sound) sfx(TUNING.SFX_PAUSE);
-  duckMusic();
+  freezeAudio();
+  freezeMap();
   log("shown");
 }
 
@@ -339,7 +381,8 @@ function hide({ sound = true } = {}) {
   const outMs = Math.max(TUNING.WORD_OUT_MS, TUNING.UNDIM_AT_MS + TUNING.UNDIM_MS);
   leaveTimer = setTimeout(() => root?.classList.remove("is-shown", "is-leaving"), outMs + 50);
   if (sound) sfx(TUNING.SFX_RESUME);
-  restoreMusic();
+  thawAudio();
+  thawMap();
   log("hidden");
 }
 
@@ -357,21 +400,8 @@ Hooks.on("pauseGame", (paused) => {
   else hide();
 });
 
-// Starting a track updates its PLAYLIST (changes.sounds), not the sound, so
-// updatePlaylistSound alone misses it. A volume edit on a sound fires the latter.
-Hooks.on("updatePlaylist", (playlist, changes) => {
-  if (!shown) return;
-  for (const change of changes.sounds ?? []) {
-    if (!change.playing) continue;
-    const ps = playlist.sounds.get(change._id);
-    if (ps) reduckSoon(ps);
-  }
-});
-
-Hooks.on("updatePlaylistSound", (ps, changes) => {
-  if (!shown) return;
-  if (("playing" in changes && changes.playing) || "volume" in changes) reduckSoon(ps);
-});
+// A scene changed or redrawn mid-break brings its own videos: freeze those too.
+Hooks.on("canvasReady", () => { if (shown) freezeMap(); });
 
 // Console handle: preview the screen without pausing, for tuning.
 globalThis.oni = globalThis.oni || {};

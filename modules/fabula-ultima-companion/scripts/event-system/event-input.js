@@ -10,7 +10,7 @@
  *   two face buttons and a direction pad: Confirm, Cancel, Up, Down
  * - Registers them as Foundry keybindings, so they show in Configure Controls
  *   and each person can rebind them
- *     Confirm: Z, Enter, Spacebar
+ *     Confirm: Z, Enter (not Spacebar: that stays the GM's pause key)
  *     Cancel:  X
  *     Up:      Arrow Up, W
  *     Down:    Arrow Down, S
@@ -76,7 +76,7 @@
       game.keybindings.register(MODULE_ID, "oniConfirm", {
         name: "Confirm",
         hint: "Advance dialogue and confirm prompts. Only acts while something is asking for it.",
-        editable: [{ key: "KeyZ" }, { key: "Enter" }, { key: "Space" }],
+        editable: [{ key: "KeyZ" }, { key: "Enter" }],
         onDown: () => dispatch(ACTIONS.CONFIRM, "key"),
         restricted: false,
         precedence: CONST.KEYBINDING_PRECEDENCE.PRIORITY
