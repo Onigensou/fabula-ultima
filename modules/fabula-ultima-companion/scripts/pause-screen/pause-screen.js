@@ -4,16 +4,24 @@
 // The GM still pauses with Space; game.paused stays the real state (it blocks
 // player token movement and is synced by core). This file only replaces what
 // that pause LOOKS like: the spinning "Game Paused" logo is hidden, the map
-// dims and drains a little colour, a parchment "PAUSE" panel slides in, and
-// the music drops while the group is on a break.
+// dims and drains a little colour, and the music drops while the group is on
+// a break.
+//
+// THE BEAT (the user's storyboard, 2026-10-15) —
+//   1. a thin red line draws in from the left edge across the screen
+//   2. at full width it thickens
+//   3. "Pause" slides in from the left, grey and see-through
+//   4. it lands centred on the line, white with a black outline, and slowly
+//      blinks for as long as the break lasts
+// Times are in TUNING; each step is a CSS animation started by .is-shown.
 //
 // SAME SCREEN FOR EVERYONE — the GM sees exactly what the players see, so the
 // table pauses together like one console. This is a deliberate exception to
 // the "presentation never takes the GM screen" rule, and it keeps that rule's
 // spirit: the whole screen is pointer-events:none and listens to no keys, so
 // the GM keeps moving tokens and placing things underneath it, as core pause
-// allows. On the GM client the panel also fades out of the way while the GM
-// drags on the map or points at the spot the panel covers.
+// allows. On the GM client the line and word also fade out of the way while
+// the GM drags on the map or points at the word.
 //
 // LAYERING — the screen sits right after the #board canvas at z-index 0: it
 // paints over the map (same z, later in the page) and under the sidebar,
@@ -30,8 +38,6 @@
 // Purely client-side: every client reacts to the core pauseGame hook.
 // ============================================================================
 
-import { readAreaConfig, cleanName, GLYPH } from "../area-panel/area-panel-core.js";
-
 const TAG = "[PauseScreen]";
 const ROOT_ID = "oni-pause-screen";
 const STYLE_ID = "oni-pause-screen-style";
@@ -43,87 +49,109 @@ export const TUNING = {
   SFX_VOLUME: 0.6,
   MUSIC_DUCK: 0.4,        // fraction of each track's own volume while paused
   MUSIC_FADE_MS: 900,
-  ENTER_MS: 650,          // slow + smooth, see the animation pacing rule
+  // The beat — slow + smooth, see the animation pacing rule.
+  DIM_MS: 650,            // map dims
+  LINE_AT_MS: 150,        // red line starts drawing
+  LINE_DRAW_MS: 900,      // ... and reaches the right edge
+  LINE_THICKEN_MS: 300,   // then thickens
+  WORD_AT_MS: 1050,       // "Pause" starts sliding in
+  WORD_IN_MS: 750,
+  BLINK_AT_MS: 2300,      // first blink
+  BLINK_MS: 2800,         // one slow blink, bright → dim → bright
+  BLINK_LOW: 0.3,         // opacity at the bottom of a blink
   EXIT_MS: 450,
-  GM_FADE_OPACITY: 0.15,  // panel opacity while the GM works under it
-  GM_FADE_HOLD_MS: 700,   // how long it stays faded after the GM lets go
+  GM_FADE_OPACITY: 0.15,  // line + word opacity while the GM works under them
+  GM_FADE_HOLD_MS: 700,   // how long they stay faded after the GM lets go
   WAIT_POLL_MS: 150,
   WAIT_MAX_MS: 12000,     // never hold the pause screen back longer than this
 };
+
+const T = TUNING;
+const OUTLINE = [
+  "3px 0 0 #000", "-3px 0 0 #000", "0 3px 0 #000", "0 -3px 0 #000",
+  "2px 2px 0 #000", "-2px 2px 0 #000", "2px -2px 0 #000", "-2px -2px 0 #000",
+  "6px 7px 10px rgba(0, 0, 0, 0.65)",
+].join(", ");
 
 const CSS = `
   /* Core's pause logo — replaced by this screen. */
   #pause { display: none !important; }
 
-  #board { transition: filter ${TUNING.ENTER_MS}ms ease; }
+  #board { transition: filter ${T.DIM_MS}ms ease; }
   body.oni-paused #board { filter: saturate(0.55) brightness(0.8); }
 
   #${ROOT_ID} {
     position: fixed; inset: 0; z-index: 0;
     pointer-events: none !important;
-    display: flex; align-items: center; justify-content: center;
     background: rgba(18, 8, 1, 0.42);
     opacity: 0;
-    transition: opacity ${TUNING.ENTER_MS}ms ease;
-    font-family: "Signika", sans-serif;
+    visibility: hidden;
     user-select: none;
   }
   #${ROOT_ID} * { pointer-events: none !important; }
-  #${ROOT_ID}.is-shown { opacity: 1; }
-  #${ROOT_ID}.is-leaving { transition-duration: ${TUNING.EXIT_MS}ms; }
-
-  /* Parchment panel — the Save/Load confirm skin. */
-  #${ROOT_ID} .ops-panel {
-    position: relative;
-    min-width: 360px;
-    padding: 30px 64px 24px;
-    display: flex; flex-direction: column; align-items: center; gap: 12px;
-    background: linear-gradient(168deg, #f8f0d4 0%, #ede0b0 100%);
-    border: 2px solid #c9a44a;
-    border-radius: 10px;
-    box-shadow:
-      0 0 0 2px #7a4e20, 0 0 0 4px #b8865a,
-      0 0 40px rgba(0, 0, 0, 0.55),
-      inset 0 1px 0 rgba(255, 245, 200, 0.70);
-    color: #3a1e06;
+  #${ROOT_ID}.is-shown {
+    opacity: 1; visibility: visible;
+    transition: opacity ${T.DIM_MS}ms ease;
+  }
+  #${ROOT_ID}.is-shown.is-leaving {
     opacity: 0;
-    transform: translateX(-48px);
-    transition:
-      opacity ${TUNING.ENTER_MS}ms ease,
-      transform ${TUNING.ENTER_MS}ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  #${ROOT_ID} .ops-panel::before {
-    content: ""; position: absolute; inset: 0; z-index: 0; border-radius: 10px;
-    background: repeating-linear-gradient(0deg, transparent, transparent 23px,
-      rgba(140, 90, 30, 0.04) 23px, rgba(140, 90, 30, 0.04) 24px);
-  }
-  #${ROOT_ID} .ops-panel > * { position: relative; z-index: 1; }
-  #${ROOT_ID}.is-shown .ops-panel { opacity: 1; transform: translateX(0); }
-  #${ROOT_ID}.is-leaving .ops-panel {
-    opacity: 0; transform: translateX(48px);
-    transition-duration: ${TUNING.EXIT_MS}ms;
-  }
-  #${ROOT_ID}.is-gm-working .ops-panel {
-    opacity: ${TUNING.GM_FADE_OPACITY};
-    transition: opacity 250ms ease, transform 0ms;
+    transition: opacity ${T.EXIT_MS}ms ease;
   }
 
-  #${ROOT_ID} .ops-title {
-    font-size: 46px; font-weight: 400; letter-spacing: 0.22em;
-    margin-right: -0.22em; /* letter-spacing pads the right edge */
+  /* The band across the middle: the line, with the word sitting on it. */
+  #${ROOT_ID} .ops-stage {
+    position: absolute; left: 0; right: 0; top: 46%;
+    transform: translateY(-50%);
+    transition: opacity 250ms ease;
+  }
+  #${ROOT_ID}.is-gm-working .ops-stage { opacity: ${T.GM_FADE_OPACITY}; }
+
+  #${ROOT_ID} .ops-line {
+    position: absolute; left: 0; right: 0; top: 84%;
+    height: 6px; margin-top: -3px;
+    transform: scaleX(0); transform-origin: left center;
+  }
+  #${ROOT_ID} .ops-line-bar {
+    width: 100%; height: 100%;
+    background: linear-gradient(180deg, #ff3b3b 0%, #c8101a 55%, #8a0a10 100%);
+    box-shadow: 0 0 10px rgba(255, 40, 40, 0.55), 0 2px 6px rgba(0, 0, 0, 0.6);
+    transform: scaleY(0.34);
+  }
+  #${ROOT_ID}.is-shown .ops-line {
+    animation: ops-line-draw ${T.LINE_DRAW_MS}ms cubic-bezier(0.65, 0, 0.35, 1) ${T.LINE_AT_MS}ms both;
+  }
+  #${ROOT_ID}.is-shown .ops-line-bar {
+    animation: ops-line-thicken ${T.LINE_THICKEN_MS}ms ease-out ${T.LINE_AT_MS + T.LINE_DRAW_MS - 100}ms both;
+  }
+  @keyframes ops-line-draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes ops-line-thicken { from { transform: scaleY(0.34); } to { transform: scaleY(1); } }
+
+  #${ROOT_ID} .ops-word {
+    position: relative;
+    text-align: center;
+    font-family: "Arial Black", "Arial", "Signika", sans-serif;
+    font-weight: 900; font-style: italic;
+    font-size: clamp(64px, 6.2vw, 128px);
     line-height: 1;
-    animation: ops-breathe 3.2s ease-in-out infinite;
+    letter-spacing: 0.01em;
+    color: #fff;
+    text-shadow: ${OUTLINE};
+    opacity: 0;
   }
-  @keyframes ops-breathe {
-    0%, 100% { text-shadow: 0 1px 0 rgba(255, 220, 130, 0.55), 0 0 6px rgba(201, 164, 74, 0.10); }
-    50%      { text-shadow: 0 1px 0 rgba(255, 220, 130, 0.55), 0 0 18px rgba(201, 164, 74, 0.55); }
+  #${ROOT_ID}.is-shown .ops-word {
+    animation:
+      ops-word-in ${T.WORD_IN_MS}ms cubic-bezier(0.22, 1, 0.36, 1) ${T.WORD_AT_MS}ms both,
+      ops-word-blink ${T.BLINK_MS}ms ease-in-out ${T.BLINK_AT_MS}ms infinite;
   }
-  #${ROOT_ID} .ops-rule {
-    width: 100%; height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(140, 90, 30, 0.45), transparent);
+  @keyframes ops-word-in {
+    from { opacity: 0;    transform: translateX(-140px); color: #8e8e8e; }
+    45%  { opacity: 0.55; color: #a8a8a8; }
+    to   { opacity: 1;    transform: translateX(0);      color: #fff; }
   }
-  #${ROOT_ID} .ops-loc { font-size: 15px; color: #7a5428; }
-  #${ROOT_ID} .ops-loc:empty, #${ROOT_ID} .ops-loc:empty + * { display: none; }
+  @keyframes ops-word-blink {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: ${T.BLINK_LOW}; }
+  }
 `;
 
 // ── State ───────────────────────────────────────────────────────────────────
@@ -147,33 +175,20 @@ function ensureStyle() {
   document.head.appendChild(style);
 }
 
-function locationText() {
-  const scene = canvas?.scene ?? game.scenes?.viewed;
-  if (!scene) return "";
-  const name = cleanName(readAreaConfig(scene).name || scene.navName || "");
-  return name ? `${GLYPH} ${name}` : "";
-}
-
 function ensureRoot() {
   if (root?.isConnected) return root;
   root = document.createElement("div");
   root.id = ROOT_ID;
   root.setAttribute("aria-hidden", "true");
   root.innerHTML = `
-    <div class="ops-panel">
-      <div class="ops-title">PAUSE</div>
-      <div class="ops-loc"></div>
-      <div class="ops-rule"></div>
+    <div class="ops-stage">
+      <div class="ops-line"><div class="ops-line-bar"></div></div>
+      <div class="ops-word">Pause</div>
     </div>`;
   // Above the map, below the sidebar / controls / windows (see LAYERING).
   const board = document.getElementById("board");
   if (board) board.after(root); else document.body.appendChild(root);
   return root;
-}
-
-function refreshLocation() {
-  const el = root?.querySelector(".ops-loc");
-  if (el) el.textContent = locationText();
 }
 
 // ── Transitions ─────────────────────────────────────────────────────────────
@@ -274,9 +289,9 @@ function onPointerMove(ev) {
   const { clientX: x, clientY: y } = ev;
   requestAnimationFrame(() => {
     moveQueued = false;
-    const panel = root?.querySelector(".ops-panel");
-    if (!panel) return;
-    const r = panel.getBoundingClientRect();
+    const word = root?.querySelector(".ops-word");
+    if (!word) return;
+    const r = word.getBoundingClientRect();
     const inside = x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
     if (inside === overPanel) return;
     overPanel = inside;
@@ -304,9 +319,8 @@ async function show({ sound = true } = {}) {
   clearTimeout(leaveTimer);
   ensureStyle();
   ensureRoot();
-  refreshLocation();
-  root.classList.remove("is-leaving");
-  void root.offsetHeight; // commit the hidden state so the slide-in plays
+  root.classList.remove("is-shown", "is-leaving");
+  void root.offsetHeight; // reset so the whole beat plays from the start
   root.classList.add("is-shown");
   document.body.classList.add("oni-paused");
   bindGmListeners(true);
@@ -321,10 +335,10 @@ function hide({ sound = true } = {}) {
   shown = false;
   bindGmListeners(false);
   document.body.classList.remove("oni-paused");
+  // Fade out with the line and word still drawn, then reset.
   root?.classList.add("is-leaving");
-  root?.classList.remove("is-shown");
   clearTimeout(leaveTimer);
-  leaveTimer = setTimeout(() => root?.classList.remove("is-leaving"), TUNING.EXIT_MS + 50);
+  leaveTimer = setTimeout(() => root?.classList.remove("is-shown", "is-leaving"), TUNING.EXIT_MS + 50);
   if (sound) sfx(TUNING.SFX_RESUME);
   restoreMusic();
   log("hidden");
@@ -343,8 +357,6 @@ Hooks.on("pauseGame", (paused) => {
   if (paused) show();
   else hide();
 });
-
-Hooks.on("canvasReady", () => { if (shown) refreshLocation(); });
 
 // Starting a track updates its PLAYLIST (changes.sounds), not the sound, so
 // updatePlaylistSound alone misses it. A volume edit on a sound fires the latter.
