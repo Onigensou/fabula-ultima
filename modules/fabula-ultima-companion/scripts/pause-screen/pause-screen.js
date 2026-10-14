@@ -15,9 +15,11 @@
 // allows. On the GM client the panel also fades out of the way while the GM
 // drags on the map or points at the spot the panel covers.
 //
-// LAYERING — the screen sits right before #interface: above the map, below the
-// sidebar, controls and every Foundry window, so a sheet the GM opens during a
-// break draws on top.
+// LAYERING — the screen sits right after the #board canvas at z-index 0: it
+// paints over the map (same z, later in the page) and under the sidebar,
+// controls and every Foundry window, which all carry a higher z-index, so a
+// sheet the GM opens during a break draws on top. In V12 #board comes AFTER
+// #interface, so placing it before #interface left it hidden under the map.
 //
 // TRANSITIONS — a pause during a battle shatter or a scene-change fade waits
 // until the screen is clear, then draws.
@@ -163,9 +165,9 @@ function ensureRoot() {
       <div class="ops-loc"></div>
       <div class="ops-rule"></div>
     </div>`;
-  // Above the map, below the sidebar / controls / windows.
-  const ui = document.getElementById("interface");
-  if (ui) ui.before(root); else document.body.appendChild(root);
+  // Above the map, below the sidebar / controls / windows (see LAYERING).
+  const board = document.getElementById("board");
+  if (board) board.after(root); else document.body.appendChild(root);
   return root;
 }
 
@@ -224,7 +226,7 @@ function restoreMusic() {
 }
 
 // A track started (or a volume changed) mid-break plays at full volume; bring
-// it down once its sound has loaded.
+// it down once its sound has loaded, which can take a few seconds.
 function reduckSoon(ps) {
   if (!shown) return;
   let tries = 0;
@@ -236,7 +238,7 @@ function reduckSoon(ps) {
       catch { /* decoration */ }
       return;
     }
-    if (++tries < 20) setTimeout(tick, 250);
+    if (++tries < 40) setTimeout(tick, 250);
   };
   setTimeout(tick, 400);
 }
@@ -343,6 +345,17 @@ Hooks.on("pauseGame", (paused) => {
 });
 
 Hooks.on("canvasReady", () => { if (shown) refreshLocation(); });
+
+// Starting a track updates its PLAYLIST (changes.sounds), not the sound, so
+// updatePlaylistSound alone misses it. A volume edit on a sound fires the latter.
+Hooks.on("updatePlaylist", (playlist, changes) => {
+  if (!shown) return;
+  for (const change of changes.sounds ?? []) {
+    if (!change.playing) continue;
+    const ps = playlist.sounds.get(change._id);
+    if (ps) reduckSoon(ps);
+  }
+});
 
 Hooks.on("updatePlaylistSound", (ps, changes) => {
   if (!shown) return;
