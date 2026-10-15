@@ -63,8 +63,11 @@
   const BEHIND_PENALTY = 3;
   const FACING_MIN_COS = 0.35;
 
-  // After an event ends, a Confirm this soon is swallowed: mashing through
-  // the last line of dialogue must not start the same talk again.
+  // After an event ends, a Confirm this soon is swallowed, and each swallowed
+  // press starts the wait again: someone mashing through the last line of
+  // dialogue must stop for a moment before Confirm opens anything. Without
+  // the restart, steady mashing reopened the menu and ran the same talk again
+  // (seen live: four talks in a row).
   const AFTER_EVENT_QUIET_MS = 400;
 
   const MENU_IN_MS = 260;
@@ -208,7 +211,12 @@
     style.id = STYLE_ID;
     style.textContent = `
 .${FOCUS_CLASS} {
-  filter: drop-shadow(0 0 3px #f4d488) drop-shadow(0 0 9px rgba(244,212,136,0.85)) !important;
+  filter: drop-shadow(0 0 2px #fff6d0) drop-shadow(0 0 5px #f4c040) drop-shadow(0 0 11px rgba(244,192,64,0.85)) !important;
+  animation: oni-kb-focus-pulse 1600ms ease-in-out infinite;
+}
+@keyframes oni-kb-focus-pulse {
+  0%, 100% { filter: drop-shadow(0 0 2px #fff6d0) drop-shadow(0 0 5px #f4c040) drop-shadow(0 0 11px rgba(244,192,64,0.85)); }
+  50%      { filter: drop-shadow(0 0 2px #fff6d0) drop-shadow(0 0 3px #f4c040) drop-shadow(0 0 6px rgba(244,192,64,0.55)); }
 }
 
 #${MENU_ID} {
@@ -482,7 +490,11 @@
     if (menu) return false;
     if (action !== window.oni.Input?.ACTIONS?.CONFIRM) return false;
     if (!isActive()) return false;
-    if (performance.now() < quietUntil) return true;
+    const now = performance.now();
+    if (now < quietUntil) {
+      quietUntil = now + AFTER_EVENT_QUIET_MS;
+      return true;
+    }
 
     const group = pickTarget(collectTargets());
     if (!group) return false;

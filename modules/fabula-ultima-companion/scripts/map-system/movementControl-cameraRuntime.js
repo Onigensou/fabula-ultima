@@ -153,6 +153,8 @@
     keySeq: 0,
     keyTimer: null,
     keyFacing: null,
+    // Measured time for a leg to come back from the server (smoothed).
+    keyLatencyMs: 40,
 
     inputLocked: false,
     movementLockIds: new Set(),
@@ -939,14 +941,20 @@
     const doc = token?.document;
     if (!doc?.isOwner) return;
 
-    const x = Math.round(token.x);
-    const y = Math.round(token.y);
+    // Stop where the token will be drawn when the update comes back, not
+    // where it is now: stopping "here" pulled it back about 12 px (measured).
+    const here = drawnCenter(token);
+    const stop = aheadOnCurrentLeg(token, here, state.keyLatencyMs);
+    const { x, y } = toWalkPosition(stop, token);
     if (Math.abs(x - doc._source.x) < 1 && Math.abs(y - doc._source.y) < 1) return;
 
     try {
       await doc.update({ x, y }, {
         animate: true,
-        animation: { duration: 1, movementSpeed: WALK_SPEED },
+        animation: {
+          duration: walkDuration(Math.hypot(stop.x - here.x, stop.y - here.y)),
+          movementSpeed: WALK_SPEED
+        },
         oniBypassGate: true
       });
     } catch (err) {
@@ -1011,6 +1019,21 @@
     return true;
   }
 
+  // Where a walking token will be drawn ms from now, along the leg it is on.
+  // A token at rest stays where it is.
+  function aheadOnCurrentLeg(token, here, ms) {
+    const doc = token.document;
+    const end = topLeftToCenter({ x: doc._source.x, y: doc._source.y }, token);
+    const left = Math.hypot(end.x - here.x, end.y - here.y);
+    if (left < 1) return here;
+
+    const travel = Math.min(left, (canvas.dimensions?.size || 100) * WALK_SPEED * (ms / 1000));
+    return {
+      x: here.x + (((end.x - here.x) / left) * travel),
+      y: here.y + (((end.y - here.y) / left) * travel)
+    };
+  }
+
   /**
    * Send the next leg of a keyboard walk: about one square ahead, through the
    * same wall rules as a click (stop short, slide along), then queue the leg
@@ -1056,14 +1079,22 @@
       return;
     }
 
+    // Foundry starts the new leg from wherever the token is drawn when the
+    // update comes back, not when it was sent. Timing the leg from the send
+    // point makes it short of distance for its time: measured 2.7 squares a
+    // second against 3. So time it from where the token will be by then.
+    const sentAt = performance.now();
+    const from = aheadOnCurrentLeg(token, origin, state.keyLatencyMs);
+
     let duration;
     try {
-      duration = await walkTokenTo(token, spot, origin);
+      duration = await walkTokenTo(token, spot, from);
     } catch (err) {
       DBG.warn("CameraRuntime", "Keyboard walk leg failed", { error: err?.message ?? err });
       dropHeldKeys();
       return;
     }
+    state.keyLatencyMs = (state.keyLatencyMs * 0.7) + ((performance.now() - sentAt) * 0.3);
 
     if (seq !== state.keySeq) return;
     state.keyTimer = setTimeout(keyStep, Math.max(0, duration - KEY_LEAD_MS));
