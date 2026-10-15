@@ -23,6 +23,12 @@ Hooks.once("ready", async () => {
   // UI → Backend
   ui.onClickBlacksmithToken = (tokenId) => backend.openBlacksmithByTokenId(tokenId);
 
+  // Keyboard play: the same buttons, offered to Confirm on walk maps.
+  window.oni?.Interact?.register?.("refine", window.oni.Interact.tokenButtons(ui._btnByTokenId, {
+    label: "Refine", icon: "fas fa-hammer", order: 30,
+    run: (tokenId) => backend.openBlacksmithByTokenId(tokenId)
+  }));
+
   // Reposition on pan/zoom/resize
   Hooks.on("canvasPan",   () => ui.repositionAll());
   Hooks.on("canvasReady", () => ui.repositionAll());

@@ -285,6 +285,7 @@
     "scripts/event-system/event-debug.js",
     "scripts/event-system/event-logic.js",
     "scripts/event-system/event-input.js",
+    "scripts/map-system/keyboard-interact.js",
     "scripts/event-system/event-client.js",
     "scripts/event-system/event-gameState.js",
     "scripts/event-system/event-configKit.js",

@@ -42,6 +42,12 @@ Hooks.once("ready", async () => {
   // UI -> Backend
   ui.onClickShopToken = (tokenId) => backend.openShopByTokenId(tokenId);
 
+  // Keyboard play: the same buttons, offered to Confirm on walk maps.
+  window.oni?.Interact?.register?.("shop", window.oni.Interact.tokenButtons(ui._btnByTokenId, {
+    label: "Shop", icon: "fas fa-tag", order: 20,
+    run: (tokenId) => backend.openShopByTokenId(tokenId)
+  }));
+
   // Reposition on pan/zoom/resize
   Hooks.on("canvasPan",  () => ui.repositionAll());
   Hooks.on("canvasReady",() => ui.repositionAll());

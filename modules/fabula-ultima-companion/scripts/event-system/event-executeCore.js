@@ -611,6 +611,48 @@
       return this._activeCandidate ? foundry.utils.deepClone(this._activeCandidate) : null;
     },
 
+    // The buttons on offer right now, for keyboard play (window.oni.Interact).
+    // Anchors are where the thing itself is: the NPC for a talk, the middle
+    // of the tile for an examine point (its "!" rides on the party).
+    listInteractions() {
+      if (!this.running) return [];
+      const allowed = window.oni.EventSystem.Flow?.isLocalUserInteractor?.() ?? true;
+      const out = [];
+
+      const talk = this._activeTalkCandidate;
+      const talkToken = talk ? (canvas.tokens?.get(talk.tileId) ?? null) : null;
+      if (talkToken) {
+        out.push({
+          target: `token:${talk.tileId}`,
+          label: "Talk",
+          icon: "fas fa-comment-dots",
+          order: 0,
+          anchor: { x: talkToken.x + (talkToken.w / 2), y: talkToken.y + (talkToken.h / 2) },
+          el: this.ui?.talk?.el ?? null,
+          allowed,
+          run: () => this.requestExecute(talk.tileId)
+        });
+      }
+
+      const examine = this._activeCandidate;
+      const tile = examine ? (canvas.tiles?.get(examine.tileId) ?? null) : null;
+      if (tile) {
+        const rect = getTileRect(tile);
+        out.push({
+          target: `tile:${examine.tileId}`,
+          label: "Examine",
+          icon: "fas fa-magnifying-glass",
+          order: 0,
+          anchor: { x: rect.left + (rect.width / 2), y: rect.top + (rect.height / 2) },
+          el: this.ui?.examine?.el ?? null,
+          allowed,
+          run: () => this.requestExecute(examine.tileId)
+        });
+      }
+
+      return out;
+    },
+
     _setOverride(tokenId, x, y) {
       this._posOverrides.set(String(tokenId), {
         x: Number(x),
@@ -1026,6 +1068,7 @@
       this._hooks.push(["resize", onResize]);
 
       this.running = true;
+      window.oni.Interact?.register?.("event", () => this.listInteractions());
 
       await this.scan("start");
 
@@ -1063,6 +1106,7 @@
       this.ui?.stop();
       this.ui = null;
 
+      window.oni.Interact?.unregister?.("event");
       this.running = false;
 
       DBG.log(DEBUG_SCOPE, "Event System stopped.");
