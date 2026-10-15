@@ -10,8 +10,10 @@
  *   camera). Optionally also y-sorts tokens so a nearer one draws in front.
  *
  * Scope:
- * - Only runs when the scene's sceneMode is "exploration" AND depthEnabled is
- *   set. Every other mode is untouched.
+ * - Scales only when the scene's sceneMode is "exploration" AND depthEnabled
+ *   is set. Any other exploration scene is still y-sorted by the feet (no
+ *   scaling), since characters are solid only at their feet and the party
+ *   can stand behind an NPC. Every other mode is untouched.
  *
  * WHY THIS IS PURELY VISUAL (read before changing anything here):
  * - We NEVER write to the token document. An earlier attempt (the world macro
@@ -147,7 +149,11 @@
     const mode = safeGet(fab, `${GENERAL_KEY}.${SCENE_MODE_KEY}`, null);
     if (mode !== "exploration") return null;
 
-    if (!bool(safeGet(fab, `${GENERAL_KEY}.${DEPTH_ENABLED_KEY}`, false), false)) return null;
+    // Without depth scaling, an exploration map still draws tokens by their
+    // feet (nearer in front). Characters are solid only at their feet, so the
+    // party can stand right behind an NPC; Foundry's own order would then draw
+    // whichever token was placed last on top, behind or not.
+    if (!bool(safeGet(fab, `${GENERAL_KEY}.${DEPTH_ENABLED_KEY}`, false), false)) return { sortOnly: true, sort: true };
 
     // Default band = the whole scene rectangle: far at the top edge, near at
     // the bottom edge. sceneRect excludes the padding, which is what we want —
@@ -271,6 +277,14 @@
     if (token.document.getFlag?.(MODULE_ID, TOKEN_EXEMPT_FLAG) === true) return false;
 
     const doc = token.document;
+
+    // Sort only (depth scaling off): the same key as below, from the feet.
+    if (cfg.sortOnly) {
+      const height = token.h || (doc.height * canvas.grid.size);
+      const key = Math.round(doc.y + height);
+      if (mesh.sort !== key) mesh.sort = key;
+      return true;
+    }
     const { anchorX, anchorY, fit, scaleX, scaleY } = doc.texture ?? {};
 
     const size = token.getSize?.() ?? {
@@ -445,6 +459,7 @@
     factorForToken(token) {
       const cfg = getConfig();
       if (!cfg || !token) return null;
+      if (cfg.sortOnly) return 1;
       const size = token.getSize?.() ?? { width: 0, height: 0 };
       return factorForY((token.document?.y ?? 0) + size.height, cfg);
     }

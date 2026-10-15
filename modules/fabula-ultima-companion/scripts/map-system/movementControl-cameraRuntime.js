@@ -483,16 +483,22 @@
     return clampToSceneTopLeft(Math.round(topLeft.x), Math.round(topLeft.y), token);
   }
 
-  // NPCs are solid on a walk map, JRPG-style: the party stops where its square
-  // meets an NPC's. Each NPC's square, grown by half the party's size, is a box
-  // the party's centre may not enter, and its four sides are handled like
-  // walls. An NPC the party already stands on (placed on top of it) is left
-  // out, so the party can always walk off. A token flagged
-  // flags.<module>.walkThrough is not solid.
+  // NPCs are solid on a walk map, JRPG-style, by their FEET: the party stops
+  // where its footprint meets an NPC's (window.oni.Interact.footprintOf: the
+  // bottom of the token's square, half its width, 0.3 of its height). The
+  // squares themselves are mostly empty air around tall, narrow art and kept
+  // the party a full square away. The NPC's footprint, grown by the party's,
+  // is a box the party's centre may not enter; its four sides are handled
+  // like walls. An NPC the party already stands on is left out, so the party
+  // can always walk off. A token flagged flags.<module>.walkThrough is not solid.
   function npcEdges(token, origin) {
     const out = [];
     const hw = token.w / 2;
     const hh = token.h / 2;
+    const footprintOf = window.oni?.Interact?.footprintOf ?? ((square) => square);
+
+    // The party's feet, relative to its centre.
+    const own = footprintOf({ left: -hw, top: -hh, right: hw, bottom: hh }, token);
 
     for (const other of canvas.tokens?.placeables ?? []) {
       if (other.id === token.id) continue;
@@ -500,10 +506,11 @@
       if (!doc || doc.hidden) continue;
       if (doc.getFlag?.(MODULE_ID, "walkThrough")) continue;
 
-      const left = doc.x - hw;
-      const top = doc.y - hh;
-      const right = doc.x + other.w + hw;
-      const bottom = doc.y + other.h + hh;
+      const feet = footprintOf({ left: doc.x, top: doc.y, right: doc.x + other.w, bottom: doc.y + other.h }, other);
+      const left = feet.left - own.right;
+      const top = feet.top - own.bottom;
+      const right = feet.right - own.left;
+      const bottom = feet.bottom - own.top;
       if (origin && origin.x > left && origin.x < right && origin.y > top && origin.y < bottom) continue;
 
       const c = [{ x: left, y: top }, { x: right, y: top }, { x: right, y: bottom }, { x: left, y: bottom }];

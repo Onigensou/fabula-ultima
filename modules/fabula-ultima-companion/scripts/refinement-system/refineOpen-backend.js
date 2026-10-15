@@ -152,11 +152,11 @@ export class RefineOpenBackend {
       for (const st of smithTokens) {
         const sc = sCenters.get(st.id);
         for (const pt of partyTokens) {
-          // Next to the blacksmith, by the rule Talk and Shop share
+          // At the blacksmith's feet, by the rule Talk and Shop share
           // (window.oni.Interact); RANGE_PX only if that is missing.
           const pc = pCenters.get(pt.id);
           const near = window.oni?.Interact?.npcInRange
-            ? window.oni.Interact.npcInRange(pt, pc, window.oni.Interact.rectOf(st, sc))
+            ? window.oni.Interact.npcInRange(pt, pc, window.oni.Interact.rectOf(st, sc), st)
             : distPxCenters(sc, pc) <= this.cfg.RANGE_PX;
           if (near) {
             show.add(st.id); break;

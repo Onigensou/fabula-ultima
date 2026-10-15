@@ -70,12 +70,23 @@
   // (seen live: four talks in a row).
   const AFTER_EVENT_QUIET_MS = 400;
 
-  // Buttons over an NPC (Talk, Shop, Refine) appear when the party stands next
-  // to it, JRPG-style: at most this many squares of gap between the party's
-  // square and the NPC's. One rule for all three; they used to be 75 px from
-  // the NPC's edge (Talk) and 140 px centre to centre (Shop, Refine), which
-  // showed buttons from two squares away.
-  const NPC_RANGE_GRID = 0.5;
+  const MODULE_ID = "fabula-ultima-companion";
+
+  // Characters are solid, and talk, by their FEET, as in a JRPG: a footprint
+  // at the bottom of the token's square, FOOTPRINT_W of its width and
+  // FOOTPRINT_D of its height. Walk-map art is tall and narrow, fitted to the
+  // square's height, so the square itself is mostly empty air at the sides
+  // and kept the party a full square below an NPC (measured: art 0.4-0.55 of
+  // the square's width at the feet). A token can set its own shares in
+  // flags.<module>.footprint = { w, d } (a chest, a big monster).
+  const FOOTPRINT_W = 0.5;
+  const FOOTPRINT_D = 0.3;
+
+  // Buttons over an NPC (Talk, Shop, Refine) appear when the party's feet are
+  // within this many squares of the NPC's feet. One rule for all three; they
+  // used to be 75 px from the NPC's edge (Talk) and 140 px centre to centre
+  // (Shop, Refine), which showed buttons from two squares away.
+  const NPC_RANGE_GRID = 0.35;
 
   const MENU_IN_MS = 260;
   const MENU_OUT_MS = 200;
@@ -135,11 +146,33 @@
     };
   }
 
-  // Is the party (its token, centred at partyCenter) next to the NPC's square?
-  function npcInRange(partyToken, partyCenter, npcRect) {
-    const a = rectOf(partyToken, partyCenter);
-    const gx = Math.max(0, npcRect.left - a.right, a.left - npcRect.right);
-    const gy = Math.max(0, npcRect.top - a.bottom, a.top - npcRect.bottom);
+  function footprintShares(token) {
+    const doc = token?.document ?? token;
+    const f = doc?.getFlag?.(MODULE_ID, "footprint") ?? null;
+    const share = (v, fallback) => {
+      const n = Number(v);
+      return Number.isFinite(n) && n > 0 && n <= 1 ? n : fallback;
+    };
+    return { w: share(f?.w, FOOTPRINT_W), d: share(f?.d, FOOTPRINT_D) };
+  }
+
+  // The feet of a token whose square is { left, top, right, bottom }.
+  function footprintOf(square, token = null) {
+    const { w, d } = footprintShares(token);
+    const width = (square.right - square.left) * w;
+    const depth = (square.bottom - square.top) * d;
+    const cx = (square.left + square.right) / 2;
+    return { left: cx - (width / 2), right: cx + (width / 2), top: square.bottom - depth, bottom: square.bottom };
+  }
+
+  // Are the party's feet (its token centred at partyCenter) near the NPC's?
+  // npcRect is the NPC's square; npcToken, when given, may carry its own
+  // footprint.
+  function npcInRange(partyToken, partyCenter, npcRect, npcToken = null) {
+    const a = footprintOf(rectOf(partyToken, partyCenter), partyToken);
+    const b = footprintOf(npcRect, npcToken);
+    const gx = Math.max(0, b.left - a.right, a.left - b.right);
+    const gy = Math.max(0, b.top - a.bottom, a.top - b.bottom);
     const grid = canvas?.dimensions?.size || 100;
     return Math.hypot(gx, gy) <= (grid * NPC_RANGE_GRID) + 0.5;
   }
@@ -420,6 +453,9 @@
       const cx = bounds.x + (bounds.width / 2);
       els.sort((a, b) => rowRank(a) - rowRank(b));
 
+      // Always the NPC's own head, even with the party standing right behind
+      // it and the row over the party's face: the user's choice, it reads as
+      // depth and leaves no doubt whose commands they are.
       els.forEach((el, i) => {
         // Buttons are centred on left/top (translate -50%).
         const half = (el.offsetHeight || 34) / 2;
@@ -617,6 +653,7 @@
     NPC_RANGE_GRID,
     npcInRange,
     rectOf,
+    footprintOf,
     // For tests and debugging: what Confirm would act on right now.
     peek: () => {
       const group = pickTarget(collectTargets());
