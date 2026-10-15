@@ -35,6 +35,7 @@
  * own explicit shatter-path emit (observer-only, summoner reacts).
  */
 import { log, warn } from "./logger.js";
+import { playDefeatPose } from "./battler-pose.js";
 
 // Property paths — kept identical to the legacy auto-defeat hook.
 const PATH_DB_OPTION = "system.props.option_autoDefeat";
@@ -50,6 +51,8 @@ function isGuest(actor) { return Boolean(get(actor, PATH_GUEST, false)); }
 
 const DEATH_SFX_URL =
   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Enemy_Death.ogg";
+// How long a fallen creature with KO art lies on its last frame before fading.
+const KO_HOLD_MS = 400;
 
 function num(v) { const n = Number(v); return Number.isFinite(n) ? n : null; }
 
@@ -172,10 +175,26 @@ async function performDefeat(director, tokenDoc, actor) {
     }
   };
 
+  // KO art (sprite_ko): play the fall on every client, let it land, then fade —
+  // in place of the red tint. 0 = no KO art (or not loaded): the legacy chain.
+  let koMs = 0;
+  try { koMs = playDefeatPose(tokenDoc); }
+  catch (e) { warn("defeat-reactor: playDefeatPose threw — using the legacy death", e); }
+
   // Mirror the legacy auto-defeat animation chain. If Sequencer or the placeable
   // is unavailable (token off-canvas / inactive scene), skip straight to removal.
   try {
-    if (typeof Sequence === "function" && placeable) {
+    if (typeof Sequence === "function" && placeable && koMs > 0) {
+      await new Sequence()
+        .sound(DEATH_SFX_URL)
+        .wait(koMs + KO_HOLD_MS)
+        .animation().on(placeable).fadeOut(1000).waitUntilFinished()
+        .thenDo(async () => {
+          await remove();
+          ChatMessage.create({ content: `<b>${name}</b> was defeated!` });
+        })
+        .play();
+    } else if (typeof Sequence === "function" && placeable) {
       await new Sequence()
         .sound(DEATH_SFX_URL)
         .animation().on(placeable).tint("#ff0000").waitUntilFinished()

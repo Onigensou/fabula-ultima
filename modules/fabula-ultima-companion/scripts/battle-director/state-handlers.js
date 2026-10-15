@@ -109,6 +109,8 @@ import { isAutopilotEnabled, isAiControlledTurn, isAiControlledCombatant, autopi
 import { isSummonAutopilotEnabled, isAutomatedSummon, isAutomatedSummonTurn, summonVetoMs, isGuestActor } from "./summon-autopilot.js";
 import { isBattlefieldObject } from "./battlefield-object.js";
 import { resolveAnimationSpec, playDirectorAnimation } from "./director-animation.js";
+import { emitBattlerPose } from "./battler-pose.js";
+import { actionPose } from "./battler-pose-rules.js";
 import { witnessNpcAbility, witnessFiredCandidate, witnessAffinityHits } from "./encyclopedia-witness.js";
 import { SimMode } from "./sim/sim-mode.js";
 
@@ -8102,6 +8104,15 @@ const Animation = {
   async onEnter(director) {
     const ar = director.ctx.actionResult;
     const spec = await resolveAnimationSpec(ar);
+
+    // Attack / cast pose on the actor, on every client — also for actions with
+    // no animation script, the way a JRPG battler swings even without effects.
+    // A "resolve"-timed script poses when its chain step plays it instead
+    // (playSkillAnimation), so it is not posed twice.
+    try {
+      const pose = (spec.hasScript && spec.playAt === "resolve") ? null : actionPose(ar);
+      if (pose && ar?.attacker?.tokenUuid) emitBattlerPose({ tokenUuid: ar.attacker.tokenUuid, pose });
+    } catch (e) { warn("ANIMATION: battler pose threw", e); }
 
     if (!spec.hasScript || spec.playAt === "resolve") {
       // No animation defined for this action — or one that plays from a chain

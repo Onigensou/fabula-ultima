@@ -15,6 +15,8 @@
 import { log, warn } from "./logger.js";
 import { INTENTS } from "./intents.js";
 import { isBackgroundedFor, hasOtherViewers } from "./presentation-clock.js";
+import { emitBattlerPose } from "./battler-pose.js";
+import { skillPose } from "./battler-pose-rules.js";
 
 // How long the window must be continuously hidden before we start discarding
 // animations. On Windows `document.hidden` flips true for an ordinary alt-tab
@@ -532,6 +534,12 @@ export async function playSkillAnimation({ skillUuid, casterTokenUuid, targetTok
   if (!skillUuid) return { played: false, reason: "no-skill" };
   const spec = await resolveAnimationSpec({ skillUuid });
   if (!spec.hasScript) return { played: false, reason: "no-script" };
+
+  // Attack / cast pose on the caster (the FSM path poses in Animation.onEnter).
+  try {
+    const skill = await fromUuid(skillUuid);
+    if (casterTokenUuid) emitBattlerPose({ tokenUuid: casterTokenUuid, pose: skillPose(skill?.system?.props?.skill_type) });
+  } catch (e) { warn("[BD Anim] battler pose threw", e); }
 
   // True-end watch (see armAnimationEndWatch). executeAnimationScript below
   // returns at the GATE (drop-stop) so a chained deal_damage lands at impact;

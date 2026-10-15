@@ -27,6 +27,7 @@
 
 import { log, warn } from "../logger.js";
 import { registerAnimation } from "../director-surfaces.js";
+import { playHurtPoseLocal } from "../battler-pose.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const ACTION_PLAY = "FU_DIRECTOR_HURT_PLAY";
@@ -178,10 +179,15 @@ export async function playHurtReactionLocal({ tokenUuid, intensity = "normal" } 
     if (!token || token.destroyed) return;
     const src = token.document?.texture?.src;
     if (!src) return;
-    ensureStyle();
 
     const strong = intensity === "strong";
     const dur = strong ? DUR.strong : DUR.normal;
+
+    // The actor has hurt art (sprite_hurt): the pose system plays it on the
+    // token with its own shake, and this image-copy flinch stands down. No
+    // hurt art (or not loaded yet) = the flinch below, as before.
+    if (playHurtPoseLocal(tokenUuid, intensity)) return;
+    ensureStyle();
 
     // Geometry — project the token center onto THIS client's screen; size to the
     // token's ACTUAL rendered sprite (mesh.width/height already bake in the config

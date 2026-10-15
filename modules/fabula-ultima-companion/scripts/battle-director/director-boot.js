@@ -61,6 +61,7 @@ import { initSfxAudition } from "./sfx-audition.js";
 import { initDamageNumbers, emitDamageNumber, renderDamageNumberLocal } from "./damage-numbers/director-damage-numbers.js";
 import { initImpactFx } from "./damage-numbers/director-impact-fx.js";
 import { initHurtReaction, emitHurtReaction, playHurtReactionLocal } from "./damage-numbers/director-hurt-reaction.js";
+import { initBattlerPose, emitBattlerPose, playBattlerPoseLocal, describeToken as describeBattlerPose } from "./battler-pose.js";
 import { initNpcHpBar, emitNpcHpBar, emitNpcHpBarUnchecked, renderNpcHpBarLocal } from "./damage-numbers/director-hp-bar.js";
 import { initDominationFx } from "./domination.js";
 import { initDominationCrest } from "./domination-crest.js";
@@ -1134,6 +1135,15 @@ Hooks.once("ready", () => {
       emit: (payload) => emitHurtReaction(payload),
       renderLocal: (payload) => playHurtReactionLocal(payload),
     },
+    // Battler poses (per-state sprite art: hurt, KO, crisis, guard, attack,
+    // cast). `play` = GM local + broadcast of a one-shot ({ tokenUuid, pose });
+    // `playLocal` = this client only; `describe` = what a token shows and why.
+    // See battler-pose.js.
+    battlerPose: {
+      play: (payload) => emitBattlerPose(payload),
+      playLocal: (payload) => playBattlerPoseLocal(payload),
+      describe: (tokenOrUuid) => describeBattlerPose(tokenOrUuid),
+    },
     // Transient NPC HP bar. `emit` = production path (hostile + studied gates,
     // raw HP facts → fractions); `emitUnchecked` = gate-free fractions payload
     // (broadcasts — dev/preview); `renderLocal` = this client only. See
@@ -1690,6 +1700,11 @@ Hooks.once("ready", () => {
   // live loss path doesn't call it yet.
   try { initHurtReaction(); }
   catch (e) { warn("initHurtReaction on ready threw", e); }
+
+  // Battler poses — per-state sprite art on battle tokens, drawn locally on
+  // every client from the actor's markers + one-shot broadcasts.
+  try { initBattlerPose(); }
+  catch (e) { warn("initBattlerPose on ready threw", e); }
 
   // Transient NPC HP bar — registers its socketlib handler on every client so
   // the GM-side damage/heal seams can slide a condition bar under a studied
