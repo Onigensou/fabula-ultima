@@ -287,6 +287,48 @@
     applyFacing(token);
   }
 
+  // Which of the eight slices a direction falls in (0 = right, clockwise).
+  function sectorOf(dx, dy) {
+    return ((Math.round(Math.atan2(dy, dx) / (Math.PI / 4)) % 8) + 8) % 8;
+  }
+
+  // The way a token faces, as a unit vector (the art is drawn facing left;
+  // "right" mirrors it), or null when it has no direction yet.
+  const DIRECTION_VECTORS = {
+    left: [1, 0], downLeft: [Math.SQRT1_2, Math.SQRT1_2], down: [0, 1],
+    up: [0, -1], upLeft: [Math.SQRT1_2, -Math.SQRT1_2]
+  };
+
+  function facingVector(token) {
+    const entry = entryFor(token);
+    const v = DIRECTION_VECTORS[entry.dir];
+    if (!v) return null;
+    const side = entry.facing === "right" ? 1 : -1;
+    return { x: v[0] === 0 ? 0 : v[0] * side, y: v[1] };
+  }
+
+  /**
+   * Turn the party to face a way without moving: a tap of an arrow, or
+   * walking into a wall, as in a JRPG. Shown here at once; the other clients
+   * see it through the saved facing, the same way a walk's end is shared.
+   */
+  function turnTo(token, dx, dy) {
+    if (!token || isFacingLocked(token) || Math.hypot(dx, dy) < 1e-6) return;
+
+    const sector = sectorOf(dx, dy);
+    const { dir, side } = SECTORS[sector];
+    const entry = entryFor(token);
+
+    if (side) setFacing(token, side, { instant: true });
+    if (entry.dir !== dir) {
+      entry.dir = dir;
+      if (token.id === state.partyTokenId && !state.walking) state.standDirty = true;
+    }
+
+    state.lastMoverIsMe = true;
+    scheduleSaveFacing(token);
+  }
+
   function faceToward(token, point) {
     const dx = point.x - (token.x + (token.w / 2));
     if (Math.abs(dx) < LOOK_DEADZONE_PX) return;
@@ -1131,6 +1173,12 @@
     getDirection(token) { return token ? entryFor(token).dir : null; },
     setFacing(token, facing, options) { if (token) setFacing(token, facing, options); },
     faceToward(token, point) { if (token && point) faceToward(token, point); },
+
+    // Keyboard walking (movementControl-cameraRuntime.js): which way the
+    // party faces, and turning it without a step.
+    facingVector(token) { return token ? facingVector(token) : null; },
+    sectorOf(dx, dy) { return sectorOf(dx, dy); },
+    turnTo(token, dx, dy) { if (state.active && !state.dungeon) turnTo(token, dx, dy); },
 
     // Dungeon steps (dp-movement.js): the walk art for a step of dx, dy.
     dungeonStepBegin(token, dx, dy) { return state.active && state.dungeon ? dungeonStepBegin(token, dx, dy) : null; },

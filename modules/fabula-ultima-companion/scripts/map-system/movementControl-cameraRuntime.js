@@ -77,6 +77,10 @@
   const KEY_STEP_GRID = 1;
   const KEY_LEAD_MS = 120;
 
+  // From a standstill, a key pointing a new way only turns the party until it
+  // has been held this long; a quicker tap is just a turn (JRPG tap-to-turn).
+  const TAP_TURN_MS = 110;
+
   // Pushing into a wall with nothing to slide along: look again this often,
   // without moving, in case the direction now has room.
   const KEY_BLOCKED_RETRY_MS = 100;
@@ -1056,17 +1060,50 @@
     if (!state.enabled || state.mode === "inactive" || !state.followEnabledForScene) return false;
     if (!KEY_VECTORS[direction]) return false;
 
+    let fromStandstill = false;
     if (pressed) {
       if (game.paused || !canCurrentUserMovePartyToken()) return true;
+      fromStandstill = state.heldKeys.size === 0 && isAtRest(getFollowToken());
       state.heldKeys.add(direction);
     } else if (!state.heldKeys.delete(direction)) {
       // Dropped already (a click or a lock took over); nothing to release.
       return true;
     }
 
-    // Any change of keys turns the party at once, from where it is drawn.
     cancelKeyLeg();
+
+    // From a standstill, a key pointing a new way turns the party first and
+    // walks only if still held after TAP_TURN_MS: a tap is just a turn, as in
+    // a JRPG. A key the party already faces walks at once.
+    if (fromStandstill && turnTowardKeys()) {
+      state.keyTimer = setTimeout(keyStep, TAP_TURN_MS);
+      return true;
+    }
+
+    // Any other change of keys turns the walk at once, from where it is drawn.
     keyStep();
+    return true;
+  }
+
+  function isAtRest(token) {
+    const doc = token?.document;
+    if (!doc) return false;
+    return Math.abs(token.x - doc._source.x) < 0.5 && Math.abs(token.y - doc._source.y) < 0.5;
+  }
+
+  // Face the way the held keys point (sprite-facing-runtime.js shows it and
+  // shares it). Returns false when the party already faces that way.
+  function turnTowardKeys() {
+    const dir = keyVector();
+    const token = getFollowToken();
+    const sf = globalThis.FUCompanion?.api?.spriteFacing;
+    if (!dir || !token || !sf?.turnTo) return false;
+
+    state.keyFacing = dir;
+    const now = sf.facingVector?.(token);
+    if (now && sf.sectorOf(now.x, now.y) === sf.sectorOf(dir.x, dir.y)) return false;
+
+    sf.turnTo(token, dir.x, dir.y);
     return true;
   }
 
@@ -1193,7 +1230,8 @@
 
     const plan = planKeyLeg(token, from, dir, reach);
     if (!plan) {
-      // Pushing into a wall: stand, and look again shortly.
+      // Pushing into a wall: stand facing it, and look again shortly.
+      if (isAtRest(token)) turnTowardKeys();
       if (seq === state.keySeq) state.keyTimer = setTimeout(keyStep, KEY_BLOCKED_RETRY_MS);
       return;
     }

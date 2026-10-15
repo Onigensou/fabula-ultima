@@ -192,22 +192,11 @@
   }
 
   // Which way the party faces, as a unit vector: the sprite's own direction
-  // (it follows click walks too), else the last keyboard direction.
-  const DIRECTION_VECTORS = {
-    left: [1, 0], downLeft: [Math.SQRT1_2, Math.SQRT1_2], down: [0, 1],
-    up: [0, -1], upLeft: [Math.SQRT1_2, -Math.SQRT1_2]
-  };
-
+  // (it follows click walks and turns too), else the last keyboard direction.
   function partyFacing() {
     const token = runtime()?.getFollowToken?.();
-    const sf = globalThis.FUCompanion?.api?.spriteFacing;
-    const v = token && DIRECTION_VECTORS[sf?.getDirection?.(token)];
-    if (v) {
-      // The art is drawn facing left; "right" mirrors it.
-      const side = sf.getFacing?.(token) === "right" ? 1 : -1;
-      return { x: v[0] === 0 ? 0 : v[0] * side, y: v[1] };
-    }
-    return runtime()?.getKeyFacing?.() ?? null;
+    const v = token ? globalThis.FUCompanion?.api?.spriteFacing?.facingVector?.(token) : null;
+    return v ?? runtime()?.getKeyFacing?.() ?? null;
   }
 
   // Lower is better; Infinity rules a target out. A keyboard player talks to
