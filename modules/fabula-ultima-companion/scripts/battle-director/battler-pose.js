@@ -139,7 +139,9 @@ export function playHurtPoseLocal(tokenUuid, intensity = "normal") {
   const art = _arts.get(artKey(token.id, src));
   if (!art?.ready) return false;           // not loaded yet: old flinch this time
   startOneShot(token, "hurt", { art });
-  startShake(token, intensity === "strong" ? "strong" : "normal");
+  const tier = intensity === "strong" ? "strong" : "normal";
+  if (hurtFlinchMode() === "full") startFullFlinch(token, tier);
+  else startShake(token, tier);
   return true;
 }
 
@@ -399,6 +401,103 @@ function startShake(token, tier) {
     try { canvas.app.ticker.remove(tick); } catch {}
     const m = token.mesh;
     if (m && !token.destroyed) { m.pivot.x = 0; m.tint = token.document?.texture?.tint ?? baseTint; }
+    if (entry.shake === handle) entry.shake = null;
+  }
+  const handle = { stop };
+  entry.shake = handle;
+  canvas.app.ticker.add(tick, null, PIXI.UPDATE_PRIORITY.LOW + 1);
+}
+
+// Which flinch rides on a hurt clip: "light" = the pivot shake above;
+// "full" = the old image-copy flinch's squash, shake and white flash (+ red
+// silhouette on strong hits), played on the token so the clip keeps moving.
+// DEMO SWITCH — globalThis.ONI_HURT_POSE_FLINCH = "light" | "full".
+function hurtFlinchMode() {
+  return globalThis.ONI_HURT_POSE_FLINCH === "full" ? "full" : "light";
+}
+
+// Keyframes copied from director-hurt-reaction.js's CSS (same durations,
+// stops and values): [time 0..1, scaleX, scaleY, shiftX px]. Brightness
+// stops: [time, brightness]. Red silhouette (strong only): [time, opacity].
+const FULL_FLINCH = {
+  normal: {
+    ms: 300,
+    move: [[0, 1, 1, 0], [0.12, 1.12, 0.88, 0], [0.30, 0.97, 1.03, -7], [0.50, 1, 1, 6], [0.70, 1, 1, -4], [0.85, 1, 1, 3], [1, 1, 1, 0]],
+    bright: [[0, 3.6], [0.35, 1], [1, 1]],
+    red: null,
+  },
+  strong: {
+    ms: 480,
+    move: [[0, 1, 1, 0], [0.10, 1.22, 0.80, 0], [0.26, 0.90, 1.10, -13], [0.44, 1, 1, 11], [0.62, 1, 1, -7], [0.80, 1, 1, 5], [1, 1, 1, 0]],
+    bright: [[0, 4], [0.20, 1], [0.40, 3.2], [0.60, 1], [1, 1]],
+    red: [[0, 0.9], [0.55, 0.45], [1, 0]],
+  },
+};
+
+// Value at time t on a stop list (ease-out within each segment, like CSS).
+function sampleStops(stops, t, col) {
+  for (let i = 1; i < stops.length; i++) {
+    if (t <= stops[i][0]) {
+      const [t0, t1] = [stops[i - 1][0], stops[i][0]];
+      const u = t1 > t0 ? (t - t0) / (t1 - t0) : 1;
+      const e = 1 - (1 - u) * (1 - u);
+      return stops[i - 1][col] + (stops[i][col] - stops[i - 1][col]) * e;
+    }
+  }
+  return stops[stops.length - 1][col];
+}
+
+function startFullFlinch(token, tier) {
+  const entry = entryFor(token);
+  if (entry.shake) entry.shake.stop();
+  const spec = FULL_FLINCH[tier];
+  const mesh = token.mesh;
+  // Squash is a multiplier on whatever scale Foundry (and the bounce) set;
+  // re-read the base each tick by undoing last tick's multiplier.
+  // set = the scale we last wrote; if Foundry re-fitted the mesh since, its
+  // new scale is the base and there is no multiplier of ours to undo.
+  let lastKx = 1, lastKy = 1, setX = null, setY = null;
+  const baseX = (m) => (setX !== null && m.scale.x === setX ? m.scale.x / lastKx : m.scale.x);
+  const baseY = (m) => (setY !== null && m.scale.y === setY ? m.scale.y / lastKy : m.scale.y);
+  const filter = new PIXI.ColorMatrixFilter();
+  const ownFilters = mesh.filters ? [...mesh.filters] : [];
+  mesh.filters = [...ownFilters, filter];
+  const t0 = performance.now();
+  const tick = () => {
+    const m = token.mesh;
+    if (!m || token.destroyed) return stop();
+    const t = (performance.now() - t0) / spec.ms;
+    if (t >= 1) return stop();
+    const kx = sampleStops(spec.move, t, 1), ky = sampleStops(spec.move, t, 2), px = sampleStops(spec.move, t, 3);
+    m.scale.x = baseX(m) * kx;
+    m.scale.y = baseY(m) * ky;
+    lastKx = kx; lastKy = ky; setX = m.scale.x; setY = m.scale.y;
+    const zoom = canvas.stage?.scale?.x || 1;
+    m.pivot.x = -px / ((Math.abs(m.scale.x) || 1) * zoom);
+    // brightness b, then blend toward a red silhouette by r (alpha untouched)
+    const b = sampleStops(spec.bright, t, 1);
+    const r = spec.red ? sampleStops(spec.red, t, 1) : 0;
+    const k = (1 - r) * b;
+    filter.matrix = [
+      k, 0, 0, 0, r * 1.0,
+      0, k, 0, 0, r * 0.17,
+      0, 0, k, 0, r * 0.17,
+      0, 0, 0, 1, 0,
+    ];
+  };
+  let stopped = false;
+  function stop() {
+    if (stopped) return;
+    stopped = true;
+    try { canvas.app.ticker.remove(tick); } catch {}
+    const m = token.mesh;
+    if (m && !token.destroyed) {
+      m.scale.x = baseX(m); m.scale.y = baseY(m);
+      m.pivot.x = 0;
+      m.filters = (m.filters ?? []).filter((f) => f !== filter);
+      if (!m.filters.length) m.filters = null;
+    }
+    try { filter.destroy(); } catch {}
     if (entry.shake === handle) entry.shake = null;
   }
   const handle = { stop };
