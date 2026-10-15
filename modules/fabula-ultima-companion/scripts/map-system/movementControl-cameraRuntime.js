@@ -475,9 +475,39 @@
     return clampToSceneTopLeft(Math.round(topLeft.x), Math.round(topLeft.y), token);
   }
 
+  // NPCs are solid on a walk map, JRPG-style: the party stops where its square
+  // meets an NPC's. Each NPC's square, grown by half the party's size, is a box
+  // the party's centre may not enter, and its four sides are handled like
+  // walls. An NPC the party already stands on (placed on top of it) is left
+  // out, so the party can always walk off. A token flagged
+  // flags.<module>.walkThrough is not solid.
+  function npcEdges(token, origin) {
+    const out = [];
+    const hw = token.w / 2;
+    const hh = token.h / 2;
+
+    for (const other of canvas.tokens?.placeables ?? []) {
+      if (other.id === token.id) continue;
+      const doc = other.document;
+      if (!doc || doc.hidden) continue;
+      if (doc.getFlag?.(MODULE_ID, "walkThrough")) continue;
+
+      const left = doc.x - hw;
+      const top = doc.y - hh;
+      const right = doc.x + other.w + hw;
+      const bottom = doc.y + other.h + hh;
+      if (origin && origin.x > left && origin.x < right && origin.y > top && origin.y < bottom) continue;
+
+      const c = [{ x: left, y: top }, { x: right, y: top }, { x: right, y: bottom }, { x: left, y: bottom }];
+      for (let i = 0; i < 4; i++) out.push({ a: c[i], b: c[(i + 1) % 4], npc: true });
+    }
+    return out;
+  }
+
   // Walls that stop a walk from either side. One-way walls are left to
-  // Foundry's own test, which knows their direction.
-  function blockingEdges() {
+  // Foundry's own test, which knows their direction. Given the walking token
+  // and where it starts, the sides of solid NPCs are included too.
+  function blockingEdges(token = null, origin = null) {
     const out = [];
     for (const edge of canvas.edges?.values?.() ?? []) {
       if (!edge?.move) continue;
@@ -485,6 +515,7 @@
       if (edge.direction) continue;
       out.push(edge);
     }
+    if (token) out.push(...npcEdges(token, origin));
     return out;
   }
 
@@ -537,7 +568,7 @@
 
     const ux = (destination.x - origin.x) / span;
     const uy = (destination.y - origin.y) / span;
-    const edges = blockingEdges();
+    const edges = blockingEdges(token, origin);
 
     // Probe a little past the click, so a click that lands just in front of
     // a wall is held back from it the same way a click beyond the wall is.
@@ -936,7 +967,7 @@
       const slideCenter = topLeftToCenter(slideSpot, token);
       const arrived = Math.hypot(here.x - firstCenter.x, here.y - firstCenter.y) < 1;
 
-      if (!isSafeWalkSpot(token, here, slideCenter, blockingEdges())) {
+      if (!isSafeWalkSpot(token, here, slideCenter, blockingEdges(token, here))) {
         if (!arrived) state.slideTimer = setTimeout(attempt, SLIDE_RETRY_MS);
         return;
       }
@@ -1170,7 +1201,7 @@
     // The update may come back sooner or later than expected: the path must
     // also be clear from where the token is now and from a little further on.
     // If not, wait for the token to get there and plan again.
-    const edges = blockingEdges();
+    const edges = blockingEdges(token, origin);
     const end = topLeftToCenter(plan.spot, token);
     const late = aheadOnCurrentLeg(token, origin, state.keyLatencyMs * 2);
     if (!isSafeWalkSpot(token, origin, end, edges) || !isSafeWalkSpot(token, late, end, edges)) {
