@@ -42,12 +42,21 @@ await play(
   const easeWalk  = t => -(Math.cos(Math.PI * t) - 1) / 2;
   const easeShove = t => t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2;
 
+  // The newest step of each token. A step that ends after a newer one has
+  // started (a push straight after a walk, or a late client) must not show the
+  // token or stop a clip under the newer step's copy.
+  const _latestStep = new Map(); // tokenId -> step id
+  const _liveCopy   = new Map(); // tokenId -> the copy on the stage
+
   function facingApi() {
     return globalThis.__ONI_SPRITE_FACING_RUNTIME__ ?? null;
   }
 
   async function playStep(token, fromC, toC, durationMs, { shove = false, holdMs = 50 } = {}) {
     if (!token) return;
+    const stepId = Symbol("step");
+    _latestStep.set(token.id, stepId);
+    const isLatest = () => _latestStep.get(token.id) === stepId;
 
     const walk = shove ? null
       : (facingApi()?.dungeonStepBegin?.(token, toC.x - fromC.x, toC.y - fromC.y) ?? null);
@@ -56,7 +65,25 @@ await play(
     const base  = token.mesh ?? token.icon;
     const tex   = base?.texture ?? await loadTexture(token.document.texture.src);
     const frame = art ? (art.kind === "strip" ? art.frames[0] : art.texture) : null;
-    const s     = new PIXI.Sprite(frame?.valid ? frame : tex);
+    const startTex = frame?.valid ? frame : tex;
+
+    // The copy lives where the token's own sprite does: in the primary group,
+    // a sprite of the same kind at the token's elevation and layer. So the
+    // scene's lighting falls on it as on the token, and the tile markers drawn
+    // over the token's feet are drawn over the copy's too. Without a token
+    // sprite to match, it goes on top of the stage.
+    let s = null;
+    let inPrimary = false;
+    if (base && base.parent === canvas.primary) {
+      try {
+        s = new base.constructor({ texture: startTex, name: "dungeonStepCopy" });
+        inPrimary = true;
+      } catch (e) {
+        console.warn("[DungeonPathing][Movement] step copy on the stage instead", e);
+      }
+    }
+    if (!s) s = new PIXI.Sprite(startTex);
+    s._dpStepCopy = true;
     s.anchor.set(0.5);
     s.x = fromC.x; s.y = fromC.y;
     if (base) {
@@ -70,22 +97,35 @@ await play(
     } else {
       s.width = token.w; s.height = token.h;
     }
-    s.zIndex = 500000;
     const prevSortable = canvas.stage.sortableChildren;
-    canvas.stage.sortableChildren = true;
-    canvas.stage.addChild(s);
+    if (inPrimary) {
+      s.elevation = base.elevation;
+      s.sortLayer = base.sortLayer;
+      s.sort = (base.sort ?? 0) + 1;
+      canvas.primary.addChild(s);
+    } else {
+      s.zIndex = 500000;
+      canvas.stage.sortableChildren = true;
+      canvas.stage.addChild(s);
+    }
+    // The copy of an older step goes the moment this one is up.
+    const prevCopy = _liveCopy.get(token.id);
+    if (prevCopy && !prevCopy.destroyed) prevCopy.visible = false;
+    _liveCopy.set(token.id, s);
 
     const video = (frame?.valid && art.kind === "video") ? art.video : null;
+    // Stop the clip only if no newer step has taken it over.
+    const stopVideo = () => {
+      if (video && video._dpStep === stepId) { try { video.pause(); } catch (_) {} }
+    };
     if (video) {
+      video._dpStep = stepId;
       try {
         video.currentTime = 0;
         const playing = video.play();
         if (playing?.catch) playing.catch(() => {});
       } catch (_) {}
     }
-
-    const origVis  = token.visible;
-    const origMesh = base?.visible ?? true;
 
     // Foundry shows the token again when its position update lands, which is
     // before the copy has finished: two sprites for a moment. So the token is
@@ -111,6 +151,8 @@ await play(
       await new Promise(res => {
         const start = performance.now();
         const tick  = () => {
+          // A newer step of this token took over: this copy goes at once.
+          if (!isLatest()) { canvas.app.ticker.remove(tick); res(); return; }
           const t = Math.min((performance.now() - start) / durationMs, 1);
           const e = ease(t);
           let x = fromC.x + (toC.x - fromC.x) * e;
@@ -138,8 +180,8 @@ await play(
 
       // Arrived: the copy stops walking and stands in the token's own idle
       // art, exactly as the token will look, so the hand-over cannot be seen.
-      if (walk && base) {
-        if (video) { try { video.pause(); } catch (_) {} }
+      if (walk && base && isLatest()) {
+        stopVideo();
         s.skew.x = 0;
         s.x = toC.x; s.y = toC.y;
         s.texture = base.texture;
@@ -147,12 +189,12 @@ await play(
         if (((base.scale?.x ?? 1) < 0) !== (s.scale.x < 0)) s.scale.x = -s.scale.x;
       }
 
-      if (holdMs > 0) await wait(holdMs);
+      if (holdMs > 0 && isLatest()) await wait(holdMs);
 
       // Hand over only once the token is drawn on the new tile. Its update
       // can reach another client after the copy has arrived.
       const startWait = performance.now();
-      while (performance.now() - startWait < 1500) {
+      while (isLatest() && performance.now() - startWait < 1500) {
         const live = canvas.tokens?.get(token.id);
         if (!live) break;
         const cx = live.x + live.w / 2, cy = live.y + live.h / 2;
@@ -160,14 +202,25 @@ await play(
         await wait(30);
       }
     } finally {
-      if (video) { try { video.pause(); } catch (_) {} }
+      stopVideo();
       canvas.app.ticker.remove(hideTick);
-      canvas.stage.sortableChildren = prevSortable;
-      try { canvas.stage.removeChild(s); } catch {}
+      if (!inPrimary) canvas.stage.sortableChildren = prevSortable;
+      try { s.parent?.removeChild(s); } catch {}
+      if (_liveCopy.get(token.id) === s) _liveCopy.delete(token.id);
       s.destroy();
-      const live = canvas.tokens?.get(token.id) ?? token;
-      if (live.mesh) live.mesh.visible = origMesh;
-      live.visible = origVis;
+      // Show the token again, unless a newer step is now hiding it. Foundry
+      // decides how (a token hidden from players, fog), so its own visibility
+      // is asked for rather than the one captured when the step began.
+      if (isLatest()) {
+        _latestStep.delete(token.id);
+        const live = canvas.tokens?.get(token.id) ?? token;
+        if (!live.destroyed) {
+          const shown = live.isVisible ?? true;
+          live.visible = shown;
+          if (live.mesh) live.mesh.visible = shown;
+          live.renderFlags?.set?.({ refreshVisibility: true });
+        }
+      }
     }
   }
 
