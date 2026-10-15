@@ -21,10 +21,10 @@
   // below only calls it.
   //
   // A step is a walk: the copy wears the character's walk art for the step's
-  // direction (sprite-facing-runtime.js picks it and turns the hidden token, so
-  // it shows again in that direction's standing art), or sways when the
+  // direction (sprite-facing-runtime.js picks it), or sways when the
   // character has no walk art, and moves on an even sine curve so the feet do
-  // not skate. A shove (Force Move, Gusty) is the plain copy of the standing
+  // not skate. Only the copy walks: the token shows again in its own idle art,
+  // facing the camera. A shove (Force Move, Gusty) is the plain copy of the standing
   // sprite on the old speed-up-and-brake curve.
   const _PSEUDO_SCRIPT = `
 const { casterToken, params } = ctx;
@@ -49,8 +49,6 @@ await play(
   async function playStep(token, fromC, toC, durationMs, { shove = false, holdMs = 50 } = {}) {
     if (!token) return;
 
-    // Turn before anything is awaited: moveToNode reads the new facing for
-    // the step's position update right after calling this.
     const walk = shove ? null
       : (facingApi()?.dungeonStepBegin?.(token, toC.x - fromC.x, toC.y - fromC.y) ?? null);
     const art  = walk?.art ?? null;
@@ -66,7 +64,7 @@ await play(
       // standing sprite's size on the map.
       s.width = Math.abs(base.width); s.height = Math.abs(base.height);
       s.rotation = base.rotation ?? 0; s.alpha = base.alpha ?? 1;
-      const signX = (frame?.valid && walk) ? walk.sign : ((base.scale?.x ?? 1) < 0 ? -1 : 1);
+      const signX = walk ? walk.sign : ((base.scale?.x ?? 1) < 0 ? -1 : 1);
       if (signX < 0) s.scale.x = -Math.abs(s.scale.x);
       if ((base.scale?.y ?? 1) < 0) s.scale.y = -Math.abs(s.scale.y);
     } else {
@@ -174,10 +172,6 @@ await play(
       playStep(token, fromC, toCAdj, DP.MOVE_MS, { shove })
         .catch(e => console.warn("[DungeonPathing][Movement] inline animation error", e));
 
-      // The way the step turned the token, saved in the step's own update so
-      // a reload (or a late joiner) shows it. playStep turned it synchronously.
-      const facingFlags = shove ? {} : (facingApi()?.stepFacingFlags?.(token) ?? {});
-
       // ── Broadcast to other clients via pseudo socket ────────────────────────
       // Other clients receive _PSEUDO_SCRIPT and run it through their own
       // pseudo listener — they see the smooth animation too.
@@ -223,7 +217,7 @@ await play(
         canvas.app.ticker.remove(_fct);
 
         const tUpd = performance.now();
-        await token.document.update({ x: realX, y: realY, ...facingFlags }, { animate: false, dungeonPathing: true });
+        await token.document.update({ x: realX, y: realY }, { animate: false, dungeonPathing: true });
         const dtUpd = performance.now() - tUpd;
 
         const tW2 = performance.now();

@@ -34,8 +34,9 @@
  *
  * Runs on walk maps and dungeon maps. On a dungeon map the party token steps
  * from tile to tile: dp-movement.js slides a copy of the sprite and asks here
- * for the step's walk art; the token then stands on the new tile in the
- * standing art of the way it stepped. Battle scenes keep their own facing rules.
+ * for the step's walk art. Only the copy walks; the token itself never turns
+ * there and always stands in its own idle art, facing the camera. Battle
+ * scenes keep their own facing rules.
  *
  * Globals:
  *   globalThis.__ONI_SPRITE_FACING_RUNTIME__
@@ -242,8 +243,9 @@
   function entryFor(token) {
     let entry = state.tokens.get(token.id);
     if (!entry) {
-      const saved = token.document?.getFlag?.(MODULE_ID, FACING_FLAG);
-      const savedDir = token.document?.getFlag?.(MODULE_ID, DIR_FLAG);
+      // A dungeon token always stands facing the camera, whatever was saved.
+      const saved = state.dungeon ? null : token.document?.getFlag?.(MODULE_ID, FACING_FLAG);
+      const savedDir = state.dungeon ? null : token.document?.getFlag?.(MODULE_ID, DIR_FLAG);
       entry = {
         facing: (saved === "left" || saved === "right") ? saved : drawnFacing(token),
         dir: DIR_FIELDS[savedDir] ? savedDir : "downLeft",
@@ -795,8 +797,8 @@
   // On a dungeon map the party token does not walk where this file can see
   // it: dp-movement.js hides it, slides a copy of its sprite to the next tile
   // and then puts the token there in one jump. The copy asks here for the
-  // step's walk art; the token turns at once (it is hidden) and wears the
-  // standing art of the step's direction when it shows again.
+  // step's walk art. The token itself is left alone: on landing it shows its
+  // own idle art again, facing the camera, whichever way it stepped.
 
   // Load every walk and standing image of the character, so the first step in
   // a new direction is not shown in the standing art while its walk loads.
@@ -816,15 +818,14 @@
   //   sway  - true when the character has no walk art at all
   //   sign  - the sign of the copy's x scale while it shows the walk art
   // or null for a token that never turns (the copy slides as it is).
+  // Straight up or down has no side; the copy then faces the drawn way.
   function dungeonStepBegin(token, dx, dy) {
     if (!token?.mesh || isFacingLocked(token) || Math.hypot(dx, dy) < 1) return null;
 
     const sector = ((Math.round(Math.atan2(dy, dx) / (Math.PI / 4)) % 8) + 8) % 8;
     const { dir, side } = SECTORS[sector];
-    const entry = entryFor(token);
-    entry.dir = dir;
-    if (side) setFacing(token, side, { instant: true });
-    state.standDirty = true;
+    const drawn = drawnFacing(token);
+    const facing = side ?? drawn;
 
     const pick = pickSlot(token, "walk", dir);
     const art = pick ? loadWalkArt(pick.src, token.mesh.texture) : null;
@@ -832,7 +833,7 @@
     const docSign = (Number(token.document?.texture?.scaleX) || 1) < 0 ? -1 : 1;
     const sign = (pick && NEVER_MIRRORED.has(pick.slot))
       ? docSign
-      : docSign * (entry.facing === drawnFacing(token) ? 1 : -1);
+      : docSign * (facing === drawn ? 1 : -1);
 
     return {
       art: (art?.ready && !art.failed) ? art : null,
@@ -1034,18 +1035,8 @@
     setFacing(token, facing, options) { if (token) setFacing(token, facing, options); },
     faceToward(token, point) { if (token && point) faceToward(token, point); },
 
-    // Dungeon steps (dp-movement.js): turn the token for a step of dx, dy and
-    // get the walk art for it. The mover saves the facing in the step's own
-    // position update (stepFacingFlags), so a step costs no extra write.
+    // Dungeon steps (dp-movement.js): the walk art for a step of dx, dy.
     dungeonStepBegin(token, dx, dy) { return state.active && state.dungeon ? dungeonStepBegin(token, dx, dy) : null; },
-    stepFacingFlags(token) {
-      const entry = token ? state.tokens.get(token.id) : null;
-      if (!entry) return {};
-      return {
-        [`flags.${MODULE_ID}.${FACING_FLAG}`]: entry.facing,
-        [`flags.${MODULE_ID}.${DIR_FLAG}`]: entry.dir
-      };
-    },
 
     // Testing: play this walk art for the party token on this client,
     // whatever the character sheet says. Pass nothing to clear it.
@@ -1075,8 +1066,8 @@
 
     await refreshPartyActor();
 
-    // Tokens whose facing was saved start out on it.
-    for (const token of canvas.tokens?.placeables ?? []) {
+    // Tokens whose facing was saved start out on it (not on a dungeon map).
+    for (const token of (state.dungeon ? [] : canvas.tokens?.placeables ?? [])) {
       const saved = token.document?.getFlag?.(MODULE_ID, FACING_FLAG);
       if (saved === "left" || saved === "right") {
         entryFor(token);
@@ -1149,7 +1140,7 @@
     // Another client saved the facing and direction its walk ended on.
     const saved = change?.flags?.[MODULE_ID]?.[FACING_FLAG];
     const savedDir = change?.flags?.[MODULE_ID]?.[DIR_FLAG];
-    if (!(doc.id === state.partyTokenId && state.walking)) {
+    if (!state.dungeon && !(doc.id === state.partyTokenId && state.walking)) {
       const token = doc.object;
       if (token && (saved === "left" || saved === "right")) setFacing(token, saved);
       if (token && DIR_FIELDS[savedDir] && entryFor(token).dir !== savedDir) {
