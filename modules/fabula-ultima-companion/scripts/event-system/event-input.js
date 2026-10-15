@@ -15,6 +15,7 @@
  *     Up:      Arrow Up, W
  *     Down:    Arrow Down, S
  *     Walk:    the four arrows (held)
+ *     Run:     X (held, while walking; X is Cancel whenever something wants it)
  * - Hands a press to whichever system is currently listening
  * - Hands the held arrows to the walker (exploration walking) when no menu
  *   took them first
@@ -37,7 +38,7 @@
  *   stop(); // when finished
  *
  *   window.oni.Input.setWalker((direction, pressed) => {
- *     // direction is "up", "down", "left" or "right"; pressed is false on release.
+ *     // direction is "up", "down", "left", "right" or "run"; pressed is false on release.
  *     // Return true when the key belongs to the walk.
  *   });
  *
@@ -189,6 +190,22 @@
           precedence: CONST.KEYBINDING_PRECEDENCE.PRIORITY
         });
       }
+
+      // Run while held. Registered after Cancel on the same key: a menu or
+      // dialogue that wants Cancel gets X first; only an X nothing else
+      // takes reaches the walker (as direction "run").
+      game.keybindings.register(MODULE_ID, "oniRun", {
+        name: "Run (hold)",
+        hint: "Hold while walking on an exploration map to run. Menus and dialogue still take it as Cancel.",
+        editable: [{ key: "KeyX" }],
+        onDown: () => {
+          setMode("key");
+          return walk("run", true);
+        },
+        onUp: () => walk("run", false),
+        restricted: false,
+        precedence: CONST.KEYBINDING_PRECEDENCE.PRIORITY
+      });
     } catch (e) {
       console.error(INSTALL_TAG, "Failed to register keybindings.", e);
     }

@@ -171,6 +171,7 @@
     standShown: null, // { tokenId, src, slot, art, idleTexture }
     standDirty: false, // the party token's standing art needs choosing again
     walkIntent: null,  // the keyboard direction of the last move, { x, y }, or null
+    walkRate: 1,       // walk-art playback speed for the last move (a run plays faster)
     dirSector: null, // the movement slice the current walk is in
 
     tickerFn: null
@@ -558,6 +559,8 @@
     } else {
       // If Foundry put the standing art back (a redraw), take the walk art again.
       setMeshTexture(token, shown.art.texture);
+      const video = shown.art.video;
+      if (video && video.playbackRate !== state.walkRate) video.playbackRate = state.walkRate;
     }
   }
 
@@ -567,7 +570,10 @@
     state.walkShown = null;
 
     if (shown.art.kind === "video" && shown.art.video) {
-      try { shown.art.video.pause(); } catch (_) {}
+      try {
+        shown.art.video.pause();
+        shown.art.video.playbackRate = 1; // the clip is shared (dungeon steps)
+      } catch (_) {}
     }
 
     const entry = state.tokens.get(shown.tokenId);
@@ -1272,6 +1278,10 @@
       state.walkIntent = (intent && Number.isFinite(intent.x) && Number.isFinite(intent.y))
         ? { x: intent.x, y: intent.y }
         : null;
+
+      // Walk art plays faster on a run and slower on a steep slide.
+      const rate = Number(options?.oniWalkRate);
+      state.walkRate = Number.isFinite(rate) ? Math.min(2, Math.max(0.5, rate)) : 1;
 
       // Placed, not walked: do not read a facing out of the jump.
       if (options?.animate === false || options?.teleport === true) {

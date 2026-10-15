@@ -51,8 +51,10 @@
   const STRIDE_GRIDS = 0.9;
 
   // Steps are never closer together than this, however fast the token is
-  // dragged or however quickly walks are restarted.
-  const MIN_STEP_GAP_MS = 220;
+  // dragged or however quickly walks are restarted. Below the keyboard run's
+  // stride (0.9 square at 4.8 squares a second, about 187 ms), so a run is
+  // heard at its own pace.
+  const MIN_STEP_GAP_MS = 170;
 
   // Standing still this long ends a walk; the next movement opens with a step.
   const IDLE_RESET_MS = 180;

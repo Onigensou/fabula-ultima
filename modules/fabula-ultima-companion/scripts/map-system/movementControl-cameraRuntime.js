@@ -77,6 +77,9 @@
   const KEY_STEP_GRID = 1;
   const KEY_LEAD_MS = 120;
 
+  // Holding X (Run) multiplies the keyboard walk speed by this.
+  const RUN_MULTIPLIER = 1.6;
+
   // From a standstill, a key pointing a new way only turns the party until it
   // has been held this long; a quicker tap is just a turn (JRPG tap-to-turn).
   const TAP_TURN_MS = 110;
@@ -162,6 +165,7 @@
     // Arrow keys held down for walking, the pending next leg, and the last
     // direction walked by keyboard (which way the party is "looking").
     heldKeys: new Set(),
+    running: false, // X (Run) held
     keySeq: 0,
     keyTimer: null,
     keyFacing: null,
@@ -935,7 +939,12 @@
       animate: true,
       animation: { duration, movementSpeed: speed }
     };
-    if (facing) options.oniWalkFacing = { x: facing.x, y: facing.y };
+    if (facing) {
+      options.oniWalkFacing = { x: facing.x, y: facing.y };
+      // How fast the walk art should play, against a plain walk (a run is
+      // quicker, a steep slide slower). Read by sprite-facing on every client.
+      options.oniWalkRate = speed / WALK_SPEED;
+    }
 
     await token.document.update({ x: spot.x, y: spot.y }, options);
 
@@ -1046,6 +1055,7 @@
   // walk again once pressed again, since a held key does not repeat.
   function dropHeldKeys() {
     state.heldKeys.clear();
+    state.running = false;
     cancelKeyLeg();
   }
 
@@ -1058,6 +1068,18 @@
   function pressDirection(direction, pressed) {
     if (game.user?.isGM) return false;
     if (!state.enabled || state.mode === "inactive" || !state.followEnabledForScene) return false;
+
+    // Run (X held): changes the pace of a walk in progress at once.
+    if (direction === "run") {
+      if (state.running === pressed) return true;
+      state.running = pressed;
+      if (state.heldKeys.size) {
+        cancelKeyLeg();
+        keyStep();
+      }
+      return true;
+    }
+
     if (!KEY_VECTORS[direction]) return false;
 
     let fromStandstill = false;
@@ -1218,7 +1240,9 @@
     state.keyFacing = dir;
 
     const origin = drawnCenter(token);
-    const reach = (canvas.dimensions?.size || 100) * KEY_STEP_GRID;
+    // A run covers more ground per leg, so legs are not sent more often.
+    const pace = state.running ? RUN_MULTIPLIER : 1;
+    const reach = (canvas.dimensions?.size || 100) * KEY_STEP_GRID * pace;
 
     // Foundry starts the new leg from wherever the token is drawn when the
     // update comes back, not when it was sent. So the leg is planned (and
@@ -1252,7 +1276,7 @@
 
     let duration;
     try {
-      duration = await walkTokenTo(token, plan.spot, from, { speed: WALK_SPEED * plan.speed, facing: dir });
+      duration = await walkTokenTo(token, plan.spot, from, { speed: WALK_SPEED * plan.speed * pace, facing: dir });
     } catch (err) {
       DBG.warn("CameraRuntime", "Keyboard walk leg failed", { error: err?.message ?? err });
       dropHeldKeys();
@@ -1307,6 +1331,7 @@
   // Window lost focus, game paused: a key released while we were not looking
   // never sends its key-up, so stop as if every key had been released.
   function releaseAllKeys() {
+    state.running = false;
     if (!state.heldKeys.size) return;
     state.heldKeys.clear();
     stopKeyWalk();
