@@ -86,6 +86,18 @@ await play(
 
     const origVis  = token.visible;
     const origMesh = base?.visible ?? true;
+
+    // Foundry shows the token again when its position update lands, which is
+    // before the copy has finished: two sprites for a moment. So the token is
+    // hidden again every frame, after Foundry's refresh and before the frame
+    // is drawn, until the copy hands over.
+    const hideTick = () => {
+      const live = canvas.tokens?.get(token.id) ?? token;
+      live.visible = false;
+      if (live.mesh) live.mesh.visible = false;
+    };
+    canvas.app.ticker.add(hideTick, undefined, PIXI.UPDATE_PRIORITY.LOW + 1);
+
     try {
       if (base) base.visible = false;
       token.visible = false;
@@ -123,14 +135,39 @@ await play(
         };
         canvas.app.ticker.add(tick);
       });
+
+      // Arrived: the copy stops walking and stands in the token's own idle
+      // art, exactly as the token will look, so the hand-over cannot be seen.
+      if (walk && base) {
+        if (video) { try { video.pause(); } catch (_) {} }
+        s.skew.x = 0;
+        s.x = toC.x; s.y = toC.y;
+        s.texture = base.texture;
+        s.width = Math.abs(base.width); s.height = Math.abs(base.height);
+        if (((base.scale?.x ?? 1) < 0) !== (s.scale.x < 0)) s.scale.x = -s.scale.x;
+      }
+
       if (holdMs > 0) await wait(holdMs);
+
+      // Hand over only once the token is drawn on the new tile. Its update
+      // can reach another client after the copy has arrived.
+      const startWait = performance.now();
+      while (performance.now() - startWait < 1500) {
+        const live = canvas.tokens?.get(token.id);
+        if (!live) break;
+        const cx = live.x + live.w / 2, cy = live.y + live.h / 2;
+        if (Math.abs(cx - toC.x) < 2 && Math.abs(cy - toC.y) < 2) break;
+        await wait(30);
+      }
     } finally {
       if (video) { try { video.pause(); } catch (_) {} }
+      canvas.app.ticker.remove(hideTick);
       canvas.stage.sortableChildren = prevSortable;
       try { canvas.stage.removeChild(s); } catch {}
       s.destroy();
-      if (base) base.visible = origMesh;
-      token.visible = origVis;
+      const live = canvas.tokens?.get(token.id) ?? token;
+      if (live.mesh) live.mesh.visible = origMesh;
+      live.visible = origVis;
     }
   }
 
