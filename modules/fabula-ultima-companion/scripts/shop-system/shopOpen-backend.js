@@ -282,8 +282,12 @@ export class ShopOpenBackend {
         const sc = shopCenters.get(shopT.id);
         for (const partyT of partyTokens) {
           const pc = partyCenters.get(partyT.id);
-          const d = distPxCenters(sc, pc);
-          if (d <= this.cfg.RANGE_PX) {
+          // Next to the shopkeeper, by the rule Talk and Refine share
+          // (window.oni.Interact); RANGE_PX only if that is missing.
+          const near = window.oni?.Interact?.npcInRange
+            ? window.oni.Interact.npcInRange(partyT, pc, window.oni.Interact.rectOf(shopT, sc))
+            : distPxCenters(sc, pc) <= this.cfg.RANGE_PX;
+          if (near) {
             shouldShow.add(shopT.id);
             break;
           }

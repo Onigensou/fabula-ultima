@@ -70,6 +70,13 @@
   // (seen live: four talks in a row).
   const AFTER_EVENT_QUIET_MS = 400;
 
+  // Buttons over an NPC (Talk, Shop, Refine) appear when the party stands next
+  // to it, JRPG-style: at most this many squares of gap between the party's
+  // square and the NPC's. One rule for all three; they used to be 75 px from
+  // the NPC's edge (Talk) and 140 px centre to centre (Shop, Refine), which
+  // showed buttons from two squares away.
+  const NPC_RANGE_GRID = 0.5;
+
   const MENU_IN_MS = 260;
   const MENU_OUT_MS = 200;
 
@@ -114,6 +121,27 @@
       }
       return out;
     };
+  }
+
+  // A token's square as { left, top, right, bottom }, around a given centre
+  // (a walking token's live one) or where the token is drawn.
+  function rectOf(token, center = null) {
+    const c = center ?? { x: token.x + (token.w / 2), y: token.y + (token.h / 2) };
+    return {
+      left: c.x - (token.w / 2),
+      top: c.y - (token.h / 2),
+      right: c.x + (token.w / 2),
+      bottom: c.y + (token.h / 2)
+    };
+  }
+
+  // Is the party (its token, centred at partyCenter) next to the NPC's square?
+  function npcInRange(partyToken, partyCenter, npcRect) {
+    const a = rectOf(partyToken, partyCenter);
+    const gx = Math.max(0, npcRect.left - a.right, a.left - npcRect.right);
+    const gy = Math.max(0, npcRect.top - a.bottom, a.top - npcRect.bottom);
+    const grid = canvas?.dimensions?.size || 100;
+    return Math.hypot(gx, gy) <= (grid * NPC_RANGE_GRID) + 0.5;
   }
 
   // Walk maps only, players only: the GM keeps the mouse and Foundry's keys.
@@ -163,6 +191,29 @@
     return [...groups.values()];
   }
 
+  // Which way the party faces, as a unit vector: the sprite's own direction
+  // (it follows click walks too), else the last keyboard direction.
+  const DIRECTION_VECTORS = {
+    left: [1, 0], downLeft: [Math.SQRT1_2, Math.SQRT1_2], down: [0, 1],
+    up: [0, -1], upLeft: [Math.SQRT1_2, -Math.SQRT1_2]
+  };
+
+  function partyFacing() {
+    const token = runtime()?.getFollowToken?.();
+    const sf = globalThis.FUCompanion?.api?.spriteFacing;
+    const v = token && DIRECTION_VECTORS[sf?.getDirection?.(token)];
+    if (v) {
+      // The art is drawn facing left; "right" mirrors it.
+      const side = sf.getFacing?.(token) === "right" ? 1 : -1;
+      return { x: v[0] === 0 ? 0 : v[0] * side, y: v[1] };
+    }
+    return runtime()?.getKeyFacing?.() ?? null;
+  }
+
+  // Lower is better; Infinity rules a target out. A keyboard player talks to
+  // the NPC the party faces, as in a JRPG: an NPC beside or behind is not
+  // chosen. Examine points are areas the party may stand on, so only their
+  // distance counts, with the ones behind put last.
   function scoreTarget(group, here, facing) {
     if (!group.anchor) return Infinity;
     const dx = group.anchor.x - here.x;
@@ -171,7 +222,8 @@
     if (!facing || distance < 1) return distance;
 
     const cos = ((dx * facing.x) + (dy * facing.y)) / distance;
-    return cos >= FACING_MIN_COS ? distance : distance * BEHIND_PENALTY;
+    if (cos >= FACING_MIN_COS) return distance;
+    return group.target.startsWith("token:") ? Infinity : distance * BEHIND_PENALTY;
   }
 
   function pickTarget(groups) {
@@ -179,7 +231,7 @@
     const here = partyCenter();
     if (!here) return groups[0];
 
-    const facing = runtime()?.getKeyFacing?.() ?? null;
+    const facing = partyFacing();
     let best = null;
     let bestScore = Infinity;
     let current = null;
@@ -197,6 +249,7 @@
       }
     }
 
+    if (bestScore === Infinity) return null;
     if (current && currentScore <= bestScore * FOCUS_STICKINESS) return current;
     return best;
   }
@@ -513,6 +566,9 @@
     register,
     unregister,
     tokenButtons,
+    NPC_RANGE_GRID,
+    npcInRange,
+    rectOf,
     // For tests and debugging: what Confirm would act on right now.
     peek: () => {
       const group = pickTarget(collectTargets());

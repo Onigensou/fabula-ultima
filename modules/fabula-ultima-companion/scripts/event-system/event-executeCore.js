@@ -312,8 +312,13 @@
     const rect = getTileRect(tileLike);
     const d = pointToRectDistance(point, rect);
 
+    // An NPC offers its talk button by the shared "next to it" rule (see
+    // scan); accept that too, so the GM never refuses a button it showed.
+    const npcRule = isTokenSource(tileLike) ? window.oni.Interact?.npcInRange : null;
+    const npcOk = !!npcRule && npcRule(partyToken, point, rect);
+
     return {
-      ok: d <= data.proximityPx,
+      ok: npcOk || d <= data.proximityPx,
       distance: d,
       proximityPx: data.proximityPx
     };
@@ -768,7 +773,11 @@
           const rect = getTileRect(tile);
           const d = pointToRectDistance(partyCenter, rect);
 
-          if (d > data.proximityPx) continue;
+          // An NPC talks when the party stands next to it (the rule Shop and
+          // Refine share, in window.oni.Interact). Examine points keep the
+          // range set on them.
+          const npcRule = isTokenSource(tile) ? window.oni.Interact?.npcInRange : null;
+          if (npcRule ? !npcRule(partyToken, partyCenter, rect) : d > data.proximityPx) continue;
 
           const candidate = {
             tileId: tile.id,
