@@ -12,120 +12,138 @@
     return Number(canvas?.grid?.size ?? canvas?.scene?.grid?.size ?? 100) || 100;
   }
 
-  // _PSEUDO_SCRIPT is broadcast to OTHER clients so they see the movement animation
-  // via their pseudo-animation listener. The LOCAL client runs _startLocalAnimation()
-  // instead — this bypasses the pseudo system's deepClone, debug-logging, and
-  // floating-promise microtask chain that were delaying the wait1 setTimeout.
+  // ── One step's slide ────────────────────────────────────────────────────────
+  // The real token is hidden and a copy of its sprite slides to the next tile;
+  // moveToNode then puts the token there in one jump. Every client runs
+  // playStep(): the mover calls it directly (no pseudo-system overhead — its
+  // deepClone, debug logging and floating promise chain were delaying the
+  // wait1 setTimeout), the others through the pseudo socket, whose script
+  // below only calls it.
+  //
+  // A step is a walk: the copy wears the character's walk art for the step's
+  // direction (sprite-facing-runtime.js picks it and turns the hidden token, so
+  // it shows again in that direction's standing art), or sways when the
+  // character has no walk art, and moves on an even sine curve so the feet do
+  // not skate. A shove (Force Move, Gusty) is the plain copy of the standing
+  // sprite on the old speed-up-and-brake curve.
   const _PSEUDO_SCRIPT = `
 const { casterToken, params } = ctx;
 if (!casterToken) throw new Error("DungeonPathing pseudo movement requires casterToken.");
-const fromX = Number(params.fromX), fromY = Number(params.fromY);
-const toX   = Number(params.toX),   toY   = Number(params.toY);
-const dur   = Math.max(1, Number(params.durationMs ?? 650));
-const hold  = Math.max(0, Number(params.holdMs    ?? 40));
-function ease(t){ return t < 0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
-function animate(obj, sx, sy, ex, ey, ms){
-  return new Promise(res => {
-    const s = performance.now();
-    const tick = () => {
-      const t = Math.min((performance.now()-s)/ms,1);
-      obj.x = sx+(ex-sx)*ease(t); obj.y = sy+(ey-sy)*ease(t);
-      if(t>=1){canvas.app.ticker.remove(tick);res();}
-    };
-    canvas.app.ticker.add(tick);
-  });
-}
-async function clone(token){
-  const base = token.mesh ?? token.icon;
-  const tex  = base?.texture ?? await loadTexture(token.document.texture.src);
-  const s    = new PIXI.Sprite(tex);
-  s.anchor.set(0.5); s.x=fromX; s.y=fromY;
-  if(base){
-    s.width=base.width;s.height=base.height;s.rotation=base.rotation??0;s.alpha=base.alpha??1;
-    if((base.scale?.x??1)<0) s.scale.x=-Math.abs(s.scale.x);
-    if((base.scale?.y??1)<0) s.scale.y=-Math.abs(s.scale.y);
-  }
-  else{s.width=token.w;s.height=token.h;}
-  s.zIndex=500000;
-  const _prev=canvas.stage.sortableChildren;
-  canvas.stage.sortableChildren=true; canvas.stage.addChild(s);
-  s.__prevSortable=_prev;
-  return s;
-}
-const base = casterToken.mesh ?? casterToken.icon;
-const origVis = casterToken.visible, origMesh = base?.visible??true;
-let sp=null;
-try{
-  sp=await clone(casterToken);
-  if(base) base.visible=false; casterToken.visible=false;
-  await animate(sp,fromX,fromY,toX,toY,dur);
-  if(hold>0) await new Promise(r=>setTimeout(r,hold));
-}finally{
-  if(sp){
-    canvas.stage.sortableChildren=sp.__prevSortable??false;
-    try{canvas.stage.removeChild(sp);}catch(_){}sp.destroy();
-  }
-  if(base) base.visible=origMesh; casterToken.visible=origVis;
-}`;
+const play = globalThis.DungeonPathing?.Movement?.playStep;
+if (typeof play !== "function") return;
+await play(
+  casterToken,
+  { x: Number(params.fromX), y: Number(params.fromY) },
+  { x: Number(params.toX),   y: Number(params.toY) },
+  Math.max(1, Number(params.durationMs ?? 650)),
+  { shove: params.shove === true, holdMs: Math.max(0, Number(params.holdMs ?? 40)) }
+);`;
 
-  // Local inline animation — same PIXI logic as _PSEUDO_SCRIPT but runs directly
-  // on this client without going through the pseudo system. Eliminates:
-  //   - foundry.utils.deepClone of the 1553-char scriptSource per call
-  //   - console.log(full msg) in pseudo core/listener (DEBUG=true)
-  //   - floating onSocketMessage promise chain (resolveTokenFromUuid awaits)
-  //     that occupied microtasks and delayed the wait1 setTimeout callback.
-  function _startLocalAnimation(token, fromC, toC, durationMs) {
-    (async () => {
-      const base = token.mesh ?? token.icon;
-      const tex  = base?.texture ?? await loadTexture(token.document.texture.src);
-      const s    = new PIXI.Sprite(tex);
-      s.anchor.set(0.5);
-      s.x = fromC.x; s.y = fromC.y;
-      if (base) {
-        s.width = base.width; s.height = base.height;
-        s.rotation = base.rotation ?? 0; s.alpha = base.alpha ?? 1;
-        if ((base.scale?.x ?? 1) < 0) s.scale.x = -Math.abs(s.scale.x);
-        if ((base.scale?.y ?? 1) < 0) s.scale.y = -Math.abs(s.scale.y);
-      } else {
-        s.width = token.w; s.height = token.h;
-      }
-      s.zIndex = 500000;
-      const prevSortable = canvas.stage.sortableChildren;
-      canvas.stage.sortableChildren = true;
-      canvas.stage.addChild(s);
-      const origVis  = token.visible;
-      const origMesh = base?.visible ?? true;
+  const easeWalk  = t => -(Math.cos(Math.PI * t) - 1) / 2;
+  const easeShove = t => t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2;
+
+  function facingApi() {
+    return globalThis.__ONI_SPRITE_FACING_RUNTIME__ ?? null;
+  }
+
+  async function playStep(token, fromC, toC, durationMs, { shove = false, holdMs = 50 } = {}) {
+    if (!token) return;
+
+    // Turn before anything is awaited: moveToNode reads the new facing for
+    // the step's position update right after calling this.
+    const walk = shove ? null
+      : (facingApi()?.dungeonStepBegin?.(token, toC.x - fromC.x, toC.y - fromC.y) ?? null);
+    const art  = walk?.art ?? null;
+
+    const base  = token.mesh ?? token.icon;
+    const tex   = base?.texture ?? await loadTexture(token.document.texture.src);
+    const frame = art ? (art.kind === "strip" ? art.frames[0] : art.texture) : null;
+    const s     = new PIXI.Sprite(frame?.valid ? frame : tex);
+    s.anchor.set(0.5);
+    s.x = fromC.x; s.y = fromC.y;
+    if (base) {
+      // Walk art is drawn on the standing sprite's canvas, so it takes the
+      // standing sprite's size on the map.
+      s.width = Math.abs(base.width); s.height = Math.abs(base.height);
+      s.rotation = base.rotation ?? 0; s.alpha = base.alpha ?? 1;
+      const signX = (frame?.valid && walk) ? walk.sign : ((base.scale?.x ?? 1) < 0 ? -1 : 1);
+      if (signX < 0) s.scale.x = -Math.abs(s.scale.x);
+      if ((base.scale?.y ?? 1) < 0) s.scale.y = -Math.abs(s.scale.y);
+    } else {
+      s.width = token.w; s.height = token.h;
+    }
+    s.zIndex = 500000;
+    const prevSortable = canvas.stage.sortableChildren;
+    canvas.stage.sortableChildren = true;
+    canvas.stage.addChild(s);
+
+    const video = (frame?.valid && art.kind === "video") ? art.video : null;
+    if (video) {
       try {
-        if (base) base.visible = false;
-        token.visible = false;
-        await new Promise(res => {
-          const start = performance.now();
-          const ease  = t => t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2;
-          const tick  = () => {
-            const t = Math.min((performance.now() - start) / durationMs, 1);
-            s.x = fromC.x + (toC.x - fromC.x) * ease(t);
-            s.y = fromC.y + (toC.y - fromC.y) * ease(t);
-            if (t >= 1) { canvas.app.ticker.remove(tick); res(); }
-          };
-          canvas.app.ticker.add(tick);
-        });
-        await wait(50);
-      } finally {
-        canvas.stage.sortableChildren = prevSortable;
-        try { canvas.stage.removeChild(s); } catch {}
-        s.destroy();
-        if (base) base.visible = origMesh;
-        token.visible = origVis;
-      }
-    })().catch(e => console.warn("[DungeonPathing][Movement] inline animation error", e));
+        video.currentTime = 0;
+        const playing = video.play();
+        if (playing?.catch) playing.catch(() => {});
+      } catch (_) {}
+    }
+
+    const origVis  = token.visible;
+    const origMesh = base?.visible ?? true;
+    try {
+      if (base) base.visible = false;
+      token.visible = false;
+
+      const ease   = shove ? easeShove : easeWalk;
+      const length = Math.hypot(toC.x - fromC.x, toC.y - fromC.y);
+      const frames = (frame?.valid && art.kind === "strip") ? art.frames : null;
+      const sway   = !shove && walk?.sway;
+      const height = Math.abs(s.height);
+
+      await new Promise(res => {
+        const start = performance.now();
+        const tick  = () => {
+          const t = Math.min((performance.now() - start) / durationMs, 1);
+          const e = ease(t);
+          let x = fromC.x + (toC.x - fromC.x) * e;
+          let y = fromC.y + (toC.y - fromC.y) * e;
+          const walked = length * e;
+
+          if (frames) {
+            // Frames step with the distance walked, as on walk maps.
+            const i = Math.floor(((walked % walk.cycle) / walk.cycle) * frames.length) % frames.length;
+            if (s.texture !== frames[i]) s.texture = frames[i];
+          } else if (sway) {
+            // No walk art: lean from side to side about the feet, with a hop.
+            const phase = (walked / walk.cycle) * Math.PI * 2;
+            const lean  = Math.sin(phase) * walk.swayLean;
+            s.skew.x = lean;
+            x -= Math.sin(lean) * height * 0.5;
+            y -= Math.abs(Math.sin(phase)) * height * walk.swayHop;
+          }
+
+          s.x = x; s.y = y;
+          if (t >= 1) { canvas.app.ticker.remove(tick); res(); }
+        };
+        canvas.app.ticker.add(tick);
+      });
+      if (holdMs > 0) await wait(holdMs);
+    } finally {
+      if (video) { try { video.pause(); } catch (_) {} }
+      canvas.stage.sortableChildren = prevSortable;
+      try { canvas.stage.removeChild(s); } catch {}
+      s.destroy();
+      if (base) base.visible = origMesh;
+      token.visible = origVis;
+    }
   }
 
   DP.Movement = {
     /**
      * Animate the token to destNode then update the real document.
      * TOKEN_OFFSET is applied so the character's feet rest on the tile graphic.
+     * shove: pushed by a tile (Force Move, Gusty) rather than walked, so no
+     * walk art and no turn.
      */
-    async moveToNode(token, destNode) {
+    async moveToNode(token, destNode, { shove = false } = {}) {
       if (!token?.document) return false;
 
       const gSize  = getGridSize();
@@ -153,7 +171,12 @@ try{
       // creating a floating async chain (deepClone + debug console.log +
       // resolveTokenFromUuid await) that held the microtask queue open and
       // delayed the wait1 setTimeout callback by 2-3 s every ~4 turns.
-      _startLocalAnimation(token, fromC, toCAdj, DP.MOVE_MS);
+      playStep(token, fromC, toCAdj, DP.MOVE_MS, { shove })
+        .catch(e => console.warn("[DungeonPathing][Movement] inline animation error", e));
+
+      // The way the step turned the token, saved in the step's own update so
+      // a reload (or a late joiner) shows it. playStep turned it synchronously.
+      const facingFlags = shove ? {} : (facingApi()?.stepFacingFlags?.(token) ?? {});
 
       // ── Broadcast to other clients via pseudo socket ────────────────────────
       // Other clients receive _PSEUDO_SCRIPT and run it through their own
@@ -176,6 +199,7 @@ try{
               toX:   toCAdj.x, toY: toCAdj.y,
               durationMs: DP.MOVE_MS,
               holdMs:     50,
+              shove,
             },
             meta: { source: "DungeonPathing", toNodeId: destNode.nodeId },
           });
@@ -199,7 +223,7 @@ try{
         canvas.app.ticker.remove(_fct);
 
         const tUpd = performance.now();
-        await token.document.update({ x: realX, y: realY }, { animate: false, dungeonPathing: true });
+        await token.document.update({ x: realX, y: realY, ...facingFlags }, { animate: false, dungeonPathing: true });
         const dtUpd = performance.now() - tUpd;
 
         const tW2 = performance.now();
@@ -233,6 +257,9 @@ try{
 
       return true;
     },
+
+    /** One step's slide on this client (the other clients run it via the pseudo socket). */
+    playStep,
 
     /** Revert to a previously saved position (top-left doc coords). */
     async revertToPosition(token, savedPos) {

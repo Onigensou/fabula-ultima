@@ -135,7 +135,7 @@
       const _bState = globalThis.__ONI_DUNGEON_PATHING__?.state;
       if (_bState) _bState.forcedNodeId = destNode.nodeId;
 
-      await DP.Movement.moveToNode(token, destNode);
+      await DP.Movement.moveToNode(token, destNode, { shove: true });
 
       const bootstrap = globalThis.__ONI_DUNGEON_PATHING__;
       if (bootstrap?.processArrivalAt) {

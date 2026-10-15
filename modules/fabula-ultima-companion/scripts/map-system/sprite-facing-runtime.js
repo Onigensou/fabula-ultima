@@ -32,7 +32,10 @@
  *   side view, then the other half. So a character with only sprite_walk
  *   behaves exactly as before. Straight down and up art is never mirrored.
  *
- * Only runs on walk maps. Battle scenes keep their own facing rules.
+ * Runs on walk maps and dungeon maps. On a dungeon map the party token steps
+ * from tile to tile: dp-movement.js slides a copy of the sprite and asks here
+ * for the step's walk art; the token then stands on the new tile in the
+ * standing art of the way it stepped. Battle scenes keep their own facing rules.
  *
  * Globals:
  *   globalThis.__ONI_SPRITE_FACING_RUNTIME__
@@ -131,6 +134,7 @@
     installed: true,
     enabled: ENABLED,
     active: false,
+    dungeon: false, // a dungeon map: steps come from dp-movement.js, not from watching the token
 
     partyActorId: null,
     partyTokenId: null,
@@ -174,6 +178,10 @@
     // Older walk maps carry only the camera-follow switch.
     const legacy = general?.cameraFollowToken;
     return legacy === true || legacy === "true" || legacy === 1 || legacy === "1";
+  }
+
+  function sceneIsDungeon(scene) {
+    return scene?.flags?.[MODULE_ID]?.[FABULA_ROOT_KEY]?.general?.sceneMode === "dungeon";
   }
 
   // ------------------------------------------------------------
@@ -782,6 +790,61 @@
   }
 
   // ------------------------------------------------------------
+  // Dungeon steps
+  // ------------------------------------------------------------
+  // On a dungeon map the party token does not walk where this file can see
+  // it: dp-movement.js hides it, slides a copy of its sprite to the next tile
+  // and then puts the token there in one jump. The copy asks here for the
+  // step's walk art; the token turns at once (it is hidden) and wears the
+  // standing art of the step's direction when it shows again.
+
+  // Load every walk and standing image of the character, so the first step in
+  // a new direction is not shown in the standing art while its walk loads.
+  function preloadArt(token) {
+    const props = sourceActorFor(token)?.system?.props ?? {};
+    for (const fields of Object.values(DIR_FIELDS)) {
+      for (const field of [fields.walk, fields.stand]) {
+        const src = cleanString(props[field]);
+        if (src) loadWalkArt(src, token.mesh?.texture);
+      }
+    }
+  }
+
+  // A step is one move on its own, so its direction is the plain slice it
+  // falls in (no stickiness). Returns what the sliding copy shows:
+  //   art   - the walk art, loaded and ready, or null
+  //   sway  - true when the character has no walk art at all
+  //   sign  - the sign of the copy's x scale while it shows the walk art
+  // or null for a token that never turns (the copy slides as it is).
+  function dungeonStepBegin(token, dx, dy) {
+    if (!token?.mesh || isFacingLocked(token) || Math.hypot(dx, dy) < 1) return null;
+
+    const sector = ((Math.round(Math.atan2(dy, dx) / (Math.PI / 4)) % 8) + 8) % 8;
+    const { dir, side } = SECTORS[sector];
+    const entry = entryFor(token);
+    entry.dir = dir;
+    if (side) setFacing(token, side, { instant: true });
+    state.standDirty = true;
+
+    const pick = pickSlot(token, "walk", dir);
+    const art = pick ? loadWalkArt(pick.src, token.mesh.texture) : null;
+
+    const docSign = (Number(token.document?.texture?.scaleX) || 1) < 0 ? -1 : 1;
+    const sign = (pick && NEVER_MIRRORED.has(pick.slot))
+      ? docSign
+      : docSign * (entry.facing === drawnFacing(token) ? 1 : -1);
+
+    return {
+      art: (art?.ready && !art.failed) ? art : null,
+      sway: !art || art.failed,
+      sign,
+      cycle: (canvas.dimensions?.size || 100) * WALK_CYCLE_GRIDS,
+      swayLean: SWAY_LEAN_RADIANS,
+      swayHop: SWAY_HOP_SHARE
+    };
+  }
+
+  // ------------------------------------------------------------
   // Examine and talk
   // ------------------------------------------------------------
   function centerOfSource(source) {
@@ -854,7 +917,9 @@
     if (!state.enabled || !state.active || !canvas?.ready) return;
 
     const now = performance.now();
-    tickParty(now);
+    // A dungeon step is a jump of the token; reading it as a walk would flash
+    // the walk art on the token. The steps come from dp-movement.js instead.
+    if (!state.dungeon) tickParty(now);
     tickTalks(now);
 
     // At rest, the party token wears the standing art of its direction.
@@ -863,6 +928,7 @@
       if (party) {
         if (state.standDirty) {
           state.standDirty = false;
+          if (state.dungeon) preloadArt(party);
           showStandArt(party);
         } else {
           holdStandArt(party);
@@ -931,7 +997,7 @@
       const wrap = document.createElement("fieldset");
       wrap.className = "oni-sprite-facing";
       wrap.innerHTML = `
-        <legend>Facing (walk maps)</legend>
+        <legend>Facing (walk and dungeon maps)</legend>
         <div class="form-group">
           <label>Art is drawn facing right</label>
           <div class="form-fields">
@@ -968,6 +1034,19 @@
     setFacing(token, facing, options) { if (token) setFacing(token, facing, options); },
     faceToward(token, point) { if (token && point) faceToward(token, point); },
 
+    // Dungeon steps (dp-movement.js): turn the token for a step of dx, dy and
+    // get the walk art for it. The mover saves the facing in the step's own
+    // position update (stepFacingFlags), so a step costs no extra write.
+    dungeonStepBegin(token, dx, dy) { return state.active && state.dungeon ? dungeonStepBegin(token, dx, dy) : null; },
+    stepFacingFlags(token) {
+      const entry = token ? state.tokens.get(token.id) : null;
+      if (!entry) return {};
+      return {
+        [`flags.${MODULE_ID}.${FACING_FLAG}`]: entry.facing,
+        [`flags.${MODULE_ID}.${DIR_FLAG}`]: entry.dir
+      };
+    },
+
     // Testing: play this walk art for the party token on this client,
     // whatever the character sheet says. Pass nothing to clear it.
     sourceActorFor(token) { return token ? sourceActorFor(token) : null; },
@@ -987,7 +1066,8 @@
 
   async function start() {
     reset();
-    state.active = sceneIsWalkMap(canvas?.scene);
+    state.dungeon = sceneIsDungeon(canvas?.scene);
+    state.active = state.dungeon || sceneIsWalkMap(canvas?.scene);
     if (!state.active) {
       detachTicker();
       return;
@@ -1022,8 +1102,9 @@
 
   Hooks.on("updateScene", (scene) => {
     if (!canvas?.scene || scene.id !== canvas.scene.id) return;
-    const active = sceneIsWalkMap(scene);
-    if (active !== state.active) start();
+    const dungeon = sceneIsDungeon(scene);
+    const active = dungeon || sceneIsWalkMap(scene);
+    if (active !== state.active || dungeon !== state.dungeon) start();
   });
 
   Hooks.on("createToken", () => { state.partyTokenId = null; });

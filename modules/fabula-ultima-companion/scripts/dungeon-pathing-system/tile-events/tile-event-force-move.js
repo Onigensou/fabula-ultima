@@ -168,7 +168,7 @@
       const _bState = globalThis.__ONI_DUNGEON_PATHING__?.state;
       if (_bState) _bState.forcedNodeId = destNode.nodeId;
 
-      await DP.Movement.moveToNode(token, destNode);
+      await DP.Movement.moveToNode(token, destNode, { shove: true });
 
       // Hand off to the bootstrap's arrival processor — runs the full
       // confirm → event dispatch → clear cycle for the destination tile.
