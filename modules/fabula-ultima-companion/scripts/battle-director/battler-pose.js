@@ -409,11 +409,12 @@ function startShake(token, tier) {
 }
 
 // Which flinch rides on a hurt clip: "light" = the pivot shake above;
-// "full" = the old image-copy flinch's squash, shake and white flash (+ red
+// "full" (default) = the old image-copy flinch's squash, shake and white flash (+ red
 // silhouette on strong hits), played on the token so the clip keeps moving.
-// DEMO SWITCH — globalThis.ONI_HURT_POSE_FLINCH = "light" | "full".
+// Default "full" (user's pick after the side-by-side demo, 2026-10-16);
+// globalThis.ONI_HURT_POSE_FLINCH = "light" switches back to the shake only.
 function hurtFlinchMode() {
-  return globalThis.ONI_HURT_POSE_FLINCH === "full" ? "full" : "light";
+  return globalThis.ONI_HURT_POSE_FLINCH === "light" ? "light" : "full";
 }
 
 // Keyframes copied from director-hurt-reaction.js's CSS (same durations,
