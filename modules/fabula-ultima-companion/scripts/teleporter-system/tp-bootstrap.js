@@ -407,11 +407,7 @@
     btn.addEventListener("pointerdown", async (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
-      const tile  = _hudBtnTile;
-      const token = _hudBtnToken;
-      hideTpHudButton();
-      if (!tile || !token) return;
-      await confirmAndTeleport(tile, token, { rearmButton: true });
+      await useTpHudButton();
     });
 
     // RAF loop: re-position every frame while camera is moving to follow the token
@@ -422,6 +418,33 @@
     }
     _hudBtnRaf = requestAnimationFrame(track);
   }
+
+  // What the door button does, by click or by keyboard Confirm.
+  async function useTpHudButton() {
+    const tile  = _hudBtnTile;
+    const token = _hudBtnToken;
+    hideTpHudButton();
+    if (!tile || !token) return;
+    await confirmAndTeleport(tile, token, { rearmButton: true });
+  }
+
+  // Keyboard play (window.oni.Interact): the door button is a Confirm target
+  // like an NPC's buttons, so Z on an exit uses it.
+  Hooks.once("ready", () => {
+    window.oni?.Interact?.register?.("teleporter", () => {
+      if (!_hudBtn || !_hudBtnTile) return [];
+      const t = _hudBtnTile;
+      return [{
+        target: `tile:${t.id}`,
+        label: "Enter",
+        icon: "fas fa-door-open",
+        order: 0,
+        anchor: { x: t.x + ((t.width ?? 0) / 2), y: t.y + ((t.height ?? 0) / 2) },
+        el: _hudBtn,
+        run: () => useTpHudButton()
+      }];
+    });
+  });
 
   // Prompt (when the tile's confirmDialog is on, the default) → teleport.
   // rearmButton: after a "No", bring the door button back while the token is
@@ -546,9 +569,24 @@
         else handled = false;
         if (handled) { ev.preventDefault(); ev.stopPropagation(); }
       };
+      // The module's own Confirm / Cancel (Z / X, rebindable) answer it too,
+      // as on every other prompt. Up / Down are swallowed and the party held
+      // still, so the walk keys cannot carry it off the door mid-question.
+      const runtime = globalThis.FUCompanion?.api?.MovementControlCameraRuntime ?? null;
+      runtime?.lockMovement?.("tp-prompt");
+      const A = window.oni?.Input?.ACTIONS ?? {};
+      const stopInput = window.oni?.Input?.listen?.(({ action }) => {
+        if (action === A.CONFIRM) entry.finish(picked === yesBtn);
+        else if (action === A.CANCEL) entry.finish(false);
+        else if (action !== A.UP && action !== A.DOWN) return false;
+        return true;
+      }) ?? null;
+
       entry.finish = (result) => {
         if (_tpPrompt !== entry) return;   // already finished
         _tpPrompt = null;
+        stopInput?.();
+        runtime?.unlockMovement?.("tp-prompt");
         window.removeEventListener("keydown", onKey, true);
         el.classList.remove("tp-visible");
         el.classList.add("tp-leaving");
