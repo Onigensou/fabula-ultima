@@ -78,6 +78,15 @@
   const SWAY_LEAN_RADIANS = 0.05;
   const SWAY_HOP_SHARE = 0.035; // of the sprite's height on the map
 
+  // Dungeon maps: at rest the party token walks in place, like the units of a
+  // tactics game, in its down-left walk art (sprite_walk, the same pose as its
+  // standing art), slower than a real walk. A character with no sprite_walk
+  // just stands. The rate is a share of the clip's own speed: the
+  // placeholders walk at 150 ms a frame, so 0.5 is 300 ms a frame in place.
+  const DUNGEON_IDLE_WALK_RATE = 0.5;
+  // The same pace for walk art made as a strip of frames.
+  const DUNGEON_IDLE_STRIP_FRAME_MS = 300;
+
   // A talking NPC turns back when the talk ends, when the party walks this many
   // grid squares away, or after this long, whichever comes first.
   const TALK_LEAVE_GRIDS = 3;
@@ -508,6 +517,46 @@
     if (own) setMeshTexture(token, own);
   }
 
+  // The walk-in-place clip of a dungeon map gets a video of its own, so its
+  // slower rate does not slow the same clip on a step, and a step ending does
+  // not stop it. Strips have no playback of their own and are shared.
+  function loadIdleWalk(src, idleTexture) {
+    if (!isVideoSrc(src)) return loadWalkArt(src, idleTexture);
+
+    const key = "idle:" + src;
+    let art = state.walkArt.get(key);
+    if (art) return art;
+
+    art = { kind: "video", texture: null, frames: null, video: null, failed: false, ready: false };
+    state.walkArt.set(key, art);
+
+    const video = document.createElement("video");
+    video.crossOrigin = "anonymous";
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.preload = "auto";
+    video.defaultPlaybackRate = DUNGEON_IDLE_WALK_RATE;
+    video.addEventListener("loadeddata", () => {
+      try {
+        video.playbackRate = DUNGEON_IDLE_WALK_RATE;
+        art.texture = PIXI.Texture.from(video, { resourceOptions: { autoPlay: false } });
+        art.video = video;
+        art.ready = true;
+      } catch (err) {
+        art.failed = true;
+        console.warn("[SpriteFacing] Could not use walk-in-place art", src, err);
+      }
+    }, { once: true });
+    video.addEventListener("error", () => {
+      art.failed = true;
+      console.warn("[SpriteFacing] Could not load walk-in-place art", src);
+    }, { once: true });
+    video.src = src;
+
+    return art;
+  }
+
   // ------------------------------------------------------------
   // Standing art for the direction a walk ended on
   // ------------------------------------------------------------
@@ -518,6 +567,21 @@
     clearStandArt();
 
     const entry = entryFor(token);
+
+    // Dungeon map: walk in place, when the character has the walk art for it.
+    const idleSrc = state.dungeon
+      ? cleanString(sourceActorFor(token)?.system?.props?.[DIR_FIELDS.downLeft.walk])
+      : "";
+    const idleArt = idleSrc ? loadIdleWalk(idleSrc, token.mesh.texture) : null;
+    if (idleArt && !idleArt.failed) {
+      state.standShown = {
+        tokenId: token.id, src: idleSrc, slot: "downLeft", art: idleArt, idle: true,
+        idleTexture: token.mesh.texture, ownSrc: cleanString(token.document?.texture?.src)
+      };
+      holdStandArt(token);
+      return;
+    }
+
     const pick = pickSlot(token, "stand", entry.dir);
     if (!pick || pick.slot === "downLeft") {
       entry.shownSlot = null;
@@ -553,7 +617,10 @@
     }
     if (!shown.art.ready) return;
 
-    const frame = shown.art.kind === "strip" ? shown.art.frames[0] : shown.art.texture;
+    const frames = shown.art.frames;
+    const frame = shown.art.kind !== "strip" ? shown.art.texture
+      : shown.idle ? frames[Math.floor(performance.now() / DUNGEON_IDLE_STRIP_FRAME_MS) % frames.length]
+      : frames[0];
     if (!frame?.valid) return;
 
     // Not during a pause: pause-screen.js freezes map videos on purpose.
