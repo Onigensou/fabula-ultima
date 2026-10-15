@@ -47,6 +47,9 @@ const ONE_SHOT_LOAD_WAIT_MS = 250;
 // Hurt-with-art shake (the art itself is the reaction; this adds the impact).
 const SHAKE_MS = { normal: 260, strong: 420 };
 const SHAKE_PX = { normal: 4, strong: 8 };
+// After a hurt clip on a hit that took HP to 0: how long to hold its last
+// frame waiting for the KO to take over before standing back up.
+const LETHAL_HURT_HOLD_MS = 1500;
 const STRONG_TINT = 0xff7a7a;
 
 let _socket = null;
@@ -61,6 +64,16 @@ const _tokens = new Map();
 const _arts = new Map();
 const _failedSrcs = new Set();
 let _stripTicker = null;
+
+// Debug trace (off by default): globalThis.ONI_BATTLER_POSE_DEBUG = true, then
+// read globalThis.__battlerPoseTrace — every pose decision with its reason.
+function trace(token, what, extra = {}) {
+  if (!globalThis.ONI_BATTLER_POSE_DEBUG) return;
+  const buf = (globalThis.__battlerPoseTrace ??= []);
+  const e = _tokens.get(token?.id);
+  buf.push({ t: Math.round(performance.now()), token: token?.name, what, lasting: e?.lasting, oneShot: e?.oneShot?.pose ?? null, ...extra });
+  if (buf.length > 400) buf.splice(0, buf.length - 400);
+}
 
 // ── boot ────────────────────────────────────────────────────────────────
 export function initBattlerPose() {
@@ -161,6 +174,7 @@ export function describeToken(tokenOrUuid) {
 function onTokenDrawn(token) {
   if (!inScope(token)) return;
   const entry = entryFor(token);
+  trace(token, "drawn");
   entry.shown = null;          // new mesh: whatever we laid on the old one is gone
   entry.applied = null;
   for (const src of declaredPoseSrcs(propsOf(token))) loadArt(token, src);
@@ -185,6 +199,7 @@ function onEffectChanged(effect) {
     if (next === entry.lasting) continue;
     const prev = entry.lasting;
     entry.lasting = next;
+    trace(token, "lasting", { from: prev, to: next, effect: effect.name });
     log(`battler-pose: ${token.name} ${prev} -> ${next}`);
     // Entering KO plays the fall from the start; anything else just switches.
     render(token, { restart: next === "ko" });
@@ -217,6 +232,7 @@ function startOneShot(token, pose, { hold = false, art = null } = {}) {
     if (token.destroyed) return 0;
     if (entry.oneShot?.timer) clearTimeout(entry.oneShot.timer);
     entry.oneShot = { pose, hold, timer: null };
+    trace(token, "oneShot", { pose, hold, ms: clipMs(a) });
     render(token, { restart: true });
     const ms = Math.min(MAX_ONE_SHOT_MS, clipMs(a) || STILL_MS);
     if (!hold) {
@@ -237,9 +253,24 @@ function startOneShot(token, pose, { hold = false, art = null } = {}) {
 function endOneShot(tokenId, pose) {
   const entry = _tokens.get(tokenId);
   if (!entry?.oneShot || entry.oneShot.pose !== pose) return;
+  trace(canvas?.tokens?.get?.(tokenId), "end", { pose });
   entry.oneShot = null;
   const token = canvas?.tokens?.get?.(tokenId);
-  if (token && !token.destroyed) render(token, { restart: true });
+  if (!token || token.destroyed) return;
+  // A lethal hit: the KO (marker or removal fall) lands a moment after the
+  // hurt clip ends. Hold the hurt clip's last frame instead of standing back
+  // up for that moment; whatever comes next renders over it. If nothing does
+  // (no KO marker, no removal), stand up after a short wait.
+  if (pose === "hurt" && Number(propsOf(token).current_hp) <= 0) {
+    trace(token, "hold-hurt-until-ko");
+    setTimeout(() => {
+      const t = canvas?.tokens?.get?.(tokenId);
+      const e = _tokens.get(tokenId);
+      if (t && !t.destroyed && e && !e.oneShot && e.shown === "hurt") render(t, { restart: true });
+    }, LETHAL_HURT_HOLD_MS);
+    return;
+  }
+  render(token, { restart: true });
 }
 
 // ── drawing ─────────────────────────────────────────────────────────────
@@ -252,6 +283,7 @@ function render(token, { restart = false, fresh = false } = {}) {
   const pose = shownPose(entry.lasting, entry.oneShot?.pose ?? null);
   const src = pose === "idle" ? null : poseSrc(propsOf(token), pose, _failedSrcs);
   const art = src ? _arts.get(artKey(token.id, src)) ?? loadArt(token, src) : null;
+  trace(token, "render", { pose, src: src?.split("/").pop() ?? null, ready: !!art?.ready, restart, fresh });
 
   if (!art || !art.ready) {
     // No art (or not loaded yet): the token's own image. A loading lasting
