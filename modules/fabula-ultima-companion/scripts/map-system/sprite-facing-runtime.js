@@ -170,6 +170,7 @@
     walkShown: null, // { tokenId, src, slot, art, idleTexture }
     standShown: null, // { tokenId, src, slot, art, idleTexture }
     standDirty: false, // the party token's standing art needs choosing again
+    walkIntent: null,  // the keyboard direction of the last move, { x, y }, or null
     dirSector: null, // the movement slice the current walk is in
 
     tickerFn: null
@@ -880,7 +881,9 @@
     state.walking = true;
     state.walkDistance += moved;
 
-    updateDirection(token, dx, dy);
+    const intent = state.walkIntent;
+    if (intent) updateDirection(token, intent.x, intent.y);
+    else updateDirection(token, dx, dy);
 
     showWalk(token);
   }
@@ -1213,6 +1216,14 @@
 
     if (doc.id === state.partyTokenId && (("x" in change) || ("y" in change))) {
       state.lastMoverIsMe = userId === game.user?.id;
+
+      // A keyboard walk says which way the key points. Sliding along a wall
+      // or stepping round a corner, the party still faces that way, as in a
+      // JRPG. It rides on the update, so every client faces the same way.
+      const intent = options?.oniWalkFacing;
+      state.walkIntent = (intent && Number.isFinite(intent.x) && Number.isFinite(intent.y))
+        ? { x: intent.x, y: intent.y }
+        : null;
 
       // Placed, not walked: do not read a facing out of the jump.
       if (options?.animate === false || options?.teleport === true) {

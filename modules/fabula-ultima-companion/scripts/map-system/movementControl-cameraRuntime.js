@@ -88,6 +88,14 @@
   // lands ahead of where it is drawn instead of pulling it back.
   const KEY_COAST_MS = 60;
 
+  // A held key slides along a wall only when the wall runs within this many
+  // degrees of the key's direction; hit more head-on, the party stops.
+  const KEY_SLIDE_MAX_DEG = 40;
+
+  // How far (in grid squares) a held key may step sideways round a corner it
+  // is only just catching on, smallest first.
+  const KEY_CORNER_NUDGE_GRID = [0.08, 0.16, 0.24];
+
   const KEY_VECTORS = {
     up: { x: 0, y: -1 },
     down: { x: 0, y: 1 },
@@ -155,6 +163,11 @@
     keyFacing: null,
     // Measured time for a leg to come back from the server (smoothed).
     keyLatencyMs: 40,
+    // Speed of the leg under way, squares a second (a slide is slower).
+    legSpeed: WALK_SPEED,
+    // How often a keyboard leg waited because its path was not yet clear
+    // from where the token will really start (for debugging hitches).
+    keySafetyWaits: 0,
 
     inputLocked: false,
     movementLockIds: new Set(),
@@ -869,20 +882,27 @@
     scheduleSlide(walkSeq, token.id, firstCenter, slideSpot, Math.max(0, duration - SLIDE_LEAD_MS));
   }
 
-  function walkDuration(distance) {
+  function walkDuration(distance, speed = WALK_SPEED) {
     const gridSize = canvas.dimensions?.size || 100;
-    return Math.max(1, Math.round((distance / gridSize / WALK_SPEED) * 1000));
+    return Math.max(1, Math.round((distance / gridSize / speed) * 1000));
   }
 
   // One straight, timed leg. Returns its duration in milliseconds.
-  async function walkTokenTo(token, spot, from) {
+  // speed: squares a second (a keyboard slide goes slower than a walk).
+  // facing: the keyboard direction, sent with the move so every client keeps
+  // the party facing the key while it slides (sprite-facing-runtime.js).
+  async function walkTokenTo(token, spot, from, { speed = WALK_SPEED, facing = null } = {}) {
     const center = topLeftToCenter(spot, token);
-    const duration = walkDuration(Math.hypot(center.x - from.x, center.y - from.y));
+    const duration = walkDuration(Math.hypot(center.x - from.x, center.y - from.y), speed);
+    state.legSpeed = speed;
 
-    await token.document.update({ x: spot.x, y: spot.y }, {
+    const options = {
       animate: true,
-      animation: { duration, movementSpeed: WALK_SPEED }
-    });
+      animation: { duration, movementSpeed: speed }
+    };
+    if (facing) options.oniWalkFacing = { x: facing.x, y: facing.y };
+
+    await token.document.update({ x: spot.x, y: spot.y }, options);
 
     DBG.verbose("CameraRuntime", "Central party token moved by right-click", {
       tokenId: token.id,
@@ -1027,17 +1047,85 @@
     const left = Math.hypot(end.x - here.x, end.y - here.y);
     if (left < 1) return here;
 
-    const travel = Math.min(left, (canvas.dimensions?.size || 100) * WALK_SPEED * (ms / 1000));
+    const travel = Math.min(left, (canvas.dimensions?.size || 100) * state.legSpeed * (ms / 1000));
     return {
       x: here.x + (((end.x - here.x) / left) * travel),
       y: here.y + (((end.y - here.y) / left) * travel)
     };
   }
 
+  // A leg toward u (unit vector) from origin, or null when it would not get
+  // anywhere. hit is where a wall stopped it, for a slide to be worked out.
+  function keyLegToward(token, origin, u, length) {
+    const walk = resolveWalk(token, origin, { x: origin.x + (u.x * length), y: origin.y + (u.y * length) }, { snap: false });
+    if (!walk.spot) return { spot: null, hit: walk.hit, moved: 0 };
+    const c = topLeftToCenter(walk.spot, token);
+    const moved = Math.hypot(c.x - origin.x, c.y - origin.y);
+    return { spot: moved >= KEY_MIN_STEP_PX ? walk.spot : null, hit: walk.hit, moved };
+  }
+
   /**
-   * Send the next leg of a keyboard walk: about one square ahead, through the
-   * same wall rules as a click (stop short, slide along), then queue the leg
-   * after it so a held key walks without a break.
+   * Where the next keyboard leg goes, JRPG-style: the party goes the way the
+   * key points or nowhere near it. Click walks keep their own, freer slide.
+   *   1. Straight ahead.
+   *   2. A diagonal held into a wall: on along whichever of its two
+   *      directions is open (hold up-right under a ceiling: walk right).
+   *   3. A wall met at a glancing angle (within KEY_SLIDE_MAX_DEG of the
+   *      key): slide along it, slower the steeper it is. Head-on: stop.
+   *   4. Caught on a corner by a few pixels: step round it.
+   * Returns { spot, speed } (speed as a share of the walk), or null.
+   */
+  function planKeyLeg(token, origin, dir, reach) {
+    const ahead = keyLegToward(token, origin, dir, reach);
+    if (ahead.spot) return { spot: ahead.spot, speed: 1 };
+
+    const diagonal = dir.x !== 0 && dir.y !== 0;
+
+    if (diagonal) {
+      let best = null;
+      for (const u of [{ x: Math.sign(dir.x), y: 0 }, { x: 0, y: Math.sign(dir.y) }]) {
+        const leg = keyLegToward(token, origin, u, reach);
+        if (leg.spot && (!best || leg.moved > best.moved)) best = leg;
+      }
+      if (best) return { spot: best.spot, speed: Math.SQRT1_2 };
+    }
+
+    const target = { x: origin.x + (dir.x * reach), y: origin.y + (dir.y * reach) };
+    const slideSpot = resolveSlide(token, origin, target, ahead.hit, { snap: false });
+    if (slideSpot) {
+      const c = topLeftToCenter(slideSpot, token);
+      const length = Math.hypot(c.x - origin.x, c.y - origin.y);
+      const cos = length > 0 ? (((c.x - origin.x) * dir.x) + ((c.y - origin.y) * dir.y)) / length : 0;
+      if (cos >= Math.cos(KEY_SLIDE_MAX_DEG * Math.PI / 180)) return { spot: slideSpot, speed: cos };
+    }
+
+    if (!diagonal) {
+      const grid = canvas.dimensions?.size || 100;
+      const side = { x: -dir.y, y: dir.x };
+      for (const share of KEY_CORNER_NUDGE_GRID) {
+        const offset = grid * share;
+        for (const sign of [1, -1]) {
+          const beside = { x: origin.x + (side.x * offset * sign), y: origin.y + (side.y * offset * sign) };
+          // Only a corner: from beside it, the way ahead is clearly open.
+          const past = keyLegToward(token, beside, dir, reach);
+          if (!past.spot || past.moved < reach * 0.5) continue;
+          // The sidestep itself goes forward as much as sideways.
+          const step = resolveWalk(token, origin, {
+            x: beside.x + (dir.x * offset),
+            y: beside.y + (dir.y * offset)
+          }, { snap: false });
+          if (step.spot && !step.hit) return { spot: step.spot, speed: 1 };
+        }
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Send the next leg of a keyboard walk: about one square ahead (see
+   * planKeyLeg for walls), then queue the leg after it so a held key walks
+   * without a break.
    */
   async function keyStep() {
     state.keyTimer = null;
@@ -1063,32 +1151,39 @@
 
     const origin = drawnCenter(token);
     const reach = (canvas.dimensions?.size || 100) * KEY_STEP_GRID;
-    const target = { x: origin.x + (dir.x * reach), y: origin.y + (dir.y * reach) };
 
-    const walk = resolveWalk(token, origin, target, { snap: false });
-    let spot = walk.spot;
-    if (spot) {
-      const c = topLeftToCenter(spot, token);
-      if (Math.hypot(c.x - origin.x, c.y - origin.y) < KEY_MIN_STEP_PX) spot = null;
-    }
-    if (!spot) spot = resolveSlide(token, origin, target, walk.hit, { snap: false });
+    // Foundry starts the new leg from wherever the token is drawn when the
+    // update comes back, not when it was sent. So the leg is planned (and
+    // timed) from where the token will be by then. Timed from the send point
+    // it was short of distance for its time (2.7 squares a second against 3);
+    // planned from it, the real path could clip a wall corner (seen once in a
+    // fuzz: a 5 px cut through a slanted wall).
+    const from = aheadOnCurrentLeg(token, origin, state.keyLatencyMs);
 
-    if (!spot) {
-      // Pushing straight into a wall: stand, and look again shortly.
+    const plan = planKeyLeg(token, from, dir, reach);
+    if (!plan) {
+      // Pushing into a wall: stand, and look again shortly.
       if (seq === state.keySeq) state.keyTimer = setTimeout(keyStep, KEY_BLOCKED_RETRY_MS);
       return;
     }
 
-    // Foundry starts the new leg from wherever the token is drawn when the
-    // update comes back, not when it was sent. Timing the leg from the send
-    // point makes it short of distance for its time: measured 2.7 squares a
-    // second against 3. So time it from where the token will be by then.
+    // The update may come back sooner or later than expected: the path must
+    // also be clear from where the token is now and from a little further on.
+    // If not, wait for the token to get there and plan again.
+    const edges = blockingEdges();
+    const end = topLeftToCenter(plan.spot, token);
+    const late = aheadOnCurrentLeg(token, origin, state.keyLatencyMs * 2);
+    if (!isSafeWalkSpot(token, origin, end, edges) || !isSafeWalkSpot(token, late, end, edges)) {
+      state.keySafetyWaits++;
+      if (seq === state.keySeq) state.keyTimer = setTimeout(keyStep, SLIDE_RETRY_MS);
+      return;
+    }
+
     const sentAt = performance.now();
-    const from = aheadOnCurrentLeg(token, origin, state.keyLatencyMs);
 
     let duration;
     try {
-      duration = await walkTokenTo(token, spot, from);
+      duration = await walkTokenTo(token, plan.spot, from, { speed: WALK_SPEED * plan.speed, facing: dir });
     } catch (err) {
       DBG.warn("CameraRuntime", "Keyboard walk leg failed", { error: err?.message ?? err });
       dropHeldKeys();
@@ -1116,7 +1211,7 @@
     const here = drawnCenter(token);
     const end = topLeftToCenter({ x: doc._source.x, y: doc._source.y }, token);
     const left = Math.hypot(end.x - here.x, end.y - here.y);
-    const coast = (canvas.dimensions?.size || 100) * WALK_SPEED * (KEY_COAST_MS / 1000);
+    const coast = (canvas.dimensions?.size || 100) * state.legSpeed * (KEY_COAST_MS / 1000);
 
     // Nearly there anyway: let the leg finish.
     if (left <= coast + 1) return;
@@ -1126,12 +1221,15 @@
       y: here.y + (((end.y - here.y) / left) * coast)
     }, token);
 
+    const options = {
+      animate: true,
+      animation: { duration: KEY_COAST_MS, movementSpeed: state.legSpeed },
+      oniBypassGate: true
+    };
+    if (state.keyFacing) options.oniWalkFacing = { ...state.keyFacing };
+
     try {
-      await doc.update({ x: stop.x, y: stop.y }, {
-        animate: true,
-        animation: { duration: KEY_COAST_MS, movementSpeed: WALK_SPEED },
-        oniBypassGate: true
-      });
+      await doc.update({ x: stop.x, y: stop.y }, options);
     } catch (err) {
       DBG.warn("CameraRuntime", "Keyboard walk stop failed", { error: err?.message ?? err });
     }
