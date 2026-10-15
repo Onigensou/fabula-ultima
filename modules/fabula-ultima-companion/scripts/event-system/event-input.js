@@ -14,7 +14,12 @@
  *     Cancel:  X
  *     Up:      Arrow Up, W
  *     Down:    Arrow Down, S
+ *     Walk:    the four arrows (held)
  * - Hands a press to whichever system is currently listening
+ * - Hands the held arrows to the walker (exploration walking) when no menu
+ *   took them first
+ * - Tracks whether the player last used the keyboard or the mouse, so
+ *   keyboard-only hints show only to someone playing on the keyboard
  *
  * A key does nothing here unless a listener takes it. With no listener, while
  * the game is paused, or when the listener declines, the key falls through to whatever it normally
@@ -30,6 +35,14 @@
  *     // return true when the press was used
  *   });
  *   stop(); // when finished
+ *
+ *   window.oni.Input.setWalker((direction, pressed) => {
+ *     // direction is "up", "down", "left" or "right"; pressed is false on release.
+ *     // Return true when the key belongs to the walk.
+ *   });
+ *
+ *   window.oni.Input.mode          // "key" or "pointer"
+ *   Hooks.on("oniInputMode", (mode) => { ... })
  */
 
 (() => {
@@ -56,10 +69,53 @@
     };
   }
 
+  // The exploration walk. One at a time; the movement runtime sets it.
+  let walker = null;
+
+  function setWalker(fn) {
+    walker = typeof fn === "function" ? fn : null;
+  }
+
+  function walk(direction, pressed) {
+    if (!walker) return false;
+    try {
+      return walker(direction, pressed) === true;
+    } catch (e) {
+      console.warn(INSTALL_TAG, "The walker threw.", e);
+      return false;
+    }
+  }
+
+  // Keyboard or mouse, whichever was used last.
+  let mode = "pointer";
+  let pointerTravel = 0;
+
+  function setMode(next) {
+    pointerTravel = 0;
+    if (next === mode) return;
+    mode = next;
+    window.oni.Input.mode = mode;
+    Hooks.callAll("oniInputMode", mode);
+  }
+
+  // A mouse that is merely nudged (a desk bump) should not take over from the
+  // keyboard; a click, or a real move, does.
+  const POINTER_TAKEOVER_PX = 24;
+
+  function installPointerWatch() {
+    window.addEventListener("pointerdown", () => setMode("pointer"), { capture: true, passive: true });
+    window.addEventListener("pointermove", (ev) => {
+      if (mode !== "key") return;
+      pointerTravel += Math.abs(ev.movementX || 0) + Math.abs(ev.movementY || 0);
+      if (pointerTravel >= POINTER_TAKEOVER_PX) setMode("pointer");
+    }, { capture: true, passive: true });
+  }
+
   // Returns true when a listener used the press.
   // While the game is paused nothing listens, as on a console: the press falls
   // through, so the GM's Spacebar always reaches core and resumes.
   function dispatch(action, source = "key") {
+    if (source === "key") setMode("key");
     if (globalThis.game?.paused) return false;
     for (const handler of [...listeners]) {
       try {
@@ -108,6 +164,31 @@
         restricted: false,
         precedence: CONST.KEYBINDING_PRECEDENCE.PRIORITY
       });
+
+      // Walking. Registered after Menu Up / Down on purpose: Foundry runs
+      // bindings of equal precedence in the order they were registered, so an
+      // open menu takes the arrow first and the walk only gets it when nothing
+      // did. Held keys do not repeat; the walker keeps going until the release.
+      const WALK_KEYS = [
+        ["oniWalkUp", "Walk Up", "up", "ArrowUp"],
+        ["oniWalkDown", "Walk Down", "down", "ArrowDown"],
+        ["oniWalkLeft", "Walk Left", "left", "ArrowLeft"],
+        ["oniWalkRight", "Walk Right", "right", "ArrowRight"]
+      ];
+      for (const [action, name, direction, key] of WALK_KEYS) {
+        game.keybindings.register(MODULE_ID, action, {
+          name,
+          hint: "Walk the party on exploration maps while held. Elsewhere the key does what it normally does.",
+          editable: [{ key }],
+          onDown: () => {
+            setMode("key");
+            return walk(direction, true);
+          },
+          onUp: () => walk(direction, false),
+          restricted: false,
+          precedence: CONST.KEYBINDING_PRECEDENCE.PRIORITY
+        });
+      }
     } catch (e) {
       console.error(INSTALL_TAG, "Failed to register keybindings.", e);
     }
@@ -118,10 +199,13 @@
     ACTIONS,
     listen,
     dispatch,
-    hasListeners: () => listeners.length > 0
+    hasListeners: () => listeners.length > 0,
+    setWalker,
+    mode
   };
 
   Hooks.once("init", registerKeybindings);
+  installPointerWatch();
 
   console.debug(INSTALL_TAG, "Installed. API: window.oni.Input");
 })();

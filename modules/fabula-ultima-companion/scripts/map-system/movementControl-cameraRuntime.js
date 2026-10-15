@@ -7,8 +7,9 @@
  * - Keep the camera-follow-token behavior for player clients
  * - Only operate when scene flag cameraFollowToken is true
  * - Follow the current Central Party Token resolved by Movement Control API
- * - Allow only the current Main Controller to right-click move the party token
- * - Keep other players in observer mode
+ * - Allow only the current Main Controller to right-click move the party token,
+ *   or walk it by holding the arrow keys
+ * - Keep other players in observer mode (their arrow keys do nothing here)
  *
  * Notes:
  * - GM client is never affected
@@ -70,6 +71,30 @@
   // so rounding to whole pixels cannot eat into the clearance on the way.
   const SLIDE_NUDGE_PX = 1.5;
 
+  // Keyboard walking: while an arrow is held, each leg aims this many grid
+  // squares ahead, and the next leg is sent this long before the current one
+  // ends (about one server round trip), so a held key walks without stopping.
+  const KEY_STEP_GRID = 1;
+  const KEY_LEAD_MS = 120;
+
+  // Pushing into a wall with nothing to slide along: look again this often,
+  // without moving, in case the direction now has room.
+  const KEY_BLOCKED_RETRY_MS = 100;
+
+  // A leg shorter than this is not sent; at a wall it would be a twitch.
+  const KEY_MIN_STEP_PX = 2;
+
+  // On release the party carries on this long before stopping, so the stop
+  // lands ahead of where it is drawn instead of pulling it back.
+  const KEY_COAST_MS = 60;
+
+  const KEY_VECTORS = {
+    up: { x: 0, y: -1 },
+    down: { x: 0, y: 1 },
+    left: { x: -1, y: 0 },
+    right: { x: 1, y: 0 }
+  };
+
   /**
    * Where the followed token should sit, in world units.
    *
@@ -121,6 +146,13 @@
 
     walkSeq: 0,
     slideTimer: null,
+
+    // Arrow keys held down for walking, the pending next leg, and the last
+    // direction walked by keyboard (which way the party is "looking").
+    heldKeys: new Set(),
+    keySeq: 0,
+    keyTimer: null,
+    keyFacing: null,
 
     inputLocked: false,
     movementLockIds: new Set(),
@@ -255,6 +287,9 @@
     state.movementLockIds.add(String(lockId));
     state.inputLocked = true;
     clearPendingMove();
+    // A key still held when the lock lifts must be pressed again, or the party
+    // walks off the moment the dialogue closes.
+    dropHeldKeys();
 
     DBG.verbose("CameraRuntime", "Movement locked", {
       lockId: String(lockId),
@@ -481,7 +516,7 @@
    * Returned as `spot`, with `hit`: the point where a wall stopped the walk
    * (null on open ground), which is what a slide is worked out from.
    */
-  function resolveWalk(token, origin, destination) {
+  function resolveWalk(token, origin, destination, { snap = true } = {}) {
     const span = Math.hypot(destination.x - origin.x, destination.y - origin.y);
     if (span < 1) return { spot: null, hit: null };
 
@@ -506,10 +541,16 @@
 
     if (!blocked) {
       const free = toWalkPosition(destination, token);
-      const snapped = snapTopLeftIfGrid(free.x, free.y);
-      const snappedPos = clampToSceneTopLeft(snapped.x, snapped.y, token);
+      const spots = [free];
 
-      for (const spot of [snappedPos, free]) {
+      // A click lands on the grid; a held key does not, or every leg would
+      // bend toward the nearest square.
+      if (snap) {
+        const snapped = snapTopLeftIfGrid(free.x, free.y);
+        spots.unshift(clampToSceneTopLeft(snapped.x, snapped.y, token));
+      }
+
+      for (const spot of spots) {
         if (isSafeWalkSpot(token, origin, topLeftToCenter(spot, token), edges)) return { spot, hit: null };
       }
     }
@@ -544,7 +585,7 @@
    * wall that was hit, until level with the clicked point. Returns a token
    * top-left, or null when there is no slide worth making.
    */
-  function resolveSlide(token, start, destination, hit) {
+  function resolveSlide(token, start, destination, hit, { snap = true } = {}) {
     if (!SLIDE_ENABLED || !hit) return null;
 
     let wall = null;
@@ -583,7 +624,7 @@
       y: start.y + (ty * along) + (ny * SLIDE_NUDGE_PX)
     };
 
-    const spot = resolveWalk(token, start, slideTo).spot;
+    const spot = resolveWalk(token, start, slideTo, { snap }).spot;
     if (!spot) return null;
 
     const center = topLeftToCenter(spot, token);
@@ -913,6 +954,166 @@
     }
   }
 
+  // ------------------------------------------------------------------
+  // Keyboard walking (arrow keys, held)
+  // ------------------------------------------------------------------
+
+  // Where the held keys point, as a unit vector. Two keys make a diagonal at
+  // the same speed as a straight walk; opposite keys cancel out.
+  function keyVector() {
+    let x = 0;
+    let y = 0;
+    for (const key of state.heldKeys) {
+      x += KEY_VECTORS[key]?.x ?? 0;
+      y += KEY_VECTORS[key]?.y ?? 0;
+    }
+    const length = Math.hypot(x, y);
+    if (length < 0.5) return null;
+    return { x: x / length, y: y / length };
+  }
+
+  function cancelKeyLeg() {
+    state.keySeq++;
+    if (state.keyTimer) clearTimeout(state.keyTimer);
+    state.keyTimer = null;
+  }
+
+  // Forget the held keys without stopping the token: whatever takes over (a
+  // click, a lock, a scene change) decides where it goes next. The keys only
+  // walk again once pressed again, since a held key does not repeat.
+  function dropHeldKeys() {
+    state.heldKeys.clear();
+    cancelKeyLeg();
+  }
+
+  /**
+   * An arrow key went down or up. Returns true when the key belongs to the
+   * walk, so Foundry does not also pan the map or nudge a token with it. On a
+   * walk map every player's arrows belong to the walk: the one holding the
+   * party walks, everyone else's arrows do nothing. The GM is never affected.
+   */
+  function pressDirection(direction, pressed) {
+    if (game.user?.isGM) return false;
+    if (!state.enabled || state.mode === "inactive" || !state.followEnabledForScene) return false;
+    if (!KEY_VECTORS[direction]) return false;
+
+    if (pressed) {
+      if (game.paused || !canCurrentUserMovePartyToken()) return true;
+      state.heldKeys.add(direction);
+    } else if (!state.heldKeys.delete(direction)) {
+      // Dropped already (a click or a lock took over); nothing to release.
+      return true;
+    }
+
+    // Any change of keys turns the party at once, from where it is drawn.
+    cancelKeyLeg();
+    keyStep();
+    return true;
+  }
+
+  /**
+   * Send the next leg of a keyboard walk: about one square ahead, through the
+   * same wall rules as a click (stop short, slide along), then queue the leg
+   * after it so a held key walks without a break.
+   */
+  async function keyStep() {
+    state.keyTimer = null;
+    const seq = state.keySeq;
+
+    const dir = keyVector();
+    if (!dir) {
+      stopKeyWalk();
+      return;
+    }
+    if (game.paused) return;
+    if (!canCurrentUserMovePartyToken()) {
+      dropHeldKeys();
+      return;
+    }
+
+    const token = getFollowToken();
+    if (!token?.document?.isOwner) return;
+
+    // The keys take over from a click walk and its pending slide.
+    clearPendingMove();
+    state.keyFacing = dir;
+
+    const origin = drawnCenter(token);
+    const reach = (canvas.dimensions?.size || 100) * KEY_STEP_GRID;
+    const target = { x: origin.x + (dir.x * reach), y: origin.y + (dir.y * reach) };
+
+    const walk = resolveWalk(token, origin, target, { snap: false });
+    let spot = walk.spot;
+    if (spot) {
+      const c = topLeftToCenter(spot, token);
+      if (Math.hypot(c.x - origin.x, c.y - origin.y) < KEY_MIN_STEP_PX) spot = null;
+    }
+    if (!spot) spot = resolveSlide(token, origin, target, walk.hit, { snap: false });
+
+    if (!spot) {
+      // Pushing straight into a wall: stand, and look again shortly.
+      if (seq === state.keySeq) state.keyTimer = setTimeout(keyStep, KEY_BLOCKED_RETRY_MS);
+      return;
+    }
+
+    let duration;
+    try {
+      duration = await walkTokenTo(token, spot, origin);
+    } catch (err) {
+      DBG.warn("CameraRuntime", "Keyboard walk leg failed", { error: err?.message ?? err });
+      dropHeldKeys();
+      return;
+    }
+
+    if (seq !== state.keySeq) return;
+    state.keyTimer = setTimeout(keyStep, Math.max(0, duration - KEY_LEAD_MS));
+  }
+
+  /**
+   * All keys up: stop a little ahead of where the party is drawn, along the
+   * way it is already going, so it neither runs on to the end of the leg nor
+   * pulls back to where it was a moment ago.
+   */
+  async function stopKeyWalk() {
+    cancelKeyLeg();
+    if (game.user?.isGM || !state.cachedIsMainController) return;
+
+    const token = getFollowToken();
+    const doc = token?.document;
+    if (!doc?.isOwner) return;
+
+    const here = drawnCenter(token);
+    const end = topLeftToCenter({ x: doc._source.x, y: doc._source.y }, token);
+    const left = Math.hypot(end.x - here.x, end.y - here.y);
+    const coast = (canvas.dimensions?.size || 100) * WALK_SPEED * (KEY_COAST_MS / 1000);
+
+    // Nearly there anyway: let the leg finish.
+    if (left <= coast + 1) return;
+
+    const stop = toWalkPosition({
+      x: here.x + (((end.x - here.x) / left) * coast),
+      y: here.y + (((end.y - here.y) / left) * coast)
+    }, token);
+
+    try {
+      await doc.update({ x: stop.x, y: stop.y }, {
+        animate: true,
+        animation: { duration: KEY_COAST_MS, movementSpeed: WALK_SPEED },
+        oniBypassGate: true
+      });
+    } catch (err) {
+      DBG.warn("CameraRuntime", "Keyboard walk stop failed", { error: err?.message ?? err });
+    }
+  }
+
+  // Window lost focus, game paused: a key released while we were not looking
+  // never sends its key-up, so stop as if every key had been released.
+  function releaseAllKeys() {
+    if (!state.heldKeys.size) return;
+    state.heldKeys.clear();
+    stopKeyWalk();
+  }
+
   async function consumeMoveQueue() {
     if (state.isMoving) return;
     state.isMoving = true;
@@ -980,6 +1181,8 @@
           y: ev.clientY
         });
 
+        // The latest input wins: a click ends a keyboard walk.
+        dropHeldKeys();
         state.pendingDestination = p;
         consumeMoveQueue();
         return;
@@ -1007,6 +1210,8 @@
       }
     };
     addDomListener(view, "pointermove", onPointerMove, { capture: true });
+
+    addDomListener(window, "blur", releaseAllKeys);
 
     DBG.verbose("CameraRuntime", "Installed input blockers");
   }
@@ -1160,6 +1365,7 @@
     register("canvasTearDown", () => {
       if (game.user?.isGM) return;
       cancelPendingSlide();
+      dropHeldKeys();
       detachTicker();
       removeInputBlockers();
     });
@@ -1201,6 +1407,11 @@
       }
 
       scheduleApply("updateToken", 20);
+    });
+
+    register("pauseGame", (paused) => {
+      if (game.user?.isGM) return;
+      if (paused) releaseAllKeys();
     });
 
     register("updateActor", () => {
@@ -1264,6 +1475,10 @@
     releaseCamera,
     getFollowTarget,
 
+    pressDirection,
+    // The last direction walked by keyboard, as a unit vector, or null.
+    getKeyFacing: () => (state.keyFacing ? { ...state.keyFacing } : null),
+
     shutdown
   };
 
@@ -1285,6 +1500,7 @@
 
     installPreUpdateGateOnce();
     installHooks();
+    window.oni?.Input?.setWalker?.(pressDirection);
 
     if (canvas?.ready) {
       ensureInputBlockersInstalled();

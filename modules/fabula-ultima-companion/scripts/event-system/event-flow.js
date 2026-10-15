@@ -289,7 +289,11 @@
     const want = state.active.size > 0;
 
     if (want && !state.stopInput) {
-      state.stopInput = window.oni.Input?.listen?.(() => press()) ?? (() => {});
+      // Confirm and Cancel only: the arrows belong to the walk, which a free
+      // event leaves running, and to any menu opened over the dialogue.
+      state.stopInput = window.oni.Input?.listen?.(({ action }) =>
+        (action === "confirm" || action === "cancel") ? press() : false
+      ) ?? (() => {});
 
       // A left-click on the map advances too. Not for the GM, who clicks the
       // map for other reasons; the GM uses the keys or clicks the bubble.
