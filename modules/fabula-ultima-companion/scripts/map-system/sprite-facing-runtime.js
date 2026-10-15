@@ -370,7 +370,27 @@
     return VIDEO_EXTENSIONS.some(ext => path.endsWith("." + ext));
   }
 
+  // Foundry's texture cache destroys images it has not drawn for a while; the
+  // GM, who loads far more of them, loses them first. The Texture object kept
+  // here outlives its base (`valid` still reads true) but draws nothing, so a
+  // walk in that direction made the token vanish on the GM's screen (seen
+  // live: 6 of 9 images gone on the GM, all 9 fine on the player).
+  function isArtDead(art) {
+    if (!art?.ready) return false;
+    const base = art.kind === "strip" ? art.frames?.[0]?.baseTexture : art.texture?.baseTexture;
+    return !base || base.destroyed;
+  }
+
+  // Forget art whose image was destroyed, so the next use loads it again.
+  function dropIfDead(key) {
+    const art = state.walkArt.get(key);
+    if (!art || !isArtDead(art)) return;
+    try { art.video?.pause(); } catch (_) {}
+    state.walkArt.delete(key);
+  }
+
   function loadWalkArt(src, idleTexture) {
+    dropIfDead(src);
     let art = state.walkArt.get(src);
     if (art) return art;
 
@@ -454,11 +474,12 @@
     if (!src) return;
 
     const shown = state.walkShown;
-    if (shown && shown.tokenId === token.id && shown.src === src) {
+    if (shown && shown.tokenId === token.id && shown.src === src && !isArtDead(shown.art)) {
       advanceWalkArt(token);
       return;
     }
-    // A change of direction mid-walk: put the standing art back, then take the new walk.
+    // A change of direction mid-walk, or the art on show was destroyed: put
+    // the standing art back, then take the new (or reloaded) walk.
     if (shown) hideWalkArt();
 
     const idleTexture = mesh.texture;
@@ -524,6 +545,7 @@
     if (!isVideoSrc(src)) return loadWalkArt(src, idleTexture);
 
     const key = "idle:" + src;
+    dropIfDead(key);
     let art = state.walkArt.get(key);
     if (art) return art;
 
@@ -613,6 +635,11 @@
     if (shown.art.failed) {
       clearStandArt();
       state.standDirty = true; // choose again: the next direction on the list
+      return;
+    }
+    if (isArtDead(shown.art)) {
+      clearStandArt();
+      state.standDirty = true; // choose again, which loads the image afresh
       return;
     }
     if (!shown.art.ready) return;
