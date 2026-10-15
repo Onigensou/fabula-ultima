@@ -340,6 +340,8 @@
 
       this.tileId = candidate?.tileId ?? null;
       this.tokenId = token.id;
+      // A talk button joins the NPC's overhead row (window.oni.Interact).
+      if (this.kind === "talk") this.el.dataset.tokenId = token.id;
       this.desiredVisible = true;
       this.el.title = candidate?.tileName ? `${this.defaultTitle}: ${candidate.tileName}` : this.defaultTitle;
 

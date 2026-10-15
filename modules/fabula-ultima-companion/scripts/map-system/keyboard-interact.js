@@ -392,6 +392,65 @@
   }
 
   // ------------------------------------------------------------
+  // Overhead row: an NPC's buttons side by side above its sprite
+  // ------------------------------------------------------------
+  // Talk, Shop and Refine each place their own button, at a fixed number of
+  // screen pixels above the middle of the NPC's square. Walk-map sprites fill
+  // the square and are zoomed large, so that landed on the NPC's head. Here,
+  // after they have placed theirs, every frame, all of one NPC's buttons are
+  // lined up in one centred row just above the top of its drawn sprite.
+  const ROW_SELECTOR = ".oni-event-btn.is-talk, .fu-shop-btn, .fu-refine-prox-btn";
+  const ROW_ORDER = ["is-talk", "fu-shop-btn", "fu-refine-prox-btn"];
+  const ROW_SLOT_PX = 44;
+  const ROW_LIFT_PX = 8;
+
+  let rowTicker = null;
+
+  function rowRank(el) {
+    const i = ROW_ORDER.findIndex(c => el.classList.contains(c));
+    return i < 0 ? ROW_ORDER.length : i;
+  }
+
+  function layoutOverheadRows() {
+    if (!canvas?.ready) return;
+
+    const rows = new Map();
+    for (const el of document.querySelectorAll(ROW_SELECTOR)) {
+      if (!el.classList.contains("is-visible") || el.classList.contains("is-hiding")) continue;
+      const id = el.dataset.tokenId;
+      if (!id) continue;
+      if (!rows.has(id)) rows.set(id, []);
+      rows.get(id).push(el);
+    }
+
+    for (const [id, els] of rows) {
+      const token = canvas.tokens?.get(id);
+      if (!token?.mesh || token.mesh.destroyed) continue;
+
+      const bounds = token.mesh.getBounds();
+      const cx = bounds.x + (bounds.width / 2);
+      els.sort((a, b) => rowRank(a) - rowRank(b));
+
+      els.forEach((el, i) => {
+        // Buttons are centred on left/top (translate -50%).
+        const half = (el.offsetHeight || 34) / 2;
+        const left = `${Math.round(cx + ((i - ((els.length - 1) / 2)) * ROW_SLOT_PX))}px`;
+        const top = `${Math.round(bounds.top - ROW_LIFT_PX - half)}px`;
+        if (el.style.left !== left) el.style.left = left;
+        if (el.style.top !== top) el.style.top = top;
+      });
+    }
+  }
+
+  function attachRowTicker() {
+    if (rowTicker || !canvas?.app?.ticker) return;
+    rowTicker = () => layoutOverheadRows();
+    // Lowest priority: after the camera has moved and the systems have
+    // placed their buttons for this frame.
+    canvas.app.ticker.add(rowTicker, null, PIXI.UPDATE_PRIORITY.UTILITY);
+  }
+
+  // ------------------------------------------------------------
   // Running a command
   // ------------------------------------------------------------
   async function runCommand(cmd) {
@@ -579,6 +638,10 @@
   };
 
   Hooks.once("ready", () => {
+    // The overhead row is for everyone who sees the buttons, the GM included.
+    attachRowTicker();
+    Hooks.on("canvasReady", attachRowTicker);
+
     if (game.user?.isGM) return;
 
     // Registered at ready, so it is the last listener asked: a dialogue or a
