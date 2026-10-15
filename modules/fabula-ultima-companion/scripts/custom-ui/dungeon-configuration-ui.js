@@ -80,6 +80,7 @@
   const DEPTH_NEAR_SCALE_KEY = "depthNearScale";   // number: sprite multiplier at the near line
   const DEPTH_CURVE_KEY      = "depthCurve";       // number: ramp power (>1 shrinks faster near the top)
   const DEPTH_SORT_KEY       = "depthSort";        // boolean: y-sort tokens (nearer draws in front)
+  const OCCLUDERS_ENABLED_KEY = "occludersEnabled"; // boolean: foreground occluders (foreground-occluder.js)
   // Invoker wellsprings present on this scene. Per-element boolean under general
   // (`wellspring_<elem>`). The five RAW ones: UNSET/true → available, false →
   // absent. Moon (dark) / Sun (light) are heroic-only: UNSET/false → absent.
@@ -804,6 +805,22 @@
             </div>
           </div>
 
+          <div class="oni-occluder-group">
+            <h3 style="margin:12px 0 6px;"><i class="fas fa-house-chimney"></i> Foreground Occluders</h3>
+            <div class="form-group">
+              <label>Walk Behind Objects</label>
+              <div class="form-fields">
+                <input type="checkbox" class="oni-occluders-enabled"
+                       name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${OCCLUDERS_ENABLED_KEY}" data-dtype="Boolean" />
+              </div>
+              <p class="notes">
+                Characters walking behind houses, wells, fences and trees are covered by them.
+                Needs occluder data made for this map by the Map Occluder tool.
+              </p>
+              <p class="notes oni-occluder-status" style="font-style:italic;margin:0;"></p>
+            </div>
+          </div>
+
           <h3 style="margin:12px 0 6px;"><i class="fas fa-tag"></i> Scene Type</h3>
           <p class="notes" style="margin:0 0 8px;">Tag this scene for the Travel system. Used to categorise destinations in the Travel dialog.</p>
 
@@ -1192,6 +1209,18 @@
       if (depthSortCb) {
         const raw = safeGet(fabulaData, `${GENERAL_KEY}.${DEPTH_SORT_KEY}`, null);
         depthSortCb.checked = (raw === null) ? true : normalizeBoolean(raw, true);
+      }
+
+      // Foreground occluders: checkbox + what data this scene carries
+      const occCb = generalPanel?.querySelector("input.oni-occluders-enabled");
+      if (occCb) occCb.checked = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${OCCLUDERS_ENABLED_KEY}`, false), false);
+      const occStatus = generalPanel?.querySelector(".oni-occluder-status");
+      if (occStatus) {
+        const occData = scene?.getFlag?.(MODULE_ID, "occluders");
+        const cleanSrc = (v) => String(v ?? "").split("?")[0];
+        if (!occData?.objects?.length) occStatus.textContent = "No occluder data on this scene yet.";
+        else if (cleanSrc(occData.src) !== cleanSrc(scene?.background?.src)) occStatus.textContent = `Data for ${occData.objects.length} objects, but the map image has changed since: re-run the tool.`;
+        else occStatus.textContent = `Data for ${occData.objects.length} objects (${String(occData.src).split("/").pop()}).`;
       }
 
       // Scene type checkboxes prefill
