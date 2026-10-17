@@ -24,6 +24,11 @@
  *   stay consistent because each overlay sits directly above its own token.
  * - A token with less than FRAG_HIDE of its body still showing is hidden
  *   completely (and its sprite shadow), so nobody is left as a sliver.
+ * - Silhouette (per-scene switch, party token only): the covered part of the
+ *   party sprite is drawn again as a pale-blue silhouette ON the object, so
+ *   players never lose their character. Its mask is the overlay's own opaque
+ *   area (a white copy of it, see below), so it matches the occlusion pixel
+ *   for pixel; it keeps showing when the fragment rule hides the token.
  *
  * Client-local and purely visual: no document writes, nothing synced.
  *
@@ -36,9 +41,17 @@
  * - Reading pixels back from a VIDEO texture (walk animations) returns an
  *   empty image. Overlay visibility never depends on reading the sprite; the
  *   body shape falls back to the token's standing art.
+ * - PIXI 7 sprite masks multiply by the mask's RED channel: masking with the
+ *   coloured overlay leaves the silhouette almost invisible, so the mask is a
+ *   separate white image.
+ * - A sprite's own alpha is applied BEFORE its filters: fading with
+ *   sprite.alpha and then cutting soft pixels (the shadow oval baked into the
+ *   walk art) with a colour matrix removes the whole body. Cut first, fade in
+ *   a second filter.
  *
  * Storage (scene flags):
  *   flags.<module>.oniFabula.general.occludersEnabled  boolean  per-scene switch (Scene Config)
+ *   flags.<module>.oniFabula.general.occluderSilhouette boolean  party silhouette (Scene Config)
  *   flags.<module>.occluders = {
  *     v: 1,
  *     src:  background image path the data was made from (stale-data guard),
@@ -61,6 +74,7 @@
   const FABULA_ROOT_KEY = "oniFabula";
   const GENERAL_KEY = "general";
   const ENABLED_KEY = "occludersEnabled";
+  const SILHOUETTE_KEY = "occluderSilhouette";
   const DATA_KEY = "occluders";
   const DATA_VERSION = 1;
 
@@ -68,6 +82,12 @@
   const FRAG_SHOW = 0.20;      // ... and show it again above this (no flicker at the edge)
   const SOLID_ALPHA = 160;     // sprite pixels at or above this alpha count as body
   const PAD = 2;               // overlay margin around the token's drawn sprite (image px)
+
+  // Silhouette look: pale blue at 62%. The alpha row (4a - 2.4) drops the soft,
+  // half-transparent shadow oval baked into the walk art and keeps the body.
+  const SIL_COLOR = [0.55, 0.8, 1.0];
+  const SIL_ALPHA = 0.62;
+  const SIL_ALPHA_CUT = [4, -2.4];
 
   const TAG = "[ONI][Occluder]";
   const DEBUG_KEY = "ONI_OCCLUDER_DEBUG";
@@ -82,6 +102,7 @@
     installed: false,
     sceneId: null,
     active: false,
+    silhouette: false,       // scene switch, read on build
     reason: "not built",
     objects: [],             // { id, x, y, w, h, ground: Uint16Array, rgba: Uint8Array }
     img: null,               // { w, h, sx, sy, kx, ky }  image <-> scene mapping
@@ -182,6 +203,7 @@
     if (!objects.length) { state.reason = "no object loaded"; return; }
 
     state.objects = objects;
+    state.silhouette = safeGet(scene.getFlag?.(MODULE_ID, FABULA_ROOT_KEY), `${GENERAL_KEY}.${SILHOUETTE_KEY}`, false) === true;
     state.active = true;
     state.reason = `active (${reason})`;
     canvas.app.ticker.add(tick, null, PIXI.UPDATE_PRIORITY.LOW);
@@ -259,7 +281,7 @@
     spr.elevation = 0;
     spr.sortLayer = PrimaryCanvasGroup.SORT_LAYERS.TOKENS;
     canvas.primary.addChild(spr);
-    const rec = { spr, canvas: c, ctx: c.getContext("2d"), tex, key: "", cover: 0, painted: 0 };
+    const rec = { spr, canvas: c, ctx: c.getContext("2d"), tex, key: "", cover: 0, painted: 0, sil: null };
     state.overlays.set(tokenId, rec);
     return rec;
   }
@@ -267,9 +289,89 @@
   function dropOverlay(tokenId) {
     const o = state.overlays.get(tokenId);
     if (!o) return;
+    dropSilhouette(o);
     try { o.spr.destroy(); } catch {}
     try { o.tex.destroy(true); } catch {}
     state.overlays.delete(tokenId);
+  }
+
+  // --------------------------------------------------------------------------
+  // Party silhouette
+  // --------------------------------------------------------------------------
+  /** The party token = the token of the movement system's central party actor. */
+  function isPartyToken(token) {
+    try {
+      const snap = FUCompanion?.api?.MovementControl?.getLastSnapshot?.();
+      const id = snap?.centralPartyActorId ?? null;
+      return !!id && token.document?.actorId === id;
+    } catch {
+      return false;
+    }
+  }
+
+  function newSilhouette() {
+    const mc = document.createElement("canvas");
+    mc.width = 4; mc.height = 4;
+    const maskTex = PIXI.Texture.from(mc);
+    const mask = new PIXI.Sprite(maskTex);
+    mask.eventMode = "none";
+    canvas.stage.addChild(mask);               // outside primary: its transform stays current
+
+    const spr = new PIXI.Sprite(PIXI.Texture.EMPTY);
+    spr.name = "oniOccluderSilhouette";
+    spr.eventMode = "none";
+    spr.elevation = 0;
+    spr.sortLayer = PrimaryCanvasGroup.SORT_LAYERS.TOKENS;
+    const tint = new PIXI.ColorMatrixFilter();
+    const [r, g, b] = SIL_COLOR;
+    tint.matrix = [0, 0, 0, 0, r, 0, 0, 0, 0, g, 0, 0, 0, 0, b, 0, 0, 0, SIL_ALPHA_CUT[0], SIL_ALPHA_CUT[1]];
+    const fade = new PIXI.ColorMatrixFilter();
+    fade.matrix = [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, SIL_ALPHA, 0];
+    spr.filters = [tint, fade];
+    spr.mask = mask;
+    canvas.primary.addChild(spr);
+    return { spr, mask, maskCanvas: mc, maskCtx: mc.getContext("2d"), maskTex };
+  }
+
+  function dropSilhouette(o) {
+    const s = o?.sil;
+    if (!s) return;
+    try { s.spr.mask = null; s.spr.destroy({ texture: false }); } catch {}
+    try { s.mask.destroy(); } catch {}
+    try { s.maskTex.destroy(true); } catch {}
+    o.sil = null;
+  }
+
+  /** White copy of the overlay's opaque area, same size and place. */
+  function paintSilhouetteMask(o, d, w, h, x, y, sw, sh) {
+    const s = o.sil;
+    if (s.maskCanvas.width !== w || s.maskCanvas.height !== h) {
+      const mc = document.createElement("canvas");
+      mc.width = w; mc.height = h;
+      const old = s.maskTex;
+      s.maskCanvas = mc; s.maskCtx = mc.getContext("2d"); s.maskTex = PIXI.Texture.from(mc);
+      s.mask.texture = s.maskTex;
+      old.destroy(true);
+    }
+    const img = s.maskCtx.createImageData(w, h), m = img.data;
+    for (let i = 3; i < d.length; i += 4) if (d[i]) { m[i - 3] = 255; m[i - 2] = 255; m[i - 1] = 255; m[i] = 255; }
+    s.maskCtx.putImageData(img, 0, 0);
+    s.maskTex.baseTexture.update();
+    s.mask.position.set(x, y);
+    s.mask.width = sw;
+    s.mask.height = sh;
+  }
+
+  /** Follow the token's sprite every frame (walk video, facing flip, sway, depth scale). */
+  function syncSilhouette(o, mesh) {
+    const spr = o.sil.spr;
+    if (spr.texture !== mesh.texture) spr.texture = mesh.texture;
+    spr.anchor.copyFrom(mesh.anchor);
+    spr.position.copyFrom(mesh.position);
+    spr.scale.copyFrom(mesh.scale);
+    spr.rotation = mesh.rotation;
+    const sortKey = o.spr.sort + 0.1;
+    if (spr.sort !== sortKey) spr.sort = sortKey;
   }
 
   function setHidden(token, on) {
@@ -322,6 +424,9 @@
     // feet in image px (ground lines are stored in image px)
     const feet = ((token.document.y + token.h) - I.sy) * I.ky;
     const o = state.overlays.get(token.id) ?? newOverlay(token.id);
+    const wantSil = state.silhouette && isPartyToken(token);
+    if (wantSil && !o.sil) { o.sil = newSilhouette(); o.key = ""; }
+    else if (!wantSil && o.sil) dropSilhouette(o);
     const key = `${ix0},${iy0},${w},${h},${Math.round(feet)},${mesh.texture?.baseTexture?.uid},${R.flipX},${near.length}`;
 
     if (o.key !== key) {
@@ -357,6 +462,7 @@
       o.spr.position.set(I.sx + ix0 / I.kx, I.sy + iy0 / I.ky);
       o.spr.width = w / I.kx;
       o.spr.height = h / I.ky;
+      if (o.sil) paintSilhouetteMask(o, d, w, h, o.spr.position.x, o.spr.position.y, w / I.kx, h / I.ky);
       o.cover = total ? covered / total : 0;
       o.painted = painted;
     }
@@ -364,6 +470,10 @@
     const sortKey = (mesh.sort ?? 0) + 0.5;
     if (o.spr.sort !== sortKey) o.spr.sort = sortKey;
     o.spr.visible = o.painted > 0;            // never depends on reading the sprite
+    if (o.sil) {
+      syncSilhouette(o, mesh);
+      o.sil.spr.visible = o.painted > 0;
+    }
 
     const visible = 1 - o.cover;
     if (!state.hidden.has(token.id) && visible < FRAG_HIDE) setHidden(token, true);
@@ -406,7 +516,8 @@
       if (!canvas?.scene || scene.id !== canvas.scene.id) return;
       const touched = foundry.utils.hasProperty(changes, `flags.${MODULE_ID}.${DATA_KEY}`)
         || foundry.utils.hasProperty(changes, `flags.${MODULE_ID}.-=${DATA_KEY}`)
-        || foundry.utils.hasProperty(changes, `flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${ENABLED_KEY}`);
+        || foundry.utils.hasProperty(changes, `flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${ENABLED_KEY}`)
+        || foundry.utils.hasProperty(changes, `flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${SILHOUETTE_KEY}`);
       if (touched) scheduleBuild("updateScene");
     });
     Hooks.on("deleteToken", (doc) => { dropOverlay(doc.id); state.hidden.delete(doc.id); });
@@ -417,16 +528,17 @@
   // --------------------------------------------------------------------------
   const api = {
     installed: true,
-    KEYS: { MODULE_ID, FABULA_ROOT_KEY, GENERAL_KEY, ENABLED_KEY, DATA_KEY, DATA_VERSION },
+    KEYS: { MODULE_ID, FABULA_ROOT_KEY, GENERAL_KEY, ENABLED_KEY, SILHOUETTE_KEY, DATA_KEY, DATA_VERSION },
     status() {
       return {
         scene: canvas?.scene?.name ?? null,
         active: state.active,
+        silhouette: state.silhouette,
         reason: state.reason,
         objects: state.objects.map(o => ({ id: o.id, box: [o.x, o.y, o.w, o.h] })),
         tokens: [...state.overlays.entries()].map(([id, o]) => ({
           id, name: canvas.tokens.get(id)?.name ?? null,
-          cover: +o.cover.toFixed(2), hidden: state.hidden.has(id)
+          cover: +o.cover.toFixed(2), hidden: state.hidden.has(id), silhouette: !!o.sil
         }))
       };
     },

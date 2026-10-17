@@ -81,6 +81,7 @@
   const DEPTH_CURVE_KEY      = "depthCurve";       // number: ramp power (>1 shrinks faster near the top)
   const DEPTH_SORT_KEY       = "depthSort";        // boolean: y-sort tokens (nearer draws in front)
   const OCCLUDERS_ENABLED_KEY = "occludersEnabled"; // boolean: foreground occluders (foreground-occluder.js)
+  const OCCLUDER_SILHOUETTE_KEY = "occluderSilhouette"; // boolean: party silhouette behind objects
   // Invoker wellsprings present on this scene. Per-element boolean under general
   // (`wellspring_<elem>`). The five RAW ones: UNSET/true → available, false →
   // absent. Moon (dark) / Sun (light) are heroic-only: UNSET/false → absent.
@@ -819,6 +820,17 @@
               </p>
               <p class="notes oni-occluder-status" style="font-style:italic;margin:0;"></p>
             </div>
+            <div class="form-group">
+              <label>Party Silhouette</label>
+              <div class="form-fields">
+                <input type="checkbox" class="oni-occluder-silhouette"
+                       name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${OCCLUDER_SILHOUETTE_KEY}" data-dtype="Boolean" />
+              </div>
+              <p class="notes">
+                When the party walks behind an object, the hidden part of the party sprite is
+                drawn as a pale-blue silhouette so players never lose their character.
+              </p>
+            </div>
           </div>
 
           <h3 style="margin:12px 0 6px;"><i class="fas fa-tag"></i> Scene Type</h3>
@@ -1214,6 +1226,8 @@
       // Foreground occluders: checkbox + what data this scene carries
       const occCb = generalPanel?.querySelector("input.oni-occluders-enabled");
       if (occCb) occCb.checked = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${OCCLUDERS_ENABLED_KEY}`, false), false);
+      const silCb = generalPanel?.querySelector("input.oni-occluder-silhouette");
+      if (silCb) silCb.checked = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${OCCLUDER_SILHOUETTE_KEY}`, false), false);
       const occStatus = generalPanel?.querySelector(".oni-occluder-status");
       if (occStatus) {
         const occData = scene?.getFlag?.(MODULE_ID, "occluders");
