@@ -340,6 +340,35 @@
     return doc?.uuid ?? null;
   }
 
+  // ───────────────────── Test-battle guard ─────────────────────
+  // The bestiary means "what the PARTY has met". Test battles run the real
+  // pipeline (spawn → placeholder page, RESOLVE → witness), so without this
+  // every monster authored and tested ahead of its dungeon shows up as
+  // discovered before the party ever reaches it. Every write entry point
+  // below (placeholder, Study result, witnessed action, learned affinity)
+  // refuses while one of these is running:
+  //   - the director test harness (compute / simulate)  → harness dCombat / headless gates
+  //   - the hands-free sim (sim.run / sim.testSkill)    → SimMode.active
+  //   - the dev Test Battle tool                        → lean / devMode payload
+  // A test that exercises the encyclopedia itself opts back in with
+  // `globalThis.__FU_ENCYCLOPEDIA_RECORD_IN_TESTS__ = true`.
+  function testBattleReason() {
+    if (globalThis.__FU_ENCYCLOPEDIA_RECORD_IN_TESTS__ === true) return null;
+    if (globalThis.__fudActiveDCombat?.__isHarnessCombat === true) return "director test harness";
+    if (globalThis.__FU_HARNESS_HEADLESS__ === true) return "headless harness";
+    const exp = globalThis.FUCompanion?.api?.experimental;
+    if (exp?.sim?.mode?.active === true) return "sim";
+    const payload = exp?.battleDirector?.getActiveDirector?.()?.ctx?.payload;
+    if (payload?.context?.lean || payload?.options?.devMode) return "Test Battle (lean)";
+    return null;
+  }
+
+  function refusedInTest(what) {
+    const reason = testBattleReason();
+    if (reason) console.debug(`${TAG} ${what} skipped: ${reason} — test battles do not teach the bestiary.`);
+    return !!reason;
+  }
+
   // ───────────────────── Page helpers ─────────────────────
   function getFlag(page, key) {
     return foundry.utils.getProperty(page, `flags.${FLAG_NAMESPACE}.${FLAG_KEY}.${key}`);
@@ -999,6 +1028,7 @@
   async function recordResult({ actorUuid, total, studierActorId = null, isCrit = false, isFumble = false } = {}) {
     if (!game.user?.isGM) { console.warn(`${TAG} recordResult refused: GM only. Use the oni:action:resolved listener path which auto-routes through GMExecutor.`); return null; }
     if (!actorUuid)       { console.warn(`${TAG} recordResult: actorUuid required.`); return null; }
+    if (refusedInTest("recordResult")) return null;
 
     if (isFumble) {
       const cur = getPageForActor(actorUuid);
@@ -1089,6 +1119,7 @@
       console.warn(`${TAG} recordWitnessedAction: actorUuid and itemId required.`);
       return null;
     }
+    if (refusedInTest("recordWitnessedAction")) return null;
 
     const page = await upsertPage(actorUuid);
     if (!page) return null;
@@ -1136,6 +1167,7 @@
     const valid = new Set(Object.values(AFFINITY_NAME).map((n) => n.toLowerCase()));
     const want = [...new Set((elements ?? []).map((e) => String(e ?? "").toLowerCase()))].filter((e) => valid.has(e));
     if (!actorUuid || !want.length) return null;
+    if (refusedInTest("recordLearnedAffinities")) return null;
     const page = await upsertPage(actorUuid);
     if (!page) return null;
     const known = getLearnedAffinities(page);
@@ -1990,6 +2022,7 @@
     if (!game.user?.isGM) return [];
     const list = Array.isArray(tokens) ? tokens : [];
     if (!list.length) return [];
+    if (refusedInTest(`ensurePlaceholderPagesForTokens (${label})`)) return [];
 
     const results = [];
     for (const entry of list) {
