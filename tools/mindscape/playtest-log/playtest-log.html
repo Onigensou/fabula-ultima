@@ -1,0 +1,350 @@
+<title>Dragonslayer Playtest Log</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a field logbook — summary strip, filter bar, then one ruled entry per fight that opens into its review sheet. */
+:root {
+  --bg: #eef1f0; --panel: #f9fbfa; --ink: #18211f; --muted: #5a6764; --rule: #cfd8d5;
+  --accent: #1f5f7a; --accent-soft: #dcebf1; --ember: #b4532a;
+  --good: #2f7d4f; --good-soft: #dff0e5; --warn: #a06a00; --warn-soft: #f6ead0; --bad: #b23a3a; --bad-soft: #f6dcdc; --none-soft: #e4e9e7;
+  --display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #121817; --panel: #1a2220; --ink: #e3ebe8; --muted: #93a29e; --rule: #2d3a37;
+  --accent: #6fb3d1; --accent-soft: #1d3440; --ember: #e08a5f;
+  --good: #6cc48f; --good-soft: #1c3426; --warn: #e0b24f; --warn-soft: #3a3019; --bad: #ec8080; --bad-soft: #3d2222; --none-soft: #26302d;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #121817; --panel: #1a2220; --ink: #e3ebe8; --muted: #93a29e; --rule: #2d3a37;
+  --accent: #6fb3d1; --accent-soft: #1d3440; --ember: #e08a5f;
+  --good: #6cc48f; --good-soft: #1c3426; --warn: #e0b24f; --warn-soft: #3a3019; --bad: #ec8080; --bad-soft: #3d2222; --none-soft: #26302d;
+  color-scheme: dark; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 14px; line-height: 1.5; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-block: 28px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 20px; }
+h1 { font-family: var(--display); font-weight: 700; font-size: 34px; letter-spacing: .01em; margin: 0; line-height: 1.05; text-wrap: balance; }
+.sub { color: var(--muted); margin: 6px 0 0; max-width: 70ch; }
+.caveat { border-left: 3px solid var(--ember); padding: 8px 12px; background: var(--panel); color: var(--ink); max-width: 80ch; }
+.caveat b { font-weight: 600; }
+.mono, .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.label { font-family: var(--display); font-weight: 600; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+
+.summary { display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: baseline; }
+.summary .big { font-family: var(--display); font-size: 28px; font-weight: 700; }
+.bar { height: 8px; border-radius: 4px; background: var(--none-soft); display: flex; overflow: hidden; flex-basis: 100%; }
+.bar span { display: block; height: 100%; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; background: var(--panel); }
+.seg button { font: inherit; border: 0; background: none; color: var(--ink); padding: 6px 12px; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--rule); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--panel); }
+button:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.list { display: grid; gap: 0; border-top: 1px solid var(--rule); }
+details.fight { border-bottom: 1px solid var(--rule); }
+details.fight > summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 4px 16px; padding: 12px 4px; align-items: start; }
+details.fight > summary::-webkit-details-marker { display: none; }
+details.fight > summary:hover { background: var(--panel); }
+details.fight[open] > summary { background: var(--panel); }
+.range { font-family: var(--mono); font-size: 13px; color: var(--muted); padding-top: 2px; }
+.range b { display: block; font-family: var(--display); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--ember); font-weight: 600; }
+.who { font-weight: 600; min-width: 0; }
+.meta { display: flex; flex-wrap: wrap; gap: 4px 14px; color: var(--muted); font-size: 13px; font-weight: 400; margin-top: 2px; }
+.notes { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.chip { font-size: 12px; padding: 1px 8px; border-radius: 10px; background: var(--warn-soft); color: var(--ink); font-weight: 400; }
+.chip.ok { background: var(--good-soft); }
+.chip.err { background: var(--bad-soft); }
+.chip.gap { background: var(--none-soft); color: var(--muted); }
+.pill { font-family: var(--display); font-weight: 600; font-size: 13px; letter-spacing: .05em; text-transform: uppercase; padding: 2px 10px; border-radius: 4px; white-space: nowrap; background: var(--none-soft); color: var(--muted); }
+.pill[data-v="right"] { background: var(--good-soft); color: var(--good); }
+.pill[data-v="easy"], .pill[data-v="hard"], .pill[data-v="change"] { background: var(--warn-soft); color: var(--warn); }
+.pill[data-v="broken"] { background: var(--bad-soft); color: var(--bad); }
+
+.sheet { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px 28px; padding: 6px 4px 22px 84px; background: var(--panel); }
+@media (max-width: 760px) { .sheet { grid-template-columns: 1fr; padding-left: 4px; } details.fight > summary { grid-template-columns: 52px minmax(0, 1fr); } details.fight > summary .pill { grid-column: 2; justify-self: start; } }
+.sim { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; align-content: start; }
+.sim dt { color: var(--muted); }
+.sim dd { margin: 0; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.sim dd small { font-family: var(--body); color: var(--muted); }
+.mons { display: grid; gap: 10px; align-content: start; }
+.mon { border: 1px solid var(--rule); border-radius: 6px; padding: 8px 10px; }
+.mon h4 { margin: 0; font-size: 14px; display: flex; justify-content: space-between; gap: 8px; }
+.mon h4 span { font-weight: 400; color: var(--muted); font-size: 12px; }
+.mon p { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+.mon ul { margin: 6px 0 0; padding-left: 18px; font-size: 13px; }
+
+form.review { grid-column: 1 / -1; display: grid; gap: 14px; border-top: 1px dashed var(--rule); padding-top: 16px; }
+.verdicts { display: flex; flex-wrap: wrap; gap: 6px; }
+.verdicts label, .feel label { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--rule); border-radius: 4px; padding: 4px 10px; cursor: pointer; background: var(--bg); }
+.verdicts input, .feel input { accent-color: var(--accent); margin: 0; }
+.row { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: end; }
+.field { display: grid; gap: 4px; }
+.field input[type="number"] { width: 96px; }
+.field.grow { flex: 1 1 260px; min-width: 0; }
+input[type="number"], input[type="text"], textarea { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--rule); border-radius: 4px; padding: 6px 8px; width: 100%; box-sizing: border-box; }
+textarea { min-height: 64px; resize: vertical; }
+.feel { display: flex; gap: 6px; flex-wrap: wrap; }
+.actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.save { font: inherit; font-weight: 600; border: 0; border-radius: 4px; padding: 8px 18px; background: var(--accent); color: var(--panel); cursor: pointer; }
+.save:disabled { opacity: .5; cursor: default; }
+.status { color: var(--muted); font-size: 13px; }
+.empty { padding: 32px 4px; color: var(--muted); max-width: 60ch; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="label">The Legend of Dragonslayer · balance review</div>
+    <h1>Valley of the Dragon &amp; Fafnir Castle Playtest Log</h1>
+    <p class="sub" id="runline">Loading the encounter list…</p>
+  </header>
+  <div class="caveat" id="caveat" hidden></div>
+  <section class="summary" id="summary" aria-label="Review progress"></section>
+  <div class="controls">
+    <div class="seg" role="group" aria-label="Dungeon" id="f-dungeon">
+      <button type="button" data-v="all" aria-pressed="true">Both</button>
+      <button type="button" data-v="Valley of the Dragon" aria-pressed="false">Valley</button>
+      <button type="button" data-v="Fafnir Castle" aria-pressed="false">Fafnir Castle</button>
+    </div>
+    <div class="seg" role="group" aria-label="Show" id="f-show">
+      <button type="button" data-v="all" aria-pressed="true">All fights</button>
+      <button type="button" data-v="todo" aria-pressed="false">Not reviewed</button>
+      <button type="button" data-v="done" aria-pressed="false">Reviewed</button>
+    </div>
+    <div class="seg" role="group" aria-label="Order" id="f-order">
+      <button type="button" data-v="suggested" aria-pressed="true">Suggested order</button>
+      <button type="button" data-v="table" aria-pressed="false">Table order</button>
+    </div>
+  </div>
+  <section class="list" id="list" aria-live="polite">
+    <p class="empty">The fights appear here once the log has loaded. Each one comes from a row of a dungeon's Encounter table, plus the bosses that start from story events.</p>
+  </section>
+</div>
+
+<script>
+const VERDICTS = [
+  ["", "Not reviewed"], ["right", "Feels right"], ["easy", "Too easy"], ["hard", "Too hard"],
+  ["change", "Needs a change"], ["broken", "Broken"],
+];
+const VLABEL = Object.fromEntries(VERDICTS);
+const state = { fights: [], monsters: {}, meta: null, dungeon: "all", show: "all", order: "suggested", open: new Set(), canWrite: true, uid: null, names: {} };
+let db = null, user = null;
+
+const $ = (id) => document.getElementById(id);
+function h(tag, attrs, ...kids) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v == null || v === false) continue;
+    if (k === "class") el.className = v; else if (k.startsWith("on")) el.addEventListener(k.slice(2), v); else el.setAttribute(k, v === true ? "" : v);
+  }
+  for (const k of kids.flat()) if (k != null && k !== false) el.append(k.nodeType ? k : String(k));
+  return el;
+}
+const pct = (x) => (x == null ? "—" : Math.round(x * 100) + "%");
+const n1 = (x) => (x == null ? "—" : Number(x).toFixed(1));
+const slug = (s) => String(s).toLowerCase().normalize("NFKD").replace(/^⭐️?\s*/u, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+// Suggested playtest order (proposal): flagged high-weight rows first, then fights with
+// unmodelled monsters, then bosses; anything reviewed sinks to the bottom.
+function priority(f) {
+  const s = f.sim || {};
+  let p = 0;
+  if (s.error) p += 50;
+  if ((s.notes || []).length) p += 20 + (f.rolls || 0) * 100;
+  if ((s.gaps || []).length) p += 8;
+  if (s.kind === "boss") p += 6;
+  if (f.review && f.review.verdict) p -= 1000;
+  return p;
+}
+function visible() {
+  let xs = state.fights.filter((f) => state.dungeon === "all" || f.dungeon === state.dungeon);
+  if (state.show === "todo") xs = xs.filter((f) => !(f.review && f.review.verdict));
+  if (state.show === "done") xs = xs.filter((f) => f.review && f.review.verdict);
+  return xs.slice().sort(state.order === "table" ? (a, b) => a.order - b.order : (a, b) => priority(b) - priority(a) || a.order - b.order);
+}
+
+function renderSummary() {
+  const box = $("summary");
+  const scope = state.fights.filter((f) => state.dungeon === "all" || f.dungeon === state.dungeon);
+  const count = (v) => scope.filter((f) => (f.review && f.review.verdict || "") === v).length;
+  const done = scope.length - count("");
+  const colors = { right: "var(--good)", easy: "var(--warn)", hard: "var(--warn)", change: "var(--warn)", broken: "var(--bad)" };
+  box.replaceChildren(
+    h("div", {}, h("span", { class: "big num" }, `${done}`), h("span", { class: "status" }, ` of ${scope.length} fights reviewed`)),
+    ...VERDICTS.slice(1).map(([v, l]) => h("div", { class: "status" }, h("span", { class: "pill", "data-v": v }, l), " ", h("span", { class: "num" }, String(count(v))))),
+    h("div", { class: "bar", role: "img", "aria-label": `${done} of ${scope.length} reviewed` },
+      ...VERDICTS.slice(1).map(([v]) => h("span", { style: `width:${scope.length ? (100 * count(v)) / scope.length : 0}%;background:${colors[v]}` }))),
+  );
+}
+
+function simBlock(f) {
+  const s = f.sim || {};
+  if (s.error) return h("div", {}, h("div", { class: "label" }, "Sim"), h("p", {}, s.error));
+  const t = s.kind === "boss" ? "5.5–6 (long 7.5)" : "1.5–2 (long ≤ 4)";
+  return h("div", {},
+    h("div", { class: "label" }, `Sim · ${s.runs || "?"} runs`),
+    h("dl", { class: "sim" },
+      h("dt", {}, "Party wins"), h("dd", {}, pct(s.win), " ", h("small", {}, `loses ${pct(s.defeat)} · unresolved ${pct(s.overtime)}`)),
+      h("dt", {}, "Rounds p50 / p90"), h("dd", {}, `${n1(s.roundsP50)} / ${n1(s.roundsP90)}`, " ", h("small", {}, `target ${t}`)),
+      h("dt", {}, "Party HP left"), h("dd", {}, `${pct(s.hpP50)} median · ${pct(s.hpP10)} worst 10%`, " ", h("small", {}, "target under 70%")),
+      h("dt", {}, "Any PC down"), h("dd", {}, pct(s.anyDown)),
+      h("dt", {}, "Enemy HP"), h("dd", {}, String(s.enemyHp ?? "—"), " ", h("small", {}, `L${s.level ?? "?"} · ${s.kind || "?"}`)),
+      f.rolls != null ? [h("dt", {}, "Table weight"), h("dd", {}, f.rolls ? pct(f.rolls) : "never rolls (above the die)")] : null,
+    ),
+    (s.gaps || []).length ? h("p", { class: "status" }, "The sim never uses: ", s.gaps.join(" · "), ". Those monsters are weaker in the sim than at the table.") : null,
+  );
+}
+
+function monsterCards(f) {
+  const seen = new Set();
+  const cards = [];
+  for (const name of f.enemies || []) {
+    const k = slug(name);
+    if (seen.has(k)) continue; seen.add(k);
+    const m = state.monsters[k];
+    if (!m) continue;
+    cards.push(h("div", { class: "mon" },
+      h("h4", {}, m.name, h("span", {}, `${m.rank} L${m.level} · ${m.hp} HP · ${m.turns} turn${m.turns > 1 ? "s" : ""}`)),
+      h("p", {}, `DEF ${m.def} (party hits ${m.hitDef}) · MDEF ${m.mdef} (${m.hitMdef}) · VU ${(m.vu || []).join(", ") || "none"}`,
+        m.basic ? ` · ${m.basic.name} ${m.basic.avg}` : "", m.strongest && (!m.basic || m.strongest.name !== m.basic.name) ? ` · ${m.strongest.name} ${m.strongest.avg}` : ""),
+      (m.flags || []).length ? h("ul", {}, ...m.flags.map((x) => h("li", {}, x))) : h("p", {}, "No design rules broken."),
+    ));
+  }
+  return h("div", { class: "mons" }, h("div", { class: "label" }, "Monster audit"), ...cards);
+}
+
+function reviewForm(f) {
+  const r = f.review || {};
+  const id = f.id;
+  const status = h("span", { class: "status" });
+  if (r.testedAt) status.textContent = `Last saved ${r.testedAt.slice(0, 10)}${r.testedBy ? " by " + (state.names[r.testedBy] || "someone") : ""}.`;
+  const dis = !state.canWrite;
+  const form = h("form", { class: "review", "aria-label": "Your review" },
+    h("div", { class: "label" }, "Your review"),
+    h("div", { class: "verdicts", role: "radiogroup", "aria-label": "Verdict" },
+      ...VERDICTS.map(([v, l]) => h("label", {}, h("input", { type: "radio", name: "verdict", id: `v-${id}-${v || "none"}`, value: v, checked: (r.verdict || "") === v, disabled: dis }), l))),
+    h("div", { class: "row" },
+      h("div", { class: "field" }, h("span", { class: "label" }, "How it felt (1 dull · 5 great)"),
+        h("div", { class: "feel" }, ...[1, 2, 3, 4, 5].map((n) => h("label", {}, h("input", { type: "radio", name: "feel", id: `feel-${id}-${n}`, value: n, checked: r.feel === n, disabled: dis }), String(n))))),
+      h("label", { class: "field" }, h("span", { class: "label" }, "Rounds played"), h("input", { type: "number", min: 0, step: 0.5, name: "rounds", id: `rounds-${id}`, value: r.rounds ?? "", disabled: dis })),
+      h("label", { class: "field" }, h("span", { class: "label" }, "Party HP left %"), h("input", { type: "number", min: 0, max: 100, name: "hpLeft", id: `hp-${id}`, value: r.hpLeft ?? "", disabled: dis })),
+      h("label", { class: "field" }, h("span", { class: "label" }, "Party level"), h("input", { type: "number", min: 1, max: 99, name: "partyLevel", id: `lvl-${id}`, value: r.partyLevel ?? "", disabled: dis })),
+    ),
+    h("label", { class: "field grow" }, h("span", { class: "label" }, "Change to make"), h("input", { type: "text", name: "change", id: `change-${id}`, value: r.change ?? "", placeholder: "e.g. Succubus HP 180 → 150", disabled: dis })),
+    h("label", { class: "field grow" }, h("span", { class: "label" }, "Notes"), h("textarea", { name: "notes", id: `notes-${id}`, disabled: dis }, r.notes ?? "")),
+    h("div", { class: "actions" }, h("button", { class: "save", type: "submit", disabled: dis }, "Save review"), status,
+      dis ? h("span", { class: "status" }, "You can read this log but not edit it.") : null),
+  );
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!db) return;
+    const fd = new FormData(form);
+    const num = (k) => { const v = fd.get(k); return v === "" || v == null ? null : Number(v); };
+    const review = {
+      verdict: fd.get("verdict") || "", feel: num("feel"), rounds: num("rounds"), hpLeft: num("hpLeft"), partyLevel: num("partyLevel"),
+      change: String(fd.get("change") || "").trim(), notes: String(fd.get("notes") || "").trim(),
+      testedAt: new Date().toISOString(), testedBy: state.uid,
+    };
+    const btn = form.querySelector(".save");
+    btn.disabled = true; status.textContent = "Saving…";
+    try {
+      await db.doc(`fights/${id}`).update({ review });
+      status.textContent = "Saved.";
+    } catch (err) {
+      if (err && err.code === "invalid_argument") { state.canWrite = false; status.textContent = "This log is read-only for you, so the review was not saved."; }
+      else status.textContent = "Not saved: the log could not be reached. Try again in a moment.";
+    } finally { btn.disabled = !state.canWrite; }
+  });
+  return form;
+}
+
+function renderList() {
+  const list = $("list");
+  const xs = visible();
+  if (!state.fights.length) return;
+  if (!xs.length) { list.replaceChildren(h("p", { class: "empty" }, "No fights match these filters.")); return; }
+  // Keep an open sheet with unsaved typing as it is: rebuild only the closed rows.
+  const keep = new Map([...list.querySelectorAll("details.fight[open]")].map((d) => [d.dataset.id, d]));
+  list.replaceChildren(...xs.map((f) => {
+    if (keep.has(f.id) && keep.get(f.id).contains(document.activeElement)) return keep.get(f.id);
+    const s = f.sim || {};
+    const v = (f.review && f.review.verdict) || "";
+    const d = h("details", { class: "fight", "data-id": f.id, open: state.open.has(f.id) },
+      h("summary", {},
+        h("div", { class: "range" }, h("b", {}, f.dungeon === "Fafnir Castle" ? "Fafnir" : "Valley"), f.range),
+        h("div", { class: "who" }, (f.enemies || []).join(" + "),
+          h("div", { class: "meta" },
+            h("span", {}, s.kind === "boss" ? "Boss" : "Encounter"),
+            f.rolls == null ? h("span", {}, "story fight") : h("span", {}, f.rolls ? `rolls ${pct(f.rolls)}` : "never rolls"),
+            s.error ? null : h("span", { class: "num" }, `${n1(s.roundsP50)} rds · ${pct(s.hpP50)} HP left · ${pct(s.anyDown)} KO`)),
+          h("div", { class: "notes" },
+            s.error ? h("span", { class: "chip err" }, s.error) : null,
+            ...(s.notes || []).map((x) => h("span", { class: x.startsWith("never acts") ? "chip err" : "chip" }, x)),
+            !s.error && !(s.notes || []).length ? h("span", { class: "chip ok" }, "on target in the sim") : null,
+            (s.gaps || []).length ? h("span", { class: "chip gap" }, `${s.gaps.length} enemy action${s.gaps.length > 1 ? "s" : ""} not simulated`) : null)),
+        h("span", { class: "pill", "data-v": v }, VLABEL[v])),
+    );
+    d.addEventListener("toggle", () => {
+      if (d.open) { state.open.add(f.id); if (!d.querySelector(".sheet")) d.append(h("div", { class: "sheet" }, simBlock(f), monsterCards(f), reviewForm(f))); }
+      else state.open.delete(f.id);
+    });
+    if (d.open) d.append(h("div", { class: "sheet" }, simBlock(f), monsterCards(f), reviewForm(f)));
+    return d;
+  }));
+}
+
+function renderMeta() {
+  const m = state.meta;
+  if (!m) return;
+  $("runline").textContent = `Sim run ${String(m.generated).slice(0, 10)} · ${m.runs} runs per fight · party ${(m.party || []).join(", ")}. Your verdict is what counts; the sim numbers are only a guide.`;
+  const c = $("caveat");
+  c.replaceChildren(h("b", {}, "Read the sim numbers as a rough guide. "), `The sim party can't model ${String(m.partyCoverage || "").replace(/ — .*/, "")} and plays below a human table. When it calls a fight too easy, that's reliable. When it calls one too hard, it probably overstates it.`);
+  c.hidden = false;
+}
+
+function render() { renderSummary(); renderList(); }
+
+function bindSeg(id, key) {
+  $(id).addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    state[key] = b.dataset.v;
+    for (const x of $(id).querySelectorAll("button")) x.setAttribute("aria-pressed", String(x === b));
+    render();
+  });
+}
+bindSeg("f-dungeon", "dungeon"); bindSeg("f-show", "show"); bindSeg("f-order", "order");
+
+async function resolveNames() {
+  if (!user) return;
+  const ids = [...new Set(state.fights.map((f) => f.review && f.review.testedBy).filter(Boolean))].filter((i) => !(i in state.names));
+  if (!ids.length) return;
+  try { const ps = await user.profiles(ids); for (const i of ids) state.names[i] = (ps[i] && ps[i].name) || "Someone"; } catch {}
+}
+
+(async () => {
+  [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
+  if (!db) { $("runline").textContent = "Open this page signed in to claude.ai to load the log."; return; }
+  if (user) {
+    try { state.uid = await user.id(); } catch {}
+    try { const w = await user.can("data.write"); if (w === false) state.canWrite = false; } catch {}
+  }
+  db.doc("meta/run").onSnapshot((s) => { state.meta = s.exists ? s.data() : null; renderMeta(); }, () => {});
+  db.collection("monsters").onSnapshot((snap) => {
+    state.monsters = Object.fromEntries(snap.docs.map((d) => [d.id, d.data()]));
+    render();
+  }, () => {});
+  db.collection("fights").onSnapshot(async (snap) => {
+    state.fights = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    if (!state.fights.length) {
+      $("runline").textContent = "No fights loaded yet.";
+      $("list").replaceChildren(h("p", { class: "empty" }, "The log is empty. Claude fills it from the Encounter Matrix and Monster Audit reports. Ask Claude to re-seed the Playtest Log."));
+      return;
+    }
+    await resolveNames();
+    render();
+  }, () => { $("runline").textContent = "The log could not be reached. Reload the page to try again."; });
+})();
+</script>
