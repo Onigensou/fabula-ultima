@@ -1,0 +1,2080 @@
+{
+  "id": "encounter-matrix",
+  "generated": "2026-10-19T17:43:09.855Z",
+  "seed": "encounter-matrix",
+  "runs": 1000,
+  "partyCoverage": "41/63 turn-spendable actions unmodelled (65%)",
+  "party": [
+    "Hina L41",
+    "Keren L41",
+    "Blanche L41",
+    "Zarg L41"
+  ],
+  "dungeons": [
+    "Valley of the Dragon",
+    "Fafnir Castle"
+  ],
+  "caveat": "Sim party plays below a human table: low-pressure numbers are reliable, high-pressure ones overstate difficulty. Numbers, not verdicts.",
+  "targets": {
+    "normal": {
+      "rounds": [
+        1.5,
+        2
+      ],
+      "longRounds": 4,
+      "label": "1.5-2 rds"
+    },
+    "boss": {
+      "rounds": [
+        5.5,
+        6
+      ],
+      "longRounds": 7.5,
+      "label": "5.5-6 rds"
+    }
+  },
+  "lines": [
+    {
+      "dungeon": "Fafnir Castle",
+      "source": "Fafnir Castle - Encounter",
+      "formula": "1d16",
+      "range": [
+        1,
+        1
+      ],
+      "weight": 0.0625,
+      "rolls": true,
+      "names": [
+        "Dire Orc",
+        "Dire Orc"
+      ],
+      "ceiling": 16,
+      "enemies": [
+        "Dire Orc",
+        "Dire Orc"
+      ],
+      "kind": "normal",
+      "level": 50,
+      "enemyHp": 480,
+      "coverage": "43/69 turn-spendable actions unmodelled (62%)",
+      "enemyGaps": [
+        "Dire Orc: War Howl"
+      ],
+      "stats": {
+        "runs": 1000,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 4,
+        "roundsP90": 5,
+        "hpP50": 0.6985138004246284,
+        "hpP10": 0.49044585987261147,
+        "anyDown": 0.376,
+        "downsPerFight": 0.399
+      },
+      "notes": [
+        "rounds above 1.5-2 rds"
+      ]
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "source": "Fafnir Castle - Encounter",
+      "formula": "1d16",
+      "range": [
+        2,
+        2
+      ],
+      "weight": 0.0625,
+      "rolls": true,
+      "names": [
+        "Dragon Guard",
+        "Dragon Guard"
+      ],
+      "ceiling": 16,
+      "enemies": [
+        "Dragon Guard",
+        "Dragon Guard"
+      ],
+      "kind": "normal",
+      "level": 50,
+      "enemyHp": 500,
+      "coverage": "41/69 turn-spendable actions unmodelled (59%)",
+      "enemyGaps": [],
+      "stats": {
+        "runs": 1000,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 4,
+        "roundsP90": 4,
+        "hpP50": 0.7664543524416136,
+        "hpP10": 0.6942675159235668,
+        "anyDown": 0,
+        "downsPerFight": 0
+      },
+      "notes": [
+        "rounds above 1.5-2 rds",
+        "HP left ≥ 70%"
+      ]
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "source": "Fafnir Castle - Encounter",
+      "formula": "1d16",
+      "range": [
+        3,
+        3
+      ],
+      "weight": 0.0625,
+      "rolls": true,
+      "names": [
+        "Imp",
+        "Dire Orc",
+        "Imp"
+      ],
+      "ceiling": 16,
+      "enemies": [
+        "Imp",
+        "Dire Orc",
+        "Imp"
+      ],
+      "kind": "normal",
+      "level": 50,
+      "enemyHp": 460,
+      "coverage": "48/74 turn-spendable actions unmodelled (65%)",
+      "enemyGaps": [
+        "Imp: Strip Weapon",
+        "Imp: Prank",
+        "Imp: Strip Armor",
+        "Dire Orc: War Howl"
+      ],
+      "stats": {
+        "runs": 1000,
+        "win": 0.984,
+        "defeat": 0,
+        "overtime": 0.016,
+        "roundsP50": 5,
+        "roundsP90": 6,
+        "hpP50": 0.7515923566878981,
+        "hpP10": 0.5859872611464968,
+        "anyDown": 0.184,
+        "downsPerFight": 0.187
+      },
+      "notes": [
+        "rounds above long target (4)",
+        "HP left ≥ 70%"
+      ]
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "source": "Fafnir Castle - Encounter",
+      "formula": "1d16",
+      "range": [
+        4,
+        4
+      ],
+      "weight": 0.0625,
+      "rolls": true,
+      "names": [
+        "Succubus",
+        "Dire Orc",
+        "Succubus"
+      ],
+      "ceiling": 16,
+      "enemies": [
+        "Succubus",
+        "Dire Orc",
+        "Succubus"
+      ],
+      "kind": "normal",
+      "level": 50,
+      "enemyHp": 600,
+      "coverage": "44/72 turn-spendable actions unmodelled (61%)",
+      "enemyGaps": [
+        "Succubus: Charm",
+        "Dire Orc: War Howl"
+      ],
+      "stats": {
+        "runs": 1000,
+        "win": 0.194,
+        "defeat": 0.169,
+        "overtime": 0.637,
+        "roundsP50": 7,
+        "roundsP90": 7,
+        "hpP50": 0.5403397027600849,
+        "hpP10": 0.3785562632696391,
+        "anyDown": 0.931,
+        "downsPerFight": 2.093
+      },
+      "notes": [
+        "unresolved in 64%",
+        "party loses 17%",
+        "rounds above long target (4)"
+      ]
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "source": "Fafnir Castle - Encounter",
+      "formula": "1d16",
+      "range": [
+        5,
+        5
+      ],
+      "weight": 0.0625,
+      "rolls": true,
+      "names": [
+        "Dragon Guard",
+        "Death Gazer",
+        "Dragon Guard"
+      ],
+      "ceiling": 16,
+      "enemies": [
+        "Dragon Guard",
+        "Death Gazer",
+        "Dragon Guard"
+      ],
+      "kind": "normal",
+      "level": 50,
+      "enemyHp": 650,
+      "coverage": "42/72 turn-spendable actions unmodelled (58%)",
+      "enemyGaps": [
+        "Death Gazer: Death Gaze"
+      ],
+      "stats": {
+        "runs": 1000,
+        "win": 0.767,
+        "defeat": 0,
+        "overtime": 0.233,
+        "roundsP50": 6,
+        "roundsP90": 7,
+        "hpP50": 0.6624203821656051,
+        "hpP10": 0.48025477707006375,
+        "anyDown": 0.627,
+        "downsPerFight": 0.71
+      },
+      "notes": [
+        "rounds above long target (4)"
+      ]
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "source": "Fafnir Castle - Encounter",
+      "formula": "1d16",
+      "range": [
+        6,
+        6
+      ],
+      "weight": 0.0625,
+      "rolls": true,
+      "names": [
+        "Dire Orc",
+        "Death Gazer",
+        "Dire Orc"
+      ],
+      "ceiling": 16,
+      "enemies": [
+        "Dire Orc",
+        "Death Gazer",
+        "Dire Orc"
+      ],
+      "kind": "normal",
+      "level": 50,
+      "enemyHp": 630,
+      "coverage": "44/72 turn-spendable actions unmodelled (61%)",
+      "enemyGaps": [
+        "Dire Orc: War Howl",
+        "Death Gazer: Death Gaze"
+      ],
+      "stats": {
+        "runs": 1000,
+        "win": 0.13,
+        "defeat": 0.358,
+        "overtime": 0.512,
+        "roundsP50": 7,
+        "roundsP90": 7,
+        "hpP50": 0.5488322717622081,
+        "hpP10": 0.3583864118895966,
+        "anyDown": 0.973,
+        "downsPerFight": 2.537
+      },
+      "notes": [
+        "unresolved in 51%",
+        "party loses 36%",
+        "rounds above long target (4)"
+      ]
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "source": "Fafnir Castle - Encounter",
+      "formula": "1d16",
+      "range": [
+        7,
+        7
+      ],
+      "weight": 0.0625,
+      "rolls": true,
+      "names": [
+        "Imp",
+        "Dragon Guard",
+        "Imp"
+      ],
+      "ceiling": 16,
+      "enemies": [
+        "Imp",
+        "Dragon Guard",
+        "Imp"
+      ],
+      "kind": "normal",
+      "level": 50,
+      "enemyHp": 470,
+      "coverage": "47/74 turn-spendable actions unmodelled (64%)",
+      "enemyGaps": [
+        "Imp: Strip Weapon",
+        "Imp: Prank",
+        "Imp: Strip Armor"
+      ],
+      "stats": {
+        "runs": 1000,
+        "win": 0.998,
+        "defeat": 0,
+        "overtime": 0.002,
+        "roundsP50": 5,
+        "roundsP90": 5,
+        "hpP50": 0.7940552016985138,
+        "hpP10": 0.6815286624203821,
+        "anyDown": 0.002,
+        "downsPerFight": 0.002
+      },
+      "notes": [
+        "rounds above long target (4)",
+        "HP left ≥ 70%"
+      ]
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "source": "Fafnir Castle - Encounter",
+      "formula": "1d16",
+      "range": [
+        8,
+        8
+      ],
+      "weight": 0.0625,
+      "rolls": true,
+      "names": [
+        "Death Gazer",
+        "Succubus",
+        "Death Gazer"
+      ],
+      "ceiling": 16,
+      "enemies": [
+        "Death Gazer",
+        "Succubus",
+        "Death Gazer"
+      ],
+      "kind": "normal",
+      "level": 50,
+      "enemyHp": 480,
+      "coverage": "44/72 turn-spendable actions unmodelled (61%)",
+      "enemyGaps": [
+        "Death Gazer: Death Gaze",
+        "Succubus: Charm"
+      ],
+      "stats": {
+        "runs": 1000,
+        "win": 0.529,
+        "defeat": 0,
+        "overtime": 0.471,
+        "roundsP50": 6,
+        "roundsP90": 7,
+        "hpP50": 0.7643312101910829,
+        "hpP10": 0.5834394904458599,
+        "anyDown": 0.576,
+        "downsPerFight": 0.663
+      },
+      "notes": [
+        "unresolved in 47%",
+        "rounds above long target (4)",
+        "HP left ≥ 70%"
+      ]
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "source": "Fafnir Castle - Encounter",
+      "formula": "1d16",
+      "range": [
+        9,
+        9
+      ],
+      "weight": 0.0625,
+      "rolls": true,
+      "names": [
+        "Dire Orc",
+        "Iron Colossus",
+        "Dire Orc"
+      ],
+      "ceiling": 16,
+      "enemies": [
+        "Dire Orc",
+        "Iron Colossus",
+        "Dire Orc"
+      ],
+      "kind": "normal",
+      "level": 52,
+      "enemyHp": 1180,
+      "coverage": "43/72 turn-spendable actions unmodelled (60%)",
+      "enemyGaps": [
+        "Dire Orc: War Howl"
+      ],
+      "stats": {
+        "runs": 1000,
+        "win": 0,
+        "defeat": 0.16,
+        "overtime": 0.84,
+        "roundsP50": null,
+        "roundsP90": null,
+        "hpP50": null,
+        "hpP10": null,
+        "anyDown": 0.896,
+        "downsPerFight": 1.656
+      },
+      "notes": [
+        "unresolved in 84%",
+        "party loses 16%"
+      ]
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "source": "Fafnir Castle - Encounter",
+      "formula": "1d16",
+      "range": [
+        10,
+        10
+      ],
+      "weight": 0.0625,
+      "rolls": true,
+      "names": [
+        "Succubus",
+        "Iron Colossus",
+        "Succubus"
+      ],
+      "ceiling": 16,
+      "enemies": [
+        "Succubus",
+        "Iron Colossus",
+        "Succubus"
+      ],
+      "kind": "normal",
+      "level": 52,
+      "enemyHp": 1060,
+      "coverage": "43/72 turn-spendable actions unmodelled (60%)",
+      "enemyGaps": [
+        "Succubus: Charm"
+      ],
+      "stats": {
+        "runs": 1000,
+        "win": 0,
+        "defeat": 0.012,
+        "overtime": 0.988,
+        "roundsP50": null,
+        "roundsP90": null,
+        "hpP50": null,
+        "hpP10": null,
+        "anyDown": 0.639,
+        "downsPerFight": 0.905
+      },
+      "notes": [
+        "unresolved in 99%"
+      ]
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "source": "Fafnir Castle - Encounter",
+      "formula": "1d16",
+      "range": [
+        11,
+        11
+      ],
+      "weight": 0.0625,
+      "rolls": true,
+      "names": [
+        "Dragon Guard",
+        "Roo",
+        "Dragon Guard"
+      ],
+      "ceiling": 16,
+      "enemies": [
+        "Dragon Guard",
+        "Roo",
+        "Dragon Guard"
+      ],
+      "kind": "normal",
+      "level": 50,
+      "enemyHp": 755,
+      "coverage": "44/72 turn-spendable actions unmodelled (61%)",
+      "enemyGaps": [
+        "Roo: Karma",
+        "Roo: Chef's Knife",
+        "Roo: Empty Stare"
+      ],
+      "stats": {
+        "runs": 1000,
+        "win": 0.491,
+        "defeat": 0,
+        "overtime": 0.509,
+        "roundsP50": 7,
+        "roundsP90": 7,
+        "hpP50": 0.8046709129511678,
+        "hpP10": 0.7537154989384289,
+        "anyDown": 0,
+        "downsPerFight": 0
+      },
+      "notes": [
+        "unresolved in 51%",
+        "rounds above long target (4)",
+        "HP left ≥ 70%"
+      ]
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "source": "Fafnir Castle - Encounter",
+      "formula": "1d16",
+      "range": [
+        12,
+        12
+      ],
+      "weight": 0.0625,
+      "rolls": true,
+      "names": [
+        "Dire Orc",
+        "Death Gazer",
+        "Iron Colossus",
+        "Succubus"
+      ],
+      "ceiling": 16,
+      "enemies": [
+        "Dire Orc",
+        "Death Gazer",
+        "Iron Colossus",
+        "Succubus"
+      ],
+      "kind": "normal",
+      "level": 52,
+      "enemyHp": 1270,
+      "coverage": "44/75 turn-spendable actions unmodelled (59%)",
+      "enemyGaps": [
+        "Dire Orc: War Howl",
+        "Death Gazer: Death Gaze",
+        "Succubus: Charm"
+      ],
+      "stats": {
+        "runs": 1000,
+        "win": 0,
+        "defeat": 0.639,
+        "overtime": 0.361,
+        "roundsP50": null,
+        "roundsP90": null,
+        "hpP50": null,
+        "hpP10": null,
+        "anyDown": 0.988,
+        "downsPerFight": 3.388
+      },
+      "notes": [
+        "unresolved in 36%",
+        "party loses 64%"
+      ]
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "source": "Fafnir Castle - Encounter",
+      "formula": "1d16",
+      "range": [
+        13,
+        13
+      ],
+      "weight": 0.0625,
+      "rolls": true,
+      "names": [
+        "Imp",
+        "Death Gazer",
+        "Roo",
+        "Imp"
+      ],
+      "ceiling": 16,
+      "enemies": [
+        "Imp",
+        "Death Gazer",
+        "Roo",
+        "Imp"
+      ],
+      "kind": "normal",
+      "level": 50,
+      "enemyHp": 625,
+      "coverage": "51/77 turn-spendable actions unmodelled (66%)",
+      "enemyGaps": [
+        "Imp: Strip Weapon",
+        "Imp: Prank",
+        "Imp: Strip Armor",
+        "Death Gazer: Death Gaze",
+        "Roo: Karma",
+        "Roo: Chef's Knife",
+        "Roo: Empty Stare"
+      ],
+      "stats": {
+        "runs": 1000,
+        "win": 0.054,
+        "defeat": 0,
+        "overtime": 0.946,
+        "roundsP50": 7,
+        "roundsP90": 7,
+        "hpP50": 0.7855626326963907,
+        "hpP10": 0.7091295116772823,
+        "anyDown": 0.14,
+        "downsPerFight": 0.141
+      },
+      "notes": [
+        "unresolved in 95%",
+        "rounds above long target (4)",
+        "HP left ≥ 70%"
+      ]
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "source": "Fafnir Castle - Encounter",
+      "formula": "1d16",
+      "range": [
+        14,
+        14
+      ],
+      "weight": 0.0625,
+      "rolls": true,
+      "names": [
+        "Imp",
+        "Dragon Guard",
+        "Iron Colossus",
+        "Dragon Guard",
+        "Imp"
+      ],
+      "ceiling": 16,
+      "enemies": [
+        "Imp",
+        "Dragon Guard",
+        "Iron Colossus",
+        "Dragon Guard",
+        "Imp"
+      ],
+      "kind": "normal",
+      "level": 52,
+      "enemyHp": 1420,
+      "coverage": "47/80 turn-spendable actions unmodelled (59%)",
+      "enemyGaps": [
+        "Imp: Strip Weapon",
+        "Imp: Prank",
+        "Imp: Strip Armor"
+      ],
+      "stats": {
+        "runs": 1000,
+        "win": 0,
+        "defeat": 0.111,
+        "overtime": 0.889,
+        "roundsP50": null,
+        "roundsP90": null,
+        "hpP50": null,
+        "hpP10": null,
+        "anyDown": 0.923,
+        "downsPerFight": 2.026
+      },
+      "notes": [
+        "unresolved in 89%",
+        "party loses 11%"
+      ]
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "source": "Fafnir Castle - Encounter",
+      "formula": "1d16",
+      "range": [
+        15,
+        15
+      ],
+      "weight": 0.0625,
+      "rolls": true,
+      "names": [
+        "Death Gazer",
+        "Succubus",
+        "Iron Colossus",
+        "Succubus",
+        "Death Gazer"
+      ],
+      "ceiling": 16,
+      "enemies": [
+        "Death Gazer",
+        "Succubus",
+        "Iron Colossus",
+        "Succubus",
+        "Death Gazer"
+      ],
+      "kind": "normal",
+      "level": 52,
+      "enemyHp": 1360,
+      "coverage": "45/78 turn-spendable actions unmodelled (58%)",
+      "enemyGaps": [
+        "Death Gazer: Death Gaze",
+        "Succubus: Charm"
+      ],
+      "stats": {
+        "runs": 1000,
+        "win": 0,
+        "defeat": 0.781,
+        "overtime": 0.219,
+        "roundsP50": null,
+        "roundsP90": null,
+        "hpP50": null,
+        "hpP10": null,
+        "anyDown": 0.998,
+        "downsPerFight": 3.692
+      },
+      "notes": [
+        "party loses 78%"
+      ]
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "source": "Fafnir Castle - Encounter",
+      "formula": "1d16",
+      "range": [
+        16,
+        16
+      ],
+      "weight": 0.0625,
+      "rolls": true,
+      "names": [
+        "Carlbero"
+      ],
+      "ceiling": 16,
+      "enemies": [
+        "Carlbero"
+      ],
+      "kind": "boss",
+      "level": 50,
+      "enemyHp": 640,
+      "coverage": "42/67 turn-spendable actions unmodelled (63%)",
+      "enemyGaps": [
+        "Carlbero: Stinky Breath"
+      ],
+      "stats": {
+        "runs": 1000,
+        "win": 0.001,
+        "defeat": 0.994,
+        "overtime": 0.005,
+        "roundsP50": 8,
+        "roundsP90": 8,
+        "hpP50": 0.15286624203821655,
+        "hpP10": 0.15286624203821655,
+        "anyDown": 1,
+        "downsPerFight": 3.993
+      },
+      "notes": [
+        "party loses 99%",
+        "rounds above long target (7.5)"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        1,
+        1
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Electro Slime",
+        "Electro Slime",
+        "Electro Slime"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Electro Slime",
+        "Electro Slime",
+        "Electro Slime"
+      ],
+      "kind": "normal",
+      "level": 40,
+      "enemyHp": 135,
+      "coverage": "41/69 turn-spendable actions unmodelled (59%)",
+      "enemyGaps": [],
+      "stats": {
+        "runs": 1000,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 2,
+        "roundsP90": 2,
+        "hpP50": 1,
+        "hpP10": 0.9596602972399151,
+        "anyDown": 0,
+        "downsPerFight": 0
+      },
+      "notes": [
+        "HP left ≥ 85%"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        2,
+        2
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Electro Slime",
+        "Electro Slime",
+        "Electro Slime",
+        "Electro Slime"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Electro Slime",
+        "Electro Slime",
+        "Electro Slime",
+        "Electro Slime"
+      ],
+      "kind": "normal",
+      "level": 40,
+      "enemyHp": 180,
+      "coverage": "41/71 turn-spendable actions unmodelled (58%)",
+      "enemyGaps": [],
+      "stats": {
+        "runs": 1000,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 2,
+        "roundsP90": 2,
+        "hpP50": 0.9596602972399151,
+        "hpP10": 0.89171974522293,
+        "anyDown": 0,
+        "downsPerFight": 0
+      },
+      "notes": [
+        "HP left ≥ 85%"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        3,
+        3
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Electro Slime",
+        "Skizzik",
+        "Electro Slime"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Electro Slime",
+        "Skizzik",
+        "Electro Slime"
+      ],
+      "kind": "normal",
+      "level": 48,
+      "enemyHp": 220,
+      "coverage": "41/69 turn-spendable actions unmodelled (59%)",
+      "enemyGaps": [],
+      "stats": {
+        "runs": 1000,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 3,
+        "roundsP90": 3,
+        "hpP50": 0.8089171974522293,
+        "hpP10": 0.70276008492569,
+        "anyDown": 0.005,
+        "downsPerFight": 0.005
+      },
+      "notes": [
+        "rounds above 1.5-2 rds",
+        "HP left ≥ 70%"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        4,
+        4
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Electro Slime",
+        "Lightning Prism",
+        "Electro Slime"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Electro Slime",
+        "Lightning Prism",
+        "Electro Slime"
+      ],
+      "kind": "normal",
+      "level": 45,
+      "enemyHp": 240,
+      "coverage": "41/69 turn-spendable actions unmodelled (59%)",
+      "enemyGaps": [],
+      "stats": {
+        "runs": 1000,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 3,
+        "roundsP90": 4,
+        "hpP50": 0.6645435244161358,
+        "hpP10": 0.5668789808917197,
+        "anyDown": 0,
+        "downsPerFight": 0
+      },
+      "notes": [
+        "rounds above 1.5-2 rds"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        5,
+        5
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Skizzik",
+        "Lightning Prism"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Skizzik",
+        "Lightning Prism"
+      ],
+      "kind": "normal",
+      "level": 48,
+      "enemyHp": 280,
+      "coverage": "41/67 turn-spendable actions unmodelled (61%)",
+      "enemyGaps": [],
+      "stats": {
+        "runs": 1000,
+        "win": 0.982,
+        "defeat": 0.007,
+        "overtime": 0.011,
+        "roundsP50": 4,
+        "roundsP90": 6,
+        "hpP50": 0.5159235668789809,
+        "hpP10": 0.3335456475583864,
+        "anyDown": 0.932,
+        "downsPerFight": 1.184
+      },
+      "notes": [
+        "rounds above 1.5-2 rds"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        6,
+        6
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Skizzik",
+        "Skizzik"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Skizzik",
+        "Skizzik"
+      ],
+      "kind": "normal",
+      "level": 48,
+      "enemyHp": 260,
+      "coverage": "41/67 turn-spendable actions unmodelled (61%)",
+      "enemyGaps": [],
+      "stats": {
+        "runs": 1000,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 3,
+        "roundsP90": 4,
+        "hpP50": 0.7208067940552016,
+        "hpP10": 0.554140127388535,
+        "anyDown": 0.234,
+        "downsPerFight": 0.255
+      },
+      "notes": [
+        "rounds above 1.5-2 rds",
+        "HP left ≥ 70%"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        7,
+        7
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Lightning Prism",
+        "Skizzik",
+        "Lightning Prism"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Lightning Prism",
+        "Skizzik",
+        "Lightning Prism"
+      ],
+      "kind": "normal",
+      "level": 48,
+      "enemyHp": 430,
+      "coverage": "41/69 turn-spendable actions unmodelled (59%)",
+      "enemyGaps": [],
+      "stats": {
+        "runs": 1000,
+        "win": 0.105,
+        "defeat": 0.503,
+        "overtime": 0.392,
+        "roundsP50": 7,
+        "roundsP90": 7,
+        "hpP50": 0.35881104033970274,
+        "hpP10": 0.12399150743099788,
+        "anyDown": 1,
+        "downsPerFight": 3.002
+      },
+      "notes": [
+        "unresolved in 39%",
+        "party loses 50%",
+        "rounds above long target (4)"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        8,
+        8
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Skizzik",
+        "Lightning Prism",
+        "Skizzik"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Skizzik",
+        "Lightning Prism",
+        "Skizzik"
+      ],
+      "kind": "normal",
+      "level": 48,
+      "enemyHp": 410,
+      "coverage": "41/69 turn-spendable actions unmodelled (59%)",
+      "enemyGaps": [],
+      "stats": {
+        "runs": 1000,
+        "win": 0.539,
+        "defeat": 0.162,
+        "overtime": 0.299,
+        "roundsP50": 6,
+        "roundsP90": 7,
+        "hpP50": 0.5031847133757962,
+        "hpP10": 0.32399150743099786,
+        "anyDown": 0.981,
+        "downsPerFight": 1.907
+      },
+      "notes": [
+        "unresolved in 30%",
+        "party loses 16%",
+        "rounds above long target (4)"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        9,
+        9
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Electro Slime",
+        "Kirin",
+        "Electro Slime"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Electro Slime",
+        "Kirin",
+        "Electro Slime"
+      ],
+      "kind": "normal",
+      "level": 50,
+      "enemyHp": 300,
+      "coverage": "41/70 turn-spendable actions unmodelled (59%)",
+      "enemyGaps": [],
+      "stats": {
+        "runs": 1000,
+        "win": 0.998,
+        "defeat": 0,
+        "overtime": 0.002,
+        "roundsP50": 5,
+        "roundsP90": 6,
+        "hpP50": 0.5074309978768577,
+        "hpP10": 0.31634819532908703,
+        "anyDown": 0.743,
+        "downsPerFight": 0.763
+      },
+      "notes": [
+        "rounds above long target (4)"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        10,
+        10
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Lightning Prism",
+        "Kirin",
+        "Lightning Prism"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Lightning Prism",
+        "Kirin",
+        "Lightning Prism"
+      ],
+      "kind": "normal",
+      "level": 50,
+      "enemyHp": 510,
+      "coverage": "41/70 turn-spendable actions unmodelled (59%)",
+      "enemyGaps": [],
+      "stats": {
+        "runs": 1000,
+        "win": 0,
+        "defeat": 0.744,
+        "overtime": 0.256,
+        "roundsP50": null,
+        "roundsP90": null,
+        "hpP50": null,
+        "hpP10": null,
+        "anyDown": 1,
+        "downsPerFight": 3.504
+      },
+      "notes": [
+        "unresolved in 26%",
+        "party loses 74%"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        11,
+        11
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Skizzik",
+        "Kirin",
+        "Skizzik"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Skizzik",
+        "Kirin",
+        "Skizzik"
+      ],
+      "kind": "normal",
+      "level": 50,
+      "enemyHp": 470,
+      "coverage": "41/70 turn-spendable actions unmodelled (59%)",
+      "enemyGaps": [],
+      "stats": {
+        "runs": 1000,
+        "win": 0.217,
+        "defeat": 0.248,
+        "overtime": 0.535,
+        "roundsP50": 7,
+        "roundsP90": 7,
+        "hpP50": 0.4394904458598726,
+        "hpP10": 0.208067940552017,
+        "anyDown": 0.901,
+        "downsPerFight": 2.127
+      },
+      "notes": [
+        "unresolved in 54%",
+        "party loses 25%",
+        "rounds above long target (4)"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        12,
+        12
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Kirin",
+        "Skizzik",
+        "Lightning Prism"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Kirin",
+        "Skizzik",
+        "Lightning Prism"
+      ],
+      "kind": "normal",
+      "level": 50,
+      "enemyHp": 490,
+      "coverage": "41/70 turn-spendable actions unmodelled (59%)",
+      "enemyGaps": [],
+      "stats": {
+        "runs": 1000,
+        "win": 0.018,
+        "defeat": 0.287,
+        "overtime": 0.695,
+        "roundsP50": 7,
+        "roundsP90": 7,
+        "hpP50": 0.4734607218683652,
+        "hpP10": 0.27983014861995753,
+        "anyDown": 0.985,
+        "downsPerFight": 2.286
+      },
+      "notes": [
+        "unresolved in 70%",
+        "party loses 29%",
+        "rounds above long target (4)"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        13,
+        13
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Mana Ray",
+        "Mana Ray"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Mana Ray",
+        "Mana Ray"
+      ],
+      "kind": "normal",
+      "level": 45,
+      "enemyHp": 230,
+      "coverage": "41/67 turn-spendable actions unmodelled (61%)",
+      "enemyGaps": [],
+      "stats": {
+        "runs": 1000,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 3,
+        "roundsP90": 3,
+        "hpP50": 0.8131634819532909,
+        "hpP10": 0.6709129511677282,
+        "anyDown": 0.335,
+        "downsPerFight": 0.335
+      },
+      "notes": [
+        "rounds above 1.5-2 rds",
+        "HP left ≥ 70%"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        14,
+        14
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Ampere",
+        "Mana Ray"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Ampere",
+        "Mana Ray"
+      ],
+      "kind": "normal",
+      "level": 45,
+      "enemyHp": 290,
+      "coverage": "41/67 turn-spendable actions unmodelled (61%)",
+      "enemyGaps": [],
+      "stats": {
+        "runs": 1000,
+        "win": 0.999,
+        "defeat": 0,
+        "overtime": 0.001,
+        "roundsP50": 3,
+        "roundsP90": 4,
+        "hpP50": 0.4309978768577495,
+        "hpP10": 0.2692144373673036,
+        "anyDown": 0.867,
+        "downsPerFight": 1.061
+      },
+      "notes": [
+        "rounds above 1.5-2 rds"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        15,
+        15
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Ampere",
+        "Skizzik"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Ampere",
+        "Skizzik"
+      ],
+      "kind": "normal",
+      "level": 48,
+      "enemyHp": 305,
+      "coverage": "41/67 turn-spendable actions unmodelled (61%)",
+      "enemyGaps": [],
+      "stats": {
+        "runs": 1000,
+        "win": 0.975,
+        "defeat": 0.004,
+        "overtime": 0.021,
+        "roundsP50": 3,
+        "roundsP90": 5,
+        "hpP50": 0.5477707006369427,
+        "hpP10": 0.3205944798301486,
+        "anyDown": 0.359,
+        "downsPerFight": 0.542
+      },
+      "notes": [
+        "rounds above 1.5-2 rds"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        16,
+        16
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Ampere",
+        "Lightning Prism"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Ampere",
+        "Lightning Prism"
+      ],
+      "kind": "normal",
+      "level": 45,
+      "enemyHp": 325,
+      "coverage": "41/67 turn-spendable actions unmodelled (61%)",
+      "enemyGaps": [],
+      "stats": {
+        "runs": 1000,
+        "win": 0.322,
+        "defeat": 0.23500000000000001,
+        "overtime": 0.443,
+        "roundsP50": 6,
+        "roundsP90": 7,
+        "hpP50": 0.3099787685774947,
+        "hpP10": 0.1700636942675159,
+        "anyDown": 0.997,
+        "downsPerFight": 2.629
+      },
+      "notes": [
+        "unresolved in 44%",
+        "party loses 24%",
+        "rounds above long target (4)"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        17,
+        17
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Mana Ray",
+        "Lightning Prism",
+        "Mana Ray"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Mana Ray",
+        "Lightning Prism",
+        "Mana Ray"
+      ],
+      "kind": "normal",
+      "level": 45,
+      "enemyHp": 380,
+      "coverage": "41/69 turn-spendable actions unmodelled (59%)",
+      "enemyGaps": [],
+      "stats": {
+        "runs": 1000,
+        "win": 0.961,
+        "defeat": 0,
+        "overtime": 0.039,
+        "roundsP50": 5,
+        "roundsP90": 7,
+        "hpP50": 0.5902335456475584,
+        "hpP10": 0.4989384288747346,
+        "anyDown": 0.937,
+        "downsPerFight": 0.939
+      },
+      "notes": [
+        "rounds above long target (4)"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        18,
+        18
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Ampere",
+        "Mana Ray",
+        "Kirin"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Ampere",
+        "Mana Ray",
+        "Kirin"
+      ],
+      "kind": "normal",
+      "level": 50,
+      "enemyHp": 500,
+      "coverage": "41/70 turn-spendable actions unmodelled (59%)",
+      "enemyGaps": [],
+      "stats": {
+        "runs": 1000,
+        "win": 0.017,
+        "defeat": 0.706,
+        "overtime": 0.277,
+        "roundsP50": 7,
+        "roundsP90": 7,
+        "hpP50": 0.37154989384288745,
+        "hpP10": 0.30445859872611464,
+        "anyDown": 0.999,
+        "downsPerFight": 3.605
+      },
+      "notes": [
+        "unresolved in 28%",
+        "party loses 71%",
+        "rounds above long target (4)"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        19,
+        19
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Asura"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Asura"
+      ],
+      "kind": "boss",
+      "level": 38,
+      "enemyHp": 900,
+      "coverage": "42/71 turn-spendable actions unmodelled (59%)",
+      "enemyGaps": [
+        "Asura: Quad-Elemental Slash"
+      ],
+      "stats": {
+        "runs": 1000,
+        "win": 0,
+        "defeat": 1,
+        "overtime": 0,
+        "roundsP50": null,
+        "roundsP90": null,
+        "hpP50": null,
+        "hpP10": null,
+        "anyDown": 1,
+        "downsPerFight": 4
+      },
+      "notes": [
+        "party loses 100%"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        20,
+        20
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Gigas",
+        "Electro Slime",
+        "Electro Slime"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Gigas",
+        "Electro Slime",
+        "Electro Slime"
+      ],
+      "kind": "normal",
+      "level": 45,
+      "enemyHp": 890,
+      "coverage": "41/69 turn-spendable actions unmodelled (59%)",
+      "enemyGaps": [],
+      "brokenCycle": [
+        "Gigas (Frightened)"
+      ],
+      "stats": {
+        "runs": 1000,
+        "win": 0.223,
+        "defeat": 0.735,
+        "overtime": 0.042,
+        "roundsP50": 7,
+        "roundsP90": 7,
+        "hpP50": 0.6475583864118896,
+        "hpP10": 0.2356687898089172,
+        "anyDown": 0.948,
+        "downsPerFight": 3.373
+      },
+      "notes": [
+        "never acts: Gigas (Frightened)",
+        "party loses 74%",
+        "rounds above long target (4)"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        21,
+        21
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Electro Slime",
+        "Obsidrax",
+        "Lightning Prism",
+        "Electro Slime"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Electro Slime",
+        "Obsidrax",
+        "Lightning Prism",
+        "Electro Slime"
+      ],
+      "kind": "normal",
+      "level": 46,
+      "enemyHp": 420,
+      "coverage": "42/73 turn-spendable actions unmodelled (58%)",
+      "enemyGaps": [
+        "Obsidrax: Miasma Nova"
+      ],
+      "stats": {
+        "runs": 1000,
+        "win": 0.866,
+        "defeat": 0.019,
+        "overtime": 0.115,
+        "roundsP50": 5,
+        "roundsP90": 7,
+        "hpP50": 0.5923566878980892,
+        "hpP10": 0.39278131634819535,
+        "anyDown": 0.362,
+        "downsPerFight": 0.552
+      },
+      "notes": [
+        "rounds above long target (4)"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        22,
+        22
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Skizzik",
+        "Obsidrax"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Skizzik",
+        "Obsidrax"
+      ],
+      "kind": "normal",
+      "level": 48,
+      "enemyHp": 310,
+      "coverage": "42/69 turn-spendable actions unmodelled (61%)",
+      "enemyGaps": [
+        "Obsidrax: Miasma Nova"
+      ],
+      "stats": {
+        "runs": 1000,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 3,
+        "roundsP90": 4,
+        "hpP50": 0.6358811040339702,
+        "hpP10": 0.4902335456475584,
+        "anyDown": 0.108,
+        "downsPerFight": 0.112
+      },
+      "notes": [
+        "rounds above 1.5-2 rds"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        23,
+        23
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Obsidrax",
+        "Kirin",
+        "Skizzik"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Obsidrax",
+        "Kirin",
+        "Skizzik"
+      ],
+      "kind": "normal",
+      "level": 50,
+      "enemyHp": 520,
+      "coverage": "42/72 turn-spendable actions unmodelled (58%)",
+      "enemyGaps": [
+        "Obsidrax: Miasma Nova"
+      ],
+      "stats": {
+        "runs": 1000,
+        "win": 0.137,
+        "defeat": 0.301,
+        "overtime": 0.562,
+        "roundsP50": 7,
+        "roundsP90": 7,
+        "hpP50": 0.42038216560509556,
+        "hpP10": 0.26072186836518046,
+        "anyDown": 0.951,
+        "downsPerFight": 2.419
+      },
+      "notes": [
+        "unresolved in 56%",
+        "party loses 30%",
+        "rounds above long target (4)"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        24,
+        24
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Drakoza",
+        "Drakoza"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Drakoza",
+        "Drakoza"
+      ],
+      "kind": "normal",
+      "level": 43,
+      "enemyHp": 280,
+      "coverage": "41/69 turn-spendable actions unmodelled (59%)",
+      "enemyGaps": [],
+      "stats": {
+        "runs": 1000,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 4,
+        "roundsP90": 4,
+        "hpP50": 0.7802547770700637,
+        "hpP10": 0.7282377919320594,
+        "anyDown": 0,
+        "downsPerFight": 0
+      },
+      "notes": [
+        "rounds above 1.5-2 rds",
+        "HP left ≥ 70%"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        25,
+        25
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Drakoza",
+        "Skizzik"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Drakoza",
+        "Skizzik"
+      ],
+      "kind": "normal",
+      "level": 48,
+      "enemyHp": 270,
+      "coverage": "41/68 turn-spendable actions unmodelled (60%)",
+      "enemyGaps": [],
+      "stats": {
+        "runs": 1000,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 3,
+        "roundsP90": 4,
+        "hpP50": 0.7770700636942676,
+        "hpP10": 0.6602972399150743,
+        "anyDown": 0.008,
+        "downsPerFight": 0.008
+      },
+      "notes": [
+        "rounds above 1.5-2 rds",
+        "HP left ≥ 70%"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        26,
+        26
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Mist Dragon",
+        "Obsidrax"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Mist Dragon",
+        "Obsidrax"
+      ],
+      "kind": "normal",
+      "level": 46,
+      "enemyHp": 380,
+      "coverage": "42/72 turn-spendable actions unmodelled (58%)",
+      "enemyGaps": [
+        "Obsidrax: Miasma Nova"
+      ],
+      "stats": {
+        "runs": 1000,
+        "win": 0.996,
+        "defeat": 0,
+        "overtime": 0.004,
+        "roundsP50": 4,
+        "roundsP90": 5,
+        "hpP50": 0.5711252653927813,
+        "hpP10": 0.4267515923566879,
+        "anyDown": 0.54,
+        "downsPerFight": 0.544
+      },
+      "notes": [
+        "rounds above 1.5-2 rds"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "Valley of the Dragon - Encounter",
+      "formula": "1d27",
+      "range": [
+        27,
+        27
+      ],
+      "weight": 0.037037037037037035,
+      "rolls": true,
+      "names": [
+        "Mist Dragon",
+        "Mana Ray",
+        "Drakoza"
+      ],
+      "ceiling": 27,
+      "enemies": [
+        "Mist Dragon",
+        "Mana Ray",
+        "Drakoza"
+      ],
+      "kind": "normal",
+      "level": 45,
+      "enemyHp": 455,
+      "coverage": "41/73 turn-spendable actions unmodelled (56%)",
+      "enemyGaps": [],
+      "stats": {
+        "runs": 1000,
+        "win": 0.951,
+        "defeat": 0.003,
+        "overtime": 0.046,
+        "roundsP50": 6,
+        "roundsP90": 7,
+        "hpP50": 0.7133757961783439,
+        "hpP10": 0.5116772823779193,
+        "anyDown": 0.195,
+        "downsPerFight": 0.227
+      },
+      "notes": [
+        "rounds above long target (4)",
+        "HP left ≥ 70%"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "story (no table)",
+      "range": null,
+      "weight": null,
+      "rolls": false,
+      "names": [
+        "⭐️ Fafnir"
+      ],
+      "story": true,
+      "enemies": [
+        "⭐️ Fafnir"
+      ],
+      "kind": "boss",
+      "level": 50,
+      "enemyHp": 1824,
+      "coverage": "48/72 turn-spendable actions unmodelled (67%)",
+      "enemyGaps": [
+        "⭐️ Fafnir: Ruinous Breath",
+        "⭐️ Fafnir: Storm Calm",
+        "⭐️ Fafnir: Summon Elemental Drake",
+        "⭐️ Fafnir: Torment",
+        "⭐️ Fafnir: Searing Brand",
+        "⭐️ Fafnir: Draconic Domination",
+        "⭐️ Fafnir: Zero Power: Cruel Ultimatum"
+      ],
+      "stats": {
+        "runs": 1000,
+        "win": 0,
+        "defeat": 0.971,
+        "overtime": 0.029,
+        "roundsP50": null,
+        "roundsP90": null,
+        "hpP50": null,
+        "hpP10": null,
+        "anyDown": 1,
+        "downsPerFight": 3.971
+      },
+      "notes": [
+        "party loses 97%"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "story (no table)",
+      "range": null,
+      "weight": null,
+      "rolls": false,
+      "names": [
+        "Rakshasa"
+      ],
+      "story": true,
+      "enemies": [
+        "Rakshasa"
+      ],
+      "kind": "boss",
+      "level": 40,
+      "enemyHp": 1200,
+      "coverage": "42/73 turn-spendable actions unmodelled (58%)",
+      "enemyGaps": [
+        "Rakshasa: Devour"
+      ],
+      "stats": {
+        "runs": 1000,
+        "win": 0,
+        "defeat": 0.002,
+        "overtime": 0.998,
+        "roundsP50": null,
+        "roundsP90": null,
+        "hpP50": null,
+        "hpP10": null,
+        "anyDown": 0.185,
+        "downsPerFight": 0.256
+      },
+      "notes": [
+        "unresolved in 100%"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "story (no table)",
+      "range": null,
+      "weight": null,
+      "rolls": false,
+      "names": [
+        "Flame Drake"
+      ],
+      "story": true,
+      "enemies": [
+        "Flame Drake"
+      ],
+      "kind": "boss",
+      "level": 45,
+      "enemyHp": 300,
+      "coverage": "41/65 turn-spendable actions unmodelled (63%)",
+      "enemyGaps": [],
+      "stats": {
+        "runs": 1000,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 3,
+        "roundsP90": 3,
+        "hpP50": 0.8980891719745223,
+        "hpP10": 0.8450106157112527,
+        "anyDown": 0,
+        "downsPerFight": 0
+      },
+      "notes": [
+        "rounds below 5.5-6 rds",
+        "HP left ≥ 85%"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "story (no table)",
+      "range": null,
+      "weight": null,
+      "rolls": false,
+      "names": [
+        "Lightning Drake"
+      ],
+      "story": true,
+      "enemies": [
+        "Lightning Drake"
+      ],
+      "kind": "boss",
+      "level": 45,
+      "enemyHp": 150,
+      "coverage": "41/65 turn-spendable actions unmodelled (63%)",
+      "enemyGaps": [],
+      "stats": {
+        "runs": 1000,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 2,
+        "roundsP90": 2,
+        "hpP50": 0.9087048832271762,
+        "hpP10": 0.9002123142250531,
+        "anyDown": 0,
+        "downsPerFight": 0
+      },
+      "notes": [
+        "rounds below 5.5-6 rds",
+        "HP left ≥ 85%"
+      ]
+    }
+  ]
+}
