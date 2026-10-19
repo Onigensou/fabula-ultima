@@ -295,5 +295,5 @@ function renderMarkdown(r) {
   return out.join("\n");
 }
 
-module.exports = { rowsOfTable, summarise, notes };
+module.exports = { rowsOfTable, summarise, notes, snapshotWorld };
 if (require.main === module) main().catch((e) => { console.error(`\nencounter-matrix failed: ${e.stack || e.message}\n`); process.exit(1); });

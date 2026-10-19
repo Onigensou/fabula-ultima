@@ -1,0 +1,1351 @@
+{
+  "generated": "2026-10-19T17:44:30.552Z",
+  "dungeons": [
+    "Valley of the Dragon",
+    "Fafnir Castle"
+  ],
+  "party": [
+    "Hina",
+    "Keren",
+    "Blanche",
+    "Zarg"
+  ],
+  "meanPcHp": 118,
+  "cards": [
+    {
+      "name": "⭐️ Fafnir",
+      "rank": "champion",
+      "level": 50,
+      "species": "MONSTER",
+      "hp": 1824,
+      "mp": 400,
+      "turns": 4,
+      "def": 16,
+      "mdef": 17,
+      "hitDef": "26%",
+      "hitMdef": "20%",
+      "vu": [
+        "light"
+      ],
+      "rs": [
+        "air",
+        "bolt",
+        "fire"
+      ],
+      "im": [
+        "dark",
+        "earth"
+      ],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Condemn",
+          "type": "Active",
+          "element": "dark",
+          "targets": 1,
+          "avg": 108,
+          "vs": "mdef"
+        },
+        {
+          "name": "Rend",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 58,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Rend",
+        "type": "Attack",
+        "element": "physical",
+        "targets": 1,
+        "avg": 58,
+        "vs": "def"
+      },
+      "flags": [
+        "resisted hit = 25% of PC HP (< 25%)",
+        "not modelled in the sim: Ruinous Breath, Storm Calm, Summon Elemental Drake, Torment, Searing Brand, Draconic Domination, Zero Power: Cruel Ultimatum"
+      ]
+    },
+    {
+      "name": "Ampere",
+      "rank": "soldier",
+      "level": 43,
+      "species": "BEAST",
+      "hp": 175,
+      "mp": 30,
+      "turns": 1,
+      "def": 10,
+      "mdef": 10,
+      "hitDef": ">58%",
+      "hitMdef": ">58%",
+      "vu": [
+        "earth"
+      ],
+      "rs": [
+        "bolt"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Bubble Splash",
+          "type": "Active",
+          "element": "ice",
+          "targets": null,
+          "avg": 47,
+          "vs": "def"
+        },
+        {
+          "name": "Bubble Beam",
+          "type": "Attack",
+          "element": "ice",
+          "targets": 1,
+          "avg": 29,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Bubble Beam",
+        "type": "Attack",
+        "element": "ice",
+        "targets": 1,
+        "avg": 29,
+        "vs": "def"
+      },
+      "flags": [
+        "best basic attack avg 29 < 45"
+      ]
+    },
+    {
+      "name": "Asura",
+      "rank": "elite",
+      "level": 38,
+      "species": "DEMON",
+      "hp": 900,
+      "mp": 60,
+      "turns": 4,
+      "def": 15,
+      "mdef": 13,
+      "hitDef": "33%",
+      "hitMdef": "49%",
+      "vu": [
+        "air",
+        "bolt",
+        "fire",
+        "ice"
+      ],
+      "rs": [],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Elemental Slash (Enchanted)",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 49,
+          "vs": "mdef"
+        },
+        {
+          "name": "Elemental Slash",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 49,
+          "vs": "def"
+        },
+        {
+          "name": "Elemental Slash: Overflow",
+          "type": "Attack",
+          "element": "fire",
+          "targets": null,
+          "avg": 27,
+          "vs": "def"
+        },
+        {
+          "name": "Sword Enchant - Air",
+          "type": "Active",
+          "element": "physical",
+          "targets": 1,
+          "avg": 7,
+          "vs": "def"
+        },
+        {
+          "name": "Sword Enchant - Fire",
+          "type": "Active",
+          "element": "physical",
+          "targets": 1,
+          "avg": 7,
+          "vs": "def"
+        },
+        {
+          "name": "Sword Enchant - Bolt",
+          "type": "Active",
+          "element": "physical",
+          "targets": 1,
+          "avg": 7,
+          "vs": "def"
+        },
+        {
+          "name": "Sword Enchant - Ice",
+          "type": "Active",
+          "element": "physical",
+          "targets": 1,
+          "avg": 7,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Elemental Slash (Enchanted)",
+        "type": "Attack",
+        "element": "physical",
+        "targets": 1,
+        "avg": 49,
+        "vs": "mdef"
+      },
+      "flags": [
+        "4 VU (rule: exactly 1 for elite)",
+        "resisted hit = 21% of PC HP (< 25%)",
+        "not modelled in the sim: Quad-Elemental Slash"
+      ]
+    },
+    {
+      "name": "Carlbero",
+      "rank": "elite",
+      "level": 50,
+      "species": "PLANT",
+      "hp": 640,
+      "mp": 80,
+      "turns": 4,
+      "def": 11,
+      "mdef": 14,
+      "hitDef": ">58%",
+      "hitMdef": "41%",
+      "vu": [
+        "fire"
+      ],
+      "rs": [
+        "dark",
+        "poison"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Mind Sap",
+          "type": "Active",
+          "element": "dark",
+          "targets": 1,
+          "avg": 57,
+          "vs": "mdef"
+        },
+        {
+          "name": "Tentacle Slap",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 3,
+          "avg": 47,
+          "vs": "def"
+        },
+        {
+          "name": "Tentacle Grab",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 42,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Tentacle Slap",
+        "type": "Attack",
+        "element": "physical",
+        "targets": 3,
+        "avg": 47,
+        "vs": "def"
+      },
+      "flags": [
+        "resisted hit = 20% of PC HP (< 25%)",
+        "not modelled in the sim: Stinky Breath"
+      ]
+    },
+    {
+      "name": "Death Gazer",
+      "rank": "soldier",
+      "level": 50,
+      "species": "MONSTER",
+      "hp": 150,
+      "mp": 120,
+      "turns": 1,
+      "def": 8,
+      "mdef": 16,
+      "hitDef": ">58%",
+      "hitMdef": "26%",
+      "vu": [
+        "light"
+      ],
+      "rs": [
+        "dark",
+        "poison"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Mind Sear",
+          "type": "Spell",
+          "element": "dark",
+          "targets": 1,
+          "avg": 43,
+          "vs": "mdef"
+        },
+        {
+          "name": "Eye Beam",
+          "type": "Attack",
+          "element": "dark",
+          "targets": 1,
+          "avg": 30,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Eye Beam",
+        "type": "Attack",
+        "element": "dark",
+        "targets": 1,
+        "avg": 30,
+        "vs": "def"
+      },
+      "flags": [
+        "best basic attack avg 30 < 45",
+        "not modelled in the sim: Death Gaze"
+      ]
+    },
+    {
+      "name": "Dire Orc",
+      "rank": "soldier",
+      "level": 50,
+      "species": "MONSTER",
+      "hp": 240,
+      "mp": 40,
+      "turns": 1,
+      "def": 10,
+      "mdef": 6,
+      "hitDef": ">58%",
+      "hitMdef": ">58%",
+      "vu": [
+        "ice"
+      ],
+      "rs": [
+        "earth"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Skull Splitter",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 66,
+          "vs": "def"
+        },
+        {
+          "name": "Cleaver",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 45,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Skull Splitter",
+        "type": "Attack",
+        "element": "physical",
+        "targets": 1,
+        "avg": 66,
+        "vs": "def"
+      },
+      "flags": [
+        "not modelled in the sim: War Howl"
+      ]
+    },
+    {
+      "name": "Dragon Guard",
+      "rank": "soldier",
+      "level": 50,
+      "species": "HUMANOID",
+      "hp": 250,
+      "mp": 30,
+      "turns": 1,
+      "def": 12,
+      "mdef": 10,
+      "hitDef": "58%",
+      "hitMdef": ">58%",
+      "vu": [
+        "ice"
+      ],
+      "rs": [
+        "fire",
+        "poison"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Saber",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 32,
+          "vs": "def"
+        },
+        {
+          "name": "Flame Breath",
+          "type": "Spell",
+          "element": "fire",
+          "targets": null,
+          "avg": 26,
+          "vs": "mdef"
+        },
+        {
+          "name": "Suppressing Sweep",
+          "type": "Active",
+          "element": "physical",
+          "targets": 2,
+          "avg": 22,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Saber",
+        "type": "Attack",
+        "element": "physical",
+        "targets": 1,
+        "avg": 32,
+        "vs": "def"
+      },
+      "flags": [
+        "best basic attack avg 32 < 45"
+      ]
+    },
+    {
+      "name": "Drakoza",
+      "rank": "soldier",
+      "level": 43,
+      "species": "BEAST",
+      "hp": 140,
+      "mp": 60,
+      "turns": 1,
+      "def": 11,
+      "mdef": 10,
+      "hitDef": ">58%",
+      "hitMdef": ">58%",
+      "vu": [
+        "light"
+      ],
+      "rs": [
+        "dark"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Dragon Claw",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 27,
+          "vs": "def"
+        },
+        {
+          "name": "Thrash",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 26,
+          "vs": "def"
+        },
+        {
+          "name": "Tail Swipe",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 2,
+          "avg": 19,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Dragon Claw",
+        "type": "Attack",
+        "element": "physical",
+        "targets": 1,
+        "avg": 27,
+        "vs": "def"
+      },
+      "flags": [
+        "best basic attack avg 27 < 45"
+      ]
+    },
+    {
+      "name": "Electro Slime",
+      "rank": "soldier",
+      "level": 40,
+      "species": "ELEMENTAL",
+      "hp": 45,
+      "mp": 30,
+      "turns": 1,
+      "def": 6,
+      "mdef": 6,
+      "hitDef": ">58%",
+      "hitMdef": ">58%",
+      "vu": [
+        "earth"
+      ],
+      "rs": [],
+      "im": [
+        "poison"
+      ],
+      "ab": [
+        "bolt"
+      ],
+      "attacks": [
+        {
+          "name": "Static Shot",
+          "type": "Attack",
+          "element": "bolt",
+          "targets": 1,
+          "avg": 36,
+          "vs": "mdef"
+        },
+        {
+          "name": "Tackle",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 36,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Static Shot",
+        "type": "Attack",
+        "element": "bolt",
+        "targets": 1,
+        "avg": 36,
+        "vs": "mdef"
+      },
+      "flags": [
+        "absorbs bolt (warning signal)",
+        "best basic attack avg 36 < 45"
+      ]
+    },
+    {
+      "name": "Flame Drake",
+      "rank": "elite",
+      "level": 45,
+      "species": "MONSTER",
+      "hp": 300,
+      "mp": 30,
+      "turns": 1,
+      "def": 14,
+      "mdef": 8,
+      "hitDef": "41%",
+      "hitMdef": ">58%",
+      "vu": [
+        "bolt"
+      ],
+      "rs": [
+        "fire"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Immolate",
+          "type": "Active",
+          "element": "fire",
+          "targets": 1,
+          "avg": 32,
+          "vs": "def"
+        },
+        {
+          "name": "Dragon Claw",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 28,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Dragon Claw",
+        "type": "Attack",
+        "element": "physical",
+        "targets": 1,
+        "avg": 28,
+        "vs": "def"
+      },
+      "flags": [
+        "best basic attack avg 28 < 45",
+        "resisted hit = 12% of PC HP (< 25%)"
+      ]
+    },
+    {
+      "name": "Gigas",
+      "rank": "elite",
+      "level": 45,
+      "species": "HUMANOID",
+      "hp": 800,
+      "mp": 50,
+      "turns": 1,
+      "def": 12,
+      "mdef": 10,
+      "hitDef": "58%",
+      "hitMdef": ">58%",
+      "vu": [
+        "bolt",
+        "fire",
+        "poison"
+      ],
+      "rs": [
+        "physical",
+        "air",
+        "earth"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Heavy Swing",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 128,
+          "vs": "def"
+        },
+        {
+          "name": "Heavy Bodyslam",
+          "type": "Active",
+          "element": "physical",
+          "targets": 1,
+          "avg": 83,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Heavy Swing",
+        "type": "Attack",
+        "element": "physical",
+        "targets": 1,
+        "avg": 128,
+        "vs": "def"
+      },
+      "flags": [
+        "3 VU (rule: exactly 1 for elite)"
+      ]
+    },
+    {
+      "name": "Imp",
+      "rank": "soldier",
+      "level": 50,
+      "species": "DEMON",
+      "hp": 110,
+      "mp": 50,
+      "turns": 1,
+      "def": 15,
+      "mdef": 14,
+      "hitDef": "33%",
+      "hitMdef": "41%",
+      "vu": [
+        "light"
+      ],
+      "rs": [
+        "dark",
+        "fire"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Pitchfork",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 21,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Pitchfork",
+        "type": "Attack",
+        "element": "physical",
+        "targets": 1,
+        "avg": 21,
+        "vs": "def"
+      },
+      "flags": [
+        "best basic attack avg 21 < 45",
+        "not modelled in the sim: Strip Weapon, Prank, Strip Armor"
+      ]
+    },
+    {
+      "name": "Iron Colossus",
+      "rank": "elite",
+      "level": 52,
+      "species": "CONSTRUCT",
+      "hp": 700,
+      "mp": 60,
+      "turns": 1,
+      "def": 14,
+      "mdef": 8,
+      "hitDef": "41%",
+      "hitMdef": ">58%",
+      "vu": [
+        "bolt"
+      ],
+      "rs": [
+        "physical",
+        "earth"
+      ],
+      "im": [
+        "poison"
+      ],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Siege Fist",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 42,
+          "vs": "def"
+        },
+        {
+          "name": "Grinding Quake",
+          "type": "Spell",
+          "element": "earth",
+          "targets": null,
+          "avg": 27,
+          "vs": "mdef"
+        },
+        {
+          "name": "Seismic Stomp",
+          "type": "Attack",
+          "element": "earth",
+          "targets": 3,
+          "avg": 23,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Siege Fist",
+        "type": "Attack",
+        "element": "physical",
+        "targets": 1,
+        "avg": 42,
+        "vs": "def"
+      },
+      "flags": [
+        "best basic attack avg 42 < 45",
+        "resisted hit = 18% of PC HP (< 25%)"
+      ]
+    },
+    {
+      "name": "Kirin",
+      "rank": "elite",
+      "level": 50,
+      "species": "BEAST",
+      "hp": 210,
+      "mp": 75,
+      "turns": 1,
+      "def": 14,
+      "mdef": 15,
+      "hitDef": "41%",
+      "hitMdef": "33%",
+      "vu": [
+        "poison"
+      ],
+      "rs": [
+        "bolt"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Horn Rush",
+          "type": "Attack",
+          "element": "bolt",
+          "targets": 1,
+          "avg": 69,
+          "vs": "def"
+        },
+        {
+          "name": "Hooves",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 52,
+          "vs": "def"
+        },
+        {
+          "name": "Rail Stream",
+          "type": "Spell",
+          "element": "bolt",
+          "targets": null,
+          "avg": 37,
+          "vs": "mdef"
+        }
+      ],
+      "basic": {
+        "name": "Horn Rush",
+        "type": "Attack",
+        "element": "bolt",
+        "targets": 1,
+        "avg": 69,
+        "vs": "def"
+      },
+      "flags": []
+    },
+    {
+      "name": "Lightning Drake",
+      "rank": "elite",
+      "level": 45,
+      "species": "MONSTER",
+      "hp": 150,
+      "mp": 60,
+      "turns": 1,
+      "def": 8,
+      "mdef": 14,
+      "hitDef": ">58%",
+      "hitMdef": "41%",
+      "vu": [
+        "fire"
+      ],
+      "rs": [
+        "bolt"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Arc Volt",
+          "type": "Spell",
+          "element": "bolt",
+          "targets": 1,
+          "avg": 47,
+          "vs": "mdef"
+        },
+        {
+          "name": "Dragon Claw",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 26,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Dragon Claw",
+        "type": "Attack",
+        "element": "physical",
+        "targets": 1,
+        "avg": 26,
+        "vs": "def"
+      },
+      "flags": [
+        "best basic attack avg 26 < 45",
+        "resisted hit = 11% of PC HP (< 25%)"
+      ]
+    },
+    {
+      "name": "Lightning Prism",
+      "rank": "soldier",
+      "level": 45,
+      "species": "ELEMENTAL",
+      "hp": 150,
+      "mp": 120,
+      "turns": 1,
+      "def": 10,
+      "mdef": 16,
+      "hitDef": ">58%",
+      "hitMdef": "26%",
+      "vu": [
+        "physical",
+        "earth"
+      ],
+      "rs": [],
+      "im": [
+        "poison"
+      ],
+      "ab": [
+        "bolt"
+      ],
+      "attacks": [
+        {
+          "name": "Fulgur Finis",
+          "type": "Spell",
+          "element": "bolt",
+          "targets": 3,
+          "avg": 70,
+          "vs": "mdef"
+        },
+        {
+          "name": "Arc Spark",
+          "type": "Attack",
+          "element": "bolt",
+          "targets": 1,
+          "avg": 31,
+          "vs": "mdef"
+        }
+      ],
+      "basic": {
+        "name": "Arc Spark",
+        "type": "Attack",
+        "element": "bolt",
+        "targets": 1,
+        "avg": 31,
+        "vs": "mdef"
+      },
+      "flags": [
+        "2 VU (rule: exactly 1 for soldier)",
+        "absorbs bolt (warning signal)",
+        "best basic attack avg 31 < 45"
+      ]
+    },
+    {
+      "name": "Mana Ray",
+      "rank": "soldier",
+      "level": 45,
+      "species": "BEAST",
+      "hp": 115,
+      "mp": 30,
+      "turns": 1,
+      "def": 11,
+      "mdef": 10,
+      "hitDef": ">58%",
+      "hitMdef": ">58%",
+      "vu": [
+        "earth",
+        "ice"
+      ],
+      "rs": [
+        "bolt",
+        "fire"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Volt Stinger",
+          "type": "Active",
+          "element": "bolt",
+          "targets": 1,
+          "avg": 47,
+          "vs": "def"
+        },
+        {
+          "name": "Mana Stinger",
+          "type": "Attack",
+          "element": "dark",
+          "targets": 1,
+          "avg": 31,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Mana Stinger",
+        "type": "Attack",
+        "element": "dark",
+        "targets": 1,
+        "avg": 31,
+        "vs": "def"
+      },
+      "flags": [
+        "2 VU (rule: exactly 1 for soldier)",
+        "best basic attack avg 31 < 45"
+      ]
+    },
+    {
+      "name": "Mist Dragon",
+      "rank": "elite",
+      "level": 45,
+      "species": "ELEMENTAL",
+      "hp": 200,
+      "mp": 100,
+      "turns": 1,
+      "def": 14,
+      "mdef": 13,
+      "hitDef": "41%",
+      "hitMdef": "49%",
+      "vu": [
+        "air"
+      ],
+      "rs": [],
+      "im": [
+        "poison"
+      ],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Mist Breath",
+          "type": "Spell",
+          "element": "air",
+          "targets": 3,
+          "avg": 46,
+          "vs": "mdef"
+        },
+        {
+          "name": "Phantom Shift: Thunder Strike",
+          "type": "Attack",
+          "element": "air",
+          "targets": 1,
+          "avg": 38,
+          "vs": "def"
+        },
+        {
+          "name": "Phantom Shift: Mana Stinger",
+          "type": "Attack",
+          "element": "air",
+          "targets": 1,
+          "avg": 28,
+          "vs": "def"
+        },
+        {
+          "name": "Mist Claw",
+          "type": "Attack",
+          "element": "air",
+          "targets": 1,
+          "avg": 26,
+          "vs": "def"
+        },
+        {
+          "name": "Phantom Shift: Venomstone Spines",
+          "type": "Attack",
+          "element": "air",
+          "targets": 2,
+          "avg": 22,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Phantom Shift: Thunder Strike",
+        "type": "Attack",
+        "element": "air",
+        "targets": 1,
+        "avg": 38,
+        "vs": "def"
+      },
+      "flags": [
+        "best basic attack avg 38 < 45",
+        "resisted hit = 16% of PC HP (< 25%)"
+      ]
+    },
+    {
+      "name": "Obsidrax",
+      "rank": "soldier",
+      "level": 46,
+      "species": "ELEMENTAL",
+      "hp": 180,
+      "mp": 60,
+      "turns": 1,
+      "def": 13,
+      "mdef": 11,
+      "hitDef": "49%",
+      "hitMdef": ">58%",
+      "vu": [
+        "ice"
+      ],
+      "rs": [
+        "earth"
+      ],
+      "im": [
+        "bolt"
+      ],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Basalt Crush",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 44,
+          "vs": "def"
+        },
+        {
+          "name": "Venomstone Spines",
+          "type": "Attack",
+          "element": "poison",
+          "targets": 3,
+          "avg": 28,
+          "vs": "def"
+        },
+        {
+          "name": "Tectonic Collapse",
+          "type": "Active",
+          "element": "earth",
+          "targets": null,
+          "avg": 28,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Basalt Crush",
+        "type": "Attack",
+        "element": "physical",
+        "targets": 1,
+        "avg": 44,
+        "vs": "def"
+      },
+      "flags": [
+        "best basic attack avg 44 < 45",
+        "not modelled in the sim: Miasma Nova"
+      ]
+    },
+    {
+      "name": "Rakshasa",
+      "rank": "elite",
+      "level": 40,
+      "species": "Demon",
+      "hp": 1200,
+      "mp": 45,
+      "turns": 4,
+      "def": 14,
+      "mdef": 12,
+      "hitDef": "41%",
+      "hitMdef": "58%",
+      "vu": [
+        "light"
+      ],
+      "rs": [
+        "dark",
+        "poison"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Severing Verdict",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 166,
+          "vs": "def"
+        },
+        {
+          "name": "Saber",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 65,
+          "vs": "def"
+        },
+        {
+          "name": "Mace",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 44,
+          "vs": "mdef"
+        },
+        {
+          "name": "Chakram",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 3,
+          "avg": 27,
+          "vs": "mdef"
+        },
+        {
+          "name": "Rending Orbit",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 3,
+          "avg": 27,
+          "vs": "mdef"
+        },
+        {
+          "name": "Executioner's Volley",
+          "type": "Attack",
+          "element": "physical",
+          "targets": null,
+          "avg": 25,
+          "vs": "def"
+        },
+        {
+          "name": "Rain of Arrows",
+          "type": "Attack",
+          "element": "physical",
+          "targets": null,
+          "avg": 22,
+          "vs": "def"
+        },
+        {
+          "name": "Form Shift",
+          "type": "Active",
+          "element": "physical",
+          "targets": 1,
+          "avg": 4,
+          "vs": "def"
+        },
+        {
+          "name": "Form Shift (Dual)",
+          "type": "Active",
+          "element": "physical",
+          "targets": 1,
+          "avg": 4,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Severing Verdict",
+        "type": "Attack",
+        "element": "physical",
+        "targets": 1,
+        "avg": 166,
+        "vs": "def"
+      },
+      "flags": [
+        "not modelled in the sim: Devour"
+      ]
+    },
+    {
+      "name": "Roo",
+      "rank": "soldier",
+      "level": 50,
+      "species": "UNDEAD",
+      "hp": 255,
+      "mp": 50,
+      "turns": 1,
+      "def": 13,
+      "mdef": 13,
+      "hitDef": "49%",
+      "hitMdef": "49%",
+      "vu": [
+        "light"
+      ],
+      "rs": [
+        "dark"
+      ],
+      "im": [
+        "physical",
+        "poison"
+      ],
+      "ab": [],
+      "attacks": [],
+      "basic": null,
+      "flags": [
+        "no damage action the sim can read",
+        "not modelled in the sim: Karma, Chef's Knife, Empty Stare"
+      ]
+    },
+    {
+      "name": "Skizzik",
+      "rank": "soldier",
+      "level": 48,
+      "species": "ELEMENTAL",
+      "hp": 130,
+      "mp": 60,
+      "turns": 1,
+      "def": 12,
+      "mdef": 8,
+      "hitDef": "58%",
+      "hitMdef": ">58%",
+      "vu": [
+        "earth"
+      ],
+      "rs": [],
+      "im": [
+        "poison"
+      ],
+      "ab": [
+        "bolt"
+      ],
+      "attacks": [
+        {
+          "name": "Thunder Strike",
+          "type": "Attack",
+          "element": "bolt",
+          "targets": 1,
+          "avg": 37,
+          "vs": "def"
+        },
+        {
+          "name": "Thunder Strike (Riposte)",
+          "type": "Attack",
+          "element": "bolt",
+          "targets": 1,
+          "avg": 19,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Thunder Strike",
+        "type": "Attack",
+        "element": "bolt",
+        "targets": 1,
+        "avg": 37,
+        "vs": "def"
+      },
+      "flags": [
+        "absorbs bolt (warning signal)",
+        "best basic attack avg 37 < 45"
+      ]
+    },
+    {
+      "name": "Succubus",
+      "rank": "soldier",
+      "level": 50,
+      "species": "DEMON",
+      "hp": 180,
+      "mp": 140,
+      "turns": 1,
+      "def": 12,
+      "mdef": 14,
+      "hitDef": "58%",
+      "hitMdef": "41%",
+      "vu": [
+        "light"
+      ],
+      "rs": [
+        "dark",
+        "ice"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Draining Kiss",
+          "type": "Spell",
+          "element": "dark",
+          "targets": 1,
+          "avg": 40,
+          "vs": "mdef"
+        },
+        {
+          "name": "Rake",
+          "type": "Attack",
+          "element": "dark",
+          "targets": 1,
+          "avg": 26,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Rake",
+        "type": "Attack",
+        "element": "dark",
+        "targets": 1,
+        "avg": 26,
+        "vs": "def"
+      },
+      "flags": [
+        "best basic attack avg 26 < 45",
+        "not modelled in the sim: Charm"
+      ]
+    }
+  ]
+}
