@@ -1,6 +1,6 @@
 {
   "id": "encounter-matrix",
-  "generated": "2026-10-20T08:02:14.317Z",
+  "generated": "2026-10-20T09:48:40.391Z",
   "seed": "encounter-matrix",
   "runs": 1000,
   "policy": "standard",
@@ -72,6 +72,7 @@
         "hpP10": 0.8089171974522293,
         "hpEndP50": 0.8683651804670913,
         "roundsAllP50": 3,
+        "lowP50": 0.8598726114649682,
         "anyDown": 0,
         "downsPerFight": 0
       },
@@ -115,6 +116,7 @@
         "hpP10": 0.8386411889596603,
         "hpEndP50": 0.8789808917197452,
         "roundsAllP50": 2,
+        "lowP50": 0.8768577494692145,
         "anyDown": 0,
         "downsPerFight": 0
       },
@@ -164,6 +166,7 @@
         "hpP10": 0.821656050955414,
         "hpEndP50": 0.9002123142250531,
         "roundsAllP50": 3,
+        "lowP50": 0.8556263269639066,
         "anyDown": 0,
         "downsPerFight": 0
       },
@@ -212,6 +215,7 @@
         "hpP10": 0.8046709129511678,
         "hpEndP50": 0.9033970276008493,
         "roundsAllP50": 4,
+        "lowP50": 0.7537154989384289,
         "anyDown": 0.52,
         "downsPerFight": 0
       },
@@ -259,6 +263,7 @@
         "hpP10": 0.7855626326963907,
         "hpEndP50": 0.881104033970276,
         "roundsAllP50": 4,
+        "lowP50": 0.7600849256900213,
         "anyDown": 0,
         "downsPerFight": 0
       },
@@ -307,6 +312,7 @@
         "hpP10": 0.7388535031847133,
         "hpEndP50": 0.861995753715499,
         "roundsAllP50": 4,
+        "lowP50": 0.7505307855626326,
         "anyDown": 0.657,
         "downsPerFight": 0.005
       },
@@ -356,6 +362,7 @@
         "hpP10": 0.8492569002123143,
         "hpEndP50": 0.9150743099787686,
         "roundsAllP50": 3,
+        "lowP50": 0.8853503184713376,
         "anyDown": 0,
         "downsPerFight": 0
       },
@@ -404,6 +411,7 @@
         "hpP10": 0.8343949044585988,
         "hpEndP50": 0.9087048832271762,
         "roundsAllP50": 4,
+        "lowP50": 0.7834394904458599,
         "anyDown": 0.062,
         "downsPerFight": 0
       },
@@ -451,6 +459,7 @@
         "hpP10": null,
         "hpEndP50": 0.7929936305732485,
         "roundsAllP50": 7,
+        "lowP50": 0.6560509554140127,
         "anyDown": 0.616,
         "downsPerFight": 0
       },
@@ -497,6 +506,7 @@
         "hpP10": null,
         "hpEndP50": 0.8248407643312102,
         "roundsAllP50": 7,
+        "lowP50": 0.6157112526539278,
         "anyDown": 0.034,
         "downsPerFight": 0
       },
@@ -545,6 +555,7 @@
         "hpP10": 0.8450106157112527,
         "hpEndP50": 0.8895966029723992,
         "roundsAllP50": 5,
+        "lowP50": 0.8704883227176221,
         "anyDown": 0,
         "downsPerFight": 0
       },
@@ -596,6 +607,7 @@
         "hpP10": null,
         "hpEndP50": 0.7643312101910829,
         "roundsAllP50": 7,
+        "lowP50": 0.5191082802547771,
         "anyDown": 0.763,
         "downsPerFight": 0.277
       },
@@ -650,6 +662,7 @@
         "hpP10": 0.861995753715499,
         "hpEndP50": 0.9490445859872612,
         "roundsAllP50": 7,
+        "lowP50": 0.8556263269639066,
         "anyDown": 0,
         "downsPerFight": 0
       },
@@ -704,6 +717,7 @@
         "hpP10": null,
         "hpEndP50": 0.8110403397027601,
         "roundsAllP50": 7,
+        "lowP50": 0.6178343949044586,
         "anyDown": 0.022,
         "downsPerFight": 0.002
       },
@@ -755,6 +769,7 @@
         "hpP10": null,
         "hpEndP50": 0.7091295116772823,
         "roundsAllP50": 7,
+        "lowP50": 0.45222929936305734,
         "anyDown": 0.847,
         "downsPerFight": 0.596
       },
@@ -797,6 +812,7 @@
         "hpP10": 0.18619957537154988,
         "hpEndP50": 0.09978768577494693,
         "roundsAllP50": 5,
+        "lowP50": 0.03184713375796178,
         "anyDown": 0.999,
         "downsPerFight": 2.843
       },
@@ -842,6 +858,7 @@
         "hpP10": 0.9596602972399151,
         "hpEndP50": 1,
         "roundsAllP50": 2,
+        "lowP50": 1,
         "anyDown": 0,
         "downsPerFight": 0
       },
@@ -888,6 +905,7 @@
         "hpP10": 0.8895966029723992,
         "hpEndP50": 0.9596602972399151,
         "roundsAllP50": 2,
+        "lowP50": 0.9596602972399151,
         "anyDown": 0,
         "downsPerFight": 0
       },
@@ -932,6 +950,7 @@
         "hpP10": 0.8428874734607219,
         "hpEndP50": 0.9384288747346072,
         "roundsAllP50": 2,
+        "lowP50": 0.9384288747346072,
         "anyDown": 0,
         "downsPerFight": 0
       },
@@ -976,6 +995,7 @@
         "hpP10": 0.7515923566878981,
         "hpEndP50": 0.8184713375796179,
         "roundsAllP50": 4,
+        "lowP50": 0.6305732484076433,
         "anyDown": 0.019,
         "downsPerFight": 0
       },
@@ -1019,6 +1039,7 @@
         "hpP10": 0.7685774946921444,
         "hpEndP50": 0.8365180467091295,
         "roundsAllP50": 4,
+        "lowP50": 0.4564755838641189,
         "anyDown": 0.876,
         "downsPerFight": 0.036
       },
@@ -1062,6 +1083,7 @@
         "hpP10": 0.7707006369426752,
         "hpEndP50": 0.8747346072186837,
         "roundsAllP50": 3,
+        "lowP50": 0.8450106157112527,
         "anyDown": 0.007,
         "downsPerFight": 0
       },
@@ -1107,6 +1129,7 @@
         "hpP10": 0.6528662420382165,
         "hpEndP50": 0,
         "roundsAllP50": 4,
+        "lowP50": 0,
         "anyDown": 1,
         "downsPerFight": 3.252
       },
@@ -1154,6 +1177,7 @@
         "hpP10": 0.7430997876857749,
         "hpEndP50": 0.8152866242038217,
         "roundsAllP50": 6,
+        "lowP50": 0.4288747346072187,
         "anyDown": 0.739,
         "downsPerFight": 0.215
       },
@@ -1199,6 +1223,7 @@
         "hpP10": 0.691932059447983,
         "hpEndP50": 0.8598726114649682,
         "roundsAllP50": 3,
+        "lowP50": 0.8556263269639066,
         "anyDown": 0.187,
         "downsPerFight": 0.039
       },
@@ -1244,6 +1269,7 @@
         "hpP10": 0.3078556263269639,
         "hpEndP50": 0.1613588110403397,
         "roundsAllP50": 7,
+        "lowP50": 0.11677282377919321,
         "anyDown": 1,
         "downsPerFight": 2.629
       },
@@ -1290,6 +1316,7 @@
         "hpP10": 0.5307855626326964,
         "hpEndP50": 0.6518046709129511,
         "roundsAllP50": 4,
+        "lowP50": 0.505307855626327,
         "anyDown": 0.32,
         "downsPerFight": 0.197
       },
@@ -1334,6 +1361,7 @@
         "hpP10": 0.4140127388535032,
         "hpEndP50": 0.4968152866242038,
         "roundsAllP50": 6,
+        "lowP50": 0.26963906581740976,
         "anyDown": 0.938,
         "downsPerFight": 1.229
       },
@@ -1377,6 +1405,7 @@
         "hpP10": 0.8067940552016986,
         "hpEndP50": 0.9044585987261147,
         "roundsAllP50": 2,
+        "lowP50": 0.7983014861995754,
         "anyDown": 0.327,
         "downsPerFight": 0.001
       },
@@ -1419,6 +1448,7 @@
         "hpP10": 0.6579617834394904,
         "hpEndP50": 0.821656050955414,
         "roundsAllP50": 2,
+        "lowP50": 0.6220806794055201,
         "anyDown": 0.518,
         "downsPerFight": 0
       },
@@ -1461,6 +1491,7 @@
         "hpP10": 0.6518046709129511,
         "hpEndP50": 0.7749469214437368,
         "roundsAllP50": 3,
+        "lowP50": 0.5859872611464968,
         "anyDown": 0.05,
         "downsPerFight": 0.002
       },
@@ -1504,6 +1535,7 @@
         "hpP10": 0.535031847133758,
         "hpEndP50": 0.5955414012738853,
         "roundsAllP50": 5,
+        "lowP50": 0.2632696390658174,
         "anyDown": 0.997,
         "downsPerFight": 1.44
       },
@@ -1549,6 +1581,7 @@
         "hpP10": 0.7717622080679406,
         "hpEndP50": 0.8598726114649682,
         "roundsAllP50": 5,
+        "lowP50": 0.47983014861995754,
         "anyDown": 0.92,
         "downsPerFight": 0.032
       },
@@ -1594,6 +1627,7 @@
         "hpP10": 0.5201698513800425,
         "hpEndP50": 0.7154989384288747,
         "roundsAllP50": 4,
+        "lowP50": 0.46284501061571126,
         "anyDown": 0.986,
         "downsPerFight": 0.184
       },
@@ -1637,6 +1671,7 @@
         "hpP10": 0.2356687898089172,
         "hpEndP50": 0,
         "roundsAllP50": 6,
+        "lowP50": 0,
         "anyDown": 1,
         "downsPerFight": 2.985
       },
@@ -1684,6 +1719,7 @@
         "hpP10": 0.7333333333333335,
         "hpEndP50": 0.9044585987261147,
         "roundsAllP50": 6,
+        "lowP50": 0.7091295116772823,
         "anyDown": 0.47,
         "downsPerFight": 0.745
       },
@@ -1734,6 +1770,7 @@
         "hpP10": 0.6794055201698513,
         "hpEndP50": 0.7791932059447984,
         "roundsAllP50": 4,
+        "lowP50": 0.4989384288747346,
         "anyDown": 0.787,
         "downsPerFight": 0.001
       },
@@ -1779,6 +1816,7 @@
         "hpP10": 0.6624203821656051,
         "hpEndP50": 0.7770700636942676,
         "roundsAllP50": 3,
+        "lowP50": 0.6963906581740976,
         "anyDown": 0.001,
         "downsPerFight": 0
       },
@@ -1826,6 +1864,7 @@
         "hpP10": 0.5222929936305732,
         "hpEndP50": 0.6305732484076433,
         "roundsAllP50": 4,
+        "lowP50": 0.42462845010615713,
         "anyDown": 0.621,
         "downsPerFight": 0.656
       },
@@ -1868,6 +1907,7 @@
         "hpP10": 0.8577494692144374,
         "hpEndP50": 0.8789808917197452,
         "roundsAllP50": 2,
+        "lowP50": 0.8789808917197452,
         "anyDown": 0,
         "downsPerFight": 0
       },
@@ -1910,6 +1950,7 @@
         "hpP10": 0.8131634819532909,
         "hpEndP50": 0.8980891719745223,
         "roundsAllP50": 3,
+        "lowP50": 0.8343949044585988,
         "anyDown": 0,
         "downsPerFight": 0
       },
@@ -1955,6 +1996,7 @@
         "hpP10": 0.7070063694267515,
         "hpEndP50": 0.7898089171974523,
         "roundsAllP50": 4,
+        "lowP50": 0.5435244161358811,
         "anyDown": 0.135,
         "downsPerFight": 0
       },
@@ -2000,6 +2042,7 @@
         "hpP10": 0.7855626326963907,
         "hpEndP50": 0.8768577494692145,
         "roundsAllP50": 5,
+        "lowP50": 0.554140127388535,
         "anyDown": 0.046,
         "downsPerFight": 0
       },
@@ -2045,6 +2088,7 @@
         "hpP10": null,
         "hpEndP50": 0,
         "roundsAllP50": 7,
+        "lowP50": 0,
         "anyDown": 1,
         "downsPerFight": 3.772
       },
@@ -2083,85 +2127,12 @@
         "hpP10": null,
         "hpEndP50": 0.910828025477707,
         "roundsAllP50": 10,
+        "lowP50": 0.7707006369426752,
         "anyDown": 0.199,
         "downsPerFight": 0.013
       },
       "notes": [
         "unresolved in 100%"
-      ]
-    },
-    {
-      "dungeon": "Valley of the Dragon",
-      "source": "story (no table)",
-      "range": null,
-      "weight": null,
-      "rolls": false,
-      "names": [
-        "Flame Drake"
-      ],
-      "story": true,
-      "enemies": [
-        "Flame Drake"
-      ],
-      "kind": "boss",
-      "level": 45,
-      "enemyHp": 300,
-      "coverage": "41/65 turn-spendable actions unmodelled (63%)",
-      "enemyGaps": [],
-      "stats": {
-        "runs": 1000,
-        "win": 1,
-        "defeat": 0,
-        "overtime": 0,
-        "roundsP50": 3,
-        "roundsP90": 4,
-        "hpP50": 0.9426751592356688,
-        "hpP10": 0.8938428874734607,
-        "hpEndP50": 0.9426751592356688,
-        "roundsAllP50": 3,
-        "anyDown": 0,
-        "downsPerFight": 0
-      },
-      "notes": [
-        "rounds below 5.5-6 rds",
-        "HP left ≥ 85%"
-      ]
-    },
-    {
-      "dungeon": "Valley of the Dragon",
-      "source": "story (no table)",
-      "range": null,
-      "weight": null,
-      "rolls": false,
-      "names": [
-        "Lightning Drake"
-      ],
-      "story": true,
-      "enemies": [
-        "Lightning Drake"
-      ],
-      "kind": "boss",
-      "level": 45,
-      "enemyHp": 150,
-      "coverage": "41/65 turn-spendable actions unmodelled (63%)",
-      "enemyGaps": [],
-      "stats": {
-        "runs": 1000,
-        "win": 1,
-        "defeat": 0,
-        "overtime": 0,
-        "roundsP50": 2,
-        "roundsP90": 2,
-        "hpP50": 1,
-        "hpP10": 0.9042462845010616,
-        "hpEndP50": 1,
-        "roundsAllP50": 2,
-        "anyDown": 0,
-        "downsPerFight": 0
-      },
-      "notes": [
-        "rounds below 5.5-6 rds",
-        "HP left ≥ 85%"
       ]
     }
   ]

@@ -1,6 +1,6 @@
 # Monster Audit — Valley of the Dragon + Fafnir Castle
 
-2026-10-19 · party Hina, Keren, Blanche, Zarg · mean PC HP 118
+2026-10-20 · party Hina, Keren, Blanche, Zarg · mean PC HP 118
 
 > Numbers against the design rules, not verdicts. Hit rates are the party's L41 averages. "Resisted hit" checks elites and bosses only. PE (≤ 33%) and the live linters are not checked here.
 
@@ -15,12 +15,10 @@
 | Dragon Guard | soldier | 50 | 250 | 1 | 12 (58%) | 10 (>58%) | ice | fire, poison / — / — | Saber 32 | best basic attack avg 32 < 45 |
 | Drakoza | soldier | 43 | 140 | 1 | 11 (>58%) | 10 (>58%) | light | dark / — / — | Dragon Claw 27 | best basic attack avg 27 < 45 |
 | Electro Slime | soldier | 40 | 45 | 1 | 6 (>58%) | 6 (>58%) | earth | — / poison / bolt | Static Shot 36 | absorbs bolt (warning signal); best basic attack avg 36 < 45 |
-| Flame Drake | elite | 45 | 300 | 1 | 14 (41%) | 8 (>58%) | bolt | fire / — / — | Dragon Claw 28 · Immolate 32 | best basic attack avg 28 < 45; resisted hit = 12% of PC HP (< 25%) |
 | Gigas | elite | 45 | 800 | 1 | 12 (58%) | 10 (>58%) | bolt, fire, poison | physical, air, earth / — / — | Heavy Swing 128 | 3 VU (rule: exactly 1 for elite) |
 | Imp | soldier | 50 | 110 | 1 | 15 (33%) | 14 (41%) | light | dark, fire / — / — | Pitchfork 21 | best basic attack avg 21 < 45; not modelled in the sim: Strip Weapon, Prank, Strip Armor |
 | Iron Colossus | elite | 52 | 700 | 1 | 14 (41%) | 8 (>58%) | bolt | physical, earth / poison / — | Siege Fist 42 | best basic attack avg 42 < 45; resisted hit = 18% of PC HP (< 25%) |
 | Kirin | elite | 50 | 210 | 1 | 14 (41%) | 15 (33%) | poison | bolt / — / — | Horn Rush 69 | — |
-| Lightning Drake | elite | 45 | 150 | 1 | 8 (>58%) | 14 (41%) | fire | bolt / — / — | Dragon Claw 26 · Arc Volt 47 | best basic attack avg 26 < 45; resisted hit = 11% of PC HP (< 25%) |
 | Lightning Prism | soldier | 45 | 150 | 1 | 10 (>58%) | 16 (26%) | physical, earth | — / poison / bolt | Arc Spark 31 · Fulgur Finis 70 ×3 | 2 VU (rule: exactly 1 for soldier); absorbs bolt (warning signal); best basic attack avg 31 < 45 |
 | Mana Ray | soldier | 45 | 115 | 1 | 11 (>58%) | 10 (>58%) | earth, ice | bolt, fire / — / — | Mana Stinger 31 · Volt Stinger 47 | 2 VU (rule: exactly 1 for soldier); best basic attack avg 31 < 45 |
 | Mist Dragon | elite | 45 | 200 | 1 | 14 (41%) | 13 (49%) | air | — / poison / — | Phantom Shift: Thunder Strike 38 · Mist Breath 46 ×3 | best basic attack avg 38 < 45; resisted hit = 16% of PC HP (< 25%) |
@@ -50,8 +48,6 @@
 
 **Electro Slime** — Static Shot 36 (bolt, vs mdef) · Tackle 36 (physical, vs def)
 
-**Flame Drake** — Immolate 32 (fire, vs def) · Dragon Claw 28 (physical, vs def)
-
 **Gigas** — Heavy Swing 128 (physical, vs def) · Heavy Bodyslam 83 (physical, vs def)
 
 **Imp** — Pitchfork 21 (physical, vs def)
@@ -59,8 +55,6 @@
 **Iron Colossus** — Siege Fist 42 (physical, vs def) · Grinding Quake 27 ×all (earth, vs mdef) · Seismic Stomp 23 ×3 (earth, vs def)
 
 **Kirin** — Horn Rush 69 (bolt, vs def) · Hooves 52 (physical, vs def) · Rail Stream 37 ×all (bolt, vs mdef)
-
-**Lightning Drake** — Arc Volt 47 (bolt, vs mdef) · Dragon Claw 26 (physical, vs def)
 
 **Lightning Prism** — Fulgur Finis 70 ×3 (bolt, vs mdef) · Arc Spark 31 (bolt, vs mdef)
 

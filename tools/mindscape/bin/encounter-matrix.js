@@ -38,7 +38,10 @@ const COLLECTIONS = ["actors", "tables", "folders", "items"];
 
 // Story-started fights that sit in no Encounter table (chapter tracker, 2026-10-19).
 const STORY_FIGHTS = {
-  "Valley of the Dragon": [["⭐️ Fafnir"], ["Rakshasa"], ["Flame Drake"], ["Lightning Drake"]],
+  // Flame Drake and Lightning Drake are NOT listed: they are adds Fafnir summons mid-fight
+  // (Summon Elemental Drake), so judging them alone, one action against the whole party,
+  // says nothing. They belong to the Fafnir fight, which Mindscape cannot simulate yet.
+  "Valley of the Dragon": [["⭐️ Fafnir"], ["Rakshasa"]],
   "Fafnir Castle": [],
 };
 

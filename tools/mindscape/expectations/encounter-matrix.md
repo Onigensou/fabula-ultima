@@ -46,8 +46,6 @@ Targets: normal 1.5-2 rds (long ≤ 4), boss 5.5-6 rds (long 7.5); party HP left
 | 27-27 | 4% | Mist Dragon, Mana Ray, Drakoza | normal | 45 | 455 | 99% | 5.0 / 6.0 | 88% / 79% | 5% | rounds above long target (4); HP left ≥ 85% | — |
 | story | — | ⭐️ Fafnir | boss | 50 | 1824 | 0% | — / — | — / — | 100% | party loses 77% | ⭐️ Fafnir: Ruinous Breath; ⭐️ Fafnir: Storm Calm; ⭐️ Fafnir: Summon Elemental Drake; ⭐️ Fafnir: Torment; ⭐️ Fafnir: Searing Brand; ⭐️ Fafnir: Draconic Domination; ⭐️ Fafnir: Zero Power: Cruel Ultimatum |
 | story | — | Rakshasa | boss | 40 | 1200 | 0% | — / — | — / — | 20% | unresolved in 100% | Rakshasa: Devour |
-| story | — | Flame Drake | boss | 45 | 300 | 100% | 3.0 / 4.0 | 94% / 89% | 0% | rounds below 5.5-6 rds; HP left ≥ 85% | — |
-| story | — | Lightning Drake | boss | 45 | 150 | 100% | 2.0 / 2.0 | 100% / 90% | 0% | rounds below 5.5-6 rds; HP left ≥ 85% | — |
 
 ## Fafnir Castle
 

@@ -125,16 +125,6 @@
         }
       }
     },
-    "Flame Drake": {
-      "hpPct": 30,
-      "turns": 3,
-      "dmgAdd": 25
-    },
-    "Lightning Drake": {
-      "hpPct": 150,
-      "turns": 3,
-      "dmgAdd": 25
-    },
     "Asura": {
       "hpPct": -20,
       "attacks": {
@@ -2148,90 +2138,6 @@
         "anyDown": 0.205,
         "downsPerFight": 0.0075,
         "verdict": "stalemate"
-      }
-    },
-    {
-      "dungeon": "Valley of the Dragon",
-      "num": "story",
-      "enemies": [
-        "Flame Drake"
-      ],
-      "lineup": null,
-      "kind": "boss",
-      "touched": true,
-      "before": {
-        "runs": 800,
-        "win": 1,
-        "defeat": 0,
-        "overtime": 0,
-        "roundsP50": 3,
-        "roundsP90": 4,
-        "hpP50": 0.9426751592356688,
-        "hpP10": 0.8938428874734607,
-        "hpEndP50": 0.9426751592356688,
-        "roundsAllP50": 3,
-        "lowP50": 0.9426751592356688,
-        "anyDown": 0,
-        "downsPerFight": 0,
-        "verdict": "pushover"
-      },
-      "after": {
-        "runs": 800,
-        "win": 0.91875,
-        "defeat": 0.0575,
-        "overtime": 0.02375,
-        "roundsP50": 6,
-        "roundsP90": 7,
-        "hpP50": 0.6411889596602972,
-        "hpP10": 0.41061571125265395,
-        "hpEndP50": 0.6348195329087049,
-        "roundsAllP50": 6,
-        "lowP50": 0.5095541401273885,
-        "anyDown": 0.98,
-        "downsPerFight": 1.5125,
-        "verdict": "on target"
-      }
-    },
-    {
-      "dungeon": "Valley of the Dragon",
-      "num": "story",
-      "enemies": [
-        "Lightning Drake"
-      ],
-      "lineup": null,
-      "kind": "boss",
-      "touched": true,
-      "before": {
-        "runs": 800,
-        "win": 1,
-        "defeat": 0,
-        "overtime": 0,
-        "roundsP50": 2,
-        "roundsP90": 2,
-        "hpP50": 1,
-        "hpP10": 0.9044585987261147,
-        "hpEndP50": 1,
-        "roundsAllP50": 2,
-        "lowP50": 1,
-        "anyDown": 0,
-        "downsPerFight": 0,
-        "verdict": "pushover"
-      },
-      "after": {
-        "runs": 800,
-        "win": 0.99875,
-        "defeat": 0,
-        "overtime": 0.00125,
-        "roundsP50": 4,
-        "roundsP90": 5,
-        "hpP50": 0.7154989384288747,
-        "hpP10": 0.5643312101910828,
-        "hpEndP50": 0.7154989384288747,
-        "roundsAllP50": 4,
-        "lowP50": 0.5817409766454352,
-        "anyDown": 0.94875,
-        "downsPerFight": 1.0625,
-        "verdict": "on target"
       }
     }
   ]

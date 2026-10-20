@@ -49,5 +49,3 @@ After:  pushover 2 · too soft 10 · on target 16 · drags 13 · stalemate 1 · 
 | V27 | Mist Dragon, Mana Ray, Drakoza | drags | **drags** | 5 → 6 | 56% → 37% | 99% → 53% | 6% → 99% |
 | Vstory | ⭐️ Fafnir | wall | (unchanged) | 7+ | 0% | 0% | 100% |
 | Vstory | Rakshasa | stalemate | (unchanged) | 7+ | 76% | 0% | 21% |
-| Vstory | Flame Drake | pushover | **on target** | 3 → 6 | 94% → 51% | 100% → 92% | 0% → 98% |
-| Vstory | Lightning Drake | pushover | **on target** | 2 → 4 | 100% → 58% | 100% → 100% | 0% → 95% |

@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-19T17:44:30.552Z",
+  "generated": "2026-10-20T09:48:42.279Z",
   "dungeons": [
     "Valley of the Dragon",
     "Fafnir Castle"
@@ -544,57 +544,6 @@
       ]
     },
     {
-      "name": "Flame Drake",
-      "rank": "elite",
-      "level": 45,
-      "species": "MONSTER",
-      "hp": 300,
-      "mp": 30,
-      "turns": 1,
-      "def": 14,
-      "mdef": 8,
-      "hitDef": "41%",
-      "hitMdef": ">58%",
-      "vu": [
-        "bolt"
-      ],
-      "rs": [
-        "fire"
-      ],
-      "im": [],
-      "ab": [],
-      "attacks": [
-        {
-          "name": "Immolate",
-          "type": "Active",
-          "element": "fire",
-          "targets": 1,
-          "avg": 32,
-          "vs": "def"
-        },
-        {
-          "name": "Dragon Claw",
-          "type": "Attack",
-          "element": "physical",
-          "targets": 1,
-          "avg": 28,
-          "vs": "def"
-        }
-      ],
-      "basic": {
-        "name": "Dragon Claw",
-        "type": "Attack",
-        "element": "physical",
-        "targets": 1,
-        "avg": 28,
-        "vs": "def"
-      },
-      "flags": [
-        "best basic attack avg 28 < 45",
-        "resisted hit = 12% of PC HP (< 25%)"
-      ]
-    },
-    {
       "name": "Gigas",
       "rank": "elite",
       "level": 45,
@@ -809,57 +758,6 @@
         "vs": "def"
       },
       "flags": []
-    },
-    {
-      "name": "Lightning Drake",
-      "rank": "elite",
-      "level": 45,
-      "species": "MONSTER",
-      "hp": 150,
-      "mp": 60,
-      "turns": 1,
-      "def": 8,
-      "mdef": 14,
-      "hitDef": ">58%",
-      "hitMdef": "41%",
-      "vu": [
-        "fire"
-      ],
-      "rs": [
-        "bolt"
-      ],
-      "im": [],
-      "ab": [],
-      "attacks": [
-        {
-          "name": "Arc Volt",
-          "type": "Spell",
-          "element": "bolt",
-          "targets": 1,
-          "avg": 47,
-          "vs": "mdef"
-        },
-        {
-          "name": "Dragon Claw",
-          "type": "Attack",
-          "element": "physical",
-          "targets": 1,
-          "avg": 26,
-          "vs": "def"
-        }
-      ],
-      "basic": {
-        "name": "Dragon Claw",
-        "type": "Attack",
-        "element": "physical",
-        "targets": 1,
-        "avg": 26,
-        "vs": "def"
-      },
-      "flags": [
-        "best basic attack avg 26 < 45",
-        "resisted hit = 11% of PC HP (< 25%)"
-      ]
     },
     {
       "name": "Lightning Prism",

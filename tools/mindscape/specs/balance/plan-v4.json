@@ -124,16 +124,6 @@
       }
     }
   },
-  "Flame Drake": {
-    "hpPct": 30,
-    "turns": 3,
-    "dmgAdd": 25
-  },
-  "Lightning Drake": {
-    "hpPct": 150,
-    "turns": 3,
-    "dmgAdd": 25
-  },
   "Asura": {
     "hpPct": -20,
     "attacks": {
