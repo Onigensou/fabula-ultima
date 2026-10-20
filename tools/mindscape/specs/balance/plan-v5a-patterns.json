@@ -1,0 +1,36 @@
+{
+  "Dire Orc": {
+    "patterns": {
+      "War Howl": { "priority": 6 },
+      "Skull Splitter": { "priority": 5 },
+      "Cleaver": { "priority": 4 }
+    }
+  },
+  "Succubus": {
+    "patterns": {
+      "Charm": { "priority": 7 },
+      "Draining Kiss": { "priority": 6 },
+      "Rake": { "priority": 5 }
+    }
+  },
+  "Imp": {
+    "patterns": {
+      "Strip Weapon": { "priority": 6, "cooldown": 3 },
+      "Strip Armor": { "priority": 5, "cooldown": 3 },
+      "Prank": { "priority": 4 },
+      "Pitchfork": { "priority": 5 }
+    }
+  },
+  "Iron Colossus": {
+    "patterns": {
+      "Grinding Quake": { "priority": 7 },
+      "Seismic Stomp": { "priority": 6 },
+      "Siege Fist": { "priority": 5 }
+    }
+  },
+  "Obsidrax": {
+    "patterns": {
+      "Miasma Nova": { "priority": 9 }
+    }
+  }
+}

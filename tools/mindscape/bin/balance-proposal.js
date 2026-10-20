@@ -72,6 +72,38 @@ function patchMonster(m, spec) {
     const raw = String(p.damage_bonus ?? "0").trim() || "0";
     p.damage_bonus = /^-?\d+(\.\d+)?$/.test(raw) ? String(Number(raw) + add) : `(${raw}) + ${add}`;
   }
+  // Action-table edits: { "<row name>": { priority, cooldown, condition, string, v1, v2 } },
+  // applied to every row of that name (Gigas lists Heavy Swing twice).
+  for (const [name, edit] of Object.entries(spec.patterns ?? {})) {
+    const rows = Object.values(m._rawProps.action_pattern_table ?? {}).filter((r) => r && !r.$deleted && String(r.action_pattern_name).trim() === name);
+    if (!rows.length) throw new Error(`${m.name}: no action-table row named "${name}"`);
+    for (const r of rows) {
+      if (edit.priority != null) r.action_pattern_priority = String(edit.priority);
+      if (edit.cooldown != null) r.action_pattern_cooldown = String(edit.cooldown);
+      if (edit.condition != null) r.action_pattern_condition = edit.condition;
+      if (edit.string != null) r.action_pattern_string = edit.string;
+      if (edit.v1 != null) r.action_pattern_value_1 = String(edit.v1);
+      if (edit.v2 != null) r.action_pattern_value_2 = String(edit.v2);
+    }
+  }
+  if (spec.mp != null) { m.mp.max = spec.mp; m.mp.cur = spec.mpStart ?? spec.mp; }
+  else if (spec.mpStart != null) m.mp.cur = spec.mpStart;
+  for (const [name, cost] of Object.entries(spec.costs ?? {})) {
+    const it = (m.items ?? []).find((i) => i.name === name);
+    if (!it) throw new Error(`${m.name}: no skill named "${name}"`);
+    it.props.cost = cost;
+  }
+  // Effect-row edits: { "<skill>": { "<effect_label>": { field: value } } } (a save DL,
+  // a damage amount, a status pool).
+  for (const [name, rows] of Object.entries(spec.effects ?? {})) {
+    const it = (m.items ?? []).find((i) => i.name === name);
+    if (!it) throw new Error(`${m.name}: no skill named "${name}"`);
+    for (const [label, fields] of Object.entries(rows)) {
+      const row = Object.values(it.props.effect_table ?? {}).find((r) => r && !r.$deleted && r.effect_label === label);
+      if (!row) throw new Error(`${m.name} / ${name}: no effect row "${label}"`);
+      Object.assign(row, fields);
+    }
+  }
   if (spec.turns) m.turnsPerRound = spec.turns;
   if (spec.def != null) m.def = spec.def;
   if (spec.mdef != null) m.mdef = spec.mdef;
