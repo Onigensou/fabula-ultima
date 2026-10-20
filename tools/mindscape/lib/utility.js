@@ -109,9 +109,11 @@ function tryAccelerate(state, actor) {
 // KO prevention outranks healing throughput -- one PC going down early
 // snowballs into a loss, because the party loses a quarter of its actions while
 // taking the same incoming damage.
-function findProtector(state, victim, incoming) {
+// `bar` is the strong-hit fraction; party policies drop it to 0.12 once one enemy is
+// left (reaction-brain protectPolicy's endgame bar).
+function findProtector(state, victim, incoming, bar = TUNING.strongHitFraction) {
   if (victim.side !== "party") return null;
-  if (incoming < victim.maxHp * TUNING.strongHitFraction && incoming < victim.hp) return null;
+  if (incoming < victim.maxHp * bar && incoming < victim.hp) return null;
 
   return state.combatants.find((c) =>
     c.alive && c.side === "party" && c !== victim &&

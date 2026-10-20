@@ -18,6 +18,7 @@ const U = require("./utility");
 const RX = require("./reactions");
 const ST = require("./stances");
 const T = require("./tinctures");
+const PP = require("./party-policy");
 
 const ATTR_KEYS = { DEX: "dex", INS: "ins", MIG: "mig", WLP: "wlp" };
 
@@ -100,7 +101,9 @@ function makeCombatant(actor, side) {
 }
 
 function attrs(c) {
-  return R.effectiveAttributes(c.actor.attributes, c.actor.statuses ?? {});
+  // `c.statuses` holds what this FIGHT inflicted (party policies: Warning Shot, Meteor
+  // Shower). The actor model is shared across runs, so fight state never goes there.
+  return R.effectiveAttributes(c.actor.attributes, { ...(c.actor.statuses ?? {}), ...(c.statuses ?? {}) });
 }
 
 // Initiative: (DEX + INS) / 2, plus the armor's SIGNED initiative modifier (stored
@@ -149,6 +152,14 @@ function chooseTargets(state, actor, action) {
   if (t.side === "ally") return [];   // handled by the utility layer, not here
 
   const n = t.count === Infinity ? foes.length : Math.min(t.count, foes.length);
+
+  // Novice party (party-policy.js): no called target, whoever the dice point at.
+  if (actor.side === "party" && state.policy?.name === "novice") {
+    const pool = foes.slice();
+    const out = [];
+    while (out.length < n && pool.length) out.push(pool.splice(Math.floor(state.rng.float() * pool.length), 1)[0]);
+    return out;
+  }
 
   // FOCUS FIRE — the single biggest lever, and it costs nothing (9 rounds -> 4
   // in live runs). One called target shared by the whole party, so damage
@@ -506,6 +517,12 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
   const bonus = checkBonusFor(actor, action);
   const extra = extraDamageFor(actor, action);
 
+  // Party policies (party-policy.js): Prophetic Defender may pull a multi-target enemy
+  // action onto Hina; element-swap augments re-point the attack and add damage.
+  targets = PP.redirectTargets(state, actor, action, targets);
+  const riders = PP.declareAttack(state, actor, action, targets);
+  if (riders?.element) action = { ...action, element: riders.element };
+
   pay(actor, action, targets.length);
 
   for (const target of targets) {
@@ -531,7 +548,17 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
     if (!check.hit) {
       state.log.push({ round: state.round, actor: actor.name, action: action.name, target: target.name, miss: true, pierce: pierceMiss });
       fireReactions(state, target, RX.TRIGGERS.ON_ATTACKED, attackedCtx);
+      if (actor.side === "enemy") PP.onEnemyAttack(state, actor, target, { hit: false, damage: 0 });
       if (!pierceMiss) continue;
+    }
+    if (riders && check.hit) PP.payRiders(state, actor, riders);
+
+    // Warning Shot: the hit deals no damage and leaves the target Shaken.
+    if (riders?.warningShot && check.hit) {
+      target.statuses = { ...target.statuses, isShaken: true };
+      state.log.push({ round: state.round, actor: actor.name, action: `${action.name} + Warning Shot`, target: target.name, damage: 0, status: "shaken" });
+      fireReactions(state, target, RX.TRIGGERS.ON_ATTACKED, attackedCtx);
+      continue;
     }
 
     // A critical doubles nothing by itself in this system; it grants an
@@ -545,7 +572,7 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
     // before it is written, which is upstream of where reaction effects run.
     let base = R.outgoingDamage({
       hr: check.hr,
-      damageBonus: action.damageBonus + extra + damageAddFor(state, actor, action, target),
+      damageBonus: action.damageBonus + extra + (riders?.extra ?? 0) + damageAddFor(state, actor, action, target),
     });
     base = Math.ceil(base * damageMultiplierFor(state, actor, action, target));
     if (pierceMiss) base = Math.floor(base / 2);
@@ -600,7 +627,7 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
     // Guardian's resistances and defence never touched a hit it protected.
     let victim = target;
     if (out.direction !== "recover" && actor.side === "enemy") {
-      const prot = U.findProtector(state, target, out.damage);
+      const prot = state.policy?.name === "novice" ? null : U.findProtector(state, target, out.damage, PP.protectBar(state));
       if (prot) {
         prot.protectedThisRound++;
         victim = prot;
@@ -665,6 +692,7 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
         victim.downedOnRound = state.round;
       }
       noteCrisis(state, victim);
+      if (actor.side === "enemy") PP.onEnemyAttack(state, actor, victim, { hit: true, damage: out.damage });
     }
 
     state.log.push({
@@ -856,13 +884,31 @@ function takeTurn(state, actor, { granted = false } = {}) {
     }
   }
 
-  if (actor.side === "party") refreshFocus(state);
+  if (actor.side === "party" && state.policy?.name !== "novice") refreshFocus(state);
+
+  // Party policies (party-policy.js) replace the legacy utility layer and the greedy
+  // pick for the party. "done" = a support action spent the turn; a pick is resolved
+  // here; null falls through to the weapon swing below.
+  if (actor.side === "party" && state.policy) {
+    const pol = PP.partyTurn(state, actor, { granted }, POLICY_API);
+    if (pol === "done") {
+      if (granted) actor.grantedActionsTaken++; else actor.baseActionsTaken++;
+      return;
+    }
+    if (pol?.action) {
+      resolveAction(state, actor, pol.action, pol.targets);
+      PP.afterPick(state, actor, pol);
+      ST.consume(actor, pol.action);
+      if (granted) actor.grantedActionsTaken++; else actor.baseActionsTaken++;
+      return;
+    }
+  }
 
   // Utility pre-empts the rotation, as it does in profiles.js: a turn spent
   // keeping somebody alive or handing out an extra action beats a turn of
   // damage. Free (granted) actions are attacks only -- they never re-spend the
   // support layer, which would let one Acceleration cascade into infinite heals.
-  if (!granted && actor.side === "party") {
+  if (!granted && actor.side === "party" && !state.policy) {
     const heal = U.tryHeal(state, actor);
     if (heal) {
       state.log.push({ round: state.round, actor: actor.name, action: "Heal", heal: heal.healed, amount: heal.amount });
@@ -885,7 +931,9 @@ function takeTurn(state, actor, { granted = false } = {}) {
     }
   }
 
-  const pick = chooseAction(state, actor);
+  // Under a party policy the party's own pick was made above; what reaches here is
+  // the weapon swing.
+  const pick = actor.side === "party" && state.policy ? null : chooseAction(state, actor);
   let action = pick?.action ?? null;
   let targets = pick?.targets ?? null;
 
@@ -906,12 +954,17 @@ function takeTurn(state, actor, { granted = false } = {}) {
     let w = weaponAction(actor);
     if (w) {
       // Barrage buys REACH on a ranged shot, so it fires whenever payable.
-      const barraged = U.tryBarrage(actor, w);
+      const barraged = state.policy?.name === "novice" ? null : U.tryBarrage(actor, w);
       if (barraged) w = barraged;
       // Gear riders AFTER Barrage, so a larger Multi wins over Barrage's 2.
       w = declareRiders(state, actor, w);
       action = w;
       targets = chooseTargets(state, actor, w);
+    } else if (actor.side === "party" && state.policy) {
+      // No swingable weapon (a shield-and-shield loadout): the basic attack is the
+      // kit's own attack — Blanche's Twin Shields.
+      const p = chooseAction(state, actor);
+      if (p && !p.arming) { action = p.action; targets = p.targets; }
     }
   }
 
@@ -929,10 +982,34 @@ function takeTurn(state, actor, { granted = false } = {}) {
   else actor.baseActionsTaken++;
 }
 
+// Projected damage of one action on its targets, scored like chooseAction (a kill
+// outranks any amount of chip damage). Party policies compare options with it.
+function projectTotal(actor, action, targets) {
+  const a = attrs(actor);
+  let total = 0, finisher = false;
+  for (const t of targets) {
+    const proj = R.projectDamage(t.actor, {
+      dieA: a[action.attrA] ?? 8, dieB: a[action.attrB] ?? 8, damageBonus: action.damageBonus,
+      element: action.element, weaponFamily: action.weaponFamily, keywords: action.keywords,
+    });
+    if (proj.direction === "recover") { total -= proj.damage; continue; }
+    total += proj.damage;
+    if (proj.damage >= t.hp) finisher = true;
+  }
+  return total + (finisher ? 1e6 : 0);
+}
+
+// What party-policy.js may call back into. Function declarations, so hoisting makes
+// this safe at module level.
+const POLICY_API = { attrs, canAfford, chooseAction, chooseTargets, weaponAction, applyFlatDamage, projectTotal };
+
 // ── The run ─────────────────────────────────────────────────────────────────
 // `tinctures`: { pct: { strength, spirit, endurance }, user, stock } — null (the
 // default) leaves every fight exactly as it was.
-function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, conflictEvent = null, tinctures = null }) {
+// `policy`: how the PARTY plays (party-policy.js). "legacy" (the default) is the
+// original Mindscape party, so every published calibration is unchanged.
+function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, conflictEvent = null, tinctures = null, policy = "legacy" }) {
+  if (!PP.POLICIES.includes(policy)) throw new Error(`unknown party policy "${policy}" (${PP.POLICIES.join(", ")})`);
   const combatants = [
     ...party.map((a) => makeCombatant(a, "party")),
     ...enemies.map((a) => makeCombatant(a, "enemy")),
@@ -944,6 +1021,7 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
   };
   if (state.event?.init) state.event.init(state);
   state.tinctures = tinctures ? T.makeTinctureState(tinctures) : null;
+  state.policy = policy === "legacy" ? null : PP.init(state, policy);
 
   const order = combatants.slice().sort((a, b) => initiative(b) - initiative(a));
   // Worst-case tincture opener (tinctures.makeTinctureState carrierFirst): the carrier
@@ -955,7 +1033,7 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
 
   let outcome = "inconclusive";
   // High Speed: a one-off free attack before the first round.
-  for (const c of combatants) if (U.tryHighSpeed(c)) c.grantedTurns++;
+  for (const c of combatants) if (state.policy?.name !== "novice" && U.tryHighSpeed(c)) c.grantedTurns++;
 
   for (state.round = 1; state.round <= maxRounds; state.round++) {
     for (const c of combatants) {
@@ -964,6 +1042,7 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
       c.takenThisRound = 0;
     }
     if (state.event?.onRoundStart) state.event.onRoundStart(state);
+    if (state.policy) PP.onRoundStart(state);
     for (const c of order) {
       if (!c.alive) continue;
       for (let t = 0; t < c.baseTurns; t++) {
@@ -976,6 +1055,7 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
           continue;
         }
         takeTurn(state, c);
+        if (state.policy) PP.onTurnEnd(state, c);
         // Tinctures count down at the end of the bearer's own BASE turn (live
         // target_turn_end). Granted free attacks below are not turns.
         T.tickTurnEnd(c);
@@ -1023,6 +1103,7 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
 
   return {
     outcome,
+    policy: state.policy?.name ?? "legacy",
     rounds,
     partyHpRemaining: maxHp ? curHp / maxHp : null,
     downs: partyC.filter((c) => !c.alive).map((c) => ({ name: c.name, round: c.downedOnRound })),
