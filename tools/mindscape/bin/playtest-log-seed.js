@@ -57,7 +57,7 @@ matrix.lines.forEach((l, i) => {
       roundsP50: round(st.roundsP50, 1), roundsP90: round(st.roundsP90, 1),
       hpP50: round(st.hpP50), hpP10: round(st.hpP10), anyDown: round(st.anyDown),
       notes: l.notes ?? [], gaps: l.enemyGaps ?? [],
-      runs: matrix.runs, generated: matrix.generated,
+      runs: matrix.runs, generated: matrix.generated, policy: matrix.policy ?? "legacy",
     },
   });
 });
@@ -73,7 +73,8 @@ for (const c of audit.cards) {
 }
 put("meta", "run", {
   generated: matrix.generated, runs: matrix.runs, seed: matrix.seed, party: matrix.party,
-  partyCoverage: matrix.partyCoverage, caveat: matrix.caveat, targets: matrix.targets, dungeons: matrix.dungeons,
+  partyCoverage: matrix.partyCoverage, caveat: matrix.caveat, policy: matrix.policy ?? "legacy",
+  notModelled: (matrix.policy ?? "legacy") === "legacy" ? [] : require("../lib/party-policy").NOT_PORTED, targets: matrix.targets, dungeons: matrix.dungeons,
 });
 fs.writeFileSync(path.join(out, "writes.json"), JSON.stringify(writes, null, 1) + "\n");
 console.log(`${writes.length} documents → ${out} (writes.json holds the ArtifactData batch entries)`);

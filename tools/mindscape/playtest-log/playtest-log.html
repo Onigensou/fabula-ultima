@@ -185,7 +185,7 @@ function simBlock(f) {
   if (s.error) return h("div", {}, h("div", { class: "label" }, "Sim"), h("p", {}, s.error));
   const t = s.kind === "boss" ? "5.5–6 (long 7.5)" : "1.5–2 (long ≤ 4)";
   return h("div", {},
-    h("div", { class: "label" }, `Sim · ${s.runs || "?"} runs`),
+    h("div", { class: "label" }, `Sim · ${s.policy || "legacy"} party · ${s.runs || "?"} runs`),
     h("dl", { class: "sim" },
       h("dt", {}, "Party wins"), h("dd", {}, pct(s.win), " ", h("small", {}, `loses ${pct(s.defeat)} · unresolved ${pct(s.overtime)}`)),
       h("dt", {}, "Rounds p50 / p90"), h("dd", {}, `${n1(s.roundsP50)} / ${n1(s.roundsP90)}`, " ", h("small", {}, `target ${t}`)),
@@ -301,7 +301,12 @@ function renderMeta() {
   if (!m) return;
   $("runline").textContent = `Sim run ${String(m.generated).slice(0, 10)} · ${m.runs} runs per fight · party ${(m.party || []).join(", ")}. Your verdict is what counts; the sim numbers are only a guide.`;
   const c = $("caveat");
-  c.replaceChildren(h("b", {}, "Read the sim numbers as a rough guide. "), `The sim party can't model ${String(m.partyCoverage || "").replace(/ — .*/, "")} and plays below a human table. When it calls a fight too easy, that's reliable. When it calls one too hard, it probably overstates it.`);
+  const pol = m.policy || "legacy";
+  const plays = pol === "standard" ? "plays like the in-game sim AI (the standard policy)"
+    : pol === "legacy" ? `can't model ${String(m.partyCoverage || "").replace(/ — .*/, "")}`
+    : `plays the ${pol} policy`;
+  c.replaceChildren(h("b", {}, "Read the sim numbers as a rough guide. "), `The sim party ${plays} and still plays below a human table. When it calls a fight too easy, that's reliable. When it calls one too hard, it probably overstates it.`,
+    (m.notModelled || []).length ? h("span", { class: "status" }, ` Not modelled: ${m.notModelled.map((x) => x.split(" — ")[0]).join("; ")}.`) : null);
   c.hidden = false;
 }
 
