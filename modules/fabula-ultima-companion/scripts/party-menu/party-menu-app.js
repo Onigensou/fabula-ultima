@@ -12,8 +12,8 @@
 // it until it earns the swap.
 //
 // Commands: Item (own + shared Party Bag), Ability (skills, summon binding),
-// Equip (with a before → after comparison), Status, Bonds, Bestiary, and the
-// GM-only Setup (roster, player access). The command
+// Equip (with a before → after comparison), Status, Bonds, Bestiary, Config
+// (each user's own display options), and the GM-only Setup (roster, player access). The command
 // column shows only what this user may open — see party-menu-access.js.
 // Main + Ability live in this file; the others are VIEWS modules.
 
@@ -29,6 +29,7 @@ import { equipView, statusView, who } from "./party-menu-view-gear.js";
 import { setupView } from "./party-menu-view-setup.js";
 import { bondsView, BONDS_CSS } from "./party-menu-view-bonds.js";
 import { bestiaryView, BESTIARY_CSS } from "./party-menu-view-bestiary.js";
+import { configView, CONFIG_CSS } from "./party-menu-view-config.js";
 import { attachScrollbars } from "./party-menu-scrollbar.js";
 
 const TAG = "[PartyMenu]";
@@ -42,7 +43,7 @@ const NEEDS_MEMBER = new Set(["item", "ability", "equip", "status", "bonds"]);
 // enter(ctx, actor) · render(ctx) · key(ctx, k, ev) · click(ctx, action, el)
 // · hover(ctx, action, index) → bool · input?(ctx, ev).
 const VIEWS = {
-  item: itemView, equip: equipView, status: statusView, bonds: bondsView, bestiary: bestiaryView, setup: setupView,
+  item: itemView, equip: equipView, status: statusView, bonds: bondsView, bestiary: bestiaryView, config: configView, setup: setupView,
 };
 
 /** The command column for THIS user: what Setup granted them, plus Close. */
@@ -1387,6 +1388,7 @@ function ensureStyles() {
 #${ROOT_ID} .pm-net.is-up { color: #2e7d32; } #${ROOT_ID} .pm-net.is-down { color: var(--low); } #${ROOT_ID} .pm-net.is-mixed { color: #7a3fb4; }
 ${BONDS_CSS}
 ${BESTIARY_CSS}
+${CONFIG_CSS(ROOT_ID)}
 @media (max-width: 760px) {
   #${ROOT_ID} .pm-main { grid-template-columns: 1fr; height: auto; max-height: calc(100vh - 90px); }
   #${ROOT_ID} .pm-ability-body { grid-template-columns: 1fr; }

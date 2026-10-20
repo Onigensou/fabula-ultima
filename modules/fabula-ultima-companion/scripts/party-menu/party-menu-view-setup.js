@@ -8,11 +8,11 @@
 // writes it calls (setRosterSlot, setPlayerCommands) are GM-gated as well.
 
 import { rosterSlots, rosterCandidates, setRosterSlot } from "./party-menu-inventory.js";
-import { COMMAND_DEFS, playerCommands, setPlayerCommands } from "./party-menu-access.js";
+import { COMMAND_DEFS, playerCommands, setPlayerCommands, grantableCommands } from "./party-menu-access.js";
 import { folderPath } from "./party-menu-core.js";
 import { esc, play, SND, img, overlayFoot } from "./party-menu-ui.js";
 
-const grantable = () => COMMAND_DEFS.filter((c) => !c.gmOnly);
+const grantable = grantableCommands;
 
 const ROSTER_REASONS = {
   "not-gm": "Only a GM can change this.",
