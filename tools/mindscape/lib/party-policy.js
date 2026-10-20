@@ -58,7 +58,6 @@ const NOT_PORTED = [
   "For Whom the Bell Tolls (Keren) — needs Grave points, which nothing in the model grants",
   "Lightning Rod displacement in focus fire — matters only in Lightning Storm fights",
   "phantasms never act on their own; Create Phantasm only deals its strike and adds one to the count",
-  "Zero Trigger: Strategy (Zarg) gains 1 ZP per trigger — the item text does not say how much",
   "Hina's Foresight trigger — she never spends Zero Power, so it cannot change a fight",
 ];
 

@@ -122,6 +122,12 @@ This is what closed the live sim from 8 rounds to 3–4, and it is already decla
 constant below must equal its source; a diverged constant silently rebuilds the original
 drift problem and is the first thing to check when calibration fails.
 
+> **Corrected 2026-10-20.** The original engine (`policy: "legacy"`, still the default of
+> `runBattle`) transcribes only focus fire (4b), the heal / Protect / Acceleration gates and
+> Barrage. It picks every turn by greatest projected damage, not by the per-character
+> scripts in 4c, and has no Zero Power, items, revive or element swaps. The full
+> transcription is the **`standard`** party policy — see **4e**.
+
 ### 4a. TUNING constants — [profiles.js:36-117](../scripts/battle-director/sim/profiles.js#L36-L117)
 
 | Constant | Value | Meaning |
@@ -205,6 +211,45 @@ Reactions are a large share of the party's real output, so they are modelled, no
 
 **Standalone reactions (turn_start / turn_end / conflict_start / round_*) are always taken.**
 A real party takes its free actions; there is no version of "playing well" that declines them.
+
+### 4e. Party play policies — [lib/party-policy.js](../../../tools/mindscape/lib/party-policy.js) (added 2026-10-20)
+
+`runBattle({ policy })`, `encounter-matrix.js --policy`. Four ways the party plays, so a
+fight can be bracketed between a weak and a strong player instead of judged by one bot.
+
+| Policy | Turn choice | Support | Augments / reactions |
+|---|---|---|---|
+| `legacy` | greatest projected damage | heal, Acceleration, tinctures | Barrage, Protect |
+| `standard` | the 4c scripts for Hina / Zarg / Keren / Blanche; **basic attacks for anyone else** (live `GENERIC_PROFILE`) | revive → MP item → HP item first, every character; Zero Power per 4c | Gadgets, Thermokinesis (best element, never one that any target AB/IM), Warning Shot round 1, Prophetic Defender, Protect with the endgame bar 0.12 |
+| `expert` | greatest projected damage over the whole kit, Adoration skills included, any character | as standard | as standard, without Warning Shot; Meteor Shower takes the best element instead of poison |
+| `novice` | random target, a random affordable action half the time, else the weapon | heal / item only at ≤ 15% HP | none — no Barrage, no Protect, no High Speed |
+
+State the policies keep per fight, from the world's own item text and effect tables:
+
+- **Adoration** (Blanche, `Pases`): +1 when an enemy attacks her and misses (+1 more with
+  *Elegance Showmanship*), reset to 0 when an enemy damages her, cap 5. Pays Muleta (1),
+  Tafallera (3), Descabello (5).
+- **Zero Power** from the sheet's `zero_power_value`. Zero Triggers: Motivation (Blanche
+  refills to 6 when an ally unleashes), Shattered Phantasm (Keren +1 per phantasm),
+  Strategy (Zarg +1 at the end of his turn while the enemies carry 2+ distinct statuses).
+- **Phantasms** (Keren): Create Phantasm: Strike adds one, Detonate needs and spends one,
+  Last Den of Cinders deals 20 × phantasms + 20 Fire to all and shatters them.
+- **IP items**: Remedy (3 IP, 50 HP) and Elixir (3 IP, 50 MP), the party actor's recipes;
+  carried Mega-Remedy (100 HP) and Phoenix Feather (revive at half max HP). Potion Rain
+  spreads a single-target potion to up to SL more allies at half strength.
+- **Statuses the party inflicts** (Warning Shot: Shaken; Meteor Shower: Dazed + Shaken)
+  live on the combatant for the fight, never on the shared actor model.
+- **Granted free attacks** (Acceleration, High Speed) are weapon attacks under every
+  policy — "perform a free attack".
+
+Not ported, and printed on every non-legacy report: Life Transference (formula cut off in
+the item text), For Whom the Bell Tolls (needs Grave points), Lightning Rod displacement,
+phantasms acting on their own, Hina's Foresight trigger (she never spends Zero Power).
+
+Measured on the Valley + Fafnir encounter rows, 1000 runs each (2026-10-20), mean over the
+normal (non-boss) fights: novice wins 17% · legacy 60% · standard 78% · expert 85%, with
+party HP left at victory 25% / 54% / 73% / 77%. The gap between `standard` and a live
+sim run of the same fight is the next calibration to take.
 
 ## Part 5 — Enemy policy
 Monsters act from their `action_pattern_table` rows: condition gating, cost feasibility,

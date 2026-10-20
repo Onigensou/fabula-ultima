@@ -13,6 +13,8 @@
 //   node bin/encounter-matrix.js                     # Valley of the Dragon + Fafnir Castle
 //   node bin/encounter-matrix.js --runs 500 --dungeons "Fafnir Castle" --no-story
 //   node bin/encounter-matrix.js --out expectations/encounter-matrix.json --md ../../docs/encounter-matrix.md
+//   node bin/encounter-matrix.js --policy standard   # the party plays like the in-game sim AI
+//                                                   # (legacy | standard | expert | novice, lib/party-policy.js)
 //
 // The world stores are COPIED to a temp folder first and only the copy is opened, so a
 // run never rotates the live store's MANIFEST and works with the game open (it then
@@ -28,6 +30,7 @@ const { loadWorldFolders } = require("../lib/baseline-gear");
 const { buildCoverage, extractActions } = require("../lib/skills");
 const ST = require("../lib/stances");
 const { runBattle } = require("../lib/engine");
+const PP = require("../lib/party-policy");
 const { Rng } = require("../lib/rng");
 
 const ROOT_FOLDER = "The Legend of Dragonslayer";
@@ -50,7 +53,7 @@ const HP_TRIVIAL = 0.85;
 function parseArgs(argv) {
   const out = {
     runs: 1000, seed: "encounter-matrix", world: DEFAULT_WORLD,
-    dungeons: ["Valley of the Dragon", "Fafnir Castle"], story: true, party: null,
+    dungeons: ["Valley of the Dragon", "Fafnir Castle"], story: true, party: null, policy: "standard",
   };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
@@ -63,6 +66,7 @@ function parseArgs(argv) {
     else if (a === "--out") out.out = next();
     else if (a === "--md") out.md = next();
     else if (a === "--copy-dir") out.copyDir = next();
+    else if (a === "--policy") out.policy = next();
     else throw new Error(`unknown argument ${a}`);
   }
   return out;
@@ -144,7 +148,7 @@ function summarise(results) {
     overtime: share("overtime"),
     roundsP50: quantile(rounds, 0.5), roundsP90: quantile(rounds, 0.9),
     hpP50: quantile(hp, 0.5), hpP10: quantile(hp, 0.1),
-    anyDown: results.filter((r) => r.downs.length > 0).length / n,
+    anyDown: results.filter((r) => (r.knockedOut ?? r.downs).length > 0).length / n,
     downsPerFight: mean(results.map((r) => r.downs.length)),
   };
 }
@@ -241,7 +245,7 @@ async function main() {
     const expectedRounds = line.kind === "boss" ? 10 : 7;
     const res = [];
     for (let i = 0; i < args.runs; i++) {
-      res.push(runBattle({ party, enemies, rng: new Rng(`${args.seed}:${f.source}:${f.names.join("+")}:${i}`), expectedRounds }));
+      res.push(runBattle({ party, enemies, rng: new Rng(`${args.seed}:${f.source}:${f.names.join("+")}:${i}`), expectedRounds, policy: args.policy }));
     }
     line.stats = summarise(res);
     line.notes = notes(line.stats, line.kind);
@@ -249,7 +253,7 @@ async function main() {
   }
 
   const report = {
-    id: "encounter-matrix", generated: new Date().toISOString(), seed: args.seed, runs: args.runs,
+    id: "encounter-matrix", generated: new Date().toISOString(), seed: args.seed, runs: args.runs, policy: args.policy,
     partyCoverage: partyCov.summary,
     party: party.map((p) => `${p.name} L${p.level ?? "?"}`), dungeons: args.dungeons,
     caveat: "Sim party plays below a human table: low-pressure numbers are reliable, high-pressure ones overstate difficulty. Numbers, not verdicts.",
@@ -267,11 +271,16 @@ function renderMarkdown(r) {
   const out = [];
   out.push(`# Encounter Matrix — ${r.dungeons.join(" + ")}`);
   out.push("");
-  out.push(`${r.generated.slice(0, 10)} · ${r.runs} runs per fight · seed \`${r.seed}\` · party: ${r.party.join(", ")}`);
+  out.push(`${r.generated.slice(0, 10)} · ${r.runs} runs per fight · seed \`${r.seed}\` · party policy **${r.policy ?? "legacy"}** · party: ${r.party.join(", ")}`);
   out.push("");
   out.push(`> ${r.caveat}`);
   out.push("");
-  out.push(`Party model: ${r.partyCoverage} — the same on every line.`);
+  if ((r.policy ?? "legacy") === "legacy") {
+    out.push(`Party model: ${r.partyCoverage} — the same on every line.`);
+  } else {
+    out.push(`Party model: the **${r.policy}** policy (lib/party-policy.js) also plays Zero Power, IP items and revives, element swaps, Adoration skills, Warning Shot, Stop and Prophetic Defender. Still not modelled:`);
+    for (const x of PP.NOT_PORTED) out.push(`- ${x}`);
+  }
   out.push("");
   out.push(`Targets: normal ${TARGETS.normal.label} (long ≤ ${TARGETS.normal.longRounds}), boss ${TARGETS.boss.label} (long ${TARGETS.boss.longRounds}); party HP left at victory under ${pct(HP_PRESSURE)}, ${pct(HP_TRIVIAL)}+ = trivial.`);
   for (const d of r.dungeons) {

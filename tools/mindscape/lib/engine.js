@@ -1107,6 +1107,8 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
     rounds,
     partyHpRemaining: maxHp ? curHp / maxHp : null,
     downs: partyC.filter((c) => !c.alive).map((c) => ({ name: c.name, round: c.downedOnRound })),
+    // Everyone who hit 0 HP at any point, revived or not (party policies can revive).
+    knockedOut: partyC.filter((c) => c.downedOnRound != null).map((c) => ({ name: c.name, round: c.downedOnRound })),
     // When each enemy crossed into Crisis (HP <= half). A designer picking WHEN
     // a phase change lands needs this as directly as they need the round count:
     // "the fight switches up at Crisis" is a promise about a moment, and a
