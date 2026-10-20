@@ -534,6 +534,7 @@ function evalFormula(state, src, ctx, { fallback = 0 } = {}) {
         case "ALLY_COUNT": return livingAlliesOf(state, me).length;
         case "ENEMY_COUNT": return livingFoesOf(state, me).length;
         case "ROUND": return state.round;
+        case "ACTION_TARGET_COUNT": return Math.max(1, Number(ctx.actionTargetCount) || 1);
         case "RANK_IS_CHAMPION": return /champion/i.test(s(me.actor.rank ?? me.actor._rawProps?.npc_rank)) ? 1 : 0;
         case "CHAR_LEVEL": case "LEVEL": return Number(me.actor.level) || 0;
       }
@@ -645,6 +646,7 @@ const SUPPORTED_KINDS = new Set([
   "chain", "deal_damage", "apply_ae", "remove_ae", "remove_tagged_ae", "grant", "consume_resource",
   "adjust_damage", "change_damage_element", "free_action", "targeting", "save_check", "contest_check",
   "hide_item", "roll_dice", "weapon_read", "play_animation", "leave_combat", "set_battle_outcome",
+  "summon", "add_target",
 ]);
 
 function runLabel(state, label, ctx, depth = 0) {
@@ -706,6 +708,9 @@ function runRow(state, row, ctx, depth = 0) {
     case "set_battle_outcome":
       state.forcedOutcome = norm(row.outcome_value) || "escaped";
       break;
+    case "summon": res = effSummon(state, row, ctx); break;
+    case "add_target":
+      break;                                      // resolved by expandTargets() before the hit
     default:
       gap(state, ctx.reactor, "effect", kind || "(blank)");
       return;
@@ -855,7 +860,7 @@ function effFreeAction(state, row, ctx) {
   // `action_ref: "self"` — the item carrying the row (Dreadwyrm Descent autocasts).
   const item = norm(ref) === "self" ? ctx.item : me.md?.byName.get(key(ref));
   if (!item) { gap(state, me, "free_action", `no action "${ref}"`); return; }
-  const action = actionFor(state, me, item);
+  const action = actionFor(state, me, item, { anyType: true });
   if (!action) { gap(state, me, "free_action", `cannot build "${item.name}"`); return; }
   const bonus = s(row.damage_bonus_formula) ? evalFormula(state, row.damage_bonus_formula, ctx, { fallback: 0 }) : 0;
   const act = bonus ? { ...action, damageBonus: (action.damageBonus ?? 0) + bonus } : action;
@@ -864,7 +869,7 @@ function effFreeAction(state, row, ctx) {
   if (!targets.length && act.target?.side !== "self") return;
   if (!state.mdApi.canAfford(me, act, targets.length)) return;
   state.log.push({ round: state.round, actor: me.name, action: ctx.label ?? item.name, reaction: true, announce: true });
-  state.mdApi.perform(state, me, act, targets, { free: true });
+  state.mdApi.perform(state, me, bind(state, me, act, targets), targets, { free: true });
 }
 
 // A Save: the target rolls its two attributes against the DL. Tiers are CUMULATIVE
@@ -921,6 +926,73 @@ function armorShare(t) {
   return { def: n("def") || n("defense") || n("armor_def"), mdef: n("mdef") || n("magic_defense") || n("armor_mdef") };
 }
 
+// Summon: "Actor.<id>,Actor.<id>" — one of them per count, never more than
+// summon_max alive from this summoner. The models are loaded by the caller
+// (summonRefs) and handed in as runBattle({ summons }).
+function summonIds(row) {
+  return list(row.summon_actor).map((x) => x.replace(/^Actor\./, "").trim()).filter(Boolean);
+}
+function effSummon(state, row, ctx) {
+  const me = ctx.reactor;
+  const ids = summonIds(row);
+  const count = Math.max(1, Math.trunc(Number(evalFormula(state, row.summon_count, ctx, { fallback: 1 })) || 1));
+  const max = Math.trunc(Number(evalFormula(state, row.summon_max, ctx, { fallback: 0 })) || 0);
+  for (let i = 0; i < count; i++) {
+    const alive = state.combatants.filter((c) => c.alive && c.summonedBy === me).length;
+    if (max > 0 && alive >= max) return;
+    const have = new Set(state.combatants.filter((c) => c.alive && c.summonedBy === me).map((c) => c.summonId));
+    const pool = ids.filter((id) => !have.has(id));
+    const id = (pool.length ? pool : ids)[state.rng.int(0, (pool.length ? pool : ids).length - 1)];
+    const model = state.summons?.[id];
+    if (!model) { gap(state, me, "summon", `actor ${id} not loaded`); return; }
+    const c = state.mdApi.spawn(state, model, me.side);
+    c.summonedBy = me; c.summonId = id;
+    state.log.push({ round: state.round, actor: me.name, action: ctx.label ?? s(row.effect_label), target: c.name, summoned: true, reaction: true });
+  }
+}
+
+// Actor ids a creature can summon, for the loader.
+function summonRefs(actor) {
+  const out = new Set();
+  for (const it of actor.items ?? []) for (const r of rows(it.props?.effect_table)) if (norm(r.effect_kind) === "summon") for (const id of summonIds(r)) out.add(id);
+  return [...out];
+}
+
+// add_target (Carlbero's Grappling): a harmful action aimed at a creature that is
+// grappling someone also lands on the creature it holds. Resolved before the hits,
+// as the live card mutation does.
+function expandTargets(state, actor, action, targets) {
+  if (action.target?.side === "ally" || action.target?.self) return targets;
+  const out = targets.slice();
+  for (const t of targets) {
+    for (const a of t.aes ?? []) {
+      const r = a.template.reaction;
+      if (!r) continue;
+      for (const row of r.rows) {
+        if (norm(row.reaction_trigger) !== "creature_targeted_by_action") continue;
+        const eff = r.effects.find((e) => s(e.effect_label) === s(row.reaction_effect_ref));
+        if (!eff || norm(eff.effect_kind) !== "add_target") continue;
+        const src = norm(eff.target_ref?.candidate_source ?? eff.candidate_source);
+        if (src !== "grappled_by_self") { gap(state, t, "add_target", src || "(blank)"); continue; }
+        for (const c of state.combatants) {
+          if (!c.alive || out.includes(c) || c === actor) continue;
+          if ((c.aes ?? []).some((x) => x.applier === t && key(x.name) === key(a.template.reciprocal ?? "Grappled"))) out.push(c);
+          else if ((c.aes ?? []).some((x) => x.applier === t && key(x.name) === "grappled")) out.push(c);
+        }
+      }
+    }
+  }
+  if (out.length > targets.length) state.log.push({ round: state.round, actor: actor.name, action: action.name, reaction: true, announce: true, added: out.slice(targets.length).map((c) => c.name) });
+  return out;
+}
+
+// A damage formula that needs the moment of use (Ruinous Breath: 300 / ACTION_TARGET_COUNT).
+function bind(state, c, action, targets) {
+  if (!action?.damageFormula) return action;
+  const v = evalFormula(state, action.damageFormula, { reactor: c, vars: {}, actionTargetCount: targets.length }, { fallback: 0 });
+  return { ...action, damageBonus: v ?? 0 };
+}
+
 // ── Trigger dispatch ────────────────────────────────────────────────────────
 // Every reaction source in play: each data-driven creature's items, and every status
 // that carries a reactionConfig (Burn, Envenomed, Searing Brand) on whoever holds it.
@@ -953,7 +1025,15 @@ function emit(state, trigger, ev) {
         for (const row of src.rows) {
           if (norm(row.reaction_trigger) !== trigger) continue;
           const mode = norm(row.reaction_passive_mode);
-          if (SKIP_MODES.has(mode)) { gap(state, R, "reaction mode", `${src.item.name}: ${mode}`); continue; }
+          if (SKIP_MODES.has(mode)) {
+            // A person decides at the table (the GM, or — with reaction_responder
+            // "target" — the player being targeted). Recorded once per fight.
+            const who = norm(row.reaction_responder) === "target" ? "the targeted player" : (R.side === "party" ? "the player" : "the GM");
+            state._askSeen = state._askSeen ?? new Set();
+            const k = `${R.name}|${src.item.name}`;
+            if (!state._askSeen.has(k)) { state._askSeen.add(k); gap(state, R, "decided at the table", `${src.item.name} (${who})`); }
+            continue;
+          }
           if (!scopeMatches(R, row, ev, src)) continue;
           if (!condition(state, row.condition_formula, { reactor: R, ev, item: src.item })) continue;
           fire(state, R, src, row, ev);
@@ -981,7 +1061,17 @@ function scopeMatches(R, row, ev, src) {
   return true;
 }
 
+// A reaction never re-fires from inside its own resolution: Searing Brand's 50 Fire
+// on its bearer is itself HP loss, and would otherwise detonate again until the
+// bearer died. (The slime chain is unaffected — each slime is its own reactor.)
 function fire(state, R, src, row, ev) {
+  state._firing = state._firing ?? new Set();
+  if (state._firing.has(row)) return;
+  state._firing.add(row);
+  try { fireInner(state, R, src, row, ev); } finally { state._firing.delete(row); }
+}
+
+function fireInner(state, R, src, row, ev) {
   R.reactionsFired = (R.reactionsFired ?? 0) + 1;
   const label = src.ae ? src.ae.name : src.item.name;
   const ctx = {
@@ -1005,10 +1095,13 @@ function willDeal(state, actor, action, target) {
 // An engine action for one of a creature's items. Damage-shaped items come from the
 // shared extractor (skills.js); everything else becomes an effect-only action whose
 // whole meaning is its on-use chain (War Howl, Prank, Charm, Form Shift).
-function actionFor(state, c, item) {
+function actionFor(state, c, item, { anyType = false } = {}) {
+  // A damage action the shared extractor already parsed — but never a stance-arming
+  // stand-in or a self/ally-targeted skill: those deal no damage roll in play (Sword
+  // Enchant's whole effect is its on-use chain).
   const fromEngine = (c.actions ?? []).find((a) => key(a.name) === key(item.name));
-  if (fromEngine) return { ...fromEngine, mdItem: item };
-  if (!ACTION_TYPES.has(item.skillType)) return null;
+  if (fromEngine && !fromEngine.stanceGrants && !fromEngine.target?.self && fromEngine.target?.side !== "ally") return { ...fromEngine, mdItem: item };
+  if (!ACTION_TYPES.has(item.skillType) && !anyType) return null;
   c._mdActions = c._mdActions ?? new Map();
   if (c._mdActions.has(item.name)) return c._mdActions.get(item.name);
   const p = item.props;
@@ -1025,7 +1118,24 @@ function actionFor(state, c, item) {
     cost: cost?.unpriceable ? { resource: null, amount: 0 } : cost,
     keywords: s(p.action_keywords) || null, weaponFamily: null,
   };
-  if (act.target.guessed) gap(state, c, "skill_target", `${item.name}: "${s(p.skill_target)}"`);
+  // Damage the extractor could not price (no accuracy roll, or a use-time formula):
+  // a real damage action, auto-hit when the sheet names no attributes.
+  const dmgRaw = s(p.damage_bonus);
+  if (norm(p.type_damage) && dmgRaw && dmgRaw !== "0" && dmgRaw !== "-" && !act.target.self && act.target.side !== "ally") {
+    act.effectOnly = false;
+    act.noRoll = !(act.attrA && act.attrB);
+    act.attrA = act.attrA ?? "mig"; act.attrB = act.attrB ?? "mig";
+    if (/^-?\d+(\.\d+)?$/.test(dmgRaw)) act.damageBonus = Number(dmgRaw);
+    else act.damageFormula = dmgRaw;
+    act.weaponFamily = item.skillType === "spell" ? "arcane" : null;
+  }
+  // "Special" (a summon, a field effect): when the on-use chain never reads the
+  // action's targets, the action simply has none — aimed at its user.
+  if (act.target.guessed) {
+    const usesTargets = [...item.table.values()].some((r) => /^(hit_)?action_targets$/.test(norm(r.target_ref)));
+    if (usesTargets) gap(state, c, "skill_target", `${item.name}: "${s(p.skill_target)}"`);
+    else act.target = { side: "ally", count: 1, self: true };
+  }
   c._mdActions.set(item.name, act);
   return act;
 }
@@ -1137,7 +1247,7 @@ function focusWeight(t, focus, action) {
 function reachable(state, c, action) {
   const side = action.target?.side;
   let pool;
-  if (side === "self") return [c];
+  if (side === "self" || action.target?.self) return [c];
   if (side === "ally") pool = state.combatants.filter((x) => x.alive && x.side === c.side);
   else pool = livingFoesOf(state, c);
   if (turnedAgainst(c) && side !== "ally") pool = state.combatants.filter((x) => x.alive && x.side === c.side && x !== c);
@@ -1150,7 +1260,7 @@ function reachable(state, c, action) {
 function pickTargets(state, c, action, focus, focusStatus) {
   let pool = reachable(state, c, action);
   if (!pool.length) return [];
-  if (action.target?.side === "self") return [c];
+  if (action.target?.side === "self" || action.target?.self) return [c];
   const n = action.target?.count === Infinity ? pool.length : Math.min(Math.max(1, action.target?.count ?? 1), pool.length);
   if (n >= pool.length) return pool.slice();
   // status_focus / status_avoid narrow the pool (fail-open when nobody qualifies).
@@ -1239,9 +1349,9 @@ const KNOWN_TRIGGERS = new Set([
   "creature_lose_resource", "creature_gain_resource", "creature_defeated", "creature_targeted_by_action",
   "creature_hit_by_action", "creature_miss_action", "creature_performs_action",
 ]);
-const KNOWN_IDS = /^(CUR_HP|MAX_HP|CUR_MP|MAX_MP|CUR_IP|TARGET_(CURRENT|CUR|MAX)_(HP|MP)|HP_DEALT|DAMAGE_DEALT|TRIGGER_AMOUNT|INCOMING_DAMAGE|ATTACK_CHECK_RESULT|TRIGGER_IS_SELF|SUBJECT_IS_SELF|CAUSE_IS_SELF|IS_MY_TURN|ENEMY_IN_CRISIS|ALLY_COUNT|ENEMY_COUNT|ROUND|RANK_IS_CHAMPION|CHAR_LEVEL|LEVEL|TRIGGER_DAMAGE_IS_[A-Z]+|COMBAT_MAX_AE_CHARGES_.+|AE_COUNT_.+|AE_CHARGES_.+|VAR_.+)$/;
+const KNOWN_IDS = /^(ACTION_TARGET_COUNT|CUR_HP|MAX_HP|CUR_MP|MAX_MP|CUR_IP|TARGET_(CURRENT|CUR|MAX)_(HP|MP)|HP_DEALT|DAMAGE_DEALT|TRIGGER_AMOUNT|INCOMING_DAMAGE|ATTACK_CHECK_RESULT|TRIGGER_IS_SELF|SUBJECT_IS_SELF|CAUSE_IS_SELF|IS_MY_TURN|ENEMY_IN_CRISIS|ALLY_COUNT|ENEMY_COUNT|ROUND|RANK_IS_CHAMPION|CHAR_LEVEL|LEVEL|TRIGGER_DAMAGE_IS_[A-Z]+|COMBAT_MAX_AE_CHARGES_.+|AE_COUNT_.+|AE_CHARGES_.+|VAR_.+)$/;
 const KNOWN_PATTERN = new Set(["always", "hp", "mp", "ip", "zero_power", "round", "turn", "self_has_status", "active_effect", "self_lacks_status", "enemy_count", "ally_count", "enemy_has_status", "enemy_lacks_status", "ally_has_status", "ally_in_crisis", "creature_has_status", "effect_stacks", "random", "activation", "target_count"]);
-const PROMPTS = new Set(["open_action_menu", "redirect_target", "summon"]);
+const PROMPTS = new Set(["open_action_menu", "redirect_target"]);
 
 function coverage(actor) {
   const out = [];
@@ -1276,7 +1386,7 @@ function coverage(actor) {
 
 module.exports = {
   attach, buildStatusLibrary, toTemplate, coverage,
-  emit, willDeal, runOnActivate, chooseAction, actionFor, pickTargets,
+  emit, willDeal, runOnActivate, chooseAction, actionFor, pickTargets, bind, expandTargets, summonRefs,
   onTurnStart, onTurnEnd, onRoundEnd,
   hasAe, aeCharges, addAe, removeAes, resolveTemplate,
   applyAttrSteps, checkMod, defense, affinities, blockedLabels, isBlocked, actionLabel,

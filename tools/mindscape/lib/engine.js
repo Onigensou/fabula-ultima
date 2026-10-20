@@ -412,6 +412,21 @@ function runReactionEffect(state, reactor, reaction, ctx) {
   }
 }
 
+// A creature summoned mid-fight (Fafnir's Drakes): data-driven like its summoner, its
+// conflict_start passives fire on arrival, and it joins the end of the turn order —
+// first acting next round.
+function mdSpawn(state, model, side) {
+  const c = makeCombatant(model, side);
+  MD.attach(c, { dataDriven: true, library: state.statusLibrary });
+  c.reactions = []; c.undeclaredReactions = []; c.stanceCycle = false;
+  MD.refreshDerived(c);
+  c.joinedRound = state.round;
+  state.combatants.push(c);
+  if (state.order && !state.order.includes(c)) state.order.push(c);
+  MD.emit(state, "conflict_start", { onlyReactor: c });
+  return c;
+}
+
 // weapon_read from a data row (Rakshasa's Adaptive Defense): same counter model as
 // the registry entry, fed the attacking family from the event.
 function mdWeaponRead(state, reactor, row, ctx) {
@@ -635,6 +650,7 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
   // Party policies (party-policy.js): Prophetic Defender may pull a multi-target enemy
   // action onto Hina; element-swap augments re-point the attack and add damage.
   targets = PP.redirectTargets(state, actor, action, targets);
+  if (state.mdApi) targets = MD.expandTargets(state, actor, action, targets);
   const riders = PP.declareAttack(state, actor, action, targets);
   if (riders?.element) action = { ...action, element: riders.element };
 
@@ -645,7 +661,11 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
   for (const target of targets) {
     if (!target.alive) continue;
     const dl = MD.defense(target, action.defenseTarget === "mdef" ? "mdef" : "def");
-    const check = R.accuracyCheck(state.rng, { dieA, dieB, bonus, dl });
+    // An action with no accuracy roll on its sheet (Ruinous Breath) always lands, for
+    // its damage alone (no high roll).
+    const check = action.noRoll
+      ? { a: 0, b: 0, hr: 0, result: 0, crit: false, fumble: false, hit: true }
+      : R.accuracyCheck(state.rng, { dieA, dieB, bonus, dl });
 
     // ON_ATTACKED fires on hit AND miss — the defining property of the family of
     // reactions gated on `creature_hit_by_action` + `creature_miss_action`
@@ -1125,10 +1145,10 @@ function takeTurnInner(state, actor, { granted }) {
     const p = MD.chooseAction(state, actor);
     if (!p || p.none || !p.action) {
       state.log.push({ round: state.round, actor: actor.name, action: "(guard)", idle: true });
-    } else if (!p.targets.length && p.action.target?.side !== "self") {
+    } else if (!p.targets.length && p.action.target?.side !== "self" && !p.action.target?.self) {
       state.log.push({ round: state.round, actor: actor.name, action: "(guard)", idle: true, reason: `${p.action.name}: no target` });
     } else {
-      resolveAction(state, actor, p.action, p.targets);
+      resolveAction(state, actor, MD.bind(state, actor, p.action, p.targets), p.targets);
     }
     if (granted) actor.grantedActionsTaken++; else actor.baseActionsTaken++;
     return;
@@ -1204,6 +1224,133 @@ function turnedTurn(state, actor) {
   resolveAction(state, actor, { ...act, target: { side: "enemy", count: 1 } }, [t]);
 }
 
+// ── Rounds ──────────────────────────────────────────────────────────────────
+// One base activation of `c` (the `t`-th this round), with everything that hangs
+// off a turn's end.
+function actOnce(state, c, t) {
+  if (c.turnDebt > 0) {
+    c.turnDebt--;
+    c.turnsDenied++;
+    state.log.push({ round: state.round, actor: c.name, action: "(turn lost)", denied: true });
+    T.tickTurnEnd(c);
+    return;
+  }
+  c.activationIndex = t + 1;
+  takeTurn(state, c);
+  if (state.mdApi && c.alive) {
+    MD.emit(state, "turn_end", { subject: c, victim: c, actor: c, causeActor: c });
+    MD.onTurnEnd(state, c);
+  }
+  notePartyLow(state);
+  if (state.policy) PP.onTurnEnd(state, c);
+  // Tinctures count down at the end of the bearer's own BASE turn (live
+  // target_turn_end). Granted free attacks are not turns.
+  T.tickTurnEnd(c);
+}
+
+// Acceleration is a RECURRING grant ("at the end of each of their turns, perform a
+// free attack"), added every round. Granted turns are counted separately from base
+// ones, so BaselineDPR (base only) and RD (both) cannot double-count. Spec D3.
+function grantedTurns(state, c) {
+  if (c.accelerated) c.grantedTurns++;
+  for (let t = 0; t < c.grantedTurns; t++) {
+    if (!c.alive) break;
+    takeTurn(state, c, { granted: true });
+    notePartyLow(state);
+  }
+  c.grantedTurns = 0;
+}
+
+function fightOver(state) {
+  const partyAlive = state.combatants.some((x) => x.side === "party" && x.alive);
+  const enemyAlive = state.combatants.some((x) => x.side === "enemy" && x.alive);
+  if (partyAlive && enemyAlive) return null;
+  return !partyAlive && !enemyAlive ? "mutual-destruction" : !partyAlive ? "defeat" : (state.forcedOutcome ?? "victory");
+}
+
+// Mindscape's original round: initiative order, each creature taking all of its
+// activations in one block.
+function orderedRound(state, order) {
+  for (const c of order) {
+    if (!c.alive || c.joinedRound === state.round) continue;
+    for (let t = 0; t < c.baseTurns; t++) {
+      if (!c.alive) break;
+      actOnce(state, c, t);
+    }
+    grantedTurns(state, c);
+    const over = fightOver(state);
+    if (over) return over;
+  }
+  return null;
+}
+
+// The Battle Director's round (director-combat.js nextTurn): a group Initiative
+// check picks the side that starts, then the sides ALTERNATE one turn at a time
+// while both have turns left; the side with turns over burns them in a row. On
+// each side's turn the creature with the best DEX + INS (± 1 jitter) that still has
+// an activation left acts (enemy-autopilot rankEnemyCombatants; the sim drives the
+// party the same way). Monsters with several activations therefore spread them
+// across the round instead of taking them in one block.
+function alternatingRound(state) {
+  const left = new Map();
+  for (const c of state.combatants) if (c.alive && c.joinedRound !== state.round) left.set(c, c.baseTurns);
+  const eligible = (side) => [...left.keys()].filter((c) => c.side === side && c.alive && left.get(c) > 0);
+  let side = rollInitiative(state);
+  state.initiativeSide = side;
+  for (let guard = 0; guard < 200; guard++) {
+    let pool = eligible(side);
+    if (!pool.length) {
+      side = side === "party" ? "enemy" : "party";
+      pool = eligible(side);
+      if (!pool.length) break;
+    }
+    const c = pool
+      .map((x) => ({ x, score: initiativeScore(x) + state.rng.float() * 2 - 1 }))
+      .sort((a, b) => b.score - a.score)[0].x;
+    const t = c.baseTurns - left.get(c);
+    left.set(c, left.get(c) - 1);
+    actOnce(state, c, t);
+    if (left.get(c) === 0 && c.alive) grantedTurns(state, c);
+    const over = fightOver(state);
+    if (over) return over;
+    const other = side === "party" ? "enemy" : "party";
+    if (eligible(other).length) side = other;
+  }
+  return null;
+}
+
+// DEX + INS die sizes and any flat initiative bonus — enemy-autopilot readInitiativeScore.
+function initiativeScore(c) {
+  const a = attrs(c);
+  const p = c.actor._rawProps ?? {};
+  const bonus = Number(p.initiative ?? p.init_bonus ?? p.initiative_bonus) || 0;
+  return (a.dex ?? 8) + (a.ins ?? 8) + bonus;
+}
+
+// The Initiative Group Check (director-initiative.js, rolled every round): the PC with
+// the best DEX + INS leads and rolls DEX + INS with their armour's initiative modifier
+// against the highest living enemy's Initiative score; every other PC rolls DEX + INS
+// against 10 and adds +1 on a success that is not a fumble. Meeting the score hands the
+// round's first turn to the party.
+function rollInitiative(state) {
+  const party = state.combatants.filter((c) => c.side === "party" && c.alive);
+  const foes = state.combatants.filter((c) => c.side === "enemy" && c.alive);
+  if (!party.length) return "enemy";
+  if (!foes.length) return "party";
+  const dl = Math.max(...foes.map((f) => Number(f.actor._rawProps?.init) || 0)) || 10;
+  const proxy = (c) => { const a = attrs(c); return (a.dex ?? 8) + (a.ins ?? 8) + (Number(c.actor._rawProps?.init_penalty) || 0); };
+  const ranked = party.slice().sort((a, b) => proxy(b) - proxy(a) || (state.rng.float() - 0.5));
+  const leader = ranked[0];
+  const la = attrs(leader);
+  let total = state.rng.die(la.dex ?? 8) + state.rng.die(la.ins ?? 8) + (Number(leader.actor._rawProps?.init_penalty) || 0);
+  for (const h of ranked.slice(1)) {
+    const ha = attrs(h);
+    const a = state.rng.die(ha.dex ?? 8), b = state.rng.die(ha.ins ?? 8);
+    if (!(a === 1 && b === 1) && a + b >= 10) total += 1;
+  }
+  return total >= dl ? "party" : "enemy";
+}
+
 // Projected damage of one action on its targets, scored like chooseAction (a kill
 // outranks any amount of chip damage). Party policies compare options with it.
 function projectTotal(actor, action, targets) {
@@ -1237,7 +1384,11 @@ const POLICY_API = { attrs, canAfford, chooseAction, chooseTargets, weaponAction
 // default) leaves every fight exactly as it was.
 // `policy`: how the PARTY plays (party-policy.js). "legacy" (the default) is the
 // original Mindscape party, so every published calibration is unchanged.
-function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, conflictEvent = null, tinctures = null, policy = "legacy", monsterRules = "registry", statusLibrary = null }) {
+function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, conflictEvent = null, tinctures = null, policy = "legacy", monsterRules = "registry", statusLibrary = null, summons = null, turnOrder = null }) {
+  // "alternate" (the Battle Director's side-by-side turns) comes with the data rules;
+  // "initiative" is Mindscape's original block order. Either can be forced.
+  turnOrder = turnOrder ?? (monsterRules === "data" ? "alternate" : "initiative");
+  if (!["alternate", "initiative"].includes(turnOrder)) throw new Error(`unknown turnOrder "${turnOrder}" (alternate, initiative)`);
   if (!["registry", "data"].includes(monsterRules)) throw new Error(`unknown monsterRules "${monsterRules}" (registry, data)`);
   if (!PP.POLICIES.includes(policy)) throw new Error(`unknown party policy "${policy}" (${PP.POLICIES.join(", ")})`);
   const combatants = [
@@ -1256,6 +1407,12 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
     const dataDriven = monsterRules === "data" && c.side === "enemy";
     MD.attach(c, { dataDriven, library: statusLibrary });
     if (dataDriven) {
+      // A monster enters with its SHEET'S current HP/MP, as a spawned token does.
+      // Asura and Kirin are authored at 0 MP on purpose (they charge up); starting
+      // them full handed Asura its 60-MP Quad-Elemental Slash on turn one.
+      const curMp = Number(c.actor.mp?.cur), curHp = Number(c.actor.hp?.cur);
+      if (Number.isFinite(curMp) && curMp >= 0 && curMp < c.mp) c.mp = curMp;
+      if (Number.isFinite(curHp) && curHp > 0 && curHp < c.hp) c.hp = curHp;
       c.reactions = [];
       c.undeclaredReactions = [];
       c.stanceCycle = false;
@@ -1264,7 +1421,8 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
   }
   if (monsterRules === "data") {
     state.statusLibrary = statusLibrary ?? {};
-    state.mdApi = { applyFlatDamage, perform: resolveAction, canAfford, attrs, parseTarget, parseCost, isMelee, weaponRead: mdWeaponRead };
+    state.summons = summons ?? {};
+    state.mdApi = { applyFlatDamage, perform: resolveAction, canAfford, attrs, parseTarget, parseCost, isMelee, weaponRead: mdWeaponRead, spawn: mdSpawn };
   }
   if (state.event?.init) state.event.init(state);
   state.tinctures = tinctures ? T.makeTinctureState(tinctures) : null;
@@ -1273,6 +1431,7 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
 
   // Delay (Gigas' Oaf): always acts after everyone else.
   const order = combatants.slice().sort((a, b) => (a.delay - b.delay) || (initiative(b) - initiative(a)));
+  state.order = order;
   // Worst-case tincture opener (tinctures.makeTinctureState carrierFirst): the carrier
   // moves to the front, so a round-1 tincture lands before the carry's first volley.
   if (state.tinctures?.carrierFirst) {
@@ -1292,51 +1451,8 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
     }
     if (state.event?.onRoundStart) state.event.onRoundStart(state);
     if (state.policy) PP.onRoundStart(state);
-    for (const c of order) {
-      if (!c.alive) continue;
-      for (let t = 0; t < c.baseTurns; t++) {
-        if (!c.alive) break;
-        if (c.turnDebt > 0) {
-          c.turnDebt--;
-          c.turnsDenied++;
-          state.log.push({ round: state.round, actor: c.name, action: "(turn lost)", denied: true });
-          T.tickTurnEnd(c);
-          continue;
-        }
-        c.activationIndex = t + 1;
-        takeTurn(state, c);
-        if (state.mdApi && c.alive) {
-          MD.emit(state, "turn_end", { subject: c, victim: c, actor: c, causeActor: c });
-          MD.onTurnEnd(state, c);
-        }
-        notePartyLow(state);
-        if (state.policy) PP.onTurnEnd(state, c);
-        // Tinctures count down at the end of the bearer's own BASE turn (live
-        // target_turn_end). Granted free attacks below are not turns.
-        T.tickTurnEnd(c);
-      }
-      // Acceleration is a RECURRING grant ("at the end of each of their turns,
-      // perform a free attack"), so it is added every round rather than once.
-      if (c.accelerated) c.grantedTurns++;
-
-      // Granted turns are taken AFTER the base ones and counted separately, so
-      // BaselineDPR (base only) and RD (both) cannot double-count. Spec D3.
-      for (let t = 0; t < c.grantedTurns; t++) {
-        if (!c.alive) break;
-        takeTurn(state, c, { granted: true });
-        notePartyLow(state);
-      }
-      c.grantedTurns = 0;
-
-      const partyAlive = combatants.some((x) => x.side === "party" && x.alive);
-      const enemyAlive = combatants.some((x) => x.side === "enemy" && x.alive);
-      if (!partyAlive || !enemyAlive) {
-        outcome = !partyAlive && !enemyAlive ? "mutual-destruction"
-                : !partyAlive ? "defeat" : (state.forcedOutcome ?? "victory");
-        break;
-      }
-    }
-    if (outcome !== "inconclusive") break;
+    const over = turnOrder === "alternate" ? alternatingRound(state) : orderedRound(state, order);
+    if (over) { outcome = over; break; }
     if (state.mdApi) {
       MD.emit(state, "round_end", {});
       MD.onRoundEnd(state);
@@ -1416,7 +1532,7 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
     // that many lanes. Without this table a design that collapses to one lane
     // reads as a plain damage nerf and nothing says why.
     laneReport: state.laneStats ? summariseLanes(state.laneStats) : null,
-    monsterRules,
+    monsterRules, turnOrder,
     // What the monster-data interpreter met and could not run, "<who>|<kind>|<what>" -> count.
     dataGaps: state.dataGaps ?? null,
     log: state.log,
