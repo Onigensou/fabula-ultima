@@ -15,9 +15,9 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const { DEFAULT_WORLD } = require("../../safe-edit/lib/paths");
-const { loadParty, loadNamed } = require("../lib/load-actors");
-const { runBattle } = require("../lib/engine");
-const { Rng } = require("../lib/rng");
+const { loadParty, loadNamed, loadSummons } = require("../lib/load-actors");
+const { loadStatusLibrary } = require("../lib/world-items");
+const { runLine } = require("../lib/line-runner");
 const { snapshotWorld } = require("./encounter-matrix");
 const { loadGroup } = require("./balance-proposal");
 
@@ -35,12 +35,14 @@ async function main() {
   if (plan) delete plan.rows;
   const matrix = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "expectations", "encounter-matrix.json"), "utf8"));
   const policy = matrix.policy ?? "standard";
+  const monsterRules = matrix.monsterRules ?? "registry";
   const copyDir = path.join(os.tmpdir(), "fu-monster-report");
   const world = snapshotWorld(DEFAULT_WORLD, copyDir);
   const acc = {};
   let partyMaxHp = 0, pcCount = 0;
   try {
     const party = await loadParty({ world });
+    const statusLibrary = monsterRules === "data" ? await loadStatusLibrary({ world }) : null;
     partyMaxHp = party.reduce((t, p) => t + (p.hp.max ?? 0), 0);
     pcCount = party.length;
     for (const l of matrix.lines) {
@@ -48,8 +50,9 @@ async function main() {
       const enemies = await loadGroup(l.enemies, world, plan);
       const counts = {};
       for (const n of l.enemies) counts[n] = (counts[n] ?? 0) + 1;
-      for (let i = 0; i < runs; i++) {
-        const r = runBattle({ party, enemies, rng: new Rng(`report:${l.source}:${l.enemies.join("+")}:${i}`), expectedRounds: l.kind === "boss" ? 10 : 7, policy });
+      const summons = monsterRules === "data" ? await loadSummons(enemies, { world }) : null;
+      runLine({ party, enemies, events: l.events, runs, seed: `report:${l.source}:${l.enemies.join("+")}`,
+        expectedRounds: l.kind === "boss" ? 10 : 7, policy, monsterRules, statusLibrary, summons, onResult: (r) => {
         const perName = {};
         for (const n of Object.keys(counts)) perName[n] = { actions: 0, attacks: 0, hits: 0, dmg: 0, kos: 0 };
         let lastActor = null, lastRound = 0;
@@ -79,7 +82,7 @@ async function main() {
           a.actions += m.actions; a.attacks += m.attacks; a.hits += m.hits; a.dmg += m.dmg; a.kos += m.kos;
           a.runs += cs.length;
         }
-      }
+      } });
     }
   } finally {
     fs.rmSync(copyDir, { recursive: true, force: true });
@@ -94,7 +97,7 @@ async function main() {
     partyShare: a.runs ? a.dmg / a.runs / partyMaxHp : 0,
     kosPerFight: a.runs ? a.kos / a.runs : 0,
   })).sort((x, y) => x.perRound - y.perRound);
-  const report = { generated: new Date().toISOString(), policy, runs, partyMaxHp, avgPcHp: partyMaxHp / pcCount, rows };
+  const report = { generated: new Date().toISOString(), policy, monsterRules, runs, partyMaxHp, avgPcHp: partyMaxHp / pcCount, rows };
   for (const r of rows) {
     console.log(`${r.name.padEnd(16)} alive ${String(r.roundsAlive).padStart(2)} rds · hit ${Math.round(100 * (r.hitRate ?? 0))}% · ${Math.round(r.perHit ?? 0)}/hit · ${Math.round(r.perRound)}/rd · ${Math.round(r.perFight)}/fight (${Math.round(100 * r.partyShare)}% party) · KO ${r.kosPerFight.toFixed(2)} · ${r.fights.length} fights`);
   }

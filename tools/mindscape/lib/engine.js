@@ -176,8 +176,10 @@ function tview(t, element, opts) {
 }
 
 // ── Targeting ───────────────────────────────────────────────────────────────
+// Battlefield objects (a Lightning Crystal) are never chosen as a target and never
+// keep a side alive; only an "all enemies" action reaches them (chooseTargets).
 function livingFoes(state, side) {
-  return state.combatants.filter((c) => c.alive && c.side !== side);
+  return state.combatants.filter((c) => c.alive && c.side !== side && !c.object);
 }
 
 function chooseTargets(state, actor, action) {
@@ -190,6 +192,9 @@ function chooseTargets(state, actor, action) {
   const t = action.target;
   if (t.side === "ally") return [];   // handled by the utility layer, not here
 
+  // "All enemies" includes the battlefield's objects — the intended way to work a
+  // crystal's clock while keeping up offence.
+  if (t.count === Infinity) foes = foes.concat(state.combatants.filter((c) => c.alive && c.object && c.side !== actor.side));
   const n = t.count === Infinity ? foes.length : Math.min(t.count, foes.length);
 
   // Novice party (party-policy.js): no called target, whoever the dice point at.
@@ -412,6 +417,20 @@ function runReactionEffect(state, reactor, reaction, ctx) {
   }
 }
 
+// A battlefield object (conflict-events.js): a combatant with no turns that the
+// event drives. Joins whatever turn order exists but never acts.
+function spawnObject(state, model) {
+  const c = makeCombatant(model, "enemy");
+  MD.attach(c, { dataDriven: false, library: state.statusLibrary });
+  c.object = true;
+  c.crystal = /crystal/i.test(model.name);
+  c.baseTurns = 0;
+  c.reactions = [];
+  state.combatants.push(c);
+  if (state.order && !state.order.includes(c)) state.order.push(c);
+  return c;
+}
+
 // A creature summoned mid-fight (Fafnir's Drakes): data-driven like its summoner, its
 // conflict_start passives fire on arrival, and it joins the end of the turn order —
 // first acting next round.
@@ -509,7 +528,7 @@ function mdLedger(state, source, target, out, element, cause, wasAlive) {
 // creature-inflicted ("damage") from hazard/tick, which the Rod rule needs.
 function onHpMoved(state, source, target, out, element, cause, action = null) {
   if (state.event?.onDamage && out.direction !== "recover") {
-    state.event.onDamage(state, target, cause);
+    state.event.onDamage(state, target, cause, out.damage);
   }
   fireReactions(state, target, RX.TRIGGERS.ON_TAKE_ELEMENT, {
     element, damage: out.damage, direction: out.direction, cause, attacker: source,
@@ -1073,7 +1092,7 @@ function takeTurnInner(state, actor, { granted }) {
   // registers a bolt event for its passives, which is the interaction the
   // Valley roster is built on. Fires per ACTIVATION, not per round.
   if (state.event?.onTurnStart) {
-    const strike = state.event.onTurnStart(state, actor);
+    const strike = state.event.onTurnStart(state, actor, { granted });
     if (strike) {
       // cause "hazard" — the Storm's own strike must NOT move the Rod, or it
       // self-refreshes and never leaves its holder (lightning-storm-design.md,
@@ -1262,8 +1281,8 @@ function grantedTurns(state, c) {
 }
 
 function fightOver(state) {
-  const partyAlive = state.combatants.some((x) => x.side === "party" && x.alive);
-  const enemyAlive = state.combatants.some((x) => x.side === "enemy" && x.alive);
+  const partyAlive = state.combatants.some((x) => x.side === "party" && x.alive && !x.object);
+  const enemyAlive = state.combatants.some((x) => x.side === "enemy" && x.alive && !x.object);
   if (partyAlive && enemyAlive) return null;
   return !partyAlive && !enemyAlive ? "mutual-destruction" : !partyAlive ? "defeat" : (state.forcedOutcome ?? "victory");
 }
@@ -1424,6 +1443,7 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
     state.summons = summons ?? {};
     state.mdApi = { applyFlatDamage, perform: resolveAction, canAfford, attrs, parseTarget, parseCost, isMelee, weaponRead: mdWeaponRead, spawn: mdSpawn };
   }
+  state.eventApi = { applyFlatDamage, spawnObject };
   if (state.event?.init) state.event.init(state);
   state.tinctures = tinctures ? T.makeTinctureState(tinctures) : null;
   state.policy = policy === "legacy" ? null : PP.init(state, policy);

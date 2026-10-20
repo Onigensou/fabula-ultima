@@ -104,6 +104,12 @@ img.sprite { image-rendering: pixelated; display: block; max-width: 100%; }
 .note { margin: 0; font-size: 13.5px; }
 .warnbox { font-size: 12.5px; color: var(--work-ink); border-left: 3px solid var(--work); padding: 4px 8px; background: rgba(224,96,44,0.10); }
 .livebox { font-size: 12.5px; color: var(--target-ink); border-left: 3px solid var(--target); padding: 4px 8px; background: rgba(23,163,116,0.10); }
+.evbox { font-size: 12.5px; border-left: 3px solid var(--accent, #6aa8ff); padding: 4px 8px; background: rgba(106,168,255,0.10); display: grid; gap: 2px; }
+.evbox b { font-weight: 700; }
+.unit.summon-wait { display: none; }
+.unit .rock { width: 34px; height: 46px; margin: 0 auto; clip-path: polygon(50% 0, 100% 35%, 80% 100%, 20% 100%, 0 35%); background: linear-gradient(160deg, #cfe6ff, #5b8fd6 55%, #2c4f8a); box-shadow: 0 0 14px #8fc2ff; }
+.unit .cd { font-size: 11px; text-align: center; color: var(--muted, #9aa); }
+.bv-head .ev { font-size: 12px; padding: 2px 8px; border-radius: 10px; border: 1px solid currentColor; opacity: 0.85; }
 .calls { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; border-top: 1px dashed var(--win-inner); padding-top: 10px; }
 .calls .lab { font-family: var(--display); color: var(--gold); margin-right: 2px; }
 .calls button { border: 1px solid var(--win-inner); background: rgba(8,13,34,0.35); border-radius: 5px; padding: 3px 8px; cursor: pointer; font-size: 12.5px; }
@@ -395,6 +401,15 @@ function callRow(f) {
     h("button", { type: "button", class: "notebtn", onclick: () => { open ? state.openNote.delete(f.id) : state.openNote.add(f.id); renderCards(); } }, open ? "Hide note" : fb?.note ? "Note ✎" : "Add note"), msg);
   return open ? [row, h("div", { class: "noteform" }, note, h("button", { type: "button", class: "save", disabled: !db || !state.canWrite, onclick: () => write(fb?.verdict ?? "") }, "Save note"))] : [row];
 }
+// The dungeon's conflict events: a Valley fight is fought on the battle map of the floor
+// it is rolled on, so the card shows each event's share and its own result.
+const EVENT_NAME = { "lightning-storm": "⚡ Lightning Storm", "lightning-crystal": "💎 Lightning Crystal", none: "No event" };
+function eventBox(f) {
+  const evs = Object.entries(f.byEvent ?? {});
+  if (!evs.length) return null;
+  return h("div", { class: "evbox" },
+    ...evs.map(([id, b]) => h("div", {}, h("b", {}, EVENT_NAME[id] ?? id), ` ${pct(b.share)} of these fights — party wins ${pct(b.win)}, lowest party HP ${pct(b.low)}`)));
+}
 function card(f) {
   const k = kindOf(f);
   const sprites = [];
@@ -416,6 +431,7 @@ function card(f) {
     dangerGauge(f),
     lengthGauge(f),
     h("p", { class: "note" }, why(f)),
+    eventBox(f),
     f.live ? h("div", { class: "livebox" }, `In-game sim with King Gorger: won ${f.live.n ? pct(f.live.win) : "—"} of ${f.live.n} runs${f.live.roundsWin ? `, ${f.live.roundsWin} rounds, ${pct(f.live.hpWin)} HP left` : ""}.`) : null,
     f.trust.length ? h("div", { class: "warnbox" }, "Don't trust this card yet: ", f.trust.join("; "), ".") : null,
     ...callRow(f));
@@ -531,8 +547,13 @@ function simulate(f, seed, trace) {
     return m;
   });
   const party = D.sim.party.map(clone);
-  const res = Mindscape.runBattle({ party, enemies, rng: new Mindscape.Rng(`page:${f.id}:${seed}`), expectedRounds: f.kind === "boss" ? 10 : 7, policy: D.policy });
-  return { res, party, enemies };
+  // Which battle map this fight lands on: drawn by the dungeon's tile shares.
+  const evs = f.events?.length ? f.events : [{ id: null, share: 1 }];
+  let r = new Mindscape.Rng(`page-ev:${f.id}:${seed}`).float(), eventId = evs.at(-1).id;
+  for (const e of evs) { r -= e.share; if (r <= 0) { eventId = e.id; break; } }
+  const res = Mindscape.runBattle({ party, enemies, rng: new Mindscape.Rng(`page:${f.id}:${seed}`), expectedRounds: f.kind === "boss" ? 10 : 7, policy: D.policy,
+    monsterRules: D.monsterRules, statusLibrary: D.sim.statusLibrary, summons: D.sim.summons, conflictEvent: eventId ? Mindscape.resolveEvent(eventId) : null });
+  return { res, party, enemies, eventId };
 }
 
 function openBattle(f) {
@@ -546,8 +567,9 @@ function closeBattle() { BV.token++; BV.playing = false; $("battle").hidden = tr
 function startBattle() {
   BV.token++;
   const f = BV.f;
-  const { res, party, enemies } = simulate(f, BV.seed, true);
+  const { res, party, enemies, eventId } = simulate(f, BV.seed, true);
   BV.res = res;
+  BV.eventId = eventId;
   // Group consecutive entries of one action (a multi-target hit is one beat).
   const groups = [];
   for (const e of res.log) {
@@ -568,6 +590,19 @@ function startBattle() {
     return { el, name: m.name, side, max };
   };
   BV.units = [...party.map((m, i) => unitEl(m, "party", i)), ...enemies.map((m, i) => unitEl(m, "foe", party.length + i))];
+  // Everything the fight added later, in the engine's own order (the HP trace indexes
+  // it): Lightning Crystals from the start, summons once they arrive.
+  for (const c of res.combatants.slice(BV.units.length)) {
+    const i = BV.units.length;
+    if (/crystal/i.test(c.name) && c.maxHp >= 9999) {
+      const el = h("div", { class: "unit", "data-i": i }, h("div", { class: "plate" }, h("span", { class: "nm" }, c.name), h("span", { class: "hpn cd" }, "")), h("div", { class: "rock" }));
+      BV.units.push({ el, name: c.name, side: "foe", max: c.maxHp, object: true });
+    } else {
+      const u = unitEl({ name: c.name, _base: c.name, hp: { max: c.maxHp } }, "foe", i);
+      u.el.classList.add("summon-wait");
+      BV.units.push(u);
+    }
+  }
   const byName = Object.fromEntries(BV.units.map((u) => [u.name, u]));
   BV.byName = byName;
   const stage = h("div", { class: "bv-stage" },
@@ -588,7 +623,8 @@ function startBattle() {
     h("span", { class: "muted" }, "Space: play/pause · Esc: close"));
   $("battle").replaceChildren(h("div", { class: "win bv" },
     h("div", { class: "bv-head" }, h("span", { class: "eyebrow" }, `${f.area === "V" ? "Valley" : "Fafnir"} ${f.story ? "story" : "#" + f.num}`),
-      h("h3", {}, fname(f)), stamp(kindOf(f)), h("button", { type: "button", class: "x", onclick: closeBattle, "aria-label": "Close" }, "✕")),
+      h("h3", {}, fname(f)), BV.eventId ? h("span", { class: "ev", title: "This battle's map carries this conflict event" }, EVENT_NAME[BV.eventId] ?? BV.eventId) : null,
+      stamp(kindOf(f)), h("button", { type: "button", class: "x", onclick: closeBattle, "aria-label": "Close" }, "✕")),
     h("div", { class: "bv-main" }, stage, log), controls, h("div", { class: "bv-result", id: "bv-result" })));
   BV.playing = true;
   loop(BV.token);
@@ -641,6 +677,7 @@ function syncHp(e) {
   if (!e?.__hp) return;
   e.__hp.forEach(([hp, alive], i) => {
     const u = BV.units[i]; if (!u) return;
+    if (u.object) { u.el.classList.toggle("down", !alive); return; }
     const frac = Math.max(0, Math.min(1, hp / u.max));
     const bar = u.el.querySelector(".bar i");
     bar.style.width = `${frac * 100}%`;
@@ -654,6 +691,25 @@ function lineFor(g) {
   const u = BV.byName[e.actor];
   const cls = !u ? "sys" : u.side === "party" ? "ally" : "foe";
   if (e.denied) return [cls, `${e.actor} loses a turn.`];
+  if (e.crystals) return ["sys", `${e.action} — they go off in ${e.crystals.join(" / ")} turns unless hit.`];
+  if (e.blast) return ["sys", `${e.actor} explodes: ${e.blast} Bolt to every creature!`];
+  if (e.summoned) return [cls, `${e.actor} summons ${g.map((x) => x.target).join(", ")}!`];
+  if (e.escaped) return [cls, `${e.actor} leaves the battle.`];
+  if (e.stripped) return [cls, `${e.actor} strips ${g.map((x) => `${x.target}'s ${x.stripped}`).join(", ")}!`];
+  if (e.mpDamage) return [cls, `${e.actor}'s ${e.action} drains ${g.map((x) => `${x.mpDamage} MP from ${x.target}`).join(", ")}.`];
+  if (e.added) return [cls, `${e.actor}'s ${e.action} also hits ${e.added.join(", ")}, held in the grip.`];
+  if (e.status) {
+    const by = {};
+    for (const x of g) (by[x.status] ??= []).push(x.target);
+    return [cls, `${e.action}: ${Object.entries(by).map(([st, ts]) => `${ts.join(", ")} ${ts.length > 1 ? "are" : "is"} ${st}`).join("; ")}.`];
+  }
+  if (e.effectOnly) {
+    const dodged = (e.targets?.length ?? 0) - (e.hits?.length ?? 0);
+    const on = e.hits?.length && !(e.hits.length === 1 && e.hits[0] === e.actor) ? ` on ${e.hits.join(", ")}` : "";
+    return [cls, `${e.actor} uses ${e.action}${on}${dodged > 0 ? ` (${dodged} avoided it)` : ""}.`];
+  }
+  if (e.action === "(turned against its allies)") return [cls, `${e.actor} is turned against its own side!`];
+  if (e.idle && e.reason) return [cls, `${e.actor} guards (${e.reason}).`];
   if (e.idle) return [cls, `${e.actor} guards.`];
   if (e.arming) return [cls, `${e.actor} readies ${e.action}.`];
   if (e.heal) return [cls, `${e.actor} uses ${e.action}: +${e.amount} HP to ${[].concat(e.heal).join(", ")}.`];
@@ -685,7 +741,16 @@ async function playGroup(g) {
   actor?.el.classList.add("acting");
   logGroup(g);
   const dir = actor?.side === "party" ? 1 : -1;
-  if (e.heal || e.restore || e.revive) {
+  if (e.summoned) {
+    for (const x of g) { const t = BV.byName[x.target]; if (t) { t.el.classList.remove("summon-wait"); pop(t, "Summoned!", "tag"); } }
+    await sleep(520);
+  } else if (e.status || e.stripped || e.mpDamage) {
+    for (const x of g) pop(BV.byName[x.target], x.status ?? (x.stripped ? `${x.stripped} stripped` : `-${x.mpDamage} MP`), "tag");
+    await sleep(420);
+  } else if (e.blast || e.crystals) {
+    if (!reduceMotion && actor) actor.el.animate([{ filter: "brightness(1)" }, { filter: "brightness(3) drop-shadow(0 0 16px #9cc6ff)" }, { filter: "brightness(1)" }], { duration: 520 / BV.speed });
+    await sleep(420);
+  } else if (e.heal || e.restore || e.revive) {
     await moveAnim(actor?.el, [{ transform: "translateY(0)" }, { transform: "translateY(-8px)" }, { transform: "translateY(0)" }], 320);
     for (const n of [].concat(e.heal ?? e.target ?? [])) pop(BV.byName[n], e.revive ? "REVIVE" : `+${e.amount}`, "heal");
     syncHp(g.at(-1));
@@ -738,7 +803,7 @@ function finish() {
   BV.playing = false;
   const b = $("bv-play"); if (b) b.textContent = "▶ Play";
   const r = BV.res, f = BV.f;
-  const word = r.outcome === "victory" ? "VICTORY" : r.outcome === "overtime" ? "TIME UP" : "DEFEAT";
+  const word = r.outcome === "victory" ? "VICTORY" : r.outcome === "escaped" ? "IT GOT AWAY" : r.outcome === "overtime" ? "TIME UP" : "DEFEAT";
   const banner = $("bv-banner"); if (banner) banner.textContent = word;
   const kos = (r.knockedOut ?? []).map((k) => k.name);
   const box = $("bv-result"); if (!box) return;
@@ -771,7 +836,7 @@ function batch(out) {
     while (i < N && performance.now() - t0 < 30) { const { res } = simulate(f, `batch:${BV.seed}:${i}`, false); rows.push(res); i++; }
     if (i < N) { out.textContent = `Simulating… ${i}/${N}`; setTimeout(step, 0); return; }
     const med = (xs) => { const s = xs.filter((x) => x != null).sort((a, b) => a - b); return s.length ? s[Math.floor((s.length - 1) / 2)] : null; };
-    const wins = rows.filter((r) => r.outcome === "victory");
+    const wins = rows.filter((r) => r.outcome === "victory" || r.outcome === "escaped");
     out.textContent = `${N} battles${BV.useProps ? " with your proposals" : ""}: party wins ${pct(wins.length / N)} · ${med(wins.map((r) => r.rounds)) ?? "—"} rounds when it wins · lowest party HP ${pct(med(rows.map((r) => r.partyHpLow)))} (median) · someone KO'd in ${pct(rows.filter((r) => (r.knockedOut ?? []).length).length / N)}`;
   };
   setTimeout(step, 0);

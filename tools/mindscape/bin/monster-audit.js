@@ -20,6 +20,7 @@ const { DEFAULT_WORLD } = require("../../safe-edit/lib/paths");
 const { loadAll, loadParty } = require("../lib/load-actors");
 const { extractActions } = require("../lib/skills");
 const RX = require("../lib/reactions");
+const MD = require("../lib/monster-data");
 const { snapshotWorld } = require("./encounter-matrix");
 
 // Party average hit rate by DEF/MDEF, L41 snapshot (memory: project_party_stat_snapshot).
@@ -59,7 +60,7 @@ function hitRate(def) {
 }
 
 // Pure: a combat model -> its audit card. Exported for tests.
-function auditMonster(m, { meanPcHp }) {
+function auditMonster(m, { meanPcHp, monsterRules = "registry" }) {
   const ex = extractActions(m);
   const die = (attr) => (attr ? m.attributes?.[String(attr).toLowerCase()] : null);
   const attacks = ex.actions.map((a) => {
@@ -81,11 +82,19 @@ function auditMonster(m, { meanPcHp }) {
   if (best && meanPcHp && best.avg / 2 / meanPcHp < RESISTED_MIN && rank !== "soldier") {
     flags.push(`resisted hit = ${pct(best.avg / 2 / meanPcHp)} of PC HP (< ${pct(RESISTED_MIN)})`);
   }
-  const gaps = [...ex.unmodelled, ...ex.unmodelledUtility].map((u) => u.name);
-  if (gaps.length) flags.push(`not modelled in the sim: ${gaps.join(", ")}`);
-  // Passives the engine has no rule for (reactions.js registry + traits).
-  const passives = RX.undeclaredReactions(ex.passives);
-  if (passives.length) flags.push(`passive not simulated: ${passives.join(", ")}`);
+  if (monsterRules === "data") {
+    // The interpreter reads the monster's own tables: what it cannot run, and what the
+    // action table does that its author may not intend (lib/monster-data.js).
+    const cov = MD.coverage(m);
+    if (cov.length) flags.push(`not simulated: ${cov.join("; ")}`);
+    for (const l of MD.lintPatterns(m)) flags.push(`pattern: ${l}`);
+  } else {
+    const gaps = [...ex.unmodelled, ...ex.unmodelledUtility].map((u) => u.name);
+    if (gaps.length) flags.push(`not modelled in the sim: ${gaps.join(", ")}`);
+    // Passives the engine has no rule for (reactions.js registry + traits).
+    const passives = RX.undeclaredReactions(ex.passives);
+    if (passives.length) flags.push(`passive not simulated: ${passives.join(", ")}`);
+  }
 
   return {
     name: m.name, rank, level: m.level, species: m.species, hp: m.hp?.max, mp: m.mp?.max,
@@ -123,9 +132,11 @@ async function main() {
   const args = parseArgs(process.argv);
   let names = args.names;
   let dungeons = ["(named)"];
+  let monsterRules = "data";
   if (!names) {
     const matrix = JSON.parse(fs.readFileSync(path.resolve(args.matrix), "utf8"));
     dungeons = matrix.dungeons;
+    monsterRules = matrix.monsterRules ?? "registry";
     names = [...new Set(matrix.lines.flatMap((l) => l.enemies))];
   }
   const copyDir = path.join(os.tmpdir(), "fu-monster-audit");
@@ -139,10 +150,10 @@ async function main() {
     for (const n of names) {
       const m = byName.get(n.toLowerCase()) ?? byName.get(n.replace(/^⭐️?\s*/u, "").toLowerCase());
       if (!m) { console.warn(`no monster actor named "${n}"`); continue; }
-      cards.push(auditMonster(m, { meanPcHp }));
+      cards.push(auditMonster(m, { meanPcHp, monsterRules }));
     }
     cards.sort((a, b) => a.name.localeCompare(b.name));
-    const meta = { generated: new Date().toISOString(), dungeons, party: party.map((p) => p.name), meanPcHp };
+    const meta = { generated: new Date().toISOString(), dungeons, monsterRules, party: party.map((p) => p.name), meanPcHp };
     const md = render(cards, meta);
     console.log(md);
     if (args.md) { fs.writeFileSync(path.resolve(args.md), md + "\n"); console.log(`\nwrote ${args.md}`); }

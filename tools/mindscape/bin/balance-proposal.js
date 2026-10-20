@@ -24,9 +24,9 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const { DEFAULT_WORLD } = require("../../safe-edit/lib/paths");
-const { loadParty, loadNamed, readAffinities, readEfficiency } = require("../lib/load-actors");
-const { runBattle } = require("../lib/engine");
-const { Rng } = require("../lib/rng");
+const { loadParty, loadNamed, readAffinities, readEfficiency, loadSummons } = require("../lib/load-actors");
+const { loadStatusLibrary } = require("../lib/world-items");
+const { runLine } = require("../lib/line-runner");
 const { snapshotWorld, summarise } = require("./encounter-matrix");
 
 function arg(name, fallback) {
@@ -98,12 +98,14 @@ async function main() {
   delete plan.rows;
   const matrix = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "expectations", "encounter-matrix.json"), "utf8"));
   const policy = matrix.policy ?? "standard";
+  const monsterRules = matrix.monsterRules ?? "registry";
 
   const copyDir = path.join(os.tmpdir(), "fu-balance-proposal");
   const world = snapshotWorld(DEFAULT_WORLD, copyDir);
   const rows = [];
   try {
     const party = await loadParty({ world });
+    const statusLibrary = monsterRules === "data" ? await loadStatusLibrary({ world }) : null;
     for (const unknown of Object.keys(plan)) {
       if (unknown === "rows") continue;
       if (!matrix.lines.some((l) => l.enemies.includes(unknown))) console.warn(`plan names "${unknown}", which is in no fight`);
@@ -115,11 +117,10 @@ async function main() {
       const touched = lineup !== l.enemies || l.enemies.some((n) => plan[n]);
       const run = async (patched) => {
         const enemies = await loadGroup(patched ? lineup : l.enemies, world, patched ? plan : null);
-        const res = [];
-        for (let i = 0; i < runs; i++) {
-          res.push(runBattle({ party, enemies, rng: new Rng(`proposal:${l.source}:${l.enemies.join("+")}:${i}`), expectedRounds: l.kind === "boss" ? 10 : 7, policy }));
-        }
-        return summarise(res);
+        const summons = monsterRules === "data" ? await loadSummons(enemies, { world }) : null;
+        const { all } = runLine({ party, enemies, events: l.events, runs, seed: `proposal:${l.source}:${l.enemies.join("+")}`,
+          expectedRounds: l.kind === "boss" ? 10 : 7, policy, monsterRules, statusLibrary, summons });
+        return summarise(all);
       };
       const before = await run(false);
       const after = touched ? await run(true) : before;

@@ -39,6 +39,16 @@ function verdict(l) {
 
 function trustNotes(l) {
   const out = [];
+  if (matrix.monsterRules === "data") {
+    // What the interpreter could not run for these monsters — decisions a person makes
+    // at the table are listed by the monster card, not here, unless they change the fight.
+    for (const c of l.dataCoverage ?? []) for (const g of c.gaps) {
+      if (/a player decides|redirect target|open action menu/.test(g)) out.push(`${c.name}: ${g.replace(/: a player decides \(ask\)/, " is a player's choice at the table").replace(/: redirect target/, " (redirect) is not simulated").replace(/: open action menu/, " (a menu choice) is not simulated")}`);
+      else out.push(`${c.name}: ${g} is not simulated`);
+    }
+    for (const g of l.dataGaps ?? []) if (g.kind !== "decided at the table") out.push(`${g.who}: ${g.what} (${g.kind}) is not simulated`);
+    return [...new Set(out)];
+  }
   for (const n of l.notes ?? []) if (n.startsWith("never acts")) out.push(`${n.replace("never acts: ", "")} never acts in the sim — its stance is never armed`);
   for (const name of new Set(l.enemies)) {
     const c = cards[slug(name)];
@@ -77,6 +87,8 @@ const fights = matrix.lines.filter((l) => !l.error && l.stats).map((l) => {
     rounds: s.roundsP50, roundsAll: s.roundsAllP50, hpWin: round(s.hpP50), hpEnd: round(s.hpEndP50), ko: round(s.anyDown),
     verdict: verdict(l),
     trust: trustNotes(l),
+    events: (l.events ?? []).map((e) => ({ id: e.id, share: e.share })),
+    byEvent: Object.fromEntries(Object.entries(l.byEvent ?? {}).map(([id, b]) => [id, { share: round(b.share), win: round(b.stats.win), low: round(b.stats.lowP50) }])),
     live: liveByKey[key(l.enemies)] ?? null,
   };
 });
@@ -92,6 +104,7 @@ const monsters = audit.cards.map((c) => ({
 
 const data = {
   generated: matrix.generated, policy: matrix.policy ?? "legacy", runs: matrix.runs,
+  monsterRules: matrix.monsterRules ?? "registry",
   party: matrix.party, liveScenario: live?.scenario ?? null,
   fights, monsters,
 };
@@ -117,7 +130,9 @@ async function simPayload() {
   const os = require("os");
   const vm = require("vm");
   const { snapshotWorld } = require("./encounter-matrix");
-  const { loadParty, loadNamed } = require("../lib/load-actors");
+  const { loadParty, loadNamed, loadSummons } = require("../lib/load-actors");
+  const { loadStatusLibrary } = require("../lib/world-items");
+  const { resolveEvent } = require("../lib/conflict-events");
   const { runBattle } = require("../lib/engine");
   const { Rng } = require("../lib/rng");
   const { slimModel } = require("../lib/slim-model");
@@ -130,6 +145,9 @@ async function simPayload() {
     const loaded = await loadNamed(names, { world });
     const monsters = {};
     names.forEach((n, i) => { if (!monsters[n]) monsters[n] = slimModel(loaded[i]); });
+    const statusLibrary = data.monsterRules === "data" ? await loadStatusLibrary({ world }) : null;
+    const summons = {};
+    if (data.monsterRules === "data") for (const [id, m] of Object.entries(await loadSummons(loaded, { world }))) summons[id] = slimModel(m);
     const engine = bundleEngine();
     const ctx = { console };
     ctx.globalThis = ctx;
@@ -137,18 +155,24 @@ async function simPayload() {
     vm.runInContext(engine, ctx);
     ctx.__msTraceHp = true;
     let checked = 0;
-    for (const l of matrix.lines.filter((x) => !x.error).slice(0, 6)) {
+    // Every line once per event it is fought under, plus the story fights: the page must
+    // reproduce the interpreter, the crystal and the summons exactly.
+    const checks = [];
+    for (const l of matrix.lines.filter((x) => !x.error)) for (const e of (l.events?.length ? l.events : [{ id: null }])) checks.push({ l, ev: e.id });
+    for (const { l, ev } of checks) {
       const en = l.enemies.map((n) => monsters[n]);
-      for (let i = 0; i < 5; i++) {
-        const a = runBattle({ party, enemies: en, rng: new Rng(`self:${i}`), expectedRounds: 7, policy: data.policy });
-        const b = ctx.Mindscape.runBattle({ party: JSON.parse(JSON.stringify(party)), enemies: JSON.parse(JSON.stringify(en)), rng: new ctx.Mindscape.Rng(`self:${i}`), expectedRounds: 7, policy: data.policy });
+      for (let i = 0; i < 2; i++) {
+        const opts = { expectedRounds: l.kind === "boss" ? 10 : 7, policy: data.policy, monsterRules: data.monsterRules };
+        const a = runBattle({ party, enemies: en, rng: new Rng(`self:${i}`), ...opts, statusLibrary, summons, conflictEvent: ev ? resolveEvent(ev) : null });
+        const b = ctx.Mindscape.runBattle({ party: JSON.parse(JSON.stringify(party)), enemies: JSON.parse(JSON.stringify(en)), rng: new ctx.Mindscape.Rng(`self:${i}`), ...opts,
+          statusLibrary: JSON.parse(JSON.stringify(statusLibrary)), summons: JSON.parse(JSON.stringify(summons)), conflictEvent: ev ? ctx.Mindscape.resolveEvent(ev) : null });
         const strip = (log) => JSON.stringify(log.map(({ __hp, ...r }) => r));
-        if (strip(a.log) !== strip(b.log)) throw new Error(`page engine differs from Node on ${l.enemies.join(", ")} run ${i}`);
+        if (strip(a.log) !== strip(b.log)) throw new Error(`page engine differs from Node on ${l.enemies.join(", ")} (${ev ?? "no event"}) run ${i}`);
         checked++;
       }
     }
     console.log(`page engine: ${checked} battles identical to Node`);
-    return { engine, sim: { party, monsters } };
+    return { engine, sim: { party, monsters, statusLibrary, summons } };
   } finally {
     fs.rmSync(copyDir, { recursive: true, force: true });
   }

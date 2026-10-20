@@ -15,7 +15,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const MODULES = ["rules", "formula", "stances", "skills", "utility", "reactions", "tinctures", "party-policy", "engine", "rng"];
+const MODULES = ["rules", "formula", "stances", "skills", "utility", "reactions", "tinctures", "monster-data", "party-policy", "engine", "rng", "conflict-events"];
 
 const SAFE_EVAL = String.raw`
 function __safeEval(src, env) {
@@ -103,7 +103,7 @@ function __require(name) {
   def(module, module.exports, __require);
   return module.exports;
 }
-globalThis.Mindscape = { runBattle: __require("./engine").runBattle, Rng: __require("./rng").Rng };
+globalThis.Mindscape = { runBattle: __require("./engine").runBattle, Rng: __require("./rng").Rng, resolveEvent: __require("./conflict-events").resolveEvent };
 })();`;
 }
 

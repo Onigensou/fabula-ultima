@@ -99,7 +99,7 @@ function budgetSpent(state, key) { return state.policy.budget[`${state.round}:${
 function spendBudget(state, key) { const k = `${state.round}:${key}`; state.policy.budget[k] = (state.policy.budget[k] ?? 0) + 1; }
 
 function allies(state, actor) { return state.combatants.filter((c) => c.side === actor.side && c.alive); }
-function foes(state, actor) { return state.combatants.filter((c) => c.side !== actor.side && c.alive); }
+function foes(state, actor) { return state.combatants.filter((c) => c.side !== actor.side && c.alive && !c.object); }
 const endgame = (state, actor) => foes(state, actor).length <= 1;
 
 // ── Built-in actions not in the extracted kit ───────────────────────────────
@@ -583,7 +583,7 @@ function onTurnEnd(state, actor) {
 function protectBar(state) {
   const name = state.policy?.name;
   if (!name || name === "legacy") return TUNING.strongHitFraction;
-  const enemies = state.combatants.filter((c) => c.side === "enemy" && c.alive).length;
+  const enemies = state.combatants.filter((c) => c.side === "enemy" && c.alive && !c.object).length;
   return enemies <= 1 ? TUNING.strongHitFractionEndgame : TUNING.strongHitFraction;
 }
 

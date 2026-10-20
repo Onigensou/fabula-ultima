@@ -499,8 +499,10 @@ function gap(state, who, kind, what) {
 // current target of a per-target evaluation, and chain variables.
 function relation(a, b) { return a === b ? "self" : a.side === b.side ? "ally" : "enemy"; }
 function sideOf(c) { return c.side; }
-function livingFoesOf(state, c) { return state.combatants.filter((x) => x.alive && sideOf(x) !== sideOf(c)); }
-function livingAlliesOf(state, c) { return state.combatants.filter((x) => x.alive && x !== c && sideOf(x) === sideOf(c)); }
+// Objects (a Lightning Crystal) are invisible to the AI: never a target, never counted
+// (actionReader-core isUntargetableActor).
+function livingFoesOf(state, c) { return state.combatants.filter((x) => x.alive && !x.object && sideOf(x) !== sideOf(c)); }
+function livingAlliesOf(state, c) { return state.combatants.filter((x) => x.alive && !x.object && x !== c && sideOf(x) === sideOf(c)); }
 
 function evalFormula(state, src, ctx, { fallback = 0 } = {}) {
   const raw = s(src);
@@ -788,7 +790,7 @@ function effApplyAe(state, row, ctx) {
 // stored; a creature with an "immunity_<status>" flag would go here). Kept as one seam.
 function statusImmune(t, tpl) {
   const im = t.actor.statusImmunities;
-  return !!(im && (im[key(tpl.name)] || (tpl.chargeKey && im[tpl.chargeKey])));
+  return !!(im && (im["*"] || im[key(tpl.name)] || (tpl.chargeKey && im[tpl.chargeKey])));
 }
 
 function effRemoveAe(state, row, ctx, kind) {
@@ -1248,9 +1250,9 @@ function reachable(state, c, action) {
   const side = action.target?.side;
   let pool;
   if (side === "self" || action.target?.self) return [c];
-  if (side === "ally") pool = state.combatants.filter((x) => x.alive && x.side === c.side);
+  if (side === "ally") pool = state.combatants.filter((x) => x.alive && !x.object && x.side === c.side);
   else pool = livingFoesOf(state, c);
-  if (turnedAgainst(c) && side !== "ally") pool = state.combatants.filter((x) => x.alive && x.side === c.side && x !== c);
+  if (turnedAgainst(c) && side !== "ally") pool = state.combatants.filter((x) => x.alive && !x.object && x.side === c.side && x !== c);
   if (state.mdApi.isMelee(c, action)) pool = pool.filter((f) => !f.flying);
   const barred = cannotTarget(c);
   if (barred.size) pool = pool.filter((f) => !barred.has(f));
@@ -1384,7 +1386,54 @@ function coverage(actor) {
   return out;
 }
 
+// ── Pattern lint ────────────────────────────────────────────────────────────
+// Facts about a monster's action_pattern_table that follow from the action reader's
+// rules alone (priority window 3/2/1, cooldown fallback, feasibility), read statically.
+// Each is a way the table plays differently from how it reads.
+function lintPatterns(actor) {
+  const out = [];
+  const pats = rows(actor._rawProps?.action_pattern_table).map((r) => ({
+    name: s(r.action_pattern_name), cond: norm(r.action_pattern_condition) || "always",
+    pri: s(r.action_pattern_priority) === "" ? 5 : Math.trunc(Number(r.action_pattern_priority) || 0),
+    cd: Math.trunc(Number(r.action_pattern_cooldown) || 0), string: s(r.action_pattern_string),
+    v1: r.action_pattern_value_1, v2: r.action_pattern_value_2,
+  })).filter((r) => r.name);
+  if (!pats.length) return out;
+  const items = new Map((actor.items ?? []).map((i) => [key(i.name), i]));
+  const mpMax = Number(actor.mp?.max) || 0, mpStart = Number.isFinite(Number(actor.mp?.cur)) ? Number(actor.mp.cur) : mpMax;
+  const costOf = (n) => { const m = /^\s*(\d+)\s*(?:x\s*T\s*)?MP/i.exec(s(items.get(key(n))?.props?.cost)); return m ? Number(m[1]) : 0; };
+  const grantsMp = (actor.items ?? []).some((i) => rows(i.props?.effect_table).some((r) => norm(r.effect_kind) === "grant" && norm(r.grant_resource) === "mp"));
+  for (const p of pats) {
+    const it = items.get(key(p.name));
+    if (!it) { out.push(`pattern row "${p.name}" names no action this monster has — it is never used`); continue; }
+    const others = pats.filter((o) => o !== p && items.has(key(o.name)));
+    // 1. A cooldown with nothing inside the window to hand the turn to.
+    if (p.cd > 0 && !others.some((o) => o.pri >= p.pri - 2)) {
+      out.push(`${p.name} repeats every turn its condition holds: its ${p.cd}-round cooldown never applies (no other row within 2 priority of ${p.pri})`);
+    }
+    // 2. Shadowed by an always-on row 3+ priority above it.
+    const shadow = others.find((o) => o.cond === "always" && o.pri >= p.pri + 3 && !costOf(o.name) && o.cd === 0);
+    if (shadow) out.push(`${p.name} (priority ${p.pri}) can never be picked: ${shadow.name} is always available at priority ${shadow.pri}`);
+    // 3. Costs it cannot pay.
+    const cost = costOf(p.name);
+    if (cost > mpMax) out.push(`${p.name} costs ${cost} MP but max MP is ${mpMax} — never usable`);
+    else if (cost > mpStart && !grantsMp) out.push(`${p.name} costs ${cost} MP; the monster starts at ${mpStart} MP and nothing restores it`);
+    else if (cost > mpStart) out.push(`${p.name} costs ${cost} MP; the monster starts at ${mpStart} MP and must charge up first`);
+    // 4. A stack threshold its status can never reach.
+    if (p.cond === "effect_stacks" && p.string) {
+      const need = Math.max(1, Math.trunc(Number(p.v1) || 1));
+      for (const i of actor.items ?? []) for (const e of i.effects ?? []) {
+        if (key(e.name) !== key(p.string)) continue;
+        const cap = Number(e.flags?.[NS]?.chargesMax);
+        if (Number.isFinite(cap) && cap > 0 && cap < need) out.push(`${p.name} needs ${need} ${p.string} but ${p.string} caps at ${cap} — never usable`);
+      }
+    }
+  }
+  return [...new Set(out)];
+}
+
 module.exports = {
+  lintPatterns,
   attach, buildStatusLibrary, toTemplate, coverage,
   emit, willDeal, runOnActivate, chooseAction, actionFor, pickTargets, bind, expandTargets, summonRefs,
   onTurnStart, onTurnEnd, onRoundEnd,

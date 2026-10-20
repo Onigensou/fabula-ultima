@@ -13,7 +13,8 @@ const ITEM_PROP_DROP = [
 ];
 // Raw sheet fields the engine reads (engine.js init_penalty, stances.js action_pattern_table),
 // plus the affinity / weapon-efficiency columns tuning tools rewrite.
-const RAW_KEEP = /^(init_penalty|action_pattern_table|affinity_\d|[a-z]+_ef)$/;
+// init / initiative: the round's group Initiative check and the turn picker (engine.js).
+const RAW_KEEP = /^(init|initiative|init_bonus|initiative_bonus|init_penalty|action_pattern_table|affinity_\d|[a-z]+_ef)$/;
 
 function slimModel(model) {
   const m = JSON.parse(JSON.stringify(model));
