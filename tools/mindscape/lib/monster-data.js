@@ -228,12 +228,16 @@ const ACTION_TYPES = new Set(["attack", "spell", "active", "skill"]);
 
 // `dataDriven`: this combatant's own items drive its reactions and action choice.
 // Every combatant gets a status list — a PC can be Burning, Wet or Charmed.
-function attach(c, { dataDriven = false, library = null } = {}) {
+// `reactionsOnly` (a PC under the data rules): its items' automatic reaction rows run,
+// but its turn is still the party policy's, and its skills' on-use chains are not run
+// (the policy scripts those). `skipItems`: names the policy already plays.
+function attach(c, { dataDriven = false, reactionsOnly = false, skipItems = null, library = null } = {}) {
   c.aes = [];
   c.vars = {};
   c.md = null;
-  if (!dataDriven) return;
-  const items = (c.actor.items ?? []).map(itemModel);
+  if (!dataDriven && !reactionsOnly) return;
+  const skip = new Set([...(skipItems ?? [])].map(key));
+  const items = (c.actor.items ?? []).filter((it) => !skip.has(key(it.name))).map(itemModel);
   c.md = {
     items,
     byName: new Map(items.map((i) => [key(i.name), i])),
@@ -250,7 +254,9 @@ function attach(c, { dataDriven = false, library = null } = {}) {
       hpCeiling: Math.trunc(Number(r.action_pattern_hp_ceiling) || 0),
     })).filter((r) => r.name),
     memory: { last: null, used: {} },
+    reactionsOnly,
   };
+  if (reactionsOnly) c.md.patterns = [];
   c.library = library;
 }
 
@@ -268,6 +274,15 @@ function aeCharges(c, name) {
 const inCrisis = (c) => c.alive && c.hp > 0 && c.hp <= c.maxHp / 2;
 
 function resolveTemplate(state, name, item, holder) {
+  // "Actor.<id>.Item.<id>.ActiveEffect.<id>" / "Item.<id>.ActiveEffect.<id>": by id.
+  const u = /Item\.([^.]+)\.ActiveEffect\.([^.]+)$/.exec(s(name));
+  if (u) {
+    for (const c of [holder, ...(state.combatants ?? [])]) {
+      const it = (c?.actor?.items ?? []).find((i) => i.id === u[1]);
+      const eff = (it?.effects ?? []).find((e) => e._id === u[2] || e.id === u[2]);
+      if (eff) return toTemplate(eff);
+    }
+  }
   const k = key(name);
   for (const t of item?.templates ?? []) if (key(t.name) === k) return t;
   const lib = state.statusLibrary ?? {};
@@ -292,6 +307,8 @@ function addAe(state, target, tpl, { applier = null, mode = "replace", charges =
   }
   if (existing.length) target.aes = target.aes.filter((a) => !existing.includes(a));
   if (initial != null && !Number.isFinite(initial)) initial = tpl.charges;
+  state._statusApplied = state._statusApplied ?? [];
+  state._statusApplied.push({ target, applier, name: tpl.name });
   target.aes.push({
     name: tpl.name, template: tpl, charges: initial,
     lifetime: rounds != null && !tpl.lifetime ? "" : tpl.lifetime,
@@ -482,6 +499,14 @@ function onTurnEnd(state, actor) {
     else if (a.applier === actor && a.lifetime === "applier_turn_end") tick(state, c, a);
   });
 }
+// creature_status_applied fires once the application has settled (Skull Orb).
+function flushStatusApplied(state) {
+  const list = state._statusApplied;
+  if (!list?.length || !state.mdApi) return;
+  state._statusApplied = [];
+  for (const x of list) emit(state, "creature_status_applied", { subject: x.target, victim: x.target, actor: x.applier, causeActor: x.applier, status: x.name });
+}
+
 function onRoundEnd(state) {
   for (const c of state.combatants) if (c.aes?.length) removeAes(c, (a) => a.lifetime === "round_end");
 }
@@ -539,8 +564,35 @@ function evalFormula(state, src, ctx, { fallback = 0 } = {}) {
         case "ACTION_TARGET_COUNT": return Math.max(1, Number(ctx.actionTargetCount) || 1);
         case "RANK_IS_CHAMPION": return /champion/i.test(s(me.actor.rank ?? me.actor._rawProps?.npc_rank)) ? 1 : 0;
         case "CHAR_LEVEL": case "LEVEL": return Number(me.actor.level) || 0;
+        // The action in progress (performs / will deal / deals / completes).
+        case "ACTION_IS_ATTACK": return ev.action && actionLabel(ev.action) === "Attack" ? 1 : 0;
+        case "ACTION_IS_SPELL": return ev.action && actionLabel(ev.action) === "Spell" ? 1 : 0;
+        case "ACTION_IS_SKILL": return ev.action && actionLabel(ev.action) === "Skill" ? 1 : 0;
+        case "ATTACK_IS_RANGED": return ev.action && actionLabel(ev.action) === "Attack" && isRanged(ev.actor, ev.action) ? 1 : 0;
+        case "ATTACK_IS_MELEE": return ev.action && actionLabel(ev.action) === "Attack" && !isRanged(ev.actor, ev.action) ? 1 : 0;
+        case "SINGLE_TARGET_ATTACK": return ev.action && actionLabel(ev.action) === "Attack" && (ev.targets?.length ?? ev.action.target?.count ?? 1) === 1 ? 1 : 0;
+        case "ACTION_TARGET_COUNT": return Math.max(1, Number(ctx.actionTargetCount ?? ev.targets?.length) || 1);
+        case "ACTION_IS_FREE_CAST": return ev.free ? 1 : 0;
+        // Skill Level of the item carrying the row (formula.js reads SL_<NAME> the same way).
+        case "SL": return Math.max(1, Number(ctx.item?.props?.level ?? ctx.item?.props?.skill_level) || 1);
+        case "TARGET_STATUS_COUNT": { const t = tgt ?? ev.victim; return t ? (t.aes ?? []).length : 0; }
+        case "HAS_ARCANE_WEAPON": return norm(me.actor.weapon?.family) === "arcane" ? 1 : 0;
+        case "CREATURE_ELEMENTAL_PRESENT": return state.combatants.some((c) => c.alive && /elemental/i.test(s(c.actor.species))) ? 1 : 0;
+        // Summons as the model has them: the party's phantasms are a count (party-policy.js),
+        // a summoned monster knows its summoner; nothing else is ever summoned in the sim.
+        case "OWN_PHANTASM_COUNT": return Number(me.phantasms) || 0;
+        case "OWN_MINION_COUNT": case "OWN_NUMEN_COUNT": case "OWN_SUMMON_COUNT": return state.combatants.filter((c) => c.alive && c.summonedBy === me).length;
+        case "SUBJECT_IS_MY_SUMMON": case "SUBJECT_IS_MY_PHANTASM": case "SUBJECT_IS_MY_MINION": return ev.subject?.summonedBy === me ? 1 : 0;
       }
       let m;
+      if ((m = /^HAS_WEAPON_CATEGORY_(.+)$/.exec(N))) return norm(me.actor.weapon?.family) === m[1].toLowerCase() ? 1 : 0;
+      if ((m = /^TARGET_SPECIES_IS_(.+)$/.exec(N))) { const t = tgt ?? ev.victim; return t && norm(t.actor.species) === m[1].toLowerCase() ? 1 : 0; }
+      if ((m = /^ANY_TARGET_HAS_(.+)$/.exec(N))) return (ev.targets ?? (ev.victim ? [ev.victim] : [])).some((t) => aeCount(state, t, m[1], false) > 0) ? 1 : 0;
+      if ((m = /^SKILL_HAS_TAG_(.+)$/.exec(N))) return skillTags(ev).includes(m[1].toLowerCase()) ? 1 : 0;
+      if ((m = /^TARGET_AE_COUNT_(.+)$/.exec(N))) { const t = tgt ?? ev.victim; return t ? aeCount(state, t, m[1], false) : 0; }
+      if ((m = /^TARGET_AE_CHARGES_(.+)$/.exec(N))) { const t = tgt ?? ev.victim; return t ? aeCount(state, t, m[1], true) : 0; }
+      if ((m = /^HAS_STATUS_(.+)$/.exec(N))) return aeCount(state, me, m[1], false) > 0 ? 1 : 0;
+      if ((m = /^HAS_SKILL_(.+)$/.exec(N))) { const k = key(m[1].replace(/_/g, " ")); return (me.actor.items ?? []).some((i) => key(i.name) === k) ? 1 : 0; }
       if ((m = /^TRIGGER_DAMAGE_IS_([A-Z]+)$/.exec(N))) return norm(ev.element) === m[1].toLowerCase() ? 1 : 0;
       if ((m = /^COMBAT_MAX_AE_CHARGES_(.+)$/.exec(N))) return Math.max(0, ...state.combatants.filter((c) => c.alive).map((c) => aeCount(state, c, m[1], true)));
       if ((m = /^AE_COUNT_(.+)$/.exec(N))) return aeCount(state, tgt && ctx.targetScope ? tgt : me, m[1], false);
@@ -558,6 +610,17 @@ function evalFormula(state, src, ctx, { fallback = 0 } = {}) {
     gap(state, me, "formula", e.gap ?? `${raw}: ${e.message}`);
     return null;
   }
+}
+
+// Tags on the skill being used: its sheet's skill_tags (comma list), lower-case.
+function skillTags(ev) {
+  const items = ev.actor?.actor?.items ?? [];
+  const it = items.find((i) => key(i.name) === key(ev.skillName));
+  return s(it?.props?.skill_tags).toLowerCase().split(/[,\s]+/).filter(Boolean);
+}
+function isRanged(actor, action) {
+  if (action?.range) return norm(action.range) === "ranged";
+  return norm(actor?.actor?.weapon?.range) === "ranged";
 }
 
 function aeCount(state, c, rawName, charges) {
@@ -592,6 +655,7 @@ function resolveTargeting(state, row, ctx) {
   if (src === "trigger_subject") pool = triggerSubject(ctx);
   else if (src === "trigger_attacker") pool = ctx.ev?.attacker ? [ctx.ev.attacker] : (ctx.ev?.actor ? [ctx.ev.actor] : []);
   else if (src === "combat") pool = state.combatants.filter((c) => c.alive);
+  else if (src === "self") pool = [me];
   else { gap(state, me, "targeting", `candidate_source ${src}`); pool = []; }
   pool = pool.filter((c) => c.alive || src !== "combat");
   if (src === "combat") pool = pool.filter((c) => inCategory(me, c, row.category));
@@ -1089,7 +1153,7 @@ function fireInner(state, R, src, row, ev) {
 // change_damage_element), collected before the damage is computed.
 function willDeal(state, actor, action, target) {
   const adj = { add: 0, mult: 1, element: action.element, target };
-  emit(state, "creature_will_deal_damage", { subject: actor, actor, causeActor: actor, skillName: action.name, target, element: action.element, damageAdjust: adj });
+  emit(state, "creature_will_deal_damage", { subject: actor, actor, causeActor: actor, skillName: action.name, action, target, victim: target, targets: [target], element: action.element, damageAdjust: adj });
   return adj;
 }
 
@@ -1144,6 +1208,7 @@ function actionFor(state, c, item, { anyType = false } = {}) {
 
 // On-use chain, after the action's accuracy and damage have resolved.
 function runOnActivate(state, actor, action, { targets = [], hits = [] } = {}) {
+  if (actor.md?.reactionsOnly) return;
   const item = action.mdItem ?? actor.md?.byName.get(key(action.name));
   if (!item?.onActivate) return;
   runLabel(state, item.onActivate, {
@@ -1350,8 +1415,10 @@ const KNOWN_TRIGGERS = new Set([
   "conflict_start", "turn_start", "turn_end", "round_end", "creature_deals_damage", "creature_will_deal_damage",
   "creature_lose_resource", "creature_gain_resource", "creature_defeated", "creature_targeted_by_action",
   "creature_hit_by_action", "creature_miss_action", "creature_performs_action",
+  "creature_completes_action", "creature_completes_attack", "creature_completes_spell", "creature_completes_skill",
+  "creature_status_applied", "round_start",
 ]);
-const KNOWN_IDS = /^(ACTION_TARGET_COUNT|CUR_HP|MAX_HP|CUR_MP|MAX_MP|CUR_IP|TARGET_(CURRENT|CUR|MAX)_(HP|MP)|HP_DEALT|DAMAGE_DEALT|TRIGGER_AMOUNT|INCOMING_DAMAGE|ATTACK_CHECK_RESULT|TRIGGER_IS_SELF|SUBJECT_IS_SELF|CAUSE_IS_SELF|IS_MY_TURN|ENEMY_IN_CRISIS|ALLY_COUNT|ENEMY_COUNT|ROUND|RANK_IS_CHAMPION|CHAR_LEVEL|LEVEL|TRIGGER_DAMAGE_IS_[A-Z]+|COMBAT_MAX_AE_CHARGES_.+|AE_COUNT_.+|AE_CHARGES_.+|VAR_.+)$/;
+const KNOWN_IDS = /^(HAS_WEAPON_CATEGORY_.+|ACTION_IS_FREE_CAST|SL|TARGET_STATUS_COUNT|HAS_ARCANE_WEAPON|CREATURE_ELEMENTAL_PRESENT|OWN_(PHANTASM|MINION|NUMEN|SUMMON)_COUNT|SUBJECT_IS_MY_(SUMMON|PHANTASM|MINION)|TARGET_SPECIES_IS_.+|ANY_TARGET_HAS_.+|ACTION_IS_(ATTACK|SPELL|SKILL)|ATTACK_IS_(RANGED|MELEE)|SINGLE_TARGET_ATTACK|SKILL_HAS_TAG_.+|TARGET_AE_(COUNT|CHARGES)_.+|HAS_STATUS_.+|HAS_SKILL_.+|ACTION_TARGET_COUNT|CUR_HP|MAX_HP|CUR_MP|MAX_MP|CUR_IP|TARGET_(CURRENT|CUR|MAX)_(HP|MP)|HP_DEALT|DAMAGE_DEALT|TRIGGER_AMOUNT|INCOMING_DAMAGE|ATTACK_CHECK_RESULT|TRIGGER_IS_SELF|SUBJECT_IS_SELF|CAUSE_IS_SELF|IS_MY_TURN|ENEMY_IN_CRISIS|ALLY_COUNT|ENEMY_COUNT|ROUND|RANK_IS_CHAMPION|CHAR_LEVEL|LEVEL|TRIGGER_DAMAGE_IS_[A-Z]+|COMBAT_MAX_AE_CHARGES_.+|AE_COUNT_.+|AE_CHARGES_.+|VAR_.+)$/;
 const KNOWN_PATTERN = new Set(["always", "hp", "mp", "ip", "zero_power", "round", "turn", "self_has_status", "active_effect", "self_lacks_status", "enemy_count", "ally_count", "enemy_has_status", "enemy_lacks_status", "ally_has_status", "ally_in_crisis", "creature_has_status", "effect_stacks", "random", "activation", "target_count"]);
 const PROMPTS = new Set(["open_action_menu", "redirect_target"]);
 
@@ -1435,7 +1502,7 @@ function lintPatterns(actor) {
 module.exports = {
   lintPatterns,
   attach, buildStatusLibrary, toTemplate, coverage,
-  emit, willDeal, runOnActivate, chooseAction, actionFor, pickTargets, bind, expandTargets, summonRefs,
+  emit, willDeal, runOnActivate, flushStatusApplied, chooseAction, actionFor, pickTargets, bind, expandTargets, summonRefs,
   onTurnStart, onTurnEnd, onRoundEnd,
   hasAe, aeCharges, addAe, removeAes, resolveTemplate,
   applyAttrSteps, checkMod, defense, affinities, blockedLabels, isBlocked, actionLabel,

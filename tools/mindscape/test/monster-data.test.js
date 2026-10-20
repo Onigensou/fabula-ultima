@@ -261,6 +261,36 @@ t("save tiers are cumulative: a low total lands every tier above it", () => {
   assert.ok(!got.includes("Paralyzed"));
 });
 
+// ── The party under the data rules ──────────────────────────────────────────
+t("a PC's automatic passive runs from its data; one the policy scripts does not", () => {
+  const agony = item("Agony", "Passive", {}, {
+    reactions: [{ reaction_trigger: "creature_deals_damage", reaction_source: "self", reaction_passive_mode: "on", reaction_effect_ref: "g" }],
+    effects: [{ effect_label: "g", effect_kind: "grant", grant_resource: "mp", grant_amount: "7", target_ref: "self" }],
+  });
+  const pases = item("Pases", "Passive", {}, {
+    reactions: [{ reaction_trigger: "creature_deals_damage", reaction_source: "self", reaction_passive_mode: "on", reaction_effect_ref: "g" }],
+    effects: [{ effect_label: "g", effect_kind: "grant", grant_resource: "mp", grant_amount: "1000", target_ref: "self" }],
+  });
+  const hero = pc("Hero", { max_mp: "500", current_mp: "0" }, [attack("Hit", 5), agony, pases]);
+  const r = fight([hero], [npc("Dummy", { max_hp: "9999", current_hp: "9999", defense: "1" })], { rounds: 1 });
+  const h = r.combatants.find((c) => c.name === "Hero");
+  assert.ok(h.reactionsFired > 0, "Agony fired");
+  assert.ok(!r.log.some((e) => e.action === "Pases"), "Pases is the policy's, not the interpreter's");
+});
+
+t("Lightning Rod on a PC: the party focuses whoever is worst off holding it", () => {
+  const storm = { id: "t", label: "Storm",
+    init(state) { state.rod = state.combatants.find((c) => c.name === "Hero"); },
+    onTurnStart() { return null; } };
+  const hero = pc("Hero", { max_hp: "9999", current_hp: "9999" }, [attack("Hit", 1)]);
+  // The absorber is healed by the strike; the plain one takes it.
+  const absorber = npc("Absorber", { max_hp: "50", current_hp: "50", affinity_3: "AB", defense: "1" });
+  const plain = npc("Plain", { max_hp: "9000", current_hp: "9000", defense: "1" });
+  const r = runBattle({ party: [hero], enemies: [absorber, plain], rng: new Rng("rod"), expectedRounds: 1, policy: "standard", monsterRules: "data", statusLibrary: LIB, conflictEvent: storm });
+  const first = r.log.find((e) => e.actor === "Hero" && e.target);
+  assert.strictEqual(first?.target, "Plain", "the Rod goes where its strike hurts, not to the absorber");
+});
+
 // ── Coverage ────────────────────────────────────────────────────────────────
 t("coverage(): names what the interpreter cannot run, by kind", () => {
   const m = npc("Odd", {}, [item("Weird", "Passive", {}, {

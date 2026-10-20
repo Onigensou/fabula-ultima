@@ -223,6 +223,22 @@ function chooseTargets(state, actor, action) {
   return foes.slice().sort((a, b) => a.hp - b.hp).slice(0, n);
 }
 
+// How good it is FOR THE PARTY that `c` holds the Rod (hazard-brain.js
+// partyUtilityOfHolding): the strike after Bolt affinity, minus the 30 MP it gifts
+// (as a fraction of pool, x0.4, only for a creature with MP-costing actions), with a
+// kill swinging it hard either way.
+const ROD_STRIKE = { VU: 60, NE: 30, NA: 30, RS: 15, IM: 0, AB: -30 };
+function rodHoldingValue(c, isAlly) {
+  const aff = MD.affinities(c)?.bolt ?? "NE";
+  const strike = ROD_STRIKE[aff] ?? 30;
+  const usesMp = (c.actor.items ?? []).some((it) => { const k = String(it.props?.cost ?? ""); return /\d/.test(k) && /\bmp\b/i.test(k); });
+  const maxMp = Number(c.actor.mp?.max) || 0;
+  const gift = usesMp && maxMp > 0 ? (Math.max(0, Math.min(30, maxMp - c.mp)) / maxMp) * 100 * 0.4 : 0;
+  let value = strike - gift;
+  if (strike > 0 && c.hp > 0 && strike >= c.hp) value += isAlly ? -120 : 60;
+  return isAlly ? -value : value;
+}
+
 // The party's called target. Precedence per profiles.js:
 //   1. finisher  — anything at or under focusLowHpFraction, preferring one the
 //                  party can exploit (a weakness is close to a damage multiplier)
@@ -241,6 +257,14 @@ function refreshFocus(state) {
     .filter((f) => f.hp / f.maxHp <= FOCUS_LOW_HP_FRACTION)
     .sort((a, b) => (exploitable(b) ? 1 : 0) - (exploitable(a) ? 1 : 0) || a.hp - b.hp);
   if (hurt.length) { state.focus = hurt[0]; return; }
+
+  // Hazard: get the Lightning Rod off the party (sim/hazard-brain.js
+  // rodDisplacementTarget). Ranked below the finisher and above the standing call,
+  // as in profiles.js: always move it off a PC, and let the score pick who gets it.
+  if (state.rod?.alive && state.rod.side === "party") {
+    state.focus = foes.slice().sort((a, b) => rodHoldingValue(b, false) - rodHoldingValue(a, false))[0];
+    return;
+  }
 
   if (state.focus && state.focus.alive) return;
 
@@ -675,7 +699,7 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
   if (riders?.element) action = { ...action, element: riders.element };
 
   pay(actor, action, targets.length, state);
-  if (state.mdApi) MD.emit(state, "creature_performs_action", { subject: actor, actor, causeActor: actor, skillName: action.name, targets });
+  if (state.mdApi) MD.emit(state, "creature_performs_action", { subject: actor, actor, causeActor: actor, skillName: action.name, action, targets, free });
   const hits = [];
 
   for (const target of targets) {
@@ -892,19 +916,29 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
       const hurt = out.direction === "recover" ? target : victim;
       mdLedger(state, actor, hurt, out, act.element, "damage", out.direction === "recover" ? true : hpBefore > 0);
       if (out.direction !== "recover") {
-        MD.emit(state, "creature_deals_damage", { subject: actor, actor, victim, causeActor: actor, skillName: action.name, element: act.element, amount: out.damage, resource: "hp" });
+        MD.emit(state, "creature_deals_damage", { subject: actor, actor, victim, causeActor: actor, skillName: action.name, action, targets, element: act.element, amount: out.damage, resource: "hp" });
       }
       MD.emit(state, "creature_hit_by_action", { subject: target, victim: target, actor, attacker: actor, causeActor: actor, skillName: action.name, weaponFamily: action.weaponFamily ?? null, element: act.element, amount: out.damage });
     }
   }
   if (actor.md) MD.runOnActivate(state, actor, action, { targets, hits });
+  if (state.mdApi) completes(state, actor, action, targets, free);
+}
+
+// creature_completes_action and its per-kind twin, after everything the action did.
+function completes(state, actor, action, targets, free = false) {
+  MD.flushStatusApplied(state);
+  const ev = { subject: actor, actor, causeActor: actor, skillName: action.name, action, targets, free };
+  MD.emit(state, "creature_completes_action", ev);
+  const label = MD.actionLabel(action).toLowerCase();
+  MD.emit(state, label === "attack" ? "creature_completes_attack" : label === "spell" ? "creature_completes_spell" : "creature_completes_skill", ev);
 }
 
 // An action with no damage roll of its own: pay, roll accuracy if the sheet names two
 // attributes (against foes only), then run the on-use chain on whoever was reached.
 function resolveEffectOnly(state, actor, action, targets) {
   pay(actor, action, targets.length, state);
-  if (state.mdApi) MD.emit(state, "creature_performs_action", { subject: actor, actor, causeActor: actor, skillName: action.name, targets });
+  if (state.mdApi) MD.emit(state, "creature_performs_action", { subject: actor, actor, causeActor: actor, skillName: action.name, action, targets });
   const hits = [];
   for (const t of targets) {
     if (!t.alive) continue;
@@ -917,6 +951,7 @@ function resolveEffectOnly(state, actor, action, targets) {
   }
   state.log.push({ round: state.round, actor: actor.name, action: action.name, effectOnly: true, targets: targets.map((t) => t.name), hits: hits.map((t) => t.name) });
   MD.runOnActivate(state, actor, action, { targets, hits });
+  if (state.mdApi) completes(state, actor, action, targets);
 }
 
 // ── Choosing an action ──────────────────────────────────────────────────────
@@ -1258,6 +1293,7 @@ function actOnce(state, c, t) {
   c.activationIndex = t + 1;
   takeTurn(state, c);
   if (state.mdApi && c.alive) {
+    MD.flushStatusApplied(state);
     MD.emit(state, "turn_end", { subject: c, victim: c, actor: c, causeActor: c });
     MD.onTurnEnd(state, c);
   }
@@ -1425,7 +1461,11 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
   // "registry": the hand-written reactions.js entries, as every earlier run.
   for (const c of combatants) {
     const dataDriven = monsterRules === "data" && c.side === "enemy";
-    MD.attach(c, { dataDriven, library: statusLibrary });
+    // A PC's automatic passives (force / on rows) run from its own data too; what the
+    // party policy already plays, and skills on gear not worn, stay out of it.
+    const reactionsOnly = monsterRules === "data" && c.side === "party";
+    MD.attach(c, { dataDriven, reactionsOnly, library: statusLibrary,
+      skipItems: reactionsOnly ? [...PP.SCRIPTED, ...extractActions(c.actor).gatedByGear] : null });
     if (dataDriven) {
       // A monster enters with its SHEET'S current HP/MP, as a spawned token does.
       // Asura and Kirin are authored at 0 MP on purpose (they charge up); starting
@@ -1472,6 +1512,7 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
     }
     if (state.event?.onRoundStart) state.event.onRoundStart(state);
     if (state.policy) PP.onRoundStart(state);
+    if (state.mdApi) MD.emit(state, "round_start", {});
     const over = turnOrder === "alternate" ? alternatingRound(state) : orderedRound(state, order);
     if (over) { outcome = over; break; }
     if (state.mdApi) {

@@ -56,9 +56,19 @@ const AFF_SCORE = { VU: 3, NE: 1, NA: 1, RS: 0.4, IM: 0, AB: -5 };
 const NOT_PORTED = [
   "Life Transference (Keren) — its heal formula is cut off in the item text",
   "For Whom the Bell Tolls (Keren) — needs Grave points, which nothing in the model grants",
-  "Lightning Rod displacement in focus fire — matters only in Lightning Storm fights",
   "phantasms never act on their own; Create Phantasm only deals its strike and adds one to the count",
   "Hina's Foresight trigger — she never spends Zero Power, so it cannot change a fight",
+];
+
+// Party skills and passives this module (or the utility registry) already plays. Under
+// the data rules the monster-data interpreter skips them on PCs, so nothing fires twice.
+const SCRIPTED = [
+  "Create Phantasm: Strike", "Descabello", "Detonate Phantasm", "Divination", "Elegance Showmanship", "Gadgets",
+  "Mega-Remedy", "Muleta", "Pases", "Phoenix Feather", "Potion Rain", "Prophetic Defender", "Stop", "Tafallera",
+  "Thermokinesis", "Warning Shot", "Zero Power: Meteor Shower", "Zero Trigger: Motivation",
+  "Zero Trigger: Shattered Phantasm", "Zero Trigger: Strategy",
+  // utility registry (skills.js UTILITY_REGISTRY)
+  "Acceleration", "Heal", "Protect", "High Speed", "Barrage",
 ];
 
 const lc = (s) => String(s ?? "").trim().toLowerCase();
@@ -588,6 +598,7 @@ function protectBar(state) {
 }
 
 module.exports = {
+  SCRIPTED,
   POLICIES, TUNING, NOT_PORTED, RECIPES,
   init, partyTurn, afterPick, declareAttack, payRiders, redirectTargets, onEnemyAttack, onRoundStart, onTurnEnd, protectBar,
   bestElementAcross,
