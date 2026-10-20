@@ -19,6 +19,7 @@ const path = require("path");
 const { DEFAULT_WORLD } = require("../../safe-edit/lib/paths");
 const { loadAll, loadParty } = require("../lib/load-actors");
 const { extractActions } = require("../lib/skills");
+const RX = require("../lib/reactions");
 const { snapshotWorld } = require("./encounter-matrix");
 
 // Party average hit rate by DEF/MDEF, L41 snapshot (memory: project_party_stat_snapshot).
@@ -82,6 +83,9 @@ function auditMonster(m, { meanPcHp }) {
   }
   const gaps = [...ex.unmodelled, ...ex.unmodelledUtility].map((u) => u.name);
   if (gaps.length) flags.push(`not modelled in the sim: ${gaps.join(", ")}`);
+  // Passives the engine has no rule for (reactions.js registry + traits).
+  const passives = RX.undeclaredReactions(ex.passives);
+  if (passives.length) flags.push(`passive not simulated: ${passives.join(", ")}`);
 
   return {
     name: m.name, rank, level: m.level, species: m.species, hp: m.hp?.max, mp: m.mp?.max,

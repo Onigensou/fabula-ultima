@@ -17,32 +17,32 @@ Targets: normal 1.5-2 rds (long ≤ 4), boss 5.5-6 rds (long 7.5); party HP left
 
 | Range | Rolls | Fight | Kind | Lvl | Enemy HP | Win | Rounds p50 / p90 | HP left p50 / p10 | Any PC down | Against targets | Enemy actions not modelled |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 1-1 | 4% | Electro Slime, Electro Slime, Electro Slime | normal | 40 | 135 | 100% | 2.0 / 2.0 | 96% / 90% | 0% | HP left ≥ 85% | — |
-| 2-2 | 4% | Electro Slime, Electro Slime, Electro Slime, Electro Slime | normal | 40 | 180 | 100% | 2.0 / 2.0 | 89% / 86% | 0% | HP left ≥ 85% | — |
-| 3-3 | 4% | Electro Slime, Skizzik, Electro Slime | normal | 48 | 220 | 100% | 2.0 / 2.0 | 94% / 84% | 0% | HP left ≥ 85% | — |
-| 4-4 | 4% | Electro Slime, Lightning Prism, Electro Slime | normal | 45 | 240 | 100% | 4.0 / 5.0 | 84% / 76% | 2% | rounds above 1.5-2 rds; HP left ≥ 70% | — |
+| 1-1 | 4% | Electro Slime, Electro Slime, Electro Slime | normal | 40 | 135 | 100% | 2.0 / 2.0 | 65% / 50% | 58% | on target | — |
+| 2-2 | 4% | Electro Slime, Electro Slime, Electro Slime, Electro Slime | normal | 40 | 180 | 100% | 3.0 / 3.0 | 52% / 46% | 78% | rounds above 1.5-2 rds | — |
+| 3-3 | 4% | Electro Slime, Skizzik, Electro Slime | normal | 48 | 220 | 100% | 3.0 / 3.0 | 74% / 61% | 80% | rounds above 1.5-2 rds; HP left ≥ 70% | — |
+| 4-4 | 4% | Electro Slime, Lightning Prism, Electro Slime | normal | 45 | 240 | 100% | 5.0 / 6.0 | 64% / 53% | 91% | rounds above long target (4) | — |
 | 5-5 | 4% | Skizzik, Lightning Prism | normal | 48 | 280 | 98% | 4.0 / 6.0 | 84% / 77% | 88% | rounds above 1.5-2 rds; HP left ≥ 70% | — |
 | 6-6 | 4% | Skizzik, Skizzik | normal | 48 | 260 | 100% | 3.0 / 3.0 | 87% / 77% | 1% | rounds above 1.5-2 rds; HP left ≥ 85% | — |
 | 7-7 | 4% | Lightning Prism, Skizzik, Lightning Prism | normal | 48 | 430 | 5% | 6.0 / 7.0 | 84% / 65% | 100% | unresolved in 31%; party loses 64%; rounds above long target (4); HP left ≥ 70% | — |
 | 8-8 | 4% | Skizzik, Lightning Prism, Skizzik | normal | 48 | 410 | 83% | 5.0 / 7.0 | 83% / 74% | 74% | rounds above long target (4); HP left ≥ 70% | — |
-| 9-9 | 4% | Electro Slime, Kirin, Electro Slime | normal | 50 | 300 | 100% | 3.0 / 3.0 | 77% / 63% | 10% | rounds above 1.5-2 rds; HP left ≥ 70% | — |
+| 9-9 | 4% | Electro Slime, Kirin, Electro Slime | normal | 50 | 300 | 100% | 3.0 / 4.0 | 64% / 55% | 81% | rounds above 1.5-2 rds | — |
 | 10-10 | 4% | Lightning Prism, Kirin, Lightning Prism | normal | 50 | 510 | 9% | 6.0 / 7.0 | 47% / 31% | 100% | unresolved in 57%; party loses 35%; rounds above long target (4) | — |
 | 11-11 | 4% | Skizzik, Kirin, Skizzik | normal | 50 | 470 | 94% | 4.0 / 6.0 | 66% / 53% | 32% | rounds above 1.5-2 rds | — |
 | 12-12 | 4% | Kirin, Skizzik, Lightning Prism | normal | 50 | 490 | 67% | 5.0 / 6.0 | 56% / 41% | 94% | party loses 15%; rounds above long target (4) | — |
-| 13-13 | 4% | Mana Ray, Mana Ray | normal | 45 | 230 | 100% | 2.0 / 2.0 | 87% / 67% | 66% | HP left ≥ 85% | — |
+| 13-13 | 4% | Mana Ray, Mana Ray | normal | 45 | 230 | 100% | 2.0 / 3.0 | 87% / 67% | 66% | HP left ≥ 85% | — |
 | 14-14 | 4% | Ampere, Mana Ray | normal | 45 | 290 | 100% | 2.0 / 3.0 | 82% / 65% | 54% | HP left ≥ 70% | — |
 | 15-15 | 4% | Ampere, Skizzik | normal | 48 | 305 | 100% | 3.0 / 3.0 | 77% / 65% | 5% | rounds above 1.5-2 rds; HP left ≥ 70% | — |
 | 16-16 | 4% | Ampere, Lightning Prism | normal | 45 | 325 | 65% | 4.0 / 6.0 | 67% / 54% | 100% | unresolved in 35%; rounds above 1.5-2 rds | — |
 | 17-17 | 4% | Mana Ray, Lightning Prism, Mana Ray | normal | 45 | 380 | 98% | 5.0 / 7.0 | 83% / 74% | 95% | rounds above long target (4); HP left ≥ 70% | — |
 | 18-18 | 4% | Ampere, Mana Ray, Kirin | normal | 50 | 500 | 100% | 4.0 / 4.0 | 70% / 52% | 99% | rounds above 1.5-2 rds | — |
-| 19-19 | 4% | Gigas, Electro Slime, Electro Slime | normal | 45 | 890 | 60% | 5.0 / 6.0 | 95% / 70% | 58% | never acts: Gigas (Frightened); party loses 16%; rounds above long target (4); HP left ≥ 85% | — |
-| 20-20 | 4% | Electro Slime, Obsidrax, Lightning Prism, Electro Slime | normal | 46 | 420 | 100% | 4.0 / 6.0 | 78% / 68% | 80% | rounds above 1.5-2 rds; HP left ≥ 70% | Obsidrax: Miasma Nova |
+| 19-19 | 4% | Gigas, Electro Slime, Electro Slime | normal | 45 | 890 | 26% | 6.0 / 7.0 | 66% / 45% | 100% | unresolved in 32%; party loses 42%; rounds above long target (4) | — |
+| 20-20 | 4% | Electro Slime, Obsidrax, Lightning Prism, Electro Slime | normal | 46 | 420 | 85% | 6.0 / 7.0 | 63% / 50% | 99% | rounds above long target (4) | Obsidrax: Miasma Nova |
 | 21-21 | 4% | Skizzik, Obsidrax | normal | 48 | 310 | 100% | 3.0 / 4.0 | 78% / 66% | 0% | rounds above 1.5-2 rds; HP left ≥ 70% | Obsidrax: Miasma Nova |
 | 22-22 | 4% | Obsidrax, Kirin, Skizzik | normal | 50 | 520 | 78% | 4.0 / 5.0 | 66% / 52% | 62% | rounds above 1.5-2 rds | Obsidrax: Miasma Nova |
-| 23-23 | 4% | Drakoza, Drakoza | normal | 43 | 280 | 100% | 2.0 / 2.0 | 80% / 78% | 0% | HP left ≥ 70% | — |
-| 24-24 | 4% | Drakoza, Skizzik | normal | 48 | 270 | 100% | 3.0 / 3.0 | 84% / 75% | 0% | rounds above 1.5-2 rds; HP left ≥ 70% | — |
+| 23-23 | 4% | Drakoza, Drakoza | normal | 43 | 280 | 100% | 2.0 / 2.0 | 81% / 77% | 0% | HP left ≥ 70% | — |
+| 24-24 | 4% | Drakoza, Skizzik | normal | 48 | 270 | 100% | 3.0 / 3.0 | 81% / 73% | 24% | rounds above 1.5-2 rds; HP left ≥ 70% | — |
 | 25-25 | 4% | Mist Dragon, Obsidrax | normal | 46 | 380 | 100% | 4.0 / 5.0 | 79% / 71% | 14% | rounds above 1.5-2 rds; HP left ≥ 70% | Obsidrax: Miasma Nova |
-| 26-26 | 4% | Mist Dragon, Mana Ray, Drakoza | normal | 45 | 455 | 96% | 5.0 / 6.0 | 86% / 78% | 24% | rounds above long target (4); HP left ≥ 85% | — |
+| 26-26 | 4% | Mist Dragon, Mana Ray, Drakoza | normal | 45 | 455 | 95% | 5.0 / 6.0 | 84% / 77% | 26% | rounds above long target (4); HP left ≥ 70% | — |
 | story | — | ⭐️ Fafnir | boss | 50 | 1824 | 0% | — / — | — / — | 100% | party loses 77% | ⭐️ Fafnir: Ruinous Breath; ⭐️ Fafnir: Storm Calm; ⭐️ Fafnir: Summon Elemental Drake; ⭐️ Fafnir: Torment; ⭐️ Fafnir: Searing Brand; ⭐️ Fafnir: Draconic Domination; ⭐️ Fafnir: Zero Power: Cruel Ultimatum |
 | story | — | Rakshasa | boss | 40 | 1200 | 0% | — / — | — / — | 20% | unresolved in 100% | Rakshasa: Devour |
 | story | — | Asura | boss | 38 | 900 | 42% | 6.0 / 7.0 | 44% / 24% | 100% | party loses 58% | Asura: Quad-Elemental Slash |
@@ -51,18 +51,18 @@ Targets: normal 1.5-2 rds (long ≤ 4), boss 5.5-6 rds (long 7.5); party HP left
 
 | Range | Rolls | Fight | Kind | Lvl | Enemy HP | Win | Rounds p50 / p90 | HP left p50 / p10 | Any PC down | Against targets | Enemy actions not modelled |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 1-1 | 6% | Dire Orc, Dire Orc | normal | 50 | 480 | 100% | 3.0 / 3.0 | 87% / 81% | 0% | rounds above 1.5-2 rds; HP left ≥ 85% | Dire Orc: War Howl |
+| 1-1 | 6% | Dire Orc, Dire Orc | normal | 50 | 480 | 100% | 3.0 / 3.0 | 87% / 77% | 0% | rounds above 1.5-2 rds; HP left ≥ 85% | Dire Orc: War Howl |
 | 2-2 | 6% | Dragon Guard, Dragon Guard | normal | 50 | 500 | 100% | 2.0 / 3.0 | 87% / 76% | 0% | HP left ≥ 85% | — |
-| 3-3 | 6% | Imp, Dire Orc, Imp | normal | 50 | 460 | 100% | 4.0 / 4.0 | 87% / 77% | 28% | rounds above 1.5-2 rds; HP left ≥ 85% | Imp: Strip Weapon; Imp: Prank; Imp: Strip Armor; Dire Orc: War Howl |
-| 4-4 | 6% | Succubus, Dire Orc, Succubus | normal | 50 | 600 | 100% | 4.0 / 5.0 | 88% / 76% | 8% | rounds above 1.5-2 rds; HP left ≥ 85% | Succubus: Charm; Dire Orc: War Howl |
+| 3-3 | 6% | Imp, Dire Orc, Imp | normal | 50 | 460 | 100% | 4.0 / 4.0 | 89% / 77% | 28% | rounds above 1.5-2 rds; HP left ≥ 85% | Imp: Strip Weapon; Imp: Prank; Imp: Strip Armor; Dire Orc: War Howl |
+| 4-4 | 6% | Succubus, Dire Orc, Succubus | normal | 50 | 600 | 100% | 4.0 / 5.0 | 89% / 78% | 16% | rounds above 1.5-2 rds; HP left ≥ 85% | Succubus: Charm; Dire Orc: War Howl |
 | 5-5 | 6% | Dragon Guard, Death Gazer, Dragon Guard | normal | 50 | 650 | 100% | 4.0 / 4.0 | 87% / 76% | 16% | rounds above 1.5-2 rds; HP left ≥ 85% | Death Gazer: Death Gaze |
-| 6-6 | 6% | Dire Orc, Death Gazer, Dire Orc | normal | 50 | 630 | 100% | 4.0 / 5.0 | 86% / 74% | 66% | rounds above 1.5-2 rds; HP left ≥ 85% | Dire Orc: War Howl; Death Gazer: Death Gaze |
+| 6-6 | 6% | Dire Orc, Death Gazer, Dire Orc | normal | 50 | 630 | 100% | 5.0 / 5.0 | 86% / 72% | 70% | rounds above long target (4); HP left ≥ 85% | Dire Orc: War Howl; Death Gazer: Death Gaze |
 | 7-7 | 6% | Imp, Dragon Guard, Imp | normal | 50 | 470 | 100% | 3.0 / 3.0 | 84% / 76% | 0% | rounds above 1.5-2 rds; HP left ≥ 70% | Imp: Strip Weapon; Imp: Prank; Imp: Strip Armor |
 | 8-8 | 6% | Death Gazer, Succubus, Death Gazer | normal | 50 | 480 | 100% | 4.0 / 4.0 | 92% / 84% | 6% | rounds above 1.5-2 rds; HP left ≥ 85% | Death Gazer: Death Gaze; Succubus: Charm |
-| 9-9 | 6% | Dire Orc, Iron Colossus, Dire Orc | normal | 52 | 1180 | 0% | — / — | — / — | 62% | unresolved in 100% | Dire Orc: War Howl |
+| 9-9 | 6% | Dire Orc, Iron Colossus, Dire Orc | normal | 52 | 1180 | 0% | — / — | — / — | 60% | unresolved in 100% | Dire Orc: War Howl |
 | 10-10 | 6% | Succubus, Iron Colossus, Succubus | normal | 52 | 1060 | 0% | — / — | — / — | 2% | unresolved in 100% | Succubus: Charm |
 | 11-11 | 6% | Dragon Guard, Roo, Dragon Guard | normal | 50 | 755 | 79% | 4.0 / 6.0 | 100% / 87% | 0% | rounds above 1.5-2 rds; HP left ≥ 85% | Roo: Karma; Roo: Chef's Knife; Roo: Empty Stare |
-| 12-12 | 6% | Dire Orc, Death Gazer, Iron Colossus, Succubus | normal | 52 | 1270 | 0% | — / — | — / — | 78% | unresolved in 96% | Dire Orc: War Howl; Death Gazer: Death Gaze; Succubus: Charm |
+| 12-12 | 6% | Dire Orc, Death Gazer, Iron Colossus, Succubus | normal | 52 | 1270 | 0% | — / — | — / — | 82% | unresolved in 94% | Dire Orc: War Howl; Death Gazer: Death Gaze; Succubus: Charm |
 | 13-13 | 6% | Imp, Death Gazer, Roo, Imp | normal | 50 | 625 | 46% | 6.0 / 7.0 | 93% / 85% | 27% | unresolved in 55%; rounds above long target (4); HP left ≥ 85% | Imp: Strip Weapon; Imp: Prank; Imp: Strip Armor; Death Gazer: Death Gaze; Roo: Karma; Roo: Chef's Knife; Roo: Empty Stare |
 | 14-14 | 6% | Imp, Dragon Guard, Iron Colossus, Dragon Guard, Imp | normal | 52 | 1420 | 0% | — / — | — / — | 98% | unresolved in 84%; party loses 16% | Imp: Strip Weapon; Imp: Prank; Imp: Strip Armor |
 | 15-15 | 6% | Death Gazer, Succubus, Iron Colossus, Succubus, Death Gazer | normal | 52 | 1360 | 0% | — / — | — / — | 93% | unresolved in 83%; party loses 17% | Death Gazer: Death Gaze; Succubus: Charm |

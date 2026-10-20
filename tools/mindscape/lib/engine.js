@@ -97,7 +97,23 @@ function makeCombatant(actor, side) {
     hitsTaken: 0,
     downedOnRound: null,
     crisisOnRound: null,
+    // Standing traits (reactions.js TRAITS): Flying, Delay.
+    ...traitsOf(ex.passives),
   };
+}
+
+function traitsOf(passives) {
+  const out = { flying: false, delay: false };
+  for (const p of passives ?? []) Object.assign(out, RX.TRAITS[p.name] ?? {});
+  return out;
+}
+
+// Melee reach, for Flying: a weapon swing reaches only as far as the weapon (virtual
+// attacks such as Twin Shields are shield bashes). Skills and spells are treated as
+// able to reach — the sheet carries no range for them.
+function isMelee(actor, action) {
+  if (action.basicAttack || action.virtual) return actor.actor.weapon?.range !== "ranged";
+  return false;
 }
 
 function attrs(c) {
@@ -146,7 +162,9 @@ function livingFoes(state, side) {
 }
 
 function chooseTargets(state, actor, action) {
-  const foes = livingFoes(state, actor.side);
+  let foes = livingFoes(state, actor.side);
+  // Flying: out of reach of melee weapons.
+  if (isMelee(actor, action)) foes = foes.filter((f) => !f.flying);
   if (!foes.length) return [];
   const t = action.target;
   if (t.side === "ally") return [];   // handled by the utility layer, not here
@@ -281,12 +299,22 @@ function runReactionEffect(state, reactor, reaction, ctx) {
       else if (e.target === "victim" && ctx.victim?.alive) targets = [ctx.victim];
       else if (e.target === "hostile") targets = chooseTargets(state, reactor, action);
       if (!targets.length) return;
+      // Overcharge-style grants pay the action's normal cost and stop when they can't.
+      if (e.payCost && !canAfford(reactor, action, targets.length)) return;
+      const granted = e.damageAdd ? { ...action, damageBonus: action.damageBonus + e.damageAdd } : action;
       // An ANNOUNCE row: it names the reaction that granted the attack, and
       // carries no target/damage of its own — the resolveAction below logs the
       // actual swing. `announce` is the flag a log reader must skip on; without
       // it a formatter prints "-> undefined -undefined".
       state.log.push({ round: state.round, actor: reactor.name, action: reaction.name, reaction: true, announce: true });
-      resolveAction(state, reactor, action, targets, { free: true });
+      resolveAction(state, reactor, granted, targets, { free: true });
+      return;
+    }
+
+    case "counter_add": {
+      // A counter fed by HP lost (Drako Fury: Fury += damage taken).
+      if (ctx.direction === "recover") return;
+      reactor.counters[e.counter] = (reactor.counters[e.counter] ?? 0) + Math.max(0, Math.round(ctx.damage ?? 0));
       return;
     }
 
@@ -371,6 +399,7 @@ function runReactionEffect(state, reactor, reaction, ctx) {
 // the holder kept the Rod forever and ate 30 Bolt every single turn — Hina's
 // down-rate read 50% off that alone.
 function applyFlatDamage(state, source, target, amount, element, label, cause = "damage") {
+  const wasAlive = target.alive;
   const out = R.incomingDamage(
     { ...target.actor, damageReduction: reductionFor(target, element) },
     { base: amount, element },
@@ -396,8 +425,10 @@ function applyFlatDamage(state, source, target, amount, element, label, cause = 
   state.log.push({
     round: state.round, actor: source.name, action: label, target: target.name,
     damage: out.damage, affinity: out.affinity, direction: out.direction, reaction: true,
+    killed: wasAlive && !target.alive,
   });
   onHpMoved(state, source, target, out, element, cause);
+  if (wasAlive && !target.alive) fireReactions(state, target, RX.TRIGGERS.ON_DEFEATED, { element, attacker: source });
 }
 
 // One funnel for "an element moved this creature's HP" so the storm strike, a
@@ -496,6 +527,30 @@ function damageAddFor(state, actor, action, victim) {
     // (docs/equipment-balance-design.md, Part 4).
     const div = Number(r.effect.levelDiv) || 0;
     if (div > 0) add += Math.floor((Number(actor.actor.level) || 0) / div);
+  }
+  // A banked counter spent by one attack (Drako Fury -> Thrash: + ceil(Fury x 0.5),
+  // then all Fury is removed). Read once per landed hit; Thrash is single-target.
+  for (const r of RX.collect(actor, RX.TRIGGERS.ON_DEAL_DAMAGE, ctx)) {
+    if (r.effect?.kind !== "damage_add_counter") continue;
+    const n = actor.counters?.[r.effect.counter] ?? 0;
+    if (n <= 0) continue;
+    add += Math.ceil(n * (Number(r.effect.factor) || 1));
+    if (r.effect.consume) actor.counters[r.effect.counter] = 0;
+  }
+  return add;
+}
+
+// What a banked counter WOULD add to this action, without spending it — so the
+// action pick can see that Thrash with 30 Fury out-hits Dragon Claw (the Drakoza's
+// own pattern: Thrash at Fury >= 30).
+function bankedBonusPreview(state, actor, action, victim) {
+  if (!actor?.reactions?.length) return 0;
+  const ctx = riderCtx(state, actor, action, victim);
+  let add = 0;
+  for (const r of RX.collect(actor, RX.TRIGGERS.ON_DEAL_DAMAGE, ctx)) {
+    if (r.effect?.kind !== "damage_add_counter") continue;
+    const n = actor.counters?.[r.effect.counter] ?? 0;
+    if (n > 0) add += Math.ceil(n * (Number(r.effect.factor) || 1));
   }
   return add;
 }
@@ -713,6 +768,9 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
     attackedCtx.damage = out.damage;
     fireReactions(state, target, RX.TRIGGERS.ON_ATTACKED, attackedCtx);
     onHpMoved(state, actor, victim, out, action.element, "damage", action);
+    if (out.direction !== "recover" && hpBefore > 0 && !victim.alive) {
+      fireReactions(state, victim, RX.TRIGGERS.ON_DEFEATED, { element: action.element, attacker: actor });
+    }
   }
 }
 
@@ -753,7 +811,7 @@ function chooseAction(state, actor) {
     for (const t of targets) {
       const proj = R.projectDamage(t.actor, {
         dieA: a[act.attrA] ?? 8, dieB: a[act.attrB] ?? 8,
-        damageBonus: act.damageBonus,
+        damageBonus: act.damageBonus + bankedBonusPreview(state, actor, act, t),
         element: act.element, weaponFamily: act.weaponFamily, keywords: act.keywords,
       });
       if (proj.direction === "recover") { total -= proj.damage; continue; }
@@ -1030,7 +1088,8 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
   state.tinctures = tinctures ? T.makeTinctureState(tinctures) : null;
   state.policy = policy === "legacy" ? null : PP.init(state, policy);
 
-  const order = combatants.slice().sort((a, b) => initiative(b) - initiative(a));
+  // Delay (Gigas' Oaf): always acts after everyone else.
+  const order = combatants.slice().sort((a, b) => (a.delay - b.delay) || (initiative(b) - initiative(a)));
   // Worst-case tincture opener (tinctures.makeTinctureState carrierFirst): the carrier
   // moves to the front, so a round-1 tincture lands before the carry's first volley.
   if (state.tinctures?.carrierFirst) {

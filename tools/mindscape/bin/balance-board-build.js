@@ -48,6 +48,8 @@ function trustNotes(l) {
     const count = gap ? gap.split(":")[1].split(",").length : 0;
     if (count >= 3) out.push(`${c.name}: ${count} of its actions are not simulated`);
     else if (count && l.kind === "boss" && (l.stats?.win ?? 0) === 0) out.push(`${c.name}: ${gap.split(":")[1].trim()} not simulated, and the fight never resolves`);
+    const pas = c.flags.find((f) => f.startsWith("passive not simulated:"));
+    if (pas) out.push(`${c.name}'s ${pas.split(":")[1].trim()} is not simulated`);
   }
   return [...new Set(out)];
 }

@@ -250,8 +250,22 @@ async function main() {
       for (const u of [...a.unmodelled, ...a.unmodelledUtility]) enemyGaps.set(`${a.name}: ${u.name}`, true);
     }
     line.enemyGaps = [...enemyGaps.keys()];
-    const broken = [...new Set(enemies)].map((e) => [e.name, ST.brokenCycle(extractActions(e).actions)]).filter(([, b]) => b);
-    if (broken.length) line.brokenCycle = broken.map(([n, b]) => `${n} (${[].concat(b).join(", ")})`);
+    // A status-gated action that nothing grants is locked out. That only stops the
+    // monster acting when it has NO ungated action; otherwise it is one unused move
+    // (Gigas never Bodyslams in the sim, but swings every turn).
+    const broken = [], unused = [];
+    for (const e of new Set(enemies)) {
+      const acts = extractActions(e).actions;
+      const b = ST.brokenCycle(acts);
+      if (!b) continue;
+      if (acts.some((a) => !a.stanceRequires && !a.stanceGrants)) {
+        unused.push(`${e.name}: ${acts.filter((a) => a.stanceRequires).map((a) => a.name).join(", ")} (needs ${[].concat(b).join(", ")})`);
+      } else {
+        broken.push(`${e.name} (${[].concat(b).join(", ")})`);
+      }
+    }
+    if (broken.length) line.brokenCycle = broken;
+    if (unused.length) line.unusedActions = unused;
 
     const expectedRounds = line.kind === "boss" ? 10 : 7;
     const res = [];

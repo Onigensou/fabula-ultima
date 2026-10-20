@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-20T10:50:10.903Z",
+  "generated": "2026-10-20T11:11:15.401Z",
   "dungeons": [
     "Valley of the Dragon",
     "Fafnir Castle"
@@ -65,7 +65,8 @@
       },
       "flags": [
         "resisted hit = 25% of PC HP (< 25%)",
-        "not modelled in the sim: Ruinous Breath, Storm Calm, Summon Elemental Drake, Torment, Searing Brand, Draconic Domination, Zero Power: Cruel Ultimatum"
+        "not modelled in the sim: Ruinous Breath, Storm Calm, Summon Elemental Drake, Torment, Searing Brand, Draconic Domination, Zero Power: Cruel Ultimatum",
+        "passive not simulated: Cruel Ultimatum: Fire, Dreadwyrm Descent, Storm Gathering, Zero Trigger: Suffering, Cruel Ultimatum: Bolt"
       ]
     },
     {
@@ -208,7 +209,8 @@
       "flags": [
         "4 VU (rule: exactly 1 for elite)",
         "resisted hit = 21% of PC HP (< 25%)",
-        "not modelled in the sim: Quad-Elemental Slash"
+        "not modelled in the sim: Quad-Elemental Slash",
+        "passive not simulated: Ascension"
       ]
     },
     {
@@ -933,7 +935,8 @@
       },
       "flags": [
         "best basic attack avg 38 < 45",
-        "resisted hit = 16% of PC HP (< 25%)"
+        "resisted hit = 16% of PC HP (< 25%)",
+        "passive not simulated: Phantom Shift, Illusory Form"
       ]
     },
     {
@@ -994,7 +997,8 @@
       },
       "flags": [
         "best basic attack avg 44 < 45",
-        "not modelled in the sim: Miasma Nova"
+        "not modelled in the sim: Miasma Nova",
+        "passive not simulated: Lodestone Core"
       ]
     },
     {
@@ -1131,7 +1135,8 @@
       "basic": null,
       "flags": [
         "no damage action the sim can read",
-        "not modelled in the sim: Karma, Chef's Knife, Empty Stare"
+        "not modelled in the sim: Karma, Chef's Knife, Empty Stare",
+        "passive not simulated: Approach"
       ]
     },
     {
@@ -1236,7 +1241,8 @@
       },
       "flags": [
         "best basic attack avg 42 < 45",
-        "not modelled in the sim: Charm"
+        "not modelled in the sim: Charm",
+        "passive not simulated: Deadly Temptation"
       ]
     }
   ]

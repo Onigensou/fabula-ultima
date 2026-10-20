@@ -1,6 +1,6 @@
 {
   "id": "encounter-matrix",
-  "generated": "2026-10-20T10:50:09.027Z",
+  "generated": "2026-10-20T11:11:13.486Z",
   "seed": "encounter-matrix",
   "runs": 1000,
   "policy": "standard",
@@ -68,11 +68,11 @@
         "overtime": 0,
         "roundsP50": 3,
         "roundsP90": 3,
-        "hpP50": 0.8683651804670913,
-        "hpP10": 0.8089171974522293,
-        "hpEndP50": 0.8683651804670913,
+        "hpP50": 0.8662420382165605,
+        "hpP10": 0.772823779193206,
+        "hpEndP50": 0.8662420382165605,
         "roundsAllP50": 3,
-        "lowP50": 0.8598726114649682,
+        "lowP50": 0.8110403397027601,
         "anyDown": 0,
         "downsPerFight": 0
       },
@@ -162,12 +162,12 @@
         "overtime": 0,
         "roundsP50": 4,
         "roundsP90": 4,
-        "hpP50": 0.8726114649681529,
-        "hpP10": 0.7707006369426752,
-        "hpEndP50": 0.8726114649681529,
+        "hpP50": 0.8927813163481954,
+        "hpP10": 0.7726114649681529,
+        "hpEndP50": 0.8927813163481954,
         "roundsAllP50": 4,
         "lowP50": 0.7919320594479831,
-        "anyDown": 0.276,
+        "anyDown": 0.285,
         "downsPerFight": 0
       },
       "notes": [
@@ -211,13 +211,13 @@
         "overtime": 0,
         "roundsP50": 4,
         "roundsP90": 5,
-        "hpP50": 0.8789808917197452,
-        "hpP10": 0.7579617834394905,
-        "hpEndP50": 0.8789808917197452,
+        "hpP50": 0.8874734607218684,
+        "hpP10": 0.7834394904458599,
+        "hpEndP50": 0.8874734607218684,
         "roundsAllP50": 4,
-        "lowP50": 0.7685774946921444,
-        "anyDown": 0.084,
-        "downsPerFight": 0.002
+        "lowP50": 0.7579617834394905,
+        "anyDown": 0.164,
+        "downsPerFight": 0.011
       },
       "notes": [
         "rounds above 1.5-2 rds",
@@ -306,18 +306,18 @@
         "win": 1,
         "defeat": 0,
         "overtime": 0,
-        "roundsP50": 4,
+        "roundsP50": 5,
         "roundsP90": 5,
-        "hpP50": 0.861995753715499,
-        "hpP10": 0.7388535031847133,
-        "hpEndP50": 0.861995753715499,
-        "roundsAllP50": 4,
-        "lowP50": 0.7505307855626326,
-        "anyDown": 0.657,
-        "downsPerFight": 0.005
+        "hpP50": 0.8598726114649682,
+        "hpP10": 0.721868365180467,
+        "hpEndP50": 0.8598726114649682,
+        "roundsAllP50": 5,
+        "lowP50": 0.7176220806794055,
+        "anyDown": 0.7,
+        "downsPerFight": 0.046
       },
       "notes": [
-        "rounds above 1.5-2 rds",
+        "rounds above long target (4)",
         "HP left ≥ 85%"
       ]
     },
@@ -457,11 +457,11 @@
         "roundsP90": null,
         "hpP50": null,
         "hpP10": null,
-        "hpEndP50": 0.7929936305732485,
+        "hpEndP50": 0.7876857749469215,
         "roundsAllP50": 7,
-        "lowP50": 0.6560509554140127,
-        "anyDown": 0.616,
-        "downsPerFight": 0
+        "lowP50": 0.613588110403397,
+        "anyDown": 0.601,
+        "downsPerFight": 0.001
       },
       "notes": [
         "unresolved in 100%"
@@ -599,20 +599,20 @@
       "stats": {
         "runs": 1000,
         "win": 0,
-        "defeat": 0.043,
-        "overtime": 0.957,
+        "defeat": 0.062,
+        "overtime": 0.938,
         "roundsP50": null,
         "roundsP90": null,
         "hpP50": null,
         "hpP10": null,
-        "hpEndP50": 0.7016985138004246,
+        "hpEndP50": 0.6900212314225053,
         "roundsAllP50": 7,
-        "lowP50": 0.4596602972399151,
-        "anyDown": 0.775,
-        "downsPerFight": 0.809
+        "lowP50": 0.45010615711252655,
+        "anyDown": 0.817,
+        "downsPerFight": 0.958
       },
       "notes": [
-        "unresolved in 96%"
+        "unresolved in 94%"
       ]
     },
     {
@@ -856,17 +856,15 @@
         "overtime": 0,
         "roundsP50": 2,
         "roundsP90": 2,
-        "hpP50": 0.9596602972399151,
-        "hpP10": 0.8959660297239915,
-        "hpEndP50": 0.9596602972399151,
+        "hpP50": 0.6496815286624203,
+        "hpP10": 0.5010615711252654,
+        "hpEndP50": 0.6496815286624203,
         "roundsAllP50": 2,
-        "lowP50": 0.9596602972399151,
-        "anyDown": 0,
-        "downsPerFight": 0
+        "lowP50": 0.5753715498938429,
+        "anyDown": 0.576,
+        "downsPerFight": 0.001
       },
-      "notes": [
-        "HP left ≥ 85%"
-      ]
+      "notes": []
     },
     {
       "dungeon": "Valley of the Dragon",
@@ -901,18 +899,18 @@
         "win": 1,
         "defeat": 0,
         "overtime": 0,
-        "roundsP50": 2,
-        "roundsP90": 2,
-        "hpP50": 0.89171974522293,
-        "hpP10": 0.8573248407643314,
-        "hpEndP50": 0.89171974522293,
-        "roundsAllP50": 2,
-        "lowP50": 0.8895966029723992,
-        "anyDown": 0.002,
-        "downsPerFight": 0
+        "roundsP50": 3,
+        "roundsP90": 3,
+        "hpP50": 0.524416135881104,
+        "hpP10": 0.4585987261146497,
+        "hpEndP50": 0.524416135881104,
+        "roundsAllP50": 3,
+        "lowP50": 0.4607218683651805,
+        "anyDown": 0.781,
+        "downsPerFight": 0.118
       },
       "notes": [
-        "HP left ≥ 85%"
+        "rounds above 1.5-2 rds"
       ]
     },
     {
@@ -946,18 +944,19 @@
         "win": 1,
         "defeat": 0,
         "overtime": 0,
-        "roundsP50": 2,
-        "roundsP90": 2,
-        "hpP50": 0.9363057324840764,
-        "hpP10": 0.840552016985138,
-        "hpEndP50": 0.9363057324840764,
-        "roundsAllP50": 2,
-        "lowP50": 0.9363057324840764,
-        "anyDown": 0,
-        "downsPerFight": 0
+        "roundsP50": 3,
+        "roundsP90": 3,
+        "hpP50": 0.7367303609341825,
+        "hpP10": 0.6114649681528662,
+        "hpEndP50": 0.7367303609341825,
+        "roundsAllP50": 3,
+        "lowP50": 0.5307855626326964,
+        "anyDown": 0.801,
+        "downsPerFight": 0.079
       },
       "notes": [
-        "HP left ≥ 85%"
+        "rounds above 1.5-2 rds",
+        "HP left ≥ 70%"
       ]
     },
     {
@@ -991,19 +990,18 @@
         "win": 1,
         "defeat": 0,
         "overtime": 0,
-        "roundsP50": 4,
-        "roundsP90": 5,
-        "hpP50": 0.8428874734607219,
-        "hpP10": 0.7558386411889597,
-        "hpEndP50": 0.8428874734607219,
-        "roundsAllP50": 4,
-        "lowP50": 0.6008492569002123,
-        "anyDown": 0.02,
-        "downsPerFight": 0
+        "roundsP50": 5,
+        "roundsP90": 6,
+        "hpP50": 0.6390658174097664,
+        "hpP10": 0.5326963906581741,
+        "hpEndP50": 0.6390658174097664,
+        "roundsAllP50": 5,
+        "lowP50": 0.3099787685774947,
+        "anyDown": 0.91,
+        "downsPerFight": 0.641
       },
       "notes": [
-        "rounds above 1.5-2 rds",
-        "HP left ≥ 70%"
+        "rounds above long target (4)"
       ]
     },
     {
@@ -1220,18 +1218,17 @@
         "defeat": 0,
         "overtime": 0,
         "roundsP50": 3,
-        "roundsP90": 3,
-        "hpP50": 0.7749469214437368,
-        "hpP10": 0.6348195329087049,
-        "hpEndP50": 0.7749469214437368,
+        "roundsP90": 4,
+        "hpP50": 0.6411889596602972,
+        "hpP10": 0.5456475583864119,
+        "hpEndP50": 0.6411889596602972,
         "roundsAllP50": 3,
-        "lowP50": 0.7229299363057324,
-        "anyDown": 0.096,
-        "downsPerFight": 0.022
+        "lowP50": 0.42250530785562634,
+        "anyDown": 0.806,
+        "downsPerFight": 0.083
       },
       "notes": [
-        "rounds above 1.5-2 rds",
-        "HP left ≥ 70%"
+        "rounds above 1.5-2 rds"
       ]
     },
     {
@@ -1402,14 +1399,14 @@
         "defeat": 0,
         "overtime": 0,
         "roundsP50": 2,
-        "roundsP90": 2,
+        "roundsP90": 3,
         "hpP50": 0.8747346072186837,
-        "hpP10": 0.673036093418259,
+        "hpP10": 0.6709129511677282,
         "hpEndP50": 0.8747346072186837,
         "roundsAllP50": 2,
         "lowP50": 0.7961783439490446,
         "anyDown": 0.656,
-        "downsPerFight": 0.13
+        "downsPerFight": 0.144
       },
       "notes": [
         "HP left ≥ 85%"
@@ -1663,29 +1660,28 @@
       "enemyHp": 890,
       "coverage": "41/69 turn-spendable actions unmodelled (59%)",
       "enemyGaps": [],
-      "brokenCycle": [
-        "Gigas (Frightened)"
+      "unusedActions": [
+        "Gigas: Heavy Bodyslam (needs Frightened)"
       ],
       "stats": {
         "runs": 1000,
-        "win": 0.6,
-        "defeat": 0.163,
-        "overtime": 0.237,
-        "roundsP50": 5,
-        "roundsP90": 6,
-        "hpP50": 0.9511677282377919,
-        "hpP10": 0.70276008492569,
-        "hpEndP50": 0.8046709129511678,
+        "win": 0.261,
+        "defeat": 0.415,
+        "overtime": 0.324,
+        "roundsP50": 6,
+        "roundsP90": 7,
+        "hpP50": 0.6624203821656051,
+        "hpP10": 0.4543524416135881,
+        "hpEndP50": 0.03397027600849257,
         "roundsAllP50": 6,
-        "lowP50": 0.6687898089171974,
-        "anyDown": 0.583,
-        "downsPerFight": 1.317
+        "lowP50": 0.01910828025477707,
+        "anyDown": 0.996,
+        "downsPerFight": 2.894
       },
       "notes": [
-        "never acts: Gigas (Frightened)",
-        "party loses 16%",
-        "rounds above long target (4)",
-        "HP left ≥ 85%"
+        "unresolved in 32%",
+        "party loses 42%",
+        "rounds above long target (4)"
       ]
     },
     {
@@ -1720,22 +1716,21 @@
       ],
       "stats": {
         "runs": 1000,
-        "win": 0.999,
+        "win": 0.846,
         "defeat": 0,
-        "overtime": 0.001,
-        "roundsP50": 4,
-        "roundsP90": 6,
-        "hpP50": 0.7791932059447984,
-        "hpP10": 0.6794055201698513,
-        "hpEndP50": 0.7791932059447984,
-        "roundsAllP50": 4,
-        "lowP50": 0.4989384288747346,
-        "anyDown": 0.795,
-        "downsPerFight": 0.005
+        "overtime": 0.154,
+        "roundsP50": 6,
+        "roundsP90": 7,
+        "hpP50": 0.6263269639065817,
+        "hpP10": 0.5010615711252654,
+        "hpEndP50": 0.6157112526539278,
+        "roundsAllP50": 6,
+        "lowP50": 0.23779193205944799,
+        "anyDown": 0.99,
+        "downsPerFight": 0.819
       },
       "notes": [
-        "rounds above 1.5-2 rds",
-        "HP left ≥ 70%"
+        "rounds above long target (4)"
       ]
     },
     {
@@ -1862,11 +1857,11 @@
         "overtime": 0,
         "roundsP50": 2,
         "roundsP90": 2,
-        "hpP50": 0.802547770700637,
-        "hpP10": 0.7791932059447984,
-        "hpEndP50": 0.802547770700637,
+        "hpP50": 0.8110403397027601,
+        "hpP10": 0.7749469214437368,
+        "hpEndP50": 0.8110403397027601,
         "roundsAllP50": 2,
-        "lowP50": 0.7961783439490446,
+        "lowP50": 0.7070063694267515,
         "anyDown": 0,
         "downsPerFight": 0
       },
@@ -1905,12 +1900,12 @@
         "overtime": 0,
         "roundsP50": 3,
         "roundsP90": 3,
-        "hpP50": 0.8428874734607219,
-        "hpP10": 0.7473460721868365,
-        "hpEndP50": 0.8428874734607219,
+        "hpP50": 0.8110403397027601,
+        "hpP10": 0.732484076433121,
+        "hpEndP50": 0.8110403397027601,
         "roundsAllP50": 3,
-        "lowP50": 0.7983014861995754,
-        "anyDown": 0,
+        "lowP50": 0.7452229299363057,
+        "anyDown": 0.238,
         "downsPerFight": 0
       },
       "notes": [
@@ -1992,22 +1987,22 @@
       "enemyGaps": [],
       "stats": {
         "runs": 1000,
-        "win": 0.96,
+        "win": 0.953,
         "defeat": 0,
-        "overtime": 0.04,
+        "overtime": 0.047,
         "roundsP50": 5,
         "roundsP90": 6,
-        "hpP50": 0.8556263269639066,
-        "hpP10": 0.7811040339702761,
-        "hpEndP50": 0.8545647558386412,
+        "hpP50": 0.8428874734607219,
+        "hpP10": 0.7685774946921444,
+        "hpEndP50": 0.8407643312101911,
         "roundsAllP50": 5,
         "lowP50": 0.4437367303609342,
-        "anyDown": 0.24,
-        "downsPerFight": 0.013
+        "anyDown": 0.258,
+        "downsPerFight": 0.026
       },
       "notes": [
         "rounds above long target (4)",
-        "HP left ≥ 85%"
+        "HP left ≥ 70%"
       ]
     },
     {

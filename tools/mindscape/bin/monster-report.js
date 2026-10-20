@@ -55,7 +55,13 @@ async function main() {
         let lastActor = null, lastRound = 0;
         for (const e of r.log) {
           const m = perName[e.actor];
-          if (!m || e.reaction) continue;
+          if (!m) continue;
+          // Reaction damage (Electro Explosion's burst, Static discharges) is credited to
+          // the monster that caused it, but is not an action of its own.
+          if (e.reaction) {
+            if (e.target && e.direction !== "recover" && e.damage > 0 && party.some((p) => p.name === e.target)) { m.dmg += e.damage; if (e.killed) m.kos++; }
+            continue;
+          }
           // One action = one log burst by this actor in this round (multi-target rows share it).
           if (!(lastActor === e.actor && lastRound === e.round && e.target)) m.actions++;
           lastActor = e.actor; lastRound = e.round;
