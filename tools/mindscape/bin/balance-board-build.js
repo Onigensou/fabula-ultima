@@ -93,6 +93,21 @@ const data = {
   fights, monsters,
 };
 
+// Token sprites (bin/balance-board-sprites.js), embedded as data URIs with their token
+// scale so the page draws a Colossus taller than a slime, as the battle map does.
+data.sprites = {};
+const spriteDir = path.join(ROOT, "balance-board", ".sprites");
+try {
+  const manifest = JSON.parse(fs.readFileSync(path.join(spriteDir, "manifest.json"), "utf8"));
+  for (const [id, m] of Object.entries(manifest)) {
+    const ext = path.extname(m.file).slice(1).toLowerCase();
+    const mime = ext === "webp" ? "image/webp" : ext === "jpg" || ext === "jpeg" ? "image/jpeg" : "image/png";
+    data.sprites[id] = { name: m.name, scale: m.scale, party: m.party, src: `data:${mime};base64,${fs.readFileSync(path.join(spriteDir, m.file)).toString("base64")}` };
+  }
+} catch {
+  console.warn("no sprite cache — run bin/balance-board-sprites.js first; the page falls back to name plates");
+}
+
 const tpl = fs.readFileSync(path.join(ROOT, "balance-board", "template.html"), "utf8");
 if (!tpl.includes("/*DATA*/")) throw new Error("template has no /*DATA*/ marker");
 const html = tpl.replace("/*DATA*/", () => JSON.stringify(data).replace(/</g, "\\u003c"));
