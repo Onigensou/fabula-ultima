@@ -1,0 +1,487 @@
+<title>Valley &amp; Fafnir Balance Board</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a war-room board — verdict strip, then the map of every fight (rounds x HP left) beside the selected fight's sheet; fight and monster tables below. */
+:root {
+  --bg: #f4f5f3; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+  --grid: #e1e0d9; --axis: #c3c2b7; --ring: rgba(11,11,11,0.10);
+  --easy: #2a78d6; --target: #1baf7a; --work: #eb6834;
+  --easy-soft: rgba(42,120,214,0.12); --target-soft: rgba(27,175,122,0.14); --work-soft: rgba(235,104,52,0.12);
+  --zone: rgba(27,175,122,0.10); --zone-edge: rgba(27,175,122,0.55);
+  --focus: #2a78d6;
+  --display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0d0d0d; --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #898781;
+  --grid: #2c2c2a; --axis: #383835; --ring: rgba(255,255,255,0.10);
+  --easy: #3987e5; --target: #199e70; --work: #d95926;
+  --easy-soft: rgba(57,135,229,0.18); --target-soft: rgba(25,158,112,0.20); --work-soft: rgba(217,89,38,0.18);
+  --zone: rgba(25,158,112,0.14); --zone-edge: rgba(25,158,112,0.7); --focus: #3987e5;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0d0d0d; --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #898781;
+  --grid: #2c2c2a; --axis: #383835; --ring: rgba(255,255,255,0.10);
+  --easy: #3987e5; --target: #199e70; --work: #d95926;
+  --easy-soft: rgba(57,135,229,0.18); --target-soft: rgba(25,158,112,0.20); --work-soft: rgba(217,89,38,0.18);
+  --zone: rgba(25,158,112,0.14); --zone-edge: rgba(25,158,112,0.7); --focus: #3987e5;
+  color-scheme: dark; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 14px; line-height: 1.45; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 24px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 18px; }
+h1 { font-family: var(--display); font-weight: 700; font-size: 32px; margin: 2px 0 0; line-height: 1.05; text-wrap: balance; }
+h2 { font-family: var(--display); font-weight: 700; font-size: 20px; margin: 0; letter-spacing: .02em; }
+.eyebrow, .label { font-family: var(--display); font-weight: 600; font-size: 12.5px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+.sub { color: var(--ink-2); margin: 6px 0 0; max-width: 90ch; }
+.num, .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+button { font: inherit; color: inherit; }
+button:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* verdict strip = legend + filter */
+.strip { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; }
+.vbtn { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--ring); background: var(--surface); cursor: pointer; text-align: left; }
+.vbtn[aria-pressed="true"] { border-color: var(--ink-2); box-shadow: inset 0 0 0 1px var(--ink-2); }
+.vbtn .count { font-family: var(--display); font-size: 24px; font-weight: 700; line-height: 1; }
+.vbtn .what { display: grid; line-height: 1.15; }
+.vbtn .what small { color: var(--muted); font-size: 11.5px; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--ring); border-radius: 6px; overflow: hidden; background: var(--surface); }
+.seg button { border: 0; background: none; padding: 6px 12px; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--ring); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+.status { color: var(--muted); font-size: 12.5px; }
+
+/* main: chart + sheet */
+.main { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 900px) { .main { grid-template-columns: 1fr; } }
+.card { background: var(--surface); border: 1px solid var(--ring); border-radius: 8px; padding: 14px; min-width: 0; }
+.chart-head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: baseline; margin-bottom: 4px; }
+svg { display: block; width: 100%; height: auto; }
+svg text { font-family: var(--body); }
+.tip { position: fixed; pointer-events: none; z-index: 20; background: var(--ink); color: var(--surface); padding: 6px 9px; border-radius: 6px; font-size: 12.5px; max-width: 280px; }
+.tip b { font-weight: 600; }
+.sheet { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); display: grid; gap: 12px; }
+@media (max-width: 900px) { .sheet { position: static; } }
+.sheet h3 { margin: 0; font-size: 17px; line-height: 1.25; }
+.why { margin: 0; font-size: 14.5px; }
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 2px 9px 2px 6px; border-radius: 999px; font-weight: 600; font-size: 12.5px; }
+.pill[data-g="easy"] { background: var(--easy-soft); }
+.pill[data-g="target"] { background: var(--target-soft); }
+.pill[data-g="work"] { background: var(--work-soft); }
+.metrics { display: grid; gap: 7px; }
+.metric { display: grid; grid-template-columns: 112px minmax(0, 1fr) 64px; gap: 10px; align-items: center; font-size: 13px; }
+.metric .v { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.bar { position: relative; height: 10px; border-radius: 5px; background: var(--grid); }
+.bar .band { position: absolute; top: 0; bottom: 0; background: var(--zone); border-left: 1px solid var(--zone-edge); border-right: 1px solid var(--zone-edge); }
+.bar .dot { position: absolute; top: -3px; width: 4px; height: 16px; border-radius: 2px; background: var(--ink); transform: translateX(-2px); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--ring); background: var(--bg); border-radius: 999px; padding: 3px 10px; cursor: pointer; font-size: 13px; }
+.chip:hover { border-color: var(--ink-2); }
+.note { border-left: 3px solid var(--work); background: var(--bg); padding: 7px 10px; font-size: 13px; }
+.note.live { border-left-color: var(--target); }
+.fb { display: grid; gap: 8px; border-top: 1px dashed var(--axis); padding-top: 12px; }
+.fbtns { display: flex; flex-wrap: wrap; gap: 6px; }
+.fbtns button { border: 1px solid var(--ring); background: var(--bg); padding: 5px 10px; border-radius: 6px; cursor: pointer; }
+.fbtns button[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+textarea, select { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--ring); border-radius: 6px; padding: 6px 8px; }
+textarea { width: 100%; box-sizing: border-box; min-height: 54px; resize: vertical; }
+.save { border: 0; background: var(--ink); color: var(--surface); border-radius: 6px; padding: 7px 14px; font-weight: 600; cursor: pointer; justify-self: start; }
+.save:disabled { opacity: .45; cursor: default; }
+.row2 { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: end; }
+.row2 label { display: grid; gap: 3px; font-size: 12.5px; color: var(--ink-2); }
+
+/* tables */
+.tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--axis); }
+.tabs button { border: 0; background: none; padding: 8px 12px; cursor: pointer; border-bottom: 2px solid transparent; font-weight: 600; color: var(--ink-2); }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--ink); }
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { text-align: left; font-family: var(--display); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; font-size: 12px; color: var(--muted); padding: 8px; border-bottom: 1px solid var(--axis); white-space: nowrap; }
+td { padding: 7px 8px; border-bottom: 1px solid var(--grid); vertical-align: middle; }
+td.n { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+tbody tr { cursor: pointer; }
+tbody tr:hover, tbody tr[aria-selected="true"] { background: var(--bg); }
+.hit { display: inline-block; min-width: 34px; text-align: center; padding: 1px 6px; border-radius: 4px; font-family: var(--mono); }
+.hit[data-k="soft"] { background: var(--easy-soft); }
+.hit[data-k="hard"] { background: var(--work-soft); }
+.mini { display: inline-flex; gap: 2px; vertical-align: middle; }
+.empty { color: var(--muted); padding: 14px 0; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">The Legend of Dragonslayer · balance review</div>
+    <h1>Valley &amp; Fafnir Balance Board</h1>
+    <p class="sub" id="runline"></p>
+  </header>
+
+  <div class="strip" id="strip" role="group" aria-label="Filter by verdict"></div>
+
+  <div class="controls">
+    <div class="seg" role="group" aria-label="Dungeon" id="f-area">
+      <button type="button" data-v="all" aria-pressed="true">Both dungeons</button>
+      <button type="button" data-v="V" aria-pressed="false">Valley</button>
+      <button type="button" data-v="F" aria-pressed="false">Fafnir Castle</button>
+    </div>
+    <div class="seg" role="group" aria-label="Story bosses" id="f-story">
+      <button type="button" data-v="yes" aria-pressed="true">With story bosses</button>
+      <button type="button" data-v="no" aria-pressed="false">Encounter tables only</button>
+    </div>
+    <span class="status" id="fbstatus"></span>
+  </div>
+
+  <div class="main">
+    <section class="card" aria-label="Every fight by length and danger">
+      <div class="chart-head">
+        <h2>Where every fight lands</h2>
+        <span class="status">Click a mark to open the fight. Shaded box = target.</span>
+      </div>
+      <svg id="chart" viewBox="0 0 640 430" role="img" aria-label="Scatter of fights: rounds to resolve against party HP left at the end"></svg>
+    </section>
+    <aside class="card sheet" id="sheet" aria-live="polite"></aside>
+  </div>
+
+  <section class="card">
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" id="tab-fights" aria-selected="true">Fights</button>
+      <button type="button" role="tab" id="tab-monsters" aria-selected="false">Monsters</button>
+    </div>
+    <div class="tablewrap" id="tablebox"></div>
+  </section>
+</div>
+<div class="tip" id="tip" hidden></div>
+
+<script type="application/json" id="board-data">/*DATA*/</script>
+<script>
+const D = JSON.parse(document.getElementById("board-data").textContent);
+const FIGHTS = D.fights, MONS = Object.fromEntries(D.monsters.map((m) => [m.id, m]));
+const V = {
+  trivial: { g: "easy", label: "Trivial", hint: "85%+ HP left", shape: "down", fill: true },
+  low: { g: "easy", label: "Low pressure", hint: "70–85% HP left", shape: "down", fill: false },
+  target: { g: "target", label: "On target", hint: "2–4 rounds, under 70%", shape: "circle", fill: true },
+  long: { g: "work", label: "Too long", hint: "drags or never ends", shape: "diamond", fill: true },
+  wall: { g: "work", label: "Wall", hint: "party loses often", shape: "up", fill: true },
+};
+const ORDER = ["trivial", "low", "target", "long", "wall"];
+const FEEDBACK = [["easy", "Too easy"], ["right", "Feels right"], ["hard", "Too hard"], ["long", "Too long"], ["fix", "Needs a fix"]];
+const state = { area: "all", story: true, verdict: null, sel: null, selMon: null, tab: "fights", fb: {}, props: {}, canWrite: true };
+let db = null, user = null;
+
+const $ = (id) => document.getElementById(id);
+const NS = "http://www.w3.org/2000/svg";
+function h(tag, attrs, ...kids) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v == null || v === false) continue;
+    if (k === "class") el.className = v; else if (k.startsWith("on")) el.addEventListener(k.slice(2), v); else el.setAttribute(k, v === true ? "" : v);
+  }
+  for (const k of kids.flat()) if (k != null && k !== false) el.append(k.nodeType ? k : String(k));
+  return el;
+}
+function s(tag, attrs, ...kids) {
+  const el = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs || {})) if (v != null) el.setAttribute(k, v);
+  for (const k of kids.flat()) if (k != null) el.append(k.nodeType ? k : String(k));
+  return el;
+}
+const pct = (x) => (x == null ? "—" : Math.round(x * 100) + "%");
+const colorOf = (v) => `var(--${V[v].g === "easy" ? "easy" : V[v].g === "target" ? "target" : "work"})`;
+const fightName = (f) => f.groups.map((g) => g.count > 1 ? `${g.name} ×${g.count}` : g.name).join(" + ");
+const fightTag = (f) => `${f.area === "V" ? "Valley" : "Fafnir"} ${f.story ? "story" : "#" + f.num}`;
+
+// One marker path per verdict shape, centred on 0,0. Shape is the secondary encoding:
+// verdict is never carried by colour alone.
+function shapePath(shape, r) {
+  if (shape === "circle") return `M${-r},0a${r},${r} 0 1,0 ${2 * r},0a${r},${r} 0 1,0 ${-2 * r},0`;
+  if (shape === "diamond") return `M0,${-r * 1.2}L${r * 1.2},0L0,${r * 1.2}L${-r * 1.2},0Z`;
+  if (shape === "up") return `M0,${-r * 1.15}L${r * 1.1},${r * 0.8}L${-r * 1.1},${r * 0.8}Z`;
+  return `M0,${r * 1.15}L${r * 1.1},${-r * 0.8}L${-r * 1.1},${-r * 0.8}Z`;
+}
+function marker(v, r = 6, extra = {}) {
+  const spec = V[v];
+  return s("path", { d: shapePath(spec.shape, r), fill: spec.fill ? colorOf(v) : "var(--surface)", stroke: colorOf(v), "stroke-width": spec.fill ? 2 : 2.25, ...extra });
+}
+function iconSvg(v, size = 14) {
+  const svg = s("svg", { viewBox: "-8 -8 16 16", width: size, height: size, "aria-hidden": "true" });
+  svg.append(marker(v, 5.2, { stroke: V[v].fill ? "var(--surface)" : colorOf(v) }));
+  return svg;
+}
+
+function visible() {
+  return FIGHTS.filter((f) => (state.area === "all" || f.area === state.area) && (state.story || !f.story));
+}
+
+// ── Verdict strip (legend + filter) ─────────────────────────────────────────
+function renderStrip() {
+  const vis = visible();
+  $("strip").replaceChildren(...ORDER.map((v) => {
+    const n = vis.filter((f) => f.verdict === v).length;
+    return h("button", { type: "button", class: "vbtn", "aria-pressed": String(state.verdict === v), title: `Show only ${V[v].label.toLowerCase()} fights`,
+      onclick: () => { state.verdict = state.verdict === v ? null : v; renderAll(); } },
+      iconSvg(v, 18), h("span", { class: "count num" }, String(n)), h("span", { class: "what" }, h("b", {}, V[v].label), h("small", {}, V[v].hint)));
+  }));
+}
+
+// ── The map ─────────────────────────────────────────────────────────────────
+const W = 640, H = 430, M = { l: 52, r: 18, t: 18, b: 52 };
+const X = (r) => M.l + ((Math.min(r, 8) - 1) / 7) * (W - M.l - M.r);
+const Y = (hp) => M.t + (1 - hp) * (H - M.t - M.b);
+function renderChart() {
+  const svg = $("chart");
+  svg.replaceChildren();
+  // target zone: normal fights, 2-4 rounds ending at 40-70% HP
+  svg.append(s("rect", { x: X(2), y: Y(0.7), width: X(4) - X(2), height: Y(0.4) - Y(0.7), fill: "var(--zone)", stroke: "var(--zone-edge)", "stroke-dasharray": "4 3" }));
+  svg.append(s("text", { x: X(2) + 6, y: Y(0.7) + 15, "font-size": 12, "font-weight": 600, fill: "var(--ink-2)" }, "target"));
+  // unresolved lane
+  svg.append(s("rect", { x: X(7.5), y: M.t, width: X(8) - X(7.5) + 10, height: H - M.t - M.b, fill: "var(--grid)", opacity: 0.6 }));
+  for (const t of [0, 0.25, 0.5, 0.75, 1]) {
+    svg.append(s("line", { x1: M.l, x2: W - M.r, y1: Y(t), y2: Y(t), stroke: "var(--grid)" }));
+    svg.append(s("text", { x: M.l - 8, y: Y(t) + 4, "text-anchor": "end", "font-size": 11.5, fill: "var(--muted)", class: "num" }, pct(t)));
+  }
+  for (const r of [1, 2, 3, 4, 5, 6, 7]) {
+    svg.append(s("text", { x: X(r), y: H - M.b + 18, "text-anchor": "middle", "font-size": 11.5, fill: "var(--muted)" }, String(r)));
+  }
+  svg.append(s("text", { x: X(8), y: H - M.b + 18, "text-anchor": "middle", "font-size": 11.5, fill: "var(--muted)" }, "7+"));
+  svg.append(s("line", { x1: M.l, x2: W - M.r, y1: H - M.b, y2: H - M.b, stroke: "var(--axis)" }));
+  svg.append(s("text", { x: (M.l + W - M.r) / 2, y: H - 10, "text-anchor": "middle", "font-size": 12, fill: "var(--ink-2)" }, "Rounds to resolve (median) →  7+ = nobody wins in time"));
+  svg.append(s("text", { x: 14, y: (M.t + H - M.b) / 2, "text-anchor": "middle", "font-size": 12, fill: "var(--ink-2)", transform: `rotate(-90 14 ${(M.t + H - M.b) / 2})` }, "Party HP left at the end ↑ safer"));
+  svg.append(s("text", { x: W - M.r - 4, y: M.t + 14, "text-anchor": "end", "font-size": 11.5, fill: "var(--muted)" }, "harmless"));
+  svg.append(s("text", { x: W - M.r - 4, y: H - M.b - 8, "text-anchor": "end", "font-size": 11.5, fill: "var(--muted)" }, "deadly"));
+
+  // Deterministic spread: fights that share a cell fan out horizontally.
+  const vis = visible();
+  const cells = {};
+  const pts = vis.map((f) => {
+    const rx = f.overtime > 0.5 || f.rounds == null ? 8 : (f.rounds ?? f.roundsAll);
+    const hy = f.hpEnd ?? 0;
+    const key = `${rx}|${Math.round(hy * 20)}`;
+    const i = (cells[key] = (cells[key] ?? -1) + 1);
+    return { f, x: X(rx) + (i % 2 ? 1 : -1) * Math.ceil(i / 2) * 11, y: Y(hy) };
+  });
+  for (const p of pts) {
+    const dim = state.verdict && p.f.verdict !== state.verdict;
+    const g = s("g", { tabindex: 0, role: "button", "aria-label": `${fightTag(p.f)} ${fightName(p.f)}: ${V[p.f.verdict].label}`, style: "cursor:pointer", opacity: dim ? 0.15 : 1 });
+    g.append(s("circle", { cx: p.x, cy: p.y, r: 13, fill: "transparent" }));
+    if (p.f.trust.length) g.append(s("circle", { cx: p.x, cy: p.y, r: 10, fill: "none", stroke: "var(--muted)", "stroke-dasharray": "2 2", "stroke-width": 1.25 }));
+    const m = marker(p.f.verdict, p.f.kind === "boss" ? 7.5 : 6);
+    m.setAttribute("transform", `translate(${p.x} ${p.y})`);
+    g.append(m);
+    if (state.sel === p.f.id) g.append(s("circle", { cx: p.x, cy: p.y, r: 11.5, fill: "none", stroke: "var(--ink)", "stroke-width": 2 }));
+    if (p.f.kind === "boss" || state.sel === p.f.id) {
+      g.append(s("text", { x: p.x + 11, y: p.y - 9, "font-size": 11, "font-weight": 600, fill: "var(--ink-2)" }, p.f.story ? p.f.groups[0].name.replace(/^⭐️?\s*/u, "") : `${p.f.area}${p.f.num}`));
+    }
+    const show = (e) => tip(e, p.f);
+    g.addEventListener("pointerenter", show);
+    g.addEventListener("pointermove", show);
+    g.addEventListener("pointerleave", () => { $("tip").hidden = true; });
+    g.addEventListener("click", () => select(p.f.id));
+    g.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(p.f.id); } });
+    svg.append(g);
+  }
+}
+function tip(e, f) {
+  const t = $("tip");
+  t.replaceChildren(h("b", {}, `${fightTag(f)} · ${fightName(f)}`), h("br"),
+    `${V[f.verdict].label} · ${f.rounds == null ? "never resolves" : f.rounds + " rounds"} · ${pct(f.hpEnd)} HP left · KO ${pct(f.ko)}`);
+  t.hidden = false;
+  const x = Math.min(e.clientX + 14, window.innerWidth - 300);
+  t.style.left = `${x}px`; t.style.top = `${e.clientY + 14}px`;
+}
+
+// ── The sheet ───────────────────────────────────────────────────────────────
+function why(f) {
+  if (f.verdict === "trivial") return `The party ends with ${pct(f.hpEnd)} HP after ${f.rounds} round${f.rounds === 1 ? "" : "s"}. Nobody is under pressure.`;
+  if (f.verdict === "low") return `Wins comfortably: ${pct(f.hpEnd)} HP left after ${f.rounds} rounds. A little pressure, not enough.`;
+  if (f.verdict === "target") return `Lands in the target zone: ${f.rounds} rounds, party at ${pct(f.hpEnd)} HP.`;
+  if (f.verdict === "long") return f.win < 0.5
+    ? `Nobody wins within the round budget in ${pct(f.overtime)} of runs, yet the party is still at ${pct(f.hpEnd)} HP. A stalemate, not a threat.`
+    : `Won, but it takes ${f.rounds} rounds (party at ${pct(f.hpEnd)} HP). It drags.`;
+  return `The party wins only ${pct(f.win)} of the time and ends at ${pct(f.hpEnd)} HP.`;
+}
+function metric(label, value, pos, band, fmt) {
+  const bar = h("div", { class: "bar" });
+  if (band) bar.append(h("div", { class: "band", style: `left:${band[0] * 100}%;width:${(band[1] - band[0]) * 100}%` }));
+  if (pos != null) bar.append(h("div", { class: "dot", style: `left:${Math.max(0, Math.min(1, pos)) * 100}%` }));
+  return h("div", { class: "metric" }, h("span", {}, label), bar, h("span", { class: "v" }, fmt));
+}
+function fightSheet(f) {
+  const fb = state.fb[f.id];
+  const boss = f.kind === "boss";
+  const rBand = boss ? [(5.5 - 1) / 9, (7 - 1) / 9] : [(2 - 1) / 9, (4 - 1) / 9];
+  const rPos = f.rounds == null ? 1 : (f.rounds - 1) / 9;
+  const kids = [
+    h("div", { class: "eyebrow" }, `${fightTag(f)} · ${f.kind === "boss" ? "boss" : "encounter"} · L${f.level}`),
+    h("h3", {}, fightName(f)),
+    h("div", {}, h("span", { class: "pill", "data-g": V[f.verdict].g }, iconSvg(f.verdict), V[f.verdict].label)),
+    h("p", { class: "why" }, why(f)),
+    h("div", { class: "metrics" },
+      metric("Rounds", null, rPos, rBand, f.rounds == null ? "7+" : String(f.rounds)),
+      metric("Party HP left", null, f.hpEnd, [0.4, 0.7], pct(f.hpEnd)),
+      metric("Party wins", null, f.win, null, pct(f.win)),
+      metric("Someone KO'd", null, f.ko, null, pct(f.ko)),
+    ),
+    h("div", { class: "status" }, `Enemy HP ${f.enemyHp} · ${f.actions} enemy action${f.actions > 1 ? "s" : ""} per round${f.rolls != null ? ` · table rolls it ${pct(f.rolls)}` : " · story fight"}`),
+    h("div", { class: "label" }, "Monsters — click for stats"),
+    h("div", { class: "chips" }, ...f.groups.map((g) => h("button", { type: "button", class: "chip", onclick: () => selectMonster(g.id) }, g.count > 1 ? `${g.name} ×${g.count}` : g.name))),
+  ];
+  if (f.live) kids.push(h("div", { class: "note live" }, h("b", {}, "In-game sim check: "),
+    `${f.live.n} runs (${D.liveScenario ?? "default scenario"}, with King Gorger): won ${pct(f.live.win)}, ${f.live.roundsWin ?? "—"} rounds, ${pct(f.live.hpWin)} HP left on wins.`));
+  if (f.trust.length) kids.push(h("div", { class: "note" }, h("b", {}, "Don't trust these numbers yet: "), f.trust.join("; "), "."));
+  kids.push(feedbackForm(f, fb));
+  return kids;
+}
+function feedbackForm(f, fb) {
+  let pick = fb?.verdict ?? null;
+  const note = h("textarea", { id: `note-${f.id}`, placeholder: "What should change? e.g. Prism hits too hard, cut to one per fight" }, fb?.note ?? "");
+  const msg = h("span", { class: "status" }, fb?.at ? `Saved ${fb.at.slice(0, 10)}` : "");
+  const btns = FEEDBACK.map(([k, label]) => h("button", { type: "button", "aria-pressed": String(pick === k), disabled: !state.canWrite,
+    onclick: (e) => { pick = pick === k ? null : k; for (const b of e.currentTarget.parentNode.children) b.setAttribute("aria-pressed", String(b === e.currentTarget && pick === k)); } }, label));
+  const save = h("button", { type: "button", class: "save", disabled: !db || !state.canWrite, onclick: async () => {
+    save.disabled = true; msg.textContent = "Saving…";
+    try {
+      await db.doc(`feedback/${f.id}`).set({ fight: f.id, name: fightName(f), verdict: pick ?? "", note: note.value.trim(), at: new Date().toISOString(), by: state.uid ?? null });
+      msg.textContent = "Saved. Claude can read it back.";
+    } catch (e) { msg.textContent = e?.code === "invalid_argument" ? "This board is read-only for you." : "Not saved: the board's storage could not be reached."; }
+    finally { save.disabled = !state.canWrite; }
+  } }, "Save feedback");
+  return h("div", { class: "fb" }, h("div", { class: "label" }, "Your call"), h("div", { class: "fbtns" }, ...btns), note, h("div", { class: "row2" }, save, msg),
+    !db ? h("span", { class: "status" }, "Open this page signed in to claude.ai to save feedback.") : null);
+}
+
+function monsterSheet(m) {
+  const p = state.props[m.id];
+  const soft = m.basic && m.basic.avg < 45;
+  const kids = [
+    h("div", { class: "eyebrow" }, `Monster · ${m.rank} · L${m.level}`),
+    h("h3", {}, m.name),
+    h("div", { class: "metrics" },
+      metric("HP", null, Math.min(1, m.hp / 1000), null, String(m.hp)),
+      metric("Basic attack", null, m.basic ? Math.min(1, m.basic.avg / 100) : null, [0.45, 0.65], m.basic ? String(m.basic.avg) : "—"),
+      metric("Party hits DEF", null, null, null, `${m.def} · ${m.hitDef}`),
+      metric("Party hits MDEF", null, null, null, `${m.mdef} · ${m.hitMdef}`),
+    ),
+    h("div", { class: "status" }, `${m.turns} action${m.turns > 1 ? "s" : ""} per round · weak to ${m.vu.join(", ") || "nothing"}${m.rs.length ? " · resists " + m.rs.join(", ") : ""}${m.im.length ? " · immune " + m.im.join(", ") : ""}${m.ab.length ? " · absorbs " + m.ab.join(", ") : ""}`),
+    m.strongest ? h("div", { class: "status" }, `Basic: ${m.basic?.name ?? "—"} ${m.basic?.avg ?? ""} · strongest: ${m.strongest.name} ${m.strongest.avg}${m.strongest.targets !== 1 ? ` ×${m.strongest.targets}` : ""}`) : null,
+    soft ? h("div", { class: "note" }, `Basic attack ${m.basic.avg} is under the 45 floor in your design rules.`) : null,
+    m.flags.length ? h("div", { class: "note" }, h("b", {}, "Design rules flagged: "), m.flags.join("; "), ".") : null,
+    h("div", { class: "label" }, `Appears in ${m.fights.length} fight${m.fights.length === 1 ? "" : "s"}`),
+    h("div", { class: "chips" }, ...m.fights.map((id) => { const f = FIGHTS.find((x) => x.id === id); return h("button", { type: "button", class: "chip", onclick: () => select(id) }, iconSvg(f.verdict, 11), " ", `${f.area}${f.story ? "" : f.num}`); })),
+  ];
+  // Proposal: what the developer wants measured. Claude runs it in Mindscape on request.
+  const hpSel = h("select", { id: `hp-${m.id}` }, ...[-50, -40, -30, -20, -10, 0, 10, 20, 30].map((v) => h("option", { value: v, selected: (p?.hpPct ?? 0) === v }, `${v > 0 ? "+" : ""}${v}%`)));
+  const dmgSel = h("select", { id: `dmg-${m.id}` }, ...[-20, -10, -5, 0, 5, 10, 15, 20, 25, 30, 40].map((v) => h("option", { value: v, selected: (p?.dmgAdd ?? 0) === v }, `${v > 0 ? "+" : ""}${v}`)));
+  const note = h("textarea", { id: `pnote-${m.id}`, placeholder: "Anything else? e.g. drop physical Resist" }, p?.note ?? "");
+  const msg = h("span", { class: "status" }, p?.at ? `Saved ${p.at.slice(0, 10)}` : "");
+  const save = h("button", { type: "button", class: "save", disabled: !db || !state.canWrite, onclick: async () => {
+    save.disabled = true; msg.textContent = "Saving…";
+    try {
+      await db.doc(`proposals/${m.id}`).set({ monster: m.name, hpPct: Number(hpSel.value), dmgAdd: Number(dmgSel.value), note: note.value.trim(), at: new Date().toISOString(), by: state.uid ?? null });
+      msg.textContent = "Saved. Ask Claude to measure it.";
+    } catch (e) { msg.textContent = e?.code === "invalid_argument" ? "This board is read-only for you." : "Not saved: the board's storage could not be reached."; }
+    finally { save.disabled = !state.canWrite; }
+  } }, "Save proposal");
+  kids.push(h("div", { class: "fb" }, h("div", { class: "label" }, "Propose a change"),
+    h("div", { class: "row2" }, h("label", {}, "HP", hpSel), h("label", {}, "Damage per hit", dmgSel)), note, h("div", { class: "row2" }, save, msg),
+    h("span", { class: "status" }, "Nothing in the game changes. Claude measures saved proposals across every fight before anything is applied.")));
+  return kids;
+}
+
+function renderSheet() {
+  const sh = $("sheet");
+  if (state.selMon && MONS[state.selMon]) { sh.replaceChildren(...monsterSheet(MONS[state.selMon])); return; }
+  const f = FIGHTS.find((x) => x.id === state.sel);
+  if (!f) {
+    sh.replaceChildren(h("div", { class: "eyebrow" }, "How to read this"),
+      h("h3", {}, "Each mark is one encounter row"),
+      h("p", { class: "why" }, "Left is short, right is long. Top means the party walked out healthy, bottom means it nearly died. Good fights sit in the shaded box: 2–4 rounds, party ending at 40–70% HP."),
+      h("p", { class: "status" }, "Shape and colour say the same thing: ▼ too easy (hollow = only a little), ● on target, ◆ too long, ▲ a wall. A dashed ring means part of a monster's kit isn't simulated."),
+      h("p", { class: "status" }, "Pick any mark, or a row in the table below, then tell me what you think."));
+    return;
+  }
+  sh.replaceChildren(...fightSheet(f));
+}
+
+// ── Tables ──────────────────────────────────────────────────────────────────
+function renderTable() {
+  const box = $("tablebox");
+  if (state.tab === "monsters") {
+    const rows = Object.values(MONS).slice().sort((a, b) => (a.basic?.avg ?? 0) - (b.basic?.avg ?? 0));
+    box.replaceChildren(h("table", {},
+      h("thead", {}, h("tr", {}, ...["Monster", "Rank", "HP", "Actions/rd", "Basic hit", "DEF (party hits)", "MDEF (party hits)", "Weak to", "Fights", "Proposal"].map((t) => h("th", {}, t)))),
+      h("tbody", {}, ...rows.map((m) => {
+        const k = !m.basic ? null : m.basic.avg < 45 ? "soft" : m.basic.avg >= 65 ? "hard" : null;
+        const p = state.props[m.id];
+        return h("tr", { "aria-selected": String(state.selMon === m.id), onclick: () => selectMonster(m.id) },
+          h("td", {}, h("b", {}, m.name)), h("td", {}, m.rank), h("td", { class: "n" }, String(m.hp)), h("td", { class: "n" }, String(m.turns)),
+          h("td", { class: "n" }, h("span", { class: "hit", "data-k": k }, m.basic ? String(m.basic.avg) : "—")),
+          h("td", { class: "n" }, `${m.def} · ${m.hitDef}`), h("td", { class: "n" }, `${m.mdef} · ${m.hitMdef}`),
+          h("td", {}, m.vu.join(", ") || "—"),
+          h("td", {}, h("span", { class: "mini" }, ...m.fights.map((id) => iconSvg(FIGHTS.find((x) => x.id === id).verdict, 12)))),
+          h("td", { class: "status" }, p ? `HP ${p.hpPct > 0 ? "+" : ""}${p.hpPct}%, dmg ${p.dmgAdd > 0 ? "+" : ""}${p.dmgAdd}` : ""));
+      }))),
+      h("p", { class: "status" }, "Basic hit: blue = under the 45 floor in your design rules, orange = 65+. Party hit rates are the L41 party's averages."));
+    return;
+  }
+  const vis = visible().filter((f) => !state.verdict || f.verdict === state.verdict);
+  const rank = { wall: 0, long: 1, trivial: 2, low: 3, target: 4 };
+  vis.sort((a, b) => rank[a.verdict] - rank[b.verdict] || a.area.localeCompare(b.area) || (Number(a.num) || 99) - (Number(b.num) || 99));
+  if (!vis.length) { box.replaceChildren(h("p", { class: "empty" }, "No fights match these filters.")); return; }
+  box.replaceChildren(h("table", {},
+    h("thead", {}, h("tr", {}, ...["Fight", "Enemies", "Verdict", "Rounds", "HP left", "Wins", "KO", "Rolls", "Your call"].map((t) => h("th", {}, t)))),
+    h("tbody", {}, ...vis.map((f) => {
+      const fb = state.fb[f.id];
+      return h("tr", { "aria-selected": String(state.sel === f.id && !state.selMon), onclick: () => select(f.id) },
+        h("td", {}, fightTag(f)), h("td", {}, fightName(f), f.trust.length ? h("span", { class: "status" }, " · not trustworthy yet") : null),
+        h("td", {}, h("span", { class: "pill", "data-g": V[f.verdict].g }, iconSvg(f.verdict), V[f.verdict].label)),
+        h("td", { class: "n" }, f.rounds == null ? "7+" : String(f.rounds)), h("td", { class: "n" }, pct(f.hpEnd)),
+        h("td", { class: "n" }, pct(f.win)), h("td", { class: "n" }, pct(f.ko)), h("td", { class: "n" }, f.rolls == null ? "story" : pct(f.rolls)),
+        h("td", {}, fb?.verdict ? (FEEDBACK.find(([k]) => k === fb.verdict)?.[1] ?? "") : fb?.note ? "note" : ""));
+    }))));
+}
+
+function select(id) { state.sel = id; state.selMon = null; renderAll(); if (window.innerWidth < 900) $("sheet").scrollIntoView({ block: "nearest" }); }
+function selectMonster(id) { state.selMon = id; renderSheet(); renderTable(); }
+function renderAll() { renderStrip(); renderChart(); renderSheet(); renderTable(); renderStatus(); }
+function renderStatus() {
+  const n = Object.keys(state.fb).length, p = Object.keys(state.props).length;
+  $("fbstatus").textContent = db ? `${n} fight call${n === 1 ? "" : "s"} · ${p} monster proposal${p === 1 ? "" : "s"} saved` : "";
+}
+
+function bindSeg(id, fn) {
+  $(id).addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    for (const x of $(id).querySelectorAll("button")) x.setAttribute("aria-pressed", String(x === b));
+    fn(b.dataset.v); renderAll();
+  });
+}
+bindSeg("f-area", (v) => { state.area = v; });
+bindSeg("f-story", (v) => { state.story = v === "yes"; });
+for (const [id, tab] of [["tab-fights", "fights"], ["tab-monsters", "monsters"]]) {
+  $(id).addEventListener("click", () => {
+    state.tab = tab;
+    $("tab-fights").setAttribute("aria-selected", String(tab === "fights"));
+    $("tab-monsters").setAttribute("aria-selected", String(tab === "monsters"));
+    renderTable();
+  });
+}
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") { state.sel = null; state.selMon = null; renderAll(); } });
+
+$("runline").textContent = `Mindscape, ${D.policy} party (plays like the in-game sim AI), ${D.runs} runs per fight, ${D.generated.slice(0, 10)} · ${D.party.join(", ")}. `
+  + "King Gorger isn't in these runs and the bot plays below a person, so real fights are easier than shown.";
+renderAll();
+
+(async () => {
+  [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
+  if (user) {
+    try { state.uid = await user.id(); } catch {}
+    try { if ((await user.can("data.write")) === false) state.canWrite = false; } catch {}
+  }
+  if (!db) { renderAll(); return; }
+  db.collection("feedback").onSnapshot((snap) => { state.fb = Object.fromEntries(snap.docs.map((d) => [d.id, d.data()])); renderTable(); renderStatus(); }, () => {});
+  db.collection("proposals").onSnapshot((snap) => { state.props = Object.fromEntries(snap.docs.map((d) => [d.id, d.data()])); renderTable(); renderStatus(); }, () => {});
+  renderSheet();
+})();
+</script>

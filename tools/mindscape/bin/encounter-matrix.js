@@ -148,6 +148,9 @@ function summarise(results) {
     overtime: share("overtime"),
     roundsP50: quantile(rounds, 0.5), roundsP90: quantile(rounds, 0.9),
     hpP50: quantile(hp, 0.5), hpP10: quantile(hp, 0.1),
+    // Every run, not just wins: where an unresolved or lost fight leaves the party.
+    hpEndP50: quantile(results.map((r) => r.partyHpRemaining ?? 0).sort((x, y) => x - y), 0.5),
+    roundsAllP50: quantile(results.map((r) => r.rounds).sort((x, y) => x - y), 0.5),
     anyDown: results.filter((r) => (r.knockedOut ?? r.downs).length > 0).length / n,
     downsPerFight: mean(results.map((r) => r.downs.length)),
   };
