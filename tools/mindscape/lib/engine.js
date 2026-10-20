@@ -999,6 +999,13 @@ function projectTotal(actor, action, targets) {
   return total + (finisher ? 1e6 : 0);
 }
 
+// Track the party's lowest total HP share after every turn (result.partyHpLow).
+function notePartyLow(state) {
+  let cur = 0, max = 0;
+  for (const c of state.combatants) if (c.side === "party") { cur += Math.max(0, c.hp); max += c.maxHp; }
+  if (max) state.partyLow = Math.min(state.partyLow ?? 1, cur / max);
+}
+
 // What party-policy.js may call back into. Function declarations, so hoisting makes
 // this safe at module level.
 const POLICY_API = { attrs, canAfford, chooseAction, chooseTargets, weaponAction, applyFlatDamage, projectTotal };
@@ -1055,6 +1062,7 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
           continue;
         }
         takeTurn(state, c);
+        notePartyLow(state);
         if (state.policy) PP.onTurnEnd(state, c);
         // Tinctures count down at the end of the bearer's own BASE turn (live
         // target_turn_end). Granted free attacks below are not turns.
@@ -1069,6 +1077,7 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
       for (let t = 0; t < c.grantedTurns; t++) {
         if (!c.alive) break;
         takeTurn(state, c, { granted: true });
+        notePartyLow(state);
       }
       c.grantedTurns = 0;
 
@@ -1109,6 +1118,10 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
     downs: partyC.filter((c) => !c.alive).map((c) => ({ name: c.name, round: c.downedOnRound })),
     // Everyone who hit 0 HP at any point, revived or not (party policies can revive).
     knockedOut: partyC.filter((c) => c.downedOnRound != null).map((c) => ({ name: c.name, round: c.downedOnRound })),
+    // The party's LOWEST total HP during the fight, as a share of its max. HP at the end
+    // reads healing as safety: a party knocked to 20% and patched back up to 90% before
+    // the last enemy fell was in real danger. Recorded only; nothing reads it in the fight.
+    partyHpLow: state.partyLow ?? 1,
     // When each enemy crossed into Crisis (HP <= half). A designer picking WHEN
     // a phase change lands needs this as directly as they need the round count:
     // "the fight switches up at Crisis" is a promise about a moment, and a

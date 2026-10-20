@@ -151,6 +151,9 @@ function summarise(results) {
     // Every run, not just wins: where an unresolved or lost fight leaves the party.
     hpEndP50: quantile(results.map((r) => r.partyHpRemaining ?? 0).sort((x, y) => x - y), 0.5),
     roundsAllP50: quantile(results.map((r) => r.rounds).sort((x, y) => x - y), 0.5),
+    // The party's lowest point during the fight (engine partyHpLow) — the danger signal
+    // that healing cannot wash out.
+    lowP50: quantile(results.map((r) => r.partyHpLow ?? 1).sort((x, y) => x - y), 0.5),
     anyDown: results.filter((r) => (r.knockedOut ?? r.downs).length > 0).length / n,
     downsPerFight: mean(results.map((r) => r.downs.length)),
   };

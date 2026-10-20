@@ -1,0 +1,148 @@
+#!/usr/bin/env node
+"use strict";
+//
+// Mindscape — measure a monster adjustment plan on paper, before anything touches the world.
+//
+//   node bin/balance-proposal.js --plan specs/balance/<plan>.json [--runs 1000] [--out file.json] [--md file.md]
+//
+// Plan file: { "<Monster name>": { "hpPct": -30, "dmgAdd": 15, "affinity": { "physical": "NA" },
+//                                  "attacks": { "<Attack name>": { "dmgAdd": 10 } } }, ... }
+//   hpPct     max HP change in percent
+//   dmgAdd    flat damage added to EVERY damaging action the monster has
+//   attacks   per-action damage changes (on top of dmgAdd)
+//   affinity  element -> VU | RS | IM | AB | NA
+//   turns     actions per round (the sheet's activation)
+//   def/mdef  defence scores
+// A top-level "rows" key swaps an encounter row's line-up: { "rows": { "F1": ["Dire Orc", "Dire Orc", "Imp"] } }.
+//
+// Every fight in the Encounter Matrix report is run twice on the same seeds, baseline and
+// patched, under the same party policy, on a COPY of the world. Nothing is written back.
+
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
+const { DEFAULT_WORLD } = require("../../safe-edit/lib/paths");
+const { loadParty, loadNamed, readAffinities } = require("../lib/load-actors");
+const { runBattle } = require("../lib/engine");
+const { Rng } = require("../lib/rng");
+const { snapshotWorld, summarise } = require("./encounter-matrix");
+
+function arg(name, fallback) {
+  const i = process.argv.indexOf(name);
+  return i > 0 ? process.argv[i + 1] : fallback;
+}
+const pct = (x) => (x == null ? "—" : `${Math.round(100 * x)}%`);
+const AFF_KEY = { physical: 1, air: 2, bolt: 3, dark: 4, earth: 5, fire: 6, ice: 7, light: 8, poison: 9 };
+
+// Same bands as the Matrix and the Balance Board.
+function verdict(s, kind) {
+  if (s.win < 0.5 && s.defeat > 0.3) return "wall";
+  if (s.overtime > 0.3 || (s.roundsP50 ?? 99) > (kind === "boss" ? 7.5 : 4)) return s.win < 0.5 ? "stalemate" : "drags";
+  // Danger is judged at the party's LOWEST point, not at the end: healing and revives
+  // before the last enemy falls otherwise read a near-wipe as a safe fight.
+  if (s.lowP50 >= 0.85) return "pushover";
+  if (s.lowP50 >= 0.70) return "too soft";
+  return "on target";
+}
+
+function isDamaging(p) {
+  const a = String(p.rolled_atr1 ?? "").trim();
+  return !!String(p.type_damage ?? "").trim() && !!a && a !== "-";
+}
+
+function patchMonster(m, spec) {
+  if (spec.hpPct) {
+    const hp = Math.max(1, Math.round((m.hp.max ?? m.hp.cur) * (1 + spec.hpPct / 100)));
+    m.hp.max = hp; m.hp.cur = hp;
+  }
+  for (const it of m.items ?? []) {
+    const p = it.props ?? {};
+    if (!isDamaging(p)) continue;
+    const add = (spec.dmgAdd ?? 0) + (spec.attacks?.[it.name]?.dmgAdd ?? 0);
+    if (!add) continue;
+    const raw = String(p.damage_bonus ?? "0").trim() || "0";
+    p.damage_bonus = /^-?\d+(\.\d+)?$/.test(raw) ? String(Number(raw) + add) : `(${raw}) + ${add}`;
+  }
+  if (spec.turns) m.turnsPerRound = spec.turns;
+  if (spec.def != null) m.def = spec.def;
+  if (spec.mdef != null) m.mdef = spec.mdef;
+  if (spec.affinity) {
+    for (const [el, v] of Object.entries(spec.affinity)) m._rawProps[`affinity_${AFF_KEY[el]}`] = v;
+    m.affinities = readAffinities(m._rawProps);
+  }
+}
+
+async function loadGroup(names, world, plan) {
+  const enemies = await loadNamed(names, { world });
+  if (plan) for (const e of new Set(enemies)) if (plan[e.name]) patchMonster(e, plan[e.name]);
+  return enemies;
+}
+
+async function main() {
+  const planFile = arg("--plan", null);
+  const runs = Number(arg("--runs", 1000));
+  const out = arg("--out", null);
+  const md = arg("--md", null);
+  if (!planFile) { console.error("usage: node bin/balance-proposal.js --plan <file> [--runs N]"); process.exit(1); }
+  const plan = JSON.parse(fs.readFileSync(path.resolve(planFile), "utf8"));
+  const rowsOverride = plan.rows ?? {};
+  delete plan.rows;
+  const matrix = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "expectations", "encounter-matrix.json"), "utf8"));
+  const policy = matrix.policy ?? "standard";
+
+  const copyDir = path.join(os.tmpdir(), "fu-balance-proposal");
+  const world = snapshotWorld(DEFAULT_WORLD, copyDir);
+  const rows = [];
+  try {
+    const party = await loadParty({ world });
+    for (const unknown of Object.keys(plan)) {
+      if (unknown === "rows") continue;
+      if (!matrix.lines.some((l) => l.enemies.includes(unknown))) console.warn(`plan names "${unknown}", which is in no fight`);
+    }
+    for (const l of matrix.lines) {
+      if (l.error) continue;
+      const tag = `${l.dungeon.startsWith("Fafnir") ? "F" : "V"}${l.range ? l.range[0] : "story"}`;
+      const lineup = rowsOverride[tag] ?? l.enemies;
+      const touched = lineup !== l.enemies || l.enemies.some((n) => plan[n]);
+      const run = async (patched) => {
+        const enemies = await loadGroup(patched ? lineup : l.enemies, world, patched ? plan : null);
+        const res = [];
+        for (let i = 0; i < runs; i++) {
+          res.push(runBattle({ party, enemies, rng: new Rng(`proposal:${l.source}:${l.enemies.join("+")}:${i}`), expectedRounds: l.kind === "boss" ? 10 : 7, policy }));
+        }
+        return summarise(res);
+      };
+      const before = await run(false);
+      const after = touched ? await run(true) : before;
+      rows.push({ dungeon: l.dungeon, num: l.range ? l.range[0] : "story", enemies: l.enemies, lineup: lineup !== l.enemies ? lineup : null, kind: l.kind, touched,
+        before: { ...before, verdict: verdict(before, l.kind) }, after: { ...after, verdict: verdict(after, l.kind) } });
+    }
+  } finally {
+    fs.rmSync(copyDir, { recursive: true, force: true });
+  }
+
+  const lines = [];
+  const tally = (key) => {
+    const t = {};
+    for (const r of rows) if (r.num !== "story") t[r[key].verdict] = (t[r[key].verdict] ?? 0) + 1;
+    return ["pushover", "too soft", "on target", "drags", "stalemate", "wall"].map((v) => `${v} ${t[v] ?? 0}`).join(" · ");
+  };
+  lines.push(`Plan ${path.basename(planFile)} · party policy ${policy} · ${runs} runs per fight, paired seeds`);
+  lines.push(`Before: ${tally("before")}`);
+  lines.push(`After:  ${tally("after")}`);
+  lines.push("");
+  lines.push("| Fight | Enemies | Before | After | Rounds | Lowest party HP | Win | Any KO |");
+  lines.push("|---|---|---|---|---|---|---|---|");
+  for (const r of rows) {
+    const tag = `${r.dungeon.startsWith("Fafnir") ? "F" : "V"}${r.num}`;
+    const b = r.before, a = r.after;
+    const ch = (x, y, f) => (r.touched ? `${f(x)} → ${f(y)}` : f(x));
+    lines.push(`| ${tag} | ${r.enemies.join(", ")}${r.lineup ? ` → **${r.lineup.join(", ")}**` : ""} | ${b.verdict} | ${r.touched ? `**${a.verdict}**` : "(unchanged)"} | ${ch(b.roundsP50, a.roundsP50, (x) => x ?? "7+")} | ${ch(b.lowP50, a.lowP50, pct)} | ${ch(b.win, a.win, pct)} | ${ch(b.anyDown, a.anyDown, pct)} |`);
+  }
+  const text = lines.join("\n");
+  console.log(text);
+  if (md) fs.writeFileSync(path.resolve(md), text + "\n");
+  if (out) fs.writeFileSync(path.resolve(out), JSON.stringify({ plan, policy, runs, rows }, null, 2) + "\n");
+}
+
+main().catch((e) => { console.error(`balance-proposal failed: ${e.stack || e.message}`); process.exit(1); });

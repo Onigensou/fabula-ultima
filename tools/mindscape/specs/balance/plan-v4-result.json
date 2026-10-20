@@ -1,0 +1,2238 @@
+{
+  "plan": {
+    "Imp": {
+      "attacks": {
+        "Pitchfork": {
+          "dmgAdd": 45
+        }
+      }
+    },
+    "Succubus": {
+      "attacks": {
+        "Draining Kiss": {
+          "dmgAdd": 30
+        },
+        "Rake": {
+          "dmgAdd": 42
+        }
+      }
+    },
+    "Death Gazer": {
+      "attacks": {
+        "Eye Beam": {
+          "dmgAdd": 40
+        },
+        "Mind Sear": {
+          "dmgAdd": 27
+        }
+      }
+    },
+    "Dragon Guard": {
+      "attacks": {
+        "Saber": {
+          "dmgAdd": 40
+        },
+        "Flame Breath": {
+          "dmgAdd": 12
+        },
+        "Suppressing Sweep": {
+          "dmgAdd": 20
+        }
+      }
+    },
+    "Dire Orc": {
+      "attacks": {
+        "Skull Splitter": {
+          "dmgAdd": 10
+        },
+        "Cleaver": {
+          "dmgAdd": 25
+        }
+      }
+    },
+    "Iron Colossus": {
+      "hpPct": -55,
+      "affinity": {
+        "physical": "NA"
+      },
+      "attacks": {
+        "Siege Fist": {
+          "dmgAdd": 30
+        },
+        "Seismic Stomp": {
+          "dmgAdd": 10
+        }
+      }
+    },
+    "Electro Slime": {
+      "dmgAdd": 20
+    },
+    "Drakoza": {
+      "attacks": {
+        "Dragon Claw": {
+          "dmgAdd": 38
+        },
+        "Thrash": {
+          "dmgAdd": 38
+        },
+        "Tail Swipe": {
+          "dmgAdd": 16
+        }
+      }
+    },
+    "Mana Ray": {
+      "attacks": {
+        "Volt Stinger": {
+          "dmgAdd": 18
+        },
+        "Mana Stinger": {
+          "dmgAdd": 34
+        }
+      }
+    },
+    "Skizzik": {
+      "attacks": {
+        "Thunder Strike": {
+          "dmgAdd": 15
+        }
+      }
+    },
+    "Ampere": {
+      "attacks": {
+        "Bubble Beam": {
+          "dmgAdd": 30
+        }
+      }
+    },
+    "Lightning Prism": {
+      "attacks": {
+        "Fulgur Finis": {
+          "dmgAdd": -15
+        },
+        "Arc Spark": {
+          "dmgAdd": 10
+        }
+      },
+      "mdef": 13
+    },
+    "Mist Dragon": {
+      "attacks": {
+        "Mist Claw": {
+          "dmgAdd": 20
+        },
+        "Phantom Shift: Thunder Strike": {
+          "dmgAdd": 10
+        }
+      }
+    },
+    "Flame Drake": {
+      "hpPct": 30,
+      "turns": 3,
+      "dmgAdd": 25
+    },
+    "Lightning Drake": {
+      "hpPct": 150,
+      "turns": 3,
+      "dmgAdd": 25
+    },
+    "Asura": {
+      "hpPct": -20,
+      "attacks": {
+        "Elemental Slash": {
+          "dmgAdd": 10
+        },
+        "Elemental Slash (Enchanted)": {
+          "dmgAdd": 10
+        }
+      }
+    }
+  },
+  "policy": "standard",
+  "runs": 800,
+  "rows": [
+    {
+      "dungeon": "Fafnir Castle",
+      "num": 1,
+      "enemies": [
+        "Dire Orc",
+        "Dire Orc"
+      ],
+      "lineup": [
+        "Dire Orc",
+        "Dire Orc",
+        "Imp"
+      ],
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 3,
+        "roundsP90": 3,
+        "hpP50": 0.8726114649681529,
+        "hpP10": 0.8343949044585988,
+        "hpEndP50": 0.8726114649681529,
+        "roundsAllP50": 3,
+        "lowP50": 0.8598726114649682,
+        "anyDown": 0.00125,
+        "downsPerFight": 0,
+        "verdict": "pushover"
+      },
+      "after": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 3,
+        "roundsP90": 4,
+        "hpP50": 0.8959660297239915,
+        "hpP10": 0.7452229299363057,
+        "hpEndP50": 0.8959660297239915,
+        "roundsAllP50": 3,
+        "lowP50": 0.7791932059447984,
+        "anyDown": 0.44875,
+        "downsPerFight": 0.0025,
+        "verdict": "too soft"
+      }
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "num": 2,
+      "enemies": [
+        "Dragon Guard",
+        "Dragon Guard"
+      ],
+      "lineup": [
+        "Dragon Guard",
+        "Dragon Guard",
+        "Death Gazer"
+      ],
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 2,
+        "roundsP90": 3,
+        "hpP50": 0.8789808917197452,
+        "hpP10": 0.8407643312101911,
+        "hpEndP50": 0.8789808917197452,
+        "roundsAllP50": 2,
+        "lowP50": 0.8768577494692145,
+        "anyDown": 0,
+        "downsPerFight": 0,
+        "verdict": "pushover"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.98875,
+        "defeat": 0,
+        "overtime": 0.01125,
+        "roundsP50": 4,
+        "roundsP90": 5,
+        "hpP50": 0.8726114649681529,
+        "hpP10": 0.6878980891719745,
+        "hpEndP50": 0.8715498938428875,
+        "roundsAllP50": 4,
+        "lowP50": 0.7197452229299363,
+        "anyDown": 0.7275,
+        "downsPerFight": 0.17625,
+        "verdict": "too soft"
+      }
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "num": 3,
+      "enemies": [
+        "Imp",
+        "Dire Orc",
+        "Imp"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 3,
+        "roundsP90": 3,
+        "hpP50": 0.8980891719745223,
+        "hpP10": 0.8195329087048833,
+        "hpEndP50": 0.8980891719745223,
+        "roundsAllP50": 3,
+        "lowP50": 0.832271762208068,
+        "anyDown": 0,
+        "downsPerFight": 0,
+        "verdict": "too soft"
+      },
+      "after": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 3,
+        "roundsP90": 4,
+        "hpP50": 0.9309978768577495,
+        "hpP10": 0.821656050955414,
+        "hpEndP50": 0.9309978768577495,
+        "roundsAllP50": 3,
+        "lowP50": 0.8301486199575372,
+        "anyDown": 0.22625,
+        "downsPerFight": 0,
+        "verdict": "too soft"
+      }
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "num": 4,
+      "enemies": [
+        "Succubus",
+        "Dire Orc",
+        "Succubus"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 4,
+        "roundsP90": 5,
+        "hpP50": 0.9002123142250531,
+        "hpP10": 0.7919320594479831,
+        "hpEndP50": 0.9002123142250531,
+        "roundsAllP50": 4,
+        "lowP50": 0.7558386411889597,
+        "anyDown": 0.5075,
+        "downsPerFight": 0,
+        "verdict": "too soft"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.9925,
+        "defeat": 0,
+        "overtime": 0.0075,
+        "roundsP50": 4,
+        "roundsP90": 5,
+        "hpP50": 0.8747346072186837,
+        "hpP10": 0.7452229299363057,
+        "hpEndP50": 0.8726114649681529,
+        "roundsAllP50": 4,
+        "lowP50": 0.7292993630573248,
+        "anyDown": 0.4075,
+        "downsPerFight": 0.03375,
+        "verdict": "too soft"
+      }
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "num": 5,
+      "enemies": [
+        "Dragon Guard",
+        "Death Gazer",
+        "Dragon Guard"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 4,
+        "roundsP90": 4,
+        "hpP50": 0.8747346072186837,
+        "hpP10": 0.7895966029723992,
+        "hpEndP50": 0.8747346072186837,
+        "roundsAllP50": 4,
+        "lowP50": 0.7590233545647559,
+        "anyDown": 0,
+        "downsPerFight": 0,
+        "verdict": "too soft"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.9875,
+        "defeat": 0.00125,
+        "overtime": 0.01125,
+        "roundsP50": 4,
+        "roundsP90": 5,
+        "hpP50": 0.8768577494692145,
+        "hpP10": 0.7176220806794055,
+        "hpEndP50": 0.8757961783439491,
+        "roundsAllP50": 4,
+        "lowP50": 0.721868365180467,
+        "anyDown": 0.6975,
+        "downsPerFight": 0.165,
+        "verdict": "too soft"
+      }
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "num": 6,
+      "enemies": [
+        "Dire Orc",
+        "Death Gazer",
+        "Dire Orc"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 4,
+        "roundsP90": 5,
+        "hpP50": 0.861995753715499,
+        "hpP10": 0.7513800424628451,
+        "hpEndP50": 0.861995753715499,
+        "roundsAllP50": 4,
+        "lowP50": 0.7430997876857749,
+        "anyDown": 0.63625,
+        "downsPerFight": 0.01375,
+        "verdict": "too soft"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.98875,
+        "defeat": 0,
+        "overtime": 0.01125,
+        "roundsP50": 4,
+        "roundsP90": 6,
+        "hpP50": 0.8598726114649682,
+        "hpP10": 0.7346072186836518,
+        "hpEndP50": 0.8577494692144374,
+        "roundsAllP50": 4,
+        "lowP50": 0.6390658174097664,
+        "anyDown": 0.8575,
+        "downsPerFight": 0.0325,
+        "verdict": "on target"
+      }
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "num": 7,
+      "enemies": [
+        "Imp",
+        "Dragon Guard",
+        "Imp"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 3,
+        "roundsP90": 3,
+        "hpP50": 0.9150743099787686,
+        "hpP10": 0.8535031847133758,
+        "hpEndP50": 0.9150743099787686,
+        "roundsAllP50": 3,
+        "lowP50": 0.8895966029723992,
+        "anyDown": 0,
+        "downsPerFight": 0,
+        "verdict": "pushover"
+      },
+      "after": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 3,
+        "roundsP90": 4,
+        "hpP50": 0.9023354564755839,
+        "hpP10": 0.8110403397027601,
+        "hpEndP50": 0.9023354564755839,
+        "roundsAllP50": 3,
+        "lowP50": 0.8301486199575372,
+        "anyDown": 0.21,
+        "downsPerFight": 0,
+        "verdict": "too soft"
+      }
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "num": 8,
+      "enemies": [
+        "Death Gazer",
+        "Succubus",
+        "Death Gazer"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 4,
+        "roundsP90": 4,
+        "hpP50": 0.9118895966029724,
+        "hpP10": 0.8407643312101911,
+        "hpEndP50": 0.9118895966029724,
+        "roundsAllP50": 4,
+        "lowP50": 0.7855626326963907,
+        "anyDown": 0.06,
+        "downsPerFight": 0,
+        "verdict": "too soft"
+      },
+      "after": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 4,
+        "roundsP90": 5,
+        "hpP50": 0.9065817409766455,
+        "hpP10": 0.6518046709129511,
+        "hpEndP50": 0.9065817409766455,
+        "roundsAllP50": 4,
+        "lowP50": 0.7569002123142251,
+        "anyDown": 0.53,
+        "downsPerFight": 0.2575,
+        "verdict": "too soft"
+      }
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "num": 9,
+      "enemies": [
+        "Dire Orc",
+        "Iron Colossus",
+        "Dire Orc"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 0,
+        "defeat": 0,
+        "overtime": 1,
+        "roundsP50": null,
+        "roundsP90": null,
+        "hpP50": null,
+        "hpP10": null,
+        "hpEndP50": 0.7983014861995754,
+        "roundsAllP50": 7,
+        "lowP50": 0.6602972399150743,
+        "anyDown": 0.63375,
+        "downsPerFight": 0,
+        "verdict": "stalemate"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.9825,
+        "defeat": 0,
+        "overtime": 0.0175,
+        "roundsP50": 6,
+        "roundsP90": 7,
+        "hpP50": 0.7685774946921444,
+        "hpP10": 0.6263269639065817,
+        "hpEndP50": 0.7664543524416136,
+        "roundsAllP50": 6,
+        "lowP50": 0.5817409766454352,
+        "anyDown": 0.825,
+        "downsPerFight": 0.05625,
+        "verdict": "drags"
+      }
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "num": 10,
+      "enemies": [
+        "Succubus",
+        "Iron Colossus",
+        "Succubus"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 0,
+        "defeat": 0,
+        "overtime": 1,
+        "roundsP50": null,
+        "roundsP90": null,
+        "hpP50": null,
+        "hpP10": null,
+        "hpEndP50": 0.8237791932059448,
+        "roundsAllP50": 7,
+        "lowP50": 0.6231422505307855,
+        "anyDown": 0.03125,
+        "downsPerFight": 0,
+        "verdict": "stalemate"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.77,
+        "defeat": 0.015,
+        "overtime": 0.215,
+        "roundsP50": 6,
+        "roundsP90": 7,
+        "hpP50": 0.7473460721868365,
+        "hpP10": 0.6369426751592356,
+        "hpEndP50": 0.7388535031847133,
+        "roundsAllP50": 6,
+        "lowP50": 0.5902335456475584,
+        "anyDown": 0.635,
+        "downsPerFight": 0.24875,
+        "verdict": "drags"
+      }
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "num": 11,
+      "enemies": [
+        "Dragon Guard",
+        "Roo",
+        "Dragon Guard"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 0.80625,
+        "defeat": 0,
+        "overtime": 0.19375,
+        "roundsP50": 4,
+        "roundsP90": 6,
+        "hpP50": 0.8895966029723992,
+        "hpP10": 0.8471337579617835,
+        "hpEndP50": 0.89171974522293,
+        "roundsAllP50": 5,
+        "lowP50": 0.8747346072186837,
+        "anyDown": 0,
+        "downsPerFight": 0,
+        "verdict": "pushover"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.74125,
+        "defeat": 0,
+        "overtime": 0.25875,
+        "roundsP50": 5,
+        "roundsP90": 7,
+        "hpP50": 1,
+        "hpP10": 0.8853503184713377,
+        "hpEndP50": 1,
+        "roundsAllP50": 6,
+        "lowP50": 0.7919320594479831,
+        "anyDown": 0.6275,
+        "downsPerFight": 0,
+        "verdict": "drags"
+      }
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "num": 12,
+      "enemies": [
+        "Dire Orc",
+        "Death Gazer",
+        "Iron Colossus",
+        "Succubus"
+      ],
+      "lineup": [
+        "Dire Orc",
+        "Death Gazer",
+        "Iron Colossus"
+      ],
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 0,
+        "defeat": 0,
+        "overtime": 1,
+        "roundsP50": null,
+        "roundsP90": null,
+        "hpP50": null,
+        "hpP10": null,
+        "hpEndP50": 0.7685774946921444,
+        "roundsAllP50": 7,
+        "lowP50": 0.5265392781316348,
+        "anyDown": 0.75375,
+        "downsPerFight": 0.2475,
+        "verdict": "stalemate"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.54625,
+        "defeat": 0.02375,
+        "overtime": 0.43,
+        "roundsP50": 6,
+        "roundsP90": 7,
+        "hpP50": 0.7685774946921444,
+        "hpP10": 0.6199575371549894,
+        "hpEndP50": 0.7208067940552016,
+        "roundsAllP50": 7,
+        "lowP50": 0.5222929936305732,
+        "anyDown": 0.85375,
+        "downsPerFight": 0.5575,
+        "verdict": "drags"
+      }
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "num": 13,
+      "enemies": [
+        "Imp",
+        "Death Gazer",
+        "Roo",
+        "Imp"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 0.465,
+        "defeat": 0,
+        "overtime": 0.535,
+        "roundsP50": 6,
+        "roundsP90": 7,
+        "hpP50": 0.9437367303609342,
+        "hpP10": 0.861995753715499,
+        "hpEndP50": 0.9469214437367304,
+        "roundsAllP50": 7,
+        "lowP50": 0.8556263269639066,
+        "anyDown": 0,
+        "downsPerFight": 0,
+        "verdict": "stalemate"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.36875,
+        "defeat": 0,
+        "overtime": 0.63125,
+        "roundsP50": 6,
+        "roundsP90": 7,
+        "hpP50": 0.9065817409766455,
+        "hpP10": 0.7121019108280254,
+        "hpEndP50": 0.8959660297239915,
+        "roundsAllP50": 7,
+        "lowP50": 0.7261146496815286,
+        "anyDown": 0.57875,
+        "downsPerFight": 0.40625,
+        "verdict": "stalemate"
+      }
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "num": 14,
+      "enemies": [
+        "Imp",
+        "Dragon Guard",
+        "Iron Colossus",
+        "Dragon Guard",
+        "Imp"
+      ],
+      "lineup": [
+        "Imp",
+        "Dragon Guard",
+        "Iron Colossus"
+      ],
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 0,
+        "defeat": 0,
+        "overtime": 1,
+        "roundsP50": null,
+        "roundsP90": null,
+        "hpP50": null,
+        "hpP10": null,
+        "hpEndP50": 0.8121019108280255,
+        "roundsAllP50": 7,
+        "lowP50": 0.6199575371549894,
+        "anyDown": 0.025,
+        "downsPerFight": 0,
+        "verdict": "stalemate"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.8775,
+        "defeat": 0.00625,
+        "overtime": 0.11625,
+        "roundsP50": 5,
+        "roundsP90": 7,
+        "hpP50": 0.7685774946921444,
+        "hpP10": 0.6475583864118896,
+        "hpEndP50": 0.7622080679405521,
+        "roundsAllP50": 6,
+        "lowP50": 0.6709129511677282,
+        "anyDown": 0.76625,
+        "downsPerFight": 0.165,
+        "verdict": "drags"
+      }
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "num": 15,
+      "enemies": [
+        "Death Gazer",
+        "Succubus",
+        "Iron Colossus",
+        "Succubus",
+        "Death Gazer"
+      ],
+      "lineup": [
+        "Death Gazer",
+        "Succubus",
+        "Iron Colossus"
+      ],
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 0,
+        "defeat": 0.00125,
+        "overtime": 0.99875,
+        "roundsP50": null,
+        "roundsP90": null,
+        "hpP50": null,
+        "hpP10": null,
+        "hpEndP50": 0.70276008492569,
+        "roundsAllP50": 7,
+        "lowP50": 0.440552016985138,
+        "anyDown": 0.87125,
+        "downsPerFight": 0.645,
+        "verdict": "stalemate"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.79375,
+        "defeat": 0.0075,
+        "overtime": 0.19875,
+        "roundsP50": 6,
+        "roundsP90": 7,
+        "hpP50": 0.7473460721868365,
+        "hpP10": 0.637791932059448,
+        "hpEndP50": 0.7346072186836518,
+        "roundsAllP50": 6,
+        "lowP50": 0.5944798301486199,
+        "anyDown": 0.6325,
+        "downsPerFight": 0.19375,
+        "verdict": "drags"
+      }
+    },
+    {
+      "dungeon": "Fafnir Castle",
+      "num": 16,
+      "enemies": [
+        "Carlbero"
+      ],
+      "lineup": null,
+      "kind": "boss",
+      "touched": false,
+      "before": {
+        "runs": 800,
+        "win": 0.38125,
+        "defeat": 0.38125,
+        "overtime": 0.2375,
+        "roundsP50": 4,
+        "roundsP90": 5,
+        "hpP50": 0.4543524416135881,
+        "hpP10": 0.17834394904458598,
+        "hpEndP50": 0.11464968152866242,
+        "roundsAllP50": 5,
+        "lowP50": 0.04883227176220807,
+        "anyDown": 0.99875,
+        "downsPerFight": 2.7675,
+        "verdict": "wall"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.38125,
+        "defeat": 0.38125,
+        "overtime": 0.2375,
+        "roundsP50": 4,
+        "roundsP90": 5,
+        "hpP50": 0.4543524416135881,
+        "hpP10": 0.17834394904458598,
+        "hpEndP50": 0.11464968152866242,
+        "roundsAllP50": 5,
+        "lowP50": 0.04883227176220807,
+        "anyDown": 0.99875,
+        "downsPerFight": 2.7675,
+        "verdict": "wall"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 1,
+      "enemies": [
+        "Electro Slime",
+        "Electro Slime",
+        "Electro Slime"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 2,
+        "roundsP90": 2,
+        "hpP50": 1,
+        "hpP10": 0.9596602972399151,
+        "hpEndP50": 1,
+        "roundsAllP50": 2,
+        "lowP50": 1,
+        "anyDown": 0,
+        "downsPerFight": 0,
+        "verdict": "pushover"
+      },
+      "after": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 2,
+        "roundsP90": 2,
+        "hpP50": 1,
+        "hpP10": 0.8853503184713376,
+        "hpEndP50": 1,
+        "roundsAllP50": 2,
+        "lowP50": 1,
+        "anyDown": 0.19375,
+        "downsPerFight": 0.00875,
+        "verdict": "pushover"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 2,
+      "enemies": [
+        "Electro Slime",
+        "Electro Slime",
+        "Electro Slime",
+        "Electro Slime"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 2,
+        "roundsP90": 2,
+        "hpP50": 0.9596602972399151,
+        "hpP10": 0.8895966029723992,
+        "hpEndP50": 0.9596602972399151,
+        "roundsAllP50": 2,
+        "lowP50": 0.9596602972399151,
+        "anyDown": 0.00125,
+        "downsPerFight": 0,
+        "verdict": "pushover"
+      },
+      "after": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 2,
+        "roundsP90": 3,
+        "hpP50": 1,
+        "hpP10": 0.8853503184713376,
+        "hpEndP50": 1,
+        "roundsAllP50": 2,
+        "lowP50": 0.8853503184713376,
+        "anyDown": 0.3875,
+        "downsPerFight": 0.0725,
+        "verdict": "pushover"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 3,
+      "enemies": [
+        "Electro Slime",
+        "Skizzik",
+        "Electro Slime"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 2,
+        "roundsP90": 2,
+        "hpP50": 0.9363057324840764,
+        "hpP10": 0.8450106157112527,
+        "hpEndP50": 0.9363057324840764,
+        "roundsAllP50": 2,
+        "lowP50": 0.9363057324840764,
+        "anyDown": 0,
+        "downsPerFight": 0,
+        "verdict": "pushover"
+      },
+      "after": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 2,
+        "roundsP90": 3,
+        "hpP50": 0.8704883227176221,
+        "hpP10": 0.6411889596602972,
+        "hpEndP50": 0.8704883227176221,
+        "roundsAllP50": 2,
+        "lowP50": 0.7961783439490446,
+        "anyDown": 0.41,
+        "downsPerFight": 0.215,
+        "verdict": "too soft"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 4,
+      "enemies": [
+        "Electro Slime",
+        "Lightning Prism",
+        "Electro Slime"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 4,
+        "roundsP90": 5,
+        "hpP50": 0.821656050955414,
+        "hpP10": 0.7428874734607218,
+        "hpEndP50": 0.821656050955414,
+        "roundsAllP50": 4,
+        "lowP50": 0.6305732484076433,
+        "anyDown": 0.02625,
+        "downsPerFight": 0,
+        "verdict": "on target"
+      },
+      "after": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 4,
+        "roundsP90": 5,
+        "hpP50": 0.8450106157112527,
+        "hpP10": 0.7600849256900213,
+        "hpEndP50": 0.8450106157112527,
+        "roundsAllP50": 4,
+        "lowP50": 0.6836518046709129,
+        "anyDown": 0.79875,
+        "downsPerFight": 0.03125,
+        "verdict": "on target"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 5,
+      "enemies": [
+        "Skizzik",
+        "Lightning Prism"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 0.99375,
+        "defeat": 0,
+        "overtime": 0.00625,
+        "roundsP50": 4,
+        "roundsP90": 6,
+        "hpP50": 0.8365180467091295,
+        "hpP10": 0.772823779193206,
+        "hpEndP50": 0.8365180467091295,
+        "roundsAllP50": 4,
+        "lowP50": 0.4564755838641189,
+        "anyDown": 0.8725,
+        "downsPerFight": 0.01375,
+        "verdict": "on target"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.99875,
+        "defeat": 0,
+        "overtime": 0.00125,
+        "roundsP50": 4,
+        "roundsP90": 5,
+        "hpP50": 0.8492569002123143,
+        "hpP10": 0.7643312101910829,
+        "hpEndP50": 0.8492569002123143,
+        "roundsAllP50": 4,
+        "lowP50": 0.5774946921443737,
+        "anyDown": 0.62125,
+        "downsPerFight": 0.02625,
+        "verdict": "on target"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 6,
+      "enemies": [
+        "Skizzik",
+        "Skizzik"
+      ],
+      "lineup": [
+        "Skizzik",
+        "Skizzik",
+        "Electro Slime"
+      ],
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 3,
+        "roundsP90": 3,
+        "hpP50": 0.8747346072186837,
+        "hpP10": 0.7707006369426752,
+        "hpEndP50": 0.8747346072186837,
+        "roundsAllP50": 3,
+        "lowP50": 0.8450106157112527,
+        "anyDown": 0.005,
+        "downsPerFight": 0.00125,
+        "verdict": "too soft"
+      },
+      "after": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 3,
+        "roundsP90": 3,
+        "hpP50": 0.667728237791932,
+        "hpP10": 0.5116772823779193,
+        "hpEndP50": 0.667728237791932,
+        "roundsAllP50": 3,
+        "lowP50": 0.5774946921443737,
+        "anyDown": 0.88625,
+        "downsPerFight": 0.745,
+        "verdict": "on target"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 7,
+      "enemies": [
+        "Lightning Prism",
+        "Skizzik",
+        "Lightning Prism"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 0.06,
+        "defeat": 0.61375,
+        "overtime": 0.32625,
+        "roundsP50": 6,
+        "roundsP90": 7,
+        "hpP50": 0.7993630573248408,
+        "hpP10": 0.5936305732484076,
+        "hpEndP50": 0,
+        "roundsAllP50": 5,
+        "lowP50": 0,
+        "anyDown": 0.99875,
+        "downsPerFight": 3.17625,
+        "verdict": "wall"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.65,
+        "defeat": 0.16625,
+        "overtime": 0.18375,
+        "roundsP50": 5,
+        "roundsP90": 7,
+        "hpP50": 0.8248407643312102,
+        "hpP10": 0.7048832271762208,
+        "hpEndP50": 0.7515923566878981,
+        "roundsAllP50": 6,
+        "lowP50": 0.27388535031847133,
+        "anyDown": 0.9725,
+        "downsPerFight": 0.9775,
+        "verdict": "drags"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 8,
+      "enemies": [
+        "Skizzik",
+        "Lightning Prism",
+        "Skizzik"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 0.8,
+        "defeat": 0,
+        "overtime": 0.2,
+        "roundsP50": 5,
+        "roundsP90": 7,
+        "hpP50": 0.8343949044585988,
+        "hpP10": 0.7452229299363057,
+        "hpEndP50": 0.8152866242038217,
+        "roundsAllP50": 6,
+        "lowP50": 0.4267515923566879,
+        "anyDown": 0.7375,
+        "downsPerFight": 0.22875,
+        "verdict": "drags"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.90875,
+        "defeat": 0.00375,
+        "overtime": 0.0875,
+        "roundsP50": 5,
+        "roundsP90": 6,
+        "hpP50": 0.8089171974522293,
+        "hpP10": 0.6658174097664543,
+        "hpEndP50": 0.7961783439490446,
+        "roundsAllP50": 5,
+        "lowP50": 0.46284501061571126,
+        "anyDown": 0.6825,
+        "downsPerFight": 0.27625,
+        "verdict": "drags"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 9,
+      "enemies": [
+        "Electro Slime",
+        "Kirin",
+        "Electro Slime"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 3,
+        "roundsP90": 3,
+        "hpP50": 0.8598726114649682,
+        "hpP10": 0.6728237791932059,
+        "hpEndP50": 0.8598726114649682,
+        "roundsAllP50": 3,
+        "lowP50": 0.8556263269639066,
+        "anyDown": 0.16,
+        "downsPerFight": 0.0425,
+        "verdict": "pushover"
+      },
+      "after": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 3,
+        "roundsP90": 4,
+        "hpP50": 0.8598726114649682,
+        "hpP10": 0.6581740976645435,
+        "hpEndP50": 0.8598726114649682,
+        "roundsAllP50": 3,
+        "lowP50": 0.7961783439490446,
+        "anyDown": 0.55875,
+        "downsPerFight": 0.18375,
+        "verdict": "too soft"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 10,
+      "enemies": [
+        "Lightning Prism",
+        "Kirin",
+        "Lightning Prism"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 0.09375,
+        "defeat": 0.35625,
+        "overtime": 0.55,
+        "roundsP50": 6,
+        "roundsP90": 7,
+        "hpP50": 0.5116772823779193,
+        "hpP10": 0.324416135881104,
+        "hpEndP50": 0.16878980891719744,
+        "roundsAllP50": 7,
+        "lowP50": 0.11889596602972399,
+        "anyDown": 1,
+        "downsPerFight": 2.60625,
+        "verdict": "wall"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.9325,
+        "defeat": 0.015,
+        "overtime": 0.0525,
+        "roundsP50": 6,
+        "roundsP90": 7,
+        "hpP50": 0.4861995753715499,
+        "hpP10": 0.3333333333333333,
+        "hpEndP50": 0.48089171974522293,
+        "roundsAllP50": 6,
+        "lowP50": 0.25902335456475584,
+        "anyDown": 0.995,
+        "downsPerFight": 1.08,
+        "verdict": "drags"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 11,
+      "enemies": [
+        "Skizzik",
+        "Kirin",
+        "Skizzik"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 0.93875,
+        "defeat": 0,
+        "overtime": 0.06125,
+        "roundsP50": 4,
+        "roundsP90": 6,
+        "hpP50": 0.6475583864118896,
+        "hpP10": 0.535031847133758,
+        "hpEndP50": 0.6411889596602972,
+        "roundsAllP50": 4,
+        "lowP50": 0.5074309978768577,
+        "anyDown": 0.3225,
+        "downsPerFight": 0.1875,
+        "verdict": "on target"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.94125,
+        "defeat": 0,
+        "overtime": 0.05875,
+        "roundsP50": 5,
+        "roundsP90": 6,
+        "hpP50": 0.5626326963906582,
+        "hpP10": 0.451380042462845,
+        "hpEndP50": 0.5605095541401274,
+        "roundsAllP50": 5,
+        "lowP50": 0.45222929936305734,
+        "anyDown": 0.7225,
+        "downsPerFight": 0.63625,
+        "verdict": "drags"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 12,
+      "enemies": [
+        "Kirin",
+        "Skizzik",
+        "Lightning Prism"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 0.70375,
+        "defeat": 0.135,
+        "overtime": 0.16125,
+        "roundsP50": 5,
+        "roundsP90": 6,
+        "hpP50": 0.5753715498938429,
+        "hpP10": 0.4288747346072187,
+        "hpEndP50": 0.5106157112526539,
+        "roundsAllP50": 6,
+        "lowP50": 0.26963906581740976,
+        "anyDown": 0.95375,
+        "downsPerFight": 1.19375,
+        "verdict": "drags"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.83375,
+        "defeat": 0.05375,
+        "overtime": 0.1125,
+        "roundsP50": 4,
+        "roundsP90": 6,
+        "hpP50": 0.564755838641189,
+        "hpP10": 0.43014861995753717,
+        "hpEndP50": 0.535031847133758,
+        "roundsAllP50": 5,
+        "lowP50": 0.3821656050955414,
+        "anyDown": 0.94375,
+        "downsPerFight": 0.87625,
+        "verdict": "on target"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 13,
+      "enemies": [
+        "Mana Ray",
+        "Mana Ray"
+      ],
+      "lineup": [
+        "Mana Ray",
+        "Mana Ray",
+        "Electro Slime"
+      ],
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 2,
+        "roundsP90": 2,
+        "hpP50": 0.9065817409766455,
+        "hpP10": 0.8067940552016986,
+        "hpEndP50": 0.9065817409766455,
+        "roundsAllP50": 2,
+        "lowP50": 0.8004246284501062,
+        "anyDown": 0.3,
+        "downsPerFight": 0.00125,
+        "verdict": "too soft"
+      },
+      "after": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 3,
+        "roundsP90": 3,
+        "hpP50": 0.7961783439490446,
+        "hpP10": 0.6624203821656051,
+        "hpEndP50": 0.7961783439490446,
+        "roundsAllP50": 3,
+        "lowP50": 0.6666666666666666,
+        "anyDown": 0.72125,
+        "downsPerFight": 0.54875,
+        "verdict": "on target"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 14,
+      "enemies": [
+        "Ampere",
+        "Mana Ray"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 2,
+        "roundsP90": 3,
+        "hpP50": 0.8195329087048833,
+        "hpP10": 0.6539278131634819,
+        "hpEndP50": 0.8195329087048833,
+        "roundsAllP50": 2,
+        "lowP50": 0.6242038216560509,
+        "anyDown": 0.47375,
+        "downsPerFight": 0,
+        "verdict": "on target"
+      },
+      "after": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 2,
+        "roundsP90": 3,
+        "hpP50": 0.826963906581741,
+        "hpP10": 0.6390658174097664,
+        "hpEndP50": 0.826963906581741,
+        "roundsAllP50": 2,
+        "lowP50": 0.6199575371549894,
+        "anyDown": 0.65,
+        "downsPerFight": 0.16375,
+        "verdict": "on target"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 15,
+      "enemies": [
+        "Ampere",
+        "Skizzik"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 3,
+        "roundsP90": 3,
+        "hpP50": 0.7749469214437368,
+        "hpP10": 0.6560509554140127,
+        "hpEndP50": 0.7749469214437368,
+        "roundsAllP50": 3,
+        "lowP50": 0.5817409766454352,
+        "anyDown": 0.035,
+        "downsPerFight": 0,
+        "verdict": "on target"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.99625,
+        "defeat": 0,
+        "overtime": 0.00375,
+        "roundsP50": 3,
+        "roundsP90": 3,
+        "hpP50": 0.7473460721868365,
+        "hpP10": 0.613588110403397,
+        "hpEndP50": 0.7452229299363057,
+        "roundsAllP50": 3,
+        "lowP50": 0.5520169851380042,
+        "anyDown": 0.5825,
+        "downsPerFight": 0.04875,
+        "verdict": "on target"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 16,
+      "enemies": [
+        "Ampere",
+        "Lightning Prism"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 0.6475,
+        "defeat": 0.00125,
+        "overtime": 0.35125,
+        "roundsP50": 4,
+        "roundsP90": 6,
+        "hpP50": 0.6634819532908705,
+        "hpP10": 0.5371549893842887,
+        "hpEndP50": 0.5859872611464968,
+        "roundsAllP50": 6,
+        "lowP50": 0.2611464968152866,
+        "anyDown": 0.9925,
+        "downsPerFight": 1.46,
+        "verdict": "drags"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.93,
+        "defeat": 0.00625,
+        "overtime": 0.06375,
+        "roundsP50": 4,
+        "roundsP90": 6,
+        "hpP50": 0.6125265392781316,
+        "hpP10": 0.37367303609341823,
+        "hpEndP50": 0.5912951167728238,
+        "roundsAllP50": 4,
+        "lowP50": 0.3609341825902335,
+        "anyDown": 0.99625,
+        "downsPerFight": 1.18,
+        "verdict": "on target"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 17,
+      "enemies": [
+        "Mana Ray",
+        "Lightning Prism",
+        "Mana Ray"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 0.9925,
+        "defeat": 0,
+        "overtime": 0.0075,
+        "roundsP50": 5,
+        "roundsP90": 6,
+        "hpP50": 0.8641188959660298,
+        "hpP10": 0.772823779193206,
+        "hpEndP50": 0.8630573248407644,
+        "roundsAllP50": 5,
+        "lowP50": 0.47770700636942676,
+        "anyDown": 0.93875,
+        "downsPerFight": 0.03625,
+        "verdict": "drags"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.9875,
+        "defeat": 0,
+        "overtime": 0.0125,
+        "roundsP50": 5,
+        "roundsP90": 6,
+        "hpP50": 0.8365180467091295,
+        "hpP10": 0.692144373673036,
+        "hpEndP50": 0.8365180467091295,
+        "roundsAllP50": 5,
+        "lowP50": 0.5435244161358811,
+        "anyDown": 0.96375,
+        "downsPerFight": 0.14625,
+        "verdict": "drags"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 18,
+      "enemies": [
+        "Ampere",
+        "Mana Ray",
+        "Kirin"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 4,
+        "roundsP90": 4,
+        "hpP50": 0.7006369426751592,
+        "hpP10": 0.5222929936305732,
+        "hpEndP50": 0.7006369426751592,
+        "roundsAllP50": 4,
+        "lowP50": 0.4607218683651805,
+        "anyDown": 0.9775,
+        "downsPerFight": 0.21625,
+        "verdict": "on target"
+      },
+      "after": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 4,
+        "roundsP90": 4,
+        "hpP50": 0.6369426751592356,
+        "hpP10": 0.4267515923566879,
+        "hpEndP50": 0.6369426751592356,
+        "roundsAllP50": 4,
+        "lowP50": 0.42462845010615713,
+        "anyDown": 0.99625,
+        "downsPerFight": 0.7825,
+        "verdict": "on target"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 19,
+      "enemies": [
+        "Asura"
+      ],
+      "lineup": null,
+      "kind": "boss",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 0.40625,
+        "defeat": 0.59375,
+        "overtime": 0,
+        "roundsP50": 6,
+        "roundsP90": 7,
+        "hpP50": 0.4394904458598726,
+        "hpP10": 0.2356687898089172,
+        "hpEndP50": 0,
+        "roundsAllP50": 6,
+        "lowP50": 0,
+        "anyDown": 0.99875,
+        "downsPerFight": 3.04125,
+        "verdict": "wall"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.66625,
+        "defeat": 0.33375,
+        "overtime": 0,
+        "roundsP50": 5,
+        "roundsP90": 6,
+        "hpP50": 0.5583864118895966,
+        "hpP10": 0.2356687898089172,
+        "hpEndP50": 0.3651804670912951,
+        "roundsAllP50": 5,
+        "lowP50": 0.2611464968152866,
+        "anyDown": 0.98375,
+        "downsPerFight": 2.2075,
+        "verdict": "on target"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 20,
+      "enemies": [
+        "Gigas",
+        "Electro Slime",
+        "Electro Slime"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 0.74875,
+        "defeat": 0.045,
+        "overtime": 0.20625,
+        "roundsP50": 5,
+        "roundsP90": 6,
+        "hpP50": 0.9490445859872612,
+        "hpP10": 0.6942675159235668,
+        "hpEndP50": 0.8492569002123143,
+        "roundsAllP50": 5,
+        "lowP50": 0.7091295116772823,
+        "anyDown": 0.435,
+        "downsPerFight": 0.73125,
+        "verdict": "drags"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.79375,
+        "defeat": 0.00125,
+        "overtime": 0.205,
+        "roundsP50": 5,
+        "roundsP90": 6,
+        "hpP50": 0.9447983014861996,
+        "hpP10": 0.6942675159235668,
+        "hpEndP50": 0.8471337579617835,
+        "roundsAllP50": 5,
+        "lowP50": 0.7091295116772823,
+        "anyDown": 0.48,
+        "downsPerFight": 0.525,
+        "verdict": "drags"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 21,
+      "enemies": [
+        "Electro Slime",
+        "Obsidrax",
+        "Lightning Prism",
+        "Electro Slime"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 0.99875,
+        "defeat": 0,
+        "overtime": 0.00125,
+        "roundsP50": 4,
+        "roundsP90": 6,
+        "hpP50": 0.7876857749469215,
+        "hpP10": 0.6815286624203821,
+        "hpEndP50": 0.7876857749469215,
+        "roundsAllP50": 4,
+        "lowP50": 0.5010615711252654,
+        "anyDown": 0.7625,
+        "downsPerFight": 0,
+        "verdict": "on target"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.9925,
+        "defeat": 0,
+        "overtime": 0.0075,
+        "roundsP50": 4,
+        "roundsP90": 6,
+        "hpP50": 0.8004246284501062,
+        "hpP10": 0.646072186836518,
+        "hpEndP50": 0.8004246284501062,
+        "roundsAllP50": 4,
+        "lowP50": 0.6772823779193206,
+        "anyDown": 0.9725,
+        "downsPerFight": 0.11375,
+        "verdict": "on target"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 22,
+      "enemies": [
+        "Skizzik",
+        "Obsidrax"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 3,
+        "roundsP90": 4,
+        "hpP50": 0.772823779193206,
+        "hpP10": 0.6602972399150743,
+        "hpEndP50": 0.772823779193206,
+        "roundsAllP50": 3,
+        "lowP50": 0.7006369426751592,
+        "anyDown": 0.00125,
+        "downsPerFight": 0,
+        "verdict": "too soft"
+      },
+      "after": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 3,
+        "roundsP90": 4,
+        "hpP50": 0.7473460721868365,
+        "hpP10": 0.6263269639065817,
+        "hpEndP50": 0.7473460721868365,
+        "roundsAllP50": 3,
+        "lowP50": 0.6624203821656051,
+        "anyDown": 0.0175,
+        "downsPerFight": 0,
+        "verdict": "on target"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 23,
+      "enemies": [
+        "Obsidrax",
+        "Kirin",
+        "Skizzik"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 0.7525,
+        "defeat": 0.04125,
+        "overtime": 0.20625,
+        "roundsP50": 4,
+        "roundsP90": 5,
+        "hpP50": 0.6698513800424628,
+        "hpP10": 0.5225053078556263,
+        "hpEndP50": 0.6178343949044586,
+        "roundsAllP50": 4,
+        "lowP50": 0.4267515923566879,
+        "anyDown": 0.62875,
+        "downsPerFight": 0.70375,
+        "verdict": "on target"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.9425,
+        "defeat": 0.01,
+        "overtime": 0.0475,
+        "roundsP50": 4,
+        "roundsP90": 6,
+        "hpP50": 0.5881104033970276,
+        "hpP10": 0.4012738853503185,
+        "hpEndP50": 0.578556263269639,
+        "roundsAllP50": 4,
+        "lowP50": 0.4267515923566879,
+        "anyDown": 0.79875,
+        "downsPerFight": 0.61625,
+        "verdict": "on target"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 24,
+      "enemies": [
+        "Drakoza",
+        "Drakoza"
+      ],
+      "lineup": [
+        "Drakoza",
+        "Drakoza",
+        "Skizzik"
+      ],
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 2,
+        "roundsP90": 2,
+        "hpP50": 0.8789808917197452,
+        "hpP10": 0.8598726114649682,
+        "hpEndP50": 0.8789808917197452,
+        "roundsAllP50": 2,
+        "lowP50": 0.8789808917197452,
+        "anyDown": 0,
+        "downsPerFight": 0,
+        "verdict": "pushover"
+      },
+      "after": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 3,
+        "roundsP90": 4,
+        "hpP50": 0.8386411889596603,
+        "hpP10": 0.7301486199575371,
+        "hpEndP50": 0.8386411889596603,
+        "roundsAllP50": 3,
+        "lowP50": 0.673036093418259,
+        "anyDown": 0.59125,
+        "downsPerFight": 0.00125,
+        "verdict": "on target"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 25,
+      "enemies": [
+        "Drakoza",
+        "Skizzik"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 3,
+        "roundsP90": 3,
+        "hpP50": 0.8980891719745223,
+        "hpP10": 0.8152866242038217,
+        "hpEndP50": 0.8980891719745223,
+        "roundsAllP50": 3,
+        "lowP50": 0.8386411889596603,
+        "anyDown": 0,
+        "downsPerFight": 0,
+        "verdict": "too soft"
+      },
+      "after": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 3,
+        "roundsP90": 3,
+        "hpP50": 0.821656050955414,
+        "hpP10": 0.7346072186836518,
+        "hpEndP50": 0.821656050955414,
+        "roundsAllP50": 3,
+        "lowP50": 0.7600849256900213,
+        "anyDown": 0.0025,
+        "downsPerFight": 0,
+        "verdict": "too soft"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 26,
+      "enemies": [
+        "Mist Dragon",
+        "Obsidrax"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 4,
+        "roundsP90": 5,
+        "hpP50": 0.7898089171974523,
+        "hpP10": 0.7048832271762208,
+        "hpEndP50": 0.7898089171974523,
+        "roundsAllP50": 4,
+        "lowP50": 0.5414012738853503,
+        "anyDown": 0.1425,
+        "downsPerFight": 0,
+        "verdict": "on target"
+      },
+      "after": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 4,
+        "roundsP90": 5,
+        "hpP50": 0.8280254777070064,
+        "hpP10": 0.7598726114649682,
+        "hpEndP50": 0.8280254777070064,
+        "roundsAllP50": 4,
+        "lowP50": 0.5392781316348195,
+        "anyDown": 0.1425,
+        "downsPerFight": 0,
+        "verdict": "on target"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": 27,
+      "enemies": [
+        "Mist Dragon",
+        "Mana Ray",
+        "Drakoza"
+      ],
+      "lineup": null,
+      "kind": "normal",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 0.98625,
+        "defeat": 0,
+        "overtime": 0.01375,
+        "roundsP50": 5,
+        "roundsP90": 6,
+        "hpP50": 0.8726114649681529,
+        "hpP10": 0.7855626326963907,
+        "hpEndP50": 0.8726114649681529,
+        "roundsAllP50": 5,
+        "lowP50": 0.5562632696390658,
+        "anyDown": 0.055,
+        "downsPerFight": 0,
+        "verdict": "drags"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.52625,
+        "defeat": 0.01,
+        "overtime": 0.46375,
+        "roundsP50": 6,
+        "roundsP90": 7,
+        "hpP50": 0.8365180467091295,
+        "hpP10": 0.5817409766454352,
+        "hpEndP50": 0.6740976645435244,
+        "roundsAllP50": 7,
+        "lowP50": 0.37154989384288745,
+        "anyDown": 0.9875,
+        "downsPerFight": 0.96875,
+        "verdict": "drags"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": "story",
+      "enemies": [
+        "⭐️ Fafnir"
+      ],
+      "lineup": null,
+      "kind": "boss",
+      "touched": false,
+      "before": {
+        "runs": 800,
+        "win": 0,
+        "defeat": 0.785,
+        "overtime": 0.215,
+        "roundsP50": null,
+        "roundsP90": null,
+        "hpP50": null,
+        "hpP10": null,
+        "hpEndP50": 0,
+        "roundsAllP50": 7,
+        "lowP50": 0,
+        "anyDown": 1,
+        "downsPerFight": 3.785,
+        "verdict": "wall"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0,
+        "defeat": 0.785,
+        "overtime": 0.215,
+        "roundsP50": null,
+        "roundsP90": null,
+        "hpP50": null,
+        "hpP10": null,
+        "hpEndP50": 0,
+        "roundsAllP50": 7,
+        "lowP50": 0,
+        "anyDown": 1,
+        "downsPerFight": 3.785,
+        "verdict": "wall"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": "story",
+      "enemies": [
+        "Rakshasa"
+      ],
+      "lineup": null,
+      "kind": "boss",
+      "touched": false,
+      "before": {
+        "runs": 800,
+        "win": 0,
+        "defeat": 0,
+        "overtime": 1,
+        "roundsP50": null,
+        "roundsP90": null,
+        "hpP50": null,
+        "hpP10": null,
+        "hpEndP50": 0.910828025477707,
+        "roundsAllP50": 10,
+        "lowP50": 0.7611464968152867,
+        "anyDown": 0.205,
+        "downsPerFight": 0.0075,
+        "verdict": "stalemate"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0,
+        "defeat": 0,
+        "overtime": 1,
+        "roundsP50": null,
+        "roundsP90": null,
+        "hpP50": null,
+        "hpP10": null,
+        "hpEndP50": 0.910828025477707,
+        "roundsAllP50": 10,
+        "lowP50": 0.7611464968152867,
+        "anyDown": 0.205,
+        "downsPerFight": 0.0075,
+        "verdict": "stalemate"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": "story",
+      "enemies": [
+        "Flame Drake"
+      ],
+      "lineup": null,
+      "kind": "boss",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 3,
+        "roundsP90": 4,
+        "hpP50": 0.9426751592356688,
+        "hpP10": 0.8938428874734607,
+        "hpEndP50": 0.9426751592356688,
+        "roundsAllP50": 3,
+        "lowP50": 0.9426751592356688,
+        "anyDown": 0,
+        "downsPerFight": 0,
+        "verdict": "pushover"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.91875,
+        "defeat": 0.0575,
+        "overtime": 0.02375,
+        "roundsP50": 6,
+        "roundsP90": 7,
+        "hpP50": 0.6411889596602972,
+        "hpP10": 0.41061571125265395,
+        "hpEndP50": 0.6348195329087049,
+        "roundsAllP50": 6,
+        "lowP50": 0.5095541401273885,
+        "anyDown": 0.98,
+        "downsPerFight": 1.5125,
+        "verdict": "on target"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": "story",
+      "enemies": [
+        "Lightning Drake"
+      ],
+      "lineup": null,
+      "kind": "boss",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 1,
+        "defeat": 0,
+        "overtime": 0,
+        "roundsP50": 2,
+        "roundsP90": 2,
+        "hpP50": 1,
+        "hpP10": 0.9044585987261147,
+        "hpEndP50": 1,
+        "roundsAllP50": 2,
+        "lowP50": 1,
+        "anyDown": 0,
+        "downsPerFight": 0,
+        "verdict": "pushover"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.99875,
+        "defeat": 0,
+        "overtime": 0.00125,
+        "roundsP50": 4,
+        "roundsP90": 5,
+        "hpP50": 0.7154989384288747,
+        "hpP10": 0.5643312101910828,
+        "hpEndP50": 0.7154989384288747,
+        "roundsAllP50": 4,
+        "lowP50": 0.5817409766454352,
+        "anyDown": 0.94875,
+        "downsPerFight": 1.0625,
+        "verdict": "on target"
+      }
+    }
+  ]
+}
