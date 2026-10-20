@@ -47,9 +47,6 @@ function trustNotes(l) {
       else out.push(`${c.name}: ${g} is not simulated`);
     }
     for (const g of l.dataGaps ?? []) if (g.kind !== "decided at the table") out.push(`${g.who}: ${g.what} (${g.kind}) is not simulated`);
-    // Party-side parity gap (party-policy.js NOT_PORTED): the in-game party AI parks the
-    // Rod on whoever suffers most from holding it (sim/hazard-brain.js); this party never does.
-    if ((l.events ?? []).some((e) => e.id === "lightning-storm")) out.push("the sim party never moves the Lightning Rod on purpose (the in-game party AI does), so the Storm half reads harder than it plays");
     return [...new Set(out)];
   }
   for (const n of l.notes ?? []) if (n.startsWith("never acts")) out.push(`${n.replace("never acts: ", "")} never acts in the sim — its stance is never armed`);
