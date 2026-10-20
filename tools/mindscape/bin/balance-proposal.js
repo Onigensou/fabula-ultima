@@ -14,6 +14,7 @@
 //   affinity  element -> VU | RS | IM | AB | NA
 //   turns     actions per round (the sheet's activation)
 //   def/mdef  defence scores
+//   hp        absolute max HP;  ef  weapon efficiency by family, e.g. { "heavy": 200 }
 // A top-level "rows" key swaps an encounter row's line-up: { "rows": { "F1": ["Dire Orc", "Dire Orc", "Imp"] } }.
 //
 // Every fight in the Encounter Matrix report is run twice on the same seeds, baseline and
@@ -23,7 +24,7 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const { DEFAULT_WORLD } = require("../../safe-edit/lib/paths");
-const { loadParty, loadNamed, readAffinities } = require("../lib/load-actors");
+const { loadParty, loadNamed, readAffinities, readEfficiency } = require("../lib/load-actors");
 const { runBattle } = require("../lib/engine");
 const { Rng } = require("../lib/rng");
 const { snapshotWorld, summarise } = require("./encounter-matrix");
@@ -52,6 +53,11 @@ function isDamaging(p) {
 }
 
 function patchMonster(m, spec) {
+  if (spec.hp) { m.hp.max = spec.hp; m.hp.cur = spec.hp; }
+  if (spec.ef) {
+    for (const [fam, v] of Object.entries(spec.ef)) m._rawProps[`${fam}_ef`] = String(v);
+    m.efficiency = readEfficiency(m._rawProps);
+  }
   if (spec.hpPct) {
     const hp = Math.max(1, Math.round((m.hp.max ?? m.hp.cur) * (1 + spec.hpPct / 100)));
     m.hp.max = hp; m.hp.cur = hp;

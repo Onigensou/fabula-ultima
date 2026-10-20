@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-20T10:00:28.026Z",
+  "generated": "2026-10-20T10:50:10.903Z",
   "dungeons": [
     "Valley of the Dragon",
     "Fafnir Castle"
@@ -400,7 +400,7 @@
           "type": "Attack",
           "element": "physical",
           "targets": 1,
-          "avg": 32,
+          "avg": 51,
           "vs": "def"
         },
         {
@@ -408,7 +408,7 @@
           "type": "Spell",
           "element": "fire",
           "targets": null,
-          "avg": 26,
+          "avg": 36,
           "vs": "mdef"
         },
         {
@@ -416,7 +416,7 @@
           "type": "Active",
           "element": "physical",
           "targets": 2,
-          "avg": 22,
+          "avg": 32,
           "vs": "def"
         }
       ],
@@ -425,12 +425,10 @@
         "type": "Attack",
         "element": "physical",
         "targets": 1,
-        "avg": 32,
+        "avg": 51,
         "vs": "def"
       },
-      "flags": [
-        "best basic attack avg 32 < 45"
-      ]
+      "flags": []
     },
     {
       "name": "Drakoza",
@@ -458,7 +456,7 @@
           "type": "Attack",
           "element": "physical",
           "targets": 1,
-          "avg": 27,
+          "avg": 46,
           "vs": "def"
         },
         {
@@ -466,7 +464,7 @@
           "type": "Attack",
           "element": "physical",
           "targets": 1,
-          "avg": 26,
+          "avg": 45,
           "vs": "def"
         },
         {
@@ -474,7 +472,7 @@
           "type": "Attack",
           "element": "physical",
           "targets": 2,
-          "avg": 19,
+          "avg": 29,
           "vs": "def"
         }
       ],
@@ -483,12 +481,10 @@
         "type": "Attack",
         "element": "physical",
         "targets": 1,
-        "avg": 27,
+        "avg": 46,
         "vs": "def"
       },
-      "flags": [
-        "best basic attack avg 27 < 45"
-      ]
+      "flags": []
     },
     {
       "name": "Electro Slime",
@@ -624,7 +620,7 @@
           "type": "Attack",
           "element": "physical",
           "targets": 1,
-          "avg": 21,
+          "avg": 49,
           "vs": "def"
         }
       ],
@@ -633,11 +629,10 @@
         "type": "Attack",
         "element": "physical",
         "targets": 1,
-        "avg": 21,
+        "avg": 49,
         "vs": "def"
       },
       "flags": [
-        "best basic attack avg 21 < 45",
         "not modelled in the sim: Strip Weapon, Prank, Strip Armor"
       ]
     },
@@ -842,7 +837,7 @@
           "type": "Active",
           "element": "bolt",
           "targets": 1,
-          "avg": 47,
+          "avg": 62,
           "vs": "def"
         },
         {
@@ -850,7 +845,7 @@
           "type": "Attack",
           "element": "dark",
           "targets": 1,
-          "avg": 31,
+          "avg": 46,
           "vs": "def"
         }
       ],
@@ -859,12 +854,11 @@
         "type": "Attack",
         "element": "dark",
         "targets": 1,
-        "avg": 31,
+        "avg": 46,
         "vs": "def"
       },
       "flags": [
-        "2 VU (rule: exactly 1 for soldier)",
-        "best basic attack avg 31 < 45"
+        "2 VU (rule: exactly 1 for soldier)"
       ]
     },
     {
@@ -1220,7 +1214,7 @@
           "type": "Spell",
           "element": "dark",
           "targets": 1,
-          "avg": 40,
+          "avg": 56,
           "vs": "mdef"
         },
         {
@@ -1228,7 +1222,7 @@
           "type": "Attack",
           "element": "dark",
           "targets": 1,
-          "avg": 26,
+          "avg": 42,
           "vs": "def"
         }
       ],
@@ -1237,11 +1231,11 @@
         "type": "Attack",
         "element": "dark",
         "targets": 1,
-        "avg": 26,
+        "avg": 42,
         "vs": "def"
       },
       "flags": [
-        "best basic attack avg 26 < 45",
+        "best basic attack avg 42 < 45",
         "not modelled in the sim: Charm"
       ]
     }

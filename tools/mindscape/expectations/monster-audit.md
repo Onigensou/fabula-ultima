@@ -12,21 +12,21 @@
 | Carlbero | elite | 50 | 640 | 4 | 11 (>58%) | 14 (41%) | fire | dark, poison / — / — | Tentacle Slap 47 ×3 · Mind Sap 57 | resisted hit = 20% of PC HP (< 25%); not modelled in the sim: Stinky Breath |
 | Death Gazer | soldier | 50 | 150 | 1 | 8 (>58%) | 16 (26%) | light | dark, poison / — / — | Eye Beam 30 · Mind Sear 43 | best basic attack avg 30 < 45; not modelled in the sim: Death Gaze |
 | Dire Orc | soldier | 50 | 240 | 1 | 10 (>58%) | 6 (>58%) | ice | earth / — / — | Skull Splitter 66 | not modelled in the sim: War Howl |
-| Dragon Guard | soldier | 50 | 250 | 1 | 12 (58%) | 10 (>58%) | ice | fire, poison / — / — | Saber 32 | best basic attack avg 32 < 45 |
-| Drakoza | soldier | 43 | 140 | 1 | 11 (>58%) | 10 (>58%) | light | dark / — / — | Dragon Claw 27 | best basic attack avg 27 < 45 |
+| Dragon Guard | soldier | 50 | 250 | 1 | 12 (58%) | 10 (>58%) | ice | fire, poison / — / — | Saber 51 | — |
+| Drakoza | soldier | 43 | 140 | 1 | 11 (>58%) | 10 (>58%) | light | dark / — / — | Dragon Claw 46 | — |
 | Electro Slime | soldier | 40 | 45 | 1 | 6 (>58%) | 6 (>58%) | earth | — / poison / bolt | Static Shot 36 | absorbs bolt (warning signal); best basic attack avg 36 < 45 |
 | Gigas | elite | 45 | 800 | 1 | 12 (58%) | 10 (>58%) | bolt, fire, poison | physical, air, earth / — / — | Heavy Swing 128 | 3 VU (rule: exactly 1 for elite) |
-| Imp | soldier | 50 | 110 | 1 | 15 (33%) | 14 (41%) | light | dark, fire / — / — | Pitchfork 21 | best basic attack avg 21 < 45; not modelled in the sim: Strip Weapon, Prank, Strip Armor |
+| Imp | soldier | 50 | 110 | 1 | 15 (33%) | 14 (41%) | light | dark, fire / — / — | Pitchfork 49 | not modelled in the sim: Strip Weapon, Prank, Strip Armor |
 | Iron Colossus | elite | 52 | 700 | 1 | 14 (41%) | 8 (>58%) | bolt | physical, earth / poison / — | Siege Fist 42 | best basic attack avg 42 < 45; resisted hit = 18% of PC HP (< 25%) |
 | Kirin | elite | 50 | 210 | 1 | 14 (41%) | 15 (33%) | poison | bolt / — / — | Horn Rush 69 | — |
 | Lightning Prism | soldier | 45 | 150 | 1 | 10 (>58%) | 16 (26%) | physical, earth | — / poison / bolt | Arc Spark 31 · Fulgur Finis 70 ×3 | 2 VU (rule: exactly 1 for soldier); absorbs bolt (warning signal); best basic attack avg 31 < 45 |
-| Mana Ray | soldier | 45 | 115 | 1 | 11 (>58%) | 10 (>58%) | earth, ice | bolt, fire / — / — | Mana Stinger 31 · Volt Stinger 47 | 2 VU (rule: exactly 1 for soldier); best basic attack avg 31 < 45 |
+| Mana Ray | soldier | 45 | 115 | 1 | 11 (>58%) | 10 (>58%) | earth, ice | bolt, fire / — / — | Mana Stinger 46 · Volt Stinger 62 | 2 VU (rule: exactly 1 for soldier) |
 | Mist Dragon | elite | 45 | 200 | 1 | 14 (41%) | 13 (49%) | air | — / poison / — | Phantom Shift: Thunder Strike 38 · Mist Breath 46 ×3 | best basic attack avg 38 < 45; resisted hit = 16% of PC HP (< 25%) |
 | Obsidrax | soldier | 46 | 180 | 1 | 13 (49%) | 11 (>58%) | ice | earth / bolt / — | Basalt Crush 44 | best basic attack avg 44 < 45; not modelled in the sim: Miasma Nova |
 | Rakshasa | elite | 40 | 1200 | 4 | 14 (41%) | 12 (58%) | light | dark, poison / — / — | Severing Verdict 166 | not modelled in the sim: Devour |
 | Roo | soldier | 50 | 255 | 1 | 13 (49%) | 13 (49%) | light | dark / physical, poison / — | — | no damage action the sim can read; not modelled in the sim: Karma, Chef's Knife, Empty Stare |
 | Skizzik | soldier | 48 | 130 | 1 | 12 (58%) | 8 (>58%) | earth | — / poison / bolt | Thunder Strike 37 | absorbs bolt (warning signal); best basic attack avg 37 < 45 |
-| Succubus | soldier | 50 | 180 | 1 | 12 (58%) | 14 (41%) | light | dark, ice / — / — | Rake 26 · Draining Kiss 40 | best basic attack avg 26 < 45; not modelled in the sim: Charm |
+| Succubus | soldier | 50 | 180 | 1 | 12 (58%) | 14 (41%) | light | dark, ice / — / — | Rake 42 · Draining Kiss 56 | best basic attack avg 42 < 45; not modelled in the sim: Charm |
 
 ## Attacks per monster
 
@@ -42,15 +42,15 @@
 
 **Dire Orc** — Skull Splitter 66 (physical, vs def) · Cleaver 45 (physical, vs def)
 
-**Dragon Guard** — Saber 32 (physical, vs def) · Flame Breath 26 ×all (fire, vs mdef) · Suppressing Sweep 22 ×2 (physical, vs def)
+**Dragon Guard** — Saber 51 (physical, vs def) · Flame Breath 36 ×all (fire, vs mdef) · Suppressing Sweep 32 ×2 (physical, vs def)
 
-**Drakoza** — Dragon Claw 27 (physical, vs def) · Thrash 26 (physical, vs def) · Tail Swipe 19 ×2 (physical, vs def)
+**Drakoza** — Dragon Claw 46 (physical, vs def) · Thrash 45 (physical, vs def) · Tail Swipe 29 ×2 (physical, vs def)
 
 **Electro Slime** — Static Shot 36 (bolt, vs mdef) · Tackle 36 (physical, vs def)
 
 **Gigas** — Heavy Swing 128 (physical, vs def) · Heavy Bodyslam 83 (physical, vs def)
 
-**Imp** — Pitchfork 21 (physical, vs def)
+**Imp** — Pitchfork 49 (physical, vs def)
 
 **Iron Colossus** — Siege Fist 42 (physical, vs def) · Grinding Quake 27 ×all (earth, vs mdef) · Seismic Stomp 23 ×3 (earth, vs def)
 
@@ -58,7 +58,7 @@
 
 **Lightning Prism** — Fulgur Finis 70 ×3 (bolt, vs mdef) · Arc Spark 31 (bolt, vs mdef)
 
-**Mana Ray** — Volt Stinger 47 (bolt, vs def) · Mana Stinger 31 (dark, vs def)
+**Mana Ray** — Volt Stinger 62 (bolt, vs def) · Mana Stinger 46 (dark, vs def)
 
 **Mist Dragon** — Mist Breath 46 ×3 (air, vs mdef) · Phantom Shift: Thunder Strike 38 (air, vs def) · Phantom Shift: Mana Stinger 28 (air, vs def) · Mist Claw 26 (air, vs def) · Phantom Shift: Venomstone Spines 22 ×2 (air, vs def)
 
@@ -70,4 +70,4 @@
 
 **Skizzik** — Thunder Strike 37 (bolt, vs def) · Thunder Strike (Riposte) 19 (bolt, vs def)
 
-**Succubus** — Draining Kiss 40 (dark, vs mdef) · Rake 26 (dark, vs def)
+**Succubus** — Draining Kiss 56 (dark, vs mdef) · Rake 42 (dark, vs def)

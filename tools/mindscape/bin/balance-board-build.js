@@ -67,6 +67,7 @@ const fights = matrix.lines.filter((l) => !l.error && l.stats).map((l) => {
     id: `${area}-${num === "story" ? slug(l.enemies.join("-")) : num.padStart(2, "0")}`,
     area, dungeon: l.dungeon, num, story: !l.range,
     groups: Object.entries(counts).map(([name, count]) => ({ name, count, id: slug(name) })),
+    lineup: l.enemies,   // table order: the in-page simulator spawns them in this order
     kind: l.kind, level: l.level, enemyHp: l.enemyHp,
     actions: l.enemies.reduce((t, n) => t + (cards[slug(n)]?.turns ?? 1), 0),
     rolls: l.story ? null : round(l.weight),
@@ -108,8 +109,57 @@ try {
   console.warn("no sprite cache — run bin/balance-board-sprites.js first; the page falls back to name plates");
 }
 
-const tpl = fs.readFileSync(path.join(ROOT, "balance-board", "template.html"), "utf8");
-if (!tpl.includes("/*DATA*/")) throw new Error("template has no /*DATA*/ marker");
-const html = tpl.replace("/*DATA*/", () => JSON.stringify(data).replace(/</g, "\\u003c"));
-fs.writeFileSync(path.join(ROOT, "balance-board", "balance-board.html"), html);
-console.log(`Balance Board: ${fights.length} fights, ${monsters.length} monsters → balance-board/balance-board.html`);
+// In-page battle simulator: the real engine, bundled, plus the party and every monster as
+// slim combat models. Refuses to build if a battle through the bundle differs from Node.
+async function simPayload() {
+  const os = require("os");
+  const vm = require("vm");
+  const { snapshotWorld } = require("./encounter-matrix");
+  const { loadParty, loadNamed } = require("../lib/load-actors");
+  const { runBattle } = require("../lib/engine");
+  const { Rng } = require("../lib/rng");
+  const { slimModel } = require("../lib/slim-model");
+  const { bundleEngine } = require("../lib/browser-bundle");
+  const copyDir = path.join(os.tmpdir(), "fu-board-sim");
+  const world = snapshotWorld(require("../../safe-edit/lib/paths").DEFAULT_WORLD, copyDir);
+  try {
+    const party = (await loadParty({ world })).map(slimModel);
+    const names = [...new Set(matrix.lines.filter((l) => !l.error).flatMap((l) => l.enemies))];
+    const loaded = await loadNamed(names, { world });
+    const monsters = {};
+    names.forEach((n, i) => { if (!monsters[n]) monsters[n] = slimModel(loaded[i]); });
+    const engine = bundleEngine();
+    const ctx = { console };
+    ctx.globalThis = ctx;
+    vm.createContext(ctx);
+    vm.runInContext(engine, ctx);
+    ctx.__msTraceHp = true;
+    let checked = 0;
+    for (const l of matrix.lines.filter((x) => !x.error).slice(0, 6)) {
+      const en = l.enemies.map((n) => monsters[n]);
+      for (let i = 0; i < 5; i++) {
+        const a = runBattle({ party, enemies: en, rng: new Rng(`self:${i}`), expectedRounds: 7, policy: data.policy });
+        const b = ctx.Mindscape.runBattle({ party: JSON.parse(JSON.stringify(party)), enemies: JSON.parse(JSON.stringify(en)), rng: new ctx.Mindscape.Rng(`self:${i}`), expectedRounds: 7, policy: data.policy });
+        const strip = (log) => JSON.stringify(log.map(({ __hp, ...r }) => r));
+        if (strip(a.log) !== strip(b.log)) throw new Error(`page engine differs from Node on ${l.enemies.join(", ")} run ${i}`);
+        checked++;
+      }
+    }
+    console.log(`page engine: ${checked} battles identical to Node`);
+    return { engine, sim: { party, monsters } };
+  } finally {
+    fs.rmSync(copyDir, { recursive: true, force: true });
+  }
+}
+
+(async () => {
+  const { engine, sim } = await simPayload();
+  data.sim = sim;
+  const tpl = fs.readFileSync(path.join(ROOT, "balance-board", "template.html"), "utf8");
+  for (const marker of ["/*DATA*/", "/*ENGINE*/"]) if (!tpl.includes(marker)) throw new Error(`template has no ${marker} marker`);
+  const html = tpl
+    .replace("/*ENGINE*/", () => engine.replace(/<\/script/gi, "<\\/script"))
+    .replace("/*DATA*/", () => JSON.stringify(data).replace(/</g, "\\u003c"));
+  fs.writeFileSync(path.join(ROOT, "balance-board", "balance-board.html"), html);
+  console.log(`Balance Board: ${fights.length} fights, ${monsters.length} monsters, ${Math.round(html.length / 1024)} KB → balance-board/balance-board.html`);
+})().catch((e) => { console.error(`balance-board-build failed: ${e.stack || e.message}`); process.exit(1); });

@@ -144,6 +144,51 @@ textarea { width: 100%; box-sizing: border-box; min-height: 52px; resize: vertic
 .keygrid p { margin: 4px 0 0; }
 .keygrid .px { font-size: 15px; color: var(--ink); }
 #key-stamps .stamp { font-size: 12px; padding: 1px 7px 1px 5px; margin: 0 4px 4px 0; }
+
+/* battle viewer */
+.watch { border: 2px solid var(--win-edge); background: var(--ink); color: var(--win-bot); border-radius: 5px; padding: 2px 9px; font-family: var(--display); font-size: 14px; cursor: pointer; }
+.battle { position: fixed; inset: 0; z-index: 50; background: rgba(4,7,20,0.82); display: grid; place-items: center; padding: max(12px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); }
+.bv { width: min(1100px, 100%); max-height: 100%; overflow: auto; display: grid; gap: 10px; }
+.bv-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.bv-head h3 { margin: 0; }
+.bv-head .x { margin-left: auto; border: 2px solid var(--win-edge); background: none; border-radius: 5px; padding: 2px 10px; cursor: pointer; font-family: var(--display); font-size: 16px; }
+.bv-main { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 10px; }
+@media (max-width: 820px) { .bv-main { grid-template-columns: 1fr; } }
+.bv-stage { position: relative; min-height: 320px; border-radius: 6px; border: 1px solid var(--win-inner); overflow: hidden;
+  background: linear-gradient(180deg, #1a2566 0%, #24307a 48%, #2b3a2a 49%, #1f2b1f 100%); display: grid; grid-template-columns: 1fr 1fr; align-items: end; padding: 34px 14px 14px; gap: 8px; }
+.bv-side { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 6px 10px; }
+.bv-side.party { justify-content: flex-start; }
+.bv-side.foes { justify-content: flex-end; }
+.unit { position: relative; display: grid; justify-items: center; gap: 3px; min-width: 64px; }
+.unit .plate { width: 92px; background: rgba(8,13,34,0.75); border: 1px solid var(--win-inner); border-radius: 4px; padding: 2px 5px; font-size: 11px; line-height: 1.2; }
+.unit .nm { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+.unit .bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.15); overflow: hidden; margin-top: 2px; }
+.unit .bar i { display: block; height: 100%; background: #4cd38a; transition: width .35s ease; }
+.unit .bar i.mid { background: #f3cd63; }
+.unit .bar i.low { background: #ef5f4f; }
+.unit .hpn { font-family: var(--mono); font-size: 10.5px; color: var(--ink-2); }
+.unit img.sprite { filter: drop-shadow(0 3px 0 rgba(0,0,0,0.45)); }
+.bv-side.party .unit img.sprite { transform: scaleX(-1); }
+.unit.down img.sprite { opacity: .28; filter: grayscale(1); }
+.unit.acting .plate { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
+.pop { position: absolute; left: 50%; top: 30%; transform: translateX(-50%); font-family: var(--display); font-weight: 700; font-size: 20px; color: #fff; text-shadow: 0 2px 0 #000, 0 0 6px rgba(0,0,0,.8); pointer-events: none; white-space: nowrap; z-index: 3; }
+.pop.heal { color: #7dffb2; } .pop.miss { color: #c3cbef; font-size: 16px; } .pop.weak { color: #ffd36b; } .pop.tag { font-size: 13px; color: var(--gold); top: 8%; }
+.orb { position: absolute; width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle, #fff, #9cc6ff 60%, transparent 70%); z-index: 4; pointer-events: none; }
+.bv-banner { position: absolute; left: 0; right: 0; top: 6px; text-align: center; font-family: var(--display); font-size: 20px; color: var(--gold); text-shadow: 0 2px 0 #000; pointer-events: none; }
+.bv-log { background: rgba(8,13,34,0.55); border: 1px solid var(--win-inner); border-radius: 6px; padding: 8px 10px; font-size: 12.5px; height: 320px; overflow-y: auto; }
+@media (max-width: 820px) { .bv-log { height: 180px; } }
+.bv-log p { margin: 0 0 4px; }
+.bv-log .rd { color: var(--gold); font-family: var(--display); margin-top: 8px; }
+.bv-log .foe { color: var(--work-ink); }
+.bv-log .ally { color: var(--easy-ink); }
+.bv-log .sys { color: var(--muted); }
+.bv-controls { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.bv-controls button { border: 1px solid var(--win-inner); background: rgba(8,13,34,0.45); border-radius: 5px; padding: 4px 10px; cursor: pointer; font-family: var(--display); font-size: 15px; }
+.bv-controls button[aria-pressed="true"] { background: var(--ink); color: var(--win-bot); }
+.bv-controls label { display: inline-flex; gap: 6px; align-items: center; font-size: 13px; color: var(--ink-2); }
+.bv-result { display: grid; gap: 8px; }
+.bv-result .big { font-family: var(--display); font-size: 26px; }
+.bv-stats { font-size: 13px; color: var(--ink-2); }
 @media (prefers-reduced-motion: reduce) { .card.flash { animation: none; } }
 </style>
 
@@ -202,6 +247,9 @@ textarea { width: 100%; box-sizing: border-box; min-height: 52px; resize: vertic
   </section>
 </div>
 
+<div class="battle" id="battle" hidden role="dialog" aria-modal="true" aria-label="Battle simulator"></div>
+
+<script>/*ENGINE*/</script>
 <script type="application/json" id="board-data">/*DATA*/</script>
 <script>
 const D = JSON.parse(document.getElementById("board-data").textContent);
@@ -360,6 +408,7 @@ function card(f) {
       f.kind === "boss" ? h("span", { class: "badge boss" }, "Boss") : null,
       f.live ? h("span", { class: "badge live", title: `In-game sim: ${f.live.n} runs, won ${pct(f.live.win)}` }, "✓ checked in-game") : null,
       f.trust.length ? h("span", { class: "badge warn", title: f.trust.join("; ") }, "? unreliable") : null,
+      D.sim && globalThis.Mindscape ? h("button", { type: "button", class: "watch", onclick: () => openBattle(f) }, "▶ Watch battle") : null,
       stamp(k)),
     h("div", { class: "stage" }, ...sprites),
     h("div", { class: "roster" }, ...f.groups.flatMap((g, i) => [i ? " · " : "", h("button", { type: "button", onclick: () => jumpBeast(g.id) }, g.name), g.count > 1 ? ` ×${g.count}` : ""]),
@@ -447,6 +496,270 @@ function renderStatus() {
 
 $("runline").textContent = `Every encounter row, played ${D.runs} times each by a bot party that follows the in-game sim AI (Mindscape ${D.policy}, ${D.generated.slice(0, 10)}). `
   + "*King Gorger fights with the party in real play but isn't in these runs yet, and the bot plays below a person, so real fights are easier than shown.";
+// ── Battle viewer ───────────────────────────────────────────────────────────
+// Runs the bundled Mindscape engine (the same rules and party AI as the reports) and plays
+// its battle log back, Showdown-style: lunges, casts, shakes, damage pops, HP bars.
+const BV = { f: null, token: 0, playing: false, speed: 1, useProps: false, seed: 0, groups: [], gi: 0, units: [], res: null };
+const MELEE = /weapon|slash|claw|fist|strike|tackle|saber|swing|bite|rake|thrash|pitchfork|horn|hoove|cleaver|splitter|crush|slap|grab|sweep|swipe|rend|jab|muleta|descabello|tafallera|shield|stomp|rush|lance|blade|punch|kick|kiss/i;
+const reduceMotion = (() => { try { return matchMedia("(prefers-reduced-motion: reduce)").matches; } catch { return false; } })();
+const slugOf = (s) => String(s).toLowerCase().normalize("NFKD").replace(/^⭐️?\s*/u, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms / BV.speed));
+const clone = (x) => JSON.parse(JSON.stringify(x));
+
+function applyProposal(model, baseName) {
+  const p = state.props[slugOf(baseName)];
+  if (!p) return;
+  if (p.hpPct) { const hp = Math.max(1, Math.round((model.hp.max ?? model.hp.cur) * (1 + p.hpPct / 100))); model.hp.max = hp; model.hp.cur = hp; }
+  if (p.dmgAdd) for (const it of model.items ?? []) {
+    const pr = it.props ?? {};
+    if (!String(pr.type_damage ?? "").trim() || !pr.rolled_atr1 || pr.rolled_atr1 === "-") continue;
+    const raw = String(pr.damage_bonus ?? "0").trim() || "0";
+    pr.damage_bonus = /^-?\d+(\.\d+)?$/.test(raw) ? String(Number(raw) + p.dmgAdd) : `(${raw}) + ${p.dmgAdd}`;
+  }
+}
+// One battle on the page engine. Duplicates get A/B/C so the log can tell them apart.
+function simulate(f, seed, trace) {
+  globalThis.__msTraceHp = !!trace;
+  const counts = {}, seen = {};
+  for (const n of f.lineup) counts[n] = (counts[n] ?? 0) + 1;
+  const enemies = f.lineup.map((n) => {
+    const m = clone(D.sim.monsters[n]);
+    seen[n] = (seen[n] ?? 0) + 1;
+    if (counts[n] > 1) m.name = `${n} ${String.fromCharCode(64 + seen[n])}`;
+    m._base = n;
+    if (BV.useProps) applyProposal(m, n);
+    return m;
+  });
+  const party = D.sim.party.map(clone);
+  const res = Mindscape.runBattle({ party, enemies, rng: new Mindscape.Rng(`page:${f.id}:${seed}`), expectedRounds: f.kind === "boss" ? 10 : 7, policy: D.policy });
+  return { res, party, enemies };
+}
+
+function openBattle(f) {
+  BV.f = f; BV.seed = Math.floor(Math.random() * 1e9);
+  $("battle").hidden = false;
+  document.body.style.overflow = "hidden";
+  startBattle();
+}
+function closeBattle() { BV.token++; BV.playing = false; $("battle").hidden = true; document.body.style.overflow = ""; }
+
+function startBattle() {
+  BV.token++;
+  const f = BV.f;
+  const { res, party, enemies } = simulate(f, BV.seed, true);
+  BV.res = res;
+  // Group consecutive entries of one action (a multi-target hit is one beat).
+  const groups = [];
+  for (const e of res.log) {
+    const g = groups.at(-1);
+    if (g && !e.reaction && !g[0].reaction && g[0].actor === e.actor && g[0].action === e.action && g[0].round === e.round && e.target && g[0].target) g.push(e);
+    else groups.push([e]);
+  }
+  BV.groups = groups; BV.gi = 0;
+  const unitEl = (m, side, i) => {
+    const sid = side === "party" ? slugOf(m.name) : slugOf(m._base);
+    const max = m.hp.max ?? m.hp.cur;
+    const el = h("div", { class: "unit", "data-i": i },
+      h("div", { class: "plate" }, h("span", { class: "nm" }, m.name), h("div", { class: "bar" }, h("i", { style: "width:100%" })), h("span", { class: "hpn" }, `${max}/${max}`)),
+      sprite(sid, Math.round(spriteH(sid, side === "party" ? 54 : 62, 120))));
+    return { el, name: m.name, side, max };
+  };
+  BV.units = [...party.map((m, i) => unitEl(m, "party", i)), ...enemies.map((m, i) => unitEl(m, "foe", party.length + i))];
+  const byName = Object.fromEntries(BV.units.map((u) => [u.name, u]));
+  BV.byName = byName;
+  const stage = h("div", { class: "bv-stage" },
+    h("div", { class: "bv-side party" }, ...BV.units.filter((u) => u.side === "party").map((u) => u.el)),
+    h("div", { class: "bv-side foes" }, ...BV.units.filter((u) => u.side === "foe").map((u) => u.el)),
+    h("div", { class: "bv-banner", id: "bv-banner" }, "Battle start"));
+  const log = h("div", { class: "bv-log", id: "bv-log", "aria-live": "polite" });
+  const play = h("button", { type: "button", id: "bv-play", onclick: () => (BV.playing ? pause() : resume()) }, "❚❚ Pause");
+  const speeds = h("span", { class: "seg", role: "group", "aria-label": "Speed" }, ...[1, 2, 4].map((sp) => h("button", { type: "button", "aria-pressed": String(BV.speed === sp),
+    onclick: (e) => { BV.speed = sp; for (const b of e.currentTarget.parentNode.children) b.setAttribute("aria-pressed", String(b === e.currentTarget)); } }, `${sp}×`)));
+  const props = Object.keys(state.props).length;
+  const controls = h("div", { class: "bv-controls" }, play, speeds,
+    h("button", { type: "button", onclick: () => skipToEnd() }, "Skip to end"),
+    h("button", { type: "button", onclick: () => { BV.seed = Math.floor(Math.random() * 1e9); startBattle(); } }, "New battle"),
+    h("label", { title: props ? "Fight with the HP / damage changes saved in the bestiary" : "Save a proposal in the bestiary first" },
+      h("input", { type: "checkbox", id: "bv-props", checked: BV.useProps, disabled: !props, onchange: (e) => { BV.useProps = e.target.checked; startBattle(); } }),
+      `Use my monster proposals${props ? ` (${props})` : ""}`),
+    h("span", { class: "muted" }, "Space: play/pause · Esc: close"));
+  $("battle").replaceChildren(h("div", { class: "win bv" },
+    h("div", { class: "bv-head" }, h("span", { class: "eyebrow" }, `${f.area === "V" ? "Valley" : "Fafnir"} ${f.story ? "story" : "#" + f.num}`),
+      h("h3", {}, fname(f)), stamp(kindOf(f)), h("button", { type: "button", class: "x", onclick: closeBattle, "aria-label": "Close" }, "✕")),
+    h("div", { class: "bv-main" }, stage, log), controls, h("div", { class: "bv-result", id: "bv-result" })));
+  BV.playing = true;
+  loop(BV.token);
+}
+function pause() { BV.playing = false; const b = $("bv-play"); if (b) b.textContent = "▶ Play"; }
+function resume() { if (BV.gi >= BV.groups.length) return; BV.playing = true; const b = $("bv-play"); if (b) b.textContent = "❚❚ Pause"; loop(BV.token); }
+function skipToEnd() {
+  BV.token++; BV.playing = false;
+  for (; BV.gi < BV.groups.length; BV.gi++) { logGroup(BV.groups[BV.gi]); syncHp(BV.groups[BV.gi].at(-1)); }
+  finish();
+}
+
+async function loop(token) {
+  let round = BV.groups[BV.gi]?.[0]?.round ?? 0;
+  while (BV.playing && token === BV.token && BV.gi < BV.groups.length) {
+    const g = BV.groups[BV.gi];
+    if (g[0].round !== round || BV.gi === 0) {
+      round = g[0].round;
+      const b = $("bv-banner"); if (b) b.textContent = `Round ${round}`;
+      $("bv-log")?.append(h("p", { class: "rd" }, `Round ${round}`));
+      await sleep(450);
+      if (token !== BV.token) return;
+    }
+    await playGroup(g);
+    if (token !== BV.token) return;
+    BV.gi++;
+    await sleep(260);
+  }
+  if (token === BV.token && BV.gi >= BV.groups.length) finish();
+}
+
+function pop(unit, text, cls = "") {
+  if (!unit) return;
+  const p = h("span", { class: `pop ${cls}` }, text);
+  unit.el.append(p);
+  const anim = p.animate([{ transform: "translate(-50%, 0)", opacity: 1 }, { transform: "translate(-50%, -34px)", opacity: 0 }], { duration: 1100 / BV.speed, easing: "ease-out" });
+  anim.onfinish = () => p.remove();
+}
+function moveAnim(el, frames, ms) { if (reduceMotion || !el) return Promise.resolve(); return el.animate(frames, { duration: ms / BV.speed, easing: "ease-in-out" }).finished.catch(() => {}); }
+async function orb(from, to) {
+  if (reduceMotion || !from || !to) return;
+  const stage = from.el.closest(".bv-stage"); if (!stage) return;
+  const sr = stage.getBoundingClientRect(), a = from.el.getBoundingClientRect(), b = to.el.getBoundingClientRect();
+  const o = h("div", { class: "orb" }); stage.append(o);
+  const x0 = a.left + a.width / 2 - sr.left - 7, y0 = a.top + a.height / 2 - sr.top - 7, x1 = b.left + b.width / 2 - sr.left - 7, y1 = b.top + b.height / 2 - sr.top - 7;
+  await o.animate([{ transform: `translate(${x0}px, ${y0}px)` }, { transform: `translate(${x1}px, ${y1}px)` }], { duration: 420 / BV.speed, easing: "ease-in" }).finished.catch(() => {});
+  o.remove();
+}
+function syncHp(e) {
+  if (!e?.__hp) return;
+  e.__hp.forEach(([hp, alive], i) => {
+    const u = BV.units[i]; if (!u) return;
+    const frac = Math.max(0, Math.min(1, hp / u.max));
+    const bar = u.el.querySelector(".bar i");
+    bar.style.width = `${frac * 100}%`;
+    bar.className = frac <= 0.25 ? "low" : frac <= 0.5 ? "mid" : "";
+    u.el.querySelector(".hpn").textContent = `${hp}/${u.max}`;
+    u.el.classList.toggle("down", !alive);
+  });
+}
+function lineFor(g) {
+  const e = g[0];
+  const u = BV.byName[e.actor];
+  const cls = !u ? "sys" : u.side === "party" ? "ally" : "foe";
+  if (e.denied) return [cls, `${e.actor} loses a turn.`];
+  if (e.idle) return [cls, `${e.actor} guards.`];
+  if (e.arming) return [cls, `${e.actor} readies ${e.action}.`];
+  if (e.heal) return [cls, `${e.actor} uses ${e.action}: +${e.amount} HP to ${[].concat(e.heal).join(", ")}.`];
+  if (e.restore) return [cls, `${e.actor} uses ${e.action} on ${[].concat(e.target).join(", ")} (+${e.amount} ${String(e.restore).toUpperCase()}).`];
+  if (e.revive) return [cls, `${e.actor} uses ${e.action}: ${e.target} is back up!`];
+  if (e.protect) return [cls, `${e.actor} protects ${e.target}!`];
+  if (e.reaction && !e.target) return [cls, `${e.actor}: ${e.action}${e.element ? ` (${e.element})` : ""}.`];
+  const parts = g.map((x) => {
+    if (x.miss) return `${x.target} — miss`;
+    const tag = x.direction === "recover" ? ` (absorbed, +${x.damage})` : `${x.damage}${x.affinity === "VU" ? " (weak!)" : x.affinity === "RS" ? " (resisted)" : x.affinity === "IM" ? " (immune)" : ""}${x.crit ? " CRIT" : ""}`;
+    return `${x.target} ${x.direction === "recover" ? tag : tag}${x.killed ? " — down!" : ""}`;
+  });
+  return [cls, `${e.actor} uses ${e.action} → ${parts.join("; ")}`];
+}
+function logGroup(g) {
+  const [cls, text] = lineFor(g);
+  const log = $("bv-log"); if (!log) return;
+  log.append(h("p", { class: cls }, text));
+  log.scrollTop = log.scrollHeight;
+}
+async function playGroup(g) {
+  const e = g[0];
+  const actor = BV.byName[e.actor];
+  actor?.el.classList.add("acting");
+  logGroup(g);
+  const dir = actor?.side === "party" ? 1 : -1;
+  if (e.heal || e.restore || e.revive) {
+    await moveAnim(actor?.el, [{ transform: "translateY(0)" }, { transform: "translateY(-8px)" }, { transform: "translateY(0)" }], 320);
+    for (const n of [].concat(e.heal ?? e.target ?? [])) pop(BV.byName[n], e.revive ? "REVIVE" : `+${e.amount}`, "heal");
+    syncHp(g.at(-1));
+  } else if (e.protect) {
+    pop(actor, "Protect!", "tag");
+    await moveAnim(actor?.el, [{ transform: "translateX(0)" }, { transform: `translateX(${dir * 20}px)` }, { transform: "translateX(0)" }], 360);
+  } else if (e.reaction && !e.target) {
+    pop(actor, e.action, "tag");
+    await sleep(320);
+  } else if (e.idle || e.denied || e.arming) {
+    pop(actor, e.denied ? "Stopped" : e.idle ? "Guard" : e.action, "tag");
+    await sleep(380);
+  } else if (e.target) {
+    const melee = MELEE.test(e.action);
+    if (melee) await moveAnim(actor?.el, [{ transform: "translateX(0)" }, { transform: `translateX(${dir * 34}px)` }], 220);
+    else { pop(actor, e.action, "tag"); await orb(actor, BV.byName[g[0].target]); }
+    for (const x of g) {
+      const t = BV.byName[x.target];
+      if (!t) continue;
+      if (x.miss) { pop(t, "MISS", "miss"); continue; }
+      if (x.direction === "recover") { pop(t, `+${x.damage}`, "heal"); continue; }
+      pop(t, `${x.crit ? "CRIT " : ""}${x.damage}${x.affinity === "VU" ? "!" : ""}`, x.affinity === "VU" ? "weak" : "");
+      moveAnim(t.el, [{ transform: "translateX(0)", filter: "brightness(1)" }, { transform: "translateX(-7px)", filter: "brightness(2.2)" }, { transform: "translateX(7px)", filter: "brightness(1)" }, { transform: "translateX(0)" }], 300);
+    }
+    syncHp(g.at(-1));
+    if (melee) await moveAnim(actor?.el, [{ transform: `translateX(${dir * 34}px)` }, { transform: "translateX(0)" }], 200);
+    await sleep(380);
+  } else {
+    await sleep(250);
+  }
+  syncHp(g.at(-1));
+  actor?.el.classList.remove("acting");
+}
+
+function finish() {
+  BV.playing = false;
+  const b = $("bv-play"); if (b) b.textContent = "▶ Play";
+  const r = BV.res, f = BV.f;
+  const word = r.outcome === "victory" ? "VICTORY" : r.outcome === "overtime" ? "TIME UP" : "DEFEAT";
+  const banner = $("bv-banner"); if (banner) banner.textContent = word;
+  const kos = (r.knockedOut ?? []).map((k) => k.name);
+  const box = $("bv-result"); if (!box) return;
+  const stats = h("div", { class: "bv-stats" });
+  const note = h("textarea", { id: `bvnote-${f.id}`, placeholder: "What did you see? e.g. Prism's big spell one-shot Keren", rows: 2 }, state.fb[f.id]?.note ?? "");
+  const msg = h("span", { class: "saved" });
+  const save = async (verdict) => {
+    if (!db) { msg.textContent = "Sign in to claude.ai to save"; return; }
+    msg.textContent = "Saving…";
+    try {
+      await db.doc(`feedback/${f.id}`).set({ fight: f.id, name: fname(f), verdict: verdict ?? state.fb[f.id]?.verdict ?? "", note: note.value.trim(), at: new Date().toISOString(), by: state.uid ?? null, watched: true });
+      msg.textContent = "Saved";
+    } catch (e) { msg.textContent = e?.code === "invalid_argument" ? "Read-only for you" : "Not saved — try again"; }
+  };
+  box.replaceChildren(
+    h("div", { class: "big" }, r.outcome === "overtime" ? `${word} — nobody won in ${r.rounds} rounds` : `${word} in ${r.rounds} round${r.rounds === 1 ? "" : "s"}`),
+    h("div", { class: "muted" }, `Party at its lowest: ${pct(r.partyHpLow)} HP · ended at ${pct(r.partyHpRemaining)} · ${kos.length ? "KO'd: " + kos.join(", ") : "nobody KO'd"}${BV.useProps ? " · with your proposals" : ""}`),
+    h("div", { class: "calls" }, h("span", { class: "lab" }, "Your call"),
+      ...CALLS.map(([k, label]) => h("button", { type: "button", "aria-pressed": String(state.fb[f.id]?.verdict === k), disabled: !db || !state.canWrite, onclick: (e) => { for (const x of e.currentTarget.parentNode.querySelectorAll("button")) x.setAttribute("aria-pressed", String(x === e.currentTarget)); save(k); } }, label)), msg),
+    h("div", { class: "noteform" }, note, h("button", { type: "button", class: "save", disabled: !db || !state.canWrite, onclick: () => save() }, "Save note")),
+    h("div", { class: "bv-controls" }, h("button", { type: "button", onclick: () => batch(stats) }, "Simulate 300 more"), stats));
+}
+// Many battles, no animation, chunked so the page stays responsive.
+function batch(out) {
+  const f = BV.f, N = 300, rows = [];
+  let i = 0;
+  out.textContent = "Simulating…";
+  const step = () => {
+    const t0 = performance.now();
+    while (i < N && performance.now() - t0 < 30) { const { res } = simulate(f, `batch:${BV.seed}:${i}`, false); rows.push(res); i++; }
+    if (i < N) { out.textContent = `Simulating… ${i}/${N}`; setTimeout(step, 0); return; }
+    const med = (xs) => { const s = xs.filter((x) => x != null).sort((a, b) => a - b); return s.length ? s[Math.floor((s.length - 1) / 2)] : null; };
+    const wins = rows.filter((r) => r.outcome === "victory");
+    out.textContent = `${N} battles${BV.useProps ? " with your proposals" : ""}: party wins ${pct(wins.length / N)} · ${med(wins.map((r) => r.rounds)) ?? "—"} rounds when it wins · lowest party HP ${pct(med(rows.map((r) => r.partyHpLow)))} (median) · someone KO'd in ${pct(rows.filter((r) => (r.knockedOut ?? []).length).length / N)}`;
+  };
+  setTimeout(step, 0);
+}
+document.addEventListener("keydown", (e) => {
+  if ($("battle").hidden) return;
+  if (e.key === "Escape") { e.preventDefault(); closeBattle(); }
+  else if (e.key === " " && e.target === document.body) { e.preventDefault(); BV.playing ? pause() : resume(); }
+});
+
 $("key-stamps").replaceChildren(...["trivial", "low", "target", "long", "stale", "wall"].map((k) => h("span", { title: STAMP[k].plain }, stamp(k))));
 renderParty(); renderReports(); renderCards(); renderBeasts(); renderStatus();
 

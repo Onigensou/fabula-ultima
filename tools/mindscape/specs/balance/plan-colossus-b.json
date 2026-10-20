@@ -1,0 +1,10 @@
+{
+  "Iron Colossus": { "hp": 480, "def": 15, "mdef": 12, "ef": { "heavy": 200 } },
+  "rows": {
+    "F9":  ["Dire Orc", "Iron Colossus"],
+    "F10": ["Succubus", "Iron Colossus"],
+    "F12": ["Death Gazer", "Iron Colossus"],
+    "F14": ["Dragon Guard", "Iron Colossus"],
+    "F15": ["Succubus", "Iron Colossus"]
+  }
+}
