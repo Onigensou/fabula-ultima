@@ -1,0 +1,972 @@
+{
+ "running": true,
+ "plan": [
+  {
+   "id": "manaray2",
+   "enemies": [
+    {
+     "uuid": "Actor.iGc0EUHE9LKWT0Ye",
+     "id": "iGc0EUHE9LKWT0Ye",
+     "name": "Mana Ray",
+     "quantity": 2
+    }
+   ]
+  },
+  {
+   "id": "skizzik-kirin-skizzik",
+   "enemies": [
+    {
+     "uuid": "Actor.I2sSkVIQ4FCunZBE",
+     "id": "I2sSkVIQ4FCunZBE",
+     "name": "Skizzik",
+     "quantity": 2
+    },
+    {
+     "uuid": "Actor.TvLv878yZLNUAWNN",
+     "id": "TvLv878yZLNUAWNN",
+     "name": "Kirin",
+     "quantity": 1
+    }
+   ]
+  },
+  {
+   "id": "orc-colossus-orc",
+   "enemies": [
+    {
+     "uuid": "Actor.rftRuHZwWx5SiNpH",
+     "id": "rftRuHZwWx5SiNpH",
+     "name": "Dire Orc",
+     "quantity": 2
+    },
+    {
+     "uuid": "Actor.FLy3XRr40wNRmYxV",
+     "id": "FLy3XRr40wNRmYxV",
+     "name": "Iron Colossus",
+     "quantity": 1
+    }
+   ]
+  },
+  {
+   "id": "asura",
+   "enemies": [
+    {
+     "uuid": "Actor.0AwQ7wEDz4ISA9mA",
+     "id": "0AwQ7wEDz4ISA9mA",
+     "name": "Asura",
+     "quantity": 1
+    }
+   ]
+  }
+ ],
+ "results": [
+  {
+   "fight": "manaray2",
+   "run": 0,
+   "outcome": "stalled",
+   "rounds": 1,
+   "hp": 1,
+   "sec": 265,
+   "err": null,
+   "party": [
+    {
+     "name": "Hina [SIM]",
+     "hp": 98,
+     "maxHp": 98,
+     "defeated": false
+    },
+    {
+     "name": "Keren [SIM]",
+     "hp": 96,
+     "maxHp": 96,
+     "defeated": false
+    },
+    {
+     "name": "Zarg [SIM]",
+     "hp": 111,
+     "maxHp": 111,
+     "defeated": false
+    },
+    {
+     "name": "Blanche [SIM]",
+     "hp": 166,
+     "maxHp": 166,
+     "defeated": false
+    },
+    {
+     "name": "King Gorger [SIM]",
+     "hp": 28,
+     "maxHp": 28,
+     "defeated": false
+    }
+   ],
+   "journal": "worlds/fabula-ultima-2/sim-logs/sim-2026-10-20T02-00-55-509Z.json"
+  },
+  {
+   "fight": "skizzik-kirin-skizzik",
+   "run": 0,
+   "outcome": "victory",
+   "rounds": 3,
+   "hp": 1,
+   "sec": 297,
+   "err": null,
+   "party": [
+    {
+     "name": "Blanche [SIM]",
+     "hp": 166,
+     "maxHp": 166,
+     "defeated": false
+    },
+    {
+     "name": "Hina [SIM]",
+     "hp": 98,
+     "maxHp": 98,
+     "defeated": false
+    },
+    {
+     "name": "Keren [SIM]",
+     "hp": 96,
+     "maxHp": 96,
+     "defeated": false
+    },
+    {
+     "name": "Zarg [SIM]",
+     "hp": 111,
+     "maxHp": 111,
+     "defeated": false
+    },
+    {
+     "name": "King Gorger [SIM]",
+     "hp": 28,
+     "maxHp": 28,
+     "defeated": false
+    },
+    {
+     "name": "Fox fire",
+     "hp": 53,
+     "maxHp": 53,
+     "defeated": false
+    },
+    {
+     "name": "Fox fire",
+     "hp": 53,
+     "maxHp": 53,
+     "defeated": false
+    }
+   ],
+   "journal": "worlds/fabula-ultima-2/sim-logs/sim-2026-10-20T02-05-51-544Z.json"
+  },
+  {
+   "fight": "orc-colossus-orc",
+   "run": 0,
+   "outcome": "overtime",
+   "rounds": 8,
+   "hp": 0.5778985507246377,
+   "sec": 818,
+   "err": null,
+   "party": [
+    {
+     "name": "Hina [SIM]",
+     "hp": 0,
+     "maxHp": 98,
+     "defeated": true
+    },
+    {
+     "name": "Zarg [SIM]",
+     "hp": 73,
+     "maxHp": 111,
+     "defeated": false
+    },
+    {
+     "name": "Blanche [SIM]",
+     "hp": 139,
+     "maxHp": 166,
+     "defeated": false
+    },
+    {
+     "name": "Keren [SIM]",
+     "hp": 65,
+     "maxHp": 96,
+     "defeated": false
+    },
+    {
+     "name": "King Gorger [SIM]",
+     "hp": 28,
+     "maxHp": 28,
+     "defeated": false
+    },
+    {
+     "name": "Fox fire",
+     "hp": 14,
+     "maxHp": 53,
+     "defeated": false
+    }
+   ],
+   "journal": "worlds/fabula-ultima-2/sim-logs/sim-2026-10-20T02-19-29-304Z.json"
+  },
+  {
+   "fight": "asura",
+   "run": 0,
+   "outcome": "victory",
+   "rounds": 9,
+   "hp": 0.9158316633266533,
+   "sec": 1304,
+   "err": null,
+   "party": [
+    {
+     "name": "Keren [SIM]",
+     "hp": 69,
+     "maxHp": 96,
+     "defeated": false
+    },
+    {
+     "name": "Hina [SIM]",
+     "hp": 98,
+     "maxHp": 98,
+     "defeated": false
+    },
+    {
+     "name": "Blanche [SIM]",
+     "hp": 151,
+     "maxHp": 166,
+     "defeated": false
+    },
+    {
+     "name": "Zarg [SIM]",
+     "hp": 111,
+     "maxHp": 111,
+     "defeated": false
+    },
+    {
+     "name": "King Gorger [SIM]",
+     "hp": 28,
+     "maxHp": 28,
+     "defeated": false
+    }
+   ],
+   "journal": "worlds/fabula-ultima-2/sim-logs/sim-2026-10-20T02-41-14-207Z.json"
+  },
+  {
+   "fight": "manaray2",
+   "run": 1,
+   "outcome": "victory",
+   "rounds": 2,
+   "hp": 0.8677685950413223,
+   "sec": 194,
+   "err": null,
+   "party": [
+    {
+     "name": "Hina [SIM]",
+     "hp": 98,
+     "maxHp": 98,
+     "defeated": false
+    },
+    {
+     "name": "Keren [SIM]",
+     "hp": 47,
+     "maxHp": 96,
+     "defeated": false
+    },
+    {
+     "name": "Blanche [SIM]",
+     "hp": 166,
+     "maxHp": 166,
+     "defeated": false
+    },
+    {
+     "name": "Zarg [SIM]",
+     "hp": 111,
+     "maxHp": 111,
+     "defeated": false
+    },
+    {
+     "name": "King Gorger [SIM]",
+     "hp": 28,
+     "maxHp": 28,
+     "defeated": false
+    },
+    {
+     "name": "Fox fire",
+     "hp": 22,
+     "maxHp": 53,
+     "defeated": false
+    },
+    {
+     "name": "Fox fire",
+     "hp": 53,
+     "maxHp": 53,
+     "defeated": false
+    }
+   ],
+   "journal": "worlds/fabula-ultima-2/sim-logs/sim-2026-10-20T02-44-25-910Z.json"
+  },
+  {
+   "fight": "skizzik-kirin-skizzik",
+   "run": 1,
+   "outcome": "victory",
+   "rounds": 3,
+   "hp": 0.7789855072463768,
+   "sec": 360,
+   "err": null,
+   "party": [
+    {
+     "name": "Keren [SIM]",
+     "hp": 72,
+     "maxHp": 96,
+     "defeated": false
+    },
+    {
+     "name": "Hina [SIM]",
+     "hp": 0,
+     "maxHp": 98,
+     "defeated": true
+    },
+    {
+     "name": "Blanche [SIM]",
+     "hp": 166,
+     "maxHp": 166,
+     "defeated": false
+    },
+    {
+     "name": "Zarg [SIM]",
+     "hp": 111,
+     "maxHp": 111,
+     "defeated": false
+    },
+    {
+     "name": "King Gorger [SIM]",
+     "hp": 28,
+     "maxHp": 28,
+     "defeated": false
+    },
+    {
+     "name": "Fox fire",
+     "hp": 53,
+     "maxHp": 53,
+     "defeated": false
+    }
+   ],
+   "journal": "worlds/fabula-ultima-2/sim-logs/sim-2026-10-20T02-50-27-221Z.json"
+  },
+  {
+   "fight": "orc-colossus-orc",
+   "run": 1,
+   "outcome": "overtime",
+   "rounds": 8,
+   "hp": 0.5719237435008665,
+   "sec": 839,
+   "err": null,
+   "party": [
+    {
+     "name": "Hina [SIM]",
+     "hp": 0,
+     "maxHp": 98,
+     "defeated": true
+    },
+    {
+     "name": "Keren [SIM]",
+     "hp": 96,
+     "maxHp": 96,
+     "defeated": false
+    },
+    {
+     "name": "Zarg [SIM]",
+     "hp": 81,
+     "maxHp": 111,
+     "defeated": false
+    },
+    {
+     "name": "Blanche [SIM]",
+     "hp": 111,
+     "maxHp": 166,
+     "defeated": false
+    },
+    {
+     "name": "Fox fire",
+     "hp": 14,
+     "maxHp": 53,
+     "defeated": false
+    },
+    {
+     "name": "Fox fire",
+     "hp": 28,
+     "maxHp": 53,
+     "defeated": false
+    }
+   ],
+   "journal": "worlds/fabula-ultima-2/sim-logs/sim-2026-10-20T03-04-25-147Z.json"
+  },
+  {
+   "fight": "asura",
+   "run": 1,
+   "outcome": "victory",
+   "rounds": 9,
+   "hp": 0.8134057971014492,
+   "sec": 1417,
+   "err": null,
+   "party": [
+    {
+     "name": "Hina [SIM]",
+     "hp": 98,
+     "maxHp": 98,
+     "defeated": false
+    },
+    {
+     "name": "Keren [SIM]",
+     "hp": 85,
+     "maxHp": 96,
+     "defeated": false
+    },
+    {
+     "name": "Blanche [SIM]",
+     "hp": 131,
+     "maxHp": 166,
+     "defeated": false
+    },
+    {
+     "name": "Zarg [SIM]",
+     "hp": 54,
+     "maxHp": 111,
+     "defeated": false
+    },
+    {
+     "name": "King Gorger [SIM]",
+     "hp": 28,
+     "maxHp": 28,
+     "defeated": false
+    },
+    {
+     "name": "Fox fire",
+     "hp": 53,
+     "maxHp": 53,
+     "defeated": false
+    }
+   ],
+   "journal": "worlds/fabula-ultima-2/sim-logs/sim-2026-10-20T03-28-01-514Z.json"
+  },
+  {
+   "fight": "manaray2",
+   "run": 2,
+   "outcome": "victory",
+   "rounds": 2,
+   "hp": 0.9130434782608695,
+   "sec": 172,
+   "err": null,
+   "party": [
+    {
+     "name": "Blanche [SIM]",
+     "hp": 166,
+     "maxHp": 166,
+     "defeated": false
+    },
+    {
+     "name": "Hina [SIM]",
+     "hp": 98,
+     "maxHp": 98,
+     "defeated": false
+    },
+    {
+     "name": "Zarg [SIM]",
+     "hp": 111,
+     "maxHp": 111,
+     "defeated": false
+    },
+    {
+     "name": "Keren [SIM]",
+     "hp": 96,
+     "maxHp": 96,
+     "defeated": false
+    },
+    {
+     "name": "King Gorger [SIM]",
+     "hp": 28,
+     "maxHp": 28,
+     "defeated": false
+    },
+    {
+     "name": "Fox fire",
+     "hp": 5,
+     "maxHp": 53,
+     "defeated": false
+    }
+   ],
+   "journal": "worlds/fabula-ultima-2/sim-logs/sim-2026-10-20T03-30-55-394Z.json"
+  },
+  {
+   "fight": "skizzik-kirin-skizzik",
+   "run": 2,
+   "outcome": "victory",
+   "rounds": 3,
+   "hp": 0.9983471074380166,
+   "sec": 237,
+   "err": null,
+   "party": [
+    {
+     "name": "Hina [SIM]",
+     "hp": 97,
+     "maxHp": 98,
+     "defeated": false
+    },
+    {
+     "name": "Zarg [SIM]",
+     "hp": 111,
+     "maxHp": 111,
+     "defeated": false
+    },
+    {
+     "name": "Blanche [SIM]",
+     "hp": 166,
+     "maxHp": 166,
+     "defeated": false
+    },
+    {
+     "name": "Keren [SIM]",
+     "hp": 96,
+     "maxHp": 96,
+     "defeated": false
+    },
+    {
+     "name": "King Gorger [SIM]",
+     "hp": 28,
+     "maxHp": 28,
+     "defeated": false
+    },
+    {
+     "name": "Fox fire",
+     "hp": 53,
+     "maxHp": 53,
+     "defeated": false
+    },
+    {
+     "name": "Fox fire",
+     "hp": 53,
+     "maxHp": 53,
+     "defeated": false
+    }
+   ],
+   "journal": "worlds/fabula-ultima-2/sim-logs/sim-2026-10-20T03-34-51-027Z.json"
+  },
+  {
+   "fight": "orc-colossus-orc",
+   "run": 2,
+   "outcome": "overtime",
+   "rounds": 8,
+   "hp": 0.9044502617801047,
+   "sec": 693,
+   "err": null,
+   "party": [
+    {
+     "name": "Hina [SIM]",
+     "hp": 98,
+     "maxHp": 98,
+     "defeated": false
+    },
+    {
+     "name": "Keren [SIM]",
+     "hp": 96,
+     "maxHp": 96,
+     "defeated": false
+    },
+    {
+     "name": "Blanche [SIM]",
+     "hp": 102,
+     "maxHp": 166,
+     "defeated": false
+    },
+    {
+     "name": "Zarg [SIM]",
+     "hp": 102,
+     "maxHp": 111,
+     "defeated": false
+    },
+    {
+     "name": "Dire Orc (Reanimated)",
+     "hp": 240,
+     "maxHp": 240,
+     "defeated": false
+    },
+    {
+     "name": "Fox fire",
+     "hp": 53,
+     "maxHp": 53,
+     "defeated": false
+    }
+   ],
+   "journal": "worlds/fabula-ultima-2/sim-logs/sim-2026-10-20T03-46-24-475Z.json"
+  },
+  {
+   "fight": "asura",
+   "run": 2,
+   "outcome": "overtime",
+   "rounds": 11,
+   "hp": 0.6673346693386774,
+   "sec": 1313,
+   "err": null,
+   "party": [
+    {
+     "name": "Keren [SIM]",
+     "hp": 96,
+     "maxHp": 96,
+     "defeated": false
+    },
+    {
+     "name": "Hina [SIM]",
+     "hp": 98,
+     "maxHp": 98,
+     "defeated": false
+    },
+    {
+     "name": "Zarg [SIM]",
+     "hp": 111,
+     "maxHp": 111,
+     "defeated": false
+    },
+    {
+     "name": "Blanche [SIM]",
+     "hp": 0,
+     "maxHp": 166,
+     "defeated": true
+    },
+    {
+     "name": "King Gorger [SIM]",
+     "hp": 28,
+     "maxHp": 28,
+     "defeated": false
+    }
+   ],
+   "journal": "worlds/fabula-ultima-2/sim-logs/sim-2026-10-20T04-08-17-888Z.json"
+  },
+  {
+   "fight": "manaray2",
+   "run": 3,
+   "outcome": "stalled",
+   "rounds": 2,
+   "hp": 0.767175572519084,
+   "sec": 371,
+   "err": null,
+   "party": [
+    {
+     "name": "Blanche [SIM]",
+     "hp": 142,
+     "maxHp": 166,
+     "defeated": false
+    },
+    {
+     "name": "Hina [SIM]",
+     "hp": 0,
+     "maxHp": 98,
+     "defeated": true
+    },
+    {
+     "name": "Zarg [SIM]",
+     "hp": 111,
+     "maxHp": 111,
+     "defeated": false
+    },
+    {
+     "name": "Keren [SIM]",
+     "hp": 96,
+     "maxHp": 96,
+     "defeated": false
+    },
+    {
+     "name": "Fox fire",
+     "hp": 53,
+     "maxHp": 53,
+     "defeated": false
+    }
+   ],
+   "journal": "worlds/fabula-ultima-2/sim-logs/sim-2026-10-20T04-14-28-197Z.json"
+  },
+  {
+   "fight": "skizzik-kirin-skizzik",
+   "run": 3,
+   "outcome": "victory",
+   "rounds": 4,
+   "hp": 0.8134057971014492,
+   "sec": 366,
+   "err": null,
+   "party": [
+    {
+     "name": "Keren [SIM]",
+     "hp": 96,
+     "maxHp": 96,
+     "defeated": false
+    },
+    {
+     "name": "Zarg [SIM]",
+     "hp": 106,
+     "maxHp": 111,
+     "defeated": false
+    },
+    {
+     "name": "Hina [SIM]",
+     "hp": 0,
+     "maxHp": 98,
+     "defeated": true
+    },
+    {
+     "name": "Blanche [SIM]",
+     "hp": 166,
+     "maxHp": 166,
+     "defeated": false
+    },
+    {
+     "name": "King Gorger [SIM]",
+     "hp": 28,
+     "maxHp": 28,
+     "defeated": false
+    },
+    {
+     "name": "Fox fire",
+     "hp": 53,
+     "maxHp": 53,
+     "defeated": false
+    }
+   ],
+   "journal": "worlds/fabula-ultima-2/sim-logs/sim-2026-10-20T04-20-33-431Z.json"
+  },
+  {
+   "fight": "orc-colossus-orc",
+   "run": 3,
+   "outcome": "overtime",
+   "rounds": 8,
+   "hp": 0.7801652892561983,
+   "sec": 772,
+   "err": null,
+   "party": [
+    {
+     "name": "Hina [SIM]",
+     "hp": 87,
+     "maxHp": 98,
+     "defeated": false
+    },
+    {
+     "name": "Zarg [SIM]",
+     "hp": 84,
+     "maxHp": 111,
+     "defeated": false
+    },
+    {
+     "name": "Keren [SIM]",
+     "hp": 96,
+     "maxHp": 96,
+     "defeated": false
+    },
+    {
+     "name": "Blanche [SIM]",
+     "hp": 117,
+     "maxHp": 166,
+     "defeated": false
+    },
+    {
+     "name": "King Gorger [SIM]",
+     "hp": 28,
+     "maxHp": 28,
+     "defeated": false
+    },
+    {
+     "name": "Fox fire",
+     "hp": 7,
+     "maxHp": 53,
+     "defeated": false
+    },
+    {
+     "name": "Fox fire",
+     "hp": 53,
+     "maxHp": 53,
+     "defeated": false
+    }
+   ],
+   "journal": "worlds/fabula-ultima-2/sim-logs/sim-2026-10-20T04-33-26-044Z.json"
+  },
+  {
+   "fight": "asura",
+   "run": 3,
+   "outcome": "overtime",
+   "rounds": 11,
+   "hp": 0.6956521739130435,
+   "sec": 1219,
+   "err": null,
+   "party": [
+    {
+     "name": "Hina [SIM]",
+     "hp": 98,
+     "maxHp": 98,
+     "defeated": false
+    },
+    {
+     "name": "Blanche [SIM]",
+     "hp": 0,
+     "maxHp": 166,
+     "defeated": true
+    },
+    {
+     "name": "Keren [SIM]",
+     "hp": 94,
+     "maxHp": 96,
+     "defeated": false
+    },
+    {
+     "name": "Zarg [SIM]",
+     "hp": 111,
+     "maxHp": 111,
+     "defeated": false
+    },
+    {
+     "name": "King Gorger [SIM]",
+     "hp": 28,
+     "maxHp": 28,
+     "defeated": false
+    },
+    {
+     "name": "Fox fire",
+     "hp": 53,
+     "maxHp": 53,
+     "defeated": false
+    }
+   ],
+   "journal": "worlds/fabula-ultima-2/sim-logs/sim-2026-10-20T04-53-44-872Z.json"
+  },
+  {
+   "fight": "manaray2",
+   "run": 4,
+   "outcome": "victory",
+   "rounds": 2,
+   "hp": 0.9565916398713826,
+   "sec": 182,
+   "err": null,
+   "party": [
+    {
+     "name": "Hina [SIM]",
+     "hp": 98,
+     "maxHp": 98,
+     "defeated": false
+    },
+    {
+     "name": "Keren [SIM]",
+     "hp": 51,
+     "maxHp": 51,
+     "defeated": false
+    },
+    {
+     "name": "Zarg [SIM]",
+     "hp": 111,
+     "maxHp": 111,
+     "defeated": false
+    },
+    {
+     "name": "Blanche [SIM]",
+     "hp": 166,
+     "maxHp": 166,
+     "defeated": false
+    },
+    {
+     "name": "King Gorger [SIM]",
+     "hp": 28,
+     "maxHp": 28,
+     "defeated": false
+    },
+    {
+     "name": "Mana Ray (Reanimated)",
+     "hp": 115,
+     "maxHp": 115,
+     "defeated": false
+    },
+    {
+     "name": "Fox fire",
+     "hp": 26,
+     "maxHp": 53,
+     "defeated": false
+    }
+   ],
+   "journal": "worlds/fabula-ultima-2/sim-logs/sim-2026-10-20T04-56-45-599Z.json"
+  },
+  {
+   "fight": "skizzik-kirin-skizzik",
+   "run": 4,
+   "outcome": "overtime",
+   "rounds": 8,
+   "hp": 0.5210420841683366,
+   "sec": 693,
+   "err": null,
+   "party": [
+    {
+     "name": "Hina [SIM]",
+     "hp": 0,
+     "maxHp": 98,
+     "defeated": true
+    },
+    {
+     "name": "Zarg [SIM]",
+     "hp": 111,
+     "maxHp": 111,
+     "defeated": false
+    },
+    {
+     "name": "Keren [SIM]",
+     "hp": 0,
+     "maxHp": 96,
+     "defeated": true
+    },
+    {
+     "name": "Blanche [SIM]",
+     "hp": 121,
+     "maxHp": 166,
+     "defeated": false
+    },
+    {
+     "name": "King Gorger [SIM]",
+     "hp": 28,
+     "maxHp": 28,
+     "defeated": false
+    }
+   ],
+   "journal": "worlds/fabula-ultima-2/sim-logs/sim-2026-10-20T05-08-18-245Z.json"
+  },
+  {
+   "fight": "orc-colossus-orc",
+   "run": 4,
+   "outcome": "overtime",
+   "rounds": 8,
+   "hp": 0.8435114503816794,
+   "sec": 686,
+   "err": null,
+   "party": [
+    {
+     "name": "Keren [SIM]",
+     "hp": 96,
+     "maxHp": 96,
+     "defeated": false
+    },
+    {
+     "name": "Hina [SIM]",
+     "hp": 78,
+     "maxHp": 98,
+     "defeated": false
+    },
+    {
+     "name": "Blanche [SIM]",
+     "hp": 150,
+     "maxHp": 166,
+     "defeated": false
+    },
+    {
+     "name": "Zarg [SIM]",
+     "hp": 104,
+     "maxHp": 111,
+     "defeated": false
+    },
+    {
+     "name": "Fox fire",
+     "hp": 14,
+     "maxHp": 53,
+     "defeated": false
+    }
+   ],
+   "journal": "worlds/fabula-ultima-2/sim-logs/sim-2026-10-20T05-19-45-101Z.json"
+  }
+ ],
+ "started": 1792461394416,
+ "finished": null,
+ "runs": 5
+}

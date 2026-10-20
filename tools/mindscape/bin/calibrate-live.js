@@ -67,7 +67,11 @@ async function main() {
       const names = plan.enemies.flatMap((e) => Array(e.quantity).fill(e.name));
       const boss = names.length === 1 && /asura|fafnir|rakshasa|carlbero/i.test(names[0]);
       const enemies = await loadNamed(names, { world });
-      const row = { id: plan.id, enemies: names, live: summarise(live.results.filter((r) => r.fight === plan.id && !r.err)), mindscape: {} };
+      // A "stalled" live run is the sim hanging (its watchdog aborted it), not a fight
+      // result: counted apart, never as a loss.
+      const mine = live.results.filter((r) => r.fight === plan.id && !r.err);
+      const row = { id: plan.id, enemies: names, live: summarise(mine.filter((r) => r.outcome !== "stalled")),
+        liveStalled: mine.filter((r) => r.outcome === "stalled").length, mindscape: {} };
       for (const policy of ["novice", "legacy", "standard", "expert"]) {
         const party = liveScenario(await loadParty({ world }));
         const res = [];
@@ -87,7 +91,7 @@ async function main() {
   console.log("fight".padEnd(32) + "source".padEnd(12) + "  n   win  overtime  rounds(win)  HP left(win)");
   for (const f of report.fights) {
     const line = (label, s) => console.log("".padEnd(32) + label.padEnd(12) + String(s.n).padStart(4) + pct(s.win).padStart(6) + pct(s.overtime).padStart(10) + num(s.roundsWin).padStart(13) + pct(s.hpWin).padStart(14));
-    console.log(`${f.id} (${f.enemies.join(" + ")})`.slice(0, 80));
+    console.log(`${f.id} (${f.enemies.join(" + ")})${f.liveStalled ? ` — ${f.liveStalled} live run(s) stalled, excluded` : ""}`);
     line("LIVE", f.live);
     for (const [p, s] of Object.entries(f.mindscape)) line(p, s);
   }
