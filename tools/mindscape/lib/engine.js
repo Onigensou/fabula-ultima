@@ -1440,7 +1440,7 @@ const POLICY_API = { attrs, canAfford, chooseAction, chooseTargets, weaponAction
 // default) leaves every fight exactly as it was.
 // `policy`: how the PARTY plays (party-policy.js). "legacy" (the default) is the
 // original Mindscape party, so every published calibration is unchanged.
-function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, conflictEvent = null, tinctures = null, policy = "legacy", monsterRules = "registry", statusLibrary = null, summons = null, turnOrder = null }) {
+function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, conflictEvent = null, tinctures = null, policy = "legacy", monsterRules = "registry", statusLibrary = null, summons = null, turnOrder = null, askReactions = "skip" }) {
   // "alternate" (the Battle Director's side-by-side turns) comes with the data rules;
   // "initiative" is Mindscape's original block order. Either can be forced.
   turnOrder = turnOrder ?? (monsterRules === "data" ? "alternate" : "initiative");
@@ -1482,6 +1482,7 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
   if (monsterRules === "data") {
     state.statusLibrary = statusLibrary ?? {};
     state.summons = summons ?? {};
+    state.askReactions = askReactions;
     state.mdApi = { applyFlatDamage, perform: resolveAction, canAfford, attrs, parseTarget, parseCost, isMelee, weaponRead: mdWeaponRead, spawn: mdSpawn };
   }
   state.eventApi = { applyFlatDamage, spawnObject };

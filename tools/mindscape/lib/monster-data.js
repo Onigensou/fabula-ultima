@@ -1091,7 +1091,11 @@ function emit(state, trigger, ev) {
         for (const row of src.rows) {
           if (norm(row.reaction_trigger) !== trigger) continue;
           const mode = norm(row.reaction_passive_mode);
-          if (SKIP_MODES.has(mode)) {
+          // "ask": with askReactions "apply" the sim says yes whenever the row can fire, as the
+          // live sim does for every prompt it has no policy for (reaction-brain.js fallback,
+          // run config reactions: "apply"). A redirect offered to the TARGET stays a decision.
+          const applyAsk = mode === "ask" && state.askReactions === "apply" && norm(row.reaction_responder) !== "target";
+          if (SKIP_MODES.has(mode) && !applyAsk) {
             // A person decides at the table (the GM, or — with reaction_responder
             // "target" — the player being targeted). Recorded once per fight.
             const who = norm(row.reaction_responder) === "target" ? "the targeted player" : (R.side === "party" ? "the player" : "the GM");

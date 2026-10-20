@@ -1,7 +1,12 @@
 {
-  "generated": "2026-10-20T05:48:52.480Z",
-  "runs": 2000,
-  "scenario": "startingZp 0, phoenixFeathers 0, fabulaPoints 3, no guests",
+  "generated": "2026-10-20T18:59:05.313Z",
+  "runs": 1000,
+  "monsterRules": "data",
+  "policies": [
+    "standard",
+    "expert"
+  ],
+  "scenario": "startingZp 0, phoenixFeathers 0, fabulaPoints 3, no guests, no conflict event",
   "fights": [
     {
       "id": "manaray2",
@@ -18,34 +23,26 @@
       },
       "liveStalled": 2,
       "mindscape": {
-        "novice": {
-          "n": 2000,
-          "win": 0.806,
-          "overtime": 0.194,
-          "roundsWin": 5,
-          "hpWin": 0.6602972399150743
-        },
-        "legacy": {
-          "n": 2000,
+        "standard": {
+          "n": 1000,
           "win": 1,
           "overtime": 0,
-          "roundsWin": 3,
-          "hpWin": 0.832271762208068
+          "roundsWin": 2,
+          "hpWin": 0.8704883227176221
         },
-        "standard": {
-          "n": 2000,
+        "expert": {
+          "n": 1000,
           "win": 1,
           "overtime": 0,
           "roundsWin": 2,
           "hpWin": 0.8641188959660298
-        },
-        "expert": {
-          "n": 2000,
-          "win": 1,
-          "overtime": 0,
-          "roundsWin": 2,
-          "hpWin": 0.910828025477707
         }
+      },
+      "parity": {
+        "verdict": "agrees",
+        "why": "live 3/3 is plausible at the sim's 100% (p=1.00)",
+        "direction": "sim harder than live",
+        "p": 0.997002999
       }
     },
     {
@@ -64,34 +61,26 @@
       },
       "liveStalled": 0,
       "mindscape": {
-        "novice": {
-          "n": 2000,
-          "win": 0,
-          "overtime": 0.008,
-          "roundsWin": null,
-          "hpWin": null
-        },
-        "legacy": {
-          "n": 2000,
-          "win": 0.2205,
-          "overtime": 0.5135,
-          "roundsWin": 7,
-          "hpWin": 0.44798301486199577
-        },
         "standard": {
-          "n": 2000,
-          "win": 0.8715,
-          "overtime": 0.1245,
-          "roundsWin": 5,
-          "hpWin": 0.5987261146496815
+          "n": 1000,
+          "win": 0.608,
+          "overtime": 0.347,
+          "roundsWin": 4,
+          "hpWin": 0.6518046709129511
         },
         "expert": {
-          "n": 2000,
-          "win": 0.99,
-          "overtime": 0.01,
+          "n": 1000,
+          "win": 0.84,
+          "overtime": 0.16,
           "roundsWin": 3,
-          "hpWin": 0.6411889596602972
+          "hpWin": 0.7537154989384289
         }
+      },
+      "parity": {
+        "verdict": "agrees",
+        "why": "live 4/5 is plausible at the sim's 61% (p=0.35)",
+        "direction": "sim harder than live",
+        "p": 0.350920982396928
       }
     },
     {
@@ -110,34 +99,26 @@
       },
       "liveStalled": 0,
       "mindscape": {
-        "novice": {
-          "n": 2000,
-          "win": 0,
-          "overtime": 0.0085,
-          "roundsWin": null,
-          "hpWin": null
-        },
-        "legacy": {
-          "n": 2000,
-          "win": 0,
-          "overtime": 0.854,
-          "roundsWin": null,
-          "hpWin": null
-        },
         "standard": {
-          "n": 2000,
+          "n": 1000,
           "win": 0,
-          "overtime": 0.985,
+          "overtime": 1,
           "roundsWin": null,
           "hpWin": null
         },
         "expert": {
-          "n": 2000,
+          "n": 1000,
           "win": 0,
-          "overtime": 0.9925,
+          "overtime": 1,
           "roundsWin": null,
           "hpWin": null
         }
+      },
+      "parity": {
+        "verdict": "agrees",
+        "why": "live 0/5 is plausible at the sim's 0% (p=1.00)",
+        "direction": "sim harder than live",
+        "p": 1.0000000000000002
       }
     },
     {
@@ -154,34 +135,26 @@
       },
       "liveStalled": 0,
       "mindscape": {
-        "novice": {
-          "n": 2000,
-          "win": 0,
-          "overtime": 0,
-          "roundsWin": null,
-          "hpWin": null
-        },
-        "legacy": {
-          "n": 2000,
-          "win": 0,
-          "overtime": 0,
-          "roundsWin": null,
-          "hpWin": null
-        },
         "standard": {
-          "n": 2000,
-          "win": 0.026,
-          "overtime": 0,
-          "roundsWin": 6,
-          "hpWin": 0.2356687898089172
+          "n": 1000,
+          "win": 0.039,
+          "overtime": 0.062,
+          "roundsWin": 9,
+          "hpWin": 0.7961783439490446
         },
         "expert": {
-          "n": 2000,
-          "win": 0.005,
-          "overtime": 0,
-          "roundsWin": 6,
-          "hpWin": 0.2356687898089172
+          "n": 1000,
+          "win": 0.019,
+          "overtime": 0.005,
+          "roundsWin": 7,
+          "hpWin": 0.8556263269639066
         }
+      },
+      "parity": {
+        "verdict": "drifts",
+        "why": "live won 2/4; at the sim's 4% that happens 0.9% of the time",
+        "direction": "sim harder than live",
+        "p": 0.008658388323000001
       }
     }
   ]
