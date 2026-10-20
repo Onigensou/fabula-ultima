@@ -6,27 +6,27 @@
 
 | Monster | Rank | Lvl | HP | Turns | DEF (party hits) | MDEF (party hits) | VU | RS / IM / AB | Basic attack · strongest (avg) | Rules broken |
 |---|---|---|---|---|---|---|---|---|---|---|
-| ⭐️ Fafnir | champion | 50 | 1824 | 4 | 16 (26%) | 17 (20%) | light | air, bolt, fire / dark, earth / — | Rend 58 · Condemn 108 | resisted hit = 25% of PC HP (< 25%); not modelled in the sim: Ruinous Breath, Storm Calm, Summon Elemental Drake, Torment, Searing Brand, Draconic Domination, Zero Power: Cruel Ultimatum; passive not simulated: Cruel Ultimatum: Fire, Dreadwyrm Descent, Storm Gathering, Zero Trigger: Suffering, Cruel Ultimatum: Bolt |
+| ⭐️ Fafnir | champion | 50 | 1824 | 4 | 16 (26%) | 17 (20%) | light | air, bolt, fire / dark, earth / — | Rend 58 · Condemn 108 | resisted hit = 25% of PC HP (< 25%); not simulated: Torment: a player decides (ask); Torment: redirect target; Condemn: a player decides (ask); Condemn: redirect target; Zero Power: Cruel Ultimatum: open action menu |
 | Ampere | soldier | 43 | 175 | 1 | 10 (>58%) | 10 (>58%) | earth | bolt / — / — | Bubble Beam 29 · Bubble Splash 47 ×all | best basic attack avg 29 < 45 |
-| Asura | elite | 38 | 900 | 4 | 15 (33%) | 13 (49%) | air, bolt, fire, ice | — / — / — | Elemental Slash (Enchanted) 49 | 4 VU (rule: exactly 1 for elite); resisted hit = 21% of PC HP (< 25%); not modelled in the sim: Quad-Elemental Slash; passive not simulated: Ascension |
-| Carlbero | elite | 50 | 640 | 4 | 11 (>58%) | 14 (41%) | fire | dark, poison / — / — | Tentacle Slap 47 ×3 · Mind Sap 57 | resisted hit = 20% of PC HP (< 25%); not modelled in the sim: Stinky Breath |
-| Death Gazer | soldier | 50 | 150 | 1 | 8 (>58%) | 16 (26%) | light | dark, poison / — / — | Eye Beam 30 · Mind Sear 43 | best basic attack avg 30 < 45; not modelled in the sim: Death Gaze |
-| Dire Orc | soldier | 50 | 240 | 1 | 10 (>58%) | 6 (>58%) | ice | earth / — / — | Skull Splitter 66 | not modelled in the sim: War Howl |
+| Asura | elite | 38 | 900 | 4 | 15 (33%) | 13 (49%) | air, bolt, fire, ice | — / — / — | Elemental Slash (Enchanted) 49 | 4 VU (rule: exactly 1 for elite); resisted hit = 21% of PC HP (< 25%); pattern: Quad-Elemental Slash costs 60 MP; the monster starts at 0 MP and must charge up first; pattern: Elemental Slash: Overflow costs 30 MP; the monster starts at 0 MP and must charge up first |
+| Carlbero | elite | 50 | 640 | 4 | 11 (>58%) | 14 (41%) | fire | dark, poison / — / — | Tentacle Slap 47 ×3 · Mind Sap 57 | resisted hit = 20% of PC HP (< 25%) |
+| Death Gazer | soldier | 50 | 150 | 1 | 8 (>58%) | 16 (26%) | light | dark, poison / — / — | Eye Beam 30 · Mind Sear 43 | best basic attack avg 30 < 45; pattern: Death Gaze repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9) |
+| Dire Orc | soldier | 50 | 240 | 1 | 10 (>58%) | 6 (>58%) | ice | earth / — / — | Skull Splitter 66 | pattern: War Howl repeats every turn its condition holds: its 3-round cooldown never applies (no other row within 2 priority of 8) |
 | Dragon Guard | soldier | 50 | 250 | 1 | 12 (58%) | 10 (>58%) | ice | fire, poison / — / — | Saber 51 | — |
 | Drakoza | soldier | 43 | 140 | 1 | 11 (>58%) | 10 (>58%) | light | dark / — / — | Dragon Claw 46 | — |
 | Electro Slime | soldier | 40 | 45 | 1 | 6 (>58%) | 6 (>58%) | earth | — / poison / bolt | Static Shot 36 | absorbs bolt (warning signal); best basic attack avg 36 < 45 |
 | Gigas | elite | 45 | 800 | 1 | 12 (58%) | 10 (>58%) | bolt, fire, poison | physical, air, earth / — / — | Heavy Swing 128 | 3 VU (rule: exactly 1 for elite) |
-| Imp | soldier | 50 | 110 | 1 | 15 (33%) | 14 (41%) | light | dark, fire / — / — | Pitchfork 49 | not modelled in the sim: Strip Weapon, Prank, Strip Armor |
-| Iron Colossus | elite | 52 | 700 | 1 | 14 (41%) | 8 (>58%) | bolt | physical, earth / poison / — | Siege Fist 42 | best basic attack avg 42 < 45; resisted hit = 18% of PC HP (< 25%) |
+| Imp | soldier | 50 | 110 | 1 | 15 (33%) | 14 (41%) | light | dark, fire / — / — | Pitchfork 49 | — |
+| Iron Colossus | elite | 52 | 700 | 1 | 14 (41%) | 8 (>58%) | bolt | physical, earth / poison / — | Siege Fist 42 | best basic attack avg 42 < 45; resisted hit = 18% of PC HP (< 25%); pattern: Grinding Quake repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9) |
 | Kirin | elite | 50 | 210 | 1 | 14 (41%) | 15 (33%) | poison | bolt / — / — | Horn Rush 69 | — |
 | Lightning Prism | soldier | 45 | 150 | 1 | 10 (>58%) | 16 (26%) | physical, earth | — / poison / bolt | Arc Spark 31 · Fulgur Finis 70 ×3 | 2 VU (rule: exactly 1 for soldier); absorbs bolt (warning signal); best basic attack avg 31 < 45 |
 | Mana Ray | soldier | 45 | 115 | 1 | 11 (>58%) | 10 (>58%) | earth, ice | bolt, fire / — / — | Mana Stinger 46 · Volt Stinger 62 | 2 VU (rule: exactly 1 for soldier) |
-| Mist Dragon | elite | 45 | 200 | 1 | 14 (41%) | 13 (49%) | air | — / poison / — | Phantom Shift: Thunder Strike 38 · Mist Breath 46 ×3 | best basic attack avg 38 < 45; resisted hit = 16% of PC HP (< 25%); passive not simulated: Phantom Shift, Illusory Form |
-| Obsidrax | soldier | 46 | 180 | 1 | 13 (49%) | 11 (>58%) | ice | earth / bolt / — | Basalt Crush 44 | best basic attack avg 44 < 45; not modelled in the sim: Miasma Nova; passive not simulated: Lodestone Core |
-| Rakshasa | elite | 40 | 1200 | 4 | 14 (41%) | 12 (58%) | light | dark, poison / — / — | Severing Verdict 166 | not modelled in the sim: Devour |
-| Roo | soldier | 50 | 255 | 1 | 13 (49%) | 13 (49%) | light | dark / physical, poison / — | — | no damage action the sim can read; not modelled in the sim: Karma, Chef's Knife, Empty Stare; passive not simulated: Approach |
+| Mist Dragon | elite | 45 | 200 | 1 | 14 (41%) | 13 (49%) | air | — / poison / — | Phantom Shift: Thunder Strike 38 · Mist Breath 46 ×3 | best basic attack avg 38 < 45; resisted hit = 16% of PC HP (< 25%) |
+| Obsidrax | soldier | 46 | 180 | 1 | 13 (49%) | 11 (>58%) | ice | earth / bolt / — | Basalt Crush 44 | best basic attack avg 44 < 45; pattern: Miasma Nova repeats every turn its condition holds: its 3-round cooldown never applies (no other row within 2 priority of 11) |
+| Rakshasa | elite | 40 | 1200 | 4 | 14 (41%) | 12 (58%) | light | dark, poison / — / — | Severing Verdict 166 | — |
+| Roo | soldier | 50 | 255 | 1 | 13 (49%) | 13 (49%) | light | dark / physical, poison / — | — | no damage action the sim can read |
 | Skizzik | soldier | 48 | 130 | 1 | 12 (58%) | 8 (>58%) | earth | — / poison / bolt | Thunder Strike 37 | absorbs bolt (warning signal); best basic attack avg 37 < 45 |
-| Succubus | soldier | 50 | 180 | 1 | 12 (58%) | 14 (41%) | light | dark, ice / — / — | Rake 42 · Draining Kiss 56 | best basic attack avg 42 < 45; not modelled in the sim: Charm; passive not simulated: Deadly Temptation |
+| Succubus | soldier | 50 | 180 | 1 | 12 (58%) | 14 (41%) | light | dark, ice / — / — | Rake 42 · Draining Kiss 56 | best basic attack avg 42 < 45; pattern: Charm repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9) |
 
 ## Attacks per monster
 

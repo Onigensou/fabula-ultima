@@ -1,9 +1,11 @@
 {
   "id": "encounter-matrix",
-  "generated": "2026-10-20T11:11:13.486Z",
+  "generated": "2026-10-20T13:29:27.041Z",
   "seed": "encounter-matrix",
   "runs": 1000,
   "policy": "standard",
+  "monsterRules": "data",
+  "events": "auto",
   "partyCoverage": "41/63 turn-spendable actions unmodelled (65%)",
   "party": [
     "Hina L41",
@@ -50,6 +52,7 @@
         "Dire Orc"
       ],
       "ceiling": 16,
+      "tableId": "hpCzLw5RI4wQNtF7",
       "enemies": [
         "Dire Orc",
         "Dire Orc"
@@ -61,18 +64,32 @@
       "enemyGaps": [
         "Dire Orc: War Howl"
       ],
+      "events": [
+        {
+          "id": null,
+          "share": 1,
+          "tiles": 0,
+          "battleMaps": [
+            "FafnirCastle_Battlemap001",
+            "FafnirCastle_Battlemap002"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {},
       "stats": {
         "runs": 1000,
         "win": 1,
         "defeat": 0,
         "overtime": 0,
+        "escaped": 0,
         "roundsP50": 3,
         "roundsP90": 3,
-        "hpP50": 0.8662420382165605,
-        "hpP10": 0.772823779193206,
-        "hpEndP50": 0.8662420382165605,
+        "hpP50": 1,
+        "hpP10": 1,
+        "hpEndP50": 1,
         "roundsAllP50": 3,
-        "lowP50": 0.8110403397027601,
+        "lowP50": 1,
         "anyDown": 0,
         "downsPerFight": 0
       },
@@ -96,6 +113,7 @@
         "Dragon Guard"
       ],
       "ceiling": 16,
+      "tableId": "hpCzLw5RI4wQNtF7",
       "enemies": [
         "Dragon Guard",
         "Dragon Guard"
@@ -105,18 +123,32 @@
       "enemyHp": 500,
       "coverage": "41/69 turn-spendable actions unmodelled (59%)",
       "enemyGaps": [],
+      "events": [
+        {
+          "id": null,
+          "share": 1,
+          "tiles": 0,
+          "battleMaps": [
+            "FafnirCastle_Battlemap001",
+            "FafnirCastle_Battlemap002"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {},
       "stats": {
         "runs": 1000,
         "win": 1,
         "defeat": 0,
         "overtime": 0,
+        "escaped": 0,
         "roundsP50": 2,
         "roundsP90": 3,
-        "hpP50": 0.8747346072186837,
-        "hpP10": 0.7641188959660298,
-        "hpEndP50": 0.8747346072186837,
+        "hpP50": 0.8832271762208068,
+        "hpP10": 0.7876857749469215,
+        "hpEndP50": 0.8832271762208068,
         "roundsAllP50": 2,
-        "lowP50": 0.8280254777070064,
+        "lowP50": 0.8641188959660298,
         "anyDown": 0,
         "downsPerFight": 0
       },
@@ -140,6 +172,7 @@
         "Imp"
       ],
       "ceiling": 16,
+      "tableId": "hpCzLw5RI4wQNtF7",
       "enemies": [
         "Imp",
         "Dire Orc",
@@ -155,19 +188,33 @@
         "Imp: Strip Armor",
         "Dire Orc: War Howl"
       ],
+      "events": [
+        {
+          "id": null,
+          "share": 1,
+          "tiles": 0,
+          "battleMaps": [
+            "FafnirCastle_Battlemap001",
+            "FafnirCastle_Battlemap002"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {},
       "stats": {
         "runs": 1000,
         "win": 1,
         "defeat": 0,
         "overtime": 0,
+        "escaped": 0,
         "roundsP50": 4,
-        "roundsP90": 4,
-        "hpP50": 0.8927813163481954,
-        "hpP10": 0.7726114649681529,
-        "hpEndP50": 0.8927813163481954,
+        "roundsP90": 5,
+        "hpP50": 1,
+        "hpP10": 0.9065817409766455,
+        "hpEndP50": 1,
         "roundsAllP50": 4,
-        "lowP50": 0.7919320594479831,
-        "anyDown": 0.285,
+        "lowP50": 1,
+        "anyDown": 0,
         "downsPerFight": 0
       },
       "notes": [
@@ -191,6 +238,7 @@
         "Succubus"
       ],
       "ceiling": 16,
+      "tableId": "hpCzLw5RI4wQNtF7",
       "enemies": [
         "Succubus",
         "Dire Orc",
@@ -204,22 +252,37 @@
         "Succubus: Charm",
         "Dire Orc: War Howl"
       ],
+      "events": [
+        {
+          "id": null,
+          "share": 1,
+          "tiles": 0,
+          "battleMaps": [
+            "FafnirCastle_Battlemap001",
+            "FafnirCastle_Battlemap002"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {},
       "stats": {
         "runs": 1000,
-        "win": 1,
-        "defeat": 0,
-        "overtime": 0,
+        "win": 0.528,
+        "defeat": 0.001,
+        "overtime": 0.471,
+        "escaped": 0,
         "roundsP50": 4,
-        "roundsP90": 5,
-        "hpP50": 0.8874734607218684,
-        "hpP10": 0.7834394904458599,
-        "hpEndP50": 0.8874734607218684,
-        "roundsAllP50": 4,
-        "lowP50": 0.7579617834394905,
-        "anyDown": 0.164,
-        "downsPerFight": 0.011
+        "roundsP90": 7,
+        "hpP50": 0.9501061571125266,
+        "hpP10": 0.8152866242038217,
+        "hpEndP50": 0.9171974522292994,
+        "roundsAllP50": 7,
+        "lowP50": 0.6825902335456475,
+        "anyDown": 0.402,
+        "downsPerFight": 0.126
       },
       "notes": [
+        "unresolved in 47%",
         "rounds above 1.5-2 rds",
         "HP left ≥ 85%"
       ]
@@ -240,6 +303,7 @@
         "Dragon Guard"
       ],
       "ceiling": 16,
+      "tableId": "hpCzLw5RI4wQNtF7",
       "enemies": [
         "Dragon Guard",
         "Death Gazer",
@@ -252,20 +316,34 @@
       "enemyGaps": [
         "Death Gazer: Death Gaze"
       ],
+      "events": [
+        {
+          "id": null,
+          "share": 1,
+          "tiles": 0,
+          "battleMaps": [
+            "FafnirCastle_Battlemap001",
+            "FafnirCastle_Battlemap002"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {},
       "stats": {
         "runs": 1000,
         "win": 1,
         "defeat": 0,
         "overtime": 0,
-        "roundsP50": 4,
+        "escaped": 0,
+        "roundsP50": 3,
         "roundsP90": 4,
-        "hpP50": 0.8726114649681529,
-        "hpP10": 0.761995753715499,
-        "hpEndP50": 0.8726114649681529,
-        "roundsAllP50": 4,
-        "lowP50": 0.7430997876857749,
-        "anyDown": 0.16,
-        "downsPerFight": 0.001
+        "hpP50": 0.9023354564755839,
+        "hpP10": 0.7876857749469215,
+        "hpEndP50": 0.9023354564755839,
+        "roundsAllP50": 3,
+        "lowP50": 0.7600849256900213,
+        "anyDown": 0.142,
+        "downsPerFight": 0
       },
       "notes": [
         "rounds above 1.5-2 rds",
@@ -288,6 +366,7 @@
         "Dire Orc"
       ],
       "ceiling": 16,
+      "tableId": "hpCzLw5RI4wQNtF7",
       "enemies": [
         "Dire Orc",
         "Death Gazer",
@@ -301,23 +380,37 @@
         "Dire Orc: War Howl",
         "Death Gazer: Death Gaze"
       ],
+      "events": [
+        {
+          "id": null,
+          "share": 1,
+          "tiles": 0,
+          "battleMaps": [
+            "FafnirCastle_Battlemap001",
+            "FafnirCastle_Battlemap002"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {},
       "stats": {
         "runs": 1000,
-        "win": 1,
+        "win": 0.996,
         "defeat": 0,
-        "overtime": 0,
-        "roundsP50": 5,
+        "overtime": 0.004,
+        "escaped": 0,
+        "roundsP50": 4,
         "roundsP90": 5,
-        "hpP50": 0.8598726114649682,
-        "hpP10": 0.721868365180467,
-        "hpEndP50": 0.8598726114649682,
-        "roundsAllP50": 5,
-        "lowP50": 0.7176220806794055,
-        "anyDown": 0.7,
-        "downsPerFight": 0.046
+        "hpP50": 0.921443736730361,
+        "hpP10": 0.7855626326963907,
+        "hpEndP50": 0.921443736730361,
+        "roundsAllP50": 4,
+        "lowP50": 0.7961783439490446,
+        "anyDown": 0.236,
+        "downsPerFight": 0.003
       },
       "notes": [
-        "rounds above long target (4)",
+        "rounds above 1.5-2 rds",
         "HP left ≥ 85%"
       ]
     },
@@ -337,6 +430,7 @@
         "Imp"
       ],
       "ceiling": 16,
+      "tableId": "hpCzLw5RI4wQNtF7",
       "enemies": [
         "Imp",
         "Dragon Guard",
@@ -351,24 +445,38 @@
         "Imp: Prank",
         "Imp: Strip Armor"
       ],
+      "events": [
+        {
+          "id": null,
+          "share": 1,
+          "tiles": 0,
+          "battleMaps": [
+            "FafnirCastle_Battlemap001",
+            "FafnirCastle_Battlemap002"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {},
       "stats": {
         "runs": 1000,
         "win": 1,
         "defeat": 0,
         "overtime": 0,
-        "roundsP50": 3,
-        "roundsP90": 3,
-        "hpP50": 0.8407643312101911,
-        "hpP10": 0.761995753715499,
-        "hpEndP50": 0.8407643312101911,
-        "roundsAllP50": 3,
-        "lowP50": 0.7919320594479831,
+        "escaped": 0,
+        "roundsP50": 4,
+        "roundsP90": 5,
+        "hpP50": 1,
+        "hpP10": 0.9002123142250531,
+        "hpEndP50": 1,
+        "roundsAllP50": 4,
+        "lowP50": 0.9023354564755839,
         "anyDown": 0,
         "downsPerFight": 0
       },
       "notes": [
         "rounds above 1.5-2 rds",
-        "HP left ≥ 70%"
+        "HP left ≥ 85%"
       ]
     },
     {
@@ -387,6 +495,7 @@
         "Death Gazer"
       ],
       "ceiling": 16,
+      "tableId": "hpCzLw5RI4wQNtF7",
       "enemies": [
         "Death Gazer",
         "Succubus",
@@ -400,22 +509,37 @@
         "Death Gazer: Death Gaze",
         "Succubus: Charm"
       ],
+      "events": [
+        {
+          "id": null,
+          "share": 1,
+          "tiles": 0,
+          "battleMaps": [
+            "FafnirCastle_Battlemap001",
+            "FafnirCastle_Battlemap002"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {},
       "stats": {
         "runs": 1000,
-        "win": 1,
+        "win": 0.715,
         "defeat": 0,
-        "overtime": 0,
+        "overtime": 0.285,
+        "escaped": 0,
         "roundsP50": 4,
-        "roundsP90": 4,
-        "hpP50": 0.9235668789808917,
-        "hpP10": 0.8365180467091295,
-        "hpEndP50": 0.9235668789808917,
-        "roundsAllP50": 4,
-        "lowP50": 0.7664543524416136,
-        "anyDown": 0.063,
-        "downsPerFight": 0.002
+        "roundsP90": 7,
+        "hpP50": 0.9256900212314225,
+        "hpP10": 0.7842887473460722,
+        "hpEndP50": 0.9065817409766455,
+        "roundsAllP50": 6,
+        "lowP50": 0.692144373673036,
+        "anyDown": 0.565,
+        "downsPerFight": 0.214
       },
       "notes": [
+        "unresolved in 28%",
         "rounds above 1.5-2 rds",
         "HP left ≥ 85%"
       ]
@@ -436,6 +560,7 @@
         "Dire Orc"
       ],
       "ceiling": 16,
+      "tableId": "hpCzLw5RI4wQNtF7",
       "enemies": [
         "Dire Orc",
         "Iron Colossus",
@@ -448,20 +573,34 @@
       "enemyGaps": [
         "Dire Orc: War Howl"
       ],
+      "events": [
+        {
+          "id": null,
+          "share": 1,
+          "tiles": 0,
+          "battleMaps": [
+            "FafnirCastle_Battlemap001",
+            "FafnirCastle_Battlemap002"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {},
       "stats": {
         "runs": 1000,
         "win": 0,
         "defeat": 0,
         "overtime": 1,
+        "escaped": 0,
         "roundsP50": null,
         "roundsP90": null,
         "hpP50": null,
         "hpP10": null,
-        "hpEndP50": 0.7876857749469215,
+        "hpEndP50": 0.9171974522292994,
         "roundsAllP50": 7,
-        "lowP50": 0.613588110403397,
-        "anyDown": 0.601,
-        "downsPerFight": 0.001
+        "lowP50": 0.70276008492569,
+        "anyDown": 0.019,
+        "downsPerFight": 0
       },
       "notes": [
         "unresolved in 100%"
@@ -483,6 +622,7 @@
         "Succubus"
       ],
       "ceiling": 16,
+      "tableId": "hpCzLw5RI4wQNtF7",
       "enemies": [
         "Succubus",
         "Iron Colossus",
@@ -495,20 +635,34 @@
       "enemyGaps": [
         "Succubus: Charm"
       ],
+      "events": [
+        {
+          "id": null,
+          "share": 1,
+          "tiles": 0,
+          "battleMaps": [
+            "FafnirCastle_Battlemap001",
+            "FafnirCastle_Battlemap002"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {},
       "stats": {
         "runs": 1000,
         "win": 0,
         "defeat": 0,
         "overtime": 1,
+        "escaped": 0,
         "roundsP50": null,
         "roundsP90": null,
         "hpP50": null,
         "hpP10": null,
-        "hpEndP50": 0.8099787685774947,
+        "hpEndP50": 0.8259023354564756,
         "roundsAllP50": 7,
-        "lowP50": 0.5902335456475584,
-        "anyDown": 0.019,
-        "downsPerFight": 0.001
+        "lowP50": 0.5859872611464968,
+        "anyDown": 0.532,
+        "downsPerFight": 0.212
       },
       "notes": [
         "unresolved in 100%"
@@ -530,6 +684,7 @@
         "Dragon Guard"
       ],
       "ceiling": 16,
+      "tableId": "hpCzLw5RI4wQNtF7",
       "enemies": [
         "Dragon Guard",
         "Roo",
@@ -544,20 +699,34 @@
         "Roo: Chef's Knife",
         "Roo: Empty Stare"
       ],
+      "events": [
+        {
+          "id": null,
+          "share": 1,
+          "tiles": 0,
+          "battleMaps": [
+            "FafnirCastle_Battlemap001",
+            "FafnirCastle_Battlemap002"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {},
       "stats": {
         "runs": 1000,
-        "win": 0.789,
+        "win": 1,
         "defeat": 0,
-        "overtime": 0.211,
-        "roundsP50": 4,
-        "roundsP90": 6,
-        "hpP50": 0.9978768577494692,
-        "hpP10": 0.8658174097664544,
-        "hpEndP50": 0.9978768577494692,
-        "roundsAllP50": 5,
-        "lowP50": 0.8237791932059448,
-        "anyDown": 0,
-        "downsPerFight": 0
+        "overtime": 0,
+        "escaped": 0,
+        "roundsP50": 3,
+        "roundsP90": 5,
+        "hpP50": 0.9235668789808917,
+        "hpP10": 0.8089171974522293,
+        "hpEndP50": 0.9235668789808917,
+        "roundsAllP50": 3,
+        "lowP50": 0.673036093418259,
+        "anyDown": 1,
+        "downsPerFight": 0.002
       },
       "notes": [
         "rounds above 1.5-2 rds",
@@ -581,6 +750,7 @@
         "Succubus"
       ],
       "ceiling": 16,
+      "tableId": "hpCzLw5RI4wQNtF7",
       "enemies": [
         "Dire Orc",
         "Death Gazer",
@@ -596,23 +766,37 @@
         "Death Gazer: Death Gaze",
         "Succubus: Charm"
       ],
+      "events": [
+        {
+          "id": null,
+          "share": 1,
+          "tiles": 0,
+          "battleMaps": [
+            "FafnirCastle_Battlemap001",
+            "FafnirCastle_Battlemap002"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {},
       "stats": {
         "runs": 1000,
         "win": 0,
-        "defeat": 0.062,
-        "overtime": 0.938,
+        "defeat": 0.019,
+        "overtime": 0.981,
+        "escaped": 0,
         "roundsP50": null,
         "roundsP90": null,
         "hpP50": null,
         "hpP10": null,
-        "hpEndP50": 0.6900212314225053,
+        "hpEndP50": 0.7303609341825902,
         "roundsAllP50": 7,
-        "lowP50": 0.45010615711252655,
-        "anyDown": 0.817,
-        "downsPerFight": 0.958
+        "lowP50": 0.49044585987261147,
+        "anyDown": 0.68,
+        "downsPerFight": 0.566
       },
       "notes": [
-        "unresolved in 94%"
+        "unresolved in 98%"
       ]
     },
     {
@@ -632,6 +816,7 @@
         "Imp"
       ],
       "ceiling": 16,
+      "tableId": "hpCzLw5RI4wQNtF7",
       "enemies": [
         "Imp",
         "Death Gazer",
@@ -651,23 +836,37 @@
         "Roo: Chef's Knife",
         "Roo: Empty Stare"
       ],
+      "events": [
+        {
+          "id": null,
+          "share": 1,
+          "tiles": 0,
+          "battleMaps": [
+            "FafnirCastle_Battlemap001",
+            "FafnirCastle_Battlemap002"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {},
       "stats": {
         "runs": 1000,
-        "win": 0.455,
+        "win": 0.738,
         "defeat": 0,
-        "overtime": 0.545,
+        "overtime": 0.262,
+        "escaped": 0,
         "roundsP50": 6,
         "roundsP90": 7,
-        "hpP50": 0.9278131634819533,
-        "hpP10": 0.8471337579617835,
-        "hpEndP50": 0.9278131634819533,
+        "hpP50": 0.9065817409766455,
+        "hpP10": 0.7261146496815286,
+        "hpEndP50": 0.89171974522293,
         "roundsAllP50": 7,
-        "lowP50": 0.7537154989384289,
-        "anyDown": 0.267,
-        "downsPerFight": 0.008
+        "lowP50": 0.6125265392781316,
+        "anyDown": 1,
+        "downsPerFight": 0.337
       },
       "notes": [
-        "unresolved in 55%",
+        "unresolved in 26%",
         "rounds above long target (4)",
         "HP left ≥ 85%"
       ]
@@ -690,6 +889,7 @@
         "Imp"
       ],
       "ceiling": 16,
+      "tableId": "hpCzLw5RI4wQNtF7",
       "enemies": [
         "Imp",
         "Dragon Guard",
@@ -706,24 +906,37 @@
         "Imp: Prank",
         "Imp: Strip Armor"
       ],
+      "events": [
+        {
+          "id": null,
+          "share": 1,
+          "tiles": 0,
+          "battleMaps": [
+            "FafnirCastle_Battlemap001",
+            "FafnirCastle_Battlemap002"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {},
       "stats": {
         "runs": 1000,
         "win": 0,
-        "defeat": 0.163,
-        "overtime": 0.837,
+        "defeat": 0,
+        "overtime": 1,
+        "escaped": 0,
         "roundsP50": null,
         "roundsP90": null,
         "hpP50": null,
         "hpP10": null,
-        "hpEndP50": 0.3535031847133758,
+        "hpEndP50": 0.8492569002123143,
         "roundsAllP50": 7,
-        "lowP50": 0.28662420382165604,
-        "anyDown": 0.98,
-        "downsPerFight": 1.922
+        "lowP50": 0.5902335456475584,
+        "anyDown": 0.113,
+        "downsPerFight": 0.006
       },
       "notes": [
-        "unresolved in 84%",
-        "party loses 16%"
+        "unresolved in 100%"
       ]
     },
     {
@@ -744,6 +957,7 @@
         "Death Gazer"
       ],
       "ceiling": 16,
+      "tableId": "hpCzLw5RI4wQNtF7",
       "enemies": [
         "Death Gazer",
         "Succubus",
@@ -759,24 +973,37 @@
         "Death Gazer: Death Gaze",
         "Succubus: Charm"
       ],
+      "events": [
+        {
+          "id": null,
+          "share": 1,
+          "tiles": 0,
+          "battleMaps": [
+            "FafnirCastle_Battlemap001",
+            "FafnirCastle_Battlemap002"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {},
       "stats": {
         "runs": 1000,
         "win": 0,
-        "defeat": 0.172,
-        "overtime": 0.828,
+        "defeat": 0.025,
+        "overtime": 0.975,
+        "escaped": 0,
         "roundsP50": null,
         "roundsP90": null,
         "hpP50": null,
         "hpP10": null,
-        "hpEndP50": 0.3524416135881104,
+        "hpEndP50": 0.5796178343949044,
         "roundsAllP50": 7,
-        "lowP50": 0.28450106157112526,
-        "anyDown": 0.932,
-        "downsPerFight": 1.815
+        "lowP50": 0.4033970276008493,
+        "anyDown": 0.855,
+        "downsPerFight": 0.913
       },
       "notes": [
-        "unresolved in 83%",
-        "party loses 17%"
+        "unresolved in 98%"
       ]
     },
     {
@@ -793,6 +1020,7 @@
         "Carlbero"
       ],
       "ceiling": 16,
+      "tableId": "hpCzLw5RI4wQNtF7",
       "enemies": [
         "Carlbero"
       ],
@@ -803,24 +1031,39 @@
       "enemyGaps": [
         "Carlbero: Stinky Breath"
       ],
+      "events": [
+        {
+          "id": null,
+          "share": 1,
+          "tiles": 0,
+          "battleMaps": [
+            "FafnirCastle_Battlemap001",
+            "FafnirCastle_Battlemap002"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {},
       "stats": {
         "runs": 1000,
-        "win": 0.36,
-        "defeat": 0.403,
-        "overtime": 0.237,
-        "roundsP50": 4,
-        "roundsP90": 6,
-        "hpP50": 0.43736730360934184,
-        "hpP10": 0.18619957537154988,
-        "hpEndP50": 0.09978768577494693,
-        "roundsAllP50": 5,
-        "lowP50": 0.03184713375796178,
-        "anyDown": 0.999,
-        "downsPerFight": 2.843
+        "win": 0.086,
+        "defeat": 0.542,
+        "overtime": 0.372,
+        "escaped": 0,
+        "roundsP50": 7,
+        "roundsP90": 9,
+        "hpP50": 0.4745222929936306,
+        "hpP10": 0.18577494692144375,
+        "hpEndP50": 0,
+        "roundsAllP50": 9,
+        "lowP50": 0,
+        "anyDown": 0.983,
+        "downsPerFight": 3.323
       },
       "notes": [
-        "party loses 40%",
-        "rounds below 5.5-6 rds"
+        "unresolved in 37%",
+        "party loses 54%",
+        "rounds above 5.5-6 rds"
       ]
     },
     {
@@ -839,6 +1082,7 @@
         "Electro Slime"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Electro Slime",
         "Electro Slime",
@@ -849,20 +1093,81 @@
       "enemyHp": 135,
       "coverage": "41/69 turn-spendable actions unmodelled (59%)",
       "enemyGaps": [],
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 0.9973890339425587,
+            "defeat": 0,
+            "overtime": 0.0026109660574412533,
+            "escaped": 0,
+            "roundsP50": 3,
+            "roundsP90": 3,
+            "hpP50": 0.6273885350318471,
+            "hpP10": 0.4484076433121019,
+            "hpEndP50": 0.6263269639065817,
+            "roundsAllP50": 3,
+            "lowP50": 0.43524416135881105,
+            "anyDown": 0.7859007832898173,
+            "downsPerFight": 0.23237597911227154
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 1,
+            "defeat": 0,
+            "overtime": 0,
+            "escaped": 0,
+            "roundsP50": 2,
+            "roundsP90": 3.3999999999999773,
+            "hpP50": 0.5987261146496815,
+            "hpP10": 0.43906581740976647,
+            "hpEndP50": 0.5987261146496815,
+            "roundsAllP50": 2,
+            "lowP50": 0.524416135881104,
+            "anyDown": 0.3760129659643436,
+            "downsPerFight": 0.11345218800648298
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
-        "win": 1,
+        "win": 0.999,
         "defeat": 0,
-        "overtime": 0,
+        "overtime": 0.001,
+        "escaped": 0,
         "roundsP50": 2,
-        "roundsP90": 2,
-        "hpP50": 0.6496815286624203,
-        "hpP10": 0.5010615711252654,
-        "hpEndP50": 0.6496815286624203,
+        "roundsP90": 3,
+        "hpP50": 0.6093418259023354,
+        "hpP10": 0.44331210191082804,
+        "hpEndP50": 0.6093418259023354,
         "roundsAllP50": 2,
-        "lowP50": 0.5753715498938429,
-        "anyDown": 0.576,
-        "downsPerFight": 0.001
+        "lowP50": 0.49469214437367304,
+        "anyDown": 0.533,
+        "downsPerFight": 0.159
       },
       "notes": []
     },
@@ -883,6 +1188,7 @@
         "Electro Slime"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Electro Slime",
         "Electro Slime",
@@ -894,20 +1200,81 @@
       "enemyHp": 180,
       "coverage": "41/71 turn-spendable actions unmodelled (58%)",
       "enemyGaps": [],
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 0.9843342036553525,
+            "defeat": 0.005221932114882507,
+            "overtime": 0.010443864229765013,
+            "escaped": 0,
+            "roundsP50": 3,
+            "roundsP90": 4,
+            "hpP50": 0.6157112526539278,
+            "hpP10": 0.451380042462845,
+            "hpEndP50": 0.6114649681528662,
+            "roundsAllP50": 3,
+            "lowP50": 0.4033970276008493,
+            "anyDown": 0.8198433420365535,
+            "downsPerFight": 0.38903394255874674
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 0.9902755267423015,
+            "defeat": 0.0016207455429497568,
+            "overtime": 0.008103727714748784,
+            "escaped": 0,
+            "roundsP50": 3,
+            "roundsP90": 4,
+            "hpP50": 0.5923566878980892,
+            "hpP10": 0.43736730360934184,
+            "hpEndP50": 0.5881104033970276,
+            "roundsAllP50": 3,
+            "lowP50": 0.4819532908704883,
+            "anyDown": 0.5299837925445705,
+            "downsPerFight": 0.24311183144246354
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
-        "win": 1,
-        "defeat": 0,
-        "overtime": 0,
+        "win": 0.988,
+        "defeat": 0.003,
+        "overtime": 0.009,
+        "escaped": 0,
         "roundsP50": 3,
-        "roundsP90": 3,
-        "hpP50": 0.524416135881104,
-        "hpP10": 0.4585987261146497,
-        "hpEndP50": 0.524416135881104,
+        "roundsP90": 4,
+        "hpP50": 0.6008492569002123,
+        "hpP10": 0.4416135881104034,
+        "hpEndP50": 0.5987261146496815,
         "roundsAllP50": 3,
-        "lowP50": 0.4607218683651805,
-        "anyDown": 0.781,
-        "downsPerFight": 0.118
+        "lowP50": 0.4543524416135881,
+        "anyDown": 0.641,
+        "downsPerFight": 0.299
       },
       "notes": [
         "rounds above 1.5-2 rds"
@@ -929,6 +1296,7 @@
         "Electro Slime"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Electro Slime",
         "Skizzik",
@@ -939,24 +1307,84 @@
       "enemyHp": 220,
       "coverage": "41/69 turn-spendable actions unmodelled (59%)",
       "enemyGaps": [],
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 0.8172323759791122,
+            "defeat": 0.04177545691906005,
+            "overtime": 0.1409921671018277,
+            "escaped": 0,
+            "roundsP50": 3,
+            "roundsP90": 4,
+            "hpP50": 0.721868365180467,
+            "hpP10": 0.4373673036093419,
+            "hpEndP50": 0.6836518046709129,
+            "roundsAllP50": 3,
+            "lowP50": 0.32696390658174096,
+            "anyDown": 0.8485639686684073,
+            "downsPerFight": 0.7180156657963447
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 0.9367909238249594,
+            "defeat": 0.006482982171799027,
+            "overtime": 0.05672609400324149,
+            "escaped": 0,
+            "roundsP50": 3,
+            "roundsP90": 5,
+            "hpP50": 0.6571125265392781,
+            "hpP10": 0.4515923566878981,
+            "hpEndP50": 0.643312101910828,
+            "roundsAllP50": 3,
+            "lowP50": 0.416135881104034,
+            "anyDown": 0.6434359805510534,
+            "downsPerFight": 0.3873581847649919
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
-        "win": 1,
-        "defeat": 0,
-        "overtime": 0,
+        "win": 0.891,
+        "defeat": 0.02,
+        "overtime": 0.089,
+        "escaped": 0,
         "roundsP50": 3,
-        "roundsP90": 3,
-        "hpP50": 0.7367303609341825,
-        "hpP10": 0.6114649681528662,
-        "hpEndP50": 0.7367303609341825,
+        "roundsP90": 5,
+        "hpP50": 0.6900212314225053,
+        "hpP10": 0.45010615711252655,
+        "hpEndP50": 0.6539278131634819,
         "roundsAllP50": 3,
-        "lowP50": 0.5307855626326964,
-        "anyDown": 0.801,
-        "downsPerFight": 0.079
+        "lowP50": 0.3970276008492569,
+        "anyDown": 0.722,
+        "downsPerFight": 0.514
       },
       "notes": [
-        "rounds above 1.5-2 rds",
-        "HP left ≥ 70%"
+        "rounds above 1.5-2 rds"
       ]
     },
     {
@@ -975,6 +1403,7 @@
         "Electro Slime"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Electro Slime",
         "Lightning Prism",
@@ -985,23 +1414,86 @@
       "enemyHp": 240,
       "coverage": "41/69 turn-spendable actions unmodelled (59%)",
       "enemyGaps": [],
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 0.8276762402088773,
+            "defeat": 0.010443864229765013,
+            "overtime": 0.1618798955613577,
+            "escaped": 0,
+            "roundsP50": 5,
+            "roundsP90": 7,
+            "hpP50": 0.7622080679405521,
+            "hpP10": 0.5923566878980892,
+            "hpEndP50": 0.7430997876857749,
+            "roundsAllP50": 6,
+            "lowP50": 0.38004246284501064,
+            "anyDown": 0.7441253263707572,
+            "downsPerFight": 0.5483028720626631
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 0.4213938411669368,
+            "defeat": 0,
+            "overtime": 0.5786061588330632,
+            "escaped": 0,
+            "roundsP50": 5,
+            "roundsP90": 7,
+            "hpP50": 0.8259023354564756,
+            "hpP10": 0.6214437367303609,
+            "hpEndP50": 0.6878980891719745,
+            "roundsAllP50": 7,
+            "lowP50": 0.35456475583864117,
+            "anyDown": 0.8298217179902755,
+            "downsPerFight": 0.7990275526742301
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
-        "win": 1,
-        "defeat": 0,
-        "overtime": 0,
+        "win": 0.577,
+        "defeat": 0.004,
+        "overtime": 0.419,
+        "escaped": 0,
         "roundsP50": 5,
-        "roundsP90": 6,
-        "hpP50": 0.6390658174097664,
-        "hpP10": 0.5326963906581741,
-        "hpEndP50": 0.6390658174097664,
-        "roundsAllP50": 5,
-        "lowP50": 0.3099787685774947,
-        "anyDown": 0.91,
-        "downsPerFight": 0.641
+        "roundsP90": 7,
+        "hpP50": 0.7919320594479831,
+        "hpP10": 0.6076433121019108,
+        "hpEndP50": 0.7197452229299363,
+        "roundsAllP50": 7,
+        "lowP50": 0.3630573248407643,
+        "anyDown": 0.797,
+        "downsPerFight": 0.703
       },
       "notes": [
-        "rounds above long target (4)"
+        "unresolved in 42%",
+        "rounds above long target (4)",
+        "HP left ≥ 70%"
       ]
     },
     {
@@ -1019,6 +1511,7 @@
         "Lightning Prism"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Skizzik",
         "Lightning Prism"
@@ -1028,23 +1521,85 @@
       "enemyHp": 280,
       "coverage": "41/67 turn-spendable actions unmodelled (61%)",
       "enemyGaps": [],
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 0.7911227154046997,
+            "defeat": 0,
+            "overtime": 0.20887728459530025,
+            "escaped": 0,
+            "roundsP50": 5,
+            "roundsP90": 7,
+            "hpP50": 0.802547770700637,
+            "hpP10": 0.6093418259023354,
+            "hpEndP50": 0.7749469214437368,
+            "roundsAllP50": 6,
+            "lowP50": 0.4267515923566879,
+            "anyDown": 0.814621409921671,
+            "downsPerFight": 0.47780678851174935
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 0.25121555915721233,
+            "defeat": 0.04376012965964344,
+            "overtime": 0.7050243111831442,
+            "escaped": 0,
+            "roundsP50": 6,
+            "roundsP90": 7,
+            "hpP50": 0.8067940552016986,
+            "hpP10": 0.5855626326963906,
+            "hpEndP50": 0.6050955414012739,
+            "roundsAllP50": 7,
+            "lowP50": 0.31210191082802546,
+            "anyDown": 0.9692058346839546,
+            "downsPerFight": 1.2965964343598055
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
-        "win": 0.984,
-        "defeat": 0,
-        "overtime": 0.016,
-        "roundsP50": 4,
-        "roundsP90": 6,
-        "hpP50": 0.8386411889596603,
-        "hpP10": 0.7685774946921444,
-        "hpEndP50": 0.8365180467091295,
-        "roundsAllP50": 4,
-        "lowP50": 0.4564755838641189,
-        "anyDown": 0.876,
-        "downsPerFight": 0.036
+        "win": 0.458,
+        "defeat": 0.027,
+        "overtime": 0.515,
+        "escaped": 0,
+        "roundsP50": 5,
+        "roundsP90": 7,
+        "hpP50": 0.8067940552016986,
+        "hpP10": 0.6002123142250531,
+        "hpEndP50": 0.6581740976645435,
+        "roundsAllP50": 7,
+        "lowP50": 0.37154989384288745,
+        "anyDown": 0.91,
+        "downsPerFight": 0.983
       },
       "notes": [
-        "rounds above 1.5-2 rds",
+        "unresolved in 52%",
+        "rounds above long target (4)",
         "HP left ≥ 70%"
       ]
     },
@@ -1063,6 +1618,7 @@
         "Skizzik"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Skizzik",
         "Skizzik"
@@ -1072,24 +1628,85 @@
       "enemyHp": 260,
       "coverage": "41/67 turn-spendable actions unmodelled (61%)",
       "enemyGaps": [],
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 0.8851174934725848,
+            "defeat": 0.04699738903394256,
+            "overtime": 0.06788511749347259,
+            "escaped": 0,
+            "roundsP50": 3,
+            "roundsP90": 4,
+            "hpP50": 0.70276008492569,
+            "hpP10": 0.4305732484076433,
+            "hpEndP50": 0.6772823779193206,
+            "roundsAllP50": 3,
+            "lowP50": 0.4416135881104034,
+            "anyDown": 0.6527415143603134,
+            "downsPerFight": 0.6005221932114883
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 0.9789303079416531,
+            "defeat": 0.006482982171799027,
+            "overtime": 0.014586709886547812,
+            "escaped": 0,
+            "roundsP50": 3,
+            "roundsP90": 4,
+            "hpP50": 0.7112526539278131,
+            "hpP10": 0.5038216560509554,
+            "hpEndP50": 0.7070063694267515,
+            "roundsAllP50": 3,
+            "lowP50": 0.5944798301486199,
+            "anyDown": 0.4521880064829822,
+            "downsPerFight": 0.24959481361426256
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
-        "win": 1,
-        "defeat": 0,
-        "overtime": 0,
+        "win": 0.943,
+        "defeat": 0.022,
+        "overtime": 0.035,
+        "escaped": 0,
         "roundsP50": 3,
-        "roundsP90": 3,
-        "hpP50": 0.8747346072186837,
-        "hpP10": 0.7707006369426752,
-        "hpEndP50": 0.8747346072186837,
+        "roundsP90": 4,
+        "hpP50": 0.7070063694267515,
+        "hpP10": 0.4802547770700637,
+        "hpEndP50": 0.6963906581740976,
         "roundsAllP50": 3,
-        "lowP50": 0.8450106157112527,
-        "anyDown": 0.007,
-        "downsPerFight": 0
+        "lowP50": 0.5562632696390658,
+        "anyDown": 0.529,
+        "downsPerFight": 0.384
       },
       "notes": [
         "rounds above 1.5-2 rds",
-        "HP left ≥ 85%"
+        "HP left ≥ 70%"
       ]
     },
     {
@@ -1108,6 +1725,7 @@
         "Lightning Prism"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Lightning Prism",
         "Skizzik",
@@ -1118,24 +1736,85 @@
       "enemyHp": 430,
       "coverage": "41/69 turn-spendable actions unmodelled (59%)",
       "enemyGaps": [],
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 0.0835509138381201,
+            "defeat": 0.43342036553524804,
+            "overtime": 0.4830287206266319,
+            "escaped": 0,
+            "roundsP50": 7,
+            "roundsP90": 7,
+            "hpP50": 0.7876857749469215,
+            "hpP10": 0.5789808917197452,
+            "hpEndP50": 0.21443736730360935,
+            "roundsAllP50": 7,
+            "lowP50": 0.0870488322717622,
+            "anyDown": 0.9973890339425587,
+            "downsPerFight": 2.4151436031331595
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 0.008103727714748784,
+            "defeat": 0.593192868719611,
+            "overtime": 0.3987034035656402,
+            "escaped": 0,
+            "roundsP50": 7,
+            "roundsP90": 7,
+            "hpP50": 0.8004246284501062,
+            "hpP10": 0.6450106157112526,
+            "hpEndP50": 0,
+            "roundsAllP50": 6,
+            "lowP50": 0,
+            "anyDown": 0.9983792544570502,
+            "downsPerFight": 3.092382495948136
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
-        "win": 0.05,
-        "defeat": 0.638,
-        "overtime": 0.312,
-        "roundsP50": 6,
+        "win": 0.037,
+        "defeat": 0.532,
+        "overtime": 0.431,
+        "escaped": 0,
+        "roundsP50": 7,
         "roundsP90": 7,
-        "hpP50": 0.8365180467091295,
-        "hpP10": 0.6528662420382165,
+        "hpP50": 0.7919320594479831,
+        "hpP10": 0.586411889596603,
         "hpEndP50": 0,
-        "roundsAllP50": 4,
+        "roundsAllP50": 6,
         "lowP50": 0,
-        "anyDown": 1,
-        "downsPerFight": 3.252
+        "anyDown": 0.998,
+        "downsPerFight": 2.833
       },
       "notes": [
-        "unresolved in 31%",
-        "party loses 64%",
+        "unresolved in 43%",
+        "party loses 53%",
         "rounds above long target (4)",
         "HP left ≥ 70%"
       ]
@@ -1156,6 +1835,7 @@
         "Skizzik"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Skizzik",
         "Lightning Prism",
@@ -1166,22 +1846,85 @@
       "enemyHp": 410,
       "coverage": "41/69 turn-spendable actions unmodelled (59%)",
       "enemyGaps": [],
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 0.38903394255874674,
+            "defeat": 0.2950391644908616,
+            "overtime": 0.31592689295039167,
+            "escaped": 0,
+            "roundsP50": 6,
+            "roundsP90": 7,
+            "hpP50": 0.7813163481953291,
+            "hpP10": 0.6144373673036093,
+            "hpEndP50": 0.5987261146496815,
+            "roundsAllP50": 6,
+            "lowP50": 0.25690021231422505,
+            "anyDown": 0.9608355091383812,
+            "downsPerFight": 1.7441253263707572
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 0.08589951377633712,
+            "defeat": 0.2171799027552674,
+            "overtime": 0.6969205834683955,
+            "escaped": 0,
+            "roundsP50": 6,
+            "roundsP90": 7,
+            "hpP50": 0.8174097664543525,
+            "hpP10": 0.5970276008492569,
+            "hpEndP50": 0.45222929936305734,
+            "roundsAllP50": 7,
+            "lowP50": 0.21656050955414013,
+            "anyDown": 0.9870340356564019,
+            "downsPerFight": 1.9627228525121556
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
-        "win": 0.827,
-        "defeat": 0,
-        "overtime": 0.173,
-        "roundsP50": 5,
+        "win": 0.202,
+        "defeat": 0.247,
+        "overtime": 0.551,
+        "escaped": 0,
+        "roundsP50": 6,
         "roundsP90": 7,
-        "hpP50": 0.8301486199575372,
-        "hpP10": 0.7430997876857749,
-        "hpEndP50": 0.8152866242038217,
-        "roundsAllP50": 6,
-        "lowP50": 0.4288747346072187,
-        "anyDown": 0.739,
-        "downsPerFight": 0.215
+        "hpP50": 0.7887473460721869,
+        "hpP10": 0.6053078556263269,
+        "hpEndP50": 0.5010615711252654,
+        "roundsAllP50": 7,
+        "lowP50": 0.21868365180467092,
+        "anyDown": 0.977,
+        "downsPerFight": 1.879
       },
       "notes": [
+        "unresolved in 55%",
+        "party loses 25%",
         "rounds above long target (4)",
         "HP left ≥ 70%"
       ]
@@ -1202,6 +1945,7 @@
         "Electro Slime"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Electro Slime",
         "Kirin",
@@ -1212,20 +1956,81 @@
       "enemyHp": 300,
       "coverage": "41/70 turn-spendable actions unmodelled (59%)",
       "enemyGaps": [],
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 0.814621409921671,
+            "defeat": 0.057441253263707574,
+            "overtime": 0.1279373368146214,
+            "escaped": 0,
+            "roundsP50": 4,
+            "roundsP90": 5,
+            "hpP50": 0.7197452229299363,
+            "hpP10": 0.5203821656050955,
+            "hpEndP50": 0.6772823779193206,
+            "roundsAllP50": 4,
+            "lowP50": 0.208067940552017,
+            "anyDown": 0.9425587467362925,
+            "downsPerFight": 1.1018276762402088
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 0.7147487844408428,
+            "defeat": 0.09886547811993517,
+            "overtime": 0.18638573743922204,
+            "escaped": 0,
+            "roundsP50": 4,
+            "roundsP90": 6,
+            "hpP50": 0.5859872611464968,
+            "hpP10": 0.3354564755838641,
+            "hpEndP50": 0.4819532908704883,
+            "roundsAllP50": 5,
+            "lowP50": 0.22717622080679406,
+            "anyDown": 0.9124797406807131,
+            "downsPerFight": 1.3776337115072934
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
-        "win": 1,
-        "defeat": 0,
-        "overtime": 0,
-        "roundsP50": 3,
-        "roundsP90": 4,
-        "hpP50": 0.6411889596602972,
-        "hpP10": 0.5456475583864119,
-        "hpEndP50": 0.6411889596602972,
-        "roundsAllP50": 3,
-        "lowP50": 0.42250530785562634,
-        "anyDown": 0.806,
-        "downsPerFight": 0.083
+        "win": 0.753,
+        "defeat": 0.083,
+        "overtime": 0.164,
+        "escaped": 0,
+        "roundsP50": 4,
+        "roundsP90": 6,
+        "hpP50": 0.6496815286624203,
+        "hpP10": 0.37367303609341823,
+        "hpEndP50": 0.578556263269639,
+        "roundsAllP50": 4,
+        "lowP50": 0.21868365180467092,
+        "anyDown": 0.924,
+        "downsPerFight": 1.272
       },
       "notes": [
         "rounds above 1.5-2 rds"
@@ -1247,6 +2052,7 @@
         "Lightning Prism"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Lightning Prism",
         "Kirin",
@@ -1257,24 +2063,84 @@
       "enemyHp": 510,
       "coverage": "41/70 turn-spendable actions unmodelled (59%)",
       "enemyGaps": [],
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 0.044386422976501305,
+            "defeat": 0.608355091383812,
+            "overtime": 0.3472584856396867,
+            "escaped": 0,
+            "roundsP50": 7,
+            "roundsP90": 7,
+            "hpP50": 0.6072186836518046,
+            "hpP10": 0.3184713375796179,
+            "hpEndP50": 0,
+            "roundsAllP50": 6,
+            "lowP50": 0,
+            "anyDown": 0.9973890339425587,
+            "downsPerFight": 3.0809399477806787
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 0.009724473257698542,
+            "defeat": 0.8168557536466775,
+            "overtime": 0.17341977309562398,
+            "escaped": 0,
+            "roundsP50": 7,
+            "roundsP90": 7,
+            "hpP50": 0.24734607218683652,
+            "hpP10": 0.14861995753715498,
+            "hpEndP50": 0,
+            "roundsAllP50": 4,
+            "lowP50": 0,
+            "anyDown": 0.9983792544570502,
+            "downsPerFight": 3.653160453808752
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
-        "win": 0.086,
-        "defeat": 0.347,
-        "overtime": 0.567,
-        "roundsP50": 6,
+        "win": 0.023,
+        "defeat": 0.737,
+        "overtime": 0.24,
+        "escaped": 0,
+        "roundsP50": 7,
         "roundsP90": 7,
-        "hpP50": 0.4713375796178344,
-        "hpP10": 0.3078556263269639,
-        "hpEndP50": 0.1613588110403397,
-        "roundsAllP50": 7,
-        "lowP50": 0.11677282377919321,
-        "anyDown": 1,
-        "downsPerFight": 2.629
+        "hpP50": 0.5583864118895966,
+        "hpP10": 0.20721868365180468,
+        "hpEndP50": 0,
+        "roundsAllP50": 5,
+        "lowP50": 0,
+        "anyDown": 0.998,
+        "downsPerFight": 3.434
       },
       "notes": [
-        "unresolved in 57%",
-        "party loses 35%",
+        "party loses 74%",
         "rounds above long target (4)"
       ]
     },
@@ -1294,6 +2160,7 @@
         "Skizzik"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Skizzik",
         "Kirin",
@@ -1304,22 +2171,84 @@
       "enemyHp": 470,
       "coverage": "41/70 turn-spendable actions unmodelled (59%)",
       "enemyGaps": [],
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 0.3629242819843342,
+            "defeat": 0.45691906005221933,
+            "overtime": 0.1801566579634465,
+            "escaped": 0,
+            "roundsP50": 4,
+            "roundsP90": 6,
+            "hpP50": 0.6794055201698513,
+            "hpP10": 0.5252653927813163,
+            "hpEndP50": 0.15286624203821655,
+            "roundsAllP50": 4,
+            "lowP50": 0.05307855626326964,
+            "anyDown": 0.9321148825065274,
+            "downsPerFight": 2.4569190600522193
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 0.3727714748784441,
+            "defeat": 0.39708265802269044,
+            "overtime": 0.23014586709886548,
+            "escaped": 0,
+            "roundsP50": 5,
+            "roundsP90": 7,
+            "hpP50": 0.5445859872611465,
+            "hpP10": 0.23524416135881104,
+            "hpEndP50": 0.21656050955414013,
+            "roundsAllP50": 5,
+            "lowP50": 0.11040339702760085,
+            "anyDown": 0.93354943273906,
+            "downsPerFight": 2.3452188006482984
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
-        "win": 0.943,
-        "defeat": 0,
-        "overtime": 0.057,
+        "win": 0.369,
+        "defeat": 0.42,
+        "overtime": 0.211,
+        "escaped": 0,
         "roundsP50": 4,
-        "roundsP90": 6,
-        "hpP50": 0.6581740976645435,
-        "hpP10": 0.5307855626326964,
-        "hpEndP50": 0.6518046709129511,
-        "roundsAllP50": 4,
-        "lowP50": 0.505307855626327,
-        "anyDown": 0.32,
-        "downsPerFight": 0.197
+        "roundsP90": 7,
+        "hpP50": 0.6157112526539278,
+        "hpP10": 0.2734607218683652,
+        "hpEndP50": 0.208067940552017,
+        "roundsAllP50": 5,
+        "lowP50": 0.09129511677282377,
+        "anyDown": 0.933,
+        "downsPerFight": 2.388
       },
       "notes": [
+        "party loses 42%",
         "rounds above 1.5-2 rds"
       ]
     },
@@ -1339,6 +2268,7 @@
         "Lightning Prism"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Kirin",
         "Skizzik",
@@ -1349,23 +2279,84 @@
       "enemyHp": 490,
       "coverage": "41/70 turn-spendable actions unmodelled (59%)",
       "enemyGaps": [],
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 0.1409921671018277,
+            "defeat": 0.5848563968668408,
+            "overtime": 0.2741514360313316,
+            "escaped": 0,
+            "roundsP50": 6,
+            "roundsP90": 7,
+            "hpP50": 0.5934182590233545,
+            "hpP10": 0.2747346072186837,
+            "hpEndP50": 0,
+            "roundsAllP50": 6,
+            "lowP50": 0,
+            "anyDown": 0.9947780678851175,
+            "downsPerFight": 2.9738903394255876
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 0.03727714748784441,
+            "defeat": 0.7844408427876823,
+            "overtime": 0.17828200972447325,
+            "escaped": 0,
+            "roundsP50": 6,
+            "roundsP90": 7,
+            "hpP50": 0.5116772823779193,
+            "hpP10": 0.15923566878980894,
+            "hpEndP50": 0,
+            "roundsAllP50": 5,
+            "lowP50": 0,
+            "anyDown": 1,
+            "downsPerFight": 3.5445705024311183
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
-        "win": 0.674,
-        "defeat": 0.15,
-        "overtime": 0.176,
-        "roundsP50": 5,
-        "roundsP90": 6,
-        "hpP50": 0.564755838641189,
-        "hpP10": 0.4140127388535032,
-        "hpEndP50": 0.4968152866242038,
-        "roundsAllP50": 6,
-        "lowP50": 0.26963906581740976,
-        "anyDown": 0.938,
-        "downsPerFight": 1.229
+        "win": 0.077,
+        "defeat": 0.708,
+        "overtime": 0.215,
+        "escaped": 0,
+        "roundsP50": 6,
+        "roundsP90": 7,
+        "hpP50": 0.5753715498938429,
+        "hpP10": 0.21910828025477708,
+        "hpEndP50": 0,
+        "roundsAllP50": 5,
+        "lowP50": 0,
+        "anyDown": 0.998,
+        "downsPerFight": 3.326
       },
       "notes": [
-        "party loses 15%",
+        "party loses 71%",
         "rounds above long target (4)"
       ]
     },
@@ -1384,6 +2375,7 @@
         "Mana Ray"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Mana Ray",
         "Mana Ray"
@@ -1393,20 +2385,81 @@
       "enemyHp": 230,
       "coverage": "41/67 turn-spendable actions unmodelled (61%)",
       "enemyGaps": [],
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 0.9973890339425587,
+            "defeat": 0,
+            "overtime": 0.0026109660574412533,
+            "escaped": 0,
+            "roundsP50": 2,
+            "roundsP90": 3,
+            "hpP50": 0.7515923566878981,
+            "hpP10": 0.5777070063694267,
+            "hpEndP50": 0.7515923566878981,
+            "roundsAllP50": 2,
+            "lowP50": 0.6942675159235668,
+            "anyDown": 0.31070496083550914,
+            "downsPerFight": 0.044386422976501305
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 1,
+            "defeat": 0,
+            "overtime": 0,
+            "escaped": 0,
+            "roundsP50": 2,
+            "roundsP90": 3,
+            "hpP50": 0.9087048832271762,
+            "hpP10": 0.7974522292993631,
+            "hpEndP50": 0.9087048832271762,
+            "roundsAllP50": 2,
+            "lowP50": 0.8089171974522293,
+            "anyDown": 0.16531604538087522,
+            "downsPerFight": 0.0016207455429497568
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
-        "win": 1,
+        "win": 0.999,
         "defeat": 0,
-        "overtime": 0,
+        "overtime": 0.001,
+        "escaped": 0,
         "roundsP50": 2,
         "roundsP90": 3,
         "hpP50": 0.8747346072186837,
-        "hpP10": 0.6709129511677282,
+        "hpP10": 0.6518046709129511,
         "hpEndP50": 0.8747346072186837,
         "roundsAllP50": 2,
-        "lowP50": 0.7961783439490446,
-        "anyDown": 0.656,
-        "downsPerFight": 0.144
+        "lowP50": 0.7834394904458599,
+        "anyDown": 0.221,
+        "downsPerFight": 0.018
       },
       "notes": [
         "HP left ≥ 85%"
@@ -1427,6 +2480,7 @@
         "Mana Ray"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Ampere",
         "Mana Ray"
@@ -1436,23 +2490,84 @@
       "enemyHp": 290,
       "coverage": "41/67 turn-spendable actions unmodelled (61%)",
       "enemyGaps": [],
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 1,
+            "defeat": 0,
+            "overtime": 0,
+            "escaped": 0,
+            "roundsP50": 3,
+            "roundsP90": 4,
+            "hpP50": 0.7176220806794055,
+            "hpP10": 0.49723991507431,
+            "hpEndP50": 0.7176220806794055,
+            "roundsAllP50": 3,
+            "lowP50": 0.49469214437367304,
+            "anyDown": 0.4281984334203655,
+            "downsPerFight": 0.2558746736292428
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 0.9708265802269044,
+            "defeat": 0.019448946515397084,
+            "overtime": 0.009724473257698542,
+            "escaped": 0,
+            "roundsP50": 4,
+            "roundsP90": 5,
+            "hpP50": 0.6539278131634819,
+            "hpP10": 0.36942675159235666,
+            "hpEndP50": 0.6454352441613588,
+            "roundsAllP50": 4,
+            "lowP50": 0.4883227176220807,
+            "anyDown": 0.6807131280388979,
+            "downsPerFight": 0.6564019448946515
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
-        "win": 1,
-        "defeat": 0,
-        "overtime": 0,
-        "roundsP50": 2,
-        "roundsP90": 3,
-        "hpP50": 0.8195329087048833,
-        "hpP10": 0.6515923566878981,
-        "hpEndP50": 0.8195329087048833,
-        "roundsAllP50": 2,
-        "lowP50": 0.6157112526539278,
-        "anyDown": 0.541,
-        "downsPerFight": 0
+        "win": 0.982,
+        "defeat": 0.012,
+        "overtime": 0.006,
+        "escaped": 0,
+        "roundsP50": 3,
+        "roundsP90": 5,
+        "hpP50": 0.6836518046709129,
+        "hpP10": 0.40976645435244163,
+        "hpEndP50": 0.6794055201698513,
+        "roundsAllP50": 3,
+        "lowP50": 0.49044585987261147,
+        "anyDown": 0.584,
+        "downsPerFight": 0.503
       },
       "notes": [
-        "HP left ≥ 70%"
+        "rounds above 1.5-2 rds"
       ]
     },
     {
@@ -1470,6 +2585,7 @@
         "Skizzik"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Ampere",
         "Skizzik"
@@ -1479,24 +2595,85 @@
       "enemyHp": 305,
       "coverage": "41/67 turn-spendable actions unmodelled (61%)",
       "enemyGaps": [],
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 0.6892950391644909,
+            "defeat": 0.16971279373368145,
+            "overtime": 0.1409921671018277,
+            "escaped": 0,
+            "roundsP50": 5,
+            "roundsP90": 6,
+            "hpP50": 0.6560509554140127,
+            "hpP10": 0.4012738853503185,
+            "hpEndP50": 0.5562632696390658,
+            "roundsAllP50": 5,
+            "lowP50": 0.3184713375796178,
+            "anyDown": 0.9295039164490861,
+            "downsPerFight": 1.4308093994778068
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 0.34683954619124796,
+            "defeat": 0.5494327390599676,
+            "overtime": 0.10372771474878444,
+            "escaped": 0,
+            "roundsP50": 5,
+            "roundsP90": 7,
+            "hpP50": 0.4012738853503185,
+            "hpP10": 0.19384288747346073,
+            "hpEndP50": 0,
+            "roundsAllP50": 5,
+            "lowP50": 0,
+            "anyDown": 0.993517017828201,
+            "downsPerFight": 3.011345218800648
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
-        "win": 0.999,
-        "defeat": 0,
-        "overtime": 0.001,
-        "roundsP50": 3,
-        "roundsP90": 3,
-        "hpP50": 0.7749469214437368,
-        "hpP10": 0.6518046709129511,
-        "hpEndP50": 0.7749469214437368,
-        "roundsAllP50": 3,
-        "lowP50": 0.5859872611464968,
-        "anyDown": 0.05,
-        "downsPerFight": 0.002
+        "win": 0.478,
+        "defeat": 0.404,
+        "overtime": 0.118,
+        "escaped": 0,
+        "roundsP50": 5,
+        "roundsP90": 6,
+        "hpP50": 0.564755838641189,
+        "hpP10": 0.26454352441613593,
+        "hpEndP50": 0.2091295116772824,
+        "roundsAllP50": 5,
+        "lowP50": 0.1305732484076433,
+        "anyDown": 0.969,
+        "downsPerFight": 2.406
       },
       "notes": [
-        "rounds above 1.5-2 rds",
-        "HP left ≥ 70%"
+        "party loses 40%",
+        "rounds above long target (4)"
       ]
     },
     {
@@ -1514,6 +2691,7 @@
         "Lightning Prism"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Ampere",
         "Lightning Prism"
@@ -1523,24 +2701,86 @@
       "enemyHp": 325,
       "coverage": "41/67 turn-spendable actions unmodelled (61%)",
       "enemyGaps": [],
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 0.370757180156658,
+            "defeat": 0.17754569190600522,
+            "overtime": 0.4516971279373368,
+            "escaped": 0,
+            "roundsP50": 6,
+            "roundsP90": 7,
+            "hpP50": 0.692144373673036,
+            "hpP10": 0.4613588110403397,
+            "hpEndP50": 0.4543524416135881,
+            "roundsAllP50": 7,
+            "lowP50": 0.2229299363057325,
+            "anyDown": 0.9843342036553525,
+            "downsPerFight": 1.7441253263707572
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 0.1280388978930308,
+            "defeat": 0.6191247974068071,
+            "overtime": 0.25283630470016205,
+            "escaped": 0,
+            "roundsP50": 6,
+            "roundsP90": 7,
+            "hpP50": 0.524416135881104,
+            "hpP10": 0.24883227176220807,
+            "hpEndP50": 0,
+            "roundsAllP50": 6,
+            "lowP50": 0,
+            "anyDown": 0.9967585089141004,
+            "downsPerFight": 3.259319286871961
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
-        "win": 0.653,
-        "defeat": 0,
-        "overtime": 0.347,
-        "roundsP50": 4,
-        "roundsP90": 6,
-        "hpP50": 0.6709129511677282,
-        "hpP10": 0.535031847133758,
-        "hpEndP50": 0.5955414012738853,
-        "roundsAllP50": 5,
-        "lowP50": 0.2632696390658174,
-        "anyDown": 0.997,
-        "downsPerFight": 1.44
+        "win": 0.221,
+        "defeat": 0.45,
+        "overtime": 0.329,
+        "escaped": 0,
+        "roundsP50": 6,
+        "roundsP90": 7,
+        "hpP50": 0.6454352441613588,
+        "hpP10": 0.3524416135881104,
+        "hpEndP50": 0.15605095541401273,
+        "roundsAllP50": 6,
+        "lowP50": 0.10084925690021232,
+        "anyDown": 0.992,
+        "downsPerFight": 2.679
       },
       "notes": [
-        "unresolved in 35%",
-        "rounds above 1.5-2 rds"
+        "unresolved in 33%",
+        "party loses 45%",
+        "rounds above long target (4)"
       ]
     },
     {
@@ -1559,6 +2799,7 @@
         "Mana Ray"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Mana Ray",
         "Lightning Prism",
@@ -1569,22 +2810,84 @@
       "enemyHp": 380,
       "coverage": "41/69 turn-spendable actions unmodelled (59%)",
       "enemyGaps": [],
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 0.6736292428198434,
+            "defeat": 0.033942558746736295,
+            "overtime": 0.2924281984334204,
+            "escaped": 0,
+            "roundsP50": 6,
+            "roundsP90": 7,
+            "hpP50": 0.7845010615711253,
+            "hpP10": 0.6029723991507431,
+            "hpEndP50": 0.7133757961783439,
+            "roundsAllP50": 6,
+            "lowP50": 0.38004246284501064,
+            "anyDown": 0.9112271540469974,
+            "downsPerFight": 0.7127937336814621
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 0.2576985413290113,
+            "defeat": 0.011345218800648298,
+            "overtime": 0.7309562398703403,
+            "escaped": 0,
+            "roundsP50": 6,
+            "roundsP90": 7,
+            "hpP50": 0.8046709129511678,
+            "hpP10": 0.5851380042462845,
+            "hpEndP50": 0.6199575371549894,
+            "roundsAllP50": 7,
+            "lowP50": 0.32908704883227174,
+            "anyDown": 0.965964343598055,
+            "downsPerFight": 1.1588330632090762
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
-        "win": 0.979,
-        "defeat": 0,
-        "overtime": 0.021,
-        "roundsP50": 5,
+        "win": 0.417,
+        "defeat": 0.02,
+        "overtime": 0.563,
+        "escaped": 0,
+        "roundsP50": 6,
         "roundsP90": 7,
-        "hpP50": 0.8343949044585988,
-        "hpP10": 0.7409766454352441,
-        "hpEndP50": 0.832271762208068,
-        "roundsAllP50": 5,
-        "lowP50": 0.4267515923566879,
-        "anyDown": 0.947,
-        "downsPerFight": 0.113
+        "hpP50": 0.7919320594479831,
+        "hpP10": 0.6021231422505308,
+        "hpEndP50": 0.6539278131634819,
+        "roundsAllP50": 7,
+        "lowP50": 0.3535031847133758,
+        "anyDown": 0.945,
+        "downsPerFight": 0.988
       },
       "notes": [
+        "unresolved in 56%",
         "rounds above long target (4)",
         "HP left ≥ 70%"
       ]
@@ -1605,6 +2908,7 @@
         "Kirin"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Ampere",
         "Mana Ray",
@@ -1615,23 +2919,85 @@
       "enemyHp": 500,
       "coverage": "41/70 turn-spendable actions unmodelled (59%)",
       "enemyGaps": [],
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 0.4073107049608355,
+            "defeat": 0.38642297650130547,
+            "overtime": 0.206266318537859,
+            "escaped": 0,
+            "roundsP50": 5,
+            "roundsP90": 6,
+            "hpP50": 0.5095541401273885,
+            "hpP10": 0.27070063694267515,
+            "hpEndP50": 0.208067940552017,
+            "roundsAllP50": 5,
+            "lowP50": 0.09766454352441614,
+            "anyDown": 0.9738903394255874,
+            "downsPerFight": 2.519582245430809
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 0.21393841166936792,
+            "defeat": 0.6709886547811994,
+            "overtime": 0.11507293354943274,
+            "escaped": 0,
+            "roundsP50": 5,
+            "roundsP90": 7,
+            "hpP50": 0.39278131634819535,
+            "hpP10": 0.2,
+            "hpEndP50": 0,
+            "roundsAllP50": 5,
+            "lowP50": 0,
+            "anyDown": 0.9854132901134521,
+            "downsPerFight": 3.298217179902755
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
-        "win": 1,
-        "defeat": 0,
-        "overtime": 0,
-        "roundsP50": 4,
-        "roundsP90": 4,
-        "hpP50": 0.6985138004246284,
-        "hpP10": 0.5178343949044586,
-        "hpEndP50": 0.6985138004246284,
-        "roundsAllP50": 4,
-        "lowP50": 0.43312101910828027,
-        "anyDown": 0.987,
-        "downsPerFight": 0.203
+        "win": 0.288,
+        "defeat": 0.562,
+        "overtime": 0.15,
+        "escaped": 0,
+        "roundsP50": 5,
+        "roundsP90": 6,
+        "hpP50": 0.4554140127388535,
+        "hpP10": 0.21953290870488323,
+        "hpEndP50": 0,
+        "roundsAllP50": 5,
+        "lowP50": 0,
+        "anyDown": 0.981,
+        "downsPerFight": 3
       },
       "notes": [
-        "rounds above 1.5-2 rds"
+        "party loses 56%",
+        "rounds above long target (4)"
       ]
     },
     {
@@ -1650,6 +3016,7 @@
         "Electro Slime"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Gigas",
         "Electro Slime",
@@ -1660,28 +3027,86 @@
       "enemyHp": 890,
       "coverage": "41/69 turn-spendable actions unmodelled (59%)",
       "enemyGaps": [],
-      "unusedActions": [
-        "Gigas: Heavy Bodyslam (needs Frightened)"
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
       ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 0.21671018276762402,
+            "defeat": 0.4046997389033943,
+            "overtime": 0.3785900783289817,
+            "escaped": 0,
+            "roundsP50": 6,
+            "roundsP90": 7,
+            "hpP50": 0.6815286624203821,
+            "hpP10": 0.44033970276008494,
+            "hpEndP50": 0.1762208067940552,
+            "roundsAllP50": 7,
+            "lowP50": 0.1613588110403397,
+            "anyDown": 0.9947780678851175,
+            "downsPerFight": 2.759791122715405
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 0.8768233387358185,
+            "defeat": 0.04051863857374392,
+            "overtime": 0.08265802269043761,
+            "escaped": 0,
+            "roundsP50": 5,
+            "roundsP90": 6,
+            "hpP50": 0.7983014861995754,
+            "hpP10": 0.4437367303609342,
+            "hpEndP50": 0.7452229299363057,
+            "roundsAllP50": 5,
+            "lowP50": 0.35668789808917195,
+            "anyDown": 0.9092382495948136,
+            "downsPerFight": 0.7374392220421394
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
-        "win": 0.261,
-        "defeat": 0.415,
-        "overtime": 0.324,
-        "roundsP50": 6,
-        "roundsP90": 7,
-        "hpP50": 0.6624203821656051,
-        "hpP10": 0.4543524416135881,
-        "hpEndP50": 0.03397027600849257,
-        "roundsAllP50": 6,
-        "lowP50": 0.01910828025477707,
-        "anyDown": 0.996,
-        "downsPerFight": 2.894
+        "win": 0.624,
+        "defeat": 0.18,
+        "overtime": 0.196,
+        "escaped": 0,
+        "roundsP50": 5,
+        "roundsP90": 6,
+        "hpP50": 0.7823779193205945,
+        "hpP10": 0.4407643312101911,
+        "hpEndP50": 0.6242038216560509,
+        "roundsAllP50": 5,
+        "lowP50": 0.2929936305732484,
+        "anyDown": 0.942,
+        "downsPerFight": 1.512
       },
       "notes": [
-        "unresolved in 32%",
-        "party loses 42%",
-        "rounds above long target (4)"
+        "party loses 18%",
+        "rounds above long target (4)",
+        "HP left ≥ 70%"
       ]
     },
     {
@@ -1701,6 +3126,7 @@
         "Electro Slime"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Electro Slime",
         "Obsidrax",
@@ -1714,23 +3140,86 @@
       "enemyGaps": [
         "Obsidrax: Miasma Nova"
       ],
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 0.5013054830287206,
+            "defeat": 0.015665796344647518,
+            "overtime": 0.4830287206266319,
+            "escaped": 0,
+            "roundsP50": 6,
+            "roundsP90": 7,
+            "hpP50": 0.7866242038216561,
+            "hpP10": 0.6031847133757962,
+            "hpEndP50": 0.6900212314225053,
+            "roundsAllP50": 7,
+            "lowP50": 0.34394904458598724,
+            "anyDown": 0.804177545691906,
+            "downsPerFight": 0.6919060052219321
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 0.2965964343598055,
+            "defeat": 0.04213938411669368,
+            "overtime": 0.6612641815235009,
+            "escaped": 0,
+            "roundsP50": 6,
+            "roundsP90": 7,
+            "hpP50": 0.8046709129511678,
+            "hpP10": 0.6437367303609342,
+            "hpEndP50": 0.6857749469214437,
+            "roundsAllP50": 7,
+            "lowP50": 0.3354564755838641,
+            "anyDown": 0.8492706645056726,
+            "downsPerFight": 0.9643435980551054
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
-        "win": 0.846,
-        "defeat": 0,
-        "overtime": 0.154,
+        "win": 0.375,
+        "defeat": 0.032,
+        "overtime": 0.593,
+        "escaped": 0,
         "roundsP50": 6,
         "roundsP90": 7,
-        "hpP50": 0.6263269639065817,
-        "hpP10": 0.5010615711252654,
-        "hpEndP50": 0.6157112526539278,
-        "roundsAllP50": 6,
-        "lowP50": 0.23779193205944799,
-        "anyDown": 0.99,
-        "downsPerFight": 0.819
+        "hpP50": 0.7961783439490446,
+        "hpP10": 0.6208067940552017,
+        "hpEndP50": 0.6878980891719745,
+        "roundsAllP50": 7,
+        "lowP50": 0.3375796178343949,
+        "anyDown": 0.832,
+        "downsPerFight": 0.86
       },
       "notes": [
-        "rounds above long target (4)"
+        "unresolved in 59%",
+        "rounds above long target (4)",
+        "HP left ≥ 70%"
       ]
     },
     {
@@ -1748,6 +3237,7 @@
         "Obsidrax"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Skizzik",
         "Obsidrax"
@@ -1759,20 +3249,81 @@
       "enemyGaps": [
         "Obsidrax: Miasma Nova"
       ],
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 0.9765013054830287,
+            "defeat": 0,
+            "overtime": 0.02349869451697128,
+            "escaped": 0,
+            "roundsP50": 4,
+            "roundsP90": 4,
+            "hpP50": 0.8577494692144374,
+            "hpP10": 0.6963906581740976,
+            "hpEndP50": 0.8535031847133758,
+            "roundsAllP50": 4,
+            "lowP50": 0.5477707006369427,
+            "anyDown": 0.3629242819843342,
+            "downsPerFight": 0.09660574412532637
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 0.9886547811993517,
+            "defeat": 0.0016207455429497568,
+            "overtime": 0.009724473257698542,
+            "escaped": 0,
+            "roundsP50": 4,
+            "roundsP90": 5,
+            "hpP50": 0.7940552016985138,
+            "hpP10": 0.632484076433121,
+            "hpEndP50": 0.7919320594479831,
+            "roundsAllP50": 4,
+            "lowP50": 0.6157112526539278,
+            "anyDown": 0.3241491085899514,
+            "downsPerFight": 0.07455429497568881
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
-        "win": 1,
-        "defeat": 0,
-        "overtime": 0,
-        "roundsP50": 3,
+        "win": 0.984,
+        "defeat": 0.001,
+        "overtime": 0.015,
+        "escaped": 0,
+        "roundsP50": 4,
         "roundsP90": 4,
-        "hpP50": 0.7770700636942676,
-        "hpP10": 0.6624203821656051,
-        "hpEndP50": 0.7770700636942676,
-        "roundsAllP50": 3,
-        "lowP50": 0.6963906581740976,
-        "anyDown": 0.001,
-        "downsPerFight": 0
+        "hpP50": 0.8227176220806794,
+        "hpP10": 0.6481953290870488,
+        "hpEndP50": 0.8195329087048833,
+        "roundsAllP50": 4,
+        "lowP50": 0.5955414012738853,
+        "anyDown": 0.339,
+        "downsPerFight": 0.083
       },
       "notes": [
         "rounds above 1.5-2 rds",
@@ -1795,6 +3346,7 @@
         "Skizzik"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Obsidrax",
         "Kirin",
@@ -1807,23 +3359,85 @@
       "enemyGaps": [
         "Obsidrax: Miasma Nova"
       ],
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 0.6057441253263708,
+            "defeat": 0.16449086161879894,
+            "overtime": 0.2297650130548303,
+            "escaped": 0,
+            "roundsP50": 5,
+            "roundsP90": 6,
+            "hpP50": 0.721868365180467,
+            "hpP10": 0.46305732484076434,
+            "hpEndP50": 0.5966029723991507,
+            "roundsAllP50": 5,
+            "lowP50": 0.21656050955414013,
+            "anyDown": 0.8120104438642297,
+            "downsPerFight": 1.433420365535248
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 0.46353322528363045,
+            "defeat": 0.3387358184764992,
+            "overtime": 0.19773095623987033,
+            "escaped": 0,
+            "roundsP50": 5,
+            "roundsP90": 7,
+            "hpP50": 0.5721868365180467,
+            "hpP10": 0.262208067940552,
+            "hpEndP50": 0.3184713375796178,
+            "roundsAllP50": 5,
+            "lowP50": 0.14861995753715498,
+            "anyDown": 0.899513776337115,
+            "downsPerFight": 2.092382495948136
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
-        "win": 0.776,
-        "defeat": 0.039,
-        "overtime": 0.185,
-        "roundsP50": 4,
-        "roundsP90": 5,
-        "hpP50": 0.6645435244161358,
-        "hpP10": 0.5222929936305732,
-        "hpEndP50": 0.6305732484076433,
-        "roundsAllP50": 4,
-        "lowP50": 0.42462845010615713,
-        "anyDown": 0.621,
-        "downsPerFight": 0.656
+        "win": 0.518,
+        "defeat": 0.272,
+        "overtime": 0.21,
+        "escaped": 0,
+        "roundsP50": 5,
+        "roundsP90": 7,
+        "hpP50": 0.6401273885350318,
+        "hpP10": 0.3157112526539278,
+        "hpEndP50": 0.42250530785562634,
+        "roundsAllP50": 5,
+        "lowP50": 0.18046709129511676,
+        "anyDown": 0.866,
+        "downsPerFight": 1.84
       },
       "notes": [
-        "rounds above 1.5-2 rds"
+        "party loses 27%",
+        "rounds above long target (4)"
       ]
     },
     {
@@ -1841,6 +3455,7 @@
         "Drakoza"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Drakoza",
         "Drakoza"
@@ -1850,23 +3465,84 @@
       "enemyHp": 280,
       "coverage": "41/69 turn-spendable actions unmodelled (59%)",
       "enemyGaps": [],
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 1,
+            "defeat": 0,
+            "overtime": 0,
+            "escaped": 0,
+            "roundsP50": 2,
+            "roundsP90": 3,
+            "hpP50": 0.772823779193206,
+            "hpP10": 0.546072186836518,
+            "hpEndP50": 0.772823779193206,
+            "roundsAllP50": 2,
+            "lowP50": 0.6454352441613588,
+            "anyDown": 0.2402088772845953,
+            "downsPerFight": 0.0783289817232376
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 1,
+            "defeat": 0,
+            "overtime": 0,
+            "escaped": 0,
+            "roundsP50": 2,
+            "roundsP90": 3,
+            "hpP50": 0.89171974522293,
+            "hpP10": 0.7707006369426752,
+            "hpEndP50": 0.89171974522293,
+            "roundsAllP50": 2,
+            "lowP50": 0.7515923566878981,
+            "anyDown": 0.05834683954619125,
+            "downsPerFight": 0.0032414910858995136
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
         "win": 1,
         "defeat": 0,
         "overtime": 0,
+        "escaped": 0,
         "roundsP50": 2,
-        "roundsP90": 2,
-        "hpP50": 0.8110403397027601,
-        "hpP10": 0.7749469214437368,
-        "hpEndP50": 0.8110403397027601,
+        "roundsP90": 3,
+        "hpP50": 0.8556263269639066,
+        "hpP10": 0.6518046709129511,
+        "hpEndP50": 0.8556263269639066,
         "roundsAllP50": 2,
-        "lowP50": 0.7070063694267515,
-        "anyDown": 0,
-        "downsPerFight": 0
+        "lowP50": 0.7282377919320594,
+        "anyDown": 0.128,
+        "downsPerFight": 0.032
       },
       "notes": [
-        "HP left ≥ 70%"
+        "HP left ≥ 85%"
       ]
     },
     {
@@ -1884,6 +3560,7 @@
         "Skizzik"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Drakoza",
         "Skizzik"
@@ -1893,20 +3570,81 @@
       "enemyHp": 270,
       "coverage": "41/68 turn-spendable actions unmodelled (60%)",
       "enemyGaps": [],
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 0.9608355091383812,
+            "defeat": 0.013054830287206266,
+            "overtime": 0.02610966057441253,
+            "escaped": 0,
+            "roundsP50": 3,
+            "roundsP90": 4,
+            "hpP50": 0.7961783439490446,
+            "hpP10": 0.5719745222929936,
+            "hpEndP50": 0.7898089171974523,
+            "roundsAllP50": 3,
+            "lowP50": 0.4840764331210191,
+            "anyDown": 0.5326370757180157,
+            "downsPerFight": 0.3185378590078329
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 0.9789303079416531,
+            "defeat": 0.0032414910858995136,
+            "overtime": 0.017828200972447326,
+            "escaped": 0,
+            "roundsP50": 3,
+            "roundsP90": 5,
+            "hpP50": 0.8121019108280255,
+            "hpP10": 0.6390658174097664,
+            "hpEndP50": 0.8089171974522293,
+            "roundsAllP50": 3,
+            "lowP50": 0.5902335456475584,
+            "anyDown": 0.5251215559157212,
+            "downsPerFight": 0.1912479740680713
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
-        "win": 1,
-        "defeat": 0,
-        "overtime": 0,
+        "win": 0.972,
+        "defeat": 0.007,
+        "overtime": 0.021,
+        "escaped": 0,
         "roundsP50": 3,
-        "roundsP90": 3,
-        "hpP50": 0.8110403397027601,
-        "hpP10": 0.732484076433121,
-        "hpEndP50": 0.8110403397027601,
+        "roundsP90": 5,
+        "hpP50": 0.8067940552016986,
+        "hpP10": 0.6093418259023354,
+        "hpEndP50": 0.802547770700637,
         "roundsAllP50": 3,
-        "lowP50": 0.7452229299363057,
-        "anyDown": 0.238,
-        "downsPerFight": 0
+        "lowP50": 0.5668789808917197,
+        "anyDown": 0.528,
+        "downsPerFight": 0.24
       },
       "notes": [
         "rounds above 1.5-2 rds",
@@ -1928,6 +3666,7 @@
         "Obsidrax"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Mist Dragon",
         "Obsidrax"
@@ -1939,20 +3678,81 @@
       "enemyGaps": [
         "Obsidrax: Miasma Nova"
       ],
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 0.9921671018276762,
+            "defeat": 0,
+            "overtime": 0.007832898172323759,
+            "escaped": 0,
+            "roundsP50": 4,
+            "roundsP90": 5,
+            "hpP50": 0.8174097664543525,
+            "hpP10": 0.6388535031847133,
+            "hpEndP50": 0.8174097664543525,
+            "roundsAllP50": 4,
+            "lowP50": 0.5605095541401274,
+            "anyDown": 0.2402088772845953,
+            "downsPerFight": 0.02610966057441253
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 1,
+            "defeat": 0,
+            "overtime": 0,
+            "escaped": 0,
+            "roundsP50": 4,
+            "roundsP90": 5,
+            "hpP50": 0.8535031847133758,
+            "hpP10": 0.678556263269639,
+            "hpEndP50": 0.8535031847133758,
+            "roundsAllP50": 4,
+            "lowP50": 0.6305732484076433,
+            "anyDown": 0.11831442463533225,
+            "downsPerFight": 0.009724473257698542
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
-        "win": 1,
+        "win": 0.997,
         "defeat": 0,
-        "overtime": 0,
+        "overtime": 0.003,
+        "escaped": 0,
         "roundsP50": 4,
         "roundsP90": 5,
-        "hpP50": 0.7898089171974523,
-        "hpP10": 0.7070063694267515,
-        "hpEndP50": 0.7898089171974523,
+        "hpP50": 0.8428874734607219,
+        "hpP10": 0.6581740976645435,
+        "hpEndP50": 0.8428874734607219,
         "roundsAllP50": 4,
-        "lowP50": 0.5435244161358811,
-        "anyDown": 0.135,
-        "downsPerFight": 0
+        "lowP50": 0.6093418259023354,
+        "anyDown": 0.165,
+        "downsPerFight": 0.016
       },
       "notes": [
         "rounds above 1.5-2 rds",
@@ -1975,6 +3775,7 @@
         "Drakoza"
       ],
       "ceiling": 26,
+      "tableId": "Oijx8ksubxq9pc1R",
       "enemies": [
         "Mist Dragon",
         "Mana Ray",
@@ -1985,20 +3786,81 @@
       "enemyHp": 455,
       "coverage": "41/73 turn-spendable actions unmodelled (56%)",
       "enemyGaps": [],
+      "events": [
+        {
+          "id": "lightning-crystal",
+          "share": 0.3829787234042553,
+          "tiles": 18,
+          "battleMaps": [
+            "Valley_Battlemap002",
+            "Valley_Battlemap003"
+          ]
+        },
+        {
+          "id": "lightning-storm",
+          "share": 0.6170212765957447,
+          "tiles": 29,
+          "battleMaps": [
+            "Valley_Battlemap001"
+          ]
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {
+        "lightning-crystal": {
+          "share": 0.3829787234042553,
+          "stats": {
+            "runs": 383,
+            "win": 0.6579634464751958,
+            "defeat": 0.031331592689295036,
+            "overtime": 0.31070496083550914,
+            "escaped": 0,
+            "roundsP50": 6,
+            "roundsP90": 7,
+            "hpP50": 0.7845010615711253,
+            "hpP10": 0.613588110403397,
+            "hpEndP50": 0.7685774946921444,
+            "roundsAllP50": 6,
+            "lowP50": 0.4033970276008493,
+            "anyDown": 0.7728459530026109,
+            "downsPerFight": 0.48825065274151436
+          }
+        },
+        "lightning-storm": {
+          "share": 0.6170212765957447,
+          "stats": {
+            "runs": 617,
+            "win": 0.779578606158833,
+            "defeat": 0.03565640194489465,
+            "overtime": 0.1847649918962723,
+            "escaped": 0,
+            "roundsP50": 5,
+            "roundsP90": 7,
+            "hpP50": 0.7876857749469215,
+            "hpP10": 0.5371549893842887,
+            "hpEndP50": 0.7791932059447984,
+            "roundsAllP50": 6,
+            "lowP50": 0.4713375796178344,
+            "anyDown": 0.7341977309562399,
+            "downsPerFight": 0.473257698541329
+          }
+        }
+      },
       "stats": {
         "runs": 1000,
-        "win": 0.953,
-        "defeat": 0,
-        "overtime": 0.047,
+        "win": 0.733,
+        "defeat": 0.034,
+        "overtime": 0.233,
+        "escaped": 0,
         "roundsP50": 5,
-        "roundsP90": 6,
-        "hpP50": 0.8428874734607219,
-        "hpP10": 0.7685774946921444,
-        "hpEndP50": 0.8407643312101911,
-        "roundsAllP50": 5,
-        "lowP50": 0.4437367303609342,
-        "anyDown": 0.258,
-        "downsPerFight": 0.026
+        "roundsP90": 7,
+        "hpP50": 0.7876857749469215,
+        "hpP10": 0.5524416135881104,
+        "hpEndP50": 0.7738853503184714,
+        "roundsAllP50": 6,
+        "lowP50": 0.44798301486199577,
+        "anyDown": 0.749,
+        "downsPerFight": 0.479
       },
       "notes": [
         "rounds above long target (4)",
@@ -2031,23 +3893,83 @@
         "⭐️ Fafnir: Draconic Domination",
         "⭐️ Fafnir: Zero Power: Cruel Ultimatum"
       ],
+      "events": [
+        {
+          "id": null,
+          "share": 1,
+          "tiles": 0,
+          "battleMaps": []
+        }
+      ],
+      "dataCoverage": [
+        {
+          "name": "⭐️ Fafnir",
+          "gaps": [
+            "Torment: a player decides (ask)",
+            "Torment: redirect target",
+            "Condemn: a player decides (ask)",
+            "Condemn: redirect target",
+            "Zero Power: Cruel Ultimatum: open action menu"
+          ]
+        }
+      ],
+      "byEvent": {},
+      "dataGaps": [
+        {
+          "who": "⭐️ Fafnir",
+          "kind": "decided at the table",
+          "what": "Torment (the targeted player)",
+          "runs": 1000
+        },
+        {
+          "who": "⭐️ Fafnir",
+          "kind": "decided at the table",
+          "what": "Condemn (the targeted player)",
+          "runs": 1000
+        },
+        {
+          "who": "Zarg",
+          "kind": "decided at the table",
+          "what": "Searing Brand (the player)",
+          "runs": 335
+        },
+        {
+          "who": "Blanche",
+          "kind": "decided at the table",
+          "what": "Searing Brand (the player)",
+          "runs": 568
+        },
+        {
+          "who": "Hina",
+          "kind": "decided at the table",
+          "what": "Searing Brand (the player)",
+          "runs": 441
+        },
+        {
+          "who": "Keren",
+          "kind": "decided at the table",
+          "what": "Searing Brand (the player)",
+          "runs": 181
+        }
+      ],
       "stats": {
         "runs": 1000,
         "win": 0,
-        "defeat": 0.772,
-        "overtime": 0.228,
+        "defeat": 0.99,
+        "overtime": 0.01,
+        "escaped": 0,
         "roundsP50": null,
         "roundsP90": null,
         "hpP50": null,
         "hpP10": null,
         "hpEndP50": 0,
-        "roundsAllP50": 7,
+        "roundsAllP50": 5,
         "lowP50": 0,
         "anyDown": 1,
-        "downsPerFight": 3.772
+        "downsPerFight": 3.989
       },
       "notes": [
-        "party loses 77%"
+        "party loses 99%"
       ]
     },
     {
@@ -2070,20 +3992,31 @@
       "enemyGaps": [
         "Rakshasa: Devour"
       ],
+      "events": [
+        {
+          "id": null,
+          "share": 1,
+          "tiles": 0,
+          "battleMaps": []
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {},
       "stats": {
         "runs": 1000,
         "win": 0,
         "defeat": 0,
         "overtime": 1,
+        "escaped": 0,
         "roundsP50": null,
         "roundsP90": null,
         "hpP50": null,
         "hpP10": null,
-        "hpEndP50": 0.910828025477707,
+        "hpEndP50": 0.8280254777070064,
         "roundsAllP50": 10,
-        "lowP50": 0.7707006369426752,
-        "anyDown": 0.199,
-        "downsPerFight": 0.013
+        "lowP50": 0.6157112526539278,
+        "anyDown": 0.096,
+        "downsPerFight": 0.024
       },
       "notes": [
         "unresolved in 100%"
@@ -2109,23 +4042,36 @@
       "enemyGaps": [
         "Asura: Quad-Elemental Slash"
       ],
+      "events": [
+        {
+          "id": null,
+          "share": 1,
+          "tiles": 0,
+          "battleMaps": []
+        }
+      ],
+      "dataCoverage": [],
+      "byEvent": {},
       "stats": {
         "runs": 1000,
-        "win": 0.423,
-        "defeat": 0.577,
-        "overtime": 0,
-        "roundsP50": 6,
-        "roundsP90": 7,
-        "hpP50": 0.4394904458598726,
-        "hpP10": 0.2356687898089172,
+        "win": 0.012,
+        "defeat": 0.945,
+        "overtime": 0.043,
+        "escaped": 0,
+        "roundsP50": 10,
+        "roundsP90": 10,
+        "hpP50": 0.975583864118896,
+        "hpP10": 0.7919320594479831,
         "hpEndP50": 0,
         "roundsAllP50": 6,
         "lowP50": 0,
-        "anyDown": 0.996,
-        "downsPerFight": 2.974
+        "anyDown": 0.993,
+        "downsPerFight": 3.824
       },
       "notes": [
-        "party loses 58%"
+        "party loses 95%",
+        "rounds above long target (7.5)",
+        "HP left ≥ 85%"
       ]
     }
   ]

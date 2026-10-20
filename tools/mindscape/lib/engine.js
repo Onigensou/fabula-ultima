@@ -467,6 +467,7 @@ function mdWeaponRead(state, reactor, row, ctx) {
 // down-rate read 50% off that alone.
 function applyFlatDamage(state, source, target, amount, element, label, cause = "damage", { ignoreAffinity = false, keywords = null } = {}) {
   const wasAlive = target.alive;
+  const hpBefore = target.hp;
   let out = R.incomingDamage(
     tview(target, element),
     { base: amount, element: element ?? "physical", ignoreAffinity, keywords },
@@ -493,7 +494,7 @@ function applyFlatDamage(state, source, target, amount, element, label, cause = 
   state.log.push({
     round: state.round, actor: source.name, action: label, target: target.name,
     damage: out.damage, affinity: out.affinity, direction: out.direction, reaction: true,
-    killed: wasAlive && !target.alive,
+    killed: wasAlive && !target.alive, hpBefore,
   });
   onHpMoved(state, source, target, out, element, cause);
   mdLedger(state, source, target, out, element, cause, wasAlive);

@@ -81,7 +81,7 @@ const LIGHTNING_CRYSTAL = {
       c.countdown = state.rng.int(6, 9);
       state.crystals.push(c);
     }
-    if (count) state.log.push({ round: 0, actor: "Lightning Crystal", action: `${count} crystal${count > 1 ? "s" : ""} appear`, reaction: true, announce: true, crystals: state.crystals.map((c) => c.countdown) });
+    if (count) state.log.push({ round: 0, actor: "Lightning Crystal", action: count > 1 ? `${count} Lightning Crystals appear` : "A Lightning Crystal appears", reaction: true, announce: true, crystals: state.crystals.map((c) => c.countdown) });
   },
 
   onTurnStart(state, actor, { granted = false } = {}) {

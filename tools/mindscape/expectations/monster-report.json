@@ -1,15 +1,19 @@
 {
-  "generated": "2026-10-20T11:14:16.345Z",
+  "generated": "2026-10-20T13:35:49.561Z",
   "policy": "standard",
-  "runs": 800,
+  "monsterRules": "data",
+  "runs": 1000,
   "partyMaxHp": 471,
   "avgPcHp": 117.75,
   "rows": [
     {
-      "name": "Roo",
+      "name": "Succubus",
       "fights": [
-        "F11",
-        "F13"
+        "F4",
+        "F8",
+        "F10",
+        "F12",
+        "F15"
       ],
       "roundsAlive": 6,
       "hitRate": null,
@@ -20,17 +24,88 @@
       "kosPerFight": 0
     },
     {
-      "name": "Rakshasa",
+      "name": "Imp",
       "fights": [
-        "Vstory"
+        "F3",
+        "F7",
+        "F13",
+        "F14"
       ],
-      "roundsAlive": 10,
-      "hitRate": 0.4305115436849253,
-      "perHit": 31.371188222923237,
-      "perRound": 18.64625,
-      "perFight": 186.4625,
-      "partyShare": 0.3958864118895966,
-      "kosPerFight": 0.235
+      "roundsAlive": 2,
+      "hitRate": 0.5540540540540541,
+      "perHit": 44.28455284552845,
+      "perRound": 0.25731021777126933,
+      "perFight": 0.680875,
+      "partyShare": 0.0014455944798301486,
+      "kosPerFight": 0
+    },
+    {
+      "name": "Dire Orc",
+      "fights": [
+        "F1",
+        "F3",
+        "F4",
+        "F6",
+        "F9",
+        "F12"
+      ],
+      "roundsAlive": 3,
+      "hitRate": 0.49426450742240213,
+      "perHit": 54.11296928327645,
+      "perRound": 9.79012040753319,
+      "perFight": 35.233555555555554,
+      "partyShare": 0.07480585043642368,
+      "kosPerFight": 0.04611111111111111
+    },
+    {
+      "name": "Obsidrax",
+      "fights": [
+        "V20",
+        "V21",
+        "V22",
+        "V25"
+      ],
+      "roundsAlive": 3,
+      "hitRate": 0.6332252085264134,
+      "perHit": 39.561653860226855,
+      "perRound": 14.972235685106972,
+      "perFight": 54.061,
+      "partyShare": 0.1147791932059448,
+      "kosPerFight": 0.08525
+    },
+    {
+      "name": "Dragon Guard",
+      "fights": [
+        "F2",
+        "F5",
+        "F7",
+        "F11",
+        "F14"
+      ],
+      "roundsAlive": 3,
+      "hitRate": 0.40796344647519583,
+      "perHit": 32.587384615384615,
+      "perRound": 17.254081000944904,
+      "perFight": 58.83833333333333,
+      "partyShare": 0.12492215145081387,
+      "kosPerFight": 0.010666666666666666
+    },
+    {
+      "name": "Mana Ray",
+      "fights": [
+        "V13",
+        "V14",
+        "V17",
+        "V18",
+        "V26"
+      ],
+      "roundsAlive": 2,
+      "hitRate": 0.6092644396906368,
+      "perHit": 54.07103308575287,
+      "perRound": 26.060661286123405,
+      "perFight": 57.19942857142857,
+      "partyShare": 0.12144252350621777,
+      "kosPerFight": 0.15057142857142858
     },
     {
       "name": "Death Gazer",
@@ -43,62 +118,76 @@
         "F15"
       ],
       "roundsAlive": 3,
-      "hitRate": 0.7310775255461054,
-      "perHit": 33.751757616337464,
-      "perRound": 19.3542906507967,
-      "perFight": 63.0103125,
-      "partyShare": 0.13377985668789807,
-      "kosPerFight": 0.109375
+      "hitRate": 0.724210922432852,
+      "perHit": 57.09138737334373,
+      "perRound": 28.35965025488804,
+      "perFight": 109.872375,
+      "partyShare": 0.23327468152866243,
+      "kosPerFight": 0.33825
     },
     {
-      "name": "Imp",
+      "name": "Iron Colossus",
       "fights": [
-        "F3",
-        "F7",
-        "F13",
-        "F14"
-      ],
-      "roundsAlive": 2,
-      "hitRate": 0.6764799238216156,
-      "perHit": 44.836950146627565,
-      "perRound": 22.970853365384617,
-      "perFight": 59.72421875,
-      "partyShare": 0.12680301220806794,
-      "kosPerFight": 0.10609375
-    },
-    {
-      "name": "Succubus",
-      "fights": [
-        "F4",
-        "F8",
+        "F9",
         "F10",
         "F12",
+        "F14",
         "F15"
       ],
-      "roundsAlive": 4,
-      "hitRate": 0.688160973327094,
-      "perHit": 41.03399972800218,
-      "perRound": 23.326993699021994,
-      "perFight": 94.2884375,
-      "partyShare": 0.20018776539278132,
-      "kosPerFight": 0.375
+      "roundsAlive": 7,
+      "hitRate": 0.5383735610842926,
+      "perHit": 29.55264029134249,
+      "perRound": 30.68361501002578,
+      "perFight": 214.233,
+      "partyShare": 0.4548471337579618,
+      "kosPerFight": 0.0466
     },
     {
-      "name": "Mana Ray",
+      "name": "Drakoza",
       "fights": [
-        "V13",
-        "V14",
-        "V17",
-        "V18",
+        "V23",
+        "V24",
         "V26"
       ],
+      "roundsAlive": 3,
+      "hitRate": 0.712980809519819,
+      "perHit": 47.229901269393515,
+      "perRound": 32.77051052030664,
+      "perFight": 100.458,
+      "partyShare": 0.21328662420382166,
+      "kosPerFight": 0.2535
+    },
+    {
+      "name": "Electro Slime",
+      "fights": [
+        "V1",
+        "V2",
+        "V3",
+        "V4",
+        "V9",
+        "V19",
+        "V20"
+      ],
       "roundsAlive": 2,
-      "hitRate": 0.6054548050835357,
-      "perHit": 75.15117924528302,
-      "perRound": 26.555629635802983,
-      "perFight": 56.90017857142857,
-      "partyShare": 0.12080717318774643,
-      "kosPerFight": 0.26339285714285715
+      "hitRate": 0.6217695620961953,
+      "perHit": 119.59943714821763,
+      "perRound": 49.21632616700321,
+      "perFight": 97.49464705882353,
+      "partyShare": 0.20699500437117524,
+      "kosPerFight": 0.2191764705882353
+    },
+    {
+      "name": "Gigas",
+      "fights": [
+        "V19"
+      ],
+      "roundsAlive": 5,
+      "hitRate": 0.7224001708306641,
+      "perHit": 86.41146911025717,
+      "perRound": 53.383856829802774,
+      "perFight": 292.33,
+      "partyShare": 0.6206581740976646,
+      "kosPerFight": 1.734
     },
     {
       "name": "Skizzik",
@@ -115,115 +204,26 @@
         "V22",
         "V24"
       ],
-      "roundsAlive": 2,
-      "hitRate": 0.9086715145828447,
-      "perHit": 21.915899377563605,
-      "perRound": 27.894344857800007,
-      "perFight": 68.21910714285714,
-      "partyShare": 0.1448388686684865,
-      "kosPerFight": 0.12714285714285714
-    },
-    {
-      "name": "Dragon Guard",
-      "fights": [
-        "F2",
-        "F5",
-        "F7",
-        "F11",
-        "F14"
-      ],
       "roundsAlive": 3,
-      "hitRate": 0.6938989447201063,
-      "perHit": 34.57478094470742,
-      "perRound": 29.492525773195876,
-      "perFight": 95.35916666666667,
-      "partyShare": 0.20246107572540695,
-      "kosPerFight": 0.2363888888888889
+      "hitRate": 0.862339349510509,
+      "perHit": 33.22223716776068,
+      "perRound": 53.6439337995743,
+      "perFight": 176.41957142857143,
+      "partyShare": 0.3745638459205338,
+      "kosPerFight": 0.5711428571428572
     },
     {
-      "name": "Dire Orc",
+      "name": "Rakshasa",
       "fights": [
-        "F1",
-        "F3",
-        "F4",
-        "F6",
-        "F9",
-        "F12"
+        "Vstory"
       ],
-      "roundsAlive": 3,
-      "hitRate": 0.6072930648769574,
-      "perHit": 59.25970677079496,
-      "perRound": 32.110343726296456,
-      "perFight": 111.71277777777777,
-      "partyShare": 0.23718211842415662,
-      "kosPerFight": 0.2679166666666667
-    },
-    {
-      "name": "Drakoza",
-      "fights": [
-        "V23",
-        "V24",
-        "V26"
-      ],
-      "roundsAlive": 3,
-      "hitRate": 0.8164539400665927,
-      "perHit": 51.522005097706035,
-      "perRound": 34.38890779176591,
-      "perFight": 94.7521875,
-      "partyShare": 0.20117237261146498,
-      "kosPerFight": 0.063125
-    },
-    {
-      "name": "Iron Colossus",
-      "fights": [
-        "F9",
-        "F10",
-        "F12",
-        "F14",
-        "F15"
-      ],
-      "roundsAlive": 7,
-      "hitRate": 0.5151463483944302,
-      "perHit": 27.91835834068844,
-      "perRound": 36.63968725114023,
-      "perFight": 253.052,
-      "partyShare": 0.5372653927813164,
-      "kosPerFight": 0.53375
-    },
-    {
-      "name": "Obsidrax",
-      "fights": [
-        "V20",
-        "V21",
-        "V22",
-        "V25"
-      ],
-      "roundsAlive": 3,
-      "hitRate": 0.6470246010638298,
-      "perHit": 27.844765574823377,
-      "perRound": 39.745416208287494,
-      "perFight": 135.4821875,
-      "partyShare": 0.2876479564755839,
-      "kosPerFight": 0.2115625
-    },
-    {
-      "name": "Electro Slime",
-      "fights": [
-        "V1",
-        "V2",
-        "V3",
-        "V4",
-        "V9",
-        "V19",
-        "V20"
-      ],
-      "roundsAlive": 2,
-      "hitRate": 0.7188250709761956,
-      "perHit": 186.55567370499773,
-      "perRound": 53.94667252361081,
-      "perFight": 90.30117647058823,
-      "partyShare": 0.1917222430373423,
-      "kosPerFight": 0.2943382352941176
+      "roundsAlive": 10,
+      "hitRate": 0.5327367385619347,
+      "perHit": 24.705516775501014,
+      "perRound": 54.8586,
+      "perFight": 548.586,
+      "partyShare": 1.1647261146496815,
+      "kosPerFight": 0.13
     },
     {
       "name": "Lightning Prism",
@@ -238,13 +238,13 @@
         "V17",
         "V20"
       ],
-      "roundsAlive": 5,
-      "hitRate": 0.8865105152283358,
-      "perHit": 51.495801196205974,
-      "perRound": 58.30601728344392,
-      "perFight": 290.58261363636365,
-      "partyShare": 0.6169482242810268,
-      "kosPerFight": 1.0217045454545455
+      "roundsAlive": 6,
+      "hitRate": 0.8906556780996243,
+      "perHit": 45.44449433921184,
+      "perRound": 57.21769150376068,
+      "perFight": 303.60227272727275,
+      "partyShare": 0.6445908125844432,
+      "kosPerFight": 1.1317272727272727
     },
     {
       "name": "Mist Dragon",
@@ -253,12 +253,42 @@
         "V26"
       ],
       "roundsAlive": 5,
-      "hitRate": 0.8763901316630449,
-      "perHit": 36.7411756126021,
-      "perRound": 64.44039396265029,
-      "perFight": 314.871875,
-      "partyShare": 0.6685177813163482,
-      "kosPerFight": 0.124375
+      "hitRate": 0.8545757071547421,
+      "perHit": 39.240394600207686,
+      "perRound": 62.08831382214007,
+      "perFight": 302.308,
+      "partyShare": 0.6418428874734607,
+      "kosPerFight": 0.1645
+    },
+    {
+      "name": "Ampere",
+      "fights": [
+        "V14",
+        "V15",
+        "V16",
+        "V18"
+      ],
+      "roundsAlive": 4,
+      "hitRate": 0.5725944491991686,
+      "perHit": 61.77403512518016,
+      "perRound": 63.47849698299506,
+      "perFight": 289.30325,
+      "partyShare": 0.6142319532908704,
+      "kosPerFight": 1.01825
+    },
+    {
+      "name": "Roo",
+      "fights": [
+        "F11",
+        "F13"
+      ],
+      "roundsAlive": 2,
+      "hitRate": null,
+      "perHit": null,
+      "perRound": 64.72425,
+      "perFight": 129.4485,
+      "partyShare": 0.2748375796178344,
+      "kosPerFight": 1.0165
     },
     {
       "name": "Kirin",
@@ -270,68 +300,39 @@
         "V18",
         "V22"
       ],
-      "roundsAlive": 4,
-      "hitRate": 0.893119586624595,
-      "perHit": 34.355361122966755,
-      "perRound": 67.93431170292573,
-      "perFight": 301.85479166666664,
-      "partyShare": 0.640880661712668,
-      "kosPerFight": 0.5885416666666666
-    },
-    {
-      "name": "Ampere",
-      "fights": [
-        "V14",
-        "V15",
-        "V16",
-        "V18"
-      ],
-      "roundsAlive": 3,
-      "hitRate": 0.5659756308829474,
-      "perHit": 79.07988980716253,
-      "perRound": 70.77545429641128,
-      "perFight": 242.206875,
-      "partyShare": 0.5142396496815287,
-      "kosPerFight": 0.3459375
-    },
-    {
-      "name": "Gigas",
-      "fights": [
-        "V19"
-      ],
-      "roundsAlive": 7,
-      "hitRate": 0.7410673903211217,
-      "perHit": 124.67927982911199,
-      "perRound": 81.63316683316684,
-      "perFight": 510.7175,
-      "partyShare": 1.0843259023354563,
-      "kosPerFight": 3.08375
-    },
-    {
-      "name": "⭐️ Fafnir",
-      "fights": [
-        "Vstory"
-      ],
-      "roundsAlive": 7,
-      "hitRate": 0.412999633296663,
-      "perHit": 72.40654827968923,
-      "perRound": 117.14544801580176,
-      "perFight": 815.47875,
-      "partyShare": 1.7313773885350319,
-      "kosPerFight": 4.02375
+      "roundsAlive": 5,
+      "hitRate": 0.8885693395076774,
+      "perHit": 43.001846874028566,
+      "perRound": 79.69236504117389,
+      "perFight": 391.94033333333334,
+      "partyShare": 0.8321450813871196,
+      "kosPerFight": 1.6908333333333334
     },
     {
       "name": "Carlbero",
       "fights": [
         "F16"
       ],
+      "roundsAlive": 9,
+      "hitRate": 0.48963523803360726,
+      "perHit": 48.175205956209524,
+      "perRound": 133.94524742773152,
+      "perFight": 1093.529,
+      "partyShare": 2.3217176220806794,
+      "kosPerFight": 3.843
+    },
+    {
+      "name": "⭐️ Fafnir",
+      "fights": [
+        "Vstory"
+      ],
       "roundsAlive": 5,
-      "hitRate": 0.4754140703193104,
-      "perHit": 46.333106960950765,
-      "perRound": 133.53983166960265,
-      "perFight": 852.81875,
-      "partyShare": 1.8106555201698513,
-      "kosPerFight": 4.2075
+      "hitRate": 0.6716685904835193,
+      "perHit": 76.21185793393164,
+      "perRound": 139.9935110487548,
+      "perFight": 798.243,
+      "partyShare": 1.694783439490446,
+      "kosPerFight": 4.887
     },
     {
       "name": "Asura",
@@ -339,12 +340,12 @@
         "Vstory"
       ],
       "roundsAlive": 6,
-      "hitRate": 0.7108672184238934,
-      "perHit": 66.90466548553108,
-      "perRound": 163.34109165808445,
-      "perFight": 991.27625,
-      "partyShare": 2.1046204883227175,
-      "kosPerFight": 4.96125
+      "hitRate": 0.7538048902195609,
+      "perHit": 78.39089780719901,
+      "perRound": 160.86839870945832,
+      "perFight": 947.354,
+      "partyShare": 2.011367303609342,
+      "kosPerFight": 4.841
     }
   ]
 }

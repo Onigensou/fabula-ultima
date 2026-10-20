@@ -1,9 +1,10 @@
 {
-  "generated": "2026-10-20T11:11:15.401Z",
+  "generated": "2026-10-20T13:29:29.365Z",
   "dungeons": [
     "Valley of the Dragon",
     "Fafnir Castle"
   ],
+  "monsterRules": "data",
   "party": [
     "Hina",
     "Keren",
@@ -65,8 +66,7 @@
       },
       "flags": [
         "resisted hit = 25% of PC HP (< 25%)",
-        "not modelled in the sim: Ruinous Breath, Storm Calm, Summon Elemental Drake, Torment, Searing Brand, Draconic Domination, Zero Power: Cruel Ultimatum",
-        "passive not simulated: Cruel Ultimatum: Fire, Dreadwyrm Descent, Storm Gathering, Zero Trigger: Suffering, Cruel Ultimatum: Bolt"
+        "not simulated: Torment: a player decides (ask); Torment: redirect target; Condemn: a player decides (ask); Condemn: redirect target; Zero Power: Cruel Ultimatum: open action menu"
       ]
     },
     {
@@ -209,8 +209,8 @@
       "flags": [
         "4 VU (rule: exactly 1 for elite)",
         "resisted hit = 21% of PC HP (< 25%)",
-        "not modelled in the sim: Quad-Elemental Slash",
-        "passive not simulated: Ascension"
+        "pattern: Quad-Elemental Slash costs 60 MP; the monster starts at 0 MP and must charge up first",
+        "pattern: Elemental Slash: Overflow costs 30 MP; the monster starts at 0 MP and must charge up first"
       ]
     },
     {
@@ -269,8 +269,7 @@
         "vs": "def"
       },
       "flags": [
-        "resisted hit = 20% of PC HP (< 25%)",
-        "not modelled in the sim: Stinky Breath"
+        "resisted hit = 20% of PC HP (< 25%)"
       ]
     },
     {
@@ -322,7 +321,7 @@
       },
       "flags": [
         "best basic attack avg 30 < 45",
-        "not modelled in the sim: Death Gaze"
+        "pattern: Death Gaze repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9)"
       ]
     },
     {
@@ -372,7 +371,7 @@
         "vs": "def"
       },
       "flags": [
-        "not modelled in the sim: War Howl"
+        "pattern: War Howl repeats every turn its condition holds: its 3-round cooldown never applies (no other row within 2 priority of 8)"
       ]
     },
     {
@@ -634,9 +633,7 @@
         "avg": 49,
         "vs": "def"
       },
-      "flags": [
-        "not modelled in the sim: Strip Weapon, Prank, Strip Armor"
-      ]
+      "flags": []
     },
     {
       "name": "Iron Colossus",
@@ -697,7 +694,8 @@
       },
       "flags": [
         "best basic attack avg 42 < 45",
-        "resisted hit = 18% of PC HP (< 25%)"
+        "resisted hit = 18% of PC HP (< 25%)",
+        "pattern: Grinding Quake repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9)"
       ]
     },
     {
@@ -935,8 +933,7 @@
       },
       "flags": [
         "best basic attack avg 38 < 45",
-        "resisted hit = 16% of PC HP (< 25%)",
-        "passive not simulated: Phantom Shift, Illusory Form"
+        "resisted hit = 16% of PC HP (< 25%)"
       ]
     },
     {
@@ -997,8 +994,7 @@
       },
       "flags": [
         "best basic attack avg 44 < 45",
-        "not modelled in the sim: Miasma Nova",
-        "passive not simulated: Lodestone Core"
+        "pattern: Miasma Nova repeats every turn its condition holds: its 3-round cooldown never applies (no other row within 2 priority of 11)"
       ]
     },
     {
@@ -1104,9 +1100,7 @@
         "avg": 166,
         "vs": "def"
       },
-      "flags": [
-        "not modelled in the sim: Devour"
-      ]
+      "flags": []
     },
     {
       "name": "Roo",
@@ -1134,9 +1128,7 @@
       "attacks": [],
       "basic": null,
       "flags": [
-        "no damage action the sim can read",
-        "not modelled in the sim: Karma, Chef's Knife, Empty Stare",
-        "passive not simulated: Approach"
+        "no damage action the sim can read"
       ]
     },
     {
@@ -1241,8 +1233,7 @@
       },
       "flags": [
         "best basic attack avg 42 < 45",
-        "not modelled in the sim: Charm",
-        "passive not simulated: Deadly Temptation"
+        "pattern: Charm repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9)"
       ]
     }
   ]

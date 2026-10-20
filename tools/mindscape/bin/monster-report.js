@@ -25,6 +25,8 @@ function arg(name, fallback) {
   const i = process.argv.indexOf(name);
   return i > 0 ? process.argv[i + 1] : fallback;
 }
+// Damage that reached an HP bar: a 9999 execution is worth the HP its victim had.
+const landed = (e) => (e.hpBefore != null ? Math.min(e.damage ?? 0, Math.max(0, e.hpBefore)) : (e.damage ?? 0));
 const median = (xs) => { const s = xs.slice().sort((a, b) => a - b); return s.length ? s[Math.floor((s.length - 1) / 2)] : null; };
 
 async function main() {
@@ -62,7 +64,7 @@ async function main() {
           // Reaction damage (Electro Explosion's burst, Static discharges) is credited to
           // the monster that caused it, but is not an action of its own.
           if (e.reaction) {
-            if (e.target && e.direction !== "recover" && e.damage > 0 && party.some((p) => p.name === e.target)) { m.dmg += e.damage; if (e.killed) m.kos++; }
+            if (e.target && e.direction !== "recover" && e.damage > 0 && party.some((p) => p.name === e.target)) { m.dmg += landed(e); if (e.killed) m.kos++; }
             continue;
           }
           // One action = one log burst by this actor in this round (multi-target rows share it).
@@ -70,7 +72,7 @@ async function main() {
           lastActor = e.actor; lastRound = e.round;
           if (e.target == null || e.direction === "recover") continue;
           m.attacks++;
-          if (!e.miss) { m.hits++; m.dmg += e.damage ?? 0; if (e.killed) m.kos++; }
+          if (!e.miss) { m.hits++; m.dmg += landed(e); if (e.killed) m.kos++; }
         }
         for (const [name, m] of Object.entries(perName)) {
           const cs = r.combatants.filter((c) => c.side === "enemy" && c.name === name);

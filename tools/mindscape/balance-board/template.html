@@ -576,7 +576,10 @@ function startBattle() {
     const g = groups.at(-1);
     // One beat = one action: a multi-target hit, or an area burst (Electro Explosion's
     // rows are reaction rows with targets — they land together, as one blast).
-    const sameAct = g && g[0].actor === e.actor && g[0].action === e.action && g[0].round === e.round && e.target && g[0].target;
+    // Statuses, strips and drains are their own beats even when they share the action's
+    // name with the hit that caused them.
+    const kindOfEntry = (x) => (x.status ? "status" : x.stripped ? "strip" : x.mpDamage ? "mp" : "hit");
+    const sameAct = g && g[0].actor === e.actor && g[0].action === e.action && g[0].round === e.round && e.target && g[0].target && kindOfEntry(e) === kindOfEntry(g[0]);
     if (sameAct && !!e.reaction === !!g[0].reaction) g.push(e);
     else groups.push([e]);
   }
@@ -691,7 +694,7 @@ function lineFor(g) {
   const u = BV.byName[e.actor];
   const cls = !u ? "sys" : u.side === "party" ? "ally" : "foe";
   if (e.denied) return [cls, `${e.actor} loses a turn.`];
-  if (e.crystals) return ["sys", `${e.action} — they go off in ${e.crystals.join(" / ")} turns unless hit.`];
+  if (e.crystals) return ["sys", `${e.action} — ${e.crystals.length > 1 ? `they go off in ${e.crystals.join(" / ")} turns` : `it goes off in ${e.crystals[0]} turns`} unless hit.`];
   if (e.blast) return ["sys", `${e.actor} explodes: ${e.blast} Bolt to every creature!`];
   if (e.summoned) return [cls, `${e.actor} summons ${g.map((x) => x.target).join(", ")}!`];
   if (e.escaped) return [cls, `${e.actor} leaves the battle.`];
@@ -699,9 +702,12 @@ function lineFor(g) {
   if (e.mpDamage) return [cls, `${e.actor}'s ${e.action} drains ${g.map((x) => `${x.mpDamage} MP from ${x.target}`).join(", ")}.`];
   if (e.added) return [cls, `${e.actor}'s ${e.action} also hits ${e.added.join(", ")}, held in the grip.`];
   if (e.status) {
+    // Who got what: targets sharing the same list of statuses are named together.
+    const per = {};
+    for (const x of g) (per[x.target] ??= []).push(x.status);
     const by = {};
-    for (const x of g) (by[x.status] ??= []).push(x.target);
-    return [cls, `${e.action}: ${Object.entries(by).map(([st, ts]) => `${ts.join(", ")} ${ts.length > 1 ? "are" : "is"} ${st}`).join("; ")}.`];
+    for (const [t, sts] of Object.entries(per)) (by[sts.join(", ")] ??= []).push(t);
+    return [cls, `${e.action} → ${Object.entries(by).map(([sts, ts]) => `${ts.join(", ")}: ${sts}`).join(" · ")}`];
   }
   if (e.effectOnly) {
     const dodged = (e.targets?.length ?? 0) - (e.hits?.length ?? 0);
