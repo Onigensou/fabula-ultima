@@ -35,17 +35,17 @@ Targets: normal 1.5-2 rds (long ≤ 4), boss 5.5-6 rds (long 7.5); party HP left
 | 16-16 | 4% | Ampere, Lightning Prism | normal | 45 | 325 | 65% | 4.0 / 6.0 | 67% / 54% | 100% | unresolved in 35%; rounds above 1.5-2 rds | — |
 | 17-17 | 4% | Mana Ray, Lightning Prism, Mana Ray | normal | 45 | 380 | 98% | 5.0 / 6.0 | 86% / 77% | 92% | rounds above long target (4); HP left ≥ 85% | — |
 | 18-18 | 4% | Ampere, Mana Ray, Kirin | normal | 50 | 500 | 100% | 4.0 / 4.0 | 72% / 52% | 99% | rounds above 1.5-2 rds; HP left ≥ 70% | — |
-| 19-19 | 4% | Asura | boss | 38 | 900 | 42% | 6.0 / 7.0 | 44% / 24% | 100% | party loses 58% | Asura: Quad-Elemental Slash |
-| 20-20 | 4% | Gigas, Electro Slime, Electro Slime | normal | 45 | 890 | 74% | 5.0 / 6.0 | 95% / 73% | 47% | never acts: Gigas (Frightened); rounds above long target (4); HP left ≥ 85% | — |
-| 21-21 | 4% | Electro Slime, Obsidrax, Lightning Prism, Electro Slime | normal | 46 | 420 | 100% | 4.0 / 6.0 | 78% / 68% | 79% | rounds above 1.5-2 rds; HP left ≥ 70% | Obsidrax: Miasma Nova |
-| 22-22 | 4% | Skizzik, Obsidrax | normal | 48 | 310 | 100% | 3.0 / 4.0 | 78% / 66% | 0% | rounds above 1.5-2 rds; HP left ≥ 70% | Obsidrax: Miasma Nova |
-| 23-23 | 4% | Obsidrax, Kirin, Skizzik | normal | 50 | 520 | 78% | 4.0 / 5.0 | 66% / 52% | 62% | rounds above 1.5-2 rds | Obsidrax: Miasma Nova |
-| 24-24 | 4% | Drakoza, Drakoza | normal | 43 | 280 | 100% | 2.0 / 2.0 | 88% / 86% | 0% | HP left ≥ 85% | — |
-| 25-25 | 4% | Drakoza, Skizzik | normal | 48 | 270 | 100% | 3.0 / 3.0 | 90% / 81% | 0% | rounds above 1.5-2 rds; HP left ≥ 85% | — |
-| 26-26 | 4% | Mist Dragon, Obsidrax | normal | 46 | 380 | 100% | 4.0 / 5.0 | 79% / 71% | 14% | rounds above 1.5-2 rds; HP left ≥ 70% | Obsidrax: Miasma Nova |
-| 27-27 | 4% | Mist Dragon, Mana Ray, Drakoza | normal | 45 | 455 | 99% | 5.0 / 6.0 | 88% / 79% | 5% | rounds above long target (4); HP left ≥ 85% | — |
+| 19-19 | 4% | Gigas, Electro Slime, Electro Slime | normal | 45 | 890 | 74% | 5.0 / 6.0 | 95% / 73% | 47% | never acts: Gigas (Frightened); rounds above long target (4); HP left ≥ 85% | — |
+| 20-20 | 4% | Electro Slime, Obsidrax, Lightning Prism, Electro Slime | normal | 46 | 420 | 100% | 4.0 / 6.0 | 78% / 68% | 79% | rounds above 1.5-2 rds; HP left ≥ 70% | Obsidrax: Miasma Nova |
+| 21-21 | 4% | Skizzik, Obsidrax | normal | 48 | 310 | 100% | 3.0 / 4.0 | 78% / 66% | 0% | rounds above 1.5-2 rds; HP left ≥ 70% | Obsidrax: Miasma Nova |
+| 22-22 | 4% | Obsidrax, Kirin, Skizzik | normal | 50 | 520 | 78% | 4.0 / 5.0 | 66% / 52% | 62% | rounds above 1.5-2 rds | Obsidrax: Miasma Nova |
+| 23-23 | 4% | Drakoza, Drakoza | normal | 43 | 280 | 100% | 2.0 / 2.0 | 88% / 86% | 0% | HP left ≥ 85% | — |
+| 24-24 | 4% | Drakoza, Skizzik | normal | 48 | 270 | 100% | 3.0 / 3.0 | 90% / 81% | 0% | rounds above 1.5-2 rds; HP left ≥ 85% | — |
+| 25-25 | 4% | Mist Dragon, Obsidrax | normal | 46 | 380 | 100% | 4.0 / 5.0 | 79% / 71% | 14% | rounds above 1.5-2 rds; HP left ≥ 70% | Obsidrax: Miasma Nova |
+| 26-26 | 4% | Mist Dragon, Mana Ray, Drakoza | normal | 45 | 455 | 99% | 5.0 / 6.0 | 88% / 79% | 5% | rounds above long target (4); HP left ≥ 85% | — |
 | story | — | ⭐️ Fafnir | boss | 50 | 1824 | 0% | — / — | — / — | 100% | party loses 77% | ⭐️ Fafnir: Ruinous Breath; ⭐️ Fafnir: Storm Calm; ⭐️ Fafnir: Summon Elemental Drake; ⭐️ Fafnir: Torment; ⭐️ Fafnir: Searing Brand; ⭐️ Fafnir: Draconic Domination; ⭐️ Fafnir: Zero Power: Cruel Ultimatum |
 | story | — | Rakshasa | boss | 40 | 1200 | 0% | — / — | — / — | 20% | unresolved in 100% | Rakshasa: Devour |
+| story | — | Asura | boss | 38 | 900 | 42% | 6.0 / 7.0 | 44% / 24% | 100% | party loses 58% | Asura: Quad-Elemental Slash |
 
 ## Fafnir Castle
 

@@ -1,6 +1,6 @@
 {
   "id": "encounter-matrix",
-  "generated": "2026-10-20T09:48:40.391Z",
+  "generated": "2026-10-20T10:00:26.065Z",
   "seed": "encounter-matrix",
   "runs": 1000,
   "policy": "standard",
@@ -824,19 +824,19 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
         1,
         1
       ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Electro Slime",
         "Electro Slime",
         "Electro Slime"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Electro Slime",
         "Electro Slime",
@@ -869,12 +869,12 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
         2,
         2
       ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Electro Slime",
@@ -882,7 +882,7 @@
         "Electro Slime",
         "Electro Slime"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Electro Slime",
         "Electro Slime",
@@ -916,19 +916,19 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
         3,
         3
       ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Electro Slime",
         "Skizzik",
         "Electro Slime"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Electro Slime",
         "Skizzik",
@@ -961,19 +961,19 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
         4,
         4
       ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Electro Slime",
         "Lightning Prism",
         "Electro Slime"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Electro Slime",
         "Lightning Prism",
@@ -1007,18 +1007,18 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
         5,
         5
       ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Skizzik",
         "Lightning Prism"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Skizzik",
         "Lightning Prism"
@@ -1051,18 +1051,18 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
         6,
         6
       ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Skizzik",
         "Skizzik"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Skizzik",
         "Skizzik"
@@ -1095,19 +1095,19 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
         7,
         7
       ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Lightning Prism",
         "Skizzik",
         "Lightning Prism"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Lightning Prism",
         "Skizzik",
@@ -1143,19 +1143,19 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
         8,
         8
       ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Skizzik",
         "Lightning Prism",
         "Skizzik"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Skizzik",
         "Lightning Prism",
@@ -1189,19 +1189,19 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
         9,
         9
       ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Electro Slime",
         "Kirin",
         "Electro Slime"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Electro Slime",
         "Kirin",
@@ -1235,19 +1235,19 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
         10,
         10
       ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Lightning Prism",
         "Kirin",
         "Lightning Prism"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Lightning Prism",
         "Kirin",
@@ -1282,19 +1282,19 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
         11,
         11
       ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Skizzik",
         "Kirin",
         "Skizzik"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Skizzik",
         "Kirin",
@@ -1327,19 +1327,19 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
         12,
         12
       ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Kirin",
         "Skizzik",
         "Lightning Prism"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Kirin",
         "Skizzik",
@@ -1373,18 +1373,18 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
         13,
         13
       ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Mana Ray",
         "Mana Ray"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Mana Ray",
         "Mana Ray"
@@ -1416,18 +1416,18 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
         14,
         14
       ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Ampere",
         "Mana Ray"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Ampere",
         "Mana Ray"
@@ -1459,18 +1459,18 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
         15,
         15
       ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Ampere",
         "Skizzik"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Ampere",
         "Skizzik"
@@ -1503,18 +1503,18 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
         16,
         16
       ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Ampere",
         "Lightning Prism"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Ampere",
         "Lightning Prism"
@@ -1547,19 +1547,19 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
         17,
         17
       ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Mana Ray",
         "Lightning Prism",
         "Mana Ray"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Mana Ray",
         "Lightning Prism",
@@ -1593,19 +1593,19 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
         18,
         18
       ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Ampere",
         "Mana Ray",
         "Kirin"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Ampere",
         "Mana Ray",
@@ -1639,62 +1639,19 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
         19,
         19
       ],
-      "weight": 0.037037037037037035,
-      "rolls": true,
-      "names": [
-        "Asura"
-      ],
-      "ceiling": 27,
-      "enemies": [
-        "Asura"
-      ],
-      "kind": "boss",
-      "level": 38,
-      "enemyHp": 900,
-      "coverage": "42/71 turn-spendable actions unmodelled (59%)",
-      "enemyGaps": [
-        "Asura: Quad-Elemental Slash"
-      ],
-      "stats": {
-        "runs": 1000,
-        "win": 0.42,
-        "defeat": 0.58,
-        "overtime": 0,
-        "roundsP50": 6,
-        "roundsP90": 7,
-        "hpP50": 0.4394904458598726,
-        "hpP10": 0.2356687898089172,
-        "hpEndP50": 0,
-        "roundsAllP50": 6,
-        "lowP50": 0,
-        "anyDown": 1,
-        "downsPerFight": 2.985
-      },
-      "notes": [
-        "party loses 58%"
-      ]
-    },
-    {
-      "dungeon": "Valley of the Dragon",
-      "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
-      "range": [
-        20,
-        20
-      ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Gigas",
         "Electro Slime",
         "Electro Slime"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Gigas",
         "Electro Slime",
@@ -1732,12 +1689,12 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
-        21,
-        21
+        20,
+        20
       ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Electro Slime",
@@ -1745,7 +1702,7 @@
         "Lightning Prism",
         "Electro Slime"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Electro Slime",
         "Obsidrax",
@@ -1782,18 +1739,18 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
-        22,
-        22
+        21,
+        21
       ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Skizzik",
         "Obsidrax"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Skizzik",
         "Obsidrax"
@@ -1828,19 +1785,19 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
-        23,
-        23
+        22,
+        22
       ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Obsidrax",
         "Kirin",
         "Skizzik"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Obsidrax",
         "Kirin",
@@ -1875,18 +1832,18 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
-        24,
-        24
+        23,
+        23
       ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Drakoza",
         "Drakoza"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Drakoza",
         "Drakoza"
@@ -1918,18 +1875,18 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
-        25,
-        25
+        24,
+        24
       ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Drakoza",
         "Skizzik"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Drakoza",
         "Skizzik"
@@ -1962,18 +1919,18 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
-        26,
-        26
+        25,
+        25
       ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Mist Dragon",
         "Obsidrax"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Mist Dragon",
         "Obsidrax"
@@ -2008,19 +1965,19 @@
     {
       "dungeon": "Valley of the Dragon",
       "source": "Valley of the Dragon - Encounter",
-      "formula": "1d27",
+      "formula": "1d26",
       "range": [
-        27,
-        27
+        26,
+        26
       ],
-      "weight": 0.037037037037037035,
+      "weight": 0.038461538461538464,
       "rolls": true,
       "names": [
         "Mist Dragon",
         "Mana Ray",
         "Drakoza"
       ],
-      "ceiling": 27,
+      "ceiling": 26,
       "enemies": [
         "Mist Dragon",
         "Mana Ray",
@@ -2133,6 +2090,45 @@
       },
       "notes": [
         "unresolved in 100%"
+      ]
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "source": "story (no table)",
+      "range": null,
+      "weight": null,
+      "rolls": false,
+      "names": [
+        "Asura"
+      ],
+      "story": true,
+      "enemies": [
+        "Asura"
+      ],
+      "kind": "boss",
+      "level": 38,
+      "enemyHp": 900,
+      "coverage": "42/71 turn-spendable actions unmodelled (59%)",
+      "enemyGaps": [
+        "Asura: Quad-Elemental Slash"
+      ],
+      "stats": {
+        "runs": 1000,
+        "win": 0.423,
+        "defeat": 0.577,
+        "overtime": 0,
+        "roundsP50": 6,
+        "roundsP90": 7,
+        "hpP50": 0.4394904458598726,
+        "hpP10": 0.2356687898089172,
+        "hpEndP50": 0,
+        "roundsAllP50": 6,
+        "lowP50": 0,
+        "anyDown": 0.996,
+        "downsPerFight": 2.974
+      },
+      "notes": [
+        "party loses 58%"
       ]
     }
   ]

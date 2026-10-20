@@ -1,6 +1,6 @@
 Plan plan-v4.json · party policy standard · 800 runs per fight, paired seeds
-Before: pushover 9 · too soft 9 · on target 9 · drags 6 · stalemate 6 · wall 4
-After:  pushover 2 · too soft 10 · on target 16 · drags 13 · stalemate 1 · wall 1
+Before: pushover 9 · too soft 9 · on target 9 · drags 6 · stalemate 6 · wall 3
+After:  pushover 2 · too soft 10 · on target 15 · drags 13 · stalemate 1 · wall 1
 
 | Fight | Enemies | Before | After | Rounds | Lowest party HP | Win | Any KO |
 |---|---|---|---|---|---|---|---|
@@ -38,14 +38,14 @@ After:  pushover 2 · too soft 10 · on target 16 · drags 13 · stalemate 1 · 
 | V16 | Ampere, Lightning Prism | drags | **on target** | 4 → 4 | 26% → 36% | 65% → 93% | 99% → 100% |
 | V17 | Mana Ray, Lightning Prism, Mana Ray | drags | **drags** | 5 → 5 | 48% → 54% | 99% → 99% | 94% → 96% |
 | V18 | Ampere, Mana Ray, Kirin | on target | **on target** | 4 → 4 | 46% → 42% | 100% → 100% | 98% → 100% |
-| V19 | Asura | wall | **on target** | 6 → 5 | 0% → 26% | 41% → 67% | 100% → 98% |
-| V20 | Gigas, Electro Slime, Electro Slime | drags | **drags** | 5 → 5 | 71% → 71% | 75% → 79% | 44% → 48% |
-| V21 | Electro Slime, Obsidrax, Lightning Prism, Electro Slime | on target | **on target** | 4 → 4 | 50% → 68% | 100% → 99% | 76% → 97% |
-| V22 | Skizzik, Obsidrax | too soft | **on target** | 3 → 3 | 70% → 66% | 100% → 100% | 0% → 2% |
-| V23 | Obsidrax, Kirin, Skizzik | on target | **on target** | 4 → 4 | 43% → 43% | 75% → 94% | 63% → 80% |
-| V24 | Drakoza, Drakoza → **Drakoza, Drakoza, Skizzik** | pushover | **on target** | 2 → 3 | 88% → 67% | 100% → 100% | 0% → 59% |
-| V25 | Drakoza, Skizzik | too soft | **too soft** | 3 → 3 | 84% → 76% | 100% → 100% | 0% → 0% |
-| V26 | Mist Dragon, Obsidrax | on target | **on target** | 4 → 4 | 54% → 54% | 100% → 100% | 14% → 14% |
-| V27 | Mist Dragon, Mana Ray, Drakoza | drags | **drags** | 5 → 6 | 56% → 37% | 99% → 53% | 6% → 99% |
+| V19 | Gigas, Electro Slime, Electro Slime | drags | **drags** | 5 → 5 | 71% → 71% | 75% → 79% | 44% → 48% |
+| V20 | Electro Slime, Obsidrax, Lightning Prism, Electro Slime | on target | **on target** | 4 → 4 | 50% → 68% | 100% → 99% | 76% → 97% |
+| V21 | Skizzik, Obsidrax | too soft | **on target** | 3 → 3 | 70% → 66% | 100% → 100% | 0% → 2% |
+| V22 | Obsidrax, Kirin, Skizzik | on target | **on target** | 4 → 4 | 43% → 43% | 75% → 94% | 63% → 80% |
+| V23 | Drakoza, Drakoza → **Drakoza, Drakoza, Skizzik** | pushover | **on target** | 2 → 3 | 88% → 67% | 100% → 100% | 0% → 59% |
+| V24 | Drakoza, Skizzik | too soft | **too soft** | 3 → 3 | 84% → 76% | 100% → 100% | 0% → 0% |
+| V25 | Mist Dragon, Obsidrax | on target | **on target** | 4 → 4 | 54% → 54% | 100% → 100% | 14% → 14% |
+| V26 | Mist Dragon, Mana Ray, Drakoza | drags | **drags** | 5 → 6 | 56% → 37% | 99% → 53% | 6% → 99% |
 | Vstory | ⭐️ Fafnir | wall | (unchanged) | 7+ | 0% | 0% | 100% |
 | Vstory | Rakshasa | stalemate | (unchanged) | 7+ | 76% | 0% | 21% |
+| Vstory | Asura | wall | **on target** | 6 → 5 | 0% → 44% | 42% → 74% | 100% → 98% |

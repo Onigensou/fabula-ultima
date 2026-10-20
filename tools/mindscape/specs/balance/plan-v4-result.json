@@ -1665,48 +1665,6 @@
       "dungeon": "Valley of the Dragon",
       "num": 19,
       "enemies": [
-        "Asura"
-      ],
-      "lineup": null,
-      "kind": "boss",
-      "touched": true,
-      "before": {
-        "runs": 800,
-        "win": 0.40625,
-        "defeat": 0.59375,
-        "overtime": 0,
-        "roundsP50": 6,
-        "roundsP90": 7,
-        "hpP50": 0.4394904458598726,
-        "hpP10": 0.2356687898089172,
-        "hpEndP50": 0,
-        "roundsAllP50": 6,
-        "lowP50": 0,
-        "anyDown": 0.99875,
-        "downsPerFight": 3.04125,
-        "verdict": "wall"
-      },
-      "after": {
-        "runs": 800,
-        "win": 0.66625,
-        "defeat": 0.33375,
-        "overtime": 0,
-        "roundsP50": 5,
-        "roundsP90": 6,
-        "hpP50": 0.5583864118895966,
-        "hpP10": 0.2356687898089172,
-        "hpEndP50": 0.3651804670912951,
-        "roundsAllP50": 5,
-        "lowP50": 0.2611464968152866,
-        "anyDown": 0.98375,
-        "downsPerFight": 2.2075,
-        "verdict": "on target"
-      }
-    },
-    {
-      "dungeon": "Valley of the Dragon",
-      "num": 20,
-      "enemies": [
         "Gigas",
         "Electro Slime",
         "Electro Slime"
@@ -1749,7 +1707,7 @@
     },
     {
       "dungeon": "Valley of the Dragon",
-      "num": 21,
+      "num": 20,
       "enemies": [
         "Electro Slime",
         "Obsidrax",
@@ -1794,7 +1752,7 @@
     },
     {
       "dungeon": "Valley of the Dragon",
-      "num": 22,
+      "num": 21,
       "enemies": [
         "Skizzik",
         "Obsidrax"
@@ -1837,7 +1795,7 @@
     },
     {
       "dungeon": "Valley of the Dragon",
-      "num": 23,
+      "num": 22,
       "enemies": [
         "Obsidrax",
         "Kirin",
@@ -1881,7 +1839,7 @@
     },
     {
       "dungeon": "Valley of the Dragon",
-      "num": 24,
+      "num": 23,
       "enemies": [
         "Drakoza",
         "Drakoza"
@@ -1928,7 +1886,7 @@
     },
     {
       "dungeon": "Valley of the Dragon",
-      "num": 25,
+      "num": 24,
       "enemies": [
         "Drakoza",
         "Skizzik"
@@ -1971,7 +1929,7 @@
     },
     {
       "dungeon": "Valley of the Dragon",
-      "num": 26,
+      "num": 25,
       "enemies": [
         "Mist Dragon",
         "Obsidrax"
@@ -2014,7 +1972,7 @@
     },
     {
       "dungeon": "Valley of the Dragon",
-      "num": 27,
+      "num": 26,
       "enemies": [
         "Mist Dragon",
         "Mana Ray",
@@ -2138,6 +2096,48 @@
         "anyDown": 0.205,
         "downsPerFight": 0.0075,
         "verdict": "stalemate"
+      }
+    },
+    {
+      "dungeon": "Valley of the Dragon",
+      "num": "story",
+      "enemies": [
+        "Asura"
+      ],
+      "lineup": null,
+      "kind": "boss",
+      "touched": true,
+      "before": {
+        "runs": 800,
+        "win": 0.42375,
+        "defeat": 0.57625,
+        "overtime": 0,
+        "roundsP50": 6,
+        "roundsP90": 7,
+        "hpP50": 0.4394904458598726,
+        "hpP10": 0.2356687898089172,
+        "hpEndP50": 0,
+        "roundsAllP50": 6,
+        "lowP50": 0,
+        "anyDown": 0.9975,
+        "downsPerFight": 2.98125,
+        "verdict": "wall"
+      },
+      "after": {
+        "runs": 800,
+        "win": 0.7375,
+        "defeat": 0.2625,
+        "overtime": 0,
+        "roundsP50": 5,
+        "roundsP90": 6,
+        "hpP50": 0.564755838641189,
+        "hpP10": 0.2356687898089172,
+        "hpEndP50": 0.4394904458598726,
+        "roundsAllP50": 5,
+        "lowP50": 0.4394904458598726,
+        "anyDown": 0.98375,
+        "downsPerFight": 1.985,
+        "verdict": "on target"
       }
     }
   ]

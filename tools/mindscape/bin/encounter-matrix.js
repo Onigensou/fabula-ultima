@@ -41,7 +41,9 @@ const STORY_FIGHTS = {
   // Flame Drake and Lightning Drake are NOT listed: they are adds Fafnir summons mid-fight
   // (Summon Elemental Drake), so judging them alone, one action against the whole party,
   // says nothing. They belong to the Fafnir fight, which Mindscape cannot simulate yet.
-  "Valley of the Dragon": [["⭐️ Fafnir"], ["Rakshasa"]],
+  // Asura and Rakshasa are counterpart standalone elites met in story events (Asura left the
+  // Encounter table 2026-10-20; both stay on the Enemies table so the GM can spawn them).
+  "Valley of the Dragon": [["⭐️ Fafnir"], ["Rakshasa"], ["Asura"]],
   "Fafnir Castle": [],
 };
 
