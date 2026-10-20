@@ -552,7 +552,10 @@ function startBattle() {
   const groups = [];
   for (const e of res.log) {
     const g = groups.at(-1);
-    if (g && !e.reaction && !g[0].reaction && g[0].actor === e.actor && g[0].action === e.action && g[0].round === e.round && e.target && g[0].target) g.push(e);
+    // One beat = one action: a multi-target hit, or an area burst (Electro Explosion's
+    // rows are reaction rows with targets — they land together, as one blast).
+    const sameAct = g && g[0].actor === e.actor && g[0].action === e.action && g[0].round === e.round && e.target && g[0].target;
+    if (sameAct && !!e.reaction === !!g[0].reaction) g.push(e);
     else groups.push([e]);
   }
   BV.groups = groups; BV.gi = 0;
@@ -658,6 +661,11 @@ function lineFor(g) {
   if (e.revive) return [cls, `${e.actor} uses ${e.action}: ${e.target} is back up!`];
   if (e.protect) return [cls, `${e.actor} protects ${e.target}!`];
   if (e.reaction && !e.target) return [cls, `${e.actor}: ${e.action}${e.element ? ` (${e.element})` : ""}.`];
+  if (!e.target) return [cls, `${e.actor} uses ${e.action}.`];
+  if (e.reaction && g.length > 1) {
+    const hits = g.map((x) => x.direction === "recover" ? `${x.target} absorbs +${x.damage}` : `${x.target} ${x.damage}${x.affinity === "VU" ? " (weak!)" : x.affinity === "RS" ? " (resisted)" : ""}${x.killed ? " — down!" : ""}`);
+    return [cls, `${e.actor}'s ${e.action} hits everyone: ${hits.join("; ")}`];
+  }
   const parts = g.map((x) => {
     if (x.miss) return `${x.target} — miss`;
     const tag = x.direction === "recover" ? ` (absorbed, +${x.damage})` : `${x.damage}${x.affinity === "VU" ? " (weak!)" : x.affinity === "RS" ? " (resisted)" : x.affinity === "IM" ? " (immune)" : ""}${x.crit ? " CRIT" : ""}`;
@@ -684,6 +692,20 @@ async function playGroup(g) {
   } else if (e.protect) {
     pop(actor, "Protect!", "tag");
     await moveAnim(actor?.el, [{ transform: "translateX(0)" }, { transform: `translateX(${dir * 20}px)` }, { transform: "translateX(0)" }], 360);
+  } else if (e.reaction && e.target && g.length > 1) {
+    // Area burst: one flash from the source, every target reacts at once.
+    pop(actor, e.action, "tag");
+    if (!reduceMotion && actor) actor.el.animate([{ filter: "brightness(1)" }, { filter: "brightness(3) drop-shadow(0 0 12px #9cc6ff)" }, { filter: "brightness(1)" }], { duration: 420 / BV.speed });
+    await sleep(220);
+    for (const x of g) {
+      const t = BV.byName[x.target];
+      if (!t) continue;
+      if (x.direction === "recover") { pop(t, `+${x.damage}`, "heal"); continue; }
+      pop(t, `${x.damage}${x.affinity === "VU" ? "!" : ""}`, x.affinity === "VU" ? "weak" : "");
+      moveAnim(t.el, [{ transform: "translateX(0)", filter: "brightness(1)" }, { transform: "translateX(-6px)", filter: "brightness(2.2)" }, { transform: "translateX(6px)" }, { transform: "translateX(0)", filter: "brightness(1)" }], 300);
+    }
+    syncHp(g.at(-1));
+    await sleep(520);
   } else if (e.reaction && !e.target) {
     pop(actor, e.action, "tag");
     await sleep(320);
