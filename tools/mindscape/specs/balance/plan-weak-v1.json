@@ -1,0 +1,66 @@
+{
+  "Imp": {
+    "attacks": {
+      "Pitchfork": {
+        "dmgAdd": 53
+      }
+    }
+  },
+  "Succubus": {
+    "attacks": {
+      "Draining Kiss": {
+        "dmgAdd": 16
+      },
+      "Rake": {
+        "dmgAdd": 16
+      }
+    }
+  },
+  "Drakoza": {
+    "attacks": {
+      "Dragon Claw": {
+        "dmgAdd": 19
+      },
+      "Thrash": {
+        "dmgAdd": 19
+      },
+      "Tail Swipe": {
+        "dmgAdd": 10
+      }
+    }
+  },
+  "Dragon Guard": {
+    "attacks": {
+      "Saber": {
+        "dmgAdd": 19
+      },
+      "Flame Breath": {
+        "dmgAdd": 10
+      },
+      "Suppressing Sweep": {
+        "dmgAdd": 10
+      }
+    }
+  },
+  "Mana Ray": {
+    "attacks": {
+      "Volt Stinger": {
+        "dmgAdd": 15
+      },
+      "Mana Stinger": {
+        "dmgAdd": 15
+      }
+    }
+  },
+  "Electro Slime": {
+    "attacks": {
+      "Static Shot": {
+        "dmgAdd": 255
+      },
+      "Tackle": {
+        "dmgAdd": 255
+      }
+    },
+    "hpPct": 145
+  }
+}

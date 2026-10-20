@@ -9,7 +9,8 @@
 //                                  "attacks": { "<Attack name>": { "dmgAdd": 10 } } }, ... }
 //   hpPct     max HP change in percent
 //   dmgAdd    flat damage added to EVERY damaging action the monster has
-//   attacks   per-action damage changes (on top of dmgAdd)
+//   attacks   per-action damage changes (on top of dmgAdd); checkAdd = accuracy bonus
+//   checkAdd  accuracy bonus added to every damaging action
 //   affinity  element -> VU | RS | IM | AB | NA
 //   turns     actions per round (the sheet's activation)
 //   def/mdef  defence scores
@@ -58,6 +59,8 @@ function patchMonster(m, spec) {
   for (const it of m.items ?? []) {
     const p = it.props ?? {};
     if (!isDamaging(p)) continue;
+    const chk = (spec.checkAdd ?? 0) + (spec.attacks?.[it.name]?.checkAdd ?? 0);
+    if (chk) p.check_bonus = String((Number(p.check_bonus) || 0) + chk);
     const add = (spec.dmgAdd ?? 0) + (spec.attacks?.[it.name]?.dmgAdd ?? 0);
     if (!add) continue;
     const raw = String(p.damage_bonus ?? "0").trim() || "0";
@@ -145,4 +148,5 @@ async function main() {
   if (out) fs.writeFileSync(path.resolve(out), JSON.stringify({ plan, policy, runs, rows }, null, 2) + "\n");
 }
 
-main().catch((e) => { console.error(`balance-proposal failed: ${e.stack || e.message}`); process.exit(1); });
+module.exports = { patchMonster, loadGroup };
+if (require.main === module) main().catch((e) => { console.error(`balance-proposal failed: ${e.stack || e.message}`); process.exit(1); });

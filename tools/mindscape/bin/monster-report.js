@@ -19,6 +19,7 @@ const { loadParty, loadNamed } = require("../lib/load-actors");
 const { runBattle } = require("../lib/engine");
 const { Rng } = require("../lib/rng");
 const { snapshotWorld } = require("./encounter-matrix");
+const { loadGroup } = require("./balance-proposal");
 
 function arg(name, fallback) {
   const i = process.argv.indexOf(name);
@@ -29,6 +30,9 @@ const median = (xs) => { const s = xs.slice().sort((a, b) => a - b); return s.le
 async function main() {
   const runs = Number(arg("--runs", 1000));
   const out = arg("--out", null);
+  const planFile = arg("--plan", null);
+  const plan = planFile ? JSON.parse(fs.readFileSync(path.resolve(planFile), "utf8")) : null;
+  if (plan) delete plan.rows;
   const matrix = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "expectations", "encounter-matrix.json"), "utf8"));
   const policy = matrix.policy ?? "standard";
   const copyDir = path.join(os.tmpdir(), "fu-monster-report");
@@ -41,7 +45,7 @@ async function main() {
     pcCount = party.length;
     for (const l of matrix.lines) {
       if (l.error) continue;
-      const enemies = await loadNamed(l.enemies, { world });
+      const enemies = await loadGroup(l.enemies, world, plan);
       const counts = {};
       for (const n of l.enemies) counts[n] = (counts[n] ?? 0) + 1;
       for (let i = 0; i < runs; i++) {
