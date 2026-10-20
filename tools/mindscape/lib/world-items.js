@@ -145,4 +145,11 @@ async function loadWorldItems({ world = DEFAULT_WORLD } = {}) {
   });
 }
 
-module.exports = { WorldItems, loadWorldItems, isContained, tableRows, SET_NAME_EMPTY, CONTAINER_EMPTY };
+// The status library the monster-data interpreter resolves ae_template_ref against:
+// every effect on an activeEffectContainer item ("Debuff", "Buff", ...), by name.
+async function loadStatusLibrary({ world = DEFAULT_WORLD } = {}) {
+  const { buildStatusLibrary } = require("./monster-data");
+  return buildStatusLibrary((await loadWorldItems({ world })).all());
+}
+
+module.exports = { WorldItems, loadWorldItems, loadStatusLibrary, isContained, tableRows, SET_NAME_EMPTY, CONTAINER_EMPTY };
