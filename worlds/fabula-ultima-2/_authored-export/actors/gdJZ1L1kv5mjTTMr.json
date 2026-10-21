@@ -12206,6 +12206,8 @@
       "spell_hideEffect": false,
       "spiritism": false,
       "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Battler002.webm",
+      "sprite_crisis": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Crisis.webm",
+      "sprite_ko": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_KO.webm",
       "sprite_stand_down": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Standing_Down_PLACEHOLDER.png",
       "sprite_stand_left": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Standing_Left_PLACEHOLDER.png",
       "sprite_stand_up": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Standing_Up_PLACEHOLDER.png",

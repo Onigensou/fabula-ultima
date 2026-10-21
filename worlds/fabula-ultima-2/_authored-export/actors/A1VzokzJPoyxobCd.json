@@ -1315,7 +1315,7 @@
       },
       "spear_ef": "100",
       "species": "ELEMENTAL",
-      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Electro%20Slime_Standard.png",
+      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Electro%20Slime_Battle_Idle.webm",
       "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Electro%20Slime_Standard.png",
       "steal_percentage_table": {
         "0": {
