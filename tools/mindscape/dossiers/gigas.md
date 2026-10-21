@@ -26,7 +26,18 @@ Rod on it.
   until the end of its next turn** (user, 2026-10-21; supersedes the 2026-08-14 Rod-only gate).
   PC bolt attacks, the Lightning Rod and the Lightning Crystal all count: it is meant to be
   played alongside the dungeon hazards.
-  ⚠ The SHEET still gates it `IS_MY_TURN == 1` (Rod-only) — see DRIFT in the brief.
+- **Both conflict events are the intended levers** (user, 2026-10-21): the player manipulates
+  them to Frightened the Gigas and stop its Heavy Swing.
+  - **Lightning Storm — easy to play around.** Any damage moves the Rod to its victim, so
+    hitting the Gigas parks the Rod on it; the turn-start strike (30 Bolt) frightens it for
+    that turn.
+  - **Lightning Crystal — harder to manipulate.** The blast hits every creature on both sides
+    (Gigas included) when the countdown reaches zero; the party steers WHEN by how much damage
+    it puts into the crystal, aiming the blast before the Gigas acts.
+  - A PC's own Bolt skill works too.
+- Frightened lasts **1 charge**, ticked at the end of each of the Gigas's own turns: hit
+  off-turn → through the end of its next turn; hit at its own turn start (the Rod) → that
+  current turn (designer accepted the recommendation, 2026-10-21).
 - **Frightened blocks `Attack`** → Heavy Swing is off. Gigas falls back to **Heavy Bodyslam**
   (Active, so Frightened does not block it): +75 physical (~83) **and 100 physical to itself**.
 - So bolt turns the big hit into a weaker hit that hurts Gigas. Counterplay is landing bolt
@@ -64,6 +75,7 @@ Rod on it.
 
 See `blind_spots` and `open_questions` below — they print in every brief and audit.
 | 2026-10-21 | Oaf design: ANY Bolt damage → Frightened until the end of its next turn | Rod-only gate was not the intended mechanic | user | sheet still Rod-only → DRIFT, fix pending go-ahead |
+| 2026-10-21 | Sheet: Oaf gate drops IS_MY_TURN (any Bolt, any cause); text "until the end of its next turn" on the item + passive list; 1 charge kept | design correction; both conflict events must work | user | sim V19: Crystal win 28% → 61%, defeat 40% → 21%; Storm 89% → 91% |
 
 ```json dossier
 {
@@ -71,7 +83,7 @@ See `blind_spots` and `open_questions` below — they print in every brief and a
   "actorId": "1Lw78Js1f7MogV2B",
   "status": "draft",
   "updated": "2026-10-21",
-  "role": "random encounter with adds (Valley Encounter row 19: Gigas + 2 Electro Slime); rarer underground",
+  "role": "random encounter with adds (Valley Encounter row 19: Gigas + 2 Electro Slime); fought under the Lightning Storm or the Lightning Crystal; rarer underground",
   "exceptions": [
     {
       "rule": "one-shot",
@@ -159,10 +171,10 @@ See `blind_spots` and `open_questions` below — they print in every brief and a
   ],
   "blind_spots": [
     "Oaf → Frightened IS simulated in data mode (lib/monster-data.js, since 2026-10-20). Verdicts from before then (registry mode) read Gigas as always swinging — do not reuse them.",
-    "BD turn order ignores the Delay AE — 'acts last' is not engine-enforced (lowest DEX+INS makes autopilot pick it last)."
+    "BD turn order ignores the Delay AE — 'acts last' is not engine-enforced (lowest DEX+INS makes autopilot pick it last).",
+    "Sim party brains play the Rod on purpose but ignore the Lightning Crystal, so the Crystal half's numbers (61% win) understate a party that times blasts deliberately."
   ],
   "open_questions": [
-    "Rod strike lands at the START of Gigas's own turn: with 1 charge, Frightened ends when that same turn ends. Is 'its next turn' that current turn (keep 1 charge), or the following one (needs 2 charges when hit on its own turn)?",
     "Arcane EF 200 is a flat DPR doubling, not a skill expression — keep, or drop to 150?"
   ]
 }

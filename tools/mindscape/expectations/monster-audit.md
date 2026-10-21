@@ -15,7 +15,7 @@
 | Dragon Guard | soldier | 50 | 250 | 1 | 12 (58%) | 10 (>58%) | ice | fire, poison / — / — | Saber 51 | — | draft |
 | Drakoza | soldier | 43 | 140 | 1 | 11 (>58%) | 10 (>58%) | light | dark / — / — | Dragon Claw 46 | — | draft |
 | Electro Slime | soldier | 40 | 45 | 1 | 6 (>58%) | 6 (>58%) | earth | — / poison / bolt | Static Shot 36 | (+2 intended) | draft |
-| Gigas | elite | 45 | 800 | 1 | 12 (58%) | 10 (>58%) | bolt, fire, poison | physical, air, earth / — / — | Heavy Swing 128 | (+2 intended) | draft · **DRIFT 1** |
+| Gigas | elite | 45 | 800 | 1 | 12 (58%) | 10 (>58%) | bolt, fire, poison | physical, air, earth / — / — | Heavy Swing 128 | (+2 intended) | draft |
 | Imp | soldier | 50 | 110 | 1 | 15 (33%) | 14 (41%) | light | dark, fire / — / — | Pitchfork 49 | — | draft |
 | Iron Colossus | elite | 52 | 700 | 1 | 14 (41%) | 8 (>58%) | bolt | physical, earth / poison / — | Siege Fist 42 | (+3 intended) | draft |
 | Kirin | elite | 50 | 210 | 1 | 14 (41%) | 15 (33%) | poison | bolt / — / — | Horn Rush 69 | — | draft |
@@ -79,12 +79,11 @@
 - blind spot: MAX_REACTION_DEPTH 2 in Mindscape: slime-chain → second-hop combos are cut.
 
 ### Gigas — draft · 2026-10-21
-- **DRIFT** Oaf reaction_config_table[oaf_fear].condition_formula is "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1 && IS_MY_TURN == 1", design wants does not contain "IS_MY_TURN" — Any Bolt damage must frighten it (user 2026-10-21) — an IS_MY_TURN gate makes it Rod-only.
 - intended: 3 VU (rule: exactly 1 for elite) — The world sheet is authoritative: VU bolt/fire/poison + RS physical/air/earth is intended (the 2026-08-14 'VU bolt only' note was superseded on the sheet). (user 2026-10-21)
 - intended: Heavy Swing avg 128 can drop an average PC (mean HP 118) — The big hit is the threat that pushes the party to land Bolt (a PC skill or a dungeon hazard). Bolt → Frightened until the end of its next turn → Heavy Swing is blocked. Judge it WITH bolt in play. (user 2026-10-21)
 - blind spot: Oaf → Frightened IS simulated in data mode (lib/monster-data.js, since 2026-10-20). Verdicts from before then (registry mode) read Gigas as always swinging — do not reuse them.
 - blind spot: BD turn order ignores the Delay AE — 'acts last' is not engine-enforced (lowest DEX+INS makes autopilot pick it last).
-- open: Rod strike lands at the START of Gigas's own turn: with 1 charge, Frightened ends when that same turn ends. Is 'its next turn' that current turn (keep 1 charge), or the following one (needs 2 charges when hit on its own turn)?
+- blind spot: Sim party brains play the Rod on purpose but ignore the Lightning Crystal, so the Crystal half's numbers (61% win) understate a party that times blasts deliberately.
 - open: Arcane EF 200 is a flat DPR doubling, not a skill expression — keep, or drop to 150?
 
 ### Imp — draft · 2026-10-21

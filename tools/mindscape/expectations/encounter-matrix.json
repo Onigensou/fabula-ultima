@@ -1,6 +1,6 @@
 {
   "id": "encounter-matrix",
-  "generated": "2026-10-20T19:06:56.581Z",
+  "generated": "2026-10-21T03:54:58.021Z",
   "seed": "encounter-matrix",
   "runs": 1000,
   "policy": "standard",
@@ -7895,38 +7895,38 @@
           "share": 0.3829787234042553,
           "stats": {
             "runs": 383,
-            "win": 0.2845953002610966,
-            "defeat": 0.3968668407310705,
-            "overtime": 0.3185378590078329,
+            "win": 0.6057441253263708,
+            "defeat": 0.20887728459530025,
+            "overtime": 0.185378590078329,
             "escaped": 0,
-            "roundsP50": 6,
+            "roundsP50": 5,
             "roundsP90": 7,
-            "hpP50": 0.7091295116772823,
-            "hpP10": 0.3545647558386412,
-            "hpEndP50": 0.208067940552017,
+            "hpP50": 0.7409766454352441,
+            "hpP10": 0.440552016985138,
+            "hpEndP50": 0.5966029723991507,
             "roundsAllP50": 6,
-            "lowP50": 0.1762208067940552,
-            "anyDown": 0.9947780678851175,
-            "downsPerFight": 2.6788511749347257
+            "lowP50": 0.2781316348195329,
+            "anyDown": 0.9895561357702349,
+            "downsPerFight": 1.7154046997389034
           }
         },
         "lightning-storm": {
           "share": 0.6170212765957447,
           "stats": {
             "runs": 617,
-            "win": 0.8946515397082658,
-            "defeat": 0.04700162074554295,
-            "overtime": 0.05834683954619125,
+            "win": 0.9076175040518638,
+            "defeat": 0.04051863857374392,
+            "overtime": 0.05186385737439222,
             "escaped": 0,
-            "roundsP50": 5,
+            "roundsP50": 4,
             "roundsP90": 6,
-            "hpP50": 0.832271762208068,
-            "hpP10": 0.5140127388535032,
-            "hpEndP50": 0.7983014861995754,
+            "hpP50": 0.8365180467091295,
+            "hpP10": 0.4876857749469215,
+            "hpEndP50": 0.8089171974522293,
             "roundsAllP50": 5,
             "lowP50": 0.3885350318471338,
-            "anyDown": 0.8006482982171799,
-            "downsPerFight": 0.6677471636952999
+            "anyDown": 0.7876823338735819,
+            "downsPerFight": 0.6256077795786061
           }
         }
       },
@@ -8055,45 +8055,45 @@
           "who": "Hina",
           "kind": "formula",
           "what": "identifier BOND_WITH_ANY_TARGET",
-          "runs": 925
+          "runs": 935
         },
         {
           "who": "Blanche",
           "kind": "decided at the table",
           "what": "Thread the Horns (the player)",
-          "runs": 618
+          "runs": 593
         },
         {
           "who": "Blanche",
           "kind": "decided at the table",
           "what": "Counter Pass (the player)",
-          "runs": 618
+          "runs": 593
         },
         {
           "who": "Blanche",
           "kind": "effect",
           "what": "adjust_grant",
-          "runs": 579
+          "runs": 564
         }
       ],
       "stats": {
         "runs": 1000,
-        "win": 0.661,
-        "defeat": 0.181,
-        "overtime": 0.158,
+        "win": 0.792,
+        "defeat": 0.105,
+        "overtime": 0.103,
         "escaped": 0,
         "roundsP50": 5,
         "roundsP90": 6,
-        "hpP50": 0.802547770700637,
-        "hpP10": 0.4543524416135881,
-        "hpEndP50": 0.6613588110403397,
+        "hpP50": 0.8004246284501062,
+        "hpP10": 0.46305732484076434,
+        "hpEndP50": 0.732484076433121,
         "roundsAllP50": 5,
-        "lowP50": 0.32908704883227174,
-        "anyDown": 0.875,
-        "downsPerFight": 1.438
+        "lowP50": 0.3503184713375796,
+        "anyDown": 0.865,
+        "downsPerFight": 1.043
       },
       "notes": [
-        "party loses 18%",
+        "party loses 11%",
         "rounds above long target (4)",
         "HP left ≥ 70%"
       ]
