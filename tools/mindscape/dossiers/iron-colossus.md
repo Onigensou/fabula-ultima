@@ -26,13 +26,16 @@ heavy EF as the answer, high DEF / moderate MDEF. Cheap damage, paid in denial (
 |---|---|---|---|---|
 | 2026-08-29 | Built as tank (~4.4 TP elite, cheap DPS) | tank archetype, Gigas precedent | user (spec) | — |
 | 2026-10-20 | Concept restated: 4 actions at 100% efficiency; measured HP 480 proposed | rows stall (party has no heavy weapon) | user | options b/c NOT applied |
+| 2026-10-21 | Grinding Quake repeating every turn its condition holds: accepted | "already in the design when the monster is created" | user | audit pattern lint → intended |
 
 ```json dossier
 {
   "monster": "Iron Colossus",
   "actorId": "FLy3XRr40wNRmYxV",
   "status": "draft",
-  "aliases": ["Colossus"],
+  "aliases": [
+    "Colossus"
+  ],
   "updated": "2026-10-21",
   "role": "Fafnir Castle tank, always escorted (5 Encounter rows)",
   "exceptions": [
@@ -49,18 +52,27 @@ heavy EF as the answer, high DEF / moderate MDEF. Cheap damage, paid in denial (
       "why": "Same tank trade: its hits are meant to be soft.",
       "decided_by": "claude",
       "date": "2026-08-29"
+    },
+    {
+      "rule": "pattern",
+      "why": "Grinding Quake firing every turn its condition holds (the cooldown never applies) is part of the design from when the monster was created.",
+      "decided_by": "user",
+      "date": "2026-10-21"
     }
   ],
   "invariants": [
-    { "id": "bolt-vulnerable", "affinity": "bolt", "equals": "VU",
-      "why": "The answer to the tank (user concept 2026-10-20)." }
+    {
+      "id": "bolt-vulnerable",
+      "affinity": "bolt",
+      "equals": "VU",
+      "why": "The answer to the tank (user concept 2026-10-20)."
+    }
   ],
   "blind_spots": [
     "The party has no heavy weapon today, so the heavy-EF answer is not available in sims — rows stall."
   ],
   "open_questions": [
-    "Awaiting your choice from 2026-10-20: (b) 1 escort or (c) 320 HP — both ~6 rounds; or keep the sheet as is?",
-    "Grinding Quake's 2-round cooldown never applies (no other row within 2 priority of 9). Intended?"
+    "Awaiting your choice from 2026-10-20: (b) 1 escort or (c) 320 HP — both ~6 rounds; or keep the sheet as is?"
   ]
 }
 ```

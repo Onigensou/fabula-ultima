@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-21T03:15:05.873Z",
+  "generated": "2026-10-21T03:32:13.595Z",
   "dungeons": [
     "Valley of the Dragon",
     "Fafnir Castle"
@@ -602,7 +602,10 @@
         {
           "rule": "pattern",
           "text": "pattern: Death Gaze repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9)",
-          "status": "new"
+          "status": "intended",
+          "why": "Death Gaze firing every turn its condition holds (the cooldown never applies) is part of the design from when the monster was created.",
+          "confirmed": true,
+          "decided": "user 2026-10-21"
         }
       ],
       "design": {
@@ -632,9 +635,7 @@
         "blindSpots": [
           "The save leg dispatches to players' clients — it hangs solo-GM, so it was never exercised."
         ],
-        "openQuestions": [
-          "IMPORTANT: Death Gaze's 2-round cooldown never applies (no other row within 2 priority of 9), so from round 2 it is a ~60% save-or-die EVERY turn, not every other turn. Intended? If not: drop its priority to 7 or raise Mind Sear's."
-        ]
+        "openQuestions": []
       },
       "drift": []
     },
@@ -691,7 +692,10 @@
         {
           "rule": "pattern",
           "text": "pattern: War Howl repeats every turn its condition holds: its 3-round cooldown never applies (no other row within 2 priority of 8)",
-          "status": "new"
+          "status": "intended",
+          "why": "War Howl firing every turn its condition holds (the cooldown never applies) is part of the design from when the monster was created.",
+          "confirmed": true,
+          "decided": "user 2026-10-21"
         }
       ],
       "design": {
@@ -713,9 +717,7 @@
           }
         ],
         "blindSpots": [],
-        "openQuestions": [
-          "War Howl's 3-round cooldown never applies (no other row within 2 priority of 8) — it howls every turn while MP lasts. Intended?"
-        ]
+        "openQuestions": []
       },
       "drift": []
     },
@@ -1088,7 +1090,7 @@
           "text": "Heavy Swing avg 128 can drop an average PC (mean HP 118)",
           "action": "Heavy Swing",
           "status": "intended",
-          "why": "The big hit is the threat that pushes the party to the Lightning Rod. Bolt on Gigas's turn → Frightened → Heavy Swing is blocked for that turn. Judge it WITH the Rod in play.",
+          "why": "The big hit is the threat that pushes the party to land Bolt (a PC skill or a dungeon hazard). Bolt → Frightened until the end of its next turn → Heavy Swing is blocked. Judge it WITH bolt in play.",
           "confirmed": true,
           "decided": "user 2026-10-21"
         }
@@ -1129,10 +1131,10 @@
             "why": "Self-damage is the payoff for landing the Rod."
           },
           {
-            "id": "oaf-rod-only-gate",
-            "ok": true,
-            "text": "Oaf reaction_config_table[oaf_fear].condition_formula contains \"IS_MY_TURN == 1\"",
-            "why": "Without IS_MY_TURN any PC bolt frightens it and the Rod stops mattering."
+            "id": "oaf-any-bolt",
+            "ok": false,
+            "text": "Oaf reaction_config_table[oaf_fear].condition_formula is \"SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1 && IS_MY_TURN == 1\", design wants does not contain \"IS_MY_TURN\"",
+            "why": "Any Bolt damage must frighten it (user 2026-10-21) — an IS_MY_TURN gate makes it Rod-only."
           },
           {
             "id": "oaf-bolt-gate",
@@ -1144,7 +1146,7 @@
             "id": "frightened-one-charge",
             "ok": true,
             "text": "Oaf effect_table[oaf_fear].ae_initial_charges = \"1\"",
-            "why": "Charges tick per bearer turn; 1 = 'until the end of this turn'. 3 = a three-round lockout."
+            "why": "Charges tick at the end of each of Gigas's own turns; 1 charge = until the end of its next turn when hit off-turn. 3 = a three-turn lockout."
           },
           {
             "id": "club-in-sync",
@@ -1155,16 +1157,21 @@
         ],
         "blindSpots": [
           "Oaf → Frightened IS simulated in data mode (lib/monster-data.js, since 2026-10-20). Verdicts from before then (registry mode) read Gigas as always swinging — do not reuse them.",
-          "BD turn order ignores the Delay AE — 'acts last' is not engine-enforced (lowest DEX+INS makes autopilot pick it last).",
-          "In the Lightning Crystal half of the Valley (38% of tiles) there is no Rod, so Gigas has no counterplay there."
+          "BD turn order ignores the Delay AE — 'acts last' is not engine-enforced (lowest DEX+INS makes autopilot pick it last)."
         ],
         "openQuestions": [
-          "Oaf intent is 'all bolt damage counts' (user 2026-10-21), but the sheet gate still has IS_MY_TURN == 1, so only bolt landing on Gigas's own turn (the Rod's turn-start strike) frightens it — a PC's bolt or a Crystal blast on another turn does not. Keep the gate (world wins) or drop IS_MY_TURN?",
-          "Arcane EF 200 is a flat DPR doubling, not a skill expression — keep, or drop to 150?",
-          "Gigas + 2 slimes read as a wall in the Crystal half (win ~28%) vs storm ~89%. Accept as variance, or soften the cave/Crystal case?"
+          "Rod strike lands at the START of Gigas's own turn: with 1 charge, Frightened ends when that same turn ends. Is 'its next turn' that current turn (keep 1 charge), or the following one (needs 2 charges when hit on its own turn)?",
+          "Arcane EF 200 is a flat DPR doubling, not a skill expression — keep, or drop to 150?"
         ]
       },
-      "drift": []
+      "drift": [
+        {
+          "id": "oaf-any-bolt",
+          "ok": false,
+          "text": "Oaf reaction_config_table[oaf_fear].condition_formula is \"SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1 && IS_MY_TURN == 1\", design wants does not contain \"IS_MY_TURN\"",
+          "why": "Any Bolt damage must frighten it (user 2026-10-21) — an IS_MY_TURN gate makes it Rod-only."
+        }
+      ]
     },
     {
       "name": "Imp",
@@ -1332,7 +1339,10 @@
         {
           "rule": "pattern",
           "text": "pattern: Grinding Quake repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9)",
-          "status": "new"
+          "status": "intended",
+          "why": "Grinding Quake firing every turn its condition holds (the cooldown never applies) is part of the design from when the monster was created.",
+          "confirmed": true,
+          "decided": "user 2026-10-21"
         }
       ],
       "design": {
@@ -1351,8 +1361,7 @@
           "The party has no heavy weapon today, so the heavy-EF answer is not available in sims — rows stall."
         ],
         "openQuestions": [
-          "Awaiting your choice from 2026-10-20: (b) 1 escort or (c) 320 HP — both ~6 rounds; or keep the sheet as is?",
-          "Grinding Quake's 2-round cooldown never applies (no other row within 2 priority of 9). Intended?"
+          "Awaiting your choice from 2026-10-20: (b) 1 escort or (c) 320 HP — both ~6 rounds; or keep the sheet as is?"
         ]
       },
       "drift": []
@@ -1884,7 +1893,10 @@
         {
           "rule": "pattern",
           "text": "pattern: Miasma Nova repeats every turn its condition holds: its 3-round cooldown never applies (no other row within 2 priority of 11)",
-          "status": "new"
+          "status": "intended",
+          "why": "Miasma Nova firing every turn its condition holds (the cooldown never applies) is part of the design from when the monster was created.",
+          "confirmed": true,
+          "decided": "user 2026-10-21"
         }
       ],
       "design": {
@@ -1909,8 +1921,6 @@
           "Lodestone Core is modelled in the storm only."
         ],
         "openQuestions": [
-          "What is Obsidrax's role — the anti-synergy HP wall, a Rod controller, or something else? Nothing records the intent behind the current build.",
-          "Miasma Nova's 3-round cooldown never applies (no other row within 2 priority of 11) — it casts every turn while MP lasts. Intended?",
           "Basalt Crush avg 44 sits just under the 45 basic-attack floor — leave?"
         ]
       },
@@ -2097,13 +2107,14 @@
           "The stance AEs live in the world status library (persistent_counter lifetime) — not checked here; if they are reaped at the next activation the telegraph vanishes before the strike.",
           "Mindscape cannot simulate the Strike/Magic accuracy-class axis (classAffinity is never populated).",
           "Solo boss: at real HP the modelled party rarely reaches Crisis, so the Dual/Verdict half goes unmeasured unless HP is forced.",
-          "Never live-tested; runReactionLint not run on it."
+          "Never live-tested; runReactionLint not run on it.",
+          "Adaptive Defense only LOWERS efficiency (25/40/60/80%, back to 100% once 4 other families have hit) — it never raises a lane above 100%. With VU light the best possible hit is ×2, never ×4."
         ],
         "openQuestions": [
           "Is the stance readable enough at the table (token status icon / chat line) for the telegraph to work as counterplay?",
           "With 4 activations, does a PC always get a turn between the Dual Shift and the Verdict (BD alternates sides), or can Shift→Verdict land back-to-back?",
           "Crippled uses AE MULTIPLY on the derived defense prop — unverified that CSB honours it (else the text must stop promising a halving).",
-          "The build note mentions a Crisis-phase 'Ten Thousand Arms' (freezes the weapon read) — it is not on the sheet. Dropped on purpose?"
+          "HP 1200 reads as a stalemate in the current sim (0% win inside 10 rounds, 100% overtime, party's lowest HP ~62%) — but the sim party plays below human level and 58% of its actions are unmodelled. Live-test before touching HP."
         ]
       },
       "drift": []
@@ -2374,7 +2385,10 @@
         {
           "rule": "pattern",
           "text": "pattern: Charm repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9)",
-          "status": "new"
+          "status": "intended",
+          "why": "Charm firing every turn its condition holds (the cooldown never applies) is part of the design from when the monster was created.",
+          "confirmed": true,
+          "decided": "user 2026-10-21"
         }
       ],
       "design": {
@@ -2406,7 +2420,6 @@
           "Mindscape does not simulate Deadly Temptation (Board card marks it)."
         ],
         "openQuestions": [
-          "Charm's 2-round cooldown never applies (no other row within 2 priority of 9) — it charms every turn while MP lasts. Intended?",
           "Rake's description still says 'light' after the 18→34 raise — retext?"
         ]
       },

@@ -30,7 +30,7 @@
 //                   the embedded copy matches that world item on every prop both carry
 //                   (or on `fields`) — for stealable/droppable copies kept in sync by hand
 // `item_where` narrows same-named items by props ({ "skill_type": "Active" }).
-// Operators: equals · in [..] · contains "..." · min n · max n.
+// Operators: equals · in [..] · contains "..." · excludes "..." · min n · max n.
 //
 // Pure — no world access. bin/dossier.js and bin/monster-audit.js do the loading.
 
@@ -103,14 +103,16 @@ function compare(inv, actual) {
   if ("equals" in inv) return s(actual) === s(inv.equals);
   if ("in" in inv) return inv.in.map(s).includes(s(actual));
   if ("contains" in inv) return s(actual).includes(s(inv.contains));
+  if ("excludes" in inv) return !s(actual).includes(s(inv.excludes));
   if ("min" in inv) return Number(actual) >= Number(inv.min);
   if ("max" in inv) return Number(actual) <= Number(inv.max);
-  throw new Error(`invariant ${inv.id ?? "?"}: no operator (equals/in/contains/min/max)`);
+  throw new Error(`invariant ${inv.id ?? "?"}: no operator (equals/in/contains/excludes/min/max)`);
 }
 function expected(inv) {
   if ("equals" in inv) return `= ${JSON.stringify(inv.equals)}`;
   if ("in" in inv) return `in ${JSON.stringify(inv.in)}`;
   if ("contains" in inv) return `contains ${JSON.stringify(inv.contains)}`;
+  if ("excludes" in inv) return `does not contain ${JSON.stringify(inv.excludes)}`;
   if ("min" in inv) return `>= ${inv.min}`;
   return `<= ${inv.max}`;
 }

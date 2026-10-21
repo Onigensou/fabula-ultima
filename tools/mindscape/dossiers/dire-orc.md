@@ -21,6 +21,7 @@
 | Date | Change | Why | Decided by | Result |
 |---|---|---|---|---|
 | 2026-08-29 | Built (placeholder); Brutish Fury gate live-verified at exactly half HP | midrange bruiser | user (spec) | — |
+| 2026-10-21 | War Howl repeating every turn its condition holds: accepted | "already in the design when the monster is created" | user | audit pattern lint → intended |
 
 ```json dossier
 {
@@ -29,16 +30,35 @@
   "status": "draft",
   "updated": "2026-10-21",
   "role": "Fafnir Castle midrange bruiser (6 Encounter rows)",
-  "exceptions": [],
+  "exceptions": [
+    {
+      "rule": "pattern",
+      "why": "War Howl firing every turn its condition holds (the cooldown never applies) is part of the design from when the monster was created.",
+      "decided_by": "user",
+      "date": "2026-10-21"
+    }
+  ],
   "invariants": [
-    { "id": "fury-at-half-hp", "item": "Brutish Fury", "table": "reaction_config_table", "row": "do_rage", "field": "condition_formula", "equals": "CUR_HP * 2 <= MAX_HP",
-      "why": "The half-HP turn is the gimmick." },
-    { "id": "fury-plus-25", "item": "Brutish Fury", "table": "effect_table", "row": "do_rage", "field": "damage_amount", "equals": "25",
-      "why": "The size of the turn." }
+    {
+      "id": "fury-at-half-hp",
+      "item": "Brutish Fury",
+      "table": "reaction_config_table",
+      "row": "do_rage",
+      "field": "condition_formula",
+      "equals": "CUR_HP * 2 <= MAX_HP",
+      "why": "The half-HP turn is the gimmick."
+    },
+    {
+      "id": "fury-plus-25",
+      "item": "Brutish Fury",
+      "table": "effect_table",
+      "row": "do_rage",
+      "field": "damage_amount",
+      "equals": "25",
+      "why": "The size of the turn."
+    }
   ],
   "blind_spots": [],
-  "open_questions": [
-    "War Howl's 3-round cooldown never applies (no other row within 2 priority of 8) — it howls every turn while MP lasts. Intended?"
-  ]
+  "open_questions": []
 }
 ```

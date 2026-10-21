@@ -22,14 +22,15 @@ Rod on it.
 
 - **Heavy Swing** (Attack, MIG+MIG +7, **+120 physical**, avg ~128) is the threat. It is
   meant to be able to drop a PC. That is the pressure that pushes the party to the Rod.
-- **Oaf** (passive): when Gigas takes **bolt damage on its own turn**, it Frightens itself
-  until the end of that turn. Gate: `SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1 && IS_MY_TURN == 1`.
-  The `IS_MY_TURN` part makes it **Rod-only**: the Lightning Rod's turn-start strike is the
-  only realistic trigger; a PC's bolt on the PC's own turn does nothing (user, 2026-08-14).
+- **Oaf** (passive): **whenever Gigas takes Bolt damage — from anything — it is Frightened
+  until the end of its next turn** (user, 2026-10-21; supersedes the 2026-08-14 Rod-only gate).
+  PC bolt attacks, the Lightning Rod and the Lightning Crystal all count: it is meant to be
+  played alongside the dungeon hazards.
+  ⚠ The SHEET still gates it `IS_MY_TURN == 1` (Rod-only) — see DRIFT in the brief.
 - **Frightened blocks `Attack`** → Heavy Swing is off. Gigas falls back to **Heavy Bodyslam**
   (Active, so Frightened does not block it): +75 physical (~83) **and 100 physical to itself**.
-- So the Rod turns the big hit into a weaker hit that hurts Gigas. Counterplay is
-  positional (hold/aim the Rod), not a damage race.
+- So bolt turns the big hit into a weaker hit that hurts Gigas. Counterplay is landing bolt
+  before its turn — a PC's bolt skill, or the dungeon's hazards.
 - Escort tension: Electro Slime (AB bolt) can **hold the Rod as a sponge** and starve Gigas
   of Frightened → "kill the slime to free the Rod". The slime's death burst cannot frighten
   Gigas (not Gigas's turn). Bolt-feeding Prism / Skizzik / Kirin punish bolt spam.
@@ -62,6 +63,7 @@ Rod on it.
 ## Not simulated / risks
 
 See `blind_spots` and `open_questions` below — they print in every brief and audit.
+| 2026-10-21 | Oaf design: ANY Bolt damage → Frightened until the end of its next turn | Rod-only gate was not the intended mechanic | user | sheet still Rod-only → DRIFT, fix pending go-ahead |
 
 ```json dossier
 {
@@ -74,7 +76,7 @@ See `blind_spots` and `open_questions` below — they print in every brief and a
     {
       "rule": "one-shot",
       "action": "Heavy Swing",
-      "why": "The big hit is the threat that pushes the party to the Lightning Rod. Bolt on Gigas's turn → Frightened → Heavy Swing is blocked for that turn. Judge it WITH the Rod in play.",
+      "why": "The big hit is the threat that pushes the party to land Bolt (a PC skill or a dungeon hazard). Bolt → Frightened until the end of its next turn → Heavy Swing is blocked. Judge it WITH bolt in play.",
       "decided_by": "user",
       "date": "2026-10-21"
     },
@@ -86,34 +88,82 @@ See `blind_spots` and `open_questions` below — they print in every brief and a
     }
   ],
   "invariants": [
-    { "id": "frightened-not-immune", "prop": "condition_frightened", "equals": "NA",
-      "why": "Frightened IS the counterplay. RS/IM here deletes the whole design." },
-    { "id": "bolt-vulnerable", "affinity": "bolt", "equals": "VU",
-      "why": "Bolt is the Rod's element and the counterplay signal." },
-    { "id": "swing-is-attack", "item": "Heavy Swing", "prop": "skill_type", "equals": "Attack",
-      "why": "Frightened blocks the Attack label. If Heavy Swing stops being an Attack, the one-shot is no longer gated." },
-    { "id": "bodyslam-is-active", "item": "Heavy Bodyslam", "prop": "skill_type", "equals": "Active",
-      "why": "Must survive Frightened's Attack block, or Gigas has no action while Frightened." },
-    { "id": "bodyslam-recoil", "item": "Heavy Bodyslam", "table": "effect_table", "row": "bodyslam_recoil", "field": "damage_amount", "equals": "100",
-      "why": "Self-damage is the payoff for landing the Rod." },
-    { "id": "oaf-rod-only-gate", "item": "Oaf", "table": "reaction_config_table", "row": "oaf_fear", "field": "condition_formula", "contains": "IS_MY_TURN == 1",
-      "why": "Without IS_MY_TURN any PC bolt frightens it and the Rod stops mattering." },
-    { "id": "oaf-bolt-gate", "item": "Oaf", "table": "reaction_config_table", "row": "oaf_fear", "field": "condition_formula", "contains": "TRIGGER_DAMAGE_IS_BOLT == 1",
-      "why": "Bolt is the trigger." },
-    { "id": "frightened-one-charge", "item": "Oaf", "table": "effect_table", "row": "oaf_fear", "field": "ae_initial_charges", "equals": "1",
-      "why": "Charges tick per bearer turn; 1 = 'until the end of this turn'. 3 = a three-round lockout." },
-    { "id": "club-in-sync", "item": "Giant Club", "sameAsWorldItem": "MIbpz90syxNxghMh",
-      "why": "The embedded copy is what gets stolen; it must match the world item." }
+    {
+      "id": "frightened-not-immune",
+      "prop": "condition_frightened",
+      "equals": "NA",
+      "why": "Frightened IS the counterplay. RS/IM here deletes the whole design."
+    },
+    {
+      "id": "bolt-vulnerable",
+      "affinity": "bolt",
+      "equals": "VU",
+      "why": "Bolt is the Rod's element and the counterplay signal."
+    },
+    {
+      "id": "swing-is-attack",
+      "item": "Heavy Swing",
+      "prop": "skill_type",
+      "equals": "Attack",
+      "why": "Frightened blocks the Attack label. If Heavy Swing stops being an Attack, the one-shot is no longer gated."
+    },
+    {
+      "id": "bodyslam-is-active",
+      "item": "Heavy Bodyslam",
+      "prop": "skill_type",
+      "equals": "Active",
+      "why": "Must survive Frightened's Attack block, or Gigas has no action while Frightened."
+    },
+    {
+      "id": "bodyslam-recoil",
+      "item": "Heavy Bodyslam",
+      "table": "effect_table",
+      "row": "bodyslam_recoil",
+      "field": "damage_amount",
+      "equals": "100",
+      "why": "Self-damage is the payoff for landing the Rod."
+    },
+    {
+      "id": "oaf-any-bolt",
+      "item": "Oaf",
+      "table": "reaction_config_table",
+      "row": "oaf_fear",
+      "field": "condition_formula",
+      "excludes": "IS_MY_TURN",
+      "why": "Any Bolt damage must frighten it (user 2026-10-21) — an IS_MY_TURN gate makes it Rod-only."
+    },
+    {
+      "id": "oaf-bolt-gate",
+      "item": "Oaf",
+      "table": "reaction_config_table",
+      "row": "oaf_fear",
+      "field": "condition_formula",
+      "contains": "TRIGGER_DAMAGE_IS_BOLT == 1",
+      "why": "Bolt is the trigger."
+    },
+    {
+      "id": "frightened-one-charge",
+      "item": "Oaf",
+      "table": "effect_table",
+      "row": "oaf_fear",
+      "field": "ae_initial_charges",
+      "equals": "1",
+      "why": "Charges tick at the end of each of Gigas's own turns; 1 charge = until the end of its next turn when hit off-turn. 3 = a three-turn lockout."
+    },
+    {
+      "id": "club-in-sync",
+      "item": "Giant Club",
+      "sameAsWorldItem": "MIbpz90syxNxghMh",
+      "why": "The embedded copy is what gets stolen; it must match the world item."
+    }
   ],
   "blind_spots": [
     "Oaf → Frightened IS simulated in data mode (lib/monster-data.js, since 2026-10-20). Verdicts from before then (registry mode) read Gigas as always swinging — do not reuse them.",
-    "BD turn order ignores the Delay AE — 'acts last' is not engine-enforced (lowest DEX+INS makes autopilot pick it last).",
-    "In the Lightning Crystal half of the Valley (38% of tiles) there is no Rod, so Gigas has no counterplay there."
+    "BD turn order ignores the Delay AE — 'acts last' is not engine-enforced (lowest DEX+INS makes autopilot pick it last)."
   ],
   "open_questions": [
-    "Oaf intent is 'all bolt damage counts' (user 2026-10-21), but the sheet gate still has IS_MY_TURN == 1, so only bolt landing on Gigas's own turn (the Rod's turn-start strike) frightens it — a PC's bolt or a Crystal blast on another turn does not. Keep the gate (world wins) or drop IS_MY_TURN?",
-    "Arcane EF 200 is a flat DPR doubling, not a skill expression — keep, or drop to 150?",
-    "Gigas + 2 slimes read as a wall in the Crystal half (win ~28%) vs storm ~89%. Accept as variance, or soften the cave/Crystal case?"
+    "Rod strike lands at the START of Gigas's own turn: with 1 charge, Frightened ends when that same turn ends. Is 'its next turn' that current turn (keep 1 charge), or the following one (needs 2 charges when hit on its own turn)?",
+    "Arcane EF 200 is a flat DPR doubling, not a skill expression — keep, or drop to 150?"
   ]
 }
 ```

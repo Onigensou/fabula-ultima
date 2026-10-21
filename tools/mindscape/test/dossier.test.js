@@ -29,7 +29,7 @@ const GIGAS = {
     { name: "Heavy Bodyslam", props: { skill_type: "Active", effect_table: { 0: { effect_label: "bodyslam_recoil", damage_amount: "100" } } } },
     { name: "Oaf", props: {
       effect_table: { 0: { effect_label: "oaf_delay" }, 1: { effect_label: "oaf_fear", ae_initial_charges: "1" } },
-      reaction_config_table: { 1: { reaction_effect_ref: "oaf_fear", condition_formula: "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1 && IS_MY_TURN == 1" } },
+      reaction_config_table: { 1: { reaction_effect_ref: "oaf_fear", condition_formula: "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1" } },
     } },
     { name: "Giant Club", props: { id: "emb", damage_bonus: "22", item_cost: "1800" } },
   ],
@@ -91,10 +91,10 @@ test("bolt no longer VU", () => {
   assert.deepStrictEqual(failed(m), ["bolt-vulnerable"]);
 });
 
-test("IS_MY_TURN dropped from the Oaf gate", () => {
+test("an IS_MY_TURN gate on Oaf (Rod-only) is drift: any bolt must frighten it", () => {
   const m = clone(GIGAS);
-  m.items[2].props.reaction_config_table[1].condition_formula = "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1";
-  assert.deepStrictEqual(failed(m), ["oaf-rod-only-gate"]);
+  m.items[2].props.reaction_config_table[1].condition_formula = "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1 && IS_MY_TURN == 1";
+  assert.deepStrictEqual(failed(m), ["oaf-any-bolt"]);
 });
 
 test("Frightened back to 3 charges (table row found by effect_label)", () => {
@@ -151,7 +151,7 @@ test("an exception marks the matching finding intended, with its reason", () => 
   ], gigasDossier);
   assert.strictEqual(out[0].status, "intended");
   assert.strictEqual(out[0].confirmed, true);
-  assert.match(out[0].why, /Lightning Rod/);
+  assert.match(out[0].why, /land Bolt/);
   assert.strictEqual(out[1].status, "new");
 });
 
@@ -175,7 +175,7 @@ const levels = (ws) => ws.filter((w) => w.level !== "role").map((w) => w.level);
 test("a damage nerf on the intended one-shot is called out with the designer's reason", () => {
   const ws = withPlan({ attacks: { "Heavy Swing": { dmgAdd: -40 } } });
   assert.deepStrictEqual(levels(ws), ["intended"]);
-  assert.match(ws.find((w) => w.level === "intended").text, /Lightning Rod.*designer's call/);
+  assert.match(ws.find((w) => w.level === "intended").text, /land Bolt.*designer's call/);
 });
 
 test("a plan that breaks an invariant is a BREAK", () => {

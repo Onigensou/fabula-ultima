@@ -10,23 +10,23 @@
 | Ampere | soldier | 43 | 175 | 1 | 10 (>58%) | 10 (>58%) | earth | bolt / — / — | Bubble Beam 29 · Bubble Splash 47 ×all | (+1 intended) | draft |
 | Asura | elite | 38 | 900 | 4 | 15 (33%) | 13 (49%) | air, bolt, fire, ice | — / — / — | Elemental Slash (Enchanted) 49 | resisted hit = 21% of PC HP (< 25%) (+3 intended) | draft |
 | Carlbero | elite | 50 | 640 | 4 | 11 (>58%) | 14 (41%) | fire | dark, poison / — / — | Tentacle Slap 47 ×3 · Mind Sap 57 | (+1 intended) | draft |
-| Death Gazer | soldier | 50 | 150 | 1 | 8 (>58%) | 16 (26%) | light | dark, poison / — / — | Eye Beam 30 · Mind Sear 43 | pattern: Death Gaze repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9) (+1 intended) | draft |
-| Dire Orc | soldier | 50 | 240 | 1 | 10 (>58%) | 6 (>58%) | ice | earth / — / — | Skull Splitter 66 | pattern: War Howl repeats every turn its condition holds: its 3-round cooldown never applies (no other row within 2 priority of 8) | draft |
+| Death Gazer | soldier | 50 | 150 | 1 | 8 (>58%) | 16 (26%) | light | dark, poison / — / — | Eye Beam 30 · Mind Sear 43 | (+2 intended) | draft |
+| Dire Orc | soldier | 50 | 240 | 1 | 10 (>58%) | 6 (>58%) | ice | earth / — / — | Skull Splitter 66 | (+1 intended) | draft |
 | Dragon Guard | soldier | 50 | 250 | 1 | 12 (58%) | 10 (>58%) | ice | fire, poison / — / — | Saber 51 | — | draft |
 | Drakoza | soldier | 43 | 140 | 1 | 11 (>58%) | 10 (>58%) | light | dark / — / — | Dragon Claw 46 | — | draft |
 | Electro Slime | soldier | 40 | 45 | 1 | 6 (>58%) | 6 (>58%) | earth | — / poison / bolt | Static Shot 36 | (+2 intended) | draft |
-| Gigas | elite | 45 | 800 | 1 | 12 (58%) | 10 (>58%) | bolt, fire, poison | physical, air, earth / — / — | Heavy Swing 128 | (+2 intended) | draft |
+| Gigas | elite | 45 | 800 | 1 | 12 (58%) | 10 (>58%) | bolt, fire, poison | physical, air, earth / — / — | Heavy Swing 128 | (+2 intended) | draft · **DRIFT 1** |
 | Imp | soldier | 50 | 110 | 1 | 15 (33%) | 14 (41%) | light | dark, fire / — / — | Pitchfork 49 | — | draft |
-| Iron Colossus | elite | 52 | 700 | 1 | 14 (41%) | 8 (>58%) | bolt | physical, earth / poison / — | Siege Fist 42 | pattern: Grinding Quake repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9) (+2 intended) | draft |
+| Iron Colossus | elite | 52 | 700 | 1 | 14 (41%) | 8 (>58%) | bolt | physical, earth / poison / — | Siege Fist 42 | (+3 intended) | draft |
 | Kirin | elite | 50 | 210 | 1 | 14 (41%) | 15 (33%) | poison | bolt / — / — | Horn Rush 69 | — | draft |
 | Lightning Prism | soldier | 45 | 150 | 1 | 10 (>58%) | 16 (26%) | physical, earth | — / poison / bolt | Arc Spark 31 · Fulgur Finis 70 ×3 | (+3 intended) | draft |
 | Mana Ray | soldier | 45 | 115 | 1 | 11 (>58%) | 10 (>58%) | earth, ice | bolt, fire / — / — | Mana Stinger 46 · Volt Stinger 62 | (+1 intended) | draft |
 | Mist Dragon | elite | 45 | 200 | 1 | 14 (41%) | 13 (49%) | air | — / poison / — | Phantom Shift: Thunder Strike 38 · Mist Breath 46 ×3 | best basic attack avg 38 < 45; resisted hit = 16% of PC HP (< 25%) | draft |
-| Obsidrax | soldier | 46 | 180 | 1 | 13 (49%) | 11 (>58%) | ice | earth / bolt / — | Basalt Crush 44 | best basic attack avg 44 < 45; pattern: Miasma Nova repeats every turn its condition holds: its 3-round cooldown never applies (no other row within 2 priority of 11) | draft |
+| Obsidrax | soldier | 46 | 180 | 1 | 13 (49%) | 11 (>58%) | ice | earth / bolt / — | Basalt Crush 44 | best basic attack avg 44 < 45 (+1 intended) | draft |
 | Rakshasa | elite | 40 | 1200 | 4 | 14 (41%) | 12 (58%) | light | dark, poison / — / — | Severing Verdict 166 | (+1 intended) | draft |
 | Roo | soldier | 50 | 255 | 1 | 13 (49%) | 13 (49%) | light | dark / physical, poison / — | — | (+1 intended) | draft |
 | Skizzik | soldier | 48 | 130 | 1 | 12 (58%) | 8 (>58%) | earth | — / poison / bolt | Thunder Strike 37 | (+2 intended) | draft |
-| Succubus | soldier | 50 | 180 | 1 | 12 (58%) | 14 (41%) | light | dark, ice / — / — | Rake 42 · Draining Kiss 56 | best basic attack avg 42 < 45; pattern: Charm repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9) | draft |
+| Succubus | soldier | 50 | 180 | 1 | 12 (58%) | 14 (41%) | light | dark, ice / — / — | Rake 42 · Draining Kiss 56 | best basic attack avg 42 < 45 (+1 intended) | draft |
 
 ## Design records
 
@@ -61,11 +61,11 @@
 
 ### Death Gazer — draft · 2026-10-21
 - intended (unconfirmed): best basic attack avg 30 < 45 — Gimmick caster: Death Gaze is the threat; Eye Beam is filler. (claude 2026-08-29)
+- intended: pattern: Death Gaze repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9) — Death Gaze firing every turn its condition holds (the cooldown never applies) is part of the design from when the monster was created. (user 2026-10-21)
 - blind spot: The save leg dispatches to players' clients — it hangs solo-GM, so it was never exercised.
-- open: IMPORTANT: Death Gaze's 2-round cooldown never applies (no other row within 2 priority of 9), so from round 2 it is a ~60% save-or-die EVERY turn, not every other turn. Intended? If not: drop its priority to 7 or raise Mind Sear's.
 
 ### Dire Orc — draft · 2026-10-21
-- open: War Howl's 3-round cooldown never applies (no other row within 2 priority of 8) — it howls every turn while MP lasts. Intended?
+- intended: pattern: War Howl repeats every turn its condition holds: its 3-round cooldown never applies (no other row within 2 priority of 8) — War Howl firing every turn its condition holds (the cooldown never applies) is part of the design from when the monster was created. (user 2026-10-21)
 
 ### Dragon Guard — draft · 2026-10-21
 - open: Suppressing Sweep is still a placeholder — what is its real design?
@@ -79,14 +79,13 @@
 - blind spot: MAX_REACTION_DEPTH 2 in Mindscape: slime-chain → second-hop combos are cut.
 
 ### Gigas — draft · 2026-10-21
+- **DRIFT** Oaf reaction_config_table[oaf_fear].condition_formula is "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1 && IS_MY_TURN == 1", design wants does not contain "IS_MY_TURN" — Any Bolt damage must frighten it (user 2026-10-21) — an IS_MY_TURN gate makes it Rod-only.
 - intended: 3 VU (rule: exactly 1 for elite) — The world sheet is authoritative: VU bolt/fire/poison + RS physical/air/earth is intended (the 2026-08-14 'VU bolt only' note was superseded on the sheet). (user 2026-10-21)
-- intended: Heavy Swing avg 128 can drop an average PC (mean HP 118) — The big hit is the threat that pushes the party to the Lightning Rod. Bolt on Gigas's turn → Frightened → Heavy Swing is blocked for that turn. Judge it WITH the Rod in play. (user 2026-10-21)
+- intended: Heavy Swing avg 128 can drop an average PC (mean HP 118) — The big hit is the threat that pushes the party to land Bolt (a PC skill or a dungeon hazard). Bolt → Frightened until the end of its next turn → Heavy Swing is blocked. Judge it WITH bolt in play. (user 2026-10-21)
 - blind spot: Oaf → Frightened IS simulated in data mode (lib/monster-data.js, since 2026-10-20). Verdicts from before then (registry mode) read Gigas as always swinging — do not reuse them.
 - blind spot: BD turn order ignores the Delay AE — 'acts last' is not engine-enforced (lowest DEX+INS makes autopilot pick it last).
-- blind spot: In the Lightning Crystal half of the Valley (38% of tiles) there is no Rod, so Gigas has no counterplay there.
-- open: Oaf intent is 'all bolt damage counts' (user 2026-10-21), but the sheet gate still has IS_MY_TURN == 1, so only bolt landing on Gigas's own turn (the Rod's turn-start strike) frightens it — a PC's bolt or a Crystal blast on another turn does not. Keep the gate (world wins) or drop IS_MY_TURN?
+- open: Rod strike lands at the START of Gigas's own turn: with 1 charge, Frightened ends when that same turn ends. Is 'its next turn' that current turn (keep 1 charge), or the following one (needs 2 charges when hit on its own turn)?
 - open: Arcane EF 200 is a flat DPR doubling, not a skill expression — keep, or drop to 150?
-- open: Gigas + 2 slimes read as a wall in the Crystal half (win ~28%) vs storm ~89%. Accept as variance, or soften the cave/Crystal case?
 
 ### Imp — draft · 2026-10-21
 - blind spot: The interactive contest leg dispatches to players' clients — never exercised solo-GM.
@@ -97,9 +96,9 @@
 ### Iron Colossus — draft · 2026-10-21
 - intended (unconfirmed): best basic attack avg 42 < 45 — Tank archetype: cheap damage, paid in denial — the escort does the killing (Gigas precedent). (claude 2026-08-29)
 - intended (unconfirmed): resisted hit = 18% of PC HP (< 25%) — Same tank trade: its hits are meant to be soft. (claude 2026-08-29)
+- intended: pattern: Grinding Quake repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9) — Grinding Quake firing every turn its condition holds (the cooldown never applies) is part of the design from when the monster was created. (user 2026-10-21)
 - blind spot: The party has no heavy weapon today, so the heavy-EF answer is not available in sims — rows stall.
 - open: Awaiting your choice from 2026-10-20: (b) 1 escort or (c) 320 HP — both ~6 rounds; or keep the sheet as is?
-- open: Grinding Quake's 2-round cooldown never applies (no other row within 2 priority of 9). Intended?
 
 ### Kirin — draft · 2026-10-21
 - blind spot: Mindscape used to start everyone at full MP; Kirin is authored at 0 (fixed 2026-10-20) — older verdicts overstate it.
@@ -121,9 +120,8 @@
 - open: Best basic attack (Phantom Shift: Thunder Strike, avg 38) is under the 45 floor and its resisted hit is ~16% of PC HP — intended for an elite, or too soft?
 
 ### Obsidrax — draft · 2026-10-21
+- intended: pattern: Miasma Nova repeats every turn its condition holds: its 3-round cooldown never applies (no other row within 2 priority of 11) — Miasma Nova firing every turn its condition holds (the cooldown never applies) is part of the design from when the monster was created. (user 2026-10-21)
 - blind spot: Lodestone Core is modelled in the storm only.
-- open: What is Obsidrax's role — the anti-synergy HP wall, a Rod controller, or something else? Nothing records the intent behind the current build.
-- open: Miasma Nova's 3-round cooldown never applies (no other row within 2 priority of 11) — it casts every turn while MP lasts. Intended?
 - open: Basalt Crush avg 44 sits just under the 45 basic-attack floor — leave?
 
 ### Rakshasa — draft · 2026-10-21
@@ -132,10 +130,11 @@
 - blind spot: Mindscape cannot simulate the Strike/Magic accuracy-class axis (classAffinity is never populated).
 - blind spot: Solo boss: at real HP the modelled party rarely reaches Crisis, so the Dual/Verdict half goes unmeasured unless HP is forced.
 - blind spot: Never live-tested; runReactionLint not run on it.
+- blind spot: Adaptive Defense only LOWERS efficiency (25/40/60/80%, back to 100% once 4 other families have hit) — it never raises a lane above 100%. With VU light the best possible hit is ×2, never ×4.
 - open: Is the stance readable enough at the table (token status icon / chat line) for the telegraph to work as counterplay?
 - open: With 4 activations, does a PC always get a turn between the Dual Shift and the Verdict (BD alternates sides), or can Shift→Verdict land back-to-back?
 - open: Crippled uses AE MULTIPLY on the derived defense prop — unverified that CSB honours it (else the text must stop promising a halving).
-- open: The build note mentions a Crisis-phase 'Ten Thousand Arms' (freezes the weapon read) — it is not on the sheet. Dropped on purpose?
+- open: HP 1200 reads as a stalemate in the current sim (0% win inside 10 rounds, 100% overtime, party's lowest HP ~62%) — but the sim party plays below human level and 58% of its actions are unmodelled. Live-test before touching HP.
 
 ### Roo — draft · 2026-10-21
 - intended (unconfirmed): no damage action the sim can read — Its damage is Chef's Knife (an auto-hit Active, 9999 ignore_immunity) after a three-step Approach — not a rolled attack the audit can read. (claude 2026-09-03)
@@ -150,9 +149,9 @@
 - open: Was the riposte mis-targeting (free action inheriting the parent's target list) ever fixed? Balance should not be re-tuned until it is.
 
 ### Succubus — draft · 2026-10-21
+- intended: pattern: Charm repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9) — Charm firing every turn its condition holds (the cooldown never applies) is part of the design from when the monster was created. (user 2026-10-21)
 - blind spot: The Charm save leg dispatches to players' clients — never exercised solo-GM.
 - blind spot: Mindscape does not simulate Deadly Temptation (Board card marks it).
-- open: Charm's 2-round cooldown never applies (no other row within 2 priority of 9) — it charms every turn while MP lasts. Intended?
 - open: Rake's description still says 'light' after the 18→34 raise — retext?
 
 ## Attacks per monster

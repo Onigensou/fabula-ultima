@@ -21,6 +21,7 @@
 |---|---|---|---|---|
 | 2026-08-29 | Built (placeholder); Charm + Deadly Temptation rider | debuffer | user (spec) | rider resolution live-verified |
 | 2026-10-20 | Draining Kiss 32→48, Rake 18→34 | too-weak pass | user | Rake text still says "light" |
+| 2026-10-21 | Charm repeating every turn its condition holds: accepted | "already in the design when the monster is created" | user | audit pattern lint → intended |
 
 ```json dossier
 {
@@ -29,21 +30,48 @@
   "status": "draft",
   "updated": "2026-10-21",
   "role": "Fafnir Castle debuffer (5 Encounter rows)",
-  "exceptions": [],
+  "exceptions": [
+    {
+      "rule": "pattern",
+      "why": "Charm firing every turn its condition holds (the cooldown never applies) is part of the design from when the monster was created.",
+      "decided_by": "user",
+      "date": "2026-10-21"
+    }
+  ],
   "invariants": [
-    { "id": "charm-rides-universal", "item": "Charm", "table": "effect_table", "row": "sc_hold", "field": "ae_template_ref", "equals": "Charmed",
-      "why": "The universal Charmed AE, so player IM/RS and cures still apply." },
-    { "id": "charm-temptation-rider", "item": "Charm", "table": "effect_table", "row": "sc_tempt", "field": "ae_template_ref", "equals": "Deadly Temptation",
-      "why": "The 'attack your ally' half." },
-    { "id": "kiss-heals-half", "item": "Draining Kiss", "table": "effect_table", "row": "sk_drain", "field": "grant_amount", "equals": "ceil(HP_DEALT * 0.5)",
-      "why": "Heals half the HP damage (0 on MP damage)." }
+    {
+      "id": "charm-rides-universal",
+      "item": "Charm",
+      "table": "effect_table",
+      "row": "sc_hold",
+      "field": "ae_template_ref",
+      "equals": "Charmed",
+      "why": "The universal Charmed AE, so player IM/RS and cures still apply."
+    },
+    {
+      "id": "charm-temptation-rider",
+      "item": "Charm",
+      "table": "effect_table",
+      "row": "sc_tempt",
+      "field": "ae_template_ref",
+      "equals": "Deadly Temptation",
+      "why": "The 'attack your ally' half."
+    },
+    {
+      "id": "kiss-heals-half",
+      "item": "Draining Kiss",
+      "table": "effect_table",
+      "row": "sk_drain",
+      "field": "grant_amount",
+      "equals": "ceil(HP_DEALT * 0.5)",
+      "why": "Heals half the HP damage (0 on MP damage)."
+    }
   ],
   "blind_spots": [
     "The Charm save leg dispatches to players' clients — never exercised solo-GM.",
     "Mindscape does not simulate Deadly Temptation (Board card marks it)."
   ],
   "open_questions": [
-    "Charm's 2-round cooldown never applies (no other row within 2 priority of 9) — it charms every turn while MP lasts. Intended?",
     "Rake's description still says 'light' after the 18→34 raise — retext?"
   ]
 }

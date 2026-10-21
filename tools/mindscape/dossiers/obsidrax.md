@@ -19,26 +19,49 @@
 - Miasma Nova (save or Poisoned), Venomstone Spines (multi, Envenomed), Tectonic Collapse
   (Earth to all), Basalt Crush (35% Petrify).
 
+## Decision log
+
+| Date | Change | Why | Decided by | Result |
+|---|---|---|---|---|
+| 2026-10-21 | Miasma Nova repeating every turn its condition holds: accepted | "already in the design when the monster is created" | user | audit pattern lint → intended |
+| 2026-10-21 | Design intent: none yet — the current kit is not a recorded design | user answer | user | — |
+
 ```json dossier
 {
   "monster": "Obsidrax",
   "actorId": "x8TBsDZaRgoSo5no",
   "status": "draft",
   "updated": "2026-10-21",
-  "role": "Valley random encounter (4 Encounter rows) — design role unrecorded",
-  "exceptions": [],
+  "role": "Valley random encounter (4 Encounter rows) — no design intent yet (user, 2026-10-21)",
+  "exceptions": [
+    {
+      "rule": "pattern",
+      "why": "Miasma Nova firing every turn its condition holds (the cooldown never applies) is part of the design from when the monster was created.",
+      "decided_by": "user",
+      "date": "2026-10-21"
+    }
+  ],
   "invariants": [
-    { "id": "bolt-immune", "affinity": "bolt", "equals": "IM",
-      "why": "Read from the sheet: the Rod cannot hurt it, which is what Lodestone Core turns into Earth damage." },
-    { "id": "lodestone-needs-rod", "item": "Lodestone Core", "table": "reaction_config_table", "row": "lc_chain", "field": "condition_formula", "equals": "AE_COUNT_LIGHTNING_ROD > 0",
-      "why": "Read from the sheet: only while it holds the Rod." }
+    {
+      "id": "bolt-immune",
+      "affinity": "bolt",
+      "equals": "IM",
+      "why": "Read from the sheet: the Rod cannot hurt it, which is what Lodestone Core turns into Earth damage."
+    },
+    {
+      "id": "lodestone-needs-rod",
+      "item": "Lodestone Core",
+      "table": "reaction_config_table",
+      "row": "lc_chain",
+      "field": "condition_formula",
+      "equals": "AE_COUNT_LIGHTNING_ROD > 0",
+      "why": "Read from the sheet: only while it holds the Rod."
+    }
   ],
   "blind_spots": [
     "Lodestone Core is modelled in the storm only."
   ],
   "open_questions": [
-    "What is Obsidrax's role — the anti-synergy HP wall, a Rod controller, or something else? Nothing records the intent behind the current build.",
-    "Miasma Nova's 3-round cooldown never applies (no other row within 2 priority of 11) — it casts every turn while MP lasts. Intended?",
     "Basalt Crush avg 44 sits just under the 45 basic-attack floor — leave?"
   ]
 }
