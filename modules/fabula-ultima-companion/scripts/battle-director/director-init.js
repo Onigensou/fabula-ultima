@@ -1437,16 +1437,19 @@ async function runDirectorInitInner(payload) {
   }
 
   // ── 10.5. Player resource HUD — slides in immediately after entrance
-  // animations complete (or after lean token reveal). Fire-and-forget so the
-  // 420ms ease runs in parallel with battle-stance loops and the BATTLE START
-  // banner. Scene flags are written inside buildDirectorHud for reload survival.
+  // animations complete (or after lean token reveal). Started here, AWAITED
+  // just before init returns and the FSM starts: the 420ms ease still runs in parallel with
+  // battle-stance loops and the BATTLE START banner, but no turn or Start of
+  // Conflict reaction reaches a player before their plate exists (it is where
+  // their menus and reaction cards open). Scene flags are written inside
+  // buildDirectorHud for reload survival.
   // Entries are filtered to the DB-resolved party roster (member_id_1..4) — the
   // definition of "party member" for the HUD — so party-side non-PCs (guest
   // NPCs, summons, scene allies) never get a resource card. Mirrors the in-place
   // reinforce + undying resume paths, which already apply this filter. Empty set
   // (DB failure) means "no filter" so the HUD never silently blanks.
   const hudPartyIds = await dbPartyActorIds();
-  buildDirectorHud(
+  const hudBuilt = buildDirectorHud(
     partyTokens
       .filter(t => isHudPartyMember(t.actor, hudPartyIds))
       .map(t => ({ actor: t.actor, token: t }))
@@ -1505,6 +1508,10 @@ async function runDirectorInitInner(payload) {
   // ample time to cache before playback. See director-vfx.js for rationale.
   preloadDirectorCutins({ tokens: [...partyTokens, ...enemyTokens] })
     .catch((e) => warn("PREP: preloadDirectorCutins threw", e));
+
+  // Every connected client has its plate before the FSM opens the battle (see
+  // 10.5). buildDirectorHud caps its own wait, so this never hangs.
+  await hudBuilt;
 
   return {
     dCombat,

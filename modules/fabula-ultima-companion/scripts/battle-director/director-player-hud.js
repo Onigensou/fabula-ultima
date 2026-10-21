@@ -45,9 +45,12 @@ import { tabAlert, tabAlertClear } from "./tab-alert.js";
 
 const MODULE_ID  = "fabula-ultima-companion";
 const ACTION_BUILD   = "FU_DIRECTOR_HUD_BUILD";
+const HUD_BUILD_ACK_MS = 4000;   // longest the battle waits for every client to confirm its HUD
 const ACTION_DESTROY = "FU_DIRECTOR_HUD_DESTROY";
 const ACTION_TURN     = "FU_DIRECTOR_HUD_TURN";       // GM → everyone: who is choosing / acting
 const ACTION_TURN_GET = "FU_DIRECTOR_HUD_TURN_GET";   // a (re)built client → GM: the latest one
+const ACTION_PHASE     = "FU_DIRECTOR_HUD_PHASE";      // GM → everyone: is the battle settled (waiting) or moving
+const ACTION_PHASE_GET = "FU_DIRECTOR_HUD_PHASE_GET";  // a (re)built client → GM: the latest one
 const ACTION_WAIT     = "FU_DIRECTOR_HUD_WAIT";       // GM → others: a player is answering a pick
 const FLAG_KEY    = "directorHudKey";
 const FLAG_ACTORS = "directorHudActorIds";
@@ -594,6 +597,7 @@ function injectStyles() {
    Bottom-anchored, so a Clock appearing mid-battle or the drawer opening
    grows it UPWARD and nothing else moves. Right edge clears the sidebar.
    Built from the approved mockup (claude.ai/artifact/SdvijvE7bGB3TP8HzH8Rhq). */
+.dhud-plate-root.is-hover-held, .dhud-plate-root.is-hover-held * { pointer-events: none !important; }
 .dhud-plate-root {
   right: calc(var(--fu-sidebar-anchor-right, 0px) + 16px); bottom: ${HUD_BASELINE_PX}px;
   z-index: 70;
@@ -1321,6 +1325,7 @@ function onTakeKey(e) {
 
 // Battle over: the next battle starts with no stale "Hina is acting".
 function resetTurnState() {
+  applyPhase(true);
   _turnStatus = null; _statusActingId = null; _takeTurn = null; _costPreview = null;
   _waits.clear(); _answered = null;
 }
@@ -1346,6 +1351,32 @@ export function publishTurnStatus(status) {
   catch (e) { warn("[DirectorHud] turn status broadcast failed", e); }
 }
 
+// ── Settled vs moving ───────────────────────────────────────────────────────
+// The battle is SETTLED while it waits on someone — a turn pick, an action
+// menu, a target pick, an action card, a reaction window — and MOVING while it
+// runs: rolling, animating, resolving, changing turns or rounds. Things that
+// sit on top of the battle (Battle Inspect) may open while it is settled and
+// get out of the way when it moves. The host derives it from the FSM state and
+// sends it only when it flips; every client reads battleIsSettled() and hears
+// `fu-battle-phase`. Outside a battle it reads settled.
+const SETTLED_STATES = new Set(["TURN_START", "DECLARE", "TARGET", "CONFIRM", "STANDALONE_REACTION_WINDOW"]);
+let _settled = true;
+function applyPhase(settled) {
+  const v = settled !== false;
+  if (v === _settled) return;
+  _settled = v;
+  try { Hooks.callAll("fu-battle-phase", { settled: v }); } catch (_e) {}
+}
+export function battleIsSettled() { return _settled; }
+Hooks.on("fu-director-state", ({ state } = {}) => {
+  if (!game.user?.isGM) return;
+  const v = state === "IDLE" || state === "STOPPED" ? true : SETTLED_STATES.has(state);
+  if (v === _settled) return;
+  applyPhase(v);
+  try { ensureSocket()?.executeForOthers(ACTION_PHASE, { settled: v }); }
+  catch (e) { warn("[DirectorHud] phase broadcast failed", e); }
+});
+
 async function fetchTurnStatus() {
   if (game.user?.isGM) return;
   const socket = ensureSocket();
@@ -1354,6 +1385,10 @@ async function fetchTurnStatus() {
     const status = await socket.executeAsGM(ACTION_TURN_GET);
     if (status !== undefined) applyTurnStatus(status);
   } catch (e) { warn("[DirectorHud] turn status fetch failed", e); }
+  try {
+    const settled = await socket.executeAsGM(ACTION_PHASE_GET);
+    if (typeof settled === "boolean") applyPhase(settled);
+  } catch (e) { warn("[DirectorHud] phase fetch failed", e); }
 }
 
 // Whose plate this client shows: the user's assigned character if it is in the
@@ -1429,6 +1464,7 @@ function buildLocally(key, entries) {
     plateRoot.className = "dhud-plate-root";
     plateRoot.id = `dhud-plate-${key}`;
     document.body.appendChild(plateRoot);
+    watchPlateState(plateRoot);
   }
 
   const offFns = [];
@@ -1786,7 +1822,7 @@ function plateHostFor(plate) {
       const prev = plate._crumb && !/›/.test(plate._crumb) ? plate._crumb : (plate._crumb ?? "").split("›")[0].trim();
       plate.budget.innerHTML = prev ? `<span><span class="dhv-dimc">${esc(prev)} ›</span> ${esc(step)}</span>` : esc(step);
     },
-    setCard(entry) { setPlateCard(host, entry); },
+    setCard(entry, opts) { setPlateCard(host, entry, opts); },
     setHint(kind) {
       plate.el.classList.toggle("hint-mp", kind === "mp");
       plate.el.classList.toggle("hint-ip", kind === "ip");
@@ -1796,6 +1832,80 @@ function plateHostFor(plate) {
   return host;
 }
 /** The drawer of this actor's plate on this client (a reaction menu), or null. */
+// ── Hover waits for the pointer ─────────────────────────────────────────────
+// When the plate changes ON ITS OWN — the drawer opens or folds, the reaction
+// hand deals or drops a card — things slide under a pointer that has not moved,
+// and their hover effects fire (a card lifts, the description flips, a menu
+// row takes the cursor) as if the player had pointed at them. So after such a
+// change the whole plate ignores the pointer until the mouse actually moves a
+// few pixels; keys keep working throughout. Player clients only (the plate).
+const HOVER_RELEASE_PX = 4;
+let _pointerAt = null, _hoverHold = null, _pointerTracked = false;
+function trackPointer() {
+  if (_pointerTracked) return;
+  _pointerTracked = true;
+  window.addEventListener("pointermove", (e) => {
+    _pointerAt = { x: e.clientX, y: e.clientY };
+    if (_hoverHold && Math.hypot(e.clientX - _hoverHold.x, e.clientY - _hoverHold.y) >= HOVER_RELEASE_PX) releasePlateHover();
+  }, { passive: true, capture: true });
+}
+function releasePlateHover() {
+  _hoverHold = null;
+  for (const el of document.querySelectorAll(".dhud-plate-root.is-hover-held")) el.classList.remove("is-hover-held");
+}
+/** Hold the plate's hover until the pointer next moves (see above). */
+export function holdPlateHover() {
+  if (game.user?.isGM) return;
+  trackPointer();
+  if (!_pointerAt) return;   // the pointer has not been over the page yet: nothing to fight
+  const root = document.querySelector(".dhud-plate-root");
+  if (!root) return;
+  _hoverHold = { ..._pointerAt };
+  root.classList.add("is-hover-held");
+}
+// The drawer opening / folding is a class change on the plate's unit.
+function watchPlateState(root) {
+  if (game.user?.isGM || !root) return;
+  trackPointer();
+  new MutationObserver((records) => {
+    for (const r of records) {
+      const el = r.target;
+      if (!el?.classList?.contains("dhud-unit")) continue;
+      const was = /(^|\s)is-open(\s|$)/.test(r.oldValue ?? "");
+      if (was !== el.classList.contains("is-open")) { holdPlateHover(); return; }
+    }
+  }).observe(root, { subtree: true, attributes: true, attributeFilter: ["class"], attributeOldValue: true });
+}
+
+/**
+ * Resolves once this client's plate has finished changing — the drawer closed
+ * and its close transition (and any portrait flip) run out. A new action card
+ * waits on this before it shows, so choosing an action reads as: the menu folds
+ * away, THEN the card arrives — not both at once. A drawer still open (a picker
+ * tearing down after the pick) gets a moment to close first. Capped, so a
+ * drawer that legitimately stays open can never hold a card back for long.
+ */
+export async function plateSettled({ maxWaitMs = 900 } = {}) {
+  const t0 = performance.now();
+  const unit = () => document.querySelector(".dhud-plate-root .dhud-unit");
+  const left = () => Math.max(0, maxWaitMs - (performance.now() - t0));
+  while (unit()?.classList.contains("is-open") && left() > 0) await new Promise((r) => setTimeout(r, 30));
+  const u = unit();
+  if (!u) return;
+  const finite = (a) => {
+    try { return Number.isFinite(a.effect?.getComputedTiming?.().endTime); } catch { return false; }
+  };
+  const running = [u.querySelector(".dhud-drawer"), u.querySelector(".dhud-pcard")]
+    .filter(Boolean)
+    .flatMap((el) => { try { return el.getAnimations(); } catch { return []; } })
+    .filter((a) => a.playState === "running" && finite(a));
+  if (!running.length) return;
+  await Promise.race([
+    Promise.allSettled(running.map((a) => a.finished)),
+    new Promise((r) => setTimeout(r, left())),
+  ]);
+}
+
 export function plateReactionHost(actorId) {
   const plate = actorId ? plateFor(actorId) : null;
   return plate ? plateHostFor(plate) : null;
@@ -1867,6 +1977,8 @@ function ensureSocket() {
     catch (e) { warn("[DirectorHud] socket TURN error:", e); }
   });
   socket.register(ACTION_TURN_GET, () => _turnStatus);
+  socket.register(ACTION_PHASE, ({ settled } = {}) => applyPhase(settled));
+  socket.register(ACTION_PHASE_GET, () => _settled);
   socket.register(ACTION_WAIT, ({ key, info } = {}) => {
     try {
       // The player being waited on gets the pick itself, not a note about it.
@@ -2018,7 +2130,21 @@ export async function buildDirectorHud(entries, scene) {
     // GM builds with full token refs (correct token names).
     // Other clients receive actorIds and resolve via game.actors.
     buildLocally(key, valid);
-    socket.executeForOthers(ACTION_BUILD, { key, actorIds });
+    // Resolves once every connected client has BUILT its HUD (the handler is
+    // synchronous), so a caller that awaits this can open the battle knowing
+    // each player's plate exists. Fire-and-forget left Start of Conflict racing
+    // the build: in a lean battle the window reached the player first, found no
+    // plate, and fell back to the token blades. Capped so a client that never
+    // answers (stuck tab, dropped socket) can't hold the battle.
+    const others = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+    const acks = others.map((u) => socket.executeAsUser(ACTION_BUILD, u.id, { key, actorIds })
+      .catch((e) => warn(`[DirectorHud] BUILD on ${u.name} failed`, e)));
+    const t0 = Date.now();
+    const timedOut = await Promise.race([
+      Promise.allSettled(acks).then(() => false),
+      new Promise((r) => setTimeout(() => r(true), HUD_BUILD_ACK_MS)),
+    ]);
+    log(`[DirectorHud] build ${timedOut ? `NOT confirmed by every client within ${HUD_BUILD_ACK_MS} ms` : `confirmed by ${others.length} client(s) in ${Date.now() - t0} ms`}`);
   } else {
     buildLocally(key, valid);
   }

@@ -20,7 +20,7 @@ export const OPTION_GROUPS = [
         key: "reactionUi",
         label: "Reaction UI",
         hint: "How your reactions show up during battle.",
-        default: "button",
+        default: "card",
         choices: [
           { value: "card", label: "Card", hint: "Each reaction you can use is a card in your hand, behind your plate. Use plays it; one Pass answers the rest." },
           { value: "button", label: "Button", hint: "Each reaction is a row on the action card, with its own Apply and Skip." },

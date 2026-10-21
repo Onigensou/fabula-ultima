@@ -29,7 +29,8 @@ import { log, warn } from "./logger.js";
 import { INTENTS } from "./intents.js";
 import { gatherEquipmentSlots } from "./equipment-swap.js";
 import { describeCandidateForTooltip } from "./item-resource.js";
-import { resourceLabel } from "./resources.js";
+import { resourceLabel, RESOURCE_REGISTRY } from "./resources.js";
+import { plateSettled } from "./director-player-hud.js";
 import { computeEffectiveCost, formatCostMap } from "./skill-cost.js";
 import { displayElement } from "./skill-formulas.js";
 import { lookupTerm } from "./keyword-registry.js";
@@ -3750,12 +3751,23 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
   //
   // Idempotent in both directions: the delta carries the CURRENT dropped set, so
   // restoring the removed creature clears the mark on the next recompute.
-  if (Array.isArray(delta.gmDroppedReactions)) {
-    const mootKeys = new Set(delta.gmDroppedReactions
-      .map((c) => `${c?.rowKey ?? ""}:${c?.carrierUuid ?? ""}`));
+  //
+  // Same mark for a reaction the re-gate says no longer applies (staleReactions,
+  // computeStaleReactions): it is UNDECIDED, so on top of the chip its pending
+  // flag is parked (it can't be applied, and it must not hold the Confirm lock)
+  // and put back if the mark lifts. The lock is recounted from the pills after.
+  if (Array.isArray(delta.gmDroppedReactions) || Array.isArray(delta.staleReactions)) {
+    const mootReason = new Map();
+    for (const c of delta.gmDroppedReactions ?? []) mootReason.set(`${c?.rowKey ?? ""}:${c?.carrierUuid ?? ""}`, "Target removed");
+    for (const c of delta.staleReactions ?? []) {
+      const k = `${c?.rowKey ?? ""}:${c?.carrierUuid ?? ""}`;
+      if (!mootReason.has(k)) mootReason.set(k, String(c?.reason || "No longer applies"));
+    }
+    let lockTouched = false;
     for (const pill of rootEl.querySelectorAll(".fud-bf-reaction-pill")) {
       const key = `${pill.dataset.fudReactionKey ?? ""}:${pill.dataset.fudReactionCarrier ?? ""}`;
-      const moot = mootKeys.has(key);
+      const moot = mootReason.has(key);
+      const reasonText = mootReason.get(key) ?? "";
       const wasMoot = pill.dataset.fudReactionMoot === "1";
       const chipPresent = !!pill.querySelector('[data-fud-reaction-moot-chip="1"]');
       // "Already right" is not the same as "the flag matches". Another path can
@@ -3765,11 +3777,19 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
       // live Apply/Skip for a reaction the prune still drops. Re-mark when the
       // chip is missing, and refresh the stash to what that repaint left: the
       // old stash describes a state two verdicts back.
-      const needsRemark = moot && !chipPresent;
+      const reasonChanged = moot && wasMoot && chipPresent
+        && pill.querySelector('[data-fud-reaction-moot-chip="1"]')?.textContent !== reasonText;
+      const needsRemark = moot && (!chipPresent || reasonChanged);
       if (moot === wasMoot && !needsRemark) continue;
       if (moot) {
         pill.dataset.fudReactionMoot = "1";
         pill.classList.add("is-moot");
+        // An undecided pill stops being actionable while marked; remember it.
+        if (pill.dataset.fudReactionPending === "1") {
+          pill.dataset.fudReactionMootPending = "1";
+          pill.dataset.fudReactionPending = "0";
+          lockTouched = true;
+        }
         const st = pill.querySelector(".fud-bf-reaction-status, .fud-bf-reaction-actions");
         if (st) {
           // Remember what it said, so lifting the removal restores the player's
@@ -3782,11 +3802,16 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
           // this slot — a cascade injection, a re-post, restoreReactionPillToActionable
           // — and blindly writing the stash back would resurrect the buttons
           // that repaint had just replaced, wired to nothing.
-          st.outerHTML = `<span class="fud-bf-reaction-status" data-fud-reaction-moot-chip="1">Target removed</span>`;
+          st.outerHTML = `<span class="fud-bf-reaction-status" data-fud-reaction-moot-chip="1">${escapeHtml(reasonText)}</span>`;
         }
       } else {
         delete pill.dataset.fudReactionMoot;
         pill.classList.remove("is-moot");
+        if (pill.dataset.fudReactionMootPending === "1") {
+          pill.dataset.fudReactionPending = "1";
+          lockTouched = true;
+        }
+        delete pill.dataset.fudReactionMootPending;
         const st = pill.querySelector(".fud-bf-reaction-status, .fud-bf-reaction-actions");
         const mine = st?.dataset?.fudReactionMootChip === "1";
         if (st && mine && pill.dataset.fudReactionMootPrev != null) {
@@ -3796,6 +3821,15 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
         // and keeping it would let a LATER un-mark write a verdict from two
         // states ago over whatever is current.
         delete pill.dataset.fudReactionMootPrev;
+      }
+    }
+    // The Confirm lock is "any gating pill undecided" — recount, don't ±1.
+    if (lockTouched) {
+      const cardEl = rootEl.querySelector(".fud-bf-card");
+      const n = rootEl.querySelectorAll('.fud-bf-reaction-pill[data-fud-reaction-pending="1"][data-fud-reaction-gating="1"]').length;
+      if (cardEl) {
+        if (n > 0) cardEl.dataset.fudReactionsPending = String(n);
+        else delete cardEl.dataset.fudReactionsPending;
       }
     }
   }
@@ -7991,6 +8025,126 @@ export async function postActionCard({ director, kind, payload }) {
       }
     }
 
+    // ── Re-gate pending reactions after a decision changed the action ──────
+    // Reactions are offered once, at CONFIRM, against the action as it was. An
+    // Applied reaction can then remove what another one needs (Warning Shot
+    // zeroes the damage, so Gadgets' "when your attack deals damage" infusion has
+    // nothing to ride; Protect moves the attack off a creature whose own "when
+    // targeted" reaction is still offered; a first reaction spends the MP a
+    // second one needs). Left actionable, such a pill applies into nothing —
+    // or bills for nothing.
+    //
+    // Returns [{ rowKey, carrierUuid, reason }] for every UNDECIDED ask pill that
+    // no longer applies. Checks, in order (first reason wins):
+    //   1. Trigger premise — the trigger's own promise, tested on the
+    //      post-mutation card. Only premises a DECISION can break, and only
+    //      from state the table already sees: damage is judged on the
+    //      decision-made nullify (effectPreview.damageNullified), never on the
+    //      per-target damage numbers, which can be 0 for reasons the attacker
+    //      is not shown (a hidden immunity, a masked miss) — re-gating on those
+    //      would leak the studied-gate verdict through the pill.
+    //   2. Nothing left to add — an add_target reaction with no spare creature.
+    //   3. Shared budget — this reactor's Applied reactions plus this one cost
+    //      more than it has (each was affordable alone at offer time).
+    //   4. Its own gates — the reactor re-scanned with the post-mutation target
+    //      lists; a candidate that now comes back unavailable is stale. A
+    //      candidate the re-scan does NOT return is left alone (absence is not a
+    //      failed condition — see feedback_candidate_absence_is_not_condition_failure).
+    async function computeStaleReactions({ sk, mutTargets, recomputed, effectPreview, negated = false }) {
+      if (negated) return [];
+      const keyOf = (p) => `${p.rowKey}:${p.carrierUuid}`;
+      const pending = (cardReactions ?? []).filter((p) =>
+        p && p.mode === "ask" && p.available !== false && !reactionDecisionMap.has(keyOf(p)));
+      if (!pending.length) return [];
+      const targets = Array.isArray(mutTargets) && mutTargets.length ? mutTargets : (payload?.targets ?? []);
+      const targetTok = new Set(targets.map((t) => t?.tokenUuid).filter(Boolean));
+      const targetAct = new Set(targets.map((t) => t?.actorUuid).filter(Boolean));
+      const rows = Array.isArray(recomputed) ? recomputed : [];
+      const hitTok = rows.filter((r) => r?.hit).map((r) => r?.tokenUuid).filter(Boolean);
+      const attackerUuid = payload?.attackerActor?.uuid ?? payload?.attackerActorUuid ?? null;
+      const reactorUuidOf = (p) => p.reactorActorUuid ?? attackerUuid;
+
+      // What each reactor has already committed to spend on this card.
+      const docs = new Map();
+      const doc = async (u) => {
+        if (!u) return null;
+        if (!docs.has(u)) docs.set(u, await fromUuid(u).catch(() => null));
+        return docs.get(u);
+      };
+      const debitOf = async (p) => {
+        const item = await doc(p.carrierUuid), actor = await doc(reactorUuidOf(p));
+        if (!item || !actor || !p.ref || typeof sk?.analyzeChainCost !== "function") return {};
+        const c = sk.analyzeChainCost(item.system?.props?.effect_table ?? {}, p.ref, actor, item, p.payloadAtFire ?? {});
+        return c?.ok ? (c.debit ?? {}) : {};
+      };
+      const committed = new Map();
+      for (const p of cardReactions ?? []) {
+        if (reactionDecisionMap.get(keyOf(p)) !== "apply") continue;
+        const r = reactorUuidOf(p);
+        const sum = committed.get(r) ?? {};
+        for (const [res, n] of Object.entries(await debitOf(p))) sum[res] = (sum[res] ?? 0) + (Number(n) || 0);
+        committed.set(r, sum);
+      }
+
+      const rescans = new Map();   // `${reactor}|${trigger}` → candidates
+      const out = [];
+      for (const p of pending) {
+        const trig = String(p.phaseTrigger ?? "");
+        let reason = null;
+
+        // 1. trigger premise
+        if (trig === "creature_will_deal_damage" && effectPreview?.damageNullified) reason = "The attack no longer deals damage";
+        if (!reason && trig === "creature_targeted_by_action") {
+          const subTok = p.payloadAtFire?.subjectTokenUuid ?? null;
+          const subAct = p.payloadAtFire?.subjectActorUuid ?? null;
+          if ((subTok && !targetTok.has(subTok)) || (!subTok && subAct && !targetAct.has(subAct))) reason = "No longer targeted";
+        }
+        // 2. nothing left to add
+        if (!reason && p._addTarget && kind === "Attack") {
+          const spare = (director?.ctx?.eligibleTargets ?? []).filter((e) => e?.tokenUuid && !targetTok.has(e.tokenUuid));
+          if (!spare.length) reason = "No other target";
+        }
+        // 3. shared budget
+        if (!reason) {
+          const spent = committed.get(reactorUuidOf(p));
+          if (spent && Object.keys(spent).length) {
+            const actor = await doc(reactorUuidOf(p));
+            for (const [res, n] of Object.entries(await debitOf(p))) {
+              const def = RESOURCE_REGISTRY[res];
+              if (!def || !(n > 0)) continue;
+              const have = Number(actor?.system?.props?.[def.prop] ?? 0) || 0;
+              if ((spent[res] ?? 0) + n > have) { reason = `Not enough ${def.label} left`; break; }
+            }
+          }
+        }
+        // 4. its own gates, re-read against the post-mutation target lists
+        if (!reason && typeof sk?.findPassiveCandidates === "function" && p.payloadAtFire) {
+          const rk = `${reactorUuidOf(p)}|${trig}`;
+          if (!rescans.has(rk)) {
+            const actor = await doc(reactorUuidOf(p));
+            const live = {
+              ...p.payloadAtFire,
+              ...("targets" in p.payloadAtFire ? { targets: [...targetTok] } : {}),
+              ...("targetTokenUuids" in p.payloadAtFire ? { targetTokenUuids: [...targetTok] } : {}),
+              ...("hitTargets" in p.payloadAtFire ? { hitTargets: hitTok } : {}),
+              ...("hitTargetTokenUuids" in p.payloadAtFire ? { hitTargetTokenUuids: hitTok } : {}),
+            };
+            let got = [];
+            try { got = actor ? (await sk.findPassiveCandidates({ casterActor: actor, trigger: trig, includeUnavailable: true, payload: live })) ?? [] : []; }
+            catch (e) { warn(`computeStaleReactions: re-scan threw for ${p.carrierName ?? p.carrierUuid}`, e); }
+            rescans.set(rk, got);
+          }
+          const again = rescans.get(rk).find((c) => String(c.rowKey) === String(p.rowKey) && String(c.carrierUuid) === String(p.carrierUuid));
+          if (again && again.available === false) {
+            reason = again.unavailableKind === "cost" ? (again.unavailableReason || "Can't pay for it now") : "No longer applies";
+          }
+        }
+        if (reason) out.push({ rowKey: p.rowKey, carrierUuid: p.carrierUuid, carrierName: p.carrierName ?? null, reason });
+      }
+      if (out.length) log(`computeStaleReactions: ${out.length} pending reaction(s) no longer apply — ${out.map((c) => `${c.carrierName}: ${c.reason}`).join("; ")}`);
+      return out;
+    }
+
     // ── Re-scan "when targeted" reactions for creatures newly targeted by a
     // mid-card mutation (redirect destination, add_target splash). Without this,
     // a creature dragged into the action's target set never gets to use its own
@@ -8910,6 +9064,22 @@ export async function postActionCard({ director, kind, payload }) {
           //    screen (and in the sim / regression run) instead of hiding on the
           //    thin-connection player's mirror where nobody would see it.
           delta.effectPreview = computeReactionEffectPreviewData();
+          // Re-gate (reaction-architecture Rule 2): an applied reaction changed
+          // this action, so every still-UNDECIDED reaction is checked against
+          // the post-mutation state and marked "no longer applies" with a reason.
+          // The CURRENT set every pass, so a change that restores a premise
+          // (a GM rolling the first reaction back) lifts the mark again.
+          try {
+            delta.staleReactions = await computeStaleReactions({
+              sk, mutTargets, recomputed, effectPreview: delta.effectPreview,
+              // A negated / blocked action auto-skips every pending pill below;
+              // marking them here as well would fight that sweep.
+              negated: !!(mutationResult.negated || mutationResult.accuracyOverride?.blocked),
+            });
+          } catch (e) {
+            warn("recomputeTargetPreviews: re-gate threw — pending reactions stay as offered", e);
+            delta.staleReactions = [];
+          }
           const wireDelta = toWireSafe(delta) ?? delta;
           applyCardTargetMutationDelta(root, wireDelta);
 
@@ -11429,9 +11599,15 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     // The GM-side broadcast captures outerHTML before its own RAF
     // adds is-visible (RAF fires after the synchronous broadcast),
     // so the class is essentially never in the incoming HTML.
+    //
+    // It shows once this player's plate has finished changing (plateSettled):
+    // after picking an action the drawer is still folding away when a fast host's
+    // card lands, and the two moving at once read as one jumbled transition.
     const importedRoot = wrapper.querySelector(`#${ROOT_ID}`);
     if (importedRoot && !importedRoot.classList.contains("is-visible")) {
-      requestAnimationFrame(() => importedRoot.classList.add("is-visible"));
+      plateSettled()
+        .catch(() => {})
+        .then(() => requestAnimationFrame(() => importedRoot.classList.add("is-visible")));
     }
     // A player's mirror is the same card on a possibly smaller screen, so it
     // needs the same fit — the HTML arrives with the GM's caps baked in, which

@@ -19,6 +19,8 @@
 //   hover a unit .................. peek card (also while choosing a target)
 //   hold Alt over a unit .......... open while held (the way to inspect DURING
 //                                   targeting, where a click picks the target)
+//   Alt + click a unit ............ open (also while targeting: a plain click
+//                                   there picks the target, never opens this)
 //   Esc / right-click / empty click close        Tab / Shift+Tab  next / previous unit
 //   Q / E ......................... previous / next tab
 //
@@ -31,8 +33,8 @@
 
 import { buildInspectModel, HP_RULE_SETTING } from "./inspect-model.js";
 import { ROOT_ID, WORLD_ID, CARD_W, FRAME_H, renderFrame, renderPeek, injectStyles, tabsOf } from "./inspect-render.js";
-import { hudScale } from "../director-player-hud.js";
-import { hasSurface } from "../director-surfaces.js";
+import { hudScale, battleIsSettled } from "../director-player-hud.js";
+import { hasSurface, getActiveSurfaces } from "../director-surfaces.js";
 import { tokenCastsSpriteShadow } from "../../sprite-shadow/sprite-shadow-config.js";
 import { shadowSpriteFor } from "../../sprite-shadow/sprite-shadow-renderer.js";
 
@@ -110,8 +112,12 @@ function sideOf(token) {
 }
 
 /** A target picker (or the JRPG targeting session) owns clicks right now. */
+// The DOCKED picker (your plate's drawer, `.dhv-tcols`) has no banner — without
+// it here, clicking a creature to pick it also opened this card over the pick.
 function targetingActive() {
-  return !!document.querySelector(".fud-target-banner") || !!globalThis.__ONI_JRPG_TARGETING_ACTIVE__;
+  return !!document.querySelector(".fud-target-banner")
+    || !!document.querySelector(".dhv-tcols")
+    || !!globalThis.__ONI_JRPG_TARGETING_ACTIVE__;
 }
 
 // ── layout: the screen band no HUD covers ───────────────────────────────────
@@ -528,14 +534,24 @@ function placeFrame() {
   S.els.place.style.transform = `translate(${left}px, ${top}px) scale(${b.k})`;
 }
 
-// Surfaces that own the screen: never open over them (the target picker only
-// via Alt, which is the point of Alt). A reaction menu that is ALREADY up does
-// not block — reading the field is how a player decides whether to react — and
-// it stays undimmed (inspect-render.js); a NEW one appearing still closes us.
-const BLOCKING = ["action-card", "action-card-mirror", "attribute-pair-picker", "passive-manager"];
+// When Inspect may open — the guideline: while the battle is SETTLED (waiting on
+// someone: a turn pick, an action menu, a target pick, an action card, a
+// reaction window), never while it is MOVING (rolling, animating, resolving,
+// changing turns). An action card that is up is a settled moment: reading the
+// field is how a player decides whether to react. Moving also includes this
+// client's own transient animations (damage numbers, cut-ins, impact FX).
+// Beyond that, only modal dialogs that own the keyboard block it, and a plain
+// click while picking a target (Alt opens it there).
+const BLOCKING = ["attribute-pair-picker", "passive-manager"];
+
+function battleSettledHere() {
+  try { if (!battleIsSettled()) return false; } catch {}
+  try { return !getActiveSurfaces({ category: "animation" }).length; } catch { return true; }
+}
 
 function blocked(viaAlt) {
   try {
+    if (!battleSettledHere()) return true;
     if (BLOCKING.some((k) => hasSurface(k))) return true;
     return !viaAlt && targetingActive();
   } catch { return false; }
@@ -696,9 +712,21 @@ function onPointerUp(ev) {
   S.down = null;
   const why = !d ? "no-down" : ev.button !== 0 ? "button" : !inBattle() ? "no-battle"
     : Math.hypot(ev.clientX - d.x, ev.clientY - d.y) > CLICK_SLOP_PX ? "moved"
-    : performance.now() - d.t > CLICK_MAX_MS ? "slow" : targetingActive() ? "targeting" : "";
+    : performance.now() - d.t > CLICK_MAX_MS ? "slow"
+    : targetingActive() && !ev.altKey ? "targeting" : "";
   if (globalThis.__fuInspectDebug) console.debug(TAG, "pointerup", why || "click", d?.token?.name ?? null);
   if (why) return;                             // targeting: the click picks a target
+  // Alt+Click while picking is the way to read a creature mid-pick: the picker
+  // lets Alt clicks through (target-picker.js), so they open this instead.
+  // Pressing Alt over the creature already opened it (hold-to-peek); the click
+  // PINS it, so letting go of Alt no longer closes it.
+  if (ev.altKey && targetingActive()) {
+    const tok = d.token ?? hoveredToken();
+    if (!tok) return;
+    if (S.open?.tokenId === tok.id) S.open.sticky = true;
+    else open(tok, { viaAlt: true }).then((ok) => { if (ok && S.open?.tokenId === tok.id) S.open.sticky = true; });
+    return;
+  }
   const tok = d.token ?? hoveredToken();
   if (tok) { if (S.open?.tokenId !== tok.id) open(tok); }
   else if (S.open) close();
@@ -733,7 +761,7 @@ function onKeyDown(ev) {
 function onKeyUp(ev) {
   if (ev.key !== "Alt") return;
   S.altDown = false;
-  if (S.open?.viaAlt) close();
+  if (S.open?.viaAlt && !S.open.sticky) close();
 }
 
 // Right-click anywhere is Back, the same as in the Party Menu (text fields keep
@@ -748,7 +776,10 @@ function onContextMenu(ev) {
 
 // ── lifecycle ───────────────────────────────────────────────────────────────
 
-const CLOSE_ON_SURFACE = new Set(["action-card", "action-card-mirror", "reaction-menu", "attribute-pair-picker", "passive-manager"]);
+// A new action card or reaction window only ever follows a MOVING stretch, which
+// already closed us (fu-battle-phase below); these are the dialogs that take
+// the keyboard on their own.
+const CLOSE_ON_SURFACE = new Set(["attribute-pair-picker", "passive-manager"]);
 
 function bindCanvas() {
   const view = canvas?.app?.view;
@@ -788,6 +819,8 @@ function init() {
     if (CLOSE_ON_SURFACE.has(kind) || (kind === "target-picker" && !S.open.viaAlt)) close();
   });
   Hooks.on("fu-director-action", () => close());
+  // The battle starts moving (a roll, an animation, a turn change): step aside.
+  Hooks.on("fu-battle-phase", ({ settled } = {}) => { if (!settled && S.open) close(); });
   Hooks.on("fu-director-stopped", () => { close({ restoreCamera: false }); hidePeek(); });
   // Players never see the GM-local director hooks; the scene flag is their signal.
   Hooks.on("updateScene", (scene) => {

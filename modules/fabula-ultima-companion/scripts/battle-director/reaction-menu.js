@@ -50,6 +50,7 @@ import { log, warn } from "./logger.js";
 import { ensureDescTooltipStyles, attachDescTooltip, hideDescTooltip } from "./desc-tooltip.js";
 import { plateReactionHost } from "./director-player-hud.js";
 import { mountDockedReaction } from "./drawer-views.js";
+import { mountHandReaction } from "./reaction-hand.js";
 import { deskSpawnReaction } from "./gm-desk.js";
 
 const STYLE_ID = "fud-reaction-menu-style";
@@ -646,7 +647,18 @@ export const ReactionMenu = {
     const deskRec = host ? null : deskSpawnReaction({
       key, token, candidates: visible, onPick, onPass, label: label ?? "Reaction", passLabel: passLabel ?? "Pass", disabledLabels,
     });
-    const rec = deskRec ?? (host
+    // Card Reaction UI: your own character's window is dealt into the reaction
+    // hand behind your plate instead (null when Card mode is off → the drawer).
+    // Start of Conflict opens before the HUD has built the plate, so your own
+    // character qualifies without one: the hand holds the window for the plate
+    // and falls back to the token blades if it never comes.
+    const actorId = token?.actor?.id ?? token?.document?.actorId ?? null;
+    const isMyCharacter = !game.user?.isGM && !!actorId && game.user?.character?.id === actorId;
+    const handRec = (host || isMyCharacter) ? mountHandReaction({
+      candidates: visible, onPick, onPass, label: label ?? "Reaction", disabledLabels, token,
+      fallback: () => spawnMenuInternal({ director, token, combatId, candidates: visible, onPick, onPass, label, trigger, passLabel, disabledLabels }),
+    }) : null;
+    const rec = deskRec ?? handRec ?? (host
       ? mountDockedReaction(host, { candidates: visible, onPick, onPass, label: label ?? "Reaction", passLabel: passLabel ?? "Pass", disabledLabels })
       : spawnMenuInternal({
         director, token, combatId,

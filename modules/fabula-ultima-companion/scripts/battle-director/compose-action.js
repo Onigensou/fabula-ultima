@@ -222,7 +222,10 @@ async function composeActionChain({
       ],
       showUltima: !!ultimaSpec,
     });
-    if (externallyCancelled || command === null) break;
+    if (externallyCancelled) break;
+    // The player's own Cancel (free-action menu). Distinct from an external
+    // cancel: the host is still waiting, so the caller has to tell it.
+    if (command === null) return { cancelled: true, reason: "menu-cancelled" };
 
     log(`composeAction: command picked = ${command}`);
 
@@ -323,7 +326,8 @@ async function composeActionChain({
 }
 
 // Which of Skill / Spell / Item have nothing to spend them on right now —
-// Array<{label, reason}> for the turn menu. Built from the SAME lists the
+// Array<{label, reason, tag}> for the turn menu (`tag` = the short word on the
+// greyed command, `reason` = its help line). Built from the SAME lists the
 // pickers open on (pickSkill / pickItem), so the menu can't disagree with
 // them: no entries at all is what makes those pickers bail with a warning,
 // and none affordable is a picker whose every row is disabled.
@@ -337,19 +341,19 @@ async function unavailableCommands(snap, actorUuid) {
     const all = (await gatherSkillsForActor(actor)).filter((c) => !c.isReactionOnly && !c.menuHidden);
     for (const [label, type, noun] of [["Skill", "active", "skill"], ["Spell", "spell", "spell"]]) {
       const list = filterBySkillTypes(all, [type]);
-      if (!list.length) out.push({ label, reason: `You have no ${noun}s to use.` });
+      if (!list.length) out.push({ label, reason: `You have no ${noun}s to use.`, tag: "None" });
       else if (!list.some((c) => c.affordable)) {
         const short = [...new Set(list.flatMap((c) => (c.missingResources ?? []).map((m) => m.label)))];
-        out.push({ label, reason: `You can't pay for any ${noun} right now${short.length ? ` (not enough ${short.join(" / ")})` : ""}.` });
+        out.push({ label, reason: `You can't pay for any ${noun} right now${short.length ? ` (not enough ${short.join(" / ")})` : ""}.`, tag: short.length ? `No ${short.join("/")}` : "Can't pay" });
       }
     }
   } catch (e) { warn("composeAction: skill availability check threw — leaving Skill/Spell open", e); }
   try {
     const [use, create] = await Promise.all([gatherConsumables(actor), gatherCreatables(actor)]);
     const ip = Number(readActorIp(actor)?.current ?? 0) || 0;
-    if (!use.length && !create.length) out.push({ label: "Item", reason: "No items to use and no recipes to craft." });
+    if (!use.length && !create.length) out.push({ label: "Item", reason: "No items to use and no recipes to craft.", tag: "None" });
     else if (!use.length && !create.some((c) => Number(c.ipCost) <= ip)) {
-      out.push({ label: "Item", reason: `No items to use, and not enough IP to craft (IP ${ip}).` });
+      out.push({ label: "Item", reason: `No items to use, and not enough IP to craft (IP ${ip}).`, tag: "No IP" });
     }
   } catch (e) { warn("composeAction: item availability check threw — leaving Item open", e); }
   return out;
@@ -467,6 +471,15 @@ export function registerPlayerComposeActionHandler(channel, isActiveDirector = (
 
       if (result.cancelled) {
         log(`compose-action: cancelled (${result.reason ?? "unknown"})`);
+        // The player pressed Cancel: the host's DECLARE is still awaiting this
+        // user, and reads an ACTION_COMPOSED with no bundle as the cancel (a
+        // free action forfeits, back to FREE_ACTION_WINDOW). Dropping it here
+        // left the battle parked forever. Other reasons came FROM the host
+        // (MENU_CLOSE / superseded) and need no answer.
+        if (result.reason === "menu-cancelled") {
+          channel.emit({ type: INTENTS.ACTION_COMPOSED, body: { bundle: null }, combatId: menuSpec.combatId });
+          log("compose-action: emitted ACTION_COMPOSED (cancel)");
+        }
         return;
       }
 

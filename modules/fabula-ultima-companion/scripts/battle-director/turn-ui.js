@@ -55,7 +55,7 @@ const _lastCommand = new Map();
 // horizontally via scaleX so it never spills past the blade — height is fixed
 // (the stamp's own font-size/padding are untouched; only the X axis scales).
 // A 0.4 floor keeps an extreme name legible rather than fitting at any cost.
-function applyBladeStamp(wrap, btn, text) {
+function applyBladeStamp(wrap, btn, text, { soft = false } = {}) {
   if (!wrap || !btn) return;
   let stamp = wrap.querySelector(":scope > .blade-stamp");
   if (!stamp) {
@@ -63,6 +63,7 @@ function applyBladeStamp(wrap, btn, text) {
     stamp.className = "blade-stamp";
     wrap.appendChild(stamp);
   }
+  stamp.classList.toggle("is-soft", soft);
   stamp.textContent = String(text ?? "");
   stamp.style.transform = "translate(-50%,-50%) rotate(-8deg) scaleX(1)";
   const fit = () => {
@@ -282,8 +283,9 @@ function ensureBaseStyles() {
     .fud-octopath .blade.is-primary .key{ min-width:26px; height:26px; font-size:14px; }
     .fud-octopath .blade.is-cursor .key{ background:var(--fud-ink); color:var(--fud-parchment-top); border-color:var(--fud-ink); }
 
-    /* Free-action filter: out of scope, so heavily muted. */
-    .fud-octopath .blade.fud-disabled{ cursor:not-allowed; opacity:.35; }
+    /* Free-action filter: out of scope — dimmed under a soft "<X> only" tag. */
+    .fud-octopath .blade.fud-disabled{ cursor:not-allowed; }
+    .fud-octopath .blade.fud-disabled .label, .fud-octopath .blade.fud-disabled .key{ opacity:.42; }
     /* Nothing to spend it on (no spell you can pay for, no item, ...): dimmed,
        no stamp; the help line says why when the cursor is on it. */
     .fud-octopath .blade.is-unavailable{ cursor:not-allowed; }
@@ -313,6 +315,13 @@ function ensureBaseStyles() {
       padding:1px 7px; border:2px solid rgba(200,16,16,.95);
       border-radius:4px; background:rgba(255,238,228,.92);
       pointer-events:none; z-index:3;
+    }
+    /* Soft tag: the command is fine, it just can't be used right now (nothing to
+       spend it on, or outside this free action). Ink, not red — red means a
+       status took the action away. */
+    .fud-octopath .item > .blade-stamp.is-soft{
+      color:var(--fud-ink-soft); border-color:rgba(122,106,85,.75);
+      background:rgba(244,236,220,.94); text-shadow:none; font-size:11px; letter-spacing:.8px;
     }
 
     .fud-octopath .cmd-help{
@@ -361,25 +370,18 @@ function spawnMenu({ token, combatId, onPick, onPassive, enabledLabels = null, b
   ensureBaseStyles();
   ensureDrawerStyles();
 
-  // Free-action mode (enabledLabels supplied): only the allowed commands +
-  // Passive (only when explicitly allowed — omitting it keeps the menu clean
-  // for single-type free actions like Voracious) + Cancel (forfeit the grant
-  // per the locked cancel-pops-request rule).
+  // Free-action mode (enabledLabels supplied): the same commands as a turn, with
+  // the ones the grant does not cover greyed and tagged (the player sees what
+  // the free action leaves out instead of a menu that lost most of its rows),
+  // plus Cancel (forfeit the grant per the locked cancel-pops-request rule).
   // Normal mode: every command, plus the boss-only Ultima command (opens the
   // Ultima action picker — Domination / Escape / Recovery; composeAction sets
   // showUltima from snap.isBoss; never present in a free-action window).
   const filterMode = Array.isArray(enabledLabels) && enabledLabels.length > 0;
   const labels = filterMode
-    ? (() => {
-        const allowed = new Set(enabledLabels.map((s) => String(s).trim()));
-        return [...new Set([...COMMANDS.filter((label) => allowed.has(label)), "Cancel"])];
-      })()
+    ? [...COMMANDS, "Cancel"]
     : [...COMMANDS, ...(showUltima ? ["Ultima"] : [])];
 
-  // Free-action filter: filterMode pre-filters the labels, so every rendered
-  // command is by-construction enabled. The grey-out path for enabledLabels
-  // without filterMode remains for backwards compatibility but is not reached
-  // by composeAction.
   const enabledSet = Array.isArray(enabledLabels) && enabledLabels.length
     ? new Set(enabledLabels.map((s) => String(s).trim()))
     : null;
@@ -393,19 +395,29 @@ function spawnMenu({ token, combatId, onPick, onPassive, enabledLabels = null, b
       .map((d) => [String(d?.label ?? "").trim(), String(d?.reason ?? "Disabled").trim() || "Disabled"])
       .filter(([l]) => l)
   );
-  // Nothing to use it on — Array<{label, reason}> from compose-action (no spell
-  // you can pay for, no item or affordable recipe). Dimmed WITHOUT a stamp (a
-  // stamp means a status took the action away); the reason is the help line.
+  // Nothing to use it on — Array<{label, reason, tag}> from compose-action (no
+  // spell you can pay for, no item or affordable recipe). Dimmed under a soft
+  // grey tag (`tag`, e.g. "No MP"); the red stamp stays reserved for a status
+  // that took the action away. The full reason is the help line.
   const unavailableReasons = new Map(
     (Array.isArray(unavailableLabels) ? unavailableLabels : [])
       .map((d) => [String(d?.label ?? "").trim(), String(d?.reason ?? "").trim() || "Not available."])
       .filter(([l]) => l)
   );
+  const unavailableTags = new Map(
+    (Array.isArray(unavailableLabels) ? unavailableLabels : [])
+      .map((d) => [String(d?.label ?? "").trim(), String(d?.tag ?? "").trim() || "None"])
+      .filter(([l]) => l)
+  );
+  // The soft tag on a command this free action does not cover.
+  const freeActionTag = enabledSet
+    ? (enabledSet.size === 1 ? `${[...enabledSet][0]} only` : "Not now")
+    : null;
   function isEnabledLabel(label) {
     if (blockedReasons.has(label)) return false;   // action-gating debuff wins
     if (unavailableReasons.has(label)) return false;
-    if (filterMode) return true;
     if (!enabledSet) return true;
+    if (label === "Cancel") return true;
     if (NON_ACTION_COMMANDS.has(label)) return true;
     return enabledSet.has(label);
   }
@@ -503,7 +515,8 @@ function spawnMenu({ token, combatId, onPick, onPassive, enabledLabels = null, b
         : unavailable
           ? unavailable
           : (enabledLabels?.length ? `Not part of this free action. Allowed: ${enabledLabels.join(", ")}.` : "Not available.");
-      const it = { wrap, btn, label, key, enabled, blockReason, disabledText, c, r: cells.length };
+      const softTag = enabled || blockReason ? null : (unavailable ? unavailableTags.get(label) : freeActionTag);
+      const it = { wrap, btn, label, key, enabled, blockReason, softTag, disabledText, c, r: cells.length };
       // Mark the WRAP (.item) disabled so the shared director-ui-sfx delegated
       // listener (which matches '[id^="fud-octopath-"] .item' and checks
       // .is-disabled) stays quiet on hover/click of a non-working command.
@@ -584,7 +597,10 @@ function spawnMenu({ token, combatId, onPick, onPassive, enabledLabels = null, b
   }
   if (!tryDock()) { document.body.appendChild(root); placeDock(); }
   setHudActing(actorId);
-  for (const it of items) if (it.blockReason) applyBladeStamp(it.wrap, it.btn, it.blockReason);
+  for (const it of items) {
+    if (it.blockReason) applyBladeStamp(it.wrap, it.btn, it.blockReason);
+    else if (it.softTag) applyBladeStamp(it.wrap, it.btn, it.softTag, { soft: true });
+  }
   // Two frames so the initial (hidden) state is painted before the reveal.
   requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add("is-shown")));
 

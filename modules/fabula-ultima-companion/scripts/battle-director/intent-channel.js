@@ -386,10 +386,37 @@ export class IntentChannel {
       const arr = this._recentBroadcasts.get(uid) ?? [];
       // De-dup by menuSpec.kind — only the latest broadcast of each kind
       // per user stays in cache. Prevents stale entries piling up.
-      const filtered = arr.filter((p) => (p.menuSpec?.kind ?? null) !== kind);
+      //
+      // A NEW action card also ends everything that belonged to the step before
+      // it: the turn's Action Menu (already answered — the action is on the
+      // card) and the previous card's follow-ups (pill updates, target
+      // mutations, confirm acks). Replaying those on an F5 put the player's
+      // drawer back in "select an action" over the live card, and re-applied
+      // an older card's state to the new one.
+      const supersedes = kind === "action-card"
+        ? (k) => k === "compose-action" || String(k ?? "").startsWith("action-card-")
+        : () => false;
+      const filtered = arr.filter((p) => {
+        const k = p.menuSpec?.kind ?? null;
+        return k !== kind && !supersedes(k);
+      });
       filtered.push({ requestId, targetUserId: uid, menuSpec });
       this._recentBroadcasts.set(uid, filtered);
     }
+  }
+
+  // GM-side: drop a cached MENU_OPEN without sending anything — for a menu the
+  // player already ANSWERED. Their client closed it on its own; a MENU_CLOSE
+  // would be noise, but leaving it cached meant an F5 later in the action
+  // replayed it: a player who reloaded on the action card got their Action
+  // Menu back over the card (the drawer took the plate, the reaction hand hid).
+  forgetMenu({ targetUserId, kind }) {
+    if (!game.user?.isGM || !targetUserId || !kind) return;
+    const arr = this._recentBroadcasts.get(targetUserId);
+    if (!arr) return;
+    const filtered = arr.filter((p) => (p.menuSpec?.kind ?? null) !== kind);
+    if (filtered.length) this._recentBroadcasts.set(targetUserId, filtered);
+    else this._recentBroadcasts.delete(targetUserId);
   }
 
   // GM-side: force-close a menu on a player's client (e.g. timeout,

@@ -1032,6 +1032,8 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     // we intercept the canvas pointerdown and resolve tokens via canvas API.
     const handlerClick = (event) => {
       if (docked && keysBlockedFor(docked.root)) return;
+      // Alt+Click reads the creature (Battle Inspect) instead of picking it.
+      if (event.altKey) return;
       // Random mode: the player cannot manually pick — swallow all canvas clicks.
       if (mode === "random") { event.preventDefault?.(); event.stopPropagation?.(); return; }
       try {

@@ -288,6 +288,10 @@ export class BattleDirector {
     }
 
     this.state = nextState;
+    // Host-local announcement of the new state, for listeners that care which
+    // KIND of moment the battle is in (director-player-hud publishes "settled /
+    // moving" from it). Never lets a listener throw into the transition.
+    try { Hooks.callAll("fu-director-state", { state: nextState, prev: prevState }); } catch (_e) {}
 
     // If the FSM has reached STOPPED naturally (i.e. not via boot's manual
     // stop() — that sets _stopped before transitioning), notify the boot

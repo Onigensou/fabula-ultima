@@ -276,8 +276,13 @@ export function goButtonHTML(label = "Select") {
 
 // ── skill card (portrait card flip) ──────────────────────────────────────────
 // entry: { key, name, kind, img, iconHTML, chips:[{text,tone}], body, reason } | null
-const FLIP_OUT_MS = 100, FLIP_IN_MS = 160, GLINT_MS = 320;
-export function setPlateCard(host, entry) {
+// Portrait <-> description always FLIPS. `quiet` decides a description ->
+// description swap: a short cross-fade (the reaction hand's hover, where the
+// pointer runs across several cards) instead of the instant text swap.
+const FLIP_OUT_MS = 100, FLIP_IN_MS = 160, GLINT_MS = 420, QUIET_MS = 140;
+// The parts of a description face that carry its words (cardFaceHTML).
+const FACE_PARTS = [".dhv-shead", ".dhv-schips", ".dhv-swhy", ".dhv-sbody .in"];
+export function setPlateCard(host, entry, { quiet = false } = {}) {
   const pcard = host?.pcard;
   if (!pcard?.isConnected) return;
   ensureDrawerStyles();
@@ -288,7 +293,11 @@ export function setPlateCard(host, entry) {
   let face = pcard.querySelector(".dhv-sface");
   if (!face) { face = document.createElement("div"); face.className = "dhv-sface"; pcard.appendChild(face); }
 
-  const fill = () => {
+  // The LATEST request wins. A second call that lands during the flip-out (two
+  // quick hovers) must not be overwritten when that flip finishes: onfinish
+  // reads pcard._entry / pcard._mode, never this call's closure.
+  pcard._entry = entry;
+  const fill = (entry) => {
     if (entry) {
       face.innerHTML = cardFaceHTML(entry);
       const body = face.querySelector(".dhv-sbody");
@@ -301,7 +310,19 @@ export function setPlateCard(host, entry) {
     }
   };
   if (pcard._mode === want || (!pcard._mode && want === "portrait")) {
-    if (key !== pcard._key) { fill(); pcard._key = key; }
+    if (key !== pcard._key) {
+      // The card stays; only what differs between the two descriptions fades in
+      // (name, chips, reason, rules text) — the rule line and frame are the card.
+      const fadeIn = quiet && want === "skill" && !pcard._flip?.playState?.match?.(/running/);
+      const before = fadeIn ? FACE_PARTS.map((sel) => face.querySelector(sel)?.innerHTML ?? null) : null;
+      fill(entry); pcard._key = key;
+      if (fadeIn) {
+        FACE_PARTS.forEach((sel, i) => {
+          const el = face.querySelector(sel);
+          if (el && el.innerHTML !== before[i]) el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: QUIET_MS, easing: "ease-out" });
+        });
+      }
+    }
     pcard._mode = want;
     return;
   }
@@ -313,8 +334,8 @@ export function setPlateCard(host, entry) {
   pcard._flip = out;
   out.onfinish = () => {
     if (pcard._flip !== out) return;
-    pcard.classList.toggle("is-skill", want === "skill");
-    fill();
+    pcard.classList.toggle("is-skill", pcard._mode === "skill");
+    fill(pcard._entry);
     const inn = pcard.animate([
       { transform: "perspective(1200px) rotateY(-90deg)", offset: 0 },
       { transform: "perspective(1200px) rotateY(9deg)", offset: 0.68 },
@@ -323,9 +344,14 @@ export function setPlateCard(host, entry) {
     pcard._flip = inn;
     out.cancel();
     try {
+      // Same shadow COUNT at both ends, or box-shadow can't interpolate and the
+      // glow snaps off halfway instead of fading. The glow layers fade to clear
+      // on top of the card's own shadow, which stays put.
+      const own = getComputedStyle(pcard).boxShadow;
+      const base = own && own !== "none" ? own : "0 0 0 0 rgba(0,0,0,0)";
       pcard.animate([
-        { boxShadow: "0 0 0 2px #fff3c4, 0 0 26px 8px rgba(255,214,120,.9), 0 14px 30px rgba(0,0,0,.5)" },
-        { boxShadow: getComputedStyle(pcard).boxShadow || "none" },
+        { boxShadow: `0 0 0 2px rgba(255,243,196,1), 0 0 26px 8px rgba(255,214,120,.9), ${base}` },
+        { boxShadow: `0 0 0 2px rgba(255,243,196,0), 0 0 26px 8px rgba(255,214,120,0), ${base}` },
       ], { duration: GLINT_MS, delay: 110, easing: "ease-out", fill: "backwards" });
     } catch { /* cosmetic */ }
   };

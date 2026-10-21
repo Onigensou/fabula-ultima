@@ -2647,7 +2647,16 @@ const Declare = {
     // menu, so it must not leak into a later action's CLEANUP transition.
     director.ctx.returnToMenuAfterCleanup = false;
 
-    const token = canvas?.tokens?.get(snap.tokenId);
+    let token = canvas?.tokens?.get(snap.tokenId);
+    // The host is showing some other scene (a GM wandered off, or a tool swapped
+    // the canvas). Bring the battle back instead of skipping the turn: a
+    // TIMEOUT here ends it silently, and an enemy just loses its action.
+    const battleScene = game.scenes?.get(director.dCombat?.sceneId ?? "");
+    if (!token && battleScene && canvas?.scene?.id !== battleScene.id) {
+      warn(`DECLARE: host canvas is not the battle scene — viewing ${battleScene.name} before ${snap.name}'s turn`);
+      try { await battleScene.view(); } catch (e) { warn("DECLARE: battle scene view threw", e); }
+      token = canvas?.tokens?.get(snap.tokenId);
+    }
     if (!token) {
       warn("DECLARE: token not on canvas", snap.tokenId);
       director.enqueue({ type: INTENTS.TIMEOUT });
@@ -2948,6 +2957,10 @@ const Declare = {
         // Wait for local to actually unwind so its UI is gone before we
         // move to TARGET (avoids dangling Octopath).
         try { await localCompose; } catch {}
+        // The winner answered its own menu: uncache it, or an F5 during the
+        // rest of this action replays the Action Menu over the action card.
+        try { director.intentChannel?.forgetMenu?.({ targetUserId: winnerUserId, kind: "compose-action" }); }
+        catch (e) { warn("DECLARE: forgetMenu threw", e); }
         // Close every OTHER remote participant that lost the race.
         for (const { userId, awaitP } of remoteParticipants) {
           if (userId === winnerUserId) continue;
@@ -5637,6 +5650,22 @@ const Confirm = {
             const twMode = String(ar.attackMode ?? director.ctx?.attackMode ?? "").toLowerCase();
             if (twMode.startsWith("two-weapon")) continue;
             cand._addTarget = true;
+            // Nobody left to add: on an Attack the extra target must come from the
+            // attack's OWN range-gated pool (onAddTargetApply reads the same list),
+            // minus who it already targets. Offered anyway, Apply opens an empty
+            // pick and fails ("add_target apply failed — pill stays pending"), so
+            // show it unavailable WITH the reason instead — the pill renders dimmed
+            // for any non-"condition" kind. Attack only: the heal/buff/rolled
+            // spreads draw from other pools.
+            if (isAttack && cand.available !== false) {
+              const already = new Set((ar.targets ?? []).map((t) => t?.tokenUuid).filter(Boolean));
+              const spare = (director.ctx.eligibleTargets ?? []).filter((e) => e?.tokenUuid && !already.has(e.tokenUuid));
+              if (!spare.length) {
+                cand.available = false;
+                cand.unavailableKind = "target";
+                cand.unavailableReason = "No other target";
+              }
+            }
           }
           addCardReactions("creature_performs_action", [cand]);
         }
