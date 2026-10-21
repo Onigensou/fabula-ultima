@@ -4,6 +4,11 @@
 // Mindscape — measure a monster adjustment plan on paper, before anything touches the world.
 //
 //   node bin/balance-proposal.js --plan specs/balance/<plan>.json [--runs 1000] [--out file.json] [--md file.md]
+//   node bin/balance-proposal.js --plan <file> --design-only     # the design check alone, no sim
+//
+// Before anything is simulated, every monster the plan touches is checked against its design
+// dossier (dossiers/<name>.md): invariants the plan would break, intended rule-breaks it
+// would change, and monsters with no design record. Printed first; it never blocks the run.
 //
 // Plan file: { "<Monster name>": { "hpPct": -30, "dmgAdd": 15, "affinity": { "physical": "NA" },
 //                                  "attacks": { "<Attack name>": { "dmgAdd": 10 } } }, ... }
@@ -28,6 +33,8 @@ const { loadParty, loadNamed, readAffinities, readEfficiency, loadSummons } = re
 const { loadStatusLibrary } = require("../lib/world-items");
 const { runLine } = require("../lib/line-runner");
 const { snapshotWorld, summarise } = require("./encounter-matrix");
+const DS = require("../lib/dossier");
+const { loadWorldItems } = require("../lib/world-items");
 
 function arg(name, fallback) {
   const i = process.argv.indexOf(name);
@@ -113,6 +120,59 @@ function patchMonster(m, spec) {
   }
 }
 
+// Which actions a plan entry changes, by name and by kind ("*" = every damaging action):
+// damage/accuracy edits vs action-table/cost edits move different design rules.
+function touchedActions(spec) {
+  const damage = new Set([...Object.keys(spec.attacks ?? {}), ...Object.keys(spec.effects ?? {})]);
+  if (spec.dmgAdd || spec.checkAdd) damage.add("*");
+  const pattern = new Set([...Object.keys(spec.patterns ?? {}), ...Object.keys(spec.costs ?? {})]);
+  return { damage, pattern };
+}
+const DAMAGE_RULES = new Set(["one-shot", "basic-attack-min", "resisted-min", "no-damage-action"]);
+// Exception rules a plan key can move, for exceptions that name no action.
+const RULE_KEYS = { "vu-count": ["affinity"], absorb: ["affinity"], "resisted-min": ["dmgAdd", "attacks"],
+  "basic-attack-min": ["dmgAdd", "attacks"], "one-shot": ["dmgAdd", "attacks"], pattern: ["patterns", "mp", "mpStart", "costs"] };
+
+// Pure: one plan entry against its dossier -> [{ level: "break"|"intended"|"none"|"role", text }].
+function designWarnings(name, spec, dossier, base, patched, { worldItems = null } = {}) {
+  if (!dossier) return [{ level: "none", text: `${name}: no design record — its intent is unknown; ask before tuning it (node bin/dossier.js --new "${name}")` }];
+  const out = [];
+  if (dossier.data.role) out.push({ level: "role", text: `${name}: role — ${dossier.data.role}` });
+  const before = DS.checkInvariants(dossier, base, { worldItems });
+  const after = DS.checkInvariants(dossier, patched, { worldItems });
+  after.forEach((a, i) => {
+    if (before[i].ok && !a.ok) out.push({ level: "break", text: `${name}: BREAKS ${a.id} — ${a.text}${a.why ? ` (why it matters: ${a.why})` : ""}` });
+  });
+  const acts = touchedActions(spec);
+  for (const e of dossier.data.exceptions) {
+    const lane = DAMAGE_RULES.has(e.rule) ? acts.damage : acts.pattern;
+    const hit = e.action ? (lane.has(e.action) || (lane.has("*") && DAMAGE_RULES.has(e.rule)))
+      : (RULE_KEYS[e.rule] ?? []).some((k) => spec[k] != null);
+    if (hit) out.push({ level: "intended", text: `${name}: changes an intended ${e.rule}${e.action ? ` on ${e.action}` : ""} — ${e.why ?? "no reason recorded"} (${e.decided_by === "user" ? "designer's call" : "unconfirmed"}${e.date ? `, ${e.date}` : ""})` });
+  }
+  return out;
+}
+
+async function designCheck(plan, world) {
+  const dossiers = DS.loadDossiers();
+  const worldItems = await loadWorldItems({ world });
+  const out = [];
+  for (const [name, spec] of Object.entries(plan)) {
+    const [base] = await loadNamed([name], { world });
+    const [patched] = await loadNamed([name], { world });
+    patchMonster(patched, spec);
+    out.push(...designWarnings(name, spec, DS.findDossier(dossiers, base), base, patched, { worldItems }));
+  }
+  return out;
+}
+function renderDesign(warnings) {
+  if (!warnings.length) return [];
+  const icon = { break: "⛔", intended: "⚠", none: "❔", role: "·" };
+  const order = { break: 0, intended: 1, none: 2, role: 3 };
+  return ["## Design check (dossiers)", "",
+    ...warnings.slice().sort((a, b) => order[a.level] - order[b.level]).map((w) => `- ${icon[w.level]} ${w.text}`), ""];
+}
+
 async function loadGroup(names, world, plan) {
   const enemies = await loadNamed(names, { world });
   if (plan) for (const e of new Set(enemies)) if (plan[e.name]) patchMonster(e, plan[e.name]);
@@ -124,6 +184,7 @@ async function main() {
   const runs = Number(arg("--runs", 1000));
   const out = arg("--out", null);
   const md = arg("--md", null);
+  const designOnly = process.argv.includes("--design-only");
   if (!planFile) { console.error("usage: node bin/balance-proposal.js --plan <file> [--runs N]"); process.exit(1); }
   const plan = JSON.parse(fs.readFileSync(path.resolve(planFile), "utf8"));
   const rowsOverride = plan.rows ?? {};
@@ -135,7 +196,15 @@ async function main() {
   const copyDir = path.join(os.tmpdir(), "fu-balance-proposal");
   const world = snapshotWorld(DEFAULT_WORLD, copyDir);
   const rows = [];
+  let design = [];
   try {
+    design = await designCheck(plan, world);
+    if (designOnly) {
+      const text = renderDesign(design).join("\n") || "Design check: nothing to report.";
+      console.log(text);
+      if (md) fs.writeFileSync(path.resolve(md), text + "\n");
+      return;
+    }
     const party = await loadParty({ world });
     const statusLibrary = monsterRules === "data" ? await loadStatusLibrary({ world }) : null;
     for (const unknown of Object.keys(plan)) {
@@ -170,6 +239,8 @@ async function main() {
     return ["pushover", "too soft", "on target", "drags", "stalemate", "wall"].map((v) => `${v} ${t[v] ?? 0}`).join(" · ");
   };
   lines.push(`Plan ${path.basename(planFile)} · party policy ${policy} · ${runs} runs per fight, paired seeds`);
+  lines.push("");
+  lines.push(...renderDesign(design));
   lines.push(`Before: ${tally("before")}`);
   lines.push(`After:  ${tally("after")}`);
   lines.push("");
@@ -184,8 +255,8 @@ async function main() {
   const text = lines.join("\n");
   console.log(text);
   if (md) fs.writeFileSync(path.resolve(md), text + "\n");
-  if (out) fs.writeFileSync(path.resolve(out), JSON.stringify({ plan, policy, runs, rows }, null, 2) + "\n");
+  if (out) fs.writeFileSync(path.resolve(out), JSON.stringify({ plan, policy, runs, design, rows }, null, 2) + "\n");
 }
 
-module.exports = { patchMonster, loadGroup };
+module.exports = { patchMonster, loadGroup, designWarnings, touchedActions };
 if (require.main === module) main().catch((e) => { console.error(`balance-proposal failed: ${e.stack || e.message}`); process.exit(1); });

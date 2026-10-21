@@ -17,7 +17,14 @@ node bin/dossier.js --new "Rakshasa"   # scaffold a draft from the sheet
 node test/dossier.test.js
 ```
 
-`bin/monster-audit.js` reads the dossiers on every run: its *Rules broken* column shows
+Three tools read the dossiers:
+
+- **`bin/balance-proposal.js`** — before simulating a plan, a *Design check* lists every
+  invariant the plan would break (⛔), every intended rule-break it changes (⚠, with the
+  reason), monsters with no record (❔) and each monster's role. `--design-only` skips the sim.
+- **Balance Board** — a *Designer's notes* panel on every bestiary card (opens itself on drift);
+  the card's flag list shows only findings the dossier does not explain.
+- `bin/monster-audit.js` reads the dossiers on every run: its *Rules broken* column shows
 only **new** findings (`+N intended`), a *Design record* column shows status and drift,
 and a *Design records* section lists each intended finding with its reason, every
 blind spot and every open question. Monsters without a dossier are listed by name.
@@ -59,7 +66,9 @@ Decision log · Not simulated / risks), plus exactly one fenced block tagged `js
 `not-modelled` · `passive-not-simulated`. `action` narrows an exception to one action.
 
 **Invariant selectors** — `prop` (actor `system.props` key) · `affinity` (element) ·
-`item` + `prop` · `item` + `table` + `row` + `field` (row = key or a row's
-`effect_label` / `reaction_effect_ref`) · `item` + `sameAsWorldItem` (embedded copy matches
+`item` + `prop` · `[item +] table` + `row|where` + `field` (on the item, or the actor's own
+table such as `action_pattern_table` when no item is named; `row` = key or a row's
+`effect_label` / `reaction_effect_ref`; `where` = field values, must match exactly one row)
+· `item_where` narrows same-named items · `item` + `sameAsWorldItem` (embedded copy matches
 the world item, e.g. a stealable weapon). **Operators** — `equals` · `in` · `contains` ·
 `min` · `max`. See `gigas.md` for each one in use.

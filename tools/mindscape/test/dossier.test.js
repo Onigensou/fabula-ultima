@@ -165,4 +165,37 @@ test("no dossier: everything is new", () => {
   assert.strictEqual(f.status, "new");
 });
 
+console.log("\nbalance-proposal design check");
+
+const { designWarnings } = require("../bin/balance-proposal");
+const { patchMonster } = require("../bin/balance-proposal");
+const withPlan = (spec) => { const p = clone(GIGAS); p._rawProps = { ...p._rawProps }; patchMonster(p, spec); return designWarnings("Gigas", spec, gigasDossier, GIGAS, p, { worldItems: WORLD }); };
+const levels = (ws) => ws.filter((w) => w.level !== "role").map((w) => w.level);
+
+test("a damage nerf on the intended one-shot is called out with the designer's reason", () => {
+  const ws = withPlan({ attacks: { "Heavy Swing": { dmgAdd: -40 } } });
+  assert.deepStrictEqual(levels(ws), ["intended"]);
+  assert.match(ws.find((w) => w.level === "intended").text, /Lightning Rod.*designer's call/);
+});
+
+test("a plan that breaks an invariant is a BREAK", () => {
+  const ws = withPlan({ effects: { "Heavy Bodyslam": { bodyslam_recoil: { damage_amount: "50" } } } });
+  assert.ok(ws.some((w) => w.level === "break" && /bodyslam-recoil/.test(w.text)));
+});
+
+test("an action-table edit does not count as touching a damage exception", () => {
+  const p = clone(GIGAS);
+  const ws = designWarnings("Gigas", { patterns: { "Heavy Swing": { priority: 9 } } }, gigasDossier, GIGAS, p, { worldItems: WORLD });
+  assert.deepStrictEqual(levels(ws), []);
+});
+
+test("an affinity edit touches the intended vu-count", () => {
+  assert.ok(levels(withPlan({ affinity: { fire: "NA" } })).includes("intended"));
+});
+
+test("no dossier: one 'no design record' warning", () => {
+  const ws = designWarnings("Nobody", {}, null, GIGAS, GIGAS);
+  assert.deepStrictEqual(ws.map((w) => w.level), ["none"]);
+});
+
 console.log(`\n${passed} passed${process.exitCode ? " — FAILURES above" : ""}\n`);
