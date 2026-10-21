@@ -347,7 +347,7 @@
           "cost": "-",
           "damage_bonus": "0",
           "defense_target_type": "def",
-          "description": "<p>The Gigas is always <a class=\"content-link\" data-uuid=\"JournalEntry.0RscV9vkJNM9dVKQ\" data-id=\"0RscV9vkJNM9dVKQ\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Delay</strong></a>.</p><p>Whenever the Gigas takes <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage, it becomes <a class=\"content-link\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Frightened</strong></a>&nbsp;until the end of this turn.</p>",
+          "description": "<p>The Gigas is always <a class=\"content-link\" data-uuid=\"JournalEntry.0RscV9vkJNM9dVKQ\" data-id=\"0RscV9vkJNM9dVKQ\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Delay</strong></a>.</p><p>Whenever the Gigas takes <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage, it becomes <a class=\"content-link\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Frightened</strong></a>&nbsp;until the end of its next turn.</p>",
           "details_roller": "Show",
           "duration": "-",
           "effect_table": {
@@ -425,7 +425,7 @@
               "requires_skill": ""
             },
             "1": {
-              "condition_formula": "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1 && IS_MY_TURN == 1",
+              "condition_formula": "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1",
               "reaction_action_kind": "",
               "reaction_cause_filter": "",
               "reaction_effect_ref": "oaf_fear",
@@ -1279,7 +1279,7 @@
         "UFyiZDIkbhPmtqlG": {
           "id": "${item.id}",
           "name": "Oaf",
-          "passive_description": "<p>The Gigas is always <a class=\"content-link\" data-uuid=\"JournalEntry.0RscV9vkJNM9dVKQ\" data-id=\"0RscV9vkJNM9dVKQ\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Delay</strong></a>.</p><p>Whenever the Gigas takes <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage, it becomes <a class=\"content-link\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Frightened</strong></a>&nbsp;until the end of this turn.</p>",
+          "passive_description": "<p>The Gigas is always <a class=\"content-link\" data-uuid=\"JournalEntry.0RscV9vkJNM9dVKQ\" data-id=\"0RscV9vkJNM9dVKQ\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Delay</strong></a>.</p><p>Whenever the Gigas takes <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage, it becomes <a class=\"content-link\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Frightened</strong></a>&nbsp;until the end of its next turn.</p>",
           "roll": "",
           "uuid": "Actor.1Lw78Js1f7MogV2B.Item.UFyiZDIkbhPmtqlG"
         }

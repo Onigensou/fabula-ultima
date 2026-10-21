@@ -69,7 +69,8 @@ t("every registry entry has a known trigger and an effect kind", () => {
   const triggers = new Set(Object.values(RX.TRIGGERS));
   const kinds = new Set(["free_attack", "stack_burst", "burst", "grant_mp",
                          "weapon_read", "damage_mult", "damage_add", "target_count",
-                         "damage_taken_mult", "survive_at_one", "stack_deny"]);
+                         "damage_taken_mult", "survive_at_one", "stack_deny",
+                         "counter_add", "damage_add_counter"]);
   // An entry is one row or an ARRAY of rows; every row must stand on its own.
   for (const [name, entry] of Object.entries(RX.REACTION_REGISTRY)) {
     const rows = RX.registryRows(entry);
@@ -129,10 +130,11 @@ t("a counter payload is excluded from turn-action selection", () => {
   assert.ok(!RX.REACTION_ONLY_ACTIONS.has("Thunder Strike"));
 });
 t("declaredReactions/undeclaredReactions partition the passive list", () => {
-  const passives = [{ name: "Overload Riposte" }, { name: "Flying" }, { name: "Static Buildup" }];
+  const passives = [{ name: "Overload Riposte" }, { name: "Nobody Knows This One" }, { name: "Static Buildup" }, { name: "Flying" }];
   assert.deepStrictEqual(RX.declaredReactions(passives).map((r) => r.name),
     ["Overload Riposte", "Static Buildup"]);
-  assert.deepStrictEqual(RX.undeclaredReactions(passives), ["Flying"]);
+  // Flying is a TRAIT (reactions.TRAITS): modelled, but not a triggered reaction.
+  assert.deepStrictEqual(RX.undeclaredReactions(passives), ["Nobody Knows This One"]);
 });
 t("collect() returns only same-trigger reactions whose gate passes", () => {
   const c = { reactions: RX.declaredReactions([{ name: "Overload Riposte" }, { name: "Chain Reaction" }]) };

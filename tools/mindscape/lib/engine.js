@@ -18,12 +18,19 @@ const U = require("./utility");
 const RX = require("./reactions");
 const ST = require("./stances");
 const T = require("./tinctures");
+const PP = require("./party-policy");
+const MD = require("./monster-data");
+const { parseTarget, parseCost } = require("./skills");
 
 const ATTR_KEYS = { DEX: "dex", INS: "ins", MIG: "mig", WLP: "wlp" };
 
 // ── Combatant ───────────────────────────────────────────────────────────────
 function makeCombatant(actor, side) {
   const ex = extractActions(actor);
+  // The loaded model is shared by every run of a batch; the one table a fight
+  // MUTATES (weapon efficiency, under a weapon read) gets a per-fight copy. Before
+  // 2026-10-20 a Rakshasa batch carried its adapted defences from run to run.
+  actor = { ...actor, efficiency: { ...(actor.efficiency ?? {}) } };
   return {
     actor, side,
     name: actor.name,
@@ -96,11 +103,30 @@ function makeCombatant(actor, side) {
     hitsTaken: 0,
     downedOnRound: null,
     crisisOnRound: null,
+    // Standing traits (reactions.js TRAITS): Flying, Delay.
+    ...traitsOf(ex.passives),
   };
 }
 
+function traitsOf(passives) {
+  const out = { flying: false, delay: false };
+  for (const p of passives ?? []) Object.assign(out, RX.TRAITS[p.name] ?? {});
+  return out;
+}
+
+// Melee reach, for Flying: a weapon swing reaches only as far as the weapon (virtual
+// attacks such as Twin Shields are shield bashes). Skills and spells are treated as
+// able to reach — the sheet carries no range for them.
+function isMelee(actor, action) {
+  if (action.basicAttack || action.virtual) return actor.actor.weapon?.range !== "ranged";
+  return false;
+}
+
 function attrs(c) {
-  return R.effectiveAttributes(c.actor.attributes, c.actor.statuses ?? {});
+  // `c.statuses` holds what this FIGHT inflicted (party policies: Warning Shot, Meteor
+  // Shower). The actor model is shared across runs, so fight state never goes there.
+  // Statuses a creature carries (monster-data.js) step dice on top: Slow, Swift, Weak...
+  return MD.applyAttrSteps(R.effectiveAttributes(c.actor.attributes, { ...(c.actor.statuses ?? {}), ...(c.statuses ?? {}) }), c);
 }
 
 // Initiative: (DEX + INS) / 2, plus the armor's SIGNED initiative modifier (stored
@@ -115,6 +141,8 @@ function initiative(c) {
 
 // ── Affordability ───────────────────────────────────────────────────────────
 function canAfford(c, action, targetCount = 1) {
+  // Action gating (Frightened bars Attacks, Silence Spells, Paralyzed Skills).
+  if (c.aes?.length && MD.isBlocked(c, action)) return false;
   const cost = action.cost;
   if (!cost || !cost.resource) return true;
   if (cost.resource === "adoration") return true;   // see pay()
@@ -128,27 +156,54 @@ function canAfford(c, action, targetCount = 1) {
 // the live engine pays it somehow. Treating it as unaffordable made her deal
 // literally zero damage, which is a worse model of real play than this is.
 // ROUGH BY CHOICE -- flagged in the report.
-function pay(c, action, targetCount = 1) {
+function pay(c, action, targetCount = 1, state = null) {
   const cost = action.cost;
   if (!cost || !cost.resource || cost.resource === "adoration") return;
   const amount = cost.perTarget ? cost.amount * Math.max(1, targetCount) : cost.amount;
   if (cost.resource === "mp") c.mp -= amount;
   else if (cost.resource === "ip") c.ip -= amount;
   else c.zp -= amount;
+  // Spending MP is a resource loss in play (Fafnir's Storm Gathering reads it).
+  if (state?.mdApi && cost.resource === "mp" && amount > 0) {
+    MD.emit(state, "creature_lose_resource", { subject: c, victim: c, actor: c, causeActor: c, resource: "mp", amount, cause: "cost", element: null });
+  }
+}
+
+// The target as the damage pipeline sees it: its statuses' affinity changes (Wet makes
+// Bolt VU) and its damage reduction.
+function tview(t, element, opts) {
+  return { ...t.actor, affinities: MD.affinities(t), damageReduction: reductionFor(t, element, opts) };
 }
 
 // ── Targeting ───────────────────────────────────────────────────────────────
+// Battlefield objects (a Lightning Crystal) are never chosen as a target and never
+// keep a side alive; only an "all enemies" action reaches them (chooseTargets).
 function livingFoes(state, side) {
-  return state.combatants.filter((c) => c.alive && c.side !== side);
+  return state.combatants.filter((c) => c.alive && c.side !== side && !c.object);
 }
 
 function chooseTargets(state, actor, action) {
-  const foes = livingFoes(state, actor.side);
+  let foes = livingFoes(state, actor.side);
+  // Flying: out of reach of melee weapons.
+  if (isMelee(actor, action)) foes = foes.filter((f) => !f.flying);
+  // Charmed: may not target the creature that charmed it.
+  if (actor.aes?.length) { const barred = MD.cannotTarget(actor); if (barred.size) foes = foes.filter((f) => !barred.has(f)); }
   if (!foes.length) return [];
   const t = action.target;
   if (t.side === "ally") return [];   // handled by the utility layer, not here
 
+  // "All enemies" includes the battlefield's objects — the intended way to work a
+  // crystal's clock while keeping up offence.
+  if (t.count === Infinity) foes = foes.concat(state.combatants.filter((c) => c.alive && c.object && c.side !== actor.side));
   const n = t.count === Infinity ? foes.length : Math.min(t.count, foes.length);
+
+  // Novice party (party-policy.js): no called target, whoever the dice point at.
+  if (actor.side === "party" && state.policy?.name === "novice") {
+    const pool = foes.slice();
+    const out = [];
+    while (out.length < n && pool.length) out.push(pool.splice(Math.floor(state.rng.float() * pool.length), 1)[0]);
+    return out;
+  }
 
   // FOCUS FIRE — the single biggest lever, and it costs nothing (9 rounds -> 4
   // in live runs). One called target shared by the whole party, so damage
@@ -166,6 +221,22 @@ function chooseTargets(state, actor, action) {
   // Multi-target and enemy actions: spread over whoever is alive, weakest first
   // so a kill actually lands.
   return foes.slice().sort((a, b) => a.hp - b.hp).slice(0, n);
+}
+
+// How good it is FOR THE PARTY that `c` holds the Rod (hazard-brain.js
+// partyUtilityOfHolding): the strike after Bolt affinity, minus the 30 MP it gifts
+// (as a fraction of pool, x0.4, only for a creature with MP-costing actions), with a
+// kill swinging it hard either way.
+const ROD_STRIKE = { VU: 60, NE: 30, NA: 30, RS: 15, IM: 0, AB: -30 };
+function rodHoldingValue(c, isAlly) {
+  const aff = MD.affinities(c)?.bolt ?? "NE";
+  const strike = ROD_STRIKE[aff] ?? 30;
+  const usesMp = (c.actor.items ?? []).some((it) => { const k = String(it.props?.cost ?? ""); return /\d/.test(k) && /\bmp\b/i.test(k); });
+  const maxMp = Number(c.actor.mp?.max) || 0;
+  const gift = usesMp && maxMp > 0 ? (Math.max(0, Math.min(30, maxMp - c.mp)) / maxMp) * 100 * 0.4 : 0;
+  let value = strike - gift;
+  if (strike > 0 && c.hp > 0 && strike >= c.hp) value += isAlly ? -120 : 60;
+  return isAlly ? -value : value;
 }
 
 // The party's called target. Precedence per profiles.js:
@@ -187,6 +258,14 @@ function refreshFocus(state) {
     .sort((a, b) => (exploitable(b) ? 1 : 0) - (exploitable(a) ? 1 : 0) || a.hp - b.hp);
   if (hurt.length) { state.focus = hurt[0]; return; }
 
+  // Hazard: get the Lightning Rod off the party (sim/hazard-brain.js
+  // rodDisplacementTarget). Ranked below the finisher and above the standing call,
+  // as in profiles.js: always move it off a PC, and let the score pick who gets it.
+  if (state.rod?.alive && state.rod.side === "party") {
+    state.focus = foes.slice().sort((a, b) => rodHoldingValue(b, false) - rodHoldingValue(a, false))[0];
+    return;
+  }
+
   if (state.focus && state.focus.alive) return;
 
   const pool = foes.filter(exploitable);
@@ -200,7 +279,7 @@ function refreshFocus(state) {
 // shot, Hina magic 6 on a spell. Ignoring these made the party miss constantly
 // and was a large part of why the first calibration run reported a slaughter.
 function checkBonusFor(actor, action) {
-  const own = action.checkBonus ?? 0;
+  const own = (action.checkBonus ?? 0) + (actor.aes?.length ? MD.checkMod(actor, action) : 0);
   const m = actor.actor.checkMods;
   if (!m) return own;
 
@@ -270,12 +349,22 @@ function runReactionEffect(state, reactor, reaction, ctx) {
       else if (e.target === "victim" && ctx.victim?.alive) targets = [ctx.victim];
       else if (e.target === "hostile") targets = chooseTargets(state, reactor, action);
       if (!targets.length) return;
+      // Overcharge-style grants pay the action's normal cost and stop when they can't.
+      if (e.payCost && !canAfford(reactor, action, targets.length)) return;
+      const granted = e.damageAdd ? { ...action, damageBonus: action.damageBonus + e.damageAdd } : action;
       // An ANNOUNCE row: it names the reaction that granted the attack, and
       // carries no target/damage of its own — the resolveAction below logs the
       // actual swing. `announce` is the flag a log reader must skip on; without
       // it a formatter prints "-> undefined -undefined".
       state.log.push({ round: state.round, actor: reactor.name, action: reaction.name, reaction: true, announce: true });
-      resolveAction(state, reactor, action, targets, { free: true });
+      resolveAction(state, reactor, granted, targets, { free: true });
+      return;
+    }
+
+    case "counter_add": {
+      // A counter fed by HP lost (Drako Fury: Fury += damage taken).
+      if (ctx.direction === "recover") return;
+      reactor.counters[e.counter] = (reactor.counters[e.counter] ?? 0) + Math.max(0, Math.round(ctx.damage ?? 0));
       return;
     }
 
@@ -352,6 +441,47 @@ function runReactionEffect(state, reactor, reaction, ctx) {
   }
 }
 
+// A battlefield object (conflict-events.js): a combatant with no turns that the
+// event drives. Joins whatever turn order exists but never acts.
+function spawnObject(state, model) {
+  const c = makeCombatant(model, "enemy");
+  MD.attach(c, { dataDriven: false, library: state.statusLibrary });
+  c.object = true;
+  c.crystal = /crystal/i.test(model.name);
+  c.baseTurns = 0;
+  c.reactions = [];
+  state.combatants.push(c);
+  if (state.order && !state.order.includes(c)) state.order.push(c);
+  return c;
+}
+
+// A creature summoned mid-fight (Fafnir's Drakes): data-driven like its summoner, its
+// conflict_start passives fire on arrival, and it joins the end of the turn order —
+// first acting next round.
+function mdSpawn(state, model, side) {
+  const c = makeCombatant(model, side);
+  MD.attach(c, { dataDriven: true, library: state.statusLibrary });
+  c.reactions = []; c.undeclaredReactions = []; c.stanceCycle = false;
+  MD.refreshDerived(c);
+  c.joinedRound = state.round;
+  state.combatants.push(c);
+  if (state.order && !state.order.includes(c)) state.order.push(c);
+  MD.emit(state, "conflict_start", { onlyReactor: c });
+  return c;
+}
+
+// weapon_read from a data row (Rakshasa's Adaptive Defense): same counter model as
+// the registry entry, fed the attacking family from the event.
+function mdWeaponRead(state, reactor, row, ctx) {
+  const fam = String(ctx.ev?.weaponFamily ?? "").toLowerCase();
+  if (!fam) return;
+  reactor.weaponReads = reactor.weaponReads ?? {};
+  const curve = String(row.read_curve ?? "").split(",").map(Number).filter(Number.isFinite);
+  const evict = String(row.read_evict ?? "1").trim() !== "0";
+  const pct = RX.applyWeaponRead(reactor.weaponReads, reactor.actor.efficiency, fam, { window: Number(row.read_window) || 4, curve, evict });
+  state.log.push({ round: state.round, actor: reactor.name, action: ctx.label ?? "Weapon read", reaction: true, weaponRead: fam, efficiency: pct, frozen: !evict });
+}
+
 // Flat, unrolled damage through the normal incoming pipeline (affinity + DR),
 // which is what makes an absorbing target heal instead of taking it.
 //
@@ -359,14 +489,17 @@ function runReactionEffect(state, reactor, reaction, ctx) {
 // from re-pinning the Rod to its current holder. With it defaulted to "damage"
 // the holder kept the Rod forever and ate 30 Bolt every single turn — Hina's
 // down-rate read 50% off that alone.
-function applyFlatDamage(state, source, target, amount, element, label, cause = "damage") {
-  const out = R.incomingDamage(
-    { ...target.actor, damageReduction: reductionFor(target, element) },
-    { base: amount, element },
+function applyFlatDamage(state, source, target, amount, element, label, cause = "damage", { ignoreAffinity = false, keywords = null } = {}) {
+  const wasAlive = target.alive;
+  const hpBefore = target.hp;
+  let out = R.incomingDamage(
+    tview(target, element),
+    { base: amount, element: element ?? "physical", ignoreAffinity, keywords },
   );
   if (out.direction === "recover") {
     target.hp = Math.min(target.maxHp, target.hp + out.damage);
   } else {
+    out = absorbShield(state, target, out);
     if (T.reductionPct(target)) {
       const bare = R.incomingDamage(
         { ...target.actor, damageReduction: reductionFor(target, element, { withTincture: false }) },
@@ -385,8 +518,34 @@ function applyFlatDamage(state, source, target, amount, element, label, cause = 
   state.log.push({
     round: state.round, actor: source.name, action: label, target: target.name,
     damage: out.damage, affinity: out.affinity, direction: out.direction, reaction: true,
+    killed: wasAlive && !target.alive, hpBefore,
   });
   onHpMoved(state, source, target, out, element, cause);
+  mdLedger(state, source, target, out, element, cause, wasAlive);
+  if (wasAlive && !target.alive) fireReactions(state, target, RX.TRIGGERS.ON_DEFEATED, { element, attacker: source });
+}
+
+// Shields soak damage before HP (Kirin's MP overflow, Golem Fragment). Data mode only,
+// so a registry run keeps the numbers it has always produced.
+function absorbShield(state, target, out) {
+  if (!state.mdApi || !(target.shield > 0) || !(out.damage > 0)) return out;
+  const soak = Math.min(target.shield, out.damage);
+  target.shield -= soak;
+  return { ...out, damage: out.damage - soak, shielded: soak };
+}
+
+// The resource ledger the game's passives listen to (monster-data.js): HP lost or
+// gained with its element and cause, and the defeat that may follow. Hazard ticks
+// (the Storm's strike, Burn) carry no creature cause.
+function mdLedger(state, source, target, out, element, cause, wasAlive) {
+  if (!state.mdApi) return;
+  const causeActor = cause === "hazard" ? null : source;
+  if (out.direction === "recover") {
+    if (out.damage > 0) MD.emit(state, "creature_gain_resource", { subject: target, victim: target, actor: source, attacker: source, causeActor, resource: "hp", amount: out.damage, element, cause });
+    return;
+  }
+  if (out.damage > 0) MD.emit(state, "creature_lose_resource", { subject: target, victim: target, actor: source, attacker: source, causeActor, resource: "hp", amount: out.damage, element, cause });
+  if (wasAlive && !target.alive) MD.emit(state, "creature_defeated", { subject: target, victim: target, actor: source, attacker: source, causeActor, element, cause });
 }
 
 // One funnel for "an element moved this creature's HP" so the storm strike, a
@@ -394,7 +553,7 @@ function applyFlatDamage(state, source, target, amount, element, label, cause = 
 // creature-inflicted ("damage") from hazard/tick, which the Rod rule needs.
 function onHpMoved(state, source, target, out, element, cause, action = null) {
   if (state.event?.onDamage && out.direction !== "recover") {
-    state.event.onDamage(state, target, cause);
+    state.event.onDamage(state, target, cause, out.damage);
   }
   fireReactions(state, target, RX.TRIGGERS.ON_TAKE_ELEMENT, {
     element, damage: out.damage, direction: out.direction, cause, attacker: source,
@@ -486,6 +645,30 @@ function damageAddFor(state, actor, action, victim) {
     const div = Number(r.effect.levelDiv) || 0;
     if (div > 0) add += Math.floor((Number(actor.actor.level) || 0) / div);
   }
+  // A banked counter spent by one attack (Drako Fury -> Thrash: + ceil(Fury x 0.5),
+  // then all Fury is removed). Read once per landed hit; Thrash is single-target.
+  for (const r of RX.collect(actor, RX.TRIGGERS.ON_DEAL_DAMAGE, ctx)) {
+    if (r.effect?.kind !== "damage_add_counter") continue;
+    const n = actor.counters?.[r.effect.counter] ?? 0;
+    if (n <= 0) continue;
+    add += Math.ceil(n * (Number(r.effect.factor) || 1));
+    if (r.effect.consume) actor.counters[r.effect.counter] = 0;
+  }
+  return add;
+}
+
+// What a banked counter WOULD add to this action, without spending it — so the
+// action pick can see that Thrash with 30 Fury out-hits Dragon Claw (the Drakoza's
+// own pattern: Thrash at Fury >= 30).
+function bankedBonusPreview(state, actor, action, victim) {
+  if (!actor?.reactions?.length) return 0;
+  const ctx = riderCtx(state, actor, action, victim);
+  let add = 0;
+  for (const r of RX.collect(actor, RX.TRIGGERS.ON_DEAL_DAMAGE, ctx)) {
+    if (r.effect?.kind !== "damage_add_counter") continue;
+    const n = actor.counters?.[r.effect.counter] ?? 0;
+    if (n > 0) add += Math.ceil(n * (Number(r.effect.factor) || 1));
+  }
   return add;
 }
 
@@ -500,18 +683,33 @@ function damageMultiplierFor(state, actor, action, victim) {
 }
 
 function resolveAction(state, actor, action, targets, { free = false } = {}) {
+  // An action whose whole meaning is its on-use chain (War Howl, Charm, Form Shift).
+  if (action.effectOnly) return resolveEffectOnly(state, actor, action, targets);
   const a = attrs(actor);
   const dieA = a[action.attrA] ?? 8;
   const dieB = a[action.attrB] ?? 8;
   const bonus = checkBonusFor(actor, action);
   const extra = extraDamageFor(actor, action);
 
-  pay(actor, action, targets.length);
+  // Party policies (party-policy.js): Prophetic Defender may pull a multi-target enemy
+  // action onto Hina; element-swap augments re-point the attack and add damage.
+  targets = PP.redirectTargets(state, actor, action, targets);
+  if (state.mdApi) targets = MD.expandTargets(state, actor, action, targets);
+  const riders = PP.declareAttack(state, actor, action, targets);
+  if (riders?.element) action = { ...action, element: riders.element };
+
+  pay(actor, action, targets.length, state);
+  if (state.mdApi) MD.emit(state, "creature_performs_action", { subject: actor, actor, causeActor: actor, skillName: action.name, action, targets, free });
+  const hits = [];
 
   for (const target of targets) {
     if (!target.alive) continue;
-    const dl = action.defenseTarget === "mdef" ? target.actor.mdef : target.actor.def;
-    const check = R.accuracyCheck(state.rng, { dieA, dieB, bonus, dl });
+    const dl = MD.defense(target, action.defenseTarget === "mdef" ? "mdef" : "def");
+    // An action with no accuracy roll on its sheet (Ruinous Breath) always lands, for
+    // its damage alone (no high roll).
+    const check = action.noRoll
+      ? { a: 0, b: 0, hr: 0, result: 0, crit: false, fumble: false, hit: true }
+      : R.accuracyCheck(state.rng, { dieA, dieB, bonus, dl });
 
     // ON_ATTACKED fires on hit AND miss — the defining property of the family of
     // reactions gated on `creature_hit_by_action` + `creature_miss_action`
@@ -531,7 +729,20 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
     if (!check.hit) {
       state.log.push({ round: state.round, actor: actor.name, action: action.name, target: target.name, miss: true, pierce: pierceMiss });
       fireReactions(state, target, RX.TRIGGERS.ON_ATTACKED, attackedCtx);
+      // creature_miss_action: dispatched to the MISSED creature, with the attacker as
+      // the event subject (state-handlers §7d).
+      if (state.mdApi) MD.emit(state, "creature_miss_action", { onlyReactor: target, subject: actor, actor, attacker: actor, victim: target, causeActor: actor, skillName: action.name, weaponFamily: action.weaponFamily ?? null, element: action.element });
+      if (actor.side === "enemy") PP.onEnemyAttack(state, actor, target, { hit: false, damage: 0 });
       if (!pierceMiss) continue;
+    }
+    if (riders && check.hit) PP.payRiders(state, actor, riders);
+
+    // Warning Shot: the hit deals no damage and leaves the target Shaken.
+    if (riders?.warningShot && check.hit) {
+      target.statuses = { ...target.statuses, isShaken: true };
+      state.log.push({ round: state.round, actor: actor.name, action: `${action.name} + Warning Shot`, target: target.name, damage: 0, status: "shaken" });
+      fireReactions(state, target, RX.TRIGGERS.ON_ATTACKED, attackedCtx);
+      continue;
     }
 
     // A critical doubles nothing by itself in this system; it grants an
@@ -543,11 +754,16 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
     // so weapon efficiency and element affinity both scale the doubled figure.
     // Collected rather than dispatched: the multiplier has to reach the number
     // before it is written, which is upstream of where reaction effects run.
+    if (check.hit) hits.push(target);
+    // creature_will_deal_damage: the attacker's own riders (Brutish Fury +25, an
+    // Aspect turning the slash to Fire) before the number exists.
+    const adj = state.mdApi ? MD.willDeal(state, actor, action, target) : null;
+    const act = adj && adj.element && adj.element !== action.element ? { ...action, element: adj.element } : action;
     let base = R.outgoingDamage({
       hr: check.hr,
-      damageBonus: action.damageBonus + extra + damageAddFor(state, actor, action, target),
+      damageBonus: action.damageBonus + extra + (riders?.extra ?? 0) + damageAddFor(state, actor, action, target) + (adj?.add ?? 0),
     });
-    base = Math.ceil(base * damageMultiplierFor(state, actor, action, target));
+    base = Math.ceil(base * damageMultiplierFor(state, actor, action, target) * (adj?.mult ?? 1));
     if (pierceMiss) base = Math.floor(base / 2);
 
     // Record the efficiency this swing actually landed at, per family. Sampled
@@ -568,7 +784,7 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
     const tinctureAdd = check.hit ? T.outgoingAdd(actor, action) : { postEfficiencyAdd: 0, baseAdd: 0 };
     const dmgSpec = {
       base,
-      element: action.element,
+      element: act.element,
       weaponFamily: action.weaponFamily,
       keywords: action.keywords,
       postEfficiencyMult: tinctureMult,
@@ -576,14 +792,14 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
       baseAdd: tinctureAdd.baseAdd,
     };
     let out = R.incomingDamage(
-      { ...target.actor, damageReduction: reductionFor(target, action.element) },
+      tview(target, act.element),
       dmgSpec,
     );
     // The same hit unboosted, so the report can say what the tincture added.
     const boosted = tinctureMult !== 1 || tinctureAdd.postEfficiencyAdd > 0 || tinctureAdd.baseAdd > 0;
     const unboosted = boosted
       ? R.incomingDamage(
-        { ...target.actor, damageReduction: reductionFor(target, action.element) },
+        tview(target, act.element),
         { ...dmgSpec, postEfficiencyMult: 1, postEfficiencyAdd: 0, baseAdd: 0 },
       ).damage
       : null;
@@ -600,12 +816,12 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
     // Guardian's resistances and defence never touched a hit it protected.
     let victim = target;
     if (out.direction !== "recover" && actor.side === "enemy") {
-      const prot = U.findProtector(state, target, out.damage);
+      const prot = state.policy?.name === "novice" ? null : U.findProtector(state, target, out.damage, PP.protectBar(state));
       if (prot) {
         prot.protectedThisRound++;
         victim = prot;
         state.log.push({ round: state.round, actor: prot.name, action: "Protect", target: target.name, protect: true });
-        const protDl = action.defenseTarget === "mdef" ? prot.actor.mdef : prot.actor.def;
+        const protDl = MD.defense(prot, action.defenseTarget === "mdef" ? "mdef" : "def");
         const protHit = check.crit ? true : (!check.fumble && check.result >= protDl);
         if (!protHit) {
           state.log.push({ round: state.round, actor: actor.name, action: action.name, target: prot.name, miss: true, protected: target.name });
@@ -614,7 +830,7 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
           continue;
         }
         out = R.incomingDamage(
-          { ...prot.actor, damageReduction: reductionFor(prot, action.element) },
+          tview(prot, act.element),
           dmgSpec,
         );
       }
@@ -623,7 +839,7 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
     // ON_TAKE_HIT — the defender's own pre-write adjustments (damage-taken
     // multipliers, survive-at-1), after Protect has settled who the victim is.
     if (out.direction !== "recover" && out.damage > 0) {
-      out = applyTakeHitReactions(state, actor, victim, out, action.element);
+      out = applyTakeHitReactions(state, actor, victim, out, act.element);
     }
 
     // ON_TARGETED is COLLECTED here — before the HP write — because the live
@@ -631,13 +847,20 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
     // silently drop every riposte to a lethal hit.
     const targetedCtx = {
       accuracyResult: check.result, hit: true, damage: out.damage,
-      element: action.element, attacker: actor, victim,
+      element: act.element, attacker: actor, victim,
     };
+
+    // creature_targeted_by_action — pre-resolve, as live: the riposte lands even on
+    // the hit that kills.
+    if (state.mdApi && out.direction !== "recover") {
+      MD.emit(state, "creature_targeted_by_action", { subject: victim, victim, actor, attacker: actor, causeActor: actor, skillName: action.name, element: act.element, incoming: out.damage, checkResult: check.result });
+    }
 
     let hpBefore = null;
     if (out.direction === "recover") {
       target.hp = Math.min(target.maxHp, target.hp + out.damage);
     } else {
+      out = absorbShield(state, victim, out);
       // `victim` is the target unless a protector stepped in front.
       hpBefore = victim.hp;
       victim.hp -= out.damage;
@@ -649,7 +872,7 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
       }
       if (T.reductionPct(victim)) {
         const bare = R.incomingDamage(
-          { ...victim.actor, damageReduction: reductionFor(victim, action.element, { withTincture: false }) },
+          tview(victim, act.element, { withTincture: false }),
           dmgSpec,
         ).damage;
         victim.tincturePrevented += Math.max(0, bare - out.damage);
@@ -665,6 +888,7 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
         victim.downedOnRound = state.round;
       }
       noteCrisis(state, victim);
+      if (actor.side === "enemy") PP.onEnemyAttack(state, actor, victim, { hit: true, damage: out.damage });
     }
 
     state.log.push({
@@ -684,8 +908,50 @@ function resolveAction(state, actor, action, targets, { free = false } = {}) {
     // the weapon.
     attackedCtx.damage = out.damage;
     fireReactions(state, target, RX.TRIGGERS.ON_ATTACKED, attackedCtx);
-    onHpMoved(state, actor, victim, out, action.element, "damage", action);
+    onHpMoved(state, actor, victim, out, act.element, "damage", action);
+    if (out.direction !== "recover" && hpBefore > 0 && !victim.alive) {
+      fireReactions(state, victim, RX.TRIGGERS.ON_DEFEATED, { element: act.element, attacker: actor });
+    }
+    if (state.mdApi) {
+      const hurt = out.direction === "recover" ? target : victim;
+      mdLedger(state, actor, hurt, out, act.element, "damage", out.direction === "recover" ? true : hpBefore > 0);
+      if (out.direction !== "recover") {
+        MD.emit(state, "creature_deals_damage", { subject: actor, actor, victim, causeActor: actor, skillName: action.name, action, targets, element: act.element, amount: out.damage, resource: "hp" });
+      }
+      MD.emit(state, "creature_hit_by_action", { subject: target, victim: target, actor, attacker: actor, causeActor: actor, skillName: action.name, weaponFamily: action.weaponFamily ?? null, element: act.element, amount: out.damage });
+    }
   }
+  if (actor.md) MD.runOnActivate(state, actor, action, { targets, hits });
+  if (state.mdApi) completes(state, actor, action, targets, free);
+}
+
+// creature_completes_action and its per-kind twin, after everything the action did.
+function completes(state, actor, action, targets, free = false) {
+  MD.flushStatusApplied(state);
+  const ev = { subject: actor, actor, causeActor: actor, skillName: action.name, action, targets, free };
+  MD.emit(state, "creature_completes_action", ev);
+  const label = MD.actionLabel(action).toLowerCase();
+  MD.emit(state, label === "attack" ? "creature_completes_attack" : label === "spell" ? "creature_completes_spell" : "creature_completes_skill", ev);
+}
+
+// An action with no damage roll of its own: pay, roll accuracy if the sheet names two
+// attributes (against foes only), then run the on-use chain on whoever was reached.
+function resolveEffectOnly(state, actor, action, targets) {
+  pay(actor, action, targets.length, state);
+  if (state.mdApi) MD.emit(state, "creature_performs_action", { subject: actor, actor, causeActor: actor, skillName: action.name, action, targets });
+  const hits = [];
+  for (const t of targets) {
+    if (!t.alive) continue;
+    if (action.attrA && action.attrB && t.side !== actor.side) {
+      const a = attrs(actor);
+      const check = R.accuracyCheck(state.rng, { dieA: a[action.attrA] ?? 8, dieB: a[action.attrB] ?? 8, bonus: checkBonusFor(actor, action), dl: MD.defense(t, action.defenseTarget === "mdef" ? "mdef" : "def") });
+      if (!check.hit) { state.log.push({ round: state.round, actor: actor.name, action: action.name, target: t.name, miss: true }); continue; }
+    }
+    hits.push(t);
+  }
+  state.log.push({ round: state.round, actor: actor.name, action: action.name, effectOnly: true, targets: targets.map((t) => t.name), hits: hits.map((t) => t.name) });
+  MD.runOnActivate(state, actor, action, { targets, hits });
+  if (state.mdApi) completes(state, actor, action, targets);
 }
 
 // ── Choosing an action ──────────────────────────────────────────────────────
@@ -725,7 +991,7 @@ function chooseAction(state, actor) {
     for (const t of targets) {
       const proj = R.projectDamage(t.actor, {
         dieA: a[act.attrA] ?? 8, dieB: a[act.attrB] ?? 8,
-        damageBonus: act.damageBonus,
+        damageBonus: act.damageBonus + bankedBonusPreview(state, actor, act, t),
         element: act.element, weaponFamily: act.weaponFamily, keywords: act.keywords,
       });
       if (proj.direction === "recover") { total -= proj.damage; continue; }
@@ -742,6 +1008,8 @@ function chooseAction(state, actor) {
 // Blanche live here by design: Zarg's whole kit rides on the shot rather than
 // replacing it, so an empty rotation is CORRECT (profiles.js).
 function weaponAction(actor) {
+  // Strip Weapon (the Imp) takes the weapon out of the fight.
+  if (actor.weaponHidden) return null;
   const w = actor.actor.weapon;
   if (!w?.name || !(w.baseDamage > 0)) return null;
   const a1 = ATTR_KEYS[w.attrA], a2 = ATTR_KEYS[w.attrB];
@@ -838,13 +1106,29 @@ function tryTincture(state, actor) {
 
 function takeTurn(state, actor, { granted = false } = {}) {
   if (!actor.alive) return;
+  state.activeActor = actor;
+  try {
+    takeTurnInner(state, actor, { granted });
+  } finally {
+    state.activeActor = null;
+  }
+}
+
+function takeTurnInner(state, actor, { granted }) {
+  // Turn start (base turns only): statuses tick, then turn_start reactions — Roo's
+  // Approach, Obsidrax's Lodestone Core, Fafnir's Zero Trigger, a Burn tick.
+  if (state.mdApi && !granted) {
+    MD.onTurnStart(state, actor);
+    MD.emit(state, "turn_start", { subject: actor, victim: actor, actor, causeActor: actor });
+    if (!actor.alive) return;
+  }
 
   // Conflict-event turn-start hook. The Lightning Rod discharges here, through
   // the normal incoming pipeline — so an ABSORBING holder is healed and still
   // registers a bolt event for its passives, which is the interaction the
   // Valley roster is built on. Fires per ACTIVATION, not per round.
   if (state.event?.onTurnStart) {
-    const strike = state.event.onTurnStart(state, actor);
+    const strike = state.event.onTurnStart(state, actor, { granted });
     if (strike) {
       // cause "hazard" — the Storm's own strike must NOT move the Rod, or it
       // self-refreshes and never leaves its holder (lightning-storm-design.md,
@@ -856,13 +1140,31 @@ function takeTurn(state, actor, { granted = false } = {}) {
     }
   }
 
-  if (actor.side === "party") refreshFocus(state);
+  if (actor.side === "party" && state.policy?.name !== "novice") refreshFocus(state);
+
+  // Party policies (party-policy.js) replace the legacy utility layer and the greedy
+  // pick for the party. "done" = a support action spent the turn; a pick is resolved
+  // here; null falls through to the weapon swing below.
+  if (actor.side === "party" && state.policy) {
+    const pol = PP.partyTurn(state, actor, { granted }, POLICY_API);
+    if (pol === "done") {
+      if (granted) actor.grantedActionsTaken++; else actor.baseActionsTaken++;
+      return;
+    }
+    if (pol?.action && !(actor.aes?.length && MD.isBlocked(actor, pol.action))) {
+      resolveAction(state, actor, pol.action, pol.targets);
+      PP.afterPick(state, actor, pol);
+      ST.consume(actor, pol.action);
+      if (granted) actor.grantedActionsTaken++; else actor.baseActionsTaken++;
+      return;
+    }
+  }
 
   // Utility pre-empts the rotation, as it does in profiles.js: a turn spent
   // keeping somebody alive or handing out an extra action beats a turn of
   // damage. Free (granted) actions are attacks only -- they never re-spend the
   // support layer, which would let one Acceleration cascade into infinite heals.
-  if (!granted && actor.side === "party") {
+  if (!granted && actor.side === "party" && !state.policy) {
     const heal = U.tryHeal(state, actor);
     if (heal) {
       state.log.push({ round: state.round, actor: actor.name, action: "Heal", heal: heal.healed, amount: heal.amount });
@@ -885,7 +1187,31 @@ function takeTurn(state, actor, { granted = false } = {}) {
     }
   }
 
-  const pick = chooseAction(state, actor);
+  // Domination / Deadly Temptation: this creature fights for the other side this turn.
+  if (actor.aes?.length && MD.turnedAgainst(actor)) {
+    turnedTurn(state, actor);
+    if (granted) actor.grantedActionsTaken++; else actor.baseActionsTaken++;
+    return;
+  }
+
+  // A data-driven monster picks the way the Battle Director's action reader does —
+  // its own action_pattern_table, priority window, cooldowns and target focus.
+  if (actor.md?.patterns.length) {
+    const p = MD.chooseAction(state, actor);
+    if (!p || p.none || !p.action) {
+      state.log.push({ round: state.round, actor: actor.name, action: "(guard)", idle: true });
+    } else if (!p.targets.length && p.action.target?.side !== "self" && !p.action.target?.self) {
+      state.log.push({ round: state.round, actor: actor.name, action: "(guard)", idle: true, reason: `${p.action.name}: no target` });
+    } else {
+      resolveAction(state, actor, MD.bind(state, actor, p.action, p.targets), p.targets);
+    }
+    if (granted) actor.grantedActionsTaken++; else actor.baseActionsTaken++;
+    return;
+  }
+
+  // Under a party policy the party's own pick was made above; what reaches here is
+  // the weapon swing.
+  const pick = actor.side === "party" && state.policy ? null : chooseAction(state, actor);
   let action = pick?.action ?? null;
   let targets = pick?.targets ?? null;
 
@@ -906,33 +1232,221 @@ function takeTurn(state, actor, { granted = false } = {}) {
     let w = weaponAction(actor);
     if (w) {
       // Barrage buys REACH on a ranged shot, so it fires whenever payable.
-      const barraged = U.tryBarrage(actor, w);
+      const barraged = state.policy?.name === "novice" ? null : U.tryBarrage(actor, w);
       if (barraged) w = barraged;
       // Gear riders AFTER Barrage, so a larger Multi wins over Barrage's 2.
       w = declareRiders(state, actor, w);
       action = w;
       targets = chooseTargets(state, actor, w);
+    } else if (actor.side === "party" && state.policy) {
+      // No swingable weapon (a shield-and-shield loadout): the basic attack is the
+      // kit's own attack — Blanche's Twin Shields.
+      const p = chooseAction(state, actor);
+      if (p && !p.arming) { action = p.action; targets = p.targets; }
     }
   }
 
   if (!action || !targets?.length) {
     state.log.push({ round: state.round, actor: actor.name, action: "(guard)", idle: true });
   } else {
-    resolveAction(state, actor, action, targets);
-    // A strike spends the stance that permitted it — which is what forces the
-    // next activation back onto the arming action. Consumed even if every
-    // target was missed: in play the form is committed the moment it swings.
-    ST.consume(actor, action);
+    if (actor.aes?.length && MD.isBlocked(actor, action)) {
+      state.log.push({ round: state.round, actor: actor.name, action: "(guard)", idle: true, reason: "action barred by a status" });
+    } else {
+      resolveAction(state, actor, action, targets);
+      // A strike spends the stance that permitted it — which is what forces the
+      // next activation back onto the arming action. Consumed even if every
+      // target was missed: in play the form is committed the moment it swings.
+      ST.consume(actor, action);
+    }
   }
 
   if (granted) actor.grantedActionsTaken++;
   else actor.baseActionsTaken++;
 }
 
+// A creature turned against its own side (Draconic Domination, Charm + Deadly
+// Temptation) swings at a random former ally with whatever it may still use.
+function turnedTurn(state, actor) {
+  const victims = state.combatants.filter((c) => c.alive && c !== actor && c.side === actor.side);
+  if (!victims.length) { state.log.push({ round: state.round, actor: actor.name, action: "(guard)", idle: true }); return; }
+  const t = victims[state.rng.int(0, victims.length - 1)];
+  let act = weaponAction(actor);
+  if (!act || !canAfford(actor, act, 1)) {
+    act = (actor.actions ?? []).find((a) => !a.stanceGrants && a.target?.side !== "ally" && a.target?.side !== "self" && canAfford(actor, a, 1)) ?? null;
+  }
+  if (!act) { state.log.push({ round: state.round, actor: actor.name, action: "(guard)", idle: true, reason: "turned, nothing usable" }); return; }
+  state.log.push({ round: state.round, actor: actor.name, action: "(turned against its allies)", reaction: true, announce: true });
+  resolveAction(state, actor, { ...act, target: { side: "enemy", count: 1 } }, [t]);
+}
+
+// ── Rounds ──────────────────────────────────────────────────────────────────
+// One base activation of `c` (the `t`-th this round), with everything that hangs
+// off a turn's end.
+function actOnce(state, c, t) {
+  if (c.turnDebt > 0) {
+    c.turnDebt--;
+    c.turnsDenied++;
+    state.log.push({ round: state.round, actor: c.name, action: "(turn lost)", denied: true });
+    T.tickTurnEnd(c);
+    return;
+  }
+  c.activationIndex = t + 1;
+  takeTurn(state, c);
+  if (state.mdApi && c.alive) {
+    MD.flushStatusApplied(state);
+    MD.emit(state, "turn_end", { subject: c, victim: c, actor: c, causeActor: c });
+    MD.onTurnEnd(state, c);
+  }
+  notePartyLow(state);
+  if (state.policy) PP.onTurnEnd(state, c);
+  // Tinctures count down at the end of the bearer's own BASE turn (live
+  // target_turn_end). Granted free attacks are not turns.
+  T.tickTurnEnd(c);
+}
+
+// Acceleration is a RECURRING grant ("at the end of each of their turns, perform a
+// free attack"), added every round. Granted turns are counted separately from base
+// ones, so BaselineDPR (base only) and RD (both) cannot double-count. Spec D3.
+function grantedTurns(state, c) {
+  if (c.accelerated) c.grantedTurns++;
+  for (let t = 0; t < c.grantedTurns; t++) {
+    if (!c.alive) break;
+    takeTurn(state, c, { granted: true });
+    notePartyLow(state);
+  }
+  c.grantedTurns = 0;
+}
+
+function fightOver(state) {
+  const partyAlive = state.combatants.some((x) => x.side === "party" && x.alive && !x.object);
+  const enemyAlive = state.combatants.some((x) => x.side === "enemy" && x.alive && !x.object);
+  if (partyAlive && enemyAlive) return null;
+  return !partyAlive && !enemyAlive ? "mutual-destruction" : !partyAlive ? "defeat" : (state.forcedOutcome ?? "victory");
+}
+
+// Mindscape's original round: initiative order, each creature taking all of its
+// activations in one block.
+function orderedRound(state, order) {
+  for (const c of order) {
+    if (!c.alive || c.joinedRound === state.round) continue;
+    for (let t = 0; t < c.baseTurns; t++) {
+      if (!c.alive) break;
+      actOnce(state, c, t);
+    }
+    grantedTurns(state, c);
+    const over = fightOver(state);
+    if (over) return over;
+  }
+  return null;
+}
+
+// The Battle Director's round (director-combat.js nextTurn): a group Initiative
+// check picks the side that starts, then the sides ALTERNATE one turn at a time
+// while both have turns left; the side with turns over burns them in a row. On
+// each side's turn the creature with the best DEX + INS (± 1 jitter) that still has
+// an activation left acts (enemy-autopilot rankEnemyCombatants; the sim drives the
+// party the same way). Monsters with several activations therefore spread them
+// across the round instead of taking them in one block.
+function alternatingRound(state) {
+  const left = new Map();
+  for (const c of state.combatants) if (c.alive && c.joinedRound !== state.round) left.set(c, c.baseTurns);
+  const eligible = (side) => [...left.keys()].filter((c) => c.side === side && c.alive && left.get(c) > 0);
+  let side = rollInitiative(state);
+  state.initiativeSide = side;
+  for (let guard = 0; guard < 200; guard++) {
+    let pool = eligible(side);
+    if (!pool.length) {
+      side = side === "party" ? "enemy" : "party";
+      pool = eligible(side);
+      if (!pool.length) break;
+    }
+    const c = pool
+      .map((x) => ({ x, score: initiativeScore(x) + state.rng.float() * 2 - 1 }))
+      .sort((a, b) => b.score - a.score)[0].x;
+    const t = c.baseTurns - left.get(c);
+    left.set(c, left.get(c) - 1);
+    actOnce(state, c, t);
+    if (left.get(c) === 0 && c.alive) grantedTurns(state, c);
+    const over = fightOver(state);
+    if (over) return over;
+    const other = side === "party" ? "enemy" : "party";
+    if (eligible(other).length) side = other;
+  }
+  return null;
+}
+
+// DEX + INS die sizes and any flat initiative bonus — enemy-autopilot readInitiativeScore.
+function initiativeScore(c) {
+  const a = attrs(c);
+  const p = c.actor._rawProps ?? {};
+  const bonus = Number(p.initiative ?? p.init_bonus ?? p.initiative_bonus) || 0;
+  return (a.dex ?? 8) + (a.ins ?? 8) + bonus;
+}
+
+// The Initiative Group Check (director-initiative.js, rolled every round): the PC with
+// the best DEX + INS leads and rolls DEX + INS with their armour's initiative modifier
+// against the highest living enemy's Initiative score; every other PC rolls DEX + INS
+// against 10 and adds +1 on a success that is not a fumble. Meeting the score hands the
+// round's first turn to the party.
+function rollInitiative(state) {
+  const party = state.combatants.filter((c) => c.side === "party" && c.alive);
+  const foes = state.combatants.filter((c) => c.side === "enemy" && c.alive);
+  if (!party.length) return "enemy";
+  if (!foes.length) return "party";
+  const dl = Math.max(...foes.map((f) => Number(f.actor._rawProps?.init) || 0)) || 10;
+  const proxy = (c) => { const a = attrs(c); return (a.dex ?? 8) + (a.ins ?? 8) + (Number(c.actor._rawProps?.init_penalty) || 0); };
+  const ranked = party.slice().sort((a, b) => proxy(b) - proxy(a) || (state.rng.float() - 0.5));
+  const leader = ranked[0];
+  const la = attrs(leader);
+  let total = state.rng.die(la.dex ?? 8) + state.rng.die(la.ins ?? 8) + (Number(leader.actor._rawProps?.init_penalty) || 0);
+  for (const h of ranked.slice(1)) {
+    const ha = attrs(h);
+    const a = state.rng.die(ha.dex ?? 8), b = state.rng.die(ha.ins ?? 8);
+    if (!(a === 1 && b === 1) && a + b >= 10) total += 1;
+  }
+  return total >= dl ? "party" : "enemy";
+}
+
+// Projected damage of one action on its targets, scored like chooseAction (a kill
+// outranks any amount of chip damage). Party policies compare options with it.
+function projectTotal(actor, action, targets) {
+  const a = attrs(actor);
+  let total = 0, finisher = false;
+  for (const t of targets) {
+    const proj = R.projectDamage(t.actor, {
+      dieA: a[action.attrA] ?? 8, dieB: a[action.attrB] ?? 8, damageBonus: action.damageBonus,
+      element: action.element, weaponFamily: action.weaponFamily, keywords: action.keywords,
+    });
+    if (proj.direction === "recover") { total -= proj.damage; continue; }
+    total += proj.damage;
+    if (proj.damage >= t.hp) finisher = true;
+  }
+  return total + (finisher ? 1e6 : 0);
+}
+
+// Track the party's lowest total HP share after every turn (result.partyHpLow).
+function notePartyLow(state) {
+  let cur = 0, max = 0;
+  for (const c of state.combatants) if (c.side === "party") { cur += Math.max(0, c.hp); max += c.maxHp; }
+  if (max) state.partyLow = Math.min(state.partyLow ?? 1, cur / max);
+}
+
+// What party-policy.js may call back into. Function declarations, so hoisting makes
+// this safe at module level.
+const POLICY_API = { attrs, canAfford, chooseAction, chooseTargets, weaponAction, applyFlatDamage, projectTotal };
+
 // ── The run ─────────────────────────────────────────────────────────────────
 // `tinctures`: { pct: { strength, spirit, endurance }, user, stock } — null (the
 // default) leaves every fight exactly as it was.
-function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, conflictEvent = null, tinctures = null }) {
+// `policy`: how the PARTY plays (party-policy.js). "legacy" (the default) is the
+// original Mindscape party, so every published calibration is unchanged.
+function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, conflictEvent = null, tinctures = null, policy = "legacy", monsterRules = "registry", statusLibrary = null, summons = null, turnOrder = null, askReactions = "skip" }) {
+  // "alternate" (the Battle Director's side-by-side turns) comes with the data rules;
+  // "initiative" is Mindscape's original block order. Either can be forced.
+  turnOrder = turnOrder ?? (monsterRules === "data" ? "alternate" : "initiative");
+  if (!["alternate", "initiative"].includes(turnOrder)) throw new Error(`unknown turnOrder "${turnOrder}" (alternate, initiative)`);
+  if (!["registry", "data"].includes(monsterRules)) throw new Error(`unknown monsterRules "${monsterRules}" (registry, data)`);
+  if (!PP.POLICIES.includes(policy)) throw new Error(`unknown party policy "${policy}" (${PP.POLICIES.join(", ")})`);
   const combatants = [
     ...party.map((a) => makeCombatant(a, "party")),
     ...enemies.map((a) => makeCombatant(a, "enemy")),
@@ -942,10 +1456,44 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
     combatants, round: 0, rng, log: [], focus: null,
     event: conflictEvent, rod: null, reactionDepth: 0,
   };
+  // Monster rules (monster-data.js). "data": each enemy's own reaction / effect /
+  // action-pattern tables drive it and the hand registry stands down for it;
+  // "registry": the hand-written reactions.js entries, as every earlier run.
+  for (const c of combatants) {
+    const dataDriven = monsterRules === "data" && c.side === "enemy";
+    // A PC's automatic passives (force / on rows) run from its own data too; what the
+    // party policy already plays, and skills on gear not worn, stay out of it.
+    const reactionsOnly = monsterRules === "data" && c.side === "party";
+    MD.attach(c, { dataDriven, reactionsOnly, library: statusLibrary,
+      skipItems: reactionsOnly ? [...PP.SCRIPTED, ...extractActions(c.actor).gatedByGear] : null });
+    if (dataDriven) {
+      // A monster enters with its SHEET'S current HP/MP, as a spawned token does.
+      // Asura and Kirin are authored at 0 MP on purpose (they charge up); starting
+      // them full handed Asura its 60-MP Quad-Elemental Slash on turn one.
+      const curMp = Number(c.actor.mp?.cur), curHp = Number(c.actor.hp?.cur);
+      if (Number.isFinite(curMp) && curMp >= 0 && curMp < c.mp) c.mp = curMp;
+      if (Number.isFinite(curHp) && curHp > 0 && curHp < c.hp) c.hp = curHp;
+      c.reactions = [];
+      c.undeclaredReactions = [];
+      c.stanceCycle = false;
+      MD.refreshDerived(c);
+    }
+  }
+  if (monsterRules === "data") {
+    state.statusLibrary = statusLibrary ?? {};
+    state.summons = summons ?? {};
+    state.askReactions = askReactions;
+    state.mdApi = { applyFlatDamage, perform: resolveAction, canAfford, attrs, parseTarget, parseCost, isMelee, weaponRead: mdWeaponRead, spawn: mdSpawn };
+  }
+  state.eventApi = { applyFlatDamage, spawnObject };
   if (state.event?.init) state.event.init(state);
   state.tinctures = tinctures ? T.makeTinctureState(tinctures) : null;
+  state.policy = policy === "legacy" ? null : PP.init(state, policy);
+  if (state.mdApi) MD.emit(state, "conflict_start", {});
 
-  const order = combatants.slice().sort((a, b) => initiative(b) - initiative(a));
+  // Delay (Gigas' Oaf): always acts after everyone else.
+  const order = combatants.slice().sort((a, b) => (a.delay - b.delay) || (initiative(b) - initiative(a)));
+  state.order = order;
   // Worst-case tincture opener (tinctures.makeTinctureState carrierFirst): the carrier
   // moves to the front, so a round-1 tincture lands before the carry's first volley.
   if (state.tinctures?.carrierFirst) {
@@ -955,7 +1503,7 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
 
   let outcome = "inconclusive";
   // High Speed: a one-off free attack before the first round.
-  for (const c of combatants) if (U.tryHighSpeed(c)) c.grantedTurns++;
+  for (const c of combatants) if (state.policy?.name !== "novice" && U.tryHighSpeed(c)) c.grantedTurns++;
 
   for (state.round = 1; state.round <= maxRounds; state.round++) {
     for (const c of combatants) {
@@ -964,43 +1512,14 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
       c.takenThisRound = 0;
     }
     if (state.event?.onRoundStart) state.event.onRoundStart(state);
-    for (const c of order) {
-      if (!c.alive) continue;
-      for (let t = 0; t < c.baseTurns; t++) {
-        if (!c.alive) break;
-        if (c.turnDebt > 0) {
-          c.turnDebt--;
-          c.turnsDenied++;
-          state.log.push({ round: state.round, actor: c.name, action: "(turn lost)", denied: true });
-          T.tickTurnEnd(c);
-          continue;
-        }
-        takeTurn(state, c);
-        // Tinctures count down at the end of the bearer's own BASE turn (live
-        // target_turn_end). Granted free attacks below are not turns.
-        T.tickTurnEnd(c);
-      }
-      // Acceleration is a RECURRING grant ("at the end of each of their turns,
-      // perform a free attack"), so it is added every round rather than once.
-      if (c.accelerated) c.grantedTurns++;
-
-      // Granted turns are taken AFTER the base ones and counted separately, so
-      // BaselineDPR (base only) and RD (both) cannot double-count. Spec D3.
-      for (let t = 0; t < c.grantedTurns; t++) {
-        if (!c.alive) break;
-        takeTurn(state, c, { granted: true });
-      }
-      c.grantedTurns = 0;
-
-      const partyAlive = combatants.some((x) => x.side === "party" && x.alive);
-      const enemyAlive = combatants.some((x) => x.side === "enemy" && x.alive);
-      if (!partyAlive || !enemyAlive) {
-        outcome = !partyAlive && !enemyAlive ? "mutual-destruction"
-                : !partyAlive ? "defeat" : "victory";
-        break;
-      }
+    if (state.policy) PP.onRoundStart(state);
+    if (state.mdApi) MD.emit(state, "round_start", {});
+    const over = turnOrder === "alternate" ? alternatingRound(state) : orderedRound(state, order);
+    if (over) { outcome = over; break; }
+    if (state.mdApi) {
+      MD.emit(state, "round_end", {});
+      MD.onRoundEnd(state);
     }
-    if (outcome !== "inconclusive") break;
 
     // The design budget. Past this the fight has failed to resolve either way,
     // and THAT is the finding — a fight nobody can close is a design problem
@@ -1023,9 +1542,16 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
 
   return {
     outcome,
+    policy: state.policy?.name ?? "legacy",
     rounds,
     partyHpRemaining: maxHp ? curHp / maxHp : null,
     downs: partyC.filter((c) => !c.alive).map((c) => ({ name: c.name, round: c.downedOnRound })),
+    // Everyone who hit 0 HP at any point, revived or not (party policies can revive).
+    knockedOut: partyC.filter((c) => c.downedOnRound != null).map((c) => ({ name: c.name, round: c.downedOnRound })),
+    // The party's LOWEST total HP during the fight, as a share of its max. HP at the end
+    // reads healing as safety: a party knocked to 20% and patched back up to 90% before
+    // the last enemy fell was in real danger. Recorded only; nothing reads it in the fight.
+    partyHpLow: state.partyLow ?? 1,
     // When each enemy crossed into Crisis (HP <= half). A designer picking WHEN
     // a phase change lands needs this as directly as they need the round count:
     // "the fight switches up at Crisis" is a promise about a moment, and a
@@ -1069,6 +1595,9 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
     // that many lanes. Without this table a design that collapses to one lane
     // reads as a plain damage nerf and nothing says why.
     laneReport: state.laneStats ? summariseLanes(state.laneStats) : null,
+    monsterRules, turnOrder,
+    // What the monster-data interpreter met and could not run, "<who>|<kind>|<what>" -> count.
+    dataGaps: state.dataGaps ?? null,
     log: state.log,
   };
 }

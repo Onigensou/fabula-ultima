@@ -16,7 +16,7 @@
     }
   },
   "folder": "AF1TjOn1OTJNHrkx",
-  "formula": "1d11",
+  "formula": "1d12",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
   "name": "Valley of the Dragon - Enemies",
   "ownership": {
@@ -37,6 +37,21 @@
         9
       ],
       "text": "Obsidrax",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "79qQkYzcyzOzBkVn",
+      "documentCollection": "Actor",
+      "documentId": "Rk5haXsaDemonAAA",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/mystery-man.svg",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Rakshasa",
       "type": "document",
       "weight": 1
     },

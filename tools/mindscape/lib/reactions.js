@@ -57,6 +57,18 @@ const TRIGGERS = Object.freeze({
   // Effects: `damage_taken_mult` (all applied first), then `survive_at_one`.
   // ctx: { attacker, victim, element, damage }
   ON_TAKE_HIT: "on_take_hit",
+  // The reactor was just reduced to 0 HP. Fired once, after the killing blow is
+  // logged. ctx: { element, attacker }. Added 2026-10-20 for Electro Explosion.
+  ON_DEFEATED: "on_defeated",
+});
+
+// Passives that are standing traits rather than triggered reactions. The engine
+// reads them when it builds the combatant; they count as modelled.
+//   flying — melee attacks cannot target it (live: the Flying AE's range gate)
+//   delay  — acts after everyone else each round (live: the Delay AE)
+const TRAITS = Object.freeze({
+  "Flying": { flying: true },
+  "Oaf": { delay: true },   // Gigas. Its Frightened half (bolt on its OWN turn) is rare and not modelled.
 });
 
 // Round parity for equipment riders. `round > 0` is load-bearing: 0 % 2 === 0
@@ -155,6 +167,53 @@ const REACTION_REGISTRY = Object.freeze({
     effect: { kind: "burst", damage: 10, element: "bolt", target: "everyone-else" },
     note: "Ampere — hits its own allies too, which is why target is everyone-else",
   },
+
+  // ── The Valley bolt chain + combo passives (added 2026-10-20) ─────────────
+  // Every number below is read off the item's own effect_table / reaction rows.
+  "Electro Explosion": {
+    trigger: TRIGGERS.ON_DEFEATED,
+    // Live: creature_defeated, TRIGGER_DAMAGE_IS_EARTH == 0; effect electro_burst =
+    // deal_damage 30 bolt, targeting combat / exclude_self / all. Through
+    // applyFlatDamage, so the burst reaches ON_TAKE_ELEMENT on every creature it
+    // hits — that is what feeds Chain Reaction, Overcharge and Lightning Charge.
+    gate: (ctx) => ctx.element !== "earth",
+    effect: { kind: "burst", damage: 30, element: "bolt", target: "everyone-else" },
+    note: "Electro Slime — the enabler of the whole bolt ecosystem; allies included",
+  },
+
+  "Overcharge": {
+    trigger: TRIGGERS.ON_TAKE_ELEMENT,
+    // Live: creature_lose_resource + creature_gain_resource, TRIGGER_DAMAGE_IS_BOLT
+    // (lands or absorbed) -> free_action Fulgur Finis with damage_bonus_formula 10.
+    // "It pays the spell's MP cost as normal — at 0 MP it can no longer discharge."
+    gate: (ctx) => ctx.element === "bolt",
+    effect: { kind: "free_attack", actionName: "Fulgur Finis", target: "hostile", damageAdd: 10, payCost: true },
+    note: "Lightning Prism — 30 MP per target, so a full-MP Prism discharges about once at three targets",
+  },
+
+  "Brutish Fury": {
+    trigger: TRIGGERS.ON_DEAL_DAMAGE,
+    // Live: creature_will_deal_damage, CUR_HP * 2 <= MAX_HP, adjust_damage add 25 outgoing.
+    gate: (ctx) => ctx.attackerInCrisis,
+    effect: { kind: "damage_add", amount: 25 },
+    note: "Dire Orc — every attack at half HP or below",
+  },
+
+  "Drako Fury": [
+    {
+      trigger: TRIGGERS.ON_TAKE_ELEMENT,
+      // Live: creature_lose_resource, TRIGGER_AMOUNT > 0 -> Fury charges += amount.
+      gate: (ctx) => ctx.direction !== "recover" && ctx.damage > 0,
+      effect: { kind: "counter_add", counter: "fury" },
+    },
+    {
+      trigger: TRIGGERS.ON_DEAL_DAMAGE,
+      // Live (on Thrash): creature_will_deal_damage, AE_CHARGES_FURY > 0 ->
+      // adjust_damage add ceil(FURY * 0.5), then remove every Fury charge.
+      gate: (ctx) => ctx.sourceAction === "Thrash",
+      effect: { kind: "damage_add_counter", counter: "fury", factor: 0.5, consume: true },
+    },
+  ],
 
   "Lightning Charge": {
     trigger: TRIGGERS.ON_TAKE_ELEMENT,
@@ -466,7 +525,7 @@ function applyTuning(effect, props) {
 }
 
 function undeclaredReactions(passives) {
-  return (passives ?? []).filter((p) => !REACTION_REGISTRY[p.name]).map((p) => p.name);
+  return (passives ?? []).filter((p) => !REACTION_REGISTRY[p.name] && !TRAITS[p.name]).map((p) => p.name);
 }
 
 // Which declared reactions on this combatant fire for this trigger + context.
@@ -491,7 +550,7 @@ function collect(combatant, trigger, ctx) {
 const MAX_REACTION_DEPTH = 2;
 
 module.exports = {
-  TRIGGERS, REACTION_REGISTRY, REACTION_ONLY_ACTIONS, MAX_REACTION_DEPTH,
+  TRIGGERS, TRAITS, REACTION_REGISTRY, REACTION_ONLY_ACTIONS, MAX_REACTION_DEPTH,
   declaredReactions, undeclaredReactions, collect, registryRows,
   applyWeaponRead, efficiencyForCounter,
 };

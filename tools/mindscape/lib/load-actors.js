@@ -455,6 +455,18 @@ async function loadNamed(names, { world = DEFAULT_WORLD } = {}) {
   return found;
 }
 
+// Creatures these models can SUMMON mid-fight (Fafnir's Drakes), by actor id — the
+// runBattle({ summons }) map the monster-data interpreter spawns from.
+async function loadSummons(models, { world = DEFAULT_WORLD } = {}) {
+  const { summonRefs } = require("./monster-data");
+  const ids = new Set(models.flatMap((m) => summonRefs(m)));
+  if (!ids.size) return {};
+  const all = await loadAll({ world });
+  const out = {};
+  for (const m of all) if (ids.has(m.id)) out[m.id] = m;
+  return out;
+}
+
 // Every party DB actor in the world, as { name, memberIds }.
 //
 // This world holds MORE THAN ONE — "EXFURSION Party" (Hina/Keren/Blanche/Zarg)
@@ -582,6 +594,7 @@ function validate(actor) {
 }
 
 module.exports = {
+  loadSummons,
   AFFINITY_KEY, ELEMENTS, WEAPON_FAMILIES, STATUS_STEPS, CURRENT_GAME_ACTOR_ID,
   loadAll, loadNamed, loadParty, listParties, resolveCurrentGame,
   validate, toCombatModel, isNpc,

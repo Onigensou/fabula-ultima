@@ -1,0 +1,19 @@
+{
+  "Imp":            { "hpPct": 20, "attacks": { "Pitchfork": { "dmgAdd": 35 } } },
+  "Succubus":       { "hpPct": 10, "attacks": { "Draining Kiss": { "dmgAdd": 20 }, "Rake": { "dmgAdd": 32 } } },
+  "Drakoza":        { "hpPct": 20, "attacks": { "Dragon Claw": { "dmgAdd": 33 }, "Thrash": { "dmgAdd": 33 }, "Tail Swipe": { "dmgAdd": 16 } } },
+  "Ampere":         { "attacks": { "Bubble Beam": { "dmgAdd": 30 }, "Bubble Splash": { "dmgAdd": 5 } } },
+  "Death Gazer":    { "hpPct": 20, "attacks": { "Eye Beam": { "dmgAdd": 30 }, "Mind Sear": { "dmgAdd": 17 } } },
+  "Mana Ray":       { "attacks": { "Volt Stinger": { "dmgAdd": 13 }, "Mana Stinger": { "dmgAdd": 29 } } },
+  "Dragon Guard":   { "attacks": { "Saber": { "dmgAdd": 30 }, "Flame Breath": { "dmgAdd": 10 }, "Suppressing Sweep": { "dmgAdd": 16 } } },
+  "Electro Slime":  { "dmgAdd": 14 },
+  "Skizzik":        { "attacks": { "Thunder Strike": { "dmgAdd": 23 } } },
+  "Obsidrax":       { "attacks": { "Basalt Crush": { "dmgAdd": 18 }, "Venomstone Spines": { "dmgAdd": 6 } } },
+  "Dire Orc":       { "hpPct": 20 },
+  "Lightning Prism":{ "attacks": { "Fulgur Finis": { "dmgAdd": -15 }, "Arc Spark": { "dmgAdd": 29 } } },
+  "Mist Dragon":    { "attacks": { "Mist Claw": { "dmgAdd": 34 }, "Phantom Shift: Thunder Strike": { "dmgAdd": 20 } } },
+  "Iron Colossus":  { "hpPct": -45, "affinity": { "physical": "NA" }, "attacks": { "Siege Fist": { "dmgAdd": 28 }, "Seismic Stomp": { "dmgAdd": 10 } } },
+  "Flame Drake":    { "hpPct": 60, "turns": 3, "dmgAdd": 25 },
+  "Lightning Drake":{ "hpPct": 150, "turns": 3, "dmgAdd": 25 },
+  "Asura":          { "hpPct": -20, "attacks": { "Elemental Slash": { "dmgAdd": 10 }, "Elemental Slash (Enchanted)": { "dmgAdd": 10 } } }
+}

@@ -1,0 +1,55 @@
+{
+  "Dire Orc": {
+    "patterns": {
+      "War Howl": { "priority": 6 },
+      "Skull Splitter": { "priority": 5 },
+      "Cleaver": { "priority": 4 }
+    }
+  },
+  "Succubus": {
+    "patterns": {
+      "Charm": { "priority": 7 },
+      "Draining Kiss": { "priority": 6 },
+      "Rake": { "priority": 5 }
+    }
+  },
+  "Imp": {
+    "patterns": {
+      "Strip Weapon": { "priority": 6, "cooldown": 3 },
+      "Strip Armor": { "priority": 5, "cooldown": 3 },
+      "Prank": { "priority": 4 },
+      "Pitchfork": { "priority": 5 }
+    }
+  },
+  "Iron Colossus": {
+    "hp": 320, "def": 15, "mdef": 12, "ef": { "heavy": 200 },
+    "patterns": {
+      "Grinding Quake": { "priority": 7 },
+      "Seismic Stomp": { "priority": 6 },
+      "Siege Fist": { "priority": 5 }
+    }
+  },
+  "Obsidrax": {
+    "patterns": {
+      "Miasma Nova": { "priority": 9 }
+    }
+  },
+  "Kirin": {
+    "effects": {
+      "Rail Stream": {
+        "rail_charge_bonus": { "damage_amount": "min(40, CUR_MP)" },
+        "apply_paralyzed": { "ae_chance_percent": "min(50, 25 + CUR_MP)" }
+      }
+    }
+  },
+  "Lightning Prism": {
+    "mp": 60
+  },
+  "⭐️ Fafnir": {
+    "effects": {
+      "Dreadwyrm Descent": { "dd_save": { "save_dl": "12" } }
+    }
+  },
+  "Rakshasa": { "hpPct": -25 },
+  "Carlbero": { "dmgAdd": -10 }
+}

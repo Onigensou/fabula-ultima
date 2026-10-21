@@ -1,0 +1,2422 @@
+{
+  "generated": "2026-10-21T03:55:00.090Z",
+  "dungeons": [
+    "Valley of the Dragon",
+    "Fafnir Castle"
+  ],
+  "monsterRules": "data",
+  "party": [
+    "Hina",
+    "Keren",
+    "Blanche",
+    "Zarg"
+  ],
+  "meanPcHp": 118,
+  "cards": [
+    {
+      "name": "⭐️ Fafnir",
+      "rank": "champion",
+      "level": 50,
+      "species": "MONSTER",
+      "hp": 1824,
+      "mp": 400,
+      "turns": 4,
+      "def": 16,
+      "mdef": 17,
+      "hitDef": "26%",
+      "hitMdef": "20%",
+      "vu": [
+        "light"
+      ],
+      "rs": [
+        "air",
+        "bolt",
+        "fire"
+      ],
+      "im": [
+        "dark",
+        "earth"
+      ],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Condemn",
+          "type": "Active",
+          "element": "dark",
+          "targets": 1,
+          "avg": 108,
+          "vs": "mdef"
+        },
+        {
+          "name": "Rend",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 58,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Rend",
+        "type": "Attack",
+        "element": "physical",
+        "targets": 1,
+        "avg": 58,
+        "vs": "def"
+      },
+      "flags": [
+        "resisted hit = 25% of PC HP (< 25%)",
+        "not simulated: Torment: a player decides (ask); Torment: redirect target; Condemn: a player decides (ask); Condemn: redirect target; Zero Power: Cruel Ultimatum: open action menu"
+      ],
+      "findings": [
+        {
+          "rule": "resisted-min",
+          "text": "resisted hit = 25% of PC HP (< 25%)",
+          "action": "Rend",
+          "status": "new"
+        },
+        {
+          "rule": "not-simulated",
+          "text": "not simulated: Torment: a player decides (ask); Torment: redirect target; Condemn: a player decides (ask); Condemn: redirect target; Zero Power: Cruel Ultimatum: open action menu",
+          "status": "new"
+        }
+      ],
+      "design": {
+        "file": "fafnir.md",
+        "status": "draft",
+        "updated": "2026-10-21",
+        "invariants": [
+          {
+            "id": "phase-enters-below-100",
+            "ok": true,
+            "text": "Storm Gathering reaction_config_table[sg_enter].condition_formula = \"CUR_MP < 100\"",
+            "why": "Latch on: the recovery phase begins."
+          },
+          {
+            "id": "phase-exits-at-300",
+            "ok": true,
+            "text": "Storm Gathering reaction_config_table[sg_exit].condition_formula = \"CUR_MP >= 300\"",
+            "why": "Latch off: hysteresis, so phases do not flicker."
+          },
+          {
+            "id": "summon-recovery-only",
+            "ok": true,
+            "text": "action_pattern_table[Summon Elemental Drake].action_pattern_string = \"Storm Gathering\"",
+            "why": "Summon is a recovery-phase action only."
+          },
+          {
+            "id": "calm-recovery-only",
+            "ok": true,
+            "text": "action_pattern_table[Storm Calm].action_pattern_string = \"Storm Gathering\"",
+            "why": "Storm Calm is a recovery-phase action only."
+          },
+          {
+            "id": "summon-cap-2",
+            "ok": true,
+            "text": "Summon Elemental Drake effect_table[summon_drakes].summon_max = \"2\"",
+            "why": "One pair alive at a time."
+          },
+          {
+            "id": "ultimatum-ignores-absorb",
+            "ok": true,
+            "text": "Zero Power: Cruel Ultimatum effect_table[cu_120].damage_keywords = \"ignore_absorption\"",
+            "why": "Per the edict text."
+          }
+        ],
+        "blindSpots": [
+          "Mindscape cannot simulate the player choices: Torment / Condemn redirects (ask) and Cruel Ultimatum's menu.",
+          "The phase latch firing off the live resource ledger is verified by construction, never watched in a resolved fight."
+        ],
+        "openQuestions": [
+          "From the checkup, unchanged: Condemn's damage (can drop a healthy PC), the two IM affinities (dark + earth), dagger EF 50 stacking with IM dark.",
+          "Zero Trigger: Suffering grants ZP on ANY turn start — up to 8 ZP/round at 4 activations. Intended?",
+          "Deployment: also a 25% roll on Eisendrache Burning - Enemies alongside L13-15 soldiers — keep?"
+        ]
+      },
+      "drift": []
+    },
+    {
+      "name": "Ampere",
+      "rank": "soldier",
+      "level": 43,
+      "species": "BEAST",
+      "hp": 175,
+      "mp": 30,
+      "turns": 1,
+      "def": 10,
+      "mdef": 10,
+      "hitDef": ">58%",
+      "hitMdef": ">58%",
+      "vu": [
+        "earth"
+      ],
+      "rs": [
+        "bolt"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Bubble Splash",
+          "type": "Active",
+          "element": "ice",
+          "targets": null,
+          "avg": 47,
+          "vs": "def"
+        },
+        {
+          "name": "Bubble Beam",
+          "type": "Attack",
+          "element": "ice",
+          "targets": 1,
+          "avg": 29,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Bubble Beam",
+        "type": "Attack",
+        "element": "ice",
+        "targets": 1,
+        "avg": 29,
+        "vs": "def"
+      },
+      "flags": [
+        "best basic attack avg 29 < 45"
+      ],
+      "findings": [
+        {
+          "rule": "basic-attack-min",
+          "text": "best basic attack avg 29 < 45",
+          "action": "Bubble Beam",
+          "status": "intended",
+          "why": "Setup monster: Bubble Beam's job is Wet (VU bolt) for the rest of the roster, not damage.",
+          "confirmed": false,
+          "decided": "claude 2026-08-16"
+        }
+      ],
+      "design": {
+        "file": "ampere.md",
+        "status": "draft",
+        "updated": "2026-10-21",
+        "invariants": [
+          {
+            "id": "beam-applies-wet",
+            "ok": true,
+            "text": "Bubble Beam effect_table[bb_wet].ae_template_ref = \"Wet\"",
+            "why": "Wet = VU bolt — the setup."
+          },
+          {
+            "id": "beam-wet-per-target",
+            "ok": true,
+            "text": "Bubble Beam effect_table[bb_wet].ae_chance_percent = \"50\"",
+            "why": "Per-target roll (effect_kind chance would coin-flip once for the row)."
+          },
+          {
+            "id": "splash-full-tank",
+            "ok": true,
+            "text": "action_pattern_table[Bubble Splash].action_pattern_value_1 = \"100\"",
+            "why": "One cast per full tank; the Rod's +30 MP paces it."
+          },
+          {
+            "id": "volt-counter-even",
+            "ok": true,
+            "text": "Volt Counter reaction_config_table[vd_damage].condition_formula contains \"ATTACK_CHECK_RESULT % 2 == 0\"",
+            "why": "Even-parity motif."
+          },
+          {
+            "id": "volt-counter-hits-allies",
+            "ok": true,
+            "text": "Volt Counter effect_table[vd_targets].category = \"creature\"",
+            "why": "Indiscriminate — its own allies too."
+          }
+        ],
+        "blindSpots": [],
+        "openQuestions": [
+          "Action pattern row P1 is an 'always' row with no action name — leftover?"
+        ]
+      },
+      "drift": []
+    },
+    {
+      "name": "Asura",
+      "rank": "elite",
+      "level": 38,
+      "species": "DEMON",
+      "hp": 900,
+      "mp": 60,
+      "turns": 4,
+      "def": 15,
+      "mdef": 13,
+      "hitDef": "33%",
+      "hitMdef": "49%",
+      "vu": [
+        "air",
+        "bolt",
+        "fire",
+        "ice"
+      ],
+      "rs": [],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Elemental Slash (Enchanted)",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 49,
+          "vs": "mdef"
+        },
+        {
+          "name": "Elemental Slash",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 49,
+          "vs": "def"
+        },
+        {
+          "name": "Elemental Slash: Overflow",
+          "type": "Attack",
+          "element": "fire",
+          "targets": null,
+          "avg": 27,
+          "vs": "def"
+        },
+        {
+          "name": "Sword Enchant - Air",
+          "type": "Active",
+          "element": "physical",
+          "targets": 1,
+          "avg": 7,
+          "vs": "def"
+        },
+        {
+          "name": "Sword Enchant - Fire",
+          "type": "Active",
+          "element": "physical",
+          "targets": 1,
+          "avg": 7,
+          "vs": "def"
+        },
+        {
+          "name": "Sword Enchant - Bolt",
+          "type": "Active",
+          "element": "physical",
+          "targets": 1,
+          "avg": 7,
+          "vs": "def"
+        },
+        {
+          "name": "Sword Enchant - Ice",
+          "type": "Active",
+          "element": "physical",
+          "targets": 1,
+          "avg": 7,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Elemental Slash (Enchanted)",
+        "type": "Attack",
+        "element": "physical",
+        "targets": 1,
+        "avg": 49,
+        "vs": "mdef"
+      },
+      "flags": [
+        "4 VU (rule: exactly 1 for elite)",
+        "resisted hit = 21% of PC HP (< 25%)",
+        "pattern: Quad-Elemental Slash costs 60 MP; the monster starts at 0 MP and must charge up first",
+        "pattern: Elemental Slash: Overflow costs 30 MP; the monster starts at 0 MP and must charge up first"
+      ],
+      "findings": [
+        {
+          "rule": "vu-count",
+          "text": "4 VU (rule: exactly 1 for elite)",
+          "status": "intended",
+          "why": "Adaptive affinity: the four elements start VU and each flips to RS when its Mark is lit — the 4 VU are the puzzle, not a legibility failure.",
+          "confirmed": false,
+          "decided": "claude 2026-08-19"
+        },
+        {
+          "rule": "resisted-min",
+          "text": "resisted hit = 21% of PC HP (< 25%)",
+          "action": "Elemental Slash (Enchanted)",
+          "status": "new"
+        },
+        {
+          "rule": "pattern",
+          "text": "pattern: Quad-Elemental Slash costs 60 MP; the monster starts at 0 MP and must charge up first",
+          "status": "intended",
+          "why": "Starting at 0 MP is the design ('enters every conflict with no MP'): Overflow and Quad must be earned through Enchants and the storm's +30 MP.",
+          "confirmed": false,
+          "decided": "claude 2026-08-19"
+        },
+        {
+          "rule": "pattern",
+          "text": "pattern: Elemental Slash: Overflow costs 30 MP; the monster starts at 0 MP and must charge up first",
+          "status": "intended",
+          "why": "Starting at 0 MP is the design ('enters every conflict with no MP'): Overflow and Quad must be earned through Enchants and the storm's +30 MP.",
+          "confirmed": false,
+          "decided": "claude 2026-08-19"
+        }
+      ],
+      "design": {
+        "file": "asura.md",
+        "status": "draft",
+        "updated": "2026-10-21",
+        "invariants": [
+          {
+            "id": "mark-bolt-cause-blank",
+            "ok": true,
+            "text": "Ascension reaction_config_table[mark_bolt].reaction_cause_filter = \"\"",
+            "why": "The storm must be able to hand it the Bolt mark (priced into HP)."
+          },
+          {
+            "id": "aspect-bolt-cause-damage",
+            "ok": true,
+            "text": "Elemental Aspect reaction_config_table[aspect_set_bolt].reaction_cause_filter = \"damage\"",
+            "why": "The storm must NOT set the Aspect — the party owns the blade's element."
+          },
+          {
+            "id": "aspect-clear-persistent",
+            "ok": true,
+            "text": "Elemental Aspect effect_table[aspect_clear].include_persistent = true",
+            "why": "Aspect AEs are persistent_counter; without it Aspects stack silently."
+          },
+          {
+            "id": "quad-resets-marks",
+            "ok": true,
+            "text": "Quad-Elemental Slash effect_table[quad_reset_marks].include_persistent = true",
+            "why": "Quad's reset was a silent no-op once → RS to everything from round 1 → TPK."
+          },
+          {
+            "id": "quad-needs-four-marks",
+            "ok": true,
+            "text": "action_pattern_table[Quad-Elemental Slash].action_pattern_value_1 = \"4\"",
+            "why": "The fourth Mark unlocks Quad — the clock."
+          },
+          {
+            "id": "mark-worth-8",
+            "ok": true,
+            "text": "Ascension effect_table[ascension_bonus].damage_amount = \"AE_CHARGES_ASCENSION * 8\"",
+            "why": "Each collected element = +8 damage (the 'ever-increasing strength')."
+          }
+        ],
+        "blindSpots": [
+          "Mindscape: the sim reads Asura HARDER than live (calibration 2026-10-20: live 50% win r9 vs sim 3%) — offset not resolved.",
+          "Sim observation: Asura rarely casts Quad (60 MP = its whole pool; enchants lock once all Marks are lit).",
+          "Unverified: a free_action whose action_ref is an All Enemy item targets the whole party."
+        ],
+        "openQuestions": [
+          "Balance not settled: live samples ran 66–84% party HP vs the 40–60% target. Quad per-beat damage first, then HP?",
+          "Should Quad be reachable more often (MP economy), given the sim almost never sees it?"
+        ]
+      },
+      "drift": []
+    },
+    {
+      "name": "Carlbero",
+      "rank": "elite",
+      "level": 50,
+      "species": "PLANT",
+      "hp": 640,
+      "mp": 80,
+      "turns": 4,
+      "def": 11,
+      "mdef": 14,
+      "hitDef": ">58%",
+      "hitMdef": "41%",
+      "vu": [
+        "fire"
+      ],
+      "rs": [
+        "dark",
+        "poison"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Mind Sap",
+          "type": "Active",
+          "element": "dark",
+          "targets": 1,
+          "avg": 57,
+          "vs": "mdef"
+        },
+        {
+          "name": "Tentacle Slap",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 3,
+          "avg": 47,
+          "vs": "def"
+        },
+        {
+          "name": "Tentacle Grab",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 42,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Tentacle Slap",
+        "type": "Attack",
+        "element": "physical",
+        "targets": 3,
+        "avg": 47,
+        "vs": "def"
+      },
+      "flags": [
+        "resisted hit = 20% of PC HP (< 25%)"
+      ],
+      "findings": [
+        {
+          "rule": "resisted-min",
+          "text": "resisted hit = 20% of PC HP (< 25%)",
+          "action": "Tentacle Slap",
+          "status": "intended",
+          "why": "Slap is Multi 3 at 4 activations — the threat is volume across the party, not one hit; per-hit numbers are low on purpose.",
+          "confirmed": true,
+          "decided": "user 2026-08-31"
+        }
+      ],
+      "design": {
+        "file": "carlbero.md",
+        "status": "draft",
+        "updated": "2026-10-21",
+        "invariants": [
+          {
+            "id": "four-activations",
+            "ok": true,
+            "text": "activation = \"4\"",
+            "why": "User's explicit direction: 4 activations."
+          },
+          {
+            "id": "sap-drains-10",
+            "ok": true,
+            "text": "Mind Sap effect_table[cb_sap_gain].grant_amount = \"10\"",
+            "why": "At 25 one Sap re-arms the breath every round."
+          },
+          {
+            "id": "breath-six-tiers",
+            "ok": true,
+            "text": "Stinky Breath effect_table[cb_save].save_tiers = \"16,14,12,10,8,6\"",
+            "why": "The cumulative tier ladder."
+          },
+          {
+            "id": "denial-pool-is-five-commands",
+            "ok": true,
+            "text": "Stinky Breath effect_table[cb_t3].ae_name_pool = \"Frightened, Paralyzed, Silence, Disarmed, Confused\"",
+            "why": "Exactly the five disable_action statuses — two draws can never lock a PC out."
+          },
+          {
+            "id": "breath-exclusive",
+            "ok": true,
+            "text": "action_pattern_table[Stinky Breath].action_pattern_priority = \"10\"",
+            "why": "Breath fires whenever affordable."
+          },
+          {
+            "id": "sap-one-above-grab",
+            "ok": true,
+            "text": "action_pattern_table[Mind Sap].action_pattern_priority = \"6\"",
+            "why": "One apart from Grab (5) and Slap (4) so they compete — 3 apart chain-drains one PC all fight."
+          }
+        ],
+        "blindSpots": [
+          "The interactive save legs (Breath, Grab) dispatch to players' clients — never exercised in a real fight.",
+          "No real fight has been played."
+        ],
+        "openQuestions": [
+          "Real art: Bandit Shroom stands in; token scale 2.2 pending the Training Ground eyeball pass."
+        ]
+      },
+      "drift": []
+    },
+    {
+      "name": "Death Gazer",
+      "rank": "soldier",
+      "level": 50,
+      "species": "MONSTER",
+      "hp": 150,
+      "mp": 120,
+      "turns": 1,
+      "def": 8,
+      "mdef": 16,
+      "hitDef": ">58%",
+      "hitMdef": "26%",
+      "vu": [
+        "light"
+      ],
+      "rs": [
+        "dark",
+        "poison"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Mind Sear",
+          "type": "Spell",
+          "element": "dark",
+          "targets": 1,
+          "avg": 43,
+          "vs": "mdef"
+        },
+        {
+          "name": "Eye Beam",
+          "type": "Attack",
+          "element": "dark",
+          "targets": 1,
+          "avg": 30,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Eye Beam",
+        "type": "Attack",
+        "element": "dark",
+        "targets": 1,
+        "avg": 30,
+        "vs": "def"
+      },
+      "flags": [
+        "best basic attack avg 30 < 45",
+        "pattern: Death Gaze repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9)"
+      ],
+      "findings": [
+        {
+          "rule": "basic-attack-min",
+          "text": "best basic attack avg 30 < 45",
+          "action": "Eye Beam",
+          "status": "intended",
+          "why": "Gimmick caster: Death Gaze is the threat; Eye Beam is filler.",
+          "confirmed": false,
+          "decided": "claude 2026-08-29"
+        },
+        {
+          "rule": "pattern",
+          "text": "pattern: Death Gaze repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9)",
+          "status": "intended",
+          "why": "Death Gaze firing every turn its condition holds (the cooldown never applies) is part of the design from when the monster was created.",
+          "confirmed": true,
+          "decided": "user 2026-10-21"
+        }
+      ],
+      "design": {
+        "file": "death-gazer.md",
+        "status": "draft",
+        "updated": "2026-10-21",
+        "invariants": [
+          {
+            "id": "gaze-dl13",
+            "ok": true,
+            "text": "Death Gaze effect_table[dg_save].save_dl = \"13\"",
+            "why": "Specced DL (≈60% fail) — any change is a balance decision."
+          },
+          {
+            "id": "gaze-kill-crush",
+            "ok": true,
+            "text": "Death Gaze effect_table[dg_kill].damage_keywords = \"crush\"",
+            "why": "Reduce-to-0 via deal_damage + crush (bypasses flat DR); never set_resource."
+          },
+          {
+            "id": "gaze-from-round-2",
+            "ok": true,
+            "text": "action_pattern_table[Death Gaze].action_pattern_value_1 = \"2\"",
+            "why": "Pacing lives in the pattern: not in round 1."
+          }
+        ],
+        "blindSpots": [
+          "The save leg dispatches to players' clients — it hangs solo-GM, so it was never exercised."
+        ],
+        "openQuestions": []
+      },
+      "drift": []
+    },
+    {
+      "name": "Dire Orc",
+      "rank": "soldier",
+      "level": 50,
+      "species": "MONSTER",
+      "hp": 240,
+      "mp": 40,
+      "turns": 1,
+      "def": 10,
+      "mdef": 6,
+      "hitDef": ">58%",
+      "hitMdef": ">58%",
+      "vu": [
+        "ice"
+      ],
+      "rs": [
+        "earth"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Skull Splitter",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 66,
+          "vs": "def"
+        },
+        {
+          "name": "Cleaver",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 45,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Skull Splitter",
+        "type": "Attack",
+        "element": "physical",
+        "targets": 1,
+        "avg": 66,
+        "vs": "def"
+      },
+      "flags": [
+        "pattern: War Howl repeats every turn its condition holds: its 3-round cooldown never applies (no other row within 2 priority of 8)"
+      ],
+      "findings": [
+        {
+          "rule": "pattern",
+          "text": "pattern: War Howl repeats every turn its condition holds: its 3-round cooldown never applies (no other row within 2 priority of 8)",
+          "status": "intended",
+          "why": "War Howl firing every turn its condition holds (the cooldown never applies) is part of the design from when the monster was created.",
+          "confirmed": true,
+          "decided": "user 2026-10-21"
+        }
+      ],
+      "design": {
+        "file": "dire-orc.md",
+        "status": "draft",
+        "updated": "2026-10-21",
+        "invariants": [
+          {
+            "id": "fury-at-half-hp",
+            "ok": true,
+            "text": "Brutish Fury reaction_config_table[do_rage].condition_formula = \"CUR_HP * 2 <= MAX_HP\"",
+            "why": "The half-HP turn is the gimmick."
+          },
+          {
+            "id": "fury-plus-25",
+            "ok": true,
+            "text": "Brutish Fury effect_table[do_rage].damage_amount = \"25\"",
+            "why": "The size of the turn."
+          }
+        ],
+        "blindSpots": [],
+        "openQuestions": []
+      },
+      "drift": []
+    },
+    {
+      "name": "Dragon Guard",
+      "rank": "soldier",
+      "level": 50,
+      "species": "HUMANOID",
+      "hp": 250,
+      "mp": 30,
+      "turns": 1,
+      "def": 12,
+      "mdef": 10,
+      "hitDef": "58%",
+      "hitMdef": ">58%",
+      "vu": [
+        "ice"
+      ],
+      "rs": [
+        "fire",
+        "poison"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Saber",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 51,
+          "vs": "def"
+        },
+        {
+          "name": "Flame Breath",
+          "type": "Spell",
+          "element": "fire",
+          "targets": null,
+          "avg": 36,
+          "vs": "mdef"
+        },
+        {
+          "name": "Suppressing Sweep",
+          "type": "Active",
+          "element": "physical",
+          "targets": 2,
+          "avg": 32,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Saber",
+        "type": "Attack",
+        "element": "physical",
+        "targets": 1,
+        "avg": 51,
+        "vs": "def"
+      },
+      "flags": [],
+      "findings": [],
+      "design": {
+        "file": "dragon-guard.md",
+        "status": "draft",
+        "updated": "2026-10-21",
+        "invariants": [
+          {
+            "id": "breath-vs-groups",
+            "ok": true,
+            "text": "action_pattern_table[Flame Breath].action_pattern_value_1 = \"3\"",
+            "why": "Breath only against 3+ enemies."
+          },
+          {
+            "id": "ice-vulnerable",
+            "ok": true,
+            "text": "affinity ice = \"VU\"",
+            "why": "Its one weakness."
+          }
+        ],
+        "blindSpots": [],
+        "openQuestions": [
+          "Suppressing Sweep is still a placeholder — what is its real design?"
+        ]
+      },
+      "drift": []
+    },
+    {
+      "name": "Drakoza",
+      "rank": "soldier",
+      "level": 43,
+      "species": "BEAST",
+      "hp": 140,
+      "mp": 60,
+      "turns": 1,
+      "def": 11,
+      "mdef": 10,
+      "hitDef": ">58%",
+      "hitMdef": ">58%",
+      "vu": [
+        "light"
+      ],
+      "rs": [
+        "dark"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Dragon Claw",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 46,
+          "vs": "def"
+        },
+        {
+          "name": "Thrash",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 45,
+          "vs": "def"
+        },
+        {
+          "name": "Tail Swipe",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 2,
+          "avg": 29,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Dragon Claw",
+        "type": "Attack",
+        "element": "physical",
+        "targets": 1,
+        "avg": 46,
+        "vs": "def"
+      },
+      "flags": [],
+      "findings": [],
+      "design": {
+        "file": "drakoza.md",
+        "status": "draft",
+        "updated": "2026-10-21",
+        "invariants": [
+          {
+            "id": "fury-banks-all-damage",
+            "ok": true,
+            "text": "Drako Fury reaction_config_table[fury_bank].reaction_cause_filter = \"\"",
+            "why": "Blank so DoT ticks feed Fury too."
+          },
+          {
+            "id": "thrash-scoped",
+            "ok": true,
+            "text": "Thrash reaction_config_table[thrash_payback].reaction_source_skill = \"Thrash\"",
+            "why": "Stops Claw / Tail Swipe leaking the bank."
+          },
+          {
+            "id": "payback-dial",
+            "ok": true,
+            "text": "Thrash effect_table[thrash_bonus].damage_amount = \"ceil(AE_CHARGES_FURY * 0.5)\"",
+            "why": "THE balance dial — change it deliberately, with a log row."
+          },
+          {
+            "id": "payback-adjust-damage",
+            "ok": true,
+            "text": "Thrash effect_table[thrash_bonus].effect_kind = \"adjust_damage\"",
+            "why": "add_damage is retired and inert (it also aborted the spend)."
+          },
+          {
+            "id": "thrash-spends-persistent",
+            "ok": true,
+            "text": "Thrash effect_table[thrash_spend].include_persistent = true",
+            "why": "Without it Fury grows unbounded all fight."
+          },
+          {
+            "id": "thrash-at-30-fury",
+            "ok": true,
+            "text": "action_pattern_table[Thrash].action_pattern_value_1 = \"30\"",
+            "why": "Thrash only once there is a bank worth paying back."
+          }
+        ],
+        "blindSpots": [
+          "Balance unsimulated at design time; never fought a full AI-driven turn end-to-end."
+        ],
+        "openQuestions": []
+      },
+      "drift": []
+    },
+    {
+      "name": "Electro Slime",
+      "rank": "soldier",
+      "level": 40,
+      "species": "ELEMENTAL",
+      "hp": 45,
+      "mp": 30,
+      "turns": 1,
+      "def": 6,
+      "mdef": 6,
+      "hitDef": ">58%",
+      "hitMdef": ">58%",
+      "vu": [
+        "earth"
+      ],
+      "rs": [],
+      "im": [
+        "poison"
+      ],
+      "ab": [
+        "bolt"
+      ],
+      "attacks": [
+        {
+          "name": "Static Shot",
+          "type": "Attack",
+          "element": "bolt",
+          "targets": 1,
+          "avg": 36,
+          "vs": "mdef"
+        },
+        {
+          "name": "Tackle",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 36,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Static Shot",
+        "type": "Attack",
+        "element": "bolt",
+        "targets": 1,
+        "avg": 36,
+        "vs": "mdef"
+      },
+      "flags": [
+        "absorbs bolt (warning signal)",
+        "best basic attack avg 36 < 45"
+      ],
+      "findings": [
+        {
+          "rule": "absorb",
+          "text": "absorbs bolt (warning signal)",
+          "status": "intended",
+          "why": "Bolt absorb makes it a deliberate Rod sponge (starves Gigas of Frightened) and keeps the roster interlock.",
+          "confirmed": false,
+          "decided": "claude 2026-08-16"
+        },
+        {
+          "rule": "basic-attack-min",
+          "text": "best basic attack avg 36 < 45",
+          "action": "Static Shot",
+          "status": "intended",
+          "why": "Its role is the death trigger + Paralyze, not damage (2026-10-20 balance pass raised accuracy only).",
+          "confirmed": true,
+          "decided": "user 2026-10-20"
+        }
+      ],
+      "design": {
+        "file": "electro-slime.md",
+        "status": "draft",
+        "updated": "2026-10-21",
+        "invariants": [
+          {
+            "id": "absorbs-bolt",
+            "ok": true,
+            "text": "affinity bolt = \"AB\"",
+            "why": "Rod sponge."
+          },
+          {
+            "id": "earth-kills-cleanly",
+            "ok": true,
+            "text": "Electro Explosion reaction_config_table[electro_burst].condition_formula = \"TRIGGER_DAMAGE_IS_EARTH == 0\"",
+            "why": "Earth is the clean answer; anything else detonates it."
+          },
+          {
+            "id": "burst-hits-everyone",
+            "ok": true,
+            "text": "Electro Explosion effect_table[burst_targets].candidate_source = \"combat\"",
+            "why": "Allies included — that is what feeds the bolt reactors."
+          },
+          {
+            "id": "burst-is-bolt",
+            "ok": true,
+            "text": "Electro Explosion effect_table[electro_burst].damage_element = \"bolt\"",
+            "why": "The burst must be Bolt to trigger the interlock."
+          },
+          {
+            "id": "static-shot-paralyze",
+            "ok": true,
+            "text": "Static Shot reaction_config_table[apply_paralyzed].condition_formula contains \"chance(50)\"",
+            "why": "Paralyze is half its role."
+          }
+        ],
+        "blindSpots": [
+          "MAX_REACTION_DEPTH 2 in Mindscape: slime-chain → second-hop combos are cut."
+        ],
+        "openQuestions": []
+      },
+      "drift": []
+    },
+    {
+      "name": "Gigas",
+      "rank": "elite",
+      "level": 45,
+      "species": "HUMANOID",
+      "hp": 800,
+      "mp": 50,
+      "turns": 1,
+      "def": 12,
+      "mdef": 10,
+      "hitDef": "58%",
+      "hitMdef": ">58%",
+      "vu": [
+        "bolt",
+        "fire",
+        "poison"
+      ],
+      "rs": [
+        "physical",
+        "air",
+        "earth"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Heavy Swing",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 128,
+          "vs": "def"
+        },
+        {
+          "name": "Heavy Bodyslam",
+          "type": "Active",
+          "element": "physical",
+          "targets": 1,
+          "avg": 83,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Heavy Swing",
+        "type": "Attack",
+        "element": "physical",
+        "targets": 1,
+        "avg": 128,
+        "vs": "def"
+      },
+      "flags": [
+        "3 VU (rule: exactly 1 for elite)",
+        "Heavy Swing avg 128 can drop an average PC (mean HP 118)"
+      ],
+      "findings": [
+        {
+          "rule": "vu-count",
+          "text": "3 VU (rule: exactly 1 for elite)",
+          "status": "intended",
+          "why": "The world sheet is authoritative: VU bolt/fire/poison + RS physical/air/earth is intended (the 2026-08-14 'VU bolt only' note was superseded on the sheet).",
+          "confirmed": true,
+          "decided": "user 2026-10-21"
+        },
+        {
+          "rule": "one-shot",
+          "text": "Heavy Swing avg 128 can drop an average PC (mean HP 118)",
+          "action": "Heavy Swing",
+          "status": "intended",
+          "why": "The big hit is the threat that pushes the party to land Bolt (a PC skill or a dungeon hazard). Bolt → Frightened until the end of its next turn → Heavy Swing is blocked. Judge it WITH bolt in play.",
+          "confirmed": true,
+          "decided": "user 2026-10-21"
+        }
+      ],
+      "design": {
+        "file": "gigas.md",
+        "status": "draft",
+        "updated": "2026-10-21",
+        "invariants": [
+          {
+            "id": "frightened-not-immune",
+            "ok": true,
+            "text": "condition_frightened = \"NA\"",
+            "why": "Frightened IS the counterplay. RS/IM here deletes the whole design."
+          },
+          {
+            "id": "bolt-vulnerable",
+            "ok": true,
+            "text": "affinity bolt = \"VU\"",
+            "why": "Bolt is the Rod's element and the counterplay signal."
+          },
+          {
+            "id": "swing-is-attack",
+            "ok": true,
+            "text": "Heavy Swing.skill_type = \"Attack\"",
+            "why": "Frightened blocks the Attack label. If Heavy Swing stops being an Attack, the one-shot is no longer gated."
+          },
+          {
+            "id": "bodyslam-is-active",
+            "ok": true,
+            "text": "Heavy Bodyslam.skill_type = \"Active\"",
+            "why": "Must survive Frightened's Attack block, or Gigas has no action while Frightened."
+          },
+          {
+            "id": "bodyslam-recoil",
+            "ok": true,
+            "text": "Heavy Bodyslam effect_table[bodyslam_recoil].damage_amount = \"100\"",
+            "why": "Self-damage is the payoff for landing the Rod."
+          },
+          {
+            "id": "oaf-any-bolt",
+            "ok": true,
+            "text": "Oaf reaction_config_table[oaf_fear].condition_formula does not contain \"IS_MY_TURN\"",
+            "why": "Any Bolt damage must frighten it (user 2026-10-21) — an IS_MY_TURN gate makes it Rod-only."
+          },
+          {
+            "id": "oaf-bolt-gate",
+            "ok": true,
+            "text": "Oaf reaction_config_table[oaf_fear].condition_formula contains \"TRIGGER_DAMAGE_IS_BOLT == 1\"",
+            "why": "Bolt is the trigger."
+          },
+          {
+            "id": "frightened-one-charge",
+            "ok": true,
+            "text": "Oaf effect_table[oaf_fear].ae_initial_charges = \"1\"",
+            "why": "Charges tick at the end of each of Gigas's own turns; 1 charge = until the end of its next turn when hit off-turn. 3 = a three-turn lockout."
+          },
+          {
+            "id": "club-in-sync",
+            "ok": true,
+            "text": "Giant Club: embedded copy matches world item MIbpz90syxNxghMh",
+            "why": "The embedded copy is what gets stolen; it must match the world item."
+          }
+        ],
+        "blindSpots": [
+          "Oaf → Frightened IS simulated in data mode (lib/monster-data.js, since 2026-10-20). Verdicts from before then (registry mode) read Gigas as always swinging — do not reuse them.",
+          "BD turn order ignores the Delay AE — 'acts last' is not engine-enforced (lowest DEX+INS makes autopilot pick it last).",
+          "Sim party brains play the Rod on purpose but ignore the Lightning Crystal, so the Crystal half's numbers (61% win) understate a party that times blasts deliberately."
+        ],
+        "openQuestions": [
+          "Arcane EF 200 is a flat DPR doubling, not a skill expression — keep, or drop to 150?"
+        ]
+      },
+      "drift": []
+    },
+    {
+      "name": "Imp",
+      "rank": "soldier",
+      "level": 50,
+      "species": "DEMON",
+      "hp": 110,
+      "mp": 50,
+      "turns": 1,
+      "def": 15,
+      "mdef": 14,
+      "hitDef": "33%",
+      "hitMdef": "41%",
+      "vu": [
+        "light"
+      ],
+      "rs": [
+        "dark",
+        "fire"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Pitchfork",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 49,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Pitchfork",
+        "type": "Attack",
+        "element": "physical",
+        "targets": 1,
+        "avg": 49,
+        "vs": "def"
+      },
+      "flags": [],
+      "findings": [],
+      "design": {
+        "file": "imp.md",
+        "status": "draft",
+        "updated": "2026-10-21",
+        "invariants": [
+          {
+            "id": "light-vulnerable",
+            "ok": true,
+            "text": "affinity light = \"VU\"",
+            "why": "The caster is the answer."
+          },
+          {
+            "id": "strip-weapon-slot",
+            "ok": true,
+            "text": "Strip Weapon effect_table[sw_take].hide_item_slot = \"weapon\"",
+            "why": "Takes the main hand until battle end."
+          },
+          {
+            "id": "strip-armor-slot",
+            "ok": true,
+            "text": "Strip Armor effect_table[sa_take].hide_item_slot = \"armor\"",
+            "why": "Takes the armor until battle end."
+          },
+          {
+            "id": "strip-weapons-first",
+            "ok": true,
+            "text": "action_pattern_table[Strip Weapon].action_pattern_priority = \"10\"",
+            "why": "Top of the strip ladder."
+          }
+        ],
+        "blindSpots": [
+          "The interactive contest leg dispatches to players' clients — never exercised solo-GM.",
+          "Gauntlet continuation (stolen gear must not return on an in-place reinforce) verified by construction only."
+        ],
+        "openQuestions": [
+          "Brawling EF 175 is dead while Blanche uses a shield — keep as the 'party just lost its weapons' counter?",
+          "Pitchfork's description still says 'light' after the 15→43 raise — retext?"
+        ]
+      },
+      "drift": []
+    },
+    {
+      "name": "Iron Colossus",
+      "rank": "elite",
+      "level": 52,
+      "species": "CONSTRUCT",
+      "hp": 700,
+      "mp": 60,
+      "turns": 1,
+      "def": 14,
+      "mdef": 8,
+      "hitDef": "41%",
+      "hitMdef": ">58%",
+      "vu": [
+        "bolt"
+      ],
+      "rs": [
+        "physical",
+        "earth"
+      ],
+      "im": [
+        "poison"
+      ],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Siege Fist",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 42,
+          "vs": "def"
+        },
+        {
+          "name": "Grinding Quake",
+          "type": "Spell",
+          "element": "earth",
+          "targets": null,
+          "avg": 27,
+          "vs": "mdef"
+        },
+        {
+          "name": "Seismic Stomp",
+          "type": "Attack",
+          "element": "earth",
+          "targets": 3,
+          "avg": 23,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Siege Fist",
+        "type": "Attack",
+        "element": "physical",
+        "targets": 1,
+        "avg": 42,
+        "vs": "def"
+      },
+      "flags": [
+        "best basic attack avg 42 < 45",
+        "resisted hit = 18% of PC HP (< 25%)",
+        "pattern: Grinding Quake repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9)"
+      ],
+      "findings": [
+        {
+          "rule": "basic-attack-min",
+          "text": "best basic attack avg 42 < 45",
+          "action": "Siege Fist",
+          "status": "intended",
+          "why": "Tank archetype: cheap damage, paid in denial — the escort does the killing (Gigas precedent).",
+          "confirmed": false,
+          "decided": "claude 2026-08-29"
+        },
+        {
+          "rule": "resisted-min",
+          "text": "resisted hit = 18% of PC HP (< 25%)",
+          "action": "Siege Fist",
+          "status": "intended",
+          "why": "Same tank trade: its hits are meant to be soft.",
+          "confirmed": false,
+          "decided": "claude 2026-08-29"
+        },
+        {
+          "rule": "pattern",
+          "text": "pattern: Grinding Quake repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9)",
+          "status": "intended",
+          "why": "Grinding Quake firing every turn its condition holds (the cooldown never applies) is part of the design from when the monster was created.",
+          "confirmed": true,
+          "decided": "user 2026-10-21"
+        }
+      ],
+      "design": {
+        "file": "iron-colossus.md",
+        "status": "draft",
+        "updated": "2026-10-21",
+        "invariants": [
+          {
+            "id": "bolt-vulnerable",
+            "ok": true,
+            "text": "affinity bolt = \"VU\"",
+            "why": "The answer to the tank (user concept 2026-10-20)."
+          }
+        ],
+        "blindSpots": [
+          "The party has no heavy weapon today, so the heavy-EF answer is not available in sims — rows stall."
+        ],
+        "openQuestions": [
+          "Awaiting your choice from 2026-10-20: (b) 1 escort or (c) 320 HP — both ~6 rounds; or keep the sheet as is?"
+        ]
+      },
+      "drift": []
+    },
+    {
+      "name": "Kirin",
+      "rank": "elite",
+      "level": 50,
+      "species": "BEAST",
+      "hp": 210,
+      "mp": 75,
+      "turns": 1,
+      "def": 14,
+      "mdef": 15,
+      "hitDef": "41%",
+      "hitMdef": "33%",
+      "vu": [
+        "poison"
+      ],
+      "rs": [
+        "bolt"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Horn Rush",
+          "type": "Attack",
+          "element": "bolt",
+          "targets": 1,
+          "avg": 69,
+          "vs": "def"
+        },
+        {
+          "name": "Hooves",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 52,
+          "vs": "def"
+        },
+        {
+          "name": "Rail Stream",
+          "type": "Spell",
+          "element": "bolt",
+          "targets": null,
+          "avg": 37,
+          "vs": "mdef"
+        }
+      ],
+      "basic": {
+        "name": "Horn Rush",
+        "type": "Attack",
+        "element": "bolt",
+        "targets": 1,
+        "avg": 69,
+        "vs": "def"
+      },
+      "flags": [],
+      "findings": [],
+      "design": {
+        "file": "kirin.md",
+        "status": "draft",
+        "updated": "2026-10-21",
+        "invariants": [
+          {
+            "id": "charge-from-others-bolt",
+            "ok": true,
+            "text": "Lightning Charge reaction_config_table[charge_horn].condition_formula = \"TRIGGER_DAMAGE_IS_BOLT == 1 && CAUSE_IS_SELF == 0\"",
+            "why": "Feeds on ANY creature taking bolt, but not its own Rail Stream / Horn Rush."
+          },
+          {
+            "id": "charge-storm-fed",
+            "ok": true,
+            "text": "Lightning Charge reaction_config_table[charge_horn].reaction_cause_filter = \"\"",
+            "why": "BLANK lets the Rod hazard feed it."
+          },
+          {
+            "id": "charge-not-self-scoped",
+            "ok": true,
+            "text": "Lightning Charge reaction_config_table[charge_horn].reaction_source = \"\"",
+            "why": "'self' would silently make it self-only."
+          },
+          {
+            "id": "rail-scales-with-mp",
+            "ok": true,
+            "text": "Rail Stream effect_table[rail_charge_bonus].damage_amount = \"min(75, CUR_MP)\"",
+            "why": "1:1 with the gauge; the min() is the Chimerist guard."
+          },
+          {
+            "id": "rail-paralyze-before-drain",
+            "ok": true,
+            "text": "Rail Stream effect_table[rail_chain].chain_steps = \"apply_paralyzed, rail_drain\"",
+            "why": "Order is load-bearing: the Paralyze chance reads MP before the drain."
+          },
+          {
+            "id": "hooves-physical",
+            "ok": true,
+            "text": "Hooves.type_damage = \"Physical\"",
+            "why": "The off-element answer for a bolt-resistant party."
+          }
+        ],
+        "blindSpots": [
+          "Mindscape used to start everyone at full MP; Kirin is authored at 0 (fixed 2026-10-20) — older verdicts overstate it."
+        ],
+        "openQuestions": [
+          "Lightning Charge income 0.2 is still the untuned starting metric — sweep 0.15 / 0.2 / 0.3?"
+        ]
+      },
+      "drift": []
+    },
+    {
+      "name": "Lightning Prism",
+      "rank": "soldier",
+      "level": 45,
+      "species": "ELEMENTAL",
+      "hp": 150,
+      "mp": 120,
+      "turns": 1,
+      "def": 10,
+      "mdef": 16,
+      "hitDef": ">58%",
+      "hitMdef": "26%",
+      "vu": [
+        "physical",
+        "earth"
+      ],
+      "rs": [],
+      "im": [
+        "poison"
+      ],
+      "ab": [
+        "bolt"
+      ],
+      "attacks": [
+        {
+          "name": "Fulgur Finis",
+          "type": "Spell",
+          "element": "bolt",
+          "targets": 3,
+          "avg": 70,
+          "vs": "mdef"
+        },
+        {
+          "name": "Arc Spark",
+          "type": "Attack",
+          "element": "bolt",
+          "targets": 1,
+          "avg": 31,
+          "vs": "mdef"
+        }
+      ],
+      "basic": {
+        "name": "Arc Spark",
+        "type": "Attack",
+        "element": "bolt",
+        "targets": 1,
+        "avg": 31,
+        "vs": "mdef"
+      },
+      "flags": [
+        "2 VU (rule: exactly 1 for soldier)",
+        "absorbs bolt (warning signal)",
+        "best basic attack avg 31 < 45"
+      ],
+      "findings": [
+        {
+          "rule": "vu-count",
+          "text": "2 VU (rule: exactly 1 for soldier)",
+          "status": "intended",
+          "why": "VU physical + earth is the interlock answer (physical shatters the Prism, earth answers the bolt roster).",
+          "confirmed": false,
+          "decided": "claude 2026-08-01"
+        },
+        {
+          "rule": "absorb",
+          "text": "absorbs bolt (warning signal)",
+          "status": "intended",
+          "why": "Bolt absorb is the roster interlock: bolt feeds Overcharge.",
+          "confirmed": false,
+          "decided": "claude 2026-08-01"
+        },
+        {
+          "rule": "basic-attack-min",
+          "text": "best basic attack avg 31 < 45",
+          "action": "Arc Spark",
+          "status": "intended",
+          "why": "Arc Spark is the empty-tank fallback; Fulgur Finis (multi-target) and Overcharge are the threat.",
+          "confirmed": false,
+          "decided": "claude 2026-08-01"
+        }
+      ],
+      "design": {
+        "file": "lightning-prism.md",
+        "status": "draft",
+        "updated": "2026-10-21",
+        "invariants": [
+          {
+            "id": "absorbs-bolt",
+            "ok": true,
+            "text": "affinity bolt = \"AB\"",
+            "why": "Bolt feeds it."
+          },
+          {
+            "id": "physical-shatters",
+            "ok": true,
+            "text": "affinity physical = \"VU\"",
+            "why": "The interlock answer."
+          },
+          {
+            "id": "overcharge-excludes-storm",
+            "ok": true,
+            "text": "Overcharge reaction_config_table[creature_lose_resource].reaction_cause_filter = \"damage\"",
+            "why": "Deliberately excludes the Lightning Storm's hazard strike."
+          },
+          {
+            "id": "overcharge-casts-fulgur",
+            "ok": true,
+            "text": "Overcharge effect_table[overcharge_cast].action_ref = \"Fulgur Finis\"",
+            "why": "The discharge."
+          },
+          {
+            "id": "arc-spark-is-fallback",
+            "ok": true,
+            "text": "action_pattern_table[Arc Spark].action_pattern_condition = \"mp\"",
+            "why": "Arc Spark only below the Fulgur MP band."
+          }
+        ],
+        "blindSpots": [],
+        "openQuestions": [
+          "Weapon EF 25% on every family except arcane 200% — intended as 'magic is the answer', or a leftover?"
+        ]
+      },
+      "drift": []
+    },
+    {
+      "name": "Mana Ray",
+      "rank": "soldier",
+      "level": 45,
+      "species": "BEAST",
+      "hp": 115,
+      "mp": 30,
+      "turns": 1,
+      "def": 11,
+      "mdef": 10,
+      "hitDef": ">58%",
+      "hitMdef": ">58%",
+      "vu": [
+        "earth",
+        "ice"
+      ],
+      "rs": [
+        "bolt",
+        "fire"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Volt Stinger",
+          "type": "Active",
+          "element": "bolt",
+          "targets": 1,
+          "avg": 62,
+          "vs": "def"
+        },
+        {
+          "name": "Mana Stinger",
+          "type": "Attack",
+          "element": "dark",
+          "targets": 1,
+          "avg": 46,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Mana Stinger",
+        "type": "Attack",
+        "element": "dark",
+        "targets": 1,
+        "avg": 46,
+        "vs": "def"
+      },
+      "flags": [
+        "2 VU (rule: exactly 1 for soldier)"
+      ],
+      "findings": [
+        {
+          "rule": "vu-count",
+          "text": "2 VU (rule: exactly 1 for soldier)",
+          "status": "intended",
+          "why": "2 VU + 2 RS per the user's brief (2026-08-16).",
+          "confirmed": true,
+          "decided": "user 2026-08-16"
+        }
+      ],
+      "design": {
+        "file": "mana-ray.md",
+        "status": "draft",
+        "updated": "2026-10-21",
+        "invariants": [
+          {
+            "id": "stinger-bonus-before-drain",
+            "ok": true,
+            "text": "Mana Stinger reaction_config_table[stinger_bonus].reaction_trigger = \"creature_will_deal_damage\"",
+            "why": "The bonus must read MP before the drain lands."
+          },
+          {
+            "id": "stinger-drain-after",
+            "ok": true,
+            "text": "Mana Stinger reaction_config_table[stinger_burn].reaction_trigger = \"creature_deals_damage\"",
+            "why": "The drain fires on hit, after the bonus."
+          },
+          {
+            "id": "flying",
+            "ok": true,
+            "text": "Flying reaction_config_table[fly_apply].reaction_trigger = \"conflict_start\"",
+            "why": "Flying from the first turn."
+          }
+        ],
+        "blindSpots": [],
+        "openQuestions": [
+          "Still a placeholder — confirm the role it should play in its rows (the Rod refilling its pool is the stated hook)."
+        ]
+      },
+      "drift": []
+    },
+    {
+      "name": "Mist Dragon",
+      "rank": "elite",
+      "level": 45,
+      "species": "ELEMENTAL",
+      "hp": 200,
+      "mp": 100,
+      "turns": 1,
+      "def": 14,
+      "mdef": 13,
+      "hitDef": "41%",
+      "hitMdef": "49%",
+      "vu": [
+        "air"
+      ],
+      "rs": [],
+      "im": [
+        "poison"
+      ],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Mist Breath",
+          "type": "Spell",
+          "element": "air",
+          "targets": 3,
+          "avg": 46,
+          "vs": "mdef"
+        },
+        {
+          "name": "Phantom Shift: Thunder Strike",
+          "type": "Attack",
+          "element": "air",
+          "targets": 1,
+          "avg": 38,
+          "vs": "def"
+        },
+        {
+          "name": "Phantom Shift: Mana Stinger",
+          "type": "Attack",
+          "element": "air",
+          "targets": 1,
+          "avg": 28,
+          "vs": "def"
+        },
+        {
+          "name": "Mist Claw",
+          "type": "Attack",
+          "element": "air",
+          "targets": 1,
+          "avg": 26,
+          "vs": "def"
+        },
+        {
+          "name": "Phantom Shift: Venomstone Spines",
+          "type": "Attack",
+          "element": "air",
+          "targets": 2,
+          "avg": 22,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Phantom Shift: Thunder Strike",
+        "type": "Attack",
+        "element": "air",
+        "targets": 1,
+        "avg": 38,
+        "vs": "def"
+      },
+      "flags": [
+        "best basic attack avg 38 < 45",
+        "resisted hit = 16% of PC HP (< 25%)"
+      ],
+      "findings": [
+        {
+          "rule": "basic-attack-min",
+          "text": "best basic attack avg 38 < 45",
+          "action": "Phantom Shift: Thunder Strike",
+          "status": "new"
+        },
+        {
+          "rule": "resisted-min",
+          "text": "resisted hit = 16% of PC HP (< 25%)",
+          "action": "Phantom Shift: Thunder Strike",
+          "status": "new"
+        }
+      ],
+      "design": {
+        "file": "mist-dragon.md",
+        "status": "draft",
+        "updated": "2026-10-21",
+        "invariants": [
+          {
+            "id": "air-vulnerable",
+            "ok": true,
+            "text": "affinity air = \"VU\"",
+            "why": "Air is its weakness and its off-switch."
+          },
+          {
+            "id": "physical-rs-only-via-ae",
+            "ok": true,
+            "text": "affinity physical in [\"NE\",\"NA\",\"\"]",
+            "why": "RS physical lives on the Illusory Form AE so Air can strip it; an RS on the sheet would make it permanent."
+          },
+          {
+            "id": "air-scatters-form",
+            "ok": true,
+            "text": "Illusory Form reaction_config_table[mist_scatter].condition_formula contains \"TRIGGER_DAMAGE_IS_AIR == 1\"",
+            "why": "The off-switch."
+          },
+          {
+            "id": "scatter-persistent",
+            "ok": true,
+            "text": "Illusory Form effect_table[mist_scatter].include_persistent = true",
+            "why": "Else the strip is a silent no-op."
+          },
+          {
+            "id": "form-regathers",
+            "ok": true,
+            "text": "Illusory Form reaction_config_table[round_end].reaction_effect_ref = \"mist_gather\"",
+            "why": "Returns at round end."
+          }
+        ],
+        "blindSpots": [
+          "The Blind riders were never observed firing in a real attack.",
+          "Mindscape does not simulate Phantom Shift / Illusory Form fully (Board card marks it)."
+        ],
+        "openQuestions": [
+          "Best basic attack (Phantom Shift: Thunder Strike, avg 38) is under the 45 floor and its resisted hit is ~16% of PC HP — intended for an elite, or too soft?"
+        ]
+      },
+      "drift": []
+    },
+    {
+      "name": "Obsidrax",
+      "rank": "soldier",
+      "level": 46,
+      "species": "ELEMENTAL",
+      "hp": 180,
+      "mp": 60,
+      "turns": 1,
+      "def": 13,
+      "mdef": 11,
+      "hitDef": "49%",
+      "hitMdef": ">58%",
+      "vu": [
+        "ice"
+      ],
+      "rs": [
+        "earth"
+      ],
+      "im": [
+        "bolt"
+      ],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Basalt Crush",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 44,
+          "vs": "def"
+        },
+        {
+          "name": "Venomstone Spines",
+          "type": "Attack",
+          "element": "poison",
+          "targets": 3,
+          "avg": 28,
+          "vs": "def"
+        },
+        {
+          "name": "Tectonic Collapse",
+          "type": "Active",
+          "element": "earth",
+          "targets": null,
+          "avg": 28,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Basalt Crush",
+        "type": "Attack",
+        "element": "physical",
+        "targets": 1,
+        "avg": 44,
+        "vs": "def"
+      },
+      "flags": [
+        "best basic attack avg 44 < 45",
+        "pattern: Miasma Nova repeats every turn its condition holds: its 3-round cooldown never applies (no other row within 2 priority of 11)"
+      ],
+      "findings": [
+        {
+          "rule": "basic-attack-min",
+          "text": "best basic attack avg 44 < 45",
+          "action": "Basalt Crush",
+          "status": "new"
+        },
+        {
+          "rule": "pattern",
+          "text": "pattern: Miasma Nova repeats every turn its condition holds: its 3-round cooldown never applies (no other row within 2 priority of 11)",
+          "status": "intended",
+          "why": "Miasma Nova firing every turn its condition holds (the cooldown never applies) is part of the design from when the monster was created.",
+          "confirmed": true,
+          "decided": "user 2026-10-21"
+        }
+      ],
+      "design": {
+        "file": "obsidrax.md",
+        "status": "draft",
+        "updated": "2026-10-21",
+        "invariants": [
+          {
+            "id": "bolt-immune",
+            "ok": true,
+            "text": "affinity bolt = \"IM\"",
+            "why": "Read from the sheet: the Rod cannot hurt it, which is what Lodestone Core turns into Earth damage."
+          },
+          {
+            "id": "lodestone-needs-rod",
+            "ok": true,
+            "text": "Lodestone Core reaction_config_table[lc_chain].condition_formula = \"AE_COUNT_LIGHTNING_ROD > 0\"",
+            "why": "Read from the sheet: only while it holds the Rod."
+          }
+        ],
+        "blindSpots": [
+          "Lodestone Core is modelled in the storm only."
+        ],
+        "openQuestions": [
+          "Basalt Crush avg 44 sits just under the 45 basic-attack floor — leave?"
+        ]
+      },
+      "drift": []
+    },
+    {
+      "name": "Rakshasa",
+      "rank": "elite",
+      "level": 40,
+      "species": "Demon",
+      "hp": 1200,
+      "mp": 45,
+      "turns": 4,
+      "def": 14,
+      "mdef": 12,
+      "hitDef": "41%",
+      "hitMdef": "58%",
+      "vu": [
+        "light"
+      ],
+      "rs": [
+        "dark",
+        "poison"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Severing Verdict",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 166,
+          "vs": "def"
+        },
+        {
+          "name": "Saber",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 65,
+          "vs": "def"
+        },
+        {
+          "name": "Mace",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 1,
+          "avg": 44,
+          "vs": "mdef"
+        },
+        {
+          "name": "Chakram",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 3,
+          "avg": 27,
+          "vs": "mdef"
+        },
+        {
+          "name": "Rending Orbit",
+          "type": "Attack",
+          "element": "physical",
+          "targets": 3,
+          "avg": 27,
+          "vs": "mdef"
+        },
+        {
+          "name": "Executioner's Volley",
+          "type": "Attack",
+          "element": "physical",
+          "targets": null,
+          "avg": 25,
+          "vs": "def"
+        },
+        {
+          "name": "Rain of Arrows",
+          "type": "Attack",
+          "element": "physical",
+          "targets": null,
+          "avg": 22,
+          "vs": "def"
+        },
+        {
+          "name": "Form Shift",
+          "type": "Active",
+          "element": "physical",
+          "targets": 1,
+          "avg": 4,
+          "vs": "def"
+        },
+        {
+          "name": "Form Shift (Dual)",
+          "type": "Active",
+          "element": "physical",
+          "targets": 1,
+          "avg": 4,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Severing Verdict",
+        "type": "Attack",
+        "element": "physical",
+        "targets": 1,
+        "avg": 166,
+        "vs": "def"
+      },
+      "flags": [
+        "Severing Verdict avg 166 can drop an average PC (mean HP 118)"
+      ],
+      "findings": [
+        {
+          "rule": "one-shot",
+          "text": "Severing Verdict avg 166 can drop an average PC (mean HP 118)",
+          "action": "Severing Verdict",
+          "status": "intended",
+          "why": "Telegraphed: only usable after Form Shift (Dual) visibly arms the Sword and Flail stance, and only at <= 50% HP. The stance is the warning; reading it is the counterplay.",
+          "confirmed": true,
+          "decided": "user 2026-10-21"
+        }
+      ],
+      "design": {
+        "file": "rakshasa.md",
+        "status": "draft",
+        "updated": "2026-10-21",
+        "invariants": [
+          {
+            "id": "verdict-needs-dual-stance",
+            "ok": true,
+            "text": "action_pattern_table[Severing Verdict].action_pattern_string = \"Sword and Flail Stance\"",
+            "why": "The stance IS the telegraph. Without the gate the one-shot has no warning."
+          },
+          {
+            "id": "verdict-gate-is-status",
+            "ok": true,
+            "text": "action_pattern_table[Severing Verdict].action_pattern_condition = \"self_has_status\"",
+            "why": "Same gate, its condition type."
+          },
+          {
+            "id": "verdict-spends-stance",
+            "ok": true,
+            "text": "Severing Verdict effect_table[spend_combo].ae_template_ref = \"Sword and Flail Stance\"",
+            "why": "Each strike spends its stance, so the next activation must Shift again (Shift → Strike cycle)."
+          },
+          {
+            "id": "verdict-spend-persistent",
+            "ok": true,
+            "text": "Severing Verdict effect_table[spend_combo].include_persistent = true",
+            "why": "Stance AEs are persistent_counter; without include_persistent the removal is a SILENT no-op and it strikes every activation."
+          },
+          {
+            "id": "dual-shift-arms-verdict",
+            "ok": true,
+            "text": "Form Shift (Dual) effect_table[fs2_draw].ae_name_pool contains \"Sword and Flail Stance\"",
+            "why": "The only way to reach Severing Verdict."
+          },
+          {
+            "id": "dual-shift-second-half",
+            "ok": true,
+            "text": "action_pattern_table[Form Shift (Dual)].action_pattern_value_2 = \"50\"",
+            "why": "Combos (and the Verdict) belong to the second half, at <= 50% HP."
+          },
+          {
+            "id": "shift-below-strike",
+            "ok": true,
+            "text": "action_pattern_table[Form Shift (Dual)].action_pattern_priority = \"4\"",
+            "why": "Priority gap 4 vs the strikes' 8 makes Shift and Strike mutually exclusive — the cycle is emergent from it."
+          },
+          {
+            "id": "verdict-priority",
+            "ok": true,
+            "text": "action_pattern_table[Severing Verdict].action_pattern_priority = \"8\"",
+            "why": "Other side of the same gap."
+          },
+          {
+            "id": "adaptive-defense-reads-weapons",
+            "ok": true,
+            "text": "Adaptive Defense effect_table[ad_read].effect_kind = \"weapon_read\"",
+            "why": "The weapon-axis puzzle."
+          }
+        ],
+        "blindSpots": [
+          "The stance AEs live in the world status library (persistent_counter lifetime) — not checked here; if they are reaped at the next activation the telegraph vanishes before the strike.",
+          "Mindscape cannot simulate the Strike/Magic accuracy-class axis (classAffinity is never populated).",
+          "Solo boss: at real HP the modelled party rarely reaches Crisis, so the Dual/Verdict half goes unmeasured unless HP is forced.",
+          "Never live-tested; runReactionLint not run on it.",
+          "Adaptive Defense only LOWERS efficiency (25/40/60/80%, back to 100% once 4 other families have hit) — it never raises a lane above 100%. With VU light the best possible hit is ×2, never ×4."
+        ],
+        "openQuestions": [
+          "Is the stance readable enough at the table (token status icon / chat line) for the telegraph to work as counterplay?",
+          "With 4 activations, does a PC always get a turn between the Dual Shift and the Verdict (BD alternates sides), or can Shift→Verdict land back-to-back?",
+          "Crippled uses AE MULTIPLY on the derived defense prop — unverified that CSB honours it (else the text must stop promising a halving).",
+          "HP 1200 reads as a stalemate in the current sim (0% win inside 10 rounds, 100% overtime, party's lowest HP ~62%) — but the sim party plays below human level and 58% of its actions are unmodelled. Live-test before touching HP."
+        ]
+      },
+      "drift": []
+    },
+    {
+      "name": "Roo",
+      "rank": "soldier",
+      "level": 50,
+      "species": "UNDEAD",
+      "hp": 255,
+      "mp": 50,
+      "turns": 1,
+      "def": 13,
+      "mdef": 13,
+      "hitDef": "49%",
+      "hitMdef": "49%",
+      "vu": [
+        "light"
+      ],
+      "rs": [
+        "dark"
+      ],
+      "im": [
+        "physical",
+        "poison"
+      ],
+      "ab": [],
+      "attacks": [],
+      "basic": null,
+      "flags": [
+        "no damage action the sim can read"
+      ],
+      "findings": [
+        {
+          "rule": "no-damage-action",
+          "text": "no damage action the sim can read",
+          "status": "intended",
+          "why": "Its damage is Chef's Knife (an auto-hit Active, 9999 ignore_immunity) after a three-step Approach — not a rolled attack the audit can read.",
+          "confirmed": false,
+          "decided": "claude 2026-09-03"
+        }
+      ],
+      "design": {
+        "file": "roo.md",
+        "status": "draft",
+        "updated": "2026-10-21",
+        "invariants": [
+          {
+            "id": "physical-immune",
+            "ok": true,
+            "text": "affinity physical = \"IM\"",
+            "why": "Tonberry premise — physical does nothing."
+          },
+          {
+            "id": "light-vulnerable",
+            "ok": true,
+            "text": "affinity light = \"VU\"",
+            "why": "Zarg's Light bow is the intended answer."
+          },
+          {
+            "id": "slow-left-open",
+            "ok": true,
+            "text": "condition_slow in [\"NA\",\"\"]",
+            "why": "Delaying the clock is the counterplay."
+          },
+          {
+            "id": "knife-ignores-immunity",
+            "ok": true,
+            "text": "Chef's Knife effect_table[ck_cut].damage_keywords = \"ignore_immunity\"",
+            "why": "crush would only give 5000 vs IM; ignore_immunity is what makes the arrival lethal."
+          },
+          {
+            "id": "knife-gated-on-arrival",
+            "ok": true,
+            "text": "action_pattern_table[Chef's Knife].action_pattern_string = \"In Melee Range\"",
+            "why": "The knife only comes after the three-step walk — the warning."
+          },
+          {
+            "id": "three-steps",
+            "ok": true,
+            "text": "Approach reaction_config_table[ap_step].condition_formula = \"AE_CHARGES_APPROACH < 2\"",
+            "why": "Step / arrive rows are mutually exclusive on the charge count."
+          }
+        ],
+        "blindSpots": [
+          "The turn_start reaction dispatch and Chef's Knife + the vanish were never seen in a real fight (solo-GM harness wedges at round 0).",
+          "Mindscape reads Zarg and Blanche at 0 damage actions (model gap) and does not model Approach — sim verdicts on the Roo are meaningless."
+        ],
+        "openQuestions": []
+      },
+      "drift": []
+    },
+    {
+      "name": "Skizzik",
+      "rank": "soldier",
+      "level": 48,
+      "species": "ELEMENTAL",
+      "hp": 130,
+      "mp": 60,
+      "turns": 1,
+      "def": 12,
+      "mdef": 8,
+      "hitDef": "58%",
+      "hitMdef": ">58%",
+      "vu": [
+        "earth"
+      ],
+      "rs": [],
+      "im": [
+        "poison"
+      ],
+      "ab": [
+        "bolt"
+      ],
+      "attacks": [
+        {
+          "name": "Thunder Strike",
+          "type": "Attack",
+          "element": "bolt",
+          "targets": 1,
+          "avg": 37,
+          "vs": "def"
+        },
+        {
+          "name": "Thunder Strike (Riposte)",
+          "type": "Attack",
+          "element": "bolt",
+          "targets": 1,
+          "avg": 19,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Thunder Strike",
+        "type": "Attack",
+        "element": "bolt",
+        "targets": 1,
+        "avg": 37,
+        "vs": "def"
+      },
+      "flags": [
+        "absorbs bolt (warning signal)",
+        "best basic attack avg 37 < 45"
+      ],
+      "findings": [
+        {
+          "rule": "absorb",
+          "text": "absorbs bolt (warning signal)",
+          "status": "intended",
+          "why": "Bolt absorb is the roster interlock — bolt-spamming feeds it (and the Rod heals it).",
+          "confirmed": false,
+          "decided": "claude 2026-08-01"
+        },
+        {
+          "rule": "basic-attack-min",
+          "text": "best basic attack avg 37 < 45",
+          "action": "Thunder Strike",
+          "status": "intended",
+          "why": "Many small hits: free Thunder Strikes (Chain Reaction) and the uncapped riposte multiply its output, so the base number is low on purpose.",
+          "confirmed": false,
+          "decided": "claude 2026-08-20"
+        }
+      ],
+      "design": {
+        "file": "skizzik.md",
+        "status": "draft",
+        "updated": "2026-10-21",
+        "invariants": [
+          {
+            "id": "absorbs-bolt",
+            "ok": true,
+            "text": "affinity bolt = \"AB\"",
+            "why": "Rod magnet: absorbed bolt is what makes the Rod heal and feed it."
+          },
+          {
+            "id": "chain-reaction-storm-fed",
+            "ok": true,
+            "text": "Chain Reaction reaction_config_table[creature_lose_resource].reaction_cause_filter = \"\"",
+            "why": "BLANK lets the Lightning Storm feed it (Prism's Overcharge sets 'damage' for the opposite reason)."
+          },
+          {
+            "id": "chain-reaction-absorb-row",
+            "ok": true,
+            "text": "Chain Reaction reaction_config_table[creature_gain_resource].condition_formula contains \"TRIGGER_DAMAGE_IS_BOLT == 1\"",
+            "why": "Absorbed bolt is an HP GAIN — this mirror row is the only way it ever fires."
+          },
+          {
+            "id": "riposte-even-parity",
+            "ok": true,
+            "text": "Overload Riposte reaction_config_table[riposte_strike].condition_formula contains \"ATTACK_CHECK_RESULT % 2 == 0\"",
+            "why": "The even-parity counter motif (shared with Ampere)."
+          },
+          {
+            "id": "riposte-targets-attacker",
+            "ok": true,
+            "text": "Overload Riposte effect_table[riposte_target].candidate_source = \"trigger_attacker\"",
+            "why": "Single-target riposte at the attacker — not a second AoE."
+          }
+        ],
+        "blindSpots": [
+          "Live 2026-08-20: Overload Riposte fired ~1/5 of the design rate and hit the previous action's targets instead of the attacker.",
+          "The sim journal does not log enemy free actions — check what a log does not record before concluding from its silence."
+        ],
+        "openQuestions": [
+          "Was the riposte mis-targeting (free action inheriting the parent's target list) ever fixed? Balance should not be re-tuned until it is."
+        ]
+      },
+      "drift": []
+    },
+    {
+      "name": "Succubus",
+      "rank": "soldier",
+      "level": 50,
+      "species": "DEMON",
+      "hp": 180,
+      "mp": 140,
+      "turns": 1,
+      "def": 12,
+      "mdef": 14,
+      "hitDef": "58%",
+      "hitMdef": "41%",
+      "vu": [
+        "light"
+      ],
+      "rs": [
+        "dark",
+        "ice"
+      ],
+      "im": [],
+      "ab": [],
+      "attacks": [
+        {
+          "name": "Draining Kiss",
+          "type": "Spell",
+          "element": "dark",
+          "targets": 1,
+          "avg": 56,
+          "vs": "mdef"
+        },
+        {
+          "name": "Rake",
+          "type": "Attack",
+          "element": "dark",
+          "targets": 1,
+          "avg": 42,
+          "vs": "def"
+        }
+      ],
+      "basic": {
+        "name": "Rake",
+        "type": "Attack",
+        "element": "dark",
+        "targets": 1,
+        "avg": 42,
+        "vs": "def"
+      },
+      "flags": [
+        "best basic attack avg 42 < 45",
+        "pattern: Charm repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9)"
+      ],
+      "findings": [
+        {
+          "rule": "basic-attack-min",
+          "text": "best basic attack avg 42 < 45",
+          "action": "Rake",
+          "status": "new"
+        },
+        {
+          "rule": "pattern",
+          "text": "pattern: Charm repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9)",
+          "status": "intended",
+          "why": "Charm firing every turn its condition holds (the cooldown never applies) is part of the design from when the monster was created.",
+          "confirmed": true,
+          "decided": "user 2026-10-21"
+        }
+      ],
+      "design": {
+        "file": "succubus.md",
+        "status": "draft",
+        "updated": "2026-10-21",
+        "invariants": [
+          {
+            "id": "charm-rides-universal",
+            "ok": true,
+            "text": "Charm effect_table[sc_hold].ae_template_ref = \"Charmed\"",
+            "why": "The universal Charmed AE, so player IM/RS and cures still apply."
+          },
+          {
+            "id": "charm-temptation-rider",
+            "ok": true,
+            "text": "Charm effect_table[sc_tempt].ae_template_ref = \"Deadly Temptation\"",
+            "why": "The 'attack your ally' half."
+          },
+          {
+            "id": "kiss-heals-half",
+            "ok": true,
+            "text": "Draining Kiss effect_table[sk_drain].grant_amount = \"ceil(HP_DEALT * 0.5)\"",
+            "why": "Heals half the HP damage (0 on MP damage)."
+          }
+        ],
+        "blindSpots": [
+          "The Charm save leg dispatches to players' clients — never exercised solo-GM.",
+          "Mindscape does not simulate Deadly Temptation (Board card marks it)."
+        ],
+        "openQuestions": [
+          "Rake's description still says 'light' after the 18→34 raise — retext?"
+        ]
+      },
+      "drift": []
+    }
+  ]
+}

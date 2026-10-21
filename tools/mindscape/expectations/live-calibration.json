@@ -1,0 +1,161 @@
+{
+  "generated": "2026-10-20T18:59:05.313Z",
+  "runs": 1000,
+  "monsterRules": "data",
+  "policies": [
+    "standard",
+    "expert"
+  ],
+  "scenario": "startingZp 0, phoenixFeathers 0, fabulaPoints 3, no guests, no conflict event",
+  "fights": [
+    {
+      "id": "manaray2",
+      "enemies": [
+        "Mana Ray",
+        "Mana Ray"
+      ],
+      "live": {
+        "n": 3,
+        "win": 1,
+        "overtime": 0,
+        "roundsWin": 2,
+        "hpWin": 0.9130434782608695
+      },
+      "liveStalled": 2,
+      "mindscape": {
+        "standard": {
+          "n": 1000,
+          "win": 1,
+          "overtime": 0,
+          "roundsWin": 2,
+          "hpWin": 0.8704883227176221
+        },
+        "expert": {
+          "n": 1000,
+          "win": 1,
+          "overtime": 0,
+          "roundsWin": 2,
+          "hpWin": 0.8641188959660298
+        }
+      },
+      "parity": {
+        "verdict": "agrees",
+        "why": "live 3/3 is plausible at the sim's 100% (p=1.00)",
+        "direction": "sim harder than live",
+        "p": 0.997002999
+      }
+    },
+    {
+      "id": "skizzik-kirin-skizzik",
+      "enemies": [
+        "Skizzik",
+        "Skizzik",
+        "Kirin"
+      ],
+      "live": {
+        "n": 5,
+        "win": 0.8,
+        "overtime": 0.2,
+        "roundsWin": 3,
+        "hpWin": 0.8134057971014492
+      },
+      "liveStalled": 0,
+      "mindscape": {
+        "standard": {
+          "n": 1000,
+          "win": 0.608,
+          "overtime": 0.347,
+          "roundsWin": 4,
+          "hpWin": 0.6518046709129511
+        },
+        "expert": {
+          "n": 1000,
+          "win": 0.84,
+          "overtime": 0.16,
+          "roundsWin": 3,
+          "hpWin": 0.7537154989384289
+        }
+      },
+      "parity": {
+        "verdict": "agrees",
+        "why": "live 4/5 is plausible at the sim's 61% (p=0.35)",
+        "direction": "sim harder than live",
+        "p": 0.350920982396928
+      }
+    },
+    {
+      "id": "orc-colossus-orc",
+      "enemies": [
+        "Dire Orc",
+        "Dire Orc",
+        "Iron Colossus"
+      ],
+      "live": {
+        "n": 5,
+        "win": 0,
+        "overtime": 1,
+        "roundsWin": null,
+        "hpWin": null
+      },
+      "liveStalled": 0,
+      "mindscape": {
+        "standard": {
+          "n": 1000,
+          "win": 0,
+          "overtime": 1,
+          "roundsWin": null,
+          "hpWin": null
+        },
+        "expert": {
+          "n": 1000,
+          "win": 0,
+          "overtime": 1,
+          "roundsWin": null,
+          "hpWin": null
+        }
+      },
+      "parity": {
+        "verdict": "agrees",
+        "why": "live 0/5 is plausible at the sim's 0% (p=1.00)",
+        "direction": "sim harder than live",
+        "p": 1.0000000000000002
+      }
+    },
+    {
+      "id": "asura",
+      "enemies": [
+        "Asura"
+      ],
+      "live": {
+        "n": 4,
+        "win": 0.5,
+        "overtime": 0.5,
+        "roundsWin": 9,
+        "hpWin": 0.8134057971014492
+      },
+      "liveStalled": 0,
+      "mindscape": {
+        "standard": {
+          "n": 1000,
+          "win": 0.039,
+          "overtime": 0.062,
+          "roundsWin": 9,
+          "hpWin": 0.7961783439490446
+        },
+        "expert": {
+          "n": 1000,
+          "win": 0.019,
+          "overtime": 0.005,
+          "roundsWin": 7,
+          "hpWin": 0.8556263269639066
+        }
+      },
+      "parity": {
+        "verdict": "drifts",
+        "why": "live won 2/4; at the sim's 4% that happens 0.9% of the time",
+        "direction": "sim harder than live",
+        "p": 0.008658388323000001
+      }
+    }
+  ]
+}
