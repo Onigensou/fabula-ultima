@@ -78,5 +78,5 @@ Decision log · Not simulated / risks), plus exactly one fenced block tagged `js
 table such as `action_pattern_table` when no item is named; `row` = key or a row's
 `effect_label` / `reaction_effect_ref`; `where` = field values, must match exactly one row)
 · `item_where` narrows same-named items · `item` + `sameAsWorldItem` (embedded copy matches
-the world item, e.g. a stealable weapon). **Operators** — `equals` · `in` · `contains` ·
+the world item, e.g. a stealable weapon). **Operators** — `equals` · `in` · `contains` · `excludes` ·
 `min` · `max`. See `gigas.md` for each one in use.
