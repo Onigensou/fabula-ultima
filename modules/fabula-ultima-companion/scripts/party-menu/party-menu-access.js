@@ -22,8 +22,14 @@ export const COMMAND_DEFS = [
   { id: "status", label: "Status", hint: "Attributes, defenses and active effects" },
   { id: "bonds", label: "Bonds", hint: "Each character's bonds, and how the party feels about each other" },
   { id: "bestiary", label: "Bestiary", hint: "Every creature the party has met and studied" },
+  // Config holds each user's own display options (client settings), so it is
+  // open to everyone and never part of the GM's grant.
+  { id: "config", label: "Config", hint: "Your own display options", everyone: true },
   { id: "setup", label: "Setup", hint: "Party roster, player access", gmOnly: true },
 ];
+
+/** Commands the GM can open or close to players in Setup. */
+export const grantableCommands = () => COMMAND_DEFS.filter((c) => !c.gmOnly && !c.everyone);
 
 /** What players get on a fresh world: in-game data, nothing that sets the game up. */
 export const DEFAULT_PLAYER_COMMANDS = ["item", "ability", "equip", "status", "bonds", "bestiary"];
@@ -80,7 +86,7 @@ Hooks.on("updateSetting", (doc, _change, _opts, userId) => guardSetting(doc, use
 export function playerCommands() {
   let raw;
   try { raw = game.settings.get(MODULE_ID, SETTING); } catch { raw = DEFAULT_PLAYER_COMMANDS; }
-  const known = new Set(COMMAND_DEFS.filter((c) => !c.gmOnly).map((c) => c.id));
+  const known = new Set(grantableCommands().map((c) => c.id));
   return (Array.isArray(raw) ? raw : DEFAULT_PLAYER_COMMANDS).filter((id) => known.has(id));
 }
 
@@ -89,7 +95,7 @@ export function canUseCommand(id, user = game.user) {
   if (id === "close") return true;
   const def = COMMAND_DEFS.find((c) => c.id === id);
   if (!def) return false;
-  if (user?.isGM) return true;
+  if (user?.isGM || def.everyone) return true;
   if (def.gmOnly) return false;
   return playerCommands().includes(id);
 }
@@ -97,7 +103,7 @@ export function canUseCommand(id, user = game.user) {
 /** GM only: replace the player grant. Unknown and gmOnly ids are dropped. */
 export async function setPlayerCommands(ids) {
   if (!game.user?.isGM) return { ok: false, reason: "not-gm" };
-  const known = new Set(COMMAND_DEFS.filter((c) => !c.gmOnly).map((c) => c.id));
+  const known = new Set(grantableCommands().map((c) => c.id));
   const next = [...new Set((ids ?? []).filter((id) => known.has(id)))];
   await game.settings.set(MODULE_ID, SETTING, next);
   return { ok: true, commands: next };

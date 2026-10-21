@@ -505,7 +505,9 @@ function injectStyles() {
   content: ""; position: absolute; inset: 4px; pointer-events: none;
   border: 1px solid var(--dhud-gold-1); border-radius: 8px;
 }
-.dhud-card.dhud-appear { opacity: 1; transform: translateX(0); }
+/* none, not translateX(0): a transform makes the card a stacking context, and
+   the reaction hand's small cards (reaction-hand.js) tuck BEHIND it. */
+.dhud-card.dhud-appear { opacity: 1; transform: none; }
 .dhud-card.is-acting {
   border-color: var(--dhud-gold-2);
   box-shadow: 0 0 0 2px var(--dhud-gold-1), 0 0 16px rgba(213,182,122,.75), 0 8px 22px rgba(0,0,0,.42);

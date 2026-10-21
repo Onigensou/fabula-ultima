@@ -92,6 +92,7 @@
     "scripts/battle-director/item-picker.js",
     "scripts/battle-director/list-picker.js",
     "scripts/battle-director/persistence.js",
+    "scripts/battle-director/reaction-hand.js",
     "scripts/battle-director/registries.js",
     "scripts/battle-director/rewind-button.js",
     "scripts/battle-director/skill-picker.js",

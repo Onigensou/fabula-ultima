@@ -124,6 +124,9 @@ import "./_test-harness-director.js";
 // reload-gate canvasReady hook on every client (not just the GM).
 import "./director-player-hud.js";
 import { destroyDirectorHud } from "./director-player-hud.js";
+// Reaction hand — the "Card" Reaction UI (Party Menu › Config). Side-effect
+// import: watches the action card mirror on player clients.
+import "./reaction-hand.js";
 
 // Module-level singleton — at most one director runs per client.
 const TURN_START_BUSY = "A side is choosing who acts. Pick a unit first, then skip.";

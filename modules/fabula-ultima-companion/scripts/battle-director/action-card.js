@@ -7635,6 +7635,9 @@ export async function postActionCard({ director, kind, payload }) {
     // itself decided — the effective map alone has no memory of it, so a cleared
     // override would otherwise strand the pill on the GM's last verdict.
     const baseDecisionMap = new Map();
+    // Take-backs (reopenPillDecision) that arrived while their Skip was still
+    // being recorded: decision key → requesting userId.
+    const reopenQueue = new Map();
     // Decision-map keys (single colon) currently carrying a GM verdict. Read off
     // the live bag each time rather than cached — a support GM's edit lands via
     // the socket and must be visible to the very next pill write.
@@ -7799,6 +7802,63 @@ export async function postActionCard({ director, kind, payload }) {
           },
         });
       } catch (e) { warn("commitPillDecisionDom: pill-update broadcast threw", e); }
+      // A take-back that arrived while this Skip was still resolving waited for
+      // it; now the Skip is on the record, undo it.
+      const reopenBy = reopenQueue.get(`${rowKey}:${carrierUuid}`);
+      if (decision === "skip" && reopenBy !== undefined) {
+        reopenQueue.delete(`${rowKey}:${carrierUuid}`);
+        reopenPillDecision(rowKey, carrierUuid, reopenBy);
+      }
+    }
+
+    // ── Take back a Skip (the reaction hand's Pass toggle) ──
+    // A player who passed may un-pass while the card is still open: each of their
+    // Skipped pills goes back to undecided, so it gates Confirm again and its
+    // owner can Apply or Skip it afresh. Only a PLAYER's own Skip is reopened —
+    // never a GM verdict, an Applied pill, or someone else's — and only while
+    // this card is live (a confirmed card has no pills to reopen).
+    function reopenPillDecision(rowKey, carrierUuid, fromUserId) {
+      const key = `${rowKey}:${carrierUuid}`;
+      const pillEl = root.querySelector(
+        `.fud-bf-reaction-pill[data-fud-reaction-key="${CSS.escape(rowKey)}"][data-fud-reaction-carrier="${CSS.escape(carrierUuid)}"]`
+      );
+      if (!pillEl) return;
+      const owner = pillEl.dataset.fudReactionOwner ?? "";
+      if (!owner || owner !== fromUserId) return;
+      // The Skip is still being recorded (its recompute is in flight): reopen it
+      // the moment it lands rather than dropping the request.
+      if (pillEl.dataset.fudReactionPending === "1") {
+        if (baseDecisionMap.get(key) === "skip") reopenQueue.set(key, fromUserId);
+        return;
+      }
+      if (!pillEl.classList.contains("is-skipped") || pillEl.classList.contains("is-gm-set")) return;
+      if (gmDecidedKeys().has(key)) return;
+      clearReactionDecision(key);
+      const cardEl = root.querySelector(".fud-bf-card");
+      restoreReactionPillButtons(pillEl, cardEl);
+      // Recount rather than trust the ±1: the lock is "any gating pill pending".
+      const n = root.querySelectorAll(
+        '.fud-bf-reaction-pill[data-fud-reaction-pending="1"][data-fud-reaction-gating="1"]').length;
+      if (cardEl) {
+        if (n > 0) cardEl.dataset.fudReactionsPending = String(n);
+        else delete cardEl.dataset.fudReactionsPending;
+      }
+      log(`reopenPillDecision: ${key} back to undecided (by ${fromUserId}); ${n} gating pending`);
+      try {
+        const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+        director?.intentChannel?.broadcastMenuOpen({
+          targetUserIds: onlineNonPrimary.map((u) => u.id),
+          menuSpec: {
+            kind: "action-card-pill-update",
+            combatId: director.combatId,
+            rowKey,
+            carrierUuid,
+            decision: "revert",
+            reopen: true,
+            pendingCount: n,
+          },
+        });
+      } catch (e) { warn("reopenPillDecision: pill-update broadcast threw", e); }
     }
 
     // ── Reactive cascade: reaction list updates itself on card-state change ──
@@ -9199,8 +9259,17 @@ export async function postActionCard({ director, kind, payload }) {
           reactionAwait.then((intent) => {
             const body = intent?.body ?? {};
             log(`postActionCard: remote REACTION_CHOICE received (${body.rowKey ?? "?"}/${body.decision ?? "?"})`);
-            const decision = body.decision === "apply" ? "apply" : "skip";
             const fromUid = intent?.fromUserId ?? null;
+            // "reopen" — the owner took their Skip back (the reaction hand's Pass
+            // toggle). No ack: nothing is in flight on their side, they wait for
+            // the revert broadcast. An older host maps it to "skip" below, which
+            // is a no-op on an already-skipped pill.
+            if (body.decision === "reopen") {
+              reopenPillDecision(String(body.rowKey ?? ""), String(body.carrierUuid ?? ""), fromUid);
+              armReactionAwait();
+              return;
+            }
+            const decision = body.decision === "apply" ? "apply" : "skip";
             // Acknowledge receipt to the clicking player IMMEDIATELY so their
             // mirror cancels its no-response retry timer (the click landed). The
             // final Applied/Skipped/revert follows after resolution — which may
@@ -10604,12 +10673,21 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
       // mid-flight, it is sitting on a status chip this client painted from the
       // GM's earlier force/suppress. Rebuild its controls (and take the host's
       // recounted lock) so it goes back to being the player's decision to make.
-      if (menuSpec.gm) {
+      // A player taking their own Skip back (reopen) lands the same way.
+      if (menuSpec.gm || menuSpec.reopen) {
         restoreReactionPillButtons(pillEl, cardEl);
         if (cardEl) {
           const n = Math.max(0, Number(menuSpec.pendingCount ?? 0));
           if (n > 0) cardEl.dataset.fudReactionsPending = String(n);
           else delete cardEl.dataset.fudReactionsPending;
+        }
+        // The rebuilt Apply/Skip belong to the pill's owner only; everyone else
+        // sees the same "Waiting for…" chip the card was posted with.
+        const owner = pillEl.dataset.fudReactionOwner ?? "";
+        if (owner !== (game.user?.id ?? "")) {
+          const actions = pillEl.querySelector(".fud-bf-reaction-actions");
+          const ownerName = owner ? (game.users.get(owner)?.name ?? "Player") : "GM";
+          if (actions) actions.outerHTML = `<span class="fud-bf-reaction-status is-waiting">Waiting for ${escapeHtml(ownerName)}…</span>`;
         }
         return;
       }
@@ -10844,10 +10922,22 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
       ev.stopPropagation();
       const pill = reactionBtn.closest(".fud-bf-reaction-pill");
       if (!pill) return;
-      if (pill.dataset.fudReactionPending !== "1") return;
       // Per-pill ownership gate — only the reactor's owner may act on it.
       const pillOwner = pill.dataset.fudReactionOwner ?? "";
       if (!pillOwner || pillOwner !== myUserId) return;
+      // Take a Skip back (the reaction hand's Pass toggle; no visible button on
+      // the card carries this). Not optimistic: the host decides whether the
+      // card is still open to it, and its revert broadcast rebuilds the pill.
+      if (reactionBtn.dataset.fudReactionAction === "reopen") {
+        if (!pill.classList.contains("is-skipped") || pill.classList.contains("is-gm-set")) return;
+        channel.emit({
+          type: INTENTS.REACTION_CHOICE,
+          body: { rowKey: pill.dataset.fudReactionKey ?? "", carrierUuid: pill.dataset.fudReactionCarrier ?? "", decision: "reopen" },
+          combatId: menuSpec.combatId,
+        });
+        return;
+      }
+      if (pill.dataset.fudReactionPending !== "1") return;
       const rowKey  = pill.dataset.fudReactionKey ?? "";
       const carrier = pill.dataset.fudReactionCarrier ?? "";
       const decision = reactionBtn.dataset.fudReactionAction === "apply" ? "apply" : "skip";
