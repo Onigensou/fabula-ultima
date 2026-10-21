@@ -23,6 +23,9 @@ node test/rules.test.js && node test/reactions.test.js && node test/weapon-read.
 
 # loadout round-trip gate: can the model rebuild every PC's real kit? (read-only)
 node bin/verify-loadouts.js
+
+# a monster's design record (intent, intended rule breaks, drift) — read BEFORE tuning it
+node bin/dossier.js gigas          # see dossiers/README.md
 ```
 
 ## Measuring a design before it is built
