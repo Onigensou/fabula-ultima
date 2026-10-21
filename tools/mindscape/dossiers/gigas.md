@@ -36,6 +36,9 @@ Rod on it.
 
 ## Numbers & targets
 
+> Stats are read live from the world (`node bin/dossier.js gigas` → *Live sheet*); the world
+> wins over any number written here. These are the design targets and the reasoning.
+
 - HP **800** for the adds encounter (user, 2026-08-14); ~1200 only if ever fielded solo.
 - Party onto-Gigas rate ≈ 385/round high efficiency (~2 rds), ~200/round low (~4 rds).
 - Budget: elite = 2 soldiers → Gigas + 2 soldiers = Normal, + 3 = Hard (4 PCs).
@@ -53,6 +56,8 @@ Rod on it.
 | 2026-08-14 | Giant Club +22 / Uncommon / 1800z | "strong but not that strong" | user | — |
 | 2026-10-20 | Balance scan called Gigas OP for one-shotting | scan had no design context | — | **wrong read** → this dossier |
 | 2026-10-21 | Dossier created | design context must survive re-tuning | user | — |
+| 2026-10-21 | Affinities: world sheet (VU bolt/fire/poison, RS phys/air/earth) is the design | "the world is up to date" | user | 3-VU audit finding → intended |
+| 2026-10-21 | Oaf trigger intent: **all bolt damage counts** — meant to be played with the dungeon hazards (Rod, Crystal) | user answer | user | sheet gate still requires IS_MY_TURN — see open question |
 
 ## Not simulated / risks
 
@@ -70,6 +75,12 @@ See `blind_spots` and `open_questions` below — they print in every brief and a
       "rule": "one-shot",
       "action": "Heavy Swing",
       "why": "The big hit is the threat that pushes the party to the Lightning Rod. Bolt on Gigas's turn → Frightened → Heavy Swing is blocked for that turn. Judge it WITH the Rod in play.",
+      "decided_by": "user",
+      "date": "2026-10-21"
+    },
+    {
+      "rule": "vu-count",
+      "why": "The world sheet is authoritative: VU bolt/fire/poison + RS physical/air/earth is intended (the 2026-08-14 'VU bolt only' note was superseded on the sheet).",
       "decided_by": "user",
       "date": "2026-10-21"
     }
@@ -100,8 +111,7 @@ See `blind_spots` and `open_questions` below — they print in every brief and a
     "In the Lightning Crystal half of the Valley (38% of tiles) there is no Rod, so Gigas has no counterplay there."
   ],
   "open_questions": [
-    "AFFINITIES: the 2026-08-14 design says 'VU bolt only, no elemental RS'. The sheet has been VU bolt/fire/poison + RS physical/air/earth since the first world export (2026-08-15). Who set it, and which is intended?",
-    "Does the Lightning Crystal blast count as a Rod-like trigger for Oaf (the counter any party can reach)?",
+    "Oaf intent is 'all bolt damage counts' (user 2026-10-21), but the sheet gate still has IS_MY_TURN == 1, so only bolt landing on Gigas's own turn (the Rod's turn-start strike) frightens it — a PC's bolt or a Crystal blast on another turn does not. Keep the gate (world wins) or drop IS_MY_TURN?",
     "Arcane EF 200 is a flat DPR doubling, not a skill expression — keep, or drop to 150?",
     "Gigas + 2 slimes read as a wall in the Crystal half (win ~28%) vs storm ~89%. Accept as variance, or soften the cave/Crystal case?"
   ]

@@ -20,12 +20,16 @@
 //   prop            actor system.props key                     { "prop": "condition_frightened" }
 //   affinity        element name, read through the loader      { "affinity": "bolt" }
 //   item + prop     embedded item's props key                  { "item": "Heavy Swing", "prop": "skill_type" }
-//   item + table + row + field
-//                   a dynamicTable cell; `row` is the row key ("1") or a row's
-//                   effect_label / reaction_effect_ref         { "item": "Oaf", "table": "effect_table", "row": "oaf_fear", "field": "ae_initial_charges" }
+//   [item +] table + row|where + field
+//                   a dynamicTable cell — on the item, or on the actor when no item is
+//                   named (action_pattern_table). `row` is the row key ("1") or a row's
+//                   effect_label / reaction_effect_ref; `where` matches field values and
+//                   must hit exactly ONE row     { "item": "Oaf", "table": "effect_table", "row": "oaf_fear", "field": "ae_initial_charges" }
+//                                                { "table": "action_pattern_table", "where": { "action_pattern_name": "Severing Verdict" }, "field": "action_pattern_string" }
 //   item + sameAsWorldItem
 //                   the embedded copy matches that world item on every prop both carry
 //                   (or on `fields`) — for stealable/droppable copies kept in sync by hand
+// `item_where` narrows same-named items by props ({ "skill_type": "Active" }).
 // Operators: equals · in [..] · contains "..." · min n · max n.
 //
 // Pure — no world access. bin/dossier.js and bin/monster-audit.js do the loading.
@@ -79,11 +83,20 @@ function findDossier(dossiers, model) {
     ?? null;
 }
 
-function rowOf(table, row) {
-  if (!table || typeof table !== "object") return null;
-  if (table[String(row)] && typeof table[String(row)] === "object") return table[String(row)];
-  return Object.values(table).find((r) => r && typeof r === "object" && r.$deleted !== true
-    && (s(r.effect_label) === s(row) || s(r.reaction_effect_ref) === s(row))) ?? null;
+const liveRows = (table) => (table && typeof table === "object"
+  ? Object.values(table).filter((r) => r && typeof r === "object" && r.$deleted !== true) : []);
+
+// -> { row } | { error }
+function rowOf(table, inv) {
+  if (inv.where) {
+    const hits = liveRows(table).filter((r) => Object.entries(inv.where).every(([k, v]) => s(r[k]) === s(v)));
+    if (hits.length === 1) return { row: hits[0] };
+    return { error: hits.length ? `${hits.length} rows match ${JSON.stringify(inv.where)} — ambiguous` : `no row matches ${JSON.stringify(inv.where)}` };
+  }
+  const byKey = table?.[String(inv.row)];
+  if (byKey && typeof byKey === "object" && byKey.$deleted !== true) return { row: byKey };
+  const r = liveRows(table).find((x) => s(x.effect_label) === s(inv.row) || s(x.reaction_effect_ref) === s(inv.row));
+  return r ? { row: r } : { error: `row "${inv.row}" is missing` };
 }
 
 function compare(inv, actual) {
@@ -109,9 +122,10 @@ function checkInvariant(inv, model, { worldItems = null } = {}) {
   const out = (ok, text) => ({ id, ok, text, why: inv.why ?? null });
   let item = null;
   if (inv.item) {
-    const hits = model.items.filter((i) => norm(i.name) === norm(inv.item));
+    const hits = model.items.filter((i) => norm(i.name) === norm(inv.item)
+      && Object.entries(inv.item_where ?? {}).every(([k, v]) => s(i.props[k]) === s(v)));
     if (!hits.length) return out(false, `item "${inv.item}" is missing`);
-    if (hits.length > 1) return out(false, `${hits.length} items named "${inv.item}" — ambiguous`);
+    if (hits.length > 1) return out(false, `${hits.length} items named "${inv.item}" — ambiguous (narrow with item_where)`);
     item = hits[0];
   }
 
@@ -130,11 +144,14 @@ function checkInvariant(inv, model, { worldItems = null } = {}) {
   if (inv.affinity) {
     label = `affinity ${inv.affinity}`;
     actual = model.affinities?.[norm(inv.affinity)];
-  } else if (item && inv.table) {
-    const r = rowOf(item.props[inv.table], inv.row);
-    if (!r) return out(false, `${inv.item} ${inv.table} row "${inv.row}" is missing`);
-    label = `${inv.item} ${inv.table}[${inv.row}].${inv.field}`;
-    actual = r[inv.field];
+  } else if (inv.table) {
+    const owner = item ? item.props : (model._rawProps ?? {});
+    const where = inv.where ? Object.values(inv.where).join("/") : inv.row;
+    const label0 = `${item ? `${inv.item} ` : ""}${inv.table}[${where}]`;
+    const { row, error } = rowOf(owner[inv.table], inv);
+    if (error) return out(false, `${label0}: ${error}`);
+    label = `${label0}.${inv.field}`;
+    actual = row[inv.field];
   } else if (item) {
     label = `${inv.item}.${inv.prop}`;
     actual = item.props[inv.prop];

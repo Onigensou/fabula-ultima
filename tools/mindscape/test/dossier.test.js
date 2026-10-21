@@ -131,12 +131,23 @@ test("operators: in / min / max", () => {
   assert.strictEqual(run({ prop: "max_hp", max: 700 }), false);
 });
 
+test("actor-level table via where: one match passes, a duplicate is ambiguous, none is missing", () => {
+  const m = { ...GIGAS, _rawProps: { action_pattern_table: {
+    0: { action_pattern_name: "Heavy Swing", action_pattern_priority: "10", action_pattern_string: "Frightened" },
+    2: { action_pattern_name: "Heavy Swing", action_pattern_priority: "1" },
+  } } };
+  const run = (where) => DS.checkInvariant({ id: "x", table: "action_pattern_table", where, field: "action_pattern_string", equals: "Frightened" }, m);
+  assert.strictEqual(run({ action_pattern_name: "Heavy Swing", action_pattern_priority: "10" }).ok, true);
+  assert.match(run({ action_pattern_name: "Heavy Swing" }).text, /ambiguous/);
+  assert.match(run({ action_pattern_name: "Severing Verdict" }).text, /no row matches/);
+});
+
 console.log("\nfindings");
 
 test("an exception marks the matching finding intended, with its reason", () => {
   const out = DS.classifyFindings([
     { rule: "one-shot", action: "Heavy Swing", text: "Heavy Swing avg 128 ..." },
-    { rule: "vu-count", text: "3 VU" },
+    { rule: "absorb", text: "absorbs bolt" },
   ], gigasDossier);
   assert.strictEqual(out[0].status, "intended");
   assert.strictEqual(out[0].confirmed, true);
