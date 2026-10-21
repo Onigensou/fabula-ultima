@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-20T19:06:58.532Z",
+  "generated": "2026-10-21T03:00:28.314Z",
   "dungeons": [
     "Valley of the Dragon",
     "Fafnir Castle"
@@ -67,7 +67,22 @@
       "flags": [
         "resisted hit = 25% of PC HP (< 25%)",
         "not simulated: Torment: a player decides (ask); Torment: redirect target; Condemn: a player decides (ask); Condemn: redirect target; Zero Power: Cruel Ultimatum: open action menu"
-      ]
+      ],
+      "findings": [
+        {
+          "rule": "resisted-min",
+          "text": "resisted hit = 25% of PC HP (< 25%)",
+          "action": "Rend",
+          "status": "new"
+        },
+        {
+          "rule": "not-simulated",
+          "text": "not simulated: Torment: a player decides (ask); Torment: redirect target; Condemn: a player decides (ask); Condemn: redirect target; Zero Power: Cruel Ultimatum: open action menu",
+          "status": "new"
+        }
+      ],
+      "design": null,
+      "drift": []
     },
     {
       "name": "Ampere",
@@ -117,7 +132,17 @@
       },
       "flags": [
         "best basic attack avg 29 < 45"
-      ]
+      ],
+      "findings": [
+        {
+          "rule": "basic-attack-min",
+          "text": "best basic attack avg 29 < 45",
+          "action": "Bubble Beam",
+          "status": "new"
+        }
+      ],
+      "design": null,
+      "drift": []
     },
     {
       "name": "Asura",
@@ -211,7 +236,32 @@
         "resisted hit = 21% of PC HP (< 25%)",
         "pattern: Quad-Elemental Slash costs 60 MP; the monster starts at 0 MP and must charge up first",
         "pattern: Elemental Slash: Overflow costs 30 MP; the monster starts at 0 MP and must charge up first"
-      ]
+      ],
+      "findings": [
+        {
+          "rule": "vu-count",
+          "text": "4 VU (rule: exactly 1 for elite)",
+          "status": "new"
+        },
+        {
+          "rule": "resisted-min",
+          "text": "resisted hit = 21% of PC HP (< 25%)",
+          "action": "Elemental Slash (Enchanted)",
+          "status": "new"
+        },
+        {
+          "rule": "pattern",
+          "text": "pattern: Quad-Elemental Slash costs 60 MP; the monster starts at 0 MP and must charge up first",
+          "status": "new"
+        },
+        {
+          "rule": "pattern",
+          "text": "pattern: Elemental Slash: Overflow costs 30 MP; the monster starts at 0 MP and must charge up first",
+          "status": "new"
+        }
+      ],
+      "design": null,
+      "drift": []
     },
     {
       "name": "Carlbero",
@@ -270,7 +320,17 @@
       },
       "flags": [
         "resisted hit = 20% of PC HP (< 25%)"
-      ]
+      ],
+      "findings": [
+        {
+          "rule": "resisted-min",
+          "text": "resisted hit = 20% of PC HP (< 25%)",
+          "action": "Tentacle Slap",
+          "status": "new"
+        }
+      ],
+      "design": null,
+      "drift": []
     },
     {
       "name": "Death Gazer",
@@ -322,7 +382,22 @@
       "flags": [
         "best basic attack avg 30 < 45",
         "pattern: Death Gaze repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9)"
-      ]
+      ],
+      "findings": [
+        {
+          "rule": "basic-attack-min",
+          "text": "best basic attack avg 30 < 45",
+          "action": "Eye Beam",
+          "status": "new"
+        },
+        {
+          "rule": "pattern",
+          "text": "pattern: Death Gaze repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9)",
+          "status": "new"
+        }
+      ],
+      "design": null,
+      "drift": []
     },
     {
       "name": "Dire Orc",
@@ -372,7 +447,16 @@
       },
       "flags": [
         "pattern: War Howl repeats every turn its condition holds: its 3-round cooldown never applies (no other row within 2 priority of 8)"
-      ]
+      ],
+      "findings": [
+        {
+          "rule": "pattern",
+          "text": "pattern: War Howl repeats every turn its condition holds: its 3-round cooldown never applies (no other row within 2 priority of 8)",
+          "status": "new"
+        }
+      ],
+      "design": null,
+      "drift": []
     },
     {
       "name": "Dragon Guard",
@@ -429,7 +513,10 @@
         "avg": 51,
         "vs": "def"
       },
-      "flags": []
+      "flags": [],
+      "findings": [],
+      "design": null,
+      "drift": []
     },
     {
       "name": "Drakoza",
@@ -485,7 +572,10 @@
         "avg": 46,
         "vs": "def"
       },
-      "flags": []
+      "flags": [],
+      "findings": [],
+      "design": null,
+      "drift": []
     },
     {
       "name": "Electro Slime",
@@ -538,7 +628,22 @@
       "flags": [
         "absorbs bolt (warning signal)",
         "best basic attack avg 36 < 45"
-      ]
+      ],
+      "findings": [
+        {
+          "rule": "absorb",
+          "text": "absorbs bolt (warning signal)",
+          "status": "new"
+        },
+        {
+          "rule": "basic-attack-min",
+          "text": "best basic attack avg 36 < 45",
+          "action": "Static Shot",
+          "status": "new"
+        }
+      ],
+      "design": null,
+      "drift": []
     },
     {
       "name": "Gigas",
@@ -591,8 +696,98 @@
         "vs": "def"
       },
       "flags": [
-        "3 VU (rule: exactly 1 for elite)"
-      ]
+        "3 VU (rule: exactly 1 for elite)",
+        "Heavy Swing avg 128 can drop an average PC (mean HP 118)"
+      ],
+      "findings": [
+        {
+          "rule": "vu-count",
+          "text": "3 VU (rule: exactly 1 for elite)",
+          "status": "new"
+        },
+        {
+          "rule": "one-shot",
+          "text": "Heavy Swing avg 128 can drop an average PC (mean HP 118)",
+          "action": "Heavy Swing",
+          "status": "intended",
+          "why": "The big hit is the threat that pushes the party to the Lightning Rod. Bolt on Gigas's turn → Frightened → Heavy Swing is blocked for that turn. Judge it WITH the Rod in play.",
+          "confirmed": true,
+          "decided": "user 2026-10-21"
+        }
+      ],
+      "design": {
+        "file": "gigas.md",
+        "status": "draft",
+        "updated": "2026-10-21",
+        "invariants": [
+          {
+            "id": "frightened-not-immune",
+            "ok": true,
+            "text": "condition_frightened = \"NA\"",
+            "why": "Frightened IS the counterplay. RS/IM here deletes the whole design."
+          },
+          {
+            "id": "bolt-vulnerable",
+            "ok": true,
+            "text": "affinity bolt = \"VU\"",
+            "why": "Bolt is the Rod's element and the counterplay signal."
+          },
+          {
+            "id": "swing-is-attack",
+            "ok": true,
+            "text": "Heavy Swing.skill_type = \"Attack\"",
+            "why": "Frightened blocks the Attack label. If Heavy Swing stops being an Attack, the one-shot is no longer gated."
+          },
+          {
+            "id": "bodyslam-is-active",
+            "ok": true,
+            "text": "Heavy Bodyslam.skill_type = \"Active\"",
+            "why": "Must survive Frightened's Attack block, or Gigas has no action while Frightened."
+          },
+          {
+            "id": "bodyslam-recoil",
+            "ok": true,
+            "text": "Heavy Bodyslam effect_table[bodyslam_recoil].damage_amount = \"100\"",
+            "why": "Self-damage is the payoff for landing the Rod."
+          },
+          {
+            "id": "oaf-rod-only-gate",
+            "ok": true,
+            "text": "Oaf reaction_config_table[oaf_fear].condition_formula contains \"IS_MY_TURN == 1\"",
+            "why": "Without IS_MY_TURN any PC bolt frightens it and the Rod stops mattering."
+          },
+          {
+            "id": "oaf-bolt-gate",
+            "ok": true,
+            "text": "Oaf reaction_config_table[oaf_fear].condition_formula contains \"TRIGGER_DAMAGE_IS_BOLT == 1\"",
+            "why": "Bolt is the trigger."
+          },
+          {
+            "id": "frightened-one-charge",
+            "ok": true,
+            "text": "Oaf effect_table[oaf_fear].ae_initial_charges = \"1\"",
+            "why": "Charges tick per bearer turn; 1 = 'until the end of this turn'. 3 = a three-round lockout."
+          },
+          {
+            "id": "club-in-sync",
+            "ok": true,
+            "text": "Giant Club: embedded copy matches world item MIbpz90syxNxghMh",
+            "why": "The embedded copy is what gets stolen; it must match the world item."
+          }
+        ],
+        "blindSpots": [
+          "Oaf → Frightened IS simulated in data mode (lib/monster-data.js, since 2026-10-20). Verdicts from before then (registry mode) read Gigas as always swinging — do not reuse them.",
+          "BD turn order ignores the Delay AE — 'acts last' is not engine-enforced (lowest DEX+INS makes autopilot pick it last).",
+          "In the Lightning Crystal half of the Valley (38% of tiles) there is no Rod, so Gigas has no counterplay there."
+        ],
+        "openQuestions": [
+          "AFFINITIES: the 2026-08-14 design says 'VU bolt only, no elemental RS'. The sheet has been VU bolt/fire/poison + RS physical/air/earth since the first world export (2026-08-15). Who set it, and which is intended?",
+          "Does the Lightning Crystal blast count as a Rod-like trigger for Oaf (the counter any party can reach)?",
+          "Arcane EF 200 is a flat DPR doubling, not a skill expression — keep, or drop to 150?",
+          "Gigas + 2 slimes read as a wall in the Crystal half (win ~28%) vs storm ~89%. Accept as variance, or soften the cave/Crystal case?"
+        ]
+      },
+      "drift": []
     },
     {
       "name": "Imp",
@@ -633,7 +828,10 @@
         "avg": 49,
         "vs": "def"
       },
-      "flags": []
+      "flags": [],
+      "findings": [],
+      "design": null,
+      "drift": []
     },
     {
       "name": "Iron Colossus",
@@ -696,7 +894,28 @@
         "best basic attack avg 42 < 45",
         "resisted hit = 18% of PC HP (< 25%)",
         "pattern: Grinding Quake repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9)"
-      ]
+      ],
+      "findings": [
+        {
+          "rule": "basic-attack-min",
+          "text": "best basic attack avg 42 < 45",
+          "action": "Siege Fist",
+          "status": "new"
+        },
+        {
+          "rule": "resisted-min",
+          "text": "resisted hit = 18% of PC HP (< 25%)",
+          "action": "Siege Fist",
+          "status": "new"
+        },
+        {
+          "rule": "pattern",
+          "text": "pattern: Grinding Quake repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9)",
+          "status": "new"
+        }
+      ],
+      "design": null,
+      "drift": []
     },
     {
       "name": "Kirin",
@@ -752,7 +971,10 @@
         "avg": 69,
         "vs": "def"
       },
-      "flags": []
+      "flags": [],
+      "findings": [],
+      "design": null,
+      "drift": []
     },
     {
       "name": "Lightning Prism",
@@ -807,7 +1029,27 @@
         "2 VU (rule: exactly 1 for soldier)",
         "absorbs bolt (warning signal)",
         "best basic attack avg 31 < 45"
-      ]
+      ],
+      "findings": [
+        {
+          "rule": "vu-count",
+          "text": "2 VU (rule: exactly 1 for soldier)",
+          "status": "new"
+        },
+        {
+          "rule": "absorb",
+          "text": "absorbs bolt (warning signal)",
+          "status": "new"
+        },
+        {
+          "rule": "basic-attack-min",
+          "text": "best basic attack avg 31 < 45",
+          "action": "Arc Spark",
+          "status": "new"
+        }
+      ],
+      "design": null,
+      "drift": []
     },
     {
       "name": "Mana Ray",
@@ -859,7 +1101,16 @@
       },
       "flags": [
         "2 VU (rule: exactly 1 for soldier)"
-      ]
+      ],
+      "findings": [
+        {
+          "rule": "vu-count",
+          "text": "2 VU (rule: exactly 1 for soldier)",
+          "status": "new"
+        }
+      ],
+      "design": null,
+      "drift": []
     },
     {
       "name": "Mist Dragon",
@@ -934,7 +1185,23 @@
       "flags": [
         "best basic attack avg 38 < 45",
         "resisted hit = 16% of PC HP (< 25%)"
-      ]
+      ],
+      "findings": [
+        {
+          "rule": "basic-attack-min",
+          "text": "best basic attack avg 38 < 45",
+          "action": "Phantom Shift: Thunder Strike",
+          "status": "new"
+        },
+        {
+          "rule": "resisted-min",
+          "text": "resisted hit = 16% of PC HP (< 25%)",
+          "action": "Phantom Shift: Thunder Strike",
+          "status": "new"
+        }
+      ],
+      "design": null,
+      "drift": []
     },
     {
       "name": "Obsidrax",
@@ -995,7 +1262,22 @@
       "flags": [
         "best basic attack avg 44 < 45",
         "pattern: Miasma Nova repeats every turn its condition holds: its 3-round cooldown never applies (no other row within 2 priority of 11)"
-      ]
+      ],
+      "findings": [
+        {
+          "rule": "basic-attack-min",
+          "text": "best basic attack avg 44 < 45",
+          "action": "Basalt Crush",
+          "status": "new"
+        },
+        {
+          "rule": "pattern",
+          "text": "pattern: Miasma Nova repeats every turn its condition holds: its 3-round cooldown never applies (no other row within 2 priority of 11)",
+          "status": "new"
+        }
+      ],
+      "design": null,
+      "drift": []
     },
     {
       "name": "Rakshasa",
@@ -1100,7 +1382,19 @@
         "avg": 166,
         "vs": "def"
       },
-      "flags": []
+      "flags": [
+        "Severing Verdict avg 166 can drop an average PC (mean HP 118)"
+      ],
+      "findings": [
+        {
+          "rule": "one-shot",
+          "text": "Severing Verdict avg 166 can drop an average PC (mean HP 118)",
+          "action": "Severing Verdict",
+          "status": "new"
+        }
+      ],
+      "design": null,
+      "drift": []
     },
     {
       "name": "Roo",
@@ -1129,7 +1423,16 @@
       "basic": null,
       "flags": [
         "no damage action the sim can read"
-      ]
+      ],
+      "findings": [
+        {
+          "rule": "no-damage-action",
+          "text": "no damage action the sim can read",
+          "status": "new"
+        }
+      ],
+      "design": null,
+      "drift": []
     },
     {
       "name": "Skizzik",
@@ -1182,7 +1485,22 @@
       "flags": [
         "absorbs bolt (warning signal)",
         "best basic attack avg 37 < 45"
-      ]
+      ],
+      "findings": [
+        {
+          "rule": "absorb",
+          "text": "absorbs bolt (warning signal)",
+          "status": "new"
+        },
+        {
+          "rule": "basic-attack-min",
+          "text": "best basic attack avg 37 < 45",
+          "action": "Thunder Strike",
+          "status": "new"
+        }
+      ],
+      "design": null,
+      "drift": []
     },
     {
       "name": "Succubus",
@@ -1234,7 +1552,22 @@
       "flags": [
         "best basic attack avg 42 < 45",
         "pattern: Charm repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9)"
-      ]
+      ],
+      "findings": [
+        {
+          "rule": "basic-attack-min",
+          "text": "best basic attack avg 42 < 45",
+          "action": "Rake",
+          "status": "new"
+        },
+        {
+          "rule": "pattern",
+          "text": "pattern: Charm repeats every turn its condition holds: its 2-round cooldown never applies (no other row within 2 priority of 9)",
+          "status": "new"
+        }
+      ],
+      "design": null,
+      "drift": []
     }
   ]
 }
