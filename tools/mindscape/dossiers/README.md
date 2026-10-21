@@ -29,6 +29,13 @@ only **new** findings (`+N intended`), a *Design record* column shows status and
 and a *Design records* section lists each intended finding with its reason, every
 blind spot and every open question. Monsters without a dossier are listed by name.
 
+**Automatic recall (Claude Code hook).** `bin/dossier-hook.js` is a `UserPromptSubmit` hook
+(configured in `FoundryVTT/.claude/settings.json`): when a prompt names a monster (name or
+`aliases`, minus any `match_exclude` phrase such as "Fafnir Castle"), its role, intended
+rule-breaks, invariant ids, blind spots and open questions are injected into Claude's context.
+It reads only these files (~0.1 s) and never blocks a prompt. Try it:
+`echo '{"prompt":"tune gigas"}' | node bin/dossier-hook.js`
+
 ## The workflow
 
 1. **Before** any change or balance proposal for a monster: run its brief and quote the
@@ -55,6 +62,7 @@ Decision log · Not simulated / risks), plus exactly one fenced block tagged `js
 | `monster`, `actorId` | matched by actor id first, then name |
 | `status` | `draft` \| `confirmed` |
 | `role` | random encounter / story elite / boss add, and where it appears |
+| `aliases`, `match_exclude` | extra names the recall hook matches ("Qilin"), phrases it ignores ("Fafnir Castle") |
 | `exceptions` | `{ rule, action?, why, decided_by, date }` — a rule broken on purpose |
 | `invariants` | `{ id, why, <selector>, <operator> }` — sheet values the gimmick depends on |
 | `blind_spots` | what the sim/engine cannot see, so its verdict is incomplete |

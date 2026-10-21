@@ -47,6 +47,7 @@ defuse (user, 2026-08-16 → reworked 2026-08-26). The lever moved from *prevent
   "monster": "Kirin",
   "actorId": "TvLv878yZLNUAWNN",
   "status": "draft",
+  "aliases": ["Qilin"],
   "updated": "2026-10-21",
   "role": "Valley random-encounter elite (6 Encounter rows)",
   "exceptions": [],

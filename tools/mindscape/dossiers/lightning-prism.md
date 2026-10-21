@@ -39,6 +39,7 @@ A crystal that stores lightning: hit it with Bolt and it discharges back at you.
   "monster": "Lightning Prism",
   "actorId": "sTGMdYipYCG36aBO",
   "status": "draft",
+  "aliases": ["Prism"],
   "updated": "2026-10-21",
   "role": "Valley random encounter (9 Encounter rows)",
   "exceptions": [

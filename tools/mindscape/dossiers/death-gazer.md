@@ -33,6 +33,7 @@ An eye that opens fully — and whoever fails to look away drops.
   "monster": "Death Gazer",
   "actorId": "fCxslZazJKtQWsKP",
   "status": "draft",
+  "aliases": ["Death Gaze"],
   "updated": "2026-10-21",
   "role": "Fafnir Castle gimmick caster (6 Encounter rows)",
   "exceptions": [

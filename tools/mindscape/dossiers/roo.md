@@ -46,6 +46,7 @@ then draws the knife. **Easy to hit, hard to hurt** (re-stat 2026-09-04).
   "monster": "Roo",
   "actorId": "VwClo606KbQSK6aQ",
   "status": "draft",
+  "match_exclude": ["Bandit Roo"],
   "updated": "2026-10-21",
   "role": "rare random encounter in Fafnir Castle (Encounter rows 11 and 13)",
   "exceptions": [

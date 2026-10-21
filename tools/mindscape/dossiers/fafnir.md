@@ -43,6 +43,7 @@ Storm Calm and Summon are recovery-phase actions only.
   "monster": "⭐️ Fafnir",
   "actorId": "P1uCkpNnxLRBNqZr",
   "status": "draft",
+  "match_exclude": ["Fafnir Castle","Fafnir Palace","Hilde-Fafnir","Hilde Fafnir","Bandit Fafnir"],
   "updated": "2026-10-21",
   "role": "Valley story boss (champion, 4 turns); adds = Flame Drake + Lightning Drake",
   "exceptions": [],

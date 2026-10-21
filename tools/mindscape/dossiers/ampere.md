@@ -35,6 +35,7 @@ The roster's **Wet applier**. Wet makes a target VU bolt, so it sets up every ot
   "monster": "Ampere",
   "actorId": "kAYN54Id3iTAOw1A",
   "status": "draft",
+  "aliases": ["Volt Seahorse"],
   "updated": "2026-10-21",
   "role": "Valley random encounter, always paired (4 Encounter rows)",
   "exceptions": [

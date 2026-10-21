@@ -32,6 +32,7 @@ heavy EF as the answer, high DEF / moderate MDEF. Cheap damage, paid in denial (
   "monster": "Iron Colossus",
   "actorId": "FLy3XRr40wNRmYxV",
   "status": "draft",
+  "aliases": ["Colossus"],
   "updated": "2026-10-21",
   "role": "Fafnir Castle tank, always escorted (5 Encounter rows)",
   "exceptions": [
