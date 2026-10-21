@@ -26,6 +26,25 @@ try { live = read("expectations/live-calibration.json"); } catch {}
 
 const cards = Object.fromEntries(audit.cards.map((c) => [slug(c.name), c]));
 
+// Designer's notes on each bestiary card, from the monster's dossier (dossiers/<name>.md):
+// why it is built this way, which flags are intended, drift, open questions.
+const DS = require("../lib/dossier");
+const dossiers = DS.loadDossiers();
+const plain = (x) => String(x ?? "").replace(/\*\*|`/g, "").replace(/\s+/g, " ").trim();
+function designNotes(c) {
+  const d = DS.findDossier(dossiers, { name: c.name });
+  if (!d) return null;
+  const para = (k) => (d.sections[k] ?? "").split(/\r?\n\s*\r?\n/)[0];
+  const bullets = (k) => (d.sections[k] ?? "").split(/\r?\n(?=- )/).map((b) => plain(b.replace(/^- /, ""))).filter(Boolean);
+  return {
+    status: d.data.status, updated: d.data.updated ?? null, file: `dossiers/${require("path").basename(d.file)}`,
+    role: plain(d.data.role), concept: plain(para("Concept")), gimmick: bullets("The gimmick"),
+    intended: (c.findings ?? []).filter((x) => x.status === "intended").map((x) => ({ text: x.text, why: x.why, confirmed: !!x.confirmed })),
+    drift: (c.drift ?? []).map((x) => x.text),
+    blind: d.data.blind_spots, open: d.data.open_questions,
+  };
+}
+
 // Same bands as the Matrix report: normal 1.5-2 (long 4), boss 5.5-6 (long 7.5); party HP
 // left under 70% is pressure, 85%+ is trivial.
 function verdict(l) {
@@ -98,7 +117,9 @@ const monsters = audit.cards.map((c) => ({
   def: c.def, mdef: c.mdef, hitDef: c.hitDef, hitMdef: c.hitMdef, vu: c.vu, rs: c.rs, im: c.im, ab: c.ab,
   basic: c.basic ? { name: c.basic.name, avg: c.basic.avg } : null,
   strongest: c.attacks[0] ? { name: c.attacks[0].name, avg: c.attacks[0].avg, targets: Number.isFinite(c.attacks[0].targets) ? c.attacks[0].targets : "all" } : null,
-  flags: c.flags,
+  // Only findings the dossier does not explain; intended ones move to the Designer's notes.
+  flags: c.findings ? c.findings.filter((x) => x.status === "new").map((x) => x.text) : c.flags,
+  design: designNotes(c),
   fights: fights.filter((f) => f.groups.some((g) => g.id === slug(c.name))).map((f) => f.id),
 }));
 

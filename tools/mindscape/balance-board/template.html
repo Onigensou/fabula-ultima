@@ -141,6 +141,13 @@ textarea { width: 100%; box-sizing: border-box; min-height: 52px; resize: vertic
 .el.rs { color: var(--ink-2); }
 .el.im, .el.ab { border-color: var(--work-ink); color: var(--work-ink); }
 .flags { margin: 0; padding-left: 16px; font-size: 12.5px; color: var(--ink-2); }
+.notes { border-top: 1px dashed var(--win-inner); padding-top: 6px; font-size: 12.5px; }
+.notes summary { cursor: pointer; font-family: var(--display); font-size: 14px; color: var(--gold); }
+.notes h4 { margin: 8px 0 2px; font-size: 12px; font-weight: 600; color: var(--ink); }
+.notes p { margin: 2px 0; color: var(--ink-2); }
+.notes ul { margin: 2px 0; padding-left: 16px; color: var(--ink-2); }
+.notes .ok { color: var(--target-ink); }
+.notes .drift { color: var(--work-ink); font-weight: 600; }
 .prop { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; border-top: 1px dashed var(--win-inner); padding-top: 8px; }
 .prop label { display: grid; gap: 2px; font-size: 12px; color: var(--ink-2); }
 .minitiles { display: flex; flex-wrap: wrap; gap: 3px; }
@@ -451,6 +458,21 @@ function statBar(label, val, frac, cls = "", tick = null) {
     h("div", { class: "sbar" }, h("div", { class: `fill ${cls}`, style: `width:${Math.max(2, Math.min(100, (frac ?? 0) * 100))}%` }), tick != null ? h("div", { class: "tick", style: `left:${tick * 100}%` }) : null),
     h("span", { class: "val" }, val));
 }
+function designNotes(m) {
+  const d = m.design;
+  if (!d) return h("div", { class: "notes muted" }, "No designer's notes yet — its intent is not recorded. Ask before tuning it.");
+  const list = (title, items, fmt = (x) => x, cls = "") => items?.length ? [h("h4", {}, title), h("ul", { class: cls }, ...items.map((x) => h("li", {}, fmt(x))))] : [];
+  return h("details", { class: "notes", open: d.drift.length > 0 },
+    h("summary", {}, `Designer's notes${d.status === "confirmed" ? "" : " (draft)"}${d.drift.length ? ` · ${d.drift.length} drift` : ""}`),
+    d.role ? h("p", {}, h("b", {}, "Role: "), d.role) : null,
+    d.concept ? h("p", {}, d.concept) : null,
+    ...list("How it plays", d.gimmick),
+    ...list("Breaks a rule on purpose", d.intended, (x) => [h("span", { class: "ok" }, x.text), ` — ${x.why ?? "no reason recorded"}${x.confirmed ? "" : " (unconfirmed)"}`]),
+    ...list("Drift — the sheet no longer matches the design", d.drift, (x) => x, "drift"),
+    ...list("The sim cannot see", d.blind),
+    ...list("Open questions", d.open),
+    h("p", { class: "muted" }, `${d.file}${d.updated ? ` · ${d.updated}` : ""}`));
+}
 function beast(m) {
   const p = state.props[m.id];
   const hit = m.basic?.avg ?? null;
@@ -479,6 +501,7 @@ function beast(m) {
     statBar("You hit MDEF", m.hitMdef, hitNum(m.hitMdef) ?? 0.6),
     els.length ? h("div", { class: "els" }, ...els.map(([c, t]) => h("span", { class: `el ${c}` }, t))) : null,
     m.flags.length ? h("ul", { class: "flags" }, ...m.flags.map((x) => h("li", {}, x))) : null,
+    designNotes(m),
     h("div", { class: "muted" }, `Seen in ${m.fights.length} encounter${m.fights.length === 1 ? "" : "s"}:`),
     h("div", { class: "minitiles" }, ...m.fights.map((id) => { const f = FIGHTS.find((x) => x.id === id); return h("button", { type: "button", title: `${f.area === "V" ? "Valley" : "Fafnir"} ${f.story ? "story" : "#" + f.num}: ${STAMP[kindOf(f)].plain}`, onclick: () => jump(f) }, icon(kindOf(f), 13)); })),
     h("div", { class: "prop" }, h("label", {}, "HP", hpSel), h("label", {}, "Damage per hit", dmgSel), note, save, msg));
