@@ -186,7 +186,8 @@
      * 1. Stop current BGM.
      * 2. Broadcast jingle to all clients; schedule BGM resume for when it ends.
      * 3. Restore HP & MP for every party member.
-     * 4. Delete all non-permanent active effects from party actors.
+     * 4. Delete all non-permanent active effects from party actors, then let
+     *    contagious survivors (Virus) spread to at most one healthy member.
      * 5. Fire the director's `party_rested` trigger (forced-only) — awaited.
      * 6. Post a chat message.
      */
@@ -224,6 +225,10 @@
         await _clearTemporaryEffects(actor);
         await _tickCampRestEffects(actor);
       }
+
+      // Contagious effects (Virus) may pass to a healthy member — silently.
+      try { await _spreadRestContagion(actors); }
+      catch (e) { console.warn(TAG, "rest contagion failed:", e); }
 
       // Clear exploration debuffs now that rest has applied them
       await CAMP.State?.clearExplorationDebuffs?.();
@@ -353,6 +358,57 @@
         } catch (e) {
           console.warn(TAG, `Could not decrement rest charges on "${effect.name}":`, e.message);
         }
+      }
+    }
+  }
+
+  // Contagion at rest.
+  // An AE with flags["fabula-ultima-companion"].restSpread: { chance: N } may pass
+  // to a party member who lacks it: each carrier rolls N% in turn, and the FIRST
+  // success infects one random healthy member — at most ONE new infection per
+  // effect per rest, however many carriers there are. Silent by design (Virus:
+  // the bearer notices the icon, nothing announces it). The copy is the carrier's
+  // own AE, so its permanence and ticks come with it. Runs after the sweep, so
+  // only effects that survive a rest can spread.
+  async function _spreadRestContagion(actors) {
+    const MODULE_ID = "fabula-ultima-companion";
+    const nameKey = (e) => String(e?.name ?? "").trim().toLowerCase();
+    const shuffle = (arr) => {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    };
+
+    // name → [{ actor, effect, chance }]
+    const byName = new Map();
+    for (const actor of actors) {
+      for (const effect of actor.effects ?? []) {
+        const chance = Number(effect.flags?.[MODULE_ID]?.restSpread?.chance);
+        if (effect.disabled || !Number.isFinite(chance) || chance <= 0) continue;
+        const key = nameKey(effect);
+        if (!byName.has(key)) byName.set(key, []);
+        byName.get(key).push({ actor, effect, chance });
+      }
+    }
+
+    for (const [key, carriers] of byName) {
+      const healthy = actors.filter(a => !(a.effects ?? []).some(e => nameKey(e) === key));
+      if (!healthy.length) continue;
+      for (const { actor, effect, chance } of shuffle(carriers)) {
+        if (Math.random() * 100 >= chance) continue;
+        const victim = healthy[Math.floor(Math.random() * healthy.length)];
+        const data = effect.toObject();
+        delete data._id;
+        try {
+          await victim.createEmbeddedDocuments("ActiveEffect", [data]);
+          console.debug(TAG, `restSpread: "${effect.name}" passed from ${actor.name} to ${victim.name}.`);
+        } catch (e) {
+          console.warn(TAG, `restSpread: could not give "${effect.name}" to ${victim.name}:`, e.message);
+        }
+        break;
       }
     }
   }

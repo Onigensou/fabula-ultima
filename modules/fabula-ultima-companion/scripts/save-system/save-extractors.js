@@ -585,9 +585,15 @@
       // the save, belonging to the run being discarded — on a party swap they
       // would be another party's. The opted-out effects are kept because nothing
       // can put them back.
+      // `runState` (Virus) overrides every keep below: it belongs to the RUN the
+      // save records, not to the actor. It is crossScene so battles cannot sweep
+      // it, but a load must not carry it across — loading a save from before the
+      // infection, or another party's save that shares this actor, ends it. If the
+      // save has it, the create pass below restores it like any other AE.
       for (const [id, live] of liveById) {
         if (savedById.has(id)) continue;
         const f = live.flags?.[MOD] ?? {};
+        if (f.runState === true) { toDelete.push(id); continue; }
         const keep = f.crossScene === true || f.directorPermanent === true ||
           (f.reactionConfig && !f.directorAppliedBy);
         if (keep) { keptUnique.push(live.name ?? id); keptNames.add(live.name); continue; }

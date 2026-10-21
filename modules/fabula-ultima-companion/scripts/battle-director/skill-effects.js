@@ -11859,6 +11859,10 @@ export function selectAEsOnActor(actor, { aeName = "", filterTag = "", includePe
     const isCounter = String(eff?.flags?.[FLAG_NS]?.lifetimeMode ?? "").trim().toLowerCase() === "persistent_counter";
     if (isCounter && !includePersistent) return false;
     if (names.length && names.includes(String(eff?.name ?? "").trim().toLowerCase())) return true;
+    // `uncleansable` (Virus): only a row that NAMES the effect can take it —
+    // never a tag, chargeKey or "*" sweep, include_persistent or not. Its one
+    // cure (Vaccine) removes it by name; every Cleanse/Dispel/transfer stays blind.
+    if (eff?.flags?.[FLAG_NS]?.uncleansable === true) return false;
     if (tagAll) return true;
     if (!tags.length) return false;
     warnIfTagsMisfiled(eff, where);

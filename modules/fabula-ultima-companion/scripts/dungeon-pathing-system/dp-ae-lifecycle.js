@@ -114,6 +114,40 @@
     return { ticked, expired };
   }
 
+  // ── Dungeon-map damage over time ───────────────────────────────────────────
+  // An AE carrying `flags.<NS>.dungeonDot = { maxHpPercent, minHp }` costs its
+  // bearer `ceil(max_hp × maxHpPercent / 100)` HP per dungeon turn, never taking
+  // them below `minHp` (default 1 — map damage cannot kill). Independent of the
+  // countdown above: a DoT that must outlive Rest and the step tick (Virus) is
+  // rest-bound / persistent and so never reaches tickAEsOnActor at all. Its
+  // battle twin is the AE's own turn_start reaction row; this is the map half.
+  // Several DoT AEs on one actor sum into ONE write.
+
+  function dungeonDotOf(eff) {
+    if (!eff || eff.disabled) return null;
+    const dot = eff.flags?.[FLAG_NS]?.dungeonDot;
+    const pct = Number(dot?.maxHpPercent);
+    if (!dot || !Number.isFinite(pct) || pct <= 0) return null;
+    const minHp = Number(dot.minHp);
+    return { pct, minHp: Number.isFinite(minHp) ? Math.max(0, minHp) : 1 };
+  }
+
+  async function applyDungeonDotOnActor(actor) {
+    const dots = Array.from(actor?.effects ?? []).map(dungeonDotOf).filter(Boolean);
+    if (!dots.length) return 0;
+    const props = actor.system?.props ?? {};
+    const maxHp = Number(props.max_hp) || 0;
+    const curHp = Number(props.current_hp) || 0;
+    const floor = Math.max(...dots.map((d) => d.minHp));
+    if (maxHp <= 0 || curHp <= floor) return 0;
+    const dmg = dots.reduce((sum, d) => sum + Math.ceil(maxHp * d.pct / 100), 0);
+    const newHp = Math.max(floor, curHp - dmg);
+    try { await actor.update({ "system.props.current_hp": newHp }); }
+    catch (e) { console.warn(TAG, "dungeon DoT write failed for", actor.name, e); return 0; }
+    console.log(TAG, `dungeon DoT: "${actor.name}" ${curHp} → ${newHp}`);
+    return curHp - newHp;
+  }
+
   // ── Party-wide tick ────────────────────────────────────────────────────────
   // Default entry point: resolves all party members and ticks each in parallel.
 
@@ -129,6 +163,12 @@
     if (!members.length) {
       console.warn(TAG, "no party members found — skipping AE tick");
       return;
+    }
+
+    // Damage first, so an AE that both deals map damage and counts down deals
+    // its last tick before the countdown removes it.
+    if (members.some(({ actor }) => (actor?.effects ?? []).some(dungeonDotOf))) {
+      await Promise.all(members.map(({ actor }) => applyDungeonDotOnActor(actor)));
     }
 
     // Short-circuit: if no actor has a tickable AE, skip all DB roundtrips.
@@ -161,7 +201,7 @@
   });
 
   // Expose for manual testing via evalGM / test bridge
-  DP.AELifecycle = { tickAEsOnActor, tickPartyAEs };
+  DP.AELifecycle = { tickAEsOnActor, tickPartyAEs, applyDungeonDotOnActor };
 
   console.debug(TAG, "Installed; listening on", DP.HOOKS.TURN_END);
 })();

@@ -55,6 +55,9 @@ export function isDebuffEffect(e) {
   // threshold (set-bonus reconcile) removes them.
   const fu = f["fabula-ultima-companion"] ?? {};
   if (fu.directorPermanent === true || fu.setBonus) return false;
+  // Uncleansable (Virus) has exactly one cure, removed by name (Vaccine) —
+  // never by the Healing menu's Cleanse. Same rule as BD's selectAEsOnActor.
+  if (fu.uncleansable === true) return false;
   const tags = [
     ...(Array.isArray(e.system?.tags) ? e.system.tags : []),
     ...(Array.isArray(e.tags) ? e.tags : []),
