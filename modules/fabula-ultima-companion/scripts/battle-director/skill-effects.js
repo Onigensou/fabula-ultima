@@ -291,9 +291,21 @@ function ownerUserIdForDamageTarget(actor) {
   return candidates[0].id;
 }
 
-export async function resolveDamageReactions({ target, curHp, rawDamage, sourceActor = null } = {}) {
+export async function resolveDamageReactions({ target, curHp, rawDamage, sourceActor = null, element = null } = {}) {
   const result = { newHp: Math.max(0, curHp - rawDamage), dealtDamage: Math.max(0, rawDamage), consumedAeIds: [], fired: [], followUp: [] };
   if (!target || rawDamage <= 0) return result;
+
+  // What the hit looked like on arrival, before any row below touched it.
+  // `element` feeds TRIGGER_DAMAGE_IS_<EL> (a row can gate on the element — Earthen
+  // Wire only takes Bolt); `incomingDamage` feeds INCOMING_DAMAGE, in the
+  // condition/amount formulas here AND in the chain follow-ups run after the
+  // write — so a redirect can zero the hit and re-deal exactly that amount
+  // elsewhere (Obsidrax's Earthen Wire → `deal_damage` "INCOMING_DAMAGE").
+  const hitPayload = {
+    subjectActorUuid: sourceActor?.uuid ?? null,
+    element: element ? String(element).toLowerCase() : null,
+    incomingDamage: rawDamage,
+  };
 
   // Running landed-damage value the incoming adjust_damage rows mutate.
   let dmg = rawDamage;
@@ -305,7 +317,7 @@ export async function resolveDamageReactions({ target, curHp, rawDamage, sourceA
     // (current_hp is still the pre-damage value at this point).
     resolver = buildSkillResolver({
       actor: target,
-      payload: { subjectActorUuid: sourceActor?.uuid ?? null },
+      payload: hitPayload,
       skill: null, round: 0,
     });
     return resolver;
@@ -429,7 +441,7 @@ export async function resolveDamageReactions({ target, curHp, rawDamage, sourceA
         // Stash chain follow-ups (e.g. apply_ae the "spent" marker) for the
         // caller to run post-write through the normal executor.
         if (followUpRows.length) {
-          result.followUp.push({ rows: followUpRows, effectTable, aeName: ae.name });
+          result.followUp.push({ rows: followUpRows, effectTable, aeName: ae.name, payload: { ...hitPayload } });
         }
       }
     }
@@ -674,7 +686,11 @@ export async function applyDamageToTarget({
     }
 
     // Overflow → HP, via the reaction AEs (Mercy clamp etc.).
-    const { newHp, dealtDamage, consumedAeIds, fired, followUp } = await resolveDamageReactions({ target, curHp, rawDamage: toHp });
+    const { newHp, dealtDamage, consumedAeIds, fired, followUp } = await resolveDamageReactions({
+      target, curHp, rawDamage: toHp,
+      // "elementless" is the log's display default, not an element.
+      element: (_vfxElement && _vfxElement !== "elementless") ? _vfxElement : null,
+    });
     const update = { "system.props.current_hp": newHp };
     if (absorbed > 0) update["system.props.shield_value"] = newShield;
     await target.update(update);
@@ -694,7 +710,7 @@ export async function applyDamageToTarget({
       const dirf = bdf?.getActiveDirector?.() ?? null;
       const tokf = target.getActiveTokens?.()?.[0]?.document ?? null;
       for (const fu of followUp) {
-        const fctx = { director: dirf, reactorActor: target, reactorToken: tokf, skill: null, payload: {}, effect_table: fu.effectTable, dCombat: dirf?.dCombat ?? null };
+        const fctx = { director: dirf, reactorActor: target, reactorToken: tokf, skill: null, payload: { ...(fu.payload ?? {}) }, effect_table: fu.effectTable, dCombat: dirf?.dCombat ?? null };
         for (const frow of (fu.rows ?? [])) {
           try { await applyEffectRow(frow, fctx); }
           catch (e) { warn(`applyDamageToTarget: follow-up "${frow.effect_label}" failed`, e); }
