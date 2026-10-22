@@ -213,7 +213,7 @@
   const RESERVED_TARGET_REFS_FALLBACK = new Set([
     "self", "self_or_my_focus", "action_targets", "hit_action_targets",
     "ally_action_targets", "enemy_action_targets", "trigger_actor",
-    "trigger_attacker", "trigger_subject", "cause_actor", "cover_target",
+    "trigger_attacker", "trigger_subject", "cause_actor", "ae_applier", "cover_target",
     "own_numen", "own_summons", "own_phantasms", "own_persistent_summons",
     "save_failed_targets", "contest_won_targets", "contest_lost_targets",
     "save_tier_1", "save_tier_2", "save_tier_3", "save_tier_4",

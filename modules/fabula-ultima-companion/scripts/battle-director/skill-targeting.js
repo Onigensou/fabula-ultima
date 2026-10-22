@@ -732,6 +732,7 @@ async function buildCandidatePool(source, ctx) {
     case "trigger_attacker":    return collectTriggerAttacker(ctx);
     case "trigger_subject":     return collectTriggerSubject(ctx);
     case "cause_actor":         return collectCauseActor(ctx);
+    case "ae_applier":          return collectAeApplier(ctx);
     case "cover_target":        return collectCoverTarget(ctx);
     case "grappled_by_self":    return collectGrappledBySelf(ctx);
     case "save_failed_targets": return collectSaveFailedTargets(ctx);
@@ -986,6 +987,19 @@ async function collectTriggerActor(ctx) {
 async function collectCauseActor(ctx) {
   const uuid = ctx.payload?.causeTokenUuid ?? null;
   return await uuidsToTokens(uuid ? [uuid] : []);
+}
+
+// The creature that APPLIED the AE carrying this reaction (ctx.appliedBy*, set
+// for AE-carried reactions). Lets a status act on whoever put it there — the
+// Crucified creature's death hands The Cross back to its owner. Empty for any
+// reaction that isn't AE-carried.
+async function collectAeApplier(ctx) {
+  if (ctx?.appliedByTokenUuid) return await uuidsToTokens([ctx.appliedByTokenUuid]);
+  const actorUuid = ctx?.appliedByActorUuid ?? null;
+  if (!actorUuid) return [];
+  const actor = await fromUuid(actorUuid).catch(() => null);
+  const tok = actor?.getActiveTokens?.()?.[0]?.document ?? null;
+  return tok ? await uuidsToTokens([tok.uuid]) : [];
 }
 
 async function collectTriggerSubject(ctx) {

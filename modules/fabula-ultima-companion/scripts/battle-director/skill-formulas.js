@@ -2532,6 +2532,17 @@ function countDistinctClasses(actor) {
 // Why not `actor.system.props.weapon_list`? Those rows are a derived
 // presentation list — they carry `name` + `type` + `uuid` but NOT
 // `isEquipped` (the source-of-truth flag lives on the item itself).
+// A weapon's category FAMILY, lower-cased. The item flag `weaponTypeOverride`
+// wins over the CSB `category` prop — the same flag snapshot.js reads, so "treat
+// this weapon category as None" (The Balance) holds for the attack AND for every
+// category gate below.
+function weaponFamilyOf(item) {
+  const override = String(item?.flags?.["fabula-ultima-companion"]?.weaponTypeOverride ?? "").trim();
+  if (override) return override.toLowerCase();
+  const p = item?.system?.props ?? {};
+  return String(p.category ?? p.weapon_type ?? p.type ?? "").toLowerCase();
+}
+
 function hasEquippedWeaponOfType(actor, weaponType) {
   if (!actor) return false;
   const wanted = String(weaponType ?? "").toLowerCase();
@@ -2545,7 +2556,7 @@ function hasEquippedWeaponOfType(actor, weaponType) {
     // not families — so match against BOTH so HAS_RANGED_WEAPON /
     // HAS_MELEE_WEAPON work (via weapon_range) alongside HAS_ARCANE_WEAPON
     // and other family gates (via category).
-    const cat = String(p.category ?? p.weapon_type ?? p.type ?? "").toLowerCase();
+    const cat = weaponFamilyOf(item);
     const range = String(p.weapon_range ?? "").toLowerCase();
     if (cat === wanted || range === wanted) return true;
   }
@@ -2593,7 +2604,7 @@ function usedWeaponIsOfType(payload, weaponType) {
   const p = item?.system?.props ?? null;
   if (!p) return false;
   if (String(p.item_type ?? "").toLowerCase() !== "weapon") return false;
-  const cat = String(p.category ?? p.weapon_type ?? p.type ?? "").toLowerCase();
+  const cat = weaponFamilyOf(item);
   const range = String(p.weapon_range ?? "").toLowerCase();
   return cat === wanted || range === wanted;
 }

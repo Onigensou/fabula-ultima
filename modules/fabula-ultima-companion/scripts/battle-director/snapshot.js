@@ -316,6 +316,19 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
     }
   } catch (e) { warn("resolveAttackerWeapon: weapon-form overlay failed", e); }
 
+  // ── Weapon-scoped retype ───────────────────────────────────────────────
+  // "Treat the damage type dealt by this weapon as None. Treat this weapon
+  // category as None" (The Balance). Item flags, so the CSB dropdowns never need
+  // a "None" option and the retype can't spill onto the other hand the way an
+  // actor-wide override_attack_damage_type would:
+  //   flags.<NS>.damageTypeOverride — e.g. "elementless" (typeless: no affinity)
+  //   flags.<NS>.weaponTypeOverride — e.g. "None" (matches no category family)
+  // Absolute, applied after the form overlay; unset = untouched.
+  const dtOverride = String(weaponItem?.flags?.[FLAG_NS]?.damageTypeOverride ?? "").trim();
+  if (dtOverride) damageType = dtOverride;
+  const wtOverride = String(weaponItem?.flags?.[FLAG_NS]?.weaponTypeOverride ?? "").trim();
+  if (wtOverride) weaponType = wtOverride;
+
   return Object.freeze({
     hand: which,
     name: String(handName),
@@ -1113,6 +1126,17 @@ export function anyTargetDeniesCritOpportunity(ar) {
     if (actor && actorLiveRuleValues(actor, "deny_crit_opportunity").length) return true;
   }
   return false;
+}
+
+// The attacker-side twin: the ACTING creature carries a live
+// `deny_own_crit_opportunity` rule — "critical successes by these attacks do not
+// generate any Opportunity" (Sonic Blow's marker). Read at the same RESOLVE stamp.
+export function attackerDeniesOwnCritOpportunity(ar) {
+  const uuid = ar?.attackerActorRef ?? ar?.attacker?.actorUuid ?? null;
+  if (!uuid) return false;
+  let actor = null;
+  try { actor = globalThis.fromUuidSync?.(uuid) ?? null; } catch (_) { actor = null; }
+  return !!(actor && actorLiveRuleValues(actor, "deny_own_crit_opportunity").length);
 }
 
 // ── Versatile weapons ────────────────────────────────────────────────────────

@@ -598,6 +598,11 @@ export async function applyDamageToTarget({
   // element, weaponType?, efficiency?, range?, accuracy?, isCrit?, sourceType?,
   // sink. Absent → no log emit (silent callers stay quiet).
   logContext = null,
+  // Damage goes straight to HP and leaves `shield_value` untouched (a deal_damage
+  // row's `damage_skip_shield`). For self-inflicted HP costs that must land on HP
+  // even through a Shield — Robe of Flesh drops its wearer into Crisis and THEN
+  // hands out a fresh Shield. Default off: RAW Shield soaks damage first.
+  skipShield = false,
 } = {}) {
   const empty = { resource, finalValue: 0, valueDirection: "none", fired: [] };
   if (!target) return empty;
@@ -668,7 +673,7 @@ export async function applyDamageToTarget({
     let toHp = damage;
     let absorbed = 0;
     let newShield = curShield;
-    if (curShield > 0) {
+    if (curShield > 0 && !skipShield) {
       absorbed = Math.min(curShield, damage);
       newShield = curShield - absorbed;
       toHp = damage - absorbed;
@@ -5858,6 +5863,9 @@ function describeDealDamage(row, ctx = {}) {
     // incoming ruleset ("cannot be Reduce and ignore immunity"), which is what
     // lets a curse/drain land past DR and Immunity.
     damageKeywords: String(row.damage_keywords ?? "").trim(),
+    // HP-only damage that ignores the victim's Shield (see applyDamageToTarget's
+    // skipShield). Default off.
+    skipShield: row.damage_skip_shield === true || String(row.damage_skip_shield ?? "").trim().toLowerCase() === "true",
   };
 }
 
@@ -6054,6 +6062,7 @@ async function dealDamageApply(row, ctx, d) {
         // below). sourceType "effect" so the log distinguishes ticks/riders
         // from weapon attacks. No weapon/efficiency/range (status damage).
         logContext: { attackerName, element, sourceType: "effect", sink: battleLogSink },
+        skipShield: d.skipShield,
       });
       applied.push({ actorUuid: actor.uuid, amount, element, final: res?.finalValue ?? null, direction: res?.valueDirection });
 
@@ -7871,6 +7880,23 @@ async function hideItemOnActor(row, ctx, actor) {
     return { ok: false, reason: "no-item" };
   }
 
+  // `hide_item_restore`: the reverse — give a hidden item back NOW instead of at
+  // battle end (it returns unequipped, like the battle-end restore). The Cross:
+  // locked away while its Crucified creature lives, back once that creature dies.
+  if (row.hide_item_restore === true || String(row.hide_item_restore ?? "").trim().toLowerCase() === "true") {
+    if (!item.flags?.["fabula-ultima-companion"]?.hiddenUntilBattleEnd) {
+      log(`skill-effects.hide_item: "${item.name}" on ${actor.name} is not hidden — nothing to restore`);
+      return { ok: true, reason: "not-hidden", entry: null };
+    }
+    try {
+      await item.update({ "flags.fabula-ultima-companion.-=hiddenUntilBattleEnd": null });
+    } catch (e) {
+      warn("skill-effects.hide_item: restore update threw", e);
+      return { ok: false, reason: "update-threw" };
+    }
+    log(`skill-effects.hide_item: ${actor.name} — "${item.name}" restored to the inventory`);
+    return { ok: true, entry: { actor: actor.uuid, itemId: item.id, itemName: item.name, restored: true } };
+  }
   // Idempotent: if already hidden, do nothing. Re-running would be a no-op at
   // best — but worse, the partitionInventory hidden-filter (step 1 below) would
   // no longer see the item, so applyEquipmentSwap couldn't find it to empty its
@@ -10695,7 +10721,17 @@ async function applyTransferAeEffect(row, ctx) {
   if (ctx?.mode === "preview") {
     return { ok: true, kind: "transfer_ae", applied: [], reason: "preview" };
   }
-  const aeName = String(row.ae_template_ref ?? "").trim();
+  // `ae_template_ref: "TRIGGER_STATUS"` = the status whose application fired this
+  // reaction (a creature_status_applied payload's `status`). With keep_source it
+  // reads "inflict the same debuff on another creature" (Dark Ring).
+  const rawAeName = String(row.ae_template_ref ?? "").trim();
+  const aeName = rawAeName.toUpperCase() === "TRIGGER_STATUS"
+    ? String(ctx?.payload?.status ?? "").trim()
+    : rawAeName;
+  if (rawAeName && !aeName) {
+    log(`skill-effects.transfer_ae: "${row.effect_label}" wants the trigger's status but the payload has none; skipping`);
+    return { ok: true, kind: "transfer_ae", applied: [], reason: "no-trigger-status" };
+  }
   // Filter mode: `filter_tag` accepts one tag, a comma-list of tags (match ANY),
   // or `*`/`all` (every AE). Matches system.tags OR chargeKey. persistent_counter
   // clocks are never moved (same guard as remove_tagged_ae).

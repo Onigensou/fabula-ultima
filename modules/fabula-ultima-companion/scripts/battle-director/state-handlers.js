@@ -8,7 +8,7 @@
 // rules require equipped-weapon lookup, status effects, affinities, etc.,
 // which are deliberately out of scope for the prototype).
 
-import { anyTargetDeniesCritOpportunity } from "./snapshot.js";
+import { anyTargetDeniesCritOpportunity, attackerDeniesOwnCritOpportunity } from "./snapshot.js";
 import { log, warn, err } from "./logger.js";
 import { isGmOverrideEmpty, summarizeGmOverride, dropGmRemovedReactions } from "./gm-card-override.js";
 import { runBattleEndSequence } from "./battle-end/battle-end-orchestrator.js";
@@ -7357,7 +7357,7 @@ const Resolve = {
     // Crit → stamp opportunity payload so the RESOLVE transition branches to
     // OPPORTUNITY_WINDOW. Stamped after the persistence checkpoint so an F5
     // during the picker gracefully skips the opportunity (action already committed).
-    if (ar.roll?.opportunities && !anyTargetDeniesCritOpportunity(ar)) {
+    if (ar.roll?.opportunities && !anyTargetDeniesCritOpportunity(ar) && !attackerDeniesOwnCritOpportunity(ar)) {
       director.ctx.hasPendingOpportunity = {
         actorUuid:    ar.attackerActorRef ?? ar.attacker?.actorUuid ?? null,
         actorName:    ar.attacker?.name ?? "?",
