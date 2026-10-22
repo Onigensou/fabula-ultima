@@ -4781,6 +4781,12 @@
         "effects": 0
       },
       {
+        "id": "6Rh9zw11K9P9SOgB",
+        "name": "Dark Ring (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "SgBVZqVpIFdetJDi",
         "name": "Dark Weapon",
         "type": "equippableItem",
@@ -7149,6 +7155,12 @@
         "name": "Holy Bible",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "k2huLrX9cf2f5J7n",
+        "name": "Holy Crucifixion",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "3bx2yA9U5BNv2M5E",
@@ -10823,6 +10835,12 @@
         "effects": 2
       },
       {
+        "id": "RB3CDF98qYlgsgzX",
+        "name": "Robe of Flesh (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "lry58VKdGBa1kPHm",
         "name": "Rocinante",
         "type": "equippableItem",
@@ -11597,8 +11615,20 @@
         "effects": 0
       },
       {
+        "id": "f3QKcoZ4HwrR607a",
+        "name": "Sonic Blow",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "3ZV5drjroWrvXqkw",
         "name": "Sonic Katar",
+        "type": "equippableItem",
+        "effects": 2
+      },
+      {
+        "id": "rSdCKOYJzRyfFcVe",
+        "name": "Sonic Katar (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -12471,6 +12501,12 @@
         "name": "The Cross",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "pt3AvOnolAl9WrZA",
+        "name": "The Cross (Passive)",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "hL6rlOzacc62BcrE",

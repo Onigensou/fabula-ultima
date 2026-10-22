@@ -8,9 +8,126 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "gnPzEevrfSlDlZFc",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1792699077290,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "gnPzEevrfSlDlZFc",
+          "originalParentId": "3ZV5drjroWrvXqkw",
+          "originalUuid": "Item.3ZV5drjroWrvXqkw.ActiveEffect.gnPzEevrfSlDlZFc"
+        },
+        "fabula-ultima-companion": {
+          "draftAutomation": "claude-2026-10-23",
+          "twoWeaponGrant": {
+            "category": "dagger",
+            "soloWeapon": true
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1284.gif",
+      "name": "Double Strike",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "MRNqlSDgr9sHwLUh",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1792699077290,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "MRNqlSDgr9sHwLUh",
+          "originalParentId": "3ZV5drjroWrvXqkw",
+          "originalUuid": "Item.3ZV5drjroWrvXqkw.ActiveEffect.MRNqlSDgr9sHwLUh"
+        },
+        "fabula-ultima-companion": {
+          "draftAutomation": "claude-2026-10-23",
+          "multiAttackGrant": {
+            "attacks": 5,
+            "condition_formula": "AE_COUNT_SONIC_BLOW > 0",
+            "keepHighRoll": false,
+            "weaponName": "Sonic Katar"
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1284.gif",
+      "name": "Sonic Blow (Attacks)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
+    },
+    "fabula-ultima-companion": {
+      "draftAutomation": "claude-2026-10-23"
     },
     "fucompanion": {
       "itemMigratorBackup": {

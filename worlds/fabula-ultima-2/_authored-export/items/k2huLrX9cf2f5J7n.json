@@ -1,0 +1,171 @@
+{
+  "_id": "k2huLrX9cf2f5J7n",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1792699076623,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "hwvtqEzn1JZcmn4X",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1792699077259,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "hwvtqEzn1JZcmn4X",
+          "originalParentId": "k2huLrX9cf2f5J7n",
+          "originalUuid": "Item.k2huLrX9cf2f5J7n.ActiveEffect.hwvtqEzn1JZcmn4X"
+        },
+        "fabula-ultima-companion": {
+          "draftAutomation": "claude-2026-10-23",
+          "lifetimeMode": "target_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/weapons/polearms/spear-hooked-blue.webp",
+      "name": "Crucifixion Ready",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fabula-ultima-companion": {
+      "draftAutomation": "claude-2026-10-23"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/weapons/polearms/spear-hooked-blue.webp",
+  "name": "Holy Crucifixion",
+  "ownership": {
+    "2vy7wrEUqBy0kzsU": 3,
+    "6DmgigM5jq76r0Gd": 3,
+    "7hKw8KGsimboeDif": 3,
+    "9sFgrDy4MvAgoCmQ": 3,
+    "Am7qxPOavfKeDGPd": 3,
+    "JQGNzKpDPHJmcUIW": 3,
+    "JvF9tXvr7aaiS06m": 3,
+    "KD5d0efqHETPpIux": 3,
+    "LT3Z8EnRdMVk5ncQ": 3,
+    "MwTL6zXFCEpVBTpI": 3,
+    "NozW36XIGEGx7oVH": 3,
+    "NpGkA7uxaarkPiwS": 3,
+    "ULBTZPjtza939Mvy": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3,
+    "eGu3tuw7HwJd2bpx": 3,
+    "iLeUVmwqnze8ulOI": 3,
+    "mE5aEkDlrQJIYyhG": 3,
+    "nSGZ1sz1rdKao0kz": 3,
+    "nXC7OD7u5Zw5UDDU": 3,
+    "t41knaXNbgCEygM5": 3,
+    "tz9BP9MKfNGf2P3n": 3,
+    "wNzPmItLYCKE1I8t": 3,
+    "yL2PQxh3R9ddt0te": 3,
+    "yUfwoVmEPVdFG3AY": 3
+  },
+  "sort": 200000,
+  "system": {
+    "container": "rIxMsRTAdn8ZQVYH",
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "Rogue",
+      "cost": "-",
+      "damage_bonus": "",
+      "defense_target_type": "def",
+      "description": "<p><strong>Cost:</strong> -</p><p><strong>Target:</strong> One Creature</p><p><strong>Duration:</strong> Instantaneous</p><p>Perform a free attack with The Cross on a single creature. If this attack hits, the creature is Crucified and gains Vulnerability to Light damage until the end of the scene. While a creature is Crucified, The Cross cannot be equipped; once the Crucified creature dies, The Cross returns to its owner's inventory. Crucified cannot be dispelled.</p>",
+      "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "chain_steps": "hc_mark, hc_attack",
+          "effect_kind": "chain",
+          "effect_label": "hc_root"
+        },
+        "1": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Crucifixion Ready",
+          "effect_kind": "apply_ae",
+          "effect_label": "hc_mark",
+          "target_ref": "self"
+        },
+        "2": {
+          "action_ref": "Attack",
+          "effect_kind": "free_action",
+          "effect_label": "hc_attack",
+          "target_ref": "action_targets"
+        }
+      },
+      "heroic_requirement": "",
+      "id": "k2huLrX9cf2f5J7n",
+      "img": "icons/weapons/polearms/spear-hooked-blue.webp",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Holy Crucifixion",
+      "on_activate_effect_ref": "hc_root",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_description": "<p><strong>Cost:</strong> -</p><p><strong>Target:</strong> One Creature</p><p><strong>Duration:</strong> Instantaneous</p><p>Perform a free attack with The Cross on a single creature. If this attack hits, the creature is Crucified and gains Vulnerability to Light damage until the end of the scene. While a creature is Crucified, The Cross cannot be equipped; once the Crucified creature dies, The Cross returns to its owner's inventory. Crucified cannot be dispelled.</p>",
+      "skill_information": "",
+      "skill_range": "Melee",
+      "skill_target": "One Creature",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Item.k2huLrX9cf2f5J7n"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "k2huLrX9cf2f5J7n"
+  },
+  "type": "equippableItem"
+}

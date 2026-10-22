@@ -1,0 +1,84 @@
+{
+  "_id": "RB3CDF98qYlgsgzX",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1792699076623,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "draftAutomation": "claude-2026-10-23"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/equipment/chest/robe-collared-pink.webp",
+  "name": "Robe of Flesh (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "xbPqXpTF8FDw0OqJ",
+    "props": {
+      "cost": "",
+      "description": "<p>At the start of the wearer's turn, if the wearer is not in Crisis, the wearer enters Crisis and gains Shield equal to the Hit Points lost + 5.</p>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "rof_shield, rof_drop",
+          "effect_kind": "chain",
+          "effect_label": "rof_root"
+        },
+        "1": {
+          "effect_kind": "set_resource",
+          "effect_label": "rof_shield",
+          "grant_amount": "CUR_HP - floor(MAX_HP / 2) + 5",
+          "grant_resource": "shield",
+          "target_ref": "self"
+        },
+        "2": {
+          "attacker_name": "Robe of Flesh",
+          "damage_amount": "CUR_HP - floor(MAX_HP / 2)",
+          "damage_element": "elementless",
+          "damage_ignore_affinity": true,
+          "damage_keywords": "crush",
+          "damage_skip_shield": true,
+          "effect_kind": "deal_damage",
+          "effect_label": "rof_drop",
+          "target_ref": "self"
+        }
+      },
+      "id": "RB3CDF98qYlgsgzX",
+      "img": "icons/equipment/chest/robe-collared-pink.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Robe of Flesh (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "HAS_STATUS_CRISIS == 0 && CUR_HP > floor(MAX_HP / 2)",
+          "reaction_effect_ref": "rof_root",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "turn_start"
+        }
+      },
+      "skill_description": "<p>At the start of the wearer's turn, if the wearer is not in Crisis, the wearer enters Crisis and gains Shield equal to the Hit Points lost + 5.</p>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.RB3CDF98qYlgsgzX"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "RB3CDF98qYlgsgzX"
+  },
+  "type": "equippableItem"
+}

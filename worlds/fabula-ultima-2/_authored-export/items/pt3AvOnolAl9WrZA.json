@@ -1,0 +1,175 @@
+{
+  "_id": "pt3AvOnolAl9WrZA",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1792699076623,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "yeMFSOAi6rIpZ0pE",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1792699077278,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_8",
+          "mode": 5,
+          "priority": 20,
+          "value": "VU"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "yeMFSOAi6rIpZ0pE",
+          "originalParentId": "pt3AvOnolAl9WrZA",
+          "originalUuid": "Item.pt3AvOnolAl9WrZA.ActiveEffect.yeMFSOAi6rIpZ0pE"
+        },
+        "fabula-ultima-companion": {
+          "crossScene": false,
+          "directorPermanent": true,
+          "draftAutomation": "claude-2026-10-23",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "effect_kind": "hide_item",
+                "effect_label": "crux_return",
+                "hide_item_name": "The Cross",
+                "hide_item_restore": true,
+                "target_ref": "ae_applier"
+              }
+            },
+            "name": "Crucified",
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "crux_return",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_defeated"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/weapons/polearms/spear-hooked-blue.webp",
+      "name": "Crucified",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "draftAutomation": "claude-2026-10-23"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/weapons/polearms/spear-hooked-blue.webp",
+  "name": "The Cross (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "rIxMsRTAdn8ZQVYH",
+    "props": {
+      "cost": "",
+      "description": "<p>A creature hit by Holy Crucifixion is Crucified, and The Cross leaves your hands until that creature dies.</p>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "hc_crucify, hc_clear, hc_lock",
+          "effect_kind": "chain",
+          "effect_label": "hc_hit"
+        },
+        "1": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "scene",
+          "ae_template_ref": "Crucified",
+          "effect_kind": "apply_ae",
+          "effect_label": "hc_crucify",
+          "target_ref": "trigger_subject"
+        },
+        "2": {
+          "ae_template_ref": "Crucifixion Ready",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "hc_clear",
+          "target_ref": "self"
+        },
+        "3": {
+          "effect_kind": "hide_item",
+          "effect_label": "hc_lock"
+        }
+      },
+      "id": "pt3AvOnolAl9WrZA",
+      "img": "icons/weapons/polearms/spear-hooked-blue.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "The Cross (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ACTION_IS_ATTACK == 1 && AE_COUNT_CRUCIFIXION_READY > 0",
+          "reaction_effect_ref": "hc_hit",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_deals_damage"
+        },
+        "1": {
+          "condition_formula": "AE_COUNT_CRUCIFIXION_READY > 0",
+          "reaction_effect_ref": "hc_clear",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "turn_end"
+        }
+      },
+      "skill_description": "<p>A creature hit by Holy Crucifixion is Crucified, and The Cross leaves your hands until that creature dies.</p>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.pt3AvOnolAl9WrZA"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "pt3AvOnolAl9WrZA"
+  },
+  "type": "equippableItem"
+}

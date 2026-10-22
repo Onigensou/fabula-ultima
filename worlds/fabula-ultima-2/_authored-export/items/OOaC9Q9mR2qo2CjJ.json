@@ -53,6 +53,7 @@
           "effect_kind": "targeting",
           "effect_label": "mpw_enemy",
           "mode": "exact",
+          "skip_when_passive": false,
           "target_filter": "CUR_HP >= 1",
           "target_prompt": "Choose an enemy to lose 1 turn"
         },
@@ -79,6 +80,7 @@
           "effect_label": "mpw_ally",
           "exclude_self": true,
           "mode": "exact",
+          "skip_when_passive": false,
           "target_filter": "CUR_HP >= 1",
           "target_prompt": "Choose an ally to gain 1 turn"
         },

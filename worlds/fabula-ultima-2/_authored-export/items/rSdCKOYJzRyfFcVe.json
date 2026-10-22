@@ -1,0 +1,99 @@
+{
+  "_id": "rSdCKOYJzRyfFcVe",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1792699076623,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "draftAutomation": "claude-2026-10-23"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1284.gif",
+  "name": "Sonic Katar (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "3ZV5drjroWrvXqkw",
+    "props": {
+      "cost": "",
+      "description": "<p>During Sonic Blow: -2 to Accuracy Checks with this weapon; a Critical Success deals 50% more damage.</p>",
+      "effect_table": {
+        "0": {
+          "accuracy_amount": "-2",
+          "accuracy_operation": "add",
+          "effect_kind": "adjust_accuracy",
+          "effect_label": "skat_acc"
+        },
+        "1": {
+          "damage_amount": "1.5",
+          "damage_operation": "multiply",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "skat_crit"
+        },
+        "2": {
+          "ae_template_ref": "Sonic Blow",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "skat_clear",
+          "target_ref": "self"
+        }
+      },
+      "id": "rSdCKOYJzRyfFcVe",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1284.gif",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Sonic Katar (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "AE_COUNT_SONIC_BLOW > 0",
+          "reaction_action_kind": "Attack",
+          "reaction_effect_ref": "skat_acc",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_performs_action"
+        },
+        "1": {
+          "condition_formula": "ACTION_IS_ATTACK == 1 && ATTACK_IS_CRIT == 1 && AE_COUNT_SONIC_BLOW > 0",
+          "reaction_effect_ref": "skat_crit",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        },
+        "2": {
+          "condition_formula": "AE_COUNT_SONIC_BLOW > 0",
+          "reaction_effect_ref": "skat_clear",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "turn_end"
+        }
+      },
+      "skill_description": "<p>During Sonic Blow: -2 to Accuracy Checks with this weapon; a Critical Success deals 50% more damage.</p>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.rSdCKOYJzRyfFcVe"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "rSdCKOYJzRyfFcVe"
+  },
+  "type": "equippableItem"
+}

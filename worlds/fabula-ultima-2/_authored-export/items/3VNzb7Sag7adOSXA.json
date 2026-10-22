@@ -12,6 +12,11 @@
     "custom-system-builder": {
       "version": "4.4.2"
     },
+    "fabula-ultima-companion": {
+      "damageTypeOverride": "elementless",
+      "draftAutomation": "claude-2026-10-23",
+      "weaponTypeOverride": "None"
+    },
     "fucompanion": {
       "itemMigratorBackup": {
         "detectedType": "weapon",

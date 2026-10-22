@@ -12,6 +12,9 @@
     "custom-system-builder": {
       "version": "3.2.4"
     },
+    "fabula-ultima-companion": {
+      "draftAutomation": "claude-2026-10-23"
+    },
     "fucompanion": {
       "itemMigratorBackup": {
         "detectedType": "weapon",
