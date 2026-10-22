@@ -16,7 +16,7 @@
     }
   },
   "folder": "AF1TjOn1OTJNHrkx",
-  "formula": "1d12",
+  "formula": "1d10",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
   "name": "Valley of the Dragon Underground - Enemies",
   "ownership": {
@@ -52,21 +52,6 @@
         9
       ],
       "text": "Crona",
-      "type": "document",
-      "weight": 1
-    },
-    {
-      "_id": "HPk1lOZIImdSZxVK",
-      "documentCollection": "Actor",
-      "documentId": "Rk5haXsaDemonAAA",
-      "drawn": false,
-      "flags": {},
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa_Standard.png",
-      "range": [
-        12,
-        12
-      ],
-      "text": "Rakshasa",
       "type": "document",
       "weight": 1
     },
@@ -172,21 +157,6 @@
         3
       ],
       "text": "Skizzik",
-      "type": "document",
-      "weight": 1
-    },
-    {
-      "_id": "VqXElUfRsRPUYaNy",
-      "documentCollection": "Actor",
-      "documentId": "8kluKkqkcGFkmXNO",
-      "drawn": false,
-      "flags": {},
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Mist%20Dragon.png",
-      "range": [
-        11,
-        11
-      ],
-      "text": "Mist Dragon",
       "type": "document",
       "weight": 1
     },

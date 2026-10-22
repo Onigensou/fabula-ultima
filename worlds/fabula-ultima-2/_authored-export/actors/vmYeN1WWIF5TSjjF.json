@@ -8,6 +8,67 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "02FGeucT9aAnHdid",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1792632693047,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "can_target_flying_with",
+          "mode": 5,
+          "priority": 20,
+          "value": ""
+        }
+      ],
+      "description": "<p>The Crona flies, so its bite reaches creatures that are Flying.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "02FGeucT9aAnHdid",
+          "originalParentId": "vmYeN1WWIF5TSjjF",
+          "originalUuid": "Actor.vmYeN1WWIF5TSjjF.ActiveEffect.02FGeucT9aAnHdid"
+        },
+        "fabula-ultima-companion": {
+          "crossScene": true,
+          "directorPermanent": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Wind.png",
+      "name": "Bat Wings",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"
@@ -296,6 +357,65 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "2okP4FGVOYw3hMqp",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1792631976742,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>It is getting bigger. At three, it stops being a monster.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "2okP4FGVOYw3hMqp",
+              "originalParentId": "PD9V6PBKW7UAVGjk",
+              "originalUuid": "Actor.vmYeN1WWIF5TSjjF.Item.PD9V6PBKW7UAVGjk.ActiveEffect.2okP4FGVOYw3hMqp"
+            },
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "crossScene": false,
+              "lifetimeMode": "persistent_counter"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
+          "name": "Eaten",
+          "origin": "Actor.9yadoDh5EhIWpevl.Item.lmpZ4ifOcHjilCxJ",
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "gorger_eaten"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.4"
@@ -330,9 +450,24 @@
             "0": {
               "ae_duplicate_mode": "skip",
               "ae_template_ref": "Virus",
+              "chain_steps": "bite_virus,bite_fed",
+              "effect_kind": "chain",
+              "effect_label": "bite_chain",
+              "target_ref": "hit_action_targets"
+            },
+            "1": {
+              "ae_duplicate_mode": "skip",
+              "ae_template_ref": "Virus",
               "effect_kind": "apply_ae",
               "effect_label": "bite_virus",
               "target_ref": "hit_action_targets"
+            },
+            "2": {
+              "ae_duplicate_mode": "skip",
+              "ae_template_ref": "Eaten",
+              "effect_kind": "apply_ae",
+              "effect_label": "bite_fed",
+              "target_ref": "self"
             }
           },
           "heroic_requirement": "",
@@ -351,7 +486,7 @@
           "optional_params": {},
           "reaction_config_table": {
             "0": {
-              "reaction_effect_ref": "bite_virus",
+              "reaction_effect_ref": "bite_chain",
               "reaction_passive_mode": "force",
               "reaction_source": "self",
               "reaction_source_skill": "Infectious Bite",
@@ -367,6 +502,113 @@
           "skill_target": "One Creature",
           "skill_type": "Attack",
           "type_damage": "Physical",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "A87i0WJvlVD1w3E7"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "xQnD5PabiaifPkla",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1792631976610,
+        "duplicateSource": "Item.yWlkWZC2vLf4J5Pv",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/CombatRangerSkill7.png",
+      "name": "Flee",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "1",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>Its fangs wet, the Crona flutters for the exit. The party makes a <strong>DL 15</strong> <strong>【DEX + INS】</strong> Group Check — on a failure it escapes and the conflict carries on without it.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "chain_steps": "escape_check, escape_flee",
+              "effect_kind": "chain",
+              "effect_label": "run_away"
+            },
+            "1": {
+              "candidate_source": "combat",
+              "category": "enemy",
+              "effect_kind": "targeting",
+              "effect_label": "escape_party",
+              "exclude_self": true,
+              "mode": "all"
+            },
+            "2": {
+              "effect_kind": "group_check",
+              "effect_label": "escape_check",
+              "gc_attr1": "dex",
+              "gc_attr2": "ins",
+              "gc_dl": "15",
+              "gc_helper_bonus": "1",
+              "gc_mode": "designated",
+              "gc_on_error": "fail",
+              "gc_timeout": "60000",
+              "gc_var": "escape",
+              "target_ref": "escape_party"
+            },
+            "3": {
+              "condition_formula": "VAR_ESCAPE == 0",
+              "effect_kind": "leave_combat",
+              "effect_label": "escape_flee",
+              "target_ref": "self"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/CombatRangerSkill7.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Run Away",
+          "on_activate_effect_ref": "run_away",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_target": "Self",
+          "skill_type": "Active",
+          "type_damage": "",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
@@ -570,13 +812,26 @@
       "action_pattern_table": {
         "0": {
           "$deleted": false,
-          "action_pattern_condition": "always",
+          "action_pattern_condition": "self_has_status",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Flee",
+          "action_pattern_priority": "8",
+          "action_pattern_string": "Eaten",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        },
+        "1": {
+          "$deleted": false,
+          "action_pattern_condition": "self_lacks_status",
           "action_pattern_cooldown": "0",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
           "action_pattern_name": "Infectious Bite",
           "action_pattern_priority": "5",
-          "action_pattern_string": "",
+          "action_pattern_string": "Eaten",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
           "action_pattern_value_2": "100"
@@ -779,7 +1034,18 @@
       "shop_consumable_list": {},
       "shop_weapon_list": {},
       "showMacro": false,
-      "skill_active_list": {},
+      "skill_active_list": {
+        "xQnD5PabiaifPkla": {
+          "active_cost": "-",
+          "active_description": "<p>Its fangs wet, the Crona flutters for the exit. The party makes a <strong>DL 15</strong> <strong>【DEX + INS】</strong> Group Check — on a failure it escapes and the conflict carries on without it.</p>",
+          "active_duration": "Instantaneous",
+          "active_target": "Self",
+          "id": "${item.id}",
+          "name": "Flee",
+          "roll": "",
+          "uuid": "Actor.vmYeN1WWIF5TSjjF.Item.xQnD5PabiaifPkla"
+        }
+      },
       "skill_passive_list": {},
       "spear_ef": "100",
       "species": "BEAST",

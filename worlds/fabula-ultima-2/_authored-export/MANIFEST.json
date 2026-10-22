@@ -16638,6 +16638,10 @@
             "name": "(Empty)"
           },
           {
+            "id": "xQnD5PabiaifPkla",
+            "name": "Flee"
+          },
+          {
             "id": "PD9V6PBKW7UAVGjk",
             "name": "Infectious Bite"
           },
@@ -16646,7 +16650,7 @@
             "name": "Vaccine"
           }
         ],
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "pDaxX9rZP0stut65",
@@ -26374,7 +26378,7 @@
       {
         "id": "hBupoi4SsKj1GmDM",
         "name": "Valley of the Dragon Underground - Enemies",
-        "results": 12
+        "results": 10
       },
       {
         "id": "oDiuDJRoayGJwr1L",
