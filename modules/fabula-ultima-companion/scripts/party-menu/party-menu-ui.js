@@ -40,8 +40,20 @@ export const plain = (html) => {
 };
 
 const DROP_TAGS = "script,style,iframe,object,embed,link,meta,base,form,input,button,textarea,select,svg,math,template";
+
+// Some descriptions keep Foundry's raw @UUID[…]{Label} syntax instead of an
+// enriched link; turn it into the same link so it reads (and hovers) like one.
+const UUID_REF = /@UUID\[([^\]]+)\](?:\{([^}]*)\})?/g;
+function linkRefs(html) {
+  return String(html ?? "").replace(UUID_REF, (m, uuid, label) => {
+    let name = label;
+    if (!name) { try { name = fromUuidSync(uuid)?.name; } catch { name = null; } }
+    return `<a class="content-link" data-uuid="${esc(uuid)}">${esc(name || uuid.split(".").pop())}</a>`;
+  });
+}
+
 export function safeHtml(html) {
-  const body = inert(html);
+  const body = inert(linkRefs(html));
   body.querySelectorAll(DROP_TAGS).forEach((el) => el.remove());
   for (const el of body.querySelectorAll("*")) {
     for (const attr of [...el.attributes]) {
@@ -51,7 +63,8 @@ export function safeHtml(html) {
       // parchment sheets and their keyword colours read correctly on it. Anything
       // that can fetch, overlay or script is not.
       const badStyle = n === "style" && /url\(|expression|position|behavior|binding|@import|z-index/.test(v);
-      if (n.startsWith("on") || n === "srcdoc" || badStyle
+      // data-tooltip: Foundry would pop its own one-word tooltip ("Item") over the menu's.
+      if (n.startsWith("on") || n === "srcdoc" || badStyle || n === "data-tooltip"
           || ((n === "href" || n === "src" || n === "xlink:href") && !/^(https?:|\/|#|[\w.-]+\/)/.test(v))) {
         el.removeAttribute(attr.name);
       }
@@ -98,17 +111,20 @@ export const cap = (s) => (s ? String(s)[0].toUpperCase() + String(s).slice(1) :
 /**
  * The portrait row at the top of a per-character view: every character (and,
  * for the Item view, the Party Bag) as a chip, so one click jumps straight to
- * it instead of stepping with Q/E. `entries` = [{ id, name, img?, icon?, reserve? }];
- * a reserve entry sits after a divider. `info` = HTML for the selected entry,
+ * it instead of stepping with Q/E. `entries` = [{ id, name, img?, icon?, reserve?, comp? }];
+ * reserve entries, then guests / summons (`comp` = their role), each sit after a divider. `info` = HTML for the selected entry,
  * shown to the right of the chips.
  */
 export function portraitStrip(entries, selectedId, action, info = "") {
-  let sep = false;
-  const chips = entries.map((e) => {
-    const divider = e.reserve && !sep ? (sep = true, `<span class="pm-chipsep" title="Reserve"></span>`) : "";
+  let group = null;
+  const chips = entries.map((e, i) => {
+    const g = e.comp ? "comp" : e.reserve ? "reserve" : "party";
+    const divider = i > 0 && g !== group ? `<span class="pm-chipsep" title="${g === "comp" ? "Guests & summons" : "Reserve"}"></span>` : "";
+    group = g;
     const face = e.icon ? `<i class="fas ${esc(e.icon)} pm-bagicon"></i>` : img(e.img);
-    return `${divider}<span class="pm-pchip pm-hit ${e.id === selectedId ? "is-on" : ""} ${e.reserve ? "is-reserve" : ""}"
-      data-action="${esc(action)}" data-id="${esc(e.id)}" title="${esc(e.name)}${e.reserve ? " (reserve)" : ""}">${face}</span>`;
+    const note = e.comp ? ` (${e.comp})` : e.reserve ? " (reserve)" : "";
+    return `${divider}<span class="pm-pchip pm-hit ${e.id === selectedId ? "is-on" : ""} ${e.reserve ? "is-reserve" : ""} ${e.comp ? "is-comp" : ""}"
+      data-action="${esc(action)}" data-id="${esc(e.id)}" title="${esc(e.name)}${esc(note)}">${face}</span>`;
   }).join("");
   // Q / E step through the same row, so their key caps sit at its two ends.
   const ends = entries.length > 1 ? [kbd("q"), kbd("e")] : ["", ""];

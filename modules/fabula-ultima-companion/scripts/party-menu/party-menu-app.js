@@ -11,6 +11,10 @@
 // control of the frame. The CSB party sheet is NOT touched — this sits beside
 // it until it earns the swap.
 //
+// Below the party sits a row of the guests and summons travelling with it
+// (party-menu-companions.js). Ability and Status open on them too: their Ability
+// page sections their actions by type and adds their AI in words.
+//
 // Commands: Item (own + shared Party Bag), Ability (skills, summon binding),
 // Equip (with a before → after comparison), Status, Bonds, Bestiary, Config
 // (each user's own display options), and the GM-only Setup (roster, player access). The command
@@ -19,7 +23,7 @@
 
 import {
   getPartyRoster, vitalsOf, skillsOf, skillSummary, resolvedSlotsOf, summonSkillIds,
-  candidateActors, setFixedBinding, setPersistentBinding, canEditActor, folderPath,
+  candidateActors, setFixedBinding, setPersistentBinding, canBindSummons, folderPath,
   skillSource, sourceRanker, SOURCE_KINDS, skillAccess,
 } from "./party-menu-core.js";
 import { COMMAND_DEFS, canUseCommand } from "./party-menu-access.js";
@@ -31,6 +35,8 @@ import { bondsView, BONDS_CSS } from "./party-menu-view-bonds.js";
 import { bestiaryView, BESTIARY_CSS } from "./party-menu-view-bestiary.js";
 import { configView, CONFIG_CSS } from "./party-menu-view-config.js";
 import { attachScrollbars } from "./party-menu-scrollbar.js";
+import { wireLinkTips, hideLinkTip, removeLinkTip } from "./party-menu-linktip.js";
+import { companionsOf, typeSection, aiPanel } from "./party-menu-companions.js";
 
 const TAG = "[PartyMenu]";
 const ROOT_ID = "fud-party-menu";
@@ -38,6 +44,8 @@ const STYLE_ID = "fud-party-menu-style";
 
 // Commands that first ask "whose?" by moving the hand onto the party list.
 const NEEDS_MEMBER = new Set(["item", "ability", "equip", "status", "bonds"]);
+// The ones that also reach the guests and summons in the row below it.
+const FOR_COMPANIONS = new Set(["ability", "status"]);
 
 // Views other than main/ability live in their own modules behind one interface:
 // enter(ctx, actor) · render(ctx) · key(ctx, k, ev) · click(ctx, action, el)
@@ -62,6 +70,7 @@ const FILTERS = [
 
 const REASONS = {
   "not-owner": "Only this character's player or the GM can change that.",
+  "gm-only": "Only the GM can change a summon.",
   "target-in-party": "That actor is in the party.",
   "target-held-elsewhere": "That actor is already someone else's summon.",
   "kind-not-on-owner": "This character no longer has a skill that uses it.",
@@ -77,10 +86,12 @@ const REASONS = {
 const S = {
   open: false,
   view: "main",          // main | ability | a VIEWS key
-  focus: "cmd",          // cmd | member | skills | slots | picker
+  focus: "cmd",          // cmd | member | comp | skills | slots | picker
   cmd: 0,                // index into visibleCommands()
   pendingCmd: null,      // command waiting for a character pick
   member: 0,             // index into roster.active
+  comp: 0,               // index into roster.companions (guests + summons)
+  pinned: null,          // id of the list entry whose detail is pinned (Ability skill / Status effect), or null
   actorId: null,         // character shown in the Ability / Equip / Status view
   v: null,               // view-local state of a VIEWS view
   focusSearch: false,    // focus a view's search box on the next render
@@ -131,6 +142,16 @@ function applyTransition(stage) {
   }
 }
 
+// ── pinned detail ─────────────────────────────────────────────────────────────
+// Hovering a row shows its detail; clicking pins it, so the pointer can cross
+// other rows on its way to the detail (to scroll it, or hover a linked term).
+// Right-click, Esc or the pin itself releases it before stepping back.
+// Nothing here may move the layout: the row's pin sits under the hand, in the
+// gutter the hand already owns, and the detail's pin sits in a corner every
+// detail header keeps clear whether or not anything is pinned.
+const PIN_MARK = `<i class="fas fa-thumbtack pm-pinmark" title="Pinned"></i>`;
+const pinCorner = () => `<span class="pm-pincorner pm-hit" data-action="unpin" title="Pinned · click, right-click or Esc to release"><i class="fas fa-thumbtack"></i></span>`;
+
 // ── data for the current view ─────────────────────────────────────────────────
 
 function currentActor() {
@@ -153,6 +174,12 @@ function filteredSkills(actor) {
   const hit = _memo.lists.get(S.filter);
   if (hit) return hit;
   const all = skillsOf(actor);
+  if (companionOf(actor)) {
+    // A guest or summon: every action, sectioned by type rather than by source.
+    const sorted = [...all].sort((a, b) => typeSection(a).order - typeSection(b).order || a.name.localeCompare(b.name));
+    _memo.lists.set(S.filter, sorted);
+    return sorted;
+  }
   const list = S.filter === "all" ? all
     : S.filter === "summon" ? all.filter((it) => ids.has(it.id))
     : all.filter((it) => skillSummary(it).bucket === S.filter);
@@ -178,16 +205,39 @@ function sourceOf(actor, item) {
 function currentSkill(actor) {
   const list = filteredSkills(actor);
   if (!list.length) return null;
+  // A pinned skill stays the one shown even if a document hook re-sorts the list.
+  const at = S.pinned ? list.findIndex((it) => it.id === S.pinned) : -1;
+  if (at >= 0) S.skill = at;
   S.skill = Math.max(0, Math.min(S.skill, list.length - 1));
   return list[S.skill];
 }
 
 // ── open / close ──────────────────────────────────────────────────────────────
 
+/** The party, plus the guests and summons with it (a failure there never costs the menu). */
+async function loadRoster() {
+  const r = await getPartyRoster();
+  r.companions = [];
+  if (r.db) {
+    try { r.companions = await companionsOf(r); }
+    catch (e) { console.warn(TAG, "guests / summons unavailable", e); }
+  }
+  S.roster = r;
+}
+
+const companions = () => S.roster?.companions ?? [];
+const companionOf = (actor) => (actor ? companions().find((c) => c.actor.id === actor.id) ?? null : null);
+
+/** Who Q/E and the portrait row step through: Ability and Status reach the guests and summons too. */
+function characterList() {
+  const list = [...S.roster.active, ...S.roster.reserve];
+  return FOR_COMPANIONS.has(S.view) ? [...list, ...companions().map((c) => c.actor)] : list;
+}
+
 export async function openPartyMenu({ actorId = null } = {}) {
   if (S.open && S.busy) return;   // a write is in flight; its view still owns S.v
   ensureStyles();
-  S.roster = await getPartyRoster();
+  await loadRoster();
   if (!S.roster.db) {
     ui.notifications?.warn("Party Menu: no party database is set for the current game.");
     return;
@@ -199,6 +249,7 @@ export async function openPartyMenu({ actorId = null } = {}) {
   S.toast = "";
   S.v = null;
   S.pendingCmd = null;
+  S.pinned = null;
   if (actorId && game.actors?.get(actorId) && canUseCommand("ability")) {
     S.actorId = actorId;
     S.view = "ability"; S.focus = "skills"; S.skill = 0; S.filter = "all";
@@ -221,6 +272,8 @@ export async function openPartyMenu({ actorId = null } = {}) {
     _root.addEventListener("contextmenu", onContext);
     _root.addEventListener("mousedown", onMouseBack);
     _root.addEventListener("mouseup", onMouseBack);
+    // Hovering a linked term in a description shows what it means.
+    wireLinkTips(_root);
     document.body.appendChild(_root);
     window.addEventListener("keydown", onKey, true);
   }
@@ -234,6 +287,7 @@ export function closePartyMenu() {
   if (!_root) return;
   window.removeEventListener("keydown", onKey, true);
   attachScrollbars(null);
+  removeLinkTip();
   _root.remove();
   _root = null;
   S.open = false;
@@ -251,13 +305,14 @@ function scheduleRender() {
   setTimeout(async () => {
     _renderQueued = false;
     if (!S.open) return;
-    S.roster = await getPartyRoster();
+    await loadRoster();
     render();
   }, 80);
 }
 
 function render() {
   if (!_root) return;
+  hideLinkTip();   // its link is about to be rebuilt
   const list = _root.querySelector(".pm-skill-list");
   if (list) _listScroll = list.scrollTop;
   // Keep the detail pane where the reader left it while the same skill is shown
@@ -332,6 +387,21 @@ function memberCard(actor, i) {
     </div>`;
 }
 
+// A guest or summon: just its token sprite (a video for animated battlers); the
+// name and role are on the tooltip and on its pages. Only Ability and Status open
+// on them, so while another command waits for a character they sit dimmed.
+function companionCard(c, i) {
+  const pickable = S.focus === "comp" || (S.focus === "member" && FOR_COMPANIONS.has(S.pendingCmd));
+  const off = S.focus === "member" && !FOR_COMPANIONS.has(S.pendingCmd);
+  const src = c.actor.prototypeToken?.texture?.src || c.actor.img;
+  const sprite = /\.(webm|mp4|m4v|ogv)(\?|#|$)/i.test(src)
+    ? `<video src="${esc(src)}" autoplay loop muted playsinline></video>`
+    : `<img src="${esc(src)}" alt="" onerror="this.style.visibility='hidden'">`;
+  return `
+    <div class="pm-comp pm-hit ${S.focus === "comp" && S.comp === i ? "is-cursor" : ""} ${pickable ? "is-pickable" : ""} ${off ? "is-off" : ""}"
+         data-action="comp" data-index="${i}" title="${esc(`${c.actor.name} — ${c.role}`)}">${sprite}</div>`;
+}
+
 function renderMain() {
   const r = S.roster;
   const members = r.active.length
@@ -345,8 +415,17 @@ function renderMain() {
   S.cmd = Math.max(0, Math.min(S.cmd, visible.length - 1));
   const cmds = visible.map((c, i) => `
     <div class="pm-cmd pm-hit ${S.focus === "cmd" && S.cmd === i ? "is-cursor" : ""}
-         ${S.focus === "member" && S.cmd === i ? "is-held" : ""} ${c.gmOnly ? "is-gm" : ""}"
+         ${(S.focus === "member" || S.focus === "comp") && S.cmd === i ? "is-held" : ""} ${c.gmOnly ? "is-gm" : ""}"
          data-action="cmd" data-index="${i}" title="${esc(c.hint ?? "")}">${esc(c.label)}${c.gmOnly ? `<i class="fas fa-crown pm-gmmark" title="GM only"></i>` : ""}</div>`).join("");
+  const comps = companions();
+  const compRow = `
+    <div class="pm-win pm-comps">
+      <div class="pm-comps-head"><span class="pm-label">Guests &amp; Summons</span>${comps.length ? `<b class="pm-count">${comps.length}</b>` : ""}</div>
+      <div class="pm-comp-list">${comps.length ? comps.map(companionCard).join("")
+        : `<div class="pm-empty">No guests or summons are travelling with the party.</div>`}</div>
+    </div>`;
+  const hint = S.focus === "comp" ? "←→ choose · ↑ party · Enter confirm · Esc back"
+    : S.focus === "member" ? "Choose a character · Esc or right-click: back" : "↑↓ choose · Enter confirm · Esc close";
   return `
     <div class="pm-main">
       <div class="pm-win pm-party"><div class="pm-scroll pm-party-list">${members}${reserve}</div></div>
@@ -358,7 +437,8 @@ function renderMain() {
           <div class="pm-info-row"><span class="pm-zenit"><i class="fas fa-coins"></i> ${Number(r.zenit || 0).toLocaleString()}</span><em>z</em></div>
         </div>
       </div>
-      <div class="pm-hint">${S.focus === "member" ? "Choose a character · Esc or right-click: back" : "↑↓ choose · Enter confirm · Esc close"}</div>
+      ${compRow}
+      <div class="pm-hint">${hint}</div>
     </div>`;
 }
 
@@ -368,41 +448,46 @@ function renderAbility() {
   const skills = filteredSkills(actor);
   const sel = currentSkill(actor);
 
+  const comp = companionOf(actor);
   const tabs = FILTERS.map((f) => `
     <span class="pm-tab pm-hit ${S.filter === f.id ? "is-on" : ""}" data-action="filter" data-id="${f.id}"><i class="fas ${f.icon}"></i>${esc(f.label)}</span>`).join("");
+  // Section heads: where a member's skill comes from; what a guest's or summon's action is.
+  const sectionOf = (it) => (comp ? typeSection(it) : sourceOf(actor, it));
 
   let lastSection = null;
   const counts = new Map();
-  for (const it of skills) { const k = sourceOf(actor, it).key; counts.set(k, (counts.get(k) ?? 0) + 1); }
+  for (const it of skills) { const k = sectionOf(it).key; counts.set(k, (counts.get(k) ?? 0) + 1); }
   const rows = skills.map((it, i) => {
     const s = skillSummary(it);
-    const src = sourceOf(actor, it);
+    const src = sectionOf(it);
     const access = skillAccess(actor, it);
     const summon = summonIdsOf(actor).has(it.id);
     const cursor = S.focus === "skills" && S.skill === i;
     const held = S.focus !== "skills" && S.skill === i;
+    const pinned = S.pinned === it.id;
     const head = src.key === lastSection ? "" : `
-      <div class="pm-section"><i class="fas ${SOURCE_KINDS[src.kind].icon}"></i><span>${esc(src.label)}</span><b>${counts.get(src.key)}</b></div>`;
+      <div class="pm-section"><i class="fas ${src.icon ?? SOURCE_KINDS[src.kind].icon}"></i><span>${esc(src.label)}</span><b>${counts.get(src.key)}</b></div>`;
     lastSection = src.key;
     return `${head}
-      <div class="pm-skill pm-hit ${cursor ? "is-cursor" : ""} ${held ? "is-held" : ""} ${s.bucket === "passive" ? "is-passive" : ""} ${access.ok ? "" : "is-locked"}"
+      <div class="pm-skill pm-hit ${cursor ? "is-cursor" : ""} ${held ? "is-held" : ""} ${pinned ? "is-pinned" : ""} ${s.bucket === "passive" ? "is-passive" : ""} ${access.ok ? "" : "is-locked"}"
            data-action="skill" data-index="${i}">
         <img src="${esc(s.img)}" alt="" onerror="this.style.visibility='hidden'">
         <span class="pm-skill-name" title="${esc(access.ok ? (src.from ? `From ${src.from}` : "") : access.reason)}">${esc(s.name)}${summon ? `<i class="pm-badge" title="Has a summon you can set">✦</i>` : ""}</span>
-        <span class="pm-skill-cost">${esc(s.cost)}</span>
+        <span class="pm-skill-cost">${esc(s.cost)}</span>${pinned ? PIN_MARK : ""}
       </div>`;
-  }).join("") || `<div class="pm-empty">Nothing under this filter.</div>`;
+  }).join("") || `<div class="pm-empty">${comp ? `${esc(actor.name)} has no actions.` : "Nothing under this filter."}</div>`;
 
   return `
     <div class="pm-ability">
       ${renderNav()}
-      ${who(ctx, actor, "Ability")}
+      ${who(ctx, actor, "Ability", { withCompanions: true })}
       <div class="pm-ability-body">
-        <div class="pm-win pm-skills">
-          <div class="pm-tabs">${tabs}${kbd("Tab")}</div>
+        <div class="pm-win pm-skills ${comp ? "has-ai" : ""}">
+          ${comp ? "" : `<div class="pm-tabs">${tabs}${kbd("Tab")}</div>`}
           <div class="pm-skill-list">${rows}</div>
+          ${comp ? aiPanel(comp) : ""}
         </div>
-        <div class="pm-win pm-detail"><div class="pm-scroll" data-key="${esc(sel?.uuid ?? "")}">${sel ? renderDetail(actor, sel) : ""}</div></div>
+        <div class="pm-win pm-detail"><div class="pm-scroll" data-key="${esc(sel?.uuid ?? "")}">${sel ? `${S.pinned === sel.id ? pinCorner() : ""}${renderDetail(actor, sel)}` : ""}</div></div>
       </div>
     </div>`;
 }
@@ -417,7 +502,7 @@ function abilityNav() {
   if (S.focus === "slots" && sel) {
     crumbs.push(`Summon (${sel.name})`);
     const slot = slots[S.slot];
-    if (slot && canEditActor(actor)) {
+    if (slot && canBindSummons()) {
       actions.push({ key: "Enter", label: "Change", icon: "fa-right-left" });
       if (slotView(slot).canReset) actions.push({ key: "Delete", label: slot.type === "fixed" ? "Default" : "Clear", icon: "fa-rotate-left" });
     }
@@ -442,7 +527,8 @@ function renderNav() {
 function navBack() {
   if (S.busy) return;
   if (S.picker || viewOverlay()) return handleKey("Escape");          // close the overlay first
-  if (S.view === "main") { if (S.focus === "member") handleKey("Escape"); return; }   // never closes the menu
+  if (S.pinned) return handleKey("Escape");                           // then release a pinned detail
+  if (S.view === "main") { if (S.focus === "member" || S.focus === "comp") handleKey("Escape"); return; }   // never closes the menu
   if (navSpec().crumbs.length > 1) return handleKey("Escape");        // up one level inside the view
   backToMain();
 }
@@ -458,7 +544,7 @@ function renderDetail(actor, item) {
   const src = sourceOf(actor, item);
   const typeWord = (t) => t ? t[0].toUpperCase() + t.slice(1) : "";
   const facts = [
-    ["Source", src.from ? `${src.from} (${typeWord(src.fromType)})` : (src.kind === "class" ? "" : src.label)],
+    ["Source", companionOf(actor) ? "" : src.from ? `${src.from} (${typeWord(src.fromType)})` : (src.kind === "class" ? "" : src.label)],
     ["Class", s.cls], ["Type", s.type], ["Cost", s.cost],
     ["Level", s.maxLevel ? `${s.level} / ${s.maxLevel}` : (s.level || "")],
     ["Target", s.target], ["Range", s.range], ["Duration", s.duration],
@@ -502,7 +588,7 @@ function slotView(slot) {
 }
 
 function renderSlots(actor, slots) {
-  const editable = canEditActor(actor);
+  const editable = canBindSummons();
   const rows = slots.map((slot, i) => {
     const v = slotView(slot);
     const cursor = S.focus === "slots" && S.slot === i;
@@ -521,7 +607,7 @@ function renderSlots(actor, slots) {
       </div>`;
   }).join("");
   return `<div class="pm-slots"><div class="pm-label">Summon</div>${rows}
-    ${editable ? "" : `<div class="pm-sub">Only ${esc(actor.name)}'s player or the GM can change this.</div>`}</div>`;
+    ${editable ? "" : `<div class="pm-sub">Only the GM can change a summon.</div>`}</div>`;
 }
 
 function renderPicker() {
@@ -572,7 +658,7 @@ function enterAbility(actor) {
   if (!actor) return;
   if (!canUseCommand("ability")) { play(SND.buzz, 0.5); return; }
   S.actorId = actor.id;
-  S.view = "ability"; S.focus = "skills"; S.skill = 0; S.slot = 0; S.filter = "all";
+  S.view = "ability"; S.focus = "skills"; S.skill = 0; S.slot = 0; S.filter = "all"; S.pinned = null;
   _listScroll = 0;
   animate("enter");
   play(SND.ok);
@@ -580,7 +666,7 @@ function enterAbility(actor) {
 }
 
 function cycleCharacter(delta) {
-  const list = [...S.roster.active, ...S.roster.reserve];
+  const list = characterList();
   if (list.length < 2) return;
   const i = list.findIndex((a) => a.id === S.actorId);
   selectCharacter(list[(i + delta + list.length) % list.length]);
@@ -589,7 +675,7 @@ function cycleCharacter(delta) {
 /** Show `next` in the current per-character view (Q/E or a click on its portrait). */
 function selectCharacter(next) {
   if (!next || next.id === S.actorId) return;
-  S.actorId = next.id; S.skill = 0; S.slot = 0; S.focus = "skills"; _listScroll = 0;
+  S.actorId = next.id; S.skill = 0; S.slot = 0; S.focus = "skills"; S.pinned = null; _listScroll = 0;
   if (VIEWS[S.view]) VIEWS[S.view].enter(ctx, next);
   animate("switch");
   play(SND.move, 0.45);
@@ -601,7 +687,7 @@ function enterView(id, actor = null) {
   const view = VIEWS[id];
   if (!view || !canUseCommand(id)) { play(SND.buzz, 0.5); return; }
   if (actor) S.actorId = actor.id;
-  S.view = id; S.pendingCmd = null; _listScroll = 0;
+  S.view = id; S.pendingCmd = null; S.pinned = null; _listScroll = 0;
   view.enter(ctx, actor);
   animate("enter");
   play(SND.ok);
@@ -611,9 +697,11 @@ function enterView(id, actor = null) {
 /** Back from a view to the party list, hand on the character it was about. */
 function backToMain() {
   const id = S.view;
-  S.view = "main"; S.v = null;
+  S.view = "main"; S.v = null; S.pinned = null;
   const i = S.roster.active.findIndex((a) => a.id === S.actorId);
+  const c = companions().findIndex((x) => x.actor.id === S.actorId);
   if (NEEDS_MEMBER.has(id) && i >= 0) { S.focus = "member"; S.member = i; S.pendingCmd = id; }
+  else if (FOR_COMPANIONS.has(id) && c >= 0) { S.focus = "comp"; S.comp = c; S.pendingCmd = id; }
   else { S.focus = "cmd"; S.pendingCmd = null; }
   const at = visibleCommands().findIndex((c) => c.id === id);
   if (at >= 0) S.cmd = at;
@@ -634,6 +722,20 @@ function pickMember(actor) {
   else enterView(id, actor);
 }
 
+/** A guest or summon was picked: they have an Ability and a Status page. */
+function pickCompanion(i) {
+  const c = companions()[i];
+  if (!c) return;
+  if (S.pendingCmd && !FOR_COMPANIONS.has(S.pendingCmd)) { play(SND.buzz, 0.5); toast("Guests and summons only have Ability and Status pages."); return; }
+  // Clicked straight from the command column: the command under the hand if it fits, else Status.
+  const held = visibleCommands()[S.cmd]?.id;
+  const id = S.pendingCmd ?? (FOR_COMPANIONS.has(held) ? held : "status");
+  if (!canUseCommand(id)) { play(SND.buzz, 0.5); toast(REASONS["not-granted"]); return; }
+  S.comp = i;
+  if (id === "ability") enterAbility(c.actor);
+  else enterView(id, c.actor);
+}
+
 // What the VIEWS views get to drive the menu with.
 const ctx = {
   S,
@@ -649,13 +751,16 @@ const ctx = {
   focusSearch: () => { S.focusSearch = true; },
   animate: (kind) => animate(kind),
   nav: () => renderNav(),
-  refreshRoster: async () => { S.roster = await getPartyRoster(); },
+  refreshRoster: async () => { await loadRoster(); },
+  companion: (actor) => companionOf(actor),
+  pinCorner: () => pinCorner(),
+  pinMark: PIN_MARK,
   close: () => closePartyMenu(),
   isOpen: () => S.open,
 };
 
 function setFilter(id) {
-  S.filter = id; S.skill = 0; S.slot = 0; S.focus = "skills"; _listScroll = 0;
+  S.filter = id; S.skill = 0; S.slot = 0; S.focus = "skills"; S.pinned = null; _listScroll = 0;
   play(SND.move, 0.45);
   render();
 }
@@ -666,7 +771,11 @@ function confirmCmd() {
   if (c.id === "close") { closePartyMenu(); return; }
   if (!canUseCommand(c.id)) { play(SND.buzz, 0.5); return; }
   if (NEEDS_MEMBER.has(c.id)) {
-    if (!S.roster.active.length) { play(SND.buzz, 0.5); return; }
+    if (!S.roster.active.length) {
+      // No one in the party, but Status can still look at a guest or summon.
+      if (FOR_COMPANIONS.has(c.id) && companions().length) { S.pendingCmd = c.id; S.focus = "comp"; S.comp = 0; play(SND.ok); render(); return; }
+      play(SND.buzz, 0.5); return;
+    }
     // Start on the user's own character when they have one in the party.
     const mine = S.roster.active.findIndex((a) => a.id === game.user?.character?.id || (!game.user?.isGM && a.isOwner));
     if (S.focus !== "member" && mine >= 0) S.member = mine;
@@ -686,7 +795,7 @@ async function openPicker(actor, slotIndex) {
   const sel = currentSkill(actor);
   const slot = sel ? resolvedSlotsOf(actor, sel)[slotIndex] : null;
   if (!slot) return;
-  if (!canEditActor(actor)) { play(SND.buzz, 0.5); toast(REASONS["not-owner"]); return; }
+  if (!canBindSummons()) { play(SND.buzz, 0.5); toast(REASONS["gm-only"]); return; }
   // The skill is pinned by id: a document hook can re-sort the list while the
   // picker is open, and the write must land on the skill the picker was opened for.
   S.picker = { slotIndex, slot, itemId: sel.id, ownerName: actor.name, query: "", showAll: false, index: 0, list: [], focusSearch: true };
@@ -765,7 +874,10 @@ function onHover(ev) {
   let changed = false;
   if (a === "cmd" && S.focus === "cmd" && S.cmd !== i) { S.cmd = i; changed = true; }
   else if (a === "member" && S.focus === "member" && S.member !== i) { S.member = i; changed = true; }
-  else if (a === "skill" && S.focus === "skills" && S.skill !== i) { S.skill = i; changed = true; }
+  else if (a === "comp" && FOR_COMPANIONS.has(S.pendingCmd) && (S.focus === "member" || S.focus === "comp") && (S.focus !== "comp" || S.comp !== i)) {
+    S.focus = "comp"; S.comp = i; changed = true;
+  } else if (a === "member" && S.focus === "comp" && S.roster.active[i]) { S.focus = "member"; S.member = i; changed = true; }
+  else if (a === "skill" && S.focus === "skills" && S.skill !== i && !S.pinned) { S.skill = i; changed = true; }
   else if (a === "slot" && S.focus === "slots" && S.slot !== i) { S.slot = i; changed = true; }
   else if (a === "pick" && S.picker && S.picker.index !== i) { S.picker.index = i; changed = true; }
   else if (VIEWS[S.view]) changed = !!VIEWS[S.view].hover(ctx, a, i);
@@ -781,18 +893,28 @@ async function onClick(ev) {
   switch (a) {
     case "cmd": S.focus = "cmd"; S.cmd = i; confirmCmd(); break;
     case "member": pickMember(S.roster.active[i]); break;
+    case "comp": pickCompanion(i); break;
     case "filter": if (!S.picker) setFilter(el.dataset.id); break;
     case "nav-back": navBack(); break;
+    case "unpin": if (S.pinned) { S.pinned = null; play(SND.back, 0.4); render(); } break;
     case "nav-crumb": navTo(el.dataset.up); break;
     case "nav-key": handleKey(el.dataset.key); break;
     case "pick-char":
-      if (!S.picker) selectCharacter([...S.roster.active, ...S.roster.reserve].find((a) => a.id === el.dataset.id));
+      if (!S.picker) selectCharacter(characterList().find((a) => a.id === el.dataset.id));
       break;
-    case "skill":
+    case "skill": {
+      // A click pins the skill's detail so the pointer can travel to it without
+      // hovering a different row on the way; clicking the pinned row releases it.
+      // Its summon slots open with Enter or the nav bar's Summon button.
       if (S.picker) break;
-      if (S.focus === "skills" && S.skill === i) openSlots(actor);
-      else { S.focus = "skills"; S.skill = i; S.slot = 0; play(SND.move, 0.4); render(); }
+      const it = filteredSkills(actor)[i];
+      if (!it) break;
+      S.focus = "skills"; S.skill = i; S.slot = 0;
+      if (S.pinned === it.id) { S.pinned = null; play(SND.back, 0.4); }
+      else { S.pinned = it.id; play(SND.ok, 0.4); }
+      render();
       break;
+    }
     case "slot": if (!S.picker) { S.focus = "slots"; S.slot = i; render(); } break;
     case "slot-change": if (!S.picker) { S.focus = "slots"; S.slot = i; await openPicker(actor, i); } break;
     case "slot-reset": {
@@ -890,9 +1012,20 @@ function handleKey(k, ev = { key: k, shiftKey: false, target: null }) {
       else if (k === "Escape") closePartyMenu();
     } else if (S.focus === "member") {
       const n = S.roster.active.length || 1;
+      // Status reaches on past the last member, into the guests and summons below.
+      const intoComps = FOR_COMPANIONS.has(S.pendingCmd) && companions().length;
       if (k === "ArrowUp") { moveCursor("member", -1); S.member = (S.member + n) % n; render(); }
+      else if (k === "ArrowDown" && intoComps && S.member === n - 1) { play(SND.move, 0.45); S.focus = "comp"; S.comp = 0; render(); }
       else if (k === "ArrowDown") { moveCursor("member", 1); S.member %= n; render(); }
       else if (k === "Enter") pickMember(S.roster.active[S.member]);
+      else if (k === "Escape") { S.focus = "cmd"; S.pendingCmd = null; play(SND.back); render(); }
+    } else if (S.focus === "comp") {
+      const n = companions().length;
+      if (!n) { S.focus = S.roster.active.length ? "member" : "cmd"; render(); return; }
+      if (k === "ArrowLeft") { moveCursor("comp", -1); S.comp = (S.comp + n) % n; render(); }
+      else if (k === "ArrowRight") { moveCursor("comp", 1); S.comp %= n; render(); }
+      else if (k === "ArrowUp" && S.roster.active.length) { play(SND.move, 0.45); S.focus = "member"; S.member = S.roster.active.length - 1; render(); }
+      else if (k === "Enter") pickCompanion(S.comp);
       else if (k === "Escape") { S.focus = "cmd"; S.pendingCmd = null; play(SND.back); render(); }
     }
     return;
@@ -903,16 +1036,21 @@ function handleKey(k, ev = { key: k, shiftKey: false, target: null }) {
   // Ability view
   if (k === "q" || k === "Q" || k === "PageUp") return cycleCharacter(-1);
   if (k === "e" || k === "E" || k === "PageDown") return cycleCharacter(1);
-  if (k === "Tab") {
+  if (k === "Tab" && !companionOf(actor)) {   // a guest or summon has sections, not filters
     const i = FILTERS.findIndex((f) => f.id === S.filter);
     return setFilter(FILTERS[(i + (ev.shiftKey ? -1 : 1) + FILTERS.length) % FILTERS.length].id);
   }
   if (S.focus === "skills") {
     const n = filteredSkills(actor).length;
+    if (k === "Escape" && S.pinned) { S.pinned = null; play(SND.back); render(); return; }
     if (!n) { if (k === "Escape") backToMain(); return; }
     if (k.startsWith("Arrow")) {
       const next = gridStep(k);
-      if (next !== null && next >= 0 && next < n) { moveCursor("skill", next - S.skill); render(); }
+      if (next !== null && next >= 0 && next < n) {
+        moveCursor("skill", next - S.skill);
+        if (S.pinned) S.pinned = filteredSkills(actor)[S.skill]?.id ?? null;   // the pin travels with the keys
+        render();
+      }
     } else if (k === "Enter") openSlots(actor);
     else if (k === "Escape") backToMain();
   } else if (S.focus === "slots") {
@@ -920,7 +1058,7 @@ function handleKey(k, ev = { key: k, shiftKey: false, target: null }) {
     if (k === "ArrowUp" && S.slot > 0) { moveCursor("slot", -1); render(); }
     else if (k === "ArrowDown" && S.slot < slots.length - 1) { moveCursor("slot", 1); render(); }
     else if (k === "Enter") openPicker(actor, S.slot);
-    else if ((k === "Delete" || k === "Backspace") && slots[S.slot] && canEditActor(actor)) applyBinding(actor, slots[S.slot], null);
+    else if ((k === "Delete" || k === "Backspace") && slots[S.slot] && canBindSummons()) applyBinding(actor, slots[S.slot], null);
     else if (k === "Escape") { S.focus = "skills"; play(SND.back); render(); }
   }
 }
@@ -933,7 +1071,7 @@ function isRelevantActor(actor) {
   if (!S.open || !actor) return false;
   const r = S.roster;
   if (actor.id === r?.db?.id || actor.id === S.actorId) return true;
-  if ([...(r?.active ?? []), ...(r?.reserve ?? [])].some((a) => a.id === actor.id)) return true;
+  if ([...(r?.active ?? []), ...(r?.reserve ?? []), ...companions().map((c) => c.actor)].some((a) => a.id === actor.id)) return true;
   // A summon slot shows its holder / bound actor.
   return !!actor.flags?.["fabula-ultima-companion"]?.isPersistentSummon || !!S.picker;
 }
@@ -1046,8 +1184,8 @@ function ensureStyles() {
 }
 
 /* main menu */
-#${ROOT_ID} .pm-main { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 210px; gap: 18px;
-  width: min(1040px, 100%); height: min(640px, calc(100vh - 90px)); }
+#${ROOT_ID} .pm-main { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 210px; grid-template-rows: minmax(0, 1fr) auto;
+  gap: 18px; width: min(1040px, 100%); height: min(790px, calc(100vh - 90px)); }
 /* Scrolling lives on an inner .pm-scroll so the hand cursor's 34px left gutter
    is inside the scroller rather than clipped by the window. */
 #${ROOT_ID} .pm-scroll { overflow-y: auto; min-height: 0; height: 100%; padding-right: 16px; }
@@ -1087,6 +1225,19 @@ function ensureStyles() {
 #${ROOT_ID} .pm-info-row { display: flex; align-items: baseline; justify-content: flex-end; }
 #${ROOT_ID} .pm-info-row:first-child { justify-content: flex-start; }
 #${ROOT_ID} .pm-loc { font-size: 15px; justify-content: flex-start; font-weight: 600; }
+/* guests & summons: one row under the party, the hand's 34px gutter left of every card */
+#${ROOT_ID} .pm-comps { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px; min-width: 0; padding: 10px 18px 10px 20px; }
+#${ROOT_ID} .pm-comps-head { display: flex; align-items: center; gap: 8px; padding-left: 12px; }
+#${ROOT_ID} .pm-count { padding: 0 7px; border-radius: 999px; font-size: 11px; color: #5c421e; background: linear-gradient(#fff7d5, #e2c46e);
+  border: 1px solid rgba(120,86,40,.45); }
+#${ROOT_ID} .pm-comp-list { display: flex; gap: 38px; overflow-x: auto; overflow-y: hidden; padding: 2px 4px 4px 38px; scrollbar-width: thin; }
+#${ROOT_ID} .pm-comps .pm-empty { padding: 8px 0 10px; }
+#${ROOT_ID} .pm-comp { flex: 0 0 auto; width: 92px; height: 92px; display: flex; align-items: flex-end; justify-content: center; cursor: pointer; }
+#${ROOT_ID} .pm-comp :is(img, video) { max-width: 100%; max-height: 100%; object-fit: contain; border: 0; display: block;
+  filter: drop-shadow(0 3px 3px rgba(59,42,25,.35)); transition: transform .12s ease, filter .12s ease; }
+#${ROOT_ID} .pm-comp.is-cursor :is(img, video) { transform: translateY(-3px); filter: drop-shadow(0 0 8px var(--glow)) drop-shadow(0 3px 3px rgba(59,42,25,.35)); }
+#${ROOT_ID} .pm-comp.is-off { opacity: .45; filter: saturate(.6); cursor: default; }
+@media (prefers-reduced-motion: reduce) { #${ROOT_ID} .pm-comp :is(img, video) { transition: none; } }
 #${ROOT_ID} .pm-zenit { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; margin-right: 4px; color: var(--ink-soft); }
 
 /* ability view */
@@ -1158,6 +1309,16 @@ function ensureStyles() {
 #${ROOT_ID} .pm-locked { margin: 0 0 8px; padding: 4px 10px; border-radius: 8px; font-size: 13px; font-weight: 700; color: #6b4a2a;
   background: rgba(59,42,25,.08); box-shadow: inset 0 0 0 1px rgba(80,52,30,.3); }
 #${ROOT_ID} .pm-skill-cost { flex: 0 0 auto; font-size: 13px; font-weight: 700; color: var(--mp); font-variant-numeric: tabular-nums; }
+/* pinned detail: the row keeps a quiet mark, the detail says how to let go */
+#${ROOT_ID} .pm-skill.is-pinned { position: relative; }
+#${ROOT_ID} .pm-pinmark { position: absolute; left: -15px; top: 50%; margin-top: 1px; font-size: 13px; color: var(--accent);
+  transform: rotate(30deg); filter: drop-shadow(0 1px 0 rgba(255,255,255,.7)); pointer-events: none; z-index: 4; }
+#${ROOT_ID} :is(.pm-detail > .pm-scroll, .pm-effcard) { position: relative; }
+#${ROOT_ID} :is(.pm-detail-head, .pm-effcard-head) { padding-right: 26px; }
+#${ROOT_ID} .pm-pincorner { position: absolute; top: 2px; right: 2px; z-index: 2; width: 22px; height: 22px; display: flex; align-items: center;
+  justify-content: center; border-radius: 50%; cursor: pointer; color: var(--accent); font-size: 13px; }
+#${ROOT_ID} .pm-pincorner i { transform: rotate(30deg); }
+#${ROOT_ID} .pm-pincorner:hover { background: rgba(139,0,0,.1); }
 #${ROOT_ID} .pm-badge { font-style: normal; color: var(--gold-2); margin-left: 6px; font-size: 13px; text-shadow: 0 0 6px var(--glow); }
 #${ROOT_ID} .pm-detail { min-height: 0; padding: 16px 18px; display: flex; flex-direction: column; }#${ROOT_ID} .pm-detail-head { display: flex; gap: 12px; align-items: center; margin-bottom: 8px; }
 #${ROOT_ID} .pm-detail-head img { width: 42px; height: 42px; border: 1px solid var(--edge); border-radius: 6px; }
@@ -1288,8 +1449,8 @@ function ensureStyles() {
 #${ROOT_ID} .pm-anim-enter :is(.pm-ability-body > .pm-win, .pm-ability-body > .pm-win > *) { animation-delay: calc(var(--pm-t, 0ms) + 40ms); }
 #${ROOT_ID} .pm-anim-enter :is(.pm-ability-body > .pm-win + .pm-win, .pm-ability-body > .pm-win + .pm-win > *) { animation-delay: calc(var(--pm-t, 0ms) + 55ms); }
 /* back to the main menu: windows settle from just above */
-#${ROOT_ID} .pm-anim-back :is(.pm-party, .pm-side > .pm-win) { animation: pm-settle 150ms var(--pm-ease) var(--pm-t, 0ms) both; }
-#${ROOT_ID} .pm-anim-back :is(.pm-party, .pm-side > .pm-win) > * { animation: pm-ink 150ms var(--pm-ease) var(--pm-t, 0ms) both; }
+#${ROOT_ID} .pm-anim-back :is(.pm-party, .pm-comps, .pm-side > .pm-win) { animation: pm-settle 150ms var(--pm-ease) var(--pm-t, 0ms) both; }
+#${ROOT_ID} .pm-anim-back :is(.pm-party, .pm-comps, .pm-side > .pm-win) > * { animation: pm-ink 150ms var(--pm-ease) var(--pm-t, 0ms) both; }
 #${ROOT_ID} .pm-anim-back :is(.pm-side > .pm-win, .pm-side > .pm-win > *) { animation-delay: calc(var(--pm-t, 0ms) + 20ms); }
 /* another character / bag / tab: only the content changes, so only the content moves */
 #${ROOT_ID} :is(.pm-anim-switch, .pm-anim-tab) :is(.pm-ability-body > .pm-win > *, .pm-stripinfo, .pm-crumb.is-here) {
@@ -1303,8 +1464,8 @@ function ensureStyles() {
 #${ROOT_ID} .pm-anim-pop .pm-picker-veil { animation: pm-fade 120ms linear var(--pm-tp, 0ms) both; }
 @media (prefers-reduced-motion: reduce) { #${ROOT_ID} .pm-stage[class*="pm-anim-"] * { animation: none !important; } }
 /* drawn scrollbar (party-menu-scrollbar.js): the native one is hidden on these boxes */
-#${ROOT_ID} :is(.pm-skill-list, .pm-scroll, .pm-picker-list, .pm-effcard, .pm-cmpbody) { scrollbar-width: none; }
-#${ROOT_ID} :is(.pm-skill-list, .pm-scroll, .pm-picker-list, .pm-effcard, .pm-cmpbody)::-webkit-scrollbar { width: 0; height: 0; }
+#${ROOT_ID} :is(.pm-skill-list, .pm-scroll, .pm-picker-list, .pm-effcard, .pm-cmpbody, .pm-aiwin) { scrollbar-width: none; }
+#${ROOT_ID} :is(.pm-skill-list, .pm-scroll, .pm-picker-list, .pm-effcard, .pm-cmpbody, .pm-aiwin)::-webkit-scrollbar { width: 0; height: 0; }
 /* quiet at rest (thin ink thumb, no track); widens and warms to gold under the pointer */
 #${ROOT_ID} .pm-sbar { position: absolute; z-index: 3; width: 5px; border-radius: 3px; cursor: pointer;
   background: transparent; transition: width .15s ease, background-color .15s ease; }
@@ -1337,7 +1498,8 @@ function ensureStyles() {
 #${ROOT_ID} .pm-grade.aff-vu { color: var(--low); } #${ROOT_ID} .pm-grade.aff-rs { color: var(--mp); }
 #${ROOT_ID} .pm-grade.aff-im { color: #4b3517; } #${ROOT_ID} .pm-grade.aff-ab { color: #2e7d32; }
 #${ROOT_ID} .pm-effmore { font-size: 11px; font-weight: 700; color: var(--ink-soft); opacity: .75; }
-#${ROOT_ID} .pm-effcard { flex: 0 0 auto; max-height: 50%; overflow-y: auto; margin-top: 8px; padding: 10px 18px 2px 4px;
+/* One fixed share of the column whatever the effect says: a card that sized itself to its text made the list above it jump on every move. Long text scrolls inside. */
+#${ROOT_ID} .pm-effcard { flex: 0 0 auto; height: 42%; overflow-y: auto; margin-top: 8px; padding: 10px 18px 2px 4px;
   border-top: 1px solid rgba(92,66,30,.35); }
 #${ROOT_ID} .pm-effcard-head { display: flex; gap: 10px; align-items: center; margin-bottom: 6px; }
 #${ROOT_ID} .pm-effcard-head img { width: 36px; height: 36px; border: 1px solid var(--edge); border-radius: 6px; flex: 0 0 auto; }
@@ -1353,6 +1515,30 @@ function ensureStyles() {
 #${ROOT_ID} .pm-effamts b { text-align: right; font-variant-numeric: tabular-nums; }
 #${ROOT_ID} .pm-effsrc li.is-total { border-bottom: 0; font-weight: 700; color: var(--accent); }
 #${ROOT_ID} .pm-effcard .pm-desc { font-size: 13px; }
+/* a guest's / summon's AI, under its action list on the Ability page */
+#${ROOT_ID} .pm-aiwin { flex: 0 1 auto; min-height: 0; max-height: 48%; overflow-y: auto; margin-bottom: 8px; padding: 0 16px 8px 0;
+  border-bottom: 1px solid rgba(92,66,30,.35); }
+#${ROOT_ID} .pm-aiwin > .pm-label:first-child { padding-left: 12px; }
+#${ROOT_ID} .pm-aiwin .pm-locked { margin: 4px 0 6px; font-weight: 600; }
+#${ROOT_ID} .pm-airules { list-style: none; margin: 4px 0 6px; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+#${ROOT_ID} .pm-airules li { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; border-bottom: 1px dotted rgba(92,66,30,.25); }
+#${ROOT_ID} .pm-airules li:last-child { border-bottom: 0; }
+#${ROOT_ID} .pm-airules li img, #${ROOT_ID} .pm-airules li .pm-eqnone { width: 26px; height: 26px; flex: 0 0 auto; border: 0; border-radius: 4px; margin-top: 1px; }
+#${ROOT_ID} .pm-airule { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+#${ROOT_ID} .pm-aiact { font-size: 15px; font-weight: 700; color: var(--accent); }
+#${ROOT_ID} .pm-aiwhen { font-size: 14px; line-height: 1.35; }
+#${ROOT_ID} .pm-aitags { display: flex; flex-wrap: wrap; gap: 4px 6px; margin-top: 2px; }
+#${ROOT_ID} .pm-aitag { font-size: 11.5px; font-weight: 600; line-height: 1.5; padding: 0 8px; border-radius: 999px; color: var(--ink-soft);
+  background: rgba(59,42,25,.06); box-shadow: inset 0 0 0 1px rgba(80,52,30,.25); }
+#${ROOT_ID} .pm-aitag b { color: var(--ink); }
+#${ROOT_ID} .pm-aitag.is-rank { color: #5c421e; background: linear-gradient(#fff7d5, #f1dca2); box-shadow: inset 0 0 0 1px rgba(120,86,40,.45); }
+#${ROOT_ID} .pm-aitag.is-limit { color: #9a4d00; background: rgba(240,170,70,.15); box-shadow: inset 0 0 0 1px rgba(170,95,20,.35); }
+#${ROOT_ID} .pm-airules .pm-aik { font-size: 1em; font-weight: 700; letter-spacing: 0; margin: 0; white-space: normal; color: var(--ink-soft); }
+#${ROOT_ID} .pm-skills.has-ai .pm-skill-list { flex: 0 1 auto; }
+#${ROOT_ID} .pm-skills.has-ai .pm-aiwin { flex: 0 1 auto; max-height: 60%; margin: 8px 0 0; padding: 10px 16px 0 10px; border-bottom: 0;
+  border-top: 1px solid rgba(92,66,30,.35); }
+#${ROOT_ID} .pm-skills.has-ai .pm-aiwin > .pm-label:first-child { padding-left: 0; }
+#${ROOT_ID} .pm-aifoot { font-size: 12px; font-style: italic; line-height: 1.35; }
 #${ROOT_ID} .pm-from { font-weight: 700; color: var(--ink-soft); }
 
 /* setup */

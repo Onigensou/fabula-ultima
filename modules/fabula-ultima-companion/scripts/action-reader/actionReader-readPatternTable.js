@@ -119,7 +119,9 @@ function getModuleApiContainer(moduleId) {
 /* Internal helpers                                                           */
 /* -------------------------------------------------------------------------- */
 
-function normalizeConditionKey(rawValue) {
+// Exported for the Party Menu, which describes a row in words and must read its
+// condition exactly the way this stage does.
+export function normalizeConditionKey(rawValue) {
   const normalized = AR.normalizeText(rawValue).replace(/_/g, " ");
   if (!normalized) return "always";
 

@@ -44,6 +44,7 @@ const ACKNOWLEDGED = {
   description: "prose. Read by actor-shape/equipment-swap for DISPLAY and by the action reader for its own parse, never as a behaviour gate",
   skill_description: "prose; healing-actions reads it to render the chat line",
   flavor_text: "prose; class-registry surfaces it in the class picker",
+  set_description: "prose; party-menu-inventory shows it as the Set bonus text on the Equip view's item card. Set-bonus behaviour comes from set-bonus.js rows, never this text",
   level: "legitimately per-copy — the same master sits at different ranks on different actors",
   max_level: "same as level",
   animation_script: "presentation; 632 docs of HTML would swamp the diff surface this tool exists to keep readable",

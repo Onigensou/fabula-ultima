@@ -17,7 +17,7 @@ const REASONS = {
   "item-gone": "That item is gone.",
   "not-an-item": "That can't be moved on its own.",
   equipped: "Unequip it first.",
-  "in-combat": "Not during a conflict.",
+  "in-combat": "Items can't change hands during a conflict.",
   "not-yours": "That isn't yours to give away.",
   "no-transfer-core": "Item transfer isn't loaded.",
   timeout: "No GM answered. A GM must be online to move items.",
@@ -241,8 +241,9 @@ export const itemView = {
 
   openDest(ctx) {
     const it = current(ctx);
-    if (!it || !destinations(ctx, it).some((d) => !d.refusal)) { play(SND.buzz, 0.5); return; }
+    if (!it) { play(SND.buzz, 0.5); return; }
     const dests = destinations(ctx, it);
+    if (!dests.some((d) => !d.refusal)) { play(SND.buzz, 0.5); if (dests[0]) ctx.toast(moveReason(dests[0].refusal)); return; }
     ctx.S.v.itemId = it.id;
     ctx.S.v.focus = "dest";
     ctx.S.v.dest = Math.max(0, dests.findIndex((d) => !d.refusal));

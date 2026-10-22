@@ -194,11 +194,6 @@ export function conflictLive() {
   } catch { return false; }
 }
 
-/** Players do not reorganise gear mid-conflict; the GM can. */
-export function combatLock(user = game.user) {
-  return !user?.isGM && conflictLive();
-}
-
 /**
  * Why `user` may not move `item` from `src` to `dst`, or "".
  * Shared by the menu (to dim actions) and the GM handler (to enforce them).
@@ -211,9 +206,10 @@ export function moveRefusal({ user, item, src, dst, roster }) {
   if (!item || item.parent?.id !== src.id) return "item-gone";
   if (!isInventoryItem(item)) return "not-an-item";
   if (isWorn(item, roster)) return "equipped";
+  // Not even the GM: items change hands during a conflict only through actions.
+  if (conflictLive()) return "in-combat";
   if (user?.isGM) return "";
   if (!canUseCommand("item", user)) return "not-granted";
-  if (combatLock(user)) return "in-combat";
   if (owns(src, user)) return "";
   const fromShared = src.id === roster.db?.id;
   const partyPlayer = [...roster.active, ...roster.reserve].some((a) => owns(a, user));
@@ -358,7 +354,9 @@ export function equipRefusal(actor, user = game.user) {
   if (!actor) return "no-actor";
   if (!canUseCommand("equip", user)) return "not-granted";
   if (!(user?.isGM || owns(actor, user))) return "not-owner";
-  if (combatLock(user)) return "in-combat";
+  // Not even the GM: in a conflict, gear changes go through the Equipment action,
+  // which costs the turn; the menu would be a free swap.
+  if (conflictLive()) return "in-combat";
   return "";
 }
 

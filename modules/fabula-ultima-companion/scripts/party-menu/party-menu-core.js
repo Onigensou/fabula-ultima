@@ -8,9 +8,10 @@
 // here can be pruned by a CSB reloadTemplate.
 //
 // First feature: per-character summon bindings (see shared/summon-bindings.js).
-//   fixed      → flags on the character's OWN skill item; the owner writes it.
-//   persistent → flags on the CREATURE's actor, which a player does not own, so
-//                it goes to the acting GM over the shared advancement socket.
+// Only the GM changes them (canBindSummons); players see what is bound.
+//   fixed      → flags on the character's OWN skill item.
+//   persistent → flags on the CREATURE's actor, written by the acting GM over
+//                the shared advancement socket.
 
 import { registerHandler, request, installNet, isActingGM } from "../advancement/advancement-net.js";
 import {
@@ -18,7 +19,6 @@ import {
 } from "../shared/summon-bindings.js";
 import { skillDeclaresVersatile } from "../battle-director/snapshot.js";
 import { isArcanumContainer, isArcanumMerged } from "../battle-director/skill-effects.js";
-import { canUseCommand } from "./party-menu-access.js";
 
 const TAG = "[PartyMenu]";
 const log = (...a) => console.log(TAG, ...a);
@@ -75,8 +75,12 @@ export function folderPath(doc) {
   return out.join(" / ");
 }
 
-export function canEditActor(actor) {
-  return !!(game.user?.isGM || actor?.isOwner);
+/**
+ * Who may change which creature a skill summons (a Numen, a Faithful Companion):
+ * the GM only. Players see their summons but cannot rebind them.
+ */
+export function canBindSummons(user = game.user) {
+  return !!user?.isGM;
 }
 
 // ── roster ────────────────────────────────────────────────────────────────────
@@ -375,8 +379,7 @@ export function bindRefusal(actor, owner, slot, roster) {
 
 /** Bind (or with `actor = null`, reset) a fixed summon row on the owner's skill. */
 export async function setFixedBinding(owner, item, label, actor) {
-  if (!canUseCommand("ability")) return { ok: false, reason: "not-granted" };
-  if (!canEditActor(owner)) return { ok: false, reason: "not-owner" };
+  if (!canBindSummons()) return { ok: false, reason: "gm-only" };
   if (!item || item.parent?.id !== owner.id) return { ok: false, reason: "not-owners-skill" };
   // The label becomes a flag-path segment; a dot in it would nest the write.
   if (!/^[\w-]+$/.test(String(label ?? ""))) return { ok: false, reason: "bad-label" };
@@ -426,9 +429,8 @@ async function applyPersistentBind(payload) {
   const owner = await fromUuid(str(payload?.ownerUuid)).catch(() => null);
   if (!owner || owner.documentName !== "Actor") return { ok: false, reason: "no-owner" };
   const user = game.users?.get(payload?.requesterUserId);
-  const allowed = user?.isGM || owner.testUserPermission?.(user, "OWNER");
-  if (!allowed) return { ok: false, reason: "not-owner" };
-  if (!canUseCommand("ability", user)) return { ok: false, reason: "not-granted" };
+  // Re-checked here: the request can come from any client.
+  if (!canBindSummons(user)) return { ok: false, reason: "gm-only" };
 
   const kind = str(payload?.kind).toLowerCase();
   if (!/^[a-z0-9_]+$/.test(kind)) return { ok: false, reason: "bad-kind" };

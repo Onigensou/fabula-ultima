@@ -25,7 +25,7 @@
 
 import { log, warn } from "./logger.js";
 import { reconcileSetBonuses, withManagedEquip } from "./set-bonus.js";
-import { getRegistry } from "../levelup-system/class-registry.js";
+import { getRegistry, resolveClass } from "../levelup-system/class-registry.js";
 import { NAME as CODE_BACKED_NAME } from "../shared/code-backed-content.js";
 
 const UNARM_STRIKE_ITEM_ID = "bwqZvS4NXw7bCrmV";
@@ -112,22 +112,22 @@ export function martialGrants(actor) {
   } catch { /* fall through — treated as unresolved below */ }
 
   const rows = Object.values(actor.system?.props?.class_list ?? {})
-    .filter((r) => r && !r.$deleted);
+    .filter((r) => r && !r.$deleted && String(r.class_name ?? "").trim());
 
-  if (!registry) {
+  if (!registry?.byKey) {
     // No registry available — we cannot prove a class grant either way.
     out.resolved = false;
     return out;
   }
 
-  const byName = new Map(
-    (Array.isArray(registry) ? registry : Object.values(registry))
-      .map((c) => [String(c?.name ?? c?.label ?? "").toLowerCase().trim(), c])
-  );
-
   for (const row of rows) {
-    const cls = byName.get(String(row.class_name ?? "").toLowerCase().trim());
-    const free = cls?.free ?? {};
+    // resolveClass matches the way the registry keys classes (idKey), so a
+    // drifted spelling ("Dark Blade" / "Darkblade") still finds its class. The
+    // registry is { byKey, list, duplicates } — reading it as a flat list once
+    // matched nothing, and every martial item was refused to everyone.
+    const cls = resolveClass(row.class_name);
+    if (!cls) { out.resolved = false; continue; }   // a class we cannot read: fail open
+    const free = cls.free ?? {};
     if (free.martialMelee) out.melee = true;
     if (free.martialRanged) out.ranged = true;
     if (free.martialArmor) out.armor = true;
