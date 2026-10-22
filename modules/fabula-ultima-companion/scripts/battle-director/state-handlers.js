@@ -4316,6 +4316,11 @@ const Target = {
           ? snapshotEligibleTargetsFromDCombat(director.dCombat, attacker, { category: "enemy" })
           : snapshotEligibleTargets(director.combat, attacker, { category: "enemy" });
         const gate = applyAttackRangeGate(eligibleRaw, currentWeapon, attackActorDoc);
+        // Was referenced without ever being declared: the ReferenceError threw out
+        // of onEnter, and the director looped ABORTED → CLEANUP → TARGET forever on
+        // any melee attack whose every target was out of reach (Covered, or Flying
+        // vs a melee bite — Crona vs a party member with Flying).
+        const isMeleeAttack = /melee/i.test(String(currentWeapon?.range ?? ""));
         if (isMeleeAttack && eligibleRaw.length > 0 && gate.length === 0) {
           ui.notifications?.warn("All eligible enemies are Covered — switch to a ranged weapon or pick a different action.");
           director.ctx.pendingPasses = [];
