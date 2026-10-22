@@ -710,7 +710,11 @@ export async function applyDamageToTarget({
       const dirf = bdf?.getActiveDirector?.() ?? null;
       const tokf = target.getActiveTokens?.()?.[0]?.document ?? null;
       for (const fu of followUp) {
-        const fctx = { director: dirf, reactorActor: target, reactorToken: tokf, skill: null, payload: { ...(fu.payload ?? {}) }, effect_table: fu.effectTable, dCombat: dirf?.dCombat ?? null };
+        // `runtimeEffectTable` is where target_ref looks up a labelled targeting
+        // row (skill-targeting.findTargetingRow) — without it a follow-up could
+        // only aim at reserved refs like "self" (Ninja Log), never at a pick made
+        // by an earlier step of the same chain (Earthen Wire's random enemy).
+        const fctx = { director: dirf, reactorActor: target, reactorToken: tokf, skill: null, payload: { ...(fu.payload ?? {}) }, effect_table: fu.effectTable, runtimeEffectTable: fu.effectTable, dCombat: dirf?.dCombat ?? null };
         for (const frow of (fu.rows ?? [])) {
           try { await applyEffectRow(frow, fctx); }
           catch (e) { warn(`applyDamageToTarget: follow-up "${frow.effect_label}" failed`, e); }

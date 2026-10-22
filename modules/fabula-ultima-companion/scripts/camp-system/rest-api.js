@@ -168,6 +168,13 @@
     getPartyActors() { return _getPartyActors(); },
 
     /**
+     * The rest-contagion step on its own, for any actor list (perform() runs it
+     * on the party). Exposed so it can be exercised on throwaway actors without
+     * resting the real party.
+     */
+    spreadRestContagion(actors) { return _spreadRestContagion(actors ?? []); },
+
+    /**
      * Cancel the camp-BGM resume scheduled by the last perform().
      * Call this on any branch that leaves the camp scene behind (return to
      * title), or the camp playlist starts up over the new scene's music when
