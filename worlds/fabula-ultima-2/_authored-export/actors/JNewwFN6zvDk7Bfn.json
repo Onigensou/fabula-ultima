@@ -266,7 +266,7 @@
           "cost": "-",
           "damage_bonus": "40",
           "defense_target_type": "def",
-          "description": "<p>Dive down to a target enemy. Deals <strong>【40】</strong><a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\">Air</a>&nbsp;damage to the enemy.</p>",
+          "description": "<p>Dive onto one enemy. The target suffers <strong>【40】</strong> <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\">Air</a> damage.</p>",
           "duration": "-",
           "effect_table": null,
           "heroic_requirement": "",
@@ -335,7 +335,7 @@
           "cost": "-",
           "damage_bonus": "0",
           "defense_target_type": "def",
-          "description": "<p>Recover an ally creature for <strong>50</strong> Hit Points.</p>",
+          "description": "<p>One ally recovers <strong>50</strong> Hit Points.</p>",
           "duration": "-",
           "effect_table": {
             "0": {
@@ -418,7 +418,7 @@
           "cost": "-",
           "damage_bonus": "20",
           "defense_target_type": "def",
-          "description": "<p>Dive down at enemy formation. Deals<strong>【20】</strong><a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\">Fire</a>&nbsp;damage to all enemy.</p>",
+          "description": "<p>Dive into the enemy formation. Each enemy suffers <strong>【20】</strong> <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\">Fire</a> damage.</p>",
           "duration": "-",
           "effect_table": null,
           "heroic_requirement": "",
@@ -479,7 +479,7 @@
       "system": {
         "props": {
           "cost": "",
-          "description": "<p><em>Late Actor:</em> at the end of each round, this creature may immediately perform one Skill as a free action.</p>",
+          "description": "<p>At the end of each round, this creature may perform one Skill as a free action.</p>",
           "effect_table": {
             "0": {
               "$deleted": false,
