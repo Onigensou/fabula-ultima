@@ -16,7 +16,7 @@
     }
   },
   "folder": "P6epyIfueydL8Bu4",
-  "formula": "1d5",
+  "formula": "1d6",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dreae.png",
   "name": "Fafnir Castle - Armor",
   "ownership": {
@@ -25,6 +25,21 @@
   },
   "replacement": true,
   "results": [
+    {
+      "_id": "AkAHw2yYCCbQYMCs",
+      "documentCollection": "Item",
+      "documentId": "xbPqXpTF8FDw0OqJ",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/equipment/chest/robe-collared-pink.webp",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Robe of Flesh",
+      "type": "document",
+      "weight": 1
+    },
     {
       "_id": "apI6Hp0PErjsfKom",
       "documentCollection": "Item",

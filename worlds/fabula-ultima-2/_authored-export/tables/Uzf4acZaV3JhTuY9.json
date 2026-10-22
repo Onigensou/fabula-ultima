@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "P6epyIfueydL8Bu4",
-  "formula": "1d1",
+  "formula": "1d8",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
   "name": "Fafnir Castle - Weapon",
   "ownership": {
@@ -20,5 +20,127 @@
     "default": 0
   },
   "replacement": true,
+  "results": [
+    {
+      "_id": "5gBRnHKjVKu3orNP",
+      "documentCollection": "Item",
+      "documentId": "3ZV5drjroWrvXqkw",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1284.gif",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Sonic Katar",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "lTDYHEO1Qo04uPpa",
+      "documentCollection": "Item",
+      "documentId": "IPezvtbd25xqxmR8",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Valkyrie%20Connect/Invisible_Air_X_%2528Sp.%2529_icon.webp",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Excaliblur",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "NrWssOBxCQVJWLxh",
+      "documentCollection": "Item",
+      "documentId": "zxc3ur6SeRawxngr",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1617.gif",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Arch Lightning Wand",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "PLvuwu90PZyiL5z9",
+      "documentCollection": "Item",
+      "documentId": "vpaxa0QdgJ0XHfmW",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wand.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Elemental Bane",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "RdrB9TF48DSUibTZ",
+      "documentCollection": "Item",
+      "documentId": "3VNzb7Sag7adOSXA",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Knife.gif",
+      "range": [
+        6,
+        6
+      ],
+      "text": "The Balance",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "RLmqoGkNEPBJfKNF",
+      "documentCollection": "Item",
+      "documentId": "rIxMsRTAdn8ZQVYH",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/weapons/polearms/spear-hooked-blue.webp",
+      "range": [
+        4,
+        4
+      ],
+      "text": "The Cross",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "w087OYAOcbNQX2Hv",
+      "documentCollection": "Item",
+      "documentId": "GlhhS493B7q3hJ8l",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1625.gif",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Arch Fire Wand",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "zCb2PN00BlKhSBIU",
+      "documentCollection": "Item",
+      "documentId": "3PPbTNuD6rPBkICm",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1139.gif",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Psychic Dagger",
+      "type": "document",
+      "weight": 1
+    }
+  ],
   "sort": 0
 }

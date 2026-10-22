@@ -16,7 +16,7 @@
     }
   },
   "folder": "P6epyIfueydL8Bu4",
-  "formula": "1d1",
+  "formula": "1d4",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/neck.png",
   "name": "Fafnir Castle - Accessory",
   "ownership": {
@@ -24,5 +24,67 @@
     "default": 0
   },
   "replacement": true,
+  "results": [
+    {
+      "_id": "8AL10wBRIRDVk60u",
+      "documentCollection": "Item",
+      "documentId": "JAOtuEZGBjGgDVJo",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Dark%20Ring.gif",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Dark Ring",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "COT8UAFLLk7ajuVp",
+      "documentCollection": "Item",
+      "documentId": "o6OrL1676fHvOffJ",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Opera%20Phantom.gif",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Mistress Mask",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "lkuisyartqVWTuuh",
+      "documentCollection": "Item",
+      "documentId": "PCoOu6WTIe1wGgpG",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Maids Pocketwatch",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "z6HV2ceWckNZy8D7",
+      "documentCollection": "Item",
+      "documentId": "GtDJyikCuScbp7CI",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/yorb.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Alchemist Vial",
+      "type": "document",
+      "weight": 1
+    }
+  ],
   "sort": 0
 }

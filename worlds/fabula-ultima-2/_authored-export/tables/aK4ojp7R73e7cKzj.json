@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "P6epyIfueydL8Bu4",
-  "formula": "1d1",
+  "formula": "1d6",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/treas.png",
   "name": "Fafnir Castle - Treasure",
   "ownership": {
@@ -21,6 +21,81 @@
   },
   "replacement": true,
   "results": [
+    {
+      "_id": "3KBXElfJrkwfd6cF",
+      "documentCollection": "Item",
+      "documentId": "GinhTHdt1zZD3xAJ",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Ys9-Hades_Mask.webp",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Ægishjálmr",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "a3a8UfXN51HymhbE",
+      "documentCollection": "Item",
+      "documentId": "8kYk4DuNB20Eb8Yg",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Bradium%20Shield.gif",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Shield of Egis",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "U6TRME5bK88qordj",
+      "documentCollection": "Item",
+      "documentId": "G5KhFrfss8c8AHm7",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Ys/Ys9-Soul_Eater.webp",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Hrotti",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "uMcxrZAc5QV1ifO4",
+      "documentCollection": "Item",
+      "documentId": "isPhIA0LOjYMbzkT",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Luminous_Ring.webp",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Andvaranaut",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "XXf3j6xF5K0ZPKtk",
+      "documentCollection": "Item",
+      "documentId": "iMFVHkxiflRK9L4K",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Valkyrie%20Connect/Excalibur_%2528Sp.%2529_icon.webp",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Excalibur",
+      "type": "document",
+      "weight": 1
+    },
     {
       "_id": "yRjGvAvNNPVs5UyY",
       "documentCollection": "Item",
