@@ -158,6 +158,32 @@ if (!bridgeAlive()) {
   process.exit(0);
 }
 
+// ── a battle is LIVE on the bridge host → defer ─────────────────────────────
+// The bridge page IS the battle's host GM. The sweep views the Regression Bench
+// on that page and tears it down afterwards, leaving the host with no canvas
+// scene: every DECLARE then logs "token not on canvas" and TIMEOUT-skips the
+// turn. Measured 2026-10-21 (two lost Berserker turns) and again 2026-10-22, when
+// one turn-end sweep skipped a human playtest from round 1 to round 7 and ended
+// it. A live playtest and a sweep cannot share one page; the check waits for the
+// battle to end, exactly like the closed-game case above.
+function liveBattle() {
+  const code = `const bd = globalThis.FUCompanion?.api?.experimental?.battleDirector;
+    const state = bd?.status?.()?.state ?? null;
+    return { running: !!bd?.isRunning?.() && !["STOPPED", "IDLE"].includes(state), state, scene: canvas?.scene?.name ?? null };`;
+  const probe = `require(${JSON.stringify(path.join(ROOT, "lib", "bridge.js"))}).evalGM(${JSON.stringify(code)}, { timeoutSecs: 10 })
+    .then((v) => process.stdout.write(JSON.stringify(v ?? null)), () => process.stdout.write("null"));`;
+  const r = spawnSync("node", ["-e", probe], { encoding: "utf8", timeout: 40 * 1000 });
+  try { return JSON.parse(r.stdout || "null"); } catch { return null; }
+}
+const battle = liveBattle();
+if (battle?.running) {
+  const kept = hasMarker ? " (marker kept)" : "";
+  process.stderr.write(`⏸ skill-regression: ${kinds} changed this turn but a battle is LIVE on the bridge host (${battle.state} on ${battle.scene ?? "?"}) — regression check deferred until it ends, so the bench cannot take over the host's canvas${kept}.\n`);
+  const sv = staticVerdict();
+  if (sv.length) process.stderr.write(sv.join("\n") + "\n");
+  process.exit(0);
+}
+
 // Default to the whole-catalog Regression Bench so auto-enforcement covers
 // ClassTemplates/bosses/guests, not just whatever scene happens to be active —
 // the golden is scene-specific, so this must match the scene the golden was

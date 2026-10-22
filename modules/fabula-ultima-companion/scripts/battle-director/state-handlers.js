@@ -2929,6 +2929,29 @@ const Declare = {
     broadcastTurnActionIndicatorOpen();
     director.ctx._closeTurnActionIndicator = broadcastTurnActionIndicatorClose;
 
+    // The AI switch turned ON while this turn waits on a human (user,
+    // 2026-10-22): the autopilot takes it right away instead of from the next
+    // turn. The same gate and decision as the autopilot block above; a declined
+    // decision (no Action Pattern, nothing feasible) leaves the menu up.
+    const autoHooks = [];
+    const autoTakeover = new Promise((resolve) => {
+      let deciding = false;
+      const onSwitch = async (setting) => {
+        if (deciding || !/bd(Enemy|Summon)Autopilot$/.test(String(setting?.key ?? ""))) return;
+        if (!((isAutopilotEnabled() && isAiControlledTurn(director)) || isAutomatedSummonTurn(director, snap))) return;
+        deciding = true;
+        try {
+          const bundle = await autopilotDecideAction(director, snap);
+          if (bundle) {
+            log(`DECLARE: AI switched on mid-turn → autopilot takes ${snap.name}`);
+            resolve({ source: "autopilot", userId: game.user?.id, result: { cancelled: false, bundle } });
+          } else log(`DECLARE: AI switched on mid-turn, autopilot declined for ${snap.name} — menu stays`);
+        } catch (e) { warn("DECLARE: mid-turn autopilot decide threw — menu stays", e); }
+        finally { deciding = false; }
+      };
+      for (const hook of ["updateSetting", "createSetting"]) autoHooks.push([hook, Hooks.on(hook, onSwitch)]);
+    });
+
     // N-way race: local GM compose vs all remote participants (player + secondary
     // GMs). Whoever resolves first wins; all others are aborted and get
     // MENU_CLOSE. If there are no remotes, the race array contains only the
@@ -2948,6 +2971,9 @@ const Declare = {
         ),
         // If no remotes exist this extra sentinel is never needed, but
         // Promise.race([single]) is fine — keeping for clarity.
+        // The autopilot taking over mid-turn wins like a remote compose would:
+        // the branch below cancels the local menu and closes every remote one.
+        autoTakeover,
       ]);
       winnerSource = result.source;
       const winnerUserId = result.userId;
@@ -3004,12 +3030,15 @@ const Declare = {
       winnerBundle = result.result.bundle;
       // Who composed it makes its later choices too (buildActingRemotePrompt).
       if (winnerSource === "remote") director.ctx._composedByUserId = winnerUserId ?? null;
+      // Machine-chosen, as when the autopilot declares at the top of DECLARE.
+      if (winnerSource === "autopilot") director.ctx.autoDeclaredTurnKey = summonTurnKey(director, snap);
     } catch (e) {
       warn("DECLARE: compose race threw", e);
       director.enqueue({ type: INTENTS.ABORT });
       return;
     } finally {
       director.ctx._composeCancelToken = null;
+      for (const [hook, id] of autoHooks) Hooks.off(hook, id);
     }
 
     if (!winnerBundle || !winnerBundle.command) {

@@ -1198,6 +1198,38 @@ export function ensureStyles() {
       cursor: pointer;
     }
 
+    /* Reactions as a row of icons (user, 2026-10-23), for players and GMs: the
+       card records what reacts to this action, and hovering an icon tells the
+       rest (the tooltip names whose reaction it is and where it stands). A pill
+       stays a full pill only where THIS viewer answers it on the card — Button
+       mode, with no reaction hand or GM console answering it instead. */
+    .fud-bf-card .fud-bf-reactions-list { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 6px; padding: 2px; }
+    .fud-bf-card .fud-bf-reactions-list > .fud-bf-reaction-pill { flex: 1 1 100%; }
+    :is(body.fud-rx-hand .fud-bf-card .fud-bf-reaction-pill, .fud-bf-card .fud-bf-reaction-pill[data-gmd-rx], .fud-bf-card .fud-bf-reaction-pill:not(:has([data-fud-reaction-action="apply"]))) {
+      position: relative; flex: 0 0 auto; width: 32px; height: 32px; min-height: 0; padding: 0; gap: 0;
+      border: 0; border-radius: 7px; overflow: hidden; opacity: 1; filter: none;
+      background: rgba(255, 255, 255, 0.6);
+      box-shadow: 0 0 0 2px rgba(120, 80, 200, 0.45);
+    }
+    :is(body.fud-rx-hand .fud-bf-card .fud-bf-reaction-pill, .fud-bf-card .fud-bf-reaction-pill[data-gmd-rx], .fud-bf-card .fud-bf-reaction-pill:not(:has([data-fud-reaction-action="apply"]))) > :not(.fud-bf-reaction-icon) { display: none !important; }
+    :is(body.fud-rx-hand .fud-bf-card .fud-bf-reaction-pill, .fud-bf-card .fud-bf-reaction-pill[data-gmd-rx], .fud-bf-card .fud-bf-reaction-pill:not(:has([data-fud-reaction-action="apply"]))) .fud-bf-reaction-icon { width: 100%; height: 100%; border-radius: 0; font-size: 18px; line-height: 32px; }
+    :is(body.fud-rx-hand .fud-bf-card .fud-bf-reaction-pill, .fud-bf-card .fud-bf-reaction-pill[data-gmd-rx], .fud-bf-card .fud-bf-reaction-pill:not(:has([data-fud-reaction-action="apply"])))::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+      box-shadow: inset 0 0 0 0 rgba(255, 236, 190, 0); transition: box-shadow 150ms ease-out; }
+    :is(body.fud-rx-hand .fud-bf-card .fud-bf-reaction-pill, .fud-bf-card .fud-bf-reaction-pill[data-gmd-rx], .fud-bf-card .fud-bf-reaction-pill:not(:has([data-fud-reaction-action="apply"]))):hover::after { box-shadow: inset 0 0 7px 2px rgba(255, 236, 190, 0.95); }
+    /* how it came to apply, by the ring: active by itself or forced by a GM
+       (gold) · applied (green) */
+    :is(body.fud-rx-hand .fud-bf-card .fud-bf-reaction-pill, .fud-bf-card .fud-bf-reaction-pill[data-gmd-rx], .fud-bf-card .fud-bf-reaction-pill:not(:has([data-fud-reaction-action="apply"]))).is-auto, :is(body.fud-rx-hand .fud-bf-card .fud-bf-reaction-pill, .fud-bf-card .fud-bf-reaction-pill[data-gmd-rx], .fud-bf-card .fud-bf-reaction-pill:not(:has([data-fud-reaction-action="apply"]))).is-gm-set { box-shadow: 0 0 0 2px #b7935a; }
+    :is(body.fud-rx-hand .fud-bf-card .fud-bf-reaction-pill, .fud-bf-card .fud-bf-reaction-pill[data-gmd-rx], .fud-bf-card .fud-bf-reaction-pill:not(:has([data-fud-reaction-action="apply"]))).is-applied:not(.is-gm-set) { box-shadow: 0 0 0 2px #3c8c3c; background: rgba(140, 220, 130, 0.35); }
+    /* ...and of those icons, only the reactions IN EFFECT on this action stay
+       (user, 2026-10-23): Applied, Forced, or Active by themselves. Skipped,
+       unusable and still-undecided ones leave the card; they are answered in
+       the hand / GM console, and the console keeps the full record. */
+    :is(body.fud-rx-hand .fud-bf-card .fud-bf-reaction-pill, .fud-bf-card .fud-bf-reaction-pill[data-gmd-rx], .fud-bf-card .fud-bf-reaction-pill:not(:has([data-fud-reaction-action="apply"]))):not(.is-applied, .is-auto),
+    :is(body.fud-rx-hand .fud-bf-card .fud-bf-reaction-pill, .fud-bf-card .fud-bf-reaction-pill[data-gmd-rx], .fud-bf-card .fud-bf-reaction-pill:not(:has([data-fud-reaction-action="apply"]))):is(.is-skipped, .is-unavailable, .is-moot, [data-fud-reaction-moot="1"]) { display: none !important; }
+    /* No reaction in effect and none to answer here: no Reactions box at all. */
+    .fud-bf-card .fud-bf-reactions-row:not(:has(.fud-bf-reaction-pill:is(.is-applied, .is-auto):not(.is-skipped, .is-unavailable, .is-moot, [data-fud-reaction-moot="1"]))):not(:has(.fud-bf-reaction-pill:not([data-gmd-rx]) [data-fud-reaction-action="apply"])),
+    body.fud-rx-hand .fud-bf-card .fud-bf-reactions-row:not(:has(.fud-bf-reaction-pill:is(.is-applied, .is-auto):not(.is-skipped, .is-unavailable, .is-moot, [data-fud-reaction-moot="1"]))) { display: none !important; }
+
     /* ── Auto-confirm veto strip (Summon Autopilot) ─────────────────────────
        Sits directly above the button row: a thin draining bar plus a one-line
        explanation of why nobody has to click. The bar is a CSS animation so it
@@ -1759,6 +1791,9 @@ export function ensureStyles() {
       margin: 0 0 6px;
     }
     .fud-bf-desc-tip .fud-bf-desc-tip-stats:empty { display: none; }
+    .fud-bf-desc-tip .fud-bf-desc-tip-rx {
+      font-size: 10.5px; font-weight: 800; letter-spacing: 0.4px; text-transform: uppercase; color: #4a2f87;
+    }
     .fud-bf-desc-tip .fud-bf-desc-tip-stat-acc,
     .fud-bf-desc-tip .fud-bf-desc-tip-stat-dmg,
     .fud-bf-desc-tip .fud-bf-desc-tip-stat-def {
@@ -5258,6 +5293,22 @@ function buildReactionPills(cardReactions) {
         </div>
       </div>`;
   }).join("");
+}
+
+// A reaction shown as an icon says nothing on the card, so its tooltip carries
+// what the pill's text did: whose reaction it is and where it stands (Applied,
+// Skipped, Active, Low IP, Waiting for Rinri…). Read live off the pill, so it
+// follows every later decision.
+function reactionTipState(pill) {
+  if (!pill?.classList?.contains("fud-bf-reaction-pill")) return "";
+  const who = pill.querySelector(".fud-bf-reaction-reactor")?.textContent?.trim() || "";
+  let state = pill.querySelector(".fud-bf-reaction-status")?.textContent?.trim() || "";
+  if (!state) {
+    const acts = pill.querySelector(".fud-bf-reaction-actions");
+    state = acts?.querySelector("[data-fud-reaction-action]") ? "Waiting for an answer" : (acts?.textContent?.trim() || "");
+  }
+  const line = [who, state].filter(Boolean).map(escapeHtml).join(" · ");
+  return line ? `<div class="fud-bf-desc-tip-rx">${line}</div>` : "";
 }
 
 function buildReactionPillRow(cardReactions) {
@@ -9406,12 +9457,41 @@ export async function postActionCard({ director, kind, payload }) {
 
     if (director?.intentChannel) {
       try {
-        confirmAwait = director.intentChannel.awaitIntent(INTENTS.CONFIRM_ACTION, {
-          timeoutMs: 30 * 60 * 1000,
-        });
-        cancelAwait = director.intentChannel.awaitIntent(INTENTS.CANCEL_ACTION, {
-          timeoutMs: 30 * 60 * 1000,
-        });
+        // Every remote answer to this card (Confirm / Cancel, a reaction pill,
+        // an invoke) is an awaitIntent with a 30-minute timeout. A card left
+        // open longer — a long think, a break — used to go DEAF: the awaits
+        // expired, nothing re-armed them, and every later click from a player or
+        // support GM landed nowhere, so their client said "No response from the
+        // host" (user, 2026-10-23: Skip all on a card open for 70 minutes). An
+        // expiry now re-arms while the card is still open; only finish() ends
+        // the listening.
+        const AWAIT_MS = 30 * 60 * 1000;
+        const expired = (e) => !resolved && /awaitIntent timeout/.test(String(e?.message ?? ""));
+        const armConfirmAwait = () => {
+          if (resolved) return;
+          confirmAwait = director.intentChannel.awaitIntent(INTENTS.CONFIRM_ACTION, { timeoutMs: AWAIT_MS });
+          confirmAwait.then((intent) => {
+            log("postActionCard: remote CONFIRM_ACTION received");
+            sendConfirmAck(intent?.fromUserId ?? null);
+            const extras = intent?.body ?? {};
+            finish("confirm", extras);
+          }).catch((e) => {
+            if (expired(e)) { armConfirmAwait(); return; }
+            if (!resolved) warn("postActionCard: CONFIRM_ACTION await failed", e?.message);
+          });
+        };
+        const armCancelAwait = () => {
+          if (resolved) return;
+          cancelAwait = director.intentChannel.awaitIntent(INTENTS.CANCEL_ACTION, { timeoutMs: AWAIT_MS });
+          cancelAwait.then((intent) => {
+            log("postActionCard: remote CANCEL_ACTION received");
+            sendConfirmAck(intent?.fromUserId ?? null);
+            finish("cancel");
+          }).catch((e) => {
+            if (expired(e)) { armCancelAwait(); return; }
+            if (!resolved) warn("postActionCard: CANCEL_ACTION await failed", e?.message);
+          });
+        };
         // Acknowledge a remote Confirm/Cancel the INSTANT it lands (before running
         // the action) so the sender's mirror can stand down its no-response retry
         // timer — mirrors the reaction-pill "ack" contract. finish() then
@@ -9425,21 +9505,8 @@ export async function postActionCard({ director, kind, payload }) {
             });
           } catch (e) { warn("postActionCard: confirm-ack broadcast threw", e); }
         };
-        confirmAwait.then((intent) => {
-          log("postActionCard: remote CONFIRM_ACTION received");
-          sendConfirmAck(intent?.fromUserId ?? null);
-          const extras = intent?.body ?? {};
-          finish("confirm", extras);
-        }).catch((e) => {
-          if (!resolved) warn("postActionCard: CONFIRM_ACTION await failed", e?.message);
-        });
-        cancelAwait.then((intent) => {
-          log("postActionCard: remote CANCEL_ACTION received");
-          sendConfirmAck(intent?.fromUserId ?? null);
-          finish("cancel");
-        }).catch((e) => {
-          if (!resolved) warn("postActionCard: CANCEL_ACTION await failed", e?.message);
-        });
+        armConfirmAwait();
+        armCancelAwait();
         // Reaction-pill choice loop — keep re-arming awaitIntent for
         // REACTION_CHOICE so a player can click multiple pills. Each
         // landing intent updates the GM-side card; loop exits when the
@@ -9448,7 +9515,7 @@ export async function postActionCard({ director, kind, payload }) {
           if (resolved) return;
           if (initialPending === 0) return;
           reactionAwait = director.intentChannel.awaitIntent(INTENTS.REACTION_CHOICE, {
-            timeoutMs: 30 * 60 * 1000,
+            timeoutMs: AWAIT_MS,
           });
           reactionAwait.then((intent) => {
             const body = intent?.body ?? {};
@@ -9490,6 +9557,7 @@ export async function postActionCard({ director, kind, payload }) {
             // Re-arm for the next pill click (or no-op if none left).
             armReactionAwait();
           }).catch((e) => {
+            if (expired(e)) { armReactionAwait(); return; }
             if (!resolved) log(`postActionCard: REACTION_CHOICE await aborted (${e?.message})`);
           });
         };
@@ -9500,7 +9568,7 @@ export async function postActionCard({ director, kind, payload }) {
         const armInvokeAwait = () => {
           if (resolved) return;
           invokeAwait = director.intentChannel.awaitIntent(INTENTS.INVOKE_CHOICE, {
-            timeoutMs: 30 * 60 * 1000,
+            timeoutMs: AWAIT_MS,
             // No fromUserId filter — accept invoke from the acting owner OR
             // from any secondary GM who clicked Invoke on their mirror card.
           });
@@ -9557,6 +9625,7 @@ export async function postActionCard({ director, kind, payload }) {
             }
             armInvokeAwait();
           }).catch((e) => {
+            if (expired(e)) { armInvokeAwait(); return; }
             if (!resolved) log(`postActionCard: INVOKE_CHOICE await aborted (${e?.message})`);
           });
         };
@@ -10198,7 +10267,7 @@ export async function postActionCard({ director, kind, payload }) {
       // was pending, don't surface a ghost tooltip on top of nothing.
       if (resolved) return;
       const desc = target.dataset.fudEquipDesc;
-      const stats = target.dataset.fudEquipStats || "";
+      const stats = target.dataset.fudEquipStats || reactionTipState(target);
       if (!desc && !stats) return;
       const name = target.dataset.fudEquipDescName || "";
       const tip = ensureDescTip();
@@ -11606,7 +11675,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
       };
       const showMirrorTip = (target) => {
         const desc  = target.dataset.fudEquipDesc;
-        const stats = target.dataset.fudEquipStats || "";
+        const stats = target.dataset.fudEquipStats || reactionTipState(target);
         if (!desc && !stats) return;
         const name = target.dataset.fudEquipDescName || "";
         const tip = ensureMirrorTip();
