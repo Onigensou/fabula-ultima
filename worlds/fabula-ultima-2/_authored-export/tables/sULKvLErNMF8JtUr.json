@@ -16,7 +16,7 @@
     }
   },
   "folder": "to3QkbU70EQKKxHW",
-  "formula": "1d51",
+  "formula": "1d53",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
   "name": "Valley of the Dragon Underground - Encounter",
   "ownership": {
@@ -274,6 +274,20 @@
         22
       ],
       "text": "Obsidrax, Lightning Prism",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "NQnnNQUl1yWR4sKL",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        52,
+        53
+      ],
+      "text": "Roper",
       "type": "text",
       "weight": 2
     },

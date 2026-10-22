@@ -528,7 +528,7 @@
       },
       "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/CombatRangerSkill7.png",
-      "name": "Flee",
+      "name": "Run Away",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
         "default": 0
@@ -548,7 +548,7 @@
           "cost": "-",
           "damage_bonus": "0",
           "defense_target_type": "def",
-          "description": "<p>Its fangs wet, the Crona flutters for the exit. The party makes a <strong>DL 15</strong> <strong>【DEX + INS】</strong> Group Check — on a failure it escapes and the conflict carries on without it.</p>",
+          "description": "<p>The creature turns to leave. The party makes a <strong>DL 15</strong> <strong>【DEX + INS】</strong> Group Check — on a failure it slips away and the conflict carries on without it.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
@@ -816,7 +816,7 @@
           "action_pattern_cooldown": "0",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Flee",
+          "action_pattern_name": "Run Away",
           "action_pattern_priority": "8",
           "action_pattern_string": "Eaten",
           "action_pattern_target_focus": "auto",
@@ -1037,11 +1037,11 @@
       "skill_active_list": {
         "xQnD5PabiaifPkla": {
           "active_cost": "-",
-          "active_description": "<p>Its fangs wet, the Crona flutters for the exit. The party makes a <strong>DL 15</strong> <strong>【DEX + INS】</strong> Group Check — on a failure it escapes and the conflict carries on without it.</p>",
+          "active_description": "<p>The creature turns to leave. The party makes a <strong>DL 15</strong> <strong>【DEX + INS】</strong> Group Check — on a failure it slips away and the conflict carries on without it.</p>",
           "active_duration": "Instantaneous",
           "active_target": "Self",
           "id": "${item.id}",
-          "name": "Flee",
+          "name": "Run Away",
           "roll": "",
           "uuid": "Actor.vmYeN1WWIF5TSjjF.Item.xQnD5PabiaifPkla"
         }

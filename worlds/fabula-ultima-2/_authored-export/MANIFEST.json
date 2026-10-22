@@ -16638,12 +16638,12 @@
             "name": "(Empty)"
           },
           {
-            "id": "xQnD5PabiaifPkla",
-            "name": "Flee"
-          },
-          {
             "id": "PD9V6PBKW7UAVGjk",
             "name": "Infectious Bite"
+          },
+          {
+            "id": "xQnD5PabiaifPkla",
+            "name": "Run Away"
           },
           {
             "id": "6CoAPTC9qTbnYgFD",
@@ -23304,6 +23304,54 @@
         "effects": 0
       },
       {
+        "id": "NlYBXQwmXIttrDod",
+        "name": "Roper",
+        "type": "character",
+        "items": [
+          {
+            "id": "UcAQRZNaJysvnbAk",
+            "name": "(Empty)"
+          },
+          {
+            "id": "DtFwH9ZzMq3Mxl60",
+            "name": "Bite"
+          },
+          {
+            "id": "vG2SxRhTXNlHAmNo",
+            "name": "Earth Stone"
+          },
+          {
+            "id": "LMWewYAP7snvKnLJ",
+            "name": "False Appearance"
+          },
+          {
+            "id": "mrEgrO7xuEkRdRTy",
+            "name": "Obsidian"
+          },
+          {
+            "id": "6kdjnyHZGZ0MRh0g",
+            "name": "Reel"
+          },
+          {
+            "id": "hIYOeVLhSmyynvlV",
+            "name": "Rock Salt"
+          },
+          {
+            "id": "5gylqIm47dGp8uHP",
+            "name": "Seismic Pillar"
+          },
+          {
+            "id": "mcLtFtHWS9YLu5LM",
+            "name": "Severed Tendrils"
+          },
+          {
+            "id": "iHiXf8OOFWXfVztS",
+            "name": "Tentacle"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "aTLyASPTv1omAcIn",
         "name": "Roselie",
         "type": "character",
@@ -26373,12 +26421,12 @@
       {
         "id": "sULKvLErNMF8JtUr",
         "name": "Valley of the Dragon Underground - Encounter",
-        "results": 26
+        "results": 27
       },
       {
         "id": "hBupoi4SsKj1GmDM",
         "name": "Valley of the Dragon Underground - Enemies",
-        "results": 10
+        "results": 11
       },
       {
         "id": "oDiuDJRoayGJwr1L",
