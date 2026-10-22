@@ -10,7 +10,7 @@
 // render() rebuilds the menu's DOM wholesale, so bars are re-attached after every
 // render; the old ones go with the old DOM and their observers are dropped here.
 
-const SCROLLERS = ".pm-skill-list, .pm-scroll, .pm-picker-list, .pm-effcard, .pm-cmpbody";
+const SCROLLERS = ".pm-skill-list, .pm-scroll, .pm-picker-list, .pm-effcard, .pm-cmpbody, .pm-aiwin";
 const MIN_THUMB = 24;   // px — stays grabbable on a very long list
 const INSET = 3;        // px — gap between the bar and the box's top/bottom/right edge
 

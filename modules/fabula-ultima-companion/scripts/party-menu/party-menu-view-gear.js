@@ -13,7 +13,8 @@
 // Status: read-only — attributes, defenses, affinities, classes, bonds and the
 // effects currently applied, split Temporary / Permanent / Inactive, with a
 // detail card per effect (lifetime, per-source amounts, description; data in
-// party-menu-effects.js).
+// party-menu-effects.js). Also opens on the party's guests and summons (their
+// AI is on their Ability page).
 
 import {
   equipSlotsOf, equipCandidates, equipRefusal, setEquipSlot, itemSummary, statusOf,
@@ -33,17 +34,23 @@ const EQUIP_REASONS = {
   "no-such-slot": "No such slot.",
 };
 
-/** Title pill + the party's portrait row (click one to switch; Q/E still step). */
-export function who(ctx, actor, title) {
+/**
+ * Title pill + the party's portrait row (click one to switch; Q/E still step).
+ * `withCompanions` adds the guests and summons after the party (Status only).
+ */
+export function who(ctx, actor, title, { withCompanions = false } = {}) {
   const v = vitalsOf(actor);
   const r = ctx.roster();
   const entries = [
     ...r.active.map((a) => ({ id: a.id, name: a.name, img: a.img })),
     ...r.reserve.map((a) => ({ id: a.id, name: a.name, img: a.img, reserve: true })),
+    ...(withCompanions ? r.companions ?? [] : []).map((c) => ({ id: c.actor.id, name: c.actor.name, img: c.actor.img, comp: c.role })),
   ];
+  const comp = ctx.companion?.(actor);
+  const sub = [comp?.role, ...v.classes.slice(0, comp ? 2 : 3)].filter(Boolean).join(" · ") || v.identity;
   const info = `
     <div class="pm-member-top"><span class="pm-name">${esc(actor.name)}</span><span class="pm-lv"><em>LV</em>${v.level}</span></div>
-    <div class="pm-sub">${esc(v.classes.slice(0, 3).join(" · ") || v.identity)}</div>`;
+    <div class="pm-sub">${esc(sub)}</div>`;
   return `
     <div class="pm-ability-top">
       <div class="pm-win pm-title"><span class="pm-pill">${esc(title)}</span></div>
@@ -51,14 +58,14 @@ export function who(ctx, actor, title) {
     </div>`;
 }
 
-/** HP / MP / IP with bars — the header no longer carries them, so Status does. */
+/** HP / MP / IP with bars — the header no longer carries them, so Status does. A pool the actor has no room in (a summon's IP) is left out. */
 function vitalsBlock(actor) {
   const v = vitalsOf(actor);
   const low = v.maxHp > 0 && v.hp <= Math.floor(v.maxHp / 2);
   return `<div class="pm-stvitals">
     <div class="pm-stat">${STAT.hp}<b class="${low ? "is-low" : ""}">${v.hp}</b><span>/</span><b>${v.maxHp}</b>${bar(v.hp, v.maxHp, "hp")}</div>
-    <div class="pm-stat">${STAT.mp}<b>${v.mp}</b><span>/</span><b>${v.maxMp}</b>${bar(v.mp, v.maxMp, "mp")}</div>
-    <div class="pm-stat">${STAT.ip}<b>${v.ip}</b><span>/</span><b>${v.maxIp}</b>${bar(v.ip, v.maxIp, "ip")}</div>
+    ${v.maxMp > 0 || v.mp > 0 ? `<div class="pm-stat">${STAT.mp}<b>${v.mp}</b><span>/</span><b>${v.maxMp}</b>${bar(v.mp, v.maxMp, "mp")}</div>` : ""}
+    ${v.maxIp > 0 || v.ip > 0 ? `<div class="pm-stat">${STAT.ip}<b>${v.ip}</b><span>/</span><b>${v.maxIp}</b>${bar(v.ip, v.maxIp, "ip")}</div>` : ""}
   </div>`;
 }
 
@@ -414,14 +421,19 @@ export const statusView = {
     const st = statusOf(actor);
     const rows = effectRowsOf(actor);
     const v = ctx.S.v;
+    // A pinned effect stays the one shown even when the list is rebuilt around it.
+    const at = ctx.S.pinned ? rows.findIndex((r) => r.key === ctx.S.pinned) : -1;
+    if (at >= 0) v.eff = at;
+    else if (ctx.S.pinned) ctx.S.pinned = null;   // the pinned effect ended
     v.eff = Math.max(0, Math.min(v.eff, Math.max(0, rows.length - 1)));
     const attrs = Object.entries(st.attrs).map(([k, a]) => `
       <div class="pm-attr"><em>${k}</em><b>d${a.cur}</b>${a.cur !== a.base ? `<span class="pm-sub">base d${a.base}</span>` : ""}</div>`).join("");
     const aff = st.affinities.map((x) => `
       <div class="pm-aff aff-${esc(x.v.toLowerCase())}" title="${esc(x.el)}"><i class="fas ${ELEMENT_ICON[x.el]}"></i><b>${esc(AFF_LABEL[x.v] ?? x.v)}</b></div>`).join("");
+    const comp = ctx.companion(actor);
     const facts = [["Identity", st.identity], ["Theme", st.theme], ["Origin", st.origin],
       ["Classes", st.classes.map((c) => `${c.name} ${c.level}`).join(", ")], ["Bonds", st.bonds.join(", ")],
-      ["Zenit", `${st.zenit.toLocaleString()} z`]].filter(([, x]) => x);
+      ["Zenit", comp ? "" : `${st.zenit.toLocaleString()} z`]].filter(([, x]) => x);
     const group = (r) => (r.inactive ? "off" : r.temporary ? "temp" : "perm");
     const HEAD = {
       temp: ["fa-hourglass-half", "Temporary"], perm: ["fa-infinity", "Permanent"], off: ["fa-power-off", "Inactive"],
@@ -434,15 +446,15 @@ export const statusView = {
       const head = g !== last ? `<div class="pm-section"><i class="fas ${HEAD[g][0]}"></i>${HEAD[g][1]} <b>${counts[g]}</b></div>` : "";
       last = g;
       return `${head}
-      <div class="pm-skill pm-hit pm-eff ${r.temporary ? "is-temp" : ""} ${r.inactive ? "is-locked" : ""} ${v.eff === i ? "is-cursor" : ""}" data-action="st-eff" data-index="${i}">
+      <div class="pm-skill pm-hit pm-eff ${r.temporary ? "is-temp" : ""} ${r.inactive ? "is-locked" : ""} ${v.eff === i ? "is-cursor" : ""} ${ctx.S.pinned === r.key ? "is-pinned" : ""}" data-action="st-eff" data-index="${i}">
         ${img(r.img)}<span class="pm-skill-name">${esc(r.name)}${r.count > 1 ? ` <span class="pm-qty">×${r.count}</span>` : ""}</span>
-        ${rowChips(r)}</div>`;
+        ${rowChips(r)}${ctx.S.pinned === r.key ? ctx.pinMark : ""}</div>`;
     }).join("") || `<div class="pm-empty">No active effects.</div>`;
     const sel = rows[v.eff];
     return `
       <div class="pm-ability">
         ${ctx.nav()}
-        ${who(ctx, actor, "Status")}
+        ${who(ctx, actor, "Status", { withCompanions: true })}
         <div class="pm-ability-body pm-status-body">
           <div class="pm-win pm-detail"><div class="pm-scroll">
             ${vitalsBlock(actor)}
@@ -454,7 +466,7 @@ export const statusView = {
           <div class="pm-win pm-skills pm-effpanel">
             <div class="pm-label">Active effects</div>
             <div class="pm-skill-list pm-onecol pm-efflist">${list}</div>
-            ${sel ? `<div class="pm-effcard" data-keep-scroll="eff|${esc(actor.id)}|${esc(sel.key)}">${effectCard(sel)}</div>` : ""}
+            ${sel ? `<div class="pm-effcard" data-keep-scroll="eff|${esc(actor.id)}|${esc(sel.key)}">${ctx.S.pinned === sel.key ? ctx.pinCorner() : ""}${effectCard(sel)}</div>` : ""}
           </div>
         </div>
       </div>`;
@@ -464,18 +476,31 @@ export const statusView = {
     const v = ctx.S.v;
     if (k === "q" || k === "Q" || k === "PageUp" || k === "ArrowLeft") return ctx.cycleCharacter(-1);
     if (k === "e" || k === "E" || k === "PageDown" || k === "ArrowRight") return ctx.cycleCharacter(1);
-    const n = effectRowsOf(ctx.actor()).length;
-    if (k === "ArrowUp" && n) { v.eff = (v.eff - 1 + n) % n; play(SND.move, 0.4); ctx.render(); }
-    else if (k === "ArrowDown" && n) { v.eff = (v.eff + 1) % n; play(SND.move, 0.4); ctx.render(); }
+    const rows = effectRowsOf(ctx.actor());
+    const n = rows.length;
+    // The pin travels with the keys.
+    const step = (d) => { v.eff = (v.eff + d + n) % n; if (ctx.S.pinned) ctx.S.pinned = rows[v.eff]?.key ?? null; play(SND.move, 0.4); ctx.render(); };
+    if (k === "ArrowUp" && n) step(-1);
+    else if (k === "ArrowDown" && n) step(1);
+    else if (k === "Escape" && ctx.S.pinned) { ctx.S.pinned = null; play(SND.back); ctx.render(); }
     else if (k === "Escape") ctx.back();
   },
 
+  // A click pins the effect's card (clicking the pinned row releases it), so the
+  // pointer can reach the card without hovering other rows on the way.
   async click(ctx, a, el) {
-    if (a === "st-eff") { ctx.S.v.eff = Number(el.dataset.index); play(SND.move, 0.4); ctx.render(); }
+    if (a !== "st-eff") return;
+    const i = Number(el.dataset.index);
+    const row = effectRowsOf(ctx.actor())[i];
+    if (!row) return;
+    ctx.S.v.eff = i;
+    if (ctx.S.pinned === row.key) { ctx.S.pinned = null; play(SND.back, 0.4); }
+    else { ctx.S.pinned = row.key; play(SND.ok, 0.4); }
+    ctx.render();
   },
 
   hover(ctx, a, i) {
-    if (a === "st-eff" && ctx.S.v.eff !== i) { ctx.S.v.eff = i; return true; }
+    if (a === "st-eff" && ctx.S.v.eff !== i && !ctx.S.pinned) { ctx.S.v.eff = i; return true; }
     return false;
   },
 };

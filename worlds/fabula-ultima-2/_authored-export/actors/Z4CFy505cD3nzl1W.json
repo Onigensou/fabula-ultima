@@ -14341,7 +14341,7 @@
       "turbulence_status": 0,
       "uuid": "Actor.Z4CFy505cD3nzl1W",
       "weak_status": 0,
-      "weapon1_base_damage": "21",
+      "weapon1_base_damage": 21,
       "weapon1_base_mod": "1",
       "weapon1_damage": 21,
       "weapon1_damagetype": "Physical",
