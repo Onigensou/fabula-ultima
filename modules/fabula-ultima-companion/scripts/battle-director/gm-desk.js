@@ -41,7 +41,7 @@
 
 import { log, warn } from "./logger.js";
 import { playUiHoverSfx, playUiClickSfx, playUiOpenSfx, playUiBackSfx } from "./director-ui-sfx.js";
-import { ensureDrawerStyles, escapeHtml as esc, mountDockedReaction, pickDocked } from "./drawer-views.js";
+import { ensureDrawerStyles, escapeHtml as esc, pickDocked } from "./drawer-views.js";
 import { rightEdgeReserve, hudScale, readUnitInfo } from "./director-player-hud.js";
 import { tabAlert, tabAlertClear } from "./tab-alert.js";
 import { setGmFocus, focusState, setFocusPart, setFocusAll, FOCUS_PARTS, FOCUS_TOOLS, toolAvailable, openTool } from "./battle-focus.js";
@@ -261,6 +261,7 @@ function ensureStyles() {
 .gmd-crx-sec { display: flex; align-items: center; gap: 7px; margin: 8px 0 4px; font: 700 12.5px "Signika", sans-serif; color: var(--tx); }
 .gmd-crx-sec:first-child { margin-top: 0; }
 .gmd-crx-sec .dhv-ic { width: 20px; height: 20px; border-radius: 5px; }
+.gmd-crx-sec .gmd-crx-lbl { margin-left: auto; font: 700 9.5px "Signika", sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--tx-dim); }
 .gmd-crx-grid { display: grid; grid-template-columns: minmax(0,1fr); column-gap: 14px; row-gap: 3px; padding-left: 4px; }
 @container (min-width: 460px) { .gmd-crx-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
 .gmd-crx-row { display: grid; grid-template-columns: 20px minmax(0,1fr) auto; align-items: center; column-gap: 7px; height: 28px; padding: 0 4px 0 5px; border-radius: 6px; }
@@ -1800,28 +1801,26 @@ export function deskSpawnReaction({ key, token, candidates, onPick, onPass, labe
   clearTimeout(prev?._closeT);
   D.rx.set(key, entry);
   if (!D.rxOrder.includes(key)) D.rxOrder.push(key);
-  // The entry's own host: its view is in the console only while it is selected.
-  const host = {
-    actorId: actor?.id ?? null, unit: D.con, pcard: null, relativeSides: true,
-    mount(node) { deskStepHost().mount(node); },
-    mountOverlay(node) {
-      node.dataset.gmd = "1";
-      entry.node = node;
-      if (D.rxCur === key) showRxNode();
-      return () => closeRxEntry(entry);
-    },
-    setCrumb(t) { entry.crumb = t; },
-    pushCrumb() {},
-    setCard(c) { entry.card = c; if (D.rxCur === key) paintRxDetail(); },
-    setHint() {},
-    release: () => {},
-  };
-  entry.rec = mountDockedReaction(host, {
-    candidates, label: label ?? "Reaction", passLabel: passLabel ?? "Pass", disabledLabels,
-    goLabel: () => rxGoLabel(entry),
-    onPick: (c) => { entry.lastAction = "Applied"; noteContext(actor, entry.tokenId); return onPick?.(c); },
-    onPass: typeof onPass === "function" ? () => { entry.lastAction = passLabel && /cancel/i.test(passLabel) ? "Cancelled" : "Passed"; return onPass(); } : null,
+  // Start of conflict / round / turn reactions share ONE sectioned view with
+  // the card's (user, 2026-10-23): a section per creature, Skip / Apply on each
+  // reaction. A Use re-opens the creature's menu with what is left, so its
+  // record (what was applied, what was skipped) carries over from `prev`.
+  Object.assign(entry, {
+    srx: true, node: srxView(), onPick, onPass: typeof onPass === "function" ? onPass : null,
+    passLabel: passLabel ?? "Pass", disabled: new Map(Object.entries(disabledLabels ?? {})),
+    // The Use in flight landed if its reaction is no longer offered; one still
+    // offered was cancelled (its target pick) or aborted, and stays answerable.
+    history: prev?.srx ? [...prev.history, ...(prev.pending && !(candidates ?? []).some((c) => srxKeyOf(c) === srxKeyOf(prev.pending))
+      ? [{ c: prev.pending, status: "Applied" }] : [])] : [],
+    skipped: prev?.srx ? prev.skipped : new Set(), busy: false, pending: null,
   });
+  _srxDone.delete(key);
+  entry.rec = {
+    root: entry.node,
+    cleanup: () => closeSrxEntry(entry),
+    updateDisabledLabels(next) { entry.disabled = new Map(Object.entries(next ?? {})); paintSrxView(); },
+  };
+  paintSrxView();
   // Flow B: the first creature waiting on the GM opens by itself; a re-opened
   // menu (after a Use) keeps its selection. Player lines never open on their
   // own unless only players are deciding.
@@ -1831,6 +1830,163 @@ export function deskSpawnReaction({ key, token, candidates, onPick, onPass, labe
   render();
   scrollRosterTo(entry.tokenId);
   return entry.rec;
+}
+// ── start of conflict / round / turn reactions: the sectioned view ──────────
+// One view for every creature whose standalone reaction menu is open, laid out
+// like the card's reactions: a section per creature, Skip and Apply on each.
+// The menus underneath are unchanged (reaction-menu.js → standalone-reactions):
+// Apply is the menu's Use of that reaction; Skip only marks it here, and once
+// every reaction of a creature that it could use is skipped, the creature
+// passes — the menu's own Pass, which covers all of them for this window.
+let _srxView = null;
+let _srxDone = new Map(); // key → a closed creature's section, kept while others still decide
+let _srxHover = null;   // "entryKey|carrier::row" whose description the detail card shows
+const srxKeyOf = (c) => `${c?.carrierUuid}::${c?.rowKey}`;
+function srxView() {
+  if (_srxView) return _srxView;
+  const v = document.createElement("div");
+  v.className = "dhv-view gmd-crx";
+  v.dataset.gmd = "1";
+  v.addEventListener("click", onSrxClick);
+  v.addEventListener("pointerover", (ev) => {
+    const row = ev.target.closest?.(".gmd-crx-row");
+    if (!row) return;
+    const k = `${row.dataset.r}|${row.dataset.k}`;
+    if (k === _srxHover) return;
+    _srxHover = k;
+    playUiHoverSfx();
+    paintSrxDetail();
+  });
+  _srxView = v;
+  return v;
+}
+function srxEntries() { return D.rxOrder.map((k) => D.rx.get(k)).filter((e) => e?.srx && !e.closed); }
+// What a creature can still answer: not automatic, not unusable, not skipped.
+function srxOpenRows(e) {
+  return (e.candidates ?? []).filter((c) => c?.mode !== "on" && !e.disabled.get(srxKeyOf(c)) && !e.skipped.has(srxKeyOf(c)));
+}
+function paintSrxView() {
+  const v = srxView();
+  let open = 0;
+  const secs = srxEntries().map((e) => {
+    const owner = liveOwnerOf(e.actor);
+    const theirs = !!owner && D.locked;
+    const face = e.img ? `<span class="dhv-ic"><img src="${esc(e.img)}" alt=""></span>` : "";
+    const who = owner ? `<span class="gmd-chip ${theirs ? "pl" : "you"}">${theirs ? `${esc(owner.name)} decides` : `For ${esc(owner.name)}`}</span>` : "";
+    const icon = (c) => c?.carrierImg ? `<span class="dhv-ic"><img src="${esc(c.carrierImg)}" alt=""></span>` : `<span class="dhv-ic"></span>`;
+    const row = (c, tail, cls = "") => `<div class="gmd-crx-row${cls}" data-k="${esc(srxKeyOf(c))}" data-r="${esc(e.key)}">${icon(c)}<span class="nm">${esc(c?.carrierName ?? "Reaction")}</span>${tail}</div>`;
+    const done = e.history.map((h) => row(h.c, `<span class="gmd-crx-st ${h.status === "Applied" ? "ok" : "no"}">${esc(h.status)}</span>`, h.status === "Applied" ? "" : " is-off"));
+    const live = (e.candidates ?? []).map((c) => {
+      const k = srxKeyOf(c), why = e.disabled.get(k);
+      if (e.skipped.has(k)) return row(c, `<span class="gmd-crx-st no">Skipped</span>`, " is-off");
+      if (why) return row(c, `<span class="dhv-chip t-danger">${esc(why)}</span>`, " is-off");
+      if (c?.mode === "on") return row(c, `<span class="dhv-chip t-tag">Auto</span>`, " is-off");
+      if (theirs) return row(c, `<span class="dhv-chip t-tag">Waiting</span>`);
+      if (e.pending && srxKeyOf(e.pending) === k) return row(c, `<span class="gmd-crx-st wait">Applying…</span>`);
+      if (e.busy) return row(c, `<span class="gmd-crx-st wait">…</span>`);
+      open++;
+      const skip = e.onPass ? `<span class="gmd-crx-b skip" role="button" data-a="skip">Skip</span>` : "";
+      return row(c, `<span class="gmd-crx-btns">${skip}<span class="gmd-crx-b apply" role="button" data-a="apply">Apply</span></span>`);
+    });
+    return `<div class="gmd-crx-sec">${face}<b>${esc(e.name)}</b>${who}<span class="gmd-crx-lbl">${esc(e.label ?? "")}</span></div><div class="gmd-crx-grid">${[...done, ...live].join("")}</div>`;
+  }).join("") + [..._srxDone.values()].map((d) => {
+    const face = d.img ? `<span class="dhv-ic"><img src="${esc(d.img)}" alt=""></span>` : "";
+    const rows = d.rows.map(({ c, status, ok }) => `<div class="gmd-crx-row${ok ? "" : " is-off"}" data-k="${esc(srxKeyOf(c))}" data-r="${esc(d.key)}">`
+      + `${c?.carrierImg ? `<span class="dhv-ic"><img src="${esc(c.carrierImg)}" alt=""></span>` : `<span class="dhv-ic"></span>`}<span class="nm">${esc(c?.carrierName ?? "Reaction")}</span>`
+      + `<span class="gmd-crx-st ${ok ? "ok" : "no"}">${esc(status)}</span></div>`).join("");
+    return `<div class="gmd-crx-sec">${face}<b>${esc(d.name)}</b><span class="gmd-crx-lbl">${esc(d.label ?? "")}</span></div><div class="gmd-crx-grid">${rows}</div>`;
+  }).join("");
+  v.innerHTML = `<div class="dhv-main"><div class="gmd-crx-list">${secs}</div></div>`
+    + `<div class="dhv-foot"><span class="dhv-ftxt"><span class="cnt">Reactions</span> · ${open} to answer · Skip or Apply each</span>`
+    + (open ? `<span class="dhv-btn back" role="button" data-a="skipall">Skip all<span class="k">${open}</span></span>` : "") + `</div>`;
+  const keys = [...srxEntries().flatMap((e) => (e.candidates ?? []).map((c) => `${e.key}|${srxKeyOf(c)}`)),
+    ...[..._srxDone.values()].flatMap((d) => d.rows.map((r) => `${d.key}|${srxKeyOf(r.c)}`))];
+  if (!keys.includes(_srxHover)) _srxHover = keys[0] ?? null;
+  paintSrxDetail();
+}
+function paintSrxDetail() {
+  const [ek, ck] = String(_srxHover ?? "").split("|");
+  const live = D.rx.get(ek);
+  const e = live?.srx ? live : null;
+  const d = e ? null : _srxDone.get(ek);
+  const c = e?.candidates?.find((x) => srxKeyOf(x) === ck) ?? d?.rows.find((r) => srxKeyOf(r.c) === ck)?.c ?? null;
+  const why = c && e ? e.disabled.get(ck) : null;
+  const card = c ? {
+    key: `srx|${_srxHover}`, name: c.carrierName ?? "Reaction", kind: (e ?? d)?.label ?? "Reaction", img: c.carrierImg ?? null, from: (e ?? d)?.name,
+    chips: [{ text: c.mode === "on" ? "Auto" : c.kind === "manual" ? "Manual" : "Asks", tone: "tag" }],
+    body: htmlToText(c.carrierDescription ?? ""), reason: why || (c.mode === "on" ? "This one happens on its own; it is listed so you can see it." : null),
+  } : null;
+  for (const x of srxEntries()) x.card = card;
+  _srxView?.querySelectorAll(".gmd-crx-row").forEach((el) => el.classList.toggle("is-cur", `${el.dataset.r}|${el.dataset.k}` === _srxHover));
+  if (D.rx.get(D.rxCur)?.srx) paintRxDetail();
+}
+function srxPass(e) {
+  if (!e.onPass || e.closed) return;
+  e.lastAction = e.passLabel && /cancel/i.test(e.passLabel) ? "Cancelled" : "Passed";
+  for (const c of srxOpenRows(e)) e.skipped.add(srxKeyOf(c));
+  try { e.onPass(); } catch (err) { warn("[GmDesk] reaction pass threw", err); }
+}
+function onSrxClick(ev) {
+  const b = ev.target.closest?.("[data-a]");
+  if (!b) return;
+  ev.stopPropagation();
+  playUiClickSfx();
+  if (b.dataset.a === "skipall") {
+    for (const e of srxEntries()) if (!(liveOwnerOf(e.actor) && D.locked) && !e.busy) srxPass(e);
+    return;
+  }
+  const row = b.closest(".gmd-crx-row");
+  const e = row ? D.rx.get(row.dataset.r) : null;
+  const c = e?.candidates?.find((x) => srxKeyOf(x) === row.dataset.k);
+  if (!e?.srx || e.closed || e.busy || !c) return;
+  if (b.dataset.a === "skip") {
+    e.skipped.add(srxKeyOf(c));
+    // Nothing left this creature could use: that is its Pass.
+    if (!srxOpenRows(e).length) srxPass(e);
+    else paintSrxView();
+    return;
+  }
+  // Apply = the menu's Use. It re-opens with what is left (or closes).
+  e.busy = true;
+  e.pending = c;
+  e.lastAction = "Applied";
+  noteContext(e.actor, e.tokenId);
+  paintSrxView();
+  try { e.onPick?.(c); } catch (err) { warn("[GmDesk] reaction pick threw", err); }
+}
+// What a creature's section says once its menu has closed: every reaction with
+// the decision taken on it (the user, 2026-10-22: decided reactions stay listed).
+function srxDoneRecord(e) {
+  const passed = e.lastAction === "Passed" || e.lastAction === "Cancelled";
+  // A Use the menu closed on (its last reaction, or one that opens an action).
+  const history = e.pending ? [...e.history, { c: e.pending, status: "Applied" }] : e.history;
+  const rows = history.map((h) => ({ c: h.c, status: h.status, ok: h.status === "Applied" }));
+  for (const c of e.candidates ?? []) {
+    if (history.some((h) => srxKeyOf(h.c) === srxKeyOf(c))) continue;
+    const why = e.disabled.get(srxKeyOf(c));
+    const status = c?.mode === "on" ? "Auto" : why ? why : e.skipped.has(srxKeyOf(c)) ? "Skipped" : passed ? e.lastAction : "Closed";
+    rows.push({ c, status, ok: c?.mode === "on" });
+  }
+  return { key: e.key, name: e.name, img: e.img, label: e.label, rows };
+}
+function closeSrxEntry(entry) {
+  if (D.rx.get(entry.key) !== entry) return;
+  entry.closed = true;
+  _srxDone.set(entry.key, srxDoneRecord(entry));
+  paintSrxView();
+  // A Use re-opens the same menu straight away: wait a moment before letting go.
+  entry._closeT = setTimeout(() => {
+    if (D.rx.get(entry.key) !== entry) return;
+    D.rx.delete(entry.key);
+    D.rxOrder = D.rxOrder.filter((k) => k !== entry.key);
+    D.done.set(entry.tokenId, { text: entry.lastAction ?? "Answered", until: Date.now() + DONE_MS });
+    // The window is over once nobody is left deciding: the record goes with it.
+    if (!srxEntries().length) { try { _srxView?.remove(); } catch { /* */ } _srxView = null; _srxHover = null; _srxDone = new Map(); }
+    else paintSrxView();
+    if (D.rxCur === entry.key) { D.rxCur = null; autoSelectRx(); }
+    paintRxCells();
+    render();
+  }, CLOSE_GRACE_MS);
 }
 function closeRxEntry(entry) {
   if (D.rx.get(entry.key) !== entry) return;

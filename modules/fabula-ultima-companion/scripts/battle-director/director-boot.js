@@ -404,6 +404,16 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
     const { freeActionQueue } = await import("./free-action-queue.js");
     if (!freeActionQueue.isEmpty()) freeActionQueue.clear();
   } catch (e) { warn("stop: free-action queue clear threw", e); }
+  // ...and the GRANTS registry, for the same reason. A grant whose frame was
+  // never popped (Zarg's Dance, King Gorger's, 2026-10-23) outlived the battle;
+  // DECLARE drops such orphans in play, but out of battle the skill harness
+  // read it and refused every non-Dance skill of Zarg's ("this free action
+  // allows only dance") — five false drifts in the regression check. A resume
+  // or rewind re-hydrates the registry from the save (hydrateContinuationState).
+  try {
+    const { freeActions } = await import("./free-actions.js");
+    freeActions.clearAll();
+  } catch (e) { warn("stop: free-action registry clear threw", e); }
 
   try { TurnUI.despawnAll(); } catch {}
   try { TurnPicker.despawnAll(); } catch {}

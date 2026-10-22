@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-10-22T16:22:34.819Z",
+ "capturedAt": "2026-10-22T18:53:58.460Z",
  "count": 2572,
  "structure": {
   "(world) / Absorb MP": {
@@ -58084,11 +58084,13 @@
     "chain_steps=eo_spend,eo_surge,eo_wave effect_kind=chain effect_label=eo_chain",
     "consume_amount=50 consume_resource=mp effect_kind=consume_resource effect_label=eo_spend on_empty=abort target_ref=self",
     "ae_duplicate_mode=replace_family ae_duration_rounds=1 ae_family=elemental-overflow ae_name_pool=Elemental Overflow (Fire)|Elemental Overflow (Ice)|Elemental Overflow (Earth)|Elemental Overflow (Bolt)|Elemental Overflow (Air) effect_kind=apply_ae effect_label=eo_surge target_ref=field",
-    "action_ref=Elemental Overflow effect_kind=play_animation effect_label=eo_wave target_ref=self"
+    "action_ref=Elemental Overflow effect_kind=play_animation effect_label=eo_wave target_ref=self",
+    "consume_amount=CUR_MP consume_resource=mp effect_kind=consume_resource effect_label=eo_reset on_empty=drain target_ref=self"
    ],
    "reactions": [
     "condition_formula=SUBJECT_IS_MY_SUMMONER == 1 && CUR_MP >= 50 reaction_effect_ref=eo_chain reaction_passive_mode=force reaction_source=ally reaction_trigger=turn_start",
-    "condition_formula=CUR_MP >= 50 && FIELD_HAS_ELEMENTAL_OVERFLOW == 0 reaction_effect_ref=eo_chain reaction_max_per_round=1 reaction_passive_mode=force reaction_resource_filter=mp reaction_source=self reaction_trigger=creature_gain_resource"
+    "condition_formula=CUR_MP >= 50 && FIELD_HAS_ELEMENTAL_OVERFLOW == 0 reaction_effect_ref=eo_chain reaction_max_per_round=1 reaction_passive_mode=force reaction_resource_filter=mp reaction_source=self reaction_trigger=creature_gain_resource",
+    "reaction_effect_ref=eo_reset reaction_passive_mode=force reaction_trigger=conflict_start"
    ],
    "aes": [
     {
