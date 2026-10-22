@@ -255,6 +255,12 @@ body.fu-inspecting .fu-inspect-dim{filter:brightness(.42) saturate(.5);transitio
 #${ROOT_ID} .fui-count.bad{background:#f6d9d3;color:#a3261b}
 #${ROOT_ID} .fui-tabkeys{margin-left:auto;display:flex;align-items:center;gap:4px;padding-bottom:8px}
 #${ROOT_ID} .fui-pane{flex:1;min-height:0;overflow-y:auto;padding:10px 14px 12px;scrollbar-width:thin;scrollbar-color:rgba(58,50,40,.35) transparent}
+#${ROOT_ID} .fui-pane.is-in{animation:fui-cutin 160ms ease-out}
+#${ROOT_ID} .fui-pane.is-in-r{animation:fui-pane-r 200ms ease-out}
+#${ROOT_ID} .fui-pane.is-in-l{animation:fui-pane-l 200ms ease-out}
+@keyframes fui-pane-r{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+@keyframes fui-pane-l{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){#${ROOT_ID} .fui-pane.is-in-r,#${ROOT_ID} .fui-pane.is-in-l{animation:fui-cutin 160ms ease-out}}
 #${ROOT_ID} .fui-filters{display:flex;gap:5px;margin-bottom:8px;flex-wrap:wrap}
 #${ROOT_ID} .fui-fchip{display:inline-flex;align-items:center;height:26px;padding:0 10px;font:inherit;font-size:11.5px;font-weight:700;color:#4f4537;
   background:rgba(59,42,25,.06);border:1px solid rgba(122,106,85,.3);border-radius:13px;cursor:pointer;line-height:1}

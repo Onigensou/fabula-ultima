@@ -327,8 +327,8 @@ export const blackestNightUndyingRule = {
     // summons and scene allies, which must not get resource HUDs.
     try {
       const scene = dc.scene ?? canvas?.scene ?? null;
-      const { buildDirectorHud, dbPartyActorIds, isHudPartyMember } = await import("../../director-player-hud.js");
-      const partyIds = await dbPartyActorIds();
+      const { buildDirectorHud, hudPartyActorIds, isHudPartyMember } = await import("../../director-player-hud.js");
+      const partyIds = await hudPartyActorIds(director.ctx?.payload ?? null);
       const entries = dc.combatants
         .filter((c) => c.side === "party")
         .filter((c) => isHudPartyMember(c.actorDoc, partyIds))

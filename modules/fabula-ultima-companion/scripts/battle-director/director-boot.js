@@ -1571,7 +1571,7 @@ Hooks.once("ready", () => {
     // Remote pick responder — render a reaction's secondary picker (Protect
     // target / add-target / option-menu) routed to THIS client + emit
     // REMOTE_PICK_RESULT back. See remote-pick.js + [[director-player-driven-input]].
-    registerRemotePickResponder(getIntentChannel());
+    registerRemotePickResponder(getIntentChannel(), _isActiveDirector);
 
     // Catch-all observer for any other surface kinds we haven't wired
     // up yet (future kinds). Primary GM skips — it never receives its
@@ -1588,10 +1588,11 @@ Hooks.once("ready", () => {
       log(`[non-primary] MENU_CLOSE: kind=${payload?.kind ?? "?"} reason=${payload?.reason ?? "?"}`);
     });
 
-    // Announce ready to GM AFTER all handlers are attached (players only).
-    // Secondary GMs don't need replay — they're present when the director
-    // starts and the primary GM broadcasts directly to them at turn time.
-    if (!game.user?.isGM) {
+    // Announce ready to GM AFTER all handlers are attached — players AND support
+    // GMs. A support GM is sent the same menus (compose, reactions) as a
+    // player, so an F5 mid-decision left it at "between turns" with the menu
+    // gone while the host waited on it. The host GM itself never announces.
+    if (!game.user?.isGM || !(globalThis.FUCompanion?.isPrimaryGM?.() ?? true)) {
       try { getIntentChannel().announceReady(); }
       catch (e) { warn("announceReady threw", e); }
 

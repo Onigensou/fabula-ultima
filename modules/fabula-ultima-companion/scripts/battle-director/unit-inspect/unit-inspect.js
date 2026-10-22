@@ -1,4 +1,4 @@
-// Battle Inspect — click a unit in battle to read it without leaving the battle.
+// Battle Inspect — Alt+Click a unit in battle to read it without leaving the battle.
 //
 // Approved design (mockup claude.ai/artifact/52umGqFkM3KBB3AJvVWRBZ, 2026-10-14;
 // the pedestal box was dropped the same day — it lifted the unit OUT of the
@@ -14,13 +14,11 @@
 // Actions | Notes for enemies). What an enemy shows is gated by the Monster
 // Encyclopedia — see inspect-model.js.
 //
-// Input
-//   click a unit .................. open (or switch to it)
+// Input — ONE combo everywhere (user, 2026-10-22): the same Alt+Click opens it
+// outside targeting and while picking a target, where a plain click picks.
+//   Alt + click a unit ............ open (or switch to it); stays open
 //   hover a unit .................. peek card (also while choosing a target)
-//   hold Alt over a unit .......... open while held (the way to inspect DURING
-//                                   targeting, where a click picks the target)
-//   Alt + click a unit ............ open (also while targeting: a plain click
-//                                   there picks the target, never opens this)
+//   hold Alt over a unit .......... open while held; the click then pins it
 //   Esc / right-click / empty click close        Tab / Shift+Tab  next / previous unit
 //   Q / E ......................... previous / next tab
 //
@@ -502,14 +500,34 @@ function ensureWorld() {
   return w;
 }
 
-function renderCard() {
+// `pane`: how the tab content arrives when it changes — "r" / "l" slides in from
+// that side (a tab to the right / left), "fade" just fades. Live refreshes pass
+// nothing and swap without motion.
+function renderCard({ pane = null } = {}) {
   if (!S.open || !S.els) return false;
   const token = canvas?.tokens?.get(S.open.tokenId);
   if (!token) return false;
   try {
     S.model = buildInspectModel(token, { side: sideOf(token), asPlayer: S.asPlayer });
     if (!S.model) return false;
-    S.els.place.innerHTML = renderFrame(S.model, { ...S.ui, alt: !!S.open.viaAlt });
+    const html = renderFrame(S.model, { ...S.ui, alt: !!S.open.viaAlt && !S.open.sticky });
+    const frame = S.els.place.querySelector(".fui-frame");
+    if (!frame) { S.els.place.innerHTML = html; return true; }
+    // Already open: swap only the parts that changed, inside the frame that is
+    // already there. Re-writing the whole frame replayed its entrance fade, so
+    // every tab change blinked the entire card.
+    const t = document.createElement("template");
+    t.innerHTML = html.trim();
+    const next = t.content.querySelector(".fui-frame");
+    for (const sel of [".fui-head", ".fui-left", ".fui-tabs", ".fui-foot"]) {
+      const a = frame.querySelector(sel), b = next?.querySelector(sel);
+      if (a && b && a.innerHTML !== b.innerHTML) a.replaceWith(b);
+    }
+    const pa = frame.querySelector(".fui-pane"), pb = next?.querySelector(".fui-pane");
+    if (pa && pb && pa.innerHTML !== pb.innerHTML) {
+      if (pane) pb.classList.add(pane === "r" ? "is-in-r" : pane === "l" ? "is-in-l" : "is-in");
+      pa.replaceWith(pb);
+    }
     return true;
   } catch (e) {
     console.error(TAG, "render failed", e);
@@ -620,7 +638,9 @@ function step(dir) {
   const list = inspectableTokens();
   if (!list.length || !S.open) return;
   const i = Math.max(0, list.findIndex((t) => t.id === S.open.tokenId));
-  open(list[(i + dir + list.length) % list.length], { viaAlt: !!S.open.viaAlt });
+  const sticky = !!S.open.sticky;
+  open(list[(i + dir + list.length) % list.length], { viaAlt: !!S.open.viaAlt })
+    .then((ok) => { if (ok && sticky && S.open) { S.open.sticky = true; renderCard(); } });
 }
 
 function cycleTab(dir) {
@@ -629,7 +649,14 @@ function cycleTab(dir) {
   const i = Math.max(0, tabs.indexOf(S.ui.tab));
   S.ui.tab = tabs[(i + dir + tabs.length) % tabs.length];
   S.ui.filter = "all";
-  renderCard();
+  renderCard({ pane: dir > 0 ? "r" : "l" });
+}
+// Which side a newly picked tab lies on, relative to the current one.
+function tabSide(key) {
+  if (!S.model) return "fade";
+  const tabs = tabsOf(S.model).map((t) => t.key);
+  const d = tabs.indexOf(key) - tabs.indexOf(S.ui.tab);
+  return d > 0 ? "r" : d < 0 ? "l" : null;
 }
 
 function onRootClick(ev) {
@@ -639,8 +666,8 @@ function onRootClick(ev) {
   if (a === "close") close();
   else if (a === "prev") step(-1);
   else if (a === "next") step(1);
-  else if (a === "tab") { S.ui.tab = el.dataset.key; S.ui.filter = "all"; renderCard(); }
-  else if (a === "filter") { S.ui.filter = el.dataset.key; renderCard(); }
+  else if (a === "tab") { const pane = tabSide(el.dataset.key); S.ui.tab = el.dataset.key; S.ui.filter = "all"; renderCard({ pane }); }
+  else if (a === "filter") { S.ui.filter = el.dataset.key; renderCard({ pane: "fade" }); }
   else if (a === "bestiary") {
     const token = canvas?.tokens?.get(S.open.tokenId);
     close();
@@ -657,7 +684,7 @@ function showPeek(token) {
   const root = ensureRoot();
   let wrap = root.querySelector(".fui-peekwrap");
   if (!wrap) { root.insertAdjacentHTML("beforeend", `<div class="fui-peekwrap"></div>`); wrap = root.querySelector(".fui-peekwrap"); }
-  const hint = targetingActive() ? { key: "Alt", text: "Hold for full details. Click still picks the target." } : { key: "Click", text: "Zoom in and inspect" };
+  const hint = { key: "Alt+Click", text: targetingActive() ? "Inspect. A plain click still picks the target." : "Zoom in and inspect" };
   wrap.innerHTML = renderPeek(m, hint);
   S.peekId = token.id;
   const b = band();
@@ -716,20 +743,15 @@ function onPointerUp(ev) {
     : targetingActive() && !ev.altKey ? "targeting" : "";
   if (globalThis.__fuInspectDebug) console.debug(TAG, "pointerup", why || "click", d?.token?.name ?? null);
   if (why) return;                             // targeting: the click picks a target
-  // Alt+Click while picking is the way to read a creature mid-pick: the picker
-  // lets Alt clicks through (target-picker.js), so they open this instead.
-  // Pressing Alt over the creature already opened it (hold-to-peek); the click
-  // PINS it, so letting go of Alt no longer closes it.
-  if (ev.altKey && targetingActive()) {
-    const tok = d.token ?? hoveredToken();
-    if (!tok) return;
-    if (S.open?.tokenId === tok.id) S.open.sticky = true;
-    else open(tok, { viaAlt: true }).then((ok) => { if (ok && S.open?.tokenId === tok.id) S.open.sticky = true; });
-    return;
-  }
   const tok = d.token ?? hoveredToken();
-  if (tok) { if (S.open?.tokenId !== tok.id) open(tok); }
-  else if (S.open) close();
+  // A plain click never opens it; on empty ground it is still a way out.
+  if (!ev.altKey) { if (!tok && S.open) close(); return; }
+  // Alt+Click — the one way in, during targeting too (the picker lets Alt clicks
+  // through, target-picker.js). Pressing Alt over the creature may already have
+  // opened it (hold-to-peek); the click PINS it, so letting go of Alt keeps it.
+  if (!tok) return;
+  if (S.open?.tokenId === tok.id) { S.open.sticky = true; renderCard(); }
+  else open(tok, { viaAlt: true }).then((ok) => { if (ok && S.open?.tokenId === tok.id) { S.open.sticky = true; renderCard(); } });
 }
 
 function typing(ev) {

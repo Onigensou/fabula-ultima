@@ -180,7 +180,9 @@ async function renderCardLocal(spec) {
   const iconEl = document.createElement("span");
   iconEl.className = "fud-pc-icon";
   const iconStr = String(icon ?? "📜");
-  if (iconStr.startsWith("http") || iconStr.startsWith("modules/") || iconStr.startsWith("icons/")) {
+  // Any file path is a picture — a world-local asset ("worlds/…/x.png") used to
+  // fall through to the text branch and print its whole path on the card.
+  if (/^(https?:|data:|\/|[\w.-]+\/)/.test(iconStr) || /\.(png|jpe?g|webp|gif|svg|avif)(\?.*)?$/i.test(iconStr)) {
     const img = document.createElement("img");
     img.src = iconStr;
     img.style.cssText =

@@ -61,6 +61,16 @@ function secondaryParts(html) {
   if (bullets.length || pills.length) return [...bullets, ...pills];
   return (div.textContent ?? "").split("•").map((t) => t.trim()).filter(Boolean);
 }
+// Is a row's secondary a list of facts ("10 MP • Single", bullet / pill spans)
+// rather than a sentence? Facts become chips; a sentence is the row's own text.
+function secondaryIsFacts(html) {
+  const s = String(html ?? "");
+  if (!s.trim()) return false;
+  if (s.includes("•")) return true;
+  const div = document.createElement("div");
+  div.innerHTML = s;
+  return !!div.querySelector(".bullet, .check-attr");
+}
 
 // ── styles ────────────────────────────────────────────────────────────────────
 export function ensureDrawerStyles() {
@@ -395,12 +405,16 @@ function rowCardEntry(r, kind) {
   const tip = r.tooltip;
   const tipObj = tip && typeof tip === "object" ? tip : null;
   const name = tipObj?.name ?? stripTags(r.primary);
+  // A sentence secondary (a menu option's description: "Target recovers 40 HP.")
+  // is the card's text, never a chip too — it used to show twice, as a chip
+  // AND as the body. A facts secondary ("10 MP • Single") stays chips only.
+  const facts = secondaryIsFacts(r.secondary);
   const body = htmlToCardText(r.cardHtml ?? "")
     || (tipObj?.body ? String(tipObj.body) : "")
     || (typeof tip === "string" ? htmlToCardText(tip) : "")
-    || stripTags(r.secondary);
+    || (facts ? "" : htmlToCardText(r.secondary));   // decodes &amp; etc.
   const chips = [
-    ...secondaryParts(r.secondary).map((t) => ({ text: t, tone: "tag" })),
+    ...(facts ? secondaryParts(r.secondary) : []).map((t) => ({ text: t, tone: "tag" })),
     ...rowChips(r).map((c) => ({ text: stripTags(c.html), tone: c.tone || (/\bMP\b/.test(c.html) ? "mp" : /\bIP\b/.test(c.html) ? "ip" : "") })),
   ];
   if (tipObj?.cost && !chips.some((c) => c.text === tipObj.cost)) chips.push({ text: String(tipObj.cost), tone: /\bMP\b/.test(tipObj.cost) ? "mp" : "" });
@@ -518,8 +532,12 @@ export function pickDocked(host, {
     // Phantasm") gets the card of the skill it belongs to when there is one,
     // else no card. Never the previous row's: that described another option.
     const entry = r ? rowCardEntry(r, (useTabs ? groups[activeTab]?.label : groups[secOf[cur]]?.label) || tab) : null;
-    const worthACard = entry && (entry.img || (entry.body && entry.body !== entry.name && entry.body.length > 24));
-    host.setCard?.(worthACard ? entry : ctxEntry && r ? { ...ctxEntry, key: `${ctxEntry.key}|${cur}`, name: stripTags(r.primary) || ctxEntry.from } : ctxEntry);
+    // An option with text of its own shows THAT text, however short ("Target
+    // recovers 30 HP."): a length floor here used to swap short ones for the
+    // whole parent skill's description, so half a menu read the same.
+    const worthACard = entry && (entry.img || (entry.body && entry.body !== entry.name));
+    host.setCard?.(worthACard ? (ctxEntry ? { ...entry, from: ctxEntry.from } : entry)
+      : ctxEntry && r ? { ...ctxEntry, key: `${ctxEntry.key}|${cur}`, name: stripTags(r.primary) || ctxEntry.from } : ctxEntry);
     try { onFocusRow?.(r ?? null); } catch (e) { warn("drawer list: onFocusRow threw", e); }
   }
   function ensureVisible(list) {

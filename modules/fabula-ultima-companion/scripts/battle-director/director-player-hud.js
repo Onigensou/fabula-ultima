@@ -1450,6 +1450,13 @@ function scaleRoots(owner) {
 // ── build / destroy by key ────────────────────────────────────────────────────
 function buildLocally(key, entries) {
   destroyLocally(key);
+  // The GM's screen: the Battle Desk (gm-desk.js) replaces the compact party
+  // cards — its roster carries what they showed. A previewed plate keeps the
+  // old layout so the player view can still be checked from the GM seat.
+  // Every GM-level user gets the desk, even with no party cards to show; a
+  // player with nothing to show gets nothing.
+  const desk = !!game.user?.isGM && !_previewPlateActorId && deskEnabled();
+  if (!entries.length && !desk) return;
   injectStyles();
 
   const root = document.createElement("div");
@@ -1470,10 +1477,6 @@ function buildLocally(key, entries) {
   const offFns = [];
   const cards  = new Map();
   let plate = null;
-  // The GM's screen: the Battle Desk (gm-desk.js) replaces the compact party
-  // cards — its roster carries what they showed. A previewed plate keeps the
-  // old layout so the player view can still be checked from the GM seat.
-  const desk = !!game.user?.isGM && !_previewPlateActorId && deskEnabled();
 
   for (const { actor, token } of entries) {
     if (!actor) continue;
@@ -1996,13 +1999,13 @@ function ensureSocket() {
 function tryReloadRecovery(trigger) {
   const key      = canvas?.scene?.getFlag(MODULE_ID, FLAG_KEY);
   const actorIds = canvas?.scene?.getFlag(MODULE_ID, FLAG_ACTORS);
-  if (!key || !actorIds?.length) return;
+  if (!key || !Array.isArray(actorIds)) return;
   if (byKey.has(key)) return;
   log(`[DirectorHud] reload-recovery (${trigger}): rebuilding key=${key}`);
   const entries = actorIds
     .map(id => ({ actor: game.actors?.get(id), token: null }))
     .filter(e => e.actor);
-  if (entries.length) buildLocally(key, entries);
+  buildLocally(key, entries);   // no-op for a player with nothing to show
 }
 
 // GM preview: rebuild every open HUD on this client with a plate for actorId
@@ -2044,10 +2047,15 @@ Hooks.on("canvasTearDown", () => {
  * The single definition of "party member" for the HUD, shared by all three
  * build sites (PREP, in-place reinforce, undying resume) so they cannot drift.
  *
- * Two ways to qualify:
+ * Three ways to qualify:
  *
  *   1. The actor IS a DB roster member (`member_id_1..4`) — normal play.
- *   2. The actor is a SIM CLONE OF one. The automated-playtest harness clones
+ *   2. The actor is one of the battle payload's own non-guest party members
+ *      (folded into `partyIds` by hudPartyActorIds). This is how the Test
+ *      Battle's generated class actor counts: it is the party of that fight
+ *      but sits on no roster, so it got no card and — because the GM desk is
+ *      built with the HUD — no client got the GM panel either.
+ *   3. The actor is a SIM CLONE OF a roster member. The automated-playtest harness clones
  *      the party so a run can never write to the real PCs, and a clone gets a
  *      brand-new actor id — so it matched nothing here and every sim ran with
  *      NO player HUD at all. It failed silently, because buildDirectorHud
@@ -2061,7 +2069,7 @@ Hooks.on("canvasTearDown", () => {
  * the latter would hand cards to everything on the party side.
  *
  * @param {Actor} actor
- * @param {Set<string>} partyIds  from dbPartyActorIds(); empty = no filter
+ * @param {Set<string>} partyIds  from hudPartyActorIds(); empty = no filter
  */
 export function isHudPartyMember(actor, partyIds) {
   if (!actor) return false;
@@ -2098,6 +2106,26 @@ export async function dbPartyActorIds() {
 }
 
 /**
+ * The HUD party for one battle: the DB roster plus the payload's own party
+ * members. In normal play the payload's members ARE the roster, so this adds
+ * nothing; a Test Battle hands in generated actors that are on no roster.
+ * Guests ride the payload too (the sim passes its guest clones as members) and
+ * are left out, as they are in a real battle.
+ *
+ * @param {object|null} payload  the battle's start payload (director ctx.payload)
+ */
+export async function hudPartyActorIds(payload) {
+  const ids = await dbPartyActorIds();
+  const members = Array.isArray(payload?.party?.members) ? payload.party.members : [];
+  for (const m of members) {
+    if (m?.isGuest) continue;
+    const id = String(m?.actorId ?? "").trim() || String(m?.actorUuid ?? "").split(".").pop();
+    if (id) ids.add(id);
+  }
+  return ids;
+}
+
+/**
  * Build the player HUD on all clients and write reload-gate scene flags.
  * Call from the GM after entrance animations complete; fire-and-forget is safe.
  *
@@ -2105,18 +2133,18 @@ export async function dbPartyActorIds() {
  * @param {Scene} scene  The active battle scene (used for flag storage + key).
  */
 export async function buildDirectorHud(entries, scene) {
-  // An empty list is how this feature disappears WITHOUT an error: every caller
-  // filters before calling, so a filter that matches nothing looks identical to
-  // "no battle". That is exactly how the sim ran HUD-less and nobody noticed.
-  if (!entries?.length) {
-    warn("buildDirectorHud: called with no entries — every candidate was filtered out; no HUD will render");
-    return;
-  }
   if (!scene) return;
   const key      = `director-${scene.id}`;
-  const valid    = entries.filter(e => e.actor);
+  const valid    = (entries ?? []).filter(e => e.actor);
   const actorIds = valid.map(e => e.actor.id);
-  if (!actorIds.length) return;
+  // An empty list is how the party cards disappear WITHOUT an error: every
+  // caller filters before calling, so a filter that matches nothing looks
+  // identical to "no battle" (the sim, then the Test Battle, both ran HUD-less
+  // that way). Still build: the GM desk rides this build, and a GM-level user
+  // always gets the GM panel. Players with no cards build nothing.
+  if (!actorIds.length) {
+    warn("buildDirectorHud: called with no party entries — every candidate was filtered out; GMs get the desk, players no HUD");
+  }
 
   // Write flags before broadcasting so any client that reloads mid-broadcast
   // will find them on its next canvasReady.

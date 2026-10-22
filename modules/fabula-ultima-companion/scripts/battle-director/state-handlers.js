@@ -2542,7 +2542,21 @@ function resolveActingOwnerForActor(actor, { requireActive = true } = {}) {
 // acting player's client (GM races a local copy — see remote-pick.js). Null
 // when the actor has no online non-GM owner, or when WE are that owner, which
 // is the "render locally" signal every routed picker falls back to.
+//
+// The user who COMPOSED this turn's action (DECLARE's remote winner) comes
+// first: a support GM who declared a skill for an unowned PC must also get its
+// Invocation / element / target menus — they used to open on the host, which
+// may be a headless client nobody is looking at. Only while that user can
+// still control the actor (a GM, or its owner), so a stale composer never
+// picks for another creature acting later in the same turn.
 function buildActingRemotePrompt(director, actor) {
+  if (!director?.intentChannel) return null;
+  const composerId = director.ctx?._composedByUserId ?? null;
+  const composer = composerId ? game.users?.get(composerId) : null;
+  if (composer?.active && composerId !== game.user?.id
+      && (composer.isGM || actor?.testUserPermission?.(composer, "OWNER"))) {
+    return { channel: director.intentChannel, targetUserId: composerId, combatId: director.combatId };
+  }
   const ownerUserId = resolveActingOwnerForActor(actor);
   if (!ownerUserId) return null;
   if (ownerUserId === game.user?.id) return null;
@@ -2921,6 +2935,7 @@ const Declare = {
     // local side and it dominates immediately on completion.
     let winnerSource = null;
     let winnerBundle = null;
+    director.ctx._composedByUserId = null;
     try {
       const result = await Promise.race([
         localCompose.then((r) => ({ source: "local", userId: game.user?.id, result: r })),
@@ -2987,6 +3002,8 @@ const Declare = {
       }
 
       winnerBundle = result.result.bundle;
+      // Who composed it makes its later choices too (buildActingRemotePrompt).
+      if (winnerSource === "remote") director.ctx._composedByUserId = winnerUserId ?? null;
     } catch (e) {
       warn("DECLARE: compose race threw", e);
       director.enqueue({ type: INTENTS.ABORT });

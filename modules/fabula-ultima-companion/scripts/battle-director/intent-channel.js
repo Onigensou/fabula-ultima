@@ -133,10 +133,11 @@ export class IntentChannel {
 
   // Player-side: announce that handlers are installed and we're ready to
   // receive MENU_OPEN broadcasts. GM-side handler in _onPlayerHello replays
-  // any cached payloads. Called from director-boot.js's ready hook on
-  // non-GM clients after registerPlayer*Handler calls.
+  // any cached payloads. Called from director-boot.js's ready hook on every
+  // client except the host GM — a SUPPORT GM is sent the same menus (compose,
+  // reactions) and lost them on F5 just like a player did.
   announceReady() {
-    if (game.user?.isGM) return;
+    if (game.user?.isGM && (globalThis.FUCompanion?.isPrimaryGM?.() ?? true)) return;
     this._emitRaw("PLAYER_HELLO", { fromUserId: game.user?.id ?? null });
   }
 

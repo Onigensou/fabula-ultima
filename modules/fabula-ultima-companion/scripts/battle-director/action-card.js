@@ -7243,8 +7243,13 @@ function assembleActionCardRoot({ card, cardReactions, rootId, payload = null, k
   try {
     if (game.user?.isGM) gmEditHtml = buildGmEditLaunchHTML(payload?.gmOverride ?? null);
   } catch (e) { warn("assembleActionCardRoot: GM edit launch build threw", e); }
+  // Who is acting — the action-taker's OWN pills carry no reactor uuid, so the
+  // GM desk reads it here to know whose reactions they are (gm-desk syncCardRx).
+  const actorUuid = payload?.attacker?.actorUuid ?? payload?.attackerActorRef
+    ?? payload?.attackerActor?.uuid ?? payload?.attackerActorUuid ?? null;
+  const actorAttr = actorUuid ? ` data-fud-actor-uuid="${escapeHtml(String(actorUuid))}"` : "";
   const innerHTML = `
-    <div class="fud-bf-card" role="dialog" aria-label="${escapeHtml(card.titleText)}"${initialGating > 0 ? ` data-fud-reactions-pending="${initialGating}"` : ""}>
+    <div class="fud-bf-card" role="dialog" aria-label="${escapeHtml(card.titleText)}"${actorAttr}${initialGating > 0 ? ` data-fud-reactions-pending="${initialGating}"` : ""}>
       <div class="fud-bf-header">
         <div class="fud-bf-portrait-slot left">${card.portraits?.left ?? ""}</div>
         <div class="fud-bf-title-row">
@@ -7934,6 +7939,24 @@ export async function postActionCard({ director, kind, payload }) {
         const current = Number(card.dataset.fudReactionsPending ?? 0);
         card.dataset.fudReactionsPending = String(current + freshPending);
       }
+      // Mirrors get the injected pills too. They used to exist on the host's card
+      // only: a redirect that brought a new creature in (Prophetic Defender ->
+      // Blanche's Protect) re-locked the host's Confirm on a reaction no player
+      // and no support GM could see, let alone answer.
+      try {
+        const others = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+        if (others.length) {
+          director?.intentChannel?.broadcastMenuOpen({
+            targetUserIds: others.map((u) => u.id),
+            menuSpec: {
+              kind: "action-card-pills-append",
+              combatId: director.combatId,
+              html: buildReactionPills(cands),
+              pendingCount: Number(card?.dataset.fudReactionsPending ?? 0),
+            },
+          });
+        }
+      } catch (e) { warn("appendCascadePills: mirror broadcast threw", e); }
 
       const GROW_MS = 260;   // pill unfolds (its real height drives the reflow)
       const GLOW_MS = 1500;  // settle glow, right after the grow
@@ -8261,10 +8284,11 @@ export async function postActionCard({ director, kind, payload }) {
       // is their non-GM userId), any secondary picker (Protect target, Barrage
       // add-target, option-menu) renders on THEIR client instead of the GM's,
       // and nothing commits until they confirm. The GM clicking their own card
-      // passes no routeUserId → local picks, card stays as-is. See remote-pick.js.
+      // passes no routeUserId → local picks, card stays as-is. A SUPPORT GM's
+      // click routes to the support GM the same way: the host may be a headless
+      // client nobody is looking at. See remote-pick.js.
       const remotePrompt = (routeUserId
-        && routeUserId !== game.user?.id
-        && !game.users?.get(routeUserId)?.isGM)
+        && routeUserId !== game.user?.id)
         ? { channel: director.intentChannel, targetUserId: routeUserId, combatId: director.combatId }
         : null;
       // Player applied but their pill is mid-flight ("submitting" — pending=0,
@@ -10812,6 +10836,39 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     } catch (e) { warn("action-card-target-mutation: patch threw", e); }
   });
 
+  // Pills the host injected after posting (cascade / newly-targeted reactions).
+  // Same per-pill gate as the card was posted with: the reactor's owner — or a
+  // GM-level user — keeps Apply/Skip, everyone else sees "Waiting for …".
+  const offPillsAppend = channel.onMenuOpen((menuSpec) => {
+    if (!menuSpec || menuSpec.kind !== "action-card-pills-append" || isActiveDirector()) return;
+    const wrapper = document.getElementById(MIRROR_ROOT_ID);
+    const cardEl = wrapper?.querySelector(".fud-bf-card");
+    if (!cardEl || !menuSpec.html) return;
+    const tpl = document.createElement("template");
+    tpl.innerHTML = String(menuSpec.html);
+    const incoming = [...tpl.content.querySelectorAll(".fud-bf-reaction-pill")].filter((p) => !wrapper.querySelector(
+      `.fud-bf-reaction-pill[data-fud-reaction-key="${CSS.escape(p.dataset.fudReactionKey ?? "")}"][data-fud-reaction-carrier="${CSS.escape(p.dataset.fudReactionCarrier ?? "")}"]`));
+    if (!incoming.length) return;
+    let list = wrapper.querySelector(".fud-bf-reactions-list");
+    if (!list) {
+      cardEl.insertAdjacentHTML("beforeend", buildReactionPillRow([]) || `<div class="fud-bf-reactions-row"><div class="fud-bf-reactions-label">Reactions</div><div class="fud-bf-reactions-list"></div></div>`);
+      list = wrapper.querySelector(".fud-bf-reactions-list");
+    }
+    const me = game.user?.id ?? "";
+    for (const p of incoming) {
+      const owner = p.dataset.fudReactionOwner ?? "";
+      if (p.dataset.fudReactionPending === "1" && owner !== me && !game.user?.isGM) {
+        const actions = p.querySelector(".fud-bf-reaction-actions");
+        const ownerName = owner ? (game.users.get(owner)?.name ?? "Player") : "GM";
+        if (actions) actions.outerHTML = `<span class="fud-bf-reaction-status is-waiting">Waiting for ${escapeHtml(ownerName)}…</span>`;
+      }
+      list.appendChild(p);
+    }
+    const n = Math.max(0, Number(menuSpec.pendingCount ?? 0));
+    if (n > 0) cardEl.dataset.fudReactionsPending = String(n);
+    else delete cardEl.dataset.fudReactionsPending;
+  });
+
   const offPillUpdate = channel.onMenuOpen((menuSpec) => {
     if (!menuSpec || menuSpec.kind !== "action-card-pill-update") return;
     const wrapper = document.getElementById(MIRROR_ROOT_ID);
@@ -10851,10 +10908,11 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
           if (n > 0) cardEl.dataset.fudReactionsPending = String(n);
           else delete cardEl.dataset.fudReactionsPending;
         }
-        // The rebuilt Apply/Skip belong to the pill's owner only; everyone else
-        // sees the same "Waiting for…" chip the card was posted with.
+        // The rebuilt Apply/Skip belong to the pill's owner (and any GM-level
+        // user); everyone else sees the same "Waiting for…" chip the card was
+        // posted with.
         const owner = pillEl.dataset.fudReactionOwner ?? "";
-        if (owner !== (game.user?.id ?? "")) {
+        if (owner !== (game.user?.id ?? "") && !game.user?.isGM) {
           const actions = pillEl.querySelector(".fud-bf-reaction-actions");
           const ownerName = owner ? (game.users.get(owner)?.name ?? "Player") : "GM";
           if (actions) actions.outerHTML = `<span class="fud-bf-reaction-status is-waiting">Waiting for ${escapeHtml(ownerName)}…</span>`;
@@ -11068,9 +11126,15 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     // buttons; everyone else's collapse to a "Waiting for [Owner]…" chip.
     // Already-resolved pills carry .is-resolved + a status chip from the
     // GM-side recordPillDecision DOM patch — leave those alone.
+    // A GM-level user (a support GM's mirror) answers every pill, exactly as
+    // the host GM does on its own card: a reaction whose owner is offline is
+    // "the GM's", and a support GM is a GM — it used to read "Waiting for GM…"
+    // with no buttons, so with a headless host nobody could answer it.
+    const answersAll = !!game.user?.isGM;
     for (const pill of wrapper.querySelectorAll(".fud-bf-reaction-pill.is-ask")) {
       if (pill.dataset.fudReactionPending !== "1") continue;
       const pillOwner = pill.dataset.fudReactionOwner ?? "";
+      if (answersAll) continue;                            // GM — keep buttons
       if (pillOwner && pillOwner === myUserId) continue;  // mine — keep buttons
       const ownerName = pillOwner
         ? (game.users.get(pillOwner)?.name ?? "Player")
@@ -11092,13 +11156,17 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
       ev.stopPropagation();
       const pill = reactionBtn.closest(".fud-bf-reaction-pill");
       if (!pill) return;
-      // Per-pill ownership gate — only the reactor's owner may act on it.
+      // Per-pill ownership gate — only the reactor's owner may act on it, or
+      // a GM-level user (who answers any pill, like the host GM).
       const pillOwner = pill.dataset.fudReactionOwner ?? "";
-      if (!pillOwner || pillOwner !== myUserId) return;
+      const isOwner = !!pillOwner && pillOwner === myUserId;
+      if (!isOwner && !game.user?.isGM) return;
       // Take a Skip back (the reaction hand's Pass toggle; no visible button on
       // the card carries this). Not optimistic: the host decides whether the
       // card is still open to it, and its revert broadcast rebuilds the pill.
+      // The owner's own take-back only — the host refuses anyone else's.
       if (reactionBtn.dataset.fudReactionAction === "reopen") {
+        if (!isOwner) return;
         if (!pill.classList.contains("is-skipped") || pill.classList.contains("is-gm-set")) return;
         channel.emit({
           type: INTENTS.REACTION_CHOICE,
@@ -11634,6 +11702,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     try { offClose?.(); } catch {}
     try { offConfirmAck?.(); } catch {}
     try { offPillUpdate?.(); } catch {}
+    try { offPillsAppend?.(); } catch {}
     try { offTargetMutation?.(); } catch {}
     try { offBodyUpdate?.(); } catch {}
     try { offInvokeUpdate?.(); } catch {}

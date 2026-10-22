@@ -1008,11 +1008,11 @@ export async function dispatchReactionMenu({
         }
         sendAck();
         noteGmAnswer(fromUid, `used ${cand.carrierName ?? "a reaction"}`);
-        // A PLAYER accepted remotely → route any secondary picker in the
-        // chain (target pick, option menu) back to THEIR client. Only when
-        // the sender is a real non-GM user (mirrors the action-card pill's
-        // routeUserId guard); a GM-owned remote falls through to local.
-        const remotePrompt = (fromUid && channel && !game.users?.get(fromUid)?.isGM)
+        // A PLAYER or SUPPORT GM accepted remotely → route any secondary
+        // picker in the chain (target pick, option menu) back to THEIR client
+        // (mirrors the action-card pill's routeUserId guard). The host still
+        // races its own copy, but it may be a headless client nobody watches.
+        const remotePrompt = (fromUid && channel && fromUid !== game.user?.id)
           ? { channel, targetUserId: fromUid, combatId }
           : null;
         const keepGoing = await processDecision(cand, remotePrompt);

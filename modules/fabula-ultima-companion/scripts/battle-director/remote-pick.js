@@ -278,8 +278,9 @@ export async function remotePickAny({
 
 // Player-side: register a handler that renders the local picker when the GM
 // broadcasts a pick request, then emits REMOTE_PICK_RESULT with the result.
-// Returns an unregister function. Registered once at boot on non-GM clients.
-export function registerRemotePickResponder(channel) {
+// Returns an unregister function. Registered once at boot; answers on every
+// client except the host (a support GM gets the picks it chose to answer).
+export function registerRemotePickResponder(channel, isActiveDirector = () => !!game.user?.isGM) {
   // Requests whose picker is currently rendered on this client. Guards
   // against a same-requestId MENU_OPEN replay (the GM re-replays its
   // _recentBroadcasts cache on our reconnect re-announce — see
@@ -288,7 +289,7 @@ export function registerRemotePickResponder(channel) {
   // no entry here, so it still renders; an already-open picker is kept.
   const activeRequestIds = new Set();
   return channel.onMenuOpen(async (menuSpec) => {
-    if (game.user?.isGM) return;
+    if (isActiveDirector()) return;
     const kind = menuSpec?.kind;
     if (!RENDERABLE_KINDS.has(kind)) return;
     const requestId = menuSpec?.requestId ?? null;
