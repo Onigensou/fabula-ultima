@@ -1,0 +1,87 @@
+{
+  "_id": "F5puT71npNWuUap8",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1792699948271,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    },
+    "fabula-ultima-companion": {
+      "draftAutomation": "claude-2026-10-23"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Ys/Hyperion_Blade.webp",
+  "name": "Sverðgramr",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 500000,
+  "system": {
+    "container": "jGvUQbTDGWuOYOrf",
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": 0,
+      "class": "",
+      "cost": "50 MP",
+      "damage_bonus": 40,
+      "defense_target_type": "def",
+      "description": "<p><strong>Cost:</strong> 50 MP</p><p><strong>Target:</strong> One Creature</p><p><strong>Check:</strong> 【MIG】 + 【WLP】 vs Defense</p><p>Deals 【HR + 40】 Light damage. On a hit, 50% chance to inflict Break until the end of the target's next turn.</p>",
+      "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "ae_chance_percent": "50",
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_duration_rounds": "1",
+          "ae_lifetime_mode": "target_turn_end",
+          "ae_template_ref": "Break",
+          "effect_kind": "apply_ae",
+          "effect_label": "sverd_break",
+          "target_ref": "hit_action_targets"
+        }
+      },
+      "heroic_requirement": "",
+      "id": "F5puT71npNWuUap8",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Ys/Hyperion_Blade.webp",
+      "isCheck": true,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Sverðgramr",
+      "on_activate_effect_ref": "sverd_break",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "MIG",
+      "rolled_atr2": "WLP",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_description": "<p><strong>Cost:</strong> 50 MP</p><p><strong>Target:</strong> One Creature</p><p><strong>Check:</strong> 【MIG】 + 【WLP】 vs Defense</p><p>Deals 【HR + 40】 Light damage. On a hit, 50% chance to inflict Break until the end of the target's next turn.</p>",
+      "skill_information": "",
+      "skill_range": "Melee",
+      "skill_target": "One Creature",
+      "skill_type": "Active",
+      "type_damage": "Light",
+      "use_optional_params": false,
+      "uuid": "Item.F5puT71npNWuUap8"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "F5puT71npNWuUap8"
+  },
+  "type": "equippableItem"
+}

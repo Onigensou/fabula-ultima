@@ -2573,6 +2573,18 @@
         "effects": 0
       },
       {
+        "id": "GinhTHdt1zZD3xAJ",
+        "name": "Ægishjálmr",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "8ZE9ndpM1urgADRm",
+        "name": "Ægishjálmr (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "sLUFIsIYIAmmO0lI",
         "name": "Aenigma of Adaptation",
         "type": "equippableItem",
@@ -2689,6 +2701,12 @@
       {
         "id": "wIkld1R2JP4M2LVz",
         "name": "Ancient Root Medley",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "isPhIA0LOjYMbzkT",
+        "name": "Andvaranaut",
         "type": "equippableItem",
         "effects": 1
       },
@@ -3135,6 +3153,12 @@
         "name": "Ballistic Shield",
         "type": "equippableItem",
         "effects": 2
+      },
+      {
+        "id": "jGvUQbTDGWuOYOrf",
+        "name": "Balmung",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "aTdfmfmApSbbJ2c4",
@@ -7291,6 +7315,18 @@
       {
         "id": "KccxJo2tiTOgWdKg",
         "name": "Hot Pants (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "G5KhFrfss8c8AHm7",
+        "name": "Hrotti",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "xuU805QkJfaHapTT",
+        "name": "Hrotti (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -11693,6 +11729,12 @@
         "effects": 0
       },
       {
+        "id": "CWVTIIx0KgYXnQY7",
+        "name": "Soul Steal",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "aTce11W2dmw2lKtR",
         "name": "Soul Steal",
         "type": "equippableItem",
@@ -12175,6 +12217,12 @@
       {
         "id": "v63nz5loWIh5hsAS",
         "name": "Suspicious Potion Recipe",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "F5puT71npNWuUap8",
+        "name": "Sverðgramr",
         "type": "equippableItem",
         "effects": 0
       },

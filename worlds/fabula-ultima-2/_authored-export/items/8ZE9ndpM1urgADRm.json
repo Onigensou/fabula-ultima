@@ -1,0 +1,120 @@
+{
+  "_id": "8ZE9ndpM1urgADRm",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1792699948271,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "draftAutomation": "claude-2026-10-23"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Ys9-Hades_Mask.webp",
+  "name": "Ægishjálmr (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "GinhTHdt1zZD3xAJ",
+    "props": {
+      "cost": "",
+      "description": "<p><em>The helm Fafnir wore while lying on his gold. Every living thing that saw him was struck with terror.</em></p><p><strong>Awe:</strong> At the start of a conflict, each enemy has a chance to become Frightened until the end of its first turn — or Shaken, if it is an Elite or Champion. The chance is 25% + 5% for every level you are above it (minimum 10%, maximum 75%).</p><p><strong>Dread Harvest:</strong> Whenever you hit a Frightened or Shaken creature, recover 10 MP.</p>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "aeg_fright, aeg_shake",
+          "effect_kind": "chain",
+          "effect_label": "aeg_root"
+        },
+        "1": {
+          "allow_empty": true,
+          "auto_target": "skip",
+          "candidate_source": "combat",
+          "category": "enemy",
+          "effect_kind": "targeting",
+          "effect_label": "aeg_soldiers",
+          "mode": "all",
+          "target_filter": "CUR_HP >= 1 && RANK_IS_SOLDIER == 1"
+        },
+        "2": {
+          "allow_empty": true,
+          "auto_target": "skip",
+          "candidate_source": "combat",
+          "category": "enemy",
+          "effect_kind": "targeting",
+          "effect_label": "aeg_bosses",
+          "mode": "all",
+          "target_filter": "CUR_HP >= 1 && RANK_IS_SOLDIER == 0"
+        },
+        "3": {
+          "ae_chance_percent": "max(10, min(75, 25 + 5 * (CHAR_LEVEL - TARGET_LEVEL)))",
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_duration_rounds": "1",
+          "ae_template_ref": "Frightened",
+          "effect_kind": "apply_ae",
+          "effect_label": "aeg_fright",
+          "on_empty": "skip",
+          "target_ref": "aeg_soldiers"
+        },
+        "4": {
+          "ae_chance_percent": "max(10, min(75, 25 + 5 * (CHAR_LEVEL - TARGET_LEVEL)))",
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_duration_rounds": "1",
+          "ae_template_ref": "Shaken",
+          "effect_kind": "apply_ae",
+          "effect_label": "aeg_shake",
+          "on_empty": "skip",
+          "target_ref": "aeg_bosses"
+        },
+        "5": {
+          "effect_kind": "grant",
+          "effect_label": "aeg_mp",
+          "grant_amount": "10",
+          "grant_resource": "mp",
+          "grant_target": "self",
+          "target_ref": "self"
+        }
+      },
+      "id": "8ZE9ndpM1urgADRm",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Ys9-Hades_Mask.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Ægishjálmr (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "reaction_effect_ref": "aeg_root",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "conflict_start"
+        },
+        "1": {
+          "condition_formula": "DAMAGE_IS_HP == 1 && TARGET_AE_COUNT_FRIGHTENED + TARGET_AE_COUNT_SHAKEN > 0",
+          "reaction_effect_ref": "aeg_mp",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_deals_damage"
+        }
+      },
+      "skill_description": "<p><em>The helm Fafnir wore while lying on his gold. Every living thing that saw him was struck with terror.</em></p><p><strong>Awe:</strong> At the start of a conflict, each enemy has a chance to become Frightened until the end of its first turn — or Shaken, if it is an Elite or Champion. The chance is 25% + 5% for every level you are above it (minimum 10%, maximum 75%).</p><p><strong>Dread Harvest:</strong> Whenever you hit a Frightened or Shaken creature, recover 10 MP.</p>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.8ZE9ndpM1urgADRm"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "8ZE9ndpM1urgADRm"
+  },
+  "type": "equippableItem"
+}

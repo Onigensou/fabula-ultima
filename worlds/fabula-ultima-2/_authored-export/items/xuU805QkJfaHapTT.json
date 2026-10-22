@@ -1,0 +1,101 @@
+{
+  "_id": "xuU805QkJfaHapTT",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1792699948271,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "draftAutomation": "claude-2026-10-23"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Ys/Ys9-Soul_Eater.webp",
+  "name": "Hrotti (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "G5KhFrfss8c8AHm7",
+    "props": {
+      "cost": "",
+      "description": "<p><em>A sword that lay beneath Fafnir's gold at Gnitaheath for centuries. The hoard's hunger soaked into the steel.</em></p><p><strong>Avarice:</strong> Once per round, when you hit a creature with this weapon, you gain 2 IP, taken from that creature if it has any. If it had none, the hit deals 10 bonus damage.</p>",
+      "effect_table": {
+        "0": {
+          "damage_amount": "10",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "hro_bonus"
+        },
+        "1": {
+          "chain_steps": "hro_take, hro_gain",
+          "effect_kind": "chain",
+          "effect_label": "hro_avarice"
+        },
+        "2": {
+          "condition_formula": "TARGET_CURRENT_IP > 0",
+          "consume_amount": "2",
+          "consume_resource": "ip",
+          "effect_kind": "consume_resource",
+          "effect_label": "hro_take",
+          "on_empty": "skip",
+          "target_ref": "trigger_subject"
+        },
+        "3": {
+          "effect_kind": "grant",
+          "effect_label": "hro_gain",
+          "grant_amount": "2",
+          "grant_resource": "ip",
+          "grant_target": "self",
+          "target_ref": "self"
+        }
+      },
+      "id": "xuU805QkJfaHapTT",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Ys/Ys9-Soul_Eater.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Hrotti (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_CURRENT_IP < 1",
+          "reaction_effect_ref": "hro_bonus",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        },
+        "1": {
+          "condition_formula": "ACTION_IS_ATTACK == 1 && DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "hro_avarice",
+          "reaction_max_per_round": "1",
+          "reaction_max_scope": "round",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_deals_damage"
+        }
+      },
+      "skill_description": "<p><em>A sword that lay beneath Fafnir's gold at Gnitaheath for centuries. The hoard's hunger soaked into the steel.</em></p><p><strong>Avarice:</strong> Once per round, when you hit a creature with this weapon, you gain 2 IP, taken from that creature if it has any. If it had none, the hit deals 10 bonus damage.</p>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.xuU805QkJfaHapTT"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "xuU805QkJfaHapTT"
+  },
+  "type": "equippableItem"
+}
