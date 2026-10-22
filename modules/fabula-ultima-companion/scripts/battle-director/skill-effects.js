@@ -28,7 +28,7 @@ import { promptNumberDialog } from "./number-picker.js";
 import { resolveTargetRef } from "./skill-targeting.js";
 import { RESOURCE_REGISTRY } from "./resources.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor, isPersistentCounter } from "./skill-charges.js";
-import { readPropNum, resolveAffinity, skillDeclaresVersatile, resolvesVsMagicDefense } from "./snapshot.js";
+import { readPropNum, resolveAffinity, skillDeclaresVersatile, resolvesVsMagicDefense, actorLiveRuleValues } from "./snapshot.js";
 import { isActorDefeated } from "./defeat-reactor.js";
 import { computeIncomingDamage, aeOutgoingActionKeywords } from "./damage-ruleset.js";
 import { appendBattleLog, buildDamageRow } from "./director-battle-log.js";
@@ -12169,6 +12169,49 @@ function _resolveActorByUuidSyncSE(uuid) {
 //
 // Output: surfaces a Dialog (GM client) summarising per-target outcomes
 // in equipment-card style (hover = description + stats).
+//
+// Rare-steal bonus: a live `steal_rare_bonus` rule on the CASTER (Andvaranaut,
+// value = percentage points, summed) moves up to that many points out of the
+// target's "(Empty)" bucket into its RARE bucket(s) — the equipment rows
+// (weapon/armor/shield/accessory), else the lowest-odds row(s) — split evenly.
+// Only Empty shrinks, so material/consumable odds are untouched.
+const RARE_STEAL_TYPES = new Set(["weapon", "armor", "shield", "accessory"]);
+function casterStealRareBonus(caster) {
+  return actorLiveRuleValues(caster, "steal_rare_bonus").reduce((n, v) => n + (Number(v) || 0), 0);
+}
+function shiftStealOddsToRare(rows, lootMap, target, bonus) {
+  const pctOf = (r) => Number(r.loot_percentage) || 0;
+  const isEmpty = (r) => String(r.loot_id ?? "").trim() === "(Empty)";
+  const emptyRows = rows.filter((r) => isEmpty(r) && pctOf(r) > 0);
+  const emptyPct = emptyRows.reduce((n, r) => n + pctOf(r), 0);
+  const take = Math.min(Math.floor(bonus), emptyPct);
+  if (take <= 0) return rows;
+  const loot = rows.filter((r) => !isEmpty(r) && pctOf(r) > 0);
+  const typeOf = (r) => {
+    const entry = Object.entries(lootMap).find(([, e]) => String(e?.name ?? "").trim() === String(r.loot_id ?? "").trim());
+    const item = entry ? target.items?.get?.(entry[0]) : null;
+    return String(item?.system?.props?.item_type ?? "").toLowerCase();
+  };
+  let rare = loot.filter((r) => RARE_STEAL_TYPES.has(typeOf(r)));
+  if (!rare.length && loot.length) {
+    const min = Math.min(...loot.map(pctOf));
+    rare = loot.filter((r) => pctOf(r) === min);
+  }
+  if (!rare.length) return rows;
+  const out = rows.map((r) => ({ ...r }));
+  const at = (r) => out[rows.indexOf(r)];
+  // Grow the rare rows: an even share each, the remainder to the first ones.
+  const each = Math.floor(take / rare.length);
+  rare.forEach((r, i) => { at(r).loot_percentage = String(pctOf(r) + each + (i < take % rare.length ? 1 : 0)); });
+  // Shrink the Empty rows by the same total.
+  let left = take;
+  for (const r of emptyRows) {
+    const cut = Math.min(left, pctOf(r));
+    at(r).loot_percentage = String(pctOf(r) - cut);
+    left -= cut;
+  }
+  return out;
+}
 async function applyRollLootTableEffect(row, ctx) {
   const targetRef = row.target_ref || "hit_action_targets";
   // Hit set — only these proceed to the roll-and-transfer path.
@@ -12235,10 +12278,15 @@ async function applyRollLootTableEffect(row, ctx) {
 
     const lootMap   = target.system?.props?.[lootProp] ?? {};
     const chanceTbl = target.system?.props?.[chanceProp] ?? {};
-    const rows = Object.values(chanceTbl).filter((r) => r && !r.$deleted);
+    let rows = Object.values(chanceTbl).filter((r) => r && !r.$deleted);
     if (!rows.length) {
       results.push({ targetName: target.name, noTable: true, won: [] });
       continue;
+    }
+    const rareBonus = casterStealRareBonus(caster);
+    if (rareBonus > 0) {
+      rows = shiftStealOddsToRare(rows, lootMap, target, rareBonus);
+      log(`roll_loot_table: rare-steal bonus ${rareBonus} → ${target.name} odds ${rows.map((r) => `${r.loot_id} ${r.loot_percentage}`).join(" / ")}`);
     }
 
     // SINGLE weighted d100 roll per enemy. The steal table's loot_percentage
