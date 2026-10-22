@@ -36,6 +36,7 @@
 | 2026-10-22 | Grappled (not Snared), False Appearance = DL Hard INS+INS group check → free Tentacle | user | user (DL 13: claude) | live: check fires; party passed every time |
 | 2026-10-22 | Kit wired from Carlbero; Tentacle needs on_activate_effect_ref; conflict_start passive needs blank reaction_source | first build ran with no grapple/marker (Tentacle ×4/round) | claude | fixed; Tentacle ~1/round, grapple → Bite/Reel live |
 | 2026-10-22 | 2 live sims (full party, Crystal): overtime at round 4, party 9% / 14% HP, Roper 363 / 265 of 600; party landed 9–11 hits, avg 26–30 | measurement | claude | tuning proposal to the user |
+| 2026-10-22 | HP 600 → **550**; Tentacle damage 30 → **22**, Bite 50 → **38** | User: HP "midway, 500+", don't go too low because the party has Ice the sim doesn't use. Confirmed from the journals: Zarg's Gadgets picked Earth (the Crystal in the same shot is VU earth), Blanche never used Invocation (Ice), Hina cast Iceberg once in 4 rounds, the sim never swaps to Zarg's Glacial Staff / Keren's Frozen Envy. Human-play estimate ~200/round vs the sim's ~80 → 550 ≈ 2.75 rounds, = 5 landed actions at PE 90% | user (numbers: claude) | not re-measured yet |
 
 ```json dossier
 {
@@ -57,8 +58,8 @@
     "The offline Mindscape engine is not verified to model the grapple / Reel / Severed Tendrils loop — use live sim.run."
   ],
   "open_questions": [
-    "Offence: party fell to 9–14% HP by round 4 while the Roper kept 44–60% HP. Tone damage down, or keep it as a punishing wall?",
-    "Is HP 600 right for THIS party (no heavy weapon), or keep the PE 90% design point and accept a longer fight?"
+    "Tentacle text still says 'heavy' (user spec: high physical) but damage_bonus is now 22 — the normal tier by the house scale. Keep the word, or drop it?",
+    "Re-measure after the 550 / 22 / 38 change — ideally with a sim AI that picks Ice (Gadgets element choice vs a multi-target shot including the Crystal is a sim AI gap)."
   ]
 }
 ```
