@@ -2633,6 +2633,12 @@
         "effects": 0
       },
       {
+        "id": "UuZtk5eZYZ19VJK2",
+        "name": "Alchemist Vial (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "4w5iF1uTOYFHV2O3",
         "name": "Alchemusket",
         "type": "equippableItem",
@@ -5279,6 +5285,12 @@
         "effects": 0
       },
       {
+        "id": "rOyCauBGsn7yCj9n",
+        "name": "Elemental Bane (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "YEjcdTSeCrkWI9jl",
         "name": "Elemental Harmony",
         "type": "equippableItem",
@@ -5588,7 +5600,7 @@
         "id": "iMFVHkxiflRK9L4K",
         "name": "Excalibur",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "Y8J71qhXnk5hJbKb",
@@ -6108,6 +6120,12 @@
       },
       {
         "id": "MWH6Za46Bjii884i",
+        "name": "Fulgur Finis",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "cy3tl28b5vol182q",
         "name": "Fulgur Finis",
         "type": "equippableItem",
         "effects": 0
@@ -7439,6 +7457,12 @@
         "effects": 0
       },
       {
+        "id": "NwybPJPBLBlPECYY",
+        "name": "Ignis Finis",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "ofAKHqi3j6lAruI4",
         "name": "Ignis Shield",
         "type": "equippableItem",
@@ -8473,6 +8497,12 @@
       {
         "id": "PCoOu6WTIe1wGgpG",
         "name": "Maids Pocketwatch",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "OOaC9Q9mR2qo2CjJ",
+        "name": "Maids Pocketwatch (Passive)",
         "type": "equippableItem",
         "effects": 0
       },

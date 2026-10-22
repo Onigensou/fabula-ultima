@@ -1,0 +1,120 @@
+{
+  "_id": "OOaC9Q9mR2qo2CjJ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1792697462403,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "draftAutomation": "claude-2026-10-23"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+  "name": "Maids Pocketwatch (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "PCoOu6WTIe1wGgpG",
+    "props": {
+      "cost": "",
+      "description": "<p>When you perform your Zero Power, choose: target enemy loses 1 turn activation, or target ally other than yourself gains 1 turn activation. Once per round.</p>",
+      "effect_table": {
+        "0": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "mpw_menu",
+          "menu_option_refs": "mpw_slow, mpw_haste",
+          "menu_pick_count": "1",
+          "menu_subtitle": "Wind the hands of time",
+          "menu_title": "Maids Pocketwatch"
+        },
+        "1": {
+          "chain_steps": "mpw_enemy, mpw_enemy_turn",
+          "effect_kind": "chain",
+          "effect_label": "mpw_slow",
+          "menu_description": "Target enemy loses 1 turn activation.",
+          "menu_label": "Stop an enemy"
+        },
+        "2": {
+          "auto_target": "confirm",
+          "candidate_source": "combat",
+          "category": "enemy",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "mpw_enemy",
+          "mode": "exact",
+          "target_filter": "CUR_HP >= 1",
+          "target_prompt": "Choose an enemy to lose 1 turn"
+        },
+        "3": {
+          "effect_kind": "modify_turns",
+          "effect_label": "mpw_enemy_turn",
+          "target_ref": "mpw_enemy",
+          "turns_delta": "-1",
+          "turns_floor": "0"
+        },
+        "4": {
+          "chain_steps": "mpw_ally, mpw_ally_turn",
+          "effect_kind": "chain",
+          "effect_label": "mpw_haste",
+          "menu_description": "Target ally other than yourself gains 1 turn activation.",
+          "menu_label": "Hasten an ally"
+        },
+        "5": {
+          "auto_target": "confirm",
+          "candidate_source": "combat",
+          "category": "ally",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "mpw_ally",
+          "exclude_self": true,
+          "mode": "exact",
+          "target_filter": "CUR_HP >= 1",
+          "target_prompt": "Choose an ally to gain 1 turn"
+        },
+        "6": {
+          "effect_kind": "modify_turns",
+          "effect_label": "mpw_ally_turn",
+          "target_ref": "mpw_ally",
+          "turns_delta": "1",
+          "turns_floor": "0"
+        }
+      },
+      "id": "OOaC9Q9mR2qo2CjJ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Maids Pocketwatch (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "reaction_effect_ref": "mpw_menu",
+          "reaction_max_per_round": "1",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_unleashes_zero_power"
+        }
+      },
+      "skill_description": "<p>When you perform your Zero Power, choose: target enemy loses 1 turn activation, or target ally other than yourself gains 1 turn activation. Once per round.</p>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.OOaC9Q9mR2qo2CjJ"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "OOaC9Q9mR2qo2CjJ"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,69 @@
+{
+  "_id": "UuZtk5eZYZ19VJK2",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1792697462403,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "draftAutomation": "claude-2026-10-23"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/yorb.png",
+  "name": "Alchemist Vial (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "GtDJyikCuScbp7CI",
+    "props": {
+      "cost": "",
+      "description": "<p>When anyone in the scene performs a Spell that costs 30 MP or more, you gain 1 IP.</p>",
+      "effect_table": {
+        "0": {
+          "effect_kind": "grant",
+          "effect_label": "avial_ip",
+          "grant_amount": "1",
+          "grant_resource": "ip",
+          "grant_target": "self",
+          "target_ref": "self"
+        }
+      },
+      "id": "UuZtk5eZYZ19VJK2",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/yorb.png",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Alchemist Vial (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ACTION_MP_COST >= 30",
+          "reaction_effect_ref": "avial_ip",
+          "reaction_passive_mode": "force",
+          "reaction_source": "all",
+          "reaction_trigger": "creature_completes_spell"
+        }
+      },
+      "skill_description": "<p>When anyone in the scene performs a Spell that costs 30 MP or more, you gain 1 IP.</p>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.UuZtk5eZYZ19VJK2"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "UuZtk5eZYZ19VJK2"
+  },
+  "type": "equippableItem"
+}

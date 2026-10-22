@@ -8,9 +8,102 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "MVg68jZjQpWf5uja",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1792697463148,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "condition_dazed",
+          "mode": 5,
+          "priority": 1,
+          "value": "${isEquipped ? 'IM' : 'NA'}$"
+        },
+        {
+          "key": "condition_enraged",
+          "mode": 5,
+          "priority": 1,
+          "value": "${isEquipped ? 'IM' : 'NA'}$"
+        },
+        {
+          "key": "condition_poisoned",
+          "mode": 5,
+          "priority": 1,
+          "value": "${isEquipped ? 'IM' : 'NA'}$"
+        },
+        {
+          "key": "condition_shaken",
+          "mode": 5,
+          "priority": 1,
+          "value": "${isEquipped ? 'IM' : 'NA'}$"
+        },
+        {
+          "key": "condition_slow",
+          "mode": 5,
+          "priority": 1,
+          "value": "${isEquipped ? 'IM' : 'NA'}$"
+        },
+        {
+          "key": "condition_weak",
+          "mode": 5,
+          "priority": 1,
+          "value": "${isEquipped ? 'IM' : 'NA'}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "MVg68jZjQpWf5uja",
+          "originalParentId": "iMFVHkxiflRK9L4K",
+          "originalUuid": "Item.iMFVHkxiflRK9L4K.ActiveEffect.MVg68jZjQpWf5uja"
+        },
+        "fabula-ultima-companion": {
+          "draftAutomation": "claude-2026-10-23"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Valkyrie%20Connect/Excalibur_%2528Sp.%2529_icon.webp",
+      "name": "Excalibur",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "3.2.4"
+    },
+    "fabula-ultima-companion": {
+      "draftAutomation": "claude-2026-10-23"
     },
     "fucompanion": {
       "itemMigratorBackup": {
