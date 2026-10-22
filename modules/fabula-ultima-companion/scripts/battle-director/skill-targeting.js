@@ -57,6 +57,9 @@ const RESERVED_REFS = {
   // payload.causeTokenUuid (the attacker/source stamped by fireResourceChangeTrigger).
   // Painful Lesson reacts to "you lost HP" (subject = self) but Studies the CAUSE.
   cause_actor:           { candidate_source: "cause_actor", mode: "exact", count: 1 },
+  // Whoever APPLIED the AE carrying this reaction (ctx.appliedBy*). Silent: there
+  // is only ever one applier. The Crucified creature's death returns The Cross.
+  ae_applier:            { candidate_source: "ae_applier", mode: "all", auto_target: "skip" },
   // Guard's optional covered ally (resolveAction-unification). mode "all" takes
   // the (0 or 1) token collectCoverTarget yields without prompting.
   cover_target:          { candidate_source: "cover_target", mode: "all" },
