@@ -1206,6 +1206,15 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const subject = _resolveActorByUuidSync(subjectUuid);
         return subject ? (Number(subject?.system?.props?.current_mp ?? 0) || 0) : 0;
       }
+      // Current IP of the trigger's subject (the target) — the IP twin of
+      // TARGET_CURRENT_MP. Monsters carry 0. Hrotti's Avarice: take 2 IP from a
+      // target that has any, else hit harder (`TARGET_CURRENT_IP < 1`).
+      case "TARGET_CURRENT_IP": {
+        const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+        if (!subjectUuid) return 0;
+        const subject = _resolveActorByUuidSync(subjectUuid);
+        return subject ? (Number(subject?.system?.props?.current_ip ?? 0) || 0) : 0;
+      }
       // Max MP of the trigger's subject (the target). Twin of TARGET_MAX_HP,
       // reading max_mp. Powers per-victim "% of the target's max MP" riders in
       // the outgoing-damage pass (computeSenderDamageBonuses), where the
