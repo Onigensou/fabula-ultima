@@ -7787,6 +7787,12 @@
         "effects": 2
       },
       {
+        "id": "6nMEO6F1qogSymUQ",
+        "name": "Judgement Sword",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "yOJKXAQJq4R2mzCa",
         "name": "Jumping Boots",
         "type": "equippableItem",

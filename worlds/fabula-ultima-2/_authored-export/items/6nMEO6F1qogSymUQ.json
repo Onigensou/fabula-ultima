@@ -1,0 +1,89 @@
+{
+  "_id": "6nMEO6F1qogSymUQ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1792698093939,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    },
+    "fabula-ultima-companion": {
+      "draftAutomation": "claude-2026-10-23"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Valkyrie%20Connect/Excalibur_%2528Sp.%2529_icon.webp",
+  "name": "Judgement Sword",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "iMFVHkxiflRK9L4K",
+    "props": {
+      "action_command": "",
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "",
+      "cost": "6 Zero Power",
+      "damage_bonus": 0,
+      "defense_target_type": "def",
+      "description": "<p><strong>Cost:</strong> 6 Zero Power</p><p><strong>Target:</strong> One Creature</p><p><strong>Duration:</strong> Instantaneous</p><p>Deals 100 Light damage to target creature. This damage ignores Immunity and cannot be reduced or negated.</p>",
+      "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "damage_amount": "100",
+          "damage_cause": "damage",
+          "damage_element": "light",
+          "damage_ignore_affinity": true,
+          "damage_keywords": "crush",
+          "effect_kind": "deal_damage",
+          "effect_label": "jsword_dmg",
+          "target_ref": "action_targets"
+        }
+      },
+      "heroic_requirement": "",
+      "id": "6nMEO6F1qogSymUQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Valkyrie%20Connect/Excalibur_%2528Sp.%2529_icon.webp",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": true,
+      "level": "1",
+      "max_level": "1",
+      "name": "Judgement Sword",
+      "on_activate_effect_ref": "jsword_dmg",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_description": "<p><strong>Cost:</strong> 6 Zero Power</p><p><strong>Target:</strong> One Creature</p><p><strong>Duration:</strong> Instantaneous</p><p>Deals 100 Light damage to target creature. This damage ignores Immunity and cannot be reduced or negated.</p>",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_tags": "",
+      "skill_target": "One Creature",
+      "skill_type": "Active",
+      "type_damage": "light",
+      "use_optional_params": false,
+      "uuid": "Item.6nMEO6F1qogSymUQ"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "6nMEO6F1qogSymUQ"
+  },
+  "type": "equippableItem"
+}
