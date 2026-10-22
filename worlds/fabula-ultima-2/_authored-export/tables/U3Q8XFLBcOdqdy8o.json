@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "P6epyIfueydL8Bu4",
-  "formula": "1d4",
+  "formula": "1d13",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
   "name": "Fafnir Castle - Consumable",
   "ownership": {
@@ -21,6 +21,21 @@
   },
   "replacement": true,
   "results": [
+    {
+      "_id": "45QRFaUnSXCkrYaA",
+      "documentCollection": "Item",
+      "documentId": "ky7HMdQIZBJxlPqx",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Magic_Tag_Icon_HD.webp",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Super Tonic",
+      "type": "document",
+      "weight": 1
+    },
     {
       "_id": "76Rmvnt4hRuQzmAA",
       "documentCollection": "Item",
@@ -33,6 +48,36 @@
         1
       ],
       "text": "Tincture of Strength",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ClfzmsDDl8FuODed",
+      "documentCollection": "Item",
+      "documentId": "a9elI6g2FZ6qPY51",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Remedy_Icon_HD.webp",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Turbo Tonic",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "E3HlKguLfx0w3IgA",
+      "documentCollection": "Item",
+      "documentId": "TIeKQs0l9tWaNO0y",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Liquid Hope",
       "type": "document",
       "weight": 1
     },
@@ -52,6 +97,21 @@
       "weight": 1
     },
     {
+      "_id": "I8TduutxrG0xyyIO",
+      "documentCollection": "Item",
+      "documentId": "S71vgGdSVCmEGWN0",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Pokemon/poke-doll.png",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Decoy Doll",
+      "type": "document",
+      "weight": 1
+    },
+    {
       "_id": "OXwRIu14EYmRki7H",
       "documentCollection": "Item",
       "documentId": "tF74AQStp193Bpj5",
@@ -63,6 +123,81 @@
         4
       ],
       "text": "Tincture of Precision",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "PsvQO4WgTvLlVXLH",
+      "documentCollection": "Item",
+      "documentId": "SccgW4PlHy8m6ph5",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wingd.png",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Life Charm",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "QXtg4UyihxA00Wox",
+      "documentCollection": "Item",
+      "documentId": "9vM7Xu5q3cj7EFQt",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion3.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Mega-Remedy",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "VkXOQZbf1sr5l3Me",
+      "documentCollection": "Item",
+      "documentId": "kMbhsJ2cDIFndrKy",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion4.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Mega-Elixir",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "XvUANEGwI70GJ5Uo",
+      "documentCollection": "Item",
+      "documentId": "a7QM5eiDwGGrBPL4",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/8a55d0840792a95596fa37808f93e478.jpg",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Goddess Tear",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "xz73oeUVaNRX1otg",
+      "documentCollection": "Item",
+      "documentId": "QXgHt7VEXEaVdPz1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Phoenix_Down_Icon.webp",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Phoenix Feather",
       "type": "document",
       "weight": 1
     },

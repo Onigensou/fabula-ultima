@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "P6epyIfueydL8Bu4",
-  "formula": "1d1",
+  "formula": "1d40",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Red%20Berry.png",
   "name": "Fafnir Castle - Material",
   "ownership": {
@@ -20,5 +20,247 @@
     "default": 0
   },
   "replacement": true,
+  "results": [
+    {
+      "_id": "3Cp9bupPlwEeF2GT",
+      "documentCollection": "Item",
+      "documentId": "qwLfGN1ahEvnV4Tg",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Genshin/Item_Black_Bronze_Horn.webp",
+      "range": [
+        36,
+        37
+      ],
+      "text": "Mystic Horn",
+      "type": "document",
+      "weight": 2
+    },
+    {
+      "_id": "aHauGs15bfZsN8L0",
+      "documentCollection": "Item",
+      "documentId": "dmiYBQ7BczRfTH1w",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/999.gif",
+      "range": [
+        13,
+        15
+      ],
+      "text": "Steel",
+      "type": "document",
+      "weight": 3
+    },
+    {
+      "_id": "btRWhKnfUULhxvxV",
+      "documentCollection": "Item",
+      "documentId": "NX83y58twFEzmOG1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Genshin/Item_Spring_of_the_First_Dewdrop.webp",
+      "range": [
+        7,
+        9
+      ],
+      "text": "Clear Liquid",
+      "type": "document",
+      "weight": 3
+    },
+    {
+      "_id": "FkJQrn54avRiOTwn",
+      "documentCollection": "Item",
+      "documentId": "oAP85eeLJCliYm2E",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7172.gif",
+      "range": [
+        1,
+        3
+      ],
+      "text": "Animal Fang",
+      "type": "document",
+      "weight": 3
+    },
+    {
+      "_id": "Gcone96T403OhEuo",
+      "documentCollection": "Item",
+      "documentId": "WrevyMV4vanMBBx1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Tako.png",
+      "range": [
+        25,
+        27
+      ],
+      "text": "Tentacle",
+      "type": "document",
+      "weight": 3
+    },
+    {
+      "_id": "J7jYtPOKdE4Cbxr4",
+      "documentCollection": "Item",
+      "documentId": "l37t04IQeGTGCNDn",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7228.gif",
+      "range": [
+        40,
+        40
+      ],
+      "text": "Gold Bar",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "n1zXuuj5HOqpEOXL",
+      "documentCollection": "Item",
+      "documentId": "Ct03jR1j4OXXr55R",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Genshin/Item_Noctilucous_Jade.webp",
+      "range": [
+        30,
+        31
+      ],
+      "text": "Obsidian",
+      "type": "document",
+      "weight": 2
+    },
+    {
+      "_id": "OmqAvL2pD9JGT3po",
+      "documentCollection": "Item",
+      "documentId": "QeylCRYlLepwPTaJ",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7124.gif",
+      "range": [
+        34,
+        35
+      ],
+      "text": "Ash",
+      "type": "document",
+      "weight": 2
+    },
+    {
+      "_id": "SPhvrQKovTeit0LF",
+      "documentCollection": "Item",
+      "documentId": "QD5q9qkMu11On4UP",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/953.gif",
+      "range": [
+        16,
+        18
+      ],
+      "text": "Golem Heart",
+      "type": "document",
+      "weight": 3
+    },
+    {
+      "_id": "SZXJ3fIjIIHUFxRl",
+      "documentCollection": "Item",
+      "documentId": "E1emEssenceB01t0",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/commodities/gems/gem-rough-cushion-yellow.webp",
+      "range": [
+        28,
+        29
+      ],
+      "text": "Lightning Essence",
+      "type": "document",
+      "weight": 2
+    },
+    {
+      "_id": "wYfBxnMxwilO16us",
+      "documentCollection": "Item",
+      "documentId": "FdaeAMUqgNTLjibv",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/673.gif",
+      "range": [
+        22,
+        24
+      ],
+      "text": "Bloodied Coin",
+      "type": "document",
+      "weight": 3
+    },
+    {
+      "_id": "YfzHkP7FtEoGvAc8",
+      "documentCollection": "Item",
+      "documentId": "tuT3D0cQOJ6JBaZz",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Genshin/Item_Dracolite.webp",
+      "range": [
+        4,
+        6
+      ],
+      "text": "Draconic Essence",
+      "type": "document",
+      "weight": 3
+    },
+    {
+      "_id": "YlANY6SIB7pcPxQP",
+      "documentCollection": "Item",
+      "documentId": "dyKC4c96SNjnBlNg",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/6299.gif",
+      "range": [
+        19,
+        21
+      ],
+      "text": "Torned Fabric",
+      "type": "document",
+      "weight": 3
+    },
+    {
+      "_id": "YPh8palMDR8wjd9J",
+      "documentCollection": "Item",
+      "documentId": "4Ew4B2v0hxhzGnpE",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7458.gif",
+      "range": [
+        32,
+        33
+      ],
+      "text": "Charred Bone",
+      "type": "document",
+      "weight": 2
+    },
+    {
+      "_id": "ysDAw6T5stKv0Upn",
+      "documentCollection": "Item",
+      "documentId": "CCURf38oJpHYSifI",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/957.gif",
+      "range": [
+        38,
+        39
+      ],
+      "text": "Rotten Nail",
+      "type": "document",
+      "weight": 2
+    },
+    {
+      "_id": "Z68cTVTzobzW7ZgC",
+      "documentCollection": "Item",
+      "documentId": "QLv40CHewlaiU2VE",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Genshin/Item_Fractured_Eye_of_the_Deep_Shadow.webp",
+      "range": [
+        10,
+        12
+      ],
+      "text": "Eyeball",
+      "type": "document",
+      "weight": 3
+    }
+  ],
   "sort": 0
 }

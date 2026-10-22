@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "4bqgn7jZFnmardZp",
-  "formula": "1d19",
+  "formula": "1d14",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dreae.png",
   "name": "Valley of the Dragon - Armor",
   "ownership": {
@@ -29,8 +29,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/herosui.png",
       "range": [
-        7,
-        7
+        4,
+        4
       ],
       "text": "Bio Plate",
       "type": "document",
@@ -44,8 +44,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2114.gif",
       "range": [
-        18,
-        18
+        13,
+        13
       ],
       "text": "Darksteel Shield",
       "type": "document",
@@ -59,8 +59,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/shield.png",
       "range": [
-        11,
-        11
+        7,
+        7
       ],
       "text": "Terra Shield",
       "type": "document",
@@ -74,40 +74,10 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2350.gif",
       "range": [
-        5,
-        5
+        2,
+        2
       ],
       "text": "Geo Suits",
-      "type": "document",
-      "weight": 1
-    },
-    {
-      "_id": "I0ARnTisX1nppsNn",
-      "documentCollection": "Item",
-      "documentId": "vNmsoBmSPYlVAPWM",
-      "drawn": false,
-      "flags": {},
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2386.gif",
-      "range": [
-        3,
-        3
-      ],
-      "text": "Chameleon Armor",
-      "type": "document",
-      "weight": 1
-    },
-    {
-      "_id": "inn1JeSS3c6GYxTp",
-      "documentCollection": "Item",
-      "documentId": "razS1f4g7zqZPpB7",
-      "drawn": false,
-      "flags": {},
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/verst.png",
-      "range": [
-        1,
-        1
-      ],
-      "text": "Plot Armor",
       "type": "document",
       "weight": 1
     },
@@ -119,8 +89,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2316.gif",
       "range": [
-        6,
-        6
+        3,
+        3
       ],
       "text": "Full Plate",
       "type": "document",
@@ -134,8 +104,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/her.png",
       "range": [
-        17,
-        17
+        12,
+        12
       ],
       "text": "Armor of Heroes",
       "type": "document",
@@ -149,8 +119,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2199.gif",
       "range": [
-        12,
-        12
+        8,
+        8
       ],
       "text": "Buckler",
       "type": "document",
@@ -164,8 +134,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2115.gif",
       "range": [
-        19,
-        19
+        14,
+        14
       ],
       "text": "Moonsilver Shield",
       "type": "document",
@@ -179,25 +149,10 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2126.gif",
       "range": [
-        13,
-        13
-      ],
-      "text": "Shield of Rejuvenation",
-      "type": "document",
-      "weight": 1
-    },
-    {
-      "_id": "OOY4LMbN29yVx74K",
-      "documentCollection": "Item",
-      "documentId": "CptpnDmAZDa0y12E",
-      "drawn": false,
-      "flags": {},
-      "img": "icons/equipment/chest/breastplate-layered-steel-black.webp",
-      "range": [
         9,
         9
       ],
-      "text": "Vengueful Yoroi",
+      "text": "Shield of Rejuvenation",
       "type": "document",
       "weight": 1
     },
@@ -209,8 +164,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dress.png",
       "range": [
-        8,
-        8
+        5,
+        5
       ],
       "text": "White Tunic",
       "type": "document",
@@ -224,8 +179,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/shield.png",
       "range": [
-        10,
-        10
+        6,
+        6
       ],
       "text": "Fulgur Shield",
       "type": "document",
@@ -239,8 +194,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2327.gif",
       "range": [
-        4,
-        4
+        1,
+        1
       ],
       "text": "Magus Robe",
       "type": "document",
@@ -254,40 +209,10 @@
       "flags": {},
       "img": "icons/equipment/shield/heater-stone-orange.webp",
       "range": [
-        14,
-        14
+        10,
+        10
       ],
       "text": "Trailblazer Shield",
-      "type": "document",
-      "weight": 1
-    },
-    {
-      "_id": "wUBFsssvt1Td2ReO",
-      "documentCollection": "Item",
-      "documentId": "Y7JL7P9hbWipwb90",
-      "drawn": false,
-      "flags": {},
-      "img": "icons/equipment/chest/breastplate-scale-grey.webp",
-      "range": [
-        2,
-        2
-      ],
-      "text": "Dragonic Scalemail",
-      "type": "document",
-      "weight": 1
-    },
-    {
-      "_id": "Xj5mgnspzPui2tqo",
-      "documentCollection": "Item",
-      "documentId": "kAPQGMazVwFUkbMO",
-      "drawn": false,
-      "flags": {},
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wingd.png",
-      "range": [
-        15,
-        15
-      ],
-      "text": "Seraph Shield",
       "type": "document",
       "weight": 1
     },
@@ -299,8 +224,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/mant.png",
       "range": [
-        16,
-        16
+        11,
+        11
       ],
       "text": "Red Tunic",
       "type": "document",
