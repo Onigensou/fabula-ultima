@@ -2266,6 +2266,109 @@
       "type": "base"
     },
     {
+      "_id": "j5WQ1BHFceVWNqsD",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1792629059556,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Loses a little HP at the start of each of its turns and on every step of the dungeon map, but never drops below 1 HP this way. Only a <strong>Vaccine</strong> cures it, and it can pass to a companion while the party rests.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "j5WQ1BHFceVWNqsD",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.j5WQ1BHFceVWNqsD"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-virus",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "crossScene": true,
+          "dungeonDot": {
+            "maxHpPercent": 5,
+            "minHp": 1
+          },
+          "lifetimeMode": "persistent_counter",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "damage_amount": "max(0, min(ceil(MAX_HP * 0.05), CUR_HP - 1))",
+                "damage_element": "null",
+                "damage_ignore_affinity": true,
+                "damage_keywords": "crush",
+                "damage_verbosity": "full",
+                "effect_kind": "deal_damage",
+                "effect_label": "virus_dmg",
+                "emit_status": "Virus",
+                "emit_trigger": "creature_status_triggered",
+                "target_ref": "self"
+              }
+            },
+            "name": "Virus",
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "virus_dmg",
+                "reaction_passive_mode": "force",
+                "reaction_passive_target": "self",
+                "reaction_source": "self",
+                "reaction_trigger": "turn_start"
+              }
+            }
+          },
+          "restSpread": {
+            "chance": 22
+          },
+          "runState": true,
+          "uncleansable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/MaxhpDown.png",
+      "name": "Virus",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "permanent"
+      ],
+      "system": {
+        "tags": [
+          "debuff",
+          "virus"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
       "_id": "jbXGFAky9kNXeW5R",
       "_stats": {
         "compendiumSource": null,

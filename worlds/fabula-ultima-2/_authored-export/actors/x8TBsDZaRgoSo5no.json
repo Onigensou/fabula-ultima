@@ -26,6 +26,106 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "9IyEHsRTryxVBNsR",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1792629442238,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "9IyEHsRTryxVBNsR",
+              "originalParentId": "blW2o4tFoB0oVzEM",
+              "originalUuid": "Actor.x8TBsDZaRgoSo5no.Item.blW2o4tFoB0oVzEM.ActiveEffect.9IyEHsRTryxVBNsR"
+            },
+            "fabula-ultima-companion": {
+              "directorPermanent": true,
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "$deleted": false,
+                    "chain_steps": "ew_zero,ew_target,ew_redirect",
+                    "effect_kind": "chain",
+                    "effect_label": "ew_chain"
+                  },
+                  "1": {
+                    "$deleted": false,
+                    "damage_amount": "0",
+                    "damage_operation": "set",
+                    "damage_stage": "incoming",
+                    "effect_kind": "adjust_damage",
+                    "effect_label": "ew_zero"
+                  },
+                  "2": {
+                    "$deleted": false,
+                    "candidate_source": "combat",
+                    "category": "enemy",
+                    "count": "1",
+                    "effect_kind": "targeting",
+                    "effect_label": "ew_target",
+                    "mode": "random"
+                  },
+                  "3": {
+                    "$deleted": false,
+                    "damage_amount": "INCOMING_DAMAGE",
+                    "damage_element": "bolt",
+                    "damage_verbosity": "full",
+                    "effect_kind": "deal_damage",
+                    "effect_label": "ew_redirect",
+                    "target_ref": "ew_target"
+                  }
+                },
+                "name": "Earthen Wire",
+                "reaction_config_table": {
+                  "0": {
+                    "$deleted": false,
+                    "condition_formula": "TRIGGER_DAMAGE_IS_BOLT == 1",
+                    "reaction_effect_ref": "ew_chain",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_takes_damage"
+                  }
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "name": "Earthen Wire",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.4"
@@ -33,7 +133,7 @@
       },
       "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
-      "name": "Lodestone Core",
+      "name": "Earthen Wire",
       "ownership": {
         "2vy7wrEUqBy0kzsU": 3,
         "6DmgigM5jq76r0Gd": 3,
@@ -75,33 +175,10 @@
           "cost": "-",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;At the start of the Obsidrax's turn, while it holds the <strong>Lightning Rod</strong></p></li></ul><p>The Obsidrax discharges the stored charge beneath one random enemy, dealing 30 <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Earth</strong></a>&nbsp;damage. The <strong>Lightning Rod</strong> passes to that creature.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage strikes the Obsidrax</p></li></ul><p>The Obsidrax takes none of it. The same amount of <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage strikes one random enemy instead.</p>",
           "details_roller": "Show",
           "duration": "-",
-          "effect_table": {
-            "0": {
-              "chain_steps": "lc_target,lc_damage",
-              "effect_kind": "chain",
-              "effect_label": "lc_chain"
-            },
-            "1": {
-              "candidate_source": "combat",
-              "category": "enemy",
-              "count": "1",
-              "effect_kind": "targeting",
-              "effect_label": "lc_target",
-              "mode": "random"
-            },
-            "2": {
-              "damage_amount": "30",
-              "damage_cause": "damage",
-              "damage_element": "earth",
-              "damage_verbosity": "full",
-              "effect_kind": "deal_damage",
-              "effect_label": "lc_damage",
-              "target_ref": "lc_target"
-            }
-          },
+          "effect_table": null,
           "heroic_requirement": "",
           "ignore_hr": false,
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
@@ -116,17 +193,7 @@
           "name": "Lodestone Core",
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": {
-            "0": {
-              "condition_formula": "AE_COUNT_LIGHTNING_ROD > 0",
-              "reaction_cause_filter": "",
-              "reaction_effect_ref": "lc_chain",
-              "reaction_passive_mode": "force",
-              "reaction_resource_filter": "",
-              "reaction_source": "self",
-              "reaction_trigger": "turn_start"
-            }
-          },
+          "reaction_config_table": null,
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -1242,7 +1309,7 @@
       "activation": "1",
       "affinity_1": "NA",
       "affinity_2": "NA",
-      "affinity_3": "IM",
+      "affinity_3": "NA",
       "affinity_4": "NA",
       "affinity_5": "RS",
       "affinity_6": "NA",
@@ -1468,8 +1535,8 @@
       "skill_passive_list": {
         "blW2o4tFoB0oVzEM": {
           "id": "${item.id}",
-          "name": "Lodestone Core",
-          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;At the start of the Obsidrax's turn, while it holds the <strong>Lightning Rod</strong></p></li></ul><p>The Obsidrax discharges the stored charge beneath one random enemy, dealing 30 <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Earth</strong></a>&nbsp;damage. The <strong>Lightning Rod</strong> passes to that creature.</p>",
+          "name": "Earthen Wire",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage strikes the Obsidrax</p></li></ul><p>The Obsidrax takes none of it. The same amount of <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage strikes one random enemy instead.</p>",
           "roll": "",
           "uuid": "Actor.x8TBsDZaRgoSo5no.Item.blW2o4tFoB0oVzEM"
         }

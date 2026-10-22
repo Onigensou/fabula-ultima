@@ -536,6 +536,108 @@
       "type": "base"
     },
     {
+      "_id": "wPkGIdQeP7kpaw8n",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1792629347843,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_dex",
+          "mode": 2,
+          "priority": 2,
+          "value": "2"
+        },
+        {
+          "key": "bonus_ins",
+          "mode": 2,
+          "priority": 2,
+          "value": "2"
+        },
+        {
+          "key": "bonus_mig",
+          "mode": 2,
+          "priority": 2,
+          "value": "2"
+        },
+        {
+          "key": "bonus_wlp",
+          "mode": 2,
+          "priority": 2,
+          "value": "2"
+        },
+        {
+          "key": "bonus_defense",
+          "mode": 2,
+          "priority": 2,
+          "value": "2"
+        },
+        {
+          "key": "bonus_magic_defense",
+          "mode": 2,
+          "priority": 2,
+          "value": "2"
+        }
+      ],
+      "description": "<p>Overcharged by lightning: every attribute rises one die size and Defense and Magic Defense rise by 2 until the end of the battle.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "wPkGIdQeP7kpaw8n",
+          "originalParentId": "0rfKFWTyPt7TfUvl",
+          "originalUuid": "Item.0rfKFWTyPt7TfUvl.ActiveEffect.wPkGIdQeP7kpaw8n"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "supercharge",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Shock.png",
+      "name": "Supercharge",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "buff",
+          "supercharge"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
       "_id": "xuulC26tmB3n2wLT",
       "_stats": {
         "compendiumSource": null,

@@ -1231,6 +1231,149 @@
       "type": "equippableItem"
     },
     {
+      "_id": "b79FZl99KKevvQVI",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1792629180050,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "VzpCG9mySsd9sQSL",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Potion_IconC.png",
+      "name": "Vaccine",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 3100000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>Cures <strong>Virus</strong> on one creature.</p></li></ul>",
+          "dragon_ef": "100",
+          "effect_table": {
+            "0": {
+              "ae_template_ref": "Virus",
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "vaccine_cure",
+              "include_persistent": true,
+              "target_ref": "action_targets"
+            }
+          },
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Potion_IconC.png",
+          "insect_ef": "100",
+          "ip_cost": "6",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "1000",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "5",
+          "item_rarity": "Common",
+          "item_skill_active": {
+            "0gi0e6XOfjVr2S0d": {
+              "id": "${item.id}",
+              "name": "Mega-Remedy",
+              "skill_cost": "-",
+              "skill_description": "<ul><li><p><em>Target creature recovers <strong>100 Hit Points</strong>.</em></p></li></ul>",
+              "skill_maxLevel": 1,
+              "uuid": "Item.0gi0e6XOfjVr2S0d"
+            }
+          },
+          "item_type": "consumable",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Mega-Remedy",
+          "optional_params": {},
+          "plant_ef": "100",
+          "related_item_list": {
+            "0gi0e6XOfjVr2S0d": {
+              "id": "${item.id}",
+              "name": "Mega-Remedy",
+              "related_item_description": "<ul><li><p><em>Target creature recovers <strong>100 Hit Points</strong>.</em></p></li></ul>",
+              "uuid": "Item.0gi0e6XOfjVr2S0d"
+            }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "WKZqbVW4EX9JeeC9"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "c5UMCKLMcRC47hq0",
       "_stats": {
         "compendiumSource": "Item.Y8J71qhXnk5hJbKb",
@@ -2288,6 +2431,87 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "G8fBxPWSabEzD5V6"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "hncEMqDuJtWSEgdD",
+      "_stats": {
+        "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
+        "coreVersion": "12.343",
+        "createdTime": 1792629180942,
+        "duplicateSource": "Item.cneU6dfTzI13k0U2",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Potion_IconC.png",
+      "name": "Vaccine",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "container": "b79FZl99KKevvQVI",
+        "props": {
+          "action_command": "item",
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "",
+          "cost": "-",
+          "damage_bonus": "100",
+          "defense_target_type": "def",
+          "description": "<ul><li><p>Cures <strong>Virus</strong> on one creature.</p></li></ul>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "ae_template_ref": "Virus",
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "vaccine_cure",
+              "include_persistent": true,
+              "target_ref": "action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Potion_IconC.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Mega-Remedy",
+          "on_activate_effect_ref": "megaremedy_heal",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_description": "<ul><li><p><em>Target creature recovers <strong>100 Hit Points</strong>.</em></p></li></ul>",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_tags": "potion",
+          "skill_target": "One Creature",
+          "skill_type": "Item",
+          "type_damage": "Heal",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "0gkptIZ1Daipzs25"
       },
       "type": "equippableItem"
     },

@@ -3932,7 +3932,7 @@
         "id": "0rfKFWTyPt7TfUvl",
         "name": "Buff",
         "type": "activeEffectContainer",
-        "effects": 10
+        "effects": 11
       },
       {
         "id": "g1Sq9oZngBkRUW0f",
@@ -4826,7 +4826,7 @@
         "id": "XVOWOq9oUmEECGrU",
         "name": "Debuff",
         "type": "activeEffectContainer",
-        "effects": 59
+        "effects": 60
       },
       {
         "id": "ZnzHJ5RiISPz0Bll",
@@ -13067,6 +13067,18 @@
         "effects": 0
       },
       {
+        "id": "0gkptIZ1Daipzs25",
+        "name": "Vaccine",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "WKZqbVW4EX9JeeC9",
+        "name": "Vaccine",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "NqcG61Mir9aOQAqe",
         "name": "Vajra",
         "type": "equippableItem",
@@ -16617,6 +16629,26 @@
         "effects": 0
       },
       {
+        "id": "vmYeN1WWIF5TSjjF",
+        "name": "Crona",
+        "type": "character",
+        "items": [
+          {
+            "id": "Nf1Q94EiayHrJS5Q",
+            "name": "(Empty)"
+          },
+          {
+            "id": "PD9V6PBKW7UAVGjk",
+            "name": "Infectious Bite"
+          },
+          {
+            "id": "6CoAPTC9qTbnYgFD",
+            "name": "Vaccine"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "pDaxX9rZP0stut65",
         "name": "Cruxiana?",
         "type": "character",
@@ -18643,6 +18675,46 @@
         "effects": 0
       },
       {
+        "id": "ym6As1q7yG1EMl9M",
+        "name": "Galvanize Golem",
+        "type": "character",
+        "items": [
+          {
+            "id": "pUy2R2lorpmzhYok",
+            "name": "(Empty)"
+          },
+          {
+            "id": "F7gHvYczFw1y0OYj",
+            "name": "Galvanic Smash"
+          },
+          {
+            "id": "T30voDCtVrGAj3n0",
+            "name": "Golem Fist"
+          },
+          {
+            "id": "uos1sLHVyliTyqyc",
+            "name": "Golem Fragment"
+          },
+          {
+            "id": "16BERBxpFHIy4083",
+            "name": "Golem Soulstone"
+          },
+          {
+            "id": "PZ1aIYC42nTc1kgL",
+            "name": "Piston Fist"
+          },
+          {
+            "id": "MQ5RWvF33EqqCFGx",
+            "name": "Steel"
+          },
+          {
+            "id": "mc5kTxNZqC62RxDd",
+            "name": "Super Charge"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "GINJQ0L5tcOCQpxG",
         "name": "Gardner",
         "type": "character",
@@ -19165,6 +19237,14 @@
           {
             "id": "ZgLGoh1jL1XqTxl2",
             "name": "Super Tonic"
+          },
+          {
+            "id": "b79FZl99KKevvQVI",
+            "name": "Vaccine"
+          },
+          {
+            "id": "hncEMqDuJtWSEgdD",
+            "name": "Vaccine"
           },
           {
             "id": "3cnqLWqSdV8YxBSH",
@@ -22145,12 +22225,12 @@
             "name": "Earth Stone"
           },
           {
-            "id": "oonXg07HFTSKAAPt",
-            "name": "Elemental Ward"
+            "id": "blW2o4tFoB0oVzEM",
+            "name": "Earthen Wire"
           },
           {
-            "id": "blW2o4tFoB0oVzEM",
-            "name": "Lodestone Core"
+            "id": "oonXg07HFTSKAAPt",
+            "name": "Elemental Ward"
           },
           {
             "id": "DV5xg2tEq1zFsIFx",
@@ -26284,6 +26364,16 @@
       {
         "id": "3tGY9xvFTeQhFIzU",
         "name": "Valley of the Dragon - Zenit",
+        "results": 12
+      },
+      {
+        "id": "sULKvLErNMF8JtUr",
+        "name": "Valley of the Dragon Underground - Encounter",
+        "results": 26
+      },
+      {
+        "id": "hBupoi4SsKj1GmDM",
+        "name": "Valley of the Dragon Underground - Enemies",
         "results": 12
       },
       {

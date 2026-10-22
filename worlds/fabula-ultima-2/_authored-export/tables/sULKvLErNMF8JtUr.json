@@ -1,0 +1,394 @@
+{
+  "_id": "sULKvLErNMF8JtUr",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1792629543157,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "to3QkbU70EQKKxHW",
+  "formula": "1d51",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+  "name": "Valley of the Dragon Underground - Encounter",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "0NNF2MIiCPygS8UO",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        33,
+        34
+      ],
+      "text": "Galvanize Golem, Lightning Prism",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "7FqMYKfkWl3GWbgt",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        27,
+        28
+      ],
+      "text": "Electro Slime, Obsidrax, Lightning Prism, Electro Slime",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "8Miv8Rv3xAaW7V80",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        3,
+        4
+      ],
+      "text": "Electro Slime, Lightning Prism, Electro Slime",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "bOjgF8KU3k4ixtjq",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        51,
+        51
+      ],
+      "text": "Gigas, Galvanize Golem",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "Dsbt9r1A6bF2gVUP",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        47,
+        48
+      ],
+      "text": "Drakoza, Skizzik",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "DulsMmsFggo57MFO",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        43,
+        44
+      ],
+      "text": "Crona, Skizzik",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "FbGzmqcHMz9Tnuzi",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        17,
+        18
+      ],
+      "text": "Obsidrax, Electro Slime, Electro Slime",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "FjwJniR6PrQWqK8y",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        15,
+        16
+      ],
+      "text": "Mana Ray, Lightning Prism, Mana Ray",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "je8nHlxs5pRiVnGp",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        29,
+        30
+      ],
+      "text": "Galvanize Golem, Electro Slime, Electro Slime",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "JScji3ORHadAUuTo",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        35,
+        36
+      ],
+      "text": "Galvanize Golem, Galvanize Golem",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "JUUeRtsvXKiuFqRx",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        5,
+        6
+      ],
+      "text": "Skizzik, Lightning Prism",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "k63QV4j2yXqLfUjf",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        45,
+        46
+      ],
+      "text": "Crona, Obsidrax",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "KgiwunbNivuOrJwG",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        9,
+        10
+      ],
+      "text": "Mana Ray, Mana Ray",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "kwzGlKiKcDBJ1nTq",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        1,
+        2
+      ],
+      "text": "Electro Slime, Skizzik, Electro Slime",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "LR1nNserfvkHpQM7",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        25,
+        26
+      ],
+      "text": "Obsidrax, Obsidrax",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "MQX3S6A8Tagfht6p",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        41,
+        42
+      ],
+      "text": "Crona, Electro Slime, Crona",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "n9Ofh5JAkWd2rvYb",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        23,
+        24
+      ],
+      "text": "Obsidrax, Mana Ray, Ampere",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "NKGajOCSKcvlAcan",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        21,
+        22
+      ],
+      "text": "Obsidrax, Lightning Prism",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "oq3bTOpwGkDGSnPs",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        31,
+        32
+      ],
+      "text": "Galvanize Golem, Skizzik",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "QY1Piwi9yAwpHub9",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        11,
+        12
+      ],
+      "text": "Ampere, Mana Ray",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "uFTw8OErTYCa9pN0",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        7,
+        8
+      ],
+      "text": "Lightning Prism, Skizzik, Lightning Prism",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "VjA9g0SBM58oFKgM",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        13,
+        14
+      ],
+      "text": "Ampere, Lightning Prism",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "vtmbFmWkvepk8DJI",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        37,
+        38
+      ],
+      "text": "Galvanize Golem, Obsidrax",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "wSH3DNDf3hnPQoOX",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        39,
+        40
+      ],
+      "text": "Crona, Crona, Crona",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "XISjsuG1M1XiuRFz",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        19,
+        20
+      ],
+      "text": "Skizzik, Obsidrax",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "XJ5WfiaBrPa98PlZ",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        49,
+        50
+      ],
+      "text": "Mist Dragon, Obsidrax",
+      "type": "text",
+      "weight": 2
+    }
+  ],
+  "sort": 0
+}

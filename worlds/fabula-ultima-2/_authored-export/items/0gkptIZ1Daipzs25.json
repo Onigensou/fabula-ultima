@@ -1,0 +1,81 @@
+{
+  "_id": "0gkptIZ1Daipzs25",
+  "_stats": {
+    "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
+    "coreVersion": "12.343",
+    "createdTime": 1792629148218,
+    "duplicateSource": "Item.cneU6dfTzI13k0U2",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Potion_IconC.png",
+  "name": "Vaccine",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 100000,
+  "system": {
+    "container": "WKZqbVW4EX9JeeC9",
+    "props": {
+      "action_command": "item",
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "",
+      "cost": "-",
+      "damage_bonus": "100",
+      "defense_target_type": "def",
+      "description": "<ul><li><p>Cures <strong>Virus</strong> on one creature.</p></li></ul>",
+      "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "ae_template_ref": "Virus",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "vaccine_cure",
+          "include_persistent": true,
+          "target_ref": "action_targets"
+        }
+      },
+      "heroic_requirement": "",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Potion_IconC.png",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Mega-Remedy",
+      "on_activate_effect_ref": "megaremedy_heal",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_description": "<ul><li><p><em>Target creature recovers <strong>100 Hit Points</strong>.</em></p></li></ul>",
+      "skill_information": "",
+      "skill_range": "Any",
+      "skill_tags": "potion",
+      "skill_target": "One Creature",
+      "skill_type": "Item",
+      "type_damage": "Heal",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "0gkptIZ1Daipzs25"
+  },
+  "type": "equippableItem"
+}
