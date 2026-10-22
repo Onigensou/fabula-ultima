@@ -2145,6 +2145,18 @@ function canonRange(r) {
   return s; // "any" or a custom token
 }
 
+// The acting creature's token disposition: its own token (unlinked), else its
+// token on the canvas / any active token. null when it has none.
+function actorDisposition(actor) {
+  if (!actor) return null;
+  const td = actor.token
+    ?? canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === actor.uuid)?.document
+    ?? actor.getActiveTokens?.()?.[0]?.document
+    ?? null;
+  const d = Number(td?.disposition);
+  return Number.isFinite(d) ? d : null;
+}
+
 // `actionKind` ("attack" | "spell" | null) additionally honours the ATTACKER-side
 // pin `must_include_applier` (Provoked): the acting creature must include the
 // creature that applied the AE, for the listed kinds only. Same inclusion rule
@@ -2158,10 +2170,17 @@ export function collectForcedIncludeTargets(eligible, weaponRange, attackerActor
   const range = canonRange(weaponRange);
   const kind = String(actionKind ?? "").trim().toLowerCase();
   const appliers = kind ? getMustIncludeAppliers(attackerActor) : null;
+  // A taunter pins only creatures hostile to it ("attacks against your party").
+  // The pool is NOT always the attacker's enemies — a skill or spell that can
+  // reach allies hands its whole pool in — so the side is checked here: same
+  // disposition = same side, as snapshotEligibleTargets classifies it. Unknown
+  // attacker side keeps the pin (the old behaviour).
+  const attackerDisp = actorDisposition(attackerActor);
   const out = [];
   for (const e of eligible) {
     let reason = null;
-    if (range) {
+    const sameSide = attackerDisp != null && attackerDisp !== 0 && Number(e.disposition) === attackerDisp;
+    if (range && !sameSide) {
       const fi = Array.isArray(e.forcedInclude) ? e.forcedInclude : [];
       for (const b of fi) {
         const ranges = (Array.isArray(b.ranges) ? b.ranges : []).map(canonRange);

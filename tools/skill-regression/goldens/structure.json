@@ -1,6 +1,6 @@
 {
- "capturedAt": "2026-10-10T02:50:25.082Z",
- "count": 2547,
+ "capturedAt": "2026-10-22T18:53:58.460Z",
+ "count": 2572,
  "structure": {
   "(world) / Absorb MP": {
    "props": {
@@ -5452,6 +5452,27 @@
      ]
     },
     {
+     "name": "Supercharge",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "buff",
+      "supercharge"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": null,
+     "changes": [
+      "bonus_defense mode2 = 2",
+      "bonus_dex mode2 = 2",
+      "bonus_ins mode2 = 2",
+      "bonus_magic_defense mode2 = 2",
+      "bonus_mig mode2 = 2",
+      "bonus_wlp mode2 = 2"
+     ]
+    },
+    {
      "name": "Swift",
      "transfer": false,
      "disabled": false,
@@ -8195,6 +8216,53 @@
     }
    ]
   },
+  "(world) / Darksteel Shield": {
+   "props": {
+    "category": "Arcane",
+    "check": "Check",
+    "hand_slots": "One-handed",
+    "item_cost": "800",
+    "item_def_bonus": "3",
+    "item_mdef_bonus": "-3",
+    "item_quantity": "1",
+    "item_rarity": "Common",
+    "item_type": "shield",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "DEX",
+    "type_damage": "Physical",
+    "weapon_range": "Melee"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": [
+    {
+     "name": "DEF UP",
+     "transfer": true,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "bonus_defense mode2 = ${isEquipped ? (item_def_bonus * 1) : 0}$"
+     ]
+    },
+    {
+     "name": "MDEF UP",
+     "transfer": true,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "bonus_magic_defense mode2 = ${isEquipped ? (item_mdef_bonus * 1) : 0}$"
+     ]
+    }
+   ]
+  },
   "(world) / Deadly Premonition": {
    "props": {
     "category": "Firearm",
@@ -9138,6 +9206,28 @@
      "charges": 3,
      "changes": [
       "affinity_2 mode0 = VU"
+     ]
+    },
+    {
+     "name": "Virus",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [
+      "permanent"
+     ],
+     "tags": [
+      "debuff",
+      "virus"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": null,
+     "changes": [],
+     "aeReactions": [
+      "reaction_effect_ref=virus_dmg reaction_passive_mode=force reaction_passive_target=self reaction_source=self reaction_trigger=turn_start"
+     ],
+     "aeEffects": [
+      "damage_amount=max(0, min(ceil(MAX_HP * 0.05), CUR_HP - 1)) damage_element=null damage_ignore_affinity=true damage_keywords=crush damage_verbosity=full effect_kind=deal_damage effect_label=virus_dmg emit_status=Virus emit_trigger=creature_status_triggered target_ref=self"
      ]
     },
     {
@@ -12310,6 +12400,7 @@
   },
   "(world) / For Whom the Bell Tolls": {
    "props": {
+    "class": "Necromancer",
     "defense_target_type": "def",
     "isReaction": "true",
     "skill_type": "Passive"
@@ -14493,9 +14584,9 @@
     "item_cost": "15",
     "item_quantity": "1",
     "item_rarity": "Common",
-    "item_skill_active": "{\"lbsUVF4g4J4Q6pYl\":{\"name\":\"Grape Juice\",\"id\":\"${item.id}\",\"uuid\":\"Item.lbsUVF4g4J4Q6pYl\",\"skill_maxLevel\":1,\"skill_cost\":\"-\",\"skill_description\":\"<ul><li><p>Target creature <strong>recovers 20 MP</strong></p></li></ul>\"}}",
+    "item_skill_active": "{\"lbsUVF4g4J4Q6pYl\":{\"name\":\"Grape Juice\",\"id\":\"${item.id}\",\"uuid\":\"Item.lbsUVF4g4J4Q6pYl\",\"skill_maxLevel\":1,\"skill_cost\":\"-\",\"skill_description\":\"<p><em>Grape Juice:</em> target ally recovers 20 MP.</p>\"}}",
     "item_type": "consumable",
-    "related_item_list": "{\"lbsUVF4g4J4Q6pYl\":{\"name\":\"Grape Juice\",\"id\":\"${item.id}\",\"uuid\":\"Item.lbsUVF4g4J4Q6pYl\",\"related_item_description\":\"<ul><li><p>Target creature <strong>recovers 20 MP</strong></p></li></ul>\"}}",
+    "related_item_list": "{\"lbsUVF4g4J4Q6pYl\":{\"name\":\"Grape Juice\",\"id\":\"${item.id}\",\"uuid\":\"Item.lbsUVF4g4J4Q6pYl\",\"related_item_description\":\"<p><em>Grape Juice:</em> target ally recovers 20 MP.</p>\"}}",
     "rolled_atr1": "DEX",
     "rolled_atr2": "DEX",
     "set_name": "<Set Name>",
@@ -14515,6 +14606,7 @@
     "on_activate_effect_ref": "grapejuice_restore",
     "skill_range": "Any",
     "skill_tags": "potion",
+    "skill_target": "One Ally",
     "skill_type": "Item"
    },
    "effects": [
@@ -21343,6 +21435,53 @@
     }
    ]
   },
+  "(world) / Moonsilver Shield": {
+   "props": {
+    "category": "Arcane",
+    "check": "Check",
+    "hand_slots": "One-handed",
+    "item_cost": "800",
+    "item_def_bonus": "-3",
+    "item_mdef_bonus": "3",
+    "item_quantity": "1",
+    "item_rarity": "Common",
+    "item_type": "shield",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "DEX",
+    "type_damage": "Physical",
+    "weapon_range": "Melee"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": [
+    {
+     "name": "DEF UP",
+     "transfer": true,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "bonus_defense mode2 = ${isEquipped ? (item_def_bonus * 1) : 0}$"
+     ]
+    },
+    {
+     "name": "MDEF UP",
+     "transfer": true,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "bonus_magic_defense mode2 = ${isEquipped ? (item_mdef_bonus * 1) : 0}$"
+     ]
+    }
+   ]
+  },
   "(world) / Morning Star": {
    "props": {
     "category": "Flail",
@@ -24100,8 +24239,9 @@
     "cost": "30 MP",
     "damage_bonus": "HAS_MARTIAL_ARMOR * (20 + (EQUIPPED_SHIELD_COUNT >= 2) * 10 + (CHAR_LEVEL >= 30) * 10)",
     "heroic_requirement": "You must have mastered one or more Classes among Guardian and Pilot.",
+    "implementation_note": "#sha1:0c795330937c3633 (751 chars)",
     "isHeroic": "true",
-    "on_activate_effect_ref": "qt_activate",
+    "post_damage_effect_ref": "qt_no_free_attack",
     "pre_activate_effect_ref": "qt_gate",
     "skill_range": "Scene",
     "skill_target": "Each enemy you can see",
@@ -24109,9 +24249,8 @@
     "type_damage": "VAR_ELEMENT"
    },
    "effects": [
-    "chain_steps=qt_apply_status condition_formula=HAS_MARTIAL_ARMOR == 1 effect_kind=chain effect_label=qt_activate",
     "condition_formula=HAS_MARTIAL_ARMOR == 1 effect_kind=prompt_element effect_label=qt_gate element_options=earth|physical on_condition_fail=abort prompt_var=element",
-    "ae_duplicate_mode=replace_per_caster ae_template_ref=No Free Attack effect_kind=apply_ae effect_label=qt_apply_status target_ref=hit_action_targets"
+    "ae_duplicate_mode=replace_per_caster ae_template_ref=No Free Attack condition_formula=HP_LOST > 0 effect_kind=apply_ae effect_label=qt_no_free_attack target_ref=trigger_subject"
    ],
    "reactions": [],
    "aes": [
@@ -24126,7 +24265,7 @@
       "debuff"
      ],
      "family": null,
-     "lifetime": "round_end",
+     "lifetime": "target_turn_start",
      "charges": null,
      "changes": []
     }
@@ -31211,6 +31350,48 @@
    "reactions": [],
    "aes": []
   },
+  "(world) / Vaccine #0gkptI": {
+   "props": {
+    "action_command": "item",
+    "damage_bonus": "100",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "on_activate_effect_ref": "megaremedy_heal",
+    "skill_range": "Any",
+    "skill_tags": "potion",
+    "skill_target": "One Creature",
+    "skill_type": "Item",
+    "type_damage": "Heal"
+   },
+   "effects": [
+    "ae_template_ref=Virus count=all effect_kind=remove_ae effect_label=vaccine_cure include_persistent=true target_ref=action_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "(world) / Vaccine #WKZqbV": {
+   "props": {
+    "category": "Arcane",
+    "check": "Check",
+    "hand_slots": "One-handed",
+    "ip_cost": "6",
+    "item_cost": "1000",
+    "item_quantity": "1",
+    "item_rarity": "Common",
+    "item_skill_active": "{\"0gkptIZ1Daipzs25\":{\"name\":\"Vaccine\",\"id\":\"${item.id}\",\"uuid\":\"Item.0gkptIZ1Daipzs25\",\"skill_maxLevel\":1,\"skill_cost\":\"-\",\"skill_description\":\"<ul><li><p>Cures <strong>Virus</strong> on one creature.</p></li></ul>\"}}",
+    "item_type": "consumable",
+    "related_item_list": "{\"0gkptIZ1Daipzs25\":{\"name\":\"Vaccine\",\"id\":\"${item.id}\",\"uuid\":\"Item.0gkptIZ1Daipzs25\",\"related_item_description\":\"<ul><li><p>Cures <strong>Virus</strong> on one creature.</p></li></ul>\"}}",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "DEX",
+    "type_damage": "Physical",
+    "weapon_range": "Melee"
+   },
+   "effects": [
+    "ae_template_ref=Virus count=all effect_kind=remove_ae effect_label=vaccine_cure include_persistent=true target_ref=action_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
   "(world) / Vajra #NqcG61": {
    "props": {
     "category": "Thrown",
@@ -34858,7 +35039,7 @@
     "skill_type": "Item"
    },
    "effects": [
-    "effect_kind=set_resource effect_label=golemstone_shield grant_amount=10 grant_resource=shield target_ref=action_targets"
+    "effect_kind=grant effect_label=golemstone_shield grant_amount=10 grant_resource=shield target_ref=action_targets"
    ],
    "reactions": [],
    "aes": []
@@ -34871,16 +35052,16 @@
     "item_cost": "50",
     "item_quantity": "1",
     "item_rarity": "Common",
-    "item_skill_active": "#sha1:0fdbb4dc10f1d606 (258 chars)",
+    "item_skill_active": "#sha1:6220226a67096eac (340 chars)",
     "item_type": "consumable",
-    "related_item_list": "{\"HafxOPEtHF26jeNq\":{\"name\":\"Golem Soulstone\",\"id\":\"${item.id}\",\"uuid\":\"Actor.bvc69GcUFSRhy6W4.Item.HafxOPEtHF26jeNq\",\"related_item_description\":\"<p><em>Golem Soulstone:</em> target ally gains 10 Shield (keep the bigger).</p>\"}}",
+    "related_item_list": "#sha1:cf97a4cbe6655215 (310 chars)",
     "rolled_atr1": "DEX",
     "rolled_atr2": "DEX",
     "skill_target": "One Ally",
     "weapon_range": "Melee"
    },
    "effects": [
-    "effect_kind=set_resource effect_label=golemstone_shield grant_amount=10 grant_resource=shield target_ref=action_targets"
+    "effect_kind=grant effect_label=golemstone_shield grant_amount=10 grant_resource=shield target_ref=action_targets"
    ],
    "reactions": [],
    "aes": []
@@ -40508,24 +40689,50 @@
   "Commodities Shade / Mega-Elixir": {
    "props": {
     "action_command": "item",
-    "damage_bonus": "100",
     "defense_target_type": "def",
     "duration": "Instantaneous",
+    "on_activate_effect_ref": "megaelixir_mp",
     "skill_range": "Any",
+    "skill_tags": "potion",
     "skill_target": "One Creature",
-    "skill_type": "Item",
-    "type_damage": "MP"
+    "skill_type": "Item"
    },
-   "effects": [],
+   "effects": [
+    "effect_kind=grant effect_label=megaelixir_mp grant_amount=100 grant_resource=mp target_ref=action_targets"
+   ],
    "reactions": [],
    "aes": []
   },
-  "Commodities Shade / Mega-Remedy": {
+  "Commodities Shade / Mega-Remedy #FwUkhI": {
+   "props": {
+    "category": "Arcane",
+    "check": "Check",
+    "hand_slots": "One-handed",
+    "ip_cost": "6",
+    "item_cost": "600",
+    "item_quantity": "1",
+    "item_rarity": "Rare",
+    "item_skill_active": "#sha1:633c72d422a4359e (265 chars)",
+    "item_type": "consumable",
+    "related_item_list": "{\"bNkNrpohezxyBvm7\":{\"name\":\"Mega-Remedy\",\"id\":\"${item.id}\",\"uuid\":\"Actor.C7PsWytpMXK0PZSt.Item.bNkNrpohezxyBvm7\",\"related_item_description\":\"<ul><li><p><em>Target creature recovers <strong>100 Hit Points</strong>.</em></p></li></ul>\"}}",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "DEX",
+    "type_damage": "Physical",
+    "weapon_range": "Melee"
+   },
+   "effects": [
+    "effect_kind=grant effect_label=megaremedy_heal grant_amount=100 grant_resource=hp target_ref=action_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "Commodities Shade / Mega-Remedy #bNkNrp": {
    "props": {
     "action_command": "item",
     "damage_bonus": "100",
     "defense_target_type": "def",
     "duration": "Instantaneous",
+    "on_activate_effect_ref": "megaremedy_heal",
     "skill_range": "Any",
     "skill_tags": "potion",
     "skill_target": "One Creature",
@@ -40966,6 +41173,88 @@
      ]
     }
    ]
+  },
+  "Crona / Infectious Bite": {
+   "props": {
+    "action_command": "attack",
+    "action_intent": "harmful",
+    "check_bonus": "4",
+    "class": "NPC",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isReaction": "true",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "INS",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Physical"
+   },
+   "effects": [
+    "ae_duplicate_mode=skip ae_template_ref=Virus chain_steps=bite_virus,bite_fed effect_kind=chain effect_label=bite_chain target_ref=hit_action_targets",
+    "ae_duplicate_mode=skip ae_template_ref=Virus effect_kind=apply_ae effect_label=bite_virus target_ref=hit_action_targets",
+    "ae_duplicate_mode=skip ae_template_ref=Eaten effect_kind=apply_ae effect_label=bite_fed target_ref=self"
+   ],
+   "reactions": [
+    "reaction_effect_ref=bite_chain reaction_passive_mode=force reaction_source=self reaction_source_skill=Infectious Bite reaction_trigger=creature_deals_damage"
+   ],
+   "aes": [
+    {
+     "name": "Eaten",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "gorger_eaten"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": null,
+     "changes": []
+    }
+   ]
+  },
+  "Crona / Run Away": {
+   "props": {
+    "check_bonus": "1",
+    "class": "NPC",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "on_activate_effect_ref": "run_away",
+    "skill_range": "Any",
+    "skill_target": "Self",
+    "skill_type": "Active"
+   },
+   "effects": [
+    "chain_steps=escape_check, escape_flee effect_kind=chain effect_label=run_away",
+    "candidate_source=combat category=enemy effect_kind=targeting effect_label=escape_party exclude_self=true mode=all",
+    "effect_kind=group_check effect_label=escape_check gc_attr1=dex gc_attr2=ins gc_dl=15 gc_helper_bonus=1 gc_mode=designated gc_on_error=fail gc_timeout=60000 gc_var=escape target_ref=escape_party",
+    "condition_formula=VAR_ESCAPE == 0 effect_kind=leave_combat effect_label=escape_flee target_ref=self"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "Crona / Vaccine": {
+   "props": {
+    "category": "Arcane",
+    "check": "Check",
+    "hand_slots": "One-handed",
+    "ip_cost": "6",
+    "item_cost": "1000",
+    "item_quantity": "1",
+    "item_rarity": "Common",
+    "item_type": "consumable",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "DEX",
+    "type_damage": "Physical",
+    "weapon_range": "Melee"
+   },
+   "effects": [
+    "ae_template_ref=Virus count=all effect_kind=remove_ae effect_label=vaccine_cure include_persistent=true target_ref=action_targets"
+   ],
+   "reactions": [],
+   "aes": []
   },
   "Cryo Gorger / Bump": {
    "props": {
@@ -42418,7 +42707,7 @@
     "check_bonus": "5",
     "class": "NPC",
     "cost": "30 MP",
-    "damage_bonus": "20",
+    "damage_bonus": "30",
     "defense_target_type": "mdef",
     "duration": "Instantaneous",
     "isCheck": "true",
@@ -42459,7 +42748,7 @@
     "action_command": "attack",
     "check_bonus": "5",
     "class": "NPC",
-    "damage_bonus": "25",
+    "damage_bonus": "44",
     "defense_target_type": "def",
     "duration": "Instantaneous",
     "isCheck": "true",
@@ -42479,7 +42768,7 @@
     "check_bonus": "5",
     "class": "NPC",
     "cost": "10 MP",
-    "damage_bonus": "15",
+    "damage_bonus": "25",
     "defense_target_type": "def",
     "duration": "Instantaneous",
     "isCheck": "true",
@@ -42519,7 +42808,7 @@
     "action_command": "attack",
     "check_bonus": "7",
     "class": "NPC",
-    "damage_bonus": "20",
+    "damage_bonus": "39",
     "defense_target_type": "def",
     "duration": "Instantaneous",
     "isCheck": "true",
@@ -42590,7 +42879,7 @@
     "action_keywords": "multi",
     "check_bonus": "7",
     "class": "NPC",
-    "damage_bonus": "12",
+    "damage_bonus": "22",
     "defense_target_type": "def",
     "duration": "Instantaneous",
     "isCheck": "true",
@@ -42610,7 +42899,7 @@
     "action_command": "attack",
     "check_bonus": "7",
     "class": "NPC",
-    "damage_bonus": "18",
+    "damage_bonus": "37",
     "defense_target_type": "def",
     "duration": "Instantaneous",
     "isCheck": "true",
@@ -43475,16 +43764,17 @@
     "item_cost": "50",
     "item_quantity": "1",
     "item_rarity": "Common",
-    "item_skill_active": "#sha1:68c395499651d2fa (258 chars)",
+    "item_skill_active": "#sha1:058bd19d084c173d (340 chars)",
     "item_type": "consumable",
-    "related_item_list": "{\"z0V9VVTbbrOFHs5Z\":{\"name\":\"Golem Soulstone\",\"id\":\"${item.id}\",\"uuid\":\"Actor.t6E3CQ0pGxwLgXrn.Item.z0V9VVTbbrOFHs5Z\",\"related_item_description\":\"<p><em>Golem Soulstone:</em> target ally gains 10 Shield (keep the bigger).</p>\"}}",
+    "related_item_list": "#sha1:ac4607c6d2ecd21d (310 chars)",
     "rolled_atr1": "DEX",
     "rolled_atr2": "DEX",
+    "skill_target": "One Ally",
     "type_damage": "Physical",
     "weapon_range": "Melee"
    },
    "effects": [
-    "effect_kind=set_resource effect_label=golemstone_shield grant_amount=10 grant_resource=shield target_ref=action_targets"
+    "effect_kind=grant effect_label=golemstone_shield grant_amount=10 grant_resource=shield target_ref=action_targets"
    ],
    "reactions": [],
    "aes": []
@@ -43497,7 +43787,7 @@
     "skill_type": "Item"
    },
    "effects": [
-    "effect_kind=set_resource effect_label=golemstone_shield grant_amount=10 grant_resource=shield target_ref=action_targets"
+    "effect_kind=grant effect_label=golemstone_shield grant_amount=10 grant_resource=shield target_ref=action_targets"
    ],
    "reactions": [],
    "aes": []
@@ -43782,15 +44072,17 @@
   "EXFURSION Party / Mega-Elixir #30aFFX": {
    "props": {
     "action_command": "item",
-    "damage_bonus": "100",
     "defense_target_type": "def",
     "duration": "Instantaneous",
+    "on_activate_effect_ref": "megaelixir_mp",
     "skill_range": "Any",
+    "skill_tags": "potion",
     "skill_target": "One Creature",
-    "skill_type": "Item",
-    "type_damage": "MP"
+    "skill_type": "Item"
    },
-   "effects": [],
+   "effects": [
+    "effect_kind=grant effect_label=megaelixir_mp grant_amount=100 grant_resource=mp target_ref=action_targets"
+   ],
    "reactions": [],
    "aes": []
   },
@@ -44342,7 +44634,7 @@
    "props": {
     "action_command": "attack",
     "active_effect_config_table": "#sha1:efb3701cebf7b6c0 (283 chars)",
-    "check_bonus": "5",
+    "check_bonus": "8",
     "class": "NPC",
     "damage_bonus": "32",
     "defense_target_type": "mdef",
@@ -44368,7 +44660,7 @@
    "props": {
     "action_command": "attack",
     "action_keywords": "blitz",
-    "check_bonus": "6",
+    "check_bonus": "9",
     "class": "NPC",
     "damage_bonus": "32",
     "defense_target_type": "def",
@@ -47616,12 +47908,35 @@
    "reactions": [],
    "aes": []
   },
-  "Founding Festival Item Stall / Mega-Remedy": {
+  "Founding Festival Item Stall / Mega-Remedy #GKd2Bp": {
+   "props": {
+    "category": "Arcane",
+    "check": "Check",
+    "hand_slots": "One-handed",
+    "item_cost": "300",
+    "item_quantity": "1",
+    "item_rarity": "Uncommon",
+    "item_skill_active": "#sha1:71df710882a06be2 (265 chars)",
+    "item_type": "consumable",
+    "related_item_list": "{\"qPZT2J8stNlVqvHM\":{\"name\":\"Mega-Remedy\",\"id\":\"${item.id}\",\"uuid\":\"Actor.2Tf75KJiBUQwWGiL.Item.qPZT2J8stNlVqvHM\",\"related_item_description\":\"<ul><li><p><em>Target creature recovers <strong>100 Hit Points</strong>.</em></p></li></ul>\"}}",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "DEX",
+    "type_damage": "Physical",
+    "weapon_range": "Melee"
+   },
+   "effects": [
+    "effect_kind=grant effect_label=megaremedy_heal grant_amount=100 grant_resource=hp target_ref=action_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "Founding Festival Item Stall / Mega-Remedy #qPZT2J": {
    "props": {
     "action_command": "item",
     "damage_bonus": "100",
     "defense_target_type": "def",
     "duration": "Instantaneous",
+    "on_activate_effect_ref": "megaremedy_heal",
     "skill_range": "Any",
     "skill_tags": "potion",
     "skill_target": "One Creature",
@@ -48013,6 +48328,128 @@
     }
    ]
   },
+  "Galvanize Golem / Galvanic Smash": {
+   "props": {
+    "action_command": "attack",
+    "action_intent": "harmful",
+    "check_bonus": "8",
+    "class": "NPC",
+    "damage_bonus": "55",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "MIG",
+    "rolled_atr2": "MIG",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Physical"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Galvanize Golem / Golem Fist": {
+   "props": {
+    "category": "Brawling",
+    "check": "Check",
+    "custom_logic_action": "#sha1:f452535dc4c38693 (2213 chars)",
+    "damage_bonus": "5",
+    "hand_slots": "One-handed",
+    "item_cost": "2700",
+    "item_quantity": "1",
+    "item_rarity": "Rare",
+    "item_type": "weapon",
+    "rolled_atr1": "MIG",
+    "rolled_atr2": "MIG",
+    "set_name": "<Set Name>",
+    "skill_target": "One Enemy",
+    "type_damage": "Physical",
+    "weapon_range": "Melee"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Galvanize Golem / Golem Fragment": {
+   "props": {
+    "category": "Arcane",
+    "check": "Check",
+    "hand_slots": "One-handed",
+    "ip_cost": "1",
+    "item_cost": "25",
+    "item_quantity": "1",
+    "item_rarity": "Common",
+    "item_type": "consumable",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "DEX",
+    "skill_target": "One Ally",
+    "type_damage": "Physical",
+    "weapon_range": "Melee"
+   },
+   "effects": [
+    "effect_kind=grant effect_label=golemfrag_shield grant_amount=5 grant_resource=shield target_ref=action_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "Galvanize Golem / Golem Soulstone": {
+   "props": {
+    "category": "Arcane",
+    "check": "Check",
+    "hand_slots": "One-handed",
+    "item_cost": "50",
+    "item_quantity": "1",
+    "item_rarity": "Common",
+    "item_type": "consumable",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "DEX",
+    "skill_target": "One Ally",
+    "weapon_range": "Melee"
+   },
+   "effects": [
+    "effect_kind=grant effect_label=golemstone_shield grant_amount=10 grant_resource=shield target_ref=action_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "Galvanize Golem / Piston Fist": {
+   "props": {
+    "action_command": "attack",
+    "action_intent": "harmful",
+    "check_bonus": "8",
+    "class": "NPC",
+    "damage_bonus": "40",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "MIG",
+    "rolled_atr2": "DEX",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Physical"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Galvanize Golem / Super Charge": {
+   "props": {
+    "action_intent": "harmful",
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "ae_duplicate_mode=skip ae_template_ref=Supercharge effect_kind=apply_ae effect_label=sc_apply target_ref=self"
+   ],
+   "reactions": [
+    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1 && HAS_STATUS_SUPERCHARGE == 0 reaction_effect_ref=sc_apply reaction_passive_mode=force reaction_resource_filter=hp reaction_trigger=creature_lose_resource"
+   ],
+   "aes": []
+  },
   "Gardner / Brace": {
    "props": {
     "active_effect_config_table": "#sha1:1810dec0fbcd8a47 (311 chars)",
@@ -48368,7 +48805,7 @@
    ],
    "reactions": [
     "reaction_effect_ref=oaf_delay reaction_max_scope=round reaction_passive_mode=on reaction_trigger=conflict_start",
-    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1 && IS_MY_TURN == 1 reaction_effect_ref=oaf_fear reaction_max_per_round=1 reaction_max_scope=round reaction_passive_mode=on reaction_trigger=creature_lose_resource"
+    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1 reaction_effect_ref=oaf_fear reaction_max_per_round=1 reaction_max_scope=round reaction_passive_mode=on reaction_trigger=creature_lose_resource"
    ],
    "aes": []
   },
@@ -49295,24 +49732,50 @@
   "Hako / Mega-Elixir": {
    "props": {
     "action_command": "item",
-    "damage_bonus": "100",
     "defense_target_type": "def",
     "duration": "Instantaneous",
+    "on_activate_effect_ref": "megaelixir_mp",
     "skill_range": "Any",
+    "skill_tags": "potion",
     "skill_target": "One Creature",
-    "skill_type": "Item",
-    "type_damage": "MP"
+    "skill_type": "Item"
    },
-   "effects": [],
+   "effects": [
+    "effect_kind=grant effect_label=megaelixir_mp grant_amount=100 grant_resource=mp target_ref=action_targets"
+   ],
    "reactions": [],
    "aes": []
   },
-  "Hako / Mega-Remedy": {
+  "Hako / Mega-Remedy #LVwLI7": {
+   "props": {
+    "category": "Arcane",
+    "check": "Check",
+    "hand_slots": "One-handed",
+    "ip_cost": "6",
+    "item_cost": "600",
+    "item_quantity": "3",
+    "item_rarity": "Rare",
+    "item_skill_active": "#sha1:9b0a587af73811a1 (265 chars)",
+    "item_type": "consumable",
+    "related_item_list": "{\"jfHjXIvIdtMlYDpi\":{\"name\":\"Mega-Remedy\",\"id\":\"${item.id}\",\"uuid\":\"Actor.srAH3OHOoK0tvFih.Item.jfHjXIvIdtMlYDpi\",\"related_item_description\":\"<ul><li><p><em>Target creature recovers <strong>100 Hit Points</strong>.</em></p></li></ul>\"}}",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "DEX",
+    "type_damage": "Physical",
+    "weapon_range": "Melee"
+   },
+   "effects": [
+    "effect_kind=grant effect_label=megaremedy_heal grant_amount=100 grant_resource=hp target_ref=action_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "Hako / Mega-Remedy #jfHjXI": {
    "props": {
     "action_command": "item",
     "damage_bonus": "100",
     "defense_target_type": "def",
     "duration": "Instantaneous",
+    "on_activate_effect_ref": "megaremedy_heal",
     "skill_range": "Any",
     "skill_tags": "potion",
     "skill_target": "One Creature",
@@ -49452,6 +49915,48 @@
     "weapon_range": "Ranged"
    },
    "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Hako / Vaccine #b79FZl": {
+   "props": {
+    "category": "Arcane",
+    "check": "Check",
+    "hand_slots": "One-handed",
+    "ip_cost": "6",
+    "item_cost": "1000",
+    "item_quantity": "5",
+    "item_rarity": "Common",
+    "item_skill_active": "{\"hncEMqDuJtWSEgdD\":{\"name\":\"Vaccine\",\"id\":\"${item.id}\",\"uuid\":\"Actor.srAH3OHOoK0tvFih.Item.hncEMqDuJtWSEgdD\",\"skill_maxLevel\":1,\"skill_cost\":\"-\",\"skill_description\":\"<ul><li><p>Cures <strong>Virus</strong> on one creature.</p></li></ul>\"}}",
+    "item_type": "consumable",
+    "related_item_list": "{\"hncEMqDuJtWSEgdD\":{\"name\":\"Vaccine\",\"id\":\"${item.id}\",\"uuid\":\"Actor.srAH3OHOoK0tvFih.Item.hncEMqDuJtWSEgdD\",\"related_item_description\":\"<ul><li><p>Cures <strong>Virus</strong> on one creature.</p></li></ul>\"}}",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "DEX",
+    "type_damage": "Physical",
+    "weapon_range": "Melee"
+   },
+   "effects": [
+    "ae_template_ref=Virus count=all effect_kind=remove_ae effect_label=vaccine_cure include_persistent=true target_ref=action_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "Hako / Vaccine #hncEMq": {
+   "props": {
+    "action_command": "item",
+    "damage_bonus": "100",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "on_activate_effect_ref": "megaremedy_heal",
+    "skill_range": "Any",
+    "skill_tags": "potion",
+    "skill_target": "One Creature",
+    "skill_type": "Item",
+    "type_damage": "Heal"
+   },
+   "effects": [
+    "ae_template_ref=Virus count=all effect_kind=remove_ae effect_label=vaccine_cure include_persistent=true target_ref=action_targets"
+   ],
    "reactions": [],
    "aes": []
   },
@@ -52769,7 +53274,9 @@
   "Hina / Grape Juice #h5q0pB": {
    "props": {
     "action_command": "item",
+    "defense_target_type": "def",
     "on_activate_effect_ref": "grapejuice_restore",
+    "skill_range": "Any",
     "skill_tags": "potion",
     "skill_target": "One Ally",
     "skill_type": "Item"
@@ -52789,7 +53296,7 @@
     "item_cost": "15",
     "item_quantity": "63",
     "item_rarity": "Common",
-    "item_skill_active": "{\"h5q0pBru1vCPJ6Pr\":{\"name\":\"Grape Juice\",\"id\":\"${item.id}\",\"uuid\":\"Actor.dafTLBUscCDNgq8H.Item.h5q0pBru1vCPJ6Pr\",\"skill_maxLevel\":\"\",\"skill_cost\":\"-\",\"skill_description\":\"<p><em>Grape Juice:</em> target ally recovers 20 MP.</p>\"}}",
+    "item_skill_active": "{\"h5q0pBru1vCPJ6Pr\":{\"name\":\"Grape Juice\",\"id\":\"${item.id}\",\"uuid\":\"Actor.dafTLBUscCDNgq8H.Item.h5q0pBru1vCPJ6Pr\",\"skill_maxLevel\":1,\"skill_cost\":\"-\",\"skill_description\":\"<p><em>Grape Juice:</em> target ally recovers 20 MP.</p>\"}}",
     "item_type": "consumable",
     "related_item_list": "{\"h5q0pBru1vCPJ6Pr\":{\"name\":\"Grape Juice\",\"id\":\"${item.id}\",\"uuid\":\"Actor.dafTLBUscCDNgq8H.Item.h5q0pBru1vCPJ6Pr\",\"related_item_description\":\"<p><em>Grape Juice:</em> target ally recovers 20 MP.</p>\"}}",
     "rolled_atr1": "DEX",
@@ -54228,9 +54735,9 @@
   "Imp / Pitchfork": {
    "props": {
     "action_command": "attack",
-    "check_bonus": "5",
+    "check_bonus": "9",
     "class": "NPC",
-    "damage_bonus": "15",
+    "damage_bonus": "43",
     "defense_target_type": "def",
     "duration": "Instantaneous",
     "isCheck": "true",
@@ -56189,6 +56696,7 @@
   },
   "Keren / For Whom the Bell Tolls": {
    "props": {
+    "class": "Necromancer",
     "defense_target_type": "def",
     "isReaction": "true",
     "skill_type": "Passive"
@@ -57576,11 +58084,13 @@
     "chain_steps=eo_spend,eo_surge,eo_wave effect_kind=chain effect_label=eo_chain",
     "consume_amount=50 consume_resource=mp effect_kind=consume_resource effect_label=eo_spend on_empty=abort target_ref=self",
     "ae_duplicate_mode=replace_family ae_duration_rounds=1 ae_family=elemental-overflow ae_name_pool=Elemental Overflow (Fire)|Elemental Overflow (Ice)|Elemental Overflow (Earth)|Elemental Overflow (Bolt)|Elemental Overflow (Air) effect_kind=apply_ae effect_label=eo_surge target_ref=field",
-    "action_ref=Elemental Overflow effect_kind=play_animation effect_label=eo_wave target_ref=self"
+    "action_ref=Elemental Overflow effect_kind=play_animation effect_label=eo_wave target_ref=self",
+    "consume_amount=CUR_MP consume_resource=mp effect_kind=consume_resource effect_label=eo_reset on_empty=drain target_ref=self"
    ],
    "reactions": [
     "condition_formula=SUBJECT_IS_MY_SUMMONER == 1 && CUR_MP >= 50 reaction_effect_ref=eo_chain reaction_passive_mode=force reaction_source=ally reaction_trigger=turn_start",
-    "condition_formula=CUR_MP >= 50 && FIELD_HAS_ELEMENTAL_OVERFLOW == 0 reaction_effect_ref=eo_chain reaction_max_per_round=1 reaction_passive_mode=force reaction_resource_filter=mp reaction_source=self reaction_trigger=creature_gain_resource"
+    "condition_formula=CUR_MP >= 50 && FIELD_HAS_ELEMENTAL_OVERFLOW == 0 reaction_effect_ref=eo_chain reaction_max_per_round=1 reaction_passive_mode=force reaction_resource_filter=mp reaction_source=self reaction_trigger=creature_gain_resource",
+    "reaction_effect_ref=eo_reset reaction_passive_mode=force reaction_trigger=conflict_start"
    ],
    "aes": [
     {
@@ -58613,7 +59123,7 @@
     "action_command": "attack",
     "check_bonus": "8",
     "class": "NPC",
-    "damage_bonus": "24",
+    "damage_bonus": "39",
     "defense_target_type": "def",
     "duration": "Instantaneous",
     "isCheck": "true",
@@ -58640,7 +59150,7 @@
     "check_bonus": "8",
     "class": "NPC",
     "cost": "10 MP",
-    "damage_bonus": "40",
+    "damage_bonus": "55",
     "defense_target_type": "def",
     "duration": "Instantaneous",
     "isCheck": "true",
@@ -59617,17 +60127,41 @@
    "reactions": [],
    "aes": []
   },
-  "Moses / Mega-Remedy": {
+  "Moses / Mega-Remedy #gBOzgX": {
    "props": {
     "action_command": "item",
     "damage_bonus": "100",
     "defense_target_type": "def",
     "duration": "Instantaneous",
+    "on_activate_effect_ref": "megaremedy_heal",
     "skill_range": "Any",
     "skill_tags": "potion",
     "skill_target": "One Creature",
     "skill_type": "Item",
     "type_damage": "Heal"
+   },
+   "effects": [
+    "effect_kind=grant effect_label=megaremedy_heal grant_amount=100 grant_resource=hp target_ref=action_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "Moses / Mega-Remedy #ogg4AJ": {
+   "props": {
+    "category": "Arcane",
+    "check": "Check",
+    "hand_slots": "One-handed",
+    "ip_cost": "6",
+    "item_cost": "100",
+    "item_quantity": "1",
+    "item_rarity": "Uncommon",
+    "item_skill_active": "#sha1:f1bb30a7e4788966 (265 chars)",
+    "item_type": "consumable",
+    "related_item_list": "{\"gBOzgXK58WjRsCsL\":{\"name\":\"Mega-Remedy\",\"id\":\"${item.id}\",\"uuid\":\"Actor.91Lceg0mRGyUmQBW.Item.gBOzgXK58WjRsCsL\",\"related_item_description\":\"<ul><li><p><em>Target creature recovers <strong>100 Hit Points</strong>.</em></p></li></ul>\"}}",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "DEX",
+    "type_damage": "Physical",
+    "weapon_range": "Melee"
    },
    "effects": [
     "effect_kind=grant effect_label=megaremedy_heal grant_amount=100 grant_resource=hp target_ref=action_targets"
@@ -59901,6 +60435,7 @@
   },
   "Necromancer / For Whom the Bell Tolls": {
    "props": {
+    "class": "Necromancer",
     "defense_target_type": "def",
     "isReaction": "true",
     "skill_type": "Passive"
@@ -60247,16 +60782,16 @@
     "item_cost": "50",
     "item_quantity": "1",
     "item_rarity": "Common",
-    "item_skill_active": "#sha1:14bcec7cac383b3d (258 chars)",
+    "item_skill_active": "#sha1:8885686432554ce7 (340 chars)",
     "item_type": "consumable",
-    "related_item_list": "{\"cikpjS54FeWj7JU3\":{\"name\":\"Golem Soulstone\",\"id\":\"${item.id}\",\"uuid\":\"Actor.j6IpMoeBol2PprPp.Item.cikpjS54FeWj7JU3\",\"related_item_description\":\"<p><em>Golem Soulstone:</em> target ally gains 10 Shield (keep the bigger).</p>\"}}",
+    "related_item_list": "#sha1:2e13277fc841dea4 (310 chars)",
     "rolled_atr1": "DEX",
     "rolled_atr2": "DEX",
     "skill_target": "One Ally",
     "weapon_range": "Melee"
    },
    "effects": [
-    "effect_kind=set_resource effect_label=golemstone_shield grant_amount=10 grant_resource=shield target_ref=action_targets"
+    "effect_kind=grant effect_label=golemstone_shield grant_amount=10 grant_resource=shield target_ref=action_targets"
    ],
    "reactions": [],
    "aes": []
@@ -60269,7 +60804,7 @@
     "skill_type": "Item"
    },
    "effects": [
-    "effect_kind=set_resource effect_label=golemstone_shield grant_amount=10 grant_resource=shield target_ref=action_targets"
+    "effect_kind=grant effect_label=golemstone_shield grant_amount=10 grant_resource=shield target_ref=action_targets"
    ],
    "reactions": [],
    "aes": []
@@ -60518,6 +61053,39 @@
    ],
    "aes": []
   },
+  "Obsidrax / Earthen Wire": {
+   "props": {
+    "action_intent": "harmful",
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": [
+    {
+     "name": "Earthen Wire",
+     "transfer": true,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [],
+     "aeReactions": [
+      "condition_formula=TRIGGER_DAMAGE_IS_BOLT == 1 reaction_effect_ref=ew_chain reaction_passive_mode=force reaction_source=self reaction_trigger=creature_takes_damage"
+     ],
+     "aeEffects": [
+      "chain_steps=ew_zero,ew_target,ew_redirect effect_kind=chain effect_label=ew_chain",
+      "damage_amount=0 damage_operation=set damage_stage=incoming effect_kind=adjust_damage effect_label=ew_zero",
+      "candidate_source=combat category=enemy count=1 effect_kind=targeting effect_label=ew_target mode=random",
+      "damage_amount=INCOMING_DAMAGE damage_element=bolt damage_verbosity=full effect_kind=deal_damage effect_label=ew_redirect target_ref=ew_target"
+     ]
+    }
+   ]
+  },
   "Obsidrax / Elemental Ward": {
    "props": {
     "category": "Arcane",
@@ -60535,24 +61103,6 @@
    },
    "effects": [],
    "reactions": [],
-   "aes": []
-  },
-  "Obsidrax / Lodestone Core": {
-   "props": {
-    "action_intent": "harmful",
-    "class": "NPC",
-    "defense_target_type": "def",
-    "isReaction": "true",
-    "skill_type": "Passive"
-   },
-   "effects": [
-    "chain_steps=lc_target,lc_damage effect_kind=chain effect_label=lc_chain",
-    "candidate_source=combat category=enemy count=1 effect_kind=targeting effect_label=lc_target mode=random",
-    "damage_amount=30 damage_cause=damage damage_element=earth damage_verbosity=full effect_kind=deal_damage effect_label=lc_damage target_ref=lc_target"
-   ],
-   "reactions": [
-    "condition_formula=AE_COUNT_LIGHTNING_ROD > 0 reaction_effect_ref=lc_chain reaction_passive_mode=force reaction_source=self reaction_trigger=turn_start"
-   ],
    "aes": []
   },
   "Obsidrax / Miasma Nova": {
@@ -62655,6 +63205,147 @@
    "reactions": [],
    "aes": []
   },
+  "Roper / Bite": {
+   "props": {
+    "action_command": "attack",
+    "check_bonus": "5",
+    "class": "NPC",
+    "damage_bonus": "38",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "MIG",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Physical"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Roper / False Appearance": {
+   "props": {
+    "action_intent": "harmful",
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=fa_check,fa_strike effect_kind=chain effect_label=fa_chain",
+    "candidate_source=combat category=enemy effect_kind=targeting effect_label=fa_party exclude_self=true mode=all",
+    "effect_kind=group_check effect_label=fa_check gc_attr1=ins gc_attr2=ins gc_dl=13 gc_helper_bonus=1 gc_mode=designated gc_on_error=fail gc_timeout=60000 gc_var=spotted target_ref=fa_party",
+    "action_ref=Tentacle condition_formula=VAR_SPOTTED == 0 effect_kind=free_action effect_label=fa_strike"
+   ],
+   "reactions": [
+    "reaction_effect_ref=fa_chain reaction_passive_mode=force reaction_trigger=conflict_start"
+   ],
+   "aes": []
+  },
+  "Roper / Reel": {
+   "props": {
+    "check_bonus": "5",
+    "class": "NPC",
+    "cost": "20 MP",
+    "defense_target_type": "mdef",
+    "duration": "Instantaneous",
+    "on_activate_effect_ref": "reel_chain",
+    "rolled_atr1": "INS",
+    "rolled_atr2": "WLP",
+    "skill_range": "Any",
+    "skill_target": "Self",
+    "skill_type": "Active",
+    "type_damage": "Physical"
+   },
+   "effects": [
+    "chain_steps=reel_held,reel_drag effect_kind=chain effect_label=reel_chain",
+    "candidate_source=combat category=enemy effect_kind=targeting effect_label=reel_held exclude_self=true mode=all target_filter=HAS_STATUS_GRAPPLED == 1",
+    "damage_amount=15 damage_cause=damage damage_element=physical damage_verbosity=full effect_kind=deal_damage effect_label=reel_drag target_ref=reel_held"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "Roper / Seismic Pillar": {
+   "props": {
+    "category": "Heavy",
+    "check": "Check",
+    "damage_bonus": "18",
+    "hand_slots": "Two-handed",
+    "isMartial": "true",
+    "item_cost": "1600",
+    "item_quantity": "1",
+    "item_rarity": "Uncommon",
+    "item_type": "weapon",
+    "rolled_atr1": "MIG",
+    "rolled_atr2": "MIG",
+    "skill_target": "One Enemy",
+    "type_damage": "Earth",
+    "weapon_range": "Melee"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Roper / Severed Tendrils": {
+   "props": {
+    "action_intent": "harmful",
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=st_free,st_release effect_kind=chain effect_label=st_chain",
+    "allow_empty=true candidate_source=combat category=enemy effect_kind=targeting effect_label=st_held exclude_self=true mode=all target_filter=HAS_STATUS_GRAPPLED == 1",
+    "ae_template_ref=Grappled effect_kind=remove_ae effect_label=st_free include_persistent=true target_ref=st_held",
+    "ae_template_ref=Grappling effect_kind=remove_ae effect_label=st_release include_persistent=true target_ref=self"
+   ],
+   "reactions": [
+    "condition_formula=SUBJECT_IS_SELF == 1 && (TRIGGER_DAMAGE_IS_ICE == 1 || USED_WEAPON_CATEGORY_IS_HEAVY == 1) reaction_effect_ref=st_chain reaction_passive_mode=force reaction_resource_filter=hp reaction_trigger=creature_lose_resource"
+   ],
+   "aes": []
+  },
+  "Roper / Tentacle": {
+   "props": {
+    "action_command": "attack",
+    "action_keywords": "multi",
+    "check_bonus": "5",
+    "class": "NPC",
+    "damage_bonus": "22",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "on_activate_effect_ref": "tn_chain",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "MIG",
+    "skill_range": "Melee",
+    "skill_target": "Up to four creatures",
+    "skill_type": "Attack",
+    "type_damage": "Physical"
+   },
+   "effects": [
+    "chain_steps=tn_save,tn_hold,tn_mark effect_kind=chain effect_label=tn_chain",
+    "effect_kind=save_check effect_label=tn_save save_attr1=dex save_attr2=mig save_dl=13 save_mode=interactive target_ref=hit_action_targets",
+    "ae_duplicate_mode=skip ae_template_ref=Grappled effect_kind=apply_ae effect_label=tn_hold target_ref=save_failed_targets",
+    "ae_duplicate_mode=skip ae_template_ref=Tentacle Lashed effect_kind=apply_ae effect_label=tn_mark target_ref=self"
+   ],
+   "reactions": [],
+   "aes": [
+    {
+     "name": "Tentacle Lashed",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": "round_end",
+     "charges": null,
+     "changes": []
+    }
+   ]
+  },
   "Roselie / Cataclysm": {
    "props": {
     "class": "Elementalist",
@@ -63215,9 +63906,9 @@
     "item_cost": "15",
     "item_quantity": "5",
     "item_rarity": "Common",
-    "item_skill_active": "#sha1:db47c4e2b457c01a (246 chars)",
+    "item_skill_active": "{\"RmSSXrBB9yxrB3om\":{\"name\":\"Grape Juice\",\"id\":\"${item.id}\",\"uuid\":\"Actor.bCY4VbmO7SXDe7Tb.Item.RmSSXrBB9yxrB3om\",\"skill_maxLevel\":1,\"skill_cost\":\"-\",\"skill_description\":\"<p><em>Grape Juice:</em> target ally recovers 20 MP.</p>\"}}",
     "item_type": "consumable",
-    "related_item_list": "{\"RmSSXrBB9yxrB3om\":{\"name\":\"Grape Juice\",\"id\":\"${item.id}\",\"uuid\":\"Actor.bCY4VbmO7SXDe7Tb.Item.RmSSXrBB9yxrB3om\",\"related_item_description\":\"<ul><li><p>Target creature <strong>recovers 20 MP</strong></p></li></ul>\"}}",
+    "related_item_list": "{\"RmSSXrBB9yxrB3om\":{\"name\":\"Grape Juice\",\"id\":\"${item.id}\",\"uuid\":\"Actor.bCY4VbmO7SXDe7Tb.Item.RmSSXrBB9yxrB3om\",\"related_item_description\":\"<p><em>Grape Juice:</em> target ally recovers 20 MP.</p>\"}}",
     "rolled_atr1": "DEX",
     "rolled_atr2": "DEX",
     "set_name": "<Set Name>",
@@ -63238,6 +63929,7 @@
     "on_activate_effect_ref": "grapejuice_restore",
     "skill_range": "Any",
     "skill_tags": "potion",
+    "skill_target": "One Ally",
     "skill_type": "Item"
    },
    "effects": [
@@ -66119,7 +66811,7 @@
     "check_bonus": "5",
     "class": "NPC",
     "cost": "20 MP",
-    "damage_bonus": "32",
+    "damage_bonus": "48",
     "defense_target_type": "mdef",
     "duration": "Instantaneous",
     "isCheck": "true",
@@ -66166,7 +66858,7 @@
     "action_command": "attack",
     "check_bonus": "5",
     "class": "NPC",
-    "damage_bonus": "18",
+    "damage_bonus": "34",
     "defense_target_type": "def",
     "duration": "Instantaneous",
     "isCheck": "true",

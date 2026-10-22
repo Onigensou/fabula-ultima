@@ -798,9 +798,9 @@ Hooks.once("ready", () => {
 });
 
 const CSS_TEXT = `
-/* Card mode: the action card no longer carries the reaction pills. They stay
-   in the DOM (the hand acts through them), just not on screen. */
-body.${BODY_CLASS} #${MIRROR_ROOT_ID} .fud-bf-reactions-row { display: none !important; }
+/* Card mode: the action card shows its reactions as icons only (action-card.js,
+   body.fud-rx-hand) — the hand is where they are answered. The pills stay in
+   the DOM: the hand acts through them. */
 
 /* ── the hand: cards tucked behind the plate, name bands peeking ── */
 .rxh-clip {

@@ -911,6 +911,7 @@ export async function dispatchReactionMenu({
     };
   }
 
+  let liveRender = null;
   const renderMenu = () => {
     if (!remaining.length) {
       closeMenusEverywhere();
@@ -937,7 +938,10 @@ export async function dispatchReactionMenu({
       } catch (e) { warn(`reaction[${trigger}]: broadcastMenuOpen(indicator) threw`, e); }
     }
     const remoteAwait = armRemoteAwaits();
-    let localPickFired = false;
+    // One record per render, so a re-render (a late GM, below) can retire this
+    // one: once `picked` is set its menu and remote awaits are ignored.
+    const render = { remoteAwait, picked: false };
+    liveRender = render;
 
     ReactionMenu.spawn({
       director, token,
@@ -948,8 +952,8 @@ export async function dispatchReactionMenu({
       passLabel,
       disabledLabels: mergedDisabledLabels(),
       onPick: async (cand) => {
-        if (localPickFired) return;
-        localPickFired = true;
+        if (render.picked) return;
+        render.picked = true;
         try { remoteAwait?.abort?.("local-won"); } catch {}
         noteGmAnswer(game.user?.id, `used ${cand?.carrierName ?? "a reaction"}`);
         const keepGoing = await processDecision(cand);
@@ -957,8 +961,8 @@ export async function dispatchReactionMenu({
         else { closeMenusEverywhere(); resolveClose(); }
       },
       onPass: async () => {
-        if (localPickFired) return;
-        localPickFired = true;
+        if (render.picked) return;
+        render.picked = true;
         try { remoteAwait?.abort?.("local-won"); } catch {}
         noteGmAnswer(game.user?.id, passLabel && /cancel/i.test(passLabel) ? "cancelled" : "passed");
         await processPass();
@@ -969,8 +973,8 @@ export async function dispatchReactionMenu({
 
     if (remoteAwait) {
       remoteAwait.then(async (intent) => {
-        if (localPickFired) return;
-        localPickFired = true;
+        if (render.picked) return;
+        render.picked = true;
         // Abort remaining awaits so orphaned remote windows don't consume
         // future REACTION_CHOICE intents from the next reaction window.
         try { remoteAwait.abort("remote-won"); } catch {}
@@ -1003,7 +1007,7 @@ export async function dispatchReactionMenu({
         );
         if (!cand) {
           warn(`reaction[${trigger}]: remote REACTION_CHOICE rowKey ${body.rowKey} not found in remaining`);
-          localPickFired = false;
+          render.picked = false;
           return;
         }
         sendAck();
@@ -1019,7 +1023,7 @@ export async function dispatchReactionMenu({
         if (keepGoing) renderMenu();
         else { closeMenusEverywhere(); resolveClose(); }
       }).catch((e) => {
-        if (!String(e?.message ?? e).includes("local-won")) {
+        if (!/local-won|rearm/.test(String(e?.message ?? e))) {
           warn(`reaction[${trigger}]: awaitIntent rejected`, e);
         }
       });
@@ -1102,11 +1106,29 @@ export async function dispatchReactionMenu({
   };
   _dispatchCoordinator.addEventListener("stop-others", stopHandler);
 
+  // A GM who joins (or first loads) while this menu is open was not online when
+  // it opened: it was never sent to them and no answer from them is awaited.
+  // With a headless host that left the battle waiting on a menu only the host
+  // could see (user, 2026-10-22). Add them and re-open the menu for everyone.
+  // A GM already on the list who reloads gets the cached menu replayed instead.
+  const offHello = channel?.onPeerHello?.(({ userId }) => {
+    const u = game.users?.get(userId);
+    if (!u?.isGM || userId === game.user?.id || secondaryGmIds.includes(userId)) return;
+    secondaryGmIds.push(userId);
+    log(`reaction[${trigger}]: ${u.name} joined while ${reactor.name}'s menu is open — re-opening it for them`);
+    const r = liveRender;
+    if (!r || r.picked) return;      // a pick is in flight: its re-render includes them
+    r.picked = true;
+    try { r.remoteAwait?.abort?.("rearm"); } catch {}
+    renderMenu();
+  }) ?? null;
+
   try {
     renderMenu();
     await closed;
   } finally {
     _dispatchCoordinator.removeEventListener("stop-others", stopHandler);
+    try { offHello?.(); } catch {}
   }
   // `deferred` is gone — the auto-close-on-allDisabled branch was
   // removed in favor of always keeping the menu open with stamped

@@ -41,7 +41,7 @@
 
 import { log, warn } from "./logger.js";
 import { playUiHoverSfx, playUiClickSfx, playUiOpenSfx, playUiBackSfx } from "./director-ui-sfx.js";
-import { ensureDrawerStyles, escapeHtml as esc, mountDockedReaction, pickDocked } from "./drawer-views.js";
+import { ensureDrawerStyles, escapeHtml as esc, pickDocked } from "./drawer-views.js";
 import { rightEdgeReserve, hudScale, readUnitInfo } from "./director-player-hud.js";
 import { tabAlert, tabAlertClear } from "./tab-alert.js";
 import { setGmFocus, focusState, setFocusPart, setFocusAll, FOCUS_PARTS, FOCUS_TOOLS, toolAvailable, openTool } from "./battle-focus.js";
@@ -251,19 +251,29 @@ function ensureStyles() {
 .gmd-bar .end, .gmd-bar .end svg { color: var(--red); }
 .gmd-bar > [data-cmd].off { opacity: .4; cursor: not-allowed; }
 .gmd-bar > [data-cmd].off:hover { background: none; }
-/* Undecided action-card reactions are answered in the console (syncCardRx). */
-body.gmd-card-rx #fud-battlefield-card-root .fud-bf-reaction-pill[data-gmd-rx="1"] { display: none !important; }
-body.gmd-card-rx #fud-battlefield-card-root .fud-bf-reactions-row:not(:has(.fud-bf-reaction-pill:not([data-gmd-rx="1"]))) { display: none !important; }
+/* Undecided action-card reactions are answered in the console (syncCardRx);
+   on the card they show as icons (data-gmd-rx, action-card.js). */
+/* ...and the card steps aside off the console meanwhile (placeCardAside). */
+#fud-battlefield-card-root[data-gmd-aside]:not(.is-resolving):not(.is-hidden-during-pick) {
+  transition: transform 220ms cubic-bezier(.2,.7,.2,1), opacity 220ms ease-out, top 260ms cubic-bezier(.2,.7,.2,1), left 260ms cubic-bezier(.2,.7,.2,1); }
 /* The card's reactions in the console: a section per creature, Skip / Apply on each */
 .gmd .gmd-crx > .dhv-main { display: block; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--gold-2) transparent; }
 .gmd-crx-sec { display: flex; align-items: center; gap: 7px; margin: 8px 0 4px; font: 700 12.5px "Signika", sans-serif; color: var(--tx); }
 .gmd-crx-sec:first-child { margin-top: 0; }
 .gmd-crx-sec .dhv-ic { width: 20px; height: 20px; border-radius: 5px; }
+.gmd-crx-sec .gmd-crx-lbl { margin-left: auto; font: 700 9.5px "Signika", sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--tx-dim); }
 .gmd-crx-grid { display: grid; grid-template-columns: minmax(0,1fr); column-gap: 14px; row-gap: 3px; padding-left: 4px; }
 @container (min-width: 460px) { .gmd-crx-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
 .gmd-crx-row { display: grid; grid-template-columns: 20px minmax(0,1fr) auto; align-items: center; column-gap: 7px; height: 28px; padding: 0 4px 0 5px; border-radius: 6px; }
 .gmd-crx-row.is-cur { background: rgba(156,118,58,.12); box-shadow: inset 0 0 0 1px rgba(156,118,58,.35); }
 .gmd-crx-row.is-off { opacity: .6; }
+/* a decided reaction keeps its line, with the verdict the card shows */
+.gmd-crx-st { display: inline-flex; align-items: center; height: 19px; padding: 0 8px; border-radius: 999px; font: 700 10.5px "Signika", sans-serif; letter-spacing: .02em; white-space: nowrap; }
+.gmd-crx-st.ok { color: #2f6b2a; background: rgba(140,220,130,.30); box-shadow: inset 0 0 0 1px rgba(60,140,60,.55); }
+.gmd-crx-st.no { color: var(--tx-soft); background: rgba(220,220,220,.45); box-shadow: inset 0 0 0 1px rgba(140,140,140,.45); }
+.gmd-crx-st.wait { color: var(--tx-soft); background: rgba(255,255,255,.4); box-shadow: inset 0 0 0 1px rgba(122,106,85,.4); font-style: italic; }
+/* every reaction answered, card still open: the list stays as the record */
+.gmd-crx-done { grid-area: main; min-height: 0; overflow-y: auto; padding: 10px 14px; container-type: inline-size; scrollbar-width: thin; scrollbar-color: var(--gold-2) transparent; }
 .gmd-crx-row .nm { font: 600 12.5px "Signika", sans-serif; color: var(--tx); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gmd-crx-row .dhv-ic { width: 20px; height: 20px; border-radius: 5px; }
 .gmd-crx-btns { display: inline-flex; gap: 4px; }
@@ -362,7 +372,7 @@ body.gmd-card-rx #fud-battlefield-card-root .fud-bf-reactions-row:not(:has(.fud-
 .gmd-fold:hover { color: var(--tx); background: rgba(58,50,40,.08); }
 
 /* Fold: a drawer tab standing on the panels' top edge, over the gap between them */
-.gmd-foldtab { position: absolute; z-index: 3; pointer-events: auto; transform: translate(-50%, -100%); display: flex; align-items: center; gap: 4px;
+.gmd-foldtab { position: absolute; z-index: 3; pointer-events: auto; transform: translate(-100%, -100%); display: flex; align-items: center; gap: 4px;
   height: 20px; padding: 0 10px 1px; border-radius: 9px 9px 0 0; cursor: pointer; user-select: none; white-space: nowrap;
   background: linear-gradient(180deg, var(--p-top), var(--p-bot)); border: 2px solid var(--stroke); border-bottom: 0;
   box-shadow: 0 0 0 1px rgba(255,255,255,.7) inset, 0 -3px 10px rgba(0,0,0,.25);
@@ -447,8 +457,10 @@ body.gmd-card-rx #fud-battlefield-card-root .fud-bf-reactions-row:not(:has(.fud-
    position, so Left/Right cross between them). */
 .gmd .dhv-view > .dhv-main { container-type: inline-size; }
 /* 460 = two ~220 px columns: 1440p (about 518 px here, beside the commands and
-   the detail card) gets them, 1080p (about 360) keeps one. */
-@container (min-width: 460px) { .gmd .dhv-list:not(.is-one) { grid-template-columns: repeat(2, minmax(0,1fr)); column-gap: 18px; } }
+   the detail card) gets them, 1080p (about 360) keeps one. Short lists too
+   (the drawer's is-one, 3 rows or fewer): every console list reads the same
+   way at a given width (user, 2026-10-22). */
+@container (min-width: 460px) { .gmd .dhv-list, .gmd .dhv-list.is-one { grid-template-columns: repeat(2, minmax(0,1fr)); column-gap: 18px; } }
 .gmd .dhv-list.is-one { max-width: none; }
 .gmd .dhv-row { height: 25px; font-size: 12.5px; }
 .gmd .dhv-tiles { align-content: center; }
@@ -647,6 +659,11 @@ export function buildDesk(partyIds = []) {
   D.roster.addEventListener("dblclick", onRosterDblClick);
   D.roster.addEventListener("pointerover", onRosterOver);
   D.roster.addEventListener("pointerleave", () => { if (D.hover) { D.hover = null; positionRing(true); } });
+  let autoRaf = requestAnimationFrame(function autoLoop(t) {
+    try { autoScrollDetails(t); } catch (e) { warn("[GmDesk] description auto-scroll failed", e); }
+    autoRaf = requestAnimationFrame(autoLoop);
+  });
+  D.offFns.push(() => cancelAnimationFrame(autoRaf));
   D.chd.addEventListener("click", (e) => {
     if (e.target.closest?.("[data-lock]")) { toggleLock(); return; }
     // A folded console strip opens the desk again.
@@ -776,15 +793,16 @@ function place() {
   Object.assign(D.root.style, { width: `${W}px`, height: `${H}px`, transform: s === 1 ? "none" : `scale(${s})` });
   Object.assign(D.bar.style, { left: `${bar.x}px`, top: `${bar.y}px`, right: "" });
   placeMore();
-  // The Fold tab hangs off the panels' top edge, over the gap between them.
-  const tabAt = (y) => { if (D.foldTab) Object.assign(D.foldTab.style, { left: `${Math.round(cx - L.gap / 2)}px`, top: `${y}px` }); };
+  // The Fold tab hangs off the console's top edge at its right corner (user,
+  // 2026-10-23), clear of the rounded corner.
+  const tabAt = (y) => { if (D.foldTab) Object.assign(D.foldTab.style, { left: `${Math.round(cx + cw - 14)}px`, top: `${y}px` }); };
   if (D.foldShown) {
     // Folded: each panel is its header strip, sitting on its own base line.
     const rh = (D.roster.querySelector(".gmd-ph")?.offsetHeight ?? 30) + 4;
     const ch = (D.chd?.offsetHeight ?? 46) + 4;
     Object.assign(D.roster.style, { left: `${rx}px`, width: `${rw}px`, top: `${H - rb - rh}px`, height: `${rh}px` });
     Object.assign(D.con.style, { left: `${cx}px`, width: `${cw}px`, top: `${H - cb - ch}px`, height: `${ch}px` });
-    tabAt(Math.min(H - rb - rh, H - cb - ch));
+    tabAt(H - cb - ch);
     return;
   }
   Object.assign(D.roster.style, { left: `${rx}px`, width: `${rw}px`, top: `${top}px`, height: `${Math.max(150, H - rb - top)}px` });
@@ -815,6 +833,7 @@ function tick() {
   const open = !!card && card.classList.contains("is-visible") && !card.classList.contains("is-hidden-during-pick") && !!card.querySelector(".fud-bf-card");
   if (open !== D.cardOpen) { D.cardOpen = open; D.root.classList.toggle("is-card", open); render(); }
   try { syncCardRx(); } catch (e) { warn("[GmDesk] card reactions sync failed", e); }
+  try { placeCardAside(); } catch (e) { warn("[GmDesk] card step-aside failed", e); }
   // Done chips expire.
   const now = Date.now();
   let expired = false;
@@ -1120,8 +1139,8 @@ function paintRxCells() {
     let html = "";
     const done = D.done.get(r.u.tokenId);
     if (e) {
-      const n = e.candidates.filter((c) => c?.mode !== "on").length;
-      const names = e.candidates.filter((c) => c?.mode !== "on").map((c) => c.carrierName).join(" · ");
+      const n = e.candidates.filter((c) => c?.mode !== "on" && c?.mode !== "done").length;
+      const names = e.candidates.filter((c) => c?.mode !== "on" && c?.mode !== "done").map((c) => c.carrierName).join(" · ");
       const on = D.rxCur === e.key;
       const owner = liveOwnerOf(e.actor);
       const state = !owner ? `<span class="gmd-chip you">${on ? "Answering" : "Your call"}</span>`
@@ -1143,7 +1162,7 @@ function paintRxCells() {
   const open = [...D.rx.values()];
   let ban = "";
   if (open.length) {
-    const total = open.reduce((s, e) => s + e.candidates.filter((c) => c?.mode !== "on").length, 0);
+    const total = open.reduce((s, e) => s + e.candidates.filter((c) => c?.mode !== "on" && c?.mode !== "done").length, 0);
     const label = open[0].label ?? "Reaction";
     const kind = open.length > 1 ? `${open.length} menus at once` : "one at a time";
     ban = `<span class="gmd-ban"><span class="gmd-cnt">⚡${total}</span><b>${esc(label)}</b><span class="k">${esc(kind)}</span></span>`;
@@ -1470,8 +1489,13 @@ function paintIdle(layer) {
   const el = D.layers.idle;
   let h;
   if (layer === "card") {
-    const body = `The action card is open.<br>Answer its reactions and press <b>Confirm</b> on the card, as before.`;
-    h = `<div class="gmd-idle"><div>${body}</div></div><div class="gmd-foot"><span class="gmd-sum">While the card is open, Enter and Esc belong to the card.</span></div>`;
+    const answered = _crxSecs.length ? crxListHTML(_crxSecs).html : "";
+    if (answered) {
+      h = `<div class="gmd-crx-done"><div class="gmd-crx-list">${answered}</div></div><div class="gmd-foot"><span class="gmd-sum">Reactions answered. Press <b>Confirm</b> on the card. While the card is open, Enter and Esc belong to the card.</span></div>`;
+    } else {
+      const body = `The action card is open.<br>Answer its reactions and press <b>Confirm</b> on the card, as before.`;
+      h = `<div class="gmd-idle"><div>${body}</div></div><div class="gmd-foot"><span class="gmd-sum">While the card is open, Enter and Esc belong to the card.</span></div>`;
+    }
   } else {
     const ts = D.turnStatus;
     const waiting = [...D.rx.values()].length;
@@ -1559,6 +1583,48 @@ function addLog(p) {
 // Keyed by what the control is, not by its element: a repaint under a resting
 // pointer swaps the element and would play the cue again.
 const HOVER_SEL = ".gmd-bar > [data-cmd]:not(.off), .gmd-size [data-sz]:not(.on), [data-fold], [data-lock]";
+// A description too long for its box scrolls itself (user, 2026-10-22): the
+// wheel only reaches it with the mouse over it, far right of a two-column list.
+// After a few seconds on an item the text drifts down slowly, rests at the end,
+// goes back to the top and starts over. It holds while the mouse is on it, and
+// once you scroll it yourself it is yours until the next item.
+const AUTO_WAIT_MS = 3000;     // on an item before it starts moving
+const AUTO_PX_PER_S = 14;      // slow enough to read along
+const AUTO_REST_MS = 2500;     // at the end, before going back up
+const _autoDd = new WeakMap(); // .dd element → { sig, phase, at, pos, manual }
+function autoScrollDetails(now) {
+  if (!D.root?.isConnected) return;
+  for (const dd of D.root.querySelectorAll(".gmd-layer:not(.is-off) .gmd-detail .dd")) {
+    const text = dd.textContent ?? "";
+    const sig = `${text.length}:${text.slice(0, 60)}`;
+    let st = _autoDd.get(dd);
+    if (!st) {
+      st = { sig: null };
+      _autoDd.set(dd, st);
+      const mine = () => { st.manual = true; };
+      dd.addEventListener("wheel", mine, { passive: true });
+      dd.addEventListener("pointerdown", mine);
+    }
+    if (st.sig !== sig) {        // another item (the node is reused): start over
+      Object.assign(st, { sig, phase: "wait", at: now, pos: 0, manual: false });
+      dd.scrollTop = 0;
+    }
+    const max = dd.scrollHeight - dd.clientHeight;
+    if (st.manual || max <= 1) continue;
+    if (dd.matches(":hover")) { st.at = now; continue; }   // reading it: hold
+    if (st.phase === "wait") {
+      if (now - st.at >= AUTO_WAIT_MS) { st.phase = "down"; st.at = now; st.pos = dd.scrollTop; }
+    } else if (st.phase === "down") {
+      st.pos = Math.min(max, st.pos + (AUTO_PX_PER_S * Math.min(100, now - st.at)) / 1000);
+      st.at = now;
+      dd.scrollTop = st.pos;
+      if (st.pos >= max) st.phase = "rest";
+    } else if (st.phase === "rest" && now - st.at >= AUTO_REST_MS) {
+      dd.scrollTo({ top: 0, behavior: "smooth" });
+      Object.assign(st, { phase: "wait", at: now, pos: 0 });
+    }
+  }
+}
 function onDeskOver(e) {
   const el = e.target.closest?.(HOVER_SEL) ?? null;
   const key = !el ? null : el.dataset.cmd ? `cmd:${el.dataset.cmd}` : el.dataset.sz ? `sz:${el.dataset.sz}` : el.hasAttribute("data-fold") ? "fold" : "lock";
@@ -1735,28 +1801,26 @@ export function deskSpawnReaction({ key, token, candidates, onPick, onPass, labe
   clearTimeout(prev?._closeT);
   D.rx.set(key, entry);
   if (!D.rxOrder.includes(key)) D.rxOrder.push(key);
-  // The entry's own host: its view is in the console only while it is selected.
-  const host = {
-    actorId: actor?.id ?? null, unit: D.con, pcard: null, relativeSides: true,
-    mount(node) { deskStepHost().mount(node); },
-    mountOverlay(node) {
-      node.dataset.gmd = "1";
-      entry.node = node;
-      if (D.rxCur === key) showRxNode();
-      return () => closeRxEntry(entry);
-    },
-    setCrumb(t) { entry.crumb = t; },
-    pushCrumb() {},
-    setCard(c) { entry.card = c; if (D.rxCur === key) paintRxDetail(); },
-    setHint() {},
-    release: () => {},
-  };
-  entry.rec = mountDockedReaction(host, {
-    candidates, label: label ?? "Reaction", passLabel: passLabel ?? "Pass", disabledLabels,
-    goLabel: () => rxGoLabel(entry),
-    onPick: (c) => { entry.lastAction = "Applied"; noteContext(actor, entry.tokenId); return onPick?.(c); },
-    onPass: typeof onPass === "function" ? () => { entry.lastAction = passLabel && /cancel/i.test(passLabel) ? "Cancelled" : "Passed"; return onPass(); } : null,
+  // Start of conflict / round / turn reactions share ONE sectioned view with
+  // the card's (user, 2026-10-23): a section per creature, Skip / Apply on each
+  // reaction. A Use re-opens the creature's menu with what is left, so its
+  // record (what was applied, what was skipped) carries over from `prev`.
+  Object.assign(entry, {
+    srx: true, node: srxView(), onPick, onPass: typeof onPass === "function" ? onPass : null,
+    passLabel: passLabel ?? "Pass", disabled: new Map(Object.entries(disabledLabels ?? {})),
+    // The Use in flight landed if its reaction is no longer offered; one still
+    // offered was cancelled (its target pick) or aborted, and stays answerable.
+    history: prev?.srx ? [...prev.history, ...(prev.pending && !(candidates ?? []).some((c) => srxKeyOf(c) === srxKeyOf(prev.pending))
+      ? [{ c: prev.pending, status: "Applied" }] : [])] : [],
+    skipped: prev?.srx ? prev.skipped : new Set(), busy: false, pending: null,
   });
+  _srxDone.delete(key);
+  entry.rec = {
+    root: entry.node,
+    cleanup: () => closeSrxEntry(entry),
+    updateDisabledLabels(next) { entry.disabled = new Map(Object.entries(next ?? {})); paintSrxView(); },
+  };
+  paintSrxView();
   // Flow B: the first creature waiting on the GM opens by itself; a re-opened
   // menu (after a Use) keeps its selection. Player lines never open on their
   // own unless only players are deciding.
@@ -1766,6 +1830,163 @@ export function deskSpawnReaction({ key, token, candidates, onPick, onPass, labe
   render();
   scrollRosterTo(entry.tokenId);
   return entry.rec;
+}
+// ── start of conflict / round / turn reactions: the sectioned view ──────────
+// One view for every creature whose standalone reaction menu is open, laid out
+// like the card's reactions: a section per creature, Skip and Apply on each.
+// The menus underneath are unchanged (reaction-menu.js → standalone-reactions):
+// Apply is the menu's Use of that reaction; Skip only marks it here, and once
+// every reaction of a creature that it could use is skipped, the creature
+// passes — the menu's own Pass, which covers all of them for this window.
+let _srxView = null;
+let _srxDone = new Map(); // key → a closed creature's section, kept while others still decide
+let _srxHover = null;   // "entryKey|carrier::row" whose description the detail card shows
+const srxKeyOf = (c) => `${c?.carrierUuid}::${c?.rowKey}`;
+function srxView() {
+  if (_srxView) return _srxView;
+  const v = document.createElement("div");
+  v.className = "dhv-view gmd-crx";
+  v.dataset.gmd = "1";
+  v.addEventListener("click", onSrxClick);
+  v.addEventListener("pointerover", (ev) => {
+    const row = ev.target.closest?.(".gmd-crx-row");
+    if (!row) return;
+    const k = `${row.dataset.r}|${row.dataset.k}`;
+    if (k === _srxHover) return;
+    _srxHover = k;
+    playUiHoverSfx();
+    paintSrxDetail();
+  });
+  _srxView = v;
+  return v;
+}
+function srxEntries() { return D.rxOrder.map((k) => D.rx.get(k)).filter((e) => e?.srx && !e.closed); }
+// What a creature can still answer: not automatic, not unusable, not skipped.
+function srxOpenRows(e) {
+  return (e.candidates ?? []).filter((c) => c?.mode !== "on" && !e.disabled.get(srxKeyOf(c)) && !e.skipped.has(srxKeyOf(c)));
+}
+function paintSrxView() {
+  const v = srxView();
+  let open = 0;
+  const secs = srxEntries().map((e) => {
+    const owner = liveOwnerOf(e.actor);
+    const theirs = !!owner && D.locked;
+    const face = e.img ? `<span class="dhv-ic"><img src="${esc(e.img)}" alt=""></span>` : "";
+    const who = owner ? `<span class="gmd-chip ${theirs ? "pl" : "you"}">${theirs ? `${esc(owner.name)} decides` : `For ${esc(owner.name)}`}</span>` : "";
+    const icon = (c) => c?.carrierImg ? `<span class="dhv-ic"><img src="${esc(c.carrierImg)}" alt=""></span>` : `<span class="dhv-ic"></span>`;
+    const row = (c, tail, cls = "") => `<div class="gmd-crx-row${cls}" data-k="${esc(srxKeyOf(c))}" data-r="${esc(e.key)}">${icon(c)}<span class="nm">${esc(c?.carrierName ?? "Reaction")}</span>${tail}</div>`;
+    const done = e.history.map((h) => row(h.c, `<span class="gmd-crx-st ${h.status === "Applied" ? "ok" : "no"}">${esc(h.status)}</span>`, h.status === "Applied" ? "" : " is-off"));
+    const live = (e.candidates ?? []).map((c) => {
+      const k = srxKeyOf(c), why = e.disabled.get(k);
+      if (e.skipped.has(k)) return row(c, `<span class="gmd-crx-st no">Skipped</span>`, " is-off");
+      if (why) return row(c, `<span class="dhv-chip t-danger">${esc(why)}</span>`, " is-off");
+      if (c?.mode === "on") return row(c, `<span class="dhv-chip t-tag">Auto</span>`, " is-off");
+      if (theirs) return row(c, `<span class="dhv-chip t-tag">Waiting</span>`);
+      if (e.pending && srxKeyOf(e.pending) === k) return row(c, `<span class="gmd-crx-st wait">Applying…</span>`);
+      if (e.busy) return row(c, `<span class="gmd-crx-st wait">…</span>`);
+      open++;
+      const skip = e.onPass ? `<span class="gmd-crx-b skip" role="button" data-a="skip">Skip</span>` : "";
+      return row(c, `<span class="gmd-crx-btns">${skip}<span class="gmd-crx-b apply" role="button" data-a="apply">Apply</span></span>`);
+    });
+    return `<div class="gmd-crx-sec">${face}<b>${esc(e.name)}</b>${who}<span class="gmd-crx-lbl">${esc(e.label ?? "")}</span></div><div class="gmd-crx-grid">${[...done, ...live].join("")}</div>`;
+  }).join("") + [..._srxDone.values()].map((d) => {
+    const face = d.img ? `<span class="dhv-ic"><img src="${esc(d.img)}" alt=""></span>` : "";
+    const rows = d.rows.map(({ c, status, ok }) => `<div class="gmd-crx-row${ok ? "" : " is-off"}" data-k="${esc(srxKeyOf(c))}" data-r="${esc(d.key)}">`
+      + `${c?.carrierImg ? `<span class="dhv-ic"><img src="${esc(c.carrierImg)}" alt=""></span>` : `<span class="dhv-ic"></span>`}<span class="nm">${esc(c?.carrierName ?? "Reaction")}</span>`
+      + `<span class="gmd-crx-st ${ok ? "ok" : "no"}">${esc(status)}</span></div>`).join("");
+    return `<div class="gmd-crx-sec">${face}<b>${esc(d.name)}</b><span class="gmd-crx-lbl">${esc(d.label ?? "")}</span></div><div class="gmd-crx-grid">${rows}</div>`;
+  }).join("");
+  v.innerHTML = `<div class="dhv-main"><div class="gmd-crx-list">${secs}</div></div>`
+    + `<div class="dhv-foot"><span class="dhv-ftxt"><span class="cnt">Reactions</span> · ${open} to answer · Skip or Apply each</span>`
+    + (open ? `<span class="dhv-btn back" role="button" data-a="skipall">Skip all<span class="k">${open}</span></span>` : "") + `</div>`;
+  const keys = [...srxEntries().flatMap((e) => (e.candidates ?? []).map((c) => `${e.key}|${srxKeyOf(c)}`)),
+    ...[..._srxDone.values()].flatMap((d) => d.rows.map((r) => `${d.key}|${srxKeyOf(r.c)}`))];
+  if (!keys.includes(_srxHover)) _srxHover = keys[0] ?? null;
+  paintSrxDetail();
+}
+function paintSrxDetail() {
+  const [ek, ck] = String(_srxHover ?? "").split("|");
+  const live = D.rx.get(ek);
+  const e = live?.srx ? live : null;
+  const d = e ? null : _srxDone.get(ek);
+  const c = e?.candidates?.find((x) => srxKeyOf(x) === ck) ?? d?.rows.find((r) => srxKeyOf(r.c) === ck)?.c ?? null;
+  const why = c && e ? e.disabled.get(ck) : null;
+  const card = c ? {
+    key: `srx|${_srxHover}`, name: c.carrierName ?? "Reaction", kind: (e ?? d)?.label ?? "Reaction", img: c.carrierImg ?? null, from: (e ?? d)?.name,
+    chips: [{ text: c.mode === "on" ? "Auto" : c.kind === "manual" ? "Manual" : "Asks", tone: "tag" }],
+    body: htmlToText(c.carrierDescription ?? ""), reason: why || (c.mode === "on" ? "This one happens on its own; it is listed so you can see it." : null),
+  } : null;
+  for (const x of srxEntries()) x.card = card;
+  _srxView?.querySelectorAll(".gmd-crx-row").forEach((el) => el.classList.toggle("is-cur", `${el.dataset.r}|${el.dataset.k}` === _srxHover));
+  if (D.rx.get(D.rxCur)?.srx) paintRxDetail();
+}
+function srxPass(e) {
+  if (!e.onPass || e.closed) return;
+  e.lastAction = e.passLabel && /cancel/i.test(e.passLabel) ? "Cancelled" : "Passed";
+  for (const c of srxOpenRows(e)) e.skipped.add(srxKeyOf(c));
+  try { e.onPass(); } catch (err) { warn("[GmDesk] reaction pass threw", err); }
+}
+function onSrxClick(ev) {
+  const b = ev.target.closest?.("[data-a]");
+  if (!b) return;
+  ev.stopPropagation();
+  playUiClickSfx();
+  if (b.dataset.a === "skipall") {
+    for (const e of srxEntries()) if (!(liveOwnerOf(e.actor) && D.locked) && !e.busy) srxPass(e);
+    return;
+  }
+  const row = b.closest(".gmd-crx-row");
+  const e = row ? D.rx.get(row.dataset.r) : null;
+  const c = e?.candidates?.find((x) => srxKeyOf(x) === row.dataset.k);
+  if (!e?.srx || e.closed || e.busy || !c) return;
+  if (b.dataset.a === "skip") {
+    e.skipped.add(srxKeyOf(c));
+    // Nothing left this creature could use: that is its Pass.
+    if (!srxOpenRows(e).length) srxPass(e);
+    else paintSrxView();
+    return;
+  }
+  // Apply = the menu's Use. It re-opens with what is left (or closes).
+  e.busy = true;
+  e.pending = c;
+  e.lastAction = "Applied";
+  noteContext(e.actor, e.tokenId);
+  paintSrxView();
+  try { e.onPick?.(c); } catch (err) { warn("[GmDesk] reaction pick threw", err); }
+}
+// What a creature's section says once its menu has closed: every reaction with
+// the decision taken on it (the user, 2026-10-22: decided reactions stay listed).
+function srxDoneRecord(e) {
+  const passed = e.lastAction === "Passed" || e.lastAction === "Cancelled";
+  // A Use the menu closed on (its last reaction, or one that opens an action).
+  const history = e.pending ? [...e.history, { c: e.pending, status: "Applied" }] : e.history;
+  const rows = history.map((h) => ({ c: h.c, status: h.status, ok: h.status === "Applied" }));
+  for (const c of e.candidates ?? []) {
+    if (history.some((h) => srxKeyOf(h.c) === srxKeyOf(c))) continue;
+    const why = e.disabled.get(srxKeyOf(c));
+    const status = c?.mode === "on" ? "Auto" : why ? why : e.skipped.has(srxKeyOf(c)) ? "Skipped" : passed ? e.lastAction : "Closed";
+    rows.push({ c, status, ok: c?.mode === "on" });
+  }
+  return { key: e.key, name: e.name, img: e.img, label: e.label, rows };
+}
+function closeSrxEntry(entry) {
+  if (D.rx.get(entry.key) !== entry) return;
+  entry.closed = true;
+  _srxDone.set(entry.key, srxDoneRecord(entry));
+  paintSrxView();
+  // A Use re-opens the same menu straight away: wait a moment before letting go.
+  entry._closeT = setTimeout(() => {
+    if (D.rx.get(entry.key) !== entry) return;
+    D.rx.delete(entry.key);
+    D.rxOrder = D.rxOrder.filter((k) => k !== entry.key);
+    D.done.set(entry.tokenId, { text: entry.lastAction ?? "Answered", until: Date.now() + DONE_MS });
+    // The window is over once nobody is left deciding: the record goes with it.
+    if (!srxEntries().length) { try { _srxView?.remove(); } catch { /* */ } _srxView = null; _srxHover = null; _srxDone = new Map(); }
+    else paintSrxView();
+    if (D.rxCur === entry.key) { D.rxCur = null; autoSelectRx(); }
+    paintRxCells();
+    render();
+  }, CLOSE_GRACE_MS);
 }
 function closeRxEntry(entry) {
   if (D.rx.get(entry.key) !== entry) return;
@@ -1846,18 +2067,26 @@ function cardPillGroups() {
     // The action-taker's own pills have no reactor uuid: the card names them.
     const reactor = p.dataset.fudReactorUuid || card.dataset.fudActorUuid || "self";
     const pending = p.classList.contains("is-ask") && p.dataset.fudReactionPending === "1" && p.dataset.fudReactionMoot !== "1";
-    const auto = p.classList.contains("is-auto");
-    const off = p.classList.contains("is-unavailable") || p.dataset.fudReactionMoot === "1";
-    if (!pending && !auto && !off) continue;   // decided / in flight: the card shows it
+    // Decided (or on its way) keeps its line with the card's verdict (user,
+    // 2026-10-22): Applied / Skipped, or Forced / Suppressed for a GM's call.
+    const sending = p.classList.contains("is-submitting");
+    const done = !pending && (sending || p.classList.contains("is-resolved"));
+    const auto = !done && p.classList.contains("is-auto");
+    const off = !done && (p.classList.contains("is-unavailable") || p.dataset.fudReactionMoot === "1");
+    if (!pending && !auto && !off && !done) continue;
     const g = groups.get(reactor) ?? { reactor, rows: [], pending: 0 };
     if (pending) g.pending++;
     const reason = off ? (p.querySelector(".fud-bf-reaction-reason, [data-fud-reaction-moot-chip='1']")?.textContent?.trim() || "No longer applies") : "";
+    const status = !done ? ""
+      : sending ? "Sending…"
+      : p.querySelector(".fud-bf-reaction-status")?.textContent?.trim() || (p.classList.contains("is-applied") ? "Applied" : "Skipped");
     g.rows.push({
       rowKey: p.dataset.fudReactionKey ?? "", carrierUuid: p.dataset.fudReactionCarrier ?? "",
       carrierName: p.querySelector(".fud-bf-reaction-name")?.textContent?.trim() || "Reaction",
       carrierImg: p.querySelector("img")?.getAttribute("src") ?? null,
       carrierDescription: p.dataset.fudEquipDesc ?? "",
-      mode: auto ? "on" : "ask", reason,
+      mode: done ? "done" : auto ? "on" : "ask", reason,
+      status, applied: done && !sending && p.classList.contains("is-applied"),
     });
     groups.set(reactor, g);
   }
@@ -1886,28 +2115,36 @@ function cardRxToken(reactor) {
 // D.rx — that is what lights its roster line, counts it in the banner and leaves
 // the "Applied / Passed" chip — but they all show the same shared view.
 let _crxView = null;
+let _crxSecs = [];      // every reactor on the card, answered ones included
 let _crxSig = "";
 let _crxHover = null;   // "rowKey:carrier" whose description the detail card shows
 function syncCardRx() {
   const groups = D.root ? cardPillGroups() : new Map();
   document.body.classList.toggle("gmd-card-rx", !!D.root);
-  const live = [];
+  const secs = [];
   for (const [reactor, g] of groups) {
-    if (!g.pending) continue;
     const token = cardRxToken(reactor);
-    if (token) live.push({ ...g, token, key: CARD_RX + reactor });
+    if (!token) continue;
+    const actor = token.actor ?? null;
+    secs.push({ ...g, token, key: CARD_RX + reactor, actor,
+      name: token.name ?? actor?.name ?? "Reactor", img: actor?.img ?? token.document?.texture?.src ?? null });
   }
+  _crxSecs = secs;
+  // Only a creature with something still to answer is an open reaction (its
+  // roster line, the banner count); answered ones stay in the view as a record.
+  const live = secs.filter((g) => g.pending);
   for (const g of live) {
     const e = _cardRx.get(g.key) ?? openCardRxEntry(g);
     e.candidates = g.rows;
   }
   for (const [key, e] of [..._cardRx]) if (!live.some((g) => g.key === key)) closeCardRxEntry(e);
-  const sig = live.map((g) => `${g.key}=${g.rows.map((r) => `${r.rowKey}:${r.carrierUuid}:${r.mode}:${r.reason}`).join(",")}`).join("|")
-    + `|L${D.locked ? 1 : 0}`;
+  const sig = secs.map((g) => `${g.key}=${g.rows.map((r) => `${r.rowKey}:${r.carrierUuid}:${r.mode}:${r.reason}:${r.status}`).join(",")}`).join("|")
+    + `|L${D.locked ? 1 : 0}|${live.length}`;
   if (sig !== _crxSig) {
     _crxSig = sig;
-    if (live.length) paintCardRxView(live);
+    if (live.length) paintCardRxView(secs);
     paintRxCells();
+    if (!live.length && D.cardOpen) render();   // the answered list, in the card layer
   }
   // Hide on the card exactly the pills the console now offers — re-stamped every
   // pass, since the card re-renders its pills. A pill whose creature could not be
@@ -1969,31 +2206,38 @@ function closeCardRxEntry(e) {
 }
 function crxRows() {
   const out = [];
-  for (const e of _cardRx.values()) for (const r of e.candidates ?? []) out.push({ e, r });
+  for (const g of _crxSecs) for (const r of g.rows ?? []) out.push({ e: _cardRx.get(g.key) ?? g, r });
   return out;
 }
-function paintCardRxView(live) {
-  const v = crxView();
+function crxListHTML(secs) {
   let open = 0;
-  const secs = live.map((g) => {
-    const e = _cardRx.get(g.key);
-    const owner = liveOwnerOf(e?.actor);
+  const html = secs.map((g) => {
+    const owner = liveOwnerOf(g.actor);
     const theirs = !!owner && D.locked;
-    const face = e?.img ? `<span class="dhv-ic"><img src="${esc(e.img)}" alt=""></span>` : "";
-    const who = owner ? `<span class="gmd-chip ${theirs ? "pl" : "you"}">${theirs ? `${esc(owner.name)} decides` : `For ${esc(owner.name)}`}</span>` : "";
+    const face = g.img ? `<span class="dhv-ic"><img src="${esc(g.img)}" alt=""></span>` : "";
+    const who = owner && g.pending ? `<span class="gmd-chip ${theirs ? "pl" : "you"}">${theirs ? `${esc(owner.name)} decides` : `For ${esc(owner.name)}`}</span>` : "";
     const rows = g.rows.map((r) => {
       const ask = r.mode === "ask" && !r.reason;
       if (ask && !theirs) open++;
       const icon = r.carrierImg ? `<span class="dhv-ic"><img src="${esc(r.carrierImg)}" alt=""></span>` : `<span class="dhv-ic"></span>`;
-      const tail = !ask
-        ? `<span class="dhv-chip ${r.reason ? "t-danger" : "t-tag"}">${esc(r.reason || "Auto")}</span>`
+      const sending = r.status === "Sending…";
+      const tail = r.mode === "done"
+        ? `<span class="gmd-crx-st ${r.applied ? "ok" : sending ? "wait" : "no"}">${esc(r.status)}</span>`
+        : !ask ? `<span class="dhv-chip ${r.reason ? "t-danger" : "t-tag"}">${esc(r.reason || "Auto")}</span>`
         : theirs ? `<span class="dhv-chip t-tag">Waiting</span>`
         : `<span class="gmd-crx-btns"><span class="gmd-crx-b skip" role="button" data-a="skip">Skip</span><span class="gmd-crx-b apply" role="button" data-a="apply">Apply</span></span>`;
-      return `<div class="gmd-crx-row${ask ? "" : " is-off"}" data-k="${esc(r.rowKey)}" data-c="${esc(r.carrierUuid)}" data-r="${esc(g.key)}">${icon}<span class="nm">${esc(r.carrierName)}</span>${tail}</div>`;
+      // Applied stays at full strength, as on the card; Skipped fades with the rest.
+      const dim = !ask && !(r.mode === "done" && (r.applied || sending));
+      return `<div class="gmd-crx-row${dim ? " is-off" : ""}" data-k="${esc(r.rowKey)}" data-c="${esc(r.carrierUuid)}" data-r="${esc(g.key)}">${icon}<span class="nm">${esc(r.carrierName)}</span>${tail}</div>`;
     }).join("");
-    return `<div class="gmd-crx-sec">${face}<b>${esc(e?.name ?? "Reactor")}</b>${who}</div><div class="gmd-crx-grid">${rows}</div>`;
+    return `<div class="gmd-crx-sec">${face}<b>${esc(g.name ?? "Reactor")}</b>${who}</div><div class="gmd-crx-grid">${rows}</div>`;
   }).join("");
-  v.innerHTML = `<div class="dhv-main"><div class="gmd-crx-list">${secs}</div></div>`
+  return { html, open };
+}
+function paintCardRxView(secs) {
+  const v = crxView();
+  const { html, open } = crxListHTML(secs);
+  v.innerHTML = `<div class="dhv-main"><div class="gmd-crx-list">${html}</div></div>`
     + `<div class="dhv-foot"><span class="dhv-ftxt"><span class="cnt">Reactions</span> · ${open} to answer · Skip or Apply each</span>`
     + (open ? `<span class="dhv-btn back" role="button" data-a="skipall">Skip all<span class="k">${open}</span></span>` : "") + `</div>`;
   if (!_crxHover || !crxRows().some(({ r }) => `${r.rowKey}:${r.carrierUuid}` === _crxHover)) {
@@ -2006,7 +2250,7 @@ function paintCrxDetail() {
   const hit = crxRows().find(({ r }) => `${r.rowKey}:${r.carrierUuid}` === _crxHover);
   const card = hit ? {
     key: `crx|${_crxHover}`, name: hit.r.carrierName, kind: "Reaction", img: hit.r.carrierImg, from: hit.e.name,
-    chips: [{ text: hit.r.mode === "on" ? "Auto" : "Asks", tone: "tag" }],
+    chips: [{ text: hit.r.mode === "done" ? hit.r.status : hit.r.mode === "on" ? "Auto" : "Asks", tone: "tag" }],
     body: htmlToText(hit.r.carrierDescription), reason: hit.r.reason || null,
   } : null;
   for (const e of _cardRx.values()) e.card = card;
@@ -2043,8 +2287,36 @@ function clearCardRx() {
   for (const e of [..._cardRx.values()]) closeCardRxEntry(e);
   _cardRx.clear();
   try { _crxView?.remove(); } catch { /* */ }
-  _crxView = null; _crxSig = ""; _crxHover = null;
+  _crxView = null; _crxSig = ""; _crxHover = null; _crxSecs = [];
   document.body.classList.remove("gmd-card-rx");
+  placeCardAside();
+}
+// The action card sits mid-screen, which on a short window is over the
+// console's top rows — exactly where its own reactions are answered (user,
+// 2026-10-22). While the console shows them the card steps aside: up into the
+// clear canvas above the panels when it fits there, else left over the roster,
+// clear of the console. It goes back to the centre once they are answered.
+function placeCardAside() {
+  const root = document.getElementById("fud-battlefield-card-root");
+  if (!root) return;
+  const reset = () => {
+    if (!root.hasAttribute("data-gmd-aside")) return;
+    root.removeAttribute("data-gmd-aside");
+    root.style.top = ""; root.style.left = "";
+  };
+  if (!D.root || !_cardRx.size || !D.cardOpen || D.foldShown || !D.con) return reset();
+  const m = 12;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const w = root.offsetWidth, h = root.offsetHeight;
+  const con = D.con.getBoundingClientRect(), ros = D.roster?.getBoundingClientRect();
+  const line = Math.min(con.top, ros?.top ?? con.top);
+  let x = vw / 2, y = vh / 2;
+  if (y + h / 2 + m <= con.top) return reset();             // already clear of the console
+  if (h + 2 * m <= line) y = Math.min(y, line - m - h / 2);
+  else if (w + 2 * m <= con.left) { x = Math.min(x, con.left - m - w / 2); y = Math.max(h / 2 + m, Math.min(y, vh - h / 2 - m)); }
+  else y = h / 2 + m;                                        // no clear spot: as high as it goes
+  root.setAttribute("data-gmd-aside", "1");
+  root.style.top = `${Math.round(y)}px`; root.style.left = `${Math.round(x)}px`;
 }
 
 // ── the step host: command window + every picker (drawer views) ──────────────

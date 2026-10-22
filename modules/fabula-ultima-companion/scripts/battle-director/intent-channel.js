@@ -58,6 +58,8 @@ export class IntentChannel {
     this._menuPatchHandlers = new Set();
     this._menuCloseHandlers = new Set();
     this._pongHandlers = new Set();
+    // GM-side: told when another client announces itself (PLAYER_HELLO).
+    this._helloHandlers = new Set();
     // GM-side cache of recently-broadcast MENU_OPEN payloads, keyed by
     // targetUserId. Used by PLAYER_HELLO to re-broadcast on player
     // late-join (e.g. player's `ready` hook finished AFTER the GM's
@@ -114,6 +116,14 @@ export class IntentChannel {
   // (resume-after-F5 race condition).
   _onPlayerHello(data) {
     if (!game.user?.isGM) return;
+    // Open windows hear about it first: a support GM who joins after a menu
+    // opened was never sent it, and there is no cache entry to replay.
+    const helloFrom = data.payload?.fromUserId ?? null;
+    if (helloFrom) {
+      for (const h of this._helloHandlers) {
+        try { h({ userId: helloFrom }); } catch (e) { warn("PLAYER_HELLO handler threw", e); }
+      }
+    }
     // Secondary GM has no cached broadcasts — only the primary GM (who owns
     // _recentBroadcasts) should replay. Skip silently to avoid log noise.
     if (!this._recentBroadcasts.size) return;
@@ -509,6 +519,14 @@ export class IntentChannel {
   onMenuClose(handler) {
     this._menuCloseHandlers.add(handler);
     return () => this._menuCloseHandlers.delete(handler);
+  }
+
+  // GM-side: register a handler for PLAYER_HELLO ({ userId }) — another client
+  // (a player, or a support GM) just booted or reloaded. Returns an unregister
+  // function.
+  onPeerHello(handler) {
+    this._helloHandlers.add(handler);
+    return () => this._helloHandlers.delete(handler);
   }
 
   // ─── Ping / pong (diagnostics + step-1 validation) ──────────────────
