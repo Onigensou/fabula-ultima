@@ -108,7 +108,7 @@ import { classifyActionIntent, resolveActionTags, INVENTORY_ACTION_TAG } from ".
 import { isAutopilotEnabled, isAiControlledTurn, isAiControlledCombatant, autopilotPickCombatant, autopilotDecideAction } from "./enemy-autopilot.js";
 import { isSummonAutopilotEnabled, isAutomatedSummon, isAutomatedSummonTurn, summonVetoMs, isGuestActor } from "./summon-autopilot.js";
 import { isBattlefieldObject } from "./battlefield-object.js";
-import { resolveAnimationSpec, playDirectorAnimation } from "./director-animation.js";
+import { resolveAnimationSpec, playDirectorAnimation, prestageAnimation } from "./director-animation.js";
 import { emitBattlerPose } from "./battler-pose.js";
 import { actionPose } from "./battler-pose-rules.js";
 import { witnessNpcAbility, witnessFiredCandidate, witnessAffinityHits } from "./encyclopedia-witness.js";
@@ -5102,6 +5102,9 @@ const Confirm = {
       director.enqueue({ type: INTENTS.ABORT });
       return;
     }
+    // Start making this action's animation ready to draw on every client while
+    // the card is up; ANIMATION waits on it (director-animation.js).
+    try { prestageAnimation(director, ar); } catch (e) { warn("CONFIRM: prestageAnimation threw", e); }
     // Resolve the attacker actor for the chat speaker
     let attackerActor = null;
     try { attackerActor = await fromUuid(ar.attackerActorRef ?? ar.attacker.actorUuid); } catch {}

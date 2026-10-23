@@ -1257,27 +1257,6 @@ async function runShatter(o) {
     const col = sc.buildCollage(geo, cast);
     mark("collage");
 
-    // ── CRACKED · LOADING: the scene switch happens behind the frozen frame ──
-    onPhase("hold");
-    els.dim.style.opacity = "0.4";
-    await frame();   // the cracked frame is on screen before the load takes the main thread
-    loadStarted = true;
-    try { loadResult = await load(); } catch (e) { loadError = e; console.error(TAG, "load failed", e); }
-    mark("loaded");
-    const beatLeft = T(BEAT.crack) - (performance.now() - tImpact);
-    if (beatLeft > 0) await wait(beatLeft);
-    // the hang waits for `ready` (started now, so it can overlap the slow-down)
-    let isReady = !o.ready;
-    const readyP = o.ready ? Promise.resolve(typeof o.ready === "function" ? o.ready(loadResult) : o.ready).catch((e) => console.warn(TAG, "ready rejected", e)).then(() => { isReady = true; }) : Promise.resolve();
-    await frame();   // a fresh frame of the battle scene before the glass opens on it
-
-    // ── HARD CUT → SHATTER ──
-    onPhase("cut"); mark("cut");
-    const tCutReal = performance.now();
-    els.crackFrame.style.visibility = "hidden"; els.glowC.classList.remove("fsh-breathe");
-    els.collage.style.visibility = "visible";
-    const fm = frameMeter(); fm.phase("slow-down");
-    play(els.flash, [{ opacity: 0.5 }, { opacity: 0 }], { duration: T(70), easing: "ease-out" });
     const P = col.P, cam = { x: geo.I.x, y: geo.I.y, z: P };
     // ── MOTION: one real-speed path per piece, played through a time-speed curve ──
     // Every piece has ONE path, a function of u = scene time / REF: it bursts out at a constant
@@ -1392,18 +1371,62 @@ async function runShatter(o) {
       const endC = tOfU(uEnd);
       return { sw, sC, uC, endC, ts: samples(0, endC, sC) };
     };
-    // Ready already: slow-down, hang and speed-up are ONE track per piece, laid out now (no hand-over).
-    // Not yet: the slow-down is laid out for TIME.hangMax and the speed-up is booked when ready.
-    const planned = isReady, tw0 = BEAT.push + BEAT.hang;
-    const tb0 = performance.now();
-    let C = null, phaseA;
-    if (planned) {
+    const tw0 = BEAT.push + BEAT.hang;
+    let C = null, phaseA = null;
+    const buildPlanned = () => {
       C = speedUp(tw0);
       const ts = [...samples(0, tw0, sSlow), ...C.ts.slice(1).map((t) => t + tw0)];
-      phaseA = build(ts, (t) => (t <= tw0 ? uA(t) : C.uC(t - tw0)), "both");
-    } else phaseA = build(samples(0, TIME.hangMax, sSlow), uA, "both");
-    stats.buildMs = Math.round(performance.now() - tb0);
-    stats.animations = anims.length;
+      return build(ts, (t) => (t <= tw0 ? uA(t) : C.uC(t - tw0)), "both");
+    };
+
+    // ── CRACKED · LOADING: the scene switch happens behind the frozen frame ──
+    onPhase("hold");
+    els.dim.style.opacity = "0.4";
+    // With no `ready` to wait for (the director's case) the whole glass track is known already, so it
+    // is built now, paused, and every shard is painted once behind an invisible collage while the
+    // frame is still. The cut then only starts what is built and drawn. Built at the cut, it held the
+    // main thread on the very frame the glass breaks (buildMs 364 headless, 2026-10-23).
+    const prebuilt = !o.ready;
+    if (prebuilt) {
+      const tb0 = performance.now();
+      phaseA = buildPlanned();
+      for (const a of phaseA) a.pause();
+      stats.buildMs = Math.round(performance.now() - tb0);
+      stats.animations = anims.length;
+      // will-change keeps an opacity-0 layer painted and rasterised (without it Chrome skips it)
+      Object.assign(els.collage.style, { willChange: "opacity", opacity: "0", visibility: "visible" });
+      mark("prebuilt");
+      await frame();
+    }
+    await frame();   // the cracked frame is on screen before the load takes the main thread
+    loadStarted = true;
+    try { loadResult = await load(); } catch (e) { loadError = e; console.error(TAG, "load failed", e); }
+    mark("loaded");
+    const beatLeft = T(BEAT.crack) - (performance.now() - tImpact);
+    if (beatLeft > 0) await wait(beatLeft);
+    // the hang waits for `ready` (started now, so it can overlap the slow-down)
+    let isReady = !o.ready;
+    const readyP = o.ready ? Promise.resolve(typeof o.ready === "function" ? o.ready(loadResult) : o.ready).catch((e) => console.warn(TAG, "ready rejected", e)).then(() => { isReady = true; }) : Promise.resolve();
+    await frame();   // a fresh frame of the battle scene before the glass opens on it
+
+    // ── HARD CUT → SHATTER ──
+    onPhase("cut"); mark("cut");
+    const tCutReal = performance.now();
+    if (prebuilt) { const t = document.timeline.currentTime; for (const a of phaseA) a.startTime = t; }
+    els.crackFrame.style.visibility = "hidden"; els.glowC.classList.remove("fsh-breathe");
+    Object.assign(els.collage.style, { visibility: "visible", opacity: "1" });
+    const fm = frameMeter(); fm.phase("slow-down");
+    play(els.flash, [{ opacity: 0.5 }, { opacity: 0 }], { duration: T(70), easing: "ease-out" });
+    // Ready already: slow-down, hang and speed-up are ONE track per piece (no hand-over) — built
+    // during the hold when there is no `ready` to wait for, else now.
+    // Not yet: the slow-down is laid out for TIME.hangMax and the speed-up is booked when ready.
+    const planned = isReady;
+    if (!prebuilt) {
+      const tb0 = performance.now();
+      phaseA = planned ? buildPlanned() : build(samples(0, TIME.hangMax, sSlow), uA, "both");
+      stats.buildMs = Math.round(performance.now() - tb0);
+      stats.animations = anims.length;
+    }
     // time the beat from when the motion actually starts on screen (the first frame is a heavy one)
     if (col.majors[0]?.anim) await raceTimeout(col.majors[0].anim.ready, 1000);
     const tCut = document.timeline.currentTime;
