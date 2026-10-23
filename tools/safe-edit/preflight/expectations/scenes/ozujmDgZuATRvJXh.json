@@ -306,7 +306,9 @@
           "sceneNetwork": "[{\"name\":\"Eisendrach Map\",\"id\":\"Scene.bshIjNx79K5z2BXv\"},{\"name\":\"Title Screen\",\"id\":\"Scene.T0Eo2forSEruOgO0\"}]",
           "general": {
             "cameraFollowToken": false,
-            "navigationName": "Overworld"
+            "navigationName": "Overworld",
+            "sceneMode": "dungeon",
+            "isOverworld": true
           }
         }
       },
@@ -349,7 +351,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.4",
       "createdTime": 1765672966590,
-      "modifiedTime": 1791828159809,
+      "modifiedTime": 1792726449201,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [
