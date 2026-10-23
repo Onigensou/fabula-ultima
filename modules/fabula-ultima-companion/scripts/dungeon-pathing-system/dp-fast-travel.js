@@ -333,6 +333,11 @@
     return { token, pickupGuardId };
   }
 
+  function isLocationNode(tileDoc) {
+    const f = tileDoc.getFlag?.(MODULE_ID, "teleporter");
+    return f?.enabled === true || f?.enabled === "true";
+  }
+
   // ── Build eligible node list ─────────────────────────────────────────────────
   // Scans all tiles in the current scene for FT-eligible + visited tiles.
   // Eligibility is determined by the per-tile flag first, falling back to the
@@ -344,6 +349,7 @@
     const pathingKey = DP.PATHING_ROOT_KEY ?? "dungeonPathing";
     const tileDocs   = scene.tiles?.contents ?? [];
     const result     = [];
+    const worldMap   = DP.isWorldMap?.(scene) ?? false;
 
     for (const tileDoc of tileDocs) {
       const tileId = tileDoc.id;
@@ -365,7 +371,10 @@
           else if (low.includes("final")) initialType = "final";
           else if (low.includes("story")) initialType = "story";
         }
-        isEligible = FT_TYPES.has(initialType);
+        isEligible = FT_TYPES.has(initialType)
+          // World map: every location node (a tile with an enabled teleporter —
+          // a town or dungeon entrance) is a landing spot once visited.
+          || (worldMap && isLocationNode(tileDoc));
       } else {
         isEligible = !!rawEligible;
       }

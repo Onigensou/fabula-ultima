@@ -196,7 +196,11 @@
   // with isGM here; instead, delegate to DP.Socket.tickPartyAEs() which calls
   // directly if GM and emits a raw socket message to the GM if not.
 
+  //
+  // World maps skip the per-step tick: a world-map step is a walk between
+  // nodes, not a turn, and a duration there should be counted in travel days.
   Hooks.on(DP.HOOKS.TURN_END, async () => {
+    if (DP.isWorldMap?.()) return;
     await DP.Socket.tickPartyAEs();
   });
 

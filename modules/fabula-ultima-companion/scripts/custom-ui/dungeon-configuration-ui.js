@@ -841,6 +841,7 @@
             <div class="form-fields">
               <input type="checkbox" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${IS_OVERWORLD_KEY}" data-dtype="Boolean" />
             </div>
+            <p class="notes">With Scene Mode <b>Dungeon</b>, this makes the scene a <b>World Map</b>: the party walks the node graph, location tiles (teleporters) lead into towns and dungeons, and every visited location is a Fast Travel stop.</p>
           </div>
 
           <div class="form-group">

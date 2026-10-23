@@ -60,6 +60,18 @@
     THEATRE:     "theatre",
   });
 
+  // World Map — not a mode of its own but a flavour of DUNGEON: a dungeon scene
+  // that also carries the Overworld scene-type tag. It inherits the whole node
+  // walk (graph, tile events, roulettes, fog, HUD buttons); callers branch on
+  // this only where a world map must differ from a dungeon. Keep it the single
+  // test — a new sceneMode value would mean re-gating every `=== "dungeon"` site.
+  DP.isWorldMap = function isWorldMap(scene = canvas?.scene) {
+    const g = scene?.flags?.["fabula-ultima-companion"]?.[DP.FABULA_ROOT_KEY]?.[DP.GENERAL_KEY];
+    if (g?.[DP.SCENE_MODE_KEY] !== DP.SCENE_MODE.DUNGEON) return false;
+    const o = g?.isOverworld;
+    return o === true || o === "true" || o === 1;
+  };
+
   // Turn phase — tracks the current stage of the dungeon turn lifecycle.
   // Read via DungeonPathing.turnPhase or window.__ONI_DUNGEON_PATHING__.turnPhase.
   DP.TURN_PHASE = Object.freeze({
