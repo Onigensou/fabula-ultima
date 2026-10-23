@@ -59,10 +59,25 @@
   }
   Hooks.on("refreshDrawing", (d) => { try { applyRouteAlpha(d); } catch {} });
 
+  // A flag change does not refresh a drawing's state on its own; ask every
+  // switch-gated drawing to refresh (that re-runs applyRouteAlpha, or restores
+  // Foundry's own alpha once the route opens).
+  function refreshGatedRoutes() {
+    for (const d of canvas?.drawings?.placeables ?? []) {
+      // Flagged drawings only: dp-fog hides "invisible" passages by alpha too,
+      // and a refresh would flash those visible.
+      if (flagOf(d.document, "requiresSwitch")) d.renderFlags?.set?.({ refreshState: true });
+    }
+  }
+  Hooks.on(DP.HOOKS?.GRAPH_REBUILT ?? "dungeonPathing.graphRebuilt", () => { try { refreshGatedRoutes(); } catch {} });
+  Hooks.on("updateDrawing", (doc) => {
+    if (doc.parent?.id === canvas?.scene?.id) canvas.drawings?.get(doc.id)?.renderFlags?.set?.({ refreshState: true });
+  });
+
   // A switch flipped (or a save loaded): re-gate routes and stamps.
   Hooks.on("oniGameStateChanged", () => {
     if (!sceneHasGates(canvas?.scene)) return;
-    for (const d of canvas.drawings?.placeables ?? []) { d.renderFlags?.set?.({ refreshState: true }); }
+    refreshGatedRoutes();
     globalThis.__ONI_DUNGEON_PATHING__?.rebuild?.().catch?.(() => {});
   });
 
@@ -121,9 +136,11 @@
     if (!layer) return;
     const eff = await effectiveDieFn();
     const TR  = globalThis.TravelRoll;
+    // The party sprite stands on its node — a badge there would cover it.
+    const hereId = globalThis.__ONI_DUNGEON_PATHING__?.state?.currentNode?.nodeId ?? null;
 
     for (const tileDoc of scene.tiles ?? []) {
-      if (tileDoc.hidden || concealed(scene, tileDoc)) continue;
+      if (tileDoc.hidden || concealed(scene, tileDoc) || tileDoc.id === hereId) continue;
       const type = DP.TileState?.getCurrentType?.(scene, tileDoc.id);
       const cx = tileDoc.x + tileDoc.width / 2;
       const size = Math.max(9, Math.round(tileDoc.height * 0.42));
@@ -134,7 +151,9 @@
         layer.addChild(pill(die, THREAT_COLOR[level] ?? 0xffffff, cx, tileDoc.y - size * 0.7, size));
       }
       if (isCleared(tileDoc)) {
-        layer.addChild(pill("✓ Cleared", 0xe8c870, cx, tileDoc.y + tileDoc.height + size * 0.7, size));
+        // Above the tile: location nodes never carry a threat badge, and below
+        // sits the route and often the party sprite.
+        layer.addChild(pill("✓ Cleared", 0xe8c870, cx, tileDoc.y - size * 0.7, size));
       }
     }
   }
@@ -143,6 +162,17 @@
     drawBadges().catch(e => warn("badges failed", e));
   });
   Hooks.on("canvasTearDown", () => { clearBadges(); _layer = null; });
+
+  // Painting or editing an Area changes the threat under a Travel tile without
+  // any graph rebuild — redraw the badges directly.
+  const redrawIfHere = (doc) => {
+    const scene = doc?.parent?.documentName === "Scene" ? doc.parent : doc?.parent?.parent;
+    if (scene?.id === canvas?.scene?.id) drawBadges().catch(e => warn("badges failed", e));
+  };
+  for (const h of ["createRegion", "updateRegion", "deleteRegion",
+                   "createRegionBehavior", "updateRegionBehavior", "deleteRegionBehavior"]) {
+    Hooks.on(h, redrawIfHere);
+  }
 
   // ── Area entry: panel on every client, music on the primary GM ─────────────
   let _lastArea = { sceneId: null, regionId: null };
@@ -155,11 +185,18 @@
     return (t?.document?.parent?.id === scene?.id) ? t.document : null;
   }
 
+  // The area is decided by the NODE the party stands on, at its tile centre —
+  // the same point encounters use. The token itself is no good: pathing draws
+  // it offset from its tile (feet anchoring), so its centre can sit inside an
+  // area while the tile it stands on is outside.
   function areaAtToken(scene, tokenDoc, pos = {}) {
     const g = scene?.grid?.size ?? canvas?.grid?.size ?? 100;
     const x = (pos.x ?? tokenDoc.x) + (tokenDoc.width ?? 1) * g / 2;
     const y = (pos.y ?? tokenDoc.y) + (tokenDoc.height ?? 1) * g / 2;
-    return DP.Areas?.areaAt?.(scene, { point: { x, y } }) ?? null;
+    const nodes = globalThis.__ONI_DUNGEON_PATHING__?.state?.graph?.nodes ?? [];
+    const node  = DP.Graph?.findNodeForPoint?.({ x, y }, nodes);
+    const tile  = node ? scene.tiles?.get?.(node.nodeId) : null;
+    return DP.Areas?.areaAt?.(scene, tile ? { tile } : { point: { x, y } }) ?? null;
   }
 
   async function playAreaMusic(name) {
@@ -167,7 +204,8 @@
       const snd = pl.sounds?.getName?.(name);
       if (!snd) continue;
       if (snd.playing) { _areaMusic = { playlistId: pl.id, soundId: snd.id }; return; }
-      await Promise.allSettled((game.playlists ?? []).filter(p => p.playing?.length).map(p => p.stopAll()));
+      // v12 Playlist#playing is a boolean — `.playing?.length` would stop nothing.
+      await Promise.allSettled((game.playlists ?? []).filter(p => p.playing).map(p => p.stopAll()));
       await pl.playSound(snd);
       _areaMusic = { playlistId: pl.id, soundId: snd.id };
       log(`area music: ${pl.name} / ${snd.name}`);
