@@ -474,6 +474,16 @@ Hooks.once("ready", () => {
   globalThis.FUCompanion.api.areaPanel = {
     /** Play a panel right now with an arbitrary label — the tuning loop. */
     preview(name = "Area Name", opts = {}) { return play(cleanName(name), opts); },
+    /**
+     * Announce an area INSIDE the current scene — a world-map Fabula Area the
+     * party just walked into (dungeon-pathing-system/dp-worldmap.js). Same
+     * hidden-tab hold as a scene's own panel, so a player behind another
+     * window still sees it when they come back.
+     */
+    announce(name) {
+      const label = cleanName(name);
+      return label ? playOrDefer(canvas?.scene?.id ?? null, label) : false;
+    },
     /** Play the panel a given scene would produce, ignoring repeat suppression. */
     previewScene(scene = canvas?.scene) {
       const cfg = readAreaConfig(scene);

@@ -176,6 +176,7 @@
     "scripts/dungeon-pathing-system/dp-regions.js",
     "scripts/dungeon-pathing-system/dp-random-battle.js",
     "scripts/dungeon-pathing-system/dp-travel.js",
+    "scripts/dungeon-pathing-system/dp-worldmap.js",
     "scripts/dungeon-pathing-system/tile-events/tile-event-blank.js",
     "scripts/dungeon-pathing-system/tile-events/tile-event-random-battle.js",
     "scripts/dungeon-pathing-system/tile-events/tile-event-treasure.js",

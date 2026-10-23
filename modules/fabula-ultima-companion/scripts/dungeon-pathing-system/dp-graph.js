@@ -98,7 +98,8 @@
     /** Extract drawing lines as potential edges. */
     getDrawingEdges() {
       return (canvas?.drawings?.placeables ?? [])
-        .filter(dr => dr?.document && !dr.document.hidden)
+        // A story-locked route (dp-worldmap.js) is not an edge until its switch is ON.
+        .filter(dr => dr?.document && !dr.document.hidden && !DP.WorldMap?.isRouteLocked?.(dr.document))
         .map((dr, idx) => {
           const d     = dr.document;
           const shape = d.shape ?? {};

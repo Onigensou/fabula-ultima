@@ -12,6 +12,7 @@
 //   battleMap        │
 //   battleBGM        ┘
 //   loot.*           Treasure Roulette, fishing (fish) and gathering (material)
+//   announce, music  Area Name Panel + track on entry (dp-worldmap.js)
 //
 // Blank fields inherit the scene. Overlapping Areas: the SMALLEST one wins, so
 // a painted village inside a painted forest is the village.
@@ -55,6 +56,10 @@
           enemiesTable:   table("Enemies Table"),
           battleMap:      new f.DocumentUUIDField({ type: "Scene", label: "Battle Map" }),
           battleBGM:      new f.StringField({ label: "Battle BGM", blank: true, initial: "" }),
+          announce:       new f.BooleanField({ label: "Announce on Entry", initial: true,
+            hint: "Show the Area Name Panel with this Region's name when the party walks in." }),
+          music:          new f.StringField({ label: "Area Music", blank: true, initial: "",
+            hint: "Playlist track name played while the party is inside. Blank = keep the scene's music." }),
           loot: new f.SchemaField(
             Object.fromEntries(Object.entries(LOOT_KEYS).map(([k, label]) => [k, table(`${label} Table`)])),
             { label: "Loot Tables", hint: "Blank tables use the scene's." }),

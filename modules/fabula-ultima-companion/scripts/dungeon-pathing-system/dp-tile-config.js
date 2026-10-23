@@ -322,6 +322,7 @@
 
       // World-map Travel tile threat — blank = the scene's Threat Level
       const travelThreat = tileDoc?.getFlag?.(MODULE_ID, `${pathingKey}.travelThreat`) ?? "";
+      const clearedSwitch = tileDoc?.getFlag?.(MODULE_ID, `${pathingKey}.clearedSwitch`) ?? "";
       const threatOpt = (v, label) =>
         `<option value="${v}" ${travelThreat === v ? "selected" : ""}>${label}</option>`;
 
@@ -504,7 +505,20 @@
           </div>
           <p class="notes">
             Only used by <b>Travel</b> tiles: the die rolled for the travel day spent on this tile.
-            6+ is a danger, 1 a discovery. Blank uses the scene's Threat Level (Dungeon Configuration → Travel).
+            6+ is a danger, 1 a discovery. Blank uses the Fabula Area painted under the tile,
+            else the scene's Threat Level (Dungeon Configuration → Travel).
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label>Cleared when switch</label>
+          <div class="form-fields">
+            <input type="text" name="flags.${MODULE_ID}.${pathingKey}.clearedSwitch"
+                   value="${foundry.utils.escapeHTML(String(clearedSwitch))}" placeholder="e.g. Wyrmwood Cleared" />
+          </div>
+          <p class="notes">
+            World maps: once this Event System switch is ON, the tile shows a <b>✓ Cleared</b> stamp —
+            e.g. on a dungeon entrance after its boss falls. Blank = never.
           </p>
         </div>
 
