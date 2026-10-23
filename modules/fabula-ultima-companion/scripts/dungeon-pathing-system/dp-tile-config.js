@@ -323,6 +323,8 @@
       // World-map Travel tile threat — blank = the scene's Threat Level
       const travelThreat = tileDoc?.getFlag?.(MODULE_ID, `${pathingKey}.travelThreat`) ?? "";
       const clearedSwitch = tileDoc?.getFlag?.(MODULE_ID, `${pathingKey}.clearedSwitch`) ?? "";
+      const storyBattleRaw = tileDoc?.getFlag?.(MODULE_ID, `${pathingKey}.storyBattle`);
+      const storyBattle = storyBattleRaw === true || storyBattleRaw === "true";
       const threatOpt = (v, label) =>
         `<option value="${v}" ${travelThreat === v ? "selected" : ""}>${label}</option>`;
 
@@ -519,6 +521,19 @@
           <p class="notes">
             World maps: once this Event System switch is ON, the tile shows a <b>✓ Cleared</b> stamp —
             e.g. on a dungeon entrance after its boss falls. Blank = never.
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label>Story battle</label>
+          <div class="form-fields">
+            <input type="checkbox" name="flags.${MODULE_ID}.${pathingKey}.storyBattle"
+                   data-dtype="Boolean" ${storyBattle ? "checked" : ""} />
+          </div>
+          <p class="notes">
+            Random Battle tiles only: this fight ALWAYS happens (no encounter roll) and opens the
+            <b>Battle Prompt</b> so the GM sets it up — e.g. a story boss. Name the tile with "Battle"
+            (e.g. "Event Battle Tile") so it reads as a battle tile whatever its graphic.
           </p>
         </div>
 

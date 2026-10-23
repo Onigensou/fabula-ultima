@@ -201,11 +201,11 @@
       // so no primary-GM gate is needed (unlike the raw channel above, which
       // broadcasts to every GM). The reply tells the requesting client whether a
       // battle actually launched so it can skip its closing graph rebuild.
-      socket.register(HANDLERS.RANDOM_BATTLE, async ({ sceneId, tileId, tokenId }) => {
+      socket.register(HANDLERS.RANDOM_BATTLE, async ({ sceneId, tileId, tokenId, forced = false, verdict = "auto" }) => {
         if (!game.user?.isGM) return { ok: false, error: "Not GM" };
         if (!DP.RandomBattle?.run) return { ok: false, error: "RandomBattle not loaded" };
         try {
-          return await DP.RandomBattle.run({ sceneId, tileId, tokenId });
+          return await DP.RandomBattle.run({ sceneId, tileId, tokenId, forced, verdict });
         } catch (e) {
           console.error(TAG, "randomBattle socket handler failed", e);
           return { ok: false, error: e?.message };
@@ -420,14 +420,16 @@
      * Ask the GM to resolve a Random Battle tile landing.
      * Resolves { ok, appear?, launched?, error? } — see DP.RandomBattle.run().
      */
-    async requestRandomBattle(scene, tileId, tokenId) {
+    // opts: { forced, verdict } — a story battle tile (see DP.RandomBattle.run).
+    async requestRandomBattle(scene, tileId, tokenId, opts = {}) {
+      const args = { sceneId: scene.id, tileId, tokenId, forced: !!opts.forced, verdict: opts.verdict ?? "auto" };
       if (game.user?.isGM) {
         if (!DP.RandomBattle?.run) { console.warn(TAG, "RandomBattle not loaded"); return { ok: false, error: "RandomBattle not loaded" }; }
-        return DP.RandomBattle.run({ sceneId: scene.id, tileId, tokenId });
+        return DP.RandomBattle.run(args);
       }
       const socket = this._socket ?? window.FUCompanionSocket;
       if (!socket) { console.warn(TAG, "Socket not ready for randomBattle"); return { ok: false, error: "Socket not ready" }; }
-      return socket.executeAsGM(HANDLERS.RANDOM_BATTLE, { sceneId: scene.id, tileId, tokenId });
+      return socket.executeAsGM(HANDLERS.RANDOM_BATTLE, args);
     },
 
     /**

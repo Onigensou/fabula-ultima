@@ -695,6 +695,10 @@
     if (!forced) await applyRateUpdate(rates, true, { defer: false });
 
     if (verdict === "customize") {
+      // The Battle Prompt (world macro) reads this to default to the Fabula
+      // Area of the tile that triggered the fight, not wherever the party
+      // marker happens to sit on this client.
+      DP.RandomBattle.lastTrigger = { sceneId, tileId, at: Date.now() };
       openBattlePrompt();
       return { ok: true, appear: true, launched: false };
     }

@@ -26,9 +26,13 @@
     clearAfterTrigger: false,
 
     async handler(tileDoc, tokenDoc, scene) {
+      // A STORY battle (Tile Config → "Story battle") always triggers — no pity
+      // roll — and hands the GM the Battle Prompt to set the fight up by hand.
+      const story = tileDoc?.flags?.[DP.MODULE_ID ?? "fabula-ultima-companion"]?.[DP.PATHING_ROOT_KEY]?.storyBattle;
+      const opts  = (story === true || story === "true") ? { forced: true, verdict: "customize" } : {};
       let res = null;
       try {
-        res = await DP.Socket.requestRandomBattle(scene, tileDoc?.id, tokenDoc?.id);
+        res = await DP.Socket.requestRandomBattle(scene, tileDoc?.id, tokenDoc?.id, opts);
       } catch (e) {
         // A throw here would strand the player's dungeon turn — swallow it and
         // let the turn end normally instead.
