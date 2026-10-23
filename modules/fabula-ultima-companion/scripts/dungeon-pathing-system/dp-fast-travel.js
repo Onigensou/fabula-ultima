@@ -338,6 +338,19 @@
     return f?.enabled === true || f?.enabled === "true";
   }
 
+  // The place a location node leads to, named the way its door prompt names it
+  // (tp-bootstrap askTeleportConfirm): the tile's promptName, else the
+  // destination scene's nav name. Null when neither is set.
+  function locationName(tileDoc) {
+    const f = tileDoc.getFlag?.(MODULE_ID, "teleporter");
+    const custom = typeof f?.promptName === "string" ? f.promptName.trim() : "";
+    if (custom) return custom;
+    const dest = game.scenes.get(f?.destination?.sceneId);
+    return dest?.navName?.trim()
+      || dest?.flags?.[MODULE_ID]?.oniFabula?.general?.navigationName?.trim?.()
+      || null;
+  }
+
   // ── Build eligible node list ─────────────────────────────────────────────────
   // Scans all tiles in the current scene for FT-eligible + visited tiles.
   // Eligibility is determined by the per-tile flag first, falling back to the
@@ -397,7 +410,7 @@
 
       result.push({
         nodeId:   tileId,
-        name:     tileDoc.name || initialType,
+        name:     (worldMap && isLocationNode(tileDoc) && locationName(tileDoc)) || tileDoc.name || initialType,
         tileType: initialType,
         center:   { x: x + w / 2, y: y + h / 2 },
         bounds:   { left: x, right: x + w, top: y, bottom: y + h },
