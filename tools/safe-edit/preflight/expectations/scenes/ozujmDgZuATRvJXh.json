@@ -300,7 +300,8 @@
             "item": "RollTable.tn2h5aYfaVnBwa5s",
             "treasure": "RollTable.dRN7ElUZH86RVl4e",
             "zenit": "RollTable.JApuQALPoS1QIFoV"
-          }
+          },
+          "threatLevel": "low"
         },
         "oniFabula": {
           "sceneNetwork": "[{\"name\":\"Eisendrach Map\",\"id\":\"Scene.bshIjNx79K5z2BXv\"},{\"name\":\"Title Screen\",\"id\":\"Scene.T0Eo2forSEruOgO0\"}]",
@@ -351,7 +352,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.4",
       "createdTime": 1765672966590,
-      "modifiedTime": 1792726449201,
+      "modifiedTime": 1792727961779,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [
