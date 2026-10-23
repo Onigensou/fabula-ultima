@@ -249,7 +249,8 @@
 
   async function reveal(scene, tileDoc) {
     await DP.TileState.markFogRevealed(scene, tileDoc.id);
-    await postCard("Discovery!", `The party finds a hidden place: <b>${esc(tileDoc.name || "an unknown location")}</b>.`, "#b8860b");
+    const where = DP.locationName?.(tileDoc) || tileDoc.name || "an unknown location";
+    await postCard("Discovery!", `The party finds a hidden place: <b>${esc(where)}</b>.`, "#b8860b");
     return { ok: true, resolved: "reveal", tileId: tileDoc.id };
   }
 

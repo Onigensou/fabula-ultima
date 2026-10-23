@@ -199,8 +199,12 @@
   //
   // World maps tick once per TRAVEL DAY, not per step: a step onto a location
   // or waypoint is a walk between nodes, and only a Travel tile spends a day.
+  // Read the LIVE tile state: the graph node's tileType is null on the first
+  // build after a scene's tileStates are initialised, though dispatch already
+  // treated the tile as Travel.
   Hooks.on(DP.HOOKS.TURN_END, async ({ node } = {}) => {
-    if (DP.isWorldMap?.() && node?.tileType !== DP.TILE_TYPES.TRAVEL) return;
+    const type = DP.TileState?.getCurrentType?.(canvas?.scene, node?.nodeId) || node?.tileType;
+    if (DP.isWorldMap?.() && type !== DP.TILE_TYPES.TRAVEL) return;
     await DP.Socket.tickPartyAEs();
   });
 

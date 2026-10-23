@@ -72,6 +72,20 @@
     return o === true || o === "true" || o === 1;
   };
 
+  // The place a location node (a tile with a teleporter) leads to, named the
+  // way its door prompt names it (tp-bootstrap askTeleportConfirm): the tile's
+  // promptName, else the destination scene's nav name. Null when neither is set.
+  DP.locationName = function locationName(tileDoc) {
+    const MOD = "fabula-ultima-companion";
+    const f = tileDoc?.flags?.[MOD]?.teleporter;
+    const custom = typeof f?.promptName === "string" ? f.promptName.trim() : "";
+    if (custom) return custom;
+    const dest = game.scenes?.get(f?.destination?.sceneId);
+    return dest?.navName?.trim()
+      || dest?.flags?.[MOD]?.[DP.FABULA_ROOT_KEY]?.general?.navigationName?.trim?.()
+      || null;
+  };
+
   // Turn phase — tracks the current stage of the dungeon turn lifecycle.
   // Read via DungeonPathing.turnPhase or window.__ONI_DUNGEON_PATHING__.turnPhase.
   DP.TURN_PHASE = Object.freeze({
