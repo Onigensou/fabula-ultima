@@ -1,0 +1,873 @@
+{
+  "_id": "o4EglACqSoxex1ee",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1792787397126,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    }
+  },
+  "folder": "Nd8LnosrPid1eX1r",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Balewing.png",
+  "items": [
+    {
+      "_id": "7MVzBMqJq99G0UQC",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/summon_garuda.png",
+      "name": "Flying",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": null,
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Flying</strong></a></p></li></ul>",
+          "duration": "-",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "skip",
+              "ae_template_ref": "Flying",
+              "effect_kind": "apply_ae",
+              "effect_label": "fly_apply",
+              "target_ref": "self"
+            }
+          },
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Flying",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "reaction_effect_ref": "fly_apply",
+              "reaction_passive_mode": "force",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "1pmPZ8EheBcL0EQt"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ojKkePykq4CDYLnb",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T214338.173.png",
+      "name": "Dark Plume",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "action_command": "attack",
+          "active_effect_config_table": null,
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "5",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "15",
+          "defense_target_type": "def",
+          "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;damage to up to three creatures. Each creature hit suffers <strong>Blind</strong>.</p>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace_same_status",
+              "ae_template_ref": "Blind",
+              "condition_formula": "",
+              "effect_kind": "apply_ae",
+              "effect_label": "plume_blind",
+              "target_ref": "trigger_subject"
+            }
+          },
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Dark Plume",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "",
+              "reaction_effect_ref": "plume_blind",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_source_skill": "Dark Plume",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "Up to three creatures",
+          "skill_type": "Attack",
+          "type_damage": "Dark",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "rmikXlHwBOZf9uTB",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1792787397473,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "6lk44XpdlY3Dcqv3",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1792789270553,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>Already fed again this turn: Carrion Feast will not repeat until the turn ends.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "6lk44XpdlY3Dcqv3",
+              "originalParentId": "rmikXlHwBOZf9uTB",
+              "originalUuid": "Actor.o4EglACqSoxex1ee.Item.rmikXlHwBOZf9uTB.ActiveEffect.6lk44XpdlY3Dcqv3"
+            },
+            "fabula-ultima-companion": {
+              "lifetimeMode": "round_end",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "count": "all",
+                    "effect_kind": "remove_tagged_ae",
+                    "effect_label": "gorged_clear",
+                    "filter_tag": "gorged",
+                    "target_ref": "self"
+                  }
+                },
+                "reaction_config_table": {
+                  "0": {
+                    "reaction_effect_ref": "gorged_clear",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "all",
+                    "reaction_trigger": "turn_end"
+                  }
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/GNB/savage_claw.png",
+          "name": "Gorged",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-gorged"
+          ],
+          "system": {
+            "tags": [
+              "gorged"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/GNB/savage_claw.png",
+      "name": "Carrion Feast",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "action_command": "attack",
+          "active_effect_config_table": null,
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "10 MP",
+          "damage_bonus": "25",
+          "defense_target_type": "def",
+          "description": "<p>Can only target a creature in <strong>Crisis</strong> or suffering <strong>Blind</strong>. Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to it. On hit, the <strong>Banestrix</strong> recovers Hit Points equal to half the damage dealt, then performs <strong>Carrion Feast</strong> again against the same creature at no cost. It can only perform the extra <strong>Carrion Feast</strong> once per turn.</p>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "condition_formula": "",
+              "effect_kind": "grant",
+              "effect_label": "cf_heal",
+              "grant_amount": "floor(HP_DEALT / 2)",
+              "grant_resource": "hp",
+              "target_ref": "self"
+            },
+            "1": {
+              "chain_steps": "cf_lock,cf_again",
+              "effect_kind": "chain",
+              "effect_label": "cf_repeat"
+            },
+            "2": {
+              "ae_duplicate_mode": "skip",
+              "ae_template_ref": "Gorged",
+              "condition_formula": "",
+              "effect_kind": "apply_ae",
+              "effect_label": "cf_lock",
+              "target_ref": "self"
+            },
+            "3": {
+              "action_ref": "self",
+              "effect_kind": "free_action",
+              "effect_label": "cf_again",
+              "free_of_cost": true,
+              "target_ref": "trigger_subject"
+            }
+          },
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Carrion Feast",
+          "optional_params": {},
+          "post_damage_effect_ref": "cf_heal",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "AE_COUNT_GORGED == 0 && TARGET_CURRENT_HP > 0 && TARGET_AE_COUNT_BLIND + TARGET_AE_COUNT_CRISIS > 0",
+              "reaction_effect_ref": "cf_repeat",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_source_skill": "Carrion Feast",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Attack",
+          "target_eligibility": "HAS_STATUS_CRISIS + HAS_STATUS_BLIND > 0",
+          "type_damage": "Physical",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Uy9MoFTc2SrZOVje",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+      "name": "Peck",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "action_command": "attack",
+          "active_effect_config_table": null,
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "6",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "35",
+          "defense_target_type": "def",
+          "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature. On hit, it suffers <strong>Blind</strong>.</p>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace_same_status",
+              "ae_template_ref": "Blind",
+              "condition_formula": "",
+              "effect_kind": "apply_ae",
+              "effect_label": "peck_blind",
+              "target_ref": "trigger_subject"
+            }
+          },
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Peck",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "",
+              "reaction_effect_ref": "peck_blind",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_source_skill": "Peck",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Attack",
+          "type_damage": "Physical",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Tempered Banestrix",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 50,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Tempered Banestrix",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 0,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1.16,
+      "scaleY": 1.16,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Balewing.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 2200000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "action_pattern_table": {
+        "0": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "0",
+          "action_pattern_focus_status": "",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Carrion Feast",
+          "action_pattern_priority": "10",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "",
+          "action_pattern_value_2": ""
+        },
+        "1": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "0",
+          "action_pattern_focus_status": "",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Dark Plume",
+          "action_pattern_priority": "6",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "",
+          "action_pattern_value_2": ""
+        },
+        "2": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "0",
+          "action_pattern_focus_status": "",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Peck",
+          "action_pattern_priority": "6",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "",
+          "action_pattern_value_2": ""
+        }
+      },
+      "activation": "1",
+      "affinity_1": "NA",
+      "affinity_2": "NA",
+      "affinity_3": "VU",
+      "affinity_4": "RS",
+      "affinity_5": "NA",
+      "affinity_6": "NA",
+      "affinity_7": "NA",
+      "affinity_8": "VU",
+      "affinity_9": "NA",
+      "animation_table": {},
+      "arcane_ef": "100",
+      "attack_list": {
+        "Yq0FVqtSdUgAIkkP": {
+          "active_target": "Up to two creatures",
+          "attack_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;2</span></strong></span></span></p></li></ul>",
+          "attribute_die1": "INS",
+          "attribute_die2": "WLP",
+          "id": "${item.id}",
+          "name": "Dark Plume",
+          "roll": "",
+          "uuid": "Actor.Z5wQ9DMPMktJfvxM.Item.Yq0FVqtSdUgAIkkP"
+        },
+        "oK0Zm2xOu9t5qypX": {
+          "active_target": "One Creature",
+          "attack_description": "<p>This attack deals <strong>5 bonus damage </strong>to creature in <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></p>",
+          "attribute_die1": "DEX",
+          "attribute_die2": "MIG",
+          "id": "${item.id}",
+          "name": "Peck",
+          "roll": "",
+          "uuid": "Actor.Z5wQ9DMPMktJfvxM.Item.oK0Zm2xOu9t5qypX"
+        }
+      },
+      "attribute": "DARK",
+      "battle_facing_direction": "right",
+      "bonus_hp": 0,
+      "bonus_mp": 0,
+      "bow_ef": "125",
+      "brawling_ef": "100",
+      "condition_anomaly": "NA",
+      "condition_bane": "NA",
+      "condition_berserk": "NA",
+      "condition_bleed": "NA",
+      "condition_blind": "NA",
+      "condition_burn": "NA",
+      "condition_charm": "NA",
+      "condition_confused": "NA",
+      "condition_curse": "NA",
+      "condition_dazed": "NA",
+      "condition_delayed": "NA",
+      "condition_despair": "NA",
+      "condition_disarmed": "NA",
+      "condition_doom": "NA",
+      "condition_enraged": "NA",
+      "condition_envenomed": "NA",
+      "condition_fatigue": "NA",
+      "condition_frightened": "NA",
+      "condition_grappled": "NA",
+      "condition_hypothermia": "NA",
+      "condition_isolate": "NA",
+      "condition_obscure": "NA",
+      "condition_oil": "NA",
+      "condition_panic": "NA",
+      "condition_paralyzed": "NA",
+      "condition_petrify": "NA",
+      "condition_poisoned": "NA",
+      "condition_shaken": "NA",
+      "condition_silence": "NA",
+      "condition_slow": "NA",
+      "condition_stagger": "NA",
+      "condition_suppress": "NA",
+      "condition_turbulence": "NA",
+      "condition_weak": "NA",
+      "condition_wet": "NA",
+      "condition_wither": "NA",
+      "condition_zombie": "NA",
+      "current_hp": "96",
+      "current_ip": "0",
+      "current_mp": "40",
+      "cut_in_critical": "",
+      "cut_in_fumble": "",
+      "cut_in_zero_power": "",
+      "dagger_ef": "100",
+      "def_mod": "+6",
+      "default_facing_direction": "left",
+      "dex_base": "12",
+      "event_timeline_table": {},
+      "firearm_ef": "125",
+      "flail_ef": "100",
+      "gorger": false,
+      "heavy_ef": "100",
+      "init": "12",
+      "ins_base": "8",
+      "isAlmighty": false,
+      "isAwake": false,
+      "isBoss": false,
+      "isClarity": false,
+      "isCustomEvent": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnlighten": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isMasterful": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isStrong": false,
+      "isSummon": false,
+      "isSwift": false,
+      "isUnyielding": false,
+      "isVillain": false,
+      "isWeak": false,
+      "level": "44",
+      "max_hp": "96",
+      "max_ip": "0",
+      "max_mp": "40",
+      "max_zero": "6",
+      "mdef_mod": "+4",
+      "mig_base": "8",
+      "mimic": false,
+      "name": "Tempered Banestrix",
+      "normal_spell_list": {
+        "Yq0FVqtSdUgAIkkP": {
+          "cost": "-",
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Dark Plume",
+          "roll": "",
+          "spell_description": "<ul><li><p><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a></span></p></li></ul>",
+          "spell_target": "Up to two creatures",
+          "uuid": "Actor.Z5wQ9DMPMktJfvxM.Item.Yq0FVqtSdUgAIkkP"
+        },
+        "oK0Zm2xOu9t5qypX": {
+          "cost": "-",
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Generic NPC Attack",
+          "roll": "",
+          "spell_description": "",
+          "spell_target": "One Creature",
+          "uuid": "Actor.Z5wQ9DMPMktJfvxM.Item.oK0Zm2xOu9t5qypX"
+        }
+      },
+      "npc_rank": "soldier",
+      "rare": false,
+      "resource_maxValue_1": "0",
+      "resource_maxValue_2": "0",
+      "resource_maxValue_3": "0",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "shield_type": "PHYSICAL",
+      "shield_value": "0",
+      "showMacro": false,
+      "skill_passive_list": {
+        "tsSvOpOUzAAJEB36": {
+          "id": "${item.id}",
+          "name": "Flying",
+          "passive_description": "<ul><li>This creature cannot be targeted with<strong> melee attacks</strong> as long as it is in mid-air.</li><li>If this creature suffers damage of a type they are <strong>Vulnerable</strong> to, they lose the benefits of this Skill until the end of the round.</li><li><p>This creature may also be forced to land by spending an <strong>opportunity</strong>. As long as it is in <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span>, it loses all benefits granted by this Skill.</p></li></ul>",
+          "roll": "",
+          "uuid": "Actor.Z5wQ9DMPMktJfvxM.Item.tsSvOpOUzAAJEB36"
+        }
+      },
+      "spear_ef": "100",
+      "species": "BEAST",
+      "study_text": "<p>A Banestrix that has fed on the battlefields of the Valley. It blinds its prey from above, then drops onto whatever can no longer see it coming, and keeps eating while it can.</p>",
+      "subtype_list": "AVIAN",
+      "sword_ef": "100",
+      "tactic_notes": "",
+      "thrown_ef": "100",
+      "traits": "Carrion Feeder",
+      "ultima_point": "0",
+      "unique": false,
+      "wlp_base": "6",
+      "zenit_reward_max": "100",
+      "zenit_reward_min": "75",
+      "zero_power_value": ""
+    },
+    "statusEffects": {},
+    "template": "yegF6R8aaymhrvCg",
+    "templateSystemUniqueVersion": 2114752673
+  },
+  "type": "character"
+}

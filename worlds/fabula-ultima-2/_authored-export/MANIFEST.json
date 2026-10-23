@@ -1,5 +1,5 @@
 {
-  "generatedFromWorld": "fabula-ultima-2",
+  "generatedFromWorld": "../tools/_graft-world",
   "collections": {
     "folders": [
       {
@@ -24948,6 +24948,54 @@
           {
             "id": "RVOjEwCafQjq9qUx",
             "name": "Unleash"
+          }
+        ],
+        "effects": 0
+      },
+      {
+        "id": "o4EglACqSoxex1ee",
+        "name": "Tempered Banestrix",
+        "type": "character",
+        "items": [
+          {
+            "id": "rmikXlHwBOZf9uTB",
+            "name": "Carrion Feast"
+          },
+          {
+            "id": "ojKkePykq4CDYLnb",
+            "name": "Dark Plume"
+          },
+          {
+            "id": "7MVzBMqJq99G0UQC",
+            "name": "Flying"
+          },
+          {
+            "id": "Uy9MoFTc2SrZOVje",
+            "name": "Peck"
+          }
+        ],
+        "effects": 0
+      },
+      {
+        "id": "P2WIrFCkAEZWj0Hi",
+        "name": "Tempered Looker",
+        "type": "character",
+        "items": [
+          {
+            "id": "K2RGTVQhbliYI4VU",
+            "name": "Eye Beam"
+          },
+          {
+            "id": "MzH7A7jGGyj6kenR",
+            "name": "Mean Look"
+          },
+          {
+            "id": "zBvsM5uy1wZEpBvM",
+            "name": "Mind Blast"
+          },
+          {
+            "id": "56vysYsJDz3IPJxf",
+            "name": "Terror Gaze"
           }
         ],
         "effects": 0
