@@ -4269,6 +4269,39 @@ function buildGuardCard({ attacker, coverTarget }) {
   };
 }
 
+// ─── Do Nothing (autopilot only) ───────────────────────────────────────────
+// A patterned creature with no possible action this turn — nothing feasible,
+// or nothing its action can reach. No roll, no target, no effect; the card
+// exists so the table can see the turn was spent and why.
+function buildDoNothingCard({ attacker, reason }) {
+  const why = reason ? `${String(reason).charAt(0).toUpperCase()}${String(reason).slice(1)}.` : "No possible action.";
+  return {
+    titleIcon: `<i class="fa-solid fa-hourglass-half" style="font-size:20px; color:var(--fud-stroke,#7a6a55);"></i>`,
+    titleText: "Do Nothing",
+    subtitle: `<div class="fud-bf-subtitle">No possible action<span class="dot">•</span>Turn spent</div>`,
+    portraits: tryBuild("portraits", () => buildPortraitsHTML({ attacker, perTargetResults: [] })),
+    body: `
+      <fieldset class="fud-bf-section">
+        <legend>Action</legend>
+        <div class="fud-bf-attacker-row">
+          <div class="left">${escapeHtml(attacker.name)}</div>
+          <div class="mid"><i class="fa-solid fa-hourglass-half"></i></div>
+          <div class="right">Does nothing</div>
+        </div>
+      </fieldset>
+      <fieldset class="fud-bf-section" style="font-size:12.5px; line-height:1.5;">
+        <legend>Why</legend>
+        ${escapeHtml(why)}
+      </fieldset>
+    `,
+    buttons: `
+      <div class="fud-bf-btn-row">
+        <div class="fud-btn fud-btn-confirm" data-fud-action="confirm" role="button" tabindex="0">Confirm</div>
+      </div>
+    `,
+  };
+}
+
 // ─── Ultima action cards (Boss/Villain — Domination / Escape / Recovery) ───
 // Simple no-roll declaration cards, one builder for all three. Cost chips
 // come from ar.ultimaCost / ar.dominanceCost (stamped in TARGET); the debit
@@ -5602,6 +5635,7 @@ export function composeActionCardObject({ kind, payload }) {
     case "Study":     return buildStudyCard(payload);
     case "Hinder":    return buildHinderCard(payload);
     case "Equipment": return buildEquipmentCard(payload);
+    case "DoNothing": return buildDoNothingCard(payload);
     case "Skill":
     case "Objective": // skill-shaped: backing Item, optional Check, effect_table
     case "Item":      return buildSkillCard(payload);
@@ -5643,6 +5677,7 @@ const ACTION_CARD_RENDER_KEYS = [
   "costSerialized", "descriptionHtml",
   // Ultima actions (Domination / Escape / Recovery):
   "ultimaCost", "dominanceCost",
+  "reason",
   // Manual GM overrides — the edit panel renders each field's CURRENT override
   // from this, so a support GM's mirror shows the same typed values as the host
   // instead of blank boxes over already-overridden numbers.
@@ -5670,7 +5705,7 @@ export function composeActionCardRenderPayload(ar) {
 // "Objective" is included: it renders through buildSkillCard from the same
 // serializable snapshot fields a Skill does (backing Item resolved GM-side into
 // skillName/skillImg/roll/targets), so a mirror client can rebuild it locally.
-const ACTION_CARD_LOCAL_RENDER_KINDS = new Set(["Attack", "Guard", "Study", "Hinder", "Skill", "Objective"]);
+const ACTION_CARD_LOCAL_RENDER_KINDS = new Set(["Attack", "Guard", "Study", "Hinder", "Skill", "Objective", "DoNothing"]);
 
 // Display-only projection of a reaction candidate — exactly the fields
 // buildReactionPills reads. The full candidate carries GM-only resolution state

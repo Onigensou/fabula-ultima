@@ -17,6 +17,7 @@ import { INTENTS } from "./intents.js";
 import { isBackgroundedFor, hasOtherViewers } from "./presentation-clock.js";
 import { emitBattlerPose } from "./battler-pose.js";
 import { skillPose } from "./battler-pose-rules.js";
+import { stageScript, waitStaged, frameMeter } from "../action-animation/animation-stage.js";
 
 // How long the window must be continuously hidden before we start discarding
 // animations. On Windows `document.hidden` flips true for an ordinary alt-tab
@@ -286,6 +287,7 @@ async function executeAnimationScript({
   outcomes = null,
   abortPromise = null,
   timeoutMs = 35000,
+  stageJob = undefined,
 }) {
   // Backgrounded window with nobody else connected: don't run the script at
   // all. Sequencer would only queue effects that burst-replay on refocus — the
@@ -332,6 +334,13 @@ async function executeAnimationScript({
 
   const fn = compileScript(script);
 
+  // Everything the script names is made ready to draw on every client first
+  // (animation-stage.js): uploaded to the GPU, webm decoders awake. A caller
+  // that staged earlier (CONFIRM) passes its job; otherwise it starts now. The
+  // wait is capped, so a slow client costs at most a short pause, never a stall.
+  const staged = await waitStaged(stageJob !== undefined ? stageJob : stageScript(script));
+  if (staged?.timedOut) log("[BD Anim] staging not acked by every client in time — playing anyway", staged);
+
   // Race the normal gate against the (optional) abort signal so skipAnimation()
   // resolves the gate immediately without needing a separate state transition.
   //
@@ -372,6 +381,7 @@ async function executeAnimationScript({
   catch (e) { warn("[BD Anim] target bridge (set) threw", e); }
   try { if (casterTok) casterTok.control({ releaseOthers: true }); }
   catch (e) { warn("[BD Anim] caster control bridge (set) threw", e); }
+  const meter = frameMeter(`anim:${casterTok?.name ?? "?"}`);
   try {
     const result = fn(payload, targets);
     if (result && typeof result.then === "function") await result;
@@ -391,6 +401,9 @@ async function executeAnimationScript({
   }
 
   await gatePromise;
+  // up to the damage moment: most scripts return at once and run on via the
+  // per-client pseudo script, which is metered on its own (pseudo:<scriptId>)
+  meter.stop({ staged });
   return { ran: true };
 }
 
@@ -477,6 +490,33 @@ function outcomesFromDirector(director) {
   }
 }
 
+// ── Staging ahead of ANIMATION ──────────────────────────────────────────
+//
+// CONFIRM starts staging the action's animation on every client while the
+// card is up (the player reading it hides the work); ANIMATION then usually
+// finds it done. Kept off director.ctx on purpose: ctx is persisted.
+const _prestaged = new WeakMap();   // director -> { script, job, at }
+// past this the decoders a stage woke may be idle again: stage afresh
+const PRESTAGE_FRESH_MS = 20000;
+
+export function prestageAnimation(director, ar) {
+  if (!director || !ar) return;
+  const entry = { script: null, job: null, at: Date.now() };
+  entry.job = resolveAnimationSpec(ar).then((spec) => {
+    if (!spec.hasScript || spec.playAt === "resolve") return null;
+    entry.script = spec.script;
+    return stageScript(spec.script);
+  }).catch((e) => { warn("[BD Anim] prestage threw", e); return null; });
+  _prestaged.set(director, entry);
+}
+
+function takePrestaged(director, script) {
+  const pre = _prestaged.get(director);
+  _prestaged.delete(director);
+  if (!pre || pre.script !== script || Date.now() - pre.at > PRESTAGE_FRESH_MS) return undefined;
+  return pre.job;
+}
+
 export async function playDirectorAnimation({ spec, director, casterTokenUuid, targetTokenUuids }) {
   const { script, timingMode, timingOffset } = spec;
 
@@ -499,6 +539,7 @@ export async function playDirectorAnimation({ spec, director, casterTokenUuid, t
       casterTokenUuid, targetTokenUuids,
       outcomes: outcomesFromDirector(director),
       abortPromise, timeoutMs: 35000,
+      stageJob: takePrestaged(director, script),
     });
     ran = !!r?.ran;
     log("[BD Anim] gate resolved — advancing to RESOLVE");

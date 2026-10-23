@@ -18,6 +18,10 @@
 // composeAction (the GM's Octopath menu). See [[project_action_pattern_ai]] +
 // [[project_battle_director]].
 //
+// Exception — Do Nothing: a creature with an AUTHORED Action Pattern whose
+// actions can reach nobody (a melee pack against an all-Flying party) declares
+// the "DoNothing" command instead of falling back. See doNothingBundle.
+//
 // Dual-GM: both entry points are invoked from onEnter handlers that already run
 // only on the active director client, so this module adds no sockets and no
 // per-client hooks. See [[project_gm_host_dedupe_pattern]].
@@ -287,7 +291,13 @@ export async function previewEnemyActionOdds({ tokenId, director = null } = {}) 
 // Chain the pipeline for a single token, stopping before AnnounceResult. Returns
 // the ActionReader context (with chosenAction + chosenTargets) or null on any
 // stage failure. Never throws.
-async function runActionReader({ token, combat, combatant, activationIndex, director = null, directorCombatant = null }) {
+// `grant` (optional) marks a FREE-ACTION consult: the pick is spending a grant,
+// not choosing the creature's turn. Two consequences — rows whose action the
+// grant does not permit are dropped BEFORE the weighted pick (so the pattern
+// answers with what the grant allows, rather than drawing a Skill and being
+// declined), and nothing is written to the anti-repeat memory (a free action
+// must not put a row the creature never chose on cooldown).
+async function runActionReader({ token, combat, combatant, activationIndex, director = null, directorCombatant = null, grant = null }) {
   try {
     let ctx = ActionReaderCore.createBaseContext();
 
@@ -307,15 +317,41 @@ async function runActionReader({ token, combat, combatant, activationIndex, dire
     // is that dev's documented way to keep a GM actor off the AI.
     maybeInjectSummonFallbackPattern(ctx, directorCombatant);
     await readActionReaderPatternTable(ctx);
+    // Do Nothing applies to AUTHORED patterns only — a summon's synthesized rows
+    // keep handing an empty turn to its owner's menu. Rows are captured BEFORE
+    // the grant filter and the condition pass: reach is a question about every
+    // action the creature has, not about the rows one grant or one turn allows.
+    const authoredRows = hasAuthoredPattern(ctx.performer?.actor) && Array.isArray(ctx.patternRows)
+      ? [...ctx.patternRows] : [];
+    if (grant?.allow && Array.isArray(ctx.patternRows)) {
+      const items = ActionReaderCore.getActorItems(ctx.performer?.actor);
+      const before = ctx.patternRows.length;
+      ctx.patternRows = ctx.patternRows.filter((row) => {
+        const want = ActionReaderCore.normalizeText(row?.actionName ?? "");
+        const item = items.find((i) => ActionReaderCore.normalizeText(i?.name ?? "") === want);
+        return !!item && labelPermits(grant.allow, commandForItem(item));
+      });
+      log(`autopilot: free-action consult kept ${ctx.patternRows.length}/${before} pattern row(s) the grant permits (${[...grant.allow].join("/")})`);
+    }
     await evaluateActionReaderConditions(ctx);
-    await matchAndPickActionReaderAction(ctx);
-    if (!ctx.chosenAction) { log("autopilot: ActionReader picked no action (no pattern / nothing feasible)"); return null; }
+    await matchAndPickActionReaderAction(ctx, grant ? { recordMemory: false } : undefined);
+    if (!ctx.chosenAction) {
+      log("autopilot: ActionReader picked no action (no pattern / nothing feasible)");
+      // Do Nothing only when NO pattern action can reach anyone. Nothing feasible
+      // for any other reason — an action-gating debuff, MP, cooldown, unmet row
+      // conditions — still hands the turn to the GM, who can Guard or use an Item.
+      // A grant consult answers null: its caller still has the basic attack.
+      if (!grant && authoredRows.length && patternReachesNobody(ctx, authoredRows, token)) {
+        return { nothingPossible: "no target in reach" };
+      }
+      return null;
+    }
 
     await parseActionReaderTargetRule(ctx);
     await buildAndPickActionReaderTargets(ctx);
     if (!Array.isArray(ctx.chosenTargets) || !ctx.chosenTargets.length) {
       log("autopilot: ActionReader resolved no targets");
-      return null;
+      return (!grant && authoredRows.length) ? { nothingPossible: "no target in reach" } : null;
     }
     return ctx;
   } catch (e) {
@@ -468,7 +504,19 @@ export async function autopilotDecideAction(director, snap) {
     try {
       const { freeActions } = await import("./free-actions.js");
       const grant = freeActions.get?.(snap?.actorId) ?? null;
-      if (grant?.enabledLabels?.length) return await simFallbackBundle(director, snap);
+      if (grant?.enabledLabels?.length) {
+        // A creature with an authored Action Pattern spends the grant through the
+        // SAME resolver real play uses (pattern consult + target survey), so a sim
+        // exercises that path instead of the player brain's. A null (nothing it
+        // could resolve cleanly) still drops to the sim fallback below.
+        let actor = null;
+        try { actor = await fromUuid(snap?.actorUuid); } catch {}
+        if (actor && hasAuthoredPattern(actor)) {
+          const bundle = await decideFreeActionBundle(director, snap, grant);
+          if (bundle) return bundle;
+        }
+        return await simFallbackBundle(director, snap);
+      }
     } catch (e) { warn("autopilotDecideAction: free-action grant check threw", e); }
   }
 
@@ -500,6 +548,45 @@ export async function autopilotDecideAction(director, snap) {
   if (bundle) return bundle;
   if (!SimMode.active) return null;   // real play — manual fallback, unchanged
   return await simFallbackBundle(director, snap);
+}
+
+// Do Nothing (user decision 2026-10-23): a creature with an authored Action
+// Pattern that has no possible action — no pattern row feasible, or nothing its
+// action can reach (a melee pack against an all-Flying party) — spends its turn
+// on the "DoNothing" command. Real play no longer stops for the GM's menu, the
+// sim no longer substitutes a player-brain action or Guard, and a free-action
+// grant with nothing reachable is forfeited. Creatures without a pattern (the
+// GM drives them) and PCs keep their fallbacks.
+function doNothingBundle(snap, reason) {
+  log(`autopilot: ${snap?.name} → Do Nothing (${reason})`);
+  SimMode.note("decide", `${snap?.name} → Do Nothing (${reason})`);
+  return { command: "DoNothing", reason };
+}
+
+// True only when the battle's target survey says EVERY pattern row's action has
+// nobody to target. Any doubt — no survey (out of combat), a row naming an item
+// the creature lacks, a survey that throws or is not ok — answers false, so the
+// turn falls back exactly as before.
+function patternReachesNobody(ctx, rows, token) {
+  const survey = ActionReaderCore.battleProvider()?.surveyTargets;
+  if (typeof survey !== "function") return false;
+  const actor = ctx.performer?.actor ?? null;
+  const items = ActionReaderCore.getActorItems(actor);
+  for (const row of rows) {
+    const want = ActionReaderCore.normalizeText(row?.actionName ?? "");
+    const item = items.find((i) => ActionReaderCore.normalizeText(i?.name ?? "") === want);
+    if (!item) return false;
+    let s = null;
+    try {
+      s = survey(item, {
+        skillTargetText: ActionReaderCore.getActionTargetText(item),
+        performerActor: actor,
+        performerTokenDocument: token?.document ?? null,
+      });
+    } catch { return false; }
+    if (!s?.ok || !Array.isArray(s.eligible) || s.eligible.length) return false;
+  }
+  return true;
 }
 
 // The sim's terminal fallback. ActionReader had nothing (no pattern table, as on
@@ -597,7 +684,7 @@ async function simFallbackBundle(director, snap) {
   return { command: "Guard", coverTokenUuid: null };
 }
 
-async function decideViaActionReader(director, snap) {
+async function decideViaActionReader(director, snap, { grant = null } = {}) {
   try {
     const token = canvas?.tokens?.get(snap?.tokenId) ?? null;
     if (!token) { log("autopilot: DECLARE has no canvas token — manual fallback"); return null; }
@@ -621,12 +708,13 @@ async function decideViaActionReader(director, snap) {
     const pip = (inSim && !SimMode.showPip()) ? { remove() {} } : showThinkingPip(token);
     let ctx = null;
     try {
-      ctx = await runActionReader({ token, combat, combatant, activationIndex, director, directorCombatant: dc });
+      ctx = await runActionReader({ token, combat, combatant, activationIndex, director, directorCombatant: dc, grant });
       await jitterDelay(inSim ? SimMode.thinkRange() : AUTOPILOT_TIMING.decision);
     } finally {
       pip.remove();
     }
     if (!ctx) return null;   // no pattern / nothing feasible / no targets → manual
+    if (ctx.nothingPossible) return doNothingBundle(snap, ctx.nothingPossible);
 
     const mapped = toBundle(ctx.chosenAction, ctx.chosenTargets);
     if (mapped.unsupported) {
@@ -750,6 +838,13 @@ function grantIsAmbiguous(allow) {
   return !allow || allow.size > 1;
 }
 
+// Does the actor carry an authored (non-deleted) action_pattern_table row?
+function hasAuthoredPattern(actor) {
+  return Object.values(
+    actor?.system?.props?.[ActionReaderCore.keys.actionPatternTableKey] ?? {}
+  ).some((r) => r && !r[ActionReaderCore.keys.actionPatternDeletedKey]);
+}
+
 // Consult the creature's action_pattern_table for a free-action grant. Returns
 // the patterned bundle when the grant permits what the pattern chose, else null.
 // The grant keeps the final say — this decides WHICH action, never WHETHER one
@@ -790,9 +885,7 @@ async function tryPatternedGrantPick(director, snap, actor, allow, grant) {
     return null;
   }
 
-  const hasPattern = Object.values(
-    actor?.system?.props?.[ActionReaderCore.keys.actionPatternTableKey] ?? {}
-  ).some((r) => r && !r[ActionReaderCore.keys.actionPatternDeletedKey]);
+  const hasPattern = hasAuthoredPattern(actor);
   // 🪤 This gate reads the ACTOR's authored table directly, so it short-circuits
   // BEFORE decideViaActionReader — which is where a synthesized pattern gets
   // injected. Leaving it as a bare `if (!hasPattern) return null` would make the
@@ -809,7 +902,7 @@ async function tryPatternedGrantPick(director, snap, actor, allow, grant) {
     log(`autopilot: ${snap.name} has no authored pattern but is an automated summon — trying a synthesized one`);
   }
 
-  const patterned = await decideViaActionReader(director, snap);
+  const patterned = await decideViaActionReader(director, snap, { grant: { allow } });
   const cmd = patterned?.command ?? patterned?.bundle?.command ?? null;
   if (patterned && cmd && labelPermits(allow, cmd)) {
     log(`autopilot: free-action grant "${grant?.sourceLabel ?? "?"}" for ${snap.name} resolved from its Action Pattern → ${cmd}`);
@@ -862,7 +955,16 @@ async function decideFreeActionBundle(director, snap, grant) {
     let item = null;
     if (refs.length) item = pickNamedGrantItem(actor, refs, allow, ctx, snap);
 
-    if (!item && grantIsAmbiguous(allow)) {
+    // A creature that AUTHORED an Action Pattern also gets it consulted for an
+    // UNAMBIGUOUS grant ("Attack"). Its pattern is how it chooses between its
+    // attacks — Tempered Voidog's pack free Attack must still prefer Void Rend on
+    // a Slowed enemy over Claw — and resolveFirstNpcAttackItem would otherwise
+    // answer with whichever attack item happens to be first. The grant keeps the
+    // final say: tryPatternedGrantPick declines a pick the grant does not permit,
+    // and any grant it cannot enforce, and we then fall through to that same item.
+    let patternTried = false;
+    if (!item && (grantIsAmbiguous(allow) || hasAuthoredPattern(actor))) {
+      patternTried = true;
       const patterned = await tryPatternedGrantPick(director, snap, actor, allow, grant);
       if (patterned) return patterned;
     }
@@ -873,7 +975,7 @@ async function decideFreeActionBundle(director, snap, grant) {
     // a creature that has no Attack item, say — so the pattern gets its chance
     // before we hand the GM a compose menu. (The ambiguous case already tried.)
     if (!item) {
-      if (!grantIsAmbiguous(allow)) {
+      if (!patternTried) {
         const patterned = await tryPatternedGrantPick(director, snap, actor, allow, grant);
         if (patterned) return patterned;
       }
@@ -907,6 +1009,7 @@ async function decideFreeActionBundle(director, snap, grant) {
       targetUuids = targetUuidsFrom(ctx.chosenTargets ?? []);
     }
     if (!targetUuids?.length) {
+      if (hasAuthoredPattern(actor)) return doNothingBundle(snap, `free ${command} has no target in reach`);
       log(`autopilot: free-action ${command} "${item.name}" resolved no target — manual fallback`);
       return null;
     }

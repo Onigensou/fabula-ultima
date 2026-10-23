@@ -2747,6 +2747,11 @@ export async function refreshReactionSubjects({ acceptedCardReactions, ar, attac
 // the subject. No-op without a director (out of combat) — resource reactions
 // are combat-context by design. Rows filter via reaction_resource_filter +
 // reaction_cause_filter (see passesMatchFilters).
+// A checkbox column as stored on a row: true, or the string "true".
+function isTruthyRowFlag(v) {
+  return v === true || String(v ?? "").trim().toLowerCase() === "true";
+}
+
 export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource, direction, amount, cause, source = {}, element = null, originLabel = null, originUuid = null, weaponType = null, weaponRange = null, actionKind = null, actionIntent = null, isCrit = null, isFumble = null, accuracyTotal = null, highRoll = null, pierce = null, appliedEffectTags = [] }) {
   if (!director?.ctx || !actor || !resource || !(amount > 0)) return;
   if (direction !== "loss" && direction !== "recover") return;
@@ -2755,6 +2760,9 @@ export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource
     casterActor: actor,
     trigger: direction === "loss" ? "creature_lose_resource" : "creature_gain_resource",
     payload: {
+      // Identity of THIS ledger line. The event fans out to every combatant, so
+      // it is what lets an apply_ae `ae_once_per_event` count it exactly once.
+      eventId: foundry.utils.randomID(),
       resource: String(resource).toLowerCase(),
       amount,
       cause: cause ?? null,
@@ -6820,6 +6828,19 @@ async function applyApplyAeEffect(row, ctx) {
       const rowChargesAdd = evalCharge(row.ae_initial_charges);
       const rowChargesMax = evalCharge(row.ae_initial_charges_max);
       const existing = findDuplicateAe(actor, template, null);
+      // `ae_once_per_event` — count each triggering EVENT once, however many
+      // carriers react to it. An observer-aware trigger (the creature_lose_resource
+      // ledger fans out to every combatant) reaches every bearer of the same
+      // skill, so N pack members would each add a charge for ONE hit (Tempered
+      // Voidog's Follow the Leader). The stack records the event that last moved
+      // it; a second row for the same event is a no-op. Needs an event id on the
+      // payload (the resource ledger stamps one) — absent, it is plain add_charges.
+      const onceEventId = isTruthyRowFlag(row.ae_once_per_event) ? String(ctx.payload?.eventId ?? "") : "";
+      if (existing && onceEventId && existing.flags?.[FLAG_NS]?.lastEventId === onceEventId) {
+        log(`skill-effects.apply_ae add_charges: "${template.name}" on ${actor.name} already counted event ${onceEventId} — skipped`);
+        applied.push({ actorUuid: actor.uuid, aeId: existing.id, name: existing.name, chargesAdded: 0, skipped: "same-event" });
+        continue;
+      }
       if (existing) {
         const curCharges = Number(existing.flags?.[FLAG_NS]?.charges ?? 0) || 0;
         let addCharges = (rowChargesAdd != null && Number.isFinite(rowChargesAdd))
@@ -6836,6 +6857,7 @@ async function applyApplyAeEffect(row, ctx) {
           : (Number(existing.flags?.[FLAG_NS]?.chargesMax ?? template.flags?.[FLAG_NS]?.chargesMax ?? 99999) || 99999);
         const newCharges = Math.min(maxCharges, curCharges + addCharges);
         const chargeUpd = { [`flags.${FLAG_NS}.charges`]: newCharges };
+        if (onceEventId) chargeUpd[`flags.${FLAG_NS}.lastEventId`] = onceEventId;
         // For a persistent-counter POOL (Grave Points, Adoration, Fatigue — a
         // points ceiling, not a transient stack), when the grant row carries an
         // explicit ceiling (ae_initial_charges_max) keep the AE's stored chargesMax
@@ -7244,6 +7266,12 @@ async function applyApplyAeEffect(row, ctx) {
     // never authored) overrides the payload's action with the PICKED one (Lockdown).
     if (row?.ae_remember_action) {
       data.flags[FLAG_NS].rememberedAction = String(row.ae_remember_value ?? ctx.payload?.sourceSkillName ?? "");
+    }
+    // Once-per-event counting (`ae_once_per_event`, add_charges) — remember the
+    // event that created the stack, so another observer of the SAME event cannot
+    // add to it. See the add_charges branch above.
+    if (isTruthyRowFlag(row?.ae_once_per_event) && ctx.payload?.eventId) {
+      data.flags[FLAG_NS].lastEventId = String(ctx.payload.eventId);
     }
     // Affinity-override protection: an AE that OVERRIDES element-affinity props
     // (affinity_1..9 — e.g. Guard's "Resistance to all") must NOT downgrade an

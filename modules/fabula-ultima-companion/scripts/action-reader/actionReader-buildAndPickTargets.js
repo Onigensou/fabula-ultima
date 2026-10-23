@@ -470,6 +470,34 @@ function summarizeChosenTargets(targets, focusCtx = null) {
   }));
 }
 
+/*
+ * The target survey for the chosen action: the one the feasibility check already
+ * took (matchAndPick stamps it on the candidate), else a fresh one — the
+ * free-action frame builds its chosenAction by hand and never ran feasibility.
+ * Same resolution order as matchAndPick's safeSurvey: a per-run override on the
+ * context, then the ambient battle provider. Foreign code — a throw is "no answer".
+ */
+function getTargetSurvey(context, performerActor, performerTokenDocument) {
+  const chosen = context?.chosenAction ?? null;
+  const stamped = chosen?.candidate?.targetSurvey ?? chosen?.targetSurvey ?? null;
+  if (stamped?.ok) return stamped;
+  const item = chosen?.item ?? null;
+  if (!item) return null;
+  const survey = typeof context?.targetSurvey === "function"
+    ? context.targetSurvey
+    : AR.battleProvider()?.surveyTargets;
+  if (typeof survey !== "function") return null;
+  try {
+    return survey(item, {
+      skillTargetText: chosen?.skillTarget ?? null,
+      performerActor,
+      performerTokenDocument
+    }) ?? null;
+  } catch (_e) {
+    return null;
+  }
+}
+
 /* -------------------------------------------------------------------------- */
 /* Exported stage function                                                    */
 /* -------------------------------------------------------------------------- */
@@ -517,6 +545,31 @@ export async function buildAndPickActionReaderTargets(context, options = {}) {
     let legalCandidates = creatureWide
       ? allCandidates.filter(c => !c.isSelf)
       : filterCandidatesByRule(context, allCandidates, targetRule, options);
+
+    // Target AVAILABILITY — pick only from the list the action was judged
+    // feasible on. The battle's target survey owns who this action can legally
+    // reach (defeat, untargetable, Provoked, allegiance overrides,
+    // target_eligibility, pool focus, and for an Attack the range gates: melee
+    // cannot reach Flying / Covered / Vanished, Snared cannot attack in melee).
+    // Picking outside it chose creatures TARGET then dropped — a wasted turn. The
+    // survey is AUTHORITATIVE here, not intersected with the disposition filter
+    // above: that filter reads raw disposition, so a creature that counts as an
+    // enemy only through an allegiance override (Charmed) would survive the
+    // survey and be cut by it, leaving a "feasible" action with nobody to hit.
+    // No survey answer (out of combat, a standalone macro run) → unchanged.
+    // Creature-wide Burn modes pool BOTH sides, which the AI-side survey
+    // (creatureMeans "enemy") does not describe, so they are left alone.
+    if (!creatureWide) {
+      const survey = getTargetSurvey(context, performerActor, performerTokenDocument);
+      if (survey?.ok && Array.isArray(survey.eligible)) {
+        const reachable = new Set(survey.eligible.map(e => e?.tokenId).filter(Boolean));
+        const before = legalCandidates.length;
+        legalCandidates = allCandidates.filter(c => reachable.has(c.tokenId));
+        if (legalCandidates.length !== before) {
+          ARD.addWarning(context, stage, `Target survey narrowed ${before} -> ${legalCandidates.length} reachable candidate(s).`);
+        }
+      }
+    }
 
     // `status_focus:<Status>` — prefer candidates already carrying a named
     // status. The generic form of burn_focus, and unlike it this one RESPECTS

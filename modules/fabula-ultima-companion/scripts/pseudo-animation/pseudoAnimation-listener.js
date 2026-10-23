@@ -14,6 +14,19 @@
  */
 
 import { buildOni } from "../anim-studio/oni-helpers.js";
+import { frameMeter } from "../action-animation/animation-stage.js";
+
+// A pseudo script runs on EVERY client, so a Sequencer call inside it must play
+// only here. Sequencer's default is to also push to every other client, which
+// (everyone running the same script) stacked one copy per connected client on
+// every screen: N impact videos decoding at once, N hit sounds at N x volume.
+// Scripts see this as their `Sequence`; play() is forced local.
+function LocalSequence(...args) {
+  const seq = new globalThis.Sequence(...args);
+  const play = seq.play;
+  seq.play = function (opts = {}) { return play.call(this, { ...opts, local: true, remote: false }); };
+  return seq;
+}
 
 (() => {
   const TAG = "[ONI][PseudoAnim][Listener]";
@@ -69,6 +82,7 @@ if (!fn) {
     "wait",
     "foundry",
     "oni",
+    "Sequence",
     `
     "use strict";
     return (async () => {
@@ -92,10 +106,13 @@ try {
   warn("buildOni failed (continuing without helpers):", e);
 }
 
+const Seq = typeof globalThis.Sequence === "function" ? LocalSequence : undefined;
+const meter = frameMeter(`pseudo:${ctx?.msg?.scriptId ?? "?"}`);
 try {
-  return await fn(ctx, canvas, PIXI, audio, loadTexture, fromUuid, wait, foundry, oni);
+  return await fn(ctx, canvas, PIXI, audio, loadTexture, fromUuid, wait, foundry, oni, Seq);
 } finally {
   try { oni?.dispose?.(); } catch (e) { warn("oni.dispose threw", e); }
+  meter.stop();
 }
   }
 

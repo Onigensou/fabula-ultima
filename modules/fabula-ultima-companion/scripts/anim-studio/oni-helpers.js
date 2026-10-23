@@ -19,6 +19,8 @@
 // does NOT receive `game`).
 // ============================================================================
 
+import { takeVideo, releaseVideo } from "../action-animation/animation-stage.js";
+
 // ── Easing ──────────────────────────────────────────────────────────────────
 export const EASE = {
   linear: (t) => t,
@@ -587,6 +589,53 @@ export function buildOni(ctx, env) {
     return { sprite: spr, video: vid, ended };
   }
 
+  // One-shot webm effect (an impact, a burst) on its own <video>, so several can
+  // play at once without yanking each other back to frame 0. The copy comes
+  // ready from the director's staging (animation-stage.js) — decoded and on the
+  // GPU before the script started — so the frame it appears on does not pay for
+  // it. Sized like Sequencer's .effect().file(url).scale(s): native px x grid/100
+  // x s; pass `size` (world px wide) to override. Removed when it ends — and,
+  // like a Sequencer effect, it outlives the script (dispose() leaves it), so an
+  // explosion near the end of a cinematic is not cut off mid-burst.
+  async function vfx(url, {
+    x = 0, y = 0, scale = 1, size = null, parent = null,
+    zIndex = 95000, blend = null, alpha = 1, angle = 0, mirror = false,
+  } = {}) {
+    let c = null;
+    try { c = await takeVideo(url); } catch (e) { console.warn("[oni] vfx load failed", url, e); }
+    if (!c) return null;
+    const tex = c.texture, vid = c.video;
+    const w = size ?? (tex.width * scale * (canvas?.grid?.size ?? 100) / 100);
+    const spr = new PIXI.Sprite(tex);
+    spr.anchor.set(0.5);
+    spr.width = w;
+    spr.height = w * (tex.height / (tex.width || 1));
+    if (mirror) spr.scale.x *= -1;
+    spr.position.set(x, y);
+    spr.zIndex = zIndex;
+    spr.alpha = alpha;
+    spr.angle = angle;
+    if (blend != null) spr.blendMode = blend;
+    const host = parent ?? canvas.stage;
+    if (!parent) canvas.stage.sortableChildren = true;
+    host.addChild(spr);
+    let gone = false;
+    const remove = () => {
+      if (gone) return; gone = true;
+      try { spr.destroy(); } catch {}
+      releaseVideo(c);
+    };
+    const ended = new Promise((resolve) => {
+      const done = () => { clearTimeout(t); vid.removeEventListener("ended", done); remove(); resolve(); };
+      vid.addEventListener("ended", done);
+      // a hidden tab or a stalled decode must never hang a script awaiting this
+      const t = setTimeout(done, Math.max(2000, (vid.duration || 6) * 1000 + 1500));
+    });
+    try { vid.currentTime = 0; } catch {}
+    vid.play?.().catch(() => {});
+    return { sprite: spr, video: vid, ended };
+  }
+
   // ── Particle emitter ─────────────────────────────────────────────────────
   //
   // One emitter covers the three shapes every template in this pass needs:
@@ -798,7 +847,7 @@ export function buildOni(ctx, env) {
     // tokens
     cloneToken, hideToken, jump,
     // textures / media
-    gradientTexture, radialTexture, webmSprite, webm,
+    gradientTexture, radialTexture, webmSprite, webm, vfx,
     // full-screen fx (PIXI helpers are WORLD space; dom* are camera-proof)
     whiteout, blackout, dim, screenshake,
     domSheet, domDim, domFlash, sceneDim,

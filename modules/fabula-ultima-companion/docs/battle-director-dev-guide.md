@@ -193,5 +193,6 @@ Register the entry in [`data-migrations/_manifest.json`](../data-migrations/_man
 - **Force mode rule + canonical rows:** [force-mode.md](force-mode.md) — when a passive row should be `reaction_passive_mode: "force"`
 - **Director test harness (full API):** [director-test-harness.md](director-test-harness.md) — the standard for verifying any action without launching combat
 - **Payload shape:** [action-payload-shape.md](action-payload-shape.md)
+- **Animation staging (prepare before you play):** [animation-staging.md](animation-staging.md) — assets ready to draw on every client before ANIMATION; `oni.vfx`; frame meter
 - **Skill roadmap:** [battle-director-skill-roadmap.md](battle-director-skill-roadmap.md)
 - **Project root rules:** [/CLAUDE.md](../../../CLAUDE.md)

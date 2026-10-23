@@ -108,7 +108,7 @@ import { classifyActionIntent, resolveActionTags, INVENTORY_ACTION_TAG } from ".
 import { isAutopilotEnabled, isAiControlledTurn, isAiControlledCombatant, autopilotPickCombatant, autopilotDecideAction } from "./enemy-autopilot.js";
 import { isSummonAutopilotEnabled, isAutomatedSummon, isAutomatedSummonTurn, summonVetoMs, isGuestActor } from "./summon-autopilot.js";
 import { isBattlefieldObject } from "./battlefield-object.js";
-import { resolveAnimationSpec, playDirectorAnimation } from "./director-animation.js";
+import { resolveAnimationSpec, playDirectorAnimation, prestageAnimation } from "./director-animation.js";
 import { emitBattlerPose } from "./battler-pose.js";
 import { actionPose } from "./battler-pose-rules.js";
 import { witnessNpcAbility, witnessFiredCandidate, witnessAffinityHits } from "./encyclopedia-witness.js";
@@ -1658,6 +1658,8 @@ function describeActionForRewind(ar) {
         : `${attName} guarded`;
     case "Equipment":
       return `${attName} swapped equipment`;
+    case "DoNothing":
+      return `${attName} did nothing (no action it could take)`;
     case "Item": {
       const sel = ar.itemSelection;
       if (!sel) return `${attName} (Item, no selection)`;
@@ -3505,6 +3507,27 @@ const Target = {
       return;
     }
 
+    // ─── Do Nothing (autopilot only) ──────────────────────────────────
+    // A patterned creature with no possible action this turn (see
+    // enemy-autopilot doNothingBundle). Never offered in a menu and never
+    // action-gated. No targets, no roll, no cost, no effect: the card says why
+    // and RESOLVE ends the action. Self is the compat target, as for Equipment.
+    if (command === "DoNothing") {
+      const snapDN = director.ctx.turnSnapshot;
+      director.ctx.actionResult = freezeActionResult({
+        kind: "DoNothing",
+        attacker: snapDN,
+        attackerActorRef: snapDN.actorUuid,
+        reason: director.ctx._composedBundle?.reason ?? null,
+        targets: [snapDN],
+      });
+      director.enqueue({
+        type: INTENTS.TARGET_PICKED,
+        body: { targetTokenUuids: [snapDN.tokenUuid] },
+      });
+      return;
+    }
+
     // ─── Ultima actions (Boss/Villain — Domination / Escape / Recovery) ──
     // Self-targeted, no roll, no pickers — the action card at CONFIRM is the
     // player-facing confirm pass. Costs (1 Ultima Point; +1 Dominance Point
@@ -4613,7 +4636,7 @@ const Compute = {
       ? triggerIntent.body.targetTokenUuids
       : director.ctx.pickedTargetUuids ?? []);
 
-    if (command === "Guard" || command === "Equipment" || ULTIMA_COMMANDS.includes(command)) {
+    if (command === "Guard" || command === "Equipment" || command === "DoNothing" || ULTIMA_COMMANDS.includes(command)) {
       // Guard/Equipment/Ultima actionResult was already shaped in TARGET — all
       // are no-roll menu declarations. Pass through to CONFIRM where the card
       // collects the player's pick (cover target / equipment slots / the
@@ -5102,6 +5125,9 @@ const Confirm = {
       director.enqueue({ type: INTENTS.ABORT });
       return;
     }
+    // Start making this action's animation ready to draw on every client while
+    // the card is up; ANIMATION waits on it (director-animation.js).
+    try { prestageAnimation(director, ar); } catch (e) { warn("CONFIRM: prestageAnimation threw", e); }
     // Resolve the attacker actor for the chat speaker
     let attackerActor = null;
     try { attackerActor = await fromUuid(ar.attackerActorRef ?? ar.attacker.actorUuid); } catch {}
@@ -5148,7 +5174,7 @@ const Confirm = {
       const verbForKind = ar.kind === "Skill" ? "cast" : "posted";
       const kindLabel = ar.kind === "Skill"
         ? (ar.skillName ?? "Skill")
-        : ar.kind;
+        : ar.kind === "DoNothing" ? "Do Nothing" : ar.kind;
       const cnfPhase = rewindPhaseLabel(director.ctx, dc?.round);
       saveDirectorState(director, {
         label: `${cnfPhase} · ${ar.attacker?.name ?? "?"} · ${kindLabel} ${verbForKind}${passTag}`,
@@ -5563,7 +5589,7 @@ const Confirm = {
     // reactions (Barrage) ride the onAddTargetApply path — tagged `_addTarget`
     // when the reaction's effect contains add_target; everything else (Creeped's
     // negate / Energized) resolves as an ordinary pre-resolve pill.
-    const firePerformsAction = attackerActor && (ar.passIndex ?? 1) <= 1;
+    const firePerformsAction = attackerActor && (ar.passIndex ?? 1) <= 1 && ar.kind !== "DoNothing";
     // Observer hook: the declared action with its FINAL targets (after the picker,
     // the Provoked pin's convergence pass, autopilot/pre-composed bundles). Read-only
     // and additive, like `fu-director-trigger` — but that hook is not fired on this
@@ -7115,6 +7141,8 @@ const Resolve = {
       // creature_guards trigger (kind === "Guard"). Null Common item (migration
       // not yet run) → resolveAction bails with a warn.
       await resolveAction(director, ar, { actionSkill: getCoreActionSkill("guard") });
+    } else if (ar.kind === "DoNothing") {
+      log(`RESOLVE DoNothing: ${ar.attacker?.name ?? "?"} takes no action (${ar.reason ?? "no possible action"})`);
     } else if (ar.kind === "Equipment") {
       // Common/Equipment carries a single equip_swap effect row that wraps
       // applyEquipmentSwap(actor, ar.equipmentSelections) + applyWeaponForm-

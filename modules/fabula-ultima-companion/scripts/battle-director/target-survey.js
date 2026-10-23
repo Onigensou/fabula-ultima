@@ -82,10 +82,12 @@ import { affordableTargetCount, mpCapTargetCount } from "./skill-cost.js";
 import {
   applyAttackRangeGate,
   applyMultiOffensiveGate,
+  attackRangeBlockedBy,
   getMaxActionTargets,
   snapshotEligibleTargets,
   snapshotEligibleTargetsFromDCombat,
 } from "./snapshot.js";
+import { buildPseudoWeaponFromNpcAttack } from "./actor-shape.js";
 
 // ── skill_target text parsing ────────────────────────────────────────────────
 
@@ -539,8 +541,14 @@ export function surveyActionTargets({
   }
   eligible = applyTargetEligibility(eligible, { action, performerActor: actor, dCombat, round: theRound });
   if (weapon) {
+    // ATTACKER-side range block (Snared / Obscure: `disable_attack_range`) — the
+    // attack can reach nobody at all. Compose refuses it outright; the survey has
+    // to say so too, or the AI judges the attack feasible and TARGET cancels it.
+    let blockedBy = null;
+    try { blockedBy = attackRangeBlockedBy(actor, weapon.range); } catch (_) { blockedBy = null; }
+    if (blockedBy) eligible = [];
     // RAW Core p.70 — Covered creatures can't be melee-targeted; Vanish likewise.
-    eligible = applyAttackRangeGate(eligible, weapon, actor);
+    else eligible = applyAttackRangeGate(eligible, weapon, actor);
   }
   // Shadow Mask: a multi-target attack / offensive spell cannot select a bearer
   // of `cannot_be_targeted_by: "multi_offensive"`.
@@ -680,7 +688,11 @@ export function registerBattleTargetingProvider() {
         },
         performerActor:  opts.performerActor ?? null,
         action,
-        weapon:          opts.weapon ?? null,
+        // A monster's Attack-typed pattern action IS a weapon attack — TARGET
+        // builds the same pseudo-weapon and runs the range gate on it. Without it
+        // the AI judged a melee Claw feasible against a Flying target (and picked
+        // it), and TARGET then dropped the target: a wasted turn.
+        weapon:          opts.weapon ?? npcAttackWeaponFor(action),
         skillTargetText: opts.skillTargetText ?? null,
         excludeSelf:     Boolean(opts.excludeSelf),
         creatureMeans:   "enemy",
@@ -709,6 +721,12 @@ export function injectActionReaderBattleContext(ctx, { director = null } = {}) {
   const d = director ?? activeDirector();
   ctx.participants = bdParticipantRoster(d);
   return ctx;
+}
+
+// The pseudo-weapon for an Attack-typed NPC item (skill_type "attack"), else null.
+function npcAttackWeaponFor(action) {
+  if (String(action?.system?.props?.skill_type ?? "").trim().toLowerCase() !== "attack") return null;
+  try { return buildPseudoWeaponFromNpcAttack(action); } catch { return null; }
 }
 
 // The running director, without importing director-boot (which imports half the

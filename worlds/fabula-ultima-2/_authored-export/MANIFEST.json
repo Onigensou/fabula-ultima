@@ -24953,6 +24953,26 @@
         "effects": 0
       },
       {
+        "id": "inidqB29V0V2aFbF",
+        "name": "Tempered Voidog",
+        "type": "character",
+        "items": [
+          {
+            "id": "3GO9lD75BHN9kizl",
+            "name": "Claw"
+          },
+          {
+            "id": "bqEhECqrq0aQZ1ih",
+            "name": "Follow the Leader"
+          },
+          {
+            "id": "Z4txYc0L0R7nrW49",
+            "name": "Void Rend"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "PNdPbPJD7EnTgiLb",
         "name": "Test Caster",
         "type": "character",
