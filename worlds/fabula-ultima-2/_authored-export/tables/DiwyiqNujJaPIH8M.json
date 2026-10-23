@@ -1,0 +1,225 @@
+{
+  "_id": "DiwyiqNujJaPIH8M",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1792737915550,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "n7F3S1JE6AVQ7x0h",
+  "formula": "1d13",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+  "name": "Overworld (Chapter 4) - Enemies",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "090CBXvmWqfFEKR6",
+      "documentCollection": "Actor",
+      "documentId": "sTGMdYipYCG36aBO",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/LightningPrisim_Standard.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Lightning Prism",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "2EccE9gnmuNsorh9",
+      "documentCollection": "Actor",
+      "documentId": "tJCXrTtfLkrN9E57",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/DragonGuard_Standard.png",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Dragon Guard",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "8XcC3ygEs6Z3rGUt",
+      "documentCollection": "Actor",
+      "documentId": "x8TBsDZaRgoSo5no",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Obsidrax_Standard.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Obsidrax",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "FwGw0SmOf1vaXyf5",
+      "documentCollection": "Actor",
+      "documentId": "rftRuHZwWx5SiNpH",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/DireOrc_Standard.png",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Dire Orc",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "g9YgnFwTfiZkaj2Z",
+      "documentCollection": "Actor",
+      "documentId": "H6Ubup6kmkgNQzLU",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Deakoza.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Drakoza",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "JDNIMwuktP2tnHIg",
+      "documentCollection": "Actor",
+      "documentId": "fCxslZazJKtQWsKP",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/DeathGaze_Standard.png",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Death Gazer",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "lexcq0iqHxIms3dL",
+      "documentCollection": "Actor",
+      "documentId": "A1VzokzJPoyxobCd",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Electro%20Slime_Standard.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Electro Slime",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "MPG2ggbC9wCKf17k",
+      "documentCollection": "Actor",
+      "documentId": "iGc0EUHE9LKWT0Ye",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Mana%20Ray_Standard.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Mana Ray",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "msKNFMkFefDln1jw",
+      "documentCollection": "Actor",
+      "documentId": "bnem1vdA6Bv3mBVx",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Succubus_Standard.png",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Succubus",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "NjdZmx5275uhnFJF",
+      "documentCollection": "Actor",
+      "documentId": "TvLv878yZLNUAWNN",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Kirin_Standard.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Kirin",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "OCiHty6g0RLjSvxe",
+      "documentCollection": "Actor",
+      "documentId": "kAYN54Id3iTAOw1A",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Ampyr_Standard.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Ampere",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "pMOT9QQHtpILMB8O",
+      "documentCollection": "Actor",
+      "documentId": "I2sSkVIQ4FCunZBE",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Skizzik",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "YRTUp22CjtEnyUe7",
+      "documentCollection": "Actor",
+      "documentId": "wjGqTFMH0Z7yZkZt",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Imp_Standard.png",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Imp",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

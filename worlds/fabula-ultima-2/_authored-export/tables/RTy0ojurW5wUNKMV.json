@@ -1,0 +1,170 @@
+{
+  "_id": "RTy0ojurW5wUNKMV",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1792737915329,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "CT0bTXVgLi9mbiQr",
+  "formula": "1d10",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+  "name": "Overworld (Chapter 2) - Encounter",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "1Qfp1sVixihoUMPP",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Bandit Wolf, Bandit Wolf, Bandit Wolf",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "32t81VORFBYTO7xV",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Bandit, Goblin Bandit, Bandit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "4smwT4xOIQBRaCyw",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Goblin Bandit, Goblin Bandit, Goblin Bandit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "6mKv3f4CYajd8cvy",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Wolf, Wolf, Wolf",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "eQjigKp582i1tw7E",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Slime, Wolf, Slime",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "lTBk4gNOcBqgnvzi",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Goblin Bandit, Bandit Shroom, Bandit Wolf",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "OyArQZFJX3bEccsn",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Bandit, Bandit Archer, Bandit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "Pd5IPdO7HyJkkSth",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Bandit, Wolf, Bandit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "reI0mFbDF5RRvj3M",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Bandit, Bandit Shroom, Bandit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "uqSCOtKLt7aZTKon",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Bandit Archer, Bandit Wolf, Bandit Archer",
+      "type": "text",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

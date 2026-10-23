@@ -1,0 +1,240 @@
+{
+  "_id": "eU0r6IDQABoFFTsf",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1792737915245,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "CT0bTXVgLi9mbiQr",
+  "formula": "1d15",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+  "name": "Overworld (Chapter 1) - Encounter",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "43BIsWSQPWep8w9c",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Prickle Boar, Wind Slime, Aeroshroom",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "4ufeLoRS31oxAkVV",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Bandit, Wolf, Bandit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "5V5xprIVnl5e8v8N",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Boa, Aeroshroom, Wind Slime",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "8Jh6cC5HFACGrx1Q",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Wind Slime, Aeroshroom, Pakopon",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "Aj4vEyxISwRPgL6z",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        14,
+        14
+      ],
+      "text": "Wind Slime, Slime, Wind Slime, Slime",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "leD8Fo0uq9nMCiFC",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Wolf, Pakopon, Mana Gorger",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "nDvCyT9yrC1Uuf1N",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        15,
+        15
+      ],
+      "text": "Bandit, Prickle Boar, Bandit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "nFXBPejL3RGapVur",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Wolf, Boa, Slime",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "Q9ypw8EkfMhyJLHY",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Slime, Wolf, Slime",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "R7aqvxqxAauoKHHZ",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Slime, Wolf, Mana Gorger",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "ssyZw0FzCArF0AlC",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Wolf, Boa, Wolf",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "t4XWK9DoIqkDvMpB",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Slime, Wolf, Life Gorger",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "Uc9laiVutb9wFfkN",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Wolf, Wolf, Wolf",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "vFWVsIParhcNxr8g",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Prickle Boar, Wolf, Aeroshroom",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "XVQSQtaQ84GG9nzx",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Wind Slime, Aeroshroom",
+      "type": "text",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

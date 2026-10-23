@@ -1,0 +1,135 @@
+{
+  "_id": "HbOAjXR20aRMQvPJ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1792737915379,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "n7F3S1JE6AVQ7x0h",
+  "formula": "1d7",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+  "name": "Overworld (Chapter 2) - Enemies",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "5jb91xPPxLLYmKqd",
+      "documentCollection": "Actor",
+      "documentId": "o1jFZwDZxSAFSSWA",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Bandit_Standard.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Bandit",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "6ARJh5mdYNqAD6vx",
+      "documentCollection": "Actor",
+      "documentId": "Hu6dRUuxvBLrrdmV",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/BanditWolf_Standard.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Bandit Wolf",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "92ovIsGTUz6ZbQRy",
+      "documentCollection": "Actor",
+      "documentId": "XFBIZY3EKMHgBQCx",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/BanditArcher_Standard.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Bandit Archer",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "9XTh8KupDz78rGna",
+      "documentCollection": "Actor",
+      "documentId": "LdevXmJ3bnv0M10v",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/BanditShroom_Standard.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Bandit Shroom",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Bk78o4FjBlKtmKJy",
+      "documentCollection": "Actor",
+      "documentId": "KZ7jQ3mXrfqu42yO",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Wolf_Standard.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Wolf",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "btDhAj6T3s7eQNIb",
+      "documentCollection": "Actor",
+      "documentId": "hwfRiQQSsYK4CdhJ",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/GoblinBandit_Standard.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Goblin Bandit",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ogDQntHagrsXS3b7",
+      "documentCollection": "Actor",
+      "documentId": "HHKTGkNGiAoaD9WO",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Slime_Standard.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Slime",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

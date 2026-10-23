@@ -352,7 +352,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.4",
       "createdTime": 1765672966590,
-      "modifiedTime": 1792727961779,
+      "modifiedTime": 1792737971712,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [
@@ -1083,6 +1083,326 @@
           }
         },
         "_id": "xUVkxON5E7oKQxrJ"
+      }
+    ],
+    "regions": [
+      {
+        "name": "Land of the Dragon",
+        "color": "#9b59d0",
+        "shapes": [
+          {
+            "type": "polygon",
+            "points": [
+              480,
+              0,
+              1153,
+              0,
+              1153,
+              560,
+              920,
+              520,
+              940,
+              420,
+              860,
+              330,
+              700,
+              300,
+              665,
+              245,
+              600,
+              230,
+              500,
+              250,
+              480,
+              180
+            ],
+            "hole": false
+          }
+        ],
+        "visibility": 0,
+        "_id": "Hx3e0HG2P9b2iqsZ",
+        "elevation": {
+          "bottom": null,
+          "top": null
+        },
+        "locked": false,
+        "flags": {},
+        "behaviors": [
+          {
+            "name": "Chapter 4",
+            "type": "fabula-ultima-companion.area",
+            "system": {
+              "threat": "high",
+              "encounterTable": "RollTable.WAfcUXEh5bJtrDIK",
+              "enemiesTable": "RollTable.DiwyiqNujJaPIH8M",
+              "battleMap": "Scene.XHe8LfutYAkPuR5B",
+              "announce": true,
+              "battleBGM": "",
+              "music": "",
+              "loot": {
+                "treasure": null,
+                "zenit": null,
+                "weapon": null,
+                "armor": null,
+                "accessory": null,
+                "consumable": null,
+                "item": null,
+                "fish": null,
+                "material": null
+              }
+            },
+            "_id": "DxvcCrPvGdAqu7w4",
+            "disabled": false,
+            "flags": {},
+            "_stats": {
+              "compendiumSource": null,
+              "duplicateSource": null,
+              "coreVersion": "12.343",
+              "systemId": "custom-system-builder",
+              "systemVersion": "4.8.5",
+              "createdTime": null,
+              "modifiedTime": null,
+              "lastModifiedBy": null
+            }
+          }
+        ]
+      },
+      {
+        "name": "Ruhig Countryside",
+        "color": "#d8c25a",
+        "shapes": [
+          {
+            "type": "polygon",
+            "points": [
+              0,
+              280,
+              330,
+              300,
+              420,
+              380,
+              455,
+              440,
+              470,
+              520,
+              560,
+              600,
+              520,
+              612,
+              300,
+              600,
+              0,
+              620
+            ],
+            "hole": false
+          }
+        ],
+        "visibility": 0,
+        "_id": "MwH2X3PASHwSC8N7",
+        "elevation": {
+          "bottom": null,
+          "top": null
+        },
+        "locked": false,
+        "flags": {},
+        "behaviors": [
+          {
+            "name": "Chapter 2",
+            "type": "fabula-ultima-companion.area",
+            "system": {
+              "threat": "low",
+              "encounterTable": "RollTable.RTy0ojurW5wUNKMV",
+              "enemiesTable": "RollTable.HbOAjXR20aRMQvPJ",
+              "battleMap": "Scene.NHYPGoAsaZPQPyRa",
+              "announce": true,
+              "battleBGM": "",
+              "music": "",
+              "loot": {
+                "treasure": null,
+                "zenit": null,
+                "weapon": null,
+                "armor": null,
+                "accessory": null,
+                "consumable": null,
+                "item": null,
+                "fish": null,
+                "material": null
+              }
+            },
+            "_id": "AzPY5SgiMeLcpW87",
+            "disabled": false,
+            "flags": {},
+            "_stats": {
+              "compendiumSource": null,
+              "duplicateSource": null,
+              "coreVersion": "12.343",
+              "systemId": "custom-system-builder",
+              "systemVersion": "4.8.5",
+              "createdTime": null,
+              "modifiedTime": null,
+              "lastModifiedBy": null
+            }
+          }
+        ]
+      },
+      {
+        "name": "The Wyrmwood",
+        "color": "#e0913c",
+        "shapes": [
+          {
+            "type": "polygon",
+            "points": [
+              330,
+              300,
+              500,
+              250,
+              600,
+              230,
+              665,
+              245,
+              700,
+              300,
+              860,
+              330,
+              940,
+              420,
+              920,
+              520,
+              700,
+              560,
+              560,
+              600,
+              470,
+              520,
+              455,
+              440,
+              420,
+              380
+            ],
+            "hole": false
+          }
+        ],
+        "visibility": 0,
+        "_id": "elJnVHYDhPJ0Iyb5",
+        "elevation": {
+          "bottom": null,
+          "top": null
+        },
+        "locked": false,
+        "flags": {},
+        "behaviors": [
+          {
+            "name": "Chapter 3",
+            "type": "fabula-ultima-companion.area",
+            "system": {
+              "threat": "medium",
+              "encounterTable": "RollTable.FIzBIfsJT7YJZQCk",
+              "enemiesTable": "RollTable.EeGLxe4Px7LvkgIB",
+              "battleMap": "Scene.OzZIYbff6H0Drj8r",
+              "announce": true,
+              "battleBGM": "",
+              "music": "",
+              "loot": {
+                "treasure": null,
+                "zenit": null,
+                "weapon": null,
+                "armor": null,
+                "accessory": null,
+                "consumable": null,
+                "item": null,
+                "fish": null,
+                "material": null
+              }
+            },
+            "_id": "jiG1qaekVeDEknRs",
+            "disabled": false,
+            "flags": {},
+            "_stats": {
+              "compendiumSource": null,
+              "duplicateSource": null,
+              "coreVersion": "12.343",
+              "systemId": "custom-system-builder",
+              "systemVersion": "4.8.5",
+              "createdTime": null,
+              "modifiedTime": null,
+              "lastModifiedBy": null
+            }
+          }
+        ]
+      },
+      {
+        "name": "Eisendrache Kingdom",
+        "color": "#6fbf73",
+        "shapes": [
+          {
+            "type": "polygon",
+            "points": [
+              0,
+              620,
+              300,
+              600,
+              520,
+              612,
+              560,
+              600,
+              700,
+              560,
+              1153,
+              560,
+              1153,
+              1024,
+              0,
+              1024
+            ],
+            "hole": false
+          }
+        ],
+        "visibility": 0,
+        "_id": "ouSySxQ5JYQTWYRH",
+        "elevation": {
+          "bottom": null,
+          "top": null
+        },
+        "locked": false,
+        "flags": {},
+        "behaviors": [
+          {
+            "name": "Chapter 1",
+            "type": "fabula-ultima-companion.area",
+            "system": {
+              "threat": "low",
+              "encounterTable": "RollTable.eU0r6IDQABoFFTsf",
+              "enemiesTable": "RollTable.E4U6ILZHRy7Bzf1m",
+              "battleMap": null,
+              "announce": true,
+              "battleBGM": "",
+              "music": "",
+              "loot": {
+                "treasure": null,
+                "zenit": null,
+                "weapon": null,
+                "armor": null,
+                "accessory": null,
+                "consumable": null,
+                "item": null,
+                "fish": null,
+                "material": null
+              }
+            },
+            "_id": "BWbjib1dBOI9t9J5",
+            "disabled": false,
+            "flags": {},
+            "_stats": {
+              "compendiumSource": null,
+              "duplicateSource": null,
+              "coreVersion": "12.343",
+              "systemId": "custom-system-builder",
+              "systemVersion": "4.8.5",
+              "createdTime": null,
+              "modifiedTime": null,
+              "lastModifiedBy": null
+            }
+          }
+        ]
       }
     ]
   }
