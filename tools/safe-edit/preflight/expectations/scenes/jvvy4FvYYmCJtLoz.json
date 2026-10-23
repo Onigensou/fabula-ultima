@@ -8,7 +8,7 @@
   "full": {
     "folder": null,
     "name": "Training Ground",
-    "active": true,
+    "active": false,
     "navigation": false,
     "navOrder": 1000000,
     "navName": "Training Ground",
@@ -1115,7 +1115,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.4",
       "createdTime": 1762515389849,
-      "modifiedTime": 1791851556093,
+      "modifiedTime": 1792690353006,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "environment": {

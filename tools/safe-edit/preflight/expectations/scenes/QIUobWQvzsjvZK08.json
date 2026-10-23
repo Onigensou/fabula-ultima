@@ -141,9 +141,9 @@
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Gold_Tile.png"
             },
             "ElKEo0TCuXimiFxW": {
-              "initialType": "blank",
-              "currentType": "blank",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+              "initialType": "camp",
+              "currentType": "camp",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Camp_Tile.png"
             },
             "baCv8GipDUhBhVuP": {
               "initialType": "random_battle",
@@ -352,7 +352,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359004160,
-      "modifiedTime": 1791828461221,
+      "modifiedTime": 1792744044095,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [

@@ -1,0 +1,3430 @@
+{
+  "sceneId": "cSog1jN1qGTZvxnT",
+  "name": "Stealth Test Range",
+  "tokens": [
+    {
+      "name": "Vault Guard",
+      "actorId": "mZBLhQvDqiIZby50",
+      "actorLink": false
+    },
+    {
+      "name": "Gate Watch",
+      "actorId": "mZBLhQvDqiIZby50",
+      "actorLink": false
+    },
+    {
+      "name": "Exit Watch",
+      "actorId": "mZBLhQvDqiIZby50",
+      "actorLink": false
+    },
+    {
+      "name": "Hall South",
+      "actorId": "mZBLhQvDqiIZby50",
+      "actorLink": false
+    },
+    {
+      "name": "Hall North",
+      "actorId": "mZBLhQvDqiIZby50",
+      "actorLink": false
+    },
+    {
+      "name": "Bunk Sentry",
+      "actorId": "mZBLhQvDqiIZby50",
+      "actorLink": false
+    },
+    {
+      "name": "Store Keeper",
+      "actorId": "mZBLhQvDqiIZby50",
+      "actorLink": false
+    },
+    {
+      "name": "Yard Patrol",
+      "actorId": "mZBLhQvDqiIZby50",
+      "actorLink": false
+    },
+    {
+      "name": "Hina",
+      "actorId": "srAH3OHOoK0tvFih",
+      "actorLink": false
+    }
+  ],
+  "tokensFull": [
+    {
+      "name": "Vault Guard",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Bandit/Bandit_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.34,
+        "scaleY": 1.34,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": -1,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Bandit/Bandit_Standard.png",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        }
+      },
+      "actorId": "mZBLhQvDqiIZby50",
+      "x": 2040,
+      "y": 1020,
+      "hidden": false,
+      "_id": "JtA2nrtCxXfvc1nh",
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": []
+    },
+    {
+      "name": "Gate Watch",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Bandit/Bandit_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.34,
+        "scaleY": 1.34,
+        "rotation": 0,
+        "tint": "#ff0000",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": -1,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Bandit/Bandit_Standard.png",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        }
+      },
+      "actorId": "mZBLhQvDqiIZby50",
+      "x": 600,
+      "y": 300,
+      "hidden": false,
+      "_id": "O7bvpSi8WjpKIlQO",
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": []
+    },
+    {
+      "name": "Exit Watch",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Bandit/Bandit_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.34,
+        "scaleY": 1.34,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": -1,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Bandit/Bandit_Standard.png",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        }
+      },
+      "actorId": "mZBLhQvDqiIZby50",
+      "x": 2040,
+      "y": 1500,
+      "hidden": false,
+      "_id": "SrA9gwNyCIZEJ1hv",
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": []
+    },
+    {
+      "name": "Hall South",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Bandit/Bandit_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.34,
+        "scaleY": 1.34,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": -1,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Bandit/Bandit_Standard.png",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        }
+      },
+      "actorId": "mZBLhQvDqiIZby50",
+      "x": 1140,
+      "y": 1560,
+      "hidden": false,
+      "_id": "Zk7qvp72lu2CP4GC",
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": []
+    },
+    {
+      "name": "Hina",
+      "displayName": 0,
+      "actorLink": false,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Hina/Hina_Standard.png",
+        "scaleX": 1,
+        "scaleY": 1,
+        "offsetX": 0,
+        "offsetY": 0,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "fit": "contain",
+        "alphaThreshold": 0.75
+      },
+      "width": 1,
+      "height": 1,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 1,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        },
+        "negative": false,
+        "priority": 0
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "flags": {
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Hako/Hako%20Standard.png",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "barbrawl": {
+          "resourceBars": {}
+        }
+      },
+      "appendNumber": false,
+      "prependAdjective": false,
+      "hexagonalShape": 0,
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "actorId": "srAH3OHOoK0tvFih",
+      "x": 240,
+      "y": 300,
+      "hidden": false,
+      "_id": "h9Rtv2YdNGgndcZm",
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": []
+    },
+    {
+      "name": "Hall North",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Bandit/Bandit_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.34,
+        "scaleY": 1.34,
+        "rotation": 0,
+        "tint": "#ff0000",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": -1,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Bandit/Bandit_Standard.png",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        }
+      },
+      "actorId": "mZBLhQvDqiIZby50",
+      "x": 840,
+      "y": 480,
+      "hidden": false,
+      "_id": "htYJdXXGkfKRwEU9",
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": []
+    },
+    {
+      "name": "Bunk Sentry",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Bandit/Bandit_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.34,
+        "scaleY": 1.34,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": -1,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Bandit/Bandit_Standard.png",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        }
+      },
+      "actorId": "mZBLhQvDqiIZby50",
+      "x": 540,
+      "y": 1440,
+      "hidden": false,
+      "_id": "q79By6QVyHgjfrOl",
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": []
+    },
+    {
+      "name": "Store Keeper",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Bandit/Bandit_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.34,
+        "scaleY": 1.34,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": -1,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Bandit/Bandit_Standard.png",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        }
+      },
+      "actorId": "mZBLhQvDqiIZby50",
+      "x": 1500,
+      "y": 240,
+      "hidden": false,
+      "_id": "siHfbJ1bWOaYIy2i",
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": []
+    },
+    {
+      "name": "Yard Patrol",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Bandit/Bandit_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.34,
+        "scaleY": 1.34,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": -1,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Bandit/Bandit_Standard.png",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        }
+      },
+      "actorId": "mZBLhQvDqiIZby50",
+      "x": 180,
+      "y": 300,
+      "hidden": false,
+      "_id": "utnT3ZSD3nscc34y",
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": []
+    }
+  ],
+  "notes": [],
+  "tileCount": 24,
+  "full": {
+    "name": "Stealth Test Range",
+    "width": 2400,
+    "height": 1800,
+    "padding": 0,
+    "navigation": false,
+    "background": {
+      "src": null,
+      "anchorX": 0,
+      "anchorY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "fit": "fill",
+      "scaleX": 1,
+      "scaleY": 1,
+      "rotation": 0,
+      "tint": "#ffffff",
+      "alphaThreshold": 0
+    },
+    "backgroundColor": "#1b1712",
+    "grid": {
+      "type": 1,
+      "size": 60,
+      "style": "solidLines",
+      "thickness": 1,
+      "color": "#000000",
+      "alpha": 0.25,
+      "distance": 1,
+      "units": "m"
+    },
+    "tokenVision": false,
+    "fog": {
+      "exploration": false,
+      "overlay": null,
+      "colors": {
+        "explored": null,
+        "unexplored": null
+      }
+    },
+    "environment": {
+      "darknessLevel": 0,
+      "globalLight": {
+        "enabled": true,
+        "alpha": 0.5,
+        "bright": false,
+        "color": null,
+        "coloration": 1,
+        "luminosity": 0,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "darknessLock": false,
+      "cycle": true,
+      "base": {
+        "hue": 0,
+        "intensity": 0,
+        "luminosity": 0,
+        "saturation": 0,
+        "shadows": 0
+      },
+      "dark": {
+        "hue": 0.7138888888888889,
+        "intensity": 0,
+        "luminosity": -0.25,
+        "saturation": 0,
+        "shadows": 0
+      }
+    },
+    "flags": {
+      "fabula-ultima-companion": {
+        "oniFabula": {
+          "general": {
+            "sceneMode": "stealth",
+            "sceneVisited": true
+          }
+        },
+        "stealthConfig": {
+          "routes": {
+            "O7bvpSi8WjpKIlQO": [
+              {
+                "i": 7,
+                "j": 3
+              },
+              {
+                "i": 7,
+                "j": 8
+              }
+            ],
+            "utnT3ZSD3nscc34y": [
+              {
+                "i": 13,
+                "j": 3
+              },
+              {
+                "i": 19,
+                "j": 10
+              }
+            ],
+            "htYJdXXGkfKRwEU9": [
+              {
+                "i": 3,
+                "j": 15
+              },
+              {
+                "i": 10,
+                "j": 19
+              }
+            ],
+            "Zk7qvp72lu2CP4GC": [
+              {
+                "i": 26,
+                "j": 19
+              },
+              {
+                "i": 18,
+                "j": 15
+              }
+            ],
+            "siHfbJ1bWOaYIy2i": [
+              {
+                "i": 3,
+                "j": 25
+              },
+              {
+                "i": 8,
+                "j": 36
+              }
+            ],
+            "SrA9gwNyCIZEJ1hv": [
+              {
+                "i": 27,
+                "j": 36
+              },
+              {
+                "i": 23,
+                "j": 25
+              }
+            ]
+          },
+          "facings": {
+            "O7bvpSi8WjpKIlQO": "E",
+            "utnT3ZSD3nscc34y": "S",
+            "htYJdXXGkfKRwEU9": "S",
+            "q79By6QVyHgjfrOl": "N",
+            "Zk7qvp72lu2CP4GC": "N",
+            "siHfbJ1bWOaYIy2i": "W",
+            "JtA2nrtCxXfvc1nh": "W",
+            "SrA9gwNyCIZEJ1hv": "W"
+          },
+          "spawnPoints": [
+            {
+              "i": 3,
+              "j": 36
+            },
+            {
+              "i": 28,
+              "j": 36
+            },
+            {
+              "i": 28,
+              "j": 3
+            }
+          ],
+          "tuning": {}
+        },
+        "oniDungeon": {
+          "battleMap": "Scene.GBl7NcPaJmed4sKD",
+          "battleBGM": "DRG_Battle",
+          "bossBGM": "DRG_Boss",
+          "enemiesTable": "RollTable.ELzPI2DIrn0jp6ll"
+        }
+      },
+      "battle-transitions": {},
+      "LockView": {
+        "editViewbox": false,
+        "lockPan": false,
+        "lockPanInit": false,
+        "lockZoom": false,
+        "lockZoomInit": false,
+        "boundingBox": false,
+        "boundingBoxInit": false,
+        "autoScale": 0,
+        "rotation": 0,
+        "sidebar": "noChange",
+        "blackenSidebar": false,
+        "excludeSidebar": false,
+        "hideUI": false,
+        "forceInit": false,
+        "hideUIelements": {
+          "controls": true,
+          "hotbar": true,
+          "logo": true,
+          "navigation": true,
+          "players": true,
+          "sidebar": false
+        }
+      }
+    },
+    "_id": "cSog1jN1qGTZvxnT",
+    "active": false,
+    "navOrder": 0,
+    "navName": "",
+    "foreground": null,
+    "foregroundElevation": null,
+    "thumb": null,
+    "initial": {
+      "x": null,
+      "y": null,
+      "scale": 0.5
+    },
+    "playlist": null,
+    "playlistSound": null,
+    "journal": null,
+    "journalEntryPage": null,
+    "weather": "",
+    "folder": null,
+    "sort": 0,
+    "ownership": {
+      "default": 0,
+      "JQGNzKpDPHJmcUIW": 3
+    },
+    "_stats": {
+      "compendiumSource": null,
+      "duplicateSource": null,
+      "coreVersion": "12.343",
+      "systemId": "custom-system-builder",
+      "systemVersion": "4.8.5",
+      "createdTime": 1788339709711,
+      "modifiedTime": 1792743089531,
+      "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+    },
+    "drawings": [
+      {
+        "x": 840,
+        "y": 120,
+        "shape": {
+          "type": "r",
+          "width": 420,
+          "height": 1560,
+          "radius": null,
+          "points": []
+        },
+        "fillType": 1,
+        "fillColor": "#5c5142",
+        "fillAlpha": 1,
+        "strokeWidth": 0,
+        "strokeAlpha": 0,
+        "locked": true,
+        "_id": "18eu16Gtovd0Nx0w",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": -20,
+        "sort": -200,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "strokeColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 600,
+        "y": 1500,
+        "shape": {
+          "type": "r",
+          "width": 300,
+          "height": 120,
+          "radius": null,
+          "points": []
+        },
+        "fillType": 1,
+        "fillColor": "#4a4136",
+        "fillAlpha": 1,
+        "strokeWidth": 0,
+        "strokeAlpha": 0,
+        "locked": true,
+        "_id": "AK4ySZYYhHZumsJe",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": -20,
+        "sort": -200,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "strokeColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 240,
+        "y": 1200,
+        "shape": {
+          "type": "r",
+          "width": 120,
+          "height": 240,
+          "radius": null,
+          "points": []
+        },
+        "fillType": 1,
+        "fillColor": "#4a4136",
+        "fillAlpha": 1,
+        "strokeWidth": 0,
+        "strokeAlpha": 0,
+        "locked": true,
+        "_id": "EVaXZBMNHnl3kwiR",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": -20,
+        "sort": -200,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "strokeColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 1200,
+        "y": 240,
+        "shape": {
+          "type": "r",
+          "width": 300,
+          "height": 120,
+          "radius": null,
+          "points": []
+        },
+        "fillType": 1,
+        "fillColor": "#4a4136",
+        "fillAlpha": 1,
+        "strokeWidth": 0,
+        "strokeAlpha": 0,
+        "locked": true,
+        "_id": "Fs4t8e3BicMUJYxk",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": -20,
+        "sort": -200,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "strokeColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 540,
+        "y": 240,
+        "shape": {
+          "type": "r",
+          "width": 360,
+          "height": 120,
+          "radius": null,
+          "points": []
+        },
+        "fillType": 1,
+        "fillColor": "#4a4136",
+        "fillAlpha": 1,
+        "strokeWidth": 0,
+        "strokeAlpha": 0,
+        "locked": true,
+        "_id": "HJIJ0p7lgsddSF5t",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": -20,
+        "sort": -200,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "strokeColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 660,
+        "y": 900,
+        "shape": {
+          "type": "r",
+          "width": 240,
+          "height": 120,
+          "radius": null,
+          "points": []
+        },
+        "fillType": 1,
+        "fillColor": "#4a4136",
+        "fillAlpha": 1,
+        "strokeWidth": 0,
+        "strokeAlpha": 0,
+        "locked": true,
+        "_id": "KapszOMQxpJiOzmj",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": -20,
+        "sort": -200,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "strokeColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 1200,
+        "y": 900,
+        "shape": {
+          "type": "r",
+          "width": 420,
+          "height": 120,
+          "radius": null,
+          "points": []
+        },
+        "fillType": 1,
+        "fillColor": "#4a4136",
+        "fillAlpha": 1,
+        "strokeWidth": 0,
+        "strokeAlpha": 0,
+        "locked": true,
+        "_id": "LSmPHdhKRp464fPb",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": -20,
+        "sort": -200,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "strokeColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 1800,
+        "y": 540,
+        "shape": {
+          "type": "r",
+          "width": 120,
+          "height": 240,
+          "radius": null,
+          "points": []
+        },
+        "fillType": 1,
+        "fillColor": "#4a4136",
+        "fillAlpha": 1,
+        "strokeWidth": 0,
+        "strokeAlpha": 0,
+        "locked": true,
+        "_id": "MWm3VjOTdn5f7YUz",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": -20,
+        "sort": -200,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "strokeColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 1560,
+        "y": 720,
+        "shape": {
+          "type": "r",
+          "width": 660,
+          "height": 480,
+          "radius": null,
+          "points": []
+        },
+        "fillType": 1,
+        "fillColor": "#5c5142",
+        "fillAlpha": 1,
+        "strokeWidth": 0,
+        "strokeAlpha": 0,
+        "locked": true,
+        "_id": "N15wD0FxksaOAwVZ",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": -20,
+        "sort": -200,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "strokeColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 1440,
+        "y": 120,
+        "shape": {
+          "type": "r",
+          "width": 840,
+          "height": 480,
+          "radius": null,
+          "points": []
+        },
+        "fillType": 1,
+        "fillColor": "#5c5142",
+        "fillAlpha": 1,
+        "strokeWidth": 0,
+        "strokeAlpha": 0,
+        "locked": true,
+        "_id": "QG2EtD4obNSfKTts",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": -20,
+        "sort": -200,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "strokeColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 240,
+        "y": 480,
+        "shape": {
+          "type": "r",
+          "width": 120,
+          "height": 300,
+          "radius": null,
+          "points": []
+        },
+        "fillType": 1,
+        "fillColor": "#4a4136",
+        "fillAlpha": 1,
+        "strokeWidth": 0,
+        "strokeAlpha": 0,
+        "locked": true,
+        "_id": "QQdK8hfne9X7qcMz",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": -20,
+        "sort": -200,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "strokeColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 120,
+        "y": 1380,
+        "shape": {
+          "type": "r",
+          "width": 540,
+          "height": 360,
+          "radius": null,
+          "points": []
+        },
+        "fillType": 1,
+        "fillColor": "#5c5142",
+        "fillAlpha": 1,
+        "strokeWidth": 0,
+        "strokeAlpha": 0,
+        "locked": true,
+        "_id": "TK5e7sWtDBFEd67q",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": -20,
+        "sort": -200,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "strokeColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 1440,
+        "y": 1320,
+        "shape": {
+          "type": "r",
+          "width": 840,
+          "height": 420,
+          "radius": null,
+          "points": []
+        },
+        "fillType": 1,
+        "fillColor": "#5c5142",
+        "fillAlpha": 1,
+        "strokeWidth": 0,
+        "strokeAlpha": 0,
+        "locked": true,
+        "_id": "V6rmHKNGtNsYN5p7",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": -20,
+        "sort": -200,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "strokeColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 1200,
+        "y": 1500,
+        "shape": {
+          "type": "r",
+          "width": 300,
+          "height": 120,
+          "radius": null,
+          "points": []
+        },
+        "fillType": 1,
+        "fillColor": "#4a4136",
+        "fillAlpha": 1,
+        "strokeWidth": 0,
+        "strokeAlpha": 0,
+        "locked": true,
+        "_id": "VmH3dhoHIet31kYt",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": -20,
+        "sort": -200,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "strokeColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 120,
+        "y": 720,
+        "shape": {
+          "type": "r",
+          "width": 600,
+          "height": 540,
+          "radius": null,
+          "points": []
+        },
+        "fillType": 1,
+        "fillColor": "#5c5142",
+        "fillAlpha": 1,
+        "strokeWidth": 0,
+        "strokeAlpha": 0,
+        "locked": true,
+        "_id": "gFlJ0kmDFetgvqrd",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": -20,
+        "sort": -200,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "strokeColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 1800,
+        "y": 1140,
+        "shape": {
+          "type": "r",
+          "width": 120,
+          "height": 240,
+          "radius": null,
+          "points": []
+        },
+        "fillType": 1,
+        "fillColor": "#4a4136",
+        "fillAlpha": 1,
+        "strokeWidth": 0,
+        "strokeAlpha": 0,
+        "locked": true,
+        "_id": "iT03X8X2HYZVWYSp",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": -20,
+        "sort": -200,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "strokeColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 120,
+        "y": 120,
+        "shape": {
+          "type": "r",
+          "width": 480,
+          "height": 420,
+          "radius": null,
+          "points": []
+        },
+        "fillType": 1,
+        "fillColor": "#5c5142",
+        "fillAlpha": 1,
+        "strokeWidth": 0,
+        "strokeAlpha": 0,
+        "locked": true,
+        "_id": "qq6I7zZxuatumQu4",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": -20,
+        "sort": -200,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "strokeColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "interface": false,
+        "flags": {}
+      }
+    ],
+    "walls": [
+      {
+        "c": [
+          2280,
+          1320,
+          2280,
+          1740
+        ],
+        "_id": "0TG5YVZmHXIsPeTO",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          720,
+          1020,
+          840,
+          1020
+        ],
+        "_id": "0xjh6ykNrEbQmHVI",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1920,
+          1200,
+          2220,
+          1200
+        ],
+        "_id": "2WJt0sYrZg5AWEwQ",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1920,
+          1200,
+          1920,
+          1320
+        ],
+        "_id": "3hqbvLi8VkP62MVg",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          840,
+          1680,
+          1260,
+          1680
+        ],
+        "_id": "3w1ZoZgyj7gqIXcT",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1920,
+          720,
+          2220,
+          720
+        ],
+        "_id": "4hIAU3fPIV69nd76",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          600,
+          240,
+          840,
+          240
+        ],
+        "_id": "4i2GdxF6qO5PRrSf",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          120,
+          720,
+          120,
+          1260
+        ],
+        "_id": "6Dc7St0RrRc11qOe",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1440,
+          1320,
+          1800,
+          1320
+        ],
+        "_id": "6NRfpFiaP5J8jiXU",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1800,
+          1200,
+          1800,
+          1320
+        ],
+        "_id": "6ltA7HkoQ3FVfd0U",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          360,
+          1380,
+          660,
+          1380
+        ],
+        "_id": "949nudCYhkPQxr3l",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          240,
+          1260,
+          240,
+          1380
+        ],
+        "_id": "AEqZ1YB9TmsOd9Kj",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          660,
+          1620,
+          840,
+          1620
+        ],
+        "_id": "BhhxT1TXW73MnYKx",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1260,
+          360,
+          1440,
+          360
+        ],
+        "_id": "BzVKifwJbvsU6lRN",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          660,
+          1380,
+          660,
+          1500
+        ],
+        "_id": "D1JGxkCv1AX8zmdL",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          600,
+          360,
+          840,
+          360
+        ],
+        "_id": "DEKNwp8CxB1YRafG",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1560,
+          1020,
+          1560,
+          1200
+        ],
+        "_id": "DvBa4iYhZevgC3CU",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1920,
+          1320,
+          2280,
+          1320
+        ],
+        "_id": "EYVxhPESnXP55RNW",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          660,
+          1620,
+          660,
+          1740
+        ],
+        "_id": "F2xoceyCI9iYwr7N",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1260,
+          120,
+          1260,
+          240
+        ],
+        "_id": "FOuVOnRqfbFRuEvg",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          120,
+          720,
+          240,
+          720
+        ],
+        "_id": "HFAbONP7i0kqvWtx",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          120,
+          120,
+          120,
+          540
+        ],
+        "_id": "HRKL0TwzTzpDnqgw",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1920,
+          600,
+          1920,
+          720
+        ],
+        "_id": "ILBFdOu1NunqAdMK",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1260,
+          1620,
+          1440,
+          1620
+        ],
+        "_id": "IQAfM3Msilvqw2a4",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1560,
+          720,
+          1800,
+          720
+        ],
+        "_id": "JCi73HyuXCvhMilS",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1260,
+          360,
+          1260,
+          900
+        ],
+        "_id": "JxEX9q7nnXwrSWCQ",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1260,
+          240,
+          1440,
+          240
+        ],
+        "_id": "KqYwA7XlquudDhOZ",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          720,
+          1020,
+          720,
+          1260
+        ],
+        "_id": "KuNoVbKL1TkHQRhW",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1440,
+          1320,
+          1440,
+          1500
+        ],
+        "_id": "LIULMMuumwVmd8yE",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1440,
+          1620,
+          1440,
+          1740
+        ],
+        "_id": "LOs3q09tLLxALr8R",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          600,
+          360,
+          600,
+          540
+        ],
+        "_id": "NCjHmLCyrtLZgdq7",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1440,
+          360,
+          1440,
+          600
+        ],
+        "_id": "PXN9LaNf6e331IQB",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          840,
+          1620,
+          840,
+          1680
+        ],
+        "_id": "QDJtNVd1mFoDa01e",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          2220,
+          720,
+          2220,
+          1200
+        ],
+        "_id": "So5hadyJ3xxdwFVw",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1440,
+          600,
+          1800,
+          600
+        ],
+        "_id": "So7abWsWoujJAv8J",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          720,
+          720,
+          720,
+          900
+        ],
+        "_id": "TFLQb3aVhu97rLdc",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          360,
+          540,
+          600,
+          540
+        ],
+        "_id": "TPkiKuj2WI6nlNr2",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          120,
+          1740,
+          660,
+          1740
+        ],
+        "_id": "UnPt6B6pYvi6YtPc",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          120,
+          540,
+          240,
+          540
+        ],
+        "_id": "Vl2Dl68iSkndvgXp",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1260,
+          1020,
+          1560,
+          1020
+        ],
+        "_id": "XUY3IfVqtUbk5QCn",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1260,
+          1620,
+          1260,
+          1680
+        ],
+        "_id": "ZQE6O9hzA1WDbHAb",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1920,
+          600,
+          2280,
+          600
+        ],
+        "_id": "Zs7YHzmIK7n04HvQ",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          360,
+          1260,
+          360,
+          1380
+        ],
+        "_id": "coYIAB5sT1frEPls",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1440,
+          120,
+          1440,
+          240
+        ],
+        "_id": "d2Z9dZoMz226yGeg",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          2280,
+          120,
+          2280,
+          600
+        ],
+        "_id": "dd9yeiSDxIBH2irt",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          360,
+          1260,
+          720,
+          1260
+        ],
+        "_id": "dxeegLCZ4aBskNjn",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1260,
+          1500,
+          1440,
+          1500
+        ],
+        "_id": "ea5TBFoGAEb36zNr",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          600,
+          120,
+          600,
+          240
+        ],
+        "_id": "g0RRezTdHyp8kuco",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1560,
+          1200,
+          1800,
+          1200
+        ],
+        "_id": "hD5cdzO5DHVAatVf",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1440,
+          1740,
+          2280,
+          1740
+        ],
+        "_id": "hsJ7k9dWeHD0yVtg",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1560,
+          720,
+          1560,
+          900
+        ],
+        "_id": "ivW27JuCnBr36chq",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          840,
+          360,
+          840,
+          900
+        ],
+        "_id": "iz6BzFRtUOFzyOia",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          840,
+          120,
+          840,
+          240
+        ],
+        "_id": "j3s3mq6VkD4C92Ae",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          120,
+          1380,
+          120,
+          1740
+        ],
+        "_id": "m1pOtFlqhNs0MSQV",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          660,
+          1500,
+          840,
+          1500
+        ],
+        "_id": "nj8RxnIxWBpnzZGH",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1440,
+          120,
+          2280,
+          120
+        ],
+        "_id": "oB6oXecMmDWPqDZK",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          840,
+          1020,
+          840,
+          1500
+        ],
+        "_id": "pLYnD0UXGmRGwCIZ",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          360,
+          540,
+          360,
+          720
+        ],
+        "_id": "pW3MIDlXm1xA1ltE",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1800,
+          600,
+          1800,
+          720
+        ],
+        "_id": "qvANTVQsOgFfaKYK",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1260,
+          1020,
+          1260,
+          1500
+        ],
+        "_id": "t39ULagMMrdPj7uh",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          120,
+          120,
+          600,
+          120
+        ],
+        "_id": "tJUxjRiAplVnOgWW",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1260,
+          900,
+          1560,
+          900
+        ],
+        "_id": "tZG9YlHNpSB2PaqF",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          840,
+          120,
+          1260,
+          120
+        ],
+        "_id": "taERS6jgrydLDYNt",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          120,
+          1380,
+          240,
+          1380
+        ],
+        "_id": "vqmvZBgKcPCmaZva",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          720,
+          900,
+          840,
+          900
+        ],
+        "_id": "wk2d0j6qVfwwGlSf",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          240,
+          540,
+          240,
+          720
+        ],
+        "_id": "y9Ldu0HIRHPHjhz8",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          120,
+          1260,
+          240,
+          1260
+        ],
+        "_id": "z1WZbH6shxIsjqie",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          360,
+          720,
+          720,
+          720
+        ],
+        "_id": "zjSkpOtNFuerlScq",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      }
+    ]
+  }
+}

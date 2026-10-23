@@ -311,6 +311,115 @@
             "sceneMode": "dungeon",
             "isOverworld": true
           }
+        },
+        "dungeonPathing": {
+          "tileStates": {
+            "616GAbeFs1ECbA1C": {
+              "initialType": "unknown",
+              "currentType": "unknown",
+              "initialTexture": "modules/JB2A_DnD5e/Library/Generic/Smoke/Fumes_02_Steam_White_400x400.webm"
+            },
+            "RBVbFsQ0wiyan1Zf": {
+              "initialType": "unknown",
+              "currentType": "unknown",
+              "initialTexture": "modules/JB2A_DnD5e/Library/Generic/Smoke/Fumes_02_Steam_White_400x400.webm"
+            },
+            "3Q6Ow8rfOO2xqWud": {
+              "initialType": "blank",
+              "currentType": "blank",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+            },
+            "DZRjWs0tt2xNkelG": {
+              "initialType": "door",
+              "currentType": "door",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Door_Tile.png"
+            },
+            "97KvAU8hR8MzbPV3": {
+              "initialType": "door",
+              "currentType": "door",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Door_Tile.png"
+            },
+            "ECOhLDxXgUOXMusM": {
+              "initialType": "settlement",
+              "currentType": "settlement",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Settlement_Tile.png"
+            },
+            "JAzmKs0x0MCBrUm7": {
+              "initialType": "door",
+              "currentType": "door",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Door_Tile.png"
+            },
+            "JsuvTffR5ualoRGb": {
+              "initialType": "door",
+              "currentType": "door",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Door_Tile.png"
+            },
+            "kdzqDChTijA3ELoT": {
+              "initialType": "settlement",
+              "currentType": "settlement",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Settlement_Tile.png"
+            },
+            "l3fQYBQOI5C5SKLD": {
+              "initialType": "door",
+              "currentType": "door",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Door_Tile.png"
+            },
+            "11zDhVTxp5oA1LxM": {
+              "initialType": "door",
+              "currentType": "door",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Door_Tile.png"
+            },
+            "xy0NAo2VugI9gi0E": {
+              "initialType": "door",
+              "currentType": "door",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Door_Tile.png"
+            },
+            "9qA6DIADFBc3AeN6": {
+              "initialType": "door",
+              "currentType": "door",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Door_Tile.png"
+            },
+            "cdU29n3eoXjqvSOS": {
+              "initialType": "travel",
+              "currentType": "travel",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Travel_Tile.png"
+            },
+            "6WYHWu0gKi1TvlVs": {
+              "initialType": "travel",
+              "currentType": "travel",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Travel_Tile.png"
+            },
+            "LkknxVREDPIGFsDx": {
+              "initialType": "travel",
+              "currentType": "travel",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Travel_Tile.png"
+            },
+            "R4EzY5VNPKcNLjhG": {
+              "initialType": "travel",
+              "currentType": "travel",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Travel_Tile.png"
+            },
+            "YmG92BxEBNv8hzXE": {
+              "initialType": "travel",
+              "currentType": "travel",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Travel_Tile.png"
+            },
+            "KUpToOOTzzknoLTJ": {
+              "initialType": "travel",
+              "currentType": "travel",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Travel_Tile.png"
+            },
+            "nYkh1EdJJ30XZkRN": {
+              "initialType": "door",
+              "currentType": "door",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Door_Tile.png"
+            },
+            "XpS5AaCv45jseuAz": {
+              "initialType": "random_battle",
+              "currentType": "random_battle",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Event_Tile.png"
+            }
+          }
         }
       },
       "world": {
@@ -352,7 +461,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.4",
       "createdTime": 1765672966590,
-      "modifiedTime": 1792737971712,
+      "modifiedTime": 1792744880531,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [
@@ -426,7 +535,7 @@
         "fontSize": 48,
         "textColor": "#ffffff",
         "textAlpha": 1,
-        "hidden": false,
+        "hidden": true,
         "locked": false,
         "interface": false,
         "flags": {
@@ -468,7 +577,7 @@
         "fontSize": 48,
         "textColor": "#ffffff",
         "textAlpha": 1,
-        "hidden": false,
+        "hidden": true,
         "locked": false,
         "interface": false,
         "flags": {
@@ -548,7 +657,7 @@
         "fontSize": 48,
         "textColor": "#ffffff",
         "textAlpha": 1,
-        "hidden": false,
+        "hidden": true,
         "locked": false,
         "interface": false,
         "flags": {
@@ -754,7 +863,7 @@
         "fontSize": 48,
         "textColor": "#ffffff",
         "textAlpha": 1,
-        "hidden": false,
+        "hidden": true,
         "locked": false,
         "interface": false,
         "flags": {
@@ -914,7 +1023,7 @@
         "fontSize": 48,
         "textColor": "#ffffff",
         "textAlpha": 1,
-        "hidden": false,
+        "hidden": true,
         "locked": false,
         "interface": false,
         "flags": {
@@ -994,7 +1103,7 @@
         "fontSize": 48,
         "textColor": "#ffffff",
         "textAlpha": 1,
-        "hidden": false,
+        "hidden": true,
         "locked": false,
         "interface": false,
         "flags": {
@@ -1092,6 +1201,7 @@
         "shapes": [
           {
             "type": "polygon",
+            "hole": false,
             "points": [
               480,
               0,
@@ -1107,16 +1217,15 @@
               330,
               700,
               300,
-              665,
-              245,
-              600,
-              230,
+              660,
+              300,
+              580,
+              290,
               500,
               250,
               480,
               180
-            ],
-            "hole": false
+            ]
           }
         ],
         "visibility": 0,
@@ -1250,15 +1359,16 @@
         "shapes": [
           {
             "type": "polygon",
+            "hole": false,
             "points": [
               330,
               300,
               500,
               250,
-              600,
-              230,
-              665,
-              245,
+              580,
+              290,
+              660,
+              300,
               700,
               300,
               860,
@@ -1277,8 +1387,7 @@
               440,
               420,
               380
-            ],
-            "hole": false
+            ]
           }
         ],
         "visibility": 0,
