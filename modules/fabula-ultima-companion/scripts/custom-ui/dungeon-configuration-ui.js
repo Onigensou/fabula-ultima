@@ -1834,8 +1834,12 @@
       FABULA_ROOT_KEY,
       GENERAL_KEY,
       CAMERA_FOLLOW_KEY,
-      readDungeon(scene = canvas.scene) {
-        return readDungeonData(scene);
+      // `where` = { tile } or { point }: a Fabula Area (painted Region) at that
+      // spot overrides the scene's fields — see dp-regions.js. Without it this
+      // is the plain scene config, exactly as before.
+      readDungeon(scene = canvas.scene, where = null) {
+        const data = readDungeonData(scene);
+        return where ? (globalThis.DungeonPathing?.Areas?.overlay?.(scene, data, where) ?? data) : data;
       },
       readGeneral(scene = canvas.scene) {
         const fabula = readFabulaData(scene);

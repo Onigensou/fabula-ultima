@@ -251,8 +251,10 @@
     return doc?.documentName === "RollTable" ? doc : null;
   }
 
-  function readDungeonCfg(scene) {
-    try { return window.oni?.FabulaConfig?.readDungeon?.(scene) ?? {}; }
+  // tileDoc: the tile that triggered the encounter — a Fabula Area painted
+  // under it overrides the scene's tables / battle map / BGM (dp-regions.js).
+  function readDungeonCfg(scene, tileDoc = null) {
+    try { return window.oni?.FabulaConfig?.readDungeon?.(scene, tileDoc ? { tile: tileDoc } : null) ?? {}; }
     catch (e) { warn("readDungeon failed", e); return {}; }
   }
 
@@ -372,8 +374,8 @@
    *
    * @returns {Promise<Array<{actorUuid, name, quantity}>>}
    */
-  async function pickEncounter(scene) {
-    const cfg          = readDungeonCfg(scene);
+  async function pickEncounter(scene, tileDoc = null) {
+    const cfg          = readDungeonCfg(scene, tileDoc);
     const bias         = readNoveltyBias(scene);
     const encTable     = await resolveTable(cfg.encounterTable);
     const enemiesTable = await resolveTable(cfg.enemiesTable);
@@ -640,8 +642,10 @@
 
     // 2. Resolve the group BEFORE committing to the encounter, so a misconfigured
     //    dungeon degrades into a clean "nothing happened" instead of a dead turn.
-    const cfg   = readDungeonCfg(scene);
-    const picks = await pickEncounter(scene);
+    const tileDoc = scene.tiles?.get?.(tileId) ?? null;
+    const cfg   = readDungeonCfg(scene, tileDoc);
+    const picks = await pickEncounter(scene, tileDoc);
+    if (cfg.areaName) log(`area "${cfg.areaName}" overrides the scene config`);
 
     if (!picks.length || !cfg.battleMap) {
       const why = !picks.length

@@ -129,10 +129,15 @@
     return {};
   };
 
-  function getLootTableUuid(dpTypeKey, scene) {
+  // tileDoc: a Fabula Area painted under the tile overrides the scene's loot
+  // (dungeon-pathing-system/dp-regions.js, via oni.FabulaConfig.readDungeon).
+  // The local reader stays as the fallback for when that UI file is absent.
+  function getLootTableUuid(dpTypeKey, scene, tileDoc = null) {
     const cfg = DP_TYPE_CONFIG[dpTypeKey];
     if (!cfg) return "";
-    const uuid = readDungeonData(scene)?.loot?.[cfg.lootKey];
+    const shared = window.oni?.FabulaConfig?.readDungeon;
+    const data = shared ? shared(scene, tileDoc ? { tile: tileDoc } : null) : readDungeonData(scene);
+    const uuid = data?.loot?.[cfg.lootKey];
     return (typeof uuid === "string" && uuid.trim()) ? uuid.trim() : "";
   }
 
@@ -493,7 +498,7 @@
     }
     _busy.add(tileDoc.id);
 
-    const tableUuid = getLootTableUuid(dpTypeKey, scene);
+    const tableUuid = getLootTableUuid(dpTypeKey, scene, tileDoc);
     if (!tableUuid) {
       _busy.delete(tileDoc.id);
       ui.notifications?.warn?.(

@@ -60,11 +60,17 @@
   const warn = (...a) => console.warn(TAG, ...a);
 
   // ── Threat ─────────────────────────────────────────────────────────────────
-  /** The tile's own threat (dungeonPathing.travelThreat), else the scene's. */
+  /**
+   * The tile's own threat (dungeonPathing.travelThreat), else the Fabula Area
+   * painted under it (dp-regions.js), else the scene's.
+   */
   function threatFor(tileDoc, scene) {
     const TR  = globalThis.TravelRoll;
     const raw = tileDoc?.flags?.[MOD]?.[DP.PATHING_ROOT_KEY]?.travelThreat;
     if (raw && TR?.THREAT_DIE?.[raw]) return raw;
+    const area = tileDoc ? DP.Areas?.areaAt?.(scene, { tile: tileDoc }) : null;
+    const areaThreat = area?.behavior?.system?.threat;
+    if (areaThreat && TR?.THREAT_DIE?.[areaThreat]) return areaThreat;
     return TR?.getThreatLevel?.(scene) ?? "medium";
   }
 
@@ -205,11 +211,11 @@
   }
 
   // ── Danger ─────────────────────────────────────────────────────────────────
-  async function resolveDanger({ scene, tileId, level, day }) {
+  async function resolveDanger({ scene, tileId, level, day, areaName }) {
     const label = globalThis.TravelRoll?.THREAT_LABEL?.[level] ?? level;
     const pick = await showChoice({
       kind: "Travel — Danger!",
-      detail: `Day ${day ?? "?"} · ${label} threat`,
+      detail: `Day ${day ?? "?"} · ${label} threat${areaName ? ` · ${areaName}` : ""}`,
       buttons: [
         { act: "narrate",   label: "Narrate" },
         { act: "fight",     label: "Fight" },
@@ -244,8 +250,8 @@
       .sort((a, b) => Math.hypot(a.x - tx, a.y - ty) - Math.hypot(b.x - tx, b.y - ty));
   }
 
-  const hasTreasureTable = (scene) =>
-    !!String(window.oni?.FabulaConfig?.readDungeon?.(scene)?.loot?.treasure ?? "").trim();
+  const hasTreasureTable = (scene, tileDoc) =>
+    !!String(window.oni?.FabulaConfig?.readDungeon?.(scene, tileDoc ? { tile: tileDoc } : null)?.loot?.treasure ?? "").trim();
 
   async function reveal(scene, tileDoc) {
     await DP.TileState.markFogRevealed(scene, tileDoc.id);
@@ -264,16 +270,16 @@
     return { ok: !!res?.ok, resolved: "treasure", error: res?.reason };
   }
 
-  async function resolveDiscovery({ scene, tileId, tokenId, userId, day }) {
+  async function resolveDiscovery({ scene, tileId, tokenId, userId, day, areaName }) {
     const tokenDoc   = scene.tokens.get(tokenId);
     const candidates = revealCandidates(scene, tokenDoc);
-    const canTreasure = hasTreasureTable(scene);
+    const canTreasure = hasTreasureTable(scene, scene.tiles.get(tileId));
 
     const buttons = [{ act: "narrate", label: "Narrate" }];
     if (candidates.length) buttons.push({ act: "reveal", label: "Reveal hidden place" });
     if (canTreasure)       buttons.push({ act: "treasure", label: "Treasure" });
 
-    const pick = await showChoice({ kind: "Travel — Discovery!", detail: `Day ${day ?? "?"}`, buttons });
+    const pick = await showChoice({ kind: "Travel — Discovery!", detail: `Day ${day ?? "?"}${areaName ? ` · ${areaName}` : ""}`, buttons });
 
     if (pick === "reveal"   && candidates.length) return reveal(scene, candidates[0]);
     if (pick === "treasure" && canTreasure)       return treasure({ scene, tileId, tokenId, userId });
@@ -298,10 +304,12 @@
       if (!scene) return { ok: false, error: "Scene not found" };
 
       const day = await advanceDay();
-      log(`day ${day}: ${outcome} (${level}) on ${scene.name}`);
+      const tileDoc  = scene.tiles?.get?.(tileId) ?? null;
+      const areaName = tileDoc ? (DP.Areas?.areaAt?.(scene, { tile: tileDoc })?.region?.name ?? null) : null;
+      log(`day ${day}: ${outcome} (${level}) on ${scene.name}${areaName ? ` / ${areaName}` : ""}`);
 
-      if (outcome === "danger")    return { day, ...(await resolveDanger({ scene, tileId, level, day })) };
-      if (outcome === "discovery") return { day, ...(await resolveDiscovery({ scene, tileId, tokenId, userId, day })) };
+      if (outcome === "danger")    return { day, ...(await resolveDanger({ scene, tileId, level, day, areaName })) };
+      if (outcome === "discovery") return { day, ...(await resolveDiscovery({ scene, tileId, tokenId, userId, day, areaName })) };
       return { ok: true, day, resolved: "safe" };
     } catch (e) {
       console.error(TAG, "resolve() threw", e);

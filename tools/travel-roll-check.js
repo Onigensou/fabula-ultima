@@ -21,6 +21,7 @@ const REPO = path.resolve(__dirname, "..");
 const MOD  = "fabula-ultima-companion";
 const SCRIPTS = [
   "modules/fabula-ultima-companion/scripts/travel-roll/travel-roll-api.js",
+  "modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-regions.js",
   "modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-travel.js",
 ];
 
@@ -28,7 +29,7 @@ const SCRIPTS = [
 globalThis.DungeonPathing = { MODULE_ID: MOD, PATHING_ROOT_KEY: "dungeonPathing" };
 globalThis.Hooks = { once() {}, on() {}, off() {}, callAll() {} };
 globalThis.ui    = { notifications: { warn() {}, error() {}, info() {} } };
-globalThis.foundry = { utils: { escapeHTML: s => s } };
+globalThis.foundry = { utils: { escapeHTML: s => s, deepClone: o => JSON.parse(JSON.stringify(o)) } };
 for (const rel of SCRIPTS) vm.runInThisContext(fs.readFileSync(path.join(REPO, rel), "utf8"), { filename: rel });
 
 const TR = globalThis.TravelRoll;
@@ -86,6 +87,45 @@ for (let i = 0; i < N; i++) tally[I.weightedPick(I.DANGER_WEIGHTS)]++;
 const battlePct = 100 * tally.battle / N;
 console.log(`         battle ${battlePct.toFixed(1)}% · hazard ${(100 - battlePct).toFixed(1)}%`);
 check(Math.abs(battlePct - 75) < 1.5, "Battle 75 / Hazard 25 within ±1.5pp");
+
+// ── 5. Fabula Areas (painted Regions) ──────────────────────────────────────
+console.log("Fabula Areas:");
+const A = globalThis.DungeonPathing.Areas;
+const behavior = (system) => ({ type: A.TYPE, disabled: false, system });
+const area = (name, shapes, system) => ({ name, shapes, behaviors: [behavior(system)] });
+const forest  = area("Whisperwood", [{ type: "rectangle", x: 0, y: 0, width: 1000, height: 1000, rotation: 0 }],
+                     { threat: "high", encounterTable: "RollTable.forest", loot: { treasure: "RollTable.forestLoot" } });
+const village = area("Relde", [{ type: "circle", x: 500, y: 500, radius: 100 }], { threat: "minimal", battleMap: "Scene.relde" });
+const donut   = area("Lake Ring", [{ type: "circle", x: 2000, y: 2000, radius: 300 },
+                                   { type: "circle", x: 2000, y: 2000, radius: 100, hole: true }], { threat: "medium" });
+const tri     = area("Peak", [{ type: "polygon", points: [3000, 0, 3400, 0, 3200, 400] }], { threat: "very_high" });
+const tilted  = area("Ridge", [{ type: "rectangle", x: 5000, y: 0, width: 400, height: 40, rotation: 90 }], { threat: "low" });
+const off     = { name: "Disabled", shapes: [{ type: "rectangle", x: 0, y: 0, width: 9999, height: 9999 }],
+                  behaviors: [{ type: A.TYPE, disabled: true, system: { threat: "very_high" } }] };
+const mapScene = { regions: [forest, village, donut, tri, tilted, off],
+                   flags: { [MOD]: { oniDungeon: { threatLevel: "low", encounterTable: "RollTable.scene",
+                                                   battleMap: "Scene.sceneMap", loot: { treasure: "RollTable.sceneLoot", zenit: "RollTable.zenit" } } } } };
+const at = (x, y) => A.areaAt(mapScene, { point: { x, y } })?.region?.name ?? null;
+check(at(100, 100) === "Whisperwood",  "point in the forest → Whisperwood");
+check(at(500, 520) === "Relde",        "village inside the forest → smallest area wins (Relde)");
+check(at(2000, 2000) === null,         "centre of the lake ring is a hole → no area");
+check(at(2250, 2000) === "Lake Ring",  "on the ring → Lake Ring");
+check(at(3200, 100) === "Peak" && at(3010, 390) === null, "polygon inside / outside");
+check(at(5200, 150) === "Ridge" && at(5390, 20) === null, "90° rotated rectangle (rotates about its centre)");
+check(at(8000, 8000) === null,         "disabled behavior is ignored");
+
+const base = mapScene.flags[MOD].oniDungeon;
+const o = A.overlay(mapScene, base, { tile: { x: 90, y: 90, width: 20, height: 20 } });   // centre (100,100)
+check(o.encounterTable === "RollTable.forest" && o.battleMap === "Scene.sceneMap", "overlay replaces set fields, inherits blank ones");
+check(o.loot.treasure === "RollTable.forestLoot" && o.loot.zenit === "RollTable.zenit", "loot merges per key");
+check(o.areaName === "Whisperwood" && base.encounterTable === "RollTable.scene", "areaName added; scene config not mutated");
+check(A.overlay(mapScene, base, { point: { x: 9000, y: 50 } }) === base, "outside every area → scene config untouched");
+
+const wtile = (x, y, threat) => ({ x: x - 10, y: y - 10, width: 20, height: 20,
+                                   flags: { [MOD]: { dungeonPathing: threat ? { travelThreat: threat } : {} } } });
+check(T.threatFor(wtile(100, 100), mapScene) === "high",          "threat: area High beats scene Low");
+check(T.threatFor(wtile(100, 100, "minimal"), mapScene) === "minimal", "threat: tile's own beats the area");
+check(T.threatFor(wtile(9000, 50), mapScene) === "low",           "threat: no area → scene");
 
 console.log(failures ? `\n${failures} FAILED` : "\nall checks passed");
 process.exit(failures ? 1 : 0);

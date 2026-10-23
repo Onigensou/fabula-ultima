@@ -173,6 +173,7 @@
     "scripts/dungeon-pathing-system/dp-ae-lifecycle.js",
     "scripts/dungeon-pathing-system/dp-status-hud.js",
     "scripts/dungeon-pathing-system/dp-socket.js",
+    "scripts/dungeon-pathing-system/dp-regions.js",
     "scripts/dungeon-pathing-system/dp-random-battle.js",
     "scripts/dungeon-pathing-system/dp-travel.js",
     "scripts/dungeon-pathing-system/tile-events/tile-event-blank.js",
@@ -504,5 +505,10 @@
   ],
   "packs": [],
   "manifest": "https://raw.githubusercontent.com/Onigensou/FabulaUltimaCompanion/refs/heads/main/module.json",
-  "download": "https://codeload.github.com/Onigensou/FabulaUltimaCompanion/zip/refs/tags/v1.0.421"
+  "download": "https://codeload.github.com/Onigensou/FabulaUltimaCompanion/zip/refs/tags/v1.0.421",
+  "documentTypes": {
+    "RegionBehavior": {
+      "area": {}
+    }
+  }
 }

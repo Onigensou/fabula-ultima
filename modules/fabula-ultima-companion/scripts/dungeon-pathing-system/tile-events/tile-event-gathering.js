@@ -103,10 +103,11 @@
   }
 
   // ── Material Table resolution (scene oniDungeon.loot.material) ──────────────
-  async function resolveMaterialTable(scene) {
+  async function resolveMaterialTable(scene, tileDoc = null) {
     let uuid = "";
     try {
-      const dungeon = window.oni?.FabulaConfig?.readDungeon?.(scene)
+      // A Fabula Area painted under the tile overrides the scene (dp-regions.js).
+      const dungeon = window.oni?.FabulaConfig?.readDungeon?.(scene, tileDoc ? { tile: tileDoc } : null)
                    ?? scene?.getFlag?.(MODULE_ID, "oniDungeon")
                    ?? {};
       uuid = String(dungeon?.loot?.material ?? "").trim();
@@ -198,7 +199,7 @@
       const members = await resolvePartyMembers();
       if (!members.length) { ui.notifications?.warn("Gathering | No party members found."); return; }
 
-      const matTable = await resolveMaterialTable(scene);
+      const matTable = await resolveMaterialTable(scene, tileDoc);
       if (!matTable) {
         ui.notifications?.warn("Gathering | No Material Table configured on this scene (Dungeon Configuration → Loot → Material). Tile left active.");
         return; // leave tile so it can be retried once configured

@@ -57,9 +57,10 @@
   }
 
   // ── Fish Table (scene oniDungeon.loot.fish) — everything that bites here ────
-  function resolveFishTableRef(scene) {
+  function resolveFishTableRef(scene, tileDoc = null) {
     try {
-      const dungeon = window.oni?.FabulaConfig?.readDungeon?.(scene)
+      // A Fabula Area painted under the tile overrides the scene (dp-regions.js).
+      const dungeon = window.oni?.FabulaConfig?.readDungeon?.(scene, tileDoc ? { tile: tileDoc } : null)
                    ?? scene?.getFlag?.(MODULE_ID, "oniDungeon")
                    ?? {};
       return String(dungeon?.loot?.fish ?? "").trim();
@@ -102,7 +103,7 @@
 
       // Each angler fishes ONE round, in sequence (the UI is a singleton).
       // 4 party members → 4 rounds total across the table.
-      const fishTable = resolveFishTableRef(scene);
+      const fishTable = resolveFishTableRef(scene, tileDoc);
       for (const actor of participants) {
         await fishing.execute(actor, null, { totalRounds: 1, fishTable })
           .catch(e => console.error(TAG, `Fishing session failed for ${actor?.name}:`, e));
