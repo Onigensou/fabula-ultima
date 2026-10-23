@@ -677,6 +677,12 @@
     let verdict = "auto";
     if (forced) {
       verdict = forcedVerdict === "customize" ? "customize" : "auto";
+      // The 🎬 Customize-next toggle still applies to a forced (travel) battle,
+      // exactly as on a Random Battle tile — and is consumed by it.
+      if (verdict !== "customize" && getCustomizeNext()) {
+        verdict = "customize";
+        await setCustomizeNext(false);
+      }
     } else if (getCustomizeNext()) {
       verdict = "customize";
       await setCustomizeNext(false);   // one-shot: consumed by this encounter
