@@ -320,6 +320,11 @@
         ? FT_ELIGIBLE_TYPES.has(initialType)
         : (rawEligible === true || rawEligible === "true" || rawEligible === 1);
 
+      // World-map Travel tile threat — blank = the scene's Threat Level
+      const travelThreat = tileDoc?.getFlag?.(MODULE_ID, `${pathingKey}.travelThreat`) ?? "";
+      const threatOpt = (v, label) =>
+        `<option value="${v}" ${travelThreat === v ? "selected" : ""}>${label}</option>`;
+
       dbg("Tile flags read", { persistFlag, skipConfirmFlag, initialType, currentType, visitedTile, rawEligible, isEligible, fogMode, isShroudRevealed });
 
       // Build shroud state section HTML separately to avoid deeply nested template literals
@@ -479,6 +484,27 @@
           <p class="notes">
             When ON and the tile has been visited, it appears as a Fast Travel destination.
             Defaults to <b>ON</b> for Camp, Event, Story, and Final tiles.
+          </p>
+        </div>
+
+        <hr class="oni-fabula-section-divider" />
+        <h3 style="margin: 10px 0 6px;"><i class="fas fa-route"></i> Travel</h3>
+
+        <div class="form-group">
+          <label>Threat</label>
+          <div class="form-fields">
+            <select name="flags.${MODULE_ID}.${pathingKey}.travelThreat" data-dtype="String">
+              ${threatOpt("", "— Scene default —")}
+              ${threatOpt("minimal", "Minimal — d6")}
+              ${threatOpt("low", "Low — d8")}
+              ${threatOpt("medium", "Medium — d10")}
+              ${threatOpt("high", "High — d12")}
+              ${threatOpt("very_high", "Very High — d20")}
+            </select>
+          </div>
+          <p class="notes">
+            Only used by <b>Travel</b> tiles: the die rolled for the travel day spent on this tile.
+            6+ is a danger, 1 a discovery. Blank uses the scene's Threat Level (Dungeon Configuration → Travel).
           </p>
         </div>
 

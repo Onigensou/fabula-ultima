@@ -197,10 +197,10 @@
   // directly if GM and emits a raw socket message to the GM if not.
 
   //
-  // World maps skip the per-step tick: a world-map step is a walk between
-  // nodes, not a turn, and a duration there should be counted in travel days.
-  Hooks.on(DP.HOOKS.TURN_END, async () => {
-    if (DP.isWorldMap?.()) return;
+  // World maps tick once per TRAVEL DAY, not per step: a step onto a location
+  // or waypoint is a walk between nodes, and only a Travel tile spends a day.
+  Hooks.on(DP.HOOKS.TURN_END, async ({ node } = {}) => {
+    if (DP.isWorldMap?.() && node?.tileType !== DP.TILE_TYPES.TRAVEL) return;
     await DP.Socket.tickPartyAEs();
   });
 

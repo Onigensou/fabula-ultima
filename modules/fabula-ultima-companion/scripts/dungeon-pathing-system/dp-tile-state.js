@@ -68,7 +68,7 @@
       "poison", "recipe", "settlement", "obstacle", "skill check",
       "skillcheck", "slippery", "trap", "camp", "alert", "door", "treasure",
       "item", "weapon", "armor", "accessory", "consumable",
-      "dirt", "gusty", "vertigo",
+      "dirt", "gusty", "vertigo", "travel",
     ];
 
     // Map display-name fragments to canonical type keys

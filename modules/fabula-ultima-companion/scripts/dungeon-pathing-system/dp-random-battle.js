@@ -616,7 +616,12 @@
     }
   }
 
-  async function resolveLanding({ sceneId, tileId } = {}) {
+  // forced: the caller already decided a battle happens — a world-map travel
+  // Danger (dp-travel.js), where the FU travel die replaces the pity d100. The
+  // pity rate is neither rolled nor moved, a failure posts no "Nothing
+  // appears…" card (the caller falls back to something else), and `verdict`
+  // ("auto" | "customize") is the GM's pick, so the override toast is skipped.
+  async function resolveLanding({ sceneId, tileId, forced = false, verdict: forcedVerdict = "auto" } = {}) {
     if (!game.user?.isGM) return { ok: false, error: "Not GM" };
 
     const scene = game.scenes?.get?.(sceneId);
@@ -627,7 +632,7 @@
 
     // 1. Does anything happen at all?
     const d100 = Math.floor(Math.random() * 100) + 1;
-    if (d100 > rates.encounter) {
+    if (!forced && d100 > rates.encounter) {
       postMissCard();
       applyRateUpdate(rates, false);
       return { ok: true, appear: false, launched: false };
@@ -644,8 +649,10 @@
         : `no Battle Map is configured on "${scene.name}"`;
       warn("degrading to a miss:", why);
       ui.notifications?.warn?.(`Random Battle | ${why}`);   // GM-only: this runs on the GM
-      postMissCard();
-      applyRateUpdate(rates, false);
+      if (!forced) {
+        postMissCard();
+        applyRateUpdate(rates, false);
+      }
       return { ok: true, appear: false, launched: false, error: why };
     }
 
@@ -664,15 +671,18 @@
 
     // 5. GM interception.
     let verdict = "auto";
-    if (getCustomizeNext()) {
+    if (forced) {
+      verdict = forcedVerdict === "customize" ? "customize" : "auto";
+    } else if (getCustomizeNext()) {
       verdict = "customize";
       await setCustomizeNext(false);   // one-shot: consumed by this encounter
     } else if (OVERRIDE_WINDOW_MS > 0) {
       verdict = await showOverrideToast(picks, engagement, OVERRIDE_WINDOW_MS);
     }
 
-    // The rate drop is owed either way — the encounter happened.
-    await applyRateUpdate(rates, true, { defer: false });
+    // The rate drop is owed either way — the encounter happened. A forced
+    // battle never rolled the pity rate, so it does not move it either.
+    if (!forced) await applyRateUpdate(rates, true, { defer: false });
 
     if (verdict === "customize") {
       openBattlePrompt();
@@ -726,5 +736,8 @@
     setCustomizeNext,
     /** Exposed for the offline weighting sanity-check and for live debugging. */
     _internals: { pickEncounter, isUnseen, baseWeight, readNoveltyBias, resolvePartyMembers, buildPayload },
+    /** Shared look for the GM choice toast — dp-travel.js reuses it. */
+    injectToastStyles,
+    TOAST_ID,
   };
 })();

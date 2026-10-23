@@ -82,12 +82,12 @@ const ENTRIES = [
   {
     name: "Well-Traveled", kind: "skill", match: "id+name",
     module: "scripts/travel-roll/travel-roll-api.js", symbol: "getWellTraveledHolder",
-    note: "Wayfarer: reduces the party's travel die by one size (min d6); not cumulative. NOTE: no entry point invokes TravelRoll.performRoll yet, so this is API-only in play.",
+    note: "Wayfarer: reduces the party's travel die by one size (min d6); not cumulative. Live via world-map Travel tiles (tile-event-travel.js).",
   },
   {
     name: "Treasure Hunter", kind: "skill", match: "id+name",
     module: "scripts/travel-roll/travel-roll-api.js", symbol: "getTreasureHunterHolder",
-    note: "Wayfarer: travel-roll discovery on SL+1 or lower instead of only on a 1. NOTE: no entry point invokes TravelRoll.performRoll yet, so this is API-only in play.",
+    note: "Wayfarer: travel-roll discovery on SL+1 or lower instead of only on a 1. Live via world-map Travel tiles (tile-event-travel.js).",
   },
   {
     name: "Dual Shieldbearer", kind: "skill", match: "exact",

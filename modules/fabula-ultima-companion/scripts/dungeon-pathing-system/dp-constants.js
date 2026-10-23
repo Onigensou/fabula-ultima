@@ -131,6 +131,8 @@
     GUSTY:          "gusty",
     DIRT:           "dirt",
     VERTIGO:        "vertigo",
+    // World-map travel day: makes the FU travel roll (scripts/travel-roll).
+    TRAVEL:         "travel",
     UNKNOWN:        "unknown",
   });
 

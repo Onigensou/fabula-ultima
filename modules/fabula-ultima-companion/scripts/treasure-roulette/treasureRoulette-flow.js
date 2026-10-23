@@ -478,7 +478,9 @@
    *   tile itself. "use" / "decline" skip the prompt; null asks with the prompt.
    * @returns {Promise<{ok:boolean, reason?:string, requestId?:string}>}
    */
-  async function run({ tileDoc, tokenDoc, scene, dpTypeKey, controllerUserId = null, allowSkeletalKey = true, keyDecision = null } = {}) {
+  // consumeTile:false rolls the scene's loot table without spending the tile —
+  // a world-map travel Discovery runs on a Travel tile that must stay live.
+  async function run({ tileDoc, tokenDoc, scene, dpTypeKey, controllerUserId = null, allowSkeletalKey = true, keyDecision = null, consumeTile = true } = {}) {
     if (!isPrimaryGM()) return { ok: false, reason: "not-primary-gm" };
     if (!tileDoc || !scene) return { ok: false, reason: "missing-tile-or-scene" };
 
@@ -631,7 +633,7 @@
 
       // ── 3. Consume the tile. The winner is already locked, so a crash from
       //       here on must not hand out a second, better roll. ───────────────
-      await DP_clearTile(scene, tileDoc.id);
+      if (consumeTile) await DP_clearTile(scene, tileDoc.id);
       tileCleared = true;
 
       // ── 4. Wait for every client to finish the spin + reveal ───────────────
@@ -738,7 +740,7 @@
       }
 
       // A locked winner means the tile is spent, whichever path locked it.
-      if (packet && !tileCleared) {
+      if (packet && !tileCleared && consumeTile) {
         try { await DP_clearTile(scene, tileDoc.id); } catch (e) { warn("fallback tile clear failed:", e); }
       }
 

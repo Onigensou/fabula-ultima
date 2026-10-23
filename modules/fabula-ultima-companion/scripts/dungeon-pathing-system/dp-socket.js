@@ -16,6 +16,7 @@
     RESET_DUNGEON:          "dungeonPathing.resetDungeon",
     TRIGGER_TREASURE:       "dungeonPathing.triggerTreasure",
     RANDOM_BATTLE:          "dungeonPathing.randomBattle",
+    TRAVEL:                 "dungeonPathing.travel",
     MARK_VISITED:           "dungeonPathing.markVisited",
     UNMARK_VISITED:         "dungeonPathing.unmarkVisited",
     FAST_TRAVEL_TELEPORT:   "dungeonPathing.fastTravelTeleport",
@@ -207,6 +208,19 @@
           return await DP.RandomBattle.run({ sceneId, tileId, tokenId });
         } catch (e) {
           console.error(TAG, "randomBattle socket handler failed", e);
+          return { ok: false, error: e?.message };
+        }
+      });
+
+      // Resolve a world-map Travel tile's outcome (day counter, danger /
+      // discovery with the GM's choice). Single GM via executeAsGM, as above.
+      socket.register(HANDLERS.TRAVEL, async (args) => {
+        if (!game.user?.isGM) return { ok: false, error: "Not GM" };
+        if (!DP.Travel?.resolve) return { ok: false, error: "Travel not loaded" };
+        try {
+          return await DP.Travel.resolve(args);
+        } catch (e) {
+          console.error(TAG, "travel socket handler failed", e);
           return { ok: false, error: e?.message };
         }
       });
@@ -414,6 +428,21 @@
       const socket = this._socket ?? window.FUCompanionSocket;
       if (!socket) { console.warn(TAG, "Socket not ready for randomBattle"); return { ok: false, error: "Socket not ready" }; }
       return socket.executeAsGM(HANDLERS.RANDOM_BATTLE, { sceneId: scene.id, tileId, tokenId });
+    },
+
+    /**
+     * Ask the GM to resolve a Travel tile after this client rolled.
+     * Resolves { ok, day?, resolved?, launched?, error? } — see DP.Travel.resolve().
+     */
+    async requestTravel(scene, tileId, tokenId, { outcome, level } = {}) {
+      const args = { sceneId: scene.id, tileId, tokenId, userId: game.user?.id ?? null, outcome, level };
+      if (game.user?.isGM) {
+        if (!DP.Travel?.resolve) { console.warn(TAG, "Travel not loaded"); return { ok: false, error: "Travel not loaded" }; }
+        return DP.Travel.resolve(args);
+      }
+      const socket = this._socket ?? window.FUCompanionSocket;
+      if (!socket) { console.warn(TAG, "Socket not ready for travel"); return { ok: false, error: "Socket not ready" }; }
+      return socket.executeAsGM(HANDLERS.TRAVEL, args);
     }
   };
 

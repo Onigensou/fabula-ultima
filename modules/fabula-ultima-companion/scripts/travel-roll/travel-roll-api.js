@@ -7,6 +7,8 @@
 // Usage:
 //   await TravelRoll.performRoll()           — uses canvas.scene threat level
 //   await TravelRoll.performRoll(scene)      — explicit scene
+//   await TravelRoll.performRoll(scene, { level }) — explicit threat level
+//        (world-map Travel tiles; tile-event-travel.js is the in-play caller)
 //   TravelRoll.getThreatLevel(scene)         — "minimal"|"low"|"medium"|"high"|"very_high"
 //   TravelRoll.getDieFormula(level)          — "1d6" … "1d20"
 //   TravelRoll.getOutcome(total[, threshold]) — "discovery"|"safe"|"danger"
@@ -300,10 +302,13 @@
   // ---------------------------------------------------------------------------
   // Main entry point
   // ---------------------------------------------------------------------------
-  async function performRoll(scene) {
+  // opts.level overrides the scene's threat level — a world-map Travel tile
+  // carries its own threat (dungeonPathing.travelThreat). Unknown values fall
+  // back to the scene's level.
+  async function performRoll(scene, opts = {}) {
     const targetScene = scene ?? canvas?.scene ?? null;
 
-    const level       = getThreatLevel(targetScene);
+    const level       = THREAT_DIE[opts.level] ? opts.level : getThreatLevel(targetScene);
     const baseFormula = getDieFormula(level);
 
     // Wayfarer passives, resolved once and reused for the Cartography reroll so
