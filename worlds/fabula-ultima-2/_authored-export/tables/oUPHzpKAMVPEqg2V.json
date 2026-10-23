@@ -2,7 +2,7 @@
   "_id": "oUPHzpKAMVPEqg2V",
   "_stats": {
     "compendiumSource": null,
-    "coreVersion": "12.331",
+    "coreVersion": "12.343",
     "createdTime": 1769396371032,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
@@ -16,7 +16,7 @@
     }
   },
   "folder": "sXEPJiHMdTlyDoCv",
-  "formula": "1d20",
+  "formula": "1d17",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Sylph_Standard.png",
   "name": "Vastwind Field - Enemies",
   "ownership": {
@@ -33,8 +33,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Prickle%20Boar_Standard.png",
       "range": [
-        8,
-        8
+        6,
+        6
       ],
       "text": "Prickle Boar",
       "type": "document",
@@ -48,8 +48,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Geo%20Eater.png",
       "range": [
-        19,
-        19
+        17,
+        17
       ],
       "text": "Geo Gorger",
       "type": "document",
@@ -78,8 +78,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Slime_Standard.png",
       "range": [
-        16,
-        16
+        14,
+        14
       ],
       "text": "Slime",
       "type": "document",
@@ -93,8 +93,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Earthen_Hand_Standard.png",
       "range": [
-        4,
-        4
+        2,
+        2
       ],
       "text": "Earth Hand",
       "type": "document",
@@ -108,8 +108,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rock%20Golem_Standard.png",
       "range": [
-        9,
-        9
+        7,
+        7
       ],
       "text": "Rock Golem",
       "type": "document",
@@ -123,8 +123,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Bandit_Standard.png",
       "range": [
-        5,
-        5
+        3,
+        3
       ],
       "text": "Bandit",
       "type": "document",
@@ -138,8 +138,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Sylph_Standard.png",
       "range": [
-        10,
-        10
+        8,
+        8
       ],
       "text": "Sylph",
       "type": "document",
@@ -153,8 +153,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Valor_Standard.png",
       "range": [
-        11,
-        11
+        9,
+        9
       ],
       "text": "Valor",
       "type": "document",
@@ -168,8 +168,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Life%20Eater.png",
       "range": [
-        17,
-        17
+        15,
+        15
       ],
       "text": "Life Gorger",
       "type": "document",
@@ -183,8 +183,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Boa_Standard.png",
       "range": [
-        3,
-        3
+        1,
+        1
       ],
       "text": "Boa",
       "type": "document",
@@ -198,8 +198,8 @@
       "flags": {},
       "img": "icons/svg/mystery-man.svg",
       "range": [
-        1,
-        1
+        18,
+        18
       ],
       "text": "⭐️ Gryphon",
       "type": "document",
@@ -213,8 +213,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Mana%20Eater.png",
       "range": [
-        18,
-        18
+        16,
+        16
       ],
       "text": "Mana Gorger",
       "type": "document",
@@ -228,8 +228,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Ape_Standard.png",
       "range": [
-        6,
-        6
+        4,
+        4
       ],
       "text": "Ape",
       "type": "document",
@@ -243,8 +243,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Wind_Orb.png",
       "range": [
-        12,
-        12
+        10,
+        10
       ],
       "text": "Wind Orb",
       "type": "document",
@@ -258,8 +258,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Aeroslime_Standard.png",
       "range": [
-        15,
-        15
+        13,
+        13
       ],
       "text": "Wind Slime",
       "type": "document",
@@ -273,8 +273,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Aero_Gorger_Standard.png",
       "range": [
-        14,
-        14
+        12,
+        12
       ],
       "text": "Aero Gorger",
       "type": "document",
@@ -288,8 +288,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Kalina/Kalina_Standard.png",
       "range": [
-        2,
-        2
+        19,
+        19
       ],
       "text": "⭐️ Masked Girl",
       "type": "document",
@@ -303,8 +303,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Wolf_Standard.png",
       "range": [
-        13,
-        13
+        11,
+        11
       ],
       "text": "Wolf",
       "type": "document",
@@ -318,8 +318,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Momonga_Standard.png",
       "range": [
-        7,
-        7
+        5,
+        5
       ],
       "text": "Pakopon",
       "type": "document",
