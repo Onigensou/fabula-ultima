@@ -488,6 +488,7 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // Action-memory marker. Authored on shipped rows (base Dance family) and on
   // Lockdown but never a column, so a sheet save could strip it. Checkbox with
   // defaultChecked:false = no stamped default on any instance.
+  checkboxCol("ae_once_per_event", "Once per Event", { tooltip: "apply_ae add_charges: count each triggering EVENT once, however many carriers react to it (an observer-aware trigger like creature_lose_resource reaches every bearer of the skill). The stack remembers the event that last moved it; a second row for the same event adds nothing. Needs an event id on the payload (the resource ledger stamps one).", vis: APPLY_AE_VIS }),
   checkboxCol("ae_remember_action", "Remember Action", { tooltip: "apply_ae: stamp the NAME of an action onto the AE (flag rememberedAction), read back with AE_FLAG(\"<AE name>\",\"rememberedAction\") and compared to PERFORMED_SKILL. Default = the action that triggered this row; under a subject_actions menu = the action the player PICKED.", vis: APPLY_AE_VIS }),
   textCol("ae_duration_rounds", "Duration (turns)", { tooltip: "apply_ae: how long THIS application lasts, overriding the AE template's duration.rounds. \"scene\" (or 0) = lasts until the battle ends (no turn counter; the scene-end sweep removes it). A number = that many turns. Blank = the template's duration.rounds, else the 3-turn default.", vis: APPLY_AE_VIS }),
   selectCol("auto_target", "Auto-target", [

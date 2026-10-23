@@ -287,7 +287,13 @@ export async function previewEnemyActionOdds({ tokenId, director = null } = {}) 
 // Chain the pipeline for a single token, stopping before AnnounceResult. Returns
 // the ActionReader context (with chosenAction + chosenTargets) or null on any
 // stage failure. Never throws.
-async function runActionReader({ token, combat, combatant, activationIndex, director = null, directorCombatant = null }) {
+// `grant` (optional) marks a FREE-ACTION consult: the pick is spending a grant,
+// not choosing the creature's turn. Two consequences — rows whose action the
+// grant does not permit are dropped BEFORE the weighted pick (so the pattern
+// answers with what the grant allows, rather than drawing a Skill and being
+// declined), and nothing is written to the anti-repeat memory (a free action
+// must not put a row the creature never chose on cooldown).
+async function runActionReader({ token, combat, combatant, activationIndex, director = null, directorCombatant = null, grant = null }) {
   try {
     let ctx = ActionReaderCore.createBaseContext();
 
@@ -307,8 +313,18 @@ async function runActionReader({ token, combat, combatant, activationIndex, dire
     // is that dev's documented way to keep a GM actor off the AI.
     maybeInjectSummonFallbackPattern(ctx, directorCombatant);
     await readActionReaderPatternTable(ctx);
+    if (grant?.allow && Array.isArray(ctx.patternRows)) {
+      const items = ActionReaderCore.getActorItems(ctx.performer?.actor);
+      const before = ctx.patternRows.length;
+      ctx.patternRows = ctx.patternRows.filter((row) => {
+        const want = ActionReaderCore.normalizeText(row?.actionName ?? "");
+        const item = items.find((i) => ActionReaderCore.normalizeText(i?.name ?? "") === want);
+        return !!item && labelPermits(grant.allow, commandForItem(item));
+      });
+      log(`autopilot: free-action consult kept ${ctx.patternRows.length}/${before} pattern row(s) the grant permits (${[...grant.allow].join("/")})`);
+    }
     await evaluateActionReaderConditions(ctx);
-    await matchAndPickActionReaderAction(ctx);
+    await matchAndPickActionReaderAction(ctx, grant ? { recordMemory: false } : undefined);
     if (!ctx.chosenAction) { log("autopilot: ActionReader picked no action (no pattern / nothing feasible)"); return null; }
 
     await parseActionReaderTargetRule(ctx);
@@ -597,7 +613,7 @@ async function simFallbackBundle(director, snap) {
   return { command: "Guard", coverTokenUuid: null };
 }
 
-async function decideViaActionReader(director, snap) {
+async function decideViaActionReader(director, snap, { grant = null } = {}) {
   try {
     const token = canvas?.tokens?.get(snap?.tokenId) ?? null;
     if (!token) { log("autopilot: DECLARE has no canvas token — manual fallback"); return null; }
@@ -621,7 +637,7 @@ async function decideViaActionReader(director, snap) {
     const pip = (inSim && !SimMode.showPip()) ? { remove() {} } : showThinkingPip(token);
     let ctx = null;
     try {
-      ctx = await runActionReader({ token, combat, combatant, activationIndex, director, directorCombatant: dc });
+      ctx = await runActionReader({ token, combat, combatant, activationIndex, director, directorCombatant: dc, grant });
       await jitterDelay(inSim ? SimMode.thinkRange() : AUTOPILOT_TIMING.decision);
     } finally {
       pip.remove();
@@ -750,6 +766,13 @@ function grantIsAmbiguous(allow) {
   return !allow || allow.size > 1;
 }
 
+// Does the actor carry an authored (non-deleted) action_pattern_table row?
+function hasAuthoredPattern(actor) {
+  return Object.values(
+    actor?.system?.props?.[ActionReaderCore.keys.actionPatternTableKey] ?? {}
+  ).some((r) => r && !r[ActionReaderCore.keys.actionPatternDeletedKey]);
+}
+
 // Consult the creature's action_pattern_table for a free-action grant. Returns
 // the patterned bundle when the grant permits what the pattern chose, else null.
 // The grant keeps the final say — this decides WHICH action, never WHETHER one
@@ -790,9 +813,7 @@ async function tryPatternedGrantPick(director, snap, actor, allow, grant) {
     return null;
   }
 
-  const hasPattern = Object.values(
-    actor?.system?.props?.[ActionReaderCore.keys.actionPatternTableKey] ?? {}
-  ).some((r) => r && !r[ActionReaderCore.keys.actionPatternDeletedKey]);
+  const hasPattern = hasAuthoredPattern(actor);
   // 🪤 This gate reads the ACTOR's authored table directly, so it short-circuits
   // BEFORE decideViaActionReader — which is where a synthesized pattern gets
   // injected. Leaving it as a bare `if (!hasPattern) return null` would make the
@@ -809,7 +830,7 @@ async function tryPatternedGrantPick(director, snap, actor, allow, grant) {
     log(`autopilot: ${snap.name} has no authored pattern but is an automated summon — trying a synthesized one`);
   }
 
-  const patterned = await decideViaActionReader(director, snap);
+  const patterned = await decideViaActionReader(director, snap, { grant: { allow } });
   const cmd = patterned?.command ?? patterned?.bundle?.command ?? null;
   if (patterned && cmd && labelPermits(allow, cmd)) {
     log(`autopilot: free-action grant "${grant?.sourceLabel ?? "?"}" for ${snap.name} resolved from its Action Pattern → ${cmd}`);
@@ -862,7 +883,16 @@ async function decideFreeActionBundle(director, snap, grant) {
     let item = null;
     if (refs.length) item = pickNamedGrantItem(actor, refs, allow, ctx, snap);
 
-    if (!item && grantIsAmbiguous(allow)) {
+    // A creature that AUTHORED an Action Pattern also gets it consulted for an
+    // UNAMBIGUOUS grant ("Attack"). Its pattern is how it chooses between its
+    // attacks — Tempered Voidog's pack free Attack must still prefer Void Rend on
+    // a Slowed enemy over Claw — and resolveFirstNpcAttackItem would otherwise
+    // answer with whichever attack item happens to be first. The grant keeps the
+    // final say: tryPatternedGrantPick declines a pick the grant does not permit,
+    // and any grant it cannot enforce, and we then fall through to that same item.
+    let patternTried = false;
+    if (!item && (grantIsAmbiguous(allow) || hasAuthoredPattern(actor))) {
+      patternTried = true;
       const patterned = await tryPatternedGrantPick(director, snap, actor, allow, grant);
       if (patterned) return patterned;
     }
@@ -873,7 +903,7 @@ async function decideFreeActionBundle(director, snap, grant) {
     // a creature that has no Attack item, say — so the pattern gets its chance
     // before we hand the GM a compose menu. (The ambiguous case already tried.)
     if (!item) {
-      if (!grantIsAmbiguous(allow)) {
+      if (!patternTried) {
         const patterned = await tryPatternedGrantPick(director, snap, actor, allow, grant);
         if (patterned) return patterned;
       }
