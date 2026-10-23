@@ -52,6 +52,9 @@
   const DEBUG = false;
   const dbg  = (...a) => DEBUG && console.log(TAG, ...a);
   const warn = (...a) => console.warn(TAG, ...a);
+  // v12 has no foundry.utils.escapeHTML (v13+) — calling it threw and blanked
+  // the whole Fabula tab. Keep typed values inert in markup.
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
   // Tile types that default to fast-travel eligible when the per-tile
   // flag hasn't been explicitly set by the developer yet.
@@ -140,6 +143,44 @@
         opacity: .85;
         width: 100%;
       }
+
+      /* ── Fixed battle enemy chips ── */
+      /* Core's "form .form-group > *" (flex: 3) outranks a bare class — match its specificity. */
+      form .form-group > .oni-dp-fixed-enc-preview {
+        flex: 0 0 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin: 4px 0 2px;
+      }
+      .oni-dp-fe-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 2px 4px 2px 2px;
+        font-size: 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.18);
+        background: rgba(0,0,0,0.15);
+      }
+      .oni-dp-fe-icon {
+        width: 20px;
+        height: 20px;
+        border: none;
+        border-radius: 50%;
+        object-fit: cover;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        background: rgba(0,0,0,0.25);
+      }
+      .oni-dp-fe-chip.is-random     { border-style: dashed; }
+      .oni-dp-fe-chip.is-missing    { border-color: #c0392b; background: rgba(192,57,43,0.18); }
+      .oni-dp-fe-chip.is-ambiguous  { border-color: #d68910; }
+      .oni-dp-fe-remove { opacity: .55; padding: 0 2px; cursor: pointer; }
+      .oni-dp-fe-remove:hover { opacity: 1; }
+      .oni-dp-fe-dragover { outline: 2px dashed rgba(255,200,80,0.7); outline-offset: 2px; border-radius: 4px; }
     `;
     document.head.appendChild(s);
   }
@@ -325,6 +366,13 @@
       const clearedSwitch = tileDoc?.getFlag?.(MODULE_ID, `${pathingKey}.clearedSwitch`) ?? "";
       const storyBattleRaw = tileDoc?.getFlag?.(MODULE_ID, `${pathingKey}.storyBattle`);
       const storyBattle = storyBattleRaw === true || storyBattleRaw === "true";
+      // Fixed battle: Encounter-row syntax ("Goblin, Goblin, Random"), read GM-side
+      // by dp-random-battle.js readFixed().
+      const fixedEncounter     = String(tileDoc?.getFlag?.(MODULE_ID, `${pathingKey}.fixedEncounter`) ?? "");
+      const fixedEngagement    = String(tileDoc?.getFlag?.(MODULE_ID, `${pathingKey}.fixedEngagement`) ?? "");
+      const fixedVictorySwitch = String(tileDoc?.getFlag?.(MODULE_ID, `${pathingKey}.fixedVictorySwitch`) ?? "");
+      const engOpt = (v, label) =>
+        `<option value="${v}" ${fixedEngagement === v ? "selected" : ""}>${label}</option>`;
       const threatOpt = (v, label) =>
         `<option value="${v}" ${travelThreat === v ? "selected" : ""}>${label}</option>`;
 
@@ -516,11 +564,59 @@
           <label>Cleared when switch</label>
           <div class="form-fields">
             <input type="text" name="flags.${MODULE_ID}.${pathingKey}.clearedSwitch"
-                   value="${foundry.utils.escapeHTML(String(clearedSwitch))}" placeholder="e.g. Wyrmwood Cleared" />
+                   value="${esc(clearedSwitch)}" placeholder="e.g. Wyrmwood Cleared" />
           </div>
           <p class="notes">
             World maps: once this Event System switch is ON, the tile shows a <b>✓ Cleared</b> stamp —
             e.g. on a dungeon entrance after its boss falls. Blank = never.
+          </p>
+        </div>
+
+        <hr class="oni-fabula-section-divider" />
+        <h3 style="margin: 10px 0 6px;"><i class="fas fa-skull-crossbones"></i> Battle</h3>
+        <p class="notes" style="margin: 0 0 8px; font-style: italic;">
+          Random Battle tiles only. Name the tile with "Battle" (e.g. "Event Battle Tile") so it
+          reads as a battle tile whatever its graphic.
+        </p>
+
+        <div class="form-group">
+          <label>Fixed enemies</label>
+          <div class="form-fields">
+            <input type="text" name="flags.${MODULE_ID}.${pathingKey}.fixedEncounter" data-oni-fixed-enc="1"
+                   value="${esc(fixedEncounter)}" placeholder="Drop actors here, or type: Goblin, Goblin, Random" />
+          </div>
+          <div class="oni-dp-fixed-enc-preview" data-oni-fixed-enc-preview="1"></div>
+          <p class="notes">
+            When set, this tile is a <b>fixed battle</b>: it ALWAYS fights exactly this group — no encounter
+            roll, no Encounter table, and the encounter rate is left alone. Same syntax as an Encounter
+            table row: actor names separated by commas, one enemy each; <b>Random</b> draws from the
+            Enemies table (Fabula Area, else the scene). Drag actors from the sidebar onto the field to add them.
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label>Engagement</label>
+          <div class="form-fields">
+            <select name="flags.${MODULE_ID}.${pathingKey}.fixedEngagement" data-dtype="String">
+              ${engOpt("", "— Roll as usual —")}
+              ${engOpt("normal", "Normal")}
+              ${engOpt("advantage", "Advantage — the party strikes first")}
+              ${engOpt("ambush", "Ambush — the enemies strike first")}
+            </select>
+          </div>
+          <p class="notes">Fixed battles only. Blank rolls the Current Game's ambush / advantage odds.</p>
+        </div>
+
+        <div class="form-group">
+          <label>Victory turns ON</label>
+          <div class="form-fields">
+            <input type="text" name="flags.${MODULE_ID}.${pathingKey}.fixedVictorySwitch"
+                   value="${esc(fixedVictorySwitch)}" placeholder="e.g. Bridge Guard Defeated" />
+          </div>
+          <p class="notes">
+            Fixed battles only. Winning turns this Event System switch ON, and while it is ON the tile no
+            longer fights — a one-time battle. Put the same name in <b>Cleared when switch</b> to stamp
+            the tile ✓ Cleared. Blank = it fights on every landing.
           </p>
         </div>
 
@@ -531,9 +627,8 @@
                    data-dtype="Boolean" ${storyBattle ? "checked" : ""} />
           </div>
           <p class="notes">
-            Random Battle tiles only: this fight ALWAYS happens (no encounter roll) and opens the
-            <b>Battle Prompt</b> so the GM sets it up — e.g. a story boss. Name the tile with "Battle"
-            (e.g. "Event Battle Tile") so it reads as a battle tile whatever its graphic.
+            This fight ALWAYS happens (no encounter roll) and opens the <b>Battle Prompt</b> so the GM
+            sets it up by hand — e.g. a story boss. Overrides Fixed enemies' auto-launch.
           </p>
         </div>
 
@@ -757,6 +852,100 @@
             }
           });
         }
+      }
+
+      // Fixed battle: show what each slot resolves to, and accept actor drops.
+      // The input stays the source of truth (it is what the form saves); the
+      // chips are only a reading of it. Names resolve exactly as the GM will
+      // resolve them at landing time — game.actors.getName — so a red chip here
+      // is a slot that would be dropped from the fight.
+      const fixedInput   = dungeonSubPanel.querySelector("[data-oni-fixed-enc]");
+      const fixedPreview = dungeonSubPanel.querySelector("[data-oni-fixed-enc-preview]");
+      if (fixedInput && fixedPreview) {
+        const slotsOf = () => fixedInput.value.split(",").map(s => s.trim()).filter(Boolean);
+        let shownCount = -1;
+
+        const chipFor = (slot, index) => {
+          const chip = document.createElement("span");
+          chip.className = "oni-dp-fe-chip";
+          const isRandom = slot.toLowerCase() === "random";
+          const matches  = isRandom ? [] : (game.actors?.filter?.(a => a.name === slot) ?? []);
+          const actor    = matches[0] ?? null;
+
+          let icon;
+          if (actor?.img) {
+            icon = document.createElement("img");
+            icon.src = actor.img;
+          } else {
+            icon = document.createElement("i");
+            icon.className = isRandom ? "fas fa-dice" : "fas fa-question";
+          }
+          icon.classList.add("oni-dp-fe-icon");
+
+          const label = document.createElement("span");
+          label.textContent = slot;
+
+          if (isRandom) {
+            chip.classList.add("is-random");
+            chip.title = "Drawn from the Enemies table when the battle starts";
+          } else if (!actor) {
+            chip.classList.add("is-missing");
+            chip.title = "No actor has this name — this slot would be left out of the fight";
+          } else if (matches.length > 1) {
+            chip.classList.add("is-ambiguous");
+            chip.title = `${matches.length} actors share this name — the first one is used`;
+          } else {
+            chip.title = actor.name;
+          }
+
+          const remove = document.createElement("a");
+          remove.className = "oni-dp-fe-remove";
+          remove.innerHTML = `<i class="fas fa-times"></i>`;
+          remove.title = "Remove";
+          remove.addEventListener("click", () => {
+            const slots = slotsOf();
+            slots.splice(index, 1);
+            fixedInput.value = slots.join(", ");
+            renderFixed();
+          });
+
+          chip.append(icon, label, remove);
+          return chip;
+        };
+
+        const renderFixed = () => {
+          const slots = slotsOf();
+          fixedPreview.replaceChildren(...slots.map(chipFor));
+          fixedPreview.style.display = slots.length ? "" : "none";
+          if (slots.length !== shownCount) {
+            shownCount = slots.length;
+            try { app.setPosition({ height: "auto" }); } catch {}
+          }
+        };
+
+        const onDrop = async (ev) => {
+          const data = TextEditor.getDragEventData(ev);
+          if (data?.type !== "Actor") return;
+          ev.preventDefault();
+          ev.stopPropagation();
+          const actor = await fromUuid(data.uuid).catch(() => null);
+          if (!actor) return;
+          if (actor.pack || !game.actors?.getName?.(actor.name)) {
+            ui.notifications?.warn?.(`"${actor.name}" is not a world actor — import it into the Actors sidebar first.`);
+            return;
+          }
+          fixedInput.value = [...slotsOf(), actor.name].join(", ");
+          renderFixed();
+        };
+
+        const dropZone = fixedInput.closest(".form-group") ?? fixedInput;
+        dropZone.addEventListener("dragover", (ev) => { ev.preventDefault(); dropZone.classList.add("oni-dp-fe-dragover"); });
+        dropZone.addEventListener("dragleave", (ev) => {
+          if (!dropZone.contains(ev.relatedTarget)) dropZone.classList.remove("oni-dp-fe-dragover");
+        });
+        dropZone.addEventListener("drop", (ev) => { dropZone.classList.remove("oni-dp-fe-dragover"); onDrop(ev); });
+        fixedInput.addEventListener("input", renderFixed);
+        renderFixed();
       }
 
       // GM-only: wire per-tile Reset Shroud button (shown only in Shroud mode when revealed)

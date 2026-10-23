@@ -431,6 +431,53 @@
     return picks;
   }
 
+  // ── Fixed battle (per tile) ────────────────────────────────────────────────
+  // A Random Battle tile can carry its own enemy group (Tile Config → Battle).
+  // Then the fight always happens with exactly that group — no pity roll, no
+  // Encounter table — like a placed enemy in a JRPG dungeon. Slots use the
+  // Encounter-row syntax, so `Random` still draws from the Enemies table.
+  const ENGAGEMENTS = new Set(["normal", "ambush", "advantage"]);
+
+  const switchOn = (name) => {
+    try { return globalThis.oni?.GameState?.getSwitch?.(name) === true; } catch { return false; }
+  };
+
+  function readFixed(tileDoc) {
+    const f = tileDoc?.flags?.[MOD]?.[DP.PATHING_ROOT_KEY ?? "dungeonPathing"] ?? {};
+    const slots = String(f.fixedEncounter ?? "").split(",").map(s => s.trim()).filter(Boolean);
+    if (!slots.length) return null;
+    const eng = String(f.fixedEngagement ?? "").trim();
+    return {
+      slots,
+      engagement:    ENGAGEMENTS.has(eng) ? eng : null,   // null = roll it as usual
+      victorySwitch: String(f.fixedVictorySwitch ?? "").trim(),
+    };
+  }
+
+  // No fallback to the Enemies table: a fixed fight that cannot resolve its
+  // group must say so, not quietly become a random one.
+  async function resolveFixed(fixed, scene, tileDoc) {
+    const enemiesTable = await resolveTable(readDungeonCfg(scene, tileDoc).enemiesTable);
+    const picks = [];
+    for (const slot of fixed.slots) {
+      const actor = await resolveSlot(slot, enemiesTable);
+      if (actor) picks.push({ actorUuid: actor.uuid, name: actor.name, quantity: 1, isNew: isUnseen(actor) });
+    }
+    return picks;
+  }
+
+  // Winning a fixed fight can turn a switch ON — the same switch then stops the
+  // tile from fighting again (and can drive a world-map ✓ Cleared stamp).
+  // fu.battleEnd fires on the Director host, which is a GM.
+  Hooks.on("fu.battleEnd", (info) => {
+    const m = info?.meta;
+    if (m?.source !== "dungeon-random-battle" || !m.victorySwitch) return;
+    if (info?.outcome !== "victory" || !game.user?.isGM) return;
+    Promise.resolve(globalThis.oni?.GameState?.setSwitch?.(m.victorySwitch, true))
+      .then(() => log(`fixed battle won — switch "${m.victorySwitch}" ON`))
+      .catch(e => warn("victory switch failed", e));
+  });
+
   // ── Party ──────────────────────────────────────────────────────────────────
   // CampSystem.Party.resolve() is the shared reader for the game DB's
   // member_id_1..4. `slot` is only ever used to ORDER the spawn line
@@ -578,7 +625,7 @@
 
   // ── Launch ─────────────────────────────────────────────────────────────────
 
-  function buildPayload({ scene, picks, engagement, cfg, tileId }) {
+  function buildPayload({ scene, picks, engagement, cfg, tileId, victorySwitch = "" }) {
     return {
       context: {
         battleSceneUuid: cfg.battleMap,
@@ -593,7 +640,7 @@
       battlePlan:    { type: "default", isBoss: false, initiativeMode: "rolled", engagement },
       battleConfig:  { bgm: String(cfg.battleBGM ?? ""), battleSceneUuid: cfg.battleMap },
       options:       { battleSystem: "director" },
-      meta:          { source: "dungeon-random-battle", sceneId: scene.id, tileId },
+      meta:          { source: "dungeon-random-battle", sceneId: scene.id, tileId, victorySwitch },
     };
   }
 
@@ -623,11 +670,24 @@
   // pity rate is neither rolled nor moved, a failure posts no "Nothing
   // appears…" card (the caller falls back to something else), and `verdict`
   // ("auto" | "customize") is the GM's pick, so the override toast is skipped.
+  // A tile with fixed enemies forces itself the same way (readFixed below).
   async function resolveLanding({ sceneId, tileId, forced = false, verdict: forcedVerdict = "auto" } = {}) {
     if (!game.user?.isGM) return { ok: false, error: "Not GM" };
 
     const scene = game.scenes?.get?.(sceneId);
     if (!scene) return { ok: false, error: "Scene not found" };
+
+    // A fixed battle is forced by the tile itself. Read here, on the GM, rather
+    // than in the tile handler: the GM's copy of the tile is the authority.
+    const tileDoc = scene.tiles?.get?.(tileId) ?? null;
+    const fixed   = readFixed(tileDoc);
+    if (fixed) {
+      if (fixed.victorySwitch && switchOn(fixed.victorySwitch)) {
+        log(`fixed battle skipped — switch "${fixed.victorySwitch}" is already ON`);
+        return { ok: true, appear: false, launched: false };
+      }
+      forced = true;
+    }
 
     const rates = await readRates();
     if (!rates) return { ok: false, error: "Current Game DB not resolved" };
@@ -642,14 +702,15 @@
 
     // 2. Resolve the group BEFORE committing to the encounter, so a misconfigured
     //    dungeon degrades into a clean "nothing happened" instead of a dead turn.
-    const tileDoc = scene.tiles?.get?.(tileId) ?? null;
     const cfg   = readDungeonCfg(scene, tileDoc);
-    const picks = await pickEncounter(scene, tileDoc);
+    const picks = fixed ? await resolveFixed(fixed, scene, tileDoc) : await pickEncounter(scene, tileDoc);
     if (cfg.areaName) log(`area "${cfg.areaName}" overrides the scene config`);
 
     if (!picks.length || !cfg.battleMap) {
       const why = !picks.length
-        ? `no encounter could be resolved on "${scene.name}" — check its Encounter/Enemies tables`
+        ? (fixed
+            ? `the fixed enemies on tile "${tileDoc?.name || tileId}" matched no actor — check the names in its Tile Config`
+            : `no encounter could be resolved on "${scene.name}" — check its Encounter/Enemies tables`)
         : `no Battle Map is configured on "${scene.name}"`;
       warn("degrading to a miss:", why);
       ui.notifications?.warn?.(`Random Battle | ${why}`);   // GM-only: this runs on the GM
@@ -664,9 +725,10 @@
     //    now actually carried through to the Director instead of discarded.
     const pool = rates.ambush + rates.advantage + rates.normal || 1;
     const roll = Math.random() * pool;
-    const engagement = roll < rates.ambush ? "ambush"
-                     : roll < rates.ambush + rates.advantage ? "advantage"
-                     : "normal";
+    const engagement = fixed?.engagement
+                     ?? (roll < rates.ambush ? "ambush"
+                       : roll < rates.ambush + rates.advantage ? "advantage"
+                       : "normal");
 
     log(`encounter: ${picks.map(p => p.name).join(", ")} | engagement=${engagement}`);
 
@@ -710,7 +772,7 @@
       return { ok: false, appear: true, launched: false, error: "Director API missing" };
     }
 
-    const payload = buildPayload({ scene, picks, engagement, cfg, tileId });
+    const payload = buildPayload({ scene, picks, engagement, cfg, tileId, victorySwitch: fixed?.victorySwitch ?? "" });
     payload.party.members = await resolvePartyMembers();
     if (!payload.party.members.length) {
       warn("no party members resolved from the game DB — the battle would be enemy-only");
@@ -749,7 +811,7 @@
     getCustomizeNext,
     setCustomizeNext,
     /** Exposed for the offline weighting sanity-check and for live debugging. */
-    _internals: { pickEncounter, isUnseen, baseWeight, readNoveltyBias, resolvePartyMembers, buildPayload },
+    _internals: { pickEncounter, readFixed, resolveFixed, isUnseen, baseWeight, readNoveltyBias, resolvePartyMembers, buildPayload },
     /** Shared look for the GM choice toast — dp-travel.js reuses it. */
     injectToastStyles,
     TOAST_ID,
