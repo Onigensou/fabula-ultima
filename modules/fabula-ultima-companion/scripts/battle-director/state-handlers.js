@@ -5009,8 +5009,25 @@ const Compute = {
           ctx: { round: director.dCombat?.round ?? 0, attackMode: director.ctx.attackMode, multiAttackKeepHr: !!director.ctx.multiAttackKeepHr, grant: attackGrant },
         });
         const delta = projectProfileToActionResult(profile, null, targetSnapshots);
+        // An NPC attack item can print a cost (Asura's 30 MP Overflow, Tempered
+        // Banestrix's 10 MP Carrion Feast). RESOLVE debits only `costSerialized`,
+        // which this branch never set, so those costs were silently free. Priced
+        // here, except when a free_of_cost grant performs the attack (Carrion
+        // Feast's free repeat) — the grant is known only now, it is consumed above.
+        let attackCostSerialized = {}, attackRawCost = null;
+        if (director.ctx.attackMode === "npc" && director.ctx.npcAttackItemUuid && !attackGrant?.freeOfCost) {
+          const attackItem = await fromUuid(director.ctx.npcAttackItemUuid).catch(() => null);
+          const printedCost = String(attackItem?.system?.props?.cost ?? "").trim();
+          // "-" is the no-cost placeholder on nearly every attack item; parsing it only logs a warning
+          if (printedCost && printedCost !== "-") {
+            attackCostSerialized = serializeCostMap(resolveCost(parseSkillCost(printedCost), { actor: liveActor, targetCount: targetSnapshots.length }));
+            attackRawCost = printedCost;   // the card's cost bullet, as for a Skill
+          }
+        }
         director.ctx.actionResult = freezeActionResult({
           kind: "Attack",
+          costSerialized: attackCostSerialized,
+          ...(attackRawCost ? { rawCost: attackRawCost } : {}),
           attacker,
           attackerActorRef: attacker.actorUuid,
           weapon,
