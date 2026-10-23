@@ -1078,8 +1078,11 @@ async function applySetCheckDieMutation(ctx, cand, row) {
 // reaction on the TARGET raises ITS OWN effective defense for the in-flight
 // action, then recomputes only ITS hit/miss against the (possibly accuracy-
 // adjusted) roll total. Per-target — only the reactor's slot — unlike accuracy,
-// which rewrites the action-wide total. Raising defense can only flip a hit→miss
-// (never a miss→hit), so no HR/damage re-derivation is needed. The bumped
+// which rewrites the action-wide total. Raising defense flips a hit→miss; a
+// subtract / set (Terror Gaze: a Frightened target's MDEF → 0) can flip a
+// miss→hit, whose damage this row cannot know — the recompute that always follows
+// (applyTargetSetMutation → recomputeActionProfile) threads the override into
+// buildPerTarget, which derives hit AND damage against the new defence. The bumped
 // `defense` is whatever the action checks against (DEF for an attack, MDEF for a
 // spell), so it works for any action kind. First user: Matador "Verónica".
 //   { effect_kind: "adjust_defense",
@@ -1116,7 +1119,9 @@ async function applyAdjustDefenseMutation(ctx, cand, row) {
   if (!reactorUuid) { warn("adjust_defense: could not resolve reactor — skipping"); return "failed"; }
 
   const { readAdjustment } = await import("./skill-formulas.js");
-  const { op, amountFormula } = readAdjustment(row, "defense", { defaultOp: "add" });
+  const { op: _op, amountFormula } = readAdjustment(row, "defense", { defaultOp: "add" });
+  // The column's select default is "" (a blank option), which `??` lets through.
+  const op = _op || "add";
   if (!DEFENSE_OPS.has(op)) {
     warn(`adjust_defense: unknown defense_operation "${op}" — skipping`);
     return "failed";

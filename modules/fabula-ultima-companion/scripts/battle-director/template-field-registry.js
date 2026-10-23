@@ -76,6 +76,9 @@ const CHECK_DIE_SWAP_VIS = `equalText(sameRow("effect_kind",''), "check_die_swap
 // adjust_accuracy — action-level accuracy override (Magical Artillery, Adversity,
 // Cognitive Focus, Crossfire). The DEFENDER twin (adjust_defense) reuses no fields.
 const ADJUST_ACC_VIS = `equalText(sameRow("effect_kind",''), "adjust_accuracy")`;
+// adjust_defense — the reactor's own DEF/MDEF for the in-flight action (Verónica,
+// Terror Gaze's target-owned "always hits a Frightened creature").
+const ADJUST_DEF_VIS = `equalText(sameRow("effect_kind",''), "adjust_defense")`;
 // modify_turns — adjust a target's action count this round / next turn (Stop).
 const MODIFY_TURNS_VIS = `equalText(sameRow("effect_kind",''), "modify_turns")`;
 // create_bond — form an FU Bond (emotion) toward a creature (Heart of Darkness).
@@ -281,6 +284,15 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
     { key: "subtract", value: "Subtract" },
     { key: "set",      value: "Set (e.g. Crossfire → 0 = miss)" },
   ], { tooltip: "adjust_accuracy: how Accuracy Amount combines with the in-flight accuracy total. Add raises the total (recomputes hit/miss); Set overrides it (Crossfire sets 0).", vis: ADJUST_ACC_VIS, defaultValue: "" }),
+  // adjust_defense config — same gap as adjust_accuracy: Verónica's operand (9
+  // documents) and Terror Gaze's were data-only, strippable by a sheet save.
+  // Read by card-mutations.js applyAdjustDefenseMutation via readAdjustment(row, "defense").
+  textCol("defense_amount", "Defense Amount", { tooltip: "adjust_defense: the operand (number or formula) combined with the reactor's own DEF/MDEF for this action. e.g. 2, or 0 with Set for a guaranteed hit.", vis: ADJUST_DEF_VIS }),
+  selectCol("defense_operation", "Defense Op", [
+    { key: "add",      value: "Add" },
+    { key: "subtract", value: "Subtract" },
+    { key: "set",      value: "Set (e.g. 0 = always hit, a Fumble still misses)" },
+  ], { tooltip: "adjust_defense: how Defense Amount combines with the reactor's DEF/MDEF against this action. Add can only turn a hit into a miss; Subtract / Set can turn a miss into a hit.", vis: ADJUST_DEF_VIS, defaultValue: "" }),
   // adjust_grant config — per-target heal/restore boost on the in-flight card.
   // Same story as adjust_accuracy above: shipped with Cognitive Focus / Potion Rain
   // and left data-only, so a sheet save could strip the operand. Registered here so

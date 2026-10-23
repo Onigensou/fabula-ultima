@@ -517,7 +517,7 @@ function resolveTargetOutcome({ check, kind, primary, defStat, rolled, isPreRoll
 }
 
 // ── Per-target outcome + primary EffectPreview ───────────────────────────────
-async function buildPerTarget({ view, ar, attacker, primary, check, targets, liveAttacker, ctx, studiedGate, opsMap, weapon, gmHitOverrides = null, gmDamage = null }) {
+async function buildPerTarget({ view, ar, attacker, primary, check, targets, liveAttacker, ctx, studiedGate, opsMap, weapon, gmHitOverrides = null, gmDamage = null, defenseOverrides = null }) {
   const kind = view?.kind ?? ar?.kind ?? "Skill";
   const out = [];
   // Pre-roll = a Check is required but dice aren't known yet (ranges, not finals).
@@ -581,7 +581,15 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
   };
 
   for (const e of targets) {
-    const defStat = pickDef(e);
+    // An accepted adjust_defense for THIS slot (Verónica +2, Terror Gaze's "a
+    // Frightened creature's M.DEF is 0") replaces the defence BEFORE hit and damage
+    // are derived. Applying it after the fact (recomputeActionProfile's re-apply
+    // loop) could only ever zero a hit: a miss→hit flip kept the 0 damage the miss
+    // was built with — the same bug the accuracyOverride fold fixed.
+    const defOv = Array.isArray(defenseOverrides)
+      ? defenseOverrides.find((o) => (o.tokenUuid && o.tokenUuid === e.tokenUuid) || (o.actorUuid && o.actorUuid === e.actorUuid))
+      : null;
+    const defStat = (defOv && Number.isFinite(Number(defOv.to))) ? Number(defOv.to) : pickDef(e);
     // Manual GM verdict for THIS slot, keyed by token (not actor) so two linked
     // tokens sharing one world actor stay independently editable.
     const hitOverride = (gmHitOverrides && e?.tokenUuid && e.tokenUuid in gmHitOverrides)
@@ -1052,6 +1060,8 @@ export async function computeActionProfile(input) {
     // Both null on every non-edited action, which keeps the engine on its
     // untouched default path.
     gmHitOverrides = null, gmDamage = null,
+    // Per-slot adjust_defense results from card-mutations (recompute only).
+    defenseOverrides = null,
   } = input;
   let view = _viewIn;
   const kind = view?.kind ?? ar?.kind ?? "Skill";
@@ -1152,7 +1162,7 @@ export async function computeActionProfile(input) {
   let perTarget = [];
   let healingObj = null;
   if (primary.mode === "damage" || check.required) {
-    perTarget = await buildPerTarget({ view, ar, attacker, primary, check, targets, liveAttacker, ctx, studiedGate, opsMap, weapon, gmHitOverrides, gmDamage });
+    perTarget = await buildPerTarget({ view, ar, attacker, primary, check, targets, liveAttacker, ctx, studiedGate, opsMap, weapon, gmHitOverrides, gmDamage, defenseOverrides });
   }
   if (primary.mode !== "damage") {
     const heal = await attachHealEffects({ rows: perTarget, view, ar, targets, resolver, liveAttacker, check, kind, primary, chainVars: ctx?.chainVars ?? null });
@@ -1544,7 +1554,7 @@ export async function recomputeActionProfile({ ar, targets = null, acceptedReact
       // the per-target rows drift) and its hit/miss to the un-granted total.
       // Re-derives from the same dice, so the grant folds once — no double-count.
       ctx: { round: ar.round ?? round ?? 0, attackMode: attackMode ?? ar.attackMode ?? null, grant: ar.freeActionGrant ?? null },
-      acceptedReactions, accuracyOverride, gmHitOverrides, gmDamage,
+      acceptedReactions, accuracyOverride, gmHitOverrides, gmDamage, defenseOverrides,
     });
     const delta = projectProfileToActionResult(profile, ar, snaps);
     if (Array.isArray(delta?.perTargetResults)) {

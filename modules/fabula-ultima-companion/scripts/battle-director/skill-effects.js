@@ -2693,7 +2693,10 @@ export async function refreshReactionSubjects({ acceptedCardReactions, ar, attac
           includeUnavailable: true,
         });
       } catch { cands = []; }
-      if ((cands ?? []).some((c) => c.rowKey === cand.rowKey && c.carrierUuid === cand.carrierUuid)) {
+      // A copy whose condition FAILED on this target (includeUnavailable keeps it,
+      // for the dimmed cost pill) does not make the target a subject.
+      if ((cands ?? []).some((c) => c.rowKey === cand.rowKey && c.carrierUuid === cand.carrierUuid
+          && !(c.available === false && c.unavailableKind === "condition"))) {
         const tk = r.tokenUuid ?? r.actorUuid;
         if (seenTok.has(tk)) continue;
         seenTok.add(tk);

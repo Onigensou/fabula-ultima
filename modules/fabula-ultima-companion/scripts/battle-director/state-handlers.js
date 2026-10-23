@@ -5566,6 +5566,11 @@ const Confirm = {
           }
           for (const cand of cands ?? []) {
             const key = `${cand.rowKey}::${cand.carrierUuid}`;
+            // The row's condition is evaluated per target (subject = this target).
+            // A target it failed on must not receive the effect — the aggregate used
+            // to push every hit target regardless, so "+20 vs a Frightened creature"
+            // reached the other target too, or (scan order) was dropped entirely.
+            const condFailedHere = cand.available === false && cand.unavailableKind === "condition";
             let agg = byKey.get(key);
             if (!agg) {
               // First match — keep this candidate as the aggregate.
@@ -5578,15 +5583,27 @@ const Confirm = {
                 appliesToTargetUuids: [],
                 appliesToTokenUuids: [],
                 payloadAtFire: payloadForTrigger,
-                _payloadFromHit: !!entry.hit,
+                _payloadFromHit: !!entry.hit && !condFailedHere,
               };
               byKey.set(key, agg);
-            } else if (entry.hit && !agg._payloadFromHit) {
+            } else if (entry.hit && !agg._payloadFromHit && !condFailedHere) {
               agg.payloadAtFire = payloadForTrigger;
               agg._payloadFromHit = true;
             }
-            // Only HIT targets receive the effect / count toward the cost.
-            if (entry.hit) {
+            // The aggregate takes its availability from the best copy: available if
+            // ANY target's copy is, else a cost-dimmed copy over a condition-failed
+            // one (the first copy scanned decided it alone before). A copy whose
+            // condition passed also owns the fire-time payload.
+            if (agg.available === false && !condFailedHere
+                && (cand.available !== false || agg.unavailableKind === "condition")) {
+              agg.available = cand.available !== false;
+              agg.unavailableKind = cand.available !== false ? null : cand.unavailableKind;
+              agg.unavailableReason = cand.available !== false ? null : cand.unavailableReason;
+              if (entry.hit) { agg.payloadAtFire = payloadForTrigger; agg._payloadFromHit = true; }
+            }
+            // Only HIT targets the row's condition passed on receive the effect /
+            // count toward the cost.
+            if (entry.hit && !condFailedHere) {
               agg.appliesToTargetUuids.push(subjectActorUuid);
               if (subjectTokenUuid) agg.appliesToTokenUuids.push(subjectTokenUuid);
             }
@@ -6104,6 +6121,14 @@ const Confirm = {
                   includeUnavailable: true,   // surface unaffordable reactions dimmed (cost only)
                 });
                 for (const cand of ownedCands ?? []) {
+                  // includeUnavailable is for COST (a dimmed, unaffordable pill). A
+                  // copy whose condition failed on THIS target must not ride along:
+                  // every target's copy shares one card decision key
+                  // (rowKey:carrierUuid), so a force copy that passed on one target
+                  // would carry the failed copy into the accepted set and apply it to
+                  // a creature the condition excluded (Terror Gaze vs a mixed
+                  // Frightened / not-Frightened pair).
+                  if (cand.available === false && cand.unavailableKind === "condition") continue;
                   const dedup = `${cand.rowKey}::${cand.carrierUuid}::${subjectActorUuid}`;
                   if (seenKeys.has(dedup)) continue;
                   seenKeys.add(dedup);
