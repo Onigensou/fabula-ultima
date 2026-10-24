@@ -84,12 +84,33 @@
       "version": "4.5.0"
     },
     "fabula-ultima-companion": {
+      "affinity_class_magic": "NA",
+      "affinity_class_strike": "NA",
+      "check_mod_dex": 0,
+      "check_mod_ins": 0,
+      "check_mod_mig": 0,
+      "check_mod_wlp": 0,
+      "damage_dealt_mult_all": 1,
+      "damage_dealt_mult_attack": 1,
+      "damage_dealt_mult_skill": 1,
+      "damage_dealt_mult_spell": 1,
+      "damage_taken_increased_air": 0,
+      "damage_taken_increased_bolt": 0,
+      "damage_taken_increased_dark": 0,
+      "damage_taken_increased_earth": 0,
+      "damage_taken_increased_fire": 0,
+      "damage_taken_increased_ice": 0,
+      "damage_taken_increased_light": 0,
+      "damage_taken_increased_physical": 0,
+      "damage_taken_increased_poison": 0,
+      "damage_taken_mult": 1,
       "defeatStyle": "overfed",
       "entranceStyle": "feast",
       "idleAnimation": {
         "bounce": false,
         "float": false
       },
+      "opp_lucky": 0,
       "persistentSummonRetainOnDefeat": true,
       "spriteShadow": true,
       "summonTurnsPerRound": 0

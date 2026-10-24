@@ -13,6 +13,12 @@
       "version": "4.8.5"
     },
     "fabula-ultima-companion": {
+      "affinity_class_magic": "NA",
+      "affinity_class_strike": "NA",
+      "check_mod_dex": 0,
+      "check_mod_ins": 0,
+      "check_mod_mig": 0,
+      "check_mod_wlp": 0,
       "damage_dealt_mult_all": 1,
       "damage_dealt_mult_attack": 1,
       "damage_dealt_mult_skill": 1,
@@ -30,7 +36,8 @@
       "idleAnimation": {
         "bounce": false,
         "float": false
-      }
+      },
+      "opp_lucky": 0
     },
     "theatre": {
       "baseinsert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Kalina/Kalina_Portrair002.png",

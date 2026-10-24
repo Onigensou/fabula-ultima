@@ -213,6 +213,8 @@
       "version": "4.8.4"
     },
     "fabula-ultima-companion": {
+      "affinity_class_magic": "NA",
+      "affinity_class_strike": "NA",
       "attributeAdvance": {
         "claimed": 2,
         "legacy": true,
@@ -220,6 +222,10 @@
         "seededAt": "2026-07-22T05:33:00.573Z",
         "seededLevel": 41
       },
+      "check_mod_dex": 0,
+      "check_mod_ins": 0,
+      "check_mod_mig": 0,
+      "check_mod_wlp": 0,
       "damage_dealt_mult_all": 1,
       "damage_dealt_mult_attack": 1,
       "damage_dealt_mult_skill": 1,
@@ -238,7 +244,8 @@
         "x": 60,
         "y": 8,
         "zoom": 1.6
-      }
+      },
+      "opp_lucky": 0
     },
     "theatre": {
       "baseinsert": "",
