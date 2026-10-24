@@ -272,6 +272,22 @@ export function checkSideWipe(director) {
   return true;
 }
 
+// A side wipe that lands OUTSIDE a turn — a round_end Late Actor (Kalina's dive),
+// a turn_end reaction — latches dCombat.ended, but only TURN_END's nextTurn()
+// turned that latch into ctx.endOfCombat. So the next round started (ROUND_START
+// even reset endOfCombat to false), the picker fell back to the party side, and a
+// player took a whole turn against an empty side before the battle ended. The
+// states that open a round or a turn check the latch first and route straight to
+// BATTLE_ENDING (their transitions already branch on endOfCombat). An undying
+// rule un-latches dCombat.ended itself before resuming, so it is unaffected.
+function routeEndedCombat(director, where) {
+  if (!director?.dCombat?.ended) return false;
+  log(`${where}: combat already ended (side wiped outside a turn) — routing to BATTLE_ENDING`);
+  director.ctx.endOfCombat = true;
+  director.enqueue({ type: INTENTS.INTERNAL_DONE });
+  return true;
+}
+
 // Event-driven half of side-wipe detection: every HP change that lands a creature
 // at <=0 re-checks BOTH sides. The removal half (a side emptied by leave_combat /
 // destroy_summon / banish with no HP change) is covered by the removeCombatant
@@ -1937,6 +1953,7 @@ async function resolveRoundInitiative(director, roundNo) {
 // drain round-start reaction triggers.
 const RoundStart = {
   async onEnter(director) {
+    if (routeEndedCombat(director, "ROUND_START")) return;
     director.ctx.endOfRound = false;
     director.ctx.endOfCombat = false;
     // Deferred wrap: the last TURN_END of the previous round only MARKED the
@@ -2100,6 +2117,7 @@ function summonTurnKey(director, snapLike) {
 // eligible) or prompt (multiple eligible) via TurnPicker.
 const TurnStart = {
   async onEnter(director) {
+    if (routeEndedCombat(director, "TURN_START")) return;
     // Authoritative path — DirectorCombat owns turn order.
     let snap = null;
     if (director.dCombat) {
@@ -7810,6 +7828,10 @@ const RoundEnd = {
         log(`ROUND_END: swept ${swept.swept} round-end AE(s): ${swept.names.join(", ")}`);
       }
     } catch (e) { warn("ROUND_END: tickDirectorAEsAtRoundEnd threw", e); }
+
+    // A turn_end reaction wiped the last side: skip the round-end phase, so a
+    // Late Actor does not take a turn against nobody.
+    if (routeEndedCombat(director, "ROUND_END")) return;
 
     // Hand off to STANDALONE_REACTION_WINDOW for round_end. The transition
     // rule branches on endOfCombat (combat over → STOPPED, otherwise →
