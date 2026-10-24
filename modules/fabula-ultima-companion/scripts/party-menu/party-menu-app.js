@@ -37,6 +37,7 @@ import { configView, CONFIG_CSS } from "./party-menu-view-config.js";
 import { attachScrollbars } from "./party-menu-scrollbar.js";
 import { wireLinkTips, hideLinkTip, removeLinkTip } from "./party-menu-linktip.js";
 import { companionsOf, typeSection, aiPanel } from "./party-menu-companions.js";
+import { gateState } from "../levelup-system/levelup-gate.js";
 
 const TAG = "[PartyMenu]";
 const ROOT_ID = "fud-party-menu";
@@ -515,8 +516,41 @@ function abilityNav() {
       actions.push({ key: "Enter", label: "Change", icon: "fa-right-left" });
       if (slotView(slot).canReset) actions.push({ key: "Delete", label: slot.type === "fixed" ? "Default" : "Clear", icon: "fa-rotate-left" });
     }
-  } else if (slots.length) actions.push({ key: "Enter", label: "Summon", icon: "fa-paw" });
+  } else {
+    if (slots.length) actions.push({ key: "Enter", label: "Summon", icon: "fa-paw" });
+    const tree = skillTreeAccess(actor);
+    if (tree) actions.push({ key: "T", label: "Skill Tree", icon: "fa-sitemap", disabled: !tree.ok, title: tree.ok ? "Open the level-up window" : tree.reason });
+  }
   return { crumbs, actions };
+}
+
+// ── Skill Tree (the level-up window) ──────────────────────────────────────────
+//
+// The one manual way into levelling: Ability → Skill Tree. It is offered for a
+// party member you own (any of them, for a GM), never for a guest or summon.
+// Outside camp lobbies and the title screen it stays on show but greyed, because
+// fiddling with a build mid-dungeon stalls the table. The spend gate is also
+// re-checked GM-side on every write, so this is the advisory half of the rule.
+
+/** null when the action does not apply to this character; else { ok, reason }. */
+function skillTreeAccess(actor) {
+  if (!actor || companionOf(actor) || !actor.isOwner) return null;
+  if (!globalThis.FUCompanion?.api?.levelUp?.open) return null;
+  const gate = gateState();
+  return { ok: gate.open, reason: gate.reason };
+}
+
+function openSkillTree(actor) {
+  const access = skillTreeAccess(actor);
+  if (!access) return;
+  if (!access.ok) { play(SND.buzz, 0.5); toast(access.reason); return; }
+  const lu = globalThis.FUCompanion.api.levelUp;
+  const back = () => openPartyMenu({ actorId: actor.id });
+  // The level-up window sits below this menu, so step out of the way and come
+  // back to this character's Ability page when it closes.
+  closePartyMenu();
+  lu.open(actor.uuid, { onClose: back });
+  if (!lu.app?.isOpen) back();   // refused (not a player character): don't strand the player
 }
 
 /** Where the open view is ({ crumbs: [labels], actions }), "Party" excluded. */
@@ -973,7 +1007,7 @@ function onKey(ev) {
   const k = ev.key;
   const nav = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter", "Escape", "Tab", "Backspace", "Delete"];
   if (typing && !["ArrowUp", "ArrowDown", "Enter", "Escape"].includes(k)) return;
-  if (!nav.includes(k) && !["q", "e", "Q", "E", "u", "U", "PageUp", "PageDown"].includes(k)) {
+  if (!nav.includes(k) && !["q", "e", "Q", "E", "u", "U", "t", "T", "PageUp", "PageDown"].includes(k)) {
     // Swallow everything else too while the menu is up, so WASD / hotkeys do
     // not drive the canvas behind it. Typing in the search box returned above.
     ev.stopPropagation();
@@ -1050,6 +1084,7 @@ function handleKey(k, ev = { key: k, shiftKey: false, target: null }) {
     return setFilter(FILTERS[(i + (ev.shiftKey ? -1 : 1) + FILTERS.length) % FILTERS.length].id);
   }
   if (S.focus === "skills") {
+    if (k === "t" || k === "T") return openSkillTree(actor);
     const n = filteredSkills(actor).length;
     if (k === "Escape" && S.pinned) { S.pinned = null; play(SND.back); render(); return; }
     if (!n) { if (k === "Escape") backToMain(); return; }
@@ -1355,6 +1390,7 @@ function ensureStyles() {
 }
 #${ROOT_ID} .pm-btn:hover { filter: brightness(1.05) saturate(1.05); }
 #${ROOT_ID} .pm-btn:active { transform: translateY(1px); }
+#${ROOT_ID} .pm-btn:disabled { cursor: not-allowed; opacity: .45; filter: grayscale(.7); transform: none; }
 
 /* picker */
 /* overlays sit in their own layer: the drawn scrollbars and the hand use z-index 3 inside the windows below */
