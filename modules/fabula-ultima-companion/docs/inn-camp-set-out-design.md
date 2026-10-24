@@ -1,6 +1,7 @@
 # Inn Camp, Short Rest & Set Out — design
 
-**Status:** in progress on `feat/inn-camp-set-out`. Not live-tested.
+**Status:** built on `feat/inn-camp-set-out` (2026-10-24). Live-tested on ONE GM
+client — see §6. Not yet tested with a player client or two GMs.
 Companion to `camp-rest-save-flow-design.md` — read that first; this picks up
 where its `SET_OUT_LOBBY` left off.
 
@@ -108,11 +109,35 @@ view"), or the scene centre when none is set.
 |---|---|---|---|
 | Ruhig | `Ruhig_Village005` / Alcina | `Ruhig_Village006` (existing) | new clone of 006, exploration; the lobby's walk-in door repointed to it |
 | Ancient Temple | `AncientTemple_Map002` / Innkeeper Shade | `AncientTemple_Map003` (existing) | new clone of 003; new door in the lobby |
-| Midgard | `Midgard_Map005` / Freydis | **new** — bedroom half of `Valley_Map007.png` | not needed: the inn map already includes the walkable bedroom |
-| Eisendrache | `Eisendrache_Map007` / Thomas | **new**, placeholder `Ruhig_Map006.png` | new clone; the door at the top of the stairs |
+| Midgard | `Midgard_Map005` / Freydis | **new** `Midgard_Map008` | not needed: the inn map already includes the walkable bedroom |
+| Eisendrache | `Eisendrache_Map007` / Thomas | **new** `Eisendrache_Map019`, placeholder `Ruhig_Map006.png` | **new** `Eisendrache_Map020`; door at the top of the stair lane |
+
+(Ruhig walk-in = `Ruhig_Village012`, Temple walk-in = `AncientTemple_Map011`.)
 
 Twins carry `flags.<module>.campTwinOf` = the other scene's id, and are hidden
-from navigation.
+from navigation. Camp twins carry `flags.<module>.campArrival {x, y}`.
+
+**Midgard's room is the full inn image with the lobby half masked** by a locked
+black Drawing. Foundry V12 always fits a scene background to the scene rect:
+`background.offsetX` moves the *scene rect* over the image (canvas coords then
+start at the offset) and `scaleX` is ignored, so a background cannot be
+cropped in place. A cropped image upload would replace the mask.
+
+## 6. Live test (2026-10-24, one GM client, state restored afterwards)
+
+- Freydis (unhidden for the test — the Midgard NPCs are hidden staging) shows
+  the 🛏 button only within the shared Talk/Shop feet range.
+- Short Rest: black curtain + jingle, 20z × 4 charged, debuff cured, food buff
+  and the Swift Swimmers set-bonus Wet kept, HP restored.
+- Rest: 80z, teleported into `Midgard_Map008` at the arch, area banner shown,
+  loop at Free Roam, return point = Freydis' spot. Set Out → back on that spot,
+  camp reset, return point cleared.
+- Dungeon camp tile hook (Wyrmwood_Map003 → its camp) → Set Out reactivated the
+  dungeon; the waiting party token was untouched.
+- No return point → picker listed the camp's Scene Network + Stay.
+
+Not covered: a save → title → load round trip (the landing-phase check covers
+the rule offline), walking through the new doors as a player, two GMs.
 
 ## 5. Build order
 
