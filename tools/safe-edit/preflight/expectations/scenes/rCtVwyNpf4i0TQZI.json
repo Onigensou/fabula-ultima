@@ -1,882 +1,8 @@
 {
   "sceneId": "rCtVwyNpf4i0TQZI",
   "name": "Wyrmwood_Map010",
-  "tokens": [
-    {
-      "name": "Hina",
-      "actorId": "dafTLBUscCDNgq8H",
-      "actorLink": true
-    },
-    {
-      "name": "Keren",
-      "actorId": "gdJZ1L1kv5mjTTMr",
-      "actorLink": true
-    },
-    {
-      "name": "Blanche",
-      "actorId": "uJFaNQCSvwwsr2AW",
-      "actorLink": true
-    },
-    {
-      "name": "Zarg",
-      "actorId": "Z4CFy505cD3nzl1W",
-      "actorLink": true
-    }
-  ],
-  "tokensFull": [
-    {
-      "name": "Keren",
-      "displayName": 0,
-      "actorLink": true,
-      "appendNumber": false,
-      "prependAdjective": false,
-      "width": 1,
-      "height": 1,
-      "texture": {
-        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Standard.png",
-        "anchorX": 0.5,
-        "anchorY": 0.5,
-        "offsetX": 0,
-        "offsetY": 0,
-        "fit": "contain",
-        "scaleX": -1.47,
-        "scaleY": 1.47,
-        "rotation": 0,
-        "tint": "#ffffff",
-        "alphaThreshold": 0.75
-      },
-      "hexagonalShape": 0,
-      "lockRotation": false,
-      "rotation": 0,
-      "alpha": 1,
-      "disposition": 1,
-      "displayBars": 50,
-      "bar1": {
-        "attribute": "attributeBar.current_hp"
-      },
-      "bar2": {
-        "attribute": "attributeBar.current_mp"
-      },
-      "light": {
-        "negative": false,
-        "priority": 0,
-        "alpha": 0.5,
-        "angle": 360,
-        "bright": 0,
-        "color": null,
-        "coloration": 1,
-        "dim": 0,
-        "attenuation": 0.5,
-        "luminosity": 0.5,
-        "saturation": 0,
-        "contrast": 0,
-        "shadows": 0,
-        "animation": {
-          "type": null,
-          "speed": 5,
-          "intensity": 5,
-          "reverse": false
-        },
-        "darkness": {
-          "min": 0,
-          "max": 1
-        }
-      },
-      "sight": {
-        "enabled": false,
-        "range": 0,
-        "angle": 360,
-        "visionMode": "basic",
-        "color": null,
-        "attenuation": 0.1,
-        "brightness": 0,
-        "saturation": 0,
-        "contrast": 0
-      },
-      "detectionModes": [],
-      "occludable": {
-        "radius": 0
-      },
-      "ring": {
-        "enabled": false,
-        "colors": {
-          "ring": null,
-          "background": null
-        },
-        "effects": 0,
-        "subject": {
-          "scale": 1,
-          "texture": null
-        }
-      },
-      "flags": {
-        "barbrawl": {
-          "resourceBars": {
-            "bar2": {
-              "order": 0,
-              "id": "bar2",
-              "attribute": "attributeBar.current_mp",
-              "mincolor": "#000080",
-              "maxcolor": "#80B3FF",
-              "position": "bottom-inner",
-              "otherVisibility": 0,
-              "ownerVisibility": 30,
-              "gmVisibility": -1,
-              "hideFull": false,
-              "hideEmpty": false,
-              "hideCombat": false,
-              "hideNoCombat": false,
-              "indentLeft": null,
-              "indentRight": null,
-              "shareHeight": false,
-              "style": "fraction",
-              "label": "MP",
-              "invert": false,
-              "invertDirection": false,
-              "subdivisions": null,
-              "subdivisionsOwner": false,
-              "fgImage": "",
-              "bgImage": "",
-              "opacity": null,
-              "hideHud": false
-            },
-            "bar1": {
-              "order": 1,
-              "id": "bar1",
-              "attribute": "attributeBar.current_hp",
-              "mincolor": "#FF0000",
-              "maxcolor": "#80FF00",
-              "position": "bottom-inner",
-              "otherVisibility": 0,
-              "ownerVisibility": 30,
-              "gmVisibility": -1,
-              "hideFull": false,
-              "hideEmpty": false,
-              "hideCombat": false,
-              "hideNoCombat": false,
-              "indentLeft": null,
-              "indentRight": null,
-              "shareHeight": false,
-              "style": "fraction",
-              "label": "HP",
-              "invert": false,
-              "invertDirection": false,
-              "subdivisions": null,
-              "subdivisionsOwner": false,
-              "fgImage": "",
-              "bgImage": "",
-              "opacity": null,
-              "hideHud": false
-            },
-            "bar3": {
-              "order": 2,
-              "id": "bar3",
-              "attribute": "attributeBar.clock_brainwave",
-              "mincolor": "#7a39db",
-              "maxcolor": "#e811c1",
-              "position": "bottom-outer",
-              "otherVisibility": 50,
-              "ownerVisibility": 50,
-              "gmVisibility": -1,
-              "hideFull": false,
-              "hideEmpty": false,
-              "hideCombat": false,
-              "hideNoCombat": false,
-              "hideHud": false,
-              "indentLeft": null,
-              "indentRight": null,
-              "shareHeight": false,
-              "style": "percent",
-              "label": "🌀",
-              "invert": false,
-              "invertDirection": false,
-              "subdivisions": null,
-              "subdivisionsOwner": false,
-              "fgImage": "",
-              "bgImage": "",
-              "opacity": null
-            },
-            "bar4": {
-              "order": 3,
-              "id": "bar4",
-              "attribute": "attributeBar.clock_grave",
-              "mincolor": "#7d758a",
-              "maxcolor": "#7d758a",
-              "position": "bottom-outer",
-              "otherVisibility": 50,
-              "ownerVisibility": 50,
-              "gmVisibility": -1,
-              "hideFull": false,
-              "hideEmpty": false,
-              "hideCombat": false,
-              "hideNoCombat": false,
-              "hideHud": false,
-              "indentLeft": null,
-              "indentRight": null,
-              "shareHeight": false,
-              "style": "none",
-              "label": "👻",
-              "invert": false,
-              "invertDirection": false,
-              "subdivisions": 6,
-              "subdivisionsOwner": true,
-              "fgImage": "",
-              "bgImage": "",
-              "opacity": null
-            }
-          }
-        },
-        "wall-height": {
-          "tokenHeight": 0
-        },
-        "token-z": {
-          "zIndex": 0
-        },
-        "token-variants": {
-          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Standard.png",
-          "disableHUDButton": false
-        },
-        "hex-size-support": {
-          "hideBorder": true,
-          "hideFill": false
-        }
-      },
-      "actorId": "gdJZ1L1kv5mjTTMr",
-      "hidden": false,
-      "sort": 2,
-      "_id": "Ais0chs10s7Q6xMf",
-      "x": 535,
-      "y": 365,
-      "elevation": 0,
-      "locked": false,
-      "_regions": []
-    },
-    {
-      "name": "Zarg",
-      "displayName": 0,
-      "actorLink": true,
-      "appendNumber": false,
-      "prependAdjective": false,
-      "width": 1,
-      "height": 1,
-      "texture": {
-        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_Standard.png",
-        "anchorX": 0.5,
-        "anchorY": 0.5,
-        "offsetX": 0,
-        "offsetY": 0,
-        "fit": "contain",
-        "scaleX": -1.56,
-        "scaleY": 1.56,
-        "rotation": 0,
-        "tint": "#ffffff",
-        "alphaThreshold": 0.75
-      },
-      "hexagonalShape": 0,
-      "lockRotation": false,
-      "rotation": 0,
-      "alpha": 1,
-      "disposition": 1,
-      "displayBars": 50,
-      "bar1": {
-        "attribute": "attributeBar.current_hp"
-      },
-      "bar2": {
-        "attribute": "attributeBar.current_mp"
-      },
-      "light": {
-        "negative": false,
-        "priority": 0,
-        "alpha": 0.5,
-        "angle": 360,
-        "bright": 0,
-        "color": null,
-        "coloration": 1,
-        "dim": 0,
-        "attenuation": 0.5,
-        "luminosity": 0.5,
-        "saturation": 0,
-        "contrast": 0,
-        "shadows": 0,
-        "animation": {
-          "type": null,
-          "speed": 5,
-          "intensity": 5,
-          "reverse": false
-        },
-        "darkness": {
-          "min": 0,
-          "max": 1
-        }
-      },
-      "sight": {
-        "enabled": false,
-        "range": 0,
-        "angle": 360,
-        "visionMode": "basic",
-        "color": null,
-        "attenuation": 0.1,
-        "brightness": 0,
-        "saturation": 0,
-        "contrast": 0
-      },
-      "detectionModes": [],
-      "occludable": {
-        "radius": 0
-      },
-      "ring": {
-        "enabled": false,
-        "colors": {
-          "ring": null,
-          "background": null
-        },
-        "effects": 0,
-        "subject": {
-          "scale": 1,
-          "texture": null
-        }
-      },
-      "flags": {
-        "barbrawl": {
-          "resourceBars": {
-            "bar2": {
-              "order": 0,
-              "id": "bar2",
-              "attribute": "attributeBar.current_mp",
-              "mincolor": "#000080",
-              "maxcolor": "#80B3FF",
-              "position": "bottom-inner",
-              "otherVisibility": 0,
-              "ownerVisibility": 30,
-              "gmVisibility": -1,
-              "hideFull": false,
-              "hideEmpty": false,
-              "hideCombat": false,
-              "hideNoCombat": false,
-              "indentLeft": null,
-              "indentRight": null,
-              "shareHeight": false,
-              "style": "fraction",
-              "label": "MP",
-              "invert": false,
-              "invertDirection": false,
-              "subdivisions": null,
-              "subdivisionsOwner": false,
-              "fgImage": "",
-              "bgImage": "",
-              "opacity": null,
-              "hideHud": false
-            },
-            "bar1": {
-              "order": 1,
-              "id": "bar1",
-              "attribute": "attributeBar.current_hp",
-              "mincolor": "#FF0000",
-              "maxcolor": "#80FF00",
-              "position": "bottom-inner",
-              "otherVisibility": 0,
-              "ownerVisibility": 30,
-              "gmVisibility": -1,
-              "hideFull": false,
-              "hideEmpty": false,
-              "hideCombat": false,
-              "hideNoCombat": false,
-              "indentLeft": null,
-              "indentRight": null,
-              "shareHeight": false,
-              "style": "fraction",
-              "label": "HP",
-              "invert": false,
-              "invertDirection": false,
-              "subdivisions": null,
-              "subdivisionsOwner": false,
-              "fgImage": "",
-              "bgImage": "",
-              "opacity": null,
-              "hideHud": false
-            },
-            "bar3": {
-              "order": 2,
-              "id": "bar3",
-              "attribute": "attributeBar.shield_value",
-              "mincolor": "#000000",
-              "maxcolor": "#FFFFFF",
-              "position": "bottom-inner",
-              "otherVisibility": 50,
-              "ownerVisibility": 50,
-              "gmVisibility": -1,
-              "hideFull": false,
-              "hideEmpty": true,
-              "hideCombat": false,
-              "hideNoCombat": false,
-              "indentLeft": null,
-              "indentRight": null,
-              "shareHeight": false,
-              "style": "fraction",
-              "label": "",
-              "invert": false,
-              "invertDirection": false,
-              "subdivisions": null,
-              "subdivisionsOwner": false,
-              "fgImage": "",
-              "bgImage": "",
-              "opacity": null,
-              "hideHud": false
-            }
-          }
-        },
-        "wall-height": {
-          "tokenHeight": 0
-        },
-        "token-z": {
-          "zIndex": 0
-        },
-        "token-variants": {
-          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_Standard.png",
-          "disableHUDButton": false
-        },
-        "hex-size-support": {
-          "hideBorder": true,
-          "hideFill": false
-        }
-      },
-      "actorId": "Z4CFy505cD3nzl1W",
-      "hidden": false,
-      "sort": 1,
-      "_id": "EJMHo0hR3fym3okx",
-      "x": 332,
-      "y": 373,
-      "elevation": 0,
-      "locked": false,
-      "_regions": []
-    },
-    {
-      "name": "Hina",
-      "displayName": 0,
-      "actorLink": true,
-      "appendNumber": false,
-      "prependAdjective": false,
-      "width": 1,
-      "height": 1,
-      "texture": {
-        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Hina/Hina_Standard.png",
-        "anchorX": 0.5,
-        "anchorY": 0.5,
-        "offsetX": 0,
-        "offsetY": 0,
-        "fit": "contain",
-        "scaleX": 1.44,
-        "scaleY": 1.44,
-        "rotation": 0,
-        "tint": "#ffffff",
-        "alphaThreshold": 0.75
-      },
-      "hexagonalShape": 0,
-      "lockRotation": false,
-      "rotation": 0,
-      "alpha": 1,
-      "disposition": 1,
-      "displayBars": 50,
-      "bar1": {
-        "attribute": "attributeBar.current_hp"
-      },
-      "bar2": {
-        "attribute": "attributeBar.current_mp"
-      },
-      "light": {
-        "negative": false,
-        "priority": 0,
-        "alpha": 0.5,
-        "angle": 360,
-        "bright": 0,
-        "color": null,
-        "coloration": 1,
-        "dim": 0,
-        "attenuation": 0.5,
-        "luminosity": 0.5,
-        "saturation": 0,
-        "contrast": 0,
-        "shadows": 0,
-        "animation": {
-          "type": null,
-          "speed": 5,
-          "intensity": 5,
-          "reverse": false
-        },
-        "darkness": {
-          "min": 0,
-          "max": 1
-        }
-      },
-      "sight": {
-        "enabled": false,
-        "range": 0,
-        "angle": 360,
-        "visionMode": "basic",
-        "color": null,
-        "attenuation": 0.1,
-        "brightness": 0,
-        "saturation": 0,
-        "contrast": 0
-      },
-      "detectionModes": [],
-      "occludable": {
-        "radius": 0
-      },
-      "ring": {
-        "enabled": false,
-        "colors": {
-          "ring": null,
-          "background": null
-        },
-        "effects": 0,
-        "subject": {
-          "scale": 0.94,
-          "texture": null
-        }
-      },
-      "flags": {
-        "barbrawl": {
-          "resourceBars": {
-            "bar2": {
-              "order": 0,
-              "id": "bar2",
-              "attribute": "attributeBar.current_mp",
-              "mincolor": "#000080",
-              "maxcolor": "#80B3FF",
-              "position": "bottom-inner",
-              "otherVisibility": 0,
-              "ownerVisibility": 30,
-              "gmVisibility": -1,
-              "hideFull": false,
-              "hideEmpty": false,
-              "hideCombat": false,
-              "hideNoCombat": false,
-              "indentLeft": null,
-              "indentRight": null,
-              "shareHeight": false,
-              "style": "fraction",
-              "label": "MP",
-              "invert": false,
-              "invertDirection": false,
-              "subdivisions": null,
-              "subdivisionsOwner": false,
-              "fgImage": "",
-              "bgImage": "",
-              "opacity": null,
-              "hideHud": false
-            },
-            "bar1": {
-              "order": 1,
-              "id": "bar1",
-              "attribute": "attributeBar.current_hp",
-              "mincolor": "#FF0000",
-              "maxcolor": "#80FF00",
-              "position": "bottom-inner",
-              "otherVisibility": 0,
-              "ownerVisibility": 30,
-              "gmVisibility": -1,
-              "hideFull": false,
-              "hideEmpty": false,
-              "hideCombat": false,
-              "hideNoCombat": false,
-              "indentLeft": null,
-              "indentRight": null,
-              "shareHeight": false,
-              "style": "fraction",
-              "label": "HP",
-              "invert": false,
-              "invertDirection": false,
-              "subdivisions": null,
-              "subdivisionsOwner": false,
-              "fgImage": "",
-              "bgImage": "",
-              "opacity": null,
-              "hideHud": false
-            },
-            "bar3": {
-              "order": 2,
-              "id": "bar3",
-              "attribute": "attributeBar.shield_value",
-              "mincolor": "#000000",
-              "maxcolor": "#FFFFFF",
-              "position": "bottom-inner",
-              "otherVisibility": 50,
-              "ownerVisibility": 50,
-              "gmVisibility": -1,
-              "hideFull": false,
-              "hideEmpty": true,
-              "hideCombat": false,
-              "hideNoCombat": false,
-              "indentLeft": null,
-              "indentRight": null,
-              "shareHeight": false,
-              "style": "fraction",
-              "label": "",
-              "invert": false,
-              "invertDirection": false,
-              "subdivisions": null,
-              "subdivisionsOwner": false,
-              "fgImage": "",
-              "bgImage": "",
-              "opacity": null,
-              "hideHud": false
-            }
-          }
-        },
-        "wall-height": {
-          "tokenHeight": 0
-        },
-        "token-z": {
-          "zIndex": 0
-        },
-        "token-variants": {
-          "randomImgDefault": "",
-          "disableHUDButton": false
-        },
-        "hex-size-support": {
-          "hideBorder": true,
-          "hideFill": false
-        }
-      },
-      "actorId": "dafTLBUscCDNgq8H",
-      "hidden": false,
-      "sort": 0,
-      "_id": "OHYyGFIN00OW8ARM",
-      "x": 579,
-      "y": 369,
-      "elevation": 0,
-      "locked": false,
-      "_regions": []
-    },
-    {
-      "name": "Blanche",
-      "displayName": 0,
-      "actorLink": true,
-      "appendNumber": false,
-      "prependAdjective": false,
-      "width": 1,
-      "height": 1,
-      "texture": {
-        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Blanche_Standard.png",
-        "anchorX": 0.5,
-        "anchorY": 0.5,
-        "offsetX": 0,
-        "offsetY": 0,
-        "fit": "contain",
-        "scaleX": -1.55,
-        "scaleY": 1.55,
-        "rotation": 0,
-        "tint": "#ffffff",
-        "alphaThreshold": 0.75
-      },
-      "hexagonalShape": 0,
-      "lockRotation": false,
-      "rotation": 0,
-      "alpha": 1,
-      "disposition": 1,
-      "displayBars": 50,
-      "bar1": {
-        "attribute": "attributeBar.current_hp"
-      },
-      "bar2": {
-        "attribute": "attributeBar.current_mp"
-      },
-      "light": {
-        "negative": false,
-        "priority": 0,
-        "alpha": 0.5,
-        "angle": 360,
-        "bright": 0,
-        "color": null,
-        "coloration": 1,
-        "dim": 0,
-        "attenuation": 0.5,
-        "luminosity": 0.5,
-        "saturation": 0,
-        "contrast": 0,
-        "shadows": 0,
-        "animation": {
-          "type": null,
-          "speed": 5,
-          "intensity": 5,
-          "reverse": false
-        },
-        "darkness": {
-          "min": 0,
-          "max": 1
-        }
-      },
-      "sight": {
-        "enabled": false,
-        "range": 0,
-        "angle": 360,
-        "visionMode": "basic",
-        "color": null,
-        "attenuation": 0.1,
-        "brightness": 0,
-        "saturation": 0,
-        "contrast": 0
-      },
-      "detectionModes": [],
-      "occludable": {
-        "radius": 0
-      },
-      "ring": {
-        "enabled": false,
-        "colors": {
-          "ring": null,
-          "background": null
-        },
-        "effects": 0,
-        "subject": {
-          "scale": 1,
-          "texture": null
-        }
-      },
-      "flags": {
-        "barbrawl": {
-          "resourceBars": {
-            "bar2": {
-              "order": 0,
-              "id": "bar2",
-              "attribute": "attributeBar.current_mp",
-              "mincolor": "#000080",
-              "maxcolor": "#80B3FF",
-              "position": "bottom-inner",
-              "otherVisibility": 0,
-              "ownerVisibility": 30,
-              "gmVisibility": -1,
-              "hideFull": false,
-              "hideEmpty": false,
-              "hideCombat": false,
-              "hideNoCombat": false,
-              "indentLeft": null,
-              "indentRight": null,
-              "shareHeight": false,
-              "style": "fraction",
-              "label": "MP",
-              "invert": false,
-              "invertDirection": false,
-              "subdivisions": null,
-              "subdivisionsOwner": false,
-              "fgImage": "",
-              "bgImage": "",
-              "opacity": null,
-              "hideHud": false
-            },
-            "bar1": {
-              "order": 1,
-              "id": "bar1",
-              "attribute": "attributeBar.current_hp",
-              "mincolor": "#FF0000",
-              "maxcolor": "#80FF00",
-              "position": "bottom-inner",
-              "otherVisibility": 0,
-              "ownerVisibility": 30,
-              "gmVisibility": -1,
-              "hideFull": false,
-              "hideEmpty": false,
-              "hideCombat": false,
-              "hideNoCombat": false,
-              "indentLeft": null,
-              "indentRight": null,
-              "shareHeight": false,
-              "style": "fraction",
-              "label": "HP",
-              "invert": false,
-              "invertDirection": false,
-              "subdivisions": null,
-              "subdivisionsOwner": false,
-              "fgImage": "",
-              "bgImage": "",
-              "opacity": null,
-              "hideHud": false
-            },
-            "bar3": {
-              "order": 2,
-              "id": "bar3",
-              "attribute": "attributeBar.shield_value",
-              "mincolor": "#000000",
-              "maxcolor": "#FFFFFF",
-              "position": "bottom-inner",
-              "otherVisibility": 50,
-              "ownerVisibility": 50,
-              "gmVisibility": -1,
-              "hideFull": false,
-              "hideEmpty": true,
-              "hideCombat": false,
-              "hideNoCombat": false,
-              "indentLeft": null,
-              "indentRight": null,
-              "shareHeight": false,
-              "style": "fraction",
-              "label": "",
-              "invert": false,
-              "invertDirection": false,
-              "subdivisions": null,
-              "subdivisionsOwner": false,
-              "fgImage": "",
-              "bgImage": "",
-              "opacity": null,
-              "hideHud": false
-            },
-            "bar4": {
-              "order": 3,
-              "id": "bar4",
-              "attribute": "attributeBar.clock_adoration",
-              "mincolor": "#e13623",
-              "maxcolor": "#f20d0d",
-              "position": "bottom-outer",
-              "otherVisibility": 50,
-              "ownerVisibility": 50,
-              "gmVisibility": -1,
-              "hideFull": false,
-              "hideEmpty": false,
-              "hideCombat": false,
-              "hideNoCombat": false,
-              "hideHud": false,
-              "indentLeft": null,
-              "indentRight": null,
-              "shareHeight": false,
-              "style": "percent",
-              "label": "🌹",
-              "invert": false,
-              "invertDirection": false,
-              "subdivisions": 5,
-              "subdivisionsOwner": true,
-              "fgImage": "",
-              "bgImage": "",
-              "opacity": null
-            }
-          }
-        },
-        "wall-height": {
-          "tokenHeight": 0
-        },
-        "token-z": {
-          "zIndex": 0
-        },
-        "token-variants": {
-          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Blanche_Standard.png",
-          "disableHUDButton": false
-        },
-        "hex-size-support": {
-          "hideBorder": true,
-          "hideFill": false
-        }
-      },
-      "actorId": "uJFaNQCSvwwsr2AW",
-      "hidden": false,
-      "sort": 2,
-      "_id": "W4nqWtTFFNgJzUcY",
-      "x": 319,
-      "y": 520,
-      "elevation": 0,
-      "locked": false,
-      "_regions": []
-    }
-  ],
+  "tokens": [],
+  "tokensFull": [],
   "notes": [],
   "tileCount": 0,
   "full": {
@@ -1050,7 +176,181 @@
             "treasure": "RollTable.hS4XNu1vLtWbPSne",
             "material": "RollTable.aCK7rDJ2A21ZWfcj"
           }
-        }
+        },
+        "campMemberSpots": [
+          {
+            "x": 620,
+            "y": 398,
+            "actorId": "dafTLBUscCDNgq8H",
+            "look": {
+              "texture": {
+                "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Hina/Hina_Standard.png",
+                "anchorX": 0.5,
+                "anchorY": 0.5,
+                "offsetX": 0,
+                "offsetY": 0,
+                "fit": "contain",
+                "scaleX": 1.44,
+                "scaleY": 1.44,
+                "rotation": 0,
+                "tint": "#ffffff",
+                "alphaThreshold": 0.75
+              },
+              "sort": 0,
+              "flags": {
+                "barbrawl": {
+                  "resourceBars": {}
+                },
+                "wall-height": {
+                  "tokenHeight": 0
+                },
+                "token-z": {
+                  "zIndex": 0
+                },
+                "token-variants": {
+                  "randomImgDefault": "",
+                  "disableHUDButton": false
+                },
+                "hex-size-support": {
+                  "hideBorder": true,
+                  "hideFill": false
+                },
+                "fabula-ultima-companion": {}
+              }
+            },
+            "scaleRatio": 1,
+            "mirror": 1
+          },
+          {
+            "x": 654,
+            "y": 557,
+            "actorId": "gdJZ1L1kv5mjTTMr",
+            "look": {
+              "texture": {
+                "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Standard.png",
+                "anchorX": 0.5,
+                "anchorY": 0.5,
+                "offsetX": 0,
+                "offsetY": 0,
+                "fit": "contain",
+                "scaleX": 1.47,
+                "scaleY": 1.47,
+                "rotation": 0,
+                "tint": "#ffffff",
+                "alphaThreshold": 0.75
+              },
+              "sort": 0,
+              "flags": {
+                "barbrawl": {
+                  "resourceBars": {}
+                },
+                "wall-height": {
+                  "tokenHeight": 0
+                },
+                "token-z": {
+                  "zIndex": 0
+                },
+                "token-variants": {
+                  "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Standard.png",
+                  "disableHUDButton": false
+                },
+                "hex-size-support": {
+                  "hideBorder": true,
+                  "hideFill": false
+                },
+                "fabula-ultima-companion": {}
+              }
+            },
+            "scaleRatio": 1,
+            "mirror": 1
+          },
+          {
+            "x": 363,
+            "y": 564,
+            "actorId": "uJFaNQCSvwwsr2AW",
+            "look": {
+              "texture": {
+                "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Blanche_Standard.png",
+                "anchorX": 0.5,
+                "anchorY": 0.5,
+                "offsetX": 0,
+                "offsetY": 0,
+                "fit": "contain",
+                "scaleX": -1.55,
+                "scaleY": 1.55,
+                "rotation": 0,
+                "tint": "#ffffff",
+                "alphaThreshold": 0.75
+              },
+              "sort": 0,
+              "flags": {
+                "barbrawl": {
+                  "resourceBars": {}
+                },
+                "wall-height": {
+                  "tokenHeight": 0
+                },
+                "token-z": {
+                  "zIndex": 0
+                },
+                "token-variants": {
+                  "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Blanche_Standard.png",
+                  "disableHUDButton": false
+                },
+                "hex-size-support": {
+                  "hideBorder": true,
+                  "hideFill": false
+                },
+                "fabula-ultima-companion": {}
+              }
+            },
+            "scaleRatio": 1,
+            "mirror": -1
+          },
+          {
+            "x": 376,
+            "y": 417,
+            "actorId": "Z4CFy505cD3nzl1W",
+            "look": {
+              "texture": {
+                "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_Standard.png",
+                "anchorX": 0.5,
+                "anchorY": 0.5,
+                "offsetX": 0,
+                "offsetY": 0,
+                "fit": "contain",
+                "scaleX": -1.56,
+                "scaleY": 1.56,
+                "rotation": 0,
+                "tint": "#ffffff",
+                "alphaThreshold": 0.75
+              },
+              "sort": 0,
+              "flags": {
+                "barbrawl": {
+                  "resourceBars": {}
+                },
+                "wall-height": {
+                  "tokenHeight": 0
+                },
+                "token-z": {
+                  "zIndex": 0
+                },
+                "token-variants": {
+                  "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_Standard.png",
+                  "disableHUDButton": false
+                },
+                "hex-size-support": {
+                  "hideBorder": true,
+                  "hideFill": false
+                },
+                "fabula-ultima-companion": {}
+              }
+            },
+            "scaleRatio": 1,
+            "mirror": -1
+          }
+        ]
       },
       "fxmaster": {
         "effects": {
@@ -1089,7 +389,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780396681314,
-      "modifiedTime": 1787085543825,
+      "modifiedTime": 1792837418916,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "lights": [

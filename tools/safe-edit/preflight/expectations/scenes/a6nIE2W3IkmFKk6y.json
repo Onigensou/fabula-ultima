@@ -6,26 +6,6 @@
       "name": "Albero",
       "actorId": "9olYMzELv0sPERYu",
       "actorLink": true
-    },
-    {
-      "name": "Hina",
-      "actorId": "dafTLBUscCDNgq8H",
-      "actorLink": true
-    },
-    {
-      "name": "Keren",
-      "actorId": "gdJZ1L1kv5mjTTMr",
-      "actorLink": true
-    },
-    {
-      "name": "Blanche",
-      "actorId": "uJFaNQCSvwwsr2AW",
-      "actorLink": true
-    },
-    {
-      "name": "Zarg",
-      "actorId": "Z4CFy505cD3nzl1W",
-      "actorLink": true
     }
   ],
   "tokensFull": [
@@ -139,494 +119,6 @@
       "_id": "1L2dz13XSqTQY8gU",
       "x": 296,
       "y": 498,
-      "elevation": 0,
-      "locked": false,
-      "_regions": [
-        "fB9VH6iTv8ChKK0G"
-      ]
-    },
-    {
-      "name": "Hina",
-      "displayName": 0,
-      "actorLink": true,
-      "appendNumber": false,
-      "prependAdjective": false,
-      "width": 1,
-      "height": 1,
-      "texture": {
-        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Hina/Hina_Standard.png",
-        "anchorX": 0.5,
-        "anchorY": 0.5,
-        "offsetX": 0,
-        "offsetY": 0,
-        "fit": "contain",
-        "scaleX": -1.09,
-        "scaleY": 1.09,
-        "rotation": 0,
-        "tint": "#ffffff",
-        "alphaThreshold": 0.75
-      },
-      "hexagonalShape": 0,
-      "lockRotation": false,
-      "rotation": 0,
-      "alpha": 1,
-      "disposition": 1,
-      "displayBars": 50,
-      "bar1": {
-        "attribute": null
-      },
-      "bar2": {
-        "attribute": null
-      },
-      "light": {
-        "negative": false,
-        "priority": 0,
-        "alpha": 0.5,
-        "angle": 360,
-        "bright": 0,
-        "color": null,
-        "coloration": 1,
-        "dim": 0,
-        "attenuation": 0.5,
-        "luminosity": 0.5,
-        "saturation": 0,
-        "contrast": 0,
-        "shadows": 0,
-        "animation": {
-          "type": null,
-          "speed": 5,
-          "intensity": 5,
-          "reverse": false
-        },
-        "darkness": {
-          "min": 0,
-          "max": 1
-        }
-      },
-      "sight": {
-        "enabled": false,
-        "range": 0,
-        "angle": 360,
-        "visionMode": "basic",
-        "color": null,
-        "attenuation": 0.1,
-        "brightness": 0,
-        "saturation": 0,
-        "contrast": 0
-      },
-      "detectionModes": [],
-      "occludable": {
-        "radius": 0
-      },
-      "ring": {
-        "enabled": false,
-        "colors": {
-          "ring": null,
-          "background": null
-        },
-        "effects": 0,
-        "subject": {
-          "scale": 0.94,
-          "texture": null
-        }
-      },
-      "flags": {
-        "barbrawl": {
-          "resourceBars": {}
-        },
-        "wall-height": {
-          "tokenHeight": 0
-        },
-        "token-z": {
-          "zIndex": 0
-        },
-        "token-variants": {
-          "randomImgDefault": "",
-          "disableHUDButton": false
-        },
-        "hex-size-support": {
-          "hideBorder": true,
-          "hideFill": false
-        },
-        "fabula-ultima-companion": {
-          "idleAnimToken": {
-            "float": false,
-            "bounce": false
-          }
-        }
-      },
-      "actorId": "dafTLBUscCDNgq8H",
-      "hidden": false,
-      "sort": 0,
-      "_id": "BaXeRAAHcqdR0xGt",
-      "x": 5,
-      "y": 338,
-      "elevation": 0,
-      "locked": false,
-      "_regions": [
-        "fB9VH6iTv8ChKK0G"
-      ]
-    },
-    {
-      "name": "Keren",
-      "displayName": 0,
-      "actorLink": true,
-      "appendNumber": false,
-      "prependAdjective": false,
-      "width": 1,
-      "height": 1,
-      "texture": {
-        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Standard.png",
-        "anchorX": 0.5,
-        "anchorY": 0.5,
-        "offsetX": 0,
-        "offsetY": 0,
-        "fit": "contain",
-        "scaleX": 1.04,
-        "scaleY": 1.04,
-        "rotation": 0,
-        "tint": "#ffffff",
-        "alphaThreshold": 0.75
-      },
-      "hexagonalShape": 0,
-      "lockRotation": false,
-      "rotation": 0,
-      "alpha": 1,
-      "disposition": 1,
-      "displayBars": 50,
-      "bar1": {
-        "attribute": null
-      },
-      "bar2": {
-        "attribute": null
-      },
-      "light": {
-        "negative": false,
-        "priority": 0,
-        "alpha": 0.5,
-        "angle": 360,
-        "bright": 0,
-        "color": null,
-        "coloration": 1,
-        "dim": 0,
-        "attenuation": 0.5,
-        "luminosity": 0.5,
-        "saturation": 0,
-        "contrast": 0,
-        "shadows": 0,
-        "animation": {
-          "type": null,
-          "speed": 5,
-          "intensity": 5,
-          "reverse": false
-        },
-        "darkness": {
-          "min": 0,
-          "max": 1
-        }
-      },
-      "sight": {
-        "enabled": false,
-        "range": 0,
-        "angle": 360,
-        "visionMode": "basic",
-        "color": null,
-        "attenuation": 0.1,
-        "brightness": 0,
-        "saturation": 0,
-        "contrast": 0
-      },
-      "detectionModes": [],
-      "occludable": {
-        "radius": 0
-      },
-      "ring": {
-        "enabled": false,
-        "colors": {
-          "ring": null,
-          "background": null
-        },
-        "effects": 0,
-        "subject": {
-          "scale": 1,
-          "texture": null
-        }
-      },
-      "flags": {
-        "barbrawl": {
-          "resourceBars": {}
-        },
-        "wall-height": {
-          "tokenHeight": 0
-        },
-        "token-z": {
-          "zIndex": 0
-        },
-        "token-variants": {
-          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Standard.png",
-          "disableHUDButton": false
-        },
-        "hex-size-support": {
-          "hideBorder": true,
-          "hideFill": false
-        },
-        "fabula-ultima-companion": {
-          "idleAnimToken": {
-            "float": false,
-            "bounce": false
-          }
-        }
-      },
-      "actorId": "gdJZ1L1kv5mjTTMr",
-      "hidden": false,
-      "sort": 2,
-      "_id": "NpxKpqyXeWARCqGJ",
-      "x": 464,
-      "y": 84,
-      "elevation": 0,
-      "locked": false,
-      "_regions": [
-        "fB9VH6iTv8ChKK0G"
-      ]
-    },
-    {
-      "name": "Blanche",
-      "displayName": 0,
-      "actorLink": true,
-      "appendNumber": false,
-      "prependAdjective": false,
-      "width": 1,
-      "height": 1,
-      "texture": {
-        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Blanche_Standard.png",
-        "anchorX": 0.5,
-        "anchorY": 0.5,
-        "offsetX": 0,
-        "offsetY": 0,
-        "fit": "contain",
-        "scaleX": 1.09,
-        "scaleY": 1.09,
-        "rotation": 0,
-        "tint": "#ffffff",
-        "alphaThreshold": 0.75
-      },
-      "hexagonalShape": 0,
-      "lockRotation": false,
-      "rotation": 0,
-      "alpha": 1,
-      "disposition": 1,
-      "displayBars": 50,
-      "bar1": {
-        "attribute": null
-      },
-      "bar2": {
-        "attribute": null
-      },
-      "light": {
-        "negative": false,
-        "priority": 0,
-        "alpha": 0.5,
-        "angle": 360,
-        "bright": 0,
-        "color": null,
-        "coloration": 1,
-        "dim": 0,
-        "attenuation": 0.5,
-        "luminosity": 0.5,
-        "saturation": 0,
-        "contrast": 0,
-        "shadows": 0,
-        "animation": {
-          "type": null,
-          "speed": 5,
-          "intensity": 5,
-          "reverse": false
-        },
-        "darkness": {
-          "min": 0,
-          "max": 1
-        }
-      },
-      "sight": {
-        "enabled": false,
-        "range": 0,
-        "angle": 360,
-        "visionMode": "basic",
-        "color": null,
-        "attenuation": 0.1,
-        "brightness": 0,
-        "saturation": 0,
-        "contrast": 0
-      },
-      "detectionModes": [],
-      "occludable": {
-        "radius": 0
-      },
-      "ring": {
-        "enabled": false,
-        "colors": {
-          "ring": null,
-          "background": null
-        },
-        "effects": 0,
-        "subject": {
-          "scale": 1,
-          "texture": null
-        }
-      },
-      "flags": {
-        "barbrawl": {
-          "resourceBars": {}
-        },
-        "wall-height": {
-          "tokenHeight": 0
-        },
-        "token-z": {
-          "zIndex": 0
-        },
-        "token-variants": {
-          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Blanche_Standard.png",
-          "disableHUDButton": false
-        },
-        "hex-size-support": {
-          "hideBorder": true,
-          "hideFill": false
-        },
-        "fabula-ultima-companion": {
-          "idleAnimToken": {
-            "float": false,
-            "bounce": false
-          }
-        }
-      },
-      "actorId": "uJFaNQCSvwwsr2AW",
-      "hidden": false,
-      "sort": 2,
-      "_id": "aQujURu95bhUaFW5",
-      "x": 475,
-      "y": 348,
-      "elevation": 0,
-      "locked": false,
-      "_regions": [
-        "fB9VH6iTv8ChKK0G"
-      ]
-    },
-    {
-      "name": "Zarg",
-      "displayName": 0,
-      "actorLink": true,
-      "appendNumber": false,
-      "prependAdjective": false,
-      "width": 1,
-      "height": 1,
-      "texture": {
-        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_Standard.png",
-        "anchorX": 0.5,
-        "anchorY": 0.5,
-        "offsetX": 0,
-        "offsetY": 0,
-        "fit": "contain",
-        "scaleX": -1.11,
-        "scaleY": 1.11,
-        "rotation": 0,
-        "tint": "#ffffff",
-        "alphaThreshold": 0.75
-      },
-      "hexagonalShape": 0,
-      "lockRotation": false,
-      "rotation": 0,
-      "alpha": 1,
-      "disposition": 1,
-      "displayBars": 50,
-      "bar1": {
-        "attribute": null
-      },
-      "bar2": {
-        "attribute": null
-      },
-      "light": {
-        "negative": false,
-        "priority": 0,
-        "alpha": 0.5,
-        "angle": 360,
-        "bright": 0,
-        "color": null,
-        "coloration": 1,
-        "dim": 0,
-        "attenuation": 0.5,
-        "luminosity": 0.5,
-        "saturation": 0,
-        "contrast": 0,
-        "shadows": 0,
-        "animation": {
-          "type": null,
-          "speed": 5,
-          "intensity": 5,
-          "reverse": false
-        },
-        "darkness": {
-          "min": 0,
-          "max": 1
-        }
-      },
-      "sight": {
-        "enabled": false,
-        "range": 0,
-        "angle": 360,
-        "visionMode": "basic",
-        "color": null,
-        "attenuation": 0.1,
-        "brightness": 0,
-        "saturation": 0,
-        "contrast": 0
-      },
-      "detectionModes": [],
-      "occludable": {
-        "radius": 0
-      },
-      "ring": {
-        "enabled": false,
-        "colors": {
-          "ring": null,
-          "background": null
-        },
-        "effects": 0,
-        "subject": {
-          "scale": 1,
-          "texture": null
-        }
-      },
-      "flags": {
-        "barbrawl": {
-          "resourceBars": {}
-        },
-        "wall-height": {
-          "tokenHeight": 0
-        },
-        "token-z": {
-          "zIndex": 0
-        },
-        "token-variants": {
-          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_Standard.png",
-          "disableHUDButton": false
-        },
-        "hex-size-support": {
-          "hideBorder": true,
-          "hideFill": false
-        },
-        "fabula-ultima-companion": {
-          "idleAnimToken": {
-            "float": false,
-            "bounce": false
-          }
-        }
-      },
-      "actorId": "Z4CFy505cD3nzl1W",
-      "hidden": false,
-      "sort": 2,
-      "_id": "mncRB44P9DnaJcrg",
-      "x": 16,
-      "y": 83,
       "elevation": 0,
       "locked": false,
       "_regions": [
@@ -777,7 +269,206 @@
           },
           "threatLevel": "medium"
         },
-        "campSceneUuid": ""
+        "campSceneUuid": "",
+        "campTwinOf": "V8GdvnKkMJi07Pv9",
+        "campArrival": {
+          "x": 305,
+          "y": 478
+        },
+        "campMemberSpots": [
+          {
+            "x": 70,
+            "y": 403,
+            "actorId": "dafTLBUscCDNgq8H",
+            "look": {
+              "texture": {
+                "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Hina/Hina_Standard.png",
+                "anchorX": 0.5,
+                "anchorY": 0.5,
+                "offsetX": 0,
+                "offsetY": 0,
+                "fit": "contain",
+                "scaleX": -1.09,
+                "scaleY": 1.09,
+                "rotation": 0,
+                "tint": "#ffffff",
+                "alphaThreshold": 0.75
+              },
+              "sort": 0,
+              "flags": {
+                "barbrawl": {
+                  "resourceBars": {}
+                },
+                "wall-height": {
+                  "tokenHeight": 0
+                },
+                "token-z": {
+                  "zIndex": 0
+                },
+                "token-variants": {
+                  "randomImgDefault": "",
+                  "disableHUDButton": false
+                },
+                "hex-size-support": {
+                  "hideBorder": true,
+                  "hideFill": false
+                },
+                "fabula-ultima-companion": {
+                  "idleAnimToken": {
+                    "float": false,
+                    "bounce": false
+                  }
+                }
+              }
+            },
+            "scaleRatio": 0.757,
+            "mirror": -1
+          },
+          {
+            "x": 540,
+            "y": 413,
+            "actorId": "uJFaNQCSvwwsr2AW",
+            "look": {
+              "texture": {
+                "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Blanche_Standard.png",
+                "anchorX": 0.5,
+                "anchorY": 0.5,
+                "offsetX": 0,
+                "offsetY": 0,
+                "fit": "contain",
+                "scaleX": 1.09,
+                "scaleY": 1.09,
+                "rotation": 0,
+                "tint": "#ffffff",
+                "alphaThreshold": 0.75
+              },
+              "sort": 0,
+              "flags": {
+                "barbrawl": {
+                  "resourceBars": {}
+                },
+                "wall-height": {
+                  "tokenHeight": 0
+                },
+                "token-z": {
+                  "zIndex": 0
+                },
+                "token-variants": {
+                  "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Blanche_Standard.png",
+                  "disableHUDButton": false
+                },
+                "hex-size-support": {
+                  "hideBorder": true,
+                  "hideFill": false
+                },
+                "fabula-ultima-companion": {
+                  "idleAnimToken": {
+                    "float": false,
+                    "bounce": false
+                  }
+                }
+              }
+            },
+            "scaleRatio": 0.703,
+            "mirror": 1
+          },
+          {
+            "x": 529,
+            "y": 149,
+            "actorId": "gdJZ1L1kv5mjTTMr",
+            "look": {
+              "texture": {
+                "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Standard.png",
+                "anchorX": 0.5,
+                "anchorY": 0.5,
+                "offsetX": 0,
+                "offsetY": 0,
+                "fit": "contain",
+                "scaleX": 1.04,
+                "scaleY": 1.04,
+                "rotation": 0,
+                "tint": "#ffffff",
+                "alphaThreshold": 0.75
+              },
+              "sort": 0,
+              "flags": {
+                "barbrawl": {
+                  "resourceBars": {}
+                },
+                "wall-height": {
+                  "tokenHeight": 0
+                },
+                "token-z": {
+                  "zIndex": 0
+                },
+                "token-variants": {
+                  "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Standard.png",
+                  "disableHUDButton": false
+                },
+                "hex-size-support": {
+                  "hideBorder": true,
+                  "hideFill": false
+                },
+                "fabula-ultima-companion": {
+                  "idleAnimToken": {
+                    "float": false,
+                    "bounce": false
+                  }
+                }
+              }
+            },
+            "scaleRatio": 0.707,
+            "mirror": 1
+          },
+          {
+            "x": 81,
+            "y": 148,
+            "actorId": "Z4CFy505cD3nzl1W",
+            "look": {
+              "texture": {
+                "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_Standard.png",
+                "anchorX": 0.5,
+                "anchorY": 0.5,
+                "offsetX": 0,
+                "offsetY": 0,
+                "fit": "contain",
+                "scaleX": -1.11,
+                "scaleY": 1.11,
+                "rotation": 0,
+                "tint": "#ffffff",
+                "alphaThreshold": 0.75
+              },
+              "sort": 0,
+              "flags": {
+                "barbrawl": {
+                  "resourceBars": {}
+                },
+                "wall-height": {
+                  "tokenHeight": 0
+                },
+                "token-z": {
+                  "zIndex": 0
+                },
+                "token-variants": {
+                  "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_Standard.png",
+                  "disableHUDButton": false
+                },
+                "hex-size-support": {
+                  "hideBorder": true,
+                  "hideFill": false
+                },
+                "fabula-ultima-companion": {
+                  "idleAnimToken": {
+                    "float": false,
+                    "bounce": false
+                  }
+                }
+              }
+            },
+            "scaleRatio": 0.712,
+            "mirror": -1
+          }
+        ]
       },
       "LockView": {
         "lockPan": false,
@@ -826,7 +517,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1773641890101,
-      "modifiedTime": 1781875208394,
+      "modifiedTime": 1792837418916,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "_id": "a6nIE2W3IkmFKk6y",
