@@ -177,3 +177,17 @@ Knight 11), and only when those base actors are edited.
   `CampSystem.Members.captureSpots(scene)` turns them into spots.
 - Migrated: 9 rooms × 4 spots. `Valley_Map004` has none (members line up by its
   arrival point); `Wyrmwood_Map012`'s four spots nearly overlap, as authored.
+
+### Hand-activated camps (Sunset Camp)
+
+A camp the GM activates by hand (a one-off story camp) has no entry hook. When
+a camp scene becomes ACTIVE and the stored return point belongs to another camp
+(or none), it is recorded as a hand entry — `{ campSceneId, via: "gm_activate" }`,
+no destination — and the loop resets to Free Roam. Set Out then shows the
+picker built from the camp's **Scene Network**, so give such a camp a link to
+where the story goes next. Members also spawn on that activation (activating
+the scene you are already viewing does not redraw the canvas).
+
+Sunset Camp (`Valley_Map002`): spots on the four bedrolls, the purple one is the
+hand-placed Masked Girl's; Scene Network → Ancient Capital Midgard (lands at
+its Initial View, the south entrance).
