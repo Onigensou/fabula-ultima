@@ -646,6 +646,11 @@
   // Yes / No to answer on the controller's behalf (stuck or away player).
   const TP_MIRROR_KIND = "teleporter.confirm";
 
+  // The same parchment Yes / No for other exploration confirms (Fast Travel,
+  // Scene Travel), mirrored to every client the same way. text is a string or
+  // [before, bold name, after]. Resolves true / false.
+  TP.askYesNo = (text) => showTpPrompt(text);
+
   Hooks.once("ready", () => {
     globalThis.FUCompanion?.api?.MirrorPrompt?.register?.(TP_MIRROR_KIND, {
       show(ctx) {

@@ -251,6 +251,39 @@
     document.head.appendChild(s);
   }
 
+  // ── Watcher copy (MirrorPrompt) ─────────────────────────────────────────────
+  // The same destination list, display only, with the controller's focus.
+  const ST_MIRROR_KIND = "dp.sceneTravel";
+
+  function registerWatcher() {
+    globalThis.FUCompanion?.api?.MirrorPrompt?.register?.(ST_MIRROR_KIND, {
+      show(ctx) {
+        if (!ctx.payload?.content) return null;
+        injectTravelStyles();
+        let btns = [];
+        const setFocus = (idx) => btns.forEach((b, i) => b.classList.toggle("oni-travel-focused", i === idx));
+        const d = new Dialog(
+          {
+            title:   `🗺️ Travel — ${ctx.operatorName} is choosing…`,
+            content: ctx.payload.content,
+            buttons: {},
+            render:  (html) => {
+              btns = Array.from(html[0].querySelectorAll(".oni-travel-dest"));
+              btns.forEach(b => { b.disabled = true; b.style.pointerEvents = "none"; });
+              setFocus(ctx.state?.focus ?? 0);
+            },
+          },
+          { classes: ["oni-jrpg-travel-dialog", "dialog"], width: 420 }
+        );
+        d.render(true);
+        return {
+          patch: (state) => { if (Number.isInteger(state?.focus)) setFocus(state.focus); },
+          close: () => { d.close().catch?.(() => {}); },
+        };
+      },
+    });
+  }
+
   // ── Travel dialog ───────────────────────────────────────────────────────────
   async function showDialog() {
     const currentScene = canvas?.scene;
@@ -304,6 +337,9 @@
     addGroup("Dungeons", "fas fa-dungeon", dungeons);
     content += `</div>`;
 
+    // Everyone else watches the destination list read-only, focus echoed.
+    const mirror = globalThis.FUCompanion?.api?.MirrorPrompt?.open?.(ST_MIRROR_KIND, { content }) ?? null;
+
     const selectedId = await new Promise(resolve => {
       let resolved = false;
       let focusedIdx = 0;
@@ -332,6 +368,7 @@
               btns.forEach(b => b.classList.remove("oni-travel-focused"));
               focusedIdx = ((idx % btns.length) + btns.length) % btns.length;
               btns[focusedIdx]?.classList.add("oni-travel-focused");
+              mirror?.patch({ focus: focusedIdx });
               if (sound) DP.Sound?.playHover?.();
             };
 
@@ -382,16 +419,21 @@
       );
       d.render(true);
     });
+    mirror?.close(selectedId ?? null);
 
     if (!selectedId) return;
     const destScene = game.scenes.get(selectedId);
     if (!destScene) return;
 
     const navName   = getNavigationName(destScene);
-    const confirmed = await Dialog.confirm({
-      title:   "Confirm Travel",
-      content: `<p style="text-align:center;padding:8px;">Travel to <b>${navName}</b>?</p>`,
-    });
+    // Parchment Yes / No that every other client watches (teleporter prompt).
+    const ask = globalThis.TeleporterSystem?.askYesNo;
+    const confirmed = ask
+      ? await ask(["Travel to ", navName, "?"])
+      : await Dialog.confirm({
+          title:   "Confirm Travel",
+          content: `<p style="text-align:center;padding:8px;">Travel to <b>${navName}</b>?</p>`,
+        });
     if (!confirmed) {
       DP.Sound?.playCancel?.();
       return;
@@ -678,6 +720,7 @@
   Hooks.once("ready", () => {
     injectTravelStyles(); // pre-inject so first dialog open is instant
     setupSocketListener();
+    registerWatcher();
 
     Hooks.on("canvasReady", async () => {
       const scene = canvas?.scene;
