@@ -15,6 +15,7 @@
 import { warn } from "./logger.js";
 import { playSfx } from "./director-sfx.js";
 import { GATHER_STYLES, ELEMENT_RGB } from "./gather-styles.js";
+import { runGiant } from "./giant-entrance-fx.js";
 import { shadowSpriteFor, STYLE as SHADOW_STYLE } from "../sprite-shadow/sprite-shadow-renderer.js";
 
 // Above the board, under the HP bars (99985) and damage numbers (99990).
@@ -38,7 +39,7 @@ export function playGatherLocal({ sceneId, tokenId, style } = {}) {
     const finish = () => { if (!settled) { settled = true; resolve(); } };
     const failsafe = setTimeout(finish, cfg.totalMs + TOKEN_WAIT_MS + FAILSAFE_MS);
     waitForToken(tokenId)
-      .then((token) => (token ? runGather(token, cfg) : null))
+      .then((token) => (!token ? null : cfg.renderer === "giant" ? runGiant(token, cfg) : runGather(token, cfg)))
       .catch((e) => warn(`gather-entrance: "${style}" threw`, e))
       .finally(() => { clearTimeout(failsafe); finish(); });
   });

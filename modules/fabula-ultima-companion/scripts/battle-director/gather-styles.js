@@ -55,4 +55,42 @@ export const GATHER_STYLES = {
       { atMs: 1380, url: SFX + "SFX_TINK.wav",       volume: 0.45 },
     ],
   },
+
+  // King Gorger (Wild): a cinematic fake-out. A colossal shadow swallows the
+  // field; a letterboxed cutaway shows a building-sized black silhouette from
+  // a 3D camera that lowers down his front and pulls back past the party; a
+  // last strike whites the screen out — then a hard cut to the battle, where he
+  // is one tile big, with a small ring of rays behind him. Drawn by
+  // giant-entrance-fx.js (it has its own scene; only the beats live here).
+  giant: {
+    label: "Giant (fake-out cinematic)",
+    renderer: "giant",
+    totalMs: 12900,
+    shadowMs: 3400,   // the shadow has swallowed the field (black) by here
+    headMs: 3600,     // the cutaway fades in on his crown
+    restMs: 8100,     // the camera move ends behind the party
+    whiteMs: 9100,    // the last strike: the screen eases to white and holds
+    cutMs: 11300,     // hard cut to the battle; every storm cue stops dead
+    raysMs: 1500,     // the rays behind him, from the cut
+    // lightning in the cutaway's 3D scene: { atMs, strength, x, z, top, bottom } (metres)
+    strikes: [
+      { atMs: 4150, strength: 1,    x: -6,  z: 32, top: 85, bottom: 17 },
+      { atMs: 5300, strength: 0.85, x: 10,  z: 33, top: 80, bottom: 12 },
+      { atMs: 6600, strength: 0.8,  x: -12, z: 33, top: 80, bottom: 6 },
+      { atMs: 8100, strength: 1,    x: 5,   z: 29, top: 75, bottom: 9 },    // behind his shoulder
+      { atMs: 9100, strength: 1,    x: -6,  z: 30, top: 85, bottom: 19 },   // onto his crown: the white-out
+    ],
+    sfx: [
+      { atMs: 0,    url: SFX + "BGS/Quake.ogg",             volume: 0.6 },
+      { atMs: 1700, url: SFX + "BGS/Quake.ogg",             volume: 0.45 },
+      { atMs: 4150, url: SFX + "Soundboard/Thunder10.ogg",  volume: 0.6 },
+      { atMs: 5300, url: SFX + "Soundboard/Thunder9.ogg",   volume: 0.5 },
+      { atMs: 6600, url: SFX + "Soundboard/Thunder5.ogg",   volume: 0.45 },
+      { atMs: 8100, url: SFX + "Soundboard/Thunder1.ogg",   volume: 0.55 },
+      { atMs: 9100, url: SFX + "Soundboard/Thunder9.ogg",   volume: 0.6 },
+      { atMs: 9300, url: SFX + "BGS/Quake.ogg",             volume: 0.4 },
+    ],
+    // after the cut (everything above is silenced first)
+    cutSfx: { url: SFX + "Klonoa/wood_pop_a.wav", volume: 0.54 },
+  },
 };

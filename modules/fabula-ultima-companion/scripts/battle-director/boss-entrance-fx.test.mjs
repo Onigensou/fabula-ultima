@@ -356,5 +356,25 @@ eq("seven element colours",          ELEMENT_RGB.length, 7);
   ok("feast: cues in time order",     f.sfx.every((c, i, a) => i === 0 || a[i - 1].atMs <= c.atMs));
 }
 
+/* ── Gather styles (Giant — King Gorger (Wild)'s fake-out cinematic) ─────── */
+
+eq("giant reads as a style",         entranceStyleFromFlags(withStyle("giant")), "giant");
+{
+  const g = GATHER_STYLES.giant;
+  ok("giant: has its own renderer",  g.renderer === "giant");
+  // User rulings 2026-10-24 (mockup v16/v17): shadow → black → one camera move →
+  // rest → white-out held → hard cut → rays.
+  ok("giant: beats in order",        0 < g.shadowMs && g.shadowMs < g.headMs && g.headMs < g.restMs && g.restMs < g.whiteMs && g.whiteMs < g.cutMs && g.cutMs < g.totalMs);
+  ok("giant: white held ≥ 2 s before the cut", g.cutMs - g.whiteMs >= 2000);
+  ok("giant: rays end inside totalMs", g.cutMs + g.raysMs <= g.totalMs);
+  ok("giant: the last strike IS the white-out", g.strikes.at(-1).atMs === g.whiteMs);
+  ok("giant: strikes inside the cutaway, in order", g.strikes.every((s, i, a) => s.atMs >= g.headMs && s.atMs <= g.whiteMs && (i === 0 || a[i - 1].atMs < s.atMs)));
+  // photosensitivity: flashes well under three per second
+  ok("giant: strikes ≥ 900 ms apart", g.strikes.every((s, i, a) => i === 0 || s.atMs - a[i - 1].atMs >= 900));
+  ok("giant: storm cues all before the cut", g.sfx.every((c) => c.atMs >= 0 && c.atMs < g.cutMs && c.url.startsWith("https://")));
+  ok("giant: cues in time order",     g.sfx.every((c, i, a) => i === 0 || a[i - 1].atMs <= c.atMs));
+  ok("giant: the hard-cut sound is wood_pop_a", /wood_pop_a\.wav$/.test(g.cutSfx?.url ?? ""));
+}
+
 console.log(`${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

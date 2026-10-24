@@ -73,13 +73,18 @@ export async function preloadSfx(urls = []) {
 
 // Play a cue. Instant if preloaded; otherwise decodes on demand (only that
 // first uncached play pays the cost). Fire-and-forget, never throws.
+// Returns a handle whose stop() cuts the cue (also before it has started, if
+// it was still decoding) — for a cut that has to silence what is ringing.
 export function playSfx(url, vol = 0.6) {
+  const handle = { stopped: false, src: null, stop() { this.stopped = true; try { this.src?.stop(); } catch { /* not started / ended */ } } };
   try {
-    if (!url) return;
+    if (!url) return handle;
     const c = ctx();
     if (c.state === "suspended") { c.resume().catch(() => {}); }
     const start = (buf) => {
+      if (handle.stopped) return;
       const src = c.createBufferSource();
+      handle.src = src;
       const gain = c.createGain();
       gain.gain.value = vol;
       src.buffer = buf;
@@ -98,6 +103,7 @@ export function playSfx(url, vol = 0.6) {
   } catch (e) {
     warn("playSfx threw", e);
   }
+  return handle;
 }
 
 // ── Cross-client broadcast channel ────────────────────────────────────────
