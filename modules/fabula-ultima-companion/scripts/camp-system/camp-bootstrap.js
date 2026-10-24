@@ -36,7 +36,9 @@
     CAMP.GMPanel?.show();
     // Party members are spawned, not pre-placed (camp-members.js). Idempotent;
     // covers F5, a loaded save and a camp opened by hand. Primary GM only.
-    CAMP.Members?.ensure(scene);
+    // ACTIVE scene only: a GM merely viewing a camp room to edit it must not
+    // leave spawned members behind in the world data.
+    if (scene?.active) CAMP.Members?.ensure(scene);
     // Restore UI for current phase immediately
     _onPhaseChange(CAMP.State.getPhase());
   }

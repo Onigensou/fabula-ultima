@@ -64,9 +64,14 @@
       const lookFlags = foundry.utils.deepClone(spot.look?.flags ?? {});
       d.flags = foundry.utils.mergeObject(d.flags ?? {}, lookFlags, { inplace: false });
     }
-    // Camp tokens never show resource bars (Bar Brawl), authored or not.
+    // Camp tokens never show resource bars, authored or not. Bar Brawl with no
+    // bars of its own falls back to the CORE bar1/bar2 + displayBars, which
+    // the camp UI hider does not reach — so clear both layers.
     d.flags ??= {};
     d.flags.barbrawl = { resourceBars: {} };
+    d.displayBars = CONST.TOKEN_DISPLAY_MODES.NONE;
+    d.bar1 = { attribute: null };
+    d.bar2 = { attribute: null };
     d.flags[MOD] = { ...(d.flags[MOD] ?? {}), [FLAG_MEMBER]: true };
 
     Object.assign(d, {
