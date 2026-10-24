@@ -62,6 +62,7 @@ const EXPECT = {
   rest_saving:       "set_out_lobby",
   rest_title_prompt: "set_out_lobby",
   set_out_lobby:     "set_out_lobby",
+  setting_out:       "set_out_lobby",
 };
 for (const phase of Object.values(CAMP.PHASE)) {
   check(phase, CAMP.State.landingPhaseFor(phase), EXPECT[phase]);
@@ -96,6 +97,7 @@ settings.set(CAMP.SETTING.SLEEP_READY, '{"u1":true,"u2":true}');
 settings.set(CAMP.SETTING.SET_OUT_READY, '{"u1":true}');
 settings.set(CAMP.SETTING.SELECTIONS, '{"a1":{"locked":"cooking"}}');
 settings.set(CAMP.SETTING.EXPLORATION_DEBUFFS, '{"a1":{"halfRest":true}}');
+settings.set(CAMP.SETTING.RETURN_POINT, '{"sceneId":"s1","x":10,"y":20}');
 
 const mid = snapshot(CAMP.PHASE.REST_SAVING);
 check("phase normalised", mid[CAMP.SETTING.PHASE], "set_out_lobby");
@@ -104,6 +106,7 @@ check("set-out ready cleared", mid[CAMP.SETTING.SET_OUT_READY], "{}");
 check("selections cleared", mid[CAMP.SETTING.SELECTIONS], "{}");
 // Exploration debuffs are NOT transient state of the lobby — rest clears them
 // itself, and a save taken before that must keep them.
+check("return point kept", mid[CAMP.SETTING.RETURN_POINT], '{"sceneId":"s1","x":10,"y":20}');
 check("exploration debuffs kept", mid[CAMP.SETTING.EXPLORATION_DEBUFFS], '{"a1":{"halfRest":true}}');
 
 // A save taken during ordinary play must pass through untouched.

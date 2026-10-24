@@ -25,6 +25,7 @@
       { key: CAMP.SETTING.SET_OUT_READY,       type: String,  default: "{}" },
       { key: CAMP.SETTING.EXPLORATION_DEBUFFS, type: String,  default: "{}" },
       { key: CAMP.SETTING.SAVE_CHOICE,         type: String,  default: "{}" },
+      { key: CAMP.SETTING.RETURN_POINT,        type: String,  default: "{}" },
     ];
 
     for (const { key, type, default: def } of defs) {
@@ -206,7 +207,17 @@
       return activeUserIds.length > 0 && activeUserIds.every(id => m[id]);
     },
 
+    // ── Return point (see CAMP.SETTING.RETURN_POINT) ────────────────────────
+    // null when nothing usable is recorded.
+    getReturnPoint() {
+      const p = getJSON(CAMP.SETTING.RETURN_POINT);
+      return p?.sceneId ? p : null;
+    },
+    async setReturnPoint(point) { await setJSON(CAMP.SETTING.RETURN_POINT, point ?? {}); },
+
     // ── Full reset (called when camp cycle completes) ───────────────────────
+    // Clears the return point too: a finished Set Out has used it, and a fresh
+    // entry records its own right after resetting.
     async reset() {
       if (!game.user?.isGM) return;
       await game.settings.set(MOD, CAMP.SETTING.PHASE, CAMP.PHASE.FREE_ROAM);
@@ -219,6 +230,7 @@
       await setJSON(CAMP.SETTING.SET_OUT_READY, {});
       await setJSON(CAMP.SETTING.EXPLORATION_DEBUFFS, {});
       await setJSON(CAMP.SETTING.SAVE_CHOICE, {});
+      await setJSON(CAMP.SETTING.RETURN_POINT, {});
       console.debug(TAG, "State reset to FREE_ROAM.");
     },
   };

@@ -23,6 +23,7 @@
     [CAMP.PHASE.REST_SAVING]:      "💾 Saving",
     [CAMP.PHASE.REST_TITLE_PROMPT]:"🏛 Title Prompt",
     [CAMP.PHASE.SET_OUT_LOBBY]:    "👣 Set Out Lobby",
+    [CAMP.PHASE.SETTING_OUT]:      "🚪 Setting Out",
   };
 
   const PHASE_ORDER = [
@@ -37,6 +38,7 @@
     CAMP.PHASE.REST_SAVING,
     CAMP.PHASE.REST_TITLE_PROMPT,
     CAMP.PHASE.SET_OUT_LOBBY,
+    CAMP.PHASE.SETTING_OUT,
   ];
 
   CAMP.GMPanel = {

@@ -37,6 +37,12 @@
       _fadeFromBlack();
     },
 
+    /** The same black curtain, without the rest. Resolves once fully black. */
+    async fadeOut() {
+      _ensureScreen();
+      await _fadeToBlack();
+    },
+
     cleanup() {
       const el = document.getElementById(SCREEN_ID);
       if (el) { el.classList.remove("dark"); }

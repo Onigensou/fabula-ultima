@@ -288,8 +288,7 @@
           await CAMP.State.setPhase(CAMP.PHASE.SLEEPING);
           break;
         case CAMP.PHASE.SET_OUT_LOBBY:
-          await CAMP.State.clearSetOutReady();
-          await CAMP.State.reset();   // resets to FREE_ROAM
+          await CAMP.SetOut.begin();  // back to where the party entered camp
           break;
       }
     },

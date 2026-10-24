@@ -23,6 +23,7 @@
     REST_SAVING:      "rest_saving",      // GM drives the slot picker; others watch
     REST_TITLE_PROMPT:"rest_title_prompt",// "Return to the title screen?"  YES / no
     SET_OUT_LOBBY:    "set_out_lobby",    // "Set Out" button with ready lobby
+    SETTING_OUT:      "setting_out",      // fade out; primary GM returns the party to campReturnPoint
   });
 
   // ---------------------------------------------------------------------------
@@ -42,6 +43,7 @@
     [CAMP.PHASE.REST_SAVE_PROMPT]:  CAMP.PHASE.SET_OUT_LOBBY,
     [CAMP.PHASE.REST_SAVING]:       CAMP.PHASE.SET_OUT_LOBBY,
     [CAMP.PHASE.REST_TITLE_PROMPT]: CAMP.PHASE.SET_OUT_LOBBY,
+    [CAMP.PHASE.SETTING_OUT]:       CAMP.PHASE.SET_OUT_LOBBY,
   });
 
   // Ready/selection maps that belong to the camp cycle being wrapped up. A save
@@ -65,7 +67,14 @@
     SET_OUT_READY:        "campSetOutReady",          // JSON { [userId]: true }
     EXPLORATION_DEBUFFS:  "campExplorationDebuffs",   // JSON { [actorId]: { halfRest: true } }
     SAVE_CHOICE:          "campSaveChoice",           // JSON RestSaveChoice (below)
+    RETURN_POINT:         "campReturnPoint",          // JSON ReturnPoint (below) — where Set Out goes
   });
+
+  // RETURN_POINT shape — where the party entered camp from. Recorded on entry
+  // (dungeon camp tile, or a teleport into a camp-mode scene), consumed by Set
+  // Out. Saved with campState, so it survives Save → title → Load.
+  //   { sceneId, x, y, actorId, via, campSceneId, at }
+  //   x, y = CENTRE of the party token where it stood.
 
   // SAVE_CHOICE shape — the outcome of the rest-time save leg. Written by the
   // primary GM, read by every client's spectator panel and by the title prompt
@@ -90,6 +99,7 @@
     ACTIVITY_DONE:      "CAMP_ACTIVITY_DONE",
     TOGGLE_SLEEP:       "CAMP_TOGGLE_SLEEP",
     TOGGLE_SET_OUT:     "CAMP_TOGGLE_SET_OUT",
+    RECORD_RETURN:      "CAMP_RECORD_RETURN",         // any → GM { point } (entry hook ran off the GM)
     // Ephemeral broadcast (any → all)
     HOVER_ACTIVITY:     "CAMP_HOVER_ACTIVITY",
     // Rest-time save ceremony — the primary GM drives, everyone else watches.

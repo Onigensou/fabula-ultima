@@ -507,6 +507,10 @@
             await _handleToggleSetOut(payload);
             break;
 
+          case CAMP.MSG.RECORD_RETURN:     // entry hook ran on a player's client
+            await CAMP.SetOut?.recordEntry?.(payload?.point);   // primary-GM gated inside
+            break;
+
           case CAMP.MSG.CARTOGRAPHY_RESULT:   // owner → GM: score submitted
             CAMP.CartographyUI?.resolveScore(payload?.actorId, payload?.score ?? 0, payload?.hits ?? 3);
             break;

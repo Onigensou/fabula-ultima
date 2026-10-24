@@ -134,6 +134,14 @@
         CAMP.SleepUI.fadeIn();   // ensure screen is visible again
         await CAMP.Button.show();    // show() refreshes the party cache, then renders
         break;
+
+      // ── SETTING OUT ───────────────────────────────────────────────────────
+      // Fade out everywhere; the primary GM returns the party to the return
+      // point. The destination's canvasReady tears camp down on every client.
+      case CAMP.PHASE.SETTING_OUT:
+        CAMP.Button.hide();
+        await CAMP.SetOut.run();
+        break;
     }
   }
 
@@ -211,6 +219,7 @@
     CAMP.PHASE.REST_SAVING,
     CAMP.PHASE.REST_TITLE_PROMPT,
     CAMP.PHASE.SET_OUT_LOBBY,
+    CAMP.PHASE.SETTING_OUT,
   ];
 
   // Expose API for manual override / debugging

@@ -268,6 +268,22 @@
 
     const gSize = destScene.grid?.size ?? 100;
 
+    // Bookkeeping hook, once per real teleport (after the dedupe), before any
+    // token moves — `from` is the actor's token centre on the scene it leaves.
+    // The camp system records its Set Out return point from this.
+    try {
+      const fromScene = fromSceneId ? game.scenes.get(fromSceneId) : null;
+      const fromTok   = actorId ? fromScene?.tokens?.find?.(t => t.actorId === actorId) : null;
+      const fg        = fromScene?.grid?.size ?? 100;
+      const from      = fromTok ? {
+        x: Math.round(fromTok.x + (fromTok.width  ?? 1) * fg / 2),
+        y: Math.round(fromTok.y + (fromTok.height ?? 1) * fg / 2),
+      } : null;
+      Hooks.callAll("teleporter.crossScene", { actorId, fromSceneId, toSceneId, from });
+    } catch (e) {
+      console.warn(TAG, "teleporter.crossScene hook failed (non-fatal):", e);
+    }
+
     try {
       if (actorId) {
         const actor = game.actors.get(actorId);
