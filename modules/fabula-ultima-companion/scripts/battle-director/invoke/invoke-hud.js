@@ -49,9 +49,16 @@ export function getActiveType() {
 // Called externally (action-card toggle, or cleanup on card close).
 export function dismissActive({ root, ar } = {}) {
   if (!_active) return;
-  const { el, _resolve, type } = _active;
+  const { el, _resolve, type, cardSnap } = _active;
   _active = null;
-  if (root && ar) _restoreCardFromAr(root, ar);
+  // Only a Bond HUD paints the card (its hover preview), so only it restores —
+  // from what the card showed at open, never re-derived from `ar` (see
+  // _snapshotCardSurfaces). The Trait HUD never touched the card: re-deriving
+  // from the base roll there just reverted any reaction-changed check.
+  if (type === "bond" && root) {
+    if (cardSnap) _restoreCardSnapshot(root, cardSnap);
+    else if (ar) _restoreCardFromAr(root, ar);
+  }
   // Spectator HUDs have no interaction to cancel — skip the cancel cue.
   if (type !== "spectator") _playHud(SFX.cancel);
   _despawnDimmer();
@@ -623,6 +630,42 @@ function _previewBondOnCard(root, ar, bonus) {
   });
 }
 
+// The surfaces a Bond preview paints, captured as the card SHOWS them when the HUD
+// opens. Restoring from `ar` re-derived them from the action's base roll, which is
+// NOT what the card shows once a reaction has changed the check (Lucky Seven's die
+// swap, an accuracy bonus) — cancelling a Bond reverted the card to pre-reaction
+// values. Restoring the captured DOM puts back exactly what was there.
+function _snapshotCardSurfaces(root) {
+  if (!root) return null;
+  const pill = root.querySelector(".fud-bf-acc-row .bonus");
+  return {
+    total: root.querySelector(".fud-bf-acc-row .total")?.textContent ?? null,
+    pill: pill ? { text: pill.textContent, display: pill.style.display } : null,
+    results: [...root.querySelectorAll(".fud-bf-target-row")].map((row) => {
+      const el = row.querySelector(".t-result");
+      return el ? { cls: el.className, html: el.innerHTML } : null;
+    }),
+  };
+}
+
+function _restoreCardSnapshot(root, snap) {
+  if (!root || !snap) return;
+  const totalEl = root.querySelector(".fud-bf-acc-row .total");
+  if (totalEl && snap.total != null) totalEl.textContent = snap.total;
+  const pill = root.querySelector(".fud-bf-acc-row .bonus");
+  if (pill) {
+    if (snap.pill) { pill.textContent = snap.pill.text; pill.style.display = snap.pill.display; }
+    else pill.remove();   // the preview created it
+  }
+  root.querySelectorAll(".fud-bf-target-row").forEach((row, i) => {
+    const s = snap.results[i];
+    const el = row.querySelector(".t-result");
+    if (!s || !el) return;
+    el.className = s.cls;
+    el.innerHTML = s.html;
+  });
+}
+
 function _restoreCardFromAr(root, ar) {
   if (!root || !ar?.roll) return;
   const roll = ar.roll;
@@ -863,17 +906,21 @@ export async function showBondHUD({ bonds, attacker, root, ar, tokenUuid = null,
   _spawnDimmer();
   _spawnAura(tokenUuid);
 
+  const cardSnap = _snapshotCardSurfaces(root);
+  const restoreCard = () => {
+    if (cardSnap) _restoreCardSnapshot(root, cardSnap);
+    else if (ar && root) _restoreCardFromAr(root, ar);
+  };
+
   return new Promise((resolve) => {
-    _active = { type: "bond", el, _resolve: resolve };
+    _active = { type: "bond", el, _resolve: resolve, cardSnap };
 
     const list       = el.querySelector(".fud-ih-bond-list");
     const confirmBtn = el.querySelector("[data-confirm]");
 
     let _restoreTimer = null;
     const scheduleRestore = () => {
-      _restoreTimer = setTimeout(() => {
-        if (ar && root) _restoreCardFromAr(root, ar);
-      }, 60);
+      _restoreTimer = setTimeout(restoreCard, 60);
     };
     const cancelRestore = () => clearTimeout(_restoreTimer);
 
@@ -909,14 +956,14 @@ export async function showBondHUD({ bonds, attacker, root, ar, tokenUuid = null,
 
     confirmBtn.addEventListener("click", () => {
       cancelRestore();
-      if (ar && root) _restoreCardFromAr(root, ar);
+      restoreCard();
       const chosen = viable[selectedIdx];
       _resolveHud(el, resolve, chosen?.index ?? null, "confirm");
     });
 
     el.querySelector("[data-cancel]").addEventListener("click", () => {
       cancelRestore();
-      if (ar && root) _restoreCardFromAr(root, ar);
+      restoreCard();
       _resolveHud(el, resolve, null, "cancel");
     });
   });

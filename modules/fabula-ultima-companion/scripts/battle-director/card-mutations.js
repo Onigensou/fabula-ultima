@@ -879,6 +879,56 @@ async function applyAdjustAccuracyMutation(ctx, cand, row) {
   return "applied";
 }
 
+// ── Baked dice (a roll-changing reaction an Invoke was built on) ──────────
+// check_reroll / set_check_die REPLACE dice, and the mutation pass re-applies them
+// from the action's base roll on every preview and again at CONFIRM. An Invoke
+// (Trait reroll / Bond bonus) rewrites that base roll — so an invoke made AFTER
+// Lucky Seven started from the pre-swap dice and the card reverted the swap, and
+// Divination's memoized roll overwrote a later Trait reroll at commit. Order
+// matters for a dice REPLACEMENT, so the invoke must start from the dice on the
+// card: bakeReactionRoll folds the reaction-mutated roll into the base, and the
+// baked reactions stop touching the dice on later passes. Their deferred durable
+// writes (Lucky Seven's old-face writeback) are carried on the bake record and
+// still commit exactly once. Keyed like the card's decision map.
+function reactionKey(cand) {
+  return `${cand?.rowKey ?? ""}:${cand?.carrierUuid ?? ""}`;
+}
+
+// A baked reaction's dice are already in ctx.ar.roll: re-queue its deferred
+// writes and report it applied without touching the roll. Null when not baked.
+// `bakedRollReactions` is an ARRAY of { key, chargeWrites }, not a map keyed by
+// reaction: the keys embed UUIDs, and the actionResult is persisted through
+// setFlag, whose expandObject would split a dotted key into nested objects.
+function replayBakedRollReaction(ctx, cand) {
+  const key = reactionKey(cand);
+  const list = Array.isArray(ctx.ar?.bakedRollReactions) ? ctx.ar.bakedRollReactions : [];
+  const baked = list.find((b) => b?.key === key);
+  if (!baked) return null;
+  const writes = Array.isArray(baked.chargeWrites) ? baked.chargeWrites : [];
+  if (writes.length) (ctx.chargeWrites ??= []).push(...writes);
+  return "applied";
+}
+
+function noteRollChanger(ctx, cand) {
+  const key = reactionKey(cand);
+  if (!(ctx.rollChangers ??= []).includes(key)) ctx.rollChangers.push(key);
+}
+
+// Fold the dice-replacing reactions of a mutation pass (applyTargetSetMutation's
+// `reactionRoll` / `rollChangers` / `chargeWrites`) into the action's base roll.
+// Pure — returns `ar` itself when there is nothing to bake.
+export function bakeReactionRoll(ar, mutation) {
+  const changers = Array.isArray(mutation?.rollChangers) ? mutation.rollChangers : [];
+  if (!ar?.roll || !mutation?.reactionRoll || !changers.length) return ar;
+  const writes = Array.isArray(mutation.chargeWrites) ? mutation.chargeWrites : [];
+  const baked = (Array.isArray(ar.bakedRollReactions) ? ar.bakedRollReactions : [])
+    .filter((b) => !changers.includes(b?.key));
+  for (const key of changers) {
+    baked.push({ key, chargeWrites: writes.filter((w) => w?.reactionKey === key) });
+  }
+  return { ...ar, roll: mutation.reactionRoll, bakedRollReactions: baked };
+}
+
 // Memoized reroll results. check_reroll's rerollDice is RANDOM, and the mutation
 // runs at least twice for one reaction — once for the card PREVIEW (each pill
 // toggle) and again at the CONFIRM COMMIT. Rolling fresh each time makes the card
@@ -914,6 +964,8 @@ function checkRerollKey(ctx, cand) {
 // damage/HR is NOT recomputed from the new dice (the hit→miss flip is the meaningful
 // effect); a still-hitting reroll keeps the original HR.
 async function applyCheckRerollMutation(ctx, cand, row) {
+  const baked = replayBakedRollReaction(ctx, cand);
+  if (baked) return baked;
   const roll = ctx.ar?.roll;
   if (!roll) { warn("check_reroll: no accuracy roll on this action — skipping"); return "failed"; }
   if (roll.isCrit || roll.isFumble) { log("check_reroll: roll is a Critical/Fumble — cannot reroll (RAW)"); return "failed"; }
@@ -967,8 +1019,9 @@ async function applyCheckRerollMutation(ctx, cand, row) {
     rerolled: true,
     newRoll,
   };
+  noteRollChanger(ctx, cand);
 
-  log(`check_reroll: ${roll.rA}+${roll.rB}=${roll.total} → ${newRoll.rA}+${newRoll.rB}=${newTotal} (via ${via})`);
+  log(`check_reroll:${roll.rA}+${roll.rB}=${roll.total} → ${newRoll.rA}+${newRoll.rB}=${newTotal} (via ${via})`);
   return "applied";
 }
 
@@ -998,6 +1051,9 @@ async function applyCheckRerollMutation(ctx, cand, row) {
 // RAW gate (also enforced by the reaction condition): a rolled, non-crit,
 // non-fumble Check.
 async function applySetCheckDieMutation(ctx, cand, row) {
+  // Before the crit/fumble gate: a baked swap may itself have made the crit.
+  const baked = replayBakedRollReaction(ctx, cand);
+  if (baked) return baked;
   const roll = ctx.ar?.roll;
   if (!roll) { warn("set_check_die: no accuracy roll on this action — skipping"); return "failed"; }
   if (roll.isCrit || roll.isFumble) { log("set_check_die: roll is a Critical/Fumble — cannot replace a die (RAW)"); return "failed"; }
@@ -1066,8 +1122,9 @@ async function applySetCheckDieMutation(ctx, cand, row) {
   // carrier AE's charge, committed EXACTLY once by the commit path (never on a
   // preview pass). The mutation only RECORDS the intent here.
   if (row?.writeback_carrier_charge === true && cand?.carrierUuid) {
-    (ctx.chargeWrites ??= []).push({ aeUuid: cand.carrierUuid, charges: oldFace });
+    (ctx.chargeWrites ??= []).push({ aeUuid: cand.carrierUuid, charges: oldFace, reactionKey: reactionKey(cand) });
   }
+  noteRollChanger(ctx, cand);
 
   log(`set_check_die: die ${which} ${oldFace} → ${value} (writeback=${row?.writeback_carrier_charge === true}); ${roll.rA}+${roll.rB}=${roll.total} → ${newRoll.rA}+${newRoll.rB}=${newTotal} (via ${via})`);
   return "applied";
@@ -1914,6 +1971,9 @@ export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = 
     // RESOLVE, crit handling, the post-commit card). Rides out as `roll` so the
     // existing reroll plumbing carries it with no new branch.
     ...(gmRoll ? { roll: gmRoll } : {}),
+    // The REACTION-mutated roll, before any GM hand-set dice — the roll an Invoke
+    // builds on (bakeReactionRoll). The GM layer is absolute and re-applies on top.
+    reactionRoll: mut.roll ?? null,
     // Lets the commit adopt the recomputed headline damage for a damage-only
     // edit, which changes no dice and so would fail a roll-changed test.
     gmDamageApplied: !!gmDamage,
@@ -2183,6 +2243,9 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedCardReactio
     // via the SAME recomputeActionProfile every other mutation uses. Any future
     // roll-changing mutation is reflected automatically by writing ctx.ar.
     roll: ctx.ar?.roll ?? null,
+    // Reactions that REPLACED dice this pass (check_reroll / set_check_die) — what
+    // bakeReactionRoll folds into the base before an Invoke.
+    rollChangers: ctx.rollChangers ?? [],
     negated: false,
     // Check-adjusting interventions applied (causer + mechanism per applied
     // accuracy/reroll/defense mutation). Rides through applyTargetSetMutation's
