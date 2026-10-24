@@ -121,7 +121,9 @@
       "sort": 0,
       "locked": false,
       "hidden": false,
-      "_regions": []
+      "_regions": [
+        "elJnVHYDhPJ0Iyb5"
+      ]
     }
   ],
   "notes": [],
@@ -309,7 +311,8 @@
             "cameraFollowToken": false,
             "navigationName": "Overworld",
             "sceneMode": "dungeon",
-            "isOverworld": true
+            "isOverworld": true,
+            "sceneVisited": true
           }
         },
         "dungeonPathing": {
@@ -461,7 +464,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.4",
       "createdTime": 1765672966590,
-      "modifiedTime": 1792744880531,
+      "modifiedTime": 1792765275158,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [
@@ -1244,7 +1247,7 @@
               "threat": "high",
               "encounterTable": "RollTable.WAfcUXEh5bJtrDIK",
               "enemiesTable": "RollTable.DiwyiqNujJaPIH8M",
-              "battleMap": "Scene.XHe8LfutYAkPuR5B",
+              "battleMap": "Scene.QFqZdO7PjOcPY4mE",
               "announce": true,
               "battleBGM": "",
               "music": "",
@@ -1270,8 +1273,8 @@
               "systemId": "custom-system-builder",
               "systemVersion": "4.8.5",
               "createdTime": null,
-              "modifiedTime": null,
-              "lastModifiedBy": null
+              "modifiedTime": 1792841244213,
+              "lastModifiedBy": "JQGNzKpDPHJmcUIW"
             }
           }
         ]

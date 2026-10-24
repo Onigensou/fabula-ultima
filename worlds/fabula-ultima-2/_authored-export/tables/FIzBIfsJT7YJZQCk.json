@@ -16,7 +16,7 @@
     }
   },
   "folder": "CT0bTXVgLi9mbiQr",
-  "formula": "1d14",
+  "formula": "1d15",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
   "name": "Overworld (Chapter 3) - Encounter",
   "ownership": {
@@ -106,6 +106,20 @@
         10
       ],
       "text": "Salamander, Hellhound, Dryad",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "mX2lNZOw1ZzaWGvA",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        15,
+        15
+      ],
+      "text": "Crona",
       "type": "text",
       "weight": 1
     },

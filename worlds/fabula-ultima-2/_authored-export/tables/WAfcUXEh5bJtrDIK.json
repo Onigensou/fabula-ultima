@@ -16,7 +16,7 @@
     }
   },
   "folder": "CT0bTXVgLi9mbiQr",
-  "formula": "1d31",
+  "formula": "1d11",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
   "name": "Overworld (Chapter 4) - Encounter",
   "ownership": {
@@ -26,371 +26,7 @@
   "replacement": true,
   "results": [
     {
-      "_id": "0SmmTPUga3ITiCtC",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        27,
-        27
-      ],
-      "text": "Succubus, Dire Orc, Succubus",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "2z3o20QX8fg9gFwv",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        24,
-        24
-      ],
-      "text": "Dire Orc, Dire Orc",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "3JbRpK8QHM947y0k",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        1,
-        1
-      ],
-      "text": "Electro Slime, Electro Slime, Electro Slime",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "6a07bRSAQLJcqujJ",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        17,
-        17
-      ],
-      "text": "Mana Ray, Lightning Prism, Mana Ray",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "6AsRTaVXDF56QXmd",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        7,
-        7
-      ],
-      "text": "Lightning Prism, Skizzik, Lightning Prism",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "8vPIBvSdz9Cc9jOk",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        2,
-        2
-      ],
-      "text": "Electro Slime, Electro Slime, Electro Slime, Electro Slime",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "AiKBZvO6C7q0QdN9",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        28,
-        28
-      ],
-      "text": "Dragon Guard, Death Gazer, Dragon Guard",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "AUd4NF26AsIhGxiW",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        6,
-        6
-      ],
-      "text": "Skizzik, Skizzik",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "bGocKa6X7OAHQjiC",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        3,
-        3
-      ],
-      "text": "Electro Slime, Skizzik, Electro Slime",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "bin5jpoFPlO0IKZC",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        20,
-        20
-      ],
-      "text": "Skizzik, Obsidrax",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "BLkcyRbndBDdhcSJ",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        9,
-        9
-      ],
-      "text": "Electro Slime, Kirin, Electro Slime",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "C4efvXGNvRz7IaII",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        14,
-        14
-      ],
-      "text": "Ampere, Mana Ray",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "CxgLpRlVm0XFpiih",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        12,
-        12
-      ],
-      "text": "Kirin, Skizzik, Lightning Prism",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "E0kJTIxWfz2eP0wy",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        16,
-        16
-      ],
-      "text": "Ampere, Lightning Prism",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "GIdexnibjCJvGZl1",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        29,
-        29
-      ],
-      "text": "Dire Orc, Death Gazer, Dire Orc",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "H8WEaSjaQRGOcDOK",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        19,
-        19
-      ],
-      "text": "Electro Slime, Obsidrax, Lightning Prism, Electro Slime",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "HdiYpkZY45AZvcuG",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        15,
-        15
-      ],
-      "text": "Ampere, Skizzik",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "j4NweaaogGopPwVU",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        5,
-        5
-      ],
-      "text": "Skizzik, Lightning Prism",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "n0zOs0vGuUnmHF8B",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        11,
-        11
-      ],
-      "text": "Skizzik, Kirin, Skizzik",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "nie76KTJRbwYdDK2",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        23,
-        23
-      ],
-      "text": "Drakoza, Skizzik",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "NjV3n6UZV9jjJLJx",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        18,
-        18
-      ],
-      "text": "Ampere, Mana Ray, Kirin",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "Qod0MnB2Xc7DdfNG",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        10,
-        10
-      ],
-      "text": "Lightning Prism, Kirin, Lightning Prism",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "R4AhAeE2E3ZCFqDM",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        21,
-        21
-      ],
-      "text": "Obsidrax, Kirin, Skizzik",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "ROncKVzi38CmHHHj",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        26,
-        26
-      ],
-      "text": "Imp, Dire Orc, Imp",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "sFCKkQXtzhwDRGEU",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        4,
-        4
-      ],
-      "text": "Electro Slime, Lightning Prism, Electro Slime",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "Tne2LPkOPPHPIMGb",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/d20-black.svg",
-      "range": [
-        25,
-        25
-      ],
-      "text": "Dragon Guard, Dragon Guard",
-      "type": "text",
-      "weight": 1
-    },
-    {
-      "_id": "udZCHXPKiIx8JUJm",
+      "_id": "1ZhnQWOljDRWLldd",
       "documentId": null,
       "drawn": false,
       "flags": {},
@@ -399,63 +35,147 @@
         8,
         8
       ],
-      "text": "Skizzik, Lightning Prism, Skizzik",
+      "text": "Tempered Banestrix, Tempered Looker, Tempered Banestrix",
       "type": "text",
       "weight": 1
     },
     {
-      "_id": "urQeCUS2msrOsSjJ",
+      "_id": "2zH8KjwcunsZbJN1",
       "documentId": null,
       "drawn": false,
       "flags": {},
       "img": "icons/svg/d20-black.svg",
       "range": [
-        22,
-        22
+        2,
+        2
       ],
-      "text": "Drakoza, Drakoza",
+      "text": "Tempered Voidog, Tempered Voidog, Tempered Voidog, Tempered Voidog",
       "type": "text",
       "weight": 1
     },
     {
-      "_id": "XhZfKk4UqUle5NLw",
+      "_id": "3LhloofxavI0CrIZ",
       "documentId": null,
       "drawn": false,
       "flags": {},
       "img": "icons/svg/d20-black.svg",
       "range": [
-        30,
-        30
+        9,
+        9
       ],
-      "text": "Imp, Dragon Guard, Imp",
+      "text": "Tempered Looker, Tempered Looker",
       "type": "text",
       "weight": 1
     },
     {
-      "_id": "yDkpw5T0zqP8QhGm",
+      "_id": "5Sm57FvV6h7Pp0Le",
       "documentId": null,
       "drawn": false,
       "flags": {},
       "img": "icons/svg/d20-black.svg",
       "range": [
-        13,
-        13
+        5,
+        5
       ],
-      "text": "Mana Ray, Mana Ray",
+      "text": "Tempered Voidog, Tempered Banestrix, Tempered Voidog",
       "type": "text",
       "weight": 1
     },
     {
-      "_id": "YMKVjdddvZeq579D",
+      "_id": "a3D58JPvHEZGX2tu",
       "documentId": null,
       "drawn": false,
       "flags": {},
       "img": "icons/svg/d20-black.svg",
       "range": [
-        31,
-        31
+        11,
+        11
       ],
-      "text": "Death Gazer, Succubus, Death Gazer",
+      "text": "Crona",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "GRXwtSgJkmhMv80B",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Tempered Banestrix, Tempered Banestrix, Tempered Banestrix",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "kn3S1w9UwIIO05BG",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Tempered Banestrix, Tempered Voidog, Tempered Voidog, Tempered Voidog",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "lB9iASaVhTrQBSg0",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Tempered Voidog, Tempered Voidog, Tempered Voidog",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "NnHap2ys66psvANn",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Tempered Voidog, Tempered Looker, Tempered Banestrix",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "q8EJrwaGBwVUmWRg",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Tempered Banestrix, Tempered Banestrix",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "X6Att40yD71CZiNL",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Tempered Looker, Tempered Voidog, Tempered Voidog",
       "type": "text",
       "weight": 1
     }

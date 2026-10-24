@@ -16,7 +16,7 @@
     }
   },
   "folder": "CT0bTXVgLi9mbiQr",
-  "formula": "1d15",
+  "formula": "1d16",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
   "name": "Overworld (Chapter 1) - Encounter",
   "ownership": {
@@ -92,6 +92,20 @@
         14
       ],
       "text": "Wind Slime, Slime, Wind Slime, Slime",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "EmJn5aaMmQwZCmYO",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        16,
+        16
+      ],
+      "text": "Crona",
       "type": "text",
       "weight": 1
     },

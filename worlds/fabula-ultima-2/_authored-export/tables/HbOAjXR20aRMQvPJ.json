@@ -16,7 +16,7 @@
     }
   },
   "folder": "n7F3S1JE6AVQ7x0h",
-  "formula": "1d7",
+  "formula": "1d8",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
   "name": "Overworld (Chapter 2) - Enemies",
   "ownership": {
@@ -127,6 +127,21 @@
         6
       ],
       "text": "Slime",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "vl15VttT8tpnAWA6",
+      "documentCollection": "Actor",
+      "documentId": "vmYeN1WWIF5TSjjF",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Vampire%20Bat_Standard.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Crona",
       "type": "document",
       "weight": 1
     }

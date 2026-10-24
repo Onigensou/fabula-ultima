@@ -16,7 +16,7 @@
     }
   },
   "folder": "CT0bTXVgLi9mbiQr",
-  "formula": "1d10",
+  "formula": "1d11",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
   "name": "Overworld (Chapter 2) - Encounter",
   "ownership": {
@@ -92,6 +92,20 @@
         10
       ],
       "text": "Slime, Wolf, Slime",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "hZ4638j4088mDqp6",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Crona",
       "type": "text",
       "weight": 1
     },
