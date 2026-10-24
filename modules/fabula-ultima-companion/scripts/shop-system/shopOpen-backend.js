@@ -524,6 +524,31 @@ export class ShopOpenBackend {
         return;
       }
 
+      // ── IP recharge (GM executes, result sent back to requester) ──
+      if (msg.type === SHOPOPEN.MSG.IP_RECHARGE_REQ) {
+        if (!isPrimaryGM()) return;
+
+        const { rechargeId } = msg.payload ?? {};
+        this.log("IP_RECHARGE_REQ received:", rechargeId);
+
+        const ipHandler = this._ipRechargeHandler;
+        if (!ipHandler) { this.warn("No ipRechargeHandler set on backend."); return; }
+
+        // rechargeId stays in the payload: the handler uses it to drop repeats.
+        ipHandler.executeRecharge(msg.payload ?? {})
+          .then(result => this._emitSocket({ type: SHOPOPEN.MSG.IP_RECHARGE_RESULT, payload: { rechargeId, ...result } }))
+          .catch(e => {
+            this.err("IP_RECHARGE_REQ execution error:", e);
+            this._emitSocket({ type: SHOPOPEN.MSG.IP_RECHARGE_RESULT, payload: { rechargeId, ok: false, reason: "server_error" } });
+          });
+        return;
+      }
+
+      if (msg.type === SHOPOPEN.MSG.IP_RECHARGE_RESULT) {
+        this._ipRechargeHandler?.onRechargeResult(msg.payload ?? {});
+        return;
+      }
+
       // ── Presence: ephemeral, all clients render it, no GM gate (no writes) ──
       if (msg.type === SHOPOPEN.MSG.PRESENCE_ENTER ||
           msg.type === SHOPOPEN.MSG.PRESENCE_LEAVE ||

@@ -15,6 +15,7 @@
 //   item.system.props.type_damage   — damage type plain string (Physical, Fire…)
 
 import { gp, hexToRgba, readableInk } from "./shopopen-const.js";
+import { readIp, rechargeCost, shopOffersIpRecharge } from "./shopIpRecharge-handler.js";
 
 const GP_ICON = `<img class="fu-zenit-icon" src="https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/GP.png" alt="Zenit">`;
 
@@ -416,6 +417,19 @@ export class ShopWindowApp {
         text-shadow:none;
       }
 
+      /* ── IP recharge strip (town service, sits between header and stock) ── */
+      .fu-shop-ip {
+        display:flex; align-items:center; gap:10px;
+        padding:6px 12px;
+        background:rgba(255,255,255,0.35);
+        border-bottom:1px solid rgba(184,153,64,0.55);
+        font-size:12px; color:#5a3800; flex-shrink:0;
+      }
+      .fu-shop-ip .fu-ip-label { font-weight:800; }
+      .fu-shop-ip .fu-ip-val   { font-weight:800; color:#8b4513; }
+      .fu-shop-ip .fu-ip-val.full { color:#4f7f4f; }
+      .fu-shop-ip .fu-ip-price { display:flex; align-items:center; gap:2px; opacity:0.8; margin-left:auto; }
+
       /* ── Empty state ── */
       .fu-shop-empty {
         text-align:center; padding:28px; font-style:italic;
@@ -652,7 +666,27 @@ export class ShopWindowApp {
       </div>`;
   }
 
-  static _buildHTML({ portrait, shopTitle, quote, buyerZenit, hasBuyer, itemsByCategory, activeTab, newItemIds = new Set(), buyerPriceMult = 1, spectate = false, shopZenit = 0 }) {
+  // Inventory Point recharge strip. Only for a buyer in a shop that offers it;
+  // a spectating GM has no IP to refill, so the strip is simply absent.
+  static _buildIpStrip(ip) {
+    if (!ip) return "";
+    const full       = ip.missing <= 0;
+    const cantAfford = !full && ip.zenit < ip.unitCost;
+    const tip = full       ? "Your Inventory Points are full"
+              : cantAfford ? "Not enough Zenit"
+              : `Recharge up to ${ip.missing} IP`;
+    const label = full ? "Full" : cantAfford ? "💸" : "Recharge";
+    return `
+      <div class="fu-shop-ip">
+        <span class="fu-ip-label">🎒 Inventory Points</span>
+        <span class="fu-ip-val${full ? " full" : ""}">${ip.current} / ${ip.max}</span>
+        <span class="fu-ip-price">${GP_ICON}${ip.unitCost.toLocaleString()} per IP</span>
+        <button class="fu-shop-buy" ${full || cantAfford ? "disabled" : ""} title="${this._esc(tip)}"
+                data-action="ip-recharge">${label}</button>
+      </div>`;
+  }
+
+  static _buildHTML({ portrait, shopTitle, quote, buyerZenit, hasBuyer, itemsByCategory, activeTab, newItemIds = new Set(), buyerPriceMult = 1, spectate = false, shopZenit = 0, ip = null }) {
     // Tabs
     const tabs = SHOP_CATEGORIES.map(c => {
       const items   = itemsByCategory[c.key] ?? [];
@@ -700,6 +734,8 @@ export class ShopWindowApp {
             </div>
           </div>
         </div>
+
+        ${this._buildIpStrip(ip)}
 
         <div class="fu-shop-body">
           <div class="fu-shop-tabs">${tabs}</div>
@@ -828,6 +864,10 @@ export class ShopWindowApp {
       });
     });
 
+    // IP recharge
+    root.querySelector("[data-action='ip-recharge']:not([disabled])")
+      ?.addEventListener("click", (e) => ctx.onRechargeIp(e.currentTarget));
+
     // Row click → stats preview + active skills
     root.querySelectorAll(".fu-shop-row").forEach(row => {
       row.addEventListener("click", (e) => {
@@ -902,6 +942,10 @@ export class ShopWindowApp {
     const readZenit     = () => hasBuyer ? Math.max(0, Number(buyerActor.system?.props?.zenit ?? 0)) : 0;
     const readMult      = () => hasBuyer ? ShopWindowApp._buyerMult(buyerActor) : 1;
     const readShopZenit = () => Math.max(0, Number(gp(actor, "system.props.zenit", 0)) || 0);
+    const offersIp      = hasBuyer && shopOffersIpRecharge(actor);
+    const readIpState   = () => offersIp
+      ? { ...readIp(buyerActor), zenit: readZenit(), unitCost: rechargeCost(buyerActor, 1) }
+      : null;
 
     const state = {
       activeTab:       null,
@@ -939,6 +983,7 @@ export class ShopWindowApp {
       buyerPriceMult: state.buyerPriceMult,
       spectate,
       shopZenit: state.shopZenit,
+      ip: readIpState(),
     });
 
     const rootEl = () => dlg?.element?.[0]?.querySelector?.(".fu-shop") ?? null;
@@ -1149,6 +1194,77 @@ export class ShopWindowApp {
         }
 
         if (redrawPending) redraw();
+      },
+
+      onRechargeIp: async (btn) => {
+        if (spectate || !offersIp) return;
+
+        const ip = readIpState();
+        if (!ip || ip.missing <= 0) return;
+
+        // Offer no more than the buyer can both hold and afford. The prompt
+        // defaults to that ceiling, so one Confirm is "fill me up".
+        let affordable = ip.missing;
+        while (affordable > 0 && rechargeCost(buyerActor, affordable) > ip.zenit) affordable--;
+        if (affordable <= 0) {
+          ui.notifications?.warn?.(`Not enough Zenit — 1 IP costs 🪙 ${ip.unitCost.toLocaleString()}.`);
+          return;
+        }
+
+        let result;
+        state.inFlight = true;   // same double-click guard as Buy
+        try {
+          let points = affordable;
+          if (affordable > 1) {
+            const qtyUI = window["oni.ItemTransferQuantityUI"];
+            if (qtyUI) {
+              const picked = await qtyUI.promptQuantity({
+                itemName: "Inventory Points", maxQuantity: affordable, defaultQuantity: affordable,
+              });
+              if (picked == null) return; // cancelled
+              points = picked;
+            }
+          }
+
+          btn.disabled = true;
+          btn.textContent = "…";
+
+          const handler = window.FUCompanion?.shopIpRecharge;
+          if (!handler) {
+            ui.notifications?.error?.("Shop IP recharge not available.");
+            return;
+          }
+
+          result = await handler.requestRecharge({
+            shopActorUuid,
+            points,
+            buyerActorUuid:  buyerActor.uuid,
+            requesterUserId: game.user.id,
+          });
+        } finally {
+          state.inFlight = false;
+        }
+
+        if (!result) { redraw(); return; }
+
+        if (result.ok) {
+          window.FUCompanion?.shopSound?.playPurchase();
+          const costStr = result.totalCost > 0 ? ` for 🪙 ${result.totalCost.toLocaleString()}` : "";
+          ui.notifications?.info?.(`Recharged ${result.points} IP${costStr} — now ${result.ipAfter} / ${result.ipMax}.`);
+        } else {
+          const MSGS = {
+            ip_full:               "Your Inventory Points are already full.",
+            not_offered:           "This shop doesn't sell supplies.",
+            insufficient_funds:    `Not enough Zenit — need 🪙 ${(result.needed ?? 0).toLocaleString()}, have 🪙 ${(result.have ?? 0).toLocaleString()}.`,
+            buyer_not_found:       "Your character could not be resolved.",
+            shop_not_found:        "The shop could not be found.",
+            transfer_core_missing: "Item transfer system not ready yet.",
+            timeout:               "Recharge timed out — is the GM online?",
+            server_error:          "A server error occurred — check GM console.",
+          };
+          ui.notifications?.error?.(MSGS[result.reason] ?? `Recharge failed (${result.reason ?? "unknown"}).`);
+        }
+        redraw();
       },
     };
 
