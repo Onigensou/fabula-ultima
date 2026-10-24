@@ -136,6 +136,19 @@
 
   Hooks.once("ready", () => { refresh(); });
 
+  // Foundry core opens User Configuration on EVERY load for a player with no
+  // linked character (client/game.js setupGame). A spectator never has one, so
+  // the stream window would boot behind that sheet. Close that one automatic
+  // opening; a later manual open is left alone.
+  let _bootSheetHandled = false;
+  Hooks.on("renderUserConfig", (app) => {
+    if (_bootSheetHandled) return;
+    // ApplicationV2 sheets expose .document; V1 sheets .object.
+    if ((app.document ?? app.object)?.id !== game.user?.id || game.user?.isGM || game.user?.character) return;
+    _bootSheetHandled = true;
+    if (isSpectator()) app.close();
+  });
+
   // Re-resolve when the party roster or the Current Game pointer changes.
   Hooks.on("updateActor", (_actor, changes) => {
     const keys = Object.keys(foundry.utils.flattenObject(changes ?? {}));
