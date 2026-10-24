@@ -351,14 +351,19 @@
       const charges = holder.effect.flags?.["fabula-ultima-companion"]?.cartographyCharges ?? 1;
       const chargeNote = charges > 1 ? ` <em>(${charges} charges remaining)</em>` : "";
 
-      const use = await Dialog.confirm({
-        title:   "Cartography — Reroll Available",
-        content: `<p><b>${holder.actor.name}</b> has <b>Cartography</b> active.${chargeNote}</p>
-                  <p>Reroll the travel die and keep the new result?</p>`,
-        yes:     () => true,
-        no:      () => false,
-        defaultYes: true,
-      });
+      // Parchment Yes / No that every other client watches (teleporter prompt).
+      const ask = globalThis.TeleporterSystem?.askYesNo;
+      const chargeText = charges > 1 ? ` (${charges} charges)` : "";
+      const use = ask
+        ? await ask([`${holder.actor.name}'s `, "Cartography", `${chargeText}: reroll the travel die and keep the new result?`])
+        : await Dialog.confirm({
+            title:   "Cartography — Reroll Available",
+            content: `<p><b>${holder.actor.name}</b> has <b>Cartography</b> active.${chargeNote}</p>
+                      <p>Reroll the travel die and keep the new result?</p>`,
+            yes:     () => true,
+            no:      () => false,
+            defaultYes: true,
+          });
 
       if (use) {
         finalRoll    = await new Roll(formula).evaluate();
