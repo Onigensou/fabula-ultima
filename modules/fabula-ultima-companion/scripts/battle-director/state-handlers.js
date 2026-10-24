@@ -795,6 +795,7 @@ async function resolveAction(director, ar, opts = {}) {
           resource: dmgResource,
           targetName: r.name,
           tokenUuid: r.tokenUuid,
+          sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
           logPrefix: `${view.kind} ${ar.skillName ?? skill?.name ?? ""}:`,
           logSuffix: passLabel + (r.pierceMiss ? " [Pierce]" : ""),
           // Battle Log: hit row, pushed to this action's shared sink (flushed

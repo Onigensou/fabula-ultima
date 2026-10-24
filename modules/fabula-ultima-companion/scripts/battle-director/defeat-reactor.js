@@ -36,6 +36,8 @@
  */
 import { log, warn } from "./logger.js";
 import { playDefeatPose } from "./battler-pose.js";
+import { defeatStyleFromFlags, DEFAULT_DEFEAT_STYLE, defeatStartsOnHit, ownsDefeatReaction } from "./defeat-styles.js";
+import { playDefeatFx, restoreDefeatFx } from "./defeat-fx.js";
 
 // Property paths — kept identical to the legacy auto-defeat hook.
 const PATH_DB_OPTION = "system.props.option_autoDefeat";
@@ -130,8 +132,109 @@ function passesActorGates(actor) {
   return true;
 }
 
+// ── Defeat on the killing blow ─────────────────────────────────────────────
+//
+// A defeat style with `startOnHit` (defeat-styles.js — "launched") begins the
+// moment the killing blow's damage lands, alongside its damage number, rather
+// than when the action has settled and this reactor runs. Measured in real
+// battles, the settle came 0.15–1.9 s after the number: the KO freeze read as a
+// second, unrelated hit. The REMOVAL still happens here, in performDefeat, which
+// finds the playback running and waits for it.
+//
+// Only when nothing can change the outcome (defeatStartsOnHit): the removal
+// gates pass now, a battle is running, and the creature has no reaction of its
+// own to its defeat. If it is NOT removed after all (healed back above 0 before
+// the settle; the battle went away), restoreDefeatFx shows the token again.
+
+// tokenUuid -> { decided: Promise<boolean>, playing: Promise|null } — the slot
+// is taken SYNCHRONOUSLY when the on-hit check starts, so a settle that races in
+// while the check is still reading the world waits for its answer instead of
+// starting a second playback. `decided` false = not begun on the hit.
+const _defeatPlaying = new Map();
+// The auto-defeat setting, read ahead of time. Reading it means resolving the
+// current game's DB actor, measured at ~1 s on a loaded client — on the hit that
+// is the difference between "with the blow" and "a beat late". It is a campaign
+// setting that does not change mid-fight, so it is read at battle start and
+// reused for a while; the settle-time removal still reads it fresh.
+const AUTO_DEFEAT_TTL_MS = 60000;
+let _autoDefeat = null;   // { value, at }
+async function autoDefeatEnabledCached() {
+  if (_autoDefeat && performance.now() - _autoDefeat.at < AUTO_DEFEAT_TTL_MS) return _autoDefeat.value;
+  const value = await autoDefeatEnabled();
+  _autoDefeat = { value, at: performance.now() };
+  return value;
+}
+globalThis.Hooks?.on?.("fu-director-started", () => {
+  if (!game.user?.isGM) return;
+  _autoDefeat = null;
+  autoDefeatEnabledCached().catch(() => {});
+});
+
+// Longest a begun-on-the-hit defeat may wait for its removal before the token is
+// shown again (the action's settle has been measured at ~2 s; leave headroom).
+const ON_HIT_REMOVAL_GRACE_MS = 8000;
+
+/**
+ * GM, from the damage write (skill-effects applyDamageToTarget, never awaited):
+ * begin `actor`'s defeat style now if it starts on the hit. Returns true when it
+ * did (or one was already playing). Never throws.
+ */
+export async function startDefeatOnHit({ tokenUuid, actor, hpAfter, causeTokenUuid = null } = {}) {
+  try {
+    if (!game.user?.isGM || !tokenUuid || !actor) return false;
+    if (_defeatPlaying.has(tokenUuid)) return true;
+    let decide;
+    const entry = { decided: new Promise((r) => { decide = r; }), playing: null };
+    _defeatPlaying.set(tokenUuid, entry);
+    const no = () => { if (_defeatPlaying.get(tokenUuid) === entry) _defeatPlaying.delete(tokenUuid); decide(false); return false; };
+    try {
+      const t0 = performance.now();
+      const style = defeatStyleFromFlags(actor.flags);
+      // Cheapest refusal first: most killing blows are on creatures without the style.
+      if (!defeatStartsOnHit({ style, hp: hpAfter, inBattle: true, willRemove: true, ownReaction: false })) return no();
+      const tokenDoc = await resolveDefeatedToken(actor, { subjectTokenUuid: tokenUuid });
+      if (!tokenDoc?.object) return no();
+      const bd = globalThis.FUCompanion?.api?.experimental?.battleDirector;
+      const inBattle = !!(bd?.getActiveDirector?.() ?? (typeof bd?.isRunning === "function" ? bd.isRunning() : false));
+      const willRemove = passesActorGates(actor) && [-1, 0, 1].includes(getDisposition(tokenDoc)) && (await autoDefeatEnabledCached());
+      if (!defeatStartsOnHit({ style, hp: hpAfter, inBattle, willRemove, ownReaction: ownsDefeatReaction(actor) })) return no();
+
+      entry.playing = playDefeatFx({ tokenUuid, style, causeTokenUuid }).catch(() => {});
+      decide(true);
+      log(`defeat-reactor: ${actor.name} — "${style}" begun on the killing blow (checks took ${Math.round(performance.now() - t0)} ms)`);
+      // Safety net: if the removal never comes, the token must not stay hidden.
+      entry.playing.then(() => setTimeout(() => {
+        if (_defeatPlaying.get(tokenUuid) !== entry) return;   // performDefeat took it
+        _defeatPlaying.delete(tokenUuid);
+        if (fromUuidSync(tokenUuid)) {
+          warn(`defeat-reactor: ${actor.name} — defeat begun on the hit was never followed by a removal; showing the token again`);
+          restoreDefeatFx(tokenUuid);
+        }
+      }, ON_HIT_REMOVAL_GRACE_MS));
+      return true;
+    } catch (e) {
+      warn("defeat-reactor: startDefeatOnHit threw — the defeat will start at the settle instead", e);
+      return no();
+    }
+  } catch (e) {
+    warn("defeat-reactor: startDefeatOnHit threw", e);
+    return false;
+  }
+}
+
+// The creature is up again (HP > 0) before its removal: undo a defeat begun on
+// the hit. Called from defeatReactor for every HP event that did not remove.
+function cancelDefeatOnHit(actor, tokenUuid) {
+  if (!tokenUuid || !_defeatPlaying.has(tokenUuid)) return;
+  const hp = num(get(actor, PATH_HP));
+  if (hp == null || hp <= 0) return;
+  _defeatPlaying.delete(tokenUuid);
+  log(`defeat-reactor: ${actor?.name} is back up (HP ${hp}) — undoing the defeat begun on the hit`);
+  restoreDefeatFx(tokenUuid);
+}
+
 // Run the death animation then remove the combatant + token via the director.
-async function performDefeat(director, tokenDoc, actor) {
+async function performDefeat(director, tokenDoc, actor, payload = null) {
   if (!game.user?.isGM) return;            // director removal is GM-only
   const tokenUuid = tokenDoc?.uuid;
   if (!tokenUuid) return;
@@ -174,6 +277,30 @@ async function performDefeat(director, tokenDoc, actor) {
       } catch (e) { warn("defeat-reactor: clone actor delete threw", e); }
     }
   };
+
+  // Defeat style (Token Config → Appearance → Battle Defeat; defeat-styles.js).
+  // "standard" — every monster without the flag — skips this and takes the
+  // chain below untouched. playDefeatFx never throws and is failsafe-capped.
+  const style = defeatStyleFromFlags(actor?.flags);
+  // Begun on the killing blow (startDefeatOnHit)? Then it is already playing on
+  // every client: wait for it to finish rather than start a second one. A check
+  // still in flight is waited for too.
+  const entry = _defeatPlaying.get(tokenUuid);
+  const begun = entry && (await entry.decided) ? entry : null;
+  if (style !== DEFAULT_DEFEAT_STYLE && (placeable || begun)) {
+    // Otherwise play it now. The killer's token steers styles that care where
+    // the blow came from.
+    const own = begun ? null : { decided: Promise.resolve(true), playing: playDefeatFx({ tokenUuid, style, causeTokenUuid: payload?.causeTokenUuid ?? null }) };
+    if (own) _defeatPlaying.set(tokenUuid, own);
+    await (begun ?? own).playing;
+    try {
+      _defeatPlaying.delete(tokenUuid);
+      await remove();
+      ChatMessage.create({ content: `<b>${name}</b> was defeated!` });
+      log(`defeat-reactor: removed ${name} (HP 0, gates passed, style "${style}")`);
+    } catch (e) { warn("defeat-reactor: remove after defeat style threw", e); }
+    return;
+  }
 
   // KO art (sprite_ko): play the fall on every client, let it land, then fade —
   // in place of the red tint. 0 = no KO art (or not loaded): the legacy chain.
@@ -244,7 +371,7 @@ async function evaluateDefeat(director, actor, payload) {
   const disposition = getDisposition(tokenDoc);
   if (![-1, 0, 1].includes(disposition)) return false;
 
-  await performDefeat(director, tokenDoc, actor);
+  await performDefeat(director, tokenDoc, actor, payload);
   return true;
 }
 
@@ -431,6 +558,10 @@ export async function defeatReactor(director, cfg, extra) {
     await emitCreatureDefeated(director, actor, payload, extra?.firedKeys);
   }
   const removed = await evaluateDefeat(director, actor, payload);
+  if (!removed) {
+    try { cancelDefeatOnHit(actor, (await resolveDefeatedToken(actor, payload))?.uuid ?? null); }
+    catch (e) { warn("defeat-reactor: cancelDefeatOnHit threw", e); }
+  }
   // Survivors (not physically removed) get the visible, reversible Defeated
   // status; recovery (HP > 0) reconciles it off on the same reactor. Removed
   // creatures are gone — skip.

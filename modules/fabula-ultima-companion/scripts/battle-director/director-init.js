@@ -38,10 +38,13 @@ import {
   playDescentLocal,
   buildDescentPayload,
   entranceStyleFromFlags,
-  splitByEntranceStyle,
+  entranceQueuedFromFlags,
+  planEntrance,
   DEFAULT_ENTRANCE_STYLE,
 } from "./boss-entrance-fx.js";
-import { pWait, shouldRender } from "./presentation-clock.js";
+import { pWait, shouldRender, hasOtherViewers } from "./presentation-clock.js";
+import { GATHER_STYLES } from "./gather-styles.js";
+import { playGatherLocal } from "./gather-entrance-fx.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { resolveGuestRoster, ensureGuestPassive } from "../guest-roster/guest-roster-core.js";
 
@@ -665,6 +668,7 @@ export async function spawnLiveDirectorTokens({ scene, actorUuids, disposition, 
   };
 
   const out = [];
+  const joins = [];
   for (const uuid of actorUuids) {
     const actor = await resolveActor(uuid);
     if (!actor) { warn(`spawnLive: actor ${uuid} not found`); continue; }
@@ -692,11 +696,21 @@ export async function spawnLiveDirectorTokens({ scene, actorUuids, disposition, 
     td.actorLink = shouldLinkSpawnedToken(actor, disposition, proto);
     td.disposition = disposition;
     td.hidden = false;
-    td.alpha = 1;
+    // An actor with an entrance style arrives through it (a companion joining,
+    // a summon appearing): spawn it invisible, play the style, then show it.
+    // Everyone else appears at once, exactly as before.
+    const joinStyle = SimMode.active ? DEFAULT_ENTRANCE_STYLE : entranceStyleFromFlags(actor.flags);
+    td.alpha = joinStyle === DEFAULT_ENTRANCE_STYLE ? 1 : 0;
     td.flags = { ...(td.flags ?? {}), [FLAG_NS]: { ...(td.flags?.[FLAG_NS] ?? {}), [FLAG_DIRECTOR_SPAWNED]: true } };
     const [created] = await scene.createEmbeddedDocuments("Token", [td]);
-    if (created) out.push(created);
+    if (created) {
+      out.push(created);
+      if (joinStyle !== DEFAULT_ENTRANCE_STYLE) {
+        joins.push({ tokenId: created.id, style: joinStyle, queued: entranceQueuedFromFlags(actor.flags) });
+      }
+    }
   }
+  if (joins.length) await playJoinEntrances(scene, joins);
   // Kick battle-stance loops on the freshly-spawned tokens (idempotent).
   try { await ensureBattleStancePlaying(out); } catch (_e) {}
   log(`spawnLive: spawned ${out.length} token(s) disposition=${disposition}`);
@@ -769,6 +783,14 @@ function entranceStyleFor(tokenId) {
   } catch { return DEFAULT_ENTRANCE_STYLE; }
 }
 
+// `entranceQueue` (same flag namespace): this enemy's entrance waits its turn
+// and plays alone. Set from Token Config → Appearance → Battle Entrance.
+function entranceQueuedFor(tokenId) {
+  try {
+    return entranceQueuedFromFlags(canvas?.tokens?.get?.(tokenId)?.actor?.flags);
+  } catch { return false; }
+}
+
 // Return the unique set of roar URLs for a batch of spawned enemy TokenDocuments
 // so they can be added to the preload list (preloaded behind the curtain).
 function buildEnemyRoarUrls(enemyTokenDocs) {
@@ -784,6 +806,7 @@ function buildEnemyRoarUrls(enemyTokenDocs) {
 
 const ENTRANCE_MODULE_ID = "fabula-ultima-companion";
 const ACTION_ENTRANCE = "FU_DIRECTOR_ENTRANCE_PLAY";
+const ACTION_JOIN = "FU_DIRECTOR_JOIN_PLAY";
 let _entranceSocket = null;
 
 // Register the entrance socket on EVERY client (call once at boot). Lets the
@@ -797,6 +820,7 @@ export function initDirectorEntrance() {
     }
     _entranceSocket = socketlib.registerModule(ENTRANCE_MODULE_ID);
     _entranceSocket.register(ACTION_ENTRANCE, playEntranceLocal);
+    _entranceSocket.register(ACTION_JOIN, playJoinLocal);
     log("director-entrance: socket registered");
   } catch (e) {
     warn("director-entrance: init failed", e);
@@ -955,7 +979,11 @@ async function playEntranceLocal({ partyTokenIds = [], enemyTokenIds = [] } = {}
     const placeable = getP(id);
     if (!placeable) return;
     try {
-      await playDescentLocal(buildDescentPayload(placeable, styleKey, canvas?.scene ?? null));
+      if (Object.prototype.hasOwnProperty.call(GATHER_STYLES, styleKey)) {
+        await playGatherLocal({ sceneId: canvas?.scene?.id ?? null, tokenId: id, style: styleKey });
+      } else {
+        await playDescentLocal(buildDescentPayload(placeable, styleKey, canvas?.scene ?? null));
+      }
       if (!placeable.destroyed) {
         try { placeable.alpha = 1; } catch {}
         try { if (placeable.mesh) placeable.mesh.alpha = 1; } catch {}
@@ -973,14 +1001,25 @@ async function playEntranceLocal({ partyTokenIds = [], enemyTokenIds = [] } = {}
 
     // Split the enemies by entrance style. Everything without an opt-in flag
     // lands in `fading` and takes the original path untouched.
-    const { fading, descending } = splitByEntranceStyle(enemyTokenIds, entranceStyleFor);
+    const { queue, fading, descending } = planEntrance(enemyTokenIds, entranceStyleFor, entranceQueuedFor);
+
+    // Queued entrances first, one at a time in roster order, nothing else
+    // moving — each owns the camera for its whole shot. descendIn/fadeIn never
+    // throw, so one failed entrance cannot stall the ones behind it.
+    for (const { id, style } of queue) {
+      if (style === DEFAULT_ENTRANCE_STYLE) await fadeIn(id, 0);
+      else await descendIn(id, style);
+    }
 
     // Play one species-based roar (random pick from the enemy group) as enemies
     // begin fading in — mirrors the legacy Entrance Animation Listener logic.
     // Biased to a descending boss when there is one, so the roar belongs to the
-    // monster the shot is actually about.
-    if (enemyTokenIds.length > 0) {
-      playSfx(pickEnemyRoarUrl(enemyTokenIds, descending.map((d) => d.id)), ROAR_VOLUME);
+    // monster the shot is actually about. Drawn from the group entering
+    // together: a queued entrance has had its own moment (and a roar at the top
+    // would land in the silence a camera entrance opens with).
+    const together = [...fading, ...descending.map((d) => d.id)];
+    if (together.length > 0) {
+      playSfx(pickEnemyRoarUrl(together, descending.map((d) => d.id)), ROAR_VOLUME);
     }
 
     await Promise.all([
@@ -990,6 +1029,63 @@ async function playEntranceLocal({ partyTokenIds = [], enemyTokenIds = [] } = {}
   } catch (e) {
     warn("playEntranceLocal threw", e);
   }
+}
+
+// ─── Live join entrance ──────────────────────────────────────────────────
+// A creature joining a battle already running (spawnLiveDirectorTokens) with an
+// entrance style plays it on every client: queued ones one at a time, then the
+// rest together — the same order rule as the battle-start entrance.
+function entranceDurationMs(style) {
+  const g = GATHER_STYLES[style];
+  if (g) return g.totalMs;
+  return 3000;   // descents: their own timelines; a hidden GM only needs a bound
+}
+
+async function playJoinOne({ tokenId, style }) {
+  try {
+    if (Object.prototype.hasOwnProperty.call(GATHER_STYLES, style)) {
+      await playGatherLocal({ sceneId: canvas?.scene?.id ?? null, tokenId, style });
+    } else {
+      const placeable = canvas?.tokens?.get?.(tokenId);
+      if (placeable) await playDescentLocal(buildDescentPayload(placeable, style, canvas?.scene ?? null));
+    }
+  } catch (e) {
+    warn(`join entrance: "${style}" failed for ${tokenId}`, e);
+  }
+  // Reveal locally; the GM persists alpha 1 right after.
+  const p = canvas?.tokens?.get?.(tokenId);
+  if (p && !p.destroyed) {
+    try { p.alpha = 1; } catch {}
+    try { if (p.mesh) p.mesh.alpha = 1; } catch {}
+  }
+}
+
+// CLIENT: play the join entrances for tokens on this client's battle scene.
+async function playJoinLocal({ sceneId, joins = [] } = {}) {
+  if (sceneId && canvas?.scene?.id !== sceneId) return;
+  if (!shouldRender()) return;
+  const queued = joins.filter((j) => j.queued);
+  const rest = joins.filter((j) => !j.queued);
+  for (const j of queued) await playJoinOne(j);
+  await Promise.all(rest.map((j) => playJoinOne(j)));
+}
+
+// GM: broadcast, play locally, then make the tokens visible for good.
+async function playJoinEntrances(scene, joins) {
+  const payload = { sceneId: scene.id, joins };
+  try { _entranceSocket?.executeForOthers?.(ACTION_JOIN, payload); }
+  catch (e) { warn("join entrance: broadcast failed", e); }
+  if (shouldRender()) await playJoinLocal(payload);
+  else if (hasOtherViewers()) {
+    // Nothing drawn here, but the others are watching: hold the reveal for the
+    // length of the show so it does not land under their animation.
+    const q = joins.filter((j) => j.queued).reduce((n, j) => n + entranceDurationMs(j.style), 0);
+    const r = Math.max(0, ...joins.filter((j) => !j.queued).map((j) => entranceDurationMs(j.style)));
+    await new Promise((res) => setTimeout(res, q + r));
+  }
+  try {
+    await scene.updateEmbeddedDocuments("Token", joins.map((j) => ({ _id: j.tokenId, alpha: 1 })), { animate: false });
+  } catch (e) { warn("join entrance: persist alpha failed", e); }
 }
 
 // GM-side orchestration: broadcast the entrance to all OTHER clients, run it

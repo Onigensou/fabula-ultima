@@ -459,13 +459,29 @@ export async function resolveDamageReactions({ target, curHp, rawDamage, sourceA
 // doesn't statically depend on the VFX layer, and so a missing/broken VFX
 // module can never break the damage write. Never awaited — the cinematic
 // must not gate HP/MP application.
-function fireResourceLossVfx(opts) {
+// `after` runs once the number has been emitted (or the VFX layer failed) —
+// the on-hit defeat rides it, so the freeze can never come before the number.
+function fireResourceLossVfx(opts, after = null) {
   try {
     import("./director-vfx.js")
       .then((m) => m.playResourceLossVfx?.(opts))
-      .catch((e) => warn("fireResourceLossVfx import failed", e));
+      .catch((e) => warn("fireResourceLossVfx import failed", e))
+      .finally(() => { try { after?.(); } catch (e) { warn("fireResourceLossVfx: after threw", e); } });
   } catch (e) {
     warn("fireResourceLossVfx threw", e);
+  }
+}
+
+// Lazy fire-and-forget bridge to defeat-reactor's on-hit start (see
+// startDefeatOnHit). Same contract as fireResourceLossVfx: never awaited, and a
+// failure can never touch the damage write.
+function fireDefeatOnHit(opts) {
+  try {
+    import("./defeat-reactor.js")
+      .then((m) => m.startDefeatOnHit?.(opts))
+      .catch((e) => warn("fireDefeatOnHit import failed", e));
+  } catch (e) {
+    warn("fireDefeatOnHit threw", e);
   }
 }
 
@@ -603,6 +619,9 @@ export async function applyDamageToTarget({
   // even through a Shield — Robe of Flesh drops its wearer into Crisis and THEN
   // hands out a fresh Shield. Default off: RAW Shield soaks damage first.
   skipShield = false,
+  // Who landed it — only steers the direction of a defeat style that starts on
+  // the hit ("launched": he flies away from the attacker). Optional.
+  sourceTokenUuid = null,
 } = {}) {
   const empty = { resource, finalValue: 0, valueDirection: "none", fired: [] };
   if (!target) return empty;
@@ -740,7 +759,12 @@ export async function applyDamageToTarget({
     if (blockedByReaction) {
       fireBlockVfx({ tokenUuid });
     } else {
-      fireResourceLossVfx({ tokenUuid, resource: "hp", amount: dealtDamage, affinity, element: _vfxElement, isCrit: _vfxIsCrit, pierce: _vfxPierce });
+      // A killing blow on a creature whose defeat style starts on the hit:
+      // begin it right after its damage number pops, not when the action
+      // settles. The removal still happens in the settle (defeat-reactor).
+      const killing = newHp === 0 && dealtDamage > 0;
+      fireResourceLossVfx({ tokenUuid, resource: "hp", amount: dealtDamage, affinity, element: _vfxElement, isCrit: _vfxIsCrit, pierce: _vfxPierce },
+        killing ? () => fireDefeatOnHit({ tokenUuid, actor: target, hpAfter: newHp, causeTokenUuid: sourceTokenUuid }) : null);
     }
     // Transient HP bar (studied hostile NPCs only — gated inside). Carries the
     // shield band so a partially-soaked hit shows white + green shrinking in
@@ -6068,6 +6092,7 @@ async function dealDamageApply(row, ctx, d) {
         resource: isMp ? "mp" : "hp",
         targetName: actor.name,
         tokenUuid: token.uuid ?? token.document?.uuid ?? null,
+        sourceTokenUuid: causeSource?.tokenUuid ?? null,
         logPrefix: `${attackerName}:`,
         // Effect/tick damage → Battle Log (one row per target, flushed once
         // below). sourceType "effect" so the log distinguishes ticks/riders
