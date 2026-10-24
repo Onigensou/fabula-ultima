@@ -110,7 +110,7 @@
     "container": "rIxMsRTAdn8ZQVYH",
     "props": {
       "cost": "",
-      "description": "<p>A creature hit by Holy Crucifixion is Crucified, and The Cross leaves your hands until that creature dies.</p>",
+      "description": "<ul><li><p>You may perform the skill 【💥<strong>@UUID[Item.k2huLrX9cf2f5J7n]{Holy Crucifixion}</strong>】</p></li></ul>",
       "effect_table": {
         "0": {
           "chain_steps": "hc_crucify, hc_clear, hc_lock",
@@ -160,7 +160,7 @@
           "reaction_trigger": "turn_end"
         }
       },
-      "skill_description": "<p>A creature hit by Holy Crucifixion is Crucified, and The Cross leaves your hands until that creature dies.</p>",
+      "skill_description": "<ul><li><p>You may perform the skill 【💥<strong>@UUID[Item.k2huLrX9cf2f5J7n]{Holy Crucifixion}</strong>】</p></li></ul>",
       "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": "",

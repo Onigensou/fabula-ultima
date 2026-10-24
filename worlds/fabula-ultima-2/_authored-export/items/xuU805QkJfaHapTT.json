@@ -28,7 +28,7 @@
     "container": "G5KhFrfss8c8AHm7",
     "props": {
       "cost": "",
-      "description": "<p><em>A sword that lay beneath Fafnir's gold at Gnitaheath for centuries. The hoard's hunger soaked into the steel.</em></p><p><strong>Avarice:</strong> Once per round, when you hit a creature with this weapon, you gain 2 IP, taken from that creature if it has any. If it had none, the hit deals 10 bonus damage.</p>",
+      "description": "<ul><li><p>Once per round, when you hit a creature with this weapon, you gain <strong>2 IP</strong>, taken from that creature if it has any.</p></li><li><p>Your attacks with this weapon deal <strong>10 bonus damage</strong> to creatures that have no IP.</p></li></ul>",
       "effect_table": {
         "0": {
           "damage_amount": "10",
@@ -86,7 +86,7 @@
           "reaction_trigger": "creature_deals_damage"
         }
       },
-      "skill_description": "<p><em>A sword that lay beneath Fafnir's gold at Gnitaheath for centuries. The hoard's hunger soaked into the steel.</em></p><p><strong>Avarice:</strong> Once per round, when you hit a creature with this weapon, you gain 2 IP, taken from that creature if it has any. If it had none, the hit deals 10 bonus damage.</p>",
+      "skill_description": "<ul><li><p>Once per round, when you hit a creature with this weapon, you gain <strong>2 IP</strong>, taken from that creature if it has any.</p></li><li><p>Your attacks with this weapon deal <strong>10 bonus damage</strong> to creatures that have no IP.</p></li></ul>",
       "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": "",

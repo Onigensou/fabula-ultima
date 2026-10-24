@@ -553,7 +553,7 @@
           "def_bonus": "",
           "defense": "0",
           "defense_include_dex": false,
-          "description": "<ul><li>When anyone in the scene perform a&nbsp;<strong>Spell Action, </strong>you gain <strong>1 IP.</strong></li></ul>",
+          "description": "<ul><li>When anyone in the scene perform a&nbsp;<strong>Spell Action </strong>that cost <strong>30 MP</strong> or more<strong>, </strong>you gain <strong>1 IP.</strong></li></ul>",
           "details_roller": "Show",
           "flavor_text": "<p><em>Creation...from nothingness...</em></p>",
           "initiative": "0",
@@ -605,6 +605,177 @@
         "templateSystemUniqueVersion": 3725551061,
         "unique": false,
         "uniqueId": "JvssvWr6WN0dN5HJ"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "9GVF44vgPidX53Km",
+      "_stats": {
+        "compendiumSource": "Item.k2huLrX9cf2f5J7n",
+        "coreVersion": "12.343",
+        "createdTime": 1792831383767,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "hwvtqEzn1JZcmn4X",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "hwvtqEzn1JZcmn4X",
+              "originalParentId": "k2huLrX9cf2f5J7n",
+              "originalUuid": "Item.k2huLrX9cf2f5J7n.ActiveEffect.hwvtqEzn1JZcmn4X"
+            },
+            "fabula-ultima-companion": {
+              "draftAutomation": "claude-2026-10-23",
+              "lifetimeMode": "target_turn_end"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/weapons/polearms/spear-hooked-blue.webp",
+          "name": "Crucifixion Ready",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        },
+        "fabula-ultima-companion": {
+          "draftAutomation": "claude-2026-10-23"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/weapons/polearms/spear-hooked-blue.webp",
+      "name": "Holy Crucifixion",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 200000,
+      "system": {
+        "container": "IfUaLrXP2NFXhi4b",
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "Rogue",
+          "cost": "-",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>Perform a <strong>free attack</strong> with The Cross against the target. If it hits, the target becomes <strong>Crucified</strong> and gains <strong>Vulnerability</strong> to <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span>&nbsp;damage until the end of the scene. <strong>Crucified</strong> cannot be dispelled.</p><p>While a creature is <strong>Crucified</strong>, The Cross cannot be equipped. When that creature dies, The Cross returns to your inventory.</p>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "chain_steps": "hc_mark, hc_attack",
+              "effect_kind": "chain",
+              "effect_label": "hc_root"
+            },
+            "1": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Crucifixion Ready",
+              "effect_kind": "apply_ae",
+              "effect_label": "hc_mark",
+              "target_ref": "self"
+            },
+            "2": {
+              "action_ref": "Attack",
+              "effect_kind": "free_action",
+              "effect_label": "hc_attack",
+              "target_ref": "action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "k2huLrX9cf2f5J7n",
+          "img": "icons/weapons/polearms/spear-hooked-blue.webp",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Holy Crucifixion",
+          "on_activate_effect_ref": "hc_root",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_description": "<p><strong>Cost:</strong> -</p><p><strong>Target:</strong> One Creature</p><p><strong>Duration:</strong> Instantaneous</p><p>Perform a free attack with The Cross on a single creature. If this attack hits, the creature is Crucified and gains Vulnerability to Light damage until the end of the scene. While a creature is Crucified, The Cross cannot be equipped; once the Crucified creature dies, The Cross returns to its owner's inventory. Crucified cannot be dispelled.</p>",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Item.k2huLrX9cf2f5J7n"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "9GVF44vgPidX53Km"
       },
       "type": "equippableItem"
     },
@@ -841,6 +1012,156 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "ayA7XQ5emvSN5Uh1",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1792831384003,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "base_defense",
+              "mode": 4,
+              "priority": 1,
+              "value": "${isEquipped ? (isMartial ? (item_baseDef * 1) : 0) : 0}$"
+            },
+            {
+              "key": "bonus_defense",
+              "mode": 2,
+              "priority": 2,
+              "value": "${isEquipped ? (isMartial ? 0 : (item_def_bonus * 1)) : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "ayA7XQ5emvSN5Uh1",
+              "originalParentId": "Bq3ozqJyZhL5CgXw",
+              "originalUuid": "Actor.BqBoJEye80GAm9fX.Item.Bq3ozqJyZhL5CgXw.ActiveEffect.ayA7XQ5emvSN5Uh1"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-def-up",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
+          "name": "Armor DEF",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
+          "_id": "VsheuRJMtAEJlGEl",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1792831384003,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "base_magic_defense",
+              "mode": 4,
+              "priority": 1,
+              "value": "${isEquipped ? (isMartial ? (item_baseMdef * 1) : 0) : 0}$"
+            },
+            {
+              "key": "bonus_magic_defense",
+              "mode": 2,
+              "priority": 2,
+              "value": "${isEquipped ? (isMartial ? 0 : (item_mdef_bonus * 1)) : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "VsheuRJMtAEJlGEl",
+              "originalParentId": "Bq3ozqJyZhL5CgXw",
+              "originalUuid": "Actor.BqBoJEye80GAm9fX.Item.Bq3ozqJyZhL5CgXw.ActiveEffect.VsheuRJMtAEJlGEl"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-mdef-up",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUpStack.webp",
+          "name": "Armor MDEF",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "core": {
           "sourceId": "Item.xbPqXpTF8FDw0OqJ"
@@ -867,7 +1188,7 @@
           "def_bonus": "",
           "defense": "0",
           "defense_include_dex": true,
-          "description": "<img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png\" width=\"21\" height=\"21\" draggable=\"true\" contenteditable=\"false\"><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png\" width=\"21\" height=\"21\" draggable=\"true\" contenteditable=\"false\"><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/taurochole.png\" alt=\"\" width=\"21\" height=\"21\" draggable=\"true\" contenteditable=\"false\"><p>At the start of the wearer turn, if the wearer's is <strong>NOT </strong>in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong>, the wearer enters <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}&nbsp;</strong>and gains <strong>@UUID[JournalEntry.wrw2ENSwzCBjztvt]{Shield}</strong> equals to<strong>【lost Hit Points + 5】.</strong></p>",
+          "description": "<ul><li><p>At the start of the wearer's turn, if the wearer is <strong>not</strong> in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, the wearer enters <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span> and gains <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a></span></span> equal to <strong>【lost Hit Points + 5】</strong>.</p></li></ul>",
           "flavor_text": "<p><em>From the moment I understood the weakness of my armor, it disgusted me.</em></p>",
           "id": "Bq3ozqJyZhL5CgXw",
           "img": "icons/equipment/chest/robe-collared-pink.webp",
@@ -1036,6 +1357,90 @@
       "type": "equippableItem"
     },
     {
+      "_id": "cx2f0CWbnNy8TjCd",
+      "_stats": {
+        "compendiumSource": "Item.RB3CDF98qYlgsgzX",
+        "coreVersion": "12.343",
+        "createdTime": 1792831383885,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "draftAutomation": "claude-2026-10-23"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/equipment/chest/robe-collared-pink.webp",
+      "name": "Robe of Flesh (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "Bq3ozqJyZhL5CgXw",
+        "props": {
+          "cost": "",
+          "description": "<ul><li><p>At the start of the wearer's turn, if the wearer is <strong>not</strong> in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, the wearer enters <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span> and gains <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a></span></span> equal to <strong>【lost Hit Points + 5】</strong>.</p></li></ul>",
+          "effect_table": {
+            "0": {
+              "chain_steps": "rof_shield, rof_drop",
+              "effect_kind": "chain",
+              "effect_label": "rof_root"
+            },
+            "1": {
+              "effect_kind": "set_resource",
+              "effect_label": "rof_shield",
+              "grant_amount": "CUR_HP - floor(MAX_HP / 2) + 5",
+              "grant_resource": "shield",
+              "target_ref": "self"
+            },
+            "2": {
+              "attacker_name": "Robe of Flesh",
+              "damage_amount": "CUR_HP - floor(MAX_HP / 2)",
+              "damage_element": "elementless",
+              "damage_ignore_affinity": true,
+              "damage_keywords": "crush",
+              "damage_skip_shield": true,
+              "effect_kind": "deal_damage",
+              "effect_label": "rof_drop",
+              "target_ref": "self"
+            }
+          },
+          "id": "RB3CDF98qYlgsgzX",
+          "img": "icons/equipment/chest/robe-collared-pink.webp",
+          "isCheck": false,
+          "isReaction": true,
+          "name": "Robe of Flesh (Passive)",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "HAS_STATUS_CRISIS == 0 && CUR_HP > floor(MAX_HP / 2)",
+              "reaction_effect_ref": "rof_root",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "turn_start"
+            }
+          },
+          "skill_description": "<ul><li><p>At the start of the wearer's turn, if the wearer is <strong>not</strong> in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, the wearer enters <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span> and gains <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a></span></span> equal to <strong>【lost Hit Points + 5】</strong>.</p></li></ul>",
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "uuid": "Item.RB3CDF98qYlgsgzX"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "cx2f0CWbnNy8TjCd"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "DEckeUF1grwSJdZl",
       "_stats": {
         "compendiumSource": "Item.zPWgRgkYSgm9Elib",
@@ -1086,6 +1491,128 @@
         "template": "gIRU9XGqYeMBwBN9",
         "templateSystemUniqueVersion": 2814471460,
         "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Dkil5uq3qT8PxxZD",
+      "_stats": {
+        "compendiumSource": "Item.OOaC9Q9mR2qo2CjJ",
+        "coreVersion": "12.343",
+        "createdTime": 1792831383658,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "draftAutomation": "claude-2026-10-23"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Maids Pocketwatch (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "vr5rkOuXI4q3oHor",
+        "props": {
+          "cost": "",
+          "description": "<p>When you perform your&nbsp;<strong>Zero Power</strong>, Choose:</p>\n<ul>\n<li>Target enemy loses <strong><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20MainCommand%20(Others)/04_Extra/group_pose.png\" alt=\"\" width=\"21\" height=\"21\"> 1 turn activation</strong>.</li>\n<li>Target ally other than yourself gain <strong style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\"><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20MainCommand%20(Others)/04_Extra/group_pose.png\" alt=\"\" width=\"21\" height=\"21\"> 1 turn activation</strong><span style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\">.</span></li>\n</ul>\n<p><span style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\">This effect can only trigger <strong>once per round</strong>.</span></p>",
+          "effect_table": {
+            "0": {
+              "effect_kind": "open_action_menu",
+              "effect_label": "mpw_menu",
+              "menu_option_refs": "mpw_slow, mpw_haste",
+              "menu_pick_count": "1",
+              "menu_subtitle": "Wind the hands of time",
+              "menu_title": "Maids Pocketwatch"
+            },
+            "1": {
+              "chain_steps": "mpw_enemy, mpw_enemy_turn",
+              "effect_kind": "chain",
+              "effect_label": "mpw_slow",
+              "menu_description": "Target enemy loses 1 turn activation.",
+              "menu_label": "Stop an enemy"
+            },
+            "2": {
+              "auto_target": "confirm",
+              "candidate_source": "combat",
+              "category": "enemy",
+              "count": "1",
+              "effect_kind": "targeting",
+              "effect_label": "mpw_enemy",
+              "mode": "exact",
+              "skip_when_passive": false,
+              "target_filter": "CUR_HP >= 1",
+              "target_prompt": "Choose an enemy to lose 1 turn"
+            },
+            "3": {
+              "effect_kind": "modify_turns",
+              "effect_label": "mpw_enemy_turn",
+              "target_ref": "mpw_enemy",
+              "turns_delta": "-1",
+              "turns_floor": "0"
+            },
+            "4": {
+              "chain_steps": "mpw_ally, mpw_ally_turn",
+              "effect_kind": "chain",
+              "effect_label": "mpw_haste",
+              "menu_description": "Target ally other than yourself gains 1 turn activation.",
+              "menu_label": "Hasten an ally"
+            },
+            "5": {
+              "auto_target": "confirm",
+              "candidate_source": "combat",
+              "category": "ally",
+              "count": "1",
+              "effect_kind": "targeting",
+              "effect_label": "mpw_ally",
+              "exclude_self": true,
+              "mode": "exact",
+              "skip_when_passive": false,
+              "target_filter": "CUR_HP >= 1",
+              "target_prompt": "Choose an ally to gain 1 turn"
+            },
+            "6": {
+              "effect_kind": "modify_turns",
+              "effect_label": "mpw_ally_turn",
+              "target_ref": "mpw_ally",
+              "turns_delta": "1",
+              "turns_floor": "0"
+            }
+          },
+          "id": "OOaC9Q9mR2qo2CjJ",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+          "isCheck": false,
+          "isReaction": true,
+          "name": "Maids Pocketwatch (Passive)",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "reaction_effect_ref": "mpw_menu",
+              "reaction_max_per_round": "1",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_unleashes_zero_power"
+            }
+          },
+          "skill_description": "<p>When you perform your&nbsp;<strong>Zero Power</strong>, Choose:</p>\n<ul>\n<li>Target enemy loses <strong><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20MainCommand%20(Others)/04_Extra/group_pose.png\" alt=\"\" width=\"21\" height=\"21\"> 1 turn activation</strong>.</li>\n<li>Target ally other than yourself gain <strong style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\"><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20MainCommand%20(Others)/04_Extra/group_pose.png\" alt=\"\" width=\"21\" height=\"21\"> 1 turn activation</strong><span style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\">.</span></li>\n</ul>\n<p><span style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\">This effect can only trigger <strong>once per round</strong>.</span></p>",
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "uuid": "Item.OOaC9Q9mR2qo2CjJ"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "Dkil5uq3qT8PxxZD"
       },
       "type": "equippableItem"
     },
@@ -1929,7 +2456,7 @@
           "check_bonus": "1",
           "cost": "3000",
           "damage_bonus": "16",
-          "description": "<p>You may use an action to perform <strong>Holy Crucifixion</strong>: performs a <strong>free attack&nbsp;</strong>on a single creature. If this attack hit, the creature is&nbsp;<strong>Crucified</strong> and gains&nbsp;<strong>Vulnerability&nbsp;</strong>to&nbsp;<strong>Light&nbsp;</strong>damage until the end of scene.</p><ul><li>While a creature is <strong>Crucified</strong>, the Cross <strong>CANNOT</strong> be equiped.</li><li>Once the <strong>Crucified</strong> creature is dead, <strong>the Cross</strong> is returned to its owner inventory.</li><li><strong>Crucified CANNOT&nbsp;</strong>be dispel, and can only be removed by its owner.</li></ul>",
+          "description": "<ul><li><p>You may perform the skill 【💥<strong>@UUID[Item.k2huLrX9cf2f5J7n]{Holy Crucifixion}</strong>】</p></li></ul>",
           "flavor_text": "<p><em>With the man on The Cross, the history changed completely.</em></p>",
           "hand_slots": "Two-handed",
           "martial": true,
@@ -2309,6 +2836,181 @@
         "templateSystemUniqueVersion": 3725551061,
         "unique": false,
         "uniqueId": "k1ws4o2xY7qXkfaf"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Q0asOaouuu75tChz",
+      "_stats": {
+        "compendiumSource": "Item.pt3AvOnolAl9WrZA",
+        "coreVersion": "12.343",
+        "createdTime": 1792831383767,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "yeMFSOAi6rIpZ0pE",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_8",
+              "mode": 5,
+              "priority": 20,
+              "value": "VU"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "yeMFSOAi6rIpZ0pE",
+              "originalParentId": "pt3AvOnolAl9WrZA",
+              "originalUuid": "Item.pt3AvOnolAl9WrZA.ActiveEffect.yeMFSOAi6rIpZ0pE"
+            },
+            "fabula-ultima-companion": {
+              "crossScene": false,
+              "directorPermanent": true,
+              "draftAutomation": "claude-2026-10-23",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "effect_kind": "hide_item",
+                    "effect_label": "crux_return",
+                    "hide_item_name": "The Cross",
+                    "hide_item_restore": true,
+                    "target_ref": "ae_applier"
+                  }
+                },
+                "name": "Crucified",
+                "reaction_config_table": {
+                  "0": {
+                    "reaction_effect_ref": "crux_return",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_defeated"
+                  }
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/weapons/polearms/spear-hooked-blue.webp",
+          "name": "Crucified",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "draftAutomation": "claude-2026-10-23"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/weapons/polearms/spear-hooked-blue.webp",
+      "name": "The Cross (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "IfUaLrXP2NFXhi4b",
+        "props": {
+          "cost": "",
+          "description": "<ul><li><p>You may perform the skill 【💥<strong>@UUID[Item.k2huLrX9cf2f5J7n]{Holy Crucifixion}</strong>】</p></li></ul>",
+          "effect_table": {
+            "0": {
+              "chain_steps": "hc_crucify, hc_clear, hc_lock",
+              "effect_kind": "chain",
+              "effect_label": "hc_hit"
+            },
+            "1": {
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "scene",
+              "ae_template_ref": "Crucified",
+              "effect_kind": "apply_ae",
+              "effect_label": "hc_crucify",
+              "target_ref": "trigger_subject"
+            },
+            "2": {
+              "ae_template_ref": "Crucifixion Ready",
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "hc_clear",
+              "target_ref": "self"
+            },
+            "3": {
+              "effect_kind": "hide_item",
+              "effect_label": "hc_lock"
+            }
+          },
+          "id": "pt3AvOnolAl9WrZA",
+          "img": "icons/weapons/polearms/spear-hooked-blue.webp",
+          "isCheck": false,
+          "isReaction": true,
+          "name": "The Cross (Passive)",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "ACTION_IS_ATTACK == 1 && AE_COUNT_CRUCIFIXION_READY > 0",
+              "reaction_effect_ref": "hc_hit",
+              "reaction_passive_mode": "force",
+              "reaction_requires_weapon_used": true,
+              "reaction_source": "self",
+              "reaction_trigger": "creature_deals_damage"
+            },
+            "1": {
+              "condition_formula": "AE_COUNT_CRUCIFIXION_READY > 0",
+              "reaction_effect_ref": "hc_clear",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "turn_end"
+            }
+          },
+          "skill_description": "<ul><li><p>You may perform the skill 【💥<strong>@UUID[Item.k2huLrX9cf2f5J7n]{Holy Crucifixion}</strong>】</p></li></ul>",
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "uuid": "Item.pt3AvOnolAl9WrZA"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "Q0asOaouuu75tChz"
       },
       "type": "equippableItem"
     },
@@ -3048,8 +3750,9 @@
           "def_bonus": "",
           "defense": "0",
           "defense_include_dex": false,
-          "description": "<p>When you perform your&nbsp;<strong>Zero Power</strong>, Choose:</p><ul><li>Target enemy loses <strong>1 turn activation</strong>.</li><li>Target ally other than yourself gain <span style=\"font-family: var(--font-primary)\"><strong style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\">1 turn activation</strong>.</span></li></ul><p><span style=\"font-family: var(--font-primary)\">This effect can only trigger <strong>once per round</strong>.</span></p>",
+          "description": "<p>When you perform your&nbsp;<strong>Zero Power</strong>, Choose:</p>\n<ul>\n<li>Target enemy loses <strong><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20MainCommand%20(Others)/04_Extra/group_pose.png\" alt=\"\" width=\"21\" height=\"21\"> 1 turn activation</strong>.</li>\n<li>Target ally other than yourself gain <strong style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\"><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20MainCommand%20(Others)/04_Extra/group_pose.png\" alt=\"\" width=\"21\" height=\"21\"> 1 turn activation</strong><span style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\">.</span></li>\n</ul>\n<p><span style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\">This effect can only trigger <strong>once per round</strong>.</span></p>",
           "details_roller": "Show",
+          "flavor_text": "",
           "initiative": "0",
           "magic_defense": "0",
           "magic_defense_include_ins": false,
@@ -3500,6 +4203,75 @@
         "template": "5Z0gKtN5R51ebJOa",
         "templateSystemUniqueVersion": 2929120018,
         "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "YCpX5MGEODZxQUJG",
+      "_stats": {
+        "compendiumSource": "Item.UuZtk5eZYZ19VJK2",
+        "coreVersion": "12.343",
+        "createdTime": 1792831383541,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "draftAutomation": "claude-2026-10-23"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/yorb.png",
+      "name": "Alchemist Vial (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "8MrPjDOBUHds8OL6",
+        "props": {
+          "cost": "",
+          "description": "<ul><li>When anyone in the scene perform a&nbsp;<strong>Spell Action </strong>that cost <strong>30 MP</strong> or more<strong>, </strong>you gain <strong>1 IP.</strong></li></ul>",
+          "effect_table": {
+            "0": {
+              "effect_kind": "grant",
+              "effect_label": "avial_ip",
+              "grant_amount": "1",
+              "grant_resource": "ip",
+              "grant_target": "self",
+              "target_ref": "self"
+            }
+          },
+          "id": "UuZtk5eZYZ19VJK2",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/yorb.png",
+          "isCheck": false,
+          "isReaction": true,
+          "name": "Alchemist Vial (Passive)",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "ACTION_MP_COST >= 30",
+              "reaction_effect_ref": "avial_ip",
+              "reaction_passive_mode": "force",
+              "reaction_source": "all",
+              "reaction_trigger": "creature_completes_spell"
+            }
+          },
+          "skill_description": "<ul><li>When anyone in the scene perform a&nbsp;<strong>Spell Action </strong>that cost <strong>30 MP</strong> or more<strong>, </strong>you gain <strong>1 IP.</strong></li></ul>",
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "uuid": "Item.UuZtk5eZYZ19VJK2"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "YCpX5MGEODZxQUJG"
       },
       "type": "equippableItem"
     },

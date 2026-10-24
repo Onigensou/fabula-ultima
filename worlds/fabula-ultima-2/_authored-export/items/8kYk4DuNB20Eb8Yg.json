@@ -254,7 +254,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul>\n    <li>\n        <p>You may cast the spell 【<strong>⚡ Aegis Field </strong>】</p>\n        <hr>\n    </li>\n</ul>\n<details>\n    <summary><strong>⚡ Aegis Field</strong></summary>\n    <p><strong>Cost: 80 MP</strong></p>\n    <p><strong>Target: All creature</strong></p>\n    <p><strong>Duration: Instantaneous</strong></p>\n    <p>All creature in the scene gain the following effect until the end of this round: <strong>HP</strong> cannot be reduce</p>\n</details>",
+      "description": "<ul><li><p>You may cast the spell 【⚡<strong>@UUID[Item.E0SS6NYLKUyvisTv]{Aegis Field}</strong>】</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

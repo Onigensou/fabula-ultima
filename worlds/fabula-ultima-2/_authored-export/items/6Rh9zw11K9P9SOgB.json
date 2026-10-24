@@ -28,7 +28,7 @@
     "container": "JAOtuEZGBjGgDVJo",
     "props": {
       "cost": "",
-      "description": "<p>Whenever you are inflicted with a debuff, you may inflict the same debuff on target creature.</p>",
+      "description": "<ul><li><p>Whenever you are inflicted with a <strong>debuff, </strong>you may inflicts the <strong>same debuff</strong> on target creature.</p></li></ul>",
       "effect_table": {
         "0": {
           "chain_steps": "dring_pick, dring_copy",
@@ -71,7 +71,7 @@
           "reaction_trigger": "creature_status_applied"
         }
       },
-      "skill_description": "<p>Whenever you are inflicted with a debuff, you may inflict the same debuff on target creature.</p>",
+      "skill_description": "<ul><li><p>Whenever you are inflicted with a <strong>debuff, </strong>you may inflicts the <strong>same debuff</strong> on target creature.</p></li></ul>",
       "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": "",

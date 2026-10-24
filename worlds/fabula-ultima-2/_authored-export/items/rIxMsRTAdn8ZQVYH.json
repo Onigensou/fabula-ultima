@@ -53,7 +53,7 @@
       "damage_bonus": "16",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<p>You may use an action to perform <strong>Holy Crucifixion</strong>: performs a <strong>free attack&nbsp;</strong>on a single creature. If this attack hit, the creature is&nbsp;<strong>Crucified</strong> and gains&nbsp;<strong>Vulnerability&nbsp;</strong>to&nbsp;<strong>Light&nbsp;</strong>damage until the end of scene.</p>\n<ul>\n<li>While a creature is <strong>Crucified</strong>, the Cross <strong>CANNOT</strong> be equiped.</li>\n<li>Once the <strong>Crucified</strong> creature is dead, <strong>the Cross</strong> is returned to its owner inventory.</li>\n<li><strong>Crucified CANNOT&nbsp;</strong>be dispel, and can only be removed by its owner.</li>\n</ul>",
+      "description": "<ul><li><p>You may perform the skill 【💥<strong>@UUID[Item.k2huLrX9cf2f5J7n]{Holy Crucifixion}</strong>】</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

@@ -28,7 +28,7 @@
     "container": "GtDJyikCuScbp7CI",
     "props": {
       "cost": "",
-      "description": "<p>When anyone in the scene performs a Spell that costs 30 MP or more, you gain 1 IP.</p>",
+      "description": "<ul><li>When anyone in the scene perform a&nbsp;<strong>Spell Action </strong>that cost <strong>30 MP</strong> or more<strong>, </strong>you gain <strong>1 IP.</strong></li></ul>",
       "effect_table": {
         "0": {
           "effect_kind": "grant",
@@ -54,7 +54,7 @@
           "reaction_trigger": "creature_completes_spell"
         }
       },
-      "skill_description": "<p>When anyone in the scene performs a Spell that costs 30 MP or more, you gain 1 IP.</p>",
+      "skill_description": "<ul><li>When anyone in the scene perform a&nbsp;<strong>Spell Action </strong>that cost <strong>30 MP</strong> or more<strong>, </strong>you gain <strong>1 IP.</strong></li></ul>",
       "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": "",

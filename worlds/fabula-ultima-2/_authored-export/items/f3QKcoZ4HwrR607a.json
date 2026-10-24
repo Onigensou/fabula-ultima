@@ -120,7 +120,7 @@
       "cost": "50 MP",
       "damage_bonus": "",
       "defense_target_type": "def",
-      "description": "<p><strong>Cost:</strong> 50 MP</p><p><strong>Target:</strong> One Creature</p><p><strong>Duration:</strong> Instantaneous</p><p>Perform 5 free attacks with Sonic Katar on target creature. These attacks have a -2 penalty to their Accuracy Checks. A Critical Success by these attacks deals 50% more damage but does not generate an Opportunity.</p>",
+      "description": "<p>Perform <strong>5 free attacks</strong> with this weapon against the target. These attacks have a <strong>-2</strong> penalty to their Accuracy Checks. A <strong>Critical Success</strong> with these attacks deals <strong>50%</strong> more damage but does not generate an <strong>Opportunity</strong>.</p>",
       "duration": "Instantaneous",
       "effect_table": {
         "0": {

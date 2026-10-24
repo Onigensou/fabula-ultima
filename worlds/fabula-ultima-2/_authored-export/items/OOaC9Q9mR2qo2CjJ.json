@@ -28,7 +28,7 @@
     "container": "PCoOu6WTIe1wGgpG",
     "props": {
       "cost": "",
-      "description": "<p>When you perform your Zero Power, choose: target enemy loses 1 turn activation, or target ally other than yourself gains 1 turn activation. Once per round.</p>",
+      "description": "<p>When you perform your&nbsp;<strong>Zero Power</strong>, Choose:</p>\n<ul>\n<li>Target enemy loses <strong><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20MainCommand%20(Others)/04_Extra/group_pose.png\" alt=\"\" width=\"21\" height=\"21\"> 1 turn activation</strong>.</li>\n<li>Target ally other than yourself gain <strong style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\"><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20MainCommand%20(Others)/04_Extra/group_pose.png\" alt=\"\" width=\"21\" height=\"21\"> 1 turn activation</strong><span style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\">.</span></li>\n</ul>\n<p><span style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\">This effect can only trigger <strong>once per round</strong>.</span></p>",
       "effect_table": {
         "0": {
           "effect_kind": "open_action_menu",
@@ -107,7 +107,7 @@
           "reaction_trigger": "creature_unleashes_zero_power"
         }
       },
-      "skill_description": "<p>When you perform your Zero Power, choose: target enemy loses 1 turn activation, or target ally other than yourself gains 1 turn activation. Once per round.</p>",
+      "skill_description": "<p>When you perform your&nbsp;<strong>Zero Power</strong>, Choose:</p>\n<ul>\n<li>Target enemy loses <strong><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20MainCommand%20(Others)/04_Extra/group_pose.png\" alt=\"\" width=\"21\" height=\"21\"> 1 turn activation</strong>.</li>\n<li>Target ally other than yourself gain <strong style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\"><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20MainCommand%20(Others)/04_Extra/group_pose.png\" alt=\"\" width=\"21\" height=\"21\"> 1 turn activation</strong><span style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\">.</span></li>\n</ul>\n<p><span style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\">This effect can only trigger <strong>once per round</strong>.</span></p>",
       "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": "",

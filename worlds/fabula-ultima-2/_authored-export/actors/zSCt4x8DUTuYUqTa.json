@@ -203,6 +203,7 @@
           "defense_include_dex": false,
           "description": "<ul><li><p>Whenever you are inflicted with a <strong>debuff, </strong>you may inflicts the <strong>same debuff</strong> on target creature.</p></li></ul>",
           "details_roller": "Show",
+          "flavor_text": "",
           "id": "JAOtuEZGBjGgDVJo",
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Dark%20Ring.gif",
           "initiative": "0",
@@ -1565,6 +1566,92 @@
         "templateSystemUniqueVersion": 2814471460,
         "unique": false,
         "uniqueId": "ghki8JXtqcKxQFCa"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "y6TQFjABdWhtD8R3",
+      "_stats": {
+        "compendiumSource": "Item.6Rh9zw11K9P9SOgB",
+        "coreVersion": "12.343",
+        "createdTime": 1792831384326,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "draftAutomation": "claude-2026-10-23"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Dark%20Ring.gif",
+      "name": "Dark Ring (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "28SmyjrMINJ2XEpC",
+        "props": {
+          "cost": "",
+          "description": "<ul><li><p>Whenever you are inflicted with a <strong>debuff, </strong>you may inflicts the <strong>same debuff</strong> on target creature.</p></li></ul>",
+          "effect_table": {
+            "0": {
+              "chain_steps": "dring_pick, dring_copy",
+              "effect_kind": "chain",
+              "effect_label": "dring_root"
+            },
+            "1": {
+              "auto_target": "confirm",
+              "candidate_source": "combat",
+              "count": "1",
+              "effect_kind": "targeting",
+              "effect_label": "dring_pick",
+              "exclude_self": true,
+              "mode": "exact",
+              "skip_when_passive": false,
+              "target_filter": "CUR_HP >= 1",
+              "target_prompt": "Choose a creature to share the debuff with"
+            },
+            "2": {
+              "ae_template_ref": "TRIGGER_STATUS",
+              "effect_kind": "transfer_ae",
+              "effect_label": "dring_copy",
+              "from_ref": "self",
+              "keep_source": true,
+              "target_ref": "dring_pick"
+            }
+          },
+          "id": "6Rh9zw11K9P9SOgB",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Dark%20Ring.gif",
+          "isCheck": false,
+          "isReaction": true,
+          "name": "Dark Ring (Passive)",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "STATUS_HAS_TAG_DEBUFF == 1",
+              "reaction_effect_ref": "dring_root",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_status_applied"
+            }
+          },
+          "skill_description": "<ul><li><p>Whenever you are inflicted with a <strong>debuff, </strong>you may inflicts the <strong>same debuff</strong> on target creature.</p></li></ul>",
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "uuid": "Item.6Rh9zw11K9P9SOgB"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "y6TQFjABdWhtD8R3"
       },
       "type": "equippableItem"
     },
