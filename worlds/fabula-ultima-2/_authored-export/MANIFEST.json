@@ -21281,6 +21281,22 @@
         "effects": 1
       },
       {
+        "id": "LjS3Wbt3kjtr3peY",
+        "name": "King Gorger (Wild)",
+        "type": "character",
+        "items": [
+          {
+            "id": "ESsOEkCygwZursec",
+            "name": "Element Gorge"
+          },
+          {
+            "id": "yrikkR6UGwEkt1UA",
+            "name": "Flying"
+          }
+        ],
+        "effects": 1
+      },
+      {
         "id": "wqfGUTRInZUS2MNY",
         "name": "King Seigfried",
         "type": "character",
@@ -26540,7 +26556,7 @@
       {
         "id": "DiwyiqNujJaPIH8M",
         "name": "Overworld (Chapter 4) - Enemies",
-        "results": 14
+        "results": 13
       },
       {
         "id": "IGZhlzseqySC5xUd",
