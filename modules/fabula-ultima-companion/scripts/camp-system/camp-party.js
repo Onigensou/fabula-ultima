@@ -41,10 +41,13 @@
         // Find the owning PLAYER user. Assigned character beats raw ownership:
         // GM users carry explicit OWNER on most actors and would win the
         // ownership scan (e.g. Hina → "GM II"), routing player prompts to GM.
+        // Spectators (stream window, non-party players) never stand in for a
+        // party member through the ownership fallback.
+        const S = globalThis.FUCompanion?.api?.Spectator;
         const playerOwners = Object.entries(actor.ownership ?? {})
           .filter(([uid, lvl]) => uid !== "default" && lvl >= 3)
           .map(([uid]) => game.users?.get(uid))
-          .filter(u => u && !u.isGM);
+          .filter(u => u && !u.isGM && !S?.isSpectator?.(u));
         const assigned = game.users?.find(u => !u.isGM && u.character?.id === actor.id);
         const userId   = assigned?.id
           ?? playerOwners.find(u => u.active)?.id

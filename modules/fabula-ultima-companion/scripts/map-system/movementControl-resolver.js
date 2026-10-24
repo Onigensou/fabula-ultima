@@ -374,7 +374,11 @@
   }
 
   function getEligibleControllers(partyMembers, { onlineOnly = true, includeGM = false } = {}) {
-    return buildUserMatches(partyMembers, { onlineOnly, includeGM }).filter(row => row.matched);
+    // Always-spectator users (stream window) can never hold the controller,
+    // even when linked to a party character.
+    const S = globalThis.FUCompanion?.api?.Spectator;
+    return buildUserMatches(partyMembers, { onlineOnly, includeGM })
+      .filter(row => row.matched && !(row.user && !row.user.isGM && S?.isSpectator?.(row.user)));
   }
 
   function getDefaultController(eligibleControllers) {

@@ -243,6 +243,15 @@
     if (!actorUuid) return null;
     const shortId = String(actorUuid).replace(/^Actor\./, "").replace(/^.*\.Actor\./, "");
 
+    // Spectator-aware path: party-linked participant first, never a spectator.
+    const S = globalThis.FUCompanion?.api?.Spectator;
+    if (S?.deciderUserIdForActor) {
+      const actor = game.actors?.get(shortId)
+        ?? (canvas?.tokens?.placeables ?? []).find(t => t.actor?.uuid === actorUuid || t.document?.actorId === shortId)?.actor
+        ?? null;
+      return actor ? S.deciderUserIdForActor(actor, { requireActive: false }) : null;
+    }
+
     const worldActor = game.actors?.get(shortId);
     if (worldActor) {
       for (const [userId, level] of Object.entries(worldActor.ownership ?? {})) {

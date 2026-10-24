@@ -131,6 +131,12 @@ function baseActorOf(actor) {
 export function playerOwnerOf(actor) {
   const base = baseActorOf(actor);
   if (!base) return null;
+  // Same answer as the battle routing (spectators never decide).
+  const S = globalThis.FUCompanion?.api?.Spectator;
+  if (S?.deciderUserIdForActor) {
+    const id = S.deciderUserIdForActor(base, { requireActive: false });
+    return id ? game.users?.get(id) ?? null : null;
+  }
   const users = (game.users?.contents ?? []).filter((u) => !u.isGM);
   return users.find((u) => u.character?.id === base.id)
     ?? users.find((u) => (base.ownership?.[u.id] ?? 0) >= 3) ?? null;

@@ -2547,16 +2547,7 @@ const TurnStart = {
 // Foundry uses for sheet-edit access. NPCs typically have no non-GM
 // owner; PCs have exactly one.
 function resolveActingOwnerForActor(actor, { requireActive = true } = {}) {
-  if (!actor) return null;
-  const candidates = (game.users?.contents ?? []).filter((u) => {
-    if (u.isGM) return false;
-    if (requireActive && !u.active) return false;
-    try { return actor.testUserPermission?.(u, "OWNER"); }
-    catch { return false; }
-  });
-  if (!candidates.length) return null;
-  candidates.sort((a, b) => a.id.localeCompare(b.id));
-  return candidates[0].id;
+  return ownerUserIdForActor(actor, { requireActive });
 }
 
 // The `remotePrompt` handed to a chain ctx so its interactive rows open on the

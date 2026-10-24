@@ -309,7 +309,8 @@
     const currentOwner = owners.find(u => u.id === game.userId);
     if (currentOwner) return currentOwner.id;
 
-    const activeNonGM = owners.find(u => u.active && !u.isGM);
+    const activeNonGM = owners.find(u => u.active && !u.isGM
+      && !globalThis.FUCompanion?.api?.Spectator?.isSpectator?.(u));
     if (activeNonGM) return activeNonGM.id;
 
     const activeAny = owners.find(u => u.active);

@@ -164,6 +164,7 @@
 
   const canOwnerAct = (actorUuid) => {
     if (game.user?.isGM) return true;
+    if (globalThis.FUCompanion?.api?.Spectator?.isSpectator?.()) return false;
     const byWorld = game.actors.find(a => a.uuid === actorUuid);
     if (byWorld) return byWorld.testUserPermission(game.user, "OWNER");
     for (const t of (canvas.tokens?.placeables ?? []))

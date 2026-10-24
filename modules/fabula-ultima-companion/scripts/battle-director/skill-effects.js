@@ -281,6 +281,8 @@ async function promptDefenderOptIn({ target, ae, damage }) {
 // doesn't pull a UI module in mid-resolve.
 function ownerUserIdForDamageTarget(actor) {
   if (!actor) return null;
+  const S = globalThis.FUCompanion?.api?.Spectator;
+  if (S?.deciderUserIdForActor) return S.deciderUserIdForActor(actor);
   const candidates = (game.users?.contents ?? []).filter((u) => {
     if (u.isGM) return false;
     if (!u.active) return false;
@@ -8612,6 +8614,7 @@ function resolveEnemyPlayerUserIds(casterActor, casterToken = null) {
     if (!actor) continue;
     for (const u of (game.users?.contents ?? [])) {
       if (u.isGM || !u.active) continue;
+      if (globalThis.FUCompanion?.api?.Spectator?.isSpectator?.(u)) continue;
       try { if (actor.testUserPermission(u, "OWNER")) userIds.add(u.id); } catch {}
     }
   }

@@ -220,6 +220,8 @@
   }
 
   function getControllerUserId(actor) {
+    const S = globalThis.FUCompanion?.api?.Spectator;
+    if (S?.deciderUserIdForActor) return actor ? S.deciderUserIdForActor(actor, { requireActive: false }) : null;
     for (const [userId, level] of Object.entries(actor?.ownership ?? {})) {
       if (level >= CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER) {
         const user = game.users?.get(userId);
