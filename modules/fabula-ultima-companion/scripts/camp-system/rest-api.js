@@ -281,12 +281,63 @@
 
       console.debug(TAG, "Rest complete.");
     },
+
+    /**
+     * Inn Short Rest — full HP & MP and status ailments cured, nothing else.
+     * No effect sweep, no food-buff tick, no party_rested, no reset-on-rest
+     * tiles, no save prompt: those belong to the full Rest (the camp loop).
+     * Primary GM only; every client gets the black curtain + jingle.
+     * Design: docs/inn-camp-set-out-design.md §3.
+     */
+    async shortRest() {
+      if (!globalThis.FUCompanion?.isPrimaryGM?.()) return;
+
+      CAMP.Socket?.broadcast?.(CAMP.MSG.SCREEN_FADE, { dark: true });
+      const fading = CAMP.SleepUI?.fadeOut?.();
+
+      const { playlist: bgmPlaylist, sound: bgmSound } = _captureBgm();
+      await _stopBgm(bgmPlaylist);
+      const AH = getAudioHelper();
+      let jingleSound = null;
+      try { jingleSound = await AH?.play({ src: this.jingle, volume: 0.8, autoplay: true, loop: false }, true); }
+      catch (e) { console.warn(TAG, "AudioHelper.play failed:", e); }
+      _scheduleResume(jingleSound, bgmPlaylist, bgmSound);
+
+      await fading;
+      await new Promise(r => setTimeout(r, 3500));
+
+      try {
+        // Same debuff rule as the Healing menu's Turbo Tonic: Virus
+        // (uncleansable) and equipment-set effects stay.
+        const { isDebuffEffect } = await import(
+          `/modules/${CAMP.MODULE_ID}/scripts/healing-system/healing-cleanse.js`
+        );
+        const actors = await _getPartyActors();
+        for (const actor of actors) {
+          await _restoreResources(actor, { ignoreOuch: true });
+          const cured = actor.effects.filter(e => isDebuffEffect(e)).map(e => e.id);
+          if (cured.length) {
+            try { await actor.deleteEmbeddedDocuments("ActiveEffect", cured); }
+            catch (e) { console.warn(TAG, `Could not cure ${actor.name}:`, e.message); }
+          }
+        }
+        await _postChatMessage({ cured: true });
+        console.debug(TAG, `Short rest complete (${actors.length} member(s)).`);
+      } catch (e) {
+        console.error(TAG, "Short rest failed:", e);
+      } finally {
+        CAMP.Socket?.broadcast?.(CAMP.MSG.SCREEN_FADE, { dark: false });
+        CAMP.SleepUI?.fadeIn?.();
+      }
+    },
   };
 
   // ---------------------------------------------------------------------------
   // Internal steps
   // ---------------------------------------------------------------------------
-  async function _restoreResources(actor) {
+  // ignoreOuch: the Exploration "Ouch!" debuff belongs to a camp cycle — an inn
+  // Short Rest neither applies nor consumes it.
+  async function _restoreResources(actor, { ignoreOuch = false } = {}) {
     const props = actor.system?.props;
     if (!props) {
       console.warn(TAG, `No system.props on ${actor.name}; skipping restore.`);
@@ -299,7 +350,7 @@
 
     // Check for Exploration "Ouch!" debuff — recover only half the missing HP/MP
     const debuffs  = CAMP.State?.getExplorationDebuffs?.() ?? {};
-    const halfRest = !!debuffs[actor.id]?.halfRest;
+    const halfRest = !ignoreOuch && !!debuffs[actor.id]?.halfRest;
     const curHp    = parseInt(props.current_hp) || 0;
     const curMp    = parseInt(props.current_mp) || 0;
     const newHp    = halfRest ? curHp + Math.floor((props.max_hp - curHp) / 2) : props.max_hp;
@@ -420,14 +471,14 @@
     }
   }
 
-  async function _postChatMessage() {
+  async function _postChatMessage({ cured = false } = {}) {
     const msg = await ChatMessage.create({
       content: `
         <div style="font-weight:700; line-height:1.25; padding:2px 0;">
           The Party fully recovers their
           <span style="color:#c62828; font-weight:800;">HP</span>
           and
-          <span style="color:#1565c0; font-weight:800;">MP</span>!
+          <span style="color:#1565c0; font-weight:800;">MP</span>${cured ? ", and shakes off every ailment" : ""}!
         </div>
       `,
     });

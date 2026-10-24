@@ -100,6 +100,7 @@
     TOGGLE_SLEEP:       "CAMP_TOGGLE_SLEEP",
     TOGGLE_SET_OUT:     "CAMP_TOGGLE_SET_OUT",
     RECORD_RETURN:      "CAMP_RECORD_RETURN",         // any → GM { point } (entry hook ran off the GM)
+    SCREEN_FADE:        "CAMP_SCREEN_FADE",           // primary GM → all { dark: bool } (Short Rest)
     // Ephemeral broadcast (any → all)
     HOVER_ACTIVITY:     "CAMP_HOVER_ACTIVITY",
     // Rest-time save ceremony — the primary GM drives, everyone else watches.

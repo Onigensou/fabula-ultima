@@ -43,6 +43,14 @@
           return;
         }
 
+        // ── Black curtain outside the camp loop (primary GM → all) ───────
+        // Short Rest at an inn: the sleep screen without a camp phase.
+        if (type === CAMP.MSG.SCREEN_FADE) {
+          if (payload?.dark) CAMP.SleepUI?.fadeOut?.();
+          else               CAMP.SleepUI?.fadeIn?.();
+          return;
+        }
+
         // ── Rest save ceremony: cursor mirror (primary GM → all) ─────────
         if (type === CAMP.MSG.REST_FOCUS) {
           CAMP.RestSaveUI?.onRemoteFocus?.(payload?.choice);
