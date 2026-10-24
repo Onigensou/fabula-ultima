@@ -84,6 +84,8 @@
       "version": "4.5.0"
     },
     "fabula-ultima-companion": {
+      "defeatStyle": "overfed",
+      "entranceStyle": "feast",
       "idleAnimation": {
         "bounce": false,
         "float": false

@@ -84,6 +84,9 @@
       "version": "4.5.0"
     },
     "fabula-ultima-companion": {
+      "defeatStyle": "launched",
+      "entranceQueue": true,
+      "entranceStyle": "giant",
       "idleAnimation": {
         "bounce": false,
         "float": false
