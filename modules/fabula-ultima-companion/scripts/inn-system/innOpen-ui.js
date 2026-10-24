@@ -76,6 +76,13 @@ export class InnOpenUI {
         #${this.cfg.LAYER_ID} .fu-inn-prox-btn:active {
           transform: translate(-50%, -50%) scale(0.98);
         }
+        #${this.cfg.LAYER_ID} .fu-inn-prox-btn .fu-inn-bed {
+          font-size: 16px; color: #f4e8c0;
+        }
+        #${this.cfg.LAYER_ID} .fu-inn-prox-btn .fu-inn-zzz {
+          font-family: "Signika", sans-serif; font-size: 12px; font-weight: 700;
+          font-style: italic; letter-spacing: -0.5px; color: #f4e8c0;
+        }
       `;
       document.head.appendChild(s);
     }
@@ -124,13 +131,14 @@ export class InnOpenUI {
     const el = document.createElement("div");
     el.className = "fu-inn-prox-btn";
     el.title     = "Rest at the Inn";
-    el.textContent = "🛏️";
+    el.innerHTML = `<i class="fas fa-bed fu-inn-bed"></i>`;
     el.dataset.tokenId = tokenId;
     el.addEventListener("click", (ev) => {
       ev.preventDefault(); ev.stopPropagation();
       try { this.onClickInnToken?.(tokenId); } catch (e) { console.error(INN.TAG, e); }
     });
     layer.appendChild(el);
+    this._fallbackIfNoBed(el);
 
     const rec = { el, state: "showing", hideTimer: null };
     this._btnByTokenId.set(tokenId, rec);
@@ -139,6 +147,22 @@ export class InnOpenUI {
       el.classList.add("is-visible");
       rec.state = "shown";
     });
+  }
+
+  // The bed is a Font Awesome glyph. If the icon font is missing or never
+  // loads, the <i> draws nothing — show a plain "zzz" instead.
+  _fallbackIfNoBed(el) {
+    const toZzz = () => {
+      const i = el.querySelector(".fu-inn-bed");
+      if (!i) return;
+      const glyph = getComputedStyle(i, "::before").content;
+      const family = getComputedStyle(i).fontFamily.split(",")[0].replace(/["']/g, "").trim();
+      const fontOk = !family || document.fonts?.check?.(`900 16px "${family}"`) !== false;
+      if (glyph && glyph !== "none" && glyph !== "normal" && glyph !== '""' && fontOk) return;
+      el.innerHTML = `<span class="fu-inn-zzz">zzz</span>`;
+    };
+    // Give a still-loading icon font its chance before falling back.
+    (document.fonts?.ready ?? Promise.resolve()).then(toZzz, toZzz);
   }
 
   _hideToken(tokenId) {
