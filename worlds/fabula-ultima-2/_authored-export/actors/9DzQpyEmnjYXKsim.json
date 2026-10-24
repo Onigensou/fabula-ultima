@@ -170,6 +170,8 @@
       "arcane_ef": "100",
       "attribute": "",
       "battle_facing_direction": "left",
+      "bonus_hp": 0,
+      "bonus_mp": 0,
       "bow_ef": "100",
       "brawling_ef": "100",
       "condition_anomaly": "NA",
@@ -239,6 +241,7 @@
       "isEnlighten": false,
       "isEnraged": false,
       "isFocus": false,
+      "isInn": true,
       "isMasterful": false,
       "isPoisoned": false,
       "isShaken": false,
@@ -259,6 +262,9 @@
       "mimic": false,
       "name": "Thomas",
       "npc_rank": "",
+      "override_all_damage_type": "None",
+      "override_attack_damage_type": "None",
+      "override_spell_damage_type": "None",
       "rare": false,
       "resource_maxValue_1": "0",
       "resource_maxValue_2": "0",
@@ -290,7 +296,7 @@
     },
     "statusEffects": {},
     "template": "yegF6R8aaymhrvCg",
-    "templateSystemUniqueVersion": 2114752673
+    "templateSystemUniqueVersion": 1417889971
   },
   "type": "character"
 }
