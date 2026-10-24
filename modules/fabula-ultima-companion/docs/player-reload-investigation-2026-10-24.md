@@ -80,6 +80,8 @@ The fixed ~5½–6½ min delay for Blumairwen points to memory growth from a per
 ### Code / content fixes (not started, need approval)
 
 - **Screen transition:** add a safety timeout. Also lift the overlay below notifications, so a "lost connection" toast is visible.
+  - Commit `1a330723` (co-dev, same night) already covers the **battle-shatter** path: `holdUntilDrawn` with a 90 s cap and a failed-draw poll.
+  - The plain scene-change path (`cover()` on `canvasTearDown` → `reveal()` on `canvasReady`) still has no timeout. Build the fix on that commit's `holdUntilDrawn`/`STUCK_MS`.
 - **Assets:** upload the 6 host-served JB2A webms to Forge and repoint the tiles.
 - **World size:** shrink the payload, so each reload costs less.
 - **Memory:** if step 2 shows growth, profile which `canvasReady` tickers keep allocating.
