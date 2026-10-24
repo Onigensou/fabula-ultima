@@ -5,7 +5,10 @@
  * What it does:
  * - Adds a "Treasure Config" tab to Tile Config
  * - Stores config as Tile flags:
- *   flags.oni-treasure-chest.{isTreasureChest,itemUuid,itemName,itemImg,quantity,zenit}
+ *   flags.oni-treasure-chest.{isTreasureChest,itemUuid,itemName,itemImg,quantity,zenit,
+ *                              tier,artMode,revealRadius}
+ * - Tier + Art "auto" writes the tile image (bag / Silver / Gold chest) into
+ *   this form, by the rule in treasureChest-core.js artFor()
  *
  * Module Notes:
  * - Installs on Hooks.once("ready")
@@ -209,6 +212,38 @@ function installTreasureConfigUI() {
             <input type="hidden" name="flags.${SCOPE}.itemName" class="oni-item-name" />
             <input type="hidden" name="flags.${SCOPE}.itemImg"  class="oni-item-img" />
 
+            <div class="form-group">
+              <label>Tier</label>
+              <div class="form-fields">
+                <select name="flags.${SCOPE}.tier" class="oni-tier">
+                  <option value="">(none — old chest)</option>
+                  <option value="mundane">Mundane</option>
+                  <option value="standard">Standard</option>
+                  <option value="rare">Rare</option>
+                </select>
+              </div>
+              <p class="notes">Mundane: Zenit or consumables. Standard: gear, more Zenit, costly consumables. Rare: big Zenit or a Rare/Legendary item, hidden on the map.</p>
+            </div>
+
+            <div class="form-group">
+              <label>Art</label>
+              <div class="form-fields">
+                <select name="flags.${SCOPE}.artMode" class="oni-art-mode">
+                  <option value="auto">Auto (bag / Silver chest / Gold chest)</option>
+                  <option value="custom">Keep the tile's own image</option>
+                </select>
+              </div>
+              <p class="notes">Auto: Zenit or consumables only = item bag; gear = Silver chest; Rare = Gold chest. Sets the tile image when you save.</p>
+            </div>
+
+            <div class="form-group oni-reveal-row">
+              <label>Reveal Within (grid)</label>
+              <div class="form-fields">
+                <input type="number" name="flags.${SCOPE}.revealRadius" class="oni-reveal" min="0" step="0.5" />
+              </div>
+              <p class="notes">Rare only: players do not see the chest until the party is this close.</p>
+            </div>
+
             <h3 style="margin: 10px 0 6px;">Reward Item</h3>
 
             <div class="oni-treasure-drop oni-drop-zone">
@@ -320,11 +355,49 @@ function installTreasureConfigUI() {
       qtyEl.value   = Number(safeGet(data, "quantity", 1) || 1);
       zenitEl.value = Number(safeGet(data, "zenit", 0) || 0);
 
+      const tierEl    = tabPanel.querySelector(".oni-tier");
+      const artModeEl = tabPanel.querySelector(".oni-art-mode");
+      const revealEl  = tabPanel.querySelector(".oni-reveal");
+      const revealRow = tabPanel.querySelector(".oni-reveal-row");
+      const TC = window.oni?.TreasureChest;
+
+      tierEl.value    = String(safeGet(data, "tier", "") || "");
+      artModeEl.value = String(safeGet(data, "artMode", "") || (tierEl.value ? "auto" : "custom"));
+      revealEl.value  = Number(safeGet(data, "revealRadius", TC?.DEFAULT_REVEAL_RADIUS ?? 1.5));
+
+      // Whether the chosen item is gear decides bag vs chest. Cached per uuid
+      // because the drop handler and the tier select both ask.
+      let gearFor = { uuid: null, gear: false };
+      async function itemIsGear() {
+        const uuid = (itemUuidEl.value || "").trim();
+        if (!uuid) return false;
+        if (gearFor.uuid !== uuid) {
+          let doc = null;
+          try { doc = await fromUuid(uuid); } catch {}
+          gearFor = { uuid, gear: !!TC?.isEquipment?.(doc) };
+        }
+        return gearFor.gear;
+      }
+
+      // Auto art writes the tile image field of THIS form, so it lands with
+      // Save Changes like any other edit.
+      async function applyAutoArt() {
+        revealRow.style.display = tierEl.value === "rare" ? "" : "none";
+        if (artModeEl.value !== "auto" || !tierEl.value || !TC?.artFor) return;
+        const src = TC.artFor({ tier: tierEl.value, hasEquipment: await itemIsGear() });
+        const field = root.querySelector('[name="texture.src"]');
+        if (!field || field.value === src) return;
+        field.value = src;
+        field.dispatchEvent(new Event("change", { bubbles: true }));
+        log("Auto art applied:", src);
+      }
+
       function refreshPickedUI() {
         const uuid = (itemUuidEl.value || "").trim();
         const name = (itemNameEl.value || "").trim();
         const img  = (itemImgEl.value  || "").trim();
 
+        applyAutoArt();
         if (!uuid) { pickedWrap.style.display = "none"; return; }
         pickedWrap.style.display = "flex";
         pickedImg.src = img || "icons/svg/item-bag.svg";
@@ -335,6 +408,9 @@ function installTreasureConfigUI() {
       refreshPickedUI();
       log("Prefill applied.", { isTreasure, itemUuid: itemUuidEl.value, quantity: qtyEl.value, zenit: zenitEl.value });
 
+      tierEl.addEventListener("change", applyAutoArt);
+      artModeEl.addEventListener("change", applyAutoArt);
+
       cb.addEventListener("change", () => {
         fieldsWrap.hidden = !cb.checked;
         log("Is Treasure Chest toggled:", cb.checked);
@@ -343,6 +419,9 @@ function installTreasureConfigUI() {
       tabPanel.querySelector(".oni-debug-read")?.addEventListener("click", () => {
         const dump = {
           isTreasureChest: cb.checked,
+          tier: tierEl.value,
+          artMode: artModeEl.value,
+          revealRadius: revealEl.value,
           itemUuid: itemUuidEl.value,
           itemName: itemNameEl.value,
           itemImg: itemImgEl.value,

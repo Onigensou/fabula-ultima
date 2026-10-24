@@ -803,6 +803,123 @@
     }
   }
 
+  // --------------------------------------------------------------------------
+  // Fixed reward (no roll): a placed treasure chest on an exploration map.
+  // Same screens as a loot tile from step 5 on — who carries it, equip now? —
+  // with no table, no spin and no tile to clear. The caller has already
+  // consumed its source, so this always ends with the item granted: a failed
+  // or timed-out screen falls back to Party Inventory.
+  // --------------------------------------------------------------------------
+  /**
+   * @param {object} opts
+   * @param {string} opts.itemUuid
+   * @param {number} [opts.quantity=1]
+   * @param {string} [opts.title="Treasure"]   screen heading
+   * @param {string|null} [opts.controllerUserId]
+   * @param {object} [opts.meta]               carried on the packet for hooks/logs
+   * @returns {Promise<{ok:boolean, reason?:string, requestId?:string}>}
+   */
+  async function awardFixed({ itemUuid, quantity = 1, title = "Treasure", controllerUserId = null, meta = {} } = {}) {
+    if (!isPrimaryGM()) return { ok: false, reason: "not-primary-gm" };
+
+    const dispatcher = window["oni.TreasureRoulette.AwardDispatcher"];
+    if (!dispatcher?.award) return { ok: false, reason: "dispatcher-missing" };
+
+    let item = null;
+    try { item = await fromUuid(itemUuid); } catch {}
+    if (!item) return { ok: false, reason: "item-not-found" };
+
+    const decider = resolveControllerUserId(controllerUserId);
+    const { db, dbUuid } = await getDb();
+    if (!dbUuid) return { ok: false, reason: "no-db" };
+    const autoRoute = await readAutoRouteOption(db);
+    const members = await resolvePartyMembers(db);
+
+    const packet = {
+      requestId: newRequestId(),
+      reward: { kind: "item", itemUuid, quantity: Math.max(1, Number(quantity) || 1) },
+      winner: { uuid: itemUuid, name: item.name, img: item.img },
+      roller: { userId: decider ?? game.user?.id, actorUuid: null },
+      meta: { source: "TR.Flow.awardFixed", ...meta },
+    };
+
+    let recipientActorUuid = dbUuid;
+    let awarded = false;
+
+    try {
+      if (!autoRoute && members.length) {
+        const { choice } = await askScreen({
+          screen: "recipient",
+          requestId: packet.requestId,
+          controllerUserId: decider,
+          timeoutMs: RECIPIENT_TIMEOUT_MS,
+          fallback: { kind: "party", actorUuid: dbUuid },
+          payload: {
+            title,
+            reward: { name: item.name, img: item.img, kind: "item" },
+            incoming: await describeWinner(packet),
+            allowParty: true,
+            partyInventory: { actorUuid: dbUuid, name: db?.name ?? "Party Inventory" },
+            members: members.map((m) => ({
+              actorUuid: m.uuid,
+              name: m.name,
+              portrait: portraitOf(m),
+              ip: ipOf(m),
+            })),
+          },
+        });
+        recipientActorUuid = choice?.actorUuid ?? dbUuid;
+      }
+
+      const awardRes = await dispatcher.award({
+        packet,
+        recipientActorUuid,
+        postChat: true,
+        showTransferCard: false,
+      });
+      awarded = !!awardRes?.ok;
+
+      const grantedUuid = awardRes?.receiverItemUuid ?? null;
+      if (awarded && !autoRoute && recipientActorUuid !== dbUuid && grantedUuid) {
+        await maybeEquip({ packet, recipientActorUuid, grantedUuid, decider });
+      }
+    } catch (e) {
+      console.error(TAG, "awardFixed threw:", e);
+    }
+
+    // The source is already spent: if the chosen recipient could not take it,
+    // Party Inventory does. The result says whether the item reached anyone,
+    // so the caller never grants it a second time.
+    if (!awarded) {
+      try {
+        warn("awardFixed did not award to the chosen recipient — granting to Party Inventory.");
+        const res = await dispatcher.award({ packet, recipientActorUuid: dbUuid, postChat: true, showTransferCard: false });
+        awarded = !!res?.ok;
+      } catch (e) {
+        console.error(TAG, "awardFixed fallback award failed:", e, packet);
+      }
+    }
+
+    try {
+      for (const screen of ALL_SCREENS) {
+        const k = `${packet.requestId}:${screen}`;
+        if (_pending.has(k)) {
+          try { _pending.get(k)(null, "flow-ended"); } catch {}
+        }
+      }
+      globalThis.ONI?.TreasureRoulette?.UIKit?.stage?.clear?.();
+    } catch (e) {
+      warn("awardFixed teardown failed:", e);
+    }
+    emit(MSG_END, { requestId: packet.requestId });
+
+    // ok:false only when nothing was granted at all (the caller may then try
+    // its own route). Anything else counts as handled.
+    return awarded
+      ? { ok: true, requestId: packet.requestId }
+      : { ok: false, reason: "award-failed", requestId: packet.requestId };
+  }
+
   // Clear through DP's own state machine so `tileStates.currentType` becomes
   // BLANK. The old roulette path only swapped the texture, which left DP still
   // believing the tile was a loot tile (stale-tileState class of bug).
@@ -988,6 +1105,7 @@
 
   const api = {
     run,
+    awardFixed,
     DP_TYPE_CONFIG,
     SLOTS_BY_ITEM_TYPE,
     _debug: { getLootTableUuid, buildEquipPayload, describeGear, describePool, _pending, _busy },
