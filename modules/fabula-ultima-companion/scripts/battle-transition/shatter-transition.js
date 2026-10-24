@@ -1411,6 +1411,8 @@ async function runShatter(o) {
 
     // ── HARD CUT → SHATTER ──
     onPhase("cut"); mark("cut");
+    // screen-transition.js blacks out beneath the glass if this client's scene is still drawing
+    try { Hooks.callAll("fuc:shatterBreak"); } catch { /* listeners' */ }
     const tCutReal = performance.now();
     if (prebuilt) { const t = document.timeline.currentTime; for (const a of phaseA) a.startTime = t; }
     els.crackFrame.style.visibility = "hidden"; els.glowC.classList.remove("fsh-breathe");

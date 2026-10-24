@@ -4,10 +4,15 @@
   const OVERLAY_ID  = "fu-screen-transition";
   const HOLD_MS     = 180;   // dark hold after canvasReady before revealing
   const FADE_OUT_MS = 700;   // ease-out reveal duration
+  const POLL_MS     = 500;   // held-for-draw check (a failed draw fires no canvasReady)
+  const STUCK_MS    = 90000; // a draw that never ends: reveal anyway rather than stay black
 
   // IDLE | COVERED | FADING_OUT | SHATTER (the battle shatter hides the swap)
   let state   = "IDLE";
   let overlay = null;
+  let glassBroken     = false;  // the shatter is past its cut: the scene shows through
+  let blackUnderGlass = false;  // went black beneath the breaking glass
+  let drawPoll = null;
 
   // ── Overlay — created eagerly on ready so first transition has no cold cost ──
 
@@ -45,11 +50,18 @@
     // would cover the glass. Still announce the cover; the matching reveal
     // fires when the glass has cleared (fuc:shatterDone).
     if (document.body.classList.contains("fuc-shatter-active")) {
-      // a cover still up from an earlier scene change would sit behind the
-      // glass and black out the battlefield it opens onto: take it down
-      overlay.style.transition    = "none";
-      overlay.style.opacity       = "0";
-      overlay.style.pointerEvents = "none";
+      if (glassBroken) {
+        // the swap began after the glass broke: the shards are flying off a
+        // scene being torn down, so black it out beneath them
+        blackout();
+        blackUnderGlass = true;
+      } else {
+        // a cover still up from an earlier scene change would sit behind the
+        // glass and black out the battlefield it opens onto: take it down
+        overlay.style.transition    = "none";
+        overlay.style.opacity       = "0";
+        overlay.style.pointerEvents = "none";
+      }
       state = "SHATTER";
       Hooks.callAll("oni:screenCovered");
       return;
@@ -62,6 +74,35 @@
     // Anything that should not animate behind the black — badge entrances, etc.
     // — listens for this and waits for the matching reveal.
     Hooks.callAll("oni:screenCovered");
+  }
+
+  function blackout() {
+    overlay.style.transition    = "none";
+    overlay.style.opacity       = "1";
+    overlay.style.pointerEvents = "all";
+    forceReflow();
+  }
+
+  // Foundry sets canvas.loading for the whole of Canvas#draw and clears it just
+  // after canvasReady — or when a draw fails / draws blank, with no canvasReady.
+  const canvasDrawing = () => globalThis.canvas?.loading === true;
+
+  // ── holdUntilDrawn: the glass cleared before this client's scene drew ───────
+  // The shatter gives up waiting on a slow client (a big asset holds Foundry's
+  // loader at 99%). Stay black instead of showing the half-drawn scene:
+  // canvasReady reveals it, and the poll covers a draw that ends without one.
+
+  function holdUntilDrawn() {
+    blackout();
+    state = "COVERED";
+    const t0 = Date.now();
+    clearInterval(drawPoll);
+    drawPoll = setInterval(() => {
+      if (state !== "COVERED") { clearInterval(drawPoll); return; }
+      if (canvasDrawing() && Date.now() - t0 < STUCK_MS) return;
+      clearInterval(drawPoll);
+      reveal();
+    }, POLL_MS);
   }
 
   // ── Flag check — read the destination scene's disableTransition flag ─────────
@@ -131,14 +172,28 @@
     Hooks.on("canvasReady",    reveal);
     // the shatter is up: any black cover still showing would sit behind the glass
     Hooks.on("fuc:shatterStart", () => {
+      glassBroken = blackUnderGlass = false;
       if (state !== "COVERED" && state !== "FADING_OUT") return;
       overlay.style.transition    = "none";
       overlay.style.opacity       = "0";
       overlay.style.pointerEvents = "none";
       state = "SHATTER";
     });
+    // the glass breaks on a scene still drawing: go black beneath it (z 99999,
+    // under the glass) so the shards fly off black, not a half-drawn scene
+    Hooks.on("fuc:shatterBreak", () => {
+      glassBroken = true;
+      if (state !== "SHATTER" || !canvasDrawing()) return;
+      blackout();
+      blackUnderGlass = true;
+    });
     Hooks.on("fuc:shatterDone", () => {
+      const wasBlack = blackUnderGlass;
+      glassBroken = blackUnderGlass = false;
       if (state !== "SHATTER") return;
+      if (canvasDrawing()) { holdUntilDrawn(); return; }
+      // drew while the shards were flying: fade the black off as usual
+      if (wasBlack) { state = "COVERED"; reveal(); return; }
       state = "IDLE";
       Hooks.callAll("oni:screenRevealed");
     });

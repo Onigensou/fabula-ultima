@@ -8618,6 +8618,10 @@ export async function postActionCard({ director, kind, payload }) {
     // row, only a bare name with a Remove button. Kept here (not on the ar) so
     // it stays display state: the bag is still the only thing Save writes.
     let lastTargetSurface = null;
+    // The last recompute's dice-REPLACING reactions (Lucky Seven / Divination) and
+    // the roll they produced. An Invoke must start from those dice, not the base
+    // roll under them — arForInvoke() bakes them in (bakeReactionRoll).
+    let lastRollMutation = null;
     async function recomputeTargetPreviews(remotePrompt = null) {
       // Run recompute when the card has a target list (Attack OR damage-
       // dealing Skill). Non-damage Skills (Soul Steal, Torpor, etc.)
@@ -8728,6 +8732,10 @@ export async function postActionCard({ director, kind, payload }) {
             // commit (which reads the full live ar) kept them. That split is
             // exactly the drift this snapshot exists to prevent.
             gmOverride: base?.gmOverride ?? null,
+            // Dice-replacing reactions an Invoke already folded into `roll` — they
+            // must not re-apply on top of it (see bakeReactionRoll). Same
+            // explicit-field-list hazard as gmOverride above.
+            bakedRollReactions: base?.bakedRollReactions ?? null,
             round: base?.round ?? director?.dCombat?.round ?? 0,
           };
 
@@ -8757,6 +8765,11 @@ export async function postActionCard({ director, kind, payload }) {
             // don't apply partial mutation visuals or broadcast.
             return { cancelled: true };
           }
+          lastRollMutation = {
+            reactionRoll: mutationResult.reactionRoll ?? null,
+            rollChangers: mutationResult.rollChangers ?? [],
+            chargeWrites: mutationResult.chargeWrites ?? null,
+          };
           // Per-target rows: the rebuild when present (damage actions), else the
           // mutated rows (pure no-damage skill — keeps the redirect markers for
           // the loop below).
@@ -9332,6 +9345,27 @@ export async function postActionCard({ director, kind, payload }) {
     // initial card broadcast — spectators hold a mirror and offInvokeUpdate
     // no-ops if they don't. patchCardDom is pure DOM (no actor reads) and
     // preserves ??? masking for unstudied targets, so no info leak.
+    // The actionResult an Invoke works on: the card's own, with any dice-replacing
+    // reaction already applied to it (Lucky Seven's swapped die, Divination's
+    // reroll) baked into the roll. Without this the worker rerolled / bonused the
+    // dice UNDER the swap and the card reverted it. Nothing is written here — the
+    // worker commits the baked result only if the invoke goes through.
+    const arForInvoke = async () => {
+      // A pill decision's recompute may still be running (Apply → Invoke in quick
+      // succession): wait for it, or the stash predates the reaction just applied.
+      if (_previewInFlight) { try { await _previewInFlight; } catch {} }
+      if (!cardAr?.roll || !lastRollMutation?.rollChangers?.length) return cardAr;
+      const { bakeReactionRoll } = await import("./card-mutations.js?cb=" + Date.now());
+      return bakeReactionRoll(cardAr, lastRollMutation);
+    };
+    // After an invoke commits: the stash described the pre-invoke base, and the
+    // worker's recompute knows nothing of the card's other accepted reactions —
+    // re-run the shared preview so the card shows invoke + reactions together.
+    const afterInvokeCommitted = async () => {
+      lastRollMutation = null;
+      const anyApplied = [...reactionDecisionMap.values()].includes("apply");
+      if (anyApplied) { try { await recomputeTargetPreviews(); } catch (e) { warn("postActionCard: post-invoke recompute threw", e); } }
+    };
     const broadcastInvokeUpdate = () => {
       const menuSpec = {
         kind: "action-card-invoke-update",
@@ -9358,7 +9392,7 @@ export async function postActionCard({ director, kind, payload }) {
     // actionResult + attacker actor. Bond hearts are precomputed here so the
     // receiving client needs no actor read-permission.
     const buildSpectatorPayload = async (type) => {
-      const ar = cardAr;
+      const ar = await arForInvoke();
       if (!ar?.roll) return null;
       let actorName = "The attacker";
       let bonds = [];
@@ -9622,18 +9656,20 @@ export async function postActionCard({ director, kind, payload }) {
               armInvokeAwait();
               return;
             }
-            const oldTotal = cardAr?.roll?.total ?? 0;
             let ok = false;      // truthy on success (trait: choice string, bond: true)
+            let oldTotal = cardAr?.roll?.total ?? 0;
             try {
               const worker = await import(`./invoke/invoke-worker.js?cb=${Date.now()}`);
+              const invokeAr = await arForInvoke();
+              oldTotal = invokeAr?.roll?.total ?? oldTotal;
               if (type === "trait") {
                 ok = await worker.handleInvokeTrait({
-                  director, ar: cardAr, root, invokeState,
+                  director, ar: invokeAr, root, invokeState,
                   prePickedChoice: body.choice ?? null,
                 });
               } else if (type === "bond") {
                 ok = await worker.handleInvokeBond({
-                  director, ar: cardAr, root, invokeState,
+                  director, ar: invokeAr, root, invokeState,
                   prePickedBondIndex: body.bondIndex ?? null,
                 });
               }
@@ -9648,10 +9684,12 @@ export async function postActionCard({ director, kind, payload }) {
               // Reroll: animate the dice on every client's open HUD, then patch
               // the card. Replaces the silent invoke-update + spectator-close.
               await presentTraitReroll({ choice: body.choice ?? ok, oldTotal });
+              await afterInvokeCommitted();
             } else if (ok) {
               // Bond: flat bonus, no dice animation — patch + tear down spectators.
               broadcastInvokeUpdate();
               closeSpectatorHud({ excludeUserId: fromUserId, type: "bond" });
+              await afterInvokeCommitted();
             } else {
               // Post-commit failure (rare, e.g. payment failed). Tear down ALL
               // open HUDs — including the actor's own committing one (excludeUserId
@@ -10024,7 +10062,7 @@ export async function postActionCard({ director, kind, payload }) {
               return;
             }
             const worker = await import(`./invoke/invoke-worker.js?cb=${Date.now()}`);
-            const ar = cardAr;
+            const ar = await arForInvoke();
             const oldTotal = ar?.roll?.total ?? 0;
             // GM is the actor → open the read-only spectator HUD on everyone
             // else (exclude self; the GM gets the real interactive HUD below).
@@ -10045,10 +10083,12 @@ export async function postActionCard({ director, kind, payload }) {
               // Reroll: animate the GM's open HUD + broadcast so the table
               // animates in sync, then patch the card.
               await presentTraitReroll({ choice: ok, oldTotal });
+              await afterInvokeCommitted();
             } else if (ok) {
               // Bond: flat bonus, no animation — patch all mirrors + close spectators.
               broadcastInvokeUpdate();
               closeSpectatorHud({ excludeUserId: game.user?.id, type: "bond" });
+              await afterInvokeCommitted();
             } else {
               closeSpectatorHud({ excludeUserId: game.user?.id, cancelled: true, type });
             }
@@ -10573,8 +10613,8 @@ export async function postActionCard({ director, kind, payload }) {
             ?.find((c) => c.tokenUuid === cardAr?.attacker?.tokenUuid)?.actorDoc
             ?? (cardAr?.attackerActorRef ? await fromUuid(cardAr.attackerActorRef).catch(() => null) : null);
 
-          const invoked = await simInvoke({ director, ar: cardAr, root, invokeState, attackerActor });
-          if (invoked) cardAr = invokeState.lastAr ?? cardAr;
+          const invoked = await simInvoke({ director, ar: await arForInvoke(), root, invokeState, attackerActor });
+          if (invoked) { cardAr = invokeState.lastAr ?? cardAr; await afterInvokeCommitted(); }
         } catch (e) {
           warn("[SIM] invoke brain threw — carrying on", e);
         }
@@ -10824,6 +10864,11 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
   // playerAr holds the serialized actionResult broadcast with the card so the
   // player can show the invoke HUD without accessing GM-only director state.
   let playerAr = null;
+  // The roll the card SHOWS when a reaction replaced/adjusted it (Lucky Seven's
+  // swapped die, Divination's reroll) — the host's latest recompute delta. The
+  // invoke HUDs read it so a player's Trait/Bond starts from the card's dice, not
+  // the posted roll underneath. Cleared when an invoke lands (the host baked it in).
+  let playerEffRoll = null;
   // Host-authoritative GM override state, refreshed by every recompute delta.
   // A support GM edits from THESE, never from the card-post payload — see the
   // gmOverrideBag note on the delta.
@@ -10839,6 +10884,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
   const offInvokeUpdate = channel.onMenuOpen((menuSpec) => {
     if (!menuSpec || menuSpec.kind !== "action-card-invoke-update") return;
     playerAr = menuSpec.actionResult ?? playerAr;
+    playerEffRoll = null;
     playerInvokeState = menuSpec.invokeState ?? playerInvokeState;
     const wrapper = document.getElementById(MIRROR_ROOT_ID);
     if (!wrapper) return;
@@ -10882,6 +10928,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     if (!menuSpec || menuSpec.kind !== "invoke-trait-reroll") return;
     if (isActiveDirector()) return; // GM presents locally; never via its own (non-echoing) broadcast
     playerAr = menuSpec.actionResult ?? playerAr;
+    playerEffRoll = null;
     playerInvokeState = menuSpec.invokeState ?? playerInvokeState;
     // GM responded — stop the no-response net before the (slower) reroll animation.
     clearInvokeSubmitTimers(document.getElementById(MIRROR_ROOT_ID));
@@ -10935,6 +10982,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     // CLEAR the surface, not leave the previous pass's membership standing for a
     // support GM to merge into a current editor.
     if (menuSpec.delta?.gmTargetSurface !== undefined) playerGmTargets = menuSpec.delta.gmTargetSurface;
+    if (menuSpec.delta && "accuracyRoll" in menuSpec.delta) playerEffRoll = menuSpec.delta.accuracyRoll ?? null;
     try {
       applyCardTargetMutationDelta(wrapper, menuSpec.delta);
     } catch (e) { warn("action-card-target-mutation: patch threw", e); }
@@ -11118,6 +11166,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
 
     // Reset per-card state for the new card.
     playerAr = menuSpec.actionResult ?? null;
+    playerEffRoll = null;
     playerGmOverride = undefined;
     playerGmReactions = null;
     playerGmTargets = null;
@@ -11398,12 +11447,13 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
                 return;
               }
               if (!playerAr?.roll) return;
+              const invokeRoll = playerEffRoll ?? playerAr.roll;
               if (type === "trait") {
                 // Announce the open so the GM mirrors a read-only HUD to the
                 // rest of the table while this player is deciding.
                 channel.emit({ type: INTENTS.INVOKE_HUD_OPEN, body: { type: "trait" }, combatId: menuSpec.combatId });
                 const choice = await hud.showTraitHUD({
-                  roll: playerAr.roll,
+                  roll: invokeRoll,
                   root: wrapper,
                   tokenUuid: playerAr.attacker?.tokenUuid ?? null,
                   onSelectionChange: (sel) => channel.emit({ type: INTENTS.INVOKE_HUD_SELECT, body: { type: "trait", sel }, combatId: menuSpec.combatId }),
@@ -11444,7 +11494,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
                   bonds: viable,
                   attacker,
                   root: wrapper,
-                  ar: playerAr,
+                  ar: { ...playerAr, roll: invokeRoll },
                   tokenUuid: playerAr.attacker?.tokenUuid ?? null,
                   onSelectionChange: (sel) => channel.emit({ type: INTENTS.INVOKE_HUD_SELECT, body: { type: "bond", sel }, combatId: menuSpec.combatId }),
                 });
