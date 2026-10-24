@@ -26,7 +26,11 @@ function campSceneFor(scene) {
   return camp?.flags?.[INN.MODULE_ID]?.oniFabula?.general?.sceneMode === "camp" ? camp : null;
 }
 
+// flags.<module>.campArrival {x, y} (scene px, token centre) on the camp twin;
+// else its Initial View point; else its centre.
 function arrivalSpot(scene) {
+  const a = scene?.flags?.[INN.MODULE_ID]?.campArrival;
+  if (Number.isFinite(a?.x) && Number.isFinite(a?.y)) return { x: a.x, y: a.y };
   const i = scene?.initial;
   if (Number.isFinite(i?.x) && Number.isFinite(i?.y)) return { x: i.x, y: i.y };
   const d = scene?.dimensions;

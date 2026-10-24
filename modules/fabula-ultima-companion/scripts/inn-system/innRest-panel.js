@@ -54,7 +54,7 @@ function ensureStyle() {
   border: 1px solid #9b7040; border-radius: 8px;
   background: linear-gradient(180deg, #7a5230 0%, #5c3818 100%);
   color: #f4e8c0; font-family: inherit; font-size: 16px; font-weight: 400;
-  line-height: 1; letter-spacing: .8px; cursor: pointer;
+  line-height: 1; letter-spacing: .8px; white-space: nowrap; cursor: pointer;
   box-shadow: 0 2px 6px rgba(40,18,4,0.38), inset 0 1px 0 rgba(255,225,140,0.14);
   transition: border-color .12s, color .12s, background .12s, box-shadow .12s;
 }
