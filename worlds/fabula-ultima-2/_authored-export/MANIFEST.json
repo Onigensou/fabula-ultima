@@ -1,5 +1,5 @@
 {
-  "generatedFromWorld": "../tools/_graft-world",
+  "generatedFromWorld": "fabula-ultima-2",
   "collections": {
     "folders": [
       {
@@ -21267,6 +21267,22 @@
           },
           {
             "id": "5VtEaXjywcgfR9Yx",
+            "name": "Flying"
+          }
+        ],
+        "effects": 1
+      },
+      {
+        "id": "LjS3Wbt3kjtr3peY",
+        "name": "King Gorger (Wild)",
+        "type": "character",
+        "items": [
+          {
+            "id": "ESsOEkCygwZursec",
+            "name": "Element Gorge"
+          },
+          {
+            "id": "yrikkR6UGwEkt1UA",
             "name": "Flying"
           }
         ],

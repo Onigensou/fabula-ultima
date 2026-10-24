@@ -1,0 +1,835 @@
+{
+  "_id": "LjS3Wbt3kjtr3peY",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1792821806576,
+    "duplicateSource": "Actor.ik2o2KAR2WZoDgrB",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "RREqCG49lYPtLQCr",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1792821806699,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>This creature cannot be targeted by Melee attacks</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "RREqCG49lYPtLQCr",
+          "originalParentId": "LjS3Wbt3kjtr3peY",
+          "originalUuid": "Actor.LjS3Wbt3kjtr3peY.ActiveEffect.RREqCG49lYPtLQCr"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-flying",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "derivedStatus": {
+            "byRules": [
+              "king-gorger-flight"
+            ],
+            "forStatus": "Flying"
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/summon_garuda_II.png",
+      "name": "Flying",
+      "origin": "Item.XVOWOq9oUmEECGrU.ActiveEffect.wWX3DvOWaeMB6Uji",
+      "sort": 0,
+      "statuses": [
+        "CVxHWmDb0gQsob1q"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "fabula-ultima-companion": {
+      "idleAnimation": {
+        "bounce": false,
+        "float": false
+      },
+      "spriteShadow": true
+    }
+  },
+  "folder": "Nd8LnosrPid1eX1r",
+  "img": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+  "items": [
+    {
+      "_id": "ESsOEkCygwZursec",
+      "_stats": {
+        "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "TnK9bLauD2YkkK9J",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_4",
+              "mode": 5,
+              "priority": 90,
+              "value": "aeAffinityStep(\"-1\")"
+            }
+          ],
+          "description": "<p>Gorged: this creature's resistance to <strong>Dark</strong> is reduced by one level until the start of King Gorger's next turn.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "elementGorge": "dark",
+              "tags": [
+                "debuff"
+              ]
+            }
+          },
+          "img": "icons/svg/downgrade.svg",
+          "name": "Element Gorge (Dark)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-element-gorge-dark"
+          ],
+          "system": {
+            "tags": [
+              "debuff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+      "name": "Element Gorge",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "resolve",
+          "animation_script": "<p>// @desc King Gorger — Element Gorge (drain cinematic): small motes of energy</p><p>// flow into the bitten target, which lights up in the gorged element's colour</p><p>// as an orb of that energy grows over it; the flow stops, and half a second</p><p>// later the orb races to King Gorger (accelerating, &lt; 2 s), who flashes once as</p><p>// it lands — the gate fires there, so the +MP lands on the flash.</p><p>//</p><p>// Lives on the Element Gorge skill itself with timing option \"resolve\": the</p><p>// FSM plays a skill's own script BEFORE the hit resolves, but the</p><p>// element is only chosen in RESOLVE (eg_shift's ae_name_pool draw) — so \"resolve\" makes the FSM skip it and the chain</p><p>// eg_shift → eg_anim (play_animation, action_ref \"Element Gorge\") → eg_feed plays it; by the time</p><p>// this runs the target already carries the fresh \"Element Gorge (X)\" AE and the</p><p>// OUTER script reads the element off it.</p><p>\"use strict\";</p><p>(async () =&gt; {</p><p>  const CFG = {</p><p>    flowMs: 1100,          // motes stream in; target brightens; orb grows</p><p>    moteEveryMs: 70,       // spawn cadence during the flow</p><p>    moteMs: 460,           // one mote's travel into the target</p><p>    moteSize: 0.16,        // x token size</p><p>    moteSpread: [1.1, 1.9],// spawn radius, x token size</p><p>    orbSize: 1.25,         // orb diameter at full growth, x token size</p><p>    brightMax: 0.85,       // coloured silhouette alpha at the peak</p><p>    holdMs: 500,           // flow stops; orb hovers; target's colour fades</p><p>    travelMs: 1100,        // orb → King Gorger (accelerates over the first 40%)</p><p>    accelFrac: 0.4,</p><p>    trailEveryMs: 60,      // ghost copies left along the path (sparser + dimmer: the</p><p>    trailMs: 380,          // 45 ms / 55 % version strobed — user feedback 2026-09-22)</p><p>    trailAlpha: 0.22,</p><p>    travelHaloAlpha: 0.75, // the orb's additive halo while moving (1 = as at rest)</p><p>    gateAt: 0.93,          // fireDone this far along the travel: the +MP actor write's</p><p>                           // sync stutter then overlaps the last travel frames, not the flash</p><p>    landMs: 160,           // orb pop on arrival</p><p>    flashMs: 500,          // King Gorger's single flash — the engine's heal/hurt idiom:</p><p>    flashHold: 0.25,       // fraction of flashMs held at the peak before easing back</p><p>    flashPeak: 3.6,        // the SPRITE itself at brightness x3.6 easing back to 1 (not a</p><p>                           // white silhouette / glow over it)</p><p>    sfxFlow: { name: \"AbsorbElement\", volume: 0.5, rate: 0.95, fadeAfter: 1200, fadeMs: 350 },</p><p>    sfxLand: null,         // none: the engine's own MP-gain cue plays when eg_feed lands</p><p>    fallbackColor: \"#ffffff\",</p><p>    palette: { fire: \"#e8603c\", ice: \"#6fb7e8\", earth: \"#c19a6b\", bolt: \"#e8c93c\", air: \"#5fd3c6\", dark: \"#8a4fd8\" },</p><p>  };</p><p></p><p>  const NS = \"fabula-ultima-companion\";</p><p>  const P = payload ?? globalThis.__PAYLOAD ?? {};</p><p>  const casterUuid = P.casterTokenUuid ?? P.sourceTokenUuid ?? null;</p><p>  const targetUuids = (P.targetTokenUuids ?? (P.targets ?? []).map((t) =&gt; t.tokenUuid) ?? []).filter(Boolean);</p><p>  const doneHook = \"oni:done:\" + foundry.utils.randomID(8);</p><p>  const sourceTokenId = String(casterUuid ?? \"\").split(\".Token.\").pop() || null;</p><p></p><p>  const onceHook = (name, ms) =&gt; new Promise((resolve) =&gt; {</p><p>    const id = Hooks.once(name, () =&gt; { clearTimeout(t); resolve(); });</p><p>    const t = setTimeout(() =&gt; { Hooks.off(name, id); resolve(); }, ms);</p><p>  });</p><p></p><p>  // ── which element did the bite gorge? the NEWEST \"Element Gorge (X)\" AE on the</p><p>  //    target that this caster applied (a repeat bite adds a different element) ──</p><p>  let elem = null;</p><p>  try {</p><p>    const casterDoc = casterUuid ? await fromUuid(casterUuid) : null;</p><p>    const casterActorUuid = casterDoc?.actor?.uuid ?? null;</p><p>    const targetDoc = targetUuids[0] ? await fromUuid(targetUuids[0]) : null;</p><p>    let best = null;</p><p>    for (const e of targetDoc?.actor?.effects ?? []) {</p><p>      const f = e.flags?.[NS] ?? {};</p><p>      if (!f.elementGorge) continue;</p><p>      const by = f.directorAppliedBy?.reactorActorUuid ?? null;</p><p>      if (casterActorUuid &amp;&amp; by &amp;&amp; by !== casterActorUuid) continue;</p><p>      const t = Number(e._stats?.createdTime ?? 0);</p><p>      if (!best || t &gt;= best.t) best = { t, elem: String(f.elementGorge).toLowerCase() };</p><p>    }</p><p>    elem = best?.elem ?? null;</p><p>  } catch (e) { console.warn(\"[KG Gorge anim] target AE read threw\", e); }</p><p>  if (!elem) { const ks = Object.keys(CFG.palette); elem = ks[Math.floor(Math.random() * ks.length)]; }</p><p>  const color = CFG.palette[elem] ?? CFG.fallbackColor;</p><p></p><p>  Hooks.callAll(\"oni:animationStart\", { local: true, world: false, sourceTokenId });</p><p></p><p>  // INNER (every client) — oni helper library; no backticks allowed in here.</p><p>  const scriptSource = String.raw`</p><p>    const cfg = ctx.params.cfg;</p><p>    const color = ctx.params.color;</p><p>    const caster = oni.caster;</p><p>    const target = oni.targets[0] || null;</p><p>    if (!caster || !target) { oni.fireDone(); return; }</p><p>    const col = foundry.utils.Color.from(color);</p><p>    const tokenSize = Math.max(target.w || 100, target.h || 100);</p><p>    const kgSize = Math.max(caster.w || 100, caster.h || 100);</p><p>    const tx = target.center.x, ty = target.center.y;</p><p>    const kx = caster.center.x, ky = caster.center.y;</p><p>    const layer = oni.layer({ zIndex: 94000 });</p><p></p><p>    const cue = (c) =&gt; { if (c &amp;&amp; c.name) oni.sfx(c.name, { volume: c.volume, rate: c.rate, fadeAfter: c.fadeAfter, fadeMs: c.fadeMs }); };</p><p>    for (const c of [cfg.sfxFlow, cfg.sfxLand]) { try { const u = c &amp;&amp; c.name &amp;&amp; oni.sfxUrl(c.name); if (u) { const a = new Audio(); a.preload = 'auto'; a.src = u; } } catch (e) {} }</p><p></p><p>    const radial = (size) =&gt; new PIXI.Sprite(oni.radialTexture(color, 'rgba(0,0,0,0)', { size: size }));</p><p>    const mkSprite = (size, blend, alpha) =&gt; {</p><p>      const s = radial(256); s.anchor.set(0.5); s.blendMode = blend; s.width = s.height = size; s.alpha = alpha; layer.addChild(s); return s;</p><p>    };</p><p></p><p>    // ── target: coloured silhouette (\"turns bright with the colour\") + the orb ──</p><p>    const bright = oni.cloneToken(target, { parent: layer });</p><p>    if (bright) {</p><p>      const cm = new PIXI.ColorMatrixFilter();</p><p>      cm.matrix = [0,0,0,0,col.r,  0,0,0,0,col.g,  0,0,0,0,col.b,  0,0,0,1,0];</p><p>      bright.filters = [cm];</p><p>      bright.alpha = 0;</p><p>    }</p><p>    const orb = mkSprite(1, PIXI.BLEND_MODES.ADD, 0);</p><p>    orb.position.set(tx, ty);</p><p>    const orbCore = mkSprite(1, PIXI.BLEND_MODES.NORMAL, 0);</p><p>    orbCore.position.set(tx, ty);</p><p>    const setOrb = (d, a) =&gt; { orb.width = orb.height = d; orb.alpha = a; orbCore.width = orbCore.height = d * 0.45; orbCore.alpha = a * 0.9; };</p><p></p><p>    // ── motes: spawn around the target, fall into it ──</p><p>    const motes = [];</p><p>    let spawning = true;</p><p>    const spawnMote = () =&gt; {</p><p>      const ang = Math.random() * Math.PI * 2;</p><p>      const r = tokenSize * (cfg.moteSpread[0] + Math.random() * (cfg.moteSpread[1] - cfg.moteSpread[0]));</p><p>      const m = mkSprite(tokenSize * cfg.moteSize * (0.7 + Math.random() * 0.6), PIXI.BLEND_MODES.ADD, 0);</p><p>      const x0 = tx + Math.cos(ang) * r, y0 = ty + Math.sin(ang) * r;</p><p>      m.position.set(x0, y0);</p><p>      const size0 = m.width;</p><p>      motes.push(m);</p><p>      oni.tween({</p><p>        from: 0, to: 1, duration: cfg.moteMs, ease: oni.EASE.inQuad,</p><p>        onUpdate: (v) =&gt; {</p><p>          m.position.set(x0 + (tx - x0) * v, y0 + (ty - y0) * v);</p><p>          m.alpha = v &lt; 0.15 ? v / 0.15 : 1 - Math.max(0, v - 0.75) / 0.25;</p><p>          m.width = m.height = size0 * (1 - 0.6 * v);</p><p>        },</p><p>        onComplete: () =&gt; { try { m.destroy(); } catch (e) {} },</p><p>      });</p><p>    };</p><p>    const spawner = (async () =&gt; { while (spawning) { spawnMote(); await oni.wait(cfg.moteEveryMs); } })();</p><p></p><p>    cue(cfg.sfxFlow);</p><p></p><p>    // ── FLOW: silhouette brightens, orb grows ──</p><p>    await oni.tween({</p><p>      from: 0, to: 1, duration: cfg.flowMs, ease: oni.EASE.outQuad,</p><p>      onUpdate: (v) =&gt; {</p><p>        if (bright) bright.alpha = cfg.brightMax * v;</p><p>        setOrb(tokenSize * cfg.orbSize * (0.15 + 0.85 * v), Math.min(1, v * 1.5));</p><p>      },</p><p>    });</p><p>    spawning = false;</p><p>    await spawner;</p><p></p><p>    // ── HOLD: flow has stopped; the orb hovers, the target's colour drains away ──</p><p>    await oni.tween({</p><p>      from: 0, to: 1, duration: cfg.holdMs, ease: oni.EASE.linear,</p><p>      onUpdate: (v) =&gt; {</p><p>        if (bright) bright.alpha = cfg.brightMax * (1 - v);</p><p>        const pulse = 1 + 0.06 * Math.sin(v * Math.PI * 4);</p><p>        setOrb(tokenSize * cfg.orbSize * pulse, 1);</p><p>      },</p><p>    });</p><p>    if (bright) { try { bright.destroy(); } catch (e) {} }</p><p></p><p>    // ── TRAVEL: accelerate over the first accelFrac of the path, then hold max speed ──</p><p>    const a = cfg.accelFrac, k = 1 / (2 * a - a * a);</p><p>    const dist = (t) =&gt; (t &lt; a ? k * t * t : k * a * a + 2 * k * a * (t - a));</p><p>    let fired = false;</p><p>    let lastTrail = -1e9;</p><p>    const dNow = () =&gt; tokenSize * cfg.orbSize;</p><p>    await oni.tween({</p><p>      from: 0, to: 1, duration: cfg.travelMs, ease: oni.EASE.linear,</p><p>      onUpdate: (v) =&gt; {</p><p>        const s = Math.min(1, dist(v));</p><p>        if (!fired &amp;&amp; s &gt;= cfg.gateAt) { fired = true; oni.fireDone(); }</p><p>        const x = tx + (kx - tx) * s, y = ty + (ky - ty) * s;</p><p>        orb.position.set(x, y); orbCore.position.set(x, y);</p><p>        setOrb(dNow() * (1 - 0.25 * s), 1);</p><p>        orb.alpha = cfg.travelHaloAlpha;</p><p>        const now = performance.now();</p><p>        if (now - lastTrail &gt;= cfg.trailEveryMs) {</p><p>          lastTrail = now;</p><p>          const g = mkSprite(dNow() * 0.8 * (1 - 0.25 * s), PIXI.BLEND_MODES.ADD, cfg.trailAlpha);</p><p>          g.position.set(x, y);</p><p>          oni.tween({ from: cfg.trailAlpha, to: 0, duration: cfg.trailMs, ease: oni.EASE.outQuad,</p><p>            onUpdate: (al) =&gt; { g.alpha = al; g.width = g.height = g.width * 0.985; },</p><p>            onComplete: () =&gt; { try { g.destroy(); } catch (e) {} } });</p><p>        }</p><p>      },</p><p>    });</p><p></p><p>    // ── LAND: orb pops, King Gorger flashes once — the gate fires here ──</p><p>    //    The flash is the SPRITE over-brightened (a clone of the body, tint</p><p>    //    filter and all, plus a brightness matrix eased from flashPeak back to</p><p>    //    1 — the same idiom as the engine's heal / hurt flash). At brightness 1</p><p>    //    the clone is pixel-identical to the real token, so it simply fades out.</p><p>    cue(cfg.sfxLand);</p><p>    const flash = oni.cloneToken(caster, { parent: layer });</p><p>    let flashMx = null;</p><p>    if (flash) {</p><p>      flashMx = new PIXI.ColorMatrixFilter();</p><p>      flashMx.brightness(cfg.flashPeak, false);</p><p>      flash.filters = [...(flash.filters || []), flashMx];</p><p>      flash.alpha = 1;</p><p>    }</p><p>    if (!fired) { fired = true; oni.fireDone(); }</p><p>    const d0 = orb.width;</p><p>    await Promise.all([</p><p>      oni.tween({ from: 0, to: 1, duration: cfg.landMs, ease: oni.EASE.outQuad,</p><p>        onUpdate: (v) =&gt; { setOrb(d0 * (1 + 0.7 * v), 1 - v); } }),</p><p>      oni.tween({ from: 0, to: 1, duration: cfg.flashMs, ease: oni.EASE.linear,</p><p>        onUpdate: (v) =&gt; {</p><p>          if (!flash || !flashMx) return;</p><p>          const u = v &lt;= cfg.flashHold ? 0 : oni.EASE.outQuad((v - cfg.flashHold) / (1 - cfg.flashHold));</p><p>          flashMx.reset(); flashMx.brightness(cfg.flashPeak + (1 - cfg.flashPeak) * u, false);</p><p>          flash.alpha = v &gt; 0.85 ? 1 - (v - 0.85) / 0.15 : 1;</p><p>        } }),</p><p>    ]);</p><p>  `;</p><p></p><p>  game.ONI.pseudo.play({</p><p>    scriptId: \"anim-studio/king-gorger-element-gorge\",</p><p>    scriptSource,</p><p>    casterTokenUuid: casterUuid,</p><p>    targetTokenUuids: targetUuids,</p><p>    params: { doneHook, cfg: CFG, color, elem },</p><p>  });</p><p></p><p>  await onceHook(doneHook, CFG.flowMs + CFG.holdMs + CFG.travelMs + 10000);   // wide failsafe: a loaded client measured gates ~2.5 s late</p><p>  Hooks.callAll(\"oni:animationEnd\", { local: true, world: false, sourceTokenId });</p><p>})();</p><p></p>",
+          "check_bonus": "5",
+          "class": "NPC",
+          "cost": "",
+          "damage_bonus": "",
+          "defense_target_type": "mdef",
+          "description": "<p><strong>【INS + WLP】 +5</strong> vs. Magic Defense ◆ no damage.</p><p>On a hit, the target's Affinity to <strong>dark</strong> worsens by one step until the start of King Gorger's next turn, and King Gorger recovers <strong>20</strong> Mind Points.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_steps": "eg_shift,eg_anim,eg_feed",
+              "effect_kind": "chain",
+              "effect_label": "eg_chain"
+            },
+            "1": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "1",
+              "ae_name_pool": "Element Gorge (Dark)",
+              "ae_pool_skip_existing": false,
+              "ae_template_ref": "",
+              "effect_kind": "apply_ae",
+              "effect_label": "eg_shift",
+              "target_ref": "hit_action_targets"
+            },
+            "2": {
+              "$deleted": false,
+              "action_ref": "Element Gorge",
+              "effect_kind": "play_animation",
+              "effect_label": "eg_anim",
+              "grant_amount": "20",
+              "grant_resource": "mp",
+              "target_ref": "hit_action_targets"
+            },
+            "3": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "eg_feed",
+              "grant_amount": "20",
+              "grant_resource": "mp",
+              "target_ref": "self"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "y1tW2wC0N3fPHPy8",
+          "ignore_hr": false,
+          "img": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Element Gorge",
+          "on_activate_effect_ref": "eg_chain",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Enemy",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.A8vBJMBvMT9ON8O4.Item.y1tW2wC0N3fPHPy8"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "yrikkR6UGwEkt1UA",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "E78NytXinWrJ4SkX",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>King Gorger is airborne while it is not in <strong>Crisis</strong>. The <strong>Flying</strong> status is granted and withdrawn automatically by the derived-status reactor (rule <code>king-gorger-flight</code>).</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "deriveStatus": {
+                "grant": "Flying",
+                "requireEquipped": false,
+                "ruleKey": "king-gorger-flight",
+                "when": "AE_COUNT_CRISIS == 0"
+              }
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/summon_garuda_II.png",
+          "name": "Flight",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+      "name": "Flying",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "cost": "",
+          "description": "<p>King Gorger always has the <strong>Flying</strong> status. While in Crisis, it is <strong>Grounded</strong>.</p>",
+          "duration": "",
+          "effect_table": {},
+          "id": "5VtEaXjywcgfR9Yx",
+          "img": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+          "isCheck": false,
+          "isReaction": false,
+          "name": "Flying",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {},
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "uuid": "Actor.A8vBJMBvMT9ON8O4.Item.5VtEaXjywcgfR9Yx"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "King Gorger (Wild)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 50,
+    "disposition": -1,
+    "flags": {
+      "Border-Control": {
+        "borderCustomBaseOpacity": 0.5,
+        "borderCustomColorExt": "#000000",
+        "borderCustomColorInt": "#000000",
+        "borderCustomFrameOpacity": 0.5,
+        "noBorder": false
+      },
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "max": null,
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 30
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "max": null,
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 60
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "max": 3,
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 0
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "🍖",
+            "max": 3,
+            "maxcolor": "#2dca2b",
+            "mincolor": "#53e45d",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 0
+          }
+        }
+      },
+      "hex-size-support": {
+        "alternateOrientation": false,
+        "hideBorder": true,
+        "hideFill": false,
+        "pivotx": null,
+        "pivoty": null
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "wall-height": {
+        "tokenHeight": 0
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "King Gorger",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "action_pattern_table": {
+        "0": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Element Gorge",
+          "action_pattern_priority": "5",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        }
+      },
+      "activation": "1",
+      "affinity_1": "NA",
+      "affinity_2": "NA",
+      "affinity_3": "NA",
+      "affinity_4": "NA",
+      "affinity_5": "NA",
+      "affinity_6": "NA",
+      "affinity_7": "NA",
+      "affinity_8": "NA",
+      "affinity_9": "NA",
+      "animation_table": {},
+      "arcane_ef": "100",
+      "attack_list": {},
+      "attribute": "",
+      "battle_facing_direction": "left",
+      "bonus_hp": 0,
+      "bonus_mp": 0,
+      "bow_ef": "100",
+      "brawling_ef": "100",
+      "check_mod_all": 0,
+      "check_mod_magic": 0,
+      "check_mod_melee": 0,
+      "check_mod_ranged": 0,
+      "condition_anomaly": "NA",
+      "condition_bane": "NA",
+      "condition_berserk": "NA",
+      "condition_bleed": "NA",
+      "condition_blind": "NA",
+      "condition_burn": "NA",
+      "condition_charm": "NA",
+      "condition_confused": "NA",
+      "condition_curse": "NA",
+      "condition_dazed": "NA",
+      "condition_delayed": "NA",
+      "condition_despair": "NA",
+      "condition_disarmed": "NA",
+      "condition_doom": "NA",
+      "condition_enraged": "NA",
+      "condition_envenomed": "NA",
+      "condition_fatigue": "NA",
+      "condition_frightened": "NA",
+      "condition_grappled": "NA",
+      "condition_hypothermia": "NA",
+      "condition_isolate": "NA",
+      "condition_obscure": "NA",
+      "condition_oil": "NA",
+      "condition_panic": "NA",
+      "condition_paralyzed": "NA",
+      "condition_petrify": "NA",
+      "condition_poisoned": "NA",
+      "condition_shaken": "NA",
+      "condition_silence": "NA",
+      "condition_slow": "NA",
+      "condition_stagger": "NA",
+      "condition_suppress": "NA",
+      "condition_turbulence": "NA",
+      "condition_weak": "NA",
+      "condition_wet": "NA",
+      "condition_wither": "NA",
+      "condition_zombie": "NA",
+      "critical_damage_bonus": 0,
+      "critical_damage_multiplier": 1,
+      "critical_dice_range": 0,
+      "current_hp": "50",
+      "current_ip": "0",
+      "current_mp": "0",
+      "cut_in_critical": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+      "cut_in_fumble": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+      "cut_in_offset_y": "",
+      "cut_in_zero_power": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+      "dagger_ef": "100",
+      "damage_receiving_mod_air": 0,
+      "damage_receiving_mod_all": 0,
+      "damage_receiving_mod_bolt": 0,
+      "damage_receiving_mod_dark": 0,
+      "damage_receiving_mod_earth": 0,
+      "damage_receiving_mod_fire": 0,
+      "damage_receiving_mod_ice": 0,
+      "damage_receiving_mod_light": 0,
+      "damage_receiving_mod_melee": 0,
+      "damage_receiving_mod_physical": 0,
+      "damage_receiving_mod_poison": 0,
+      "damage_receiving_mod_range": 0,
+      "def_mod": "+0",
+      "default_facing_direction": "right",
+      "defense": 8,
+      "dex_base": "8",
+      "dex_current": 8,
+      "enmity": 100,
+      "event_timeline_table": {},
+      "extra_damage_mod_air": 0,
+      "extra_damage_mod_all": 0,
+      "extra_damage_mod_arcane": 0,
+      "extra_damage_mod_bolt": 0,
+      "extra_damage_mod_bow": 0,
+      "extra_damage_mod_brawling": 0,
+      "extra_damage_mod_dagger": 0,
+      "extra_damage_mod_dark": 0,
+      "extra_damage_mod_earth": 0,
+      "extra_damage_mod_fire": 0,
+      "extra_damage_mod_firearm": 0,
+      "extra_damage_mod_flail": 0,
+      "extra_damage_mod_heavy": 0,
+      "extra_damage_mod_ice": 0,
+      "extra_damage_mod_light": 0,
+      "extra_damage_mod_melee": 0,
+      "extra_damage_mod_physical": 0,
+      "extra_damage_mod_poison": 0,
+      "extra_damage_mod_ranged": 0,
+      "extra_damage_mod_spear": 0,
+      "extra_damage_mod_spell": 0,
+      "extra_damage_mod_sword": 0,
+      "extra_damage_mod_thrown": 0,
+      "firearm_ef": "100",
+      "flail_ef": "100",
+      "gorger": true,
+      "heavy_ef": "100",
+      "icon_offset_x": "",
+      "icon_offset_y": "",
+      "icon_scale": "",
+      "id": "A8vBJMBvMT9ON8O4",
+      "img": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+      "init": "8",
+      "ins_base": "8",
+      "ins_current": 8,
+      "isAlmighty": false,
+      "isAwake": false,
+      "isBlacksmith": false,
+      "isBoss": false,
+      "isClarity": false,
+      "isCustomEvent": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnlighten": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isMasterful": false,
+      "isPhantasm": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isShop": false,
+      "isSlow": false,
+      "isStolen": false,
+      "isStrong": false,
+      "isSummon": false,
+      "isSwift": false,
+      "isUnyielding": false,
+      "isVillain": false,
+      "isWeak": false,
+      "level": "5",
+      "lifesteal_percentage": 0,
+      "lifesteal_value": 0,
+      "magic_defense": 8,
+      "manadrain_percentage": 0,
+      "manadrain_value": 0,
+      "max_hp": "50",
+      "max_ip": "0",
+      "max_mp": "100",
+      "max_zero": "0",
+      "mdef_mod": "+0",
+      "mig_base": "8",
+      "mig_current": 8,
+      "mimic": false,
+      "minimum_critical_dice": 6,
+      "name": "King Gorger",
+      "normal_spell_list": {},
+      "npc_rank": "soldier",
+      "override_all_damage_type": "None",
+      "override_attack_damage_type": "None",
+      "override_damage_type": "None",
+      "override_spell_damage_type": "None",
+      "rare": false,
+      "resource_maxValue_1": "0",
+      "resource_maxValue_2": "0",
+      "resource_maxValue_3": "0",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "shield_type": "PHYSICAL",
+      "shield_value": "0",
+      "showMacro": false,
+      "skill_active_list": {},
+      "skill_passive_list": {},
+      "spear_ef": "100",
+      "species": "BEAST",
+      "sprite_battle": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+      "sprite_standard": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+      "steal_percentage_table": {},
+      "stealable_loot": {},
+      "study_text": "<p>A Gorger grown fat and proud enough to wear a crown, drifting above its feeding ground on sheer self-regard. It does not bite flesh — it bites the <strong>shadow</strong> out of whatever it catches, and what it leaves behind is soft to darkness for a while. It keeps itself aloft until it is badly hurt; bring something that reaches until then.</p>",
+      "subtype": "Sub-Type",
+      "subtype_list": "GORGER",
+      "sword_ef": "100",
+      "tactic_notes": "",
+      "thrown_ef": "100",
+      "token_option_persist": false,
+      "traits": "Gorger, Beast, Flying, Dark-Hungry, Bottomless Appetite",
+      "ultima_point": "0",
+      "unique": false,
+      "uuid": "Actor.A8vBJMBvMT9ON8O4",
+      "wlp_base": "8",
+      "wlp_current": 8,
+      "zenit_reward_max": "0",
+      "zenit_reward_min": "0",
+      "zero_power_value": "0"
+    },
+    "statusEffects": {},
+    "template": "yegF6R8aaymhrvCg",
+    "templateSystemUniqueVersion": 2114752673
+  },
+  "type": "character"
+}
