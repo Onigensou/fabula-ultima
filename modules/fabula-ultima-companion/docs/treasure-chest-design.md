@@ -124,7 +124,7 @@ approved. Coordinates are scene pixels (tile centre), first pass.
 | Midgard | Midgard_Map007 Cellar | Mundane | north-east cell by the cages (1060, 130) | Liquid Hope ×1 |
 | Midgard | Midgard_Map006 Castle | Standard | east armoury, weapon-rack wall (1700, 1100) | Rune Blade |
 | Valley | Valley_Map003 Valley Entrance | Mundane | bulge east of the path (700, 1650) | 300z |
-| Valley | Valley_Map011 The Great Seal | Mundane | east spire platform (1230, 450) | Crystal Powder ×1 |
+| Valley | Valley_Map011 The Great Seal | Mundane | east spire platform (1230, 450) | Earth Stone ×4 |
 | Valley | Valley_Map012 Ancient Mural | Standard | dead-end stair landing, top right (1400, 310) | Phoenix Feather ×1 + 300z |
 | Valley | Valley_Map020 Feeding Pit | Standard | by the cauldron, north rim (1240, 190) | Beowulf + 500z |
 | Valley | Valley_Map016 Abandoned Monastery | Standard | behind the fallen pillar by the lion statue (1000, 640) | Goddess Tear ×1 |

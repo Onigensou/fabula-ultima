@@ -12,14 +12,15 @@
  *   CHEST_ITEM_MISSING (warning) itemUuid does not resolve
  *   CHEST_NO_TIER (info)        a chest from before tiers, in a budgeted area
  *   CHEST_NOT_EXPLORATION (warning)
- *     chest on a scene whose mode is not "exploration" (tile-path dungeon
- *     maps use loot TILES, not chests)
+ *     chest on a tile-path "dungeon" scene (those use loot TILES, not
+ *     chests). Exploration, stealth and camp maps are all walk maps: fine.
  *   CHEST_RARE_NOT_UNIQUE (warning)
  *     a Rare chest's item also sits in a RollTable or a shop NPC's stock;
  *     hidden chests should hold what cannot be bought or rolled
  *   CHEST_RARE_NO_REVEAL (warning)  Rare chest with revealRadius 0 (never hidden)
  *   CHEST_ZENIT_BAND (info)
- *     Zenit outside the tier's band, measured against the area's
+ *     Value (Zenit + the item's item_cost x quantity) outside the tier's
+ *     band, measured against the area's
  *     "<Area> - Zenit" RollTable mean (mundane 25-50%, standard 100-150%,
  *     rare >= the table's max). Info: the user sets the final numbers.
  *
@@ -110,7 +111,7 @@
 
         if (!f.itemUuid && !(num(f.zenit) > 0)) push("warning", "CHEST_EMPTY", `${where}: no item and no Zenit`);
         if (!tier && AREA_BUDGETS[area]) push("info", "CHEST_NO_TIER", `${where}: no tier set`);
-        if (mode && mode !== "exploration") push("warning", "CHEST_NOT_EXPLORATION", `${where}: scene mode is "${mode}"`);
+        if (mode === "dungeon") push("warning", "CHEST_NOT_EXPLORATION", `${where}: chest on a tile-path dungeon map (use a loot tile)`);
 
         if (tier === "rare") {
           if (!(num(f.revealRadius ?? 1.5) > 0)) push("warning", "CHEST_RARE_NO_REVEAL", `${where}: Rare chest is never hidden (revealRadius 0)`);
@@ -118,12 +119,16 @@
           if (hits?.length) push("warning", "CHEST_RARE_NOT_UNIQUE", `${where}: Rare item "${item.name}" is also in ${hits.join(", ")}`);
         }
 
+        // A chest's value is its Zenit plus what its item costs (item_cost x qty).
         const stats = zenitStats(ZENIT_TABLE_FOR_AREA[area] ?? `${area} - Zenit`);
         const z = num(f.zenit);
-        if (stats && z > 0) {
+        const itemValue = item ? num(item.system?.props?.item_cost) * Math.max(1, num(f.quantity) || 1) : 0;
+        const value = z + itemValue;
+        if (stats && value > 0) {
           const band = ZENIT_BANDS[tier];
-          if (band && (z < stats.mean * band.min || z > stats.mean * band.max)) {
-            push("info", "CHEST_ZENIT_BAND", `${where}: ${z}z is outside the ${tier} band ${Math.round(stats.mean * band.min)}-${Math.round(stats.mean * band.max)}z`);
+          if (band && (value < stats.mean * band.min || value > stats.mean * band.max)) {
+            const parts = itemValue ? `${z}z + item ${itemValue}z = ${value}z` : `${z}z`;
+            push("info", "CHEST_ZENIT_BAND", `${where}: ${parts} is outside the ${tier} band ${Math.round(stats.mean * band.min)}-${Math.round(stats.mean * band.max)}z`);
           }
           if (tier === "rare" && !f.itemUuid && z < stats.max) {
             push("info", "CHEST_ZENIT_BAND", `${where}: Rare Zenit-only chest below the area table max (${stats.max}z)`);
