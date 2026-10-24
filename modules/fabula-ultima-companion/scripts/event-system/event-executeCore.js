@@ -608,6 +608,7 @@
     _socketFn: null,
     _posOverrides: new Map(),
     _scanQueued: false,
+    _scanSeq: 0,
     _activeCandidate: null,
     _activeTalkCandidate: null,
     _moveWatchTimer: null,
@@ -738,7 +739,11 @@
 
         this._cleanupOverrides();
 
+        // Scans overlap while the party walks; one that resolves after a newer
+        // one has started would put back a button that is already out of range.
+        const seq = ++this._scanSeq;
         const partyToken = await resolvePartyToken();
+        if (seq !== this._scanSeq || !this.running) return;
         if (!partyToken) {
           this._activeCandidate = null;
           this._activeTalkCandidate = null;
