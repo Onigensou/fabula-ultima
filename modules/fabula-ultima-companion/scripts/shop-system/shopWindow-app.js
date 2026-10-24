@@ -425,10 +425,13 @@ export class ShopWindowApp {
         border-bottom:1px solid rgba(184,153,64,0.55);
         font-size:12px; color:#5a3800; flex-shrink:0;
       }
+      .fu-shop-ip > span { white-space:nowrap; flex:0 0 auto; }
       .fu-shop-ip .fu-ip-label { font-weight:800; }
       .fu-shop-ip .fu-ip-val   { font-weight:800; color:#8b4513; }
       .fu-shop-ip .fu-ip-val.full { color:#4f7f4f; }
       .fu-shop-ip .fu-ip-price { display:flex; align-items:center; gap:2px; opacity:0.8; margin-left:auto; }
+      /* Foundry's dialog styles stretch every button to fill its row. */
+      .fu-shop-ip .fu-shop-buy { flex:0 0 auto; width:auto; }
 
       /* ── Empty state ── */
       .fu-shop-empty {
