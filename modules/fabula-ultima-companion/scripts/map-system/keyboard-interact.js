@@ -421,8 +421,8 @@
   // the square and are zoomed large, so that landed on the NPC's head. Here,
   // after they have placed theirs, every frame, all of one NPC's buttons are
   // lined up in one centred row just above the top of its drawn sprite.
-  const ROW_SELECTOR = ".oni-event-btn.is-talk, .fu-shop-btn, .fu-refine-prox-btn";
-  const ROW_ORDER = ["is-talk", "fu-shop-btn", "fu-refine-prox-btn"];
+  const ROW_SELECTOR = ".oni-event-btn.is-talk, .fu-shop-btn, .fu-refine-prox-btn, .fu-inn-prox-btn";
+  const ROW_ORDER = ["is-talk", "fu-shop-btn", "fu-refine-prox-btn", "fu-inn-prox-btn"];
   const ROW_SLOT_PX = 44;
   const ROW_LIFT_PX = 8;
 
