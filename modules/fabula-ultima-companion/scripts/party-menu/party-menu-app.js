@@ -323,6 +323,9 @@ function render() {
   const searchHadFocus = document.activeElement?.classList?.contains("pm-search");
   // Any other pane that should keep its scroll across a re-render while it shows the same thing.
   const kept = [..._root.querySelectorAll("[data-keep-scroll]")].map((el) => [el.dataset.keepScroll, el.scrollTop]);
+  // A companion's video sprite rebuilt by innerHTML starts empty and blinks while
+  // it reloads (every hover re-renders), so the playing elements are carried over.
+  const videos = new Map([..._root.querySelectorAll(".pm-comp video")].map((v) => [v.getAttribute("src"), v]));
 
   _root.innerHTML = `
     <div class="pm-backdrop"></div>
@@ -331,6 +334,12 @@ function render() {
       ${S.picker ? renderPicker() : ""}
       ${S.toast ? `<div class="pm-toast pm-pill">${esc(S.toast)}</div>` : ""}
     </div>`;
+
+  // Swapped back in the same task, so the moved element is never paused.
+  for (const fresh of _root.querySelectorAll(".pm-comp video")) {
+    const old = videos.get(fresh.getAttribute("src"));
+    if (old) { fresh.replaceWith(old); videos.delete(fresh.getAttribute("src")); }
+  }
 
   applyTransition(_root.querySelector(".pm-stage"));
 
