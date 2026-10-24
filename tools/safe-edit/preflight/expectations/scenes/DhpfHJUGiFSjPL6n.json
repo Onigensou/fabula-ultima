@@ -591,7 +591,7 @@
         "forceInitialView": true
       },
       "fabula-ultima-companion": {
-        "campSceneUuid": "",
+        "campSceneUuid": "Scene.jj4gGa4pp0g6ZEPU",
         "oniFabula": {
           "general": {
             "sceneMode": "exploration",
@@ -602,7 +602,6 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "Midgard - Inn",
-            "sceneVisited": false,
             "areaName": "Midgard - Inn",
             "conflictEvent": "none",
             "depthEnabled": false,
@@ -719,7 +718,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791358986767,
-      "modifiedTime": 1791842361275,
+      "modifiedTime": 1792844092302,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "lights": [

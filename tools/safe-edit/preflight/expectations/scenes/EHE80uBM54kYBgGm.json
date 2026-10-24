@@ -893,7 +893,7 @@
     }
   ],
   "notes": [],
-  "tileCount": 1,
+  "tileCount": 2,
   "full": {
     "folder": "W6amZLAXw1nGn4gs",
     "name": "Eisendrache_Map007",
@@ -1065,7 +1065,7 @@
           },
           "threatLevel": "medium"
         },
-        "campSceneUuid": ""
+        "campSceneUuid": "Scene.5iCnIbJVBk2fhhKU"
       }
     },
     "_stats": {
@@ -1075,7 +1075,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.4",
       "createdTime": 1766124215716,
-      "modifiedTime": 1781425619737,
+      "modifiedTime": 1792829046381,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "_id": "EHE80uBM54kYBgGm",

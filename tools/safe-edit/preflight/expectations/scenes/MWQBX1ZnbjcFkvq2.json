@@ -102,8 +102,8 @@
         },
         "oniDungeon": {
           "threatLevel": "medium",
-          "encounterTable": "RollTable.Oijx8ksubxq9pc1R",
-          "enemiesTable": "RollTable.0LEghOv3aJyZVyVs",
+          "encounterTable": "RollTable.sULKvLErNMF8JtUr",
+          "enemiesTable": "RollTable.hBupoi4SsKj1GmDM",
           "battleMap": "Scene.7zYxzBQAw6FkcIyM",
           "battleBGM": "DRG_Battle",
           "bossBGM": "DRG_Boss",
@@ -190,7 +190,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359025817,
-      "modifiedTime": 1791552456422,
+      "modifiedTime": 1792629543325,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

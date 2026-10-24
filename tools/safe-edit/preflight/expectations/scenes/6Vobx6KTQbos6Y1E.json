@@ -150,7 +150,7 @@
     }
   ],
   "notes": [],
-  "tileCount": 1,
+  "tileCount": 2,
   "full": {
     "name": "AncientTemple_Map002",
     "navName": "Ancient Temple - Inn Lobby",
@@ -285,7 +285,7 @@
         "advancedVision": true
       },
       "fabula-ultima-companion": {
-        "campSceneUuid": "",
+        "campSceneUuid": "Scene.isNns96tHEmlXfxi",
         "oniFabula": {
           "general": {
             "sceneMode": "exploration",
@@ -336,7 +336,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780398838268,
-      "modifiedTime": 1784342586350,
+      "modifiedTime": 1792829046197,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

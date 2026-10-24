@@ -4,7 +4,7 @@
   "tokens": [],
   "tokensFull": [],
   "notes": [],
-  "tileCount": 1,
+  "tileCount": 2,
   "full": {
     "name": "Valley_Map012",
     "navName": "Ancient Mural",
@@ -102,8 +102,8 @@
         },
         "oniDungeon": {
           "threatLevel": "medium",
-          "encounterTable": "RollTable.Oijx8ksubxq9pc1R",
-          "enemiesTable": "RollTable.0LEghOv3aJyZVyVs",
+          "encounterTable": "RollTable.sULKvLErNMF8JtUr",
+          "enemiesTable": "RollTable.hBupoi4SsKj1GmDM",
           "battleMap": "Scene.JKhl4GMekbmkKBXw",
           "battleBGM": "DRG_Battle",
           "bossBGM": "DRG_Boss",
@@ -190,7 +190,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359029316,
-      "modifiedTime": 1791828461320,
+      "modifiedTime": 1792629543340,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

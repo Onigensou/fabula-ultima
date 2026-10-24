@@ -1040,7 +1040,8 @@
             "zenit": "",
             "treasure": ""
           }
-        }
+        },
+        "campSceneUuid": "Scene.a6nIE2W3IkmFKk6y"
       },
       "LockView": {
         "lockPan": false,
@@ -1074,7 +1075,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1773641887561,
-      "modifiedTime": 1781425604677,
+      "modifiedTime": 1792829046087,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "_id": "RlHqnyJha02MJjX7",
