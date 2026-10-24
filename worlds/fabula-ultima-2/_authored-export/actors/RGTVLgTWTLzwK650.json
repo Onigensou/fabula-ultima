@@ -10,271 +10,11 @@
   },
   "effects": [
     {
-      "_id": "a8KzxIGLLi9A8eYe",
+      "_id": "GT9IShSm5OoJNYPL",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1792844803818,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "flags.fabula-ultima-companion.wellspring_fire",
-          "mode": 5,
-          "priority": 20,
-          "value": "1"
-        }
-      ],
-      "description": "<p>The <strong>Fire</strong> wellspring is present. Invokers may draw fire invocations from it.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "a8KzxIGLLi9A8eYe",
-          "originalParentId": "RGTVLgTWTLzwK650",
-          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.a8KzxIGLLi9A8eYe"
-        },
-        "fabula-ultima-companion": {
-          "directorPermanent": true,
-          "fieldOrigin": "scene",
-          "fieldSceneId": "cVxIhCmCguNGxAZv",
-          "wellspring": "fire"
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/magic/fire/flame-burning-campfire-orange.webp",
-      "name": "Fire Wellspring",
-      "origin": null,
-      "sort": 0,
-      "statuses": [],
-      "system": {
-        "tags": [
-          "wellspring"
-        ]
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "ATd0pxZ776R11Xd3",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1792844803818,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "flags.fabula-ultima-companion.wellspring_bolt",
-          "mode": 5,
-          "priority": 20,
-          "value": "1"
-        }
-      ],
-      "description": "<p>The <strong>Lightning</strong> wellspring is present. Invokers may draw bolt invocations from it.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "ATd0pxZ776R11Xd3",
-          "originalParentId": "RGTVLgTWTLzwK650",
-          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.ATd0pxZ776R11Xd3"
-        },
-        "fabula-ultima-companion": {
-          "directorPermanent": true,
-          "fieldOrigin": "scene",
-          "fieldSceneId": "cVxIhCmCguNGxAZv",
-          "wellspring": "bolt"
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/magic/lightning/bolt-strike-blue.webp",
-      "name": "Lightning Wellspring",
-      "origin": null,
-      "sort": 0,
-      "statuses": [],
-      "system": {
-        "tags": [
-          "wellspring"
-        ]
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "mvpzaGmOOvcmBiVG",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1792844803818,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "flags.fabula-ultima-companion.wellspring_air",
-          "mode": 5,
-          "priority": 20,
-          "value": "1"
-        }
-      ],
-      "description": "<p>The <strong>Air</strong> wellspring is present. Invokers may draw air invocations from it.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "mvpzaGmOOvcmBiVG",
-          "originalParentId": "RGTVLgTWTLzwK650",
-          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.mvpzaGmOOvcmBiVG"
-        },
-        "fabula-ultima-companion": {
-          "directorPermanent": true,
-          "fieldOrigin": "scene",
-          "fieldSceneId": "cVxIhCmCguNGxAZv",
-          "wellspring": "air"
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/magic/air/wind-stream-blue-gray.webp",
-      "name": "Air Wellspring",
-      "origin": null,
-      "sort": 0,
-      "statuses": [],
-      "system": {
-        "tags": [
-          "wellspring"
-        ]
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "NssKEMdUUSPm7Ipp",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1792844803818,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "flags.fabula-ultima-companion.wellspring_ice",
-          "mode": 5,
-          "priority": 20,
-          "value": "1"
-        }
-      ],
-      "description": "<p>The <strong>Water</strong> wellspring is present. Invokers may draw ice invocations from it.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "NssKEMdUUSPm7Ipp",
-          "originalParentId": "RGTVLgTWTLzwK650",
-          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.NssKEMdUUSPm7Ipp"
-        },
-        "fabula-ultima-companion": {
-          "directorPermanent": true,
-          "fieldOrigin": "scene",
-          "fieldSceneId": "cVxIhCmCguNGxAZv",
-          "wellspring": "ice"
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/magic/water/orb-water-bubbles-blue.webp",
-      "name": "Water Wellspring",
-      "origin": null,
-      "sort": 0,
-      "statuses": [],
-      "system": {
-        "tags": [
-          "wellspring"
-        ]
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "qishiDBtEvQLaMVp",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1792844803818,
+        "createdTime": 1792869380963,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -301,14 +41,14 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "qishiDBtEvQLaMVp",
+          "originalId": "GT9IShSm5OoJNYPL",
           "originalParentId": "RGTVLgTWTLzwK650",
-          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.qishiDBtEvQLaMVp"
+          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.GT9IShSm5OoJNYPL"
         },
         "fabula-ultima-companion": {
           "directorPermanent": true,
           "fieldOrigin": "scene",
-          "fieldSceneId": "cVxIhCmCguNGxAZv",
+          "fieldSceneId": "T0Eo2forSEruOgO0",
           "wellspring": "earth"
         },
         "statuscounter": {
@@ -322,6 +62,266 @@
       },
       "img": "icons/magic/earth/projectile-boulder-dust.webp",
       "name": "Earth Wellspring",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "wellspring"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "PzyYjyWeJArpd8Ge",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1792869380963,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.wellspring_ice",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>The <strong>Water</strong> wellspring is present. Invokers may draw ice invocations from it.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "PzyYjyWeJArpd8Ge",
+          "originalParentId": "RGTVLgTWTLzwK650",
+          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.PzyYjyWeJArpd8Ge"
+        },
+        "fabula-ultima-companion": {
+          "directorPermanent": true,
+          "fieldOrigin": "scene",
+          "fieldSceneId": "T0Eo2forSEruOgO0",
+          "wellspring": "ice"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/water/orb-water-bubbles-blue.webp",
+      "name": "Water Wellspring",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "wellspring"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "td32x5PTvyKw3OAK",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1792869380963,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.wellspring_air",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>The <strong>Air</strong> wellspring is present. Invokers may draw air invocations from it.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "td32x5PTvyKw3OAK",
+          "originalParentId": "RGTVLgTWTLzwK650",
+          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.td32x5PTvyKw3OAK"
+        },
+        "fabula-ultima-companion": {
+          "directorPermanent": true,
+          "fieldOrigin": "scene",
+          "fieldSceneId": "T0Eo2forSEruOgO0",
+          "wellspring": "air"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/air/wind-stream-blue-gray.webp",
+      "name": "Air Wellspring",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "wellspring"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "tLltAxSmcr27pB5P",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1792869380963,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.wellspring_bolt",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>The <strong>Lightning</strong> wellspring is present. Invokers may draw bolt invocations from it.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "tLltAxSmcr27pB5P",
+          "originalParentId": "RGTVLgTWTLzwK650",
+          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.tLltAxSmcr27pB5P"
+        },
+        "fabula-ultima-companion": {
+          "directorPermanent": true,
+          "fieldOrigin": "scene",
+          "fieldSceneId": "T0Eo2forSEruOgO0",
+          "wellspring": "bolt"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/lightning/bolt-strike-blue.webp",
+      "name": "Lightning Wellspring",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "wellspring"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "zmB1t8uApcqpZUvm",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1792869380963,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.wellspring_fire",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>The <strong>Fire</strong> wellspring is present. Invokers may draw fire invocations from it.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "zmB1t8uApcqpZUvm",
+          "originalParentId": "RGTVLgTWTLzwK650",
+          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.zmB1t8uApcqpZUvm"
+        },
+        "fabula-ultima-companion": {
+          "directorPermanent": true,
+          "fieldOrigin": "scene",
+          "fieldSceneId": "T0Eo2forSEruOgO0",
+          "wellspring": "fire"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/fire/flame-burning-campfire-orange.webp",
+      "name": "Fire Wellspring",
       "origin": null,
       "sort": 0,
       "statuses": [],

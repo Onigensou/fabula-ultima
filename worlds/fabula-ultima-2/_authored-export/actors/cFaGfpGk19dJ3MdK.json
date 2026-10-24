@@ -34,6 +34,16 @@
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
       "opp_lucky": 0
+    },
+    "theatre": {
+      "settings": {
+        "emote": null,
+        "textcolor": null,
+        "textflyin": "typewriter",
+        "textfont": null,
+        "textsize": null,
+        "textstanding": "none"
+      }
     }
   },
   "folder": "b6xZrcMjGI3ARizQ",

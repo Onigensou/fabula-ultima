@@ -1759,8 +1759,15 @@
       },
       "spear_ef": "50",
       "species": "UNDEAD",
+      "sprite_attack": "",
       "sprite_battle": "",
+      "sprite_cast": "",
+      "sprite_crisis": "",
+      "sprite_guard": "",
+      "sprite_hurt": "",
+      "sprite_ko": "",
       "sprite_standard": "",
+      "sprite_walk": "",
       "steal_percentage_table": {
         "0": {
           "$deleted": false,

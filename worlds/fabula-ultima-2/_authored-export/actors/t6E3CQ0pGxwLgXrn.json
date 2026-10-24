@@ -804,6 +804,157 @@
       "type": "equippableItem"
     },
     {
+      "_id": "32rTK4KOeGw5Gm8O",
+      "_stats": {
+        "compendiumSource": "Item.Qex8FZz4dvDcBmlz",
+        "coreVersion": "12.343",
+        "createdTime": 1792858848483,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.Qex8FZz4dvDcBmlz"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "weapon",
+            "fromTemplate": "gIRU9XGqYeMBwBN9",
+            "itemId": "Rnfh1rjtjSQyRUem",
+            "itemName": "Frozen Envy",
+            "pickedOldProps": {
+              "cost": "2000",
+              "martial": true
+            },
+            "ts": 1769647000248
+          }
+        }
+      },
+      "folder": "gkxeb18rMnUvyuqk",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1724.gif",
+      "name": "Frozen Envy",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 1000000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Bow",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "12",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li>When you hit one or more creatures with this weapon, if you have at least one <strong>Bond of inferiority</strong>, you may recover <strong>10&nbsp;MP</strong>.</li><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.HHmYmj7xffQMqtzT]{Slow}</strong></p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "<hr>\n<blockquote>\n<p>A bow forged from the heart of a winter's storm, its icy strands infused with the power of envy itself. When wielded, it unleashes a cold fury that saps the strength of its targets, while the wielder can draw upon its chilling force to fuel their own power.</p>\n</blockquote>",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "Two-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": true,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "2000",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_skill_passive": {
+            "2RRgVUpoPoad88Go": {
+              "id": "${item.id}",
+              "name": "Frozen Envy (gear skill)",
+              "skill_cost": "",
+              "skill_description": "<p>When you hit one or more creatures with this weapon, if you have at least one Bond of inferiority, you may recover <strong>10 MP</strong>. Each target hit by this weapon suffers <strong>Slow</strong>.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.2RRgVUpoPoad88Go"
+            }
+          },
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Frozen Envy",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "related_item_list": {
+            "2RRgVUpoPoad88Go": {
+              "id": "${item.id}",
+              "name": "Frozen Envy (gear skill)",
+              "related_item_description": "<p>When you hit one or more creatures with this weapon, if you have at least one Bond of inferiority, you may recover <strong>10 MP</strong>. Each target hit by this weapon suffers <strong>Slow</strong>.</p>",
+              "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.2RRgVUpoPoad88Go"
+            }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Ice",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Ranged"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "Rnfh1rjtjSQyRUem"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "4ASHq5KXQhpibVeO",
       "_stats": {
         "compendiumSource": null,
@@ -1153,6 +1304,111 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "ZIjJBbllFdgcVjk2"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "8a42vH9ANwsIa8tr",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1792858849817,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1724.gif",
+      "name": "Frozen Envy (gear skill)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "32rTK4KOeGw5Gm8O",
+        "props": {
+          "cost": "",
+          "description": "<p>When you hit one or more creatures with this weapon, if you have at least one Bond of inferiority, you may recover <strong>10 MP</strong>. Each target hit by this weapon suffers <strong>Slow</strong>.</p>",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Slow",
+              "damage_amount": "",
+              "damage_operation": "",
+              "damage_stage": "",
+              "effect_kind": "apply_ae",
+              "effect_label": "fe_slow",
+              "grant_amount": "",
+              "grant_resource": "",
+              "target_ref": "trigger_subject"
+            },
+            "1": {
+              "ae_duplicate_mode": "",
+              "ae_template_ref": "",
+              "damage_amount": "",
+              "damage_operation": "",
+              "damage_stage": "",
+              "effect_kind": "grant",
+              "effect_label": "fe_mp",
+              "grant_amount": "10",
+              "grant_resource": "mp",
+              "target_ref": "self"
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1724.gif",
+          "isCheck": false,
+          "isReaction": true,
+          "name": "Frozen Envy (gear skill)",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "",
+              "reaction_action_intent": "",
+              "reaction_action_target": "",
+              "reaction_damage_amount": "",
+              "reaction_damage_source": "",
+              "reaction_damage_type": "",
+              "reaction_effect_ref": "fe_slow",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "force",
+              "reaction_requires_weapon_used": true,
+              "reaction_source": "self",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_deals_damage",
+              "requires_skill": ""
+            },
+            "1": {
+              "condition_formula": "BOND_COUNT_INFERIORITY >= 1",
+              "reaction_action_intent": "",
+              "reaction_action_target": "",
+              "reaction_damage_amount": "",
+              "reaction_damage_source": "",
+              "reaction_damage_type": "",
+              "reaction_effect_ref": "fe_mp",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "on",
+              "reaction_requires_weapon_used": true,
+              "reaction_source": "self",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_deals_damage",
+              "requires_skill": ""
+            }
+          },
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "zUM6QfiO2ifMv7zH"
       },
       "type": "equippableItem"
     },
@@ -1510,141 +1766,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "BudKDkoE0hpl94Eb",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783794272519,
-        "duplicateSource": "Item.QvUsAoeaebjrKAHi",
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "3.2.4"
-        },
-        "fucompanion": {
-          "itemMigratorBackup": {
-            "detectedType": "accessory",
-            "fromTemplate": "r0yZpLPAK9VXhM2p",
-            "itemId": "QvUsAoeaebjrKAHi",
-            "itemName": "Amethyst Pendant",
-            "pickedOldProps": {
-              "cost": "350",
-              "def_bonus": "",
-              "defense": "0",
-              "defense_include_dex": false,
-              "initiative": "0",
-              "magic_defense": "0",
-              "magic_defense_include_ins": false,
-              "mdef_bonus": ""
-            },
-            "ts": 1769647435106
-          }
-        }
-      },
-      "folder": "5uQIy5BCy7UEVfcT",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2616.gif",
-      "name": "Ring of the Pupil",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 3450000,
-      "system": {
-        "container": null,
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li>As long as you have at least two <strong>Bonds of admiration</strong>, you gain a +1 bonus to both your <strong>Defense</strong> and <strong>Magic Defense</strong>.</li></ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flavor_text": "<p><em>Worn by devoted students, this ring shines brightest in the presence of cherished ideals.</em></p>",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "1500",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": 1,
-          "item_rarity": "Uncommon",
-          "item_type": "accessory",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Ring of the Pupil",
-          "optional_params": {},
-          "plant_ef": "100",
-          "refine_count": "0",
-          "refine_level": "0",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 3202566307,
-        "unique": false,
-        "uniqueId": "KoC4PHdQrp7r4rM9"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "bx8p5ji8rhvbMVPv",
       "_stats": {
         "compendiumSource": null,
@@ -1691,125 +1812,6 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "zF5H6P553x8T5duB"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "C0dAFeczpsVl7LDZ",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783792979932,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": "VzpCG9mySsd9sQSL",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/604.gif",
-      "name": "Dead Branch",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check": "Check",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li><p>Summon a <strong>random monster </strong>to the scene, this monster follows the <strong>companion rules </strong>and disappear at the end of the scene</p></li></ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flavor_text": "<p><em>A twig which contains the mysterious power of eternity. It can summon a living creature.</em></p>",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "id": "C0dAFeczpsVl7LDZ",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/604.gif",
-          "insect_ef": "100",
-          "ip_cost": "5",
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "800",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Uncommon",
-          "item_type": "consumable",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Dead Branch",
-          "optional_params": {},
-          "plant_ef": "100",
-          "refine_count": "0",
-          "refine_level": "0",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "<Set Name>",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.C0dAFeczpsVl7LDZ",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 3202566307,
-        "unique": false,
-        "uniqueId": "1cajyF04dx07aGEU"
       },
       "type": "equippableItem"
     },
@@ -2970,6 +2972,140 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "2v7Z5aljbQkZyDzl"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "DLuleceBlP0QrIRI",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1792858886213,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "accessory",
+            "fromTemplate": "r0yZpLPAK9VXhM2p",
+            "itemId": "STVIwh32AbLJ1SDA",
+            "itemName": "Magician Necklace",
+            "pickedOldProps": {
+              "cost": "2500",
+              "def_bonus": "",
+              "defense": "0",
+              "defense_include_dex": false,
+              "initiative": "0",
+              "magic_defense": "0",
+              "magic_defense_include_ins": false,
+              "mdef_bonus": ""
+            },
+            "ts": 1769647435947
+          }
+        }
+      },
+      "folder": "5uQIy5BCy7UEVfcT",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/borb.png",
+      "name": "Magician Necklace",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 8200000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p><strong>+25% Max MP</strong></p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "2500",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_type": "accessory",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Magician Necklace",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "STVIwh32AbLJ1SDA"
       },
       "type": "equippableItem"
     },
@@ -4403,6 +4539,143 @@
       "type": "equippableItem"
     },
     {
+      "_id": "iCd13uFfpMBG6Gl4",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1792861449446,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "VzpCG9mySsd9sQSL",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "name": "Liquid Hope",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 4600000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<blockquote><ul><li><em>Increase the target <strong>Zero Power</strong> by <strong>3</strong></em></li></ul></blockquote>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "iCd13uFfpMBG6Gl4",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "350",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Uncommon",
+          "item_skill_active": {
+            "J4I6b8JgaFuHpSYA": {
+              "id": "${item.id}",
+              "name": "Liquid Hope",
+              "skill_cost": "-",
+              "skill_description": "<blockquote><ul><li><em>Increase the target <strong>Zero Power</strong> by <strong>3</strong></em></li></ul></blockquote>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.J4I6b8JgaFuHpSYA"
+            }
+          },
+          "item_type": "consumable",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Liquid Hope",
+          "optional_params": {},
+          "plant_ef": "100",
+          "related_item_list": {
+            "J4I6b8JgaFuHpSYA": {
+              "id": "${item.id}",
+              "name": "Liquid Hope",
+              "related_item_description": "<blockquote><ul><li><em>Increase the target <strong>Zero Power</strong> by <strong>3</strong></em></li></ul></blockquote>",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.J4I6b8JgaFuHpSYA"
+            }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "skill_tags": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.iCd13uFfpMBG6Gl4",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "TIeKQs0l9tWaNO0y"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "Iu4LG8jvhKjhn9uU",
       "_stats": {
         "compendiumSource": "Item.uNsw1vWtAssZo4Bz",
@@ -4988,6 +5261,88 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "B1s2K9VLjc4XF4GB"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "J4I6b8JgaFuHpSYA",
+      "_stats": {
+        "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
+        "coreVersion": "12.343",
+        "createdTime": 1792861450118,
+        "duplicateSource": "Item.cneU6dfTzI13k0U2",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "name": "Liquid Hope",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "iCd13uFfpMBG6Gl4",
+        "props": {
+          "action_command": "item",
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<blockquote><ul><li><em>Increase the target <strong>Zero Power</strong> by <strong>3</strong></em></li></ul></blockquote>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "effect_kind": "grant",
+              "effect_label": "lhope_zp",
+              "grant_amount": "3",
+              "grant_resource": "zero_power",
+              "target_ref": "action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "IkBK4OzWHLkUUYXA",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Liquid Hope",
+          "on_activate_effect_ref": "lhope_zp",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_description": "<blockquote><ul><li><em>Increase the target <strong>Zero Power</strong> by <strong>3</strong></em></li></ul></blockquote>",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_tags": "",
+          "skill_target": "One Creature",
+          "skill_type": "Item",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Item.IkBK4OzWHLkUUYXA"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "IkBK4OzWHLkUUYXA"
       },
       "type": "equippableItem"
     },
@@ -6351,6 +6706,110 @@
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2125250754,
         "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "NXQUxlPdkRMpuIK6",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1792860504445,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "weapon",
+            "fromTemplate": "gIRU9XGqYeMBwBN9",
+            "itemId": "5i1viWviQjUSJsio",
+            "itemName": "Rune Blade",
+            "pickedOldProps": {
+              "cost": "950",
+              "martial": true
+            },
+            "ts": 1769647436288
+          }
+        }
+      },
+      "folder": "xMVY94FXuACmcFkd",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
+      "name": "Rune Blade",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Sword",
+          "celestial_ef": "100",
+          "check_bonus": "1",
+          "construct_ef": "100",
+          "damage_bonus": "7",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul>\n<li>Attacks with this weapon target <strong>Magic Defense.</strong></li>\n<li>When you attacked with this weapon, you may spend <strong>15 MP&nbsp;</strong>to change it's damage type to <strong>Ice, Fire or Bolt&nbsp;</strong>for that attack.</li>\n</ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "Two-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": true,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "950",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Rune Blade",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "5i1viWviQjUSJsio"
       },
       "type": "equippableItem"
     },
@@ -7743,154 +8202,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "qr1ElGHgIp9933XQ",
-      "_stats": {
-        "compendiumSource": "Item.Qex8FZz4dvDcBmlz",
-        "coreVersion": "12.343",
-        "createdTime": 1783717278397,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "core": {
-          "sourceId": "Item.Qex8FZz4dvDcBmlz"
-        },
-        "custom-system-builder": {
-          "version": "3.2.4"
-        },
-        "fucompanion": {
-          "itemMigratorBackup": {
-            "detectedType": "weapon",
-            "fromTemplate": "gIRU9XGqYeMBwBN9",
-            "itemId": "7rqRLdk9jF3m9xe2",
-            "itemName": "Looting Bow",
-            "pickedOldProps": {
-              "cost": "1250",
-              "martial": false
-            },
-            "ts": 1769647000272
-          }
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
-      "name": "Looting Bow",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 1400000,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Bow",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "8",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li>When you reduce a creature to 0 Hit Points with this weapon, you may immediately recover <strong>2 Inventory Points.</strong></li></ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flavor_text": "",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "Two-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isIngredient": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "1250",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Common",
-          "item_skill_passive": {
-            "rUMtX6xOMRYGvVvK": {
-              "id": "${item.id}",
-              "name": "Looting Bow (Passive)",
-              "skill_cost": "",
-              "skill_description": "<p>Equipped passive: When you reduce a creature to 0 HP, recover 2 Inventory Points.</p>",
-              "skill_maxLevel": 1,
-              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.rUMtX6xOMRYGvVvK"
-            }
-          },
-          "item_type": "weapon",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Looting Bow",
-          "optional_params": {},
-          "plant_ef": "100",
-          "related_item_list": {
-            "rUMtX6xOMRYGvVvK": {
-              "id": "${item.id}",
-              "name": "Looting Bow (Passive)",
-              "related_item_description": "<p>Equipped passive: When you reduce a creature to 0 HP, recover 2 Inventory Points.</p>",
-              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.rUMtX6xOMRYGvVvK"
-            }
-          },
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "INS",
-          "set_name": "",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Fire",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Ranged"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 3202566307,
-        "unique": false,
-        "uniqueId": "7rqRLdk9jF3m9xe2"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "qUrgo9LCU7NtLJ0r",
       "_stats": {
         "compendiumSource": null,
@@ -8408,82 +8719,6 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "2flmzfFbo1y8MCq5"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "rUMtX6xOMRYGvVvK",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1785953822559,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
-      "name": "Looting Bow (Passive)",
-      "ownership": {
-        "WQGFvLStTZeWGpak": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "container": "qr1ElGHgIp9933XQ",
-        "props": {
-          "description": "<p>Equipped passive: When you reduce a creature to 0 HP, recover 2 Inventory Points.</p>",
-          "effect_table": {
-            "0": {
-              "effect_kind": "grant",
-              "effect_label": "lbow_ip",
-              "grant_amount": "2",
-              "grant_resource": "ip",
-              "target_ref": "self"
-            }
-          },
-          "isReaction": true,
-          "max_level": "1",
-          "name": "Looting Bow (Passive)",
-          "reaction_config_table": {
-            "0": {
-              "condition_formula": "CAUSE_IS_SELF == 1",
-              "reaction_action_intent": "",
-              "reaction_action_kind": "",
-              "reaction_action_target": "",
-              "reaction_cause_filter": "",
-              "reaction_damage_source": "",
-              "reaction_effect_ref": "lbow_ip",
-              "reaction_max_per_round": "",
-              "reaction_max_scope": "",
-              "reaction_origin_filter": "",
-              "reaction_ownership": "",
-              "reaction_passive_mode": "on",
-              "reaction_passive_target": "",
-              "reaction_requires_weapon_used": false,
-              "reaction_resource_filter": "",
-              "reaction_responder": "",
-              "reaction_source": "enemy",
-              "reaction_source_skill": "",
-              "reaction_status_filter": "",
-              "reaction_subject_kind": "",
-              "reaction_trigger": "creature_defeated",
-              "requires_skill": ""
-            }
-          },
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_type": "Passive"
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2125250754,
-        "unique": false,
-        "uniqueId": "xvDqknzAmILCfCvc"
       },
       "type": "equippableItem"
     },
@@ -10908,6 +11143,14 @@
           "roll": "",
           "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.goV9gV4SZ232oKZ4"
         },
+        "iCd13uFfpMBG6Gl4": {
+          "consume_description": "<blockquote><ul><li><em>Increase the target <strong>Zero Power</strong> by <strong>3</strong></em></li></ul></blockquote>",
+          "id": "${item.id}",
+          "name": "Liquid Hope",
+          "quantity": 1,
+          "roll": "",
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.iCd13uFfpMBG6Gl4"
+        },
         "j01X9BSbZttkvBn2": {
           "consume_description": "<ul><li><p>Target creature gain <strong>10 </strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a></span></span>, if the target already have a <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a><strong><span style=\"text-decoration: underline;\">,</span></strong></span></span> increase that shield value by 10 instead.</p></li></ul>",
           "id": "${item.id}",
@@ -11187,6 +11430,13 @@
           "roll": "",
           "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.BudKDkoE0hpl94Eb"
         },
+        "DLuleceBlP0QrIRI": {
+          "acess_description": "<ul><li><p><strong>+25% Max MP</strong></p></li></ul>",
+          "id": "${item.id}",
+          "name": "Magician Necklace",
+          "roll": "",
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.DLuleceBlP0QrIRI"
+        },
         "EPXbIUDimhOhWAiU": {
           "acess_description": "<ul><li><p>Gain +3 to your Accuracy check</p></li><li><p>The first <strong>Range Attack on each round </strong>against your party must target you.</p></li></ul>",
           "id": "${item.id}",
@@ -11443,26 +11693,26 @@
           "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.zwKM2ITKA19U0coI"
         }
       },
-      "member_currenthp_1": 98,
+      "member_currenthp_1": 113,
       "member_currenthp_2": 96,
       "member_currenthp_3": 166,
       "member_currenthp_4": 111,
       "member_currentip_1": 6,
       "member_currentip_2": 8,
-      "member_currentip_3": 5,
-      "member_currentip_4": 4,
+      "member_currentip_3": 10,
+      "member_currentip_4": 10,
       "member_currentmp_1": 126,
-      "member_currentmp_2": 121,
-      "member_currentmp_3": 86,
-      "member_currentmp_4": 91,
+      "member_currentmp_2": 111,
+      "member_currentmp_3": 81,
+      "member_currentmp_4": 71,
       "member_currentzp_1": 0,
       "member_currentzp_2": 0,
       "member_currentzp_3": 6,
       "member_currentzp_4": 6,
-      "member_exp_1": 6.92,
-      "member_exp_2": 6.92,
-      "member_exp_3": 6.92,
-      "member_exp_4": 6.92,
+      "member_exp_1": 9.01,
+      "member_exp_2": 9.01,
+      "member_exp_3": 9.01,
+      "member_exp_4": 9.01,
       "member_id_1": "dafTLBUscCDNgq8H",
       "member_id_2": "Actor.gdJZ1L1kv5mjTTMr",
       "member_id_3": "Actor.uJFaNQCSvwwsr2AW",
@@ -11471,7 +11721,7 @@
       "member_level_2": 41,
       "member_level_3": 41,
       "member_level_4": 41,
-      "member_maxhp_1": 98,
+      "member_maxhp_1": 118,
       "member_maxhp_2": 96,
       "member_maxhp_3": 166,
       "member_maxhp_4": 111,
@@ -11495,10 +11745,10 @@
       "member_sprite_2": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Portrait/Keren_Portrait001.png",
       "member_sprite_3": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Portrait/Blanche_Portrait001.png",
       "member_sprite_4": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Portrait/Zarg_Portrait.png",
-      "member_zenit_1": 10052,
-      "member_zenit_2": 3241,
-      "member_zenit_3": 1867,
-      "member_zenit_4": 2201,
+      "member_zenit_1": 8103,
+      "member_zenit_2": 4003,
+      "member_zenit_3": 1505,
+      "member_zenit_4": 267,
       "minimum_encounter_percenter": "25",
       "name": "EXFURSION Party",
       "normal_percentage": "80",
@@ -11596,7 +11846,7 @@
       "smugglerport_fish_meter": 6,
       "status_tile_percentage": "15",
       "title_scene_id": "",
-      "total_zenit": 19361,
+      "total_zenit": 16178,
       "trap_tile_percentage": "30",
       "treasure_tile_percentage": "1",
       "up2_tile_percentage": "0",
@@ -11631,6 +11881,18 @@
           "weapon_hand": "Two-handed",
           "weapon_martial": "♦️",
           "weapon_range": "Melee"
+        },
+        "32rTK4KOeGw5Gm8O": {
+          "id": "${item.id}",
+          "name": "Frozen Envy",
+          "quantity": "",
+          "roll": "",
+          "type": "Bow",
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.32rTK4KOeGw5Gm8O",
+          "weapon_description": "<p><ul><li>When you hit one or more creatures with this weapon, if you have at least one <strong>Bond of inferiority</strong>, you may recover <strong>10&nbsp;MP</strong>.</li><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.HHmYmj7xffQMqtzT]{Slow}</strong></p></li></ul></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "♦️",
+          "weapon_range": "Ranged"
         },
         "4c4zkZBuKtPkCDQT": {
           "id": "${item.id}",
@@ -11774,6 +12036,18 @@
           "weapon_description": "<p><ul>\n<li>Attacks with this weapon deal <strong>6</strong> extra damage to <strong>elite</strong> or <strong>champion-rank</strong> enemies.</li>\n</ul></p>",
           "weapon_hand": "Two-handed",
           "weapon_martial": "",
+          "weapon_range": "Melee"
+        },
+        "NXQUxlPdkRMpuIK6": {
+          "id": "${item.id}",
+          "name": "Rune Blade",
+          "quantity": "",
+          "roll": "",
+          "type": "Sword",
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.NXQUxlPdkRMpuIK6",
+          "weapon_description": "<p><ul>\n<li>Attacks with this weapon target <strong>Magic Defense.</strong></li>\n<li>When you attacked with this weapon, you may spend <strong>15 MP&nbsp;</strong>to change it's damage type to <strong>Ice, Fire or Bolt&nbsp;</strong>for that attack.</li>\n</ul></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "♦️",
           "weapon_range": "Melee"
         },
         "NuKYuWPu7QeTqSzT": {
@@ -12126,7 +12400,7 @@
         }
       },
       "weapon_tile_percentage": "1",
-      "zenit": "2000",
+      "zenit": "2300",
       "zenit_global_multiplier": "1"
     },
     "statusEffects": {},

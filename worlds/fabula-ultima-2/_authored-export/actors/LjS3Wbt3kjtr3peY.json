@@ -92,6 +92,16 @@
         "float": false
       },
       "spriteShadow": true
+    },
+    "theatre": {
+      "settings": {
+        "emote": null,
+        "textcolor": null,
+        "textflyin": null,
+        "textfont": null,
+        "textsize": null,
+        "textstanding": null
+      }
     }
   },
   "folder": "Nd8LnosrPid1eX1r",

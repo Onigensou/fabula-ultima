@@ -315,7 +315,7 @@
       "isUnyielding": false,
       "isVillain": false,
       "isWeak": false,
-      "level": "7",
+      "level": 7,
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
       "magic_defense": 14,
