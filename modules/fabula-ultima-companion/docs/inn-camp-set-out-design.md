@@ -145,3 +145,35 @@ the rule offline), walking through the new doors as a player, two GMs.
 2. `RestAPI.shortRest()`; the black fade usable outside camp.
 3. Inn NPC type, payment, choice panel, keyboard.
 4. World data — twins, doors, `isInn`, lobby links — then world-export.
+
+## 7. Roster-driven camp members (2026-10-24)
+
+Camp rooms no longer carry pre-placed party member tokens. `camp-members.js`
+spawns the ACTIVE party (database `member_id_1..4`, the roster the Rest uses)
+and removes them again on Set Out, so a bench swap, a guest or another party's
+run shows the right faces at camp.
+
+**Not a performance change.** Foundry 12 walks every token of an actor on every
+update (`Actor#_updateDependentTokens`), but a LINKED token off the viewed scene
+does nothing there; only UNLINKED tokens rebuild a synthetic actor each time.
+The members were linked. The world's real duplicate cost is unlinked template
+NPCs (Bandit (Overworld) 29, Generic NPC 28, Villager 13, Eisendrachian
+Knight 11), and only when those base actors are edited.
+
+- **Spots:** `flags.<module>.campMemberSpots` — token centre, the authored
+  token's look (texture incl. scale/mirror, sort, flags), its `scaleRatio`
+  against that actor's prototype, and `mirror`. The authored member gets the
+  look verbatim; another member in that slot gets their own art at the room's
+  scale and facing; extras line up beside the arrival point.
+- **When:** `ensure()` on camp entry (before the scene draws — no pop-in) and
+  whenever the ACTIVE camp scene is drawn (F5, a loaded save, a camp the GM
+  activates by hand). Merely *viewing* a camp room does not spawn. `clear()`
+  after Set Out. Primary GM, idempotent, serialised per scene.
+- **Ownership:** only tokens flagged `campMember` are ever removed; a member
+  token placed by hand is left alone (and counts as present).
+- **Bars:** spawned tokens clear Bar Brawl bars AND core bar1/bar2/displayBars —
+  Bar Brawl falls back to core bars, which the camp UI hider does not reach.
+- **Authoring:** place member tokens in a room, then
+  `CampSystem.Members.captureSpots(scene)` turns them into spots.
+- Migrated: 9 rooms × 4 spots. `Valley_Map004` has none (members line up by its
+  arrival point); `Wyrmwood_Map012`'s four spots nearly overlap, as authored.
