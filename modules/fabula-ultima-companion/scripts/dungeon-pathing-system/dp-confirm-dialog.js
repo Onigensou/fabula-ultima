@@ -71,7 +71,8 @@
   text-shadow: 1px 1px 2px rgba(0,0,0,0.7), 0 0 6px rgba(0,0,0,0.4);
   transition: filter 120ms ease, box-shadow 120ms ease;
 }
-.oni-dp-btn:hover {
+.oni-dp-btn:hover,
+.oni-dp-btn.is-hover {
   filter: brightness(1.12);
   box-shadow:
     0 0 0 1px #e8b84b,
@@ -178,6 +179,14 @@
     );
   color: #e8c890;
 }
+
+/* ── Watcher copy (MirrorPrompt): display only, "<name> is choosing…" ────── */
+#oni-dp-confirm-panel.is-watching .oni-dp-btn { cursor: default; pointer-events: none; }
+#oni-dp-confirm-panel.is-watching.can-override .oni-dp-btn { cursor: pointer; pointer-events: auto; }
+#oni-dp-confirm-panel .oni-dp-wait {
+  margin-bottom: 4px; font-family: "Signika", sans-serif; font-size: 12px; font-style: italic;
+  color: #f4e8c0; text-shadow: 0 1px 3px rgba(0,0,0,.9); white-space: nowrap;
+}
 /* ─────────────────────────────────────────────────────────────────────────── */
     `;
     document.head.appendChild(style);
@@ -270,9 +279,114 @@
     }
   }
 
+  // ── Panel builder (shared by the operator's panel and the watcher copy) ────
+  // Result ↔ key, so a choice can cross the socket: true / "use" / "key" / false.
+  const MIRROR_KIND = "dp.moveConfirm";
+  const KEY_OF    = (r) => r === true ? "confirm" : r === false ? "revert" : String(r);
+  const RESULT_OF = { confirm: true, use: "use", key: "key", revert: false };
+
+  function buildPanel({ showUseButton, showRevertButton, keyCount }, onPick, onHover) {
+    const cfg = DP.UI?.BUTTON ?? { WIDTH: 130, HEIGHT: 42, GAP: 5, OFFSET_X: 14, FONT_SIZE: "13px" };
+    const panel = document.createElement("div");
+    panel.id = "oni-dp-confirm-panel";
+    const btns = {};
+
+    const makeBtn = (label, cssClass, result) => {
+      const btn = document.createElement("div");
+      btn.className = `oni-dp-btn ${cssClass}`;
+      btn.style.cssText = [
+        `width:${cfg.WIDTH}px`,
+        `height:${cfg.HEIGHT}px`,
+        `font-size:${cfg.FONT_SIZE}`,
+      ].join(";");
+      btn.textContent = label;
+      btn.addEventListener("pointerdown", (ev) => {
+        ev.stopPropagation();
+        ev.preventDefault();
+        onPick?.(result);
+      });
+      btn.addEventListener("pointerenter", () => onHover?.(KEY_OF(result)));
+      btns[KEY_OF(result)] = btn;
+      return btn;
+    };
+
+    const addGap = () => {
+      const gap = document.createElement("div");
+      gap.style.height = `${cfg.GAP}px`;
+      panel.appendChild(gap);
+    };
+
+    panel.appendChild(makeBtn("✔  Confirm", "oni-dp-btn-confirm", true));
+
+    if (showUseButton) {
+      addGap();
+      panel.appendChild(makeBtn("⛺  Use", "oni-dp-btn-use", "use"));
+    }
+
+    if (keyCount != null) {
+      addGap();
+      panel.appendChild(makeBtn(`🗝  Use Key ×${keyCount}`, "oni-dp-btn-key", "key"));
+    }
+
+    if (showRevertButton) {
+      addGap();
+      panel.appendChild(makeBtn("⟲  Go Back", "oni-dp-btn-revert", false));
+    }
+    return { panel, btns };
+  }
+
+  // ── Watcher copy (MirrorPrompt) ────────────────────────────────────────────
+  // Everyone else sees the controller's buttons beside the party token, with
+  // their hover echoed. A GM watcher can press one to answer for them.
+  Hooks.once("ready", () => {
+    globalThis.FUCompanion?.api?.MirrorPrompt?.register?.(MIRROR_KIND, {
+      show(ctx) {
+        if (_panel) return null;
+        const token = canvas?.tokens?.get?.(ctx.payload?.tokenId);
+        if (!token) return null;
+        const { panel, btns } = buildPanel(ctx.payload.spec ?? {},
+          ctx.canOverride ? (result) => ctx.answer(KEY_OF(result)) : null, null);
+        panel.classList.add("is-watching");
+        if (ctx.canOverride) panel.classList.add("can-override");
+        const wait = document.createElement("div");
+        wait.className = "oni-dp-wait";
+        wait.textContent = `${ctx.operatorName} is choosing…`;
+        panel.prepend(wait);
+
+        const setHover = (key) => {
+          for (const [k, b] of Object.entries(btns)) b.classList.toggle("is-hover", k === key);
+        };
+        if (ctx.state?.hover) setHover(ctx.state.hover);
+
+        document.body.appendChild(panel);
+        panel._dpCachedHeight = panel.offsetHeight;
+        const el = canvas?.app?.view ?? canvas?.app?.renderer?.view;
+        const rect = el?.getBoundingClientRect?.() ?? { left: 0, top: 0, width: 1, height: 1 };
+        let raf = null;
+        const tick = () => {
+          trackPosition(panel, token, rect);
+          raf = requestAnimationFrame(tick);
+        };
+        tick();
+        requestAnimationFrame(() => panel.classList.add("dp-visible"));
+
+        return {
+          patch: (state) => { if (state?.hover) setHover(state.hover); },
+          close: () => {
+            if (raf) cancelAnimationFrame(raf);
+            panel.classList.remove("dp-visible");
+            panel.classList.add("dp-leaving");
+            setTimeout(() => panel.remove(), 220);
+          },
+        };
+      },
+    });
+  });
+
   // ── Public API ─────────────────────────────────────────────────────────────
   DP.ConfirmDialog = {
     isOpen: false,
+    _mirror: null,
 
     /**
      * Display the in-canvas confirm buttons anchored to the given token.
@@ -302,51 +416,28 @@
       return new Promise((resolve) => {
         _resolveFn = resolve;
 
-        const cfg = DP.UI?.BUTTON ?? { WIDTH: 130, HEIGHT: 42, GAP: 5, OFFSET_X: 14, FONT_SIZE: "13px" };
-
-        const panel = document.createElement("div");
-        panel.id = "oni-dp-confirm-panel";
-
-        const makeBtn = (label, cssClass, result) => {
-          const btn = document.createElement("div");
-          btn.className = `oni-dp-btn ${cssClass}`;
-          btn.style.cssText = [
-            `width:${cfg.WIDTH}px`,
-            `height:${cfg.HEIGHT}px`,
-            `font-size:${cfg.FONT_SIZE}`,
-          ].join(";");
-          btn.textContent = label;
-          btn.addEventListener("pointerdown", (ev) => {
-            ev.stopPropagation();
-            ev.preventDefault();
-            this._resolve(result);
-          });
-          return btn;
+        const spec = {
+          showUseButton: !!showUseButton,
+          showRevertButton: !!showRevertButton,
+          keyCount: keyButton ? Math.max(0, Math.floor(Number(keyButton.count) || 0)) : null,
         };
 
-        const addGap = () => {
-          const gap = document.createElement("div");
-          gap.style.height = `${cfg.GAP}px`;
-          panel.appendChild(gap);
-        };
+        // Everyone else watches these buttons; a GM watcher may answer for us.
+        const mirror = globalThis.FUCompanion?.api?.MirrorPrompt?.open?.(MIRROR_KIND,
+          { tokenId: token?.id ?? token?.document?.id ?? null, spec },
+          { onAnswer: (key) => {
+              if (this._mirror !== mirror || !(key in RESULT_OF)) return;
+              const result = RESULT_OF[key];
+              if (result === false && !spec.showRevertButton) return;
+              if (result === "use" && !spec.showUseButton) return;
+              if (result === "key" && spec.keyCount == null) return;
+              this._resolve(result);
+            } }) ?? null;
+        this._mirror = mirror;
 
-        panel.appendChild(makeBtn("✔  Confirm", "oni-dp-btn-confirm", true));
-
-        if (showUseButton) {
-          addGap();
-          panel.appendChild(makeBtn("⛺  Use", "oni-dp-btn-use", "use"));
-        }
-
-        if (keyButton) {
-          addGap();
-          const n = Math.max(0, Math.floor(Number(keyButton.count) || 0));
-          panel.appendChild(makeBtn(`🗝  Use Key ×${n}`, "oni-dp-btn-key", "key"));
-        }
-
-        if (showRevertButton) {
-          addGap();
-          panel.appendChild(makeBtn("⟲  Go Back", "oni-dp-btn-revert", false));
-        }
+        const { panel } = buildPanel(spec,
+          (result) => this._resolve(result),
+          (key) => mirror?.patch({ hover: key }));
 
         document.body.appendChild(panel);
         _panel = panel;
@@ -368,6 +459,8 @@
       this.isOpen = false;
       const fn = _resolveFn;
       _resolveFn = null;
+      this._mirror?.close(KEY_OF(result));
+      this._mirror = null;
       if (result) DP.Sound?.playConfirm?.();
       else        DP.Sound?.playCancel?.();
       removePanel(true);
@@ -377,6 +470,8 @@
     forceClose() {
       this.isOpen = false;
       _resolveFn = null;
+      this._mirror?.close(null);
+      this._mirror = null;
       removePanel(false);
     },
   };
