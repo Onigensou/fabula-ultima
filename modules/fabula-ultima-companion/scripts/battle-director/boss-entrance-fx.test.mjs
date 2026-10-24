@@ -21,7 +21,11 @@ import {
   DEFAULT_ENTRANCE_STYLE,
   ENTRANCE_MODULE_ID,
   ENTRANCE_STYLE_FLAG,
+  ENTRANCE_QUEUE_FLAG,
+  entranceQueuedFromFlags,
+  planEntrance,
 } from "./boss-entrance-fx.js";
+import { GATHER_STYLES, ELEMENT_RGB } from "./gather-styles.js";
 
 let pass = 0, fail = 0;
 const eq = (label, got, want) => {
@@ -280,6 +284,76 @@ for (const [name, cfg] of Object.entries(DESCENT_STYLES)) {
   eq("payload: explicit scene",    p.sceneId, "sceneQ");
   eq("payload: unmirrored → flipX", p.flipX, false);
   eq("payload: style carried",     p.style, "shadowstorm");
+}
+
+/* ── Entrance queue ──────────────────────────────────────────────────────── */
+
+const withQueue = (v) => ({ [ENTRANCE_MODULE_ID]: { [ENTRANCE_QUEUE_FLAG]: v } });
+eq("queue: no flags",        entranceQueuedFromFlags(undefined),         false);
+eq("queue: unset",           entranceQueuedFromFlags({}),                false);
+eq("queue: true",            entranceQueuedFromFlags(withQueue(true)),   true);
+eq("queue: \"true\"",        entranceQueuedFromFlags(withQueue("true")), true);
+eq("queue: false",           entranceQueuedFromFlags(withQueue(false)),  false);
+eq("queue: 1 is not true",   entranceQueuedFromFlags(withQueue(1)),      false);
+eq("queue: hostile flags",   entranceQueuedFromFlags(hostile),           false);
+
+{
+  // LEGACY EQUIVALENCE: nothing queued ⇒ exactly splitByEntranceStyle.
+  const roster = ["a", "b", "c", "d"];
+  const styleOf = (id) => (id === "b" ? "shadowstorm" : id === "d" ? "flame" : "fade");
+  eq("plan: nothing queued = split",
+     planEntrance(roster, styleOf, () => false),
+     { queue: [], ...splitByEntranceStyle(roster, styleOf) });
+  eq("plan: missing queuedOf = split",
+     planEntrance(roster, styleOf, undefined),
+     { queue: [], ...splitByEntranceStyle(roster, styleOf) });
+  eq("plan: throwing queuedOf = split",
+     planEntrance(roster, styleOf, () => { throw new Error("no actor"); }),
+     { queue: [], ...splitByEntranceStyle(roster, styleOf) });
+}
+
+{
+  // Queued ids leave the group, keep roster order, and carry their style —
+  // a queued plain fader is still queued (it plays alone, as a fade).
+  const roster = ["mook1", "bossA", "mook2", "bossB", "fadeQ", "bossC"];
+  const styleOf = (id) => ({ bossA: "shadowstorm", bossB: "shadowstorm", bossC: "flame" }[id] ?? "fade");
+  const queuedOf = (id) => id === "bossB" || id === "bossA" || id === "fadeQ";
+  eq("plan: queue in roster order",
+     planEntrance(roster, styleOf, queuedOf),
+     {
+       queue: [{ id: "bossA", style: "shadowstorm" }, { id: "bossB", style: "shadowstorm" }, { id: "fadeQ", style: "fade" }],
+       fading: ["mook1", "mook2"],
+       descending: [{ id: "bossC", style: "flame" }],
+     });
+  eq("plan: everyone queued",
+     planEntrance(["x", "y"], () => "fade", () => true),
+     { queue: [{ id: "x", style: "fade" }, { id: "y", style: "fade" }], fading: [], descending: [] });
+  eq("plan: throwing styleOf on a queued id → fade",
+     planEntrance(["x"], () => { throw new Error("no actor"); }, () => true).queue,
+     [{ id: "x", style: "fade" }]);
+  eq("plan: empty roster", planEntrance([], styleOf, queuedOf), { queue: [], fading: [], descending: [] });
+}
+
+/* ── Gather styles (The Feast) ───────────────────────────────────────────── */
+
+eq("feast reads as a style",         entranceStyleFromFlags(withStyle("feast")), "feast");
+eq("inherited name → fade",          entranceStyleFromFlags(withStyle("toString")), DEFAULT_ENTRANCE_STYLE);
+eq("constructor → fade",             entranceStyleFromFlags(withStyle("constructor")), DEFAULT_ENTRANCE_STYLE);
+ok("no key is both a descent and a gather (the renderer picks by table)",
+   Object.keys(GATHER_STYLES).every((k) => !Object.prototype.hasOwnProperty.call(DESCENT_STYLES, k)));
+eq("seven element colours",          ELEMENT_RGB.length, 7);
+{
+  const f = GATHER_STYLES.feast;
+  // User ruling 2026-10-24: companion entrance is over in 2 s, with no dimming.
+  ok("feast: done in 2 s",           f.totalMs <= 2000);
+  ok("feast: no dim beat",           !("dim" in f));
+  ok("feast: gather finishes before the gulp", f.motes.spawnOverMs + f.motes.lifeMs[1] <= f.flash.atMs + 20);
+  ok("feast: orb gone before the pop",  f.orb.shrinkMs[1] <= f.pop.atMs);
+  ok("feast: pop lands before the glint", f.pop.atMs + f.pop.ms <= f.glint.atMs);
+  ok("feast: ring ends inside totalMs", f.ring.atMs + f.ring.ms <= f.totalMs);
+  ok("feast: fluff ends inside totalMs", f.fluff.atMs + f.fluff.ms <= f.totalMs);
+  ok("feast: every cue inside totalMs", f.sfx.every((c) => c.atMs >= 0 && c.atMs < f.totalMs && c.url.startsWith("https://")));
+  ok("feast: cues in time order",     f.sfx.every((c, i, a) => i === 0 || a[i - 1].atMs <= c.atMs));
 }
 
 console.log(`${pass} passed, ${fail} failed`);

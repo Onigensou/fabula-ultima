@@ -31,6 +31,7 @@
 import { warn } from "./logger.js";
 import { CameraApi } from "./director-camera.js";
 import { suspendCamera, resumeCamera } from "./camera-authority.js";
+import { GATHER_STYLES } from "./gather-styles.js";
 
 const STYLE_ID = "fud-boss-entrance-style";
 
@@ -210,6 +211,7 @@ export const DESCENT_STYLES = {
 export const ENTRANCE_MODULE_ID    = "fabula-ultima-companion";
 export const ENTRANCE_STYLE_FLAG   = "entranceStyle";
 export const DEFAULT_ENTRANCE_STYLE = "fade";
+export const ENTRANCE_QUEUE_FLAG   = "entranceQueue";
 
 /**
  * Read an actor's entrance style out of its flags.
@@ -224,7 +226,9 @@ export function entranceStyleFromFlags(flags, ns = ENTRANCE_MODULE_ID) {
   try {
     const key = String(flags?.[ns]?.[ENTRANCE_STYLE_FLAG] ?? "").trim();
     if (!key || key === DEFAULT_ENTRANCE_STYLE) return DEFAULT_ENTRANCE_STYLE;
-    return DESCENT_STYLES[key] ? key : DEFAULT_ENTRANCE_STYLE;
+    // Own keys only: an inherited name ("toString") must not read as a style.
+    const own = (t) => Object.prototype.hasOwnProperty.call(t, key);
+    return own(DESCENT_STYLES) || own(GATHER_STYLES) ? key : DEFAULT_ENTRANCE_STYLE;
   } catch { return DEFAULT_ENTRANCE_STYLE; }
 }
 
@@ -243,6 +247,48 @@ export function splitByEntranceStyle(ids, styleOf) {
     else descending.push({ id, style });
   }
   return { fading, descending };
+}
+
+/**
+ * Does this actor's entrance wait its turn? Only an explicit true (or "true")
+ * queues; anything else enters with the group, as every enemy did before the
+ * queue existed.
+ */
+export function entranceQueuedFromFlags(flags, ns = ENTRANCE_MODULE_ID) {
+  try {
+    const v = flags?.[ns]?.[ENTRANCE_QUEUE_FLAG];
+    return v === true || v === "true";
+  } catch { return false; }
+}
+
+/**
+ * Order an enemy entrance.
+ *
+ *   queue                — queued enemies, in roster order. They take the stage
+ *                          ONE AT A TIME, with nothing else moving, so two
+ *                          camera-riding entrances can no longer fight over the
+ *                          camera (a newer canvas pan cancels the running one).
+ *   fading / descending  — everyone else, entering together once the queue has
+ *                          finished: splitByEntranceStyle over the rest.
+ *
+ * Nothing queued ⇒ `queue` is empty and the rest is exactly
+ * splitByEntranceStyle(ids) — the opening every fight had before.
+ */
+export function planEntrance(ids, styleOf, queuedOf) {
+  const queuedIds = [];
+  const rest = [];
+  for (const id of ids ?? []) {
+    let q = false;
+    try { q = !!queuedOf?.(id); } catch { q = false; }
+    (q ? queuedIds : rest).push(id);
+  }
+  const styleSafe = (id) => {
+    try { return styleOf?.(id) || DEFAULT_ENTRANCE_STYLE; } catch { return DEFAULT_ENTRANCE_STYLE; }
+  };
+  return {
+    queue: queuedIds.map((id) => ({ id, style: styleSafe(id) })),
+    ...splitByEntranceStyle(rest, styleOf),
+  };
 }
 
 /* ── Easing ──────────────────────────────────────────────────────────────── */

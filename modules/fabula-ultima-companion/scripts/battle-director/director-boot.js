@@ -65,6 +65,8 @@ import { initBattlerPose, emitBattlerPose, playBattlerPoseLocal, describeToken a
 import { initNpcHpBar, emitNpcHpBar, emitNpcHpBarUnchecked, renderNpcHpBarLocal } from "./damage-numbers/director-hp-bar.js";
 import { initDominationFx } from "./domination.js";
 import { initDominationCrest } from "./domination-crest.js";
+import { initEntranceConfig } from "./boss-entrance-config.js";
+import { initDefeatFx } from "./defeat-fx.js";
 import { initAspectAura } from "./aspect-aura.js";
 import { initTokenTint } from "./token-tint.js";
 import { initBrandMark } from "./brand-mark.js";
@@ -1820,6 +1822,10 @@ Hooks.once("ready", () => {
   // broadcast the party run-in dash + enemy fade to all screens.
   try { initDirectorEntrance(); }
   catch (e) { warn("initDirectorEntrance on ready threw", e); }
+  try { initEntranceConfig(); }
+  catch (e) { warn("initEntranceConfig on ready threw", e); }
+  try { initDefeatFx(); }
+  catch (e) { warn("initDefeatFx on ready threw", e); }
 
   // Warm-decode the director's short SFX cues during idle after load. The
   // battle-start transition fires at the very top of PREP — before the
