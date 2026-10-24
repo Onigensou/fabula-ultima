@@ -34,6 +34,9 @@
     CAMP.UIHider?.activate();
     CAMP.Button.show();
     CAMP.GMPanel?.show();
+    // Party members are spawned, not pre-placed (camp-members.js). Idempotent;
+    // covers F5, a loaded save and a camp opened by hand. Primary GM only.
+    CAMP.Members?.ensure(scene);
     // Restore UI for current phase immediately
     _onPhaseChange(CAMP.State.getPhase());
   }

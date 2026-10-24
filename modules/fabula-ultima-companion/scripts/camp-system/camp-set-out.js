@@ -86,6 +86,8 @@
     await CAMP.State.reset();
     await CAMP.State.setReturnPoint({ ...point, at: Date.now() });
     console.debug(TAG, `Return point recorded (${point.via}):`, point);
+    // Spawn the party into the camp before it draws, so nobody pops in.
+    await CAMP.Members?.ensure(game.scenes.get(point.campSceneId));
   }
 
   function noteEntry(point) {
@@ -189,6 +191,8 @@
       // so the reset below is silent — no flash of the camp scene fading in.
       await new Promise(r => setTimeout(r, 600));
       await CAMP.State.reset();
+      // The camp is empty again until the next entry spawns the party.
+      await CAMP.Members?.clear(campScene);
     } catch (e) {
       console.error(TAG, "Set Out failed:", e);
       ui.notifications?.error?.(`Set Out failed: ${e.message}. The return point is kept — try again.`);
