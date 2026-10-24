@@ -69,11 +69,85 @@ function ensureStyle() {
   border-color: #f0a488; color: #ffd0c0;
   background: linear-gradient(180deg, #7a2e18 0%, #5a1c08 100%);
   box-shadow: 0 0 0 2px #f0a488, 0 0 18px rgba(230,110,80,0.50), 0 2px 6px rgba(40,18,4,0.38);
-}`;
+}
+/* Watcher copy (MirrorPrompt): "<name> is choosing…"; buttons are display only */
+#oni-inn-prompt .oni-inn-wait { display: none; }
+#oni-inn-prompt.is-watching .oni-inn-wait {
+  display: block; position: relative; margin: 6px 0 0; text-align: center;
+  font-size: 14px; font-style: italic; color: #6b4a22; opacity: .85;
+}
+#oni-inn-prompt.is-watching .oni-inn-choice { cursor: default; pointer-events: none; }
+#oni-inn-prompt.is-watching.can-override .oni-inn-choice:not(:disabled) { cursor: pointer; pointer-events: auto; }`;
   document.head.appendChild(s);
 }
 
 export function closeInnPrompt() { _open?.finish(null); }
+
+const MIRROR_KIND = "inn.offer";
+
+// Plain, socket-safe description of the offer — what both the operator's
+// prompt and every watcher's copy are drawn from.
+function viewOf({ innName, plan, hasRoom }) {
+  let note;
+  if (!plan.ok) note = plan.reason;
+  else if (plan.covered.length) note = `The party coffer covers ${plan.covered.map(a => a.name).join(", ")} (${plan.cofferNeed}z).`;
+  else note = `${plan.price}z each.`;
+  if (plan.ok && !hasRoom) note += " (No rooms are set up here — Short Rest only.)";
+  return {
+    innName, total: plan.total, note: note ?? "", blocked: !plan.ok,
+    restOff: !plan.ok || !hasRoom, shortOff: !plan.ok,
+  };
+}
+
+function buildPromptEl(view) {
+  const el = document.createElement("div");
+  el.id = "oni-inn-prompt";
+  el.setAttribute("role", "dialog");
+  el.innerHTML = `
+    <p class="oni-inn-msg"></p>
+    <p class="oni-inn-note"></p>
+    <p class="oni-inn-wait"></p>
+    <div class="oni-inn-actions">
+      <button type="button" class="oni-inn-choice rest">Rest</button>
+      <button type="button" class="oni-inn-choice short">Short Rest</button>
+      <button type="button" class="oni-inn-choice leave">Leave</button>
+    </div>`;
+
+  const msg = el.querySelector(".oni-inn-msg");
+  const strong = document.createElement("strong");
+  strong.textContent = `${view.total}z`;
+  msg.append(`${view.innName}: "A night's stay for the party is `, strong, `."`);
+
+  const note = el.querySelector(".oni-inn-note");
+  note.textContent = view.note;
+  if (view.blocked) note.classList.add("is-blocked");
+
+  const btns = {
+    rest:  el.querySelector(".rest"),
+    short: el.querySelector(".short"),
+    leave: el.querySelector(".leave"),
+  };
+  btns.rest.disabled  = view.restOff;
+  btns.short.disabled = view.shortOff;
+  btns.rest.title  = "Take a room: the full camp — activities, bonding, sleep.";
+  btns.short.title = "Restore HP and MP and cure ailments here.";
+  return { el, btns };
+}
+
+function reveal(el, stillCurrent) {
+  document.body.appendChild(el);
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    if (stillCurrent()) el.classList.add("inn-visible");
+  }));
+}
+
+function dismiss(el) {
+  el.classList.remove("inn-visible");
+  el.classList.add("inn-leaving");
+  setTimeout(() => el.remove(), OUT_MS + 40);
+}
+
+const keyOf = (btns, btn) => btn === btns.rest ? "rest" : btn === btns.short ? "short" : "leave";
 
 /**
  * @param {object} o
@@ -87,44 +161,17 @@ export function showInnPrompt({ innName, plan, hasRoom }) {
   ensureStyle();
 
   return new Promise((resolve) => {
-    const el = document.createElement("div");
-    el.id = "oni-inn-prompt";
-    el.setAttribute("role", "dialog");
-    el.innerHTML = `
-      <p class="oni-inn-msg"></p>
-      <p class="oni-inn-note"></p>
-      <div class="oni-inn-actions">
-        <button type="button" class="oni-inn-choice rest">Rest</button>
-        <button type="button" class="oni-inn-choice short">Short Rest</button>
-        <button type="button" class="oni-inn-choice leave">Leave</button>
-      </div>`;
-
-    const msg = el.querySelector(".oni-inn-msg");
-    const strong = document.createElement("strong");
-    strong.textContent = `${plan.total}z`;
-    msg.append(`${innName}: "A night's stay for the party is `, strong, `."`);
-
-    const note = el.querySelector(".oni-inn-note");
-    if (!plan.ok) {
-      note.textContent = plan.reason;
-      note.classList.add("is-blocked");
-    } else if (plan.covered.length) {
-      note.textContent = `The party coffer covers ${plan.covered.map(a => a.name).join(", ")} (${plan.cofferNeed}z).`;
-    } else {
-      note.textContent = `${plan.price}z each.`;
-    }
-    if (plan.ok && !hasRoom) note.textContent += " (No rooms are set up here — Short Rest only.)";
-
-    const btns = {
-      rest:  el.querySelector(".rest"),
-      short: el.querySelector(".short"),
-      leave: el.querySelector(".leave"),
-    };
-    btns.rest.disabled  = !plan.ok || !hasRoom;
-    btns.short.disabled = !plan.ok;
-    btns.rest.title  = "Take a room: the full camp — activities, bonding, sleep.";
-    btns.short.title = "Restore HP and MP and cure ailments here.";
+    const view = viewOf({ innName, plan, hasRoom });
+    const { el, btns } = buildPromptEl(view);
     const order = [btns.rest, btns.short, btns.leave].filter(b => !b.disabled);
+    const answerOf = (btn) => btn === btns.rest ? "rest" : btn === btns.short ? "short" : null;
+
+    // Everyone else watches this offer read-only; a GM watcher may answer for us.
+    const mirror = globalThis.FUCompanion?.api?.MirrorPrompt?.open?.(MIRROR_KIND, { view }, {
+      onAnswer: (value) => entry.finish(
+        value === "rest" && !btns.rest.disabled ? "rest"
+          : value === "short" && !btns.short.disabled ? "short" : null),
+    }) ?? null;
 
     let picked = null;
     const pick = (btn) => {
@@ -132,9 +179,9 @@ export function showInnPrompt({ innName, plan, hasRoom }) {
       picked?.classList.remove("is-picked");
       picked = btn;
       btn.classList.add("is-picked");
+      mirror?.patch({ picked: keyOf(btns, btn) });
     };
     const step = (d) => pick(order[(order.indexOf(picked) + d + order.length) % order.length]);
-    const answerOf = (btn) => btn === btns.rest ? "rest" : btn === btns.short ? "short" : null;
 
     const entry = { finish: null };
     const onKey = (ev) => {
@@ -163,9 +210,8 @@ export function showInnPrompt({ innName, plan, hasRoom }) {
       stopInput?.();
       runtime?.unlockMovement?.("inn-prompt");
       window.removeEventListener("keydown", onKey, true);
-      el.classList.remove("inn-visible");
-      el.classList.add("inn-leaving");
-      setTimeout(() => el.remove(), OUT_MS + 40);
+      mirror?.close(result ?? null);
+      dismiss(el);
       resolve(result ?? null);
     };
 
@@ -177,11 +223,46 @@ export function showInnPrompt({ innName, plan, hasRoom }) {
     window.addEventListener("keydown", onKey, true);
 
     pick(order[0]);
-    document.body.appendChild(el);
     _open = entry;
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      if (_open === entry) el.classList.add("inn-visible");
-    }));
+    reveal(el, () => _open === entry);
     console.debug(INN.TAG, "Inn prompt open.", { total: plan.total, ok: plan.ok, hasRoom });
   });
 }
+
+// ── Watcher copy (MirrorPrompt) ───────────────────────────────────────────
+// Party players and the stream spectator see the controller's offer with the
+// highlight echoed; no input, no movement lock. A GM watcher can click a
+// choice to answer on the controller's behalf.
+Hooks.once("ready", () => {
+  globalThis.FUCompanion?.api?.MirrorPrompt?.register?.(MIRROR_KIND, {
+    show(ctx) {
+      if (_open || !ctx.payload?.view) return null;
+      ensureStyle();
+      const { el, btns } = buildPromptEl(ctx.payload.view);
+      el.classList.add("is-watching");
+      if (ctx.canOverride) el.classList.add("can-override");
+      el.querySelector(".oni-inn-wait").textContent = ctx.canOverride
+        ? `${ctx.operatorName} is choosing… (GM: click to answer)`
+        : `${ctx.operatorName} is choosing…`;
+
+      const setPicked = (key) => {
+        for (const [k, b] of Object.entries(btns)) b.classList.toggle("is-picked", k === key);
+      };
+      if (ctx.state?.picked) setPicked(ctx.state.picked);
+
+      el.addEventListener("pointerdown", (ev) => ev.stopPropagation());
+      if (ctx.canOverride) {
+        for (const [k, b] of Object.entries(btns)) {
+          b.addEventListener("click", () => { if (!b.disabled) ctx.answer(k === "leave" ? null : k); });
+        }
+      }
+
+      let live = true;
+      reveal(el, () => live);
+      return {
+        patch: (state) => { if (state?.picked) setPicked(state.picked); },
+        close: () => { live = false; dismiss(el); },
+      };
+    },
+  });
+});

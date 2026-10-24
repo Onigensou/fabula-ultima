@@ -114,11 +114,19 @@ export class InnOpenBackend {
     return ids;
   }
 
+  // A GM gets the button only when no online player holds the controller;
+  // otherwise the GM watches the controller's offer (MirrorPrompt) and can
+  // answer from there — never two live offers at once.
   async _canOperate() {
-    if (game.user?.isGM) return true;
     const api = globalThis.__ONI_MOVEMENT_CONTROL_API__
       ?? globalThis.FUCompanion?.api?.MovementControl
       ?? null;
+    if (game.user?.isGM) {
+      try {
+        const c = await api?.getCurrentControllerUser?.();
+        return !(c?.userId && !c.isGM && game.users?.get(c.userId)?.active);
+      } catch { return true; }
+    }
     if (!api?.isCurrentUserMainController) return false;
     try { return !!(await api.isCurrentUserMainController()); }
     catch { return false; }
