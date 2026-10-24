@@ -385,6 +385,14 @@ function installTreasureConfigUI() {
         revealRow.style.display = tierEl.value === "rare" ? "" : "none";
         if (artModeEl.value !== "auto" || !tierEl.value || !TC?.artFor) return;
         const src = TC.artFor({ tier: tierEl.value, hasEquipment: await itemIsGear() });
+        // A fresh tile is at full opacity; chests sit lower so the icon blends
+        // into the painted map (bag 0.5, chest 0.65). A hand-set opacity is kept.
+        const alphaField = root.querySelector('[name="alpha"]');
+        if (alphaField && Number(alphaField.value) === 1 && TC.alphaFor) {
+          alphaField.value = TC.alphaFor(src);
+          alphaField.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+
         const field = root.querySelector('[name="texture.src"]');
         if (!field || field.value === src) return;
         field.value = src;

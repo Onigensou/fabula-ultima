@@ -85,6 +85,12 @@
   });
 
   const DEFAULT_REVEAL_RADIUS = 1.5;   // grid squares, rare chests only
+  // Tile opacity for placed chests: the icon art is clean and bright, painted
+  // maps are not, and at full opacity a chest pops out of the scene (user,
+  // 2026-10-24). Values are the user's own from the hand-placed chests on
+  // Ancient Temple / Wyrmwood: bags 0.5, chests about 0.65.
+  const ALPHA = { bag: 0.5, chest: 0.65 };
+  const alphaFor = (src) => String(src ?? "").endsWith("bag.png") ? ALPHA.bag : ALPHA.chest;
   const OPENED_GM_ALPHA = 0.3;         // a GM still sees where an opened chest sat
   const HIDDEN_GM_ALPHA = 0.5;         // ...and where an unrevealed rare one is
   const REVEAL_FADE_MS = 700;
@@ -883,6 +889,8 @@
   window.oni.TreasureChest.TIERS = TIERS;
   window.oni.TreasureChest.ART = ART;
   window.oni.TreasureChest.DEFAULT_REVEAL_RADIUS = DEFAULT_REVEAL_RADIUS;
+  window.oni.TreasureChest.ALPHA = ALPHA;
+  window.oni.TreasureChest.alphaFor = alphaFor;
   window.oni.TreasureChest.artFor = artFor;
   window.oni.TreasureChest.isEquipment = isEquipment;
 

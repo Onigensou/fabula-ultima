@@ -72,7 +72,12 @@ walled-off islands), boss arenas, and pure cut-scene/theatre maps.
   party can walk behind. On painted 3/4-view maps without occluders, a dark
   corner or the far side of a pillar, plus the proximity reveal (default 1.5
   grid). Never on the main path.
-- Size the tile like a prop: about 0.6 × the scene's grid size.
+- **Blend it into the scene.** The icon art is clean and bright; at full size
+  and opacity it pops out of a painted map. Size the tile about **0.4 × the
+  scene's grid** (keep the art's aspect) and lower its opacity: **bag 0.5,
+  chest 0.65**. These are the user's own values from the hand-placed chests on
+  Ancient Temple and Wyrmwood. The Treasure tab's auto art sets the opacity
+  when the tile is still at 1.
 
 ## How a chest is built
 
@@ -114,9 +119,12 @@ maps, Rare items that are also rolled or sold, and Zenit outside the band.
 
 ## Chapter rollout — Midgard / Valley / Fafnir (2026-10-24)
 
-Budgets: Midgard 3 (2 Mundane, 1 Standard) — set by the user; Valley 6
-(2 Mundane / 3 Standard / 1 Rare) and Fafnir 3 (1 / 1 / 1) — proposed and
-approved. Coordinates are scene pixels (tile centre), first pass.
+Budgets: Midgard 3 (2 Mundane, 1 Standard) — set by the user; Valley and
+Fafnir were placed at 6 (2/3/1) and 3 (1/1/1), then the user removed the
+Great Seal chest and both Rare chests (Eye of Skadi in the Monastery
+Interior, Balmung in the Treasure Hoard). Current: Valley 4 (1 Mundane /
+3 Standard), Fafnir 2 (1 / 1), no Rare in this chapter. Coordinates are
+scene pixels (tile centre), first pass.
 
 | Zone | Map | Tier | Spot | Contents |
 |---|---|---|---|---|
@@ -124,17 +132,12 @@ approved. Coordinates are scene pixels (tile centre), first pass.
 | Midgard | Midgard_Map007 Cellar | Mundane | north-east cell by the cages (1060, 130) | Liquid Hope ×1 |
 | Midgard | Midgard_Map006 Castle | Standard | east armoury, weapon-rack wall (1700, 1100) | Rune Blade |
 | Valley | Valley_Map003 Valley Entrance | Mundane | bulge east of the path (700, 1650) | 300z |
-| Valley | Valley_Map011 The Great Seal | Mundane | east spire platform (1230, 450) | Earth Stone ×4 |
 | Valley | Valley_Map012 Ancient Mural | Standard | dead-end stair landing, top right (1400, 310) | Phoenix Feather ×1 + 300z |
 | Valley | Valley_Map020 Feeding Pit | Standard | by the cauldron, north rim (1240, 190) | Beowulf + 500z |
 | Valley | Valley_Map016 Abandoned Monastery | Standard | behind the fallen pillar by the lion statue (1000, 640) | Goddess Tear ×1 |
-| Valley | Valley_Map017 Monastery Interior | **Rare** | dark back-left side court behind the pedestals (350, 470) | Eye of Skadi |
 | Fafnir | FafnirCastle_Map001 Entrance | Mundane | spilled coin pile by the toppled armour (80, 1500) | 450z |
 | Fafnir | FafnirCastle_Map004 Hatchery | Standard | painted chest by the east door (1040, 1100) | Lux Shield + 500z |
-| Fafnir | FafnirCastle_Map007 Treasure Hoard | **Rare** | behind the broken pillar on the hoard's east shoulder (1170, 470) | Balmung |
 
-No chest on Maelstrom Confluence (walled-apart islands) or Sacrificial Altar
-(boss arena). Contents are a first pass picked by these rules; the user owns
-the balance call. Balmung (Siegfried's sword, the dragon-slayer of the
-Nibelung legend that Fafnir comes from) and Beowulf (another dragon-slayer)
-were picked for theme.
+No chest on Maelstrom Confluence (walled-apart islands), Sacrificial Altar
+(boss arena), The Great Seal or the Treasure Hoard (user, 2026-10-24). Contents are a first pass picked by these rules; the user owns
+the balance call. Beowulf (a dragon-slayer) was picked for theme.

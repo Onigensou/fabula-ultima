@@ -36,11 +36,13 @@
   const MODULE_ID = "fabula-ultima-companion";
   const SCOPE = "oni-treasure-chest";
 
-  // Chest budget per area = scene folder name. Set with the user, 2026-10-24.
+  // Chest budget per area = scene folder name. Set with the user, 2026-10-24;
+  // the user then removed the Great Seal chest and both Rare chests (Eye of
+  // Skadi, Balmung), so Valley and Fafnir carry no Rare for now.
   const AREA_BUDGETS = {
     "Ancient Capital Midgard": { mundane: 2, standard: 1, rare: 0 },
-    "Valley of the Dragon":    { mundane: 2, standard: 3, rare: 1 },
-    "Fafnir Castle":           { mundane: 1, standard: 1, rare: 1 },
+    "Valley of the Dragon":    { mundane: 1, standard: 3, rare: 0 },
+    "Fafnir Castle":           { mundane: 1, standard: 1, rare: 0 },
   };
 
   // Zenit band per tier, as a share of the area Zenit table's mean result.
