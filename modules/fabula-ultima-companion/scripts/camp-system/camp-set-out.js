@@ -82,7 +82,10 @@
    * Primary GM only; noteEntry() routes here from any client.
    */
   async function recordEntry(point) {
-    if (!isPrimaryGM() || !point?.sceneId) return;
+    // A hand-activated camp has no place it came from: it records only which
+    // camp it is (sceneId absent → getReturnPoint() null → Set Out's picker).
+    if (!isPrimaryGM() || !point?.campSceneId) return;
+    if (!point.sceneId && point.via !== "gm_activate") return;
     await CAMP.State.reset();
     await CAMP.State.setReturnPoint({ ...point, at: Date.now() });
     console.debug(TAG, `Return point recorded (${point.via}):`, point);
@@ -120,6 +123,27 @@
       sceneId: fromScene.id, x: spot.x, y: spot.y,
       actorId: actorId ?? null, via: "teleport", campSceneId: toScene.id,
     });
+  });
+
+  // A camp scene becoming ACTIVE. Two jobs:
+  //  - The GM activated it by hand (a story camp like Sunset Camp): nothing
+  //    recorded this entry, so the loop would inherit the last camp's phase.
+  //    When the stored point belongs to a different camp, start fresh and
+  //    record a hand entry. Inn / dungeon / teleport entries record BEFORE
+  //    activating, and a loaded save restores its own campState after the
+  //    scene, so neither is touched.
+  //  - Spawn the members even when the GM was already viewing the scene:
+  //    activating the scene you are looking at does not redraw the canvas, so
+  //    camp-bootstrap's canvasReady pass never runs.
+  Hooks.on("updateScene", async (scene, changes) => {
+    if (changes?.active !== true || !isPrimaryGM() || !isCampScene(scene)) return;
+    let raw = {};
+    try { raw = JSON.parse(game.settings.get(MOD, CAMP.SETTING.RETURN_POINT) || "{}"); } catch {}
+    if (raw?.campSceneId !== scene.id) {
+      await recordEntry({ campSceneId: scene.id, via: "gm_activate" });
+    } else {
+      await CAMP.Members?.ensure(scene);
+    }
   });
 
   // ---------------------------------------------------------------------------
