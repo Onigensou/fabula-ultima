@@ -30,6 +30,7 @@
     "scripts/shared/ae-lifetime.js",
     "scripts/shared/condition-affinity.js",
     "scripts/scene-prefetch.js",
+    "scripts/scene-texture-repair.js",
     "scripts/reload-broadcast.js",
     "scripts/reload-button.js",
     "scripts/client-health.js",
