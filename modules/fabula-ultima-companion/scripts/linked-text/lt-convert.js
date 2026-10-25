@@ -330,6 +330,130 @@ export function convertHtml(input, { unlinkDangling = false } = {}) {
   return { html, changed: html !== src, codes: [...changes], dangling, review, repointed };
 }
 
+// ── Set bonus: description → set_description ─────────────────────────────────
+// Set bonuses belong in the piece's own Item Set section (`set_description`,
+// shown under "Set bonus" on the party menu's item card), not in `description`.
+// Old pieces wrote a 【Set Bonus】 block at the END of the description, as
+// paragraphs or inside a bullet list. splitSetBonus cuts from the marker to the
+// end and returns both halves, the moved half in the modern shape:
+//   <p><strong>【Set Bonus】</strong></p><p><strong>2-Piece</strong></p><ul>…
+
+const SET_MARK = /set\s*bonus/i;
+const SET_HEADING = /^[\s 【]*set\s*bonus[\s 】:]*$/i;
+const CANON_HEADING = "<p><strong>【Set Bonus】</strong></p>";
+
+const plainOf = (html) => {
+  const t = document.createElement("template");
+  t.innerHTML = String(html ?? "");
+  return (t.content.textContent ?? "").replace(/[\s ]+/g, " ").trim();
+};
+
+function isEmptyBlock(n) {
+  if (n.nodeType === Node.TEXT_NODE) return !n.textContent.replace(/[\s ]/g, "");
+  if (n.nodeType !== Node.ELEMENT_NODE) return true;
+  if (n.tagName === "HR" || n.tagName === "BR") return true;
+  return !n.textContent.replace(/[\s ]/g, "") && !n.querySelector("img");
+}
+function trimEdges(root) {
+  while (root.lastChild && isEmptyBlock(root.lastChild)) root.lastChild.remove();
+  while (root.firstChild && isEmptyBlock(root.firstChild)) root.firstChild.remove();
+  // A list item left ending in a separator.
+  const lastLi = root.lastElementChild?.matches?.("ul,ol") ? root.lastElementChild.lastElementChild : null;
+  while (lastLi?.lastChild && (lastLi.lastChild.nodeName === "HR" || isEmptyBlock(lastLi.lastChild) && lastLi.lastChild.nodeType === Node.TEXT_NODE)) lastLi.lastChild.remove();
+}
+
+function serialize(frag) {
+  const d = document.createElement("div");
+  d.appendChild(frag);
+  return d.innerHTML.trim();
+}
+
+export function splitSetBonus(html) {
+  const tpl = document.createElement("template");
+  tpl.innerHTML = String(html ?? "");
+  const root = tpl.content;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  let mark = null;
+  while (walker.nextNode()) if (SET_MARK.test(walker.currentNode.textContent)) { mark = walker.currentNode; break; }
+  if (!mark) return null;
+
+  // Split every list between the marker and the top level, so the marker's
+  // item and everything after it leave together.
+  let top = mark;
+  while (top.parentNode !== root) {
+    const parent = top.parentNode;
+    if ((parent.nodeName === "UL" || parent.nodeName === "OL") && top.previousSibling) {
+      const tail = parent.cloneNode(false);
+      let n = top;
+      while (n) { const next = n.nextSibling; tail.appendChild(n); n = next; }
+      parent.after(tail);
+      top = tail;
+      continue;
+    }
+    top = parent;
+  }
+  const moved = document.createDocumentFragment();
+  let n = top;
+  while (n) { const next = n.nextSibling; moved.appendChild(n); n = next; }
+
+  // Lift the block out of list wrappers: a list whose first item holds the
+  // marker is the old "set bonus as a bullet" shape.
+  for (let guard = 0; guard < 6; guard++) {
+    const first = moved.firstElementChild;
+    if (!first || !(first.matches("ul,ol")) || !SET_MARK.test(first.firstElementChild?.textContent ?? "")) break;
+    const parts = [];
+    for (const li of Array.from(first.children)) parts.push(...li.childNodes);
+    first.replaceWith(...parts);
+  }
+  // One canonical heading.
+  for (const el of Array.from(moved.querySelectorAll("p, li, ul, ol, strong, b, h1, h2, h3, h4"))) {
+    if (!SET_HEADING.test(el.textContent)) continue;
+    let block = el;
+    while (block.parentNode && block.parentNode !== moved && SET_HEADING.test(block.parentNode.textContent)) block = block.parentNode;
+    const h = document.createElement("template");
+    h.innerHTML = CANON_HEADING;
+    block.replaceWith(h.content);
+    break;
+  }
+  trimEdges(root);
+  trimEdges(moved);
+  return { keep: serialize(root), moved: serialize(moved) };
+}
+
+/** What the Item Set rules change on one item's props: { field: newValue }, plus codes. */
+function setSectionOps(item) {
+  const p = item.system?.props ?? {};
+  const ops = {};
+  const codes = {};
+  const isDef = p.set_bonus_table && Object.keys(p.set_bonus_table).length;
+  if (SET_MARK.test(p.description ?? "") && !isDef) {
+    const sp = splitSetBonus(p.description);
+    const isPassiveCopy = /\(Passive\)\s*$/.test(item.name) || String(p.skill_type ?? "").toLowerCase() === "passive";
+    // A 【Set Bonus】 block is set text whatever the piece's flags say: older
+    // copies on actors predate `isSet` and never got the key.
+    if (sp && !isPassiveCopy) {
+      ops.description = sp.keep;
+      codes.description = "SET_MOVED";
+      if (!plainOf(p.set_description)) { ops.set_description = sp.moved; codes.set_description = "SET_MOVED"; }
+    } else if (sp && isPassiveCopy) {
+      // A contained passive mirrors its parent's EFFECT only.
+      ops.description = sp.keep;
+      codes.description = "SET_MOVED";
+      if (SET_MARK.test(p.skill_description ?? "")) {
+        const sk = splitSetBonus(p.skill_description);
+        if (sk) { ops.skill_description = sk.keep; codes.skill_description = "SET_MOVED"; }
+      }
+    }
+  }
+  // Non-set gear carries no set fields: clear the cloned "【Set Bonus】" placeholder.
+  if (!p.isSet && !isDef && typeof p.set_description === "string" && p.set_description
+      && (!plainOf(p.set_description) || SET_HEADING.test(plainOf(p.set_description)))) {
+    ops.set_description = "";
+    codes.set_description = "SET_PLACEHOLDER";
+  }
+  return { ops, codes };
+}
+
 // ── World runner ──────────────────────────────────────────────────────────────
 
 const SKIP_KEY = /(^|_)script$|^script|macro|_logic_|custom_logic|_js$|^code$|formula|target_filter|^img$|^uuid$|^id$/i;
@@ -356,17 +480,26 @@ function itemChanges(item, opts) {
   const update = {};
   const old = {};
   const rows = [];
-  for (const [path, value] of stringFields(item.system?.props ?? {})) {
-    if (!/[<@]/.test(value)) continue;
-    const r = convertHtml(value, opts);
-    if (r.changed) { update[`system.props.${path}`] = r.html; old[`system.props.${path}`] = value; }
-    if (!r.changed && !r.dangling.length && !r.review.length) continue; // nothing to report
-    const b = summarize(value), a = summarize(r.html);
+  const set = setSectionOps(item);
+  // set_description may not exist yet on older pieces: visit it anyway.
+  const fields = [...stringFields(item.system?.props ?? {})];
+  for (const key of Object.keys(set.ops)) if (!fields.some(([p]) => p === key)) fields.push([key, ""]);
+  for (const [path, orig] of fields) {
+    const setCode = set.codes[path];
+    const value = path in set.ops ? set.ops[path] : orig;
+    const r = /[<@]/.test(value)
+      ? convertHtml(value, opts)
+      : { html: value, changed: false, codes: [], dangling: [], review: [], repointed: [] };
+    const final = r.html;
+    if (final !== orig) { update[`system.props.${path}`] = final; old[`system.props.${path}`] = orig; }
+    const codes = setCode ? [setCode, ...r.codes] : r.codes;
+    if (final === orig && !r.dangling.length && !r.review.length) continue; // nothing to report
+    const b = summarize(orig), a = summarize(final);
     const before = [...b.links];
     const added = a.links.filter((l) => { const i = before.indexOf(l); if (i < 0) return true; before.splice(i, 1); return false; });
     rows.push({
-      field: path, codes: r.codes, dangling: r.dangling, review: r.review, repointed: r.repointed, added,
-      textBefore: b.text, textAfter: a.text, bytesBefore: value.length, bytesAfter: r.html.length,
+      field: path, codes, dangling: r.dangling, review: r.review, repointed: r.repointed, added,
+      textBefore: b.text, textAfter: a.text, bytesBefore: orig.length, bytesAfter: final.length,
     });
   }
   return { update, old, rows };

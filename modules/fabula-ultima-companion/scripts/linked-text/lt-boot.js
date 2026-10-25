@@ -14,13 +14,13 @@
 import { renderLinkedText, plainLinkedText, decorateLinks, registerEnricher, linkHTML, safeHtml } from "./lt-render.js";
 import { resolveUuid, resolveTag } from "./lt-terms.js";
 import { initCards, openCard, closeCard } from "./lt-card.js";
-import { convertHtml, convertWorld, restoreBackup, runLinkedTextLint, minimalLink } from "./lt-convert.js";
+import { convertHtml, convertWorld, restoreBackup, runLinkedTextLint, minimalLink, splitSetBonus } from "./lt-convert.js";
 
 const api = Object.freeze({
   renderLinkedText, plainLinkedText, decorateLinks, linkHTML, safeHtml,
   resolveUuid, resolveTag, openCard, closeCard,
   // Storage format + cleanup (GM tools):
-  convertHtml, convertWorld, restoreBackup, minimalLink,
+  convertHtml, convertWorld, restoreBackup, minimalLink, splitSetBonus,
 });
 globalThis.FULinkedText = api;
 
