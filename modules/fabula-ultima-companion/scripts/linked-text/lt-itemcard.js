@@ -45,6 +45,32 @@ export function subtitle(term) {
   }
 }
 
+// Refinement (scripts/refinement-system): read the live config so a re-tune
+// shows here too; the fallback mirrors refinement-config.js.
+const RF_FALLBACK = {
+  MAX_LEVEL: { weapon: 7, armor: 5, shield: 5, accessory: 0 },
+  WEAPON_BONUS_TABLE: [0, 1, 2, 3, 4, 5, 6, 7],   // +1 damage per level (baked into damage_bonus)
+  ARMOR_BONUS_TABLE: [0, 5, 10, 15, 20, 25],      // +5 Max HP per level (Active Effect)
+  SHIELD_BONUS_TABLE: [0, 1, 2, 3, 4, 5],         // +1 physical damage reduction per level (Active Effect)
+};
+const rfConfig = () => (typeof REFINEMENT_CONFIG !== "undefined" ? REFINEMENT_CONFIG : RF_FALLBACK);
+const rfAt = (table, level) => table?.[Math.min(table.length - 1, Math.max(0, level))] ?? 0;
+
+/** Refinement level and what it grants, or null when the item cannot be refined. */
+export function refineOf(doc) {
+  const p = doc?.system?.props ?? {};
+  const cfg = rfConfig();
+  const max = cfg.MAX_LEVEL?.[p.item_type] ?? 0;
+  if (!max) return null;
+  const level = Math.max(0, Math.min(max, numOf(p.refine_level)));
+  return {
+    level, max,
+    dmg: p.item_type === "weapon" ? rfAt(cfg.WEAPON_BONUS_TABLE, level) : 0,
+    hp: p.item_type === "armor" ? rfAt(cfg.ARMOR_BONUS_TABLE, level) : 0,
+    dr: p.item_type === "shield" ? rfAt(cfg.SHIELD_BONUS_TABLE, level) : 0,
+  };
+}
+
 /** Numbers an item brings, for display and comparison. */
 export function itemNumbers(doc) {
   const p = doc?.system?.props ?? {};
@@ -53,13 +79,22 @@ export function itemNumbers(doc) {
   // Some martial pieces only fill the bonus field, so fall back to it.
   const martial = p.isMartial && t === "armor" && numOf(p.item_baseDef) > 0;
   const worn = t === "armor" || t === "shield";
+  const rf = refineOf(doc);
   return {
     dmg: t === "weapon" ? numOf(p.damage_bonus) : undefined,
     acc: t === "weapon" ? numOf(p.check_bonus) : undefined,
     def: worn ? (martial ? numOf(p.item_baseDef) : numOf(p.item_def_bonus)) : undefined,
     mdef: worn ? (martial ? numOf(p.item_baseMdef) : numOf(p.item_mdef_bonus)) : undefined,
+    hp: t === "armor" ? (rf?.hp ?? 0) : undefined,
+    dr: t === "shield" ? (rf?.dr ?? 0) : undefined,
     martial,
   };
+}
+
+// "+5 ★★★★★" — filled pips for each level reached, hollow for the rest.
+function refinePips(rf) {
+  return `<strong>+${rf.level}</strong> <span class="fu-iw-pips" aria-label="Refined ${rf.level} of ${rf.max}">`
+    + `${"★".repeat(rf.level)}<span class="is-empty">${"☆".repeat(rf.max - rf.level)}</span></span>`;
 }
 
 const check = (p) => (p.rolled_atr1 && p.rolled_atr2 ? `<strong>【${esc(p.rolled_atr1)} + ${esc(p.rolled_atr2)}】</strong>` : "");
@@ -69,8 +104,12 @@ export const dmgText = (type) => {
 };
 const signed = (n) => (n >= 0 ? `+${n}` : String(n));
 
-/** Data grid rows [label, html, numberKey], in reading order. */
-export function gridRows(term) {
+/**
+ * Data grid rows [label, html, numberKey], in reading order.
+ * `vs` (the equipped item being compared) keeps refinement rows visible when
+ * either side is refined, so the ▲▼ shows what a swap gains or loses.
+ */
+export function gridRows(term, vs = null) {
   const p = term.doc?.system?.props ?? {};
   if (term.kind === "skill" || term.kind === "spell" || term.kind === "passive") {
     const vs = { def: "Defense", mdef: "Magic Defense" }[p.defense_target_type];
@@ -81,14 +120,23 @@ export function gridRows(term) {
   }
   if (term.kind === "item") {
     const n = itemNumbers(term.doc);
+    const rf = refineOf(term.doc);
+    const vsRf = vs ? refineOf(vs) : null;
+    const showRefine = !!rf && (rf.level > 0 || (vsRf?.level ?? 0) > 0);
+    // Full grid width, so "+6 ★★★★★★☆" stays on one line.
+    const refineRow = showRefine ? [["Refine", refinePips(rf), null, "is-wide"]] : [];
     if (p.item_type === "weapon") {
       const acc = check(p) + (n.acc ? ` ${signed(n.acc)}` : "");
-      return [["Accuracy", acc, "acc"], ["Damage", `<strong>【HR + ${n.dmg}】</strong>${dmgText(p.type_damage)}`, "dmg"],
-        ["Range", esc(p.weapon_range)], ["Hands", esc(p.hand_slots)]];
+      const fromRefine = rf?.dmg ? ` <span class="fu-iw-sub">(+${rf.dmg} refine)</span>` : "";
+      return [["Accuracy", acc, "acc"], ["Damage", `<strong>【HR + ${n.dmg}】</strong>${dmgText(p.type_damage)}${fromRefine}`, "dmg"],
+        ["Range", esc(p.weapon_range)], ["Hands", esc(p.hand_slots)], ...refineRow];
     }
     if (p.item_type === "armor" || p.item_type === "shield") {
       const show = (v) => (n.martial ? String(v) : signed(v));
-      return [["DEF", show(n.def), "def"], ["M.DEF", show(n.mdef), "mdef"]];
+      const rows = [["DEF", show(n.def), "def"], ["M.DEF", show(n.mdef), "mdef"], ...refineRow];
+      if (showRefine && p.item_type === "armor") rows.push(["Max HP", signed(n.hp), "hp"]);
+      if (showRefine && p.item_type === "shield") rows.push(["Phys. DR", n.dr ? `−${n.dr} taken` : "0", "dr"]);
+      return rows;
     }
   }
   return [];
@@ -148,14 +196,14 @@ function grantedSkillsHTML(term) {
 export function cardHTML(term, { vs = null, actor, compact = false } = {}) {
   const other = vs ? itemNumbers(vs) : null;
   const mine = term.kind === "item" ? itemNumbers(term.doc) : null;
-  const rows = gridRows(term).filter(([, v]) => v);
+  const rows = gridRows(term, vs).filter(([, v]) => v);
   const delta = (key) => {
     if (!other || !mine || !key || mine[key] === undefined) return "";
     const d = mine[key] - (other[key] ?? 0);
     return d ? `<span class="fu-iw-dlt ${d > 0 ? "is-up" : "is-down"}">${d > 0 ? "▲" : "▼"}${Math.abs(d)}</span>` : "";
   };
   const grid = rows.length
-    ? `<div class="fu-ltc-grid">${rows.map(([k, v, key]) => `<div><span>${esc(k)}</span>${v}${delta(key)}</div>`).join("")}</div>`
+    ? `<div class="fu-ltc-grid">${rows.map(([k, v, key, cls]) => `<div${cls ? ` class="${cls}"` : ""}><span>${esc(k)}</span>${v}${delta(key)}</div>`).join("")}</div>`
     : "";
   const desc = descriptionOf(term);
   const body = desc
