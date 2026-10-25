@@ -44,13 +44,16 @@ a.content-link.fu-lt .fu-lt-dia {
   transform: rotate(45deg); background: currentColor; vertical-align: .1em;
 }
 
+/* Kind colours are !important: screen stylesheets (shop-content-links.css) set
+   `color: inherit` on every content link with higher specificity. */
+
 /* Damage types: element colour and glow, no underline. */
-a.content-link.fu-lt--dmg { color: var(--fu-lt-c, inherit); text-shadow: 0 0 4px var(--fu-lt-glow, transparent); }
-a.content-link.fu-lt--dmg i.fu-lt-fa { color: var(--fu-lt-c, inherit); }
+a.content-link.fu-lt--dmg { color: var(--fu-lt-c, inherit) !important; text-shadow: 0 0 4px var(--fu-lt-glow, transparent) !important; }
+a.content-link.fu-lt--dmg i.fu-lt-fa { color: var(--fu-lt-c, inherit) !important; }
 
 /* Statuses and keywords: thin solid underline under the name only. */
 a.content-link.fu-lt--status { color: inherit; }
-a.content-link.fu-lt--kw { color: #2c6672; }
+a.content-link.fu-lt--kw { color: #2c6672 !important; }
 a.content-link.fu-lt--status .fu-lt-nm,
 a.content-link.fu-lt--kw .fu-lt-nm {
   text-decoration: underline solid currentColor; text-decoration-thickness: 1px; text-underline-offset: 3px;
@@ -61,7 +64,7 @@ a.content-link.fu-lt--status i.fu-lt-fa { color: #9b3a24; }
 a.content-link.fu-lt--skill,
 a.content-link.fu-lt--spell,
 a.content-link.fu-lt--passive,
-a.content-link.fu-lt--item { color: var(--fu-lt-c, #7a4e20); }
+a.content-link.fu-lt--item { color: var(--fu-lt-c, #7a4e20) !important; }
 a.content-link.fu-lt .fu-lt-br { color: #c9a44a; font-weight: 500; }
 
 a.content-link.fu-lt--missing { cursor: default; opacity: .85; }
@@ -118,6 +121,7 @@ img.fu-ltc-badge { background: #2b1d10; padding: 0; }
 .fu-ltc-price img { width: 20px; height: 20px; border: 0; object-fit: contain; }
 
 .fu-ltc-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px 14px; font-size: 13px; }
+.fu-ltc-grid strong { white-space: nowrap; }
 .fu-ltc-grid span { display: block; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: #6b4a26; }
 .fu-ltc-body p { margin: 0 0 6px; }
 .fu-ltc-body p:last-child { margin-bottom: 0; }

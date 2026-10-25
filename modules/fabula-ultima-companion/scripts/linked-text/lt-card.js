@@ -283,12 +283,17 @@ function onOut(ev) {
   if (a && !a.contains(ev.relatedTarget)) hidePeek();
 }
 
+// Escape closes the panel and nothing else. Many screens listen for keys on
+// window in the capture phase, so this registers there at import time — ahead
+// of anything wired at `ready` — and only swallows the key while the panel is open.
 function onKey(ev) {
   if (ev.key === "Escape" && _panel && !_panel.hidden) {
-    ev.stopPropagation();
+    ev.preventDefault();
+    ev.stopImmediatePropagation();
     closeCard();
   }
 }
+window.addEventListener("keydown", onKey, true);
 
 let _wired = false;
 export function initCards() {
@@ -298,6 +303,5 @@ export function initCards() {
   document.addEventListener("pointerdown", onPointerDown, true);
   document.addEventListener("pointerover", onOver, true);
   document.addEventListener("pointerout", onOut, true);
-  document.addEventListener("keydown", onKey, true);
   document.addEventListener("wheel", hidePeek, { passive: true, capture: true });
 }

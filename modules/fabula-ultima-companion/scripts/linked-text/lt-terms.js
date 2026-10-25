@@ -146,11 +146,10 @@ export function resolveTag(tag, ref, label = "") {
   const r = String(ref ?? "").trim();
   const lbl = String(label ?? "").trim();
   if (t === "dmg" || t === "status" || t === "kw") {
-    const e = lookupTerm(r);
-    const ok = t === "dmg" ? e?.category === "damage"
-      : t === "status" ? e?.category === "status"
-      : e?.category === "keyword" || e?.category === "equipment";
-    return ok ? fromRegistry(e, lbl) : null;
+    // The tag type is a hint, not a filter: the registry files some terms
+    // differently than authors expect (Crisis is a status there), and the link
+    // should still work. The term's own category decides how it looks.
+    return fromRegistry(lookupTerm(r), lbl);
   }
   if (t === "skill" || t === "spell" || t === "item") {
     const doc = findItem(r) ?? (lbl ? findItem(lbl) : null);
