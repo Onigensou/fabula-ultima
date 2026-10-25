@@ -235,7 +235,7 @@ function characterList() {
   return FOR_COMPANIONS.has(S.view) ? [...list, ...companions().map((c) => c.actor)] : list;
 }
 
-export async function openPartyMenu({ actorId = null } = {}) {
+export async function openPartyMenu({ actorId = null, view = null } = {}) {
   if (S.open && S.busy) return;   // a write is in flight; its view still owns S.v
   ensureStyles();
   await loadRoster();
@@ -282,6 +282,9 @@ export async function openPartyMenu({ actorId = null } = {}) {
   animate("open");
   play(SND.ok);
   render();
+  // Straight into a view (the chat "Character" button opens Equip for the
+  // player's own character instead of the Foundry character sheet).
+  if (view && VIEWS[view]) enterView(view, (actorId && game.actors?.get(actorId)) || game.user?.character || null);
 }
 
 export function closePartyMenu() {

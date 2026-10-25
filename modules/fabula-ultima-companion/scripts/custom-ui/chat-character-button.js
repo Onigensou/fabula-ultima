@@ -167,6 +167,15 @@
       return;
     }
 
+    // Players use the in-game party menu (Equip view) instead of the Foundry
+    // character sheet; the sheet stays a GM / developer tool.
+    const partyMenu = globalThis.FUCompanion?.api?.partyMenu;
+    if (!game.user?.isGM && partyMenu?.open) {
+      await partyMenu.open({ actorId: actor.id, view: "equip" });
+      debugLog("Opened party menu Equip view.", { actorId: actor.id ?? null });
+      return;
+    }
+
     try {
       actor.sheet.render(true);
       debugLog("Opened character sheet.", {

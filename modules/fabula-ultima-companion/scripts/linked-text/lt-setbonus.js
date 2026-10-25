@@ -117,9 +117,10 @@ export function setViewer(item) {
 /**
  * Set section HTML for an item, or "" when it has no set text.
  * @param {Item} item
- * @param {{ actor?: Actor|null }} [opts]  defaults to setViewer(item)
+ * @param {{ actor?: Actor|null, project?: boolean }} [opts]  actor defaults to setViewer(item);
+ *   project: show the count this item would bring if equipped ("0 → 1 / 4"), lit by that count.
  */
-export function setBonusHTML(item, { actor } = {}) {
+export function setBonusHTML(item, { actor, project = false } = {}) {
   const p = item?.system?.props ?? {};
   const text = String(p.set_description ?? "");
   if (!text.replace(/<[^>]*>/g, "").replace(/set\s*bonus|[【】\s]/gi, "")) return "";
@@ -132,19 +133,23 @@ export function setBonusHTML(item, { actor } = {}) {
   const worn = who && setName ? equippedPieceNames(who, setName) : null;
   const count = worn ? worn.size : null;
   const total = pieces.length || null;
+  const gain = project && worn && !worn.has(baseName(item.name)) ? baseName(item.name) : null;
+  const lit = gain ? count + 1 : count;
 
+  const shown = count === null || !total ? ""
+    : gain ? `${count} <span class="fu-set-to">→ ${lit}</span> / ${total}` : `${count} / ${total}`;
   const head = setName
     ? `<div class="fu-set-head"><span class="fu-set-name">${esc(setName)}</span>`
-      + (count !== null && total ? `<span class="fu-set-count">${count} / ${total}</span>` : "") + `</div>`
+      + (shown ? `<span class="fu-set-count">${shown}</span>` : "") + `</div>`
     : "";
   const list = pieces.length
     ? `<div class="fu-set-pieces">${pieces.map((pc) => {
-      const off = worn && !worn.has(pc.name);
-      return `<span class="fu-set-piece${off ? " is-off" : ""}">${pc.img ? `<img src="${esc(pc.img)}" alt="">` : ""}${esc(pc.name)}</span>`;
+      const cls = pc.name === gain ? " is-gain" : worn && !worn.has(pc.name) ? " is-off" : "";
+      return `<span class="fu-set-piece${cls}">${pc.img ? `<img src="${esc(pc.img)}" alt="">` : ""}${esc(pc.name)}</span>`;
     }).join("")}</div>`
     : "";
   const rows = parsed.tiers.map((t) => {
-    const state = count === null ? "" : count >= t.pieces ? " is-on" : " is-off";
+    const state = lit === null ? "" : lit >= t.pieces ? " is-on" : " is-off";
     return `<div class="fu-set-tier${state}"><span class="fu-set-badge">${t.pieces}-Piece</span><div class="fu-set-text">${t.html}</div></div>`;
   }).join("");
   const intro = parsed.intro ? `<div class="fu-set-intro">${parsed.intro}</div>` : "";

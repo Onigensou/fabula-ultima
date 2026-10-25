@@ -122,6 +122,14 @@ if (!document.getElementById("fu-effect-preview-css-v2")) {
       ev.preventDefault(); ev.stopPropagation();
       const uuid = a.dataset.docUuid || a.dataset.uuid;
       if (!uuid) return;
+      // Items and skills open the in-game Item Window (linked text); a GM can
+      // Alt+click for the sheet. Everything else keeps the old behaviour.
+      const LT = globalThis.FULinkedText;
+      if (LT?.openItem && !(ev.altKey && game.user?.isGM)) {
+        let doc = null;
+        try { doc = fromUuidSync(uuid); } catch { doc = null; }
+        if (doc?.documentName === "Item") { LT.openItem(doc, { x: ev.clientX, y: ev.clientY }); return; }
+      }
       try {
         if (globalThis.Hotbar?.toggleDocumentSheet) {
           await Hotbar.toggleDocumentSheet(uuid);

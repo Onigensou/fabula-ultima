@@ -1,26 +1,32 @@
 // scripts/linked-text/lt-card.js
-// The two views every linked term opens, on every screen:
-//   peek  — hover a link (mouse) for a short summary. Never takes the pointer.
-//   panel — click a link for the full card. Links inside it open in place, a
-//           trail at the top steps back, clicking the open link again closes it,
-//           and a faint chain icon posts the link to chat.
+// What a linked term opens, on every screen.
 //
-// The game is moving console-style: players never open Foundry item sheets, so
-// the panel IS the player-facing view of a skill or item. A GM can still Alt-
-// click a link to get Foundry's default behaviour (open the sheet).
+//   Items, skills, spells → the Item Window (lt-itemwindow.js): hover shows the
+//     full card following the pointer, click pins a window, Shift+click drops
+//     the link into the chat message being typed.
+//   Keywords, statuses, damage types, companions →
+//     peek  — hover for a short summary. Never takes the pointer.
+//     panel — click for the full card. Links inside it open in place, a trail at
+//             the top steps back, clicking the open link again closes it, and a
+//             faint chain icon posts the link to chat.
 //
-// Both views live on document.body so screens that rebuild their DOM on every
-// key (party menu) cannot wipe them mid-read.
+// Players never open Foundry sheets from links; a GM can Alt+click a link for
+// Foundry's default behaviour (open the sheet).
+//
+// Everything lives on document.body so screens that rebuild their DOM on every
+// key (party menu) cannot wipe it mid-read.
 
-import { resolveUuid, DAMAGE } from "./lt-terms.js";
+import { resolveUuid } from "./lt-terms.js";
 import { iconHTML, renderLinkedText, safeHtml } from "./lt-render.js";
-import { setBonusHTML } from "./lt-setbonus.js";
+import { subtitle, gridRows, descriptionOf, flavorOf, badgeHTML, priceHTML } from "./lt-itemcard.js";
+import {
+  isItemish, openItemWindow, showHoverCard, moveHoverCard, hideHoverCard, linkIntoChatInput,
+} from "./lt-itemwindow.js";
 
 const PEEK_ID = "fu-lt-peek";
 const PANEL_ID = "fu-lt-panel";
 const PEEK_DELAY_MS = 220;
 const PANEL_W = 320;
-const ZENIT_ICON = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/GP.png";
 
 let _peek = null;
 let _panel = null;
@@ -32,90 +38,14 @@ let _anchorRect = null;   // where the panel was opened, kept while drilling dow
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => (
   { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
 ));
-const cap = (s) => String(s ?? "").replace(/^\w/, (c) => c.toUpperCase());
 const plain = (html) => {
   const body = new DOMParser().parseFromString(String(html ?? ""), "text/html").body;
   body.querySelectorAll("p,li,div,br,tr").forEach((el) => el.after(" "));
   return (body.textContent ?? "").replace(/\s+/g, " ").trim();
 };
+const linkLabel = (a) => a.querySelector(".fu-lt-nm")?.textContent ?? a.textContent.trim();
 
-// ── What a term says ──────────────────────────────────────────────────────────
-
-const DAMAGE_DESC = "<p>Elemental damage. Each creature has an affinity to it: <strong>Vulnerable</strong> takes double, "
-  + "<strong>Resistant</strong> takes half, <strong>Immune</strong> takes none, and <strong>Absorb</strong> heals instead.</p>";
-
-function subtitle(term) {
-  const p = term.doc?.system?.props ?? {};
-  switch (term.kind) {
-    case "dmg": return "Damage type";
-    case "status": return "Status";
-    case "kw": return term.entry?.category === "equipment" ? "Equipment keyword" : "Keyword";
-    case "skill": case "spell": case "passive":
-      return [{ skill: "Skill", spell: "Spell", passive: "Passive" }[term.kind], p.class, p.cost].filter(Boolean).join(" · ");
-    case "item":
-      return [p.item_rarity, cap(p.item_type), p.category].filter(Boolean).join(" · ");
-    case "actor": return "Companion";
-    default: return "";
-  }
-}
-
-const check = (p) => (p.rolled_atr1 && p.rolled_atr2 ? `<strong>【${esc(p.rolled_atr1)} + ${esc(p.rolled_atr2)}】</strong>` : "");
-const dmgLink = (type) => {
-  const d = DAMAGE[String(type ?? "").toLowerCase()];
-  return d ? ` <span class="fu-lt-dmgtxt" style="--fu-lt-c:${d.color};--fu-lt-glow:${d.glow}"><i class="fa-solid ${d.fa} fu-lt-fa"></i>${esc(cap(type))}</span>` : "";
-};
-
-// Data grid rows, in reading order. Data first, then the effect, then flavor.
-function gridRows(term) {
-  const p = term.doc?.system?.props ?? {};
-  if (term.kind === "skill" || term.kind === "spell" || term.kind === "passive") {
-    const vs = { def: "Defense", mdef: "Magic Defense" }[p.defense_target_type];
-    return [
-      ["Cost", esc(p.cost)], ["Target", esc(p.skill_target)], ["Range", esc(p.skill_range)],
-      ["Duration", esc(p.duration)], ["Check", check(p)], ["vs", check(p) && vs ? vs : ""],
-    ];
-  }
-  if (term.kind === "item") {
-    if (p.item_type === "weapon") {
-      const acc = check(p) + (Number(p.check_bonus) ? ` +${Number(p.check_bonus)}` : "");
-      const dmg = `<strong>【HR + ${Number(p.damage_bonus) || 0}】</strong>${dmgLink(p.type_damage)}`;
-      return [["Accuracy", acc], ["Damage", dmg], ["Range", esc(p.weapon_range)], ["Hands", esc(p.hand_slots)]];
-    }
-    if (p.item_type === "armor" || p.item_type === "shield") {
-      const def = (Number(p.item_baseDef) || 0) + (Number(p.item_def_bonus) || 0);
-      const mdef = (Number(p.item_baseMdef) || 0) + (Number(p.item_mdef_bonus) || 0);
-      return [["DEF", def ? `+${def}` : ""], ["M.DEF", mdef ? `+${mdef}` : ""]];
-    }
-  }
-  return [];
-}
-
-function descriptionOf(term) {
-  if (term.kind === "dmg") return DAMAGE_DESC;
-  if (term.descHtml) return term.descHtml;
-  const p = term.doc?.system?.props ?? {};
-  return p.description || p.consumable_description || p.skill_description || "";
-}
-
-function flavorOf(term) {
-  const p = term.doc?.system?.props ?? {};
-  return p.flavor_text || p.consumable_flavor || "";
-}
-
-function badgeHTML(term) {
-  if (term.img) return `<img class="fu-ltc-badge" src="${esc(term.img)}" alt="">`;
-  const c = term.kind === "status" ? "#9b3a24" : term.color || "#7a4e20";
-  if (term.kind === "kw") return `<div class="fu-ltc-badge is-kw" aria-hidden="true"><i></i></div>`;
-  return `<div class="fu-ltc-badge" style="--fu-lt-c:${c}" aria-hidden="true"><i class="fa-solid ${esc(term.fa || "fa-link")}"></i></div>`;
-}
-
-function priceHTML(term) {
-  const cost = Number(term.doc?.system?.props?.item_cost);
-  if (term.kind !== "item" || !cost) return "";
-  return `<div class="fu-ltc-price" title="Value"><img src="${ZENIT_ICON}" alt="Zenit">${cost.toLocaleString()}</div>`;
-}
-
-// ── Panel ─────────────────────────────────────────────────────────────────────
+// ── Panel (keywords, statuses, damage types) ──────────────────────────────────
 
 function ensurePanel() {
   if (_panel?.isConnected) return _panel;
@@ -152,8 +82,6 @@ function drawPanel() {
     ? `<div class="fu-ltc-body">${renderLinkedText(safeHtml(desc))}</div>`
     : (term.missing ? `<div class="fu-ltc-body fu-ltc-muted">No details available.</div>` : "");
   const flavor = flavorOf(term);
-  // Set pieces: tier rows, lit by the owner's (or viewer's) equipped pieces.
-  const setHtml = term.kind === "item" && term.doc ? setBonusHTML(term.doc) : "";
 
   panel.innerHTML = `
     <div class="fu-ltc-top">${crumbs}
@@ -164,7 +92,6 @@ function drawPanel() {
       ${priceHTML(term)}
     </div>
     ${grid}${body}
-    ${setHtml ? `<div class="fu-ltc-label">Set bonus</div>${safeHtml(setHtml)}` : ""}
     ${flavor ? `<div class="fu-ltc-flavor">${safeHtml(flavor)}</div>` : ""}`;
   panel.hidden = false;
   placePanel(panel);
@@ -206,7 +133,7 @@ async function linkInChat() {
   await ChatMessage.create({ speaker: ChatMessage.getSpeaker(), content: `<p>@UUID[${top.uuid}]{${top.label}}</p>` });
 }
 
-// ── Peek ──────────────────────────────────────────────────────────────────────
+// ── Peek (keywords, statuses, damage types) ───────────────────────────────────
 
 function ensurePeek() {
   if (_peek?.isConnected) return _peek;
@@ -219,9 +146,7 @@ function ensurePeek() {
   return _peek;
 }
 
-function showPeek(a) {
-  const term = resolveUuid(a.dataset.uuid, a.querySelector(".fu-lt-nm")?.textContent ?? a.textContent);
-  if (!term) return;
+function showPeek(a, term) {
   const peek = ensurePeek();
   let text = plain(descriptionOf(term));
   if (text.length > 220) text = text.slice(0, 217).trimEnd() + "…";
@@ -241,6 +166,7 @@ export function hidePeek() {
   clearTimeout(_peekTimer);
   _peekFor = null;
   if (_peek) _peek.hidden = true;
+  hideHoverCard();
 }
 
 // ── Wiring ────────────────────────────────────────────────────────────────────
@@ -259,17 +185,20 @@ function onClick(ev) {
   if (ev.altKey && game.user?.isGM) return; // GM: Foundry's default, open the sheet
   ev.preventDefault();
   ev.stopImmediatePropagation();
-  openCard({
-    uuid: a.dataset.uuid,
-    label: a.querySelector(".fu-lt-nm")?.textContent ?? a.textContent.trim(),
-    rect: a.getBoundingClientRect(),
-    nested: !!panel?.contains(a),
-  });
+  const uuid = a.dataset.uuid;
+  const label = linkLabel(a);
+  const term = resolveUuid(uuid, label);
+  if (isItemish(term)) {
+    if (ev.shiftKey && linkIntoChatInput(term.uuid ?? uuid, term.name)) return;
+    openItemWindow(term.uuid ?? uuid, { x: ev.clientX, y: ev.clientY });
+    return;
+  }
+  openCard({ uuid, label, rect: a.getBoundingClientRect(), nested: !!panel?.contains(a) });
 }
 
 function onPointerDown(ev) {
   if (!_panel || _panel.hidden) return;
-  if (_panel.contains(ev.target) || ev.target.closest?.(LINK)) return;
+  if (_panel.contains(ev.target) || ev.target.closest?.(LINK) || ev.target.closest?.(".fu-iw")) return;
   closeCard();
 }
 
@@ -279,7 +208,14 @@ function onOver(ev) {
   if (!a || a === _peekFor) return;
   _peekFor = a;
   clearTimeout(_peekTimer);
-  _peekTimer = setTimeout(() => { if (_peekFor === a && a.isConnected) showPeek(a); }, PEEK_DELAY_MS);
+  const term = resolveUuid(a.dataset.uuid, linkLabel(a));
+  if (!term) return;
+  if (isItemish(term)) { showHoverCard(term.uuid, ev.clientX, ev.clientY); return; }
+  _peekTimer = setTimeout(() => { if (_peekFor === a && a.isConnected) showPeek(a, term); }, PEEK_DELAY_MS);
+}
+
+function onMove(ev) {
+  if (_peekFor) moveHoverCard(ev.clientX, ev.clientY);
 }
 
 function onOut(ev) {
@@ -306,6 +242,7 @@ export function initCards() {
   document.addEventListener("click", onClick, true);
   document.addEventListener("pointerdown", onPointerDown, true);
   document.addEventListener("pointerover", onOver, true);
+  document.addEventListener("pointermove", onMove, { passive: true, capture: true });
   document.addEventListener("pointerout", onOut, true);
   document.addEventListener("wheel", hidePeek, { passive: true, capture: true });
 }

@@ -10,17 +10,22 @@
 //   decorateLinks(root)    → count    restyle links in rendered DOM
 //   resolveUuid(uuid, label) / resolveTag(tag, ref, label) → term | null
 //   openCard({ uuid, label, rect }) / closeCard()
+//   openItem(uuidOrItem, { x, y, compare }) / closeAllItemWindows()   in-game Item Window
+//   itemCardHTML(term, opts)                                           the shared item card
 
 import { renderLinkedText, plainLinkedText, decorateLinks, registerEnricher, linkHTML, safeHtml } from "./lt-render.js";
 import { resolveUuid, resolveTag } from "./lt-terms.js";
 import { initCards, openCard, closeCard } from "./lt-card.js";
 import { convertHtml, convertWorld, restoreBackup, runLinkedTextLint, minimalLink, splitSetBonus } from "./lt-convert.js";
 import { setBonusHTML, parseSetTiers } from "./lt-setbonus.js";
+import { cardHTML } from "./lt-itemcard.js";
+import { openItemWindow, closeAllItemWindows, refreshItemWindows, installSheetGuard, postItemLink } from "./lt-itemwindow.js";
 
 const api = Object.freeze({
   renderLinkedText, plainLinkedText, decorateLinks, linkHTML, safeHtml,
   resolveUuid, resolveTag, openCard, closeCard,
   setBonusHTML, parseSetTiers,
+  openItem: openItemWindow, closeAllItemWindows, itemCardHTML: cardHTML, postItemLink,
   // Storage format + cleanup (GM tools):
   convertHtml, convertWorld, restoreBackup, minimalLink, splitSetBonus,
 });
@@ -30,6 +35,8 @@ Hooks.once("init", () => registerEnricher());
 
 Hooks.once("ready", () => {
   initCards();
+  // Players get the in-game Item Window wherever an item sheet would open.
+  installSheetGuard();
   globalThis.FUCompanion ??= {};
   globalThis.FUCompanion.api ??= {};
   globalThis.FUCompanion.api.linkedText = api;
@@ -47,3 +54,8 @@ Hooks.on("renderItemSheet", decorate);
 Hooks.on("renderActorSheet", decorate);
 Hooks.on("renderJournalPageSheet", decorate);
 Hooks.on("renderChatMessage", (_msg, html) => decorate(null, html));
+
+// Open Item Windows follow item and equipment changes (one redraw per burst).
+let _refreshT = null;
+const refreshSoon = () => { clearTimeout(_refreshT); _refreshT = setTimeout(refreshItemWindows, 120); };
+for (const hook of ["updateItem", "createItem", "deleteItem"]) Hooks.on(hook, refreshSoon);

@@ -666,9 +666,14 @@ function details({ banner }) {
     </div>`, { width: 940 });
 
   body.querySelectorAll("[data-uuid]").forEach((n) =>
-    n.addEventListener("click", async () => {
+    n.addEventListener("click", async (ev) => {
       sfx.select();
       const doc = await fromUuid(n.dataset.uuid).catch(() => null);
+      // In-game Item Window (linked text); GM Alt+click keeps the sheet.
+      if (doc?.documentName === "Item" && globalThis.FULinkedText?.openItem && !(ev.altKey && game.user?.isGM)) {
+        globalThis.FULinkedText.openItem(doc, { x: ev.clientX, y: ev.clientY });
+        return;
+      }
       doc?.sheet?.render(true);
     })
   );

@@ -63,6 +63,12 @@ function applyTerm(a, term) {
   a.innerHTML = innerHTML(term);
 }
 
+/** The plain stored link for a uuid + label (renderLinkedText dresses it). */
+export function minimalLinkHTML(uuid, label) {
+  const parts = String(uuid).split(".");
+  return `<a class="content-link" data-uuid="${esc(uuid)}" data-id="${esc(parts[parts.length - 1])}">${esc(label)}</a>`;
+}
+
 /** Full link markup for a resolved term. */
 export function linkHTML(term) {
   const a = document.createElement("a");

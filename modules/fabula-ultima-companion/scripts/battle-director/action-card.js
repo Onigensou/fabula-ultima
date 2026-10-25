@@ -10130,6 +10130,10 @@ export async function postActionCard({ director, kind, payload }) {
         (async () => {
           try {
             const doc = await fromUuid(uuid);
+            // Players rearrange gear in the party menu's Equip view, not the sheet.
+            const actor = doc?.documentName === "Actor" ? doc : doc?.actor;
+            const partyMenu = globalThis.FUCompanion?.api?.partyMenu;
+            if (!game.user?.isGM && actor && partyMenu?.open) { await partyMenu.open({ actorId: actor.id, view: "equip" }); return; }
             const sheet = doc?.sheet ?? doc?.actor?.sheet;
             if (sheet?.render) sheet.render(true);
             else ui.notifications?.warn("Could not open the character sheet.");
@@ -11532,6 +11536,10 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
           (async () => {
             try {
               const doc = await fromUuid(uuid);
+              // Players rearrange gear in the party menu's Equip view, not the sheet.
+              const actor = doc?.documentName === "Actor" ? doc : doc?.actor;
+              const partyMenu = globalThis.FUCompanion?.api?.partyMenu;
+              if (!game.user?.isGM && actor && partyMenu?.open) { await partyMenu.open({ actorId: actor.id, view: "equip" }); return; }
               const sheet = doc?.sheet ?? doc?.actor?.sheet;
               if (sheet?.render) sheet.render(true);
               else ui.notifications?.warn("Could not open the character sheet.");
