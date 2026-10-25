@@ -359,3 +359,9 @@ export function searchTerms(query, { limit = 8, prefixOnly = false, categories =
 }
 
 export const KEYWORD_REGISTRY = _byUuid;
+
+// Every entry, variants included (the elemental Shields share one uuid, so
+// KEYWORD_REGISTRY alone cannot list them). Read by the linked-text system.
+export function allTerms() {
+  return _allEntries.slice();
+}

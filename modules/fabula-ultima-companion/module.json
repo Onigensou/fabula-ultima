@@ -396,6 +396,7 @@
     "scripts/shared/exp-core.js",
     "scripts/shared/code-backed-content.js",
     "scripts/shared/identifier-registry.js",
+    "scripts/linked-text/lt-boot.js",
     "scripts/shop-system/shopOpen-bootstrap.js",
     "scripts/shop-system/shopPurchase-handler.js",
     "scripts/shop-system/shopSound-manager.js",
@@ -513,7 +514,8 @@
   ],
   "styles": [
     "styles/style.css",
-    "styles/shop-content-links.css"
+    "styles/shop-content-links.css",
+    "styles/linked-text.css"
   ],
   "packs": [],
   "manifest": "https://raw.githubusercontent.com/Onigensou/FabulaUltimaCompanion/refs/heads/main/module.json",

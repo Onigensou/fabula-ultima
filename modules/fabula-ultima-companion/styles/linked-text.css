@@ -1,0 +1,140 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   linked-text.css — one look for every linked term (scripts/linked-text/).
+   Links:  a.content-link.fu-lt.fu-lt--<kind>
+   Cards:  #fu-lt-peek (hover) and #fu-lt-panel (click), parchment skin of the
+           Save/Load, Healing and Shop screens.
+   Icon sizes are set on the icon classes themselves, never inherited from a
+   container, so a link looks the same wherever it is placed.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Links ─────────────────────────────────────────────────────────────────── */
+a.content-link.fu-lt {
+  background: none !important;
+  border: none !important;
+  border-radius: 3px;
+  padding: 0 1px !important;
+  margin: 0;
+  display: inline !important;
+  position: static !important;
+  top: auto !important;
+  white-space: normal !important;
+  word-break: normal;
+  color: inherit;
+  font-weight: 700;
+  text-decoration: none !important;
+  text-shadow: none;
+  cursor: pointer;
+}
+a.content-link.fu-lt:hover { background: rgba(201, 164, 74, .22) !important; text-shadow: none; }
+a.content-link.fu-lt::before,
+.fu-preview-desc a.content-link.fu-lt::before,
+.fu-skill-desc a.content-link.fu-lt::before { content: none !important; display: none !important; }
+
+a.content-link.fu-lt img.fu-lt-img {
+  display: inline-block; width: 1.2em; height: 1.2em; margin: 0 .22em 0 0; padding: 0;
+  vertical-align: -.25em; border: 0; border-radius: 3px; object-fit: cover;
+  box-shadow: 0 0 0 1px rgba(58, 30, 6, .35);
+}
+a.content-link.fu-lt i.fu-lt-fa {
+  display: inline-block; width: 1.05em; margin: 0 .2em 0 0; text-align: center;
+  font-size: .92em; color: inherit;
+}
+a.content-link.fu-lt .fu-lt-dia {
+  display: inline-block; width: .55em; height: .55em; margin: 0 .38em 0 .05em;
+  transform: rotate(45deg); background: currentColor; vertical-align: .1em;
+}
+
+/* Damage types: element colour and glow, no underline. */
+a.content-link.fu-lt--dmg { color: var(--fu-lt-c, inherit); text-shadow: 0 0 4px var(--fu-lt-glow, transparent); }
+a.content-link.fu-lt--dmg i.fu-lt-fa { color: var(--fu-lt-c, inherit); }
+
+/* Statuses and keywords: thin solid underline under the name only. */
+a.content-link.fu-lt--status { color: inherit; }
+a.content-link.fu-lt--kw { color: #2c6672; }
+a.content-link.fu-lt--status .fu-lt-nm,
+a.content-link.fu-lt--kw .fu-lt-nm {
+  text-decoration: underline solid currentColor; text-decoration-thickness: 1px; text-underline-offset: 3px;
+}
+a.content-link.fu-lt--status i.fu-lt-fa { color: #9b3a24; }
+
+/* Skills, spells, items: 【icon Name】 in element/rarity colour, no underline. */
+a.content-link.fu-lt--skill,
+a.content-link.fu-lt--spell,
+a.content-link.fu-lt--passive,
+a.content-link.fu-lt--item { color: var(--fu-lt-c, #7a4e20); }
+a.content-link.fu-lt .fu-lt-br { color: #c9a44a; font-weight: 500; }
+
+a.content-link.fu-lt--missing { cursor: default; opacity: .85; }
+.fu-lt-unknown { color: #a3321c; text-decoration: underline wavy #a3321c; text-underline-offset: 3px; }
+
+/* Damage-type text inside a card's data grid (not a link). */
+.fu-lt-dmgtxt { color: var(--fu-lt-c); text-shadow: 0 0 4px var(--fu-lt-glow); font-weight: 700; }
+.fu-lt-dmgtxt i.fu-lt-fa { width: 1.05em; margin-right: .2em; text-align: center; font-size: .92em; }
+
+/* ── Cards (peek + panel) ──────────────────────────────────────────────────── */
+.fu-ltc {
+  position: fixed;
+  z-index: 10070;
+  box-sizing: border-box;
+  color: #3a1e06;
+  font: 14px/1.5 Signika, "Segoe UI", system-ui, sans-serif;
+  background: linear-gradient(180deg, #f8f0d4, #ede0b0);
+  border: 2px solid #c9a44a;
+  border-radius: 12px;
+  box-shadow: 0 0 0 2px #7a4e20, 0 0 0 4px #b8865a, 0 14px 30px rgba(0, 0, 0, .45);
+}
+.fu-ltc[hidden] { display: none !important; }
+
+#fu-lt-panel { padding: 12px 16px 14px; display: grid; gap: 10px; max-height: calc(100vh - 24px); overflow-y: auto; }
+.fu-ltc-top { display: flex; align-items: flex-start; gap: 8px; min-height: 22px; }
+.fu-ltc-top > :first-child { flex: 1; min-width: 0; }
+.fu-ltc-crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; font-size: 13px; }
+.fu-ltc-crumbs .sep { color: #c9a44a; }
+.fu-ltc-crumb {
+  font: inherit; background: none; border: 0; padding: 1px 4px; margin: 0; width: auto; height: auto; line-height: inherit;
+  color: #6b4a26; cursor: pointer; border-radius: 4px;
+}
+.fu-ltc-crumb:hover { background: rgba(58, 30, 6, .08); }
+.fu-ltc-crumb[aria-current="page"] { color: #3a1e06; font-weight: 600; cursor: default; }
+.fu-ltc-chat {
+  flex: none; width: 26px; height: 26px; margin: 0; padding: 0; line-height: 1; display: grid; place-items: center;
+  background: none; border: 0; border-radius: 6px; color: #6b4a26; opacity: .55; cursor: pointer; font-size: 13px;
+}
+.fu-ltc-chat:hover:not(:disabled) { opacity: 1; background: rgba(58, 30, 6, .08); }
+.fu-ltc-chat:disabled { opacity: .2; cursor: default; }
+
+.fu-ltc-head { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 12px; align-items: center; }
+.fu-ltc-badge {
+  width: 44px; height: 44px; box-sizing: border-box; border-radius: 9px; border: 2px solid #c9a44a;
+  display: grid; place-items: center; color: #fff; font-size: 18px; object-fit: cover;
+  background: var(--fu-lt-c, #7a4e20); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .2);
+}
+img.fu-ltc-badge { background: #2b1d10; padding: 0; }
+.fu-ltc-badge.is-kw { background: #2c6672; }
+.fu-ltc-badge.is-kw i { width: 14px; height: 14px; background: #fff; transform: rotate(45deg); }
+.fu-ltc-name { font-size: 18px; font-weight: 600; line-height: 1.2; }
+.fu-ltc-sub { font-size: 12.5px; color: #6b4a26; }
+.fu-ltc-price { align-self: start; display: inline-flex; align-items: center; gap: 5px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.fu-ltc-price img { width: 20px; height: 20px; border: 0; object-fit: contain; }
+
+.fu-ltc-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px 14px; font-size: 13px; }
+.fu-ltc-grid span { display: block; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: #6b4a26; }
+.fu-ltc-body p { margin: 0 0 6px; }
+.fu-ltc-body p:last-child { margin-bottom: 0; }
+.fu-ltc-body ul { margin: 0; padding-left: 18px; }
+.fu-ltc-body li { margin: 0 0 4px; }
+.fu-ltc-body li p { margin: 0; }
+.fu-ltc-body img:not(.fu-lt-img) { max-width: 100%; height: auto; border: 0; vertical-align: middle; }
+.fu-ltc-body table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.fu-ltc-muted { color: #6b4a26; font-style: italic; }
+.fu-ltc-flavor { font-style: italic; color: #6b4a26; border-top: 1px solid rgba(122, 78, 32, .22); padding-top: 8px; }
+.fu-ltc-flavor p { margin: 0; }
+
+.fu-ltc-peek { width: min(300px, calc(100vw - 24px)); padding: 10px 12px; display: grid; gap: 6px; font-size: 13.5px; pointer-events: none; z-index: 10080; }
+.fu-ltc-phead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; }
+.fu-ltc-phead b { font-size: 15px; }
+.fu-ltc-phead img.fu-lt-img { width: 1.2em; height: 1.2em; border: 0; border-radius: 3px; vertical-align: -.25em; object-fit: cover; }
+.fu-ltc-phead i.fu-lt-fa { width: 1.05em; text-align: center; }
+.fu-ltc-phead .fu-lt-dia { display: inline-block; width: .55em; height: .55em; transform: rotate(45deg); background: #2c6672; }
+.fu-ltc-pill { font-size: 12px; border-radius: 999px; padding: 1px 8px; background: rgba(58, 30, 6, .08); color: #6b4a26; }
+.fu-ltc-pfoot { font-size: 11.5px; color: #6b4a26; }
