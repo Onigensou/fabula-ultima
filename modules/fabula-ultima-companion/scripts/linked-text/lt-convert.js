@@ -27,11 +27,17 @@ import { allTerms, lookupTerm } from "../battle-director/keyword-registry.js";
 
 const TAG_RE = /@(Dmg|Status|Kw|Skill|Spell|Item)\[([^\]]+)\](?:\{([^}]*)\})?/g;
 const UUID_RE = /@UUID\[([^\]]+)\](?:\{([^}]*)\})?/g;
+// Rich text = contains at least one real HTML tag.
+export const REAL_HTML = /<\/?(p|ul|ol|li|a|strong|em|b|i|u|s|span|div|br|hr|h[1-6]|table|tbody|thead|tr|td|th|details|summary|blockquote|img|section|figure|code|pre|sup|sub)\b[^>]*>/i;
 const WRAP = new Set(["SPAN", "STRONG", "B", "U"]);
 const OPEN_BR = /【[\s ]*(?:\p{Extended_Pictographic}️?)?[\s ]*$/u;
 const CLOSE_BR = /^[\s ]*】/;
 const LONE_EMOJI = /\p{Extended_Pictographic}️?[\s ]*$/u;
 const DMG_WORD = /\b(physical|air|bolt|dark|earth|fire|ice|light|poison)(\s+damage)\b/gi;
+// Emoji (and the variation selector / spaces after them) at the start of a label.
+// Written with escapes on purpose: a pattern pasted in through a shell lost its
+// backslashes and stripped "Ph" off "Physical" in the 2026-10-25 cleanup.
+const LEADING_EMOJI = /^(?:\p{Extended_Pictographic}|️|\s)+/u;
 // A status after one of these verbs is unambiguous ("suffers Weak", "immune to Slow").
 const STATUS_VERB = "(?:suffers?|suffering|inflicts?|inflicted with|inflicting|immune to|immunity to|cures?|removes?|recovers? from|afflicted with|is|are|becomes?)";
 
@@ -217,8 +223,12 @@ function splitDamageWords(root, changes) {
  */
 export function convertHtml(input, { unlinkDangling = false } = {}) {
   const src = String(input ?? "");
+  // Plain-text fields are never touched: CSB placeholders like "<Set Name>" and
+  // notes like "Bane Oils: <Species>" look like tags and would be parsed into
+  // elements. Only text that already holds real HTML is rich text.
+  if (!REAL_HTML.test(src)) return { html: src, changed: false, codes: [], dangling: [], review: [], repointed: [] };
   // Old grant-line labels carried their emoji inside the link ("📜Defensive Mastery").
-  const cleanLabel = (l) => String(l ?? "").replace(/^[p{Extended_Pictographic}️s]+/u, "").trim();
+  const cleanLabel = (l) => String(l ?? "").replace(LEADING_EMOJI, "").trim();
   // A link to a deleted document: left alone, or (once a person approved it)
   // reduced to its label in bold so the text still reads.
   const unlinked = (label) => { changes.add("UNLINKED"); return `<strong>${esc(cleanLabel(label))}</strong>`; };
@@ -248,7 +258,7 @@ export function convertHtml(input, { unlinkDangling = false } = {}) {
     return minimalLink(t.uuid, label || t.name);
   });
 
-  const isHtml = /<[a-z]/i.test(s);
+  const isHtml = REAL_HTML.test(s);
   if (!isHtml && !changes.size) return { html: src, changed: false, codes: [], dangling, review, repointed };
 
   const tpl = document.createElement("template");
@@ -422,7 +432,7 @@ export function splitSetBonus(html) {
 
 /** What the Item Set rules change on one item's props: { field: newValue }, plus codes. */
 function setSectionOps(item) {
-  const p = item.system?.props ?? {};
+  const p = item._source?.system?.props ?? item.system?.props ?? {};
   const ops = {};
   const codes = {};
   const isDef = p.set_bonus_table && Object.keys(p.set_bonus_table).length;
@@ -456,7 +466,8 @@ function setSectionOps(item) {
 
 // ── World runner ──────────────────────────────────────────────────────────────
 
-const SKIP_KEY = /(^|_)script$|^script|macro|_logic_|custom_logic|_js$|^code$|formula|target_filter|^img$|^uuid$|^id$/i;
+// Plain-text keys are skipped outright as well (set_name holds the CSB "<Set Name>" sentinel).
+const SKIP_KEY = /(^|_)script$|^script|macro|_logic_|custom_logic|_js$|^code$|formula|target_filter|^img$|^uuid$|^id$|^set_name$|availability_reason|implementation_note/i;
 
 function* stringFields(obj, path = "") {
   if (typeof obj === "string") { yield [path, obj]; return; }
@@ -481,8 +492,10 @@ function itemChanges(item, opts) {
   const old = {};
   const rows = [];
   const set = setSectionOps(item);
+  // Stored values, not CSB's prepared copy (item containers are re-derived on
+  // prepare and can show older text than what is saved).
   // set_description may not exist yet on older pieces: visit it anyway.
-  const fields = [...stringFields(item.system?.props ?? {})];
+  const fields = [...stringFields(item._source?.system?.props ?? item.system?.props ?? {})];
   for (const key of Object.keys(set.ops)) if (!fields.some(([p]) => p === key)) fields.push([key, ""]);
   for (const [path, orig] of fields) {
     const setCode = set.codes[path];
