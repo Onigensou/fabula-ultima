@@ -2,7 +2,7 @@
   "id": "fabula-ultima-companion",
   "title": "FabulaUltimaCompanion",
   "description": "Adds custom hooks and cool functionality.",
-  "version": "1.0.459",
+  "version": "1.0.460",
   "compatibility": {
     "minimum": "12",
     "verified": "12"
