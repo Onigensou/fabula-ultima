@@ -25,6 +25,15 @@
 
 import { log, warn } from "./logger.js";
 import { searchTerms, CATEGORY_META } from "./keyword-registry.js";
+import { searchItems } from "../linked-text/lt-terms.js";
+
+// Badges for skills/spells/items offered after typing "@" (linked text).
+const DOC_META = {
+  skill:   { label: "Skill",   bg: "rgba(210,88,26,.16)",  fg: "#8a3510" },
+  spell:   { label: "Spell",   bg: "rgba(117,82,207,.16)", fg: "#4b2f99" },
+  passive: { label: "Passive", bg: "rgba(70,92,60,.18)",   fg: "#33502f" },
+  item:    { label: "Item",    bg: "rgba(45,90,163,.15)",  fg: "#1f4f8f" },
+};
 
 const DROPDOWN_CLASS = "fu-kw-suggest-dropdown";
 const STYLE_ID = "fu-kw-suggest-style";
@@ -84,6 +93,8 @@ function ensureStyles() {
       font-weight: 800; font-size: 13px; flex: 1;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
+    .${DROPDOWN_CLASS} img.fu-kw-suggest-icon.is-doc { object-fit: cover; border-radius: 3px; }
+    .${DROPDOWN_CLASS} .fu-kw-suggest-sub { font-weight: 400; font-size: 11px; opacity: .6; margin-left: 4px; }
     .${DROPDOWN_CLASS} .fu-kw-suggest-kind {
       font-size: 9px; font-weight: 800; text-transform: uppercase;
       letter-spacing: .03em; padding: 1px 6px; border-radius: 8px; flex-shrink: 0;
@@ -105,11 +116,12 @@ function ensureStyles() {
 //   - `entry.insert` set (action types): literal dev-syntax text (e.g.
 //     "【⚔️Attack】"), inserted verbatim — these aren't content-links.
 //   - otherwise: a content-link to the term's document. The document type is
-//     derived from the key prefix ("Item." → Item, else JournalEntry), so both
-//     damage-type Items and keyword/status JournalEntries link correctly.
-// Primary path parses the same enriched anchor Foundry round-trips (renders as a
-// styled link immediately); fallback inserts `@UUID[…]{Label}` text (always
-// persists; enriches on display).
+//     derived from the key prefix ("Item." → Item, else JournalEntry), so
+//     damage-type Items, keyword/status JournalEntries and (after "@") skills,
+//     spells and items all link correctly.
+// This minimal anchor IS the stored format for linked text: no styling is saved,
+// scripts/linked-text draws the icon and look at display time, and screens that
+// flatten text to plain still read the label. Fallback inserts `@UUID[…]{Label}`.
 function insertTerm(view, from, to, entry) {
   if (entry.insert) {
     view.dispatch(view.state.tr.insertText(entry.insert + " ", from, to).scrollIntoView());
@@ -125,13 +137,15 @@ function insertTerm(view, from, to, entry) {
     a.setAttribute("data-uuid", entry.key);
     a.setAttribute("data-id", id);
     a.setAttribute("data-type", docType);
-    a.setAttribute("data-tooltip", docType === "Item" ? "Item" : "Journal Entry");
     a.textContent = entry.label;
     div.appendChild(a);
-    div.appendChild(document.createTextNode(" "));
     const parser = ProseMirror.DOMParser.fromSchema(view.state.schema);
     const slice = parser.parseSlice(div);
-    view.dispatch(view.state.tr.replaceRange(from, to, slice).scrollIntoView());
+    // The trailing space goes in as text after the link: a whitespace-only
+    // text node in the parsed slice is collapsed away by the parser.
+    const tr = view.state.tr.replaceRange(from, to, slice);
+    tr.insertText(" ");
+    view.dispatch(tr.scrollIntoView());
   } catch (e) {
     warn("keyword-suggest: slice insert failed — falling back to @UUID text", e);
     const text = `@UUID[${entry.key}]{${entry.label}} `;
@@ -170,6 +184,25 @@ class SuggestView {
     const $from = sel.$from;
     if (!$from.parent || !$from.parent.isTextblock) return this.hide();
     const before = $from.parent.textBetween(0, $from.parentOffset, "\n", " ");
+
+    // "@" + name → skills, spells and items as well as registry terms. Explicit
+    // trigger, so substring matches are fine and prose never sets it off.
+    const at = before.match(/@([^@\n]{2,30})$/);
+    if (at) {
+      const q = at[1];
+      const terms = searchTerms(q, { prefixOnly: true, limit: 3 });
+      const docs = searchItems(q, 8 - terms.length).map((d) => ({
+        key: d.uuid, label: d.name, icon: d.img, fa: d.fa, sub: d.folder, docKind: d.kind,
+      }));
+      const results = [...terms, ...docs];
+      if (!results.length) return this.hide();
+      this.rows = results;
+      this.index = 0;
+      this.engaged = false;
+      this.range = { from: sel.from - at[0].length, to: sel.from };
+      return this.show(sel.from);
+    }
+
     // Trailing run of 1+ words that ENDS on a letter (cursor mid/end of a word).
     // Requiring a letter at the end means a completed word followed by a space —
     // e.g. the just-accepted "Unleash " — no longer matches, so accepting closes
@@ -242,13 +275,17 @@ class SuggestView {
         const icon = r.emoji
           ? `<span class="fu-kw-suggest-icon">${esc(r.emoji)}</span>`
           : iconSafe
-            ? `<img class="fu-kw-suggest-icon" src="${esc(iconSafe)}" alt="">`
-            : `<span class="fu-kw-suggest-icon"></span>`;
-        const meta = CATEGORY_META[r.category] || CATEGORY_META.keyword;
+            ? `<img class="fu-kw-suggest-icon${r.docKind ? " is-doc" : ""}" src="${esc(iconSafe)}" alt="">`
+            : r.fa
+              ? `<span class="fu-kw-suggest-icon"><i class="fa-solid ${esc(r.fa)}"></i></span>`
+              : `<span class="fu-kw-suggest-icon"></span>`;
+        const meta = (r.docKind && DOC_META[r.docKind]) || CATEGORY_META[r.category] || CATEGORY_META.keyword;
         const badge = `<span class="fu-kw-suggest-kind" style="background:${meta.bg};color:${meta.fg}">${esc(meta.label)}</span>`;
         const active = this.engaged && i === this.index ? "active" : "";
+        // Folder name tells apart duplicates (two "Blazing Impact" items exist).
+        const sub = r.sub ? `<span class="fu-kw-suggest-sub">${esc(r.sub)}</span>` : "";
         return `<div class="fu-kw-suggest-row ${active}" data-fu-kw-idx="${i}">`
-          + `${icon}<span class="fu-kw-suggest-name">${esc(r.label)}</span>${badge}</div>`;
+          + `${icon}<span class="fu-kw-suggest-name">${esc(r.label)}${sub}</span>${badge}</div>`;
       }).join("");
   }
 

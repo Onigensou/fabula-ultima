@@ -118,6 +118,37 @@ function syncDoc(uuid) {
   try { return fromUuidSync(uuid) ?? null; } catch { return null; }
 }
 
+// ── Search (editor suggestion box) ────────────────────────────────────────────
+
+/**
+ * Skills, spells and items whose name matches `query`, for the `@` trigger in
+ * the editor suggestion box. Prefix matches rank first, then substrings.
+ * Templates, effect containers and the damage-type items (the registry already
+ * offers those as damage types) are left out.
+ * @returns {{ uuid, name, kind, img, fa, folder }[]}
+ */
+export function searchItems(query, limit = 8) {
+  const q = String(query ?? "").trim().toLowerCase();
+  if (q.length < 2) return [];
+  const scored = [];
+  for (const doc of game.items ?? []) {
+    if (doc.type !== "equippableItem") continue;
+    // CSB keeps internal copies of embedded items in its own folder.
+    if (/^CSB - Embedded Items/i.test(doc.folder?.name ?? "")) continue;
+    const name = String(doc.name ?? "");
+    const n = name.toLowerCase();
+    if (DAMAGE[n]) continue;
+    const score = n === q ? 100 : n.startsWith(q) ? 80 : n.includes(q) ? 40 : 0;
+    if (!score) continue;
+    scored.push({ doc, score });
+  }
+  scored.sort((a, b) => b.score - a.score || a.doc.name.length - b.doc.name.length || a.doc.name.localeCompare(b.doc.name));
+  return scored.slice(0, limit).map(({ doc }) => {
+    const t = fromItem(doc, "");
+    return { uuid: doc.uuid, name: doc.name, kind: t.kind, img: t.img, fa: t.fa, folder: doc.folder?.name ?? "" };
+  });
+}
+
 // ── Public resolvers ──────────────────────────────────────────────────────────
 
 /**
