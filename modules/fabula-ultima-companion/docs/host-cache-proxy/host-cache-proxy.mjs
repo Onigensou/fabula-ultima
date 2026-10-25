@@ -34,7 +34,8 @@ const CACHEABLE = /\.(?:js|mjs|css|png|jpe?g|webp|gif|svg|avif|webm|mp4|m4v|ogg|
 const agent = new http.Agent({ keepAlive: true, maxSockets: 64 });
 
 export function cacheHeaderFor(method, url, status) {
-  if (method !== "GET" || status < 200 || status >= 300) return null;
+  // HEAD answers the same headers as GET, so `curl -I` shows what browsers get
+  if ((method !== "GET" && method !== "HEAD") || status < 200 || status >= 300) return null;
   const path = url.split("?")[0];
   return CACHEABLE.test(decodeURIComponent(path)) ? `public, max-age=${MAX_AGE}` : null;
 }
