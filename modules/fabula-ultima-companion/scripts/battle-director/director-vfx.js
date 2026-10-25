@@ -13,6 +13,7 @@
 import { log, warn } from "./logger.js";
 import { broadcastSfx, preloadSfx, collapseSidebarAllClients } from "./director-sfx.js";
 import { INVOKE_SFX_URLS } from "./invoke/invoke-hud.js";
+import { PARTY_ENTRANCE_SFX_URLS } from "./party-entrance-styles.js";
 import { emitDamageNumber } from "./damage-numbers/director-damage-numbers.js";
 import { emitImpactFx } from "./damage-numbers/director-impact-fx.js";
 import { emitHurtReaction } from "./damage-numbers/director-hurt-reaction.js";
@@ -662,6 +663,7 @@ export async function preloadDirectorSfx() {
     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/super_armor.wav",    // Domination burst cue
     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Cursor_Decide1.wav", // Dominance gain cue (crest gleam)
     ...INVOKE_SFX_URLS, // invoke-hud trait/bond/die/cancel/confirm cues
+    ...PARTY_ENTRANCE_SFX_URLS, // bespoke party entrances (Hina / Keren / Blanche / Zarg)
   ];
   try { await preloadSfx(urls); }
   catch (e) { warn("preloadDirectorSfx threw", e); }

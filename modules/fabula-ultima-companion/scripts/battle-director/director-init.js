@@ -45,6 +45,13 @@ import {
 import { pWait, shouldRender, hasOtherViewers } from "./presentation-clock.js";
 import { GATHER_STYLES } from "./gather-styles.js";
 import { playGatherLocal } from "./gather-entrance-fx.js";
+import {
+  PARTY_ENTRANCE_STYLES,
+  partyEntranceStyleFromFlags,
+  rollPartyOutcome,
+  partyEntranceSpanMs,
+} from "./party-entrance-styles.js";
+import { playPartyEntranceLocal, preparePartyEntrance } from "./party-entrance-fx.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { resolveGuestRoster, ensureGuestPassive } from "../guest-roster/guest-roster-core.js";
 
@@ -232,6 +239,16 @@ function buildPreloadUrls({ tokens, payload }) {
   // the linked world actor with its items collection.
   const actorDocs = tokens.map((t) => t.actor).filter(Boolean);
   for (const u of extractAnimationUrlsFromActors(actorDocs)) urls.add(u);
+
+  // A party member's bespoke entrance draws extra art of theirs (base sprite,
+  // walk / hurt / KO / crisis clips): warm those too.
+  for (const actor of actorDocs) {
+    const style = partyEntranceStyleFromFlags(actor.flags);
+    for (const prop of (style ? PARTY_ENTRANCE_STYLES[style].clips ?? [] : [])) {
+      const u = String(actor.system?.props?.[prop] ?? "").trim();
+      if (u) urls.add(u);
+    }
+  }
 
   return Array.from(urls);
 }
@@ -836,7 +853,7 @@ export function initDirectorEntrance() {
 // the real tokens never flash in mid-run on any client. No-ops gracefully if
 // the tokens aren't on this client's active scene (e.g. a player who hasn't
 // followed to the battle scene yet — they get the persisted alpha later).
-async function playEntranceLocal({ partyTokenIds = [], enemyTokenIds = [] } = {}) {
+async function playEntranceLocal({ partyTokenIds = [], enemyTokenIds = [], partyOutcomes = {} } = {}) {
   const FADE_MS = 600;
   const PER_TOKEN_STAGGER_MS = 90;
 
@@ -878,8 +895,18 @@ async function playEntranceLocal({ partyTokenIds = [], enemyTokenIds = [] } = {}
   // mesh alpha) once the copies arrive, then the copies are destroyed.
   async function dashInParty() {
     const placeables = partyTokenIds.map(getP).filter(Boolean);
+    // A member with a bespoke party entrance (party-entrance-styles.js) plays
+    // it instead of the dash, in the same top→bottom slot. It reveals its own
+    // token; the dash reveals everyone else's.
+    const styled = new Map();
+    for (const tok of placeables) {
+      const st = partyEntranceStyleFromFlags(tok.actor?.flags);
+      if (st) styled.set(tok.id, st);
+    }
+    for (const [id, st] of styled) preparePartyEntrance(id, st);
     const revealLocal = () => {
       for (const id of partyTokenIds) {
+        if (styled.has(id)) continue;
         const p = getP(id);
         if (p && !p.destroyed) {
           try { p.alpha = 1; } catch {}
@@ -889,16 +916,25 @@ async function playEntranceLocal({ partyTokenIds = [], enemyTokenIds = [] } = {}
     };
     if (!placeables.length) { revealLocal(); return; }
 
+    // Top → bottom (Hina first … Zarg last): one stagger slot each, dashers
+    // and styled members alike.
+    const slot = new Map([...placeables].sort((a, b) => a.center.y - b.center.y).map((t, i) => [t.id, i]));
+    const styledRuns = [...styled].map(([id, style]) => (async () => {
+      await wait((slot.get(id) ?? 0) * DASH_STAGGER_MS);
+      await playPartyEntranceLocal({ tokenId: id, style, outcome: partyOutcomes?.[id] ?? null, sceneId: canvas?.scene?.id ?? null });
+    })());
+
     // World offset ≈ 60% of the viewport width (matches the approved preview),
     // in world units so the run-in starts off-screen at any zoom.
     const scale = canvas.stage?.scale?.x || 1;
     const screenW = canvas.app?.renderer?.screen?.width ?? 1920;
     const worldOffset = (0.6 * screenW) / scale;
 
-    // Build a sprite copy of each party token at center + offset.
+    // Build a sprite copy of each dashing party token at center + offset.
     canvas.stage.sortableChildren = true;
     const sprites = [];
     for (const tok of placeables) {
+      if (styled.has(tok.id)) continue;
       let tex = tok.mesh?.texture;
       if (!tex || tex === PIXI.Texture.EMPTY) {
         try { tex = await loadTexture(tok.document?.texture?.src); } catch {}
@@ -916,10 +952,10 @@ async function playEntranceLocal({ partyTokenIds = [], enemyTokenIds = [] } = {}
       spr.scale.x = (sx < 0 ? -1 : 1) * Math.abs(spr.scale.x);
       spr.position.set(tok.center.x + worldOffset, tok.center.y);
       canvas.stage.addChild(spr);
-      sprites.push({ spr, restX: tok.center.x, y: tok.center.y });
+      sprites.push({ spr, restX: tok.center.x, slot: slot.get(tok.id) ?? 0 });
     }
     canvas.stage.sortChildren?.();
-    if (!sprites.length) { revealLocal(); return; }
+    if (!sprites.length) { revealLocal(); await Promise.all(styledRuns); return; }
 
     // Play the (shared) battle WEBM on each copy so the characters animate
     // WHILE running in. Cheap — only the ~4 party sprites. Each copy shares the
@@ -932,9 +968,6 @@ async function playEntranceLocal({ partyTokenIds = [], enemyTokenIds = [] } = {}
       } catch {}
     };
     for (const { spr } of sprites) playTexVideo(spr.texture);
-
-    // Top → bottom (Hina first … Zarg last).
-    sprites.sort((a, b) => a.y - b.y);
 
     // Dash SFX — local Web Audio cue (each client plays its own from the warm
     // cache). Replaces the old AudioHelper broadcast, which would double now
@@ -953,8 +986,8 @@ async function playEntranceLocal({ partyTokenIds = [], enemyTokenIds = [] } = {}
       };
       requestAnimationFrame(step);
     });
-    await Promise.all(sprites.map((s, i) => (async () => {
-      await wait(i * DASH_STAGGER_MS);
+    await Promise.all(sprites.map((s) => (async () => {
+      await wait(s.slot * DASH_STAGGER_MS);
       await tweenX(s.spr, s.restX, DASH_MS);
     })()));
 
@@ -969,6 +1002,7 @@ async function playEntranceLocal({ partyTokenIds = [], enemyTokenIds = [] } = {}
       try { canvas.stage.removeChild(spr); spr.destroy({ children: true, texture: false, baseTexture: false }); }
       catch {}
     }
+    await Promise.all(styledRuns);
   }
 
   // Bespoke boss entrance (boss-entrance-fx.js). Resolves at impact; the real
@@ -1097,7 +1131,17 @@ async function playJoinEntrances(scene, joins) {
 async function playEntranceAnimation({ partyTokens, enemyTokens }) {
   const partyTokenIds = (partyTokens ?? []).map((t) => t.id);
   const enemyTokenIds = (enemyTokens ?? []).map((t) => t.id);
-  const payload = { partyTokenIds, enemyTokenIds };
+  // A party entrance with a chance in it (Blanche's 50/50) is rolled ONCE,
+  // here, and broadcast, so every client sees the same outcome.
+  const partyOutcomes = {};
+  const partyMembers = [];
+  for (const t of [...(partyTokens ?? [])].sort((a, b) => (a.y ?? 0) - (b.y ?? 0))) {
+    const style = partyEntranceStyleFromFlags(t.actor?.flags);
+    const outcome = style ? rollPartyOutcome(style) : null;
+    if (outcome) partyOutcomes[t.id] = outcome;
+    partyMembers.push({ style, outcome });
+  }
+  const payload = { partyTokenIds, enemyTokenIds, partyOutcomes };
 
   try { _entranceSocket?.executeForOthers?.(ACTION_ENTRANCE, payload); }
   catch (e) { warn("entrance: broadcast failed", e); }
@@ -1108,7 +1152,15 @@ async function playEntranceAnimation({ partyTokens, enemyTokens }) {
   // hidden window and would park PREP until refocus. The alpha persist below
   // still runs, so the end state is identical either way.
   if (shouldRender()) await playEntranceLocal(payload);
-  else log("entrance: window hidden — broadcast sent, local playback skipped");
+  else {
+    log("entrance: window hidden — broadcast sent, local playback skipped");
+    // Nothing drawn here, but if a bespoke party entrance is playing for the
+    // others, hold the reveal below for its length so it does not land under
+    // their animation.
+    if (partyMembers.some((m) => m.style) && hasOtherViewers()) {
+      await new Promise((res) => setTimeout(res, partyEntranceSpanMs(partyMembers)));
+    }
+  }
 
   try {
     const scene = (partyTokens?.[0] ?? enemyTokens?.[0])?.parent ?? canvas?.scene ?? null;

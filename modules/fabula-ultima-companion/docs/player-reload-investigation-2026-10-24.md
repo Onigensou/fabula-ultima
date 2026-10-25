@@ -70,18 +70,50 @@ The fixed ~5½–6½ min delay for Blumairwen points to memory growth from a per
 
 ## Next steps
 
-### Client-side evidence (ask Rinri and Blumairwen next session)
+### Client-side evidence
+
+✅ **Automatic since 2026-10-25:** [scripts/client-health.js](../scripts/client-health.js) records this on every client.
+
+- **How the last page ended.** It reads the navigation type, Chrome's `document.wasDiscarded`, and whether `pagehide` ran. A reload with no `pagehide` means the page died: a crash, a killed tab or a discard.
+- **The previous page's last heartbeat.** It is written every 30 s and holds:
+  - memory, GPU texture count, ticker count, DOM size and timer drift;
+  - the scene and the time since it was drawn;
+  - the last 15 console warnings and errors.
+- **During play:** each scene draw, any draw that stalls, memory samples every minute for 10 min after a draw (then every 5 min), tab hide/show, and socket disconnects with their reason.
+
+Reports queue in localStorage, so they survive the reload, and go to the primary GM. The GM writes them to `Data/client-health-logs/<world>_<session>.json` every 2 min. On the GM console, `FUCompanion.api.clientHealth.summary()` gives a roll-up per player.
+
+The manual checks below are now only a fallback. The browser's discard count (step 3) is the one thing the logger can't see directly; `wasDiscarded` covers the same case.
 
 1. **F12 → Console → ⚙ → "Preserve log".** At the next reload, capture the lines just above `Navigated to …`.
 2. **Shift+Esc** (browser Task Manager): note the Foundry tab's memory right after a scene change, and again 5 min later.
 3. **`chrome://discards`** or **`edge://discards`**: note the Foundry tab's *Discard count*.
 4. Browser, RAM and GPU, and whether an "Aw, Snap!" page ever appeared.
 
-### Code / content fixes (not started, need approval)
+### Code / content fixes
 
 - **Screen transition:** add a safety timeout. Also lift the overlay below notifications, so a "lost connection" toast is visible.
   - Commit `1a330723` (co-dev, same night) already covers the **battle-shatter** path: `holdUntilDrawn` with a 90 s cap and a failed-draw poll.
-  - The plain scene-change path (`cover()` on `canvasTearDown` → `reveal()` on `canvasReady`) still has no timeout. Build the fix on that commit's `holdUntilDrawn`/`STUCK_MS`.
-- **Assets:** upload the 6 host-served JB2A webms to Forge and repoint the tiles.
+  - ✅ **Done 2026-10-25:** the plain scene-change path now watches the draw too. `cover()` starts the same poll (`watchDraw`, shared with `holdUntilDrawn`). It reveals once `canvas.loading` clears without a `canvasReady`, which covers Foundry's texture-load failure, group-draw failure and blank-draw returns. On a draw that never ends, it reveals at the 90 s `STUCK_MS` cap. A healthy slow draw still stays black until `canvasReady`. This was verified in a fake-clock simulation, not in a live game yet.
+  - Still open: lifting the overlay below notifications. Several overlays are tuned against z 99999 (the area panel, the camp GM panel, and the glass "under the glass" ordering), so this needs its own pass.
+- **Assets:** upload the 6 host-served JB2A webms to Forge and repoint the tiles. These are JB2A Free (CC BY-NC-SA). The list below was read from a scenes snapshot on 2026-10-25, about 4.8 MB in total:
+
+  | File (`modules/JB2A_DnD5e/Library/…`) | Size | Tiles | Scenes |
+  |---|---|---|---|
+  | `Generic/Smoke/Fumes_02_Steam_White_400x400.webm` | 699 KB | 26 | Eisendrache_Battlemap003, Eisendrache Burning, Eisendrache Kingdom, Ruhig_Village001/005/011, Valley_Map001/002, Wyrmwood_Map012, Dragonslayer Overworld, Vastwind_Field009 |
+  | `Generic/Smoke/SmokePlumes01_01_Regular_Grey_400x400.webm` | 970 KB | 2 | Ruhig_Village001, Ruhig_Village011 |
+  | `Generic/Wind/WindLines01_01_Regular_White_500x500.webm` | 271 KB | 2 | Eisendrache Highroad, Vastwind_Field002 |
+  | `1st_Level/Sleep/SleepSymbol01_01_Regular_Pink_400x400.webm` | 160 KB | 1 | Valley_Map001 |
+  | `Generic/Wind/WindStreams_01_White_20OPA_1200x1200.webm` | 1819 KB | 1 | Vastwind_Battlemap001 |
+  | `Generic/Fire/Campfire/Campfire03_02_Orange_Loop_400x600.webm` | 889 KB | 1 | Hideout_Map005 |
+
+  Our Forge key is read-only, so the upload needs Forge write access. Repointing the 33 tiles is a world-data write.
+- **Static-file caching:** ✅ [docs/host-cache-proxy/](host-cache-proxy/README.md) has a no-dependency Node proxy. Foundry sends `Cache-Control: no-cache` on all static files over HTTP/1.1, so every reload re-asks the host about each file. The proxy lets browsers keep scripts and assets for 6 h, so a mid-session reload costs only the world data. It was verified against the local server; a real player join through it has not been tested.
+- **Script bundling (measured 2026-10-25):** this module loads **749 files per page**:
+  - 376 classic scripts;
+  - 117 ES module entries, which pull in 280 more through imports;
+  - 2 stylesheets.
+
+  That is 16.0 MB raw, 4.8 MB gzipped. The largest are `skill-effects.js` (709 KB), `action-card.js` (618 KB) and `state-handlers.js` (465 KB). Test-only files such as `_test-harness-director.js` (187 KB) load on players' clients too. With the proxy in place, bundling mainly helps the **first** load. Do it after the entrance work lands, because it changes the shipped file list. The development build must stay unbundled for the harness's cache-busting.
 - **World size:** shrink the payload, so each reload costs less.
 - **Memory:** if step 2 shows growth, profile which `canvasReady` tickers keep allocating.

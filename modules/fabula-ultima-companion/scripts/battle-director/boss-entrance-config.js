@@ -8,6 +8,7 @@
 // Two per-ACTOR flags read by the director's entrance (director-init.js):
 //
 //   flags.fabula-ultima-companion.entranceStyle  — "fade" or a DESCENT_STYLES key
+//       (or, on a party member, a PARTY_ENTRANCE_STYLES key: party-entrance-styles.js)
 //   flags.fabula-ultima-companion.entranceQueue  — true: this entrance waits its
 //       turn. Queued enemies play one at a time, in roster order, before anyone
 //       else; the rest (plain fades + unqueued descents) then enter together,
@@ -36,6 +37,7 @@ import {
   defeatStyleFromFlags,
 } from "./defeat-styles.js";
 import { GATHER_STYLES } from "./gather-styles.js";
+import { PARTY_ENTRANCE_STYLES, partyEntranceStyleFromFlags } from "./party-entrance-styles.js";
 import { baseActorOf } from "../sprite-shadow/sprite-shadow-config.js";
 import { warn } from "./logger.js";
 
@@ -60,7 +62,10 @@ function injectEntranceConfig(app, html) {
     const tab = $html.find('div.tab[data-tab="appearance"]');
     if (!tab.length || tab.find(`.${CSS}`).length) return;
 
-    const style = entranceStyleFromFlags(actor.flags);
+    // A party style is read by its own reader: the enemy one sees it as
+    // "fade", and saving the dialog would then wipe it.
+    const currentStyle = () => partyEntranceStyleFromFlags(actor.flags) ?? entranceStyleFromFlags(actor.flags);
+    const style = currentStyle();
     const queued = entranceQueuedFromFlags(actor.flags);
     const opt = (v, label) => `<option value="${esc(v)}" ${style === v ? "selected" : ""}>${esc(label)}</option>`;
     const defeat = defeatStyleFromFlags(actor.flags);
@@ -82,6 +87,9 @@ function injectEntranceConfig(app, html) {
               ${opt(DEFAULT_ENTRANCE_STYLE, "Fade (basic)")}
               ${Object.keys(DESCENT_STYLES).map((k) => opt(k, k)).join("")}
               ${Object.entries(GATHER_STYLES).map(([k, g]) => opt(k, g.label ?? k)).join("")}
+              <optgroup label="Party (replaces the run-in dash at battle start)">
+                ${Object.entries(PARTY_ENTRANCE_STYLES).map(([k, g]) => opt(k, g.label ?? k)).join("")}
+              </optgroup>
             </select>
           </div>
         </div>
@@ -122,7 +130,7 @@ function injectEntranceConfig(app, html) {
           const nextQueued = !!$form.find("[data-fud-entrance-queue]").is(":checked");
           // Compare against the NORMALISED read so saving the dialog never
           // rewrites a flag the user did not touch.
-          if (nextStyle !== entranceStyleFromFlags(actor.flags)) {
+          if (nextStyle !== currentStyle()) {
             if (nextStyle === DEFAULT_ENTRANCE_STYLE) await actor.unsetFlag(ENTRANCE_MODULE_ID, ENTRANCE_STYLE_FLAG);
             else await actor.setFlag(ENTRANCE_MODULE_ID, ENTRANCE_STYLE_FLAG, nextStyle);
           }

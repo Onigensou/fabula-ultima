@@ -78,6 +78,8 @@
     overlay.style.pointerEvents = "all";
     forceReflow();   // commit to the GPU before this task continues
     state = "COVERED";
+    // canvasReady normally reveals; a failed or hung draw never fires it
+    watchDraw();
     // Anything that should not animate behind the black — badge entrances, etc.
     // — listens for this and waits for the matching reveal.
     Hooks.callAll("oni:screenCovered");
@@ -103,6 +105,16 @@
   function holdUntilDrawn() {
     blackout();
     state = "COVERED";
+    watchDraw();
+  }
+
+  // ── watchDraw: never stay black on a draw that ends without canvasReady ─────
+  // Foundry's texture-load and group-draw failures (and a blank draw) clear
+  // canvas.loading and return with no canvasReady, so the cover would hold
+  // forever and the player F5s — re-downloading the whole world. Reveal once the
+  // draw is over, or after STUCK_MS on a draw that never ends.
+
+  function watchDraw() {
     const t0 = Date.now();
     clearInterval(drawPoll);
     drawPoll = setInterval(() => {
