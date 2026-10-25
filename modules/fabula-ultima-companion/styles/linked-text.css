@@ -211,6 +211,18 @@ img.fu-ltc-badge { background: #2b1d10; padding: 0; }
 .fu-iw-tag.is-sel { color: #3a1e06; background: rgba(201, 164, 74, .45); }
 .fu-ltc-grid > .is-wide { grid-column: 1 / -1; }
 .fu-ltc-grid.is-two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* Item stat line: label beside value, flowing across the card's width
+   ("DEF +1   M.DEF +1   MAX HP +25"); .is-wide takes a line of its own. */
+.fu-iw-stats { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 18px; padding: 6px 0; border-top: 1px solid rgba(122, 78, 32, .18); border-bottom: 1px solid rgba(122, 78, 32, .18); }
+.fu-iw-stat { display: inline-flex; align-items: baseline; gap: 7px; min-width: 0; }
+.fu-iw-stat.is-wide { flex-basis: 100%; }
+.fu-iw-k { font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: #6b4a26; white-space: nowrap; }
+.fu-iw-v { font-weight: 600; font-variant-numeric: tabular-nums; }
+.fu-iw-v strong, .fu-iw-v .fu-lt-dmgtxt { white-space: nowrap; }
+.fu-ltc-name.has-tip { cursor: help; }
+.fu-iw-rftip { font-size: 13px; white-space: nowrap; }
+.fu-iw-rftip .fu-iw-pips { color: #e0b44a; }
+.fu-iw-rftip .fu-iw-pips .is-empty { color: rgba(239, 227, 196, .35); }
 /* Foundry's tooltip (9999) must show above the Item Windows (10075+). */
 #tooltip, .locked-tooltip { z-index: 10095; }
 /* A value changed from its base (refinement): modified colour; hover = formula. */

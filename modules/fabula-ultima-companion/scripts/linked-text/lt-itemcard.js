@@ -39,7 +39,9 @@ export function subtitle(term) {
     case "skill": case "spell": case "passive":
       return [{ skill: "Skill", spell: "Spell", passive: "Passive" }[term.kind], p.class, p.cost].filter(Boolean).join(" · ");
     case "item":
-      return [p.item_rarity, cap(p.item_type), p.category, p.item_type === "weapon" ? p.hand_slots : ""].filter(Boolean).join(" · ");
+      // Weapons carry their hands and range here, so the stat line holds numbers only.
+      return [p.item_rarity, cap(p.item_type), p.category,
+        p.item_type === "weapon" ? p.hand_slots : "", p.item_type === "weapon" ? p.weapon_range : ""].filter(Boolean).join(" · ");
     case "actor": return "Companion";
     default: return "";
   }
@@ -106,7 +108,7 @@ function modded(label, parts, total) {
 
 // "+5 ★★★★★" — filled pips for each level reached, hollow for the rest.
 function refinePips(rf) {
-  return `<strong>+${rf.level}</strong> <span class="fu-iw-pips" aria-label="Refined ${rf.level} of ${rf.max}">`
+  return `<strong>+${rf.level} / ${rf.max}</strong> <span class="fu-iw-pips" aria-label="Refined ${rf.level} of ${rf.max}">`
     + `${"★".repeat(rf.level)}<span class="is-empty">${"☆".repeat(rf.max - rf.level)}</span></span>`;
 }
 
@@ -135,9 +137,9 @@ export function gridRows(term, vs = null) {
     const n = itemNumbers(term.doc);
     const rf = refineOf(term.doc);
     const vsRf = vs ? refineOf(vs) : null;
+    // Refinement-only stats (Max HP, Phys. DR) show when either side is refined.
+    // The refine level itself is in the name ("+6") and its hover tooltip.
     const showRefine = !!rf && (rf.level > 0 || (vsRf?.level ?? 0) > 0);
-    // Full grid width, so "+6 ★★★★★★☆" stays on one line.
-    const refineRow = showRefine ? [["Refine", refinePips(rf), null, "is-wide"]] : [];
     if (p.item_type === "weapon") {
       const acc = check(p) + (n.acc ? ` ${signed(n.acc)}` : "");
       // The label shows the final value; when refinement changed it, it turns
@@ -145,13 +147,12 @@ export function gridRows(term, vs = null) {
       const dmgLabel = rf?.dmg
         ? modded(`【HR + ${n.dmg}】`, [["Base", `HR + ${n.dmg - rf.dmg}`], [`Refinement +${rf.level}`, `+${rf.dmg}`]], `HR + ${n.dmg}`)
         : `<strong>【HR + ${n.dmg}】</strong>`;
-      // Damage first, full width: its type and ▲▼ sit beside it.
-      return [["Damage", `${dmgLabel}${dmgText(p.type_damage)}`, "dmg", "is-wide"],
-        ["Accuracy", acc, "acc"], ["Range", esc(p.weapon_range)], ["Hands", esc(p.hand_slots)], ...refineRow];
+      // Damage leads on its own line; Accuracy follows. Hands and range live in the type line.
+      return [["Damage", `${dmgLabel}${dmgText(p.type_damage)}`, "dmg", "is-wide"], ["Accuracy", acc, "acc"]];
     }
     if (p.item_type === "armor" || p.item_type === "shield") {
       const show = (v) => (n.martial ? String(v) : signed(v));
-      const rows = [["DEF", show(n.def), "def"], ["M.DEF", show(n.mdef), "mdef"], ...refineRow];
+      const rows = [["DEF", show(n.def), "def"], ["M.DEF", show(n.mdef), "mdef"]];
       const per = (v, lvl) => (lvl ? v / lvl : 0);
       if (showRefine && p.item_type === "armor") {
         rows.push(["Max HP", n.hp ? modded(signed(n.hp), [["Base", "+0"], [`Refinement +${rf.level}`, `+${per(n.hp, rf.level)} × ${rf.level}`]], signed(n.hp)) : "+0", "hp"]);
@@ -225,19 +226,26 @@ export function cardHTML(term, { vs = null, actor, compact = false } = {}) {
     const d = mine[key] - (other[key] ?? 0);
     return d ? `<span class="fu-iw-dlt ${d > 0 ? "is-up" : "is-down"}"><span class="fu-iw-arrow">${d > 0 ? "▲" : "▼"}</span>${Math.abs(d)}</span>` : "";
   };
-  const grid = rows.length
-    // Weapons: two wider columns, so Accuracy / Damage keep their suffixes beside them.
-    ? `<div class="fu-ltc-grid${term.doc?.system?.props?.item_type === "weapon" ? " is-two" : ""}">${rows.map(([k, v, key, cls]) => `<div${cls ? ` class="${cls}"` : ""}><span>${esc(k)}</span><span class="fu-iw-line">${v}${delta(key)}</span></div>`).join("")}</div>`
-    : "";
+  // Items: one flowing stat line, label beside value ("DEF +1   M.DEF +1   MAX HP +25"),
+  // like an MMO tooltip. Skills keep the label-over-value grid their six fields fill.
+  const grid = !rows.length ? ""
+    : term.kind === "item"
+      ? `<div class="fu-iw-stats">${rows.map(([k, v, key, cls]) => `<div class="fu-iw-stat${cls ? ` ${cls}` : ""}"><span class="fu-iw-k">${esc(k)}</span><span class="fu-iw-v">${v}${delta(key)}</span></div>`).join("")}</div>`
+      : `<div class="fu-ltc-grid">${rows.map(([k, v, key, cls]) => `<div${cls ? ` class="${cls}"` : ""}><span>${esc(k)}</span><span class="fu-iw-line">${v}${delta(key)}</span></div>`).join("")}</div>`;
   const desc = descriptionOf(term);
   const body = desc
     ? `<div class="fu-ltc-body">${renderLinkedText(safeHtml(desc))}</div>`
     : (term.missing ? `<div class="fu-ltc-body fu-ltc-muted">No details available.</div>` : "");
   const set = !compact && term.kind === "item" && term.doc ? setBonusHTML(term.doc, { actor, project: !!vs }) : "";
   const flavor = compact ? "" : flavorOf(term);
+  // Refinement on hover of the name: "Refined +6 / 7 ★★★★★★☆".
+  const rf = term.kind === "item" ? refineOf(term.doc) : null;
+  const rfTip = rf
+    ? ` data-tooltip="${esc(rf.level ? `<div class="fu-iw-rftip">Refined ${refinePips(rf)}</div>` : `<div class="fu-iw-rftip">Not refined · up to +${rf.max}</div>`)}" data-tooltip-direction="UP"`
+    : "";
   return `<div class="fu-iw-card">
     <div class="fu-ltc-head">${badgeHTML(term)}
-      <div class="fu-ltc-title"><div class="fu-ltc-name" style="${term.color ? `--fu-lt-c:${term.color}` : ""}">${esc(term.name)}</div><div class="fu-ltc-sub">${esc(subtitle(term))}</div></div>
+      <div class="fu-ltc-title"><div class="fu-ltc-name${rf ? " has-tip" : ""}" style="${term.color ? `--fu-lt-c:${term.color}` : ""}"${rfTip}>${esc(term.name)}</div><div class="fu-ltc-sub">${esc(subtitle(term))}</div></div>
       ${priceHTML(term)}
     </div>
     ${grid}${body}
