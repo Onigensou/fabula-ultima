@@ -14,6 +14,7 @@
 
 import { resolveUuid, DAMAGE } from "./lt-terms.js";
 import { iconHTML, renderLinkedText, safeHtml } from "./lt-render.js";
+import { setBonusHTML } from "./lt-setbonus.js";
 
 const PEEK_ID = "fu-lt-peek";
 const PANEL_ID = "fu-lt-panel";
@@ -151,6 +152,8 @@ function drawPanel() {
     ? `<div class="fu-ltc-body">${renderLinkedText(safeHtml(desc))}</div>`
     : (term.missing ? `<div class="fu-ltc-body fu-ltc-muted">No details available.</div>` : "");
   const flavor = flavorOf(term);
+  // Set pieces: tier rows, lit by the owner's (or viewer's) equipped pieces.
+  const setHtml = term.kind === "item" && term.doc ? setBonusHTML(term.doc) : "";
 
   panel.innerHTML = `
     <div class="fu-ltc-top">${crumbs}
@@ -161,6 +164,7 @@ function drawPanel() {
       ${priceHTML(term)}
     </div>
     ${grid}${body}
+    ${setHtml ? `<div class="fu-ltc-label">Set bonus</div>${safeHtml(setHtml)}` : ""}
     ${flavor ? `<div class="fu-ltc-flavor">${safeHtml(flavor)}</div>` : ""}`;
   panel.hidden = false;
   placePanel(panel);

@@ -15,10 +15,12 @@ import { renderLinkedText, plainLinkedText, decorateLinks, registerEnricher, lin
 import { resolveUuid, resolveTag } from "./lt-terms.js";
 import { initCards, openCard, closeCard } from "./lt-card.js";
 import { convertHtml, convertWorld, restoreBackup, runLinkedTextLint, minimalLink, splitSetBonus } from "./lt-convert.js";
+import { setBonusHTML, parseSetTiers } from "./lt-setbonus.js";
 
 const api = Object.freeze({
   renderLinkedText, plainLinkedText, decorateLinks, linkHTML, safeHtml,
   resolveUuid, resolveTag, openCard, closeCard,
+  setBonusHTML, parseSetTiers,
   // Storage format + cleanup (GM tools):
   convertHtml, convertWorld, restoreBackup, minimalLink, splitSetBonus,
 });

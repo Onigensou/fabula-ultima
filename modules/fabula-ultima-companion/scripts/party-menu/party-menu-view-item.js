@@ -10,6 +10,7 @@ import {
   bagsOf, moveRefusal, moveItem, useRefusal, useItem,
 } from "./party-menu-inventory.js";
 import { esc, safeHtml, play, SND, img, gridStep, portraitStrip, overlayFoot, kbd } from "./party-menu-ui.js";
+import { setBonusHTML } from "../linked-text/lt-setbonus.js";
 
 const REASONS = {
   "same-bag": "It's already there.",
@@ -171,7 +172,7 @@ export const itemView = {
       ${notes.map((n) => `<div class="pm-locked"><i class="fas fa-circle-info"></i> ${esc(n)}</div>`).join("")}
       <dl class="pm-facts">${s.facts.map(([k, val]) => `<dt>${esc(k)}</dt><dd>${esc(val)}</dd>`).join("")}</dl>
       <div class="pm-desc">${safeHtml(s.description) || "<p><em>No description.</em></p>"}
-      ${s.setDescription ? `<div class="pm-label">Set bonus</div>${safeHtml(s.setDescription)}` : ""}</div>`;
+      ${s.setDescription ? `<div class="pm-label">Set bonus</div>${safeHtml(setBonusHTML(item) || s.setDescription)}` : ""}</div>`;
   },
 
   renderDest(ctx, item) {

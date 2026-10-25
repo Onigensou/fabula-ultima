@@ -134,6 +134,29 @@ img.fu-ltc-badge { background: #2b1d10; padding: 0; }
 .fu-ltc-flavor { font-style: italic; color: #6b4a26; border-top: 1px solid rgba(122, 78, 32, .22); padding-top: 8px; }
 .fu-ltc-flavor p { margin: 0; }
 
+/* ── Set bonus section (lt-setbonus.js) ───────────────────────────────────── */
+.fu-set { display: grid; gap: 8px; margin-top: 4px; }
+.fu-set-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.fu-set-name { font-weight: 600; color: #1f6b3a; }
+.fu-set-count { font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; border-radius: 999px; padding: 1px 9px; background: rgba(31, 107, 58, .12); color: #1f6b3a; }
+.fu-set-pieces { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12.5px; }
+.fu-set-piece { display: inline-flex; align-items: center; gap: 5px; }
+.fu-set-piece img { width: 20px; height: 20px; border-radius: 4px; border: 1px solid rgba(122, 78, 32, .3); object-fit: cover; }
+.fu-set-piece.is-off { opacity: .45; filter: grayscale(1); }
+.fu-set-tiers { display: grid; gap: 4px; }
+.fu-set-tier { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 8px; align-items: baseline; padding: 4px 8px; border-left: 3px solid transparent; border-radius: 6px; }
+.fu-set-tier.is-on { background: rgba(31, 107, 58, .08); border-left-color: #c9a44a; }
+.fu-set-tier.is-off { opacity: .45; filter: grayscale(1); }
+.fu-set-badge { font-size: 12px; font-weight: 700; color: #1f6b3a; white-space: nowrap; }
+.fu-set-tier.is-off .fu-set-badge { color: #6b4a26; }
+.fu-set-text p { margin: 0 0 4px; }
+.fu-set-text p:last-child { margin-bottom: 0; }
+.fu-set-text ul { margin: 0; padding-left: 16px; }
+.fu-set-text li { margin: 0 0 2px; }
+.fu-set-text li p { margin: 0; }
+.fu-set-text hr { display: none; }
+.fu-ltc-label { font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: #6b4a26; border-top: 1px solid rgba(122, 78, 32, .22); padding-top: 8px; }
+
 .fu-ltc-peek { width: min(300px, calc(100vw - 24px)); padding: 10px 12px; display: grid; gap: 6px; font-size: 13.5px; pointer-events: none; z-index: 10080; }
 .fu-ltc-phead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; }
 .fu-ltc-phead b { font-size: 15px; }

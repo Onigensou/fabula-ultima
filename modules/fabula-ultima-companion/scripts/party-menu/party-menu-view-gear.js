@@ -23,6 +23,7 @@ import { esc, safeHtml, play, SND, img, STAT, bar, portraitStrip, gridStep } fro
 import { effectRowsOf } from "./party-menu-effects.js";
 import { previewEquip, peekPreview } from "./party-menu-gear-preview.js";
 import { vitalsOf } from "./party-menu-core.js";
+import { setBonusHTML } from "../linked-text/lt-setbonus.js";
 
 const EQUIP_REASONS = {
   "not-granted": "The GM hasn't opened the Equip menu to players.",
@@ -77,7 +78,7 @@ function itemDetail(item, extra = "") {
     ${extra}
     <dl class="pm-facts">${s.facts.map(([k, val]) => `<dt>${esc(k)}</dt><dd>${esc(val)}</dd>`).join("")}</dl>
     <div class="pm-desc">${safeHtml(s.description) || "<p><em>No description.</em></p>"}
-    ${s.setDescription ? `<div class="pm-label">Set bonus</div>${safeHtml(s.setDescription)}` : ""}</div>`;
+    ${s.setDescription ? `<div class="pm-label">Set bonus</div>${safeHtml(setBonusHTML(item) || s.setDescription)}` : ""}</div>`;
 }
 
 function defenseLine(actor) {
