@@ -49,12 +49,16 @@ export function subtitle(term) {
 export function itemNumbers(doc) {
   const p = doc?.system?.props ?? {};
   const t = p.item_type;
-  const martialArmor = p.isMartial && t === "armor";
+  // Martial armor sets DEF outright (its base); everything else adds a bonus.
+  // Some martial pieces only fill the bonus field, so fall back to it.
+  const martial = p.isMartial && t === "armor" && numOf(p.item_baseDef) > 0;
+  const worn = t === "armor" || t === "shield";
   return {
     dmg: t === "weapon" ? numOf(p.damage_bonus) : undefined,
     acc: t === "weapon" ? numOf(p.check_bonus) : undefined,
-    def: t === "armor" || t === "shield" ? (martialArmor ? numOf(p.item_baseDef) : numOf(p.item_def_bonus)) : undefined,
-    mdef: t === "armor" || t === "shield" ? (martialArmor ? numOf(p.item_baseMdef) : numOf(p.item_mdef_bonus)) : undefined,
+    def: worn ? (martial ? numOf(p.item_baseDef) : numOf(p.item_def_bonus)) : undefined,
+    mdef: worn ? (martial ? numOf(p.item_baseMdef) : numOf(p.item_mdef_bonus)) : undefined,
+    martial,
   };
 }
 
@@ -83,7 +87,8 @@ export function gridRows(term) {
         ["Range", esc(p.weapon_range)], ["Hands", esc(p.hand_slots)]];
     }
     if (p.item_type === "armor" || p.item_type === "shield") {
-      return [["DEF", signed(n.def), "def"], ["M.DEF", signed(n.mdef), "mdef"]];
+      const show = (v) => (n.martial ? String(v) : signed(v));
+      return [["DEF", show(n.def), "def"], ["M.DEF", show(n.mdef), "mdef"]];
     }
   }
   return [];
@@ -203,7 +208,9 @@ export function swapNotesHTML(doc, vs, actor) {
     const worn = equippedPieceNames(actor, vsSet).size;
     const tiers = parseSetTiers(renderLinkedText(b.set_description ?? ""))?.tiers ?? [];
     for (const t of tiers.filter((t) => worn >= t.pieces && worn - 1 < t.pieces)) {
-      rows.push(`<div class="fu-iw-note is-warn"><span>Breaks ${esc(vsSet)} ${t.pieces}-Piece</span><span>${t.html}</span></div>`);
+      // One line in the note: drop the tier's list/paragraph wrappers, keep its links.
+      const inline = t.html.replace(/<\/?(ul|ol|li|p)\b[^>]*>/gi, " ").replace(/\s+/g, " ").trim();
+      rows.push(`<div class="fu-iw-note is-warn"><span>Breaks ${esc(vsSet)} ${t.pieces}-Piece</span><span>${inline}</span></div>`);
     }
   }
   if (!rows.length) return "";
