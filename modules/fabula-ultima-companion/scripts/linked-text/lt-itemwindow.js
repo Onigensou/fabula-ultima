@@ -93,9 +93,11 @@ function renderWin(w) {
   const btn = w.el.querySelector("[data-iw=compare]");
   btn.hidden = !canCompare;
   btn.setAttribute("aria-pressed", String(!!cmp));
+  // Compare: the item you're looking at on the left, what you wear on the
+  // right behind a faint rule.
   w.el.querySelector(".fu-iw-body").innerHTML = `<div class="fu-iw-cols">`
-    + (cmp ? `<div class="fu-iw-col">${cmp.left}</div>` : "")
     + `<div class="fu-iw-col">${cmp ? `<span class="fu-iw-tag is-sel">Selected</span>` : ""}${cardHTML(term, { vs: cmp?.vs ?? null, actor: cmp?.actor })}${cmp ? cmp.notes : ""}</div>`
+    + (cmp ? `<div class="fu-iw-col fu-iw-eqcol">${cmp.left}</div>` : "")
     + `</div>`;
 }
 
@@ -226,8 +228,8 @@ function drawHover() {
   const cmp = _shift && term.kind === "item" ? compareFor(doc) : null;
   const worn = !!doc.system?.props?.isEquipped;
   const foot = `${worn ? "Equipped · " : ""}Click to pin${term.kind === "item" && !cmp ? " · Shift to compare" : ""} · Shift+click to link`;
-  el.innerHTML = (cmp ? cmp.left.replace(/class="fu-iw-col"/g, 'class="fu-iw-col fu-iw-hcard"') : "")
-    + `<div class="fu-iw-col fu-iw-hcard">${cmp ? `<span class="fu-iw-tag is-sel">Selected</span>` : ""}${cardHTML(term, { vs: cmp?.vs ?? null, actor: cmp?.actor })}${cmp ? cmp.notes : ""}<div class="fu-iw-foot">${esc(foot)}</div></div>`;
+  el.innerHTML = `<div class="fu-iw-col fu-iw-hcard">${cmp ? `<span class="fu-iw-tag is-sel">Selected</span>` : ""}${cardHTML(term, { vs: cmp?.vs ?? null, actor: cmp?.actor })}${cmp ? cmp.notes : ""}<div class="fu-iw-foot">${esc(foot)}</div></div>`
+    + (cmp ? cmp.left.replace(/class="fu-iw-col"/g, 'class="fu-iw-col fu-iw-hcard"') : "");
   clearTimeout(_hoverHideT);
   const wasHidden = el.hidden;
   el.hidden = false;
